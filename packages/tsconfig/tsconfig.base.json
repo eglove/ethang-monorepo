@@ -2,5 +2,6 @@
   "extends": ["@tsconfig/node-lts/tsconfig.json", "@tsconfig/strictest/tsconfig.json"],
   "compilerOptions": {
     "allowImportingTsExtensions": true,
+    "allowJs": true
   }
 }

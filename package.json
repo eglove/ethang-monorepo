@@ -2,7 +2,7 @@
   "name": "ethang-monorepo",
   "version": "1.0.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "pnpm -r lint --fix"
   },
   "author": "Ethan Glover",
   "license": "ISC"
