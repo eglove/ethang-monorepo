@@ -9,7 +9,7 @@
   "type": "module",
   "main": "eslint.config.js",
   "scripts": {
-    "build": "pnpx @eslint/config-inspector build && bun build.ts",
+    "build": "bun build.ts && pnpm lint",
     "lint": "prettier . -w"
   },
   "dependencies": {

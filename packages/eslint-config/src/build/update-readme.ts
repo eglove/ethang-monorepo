@@ -1,4 +1,4 @@
-import { MarkdownGenerator } from "@ethang/markdown-generator/dist/markdown-generator.js";
+import { MarkdownGenerator } from "@ethang/markdown-generator/src/markdown-generator.ts";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 
