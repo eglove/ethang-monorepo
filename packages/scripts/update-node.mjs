@@ -13,11 +13,14 @@ execSync("fnm use lts-latest", { stdio: "inherit" });
 
 const versions = execSync("fnm list", { encoding: "utf8" });
 
-const oldVersions = filter(map(split(versions, "\n"), (line) => {
-  return trim(replace(line, "*", ""));
-}), (item) => {
-  return startsWith(item, "v") && !includes(item, "default");
-});
+const oldVersions = filter(
+  map(split(versions, "\n"), (line) => {
+    return trim(replace(line, "*", ""));
+  }),
+  (item) => {
+    return startsWith(item, "v") && !includes(item, "default");
+  },
+);
 
 for (const oldVersion of oldVersions) {
   try {
