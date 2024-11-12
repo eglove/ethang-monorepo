@@ -1,8 +1,9 @@
 {
   "name": "ethang-monorepo",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "lint": "pnpm -r lint --fix",
+    "lint": "pnpm -r lint",
     "build": "pnpm -r build"
   },
   "author": "Ethan Glover",
