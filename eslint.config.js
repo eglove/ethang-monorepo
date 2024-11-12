@@ -14,6 +14,8 @@ export default tseslint.config(
             },
         },
         rules: {
+            "sonar/no-os-command-from-path": "off",
+            "sonar/os-command": "off",
         },
     },
 );

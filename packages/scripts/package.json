@@ -10,6 +10,11 @@
     "lint": "prettier . --write"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.13",
+    "@types/node": "^22.9.0",
     "prettier": "^3.3.3"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }
