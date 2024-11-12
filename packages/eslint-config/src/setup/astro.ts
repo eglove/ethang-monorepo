@@ -6,7 +6,7 @@ const ruleNames = Object.keys(getNonDeprecatedRules(astro.rules));
 const customRules = [
   {
     name: "no-set-html-directive",
-    rule: 'off"',
+    rule: "off",
   },
 ];
 

@@ -53,7 +53,7 @@ export default tseslint.config({
     "astro/no-deprecated-astro-resolve": "error",
     "astro/no-deprecated-getentrybyslug": "error",
     "astro/no-exports-from-components": "error",
-    "astro/no-set-html-directive": 'off"',
+    "astro/no-set-html-directive": "off",
     "astro/no-set-text-directive": "error",
     "astro/no-unused-css-selector": "error",
     "astro/no-unused-define-vars-in-style": "error",
