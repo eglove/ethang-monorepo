@@ -22,7 +22,7 @@
   "devDependencies": {
     "@ethang/project-builder": "workspace:^",
     "@types/lodash": "^4.17.13",
-    "vitest": "^2.1.4"
+    "vitest": "^2.1.5"
   },
   "peerDependencies": {
     "lodash": "^4.17.21"
