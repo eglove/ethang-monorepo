@@ -47,7 +47,6 @@
   },
   "devDependencies": {
     "@ethang/eslint-config": "workspace:^",
-    "@ethang/project-builder": "workspace:^",
     "@portabletext/types": "^2.0.13",
     "@tailwindcss/typography": "^0.5.15",
     "@tanstack/router-plugin": "^1.79.0",

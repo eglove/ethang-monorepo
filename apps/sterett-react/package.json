@@ -15,8 +15,7 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "@ethang/hooks": "^2.2.6",
-    "@ethang/toolbelt": "^4.3.1",
+    "@ethang/hooks": "workspace:^",
     "@heroicons/react": "^2.1.5",
     "@nextui-org/avatar": "^2.0.33",
     "@nextui-org/button": "^2.0.38",
@@ -54,8 +53,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^19.15.2",
-    "@ethang/project-builder": "^3.0.1",
+    "@ethang/eslint-config": "workspace:^",
     "@portabletext/types": "^2.0.13",
     "@tailwindcss/typography": "^0.5.15",
     "@tsconfig/strictest": "^2.0.5",
