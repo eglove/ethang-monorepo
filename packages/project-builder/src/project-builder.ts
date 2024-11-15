@@ -1,46 +1,54 @@
+import isNil from "lodash/isNil.js";
 import { copyFileSync, readFileSync, writeFileSync } from "node:fs";
-import { sortPackageJson as sort } from "sort-package-json";
+import { sortPackageJson } from "sort-package-json";
 import { build as tsc } from "tsc-prog";
-import { build } from "tsup";
+import { build as tsup } from "tsup";
 
 const packageJsonString = "package.json";
 
+type Options = {
+  entry: string[];
+  outDir: string;
+};
+
 export const projectBuilder = async (
   basePath: string,
-  // eslint-disable-next-line unicorn/no-object-as-default-parameter
-  options = {
-    entry: ["src"],
-    outDir: "dist",
-  },
+  options?: Options,
 ) => {
   process.chdir(basePath);
+  const config = isNil(options)
+    ? {
+      entry: ["src"],
+      outDir: "dist",
+    } satisfies Options
+    : options;
 
   const packageJson = readFileSync(packageJsonString, { encoding: "utf8" });
-  writeFileSync(packageJsonString, sort(packageJson), "utf8");
+  writeFileSync(packageJsonString, sortPackageJson(packageJson), "utf8");
 
   tsc({
     basePath,
-    clean: [options.outDir],
+    clean: [config.outDir],
     compilerOptions: {
       allowSyntheticDefaultImports: true,
       declaration: true,
       emitDeclarationOnly: true,
       moduleResolution: "node",
-      outDir: options.outDir,
+      outDir: config.outDir,
       target: "esnext",
     },
-    include: options.entry,
+    include: config.entry,
   });
 
-  await build({
+  await tsup({
     bundle: true,
-    entry: options.entry,
+    entry: config.entry,
     format: ["esm"],
     minify: true,
-    outDir: options.outDir,
+    outDir: config.outDir,
     sourcemap: true,
     target: "esnext",
   });
 
-  copyFileSync(packageJsonString, `${options.outDir}/package.json`);
+  copyFileSync(packageJsonString, `${config.outDir}/package.json`);
 };
