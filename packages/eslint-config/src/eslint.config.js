@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { fixupPluginRules } from "@eslint/compat";
 import { ignores, languageOptions } from "./constants.js";
 import a11y from "eslint-plugin-jsx-a11y";

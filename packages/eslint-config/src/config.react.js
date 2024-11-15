@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ignores, languageOptions } from "./constants.js";
 import react from "@eslint-react/eslint-plugin";
 import reactCompiler from "eslint-plugin-react-compiler";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ignores, languageOptions } from "./constants.js";
 import astro from "eslint-plugin-astro";
 import tseslint from "typescript-eslint";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ignores, languageOptions } from "./constants.js";
 import solid from "eslint-plugin-solid";
 import tseslint from "typescript-eslint";

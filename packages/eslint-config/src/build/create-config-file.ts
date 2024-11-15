@@ -10,7 +10,7 @@ export const createConfigFile = async (
   listConfigs: ConfigFile[],
   fileName: string,
 ) => {
-  let configFile = "";
+  let configFile = "// @ts-nocheck\n";
 
   const imports = listConfigs.flatMap((list) => {
     const importStrings = getTypeImportStrings(list.name);

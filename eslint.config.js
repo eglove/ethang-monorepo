@@ -7,6 +7,7 @@ export default tseslint.config(
         ignores: [
             "**/*/dist",
             "**/*/node_modules",
+            "packages/eslint-config/eslint.config.js",
         ],
     },
     ...config,
