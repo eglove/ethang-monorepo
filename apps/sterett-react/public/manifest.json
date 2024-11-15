@@ -1,0 +1,27 @@
+{
+  "name": "Sterett Creek Village Trustee",
+  "short_name": "Sterett Trustee",
+  "id": "scvt",
+  "description": "Homepage of the Sterett Creek Village Trustee Board",
+  "start_url": "/",
+  "lang": "en",
+  "orientation": "any",
+  "launch_handler": {
+    "client_mode": ["focus-existing", "auto"]
+  },
+  "icons":  [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

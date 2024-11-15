@@ -1,0 +1,15 @@
+export const queryKeys = {
+  galleryImagesCount: "galleryImagesCount",
+  getAllPages: "getAllPages",
+  getBeyonderEvents: "getBeyonderEvents",
+  getCalendarEvents: "getCalendarEvents",
+  getEvents: "getEvents",
+  getFiles: "getFiles",
+  getGalleryImages: "getGalleryImages",
+  getGeneralCovenantFiles: "getGeneralCovenantFiles",
+  getMeetingMinutesFiles: "getMeetingMinutesFiles",
+  getNewsAndEvents: "getNewsAndEvents",
+  getPage: "getPage",
+  getTrustees: "getTrustees",
+  sterett: "sterett",
+};

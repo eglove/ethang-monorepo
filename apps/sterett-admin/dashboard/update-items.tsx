@@ -1,7 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-
-// TODO remove comments on TS updates
 import map from "lodash/map.js";
 
 import { UpdateItem } from "./update-item.js";
