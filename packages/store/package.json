@@ -18,6 +18,7 @@
     "immer": "^10.1.1"
   },
   "devDependencies": {
-    "@ethang/project-builder": "workspace:^"
+    "@ethang/project-builder": "workspace:^",
+    "eslint": "^9.14.0"
   }
 }

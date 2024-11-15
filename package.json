@@ -10,5 +10,9 @@
     "test": "pnpm -r test"
   },
   "author": "Ethan Glover",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@ethang/eslint-config": "workspace:^",
+    "typescript-eslint": "^8.14.0"
+  }
 }

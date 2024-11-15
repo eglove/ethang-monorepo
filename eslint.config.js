@@ -8,7 +8,8 @@ export default tseslint.config(
             "**/*/dist",
             "**/*/node_modules",
             "packages/eslint-config/eslint.config.js",
-            "apps/**/*.gen.ts"
+            "apps/**/*.gen.ts",
+            "**/.sanity"
         ],
     },
     ...config,

@@ -1,3 +1,4 @@
+import replace from "lodash/replace.js";
 import toLower from "lodash/toLower.js";
 import { defineField, defineType } from "sanity";
 
@@ -16,7 +17,7 @@ export const blog = defineType({
       options: {
         maxLength: 200,
         slugify: (input) => {
-          return toLower(input).replaceAll(/\s+/gu, "-")
+          return replace(toLower(input), /\s+/gu, "-")
             .slice(0, 200);
         },
         source: "title",
