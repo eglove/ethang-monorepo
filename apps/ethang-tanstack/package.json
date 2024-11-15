@@ -1,0 +1,60 @@
+{
+  "name": "ethang-tanstack",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite --port=3001",
+    "lint": "eslint . --fix",
+    "serve": "vite preview",
+    "start": "vite",
+    "typecheck": "tsc --noEmit"
+  },
+  "browserslist": [
+    "defaults and fully supports es6-module",
+    "maintained node versions"
+  ],
+  "dependencies": {
+    "@legendapp/state": "^3.0.0-beta.17",
+    "@nextui-org/accordion": "^2.0.40",
+    "@nextui-org/avatar": "^2.0.33",
+    "@nextui-org/button": "^2.0.38",
+    "@nextui-org/link": "^2.0.35",
+    "@nextui-org/modal": "^2.0.41",
+    "@nextui-org/navbar": "^2.0.37",
+    "@nextui-org/react": "^2.4.8",
+    "@portabletext/react": "^3.1.0",
+    "@sanity/client": "^6.22.4",
+    "@sanity/image-url": "^1.1.0",
+    "@tanstack/react-query": "^5.59.20",
+    "@tanstack/react-query-devtools": "^5.59.20",
+    "@tanstack/react-router": "^1.81.4",
+    "@tanstack/router-devtools": "^1.81.4",
+    "bignumber.js": "^9.1.2",
+    "framer-motion": "^11.11.13",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.456.0",
+    "luxon": "^3.5.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sanity-image": "^0.2.0",
+    "tailwind-merge": "^2.5.4"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "workspace:^",
+    "@ethang/project-builder": "workspace:^",
+    "@portabletext/types": "^2.0.13",
+    "@tailwindcss/typography": "^0.5.15",
+    "@tanstack/router-plugin": "^1.79.0",
+    "@types/lodash": "^4.17.13",
+    "@types/luxon": "^3.4.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.14",
+    "vite": "^5.4.11"
+  }
+}
