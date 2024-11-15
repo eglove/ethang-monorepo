@@ -52,6 +52,7 @@ export default tseslint.config(
         {
           cspell: {
             words: [
+              "typicode",
               "toolbelt",
               "taze",
               "ethang",

@@ -11,6 +11,7 @@ const customRules: CustomRules = [
       {
         cspell: {
           words: [
+            "typicode",
             "toolbelt",
             "taze",
             "ethang",

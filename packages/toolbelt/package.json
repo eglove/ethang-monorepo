@@ -1,0 +1,40 @@
+{
+  "name": "@ethang/toolbelt",
+  "version": "4.3.1",
+  "license": "ISC",
+  "author": "Ethan Glover",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "lint": "eslint src --fix",
+    "test": "vitest run --coverage.enabled=true",
+    "test:ui": "vitest --ui --coverage.enabled=true --open=false",
+    "test:watch": "vitest"
+  },
+  "browserslist": [
+    "defaults and fully supports es6-module",
+    "maintained node versions"
+  ],
+  "dependencies": {
+    "@total-typescript/ts-reset": "^0.6.1",
+    "lodash": "^4.17.21",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "workspace:^",
+    "@ethang/project-builder": "workspace:^",
+    "@faker-js/faker": "^9.2.0",
+    "@types/lodash": "^4.17.13",
+    "@types/node": "^22.9.0",
+    "@vitest/coverage-v8": "^2.1.4",
+    "@vitest/ui": "^2.1.4",
+    "eslint": "^9.14.0",
+    "type-fest": "^4.26.1",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.14.0",
+    "vitest": "^2.1.4",
+    "vitest-fetch-mock": "^0.4.2"
+  }
+}

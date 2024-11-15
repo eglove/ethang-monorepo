@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "all": "pnpm deps && pnpm test && pnpm lint && pnpm build",
     "deps": "pnpm up -r -i --latest",
     "lint": "pnpm -r lint",
-    "build": "pnpm -r build"
+    "build": "pnpm -r build",
+    "test": "pnpm -r test"
   },
   "author": "Ethan Glover",
   "license": "ISC"

@@ -3,7 +3,10 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
     {
-        ignores: ["**/*/dist", "**/*/node_modules", "packages/src/**/*.js"],
+        ignores: [
+            "**/*/dist",
+            "**/*/node_modules",
+        ],
     },
     ...config,
     {
@@ -14,6 +17,7 @@ export default tseslint.config(
             },
         },
         rules: {
+            "barrel/avoid-importing-barrel-files": "off",
             "sonar/no-os-command-from-path": "off",
             "sonar/os-command": "off",
         },
