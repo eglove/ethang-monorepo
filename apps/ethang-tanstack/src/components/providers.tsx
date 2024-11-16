@@ -7,26 +7,26 @@ import { lazy, type PropsWithChildren } from "react";
 import { persister, queryClient } from "../clients/query";
 
 const TanStackRouterDevtools =
-    "production" === (import.meta as unknown as { env: { MODE: string } }).env.MODE
-      ? constant(null)
-      : lazy(async () => {
+    (import.meta as unknown as { env: { DEV: boolean } }).env.DEV
+      ? lazy(async () => {
         return import("@tanstack/router-devtools").then((result) => {
           return {
             default: result.TanStackRouterDevtools,
           };
         });
-      });
+      })
+      : constant(null);
 
 const QueryDevtools =
-    "production" === (import.meta as unknown as { env: { MODE: string } }).env.MODE
-      ? constant(null)
-      : lazy(async () => {
+    (import.meta as unknown as { env: { DEV: boolean } }).env.DEV
+      ? lazy(async () => {
         return import("@tanstack/react-query-devtools").then((result) => {
           return {
             default: result.ReactQueryDevtools,
           };
         });
-      });
+      })
+      : constant(null);
 
 export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   const navigate = useNavigate();
