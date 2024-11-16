@@ -88,6 +88,7 @@ export default tseslint.config(
               "turso",
               "supabase",
               "solidjs",
+              "labelledby",
             ],
           },
         },

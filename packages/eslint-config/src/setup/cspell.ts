@@ -46,6 +46,7 @@ const customRules: CustomRules = [
             "turso",
             "supabase",
             "solidjs",
+            "labelledby",
           ],
         },
       },
