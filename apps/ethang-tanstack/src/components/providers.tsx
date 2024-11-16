@@ -2,12 +2,13 @@ import { NextUIProvider } from "@nextui-org/react";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { useNavigate } from "@tanstack/react-router";
 import constant from "lodash/constant.js";
+import get from "lodash/get.js";
 import { lazy, type PropsWithChildren } from "react";
 
 import { persister, queryClient } from "../clients/query";
 
 const TanStackRouterDevtools =
-    (import.meta as unknown as { env: { DEV: boolean } }).env.DEV
+    "production" === get(process, ["env", "NODE_ENV"])
       ? constant(null)
       : lazy(async () => {
         return import("@tanstack/router-devtools").then((result) => {
@@ -18,7 +19,7 @@ const TanStackRouterDevtools =
       });
 
 const QueryDevtools =
-    (import.meta as unknown as { env: { DEV: boolean } }).env.DEV
+    "production" === get(process, ["env", "NODE_ENV"])
       ? constant(null)
       : lazy(async () => {
         return import("@tanstack/react-query-devtools").then((result) => {
