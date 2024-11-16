@@ -2,7 +2,7 @@ import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import { Link } from "@nextui-org/link";
 import { Spinner } from "@nextui-org/spinner";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
@@ -71,6 +71,6 @@ const Courses = () => {
   );
 };
 
-export const Route = createFileRoute("/courses")({
+export const Route = createLazyFileRoute("/courses")({
   component: Courses,
 });

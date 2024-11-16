@@ -8,46 +8,53 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ResumeImport } from './routes/resume'
-import { Route as ProjectsImport } from './routes/projects'
-import { Route as CoursesImport } from './routes/courses'
-import { Route as CertificationsImport } from './routes/certifications'
-import { Route as IndexImport } from './routes/index'
+
+// Create Virtual Routes
+
+const ResumeLazyImport = createFileRoute('/resume')()
+const ProjectsLazyImport = createFileRoute('/projects')()
+const CoursesLazyImport = createFileRoute('/courses')()
+const CertificationsLazyImport = createFileRoute('/certifications')()
+const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
 
-const ResumeRoute = ResumeImport.update({
+const ResumeLazyRoute = ResumeLazyImport.update({
   id: '/resume',
   path: '/resume',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() => import('./routes/resume.lazy').then((d) => d.Route))
 
-const ProjectsRoute = ProjectsImport.update({
+const ProjectsLazyRoute = ProjectsLazyImport.update({
   id: '/projects',
   path: '/projects',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() => import('./routes/projects.lazy').then((d) => d.Route))
 
-const CoursesRoute = CoursesImport.update({
+const CoursesLazyRoute = CoursesLazyImport.update({
   id: '/courses',
   path: '/courses',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() => import('./routes/courses.lazy').then((d) => d.Route))
 
-const CertificationsRoute = CertificationsImport.update({
+const CertificationsLazyRoute = CertificationsLazyImport.update({
   id: '/certifications',
   path: '/certifications',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() =>
+  import('./routes/certifications.lazy').then((d) => d.Route),
+)
 
-const IndexRoute = IndexImport.update({
+const IndexLazyRoute = IndexLazyImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -57,35 +64,35 @@ declare module '@tanstack/react-router' {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
+      preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
     '/certifications': {
       id: '/certifications'
       path: '/certifications'
       fullPath: '/certifications'
-      preLoaderRoute: typeof CertificationsImport
+      preLoaderRoute: typeof CertificationsLazyImport
       parentRoute: typeof rootRoute
     }
     '/courses': {
       id: '/courses'
       path: '/courses'
       fullPath: '/courses'
-      preLoaderRoute: typeof CoursesImport
+      preLoaderRoute: typeof CoursesLazyImport
       parentRoute: typeof rootRoute
     }
     '/projects': {
       id: '/projects'
       path: '/projects'
       fullPath: '/projects'
-      preLoaderRoute: typeof ProjectsImport
+      preLoaderRoute: typeof ProjectsLazyImport
       parentRoute: typeof rootRoute
     }
     '/resume': {
       id: '/resume'
       path: '/resume'
       fullPath: '/resume'
-      preLoaderRoute: typeof ResumeImport
+      preLoaderRoute: typeof ResumeLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -94,28 +101,28 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/certifications': typeof CertificationsRoute
-  '/courses': typeof CoursesRoute
-  '/projects': typeof ProjectsRoute
-  '/resume': typeof ResumeRoute
+  '/': typeof IndexLazyRoute
+  '/certifications': typeof CertificationsLazyRoute
+  '/courses': typeof CoursesLazyRoute
+  '/projects': typeof ProjectsLazyRoute
+  '/resume': typeof ResumeLazyRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/certifications': typeof CertificationsRoute
-  '/courses': typeof CoursesRoute
-  '/projects': typeof ProjectsRoute
-  '/resume': typeof ResumeRoute
+  '/': typeof IndexLazyRoute
+  '/certifications': typeof CertificationsLazyRoute
+  '/courses': typeof CoursesLazyRoute
+  '/projects': typeof ProjectsLazyRoute
+  '/resume': typeof ResumeLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/certifications': typeof CertificationsRoute
-  '/courses': typeof CoursesRoute
-  '/projects': typeof ProjectsRoute
-  '/resume': typeof ResumeRoute
+  '/': typeof IndexLazyRoute
+  '/certifications': typeof CertificationsLazyRoute
+  '/courses': typeof CoursesLazyRoute
+  '/projects': typeof ProjectsLazyRoute
+  '/resume': typeof ResumeLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -134,19 +141,19 @@ export interface FileRouteTypes {
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  CertificationsRoute: typeof CertificationsRoute
-  CoursesRoute: typeof CoursesRoute
-  ProjectsRoute: typeof ProjectsRoute
-  ResumeRoute: typeof ResumeRoute
+  IndexLazyRoute: typeof IndexLazyRoute
+  CertificationsLazyRoute: typeof CertificationsLazyRoute
+  CoursesLazyRoute: typeof CoursesLazyRoute
+  ProjectsLazyRoute: typeof ProjectsLazyRoute
+  ResumeLazyRoute: typeof ResumeLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  CertificationsRoute: CertificationsRoute,
-  CoursesRoute: CoursesRoute,
-  ProjectsRoute: ProjectsRoute,
-  ResumeRoute: ResumeRoute,
+  IndexLazyRoute: IndexLazyRoute,
+  CertificationsLazyRoute: CertificationsLazyRoute,
+  CoursesLazyRoute: CoursesLazyRoute,
+  ProjectsLazyRoute: ProjectsLazyRoute,
+  ResumeLazyRoute: ResumeLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -167,19 +174,19 @@ export const routeTree = rootRoute
       ]
     },
     "/": {
-      "filePath": "index.tsx"
+      "filePath": "index.lazy.tsx"
     },
     "/certifications": {
-      "filePath": "certifications.tsx"
+      "filePath": "certifications.lazy.tsx"
     },
     "/courses": {
-      "filePath": "courses.tsx"
+      "filePath": "courses.lazy.tsx"
     },
     "/projects": {
-      "filePath": "projects.tsx"
+      "filePath": "projects.lazy.tsx"
     },
     "/resume": {
-      "filePath": "resume.tsx"
+      "filePath": "resume.lazy.tsx"
     }
   }
 }

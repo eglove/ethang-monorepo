@@ -1,8 +1,16 @@
 import { Link } from "@nextui-org/link";
 import { Spinner } from "@nextui-org/spinner";
-import { getKeyValue, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table";
+import {
+  getKeyValue,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from "@nextui-org/table";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import isArray from "lodash/isArray.js";
 
 import { MainLayout } from "../components/layouts/main-layout";
@@ -25,16 +33,12 @@ const RouteComponent = () => {
 
   return (
     <MainLayout>
-      <Table
-        aria-label="Projects"
-      >
+      <Table aria-label="Projects">
         <TableHeader columns={columns}>
           {(column) => {
-            return (
-              <TableColumn key={column.key}>
-                {column.label}
-              </TableColumn>
-            );
+            return (<TableColumn key={column.key}>
+              {column.label}
+            </TableColumn>);
           }}
         </TableHeader>
         <TableBody
@@ -86,6 +90,6 @@ const RouteComponent = () => {
   );
 };
 
-export const Route = createFileRoute("/projects")({
+export const Route = createLazyFileRoute("/projects")({
   component: RouteComponent,
 });

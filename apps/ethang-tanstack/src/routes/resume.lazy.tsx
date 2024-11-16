@@ -1,9 +1,15 @@
 import { useObservable } from "@legendapp/state/react";
 import { getKeyValue, TableCell, TableRow } from "@nextui-org/react";
 import { Spinner } from "@nextui-org/spinner";
-import { type SortDescriptor, Table, TableBody, TableColumn, TableHeader } from "@nextui-org/table";
+import {
+  type SortDescriptor,
+  Table,
+  TableBody,
+  TableColumn,
+  TableHeader,
+} from "@nextui-org/table";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import isArray from "lodash/isArray.js";
 import isString from "lodash/isString.js";
 import orderBy from "lodash/orderBy.js";
@@ -25,9 +31,13 @@ const Resume = () => {
     <MainLayout>
       <Table
         onSortChange={({ column, direction }) => {
-          const sorted = orderBy(data, column, "ascending" === direction
-            ? "asc"
-            : "desc");
+          const sorted = orderBy(
+            data,
+            column,
+            "ascending" === direction
+              ? "asc"
+              : "desc",
+          );
           queryClient.setQueryData(jobsQuery().queryKey, sorted);
 
           store.set({
@@ -64,11 +74,12 @@ const Resume = () => {
                     return (
                       <TableCell key={columnKey}>
                         {isString(getKeyValue(item, columnKey))
-                          ? new Date(getKeyValue(item, columnKey) as string)
-                            .toLocaleDateString(undefined, {
-                              month: "long",
-                              year: "numeric",
-                            })
+                          ? new Date(
+                            getKeyValue(item, columnKey) as string,
+                          ).toLocaleDateString(undefined, {
+                            month: "long",
+                            year: "numeric",
+                          })
                           : "(Current)"}
                       </TableCell>
                     );
@@ -77,9 +88,7 @@ const Resume = () => {
                   if ("actions" === columnKey) {
                     return (
                       <TableCell>
-                        <JobActions
-                          job={item}
-                        />
+                        <JobActions job={item} />
                       </TableCell>
                     );
                   }
@@ -99,6 +108,6 @@ const Resume = () => {
   );
 };
 
-export const Route = createFileRoute("/resume")({
+export const Route = createLazyFileRoute("/resume")({
   component: Resume,
 });

@@ -1,8 +1,16 @@
 import { Link } from "@nextui-org/link";
 import { Spinner } from "@nextui-org/spinner";
-import { getKeyValue, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table";
+import {
+  getKeyValue,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from "@nextui-org/table";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import isArray from "lodash/isArray";
 import isString from "lodash/isString";
 
@@ -79,11 +87,10 @@ const RouteComponent = () => {
                       return (
                         <TableCell>
                           {isString(value)
-                            ? new Date(value)
-                              .toLocaleString(undefined, {
-                                month: "long",
-                                year: "numeric",
-                              })
+                            ? new Date(value).toLocaleString(undefined, {
+                              month: "long",
+                              year: "numeric",
+                            })
                             : null}
                         </TableCell>
                       );
@@ -123,6 +130,6 @@ const RouteComponent = () => {
   );
 };
 
-export const Route = createFileRoute("/certifications")({
+export const Route = createLazyFileRoute("/certifications")({
   component: RouteComponent,
 });

@@ -7,7 +7,7 @@ import { lazy, type PropsWithChildren } from "react";
 import { persister, queryClient } from "../clients/query";
 
 const TanStackRouterDevtools =
-    "production" === process.env["NODE_ENV"]
+    "production" === (import.meta as unknown as { env: { NODE_ENV: string } }).env.NODE_ENV
       ? constant(null)
       : lazy(async () => {
         return import("@tanstack/router-devtools").then((result) => {
@@ -17,7 +17,7 @@ const TanStackRouterDevtools =
         });
       });
 
-const QueryDevtools = "production" === process.env["NODE_ENV"]
+const QueryDevtools = "production" === (import.meta as unknown as { env: { NODE_ENV: string } }).env.NODE_ENV
   ? constant(null)
   : lazy(async () => {
     return import("@tanstack/react-query-devtools").then((result) => {
