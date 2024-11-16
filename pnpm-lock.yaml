@@ -65,10 +65,19 @@ importers:
       '@sanity/image-url':
         specifier: ^1.1.0
         version: 1.1.0
+      '@tanstack/query-async-storage-persister':
+        specifier: ^5.60.5
+        version: 5.60.5
+      '@tanstack/query-sync-storage-persister':
+        specifier: ^5.60.5
+        version: 5.60.5
       '@tanstack/react-query':
         specifier: ^5.60.5
         version: 5.60.5(react@18.3.1)
       '@tanstack/react-query-devtools':
+        specifier: ^5.60.5
+        version: 5.60.5(@tanstack/react-query@5.60.5(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-query-persist-client':
         specifier: ^5.60.5
         version: 5.60.5(@tanstack/react-query@5.60.5(react@18.3.1))(react@18.3.1)
       '@tanstack/react-router':
@@ -83,6 +92,9 @@ importers:
       framer-motion:
         specifier: ^11.11.13
         version: 11.11.17(@emotion/is-prop-valid@1.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      idb-keyval:
+        specifier: ^6.2.1
+        version: 6.2.1
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -4083,6 +4095,9 @@ packages:
     resolution: {integrity: sha512-9MPknhhnvZKifK4jSvva6NDqYQwsNaptrRzO4ejk6yCLyi4koVG4u3C4VCeClYZY5etLEQbO8wXU9knEFZpMeg==}
     engines: {node: '>=12'}
 
+  '@tanstack/query-async-storage-persister@5.60.5':
+    resolution: {integrity: sha512-WsaNRcLOLVecVkZpGWluSLMBVmxVb22xlIEvg2H5nhXQHa/8K0tn6JFOeqLI/LiYyzZ7uto/T6BSu3BhDI+Wzg==}
+
   '@tanstack/query-core@5.60.5':
     resolution: {integrity: sha512-jiS1aC3XI3BJp83ZiTuDLerTmn9P3U95r6p+6/SNauLJaYxfIC4dMuWygwnBHIZxjn2zJqEpj3nysmPieoxfPQ==}
 
@@ -5613,7 +5628,6 @@ packages:
     resolution: {integrity: sha512-NXeHXtFLZd6QGbS5af9tiwIoI+BVptHUcGkkF/ouvEPa+ZiZvK0xek4Yh6cd5jNDEg8P+tIA5xxB2ZC/RnqXyw==}
     peerDependencies:
       eslint: '>= 5'
-    bundledDependencies: []
 
   eslint-plugin-compat@6.0.1:
     resolution: {integrity: sha512-0MeIEuoy8kWkOhW38kK8hU4vkb6l/VvyjpuYDymYOXmUY9NvTgyErF16lYuX+HPS5hkmym7lfA+XpYZiWYWmYA==}
@@ -14156,6 +14170,10 @@ snapshots:
       - typescript
 
   '@tanstack/history@1.81.9': {}
+
+  '@tanstack/query-async-storage-persister@5.60.5':
+    dependencies:
+      '@tanstack/query-persist-client-core': 5.60.5
 
   '@tanstack/query-core@5.60.5': {}
 
