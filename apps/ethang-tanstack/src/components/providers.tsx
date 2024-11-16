@@ -2,7 +2,7 @@ import { NextUIProvider } from "@nextui-org/react";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { useNavigate } from "@tanstack/react-router";
 import constant from "lodash/constant.js";
-import { lazy, type PropsWithChildren } from "react";
+import { lazy, type PropsWithChildren, useEffect } from "react";
 
 import { persister, queryClient } from "../clients/query";
 
@@ -29,6 +29,21 @@ const QueryDevtools = "production" === (import.meta as unknown as { env: { NODE_
 
 export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (HTMLScriptElement.supports("speculationrules")) {
+      console.log("hey");
+      const specScript = document.createElement("script");
+      specScript.type = "speculationrules";
+      const specRules = {
+        prerender: [
+          { urls: ["*"] },
+        ],
+      };
+      specScript.textContent = JSON.stringify(specRules);
+      document.body.append(specScript);
+    }
+  }, []);
 
   return (
     <PersistQueryClientProvider
