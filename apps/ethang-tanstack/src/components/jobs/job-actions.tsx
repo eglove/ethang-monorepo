@@ -11,8 +11,6 @@ type JobActionsProperties = {
   readonly job: Job;
 };
 
-// @ts-expect-error this exists
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 const listFormatter = new Intl.ListFormat(undefined, {
   type: "unit",
 }) as { format: (values: string[]) => string };
@@ -45,13 +43,13 @@ export const JobActions = ({ job }: JobActionsProperties) => {
                 <ModalBody>
                   <div className="prose text-foreground">
                     <SanityContent value={job.description} />
-                    <h3 className="mt-4 font-bold text-foreground">
+                    <h3 className="text-foreground mt-4 font-bold">
                       Tech Used
                     </h3>
                     <p>
                       {listFormatter.format(map(job.techUsed, "name"))}
                     </p>
-                    <h3 className="mt-4 font-bold text-foreground">
+                    <h3 className="text-foreground mt-4 font-bold">
                       Methodologies Used
                     </h3>
                     <p>

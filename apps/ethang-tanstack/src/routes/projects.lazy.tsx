@@ -36,9 +36,11 @@ const RouteComponent = () => {
       <Table aria-label="Projects">
         <TableHeader columns={columns}>
           {(column) => {
-            return (<TableColumn key={column.key}>
-              {column.label}
-            </TableColumn>);
+            return (
+              <TableColumn key={column.key}>
+                {column.label}
+              </TableColumn>
+            );
           }}
         </TableHeader>
         <TableBody
