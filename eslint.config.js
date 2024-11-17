@@ -9,7 +9,8 @@ export default tseslint.config(
             "**/*/node_modules",
             "packages/eslint-config/eslint.config.js",
             "apps/**/*.gen.ts",
-            "**/.sanity"
+            "**/.sanity",
+            "**/convex/_generated",
         ],
     },
     ...config,

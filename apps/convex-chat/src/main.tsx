@@ -3,13 +3,14 @@ import ReactDOM from "react-dom/client";
 
 import { routeTree } from "./routeTree.gen";
 
+// Set up a Router instance
 const router = createRouter({
   defaultPreload: "intent",
   routeTree,
 });
 
 declare module "@tanstack/react-router" {
-  // @ts-expect-error global types
+  // @ts-expect-error globals
   type Register = {
     router: typeof router;
   };
