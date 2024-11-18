@@ -21,14 +21,14 @@ importers:
   apps/convex-chat:
     dependencies:
       '@clerk/backend':
-        specifier: ^1.16.4
-        version: 1.16.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.17.0
+        version: 1.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/clerk-react':
-        specifier: ^5.15.5
-        version: 5.15.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^5.16.0
+        version: 5.16.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@convex-dev/react-query':
         specifier: 0.0.0-alpha.8
-        version: 0.0.0-alpha.8(@tanstack/react-query@5.60.5(react@18.3.1))(convex@1.17.0(@clerk/clerk-react@5.15.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 0.0.0-alpha.8(@tanstack/react-query@5.60.5(react@18.3.1))(convex@1.17.0(@clerk/clerk-react@5.16.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@legendapp/state':
         specifier: ^3.0.0-beta.17
         version: 3.0.0-beta.19(react@18.3.1)
@@ -84,17 +84,17 @@ importers:
         specifier: ^5.60.5
         version: 5.60.5(@tanstack/react-query@5.60.5(react@18.3.1))(react@18.3.1)
       '@tanstack/react-router':
-        specifier: ^1.81.14
-        version: 1.81.14(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.82.1
+        version: 1.82.1(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/router-devtools':
-        specifier: ^1.81.14
-        version: 1.81.14(@tanstack/react-router@1.81.14(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.82.1
+        version: 1.82.1(@tanstack/react-router@1.82.1(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/zod-form-adapter':
         specifier: ^0.35.0
         version: 0.35.0(zod@3.23.8)
       convex:
         specifier: ^1.17.0
-        version: 1.17.0(@clerk/clerk-react@5.15.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.17.0(@clerk/clerk-react@5.16.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       framer-motion:
         specifier: ^11.11.13
         version: 11.11.17(@emotion/is-prop-valid@1.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -217,8 +217,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0(react@18.3.1)
       '@sanity/client':
-        specifier: ^6.22.4
-        version: 6.22.4(debug@4.3.7)
+        specifier: ^6.22.5
+        version: 6.22.5
       '@sanity/image-url':
         specifier: ^1.1.0
         version: 1.1.0
@@ -235,11 +235,11 @@ importers:
         specifier: ^5.60.5
         version: 5.60.5(@tanstack/react-query@5.60.5(react@18.3.1))(react@18.3.1)
       '@tanstack/react-router':
-        specifier: ^1.81.14
-        version: 1.81.14(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.82.1
+        version: 1.82.1(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/router-devtools':
-        specifier: ^1.81.14
-        version: 1.81.14(@tanstack/react-router@1.81.14(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.82.1
+        version: 1.82.1(@tanstack/react-router@1.82.1(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       bignumber.js:
         specifier: ^9.1.2
         version: 9.1.2
@@ -384,8 +384,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/hooks
       '@heroicons/react':
-        specifier: ^2.1.5
-        version: 2.1.5(react@18.3.1)
+        specifier: ^2.2.0
+        version: 2.2.0(react@18.3.1)
       '@nextui-org/avatar':
         specifier: ^2.0.33
         version: 2.0.33(@nextui-org/system@2.2.6(@nextui-org/theme@2.2.11(tailwindcss@3.4.15))(framer-motion@11.11.17(@emotion/is-prop-valid@1.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@nextui-org/theme@2.2.11(tailwindcss@3.4.15))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -429,8 +429,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0(react@18.3.1)
       '@sanity/client':
-        specifier: ^6.22.4
-        version: 6.22.4(debug@4.3.7)
+        specifier: ^6.22.5
+        version: 6.22.5
       '@sanity/image-url':
         specifier: ^1.1.0
         version: 1.1.0
@@ -450,11 +450,11 @@ importers:
         specifier: ^5.60.5
         version: 5.60.5(@tanstack/react-query@5.60.5(react@18.3.1))(react@18.3.1)
       '@tanstack/react-router':
-        specifier: ^1.81.14
-        version: 1.81.14(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.82.1
+        version: 1.82.1(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/router-devtools':
-        specifier: ^1.81.14
-        version: 1.81.14(@tanstack/react-router@1.81.14(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.82.1
+        version: 1.82.1(@tanstack/react-router@1.82.1(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       calendar-link:
         specifier: ^2.7.0
         version: 2.7.0
@@ -1602,19 +1602,19 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@clerk/backend@1.16.4':
-    resolution: {integrity: sha512-hYcA9SJzQ8gIdj9szSbQhYocRITgJ0lh7unaC37DEOs+ErCm87Sypf8P+C9aOKjLeFoFYVWzLkLA9imb/sqCiA==}
+  '@clerk/backend@1.17.0':
+    resolution: {integrity: sha512-rqeyF217p4GiUKmi+9/wIlWcW2ybaskcwohtSHuuuMmH+kW46ITGSymjka+1bcni/2mHNqxl6RmpQEGK2ncmtQ==}
     engines: {node: '>=18.17.0'}
 
-  '@clerk/clerk-react@5.15.5':
-    resolution: {integrity: sha512-SuC4WFQja2aZfdV6hRM52sMwRkRQCUW6Yzq80sI+K+86TeYUuDjyutIPs+pdxOtlPTnn/cV+xc1ZHCpOXsmEqg==}
+  '@clerk/clerk-react@5.16.0':
+    resolution: {integrity: sha512-u2RocKKBDjygFv0v/qo8JMEsINKpHoDa1cA9ldAnXJHNlQFO66hH0Ax1gPKtafttthzVug237jiX7lGKifMoDw==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
       react: ^18 || ^19.0.0-0
       react-dom: ^18 || ^19.0.0-0
 
-  '@clerk/shared@2.14.0':
-    resolution: {integrity: sha512-JVDlHtnuN8LC6xJnWPaWrYChagUw9wDJBUChvIKNXmyNrWKLuqJa4l3Eqdd6iifOf42VMSy6GDW3xKeUTY/itQ==}
+  '@clerk/shared@2.15.0':
+    resolution: {integrity: sha512-aO1l9mYiz9ZVU8hOJKg5fTeyVVm2NLdGlwSROhOgWVzJ/0FcfmQfuMkiMC7ZwRUQb9jqdGj5Kdb4QxUFJNCkyA==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
       react: ^18 || ^19.0.0-0
@@ -1684,6 +1684,9 @@ packages:
 
   '@codemirror/view@6.34.2':
     resolution: {integrity: sha512-d6n0WFvL970A9Z+l9N2dO+Hk9ev4hDYQzIx+B9tCyBP0W5wPEszi1rhuyFesNSkLZzXbQE5FPH7F/z/TMJfoPA==}
+
+  '@codemirror/view@6.34.3':
+    resolution: {integrity: sha512-Ph5d+u8DxIeSgssXEakaakImkzBV4+slwIbcxl9oc9evexJhImeu/G8TK7+zp+IFK9KuJ0BdSn6kTBJeH2CHvA==}
 
   '@convex-dev/react-query@0.0.0-alpha.8':
     resolution: {integrity: sha512-Rv/q7/CplU75f7ckBd2vh+HoeeQ0tOrjwMl14Hk7D/03e55oUIU0TV5JYYzC79ZQyyAtoj7CmCo5ZxcmtKNv1Q==}
@@ -2788,10 +2791,10 @@ packages:
       react: ^16.8.5 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.5 || ^17.0.0 || ^18.0.0
 
-  '@heroicons/react@2.1.5':
-    resolution: {integrity: sha512-FuzFN+BsHa+7OxbvAERtgBTNeZpUjgM/MIizfVkSCL2/edriN0Hx/DWRCR//aPYwO5QX/YlgLGXk+E3PcfZwjA==}
+  '@heroicons/react@2.2.0':
+    resolution: {integrity: sha512-LMcepvRaS9LYHJGsF0zzmgKCUim/X3N/DQKc4jepAXJ7l8QxJ1PmxJzqplF2Z3FE4PqBAIGyJAQ/w4B5dsqbtQ==}
     peerDependencies:
-      react: '>= 16'
+      react: '>= 16 || ^19.0.0-rc'
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -4275,6 +4278,10 @@ packages:
     resolution: {integrity: sha512-l807VLFs/CVrbWoqQ6C9SNqpvSvNkNnJ5RgxUSfCB2t8elkJ7fr3ahi1bbGrIMrfr/uL044WfWIQ4E3DoqpiuQ==}
     engines: {node: '>=14.18'}
 
+  '@sanity/client@6.22.5':
+    resolution: {integrity: sha512-prVcdTftytujpTDaCbQdDMBnInSKuTV4xs9Qx+dgvtN8i+spcC8w/vuigdBwfyxVHTT+3+MIgUl5+zAPrlKR8g==}
+    engines: {node: '>=14.18'}
+
   '@sanity/code-input@4.1.4':
     resolution: {integrity: sha512-MQfZ6r0SdEtYiuhfMtFe54D+4pVIQzDa67nFQhM1D4hQJVt7yL+OBukGbcOK9Kx1PjKkb4Gog//AMoN7a90b9g==}
     engines: {node: '>=14'}
@@ -4581,8 +4588,8 @@ packages:
     peerDependencies:
       react: ^18 || ^19
 
-  '@tanstack/react-router@1.81.14':
-    resolution: {integrity: sha512-+pzpblWgIUGXlyYlUAfGTZv7YfNOEMKupB5cP4CY9K/qu94D1qrUipjZ6PAqwj8yAwUDcBGam/AyzOLLTSNY5w==}
+  '@tanstack/react-router@1.82.1':
+    resolution: {integrity: sha512-C3+itdLVvEA3dOd/dYOrFSpqVBhWt/WUfjMWfda5lAGIxGkPM8Cv+7IE6P6LI80JOnUPGLpup23SShPD+cv3kw==}
     engines: {node: '>=12'}
     peerDependencies:
       '@tanstack/router-generator': 1.81.9
@@ -4610,11 +4617,11 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
-  '@tanstack/router-devtools@1.81.14':
-    resolution: {integrity: sha512-nigYdVDLWC22tff4Z1gBT26R/RBpW/nhBR4Vgs/0kBLqcj+/DFjZK5Q1MS/xSUUTOR4AW4J9av5zpHNqGFgEYQ==}
+  '@tanstack/router-devtools@1.82.1':
+    resolution: {integrity: sha512-sIPuoqrnnFmAGMuCMuw9kMMbIdzZW6ecipTD87xk44VusLtm7Rb4IAIAc2Kr8e4rrKlbOmieQ1Qihte9/KVrrA==}
     engines: {node: '>=12'}
     peerDependencies:
-      '@tanstack/react-router': ^1.81.14
+      '@tanstack/react-router': ^1.82.1
       react: '>=18'
       react-dom: '>=18'
 
@@ -6181,6 +6188,7 @@ packages:
     resolution: {integrity: sha512-NXeHXtFLZd6QGbS5af9tiwIoI+BVptHUcGkkF/ouvEPa+ZiZvK0xek4Yh6cd5jNDEg8P+tIA5xxB2ZC/RnqXyw==}
     peerDependencies:
       eslint: '>= 5'
+    bundledDependencies: []
 
   eslint-plugin-compat@6.0.1:
     resolution: {integrity: sha512-0MeIEuoy8kWkOhW38kK8hU4vkb6l/VvyjpuYDymYOXmUY9NvTgyErF16lYuX+HPS5hkmym7lfA+XpYZiWYWmYA==}
@@ -11330,9 +11338,9 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@clerk/backend@1.16.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/backend@1.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@clerk/shared': 2.14.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/shared': 2.15.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/types': 4.34.0
       cookie: 0.7.0
       snakecase-keys: 5.4.4
@@ -11341,15 +11349,15 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/clerk-react@5.15.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/clerk-react@5.16.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@clerk/shared': 2.14.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/shared': 2.15.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/types': 4.34.0
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       tslib: 2.4.1
 
-  '@clerk/shared@2.14.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/shared@2.15.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@clerk/types': 4.34.0
       dequal: 2.0.3
@@ -11370,6 +11378,13 @@ snapshots:
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
       '@codemirror/view': 6.34.2
+      '@lezer/common': 1.2.3
+
+  '@codemirror/autocomplete@6.18.3(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.3)(@lezer/common@1.2.3)':
+    dependencies:
+      '@codemirror/language': 6.10.3
+      '@codemirror/state': 6.4.1
+      '@codemirror/view': 6.34.3
       '@lezer/common': 1.2.3
 
   '@codemirror/commands@6.7.1':
@@ -11481,7 +11496,7 @@ snapshots:
     dependencies:
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.34.2
+      '@codemirror/view': 6.34.3
       '@lezer/highlight': 1.2.1
 
   '@codemirror/view@6.34.2':
@@ -11490,10 +11505,16 @@ snapshots:
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
 
-  '@convex-dev/react-query@0.0.0-alpha.8(@tanstack/react-query@5.60.5(react@18.3.1))(convex@1.17.0(@clerk/clerk-react@5.15.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@codemirror/view@6.34.3':
+    dependencies:
+      '@codemirror/state': 6.4.1
+      style-mod: 4.1.2
+      w3c-keyname: 2.2.8
+
+  '@convex-dev/react-query@0.0.0-alpha.8(@tanstack/react-query@5.60.5(react@18.3.1))(convex@1.17.0(@clerk/clerk-react@5.16.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@tanstack/react-query': 5.60.5(react@18.3.1)
-      convex: 1.17.0(@clerk/clerk-react@5.15.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      convex: 1.17.0(@clerk/clerk-react@5.16.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   '@cspell/cspell-bundled-dicts@8.16.0':
     dependencies:
@@ -12345,7 +12366,7 @@ snapshots:
       - '@types/react-dom'
       - react-native
 
-  '@heroicons/react@2.1.5(react@18.3.1)':
+  '@heroicons/react@2.2.0(react@18.3.1)':
     dependencies:
       react: 18.3.1
 
@@ -14734,6 +14755,14 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
+  '@sanity/client@6.22.5':
+    dependencies:
+      '@sanity/eventsource': 5.0.2
+      get-it: 8.6.5(debug@4.3.7)
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - debug
+
   '@sanity/code-input@4.1.4(@babel/runtime@7.26.0)(@codemirror/lint@6.8.2)(@codemirror/theme-one-dark@6.1.2)(@lezer/common@1.2.3)(codemirror@6.0.1(@lezer/common@1.2.3))(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@3.64.1(@types/node@22.9.0)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.36.0))(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@codemirror/autocomplete': 6.18.3(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.2)(@lezer/common@1.2.3)
@@ -15302,7 +15331,7 @@ snapshots:
       '@tanstack/query-core': 5.60.5
       react: 18.3.1
 
-  '@tanstack/react-router@1.81.14(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/react-router@1.82.1(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/history': 1.81.9
       '@tanstack/react-store': 0.5.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -15332,9 +15361,9 @@ snapshots:
       '@tanstack/virtual-core': 3.0.0-beta.54
       react: 18.3.1
 
-  '@tanstack/router-devtools@1.81.14(@tanstack/react-router@1.81.14(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/router-devtools@1.82.1(@tanstack/react-router@1.82.1(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@tanstack/react-router': 1.81.14(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-router': 1.82.1(@tanstack/router-generator@1.81.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       clsx: 2.1.1
       goober: 2.1.16(csstype@3.1.3)
       react: 18.3.1
@@ -16414,13 +16443,13 @@ snapshots:
 
   codemirror@6.0.1(@lezer/common@1.2.3):
     dependencies:
-      '@codemirror/autocomplete': 6.18.3(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.2)(@lezer/common@1.2.3)
+      '@codemirror/autocomplete': 6.18.3(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.3)(@lezer/common@1.2.3)
       '@codemirror/commands': 6.7.1
       '@codemirror/language': 6.10.3
       '@codemirror/lint': 6.8.2
       '@codemirror/search': 6.5.7
       '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.34.2
+      '@codemirror/view': 6.34.3
     transitivePeerDependencies:
       - '@lezer/common'
 
@@ -16520,13 +16549,13 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex@1.17.0(@clerk/clerk-react@5.15.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  convex@1.17.0(@clerk/clerk-react@5.16.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       esbuild: 0.23.0
       jwt-decode: 3.1.2
       prettier: 3.2.5
     optionalDependencies:
-      '@clerk/clerk-react': 5.15.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/clerk-react': 5.16.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
@@ -16889,7 +16918,7 @@ snapshots:
   dot-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.8.1
+      tslib: 2.4.1
 
   dot-prop@5.3.0:
     dependencies:
@@ -18758,7 +18787,7 @@ snapshots:
 
   lower-case@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.4.1
 
   lru-cache@10.4.3: {}
 
@@ -19245,7 +19274,7 @@ snapshots:
   no-case@3.0.4:
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.8.1
+      tslib: 2.4.1
 
   node-fetch@2.7.0:
     dependencies:
@@ -20389,7 +20418,7 @@ snapshots:
   snake-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.8.1
+      tslib: 2.4.1
 
   snakecase-keys@5.4.4:
     dependencies:

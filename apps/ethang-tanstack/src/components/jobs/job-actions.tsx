@@ -43,13 +43,13 @@ export const JobActions = ({ job }: JobActionsProperties) => {
                 <ModalBody>
                   <div className="prose text-foreground">
                     <SanityContent value={job.description} />
-                    <h3 className="text-foreground mt-4 font-bold">
+                    <h3 className="mt-4 font-bold text-foreground">
                       Tech Used
                     </h3>
                     <p>
                       {listFormatter.format(map(job.techUsed, "name"))}
                     </p>
-                    <h3 className="text-foreground mt-4 font-bold">
+                    <h3 className="mt-4 font-bold text-foreground">
                       Methodologies Used
                     </h3>
                     <p>

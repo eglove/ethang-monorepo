@@ -174,7 +174,7 @@ export const routeTree = rootRoute
       ]
     },
     "/": {
-      "filePath": "index.tsx"
+      "filePath": "index.lazy.tsx"
     },
     "/certifications": {
       "filePath": "certifications.lazy.tsx"

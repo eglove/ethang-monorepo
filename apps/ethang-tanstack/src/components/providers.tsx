@@ -37,7 +37,7 @@ export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
       persistOptions={{ persister }}
     >
       <NextUIProvider navigate={(route) => {
-        // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable,no-console
+        // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
         navigate({ to: route }).catch(console.error);
       }}
       >
