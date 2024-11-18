@@ -47,7 +47,6 @@ export const FriendInvite = () => {
       onSubmit={(event) => {
         event.preventDefault();
         event.stopPropagation();
-        console.log(form.state.errors);
         form.handleSubmit().catch((_error: unknown) => {
           if (isError(_error)) {
             console.error(_error);

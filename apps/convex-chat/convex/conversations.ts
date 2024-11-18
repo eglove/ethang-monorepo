@@ -1,12 +1,15 @@
-import { ConvexError } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import find from "lodash/find.js";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
 
-import { query } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
+
+import { query, type QueryCtx as QueryContext } from "./_generated/server";
 import { getCurrentUser } from "./users";
 
 export const get = query({
+  args: { id: v.optional(v.id("messages")) },
   handler: async (context, _arguments) => {
     const currentUser = await getCurrentUser(context);
 
@@ -31,6 +34,8 @@ export const get = query({
       }),
     );
 
+    const lastMessage = await getLastMessageDetails(context, _arguments.id);
+
     return Promise.all(
       // eslint-disable-next-line max-statements
       map(conversations, async (conversation) => {
@@ -39,7 +44,10 @@ export const get = query({
         }
 
         if (conversation.isGroup) {
-          return { conversation };
+          return {
+            conversation,
+            lastMessage,
+          };
         }
 
         const allConversationsMemberships = await context.db.query("conversationUsers").withIndex("by_conversationId", (q) => {
@@ -64,9 +72,48 @@ export const get = query({
 
         return {
           conversation,
+          lastMessage,
           otherMember,
         };
       }),
     );
   },
 });
+
+export const getLastMessageDetails = async (context: QueryContext, id: Id<"messages"> | undefined) => {
+  if (isNil(id)) {
+    return null;
+  }
+
+  const message = await context.db.get(id);
+
+  if (isNil(message)) {
+    return null;
+  }
+
+  const sender = await context.db.get(message.senderId);
+
+  if (isNil(sender)) {
+    return null;
+  }
+
+  const content = getMessageContent(message.type, message.content);
+
+  return {
+    content,
+    sender: sender.email,
+  };
+};
+
+const getMessageContent = (type: string, content: string[]) => {
+  // eslint-disable-next-line sonar/no-small-switch
+  switch (type) {
+    case "text": {
+      return content;
+    }
+
+    default: {
+      return "[Non-text]";
+    }
+  }
+};
