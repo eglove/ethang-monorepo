@@ -7,7 +7,7 @@ export default {
     "./index.html",
     "../../node_modules/@nextui-org/**/*.{js,ts,jsx,tsx}",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./node_modules/@nextui-org/theme/dist/components/(button|spinner|ripple).js"
+    "./node_modules/@nextui-org/theme/dist/components/(avatar|badge|button|dropdown|input|link|navbar|spinner|ripple|menu|popover).js"
   ],
   darkMode: "class",
   plugins: [nextui(), tailwind],

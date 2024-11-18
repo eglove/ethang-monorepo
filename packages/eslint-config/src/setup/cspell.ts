@@ -47,6 +47,7 @@ const customRules: CustomRules = [
             "supabase",
             "solidjs",
             "labelledby",
+            "svix",
           ],
         },
       },

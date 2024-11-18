@@ -89,6 +89,7 @@ export default tseslint.config(
               "supabase",
               "solidjs",
               "labelledby",
+              "svix",
             ],
           },
         },

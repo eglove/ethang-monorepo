@@ -24,6 +24,8 @@ export default tseslint.config(
         },
         rules: {
             "barrel/avoid-importing-barrel-files": "off",
+            "no-console": "off",
+            "react/no-children-prop": "off",
             "sonar/no-os-command-from-path": "off",
             "sonar/os-command": "off",
         },
