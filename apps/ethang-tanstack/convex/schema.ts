@@ -13,4 +13,10 @@ export default defineSchema({
   }).index("by_publishedAt", ["publishedAt"])
     .index("by_updatedAt", ["updatedAt"])
     .index("by_slug", ["slug"]),
+  methodology: defineTable({
+    name: v.string(),
+  }),
+  technology: defineTable({
+    name: v.string(),
+  }),
 });

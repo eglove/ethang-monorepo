@@ -1,8 +1,8 @@
+import type { Certification } from "@/query/certifications.ts";
+
 import { Button } from "@nextui-org/button";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
 import { EyeIcon } from "lucide-react";
-
-import type { Certification } from "../../query/certifications";
 
 import { SanityContent } from "../sanity/sanity-content";
 

@@ -41,6 +41,8 @@
     "@tanstack/react-router": "^1.82.2",
     "@tanstack/router-devtools": "^1.82.2",
     "bignumber.js": "^9.1.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "convex": "^1.17.2",
     "framer-motion": "^11.11.13",
     "idb-keyval": "^6.2.1",
@@ -51,6 +53,7 @@
     "react-dom": "^18.3.1",
     "sanity-image": "^0.2.0",
     "tailwind-merge": "^2.5.4",
+    "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -60,6 +63,7 @@
     "@tanstack/router-plugin": "^1.81.9",
     "@types/lodash": "^4.17.13",
     "@types/luxon": "^3.4.2",
+    "@types/node": "^22.9.3",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.2",
