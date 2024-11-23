@@ -5,8 +5,8 @@
 > [!CAUTION]
 > Do not use this with Prettier! Styling rules are included.
 
-- 888 errored rules.
-- 294 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
+- 889 errored rules.
+- 295 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
 - 144 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
 - 116 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
 - 105 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
@@ -31,9 +31,9 @@
 - 52 rules for **Astro**
   - `import astroConfig from "@ethang/eslint-config/config.astro.js";`
   - 52 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)
-- 77 rules for **React**
+- 78 rules for **React**
   - `import reactConfig from "@ethang/eslint-config/config.react.js";`
-  - 74 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
+  - 75 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
   - 2 rules from [eslint-plugin-react-hooks](https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks)
   - 1 rules from [eslint-plugin-react-compiler](https://github.com/facebook/react/tree/main/compiler/packages/eslint-plugin-react-compiler)
 - 18 rules for **Solid**

@@ -7,7 +7,7 @@ export default defineConfig({
   dataset: "production",
   name: "default",
   plugins:
-    "development" === process.env.NODE_ENV
+    "development" === process.env["NODE_ENV"]
       ? developmentPlugins
       : productionPlugins,
   // eslint-disable-next-line cspell/spellchecker

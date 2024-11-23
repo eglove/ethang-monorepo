@@ -25,7 +25,6 @@ const customRules = [
   { name: "no-reference-error", rule: "off" }, // TODO bug: reports globals
   { name: "no-undefined-assignment", rule: "off" },
   { name: "shorthand-property-grouping", rule: "off" }, // Conflicts with perfectionist sorting
-  { name: "sonar-no-fallthrough", rule: "off" }, // TODO readd with v9 compat?
   { name: "sonar-no-magic-numbers", rule: "off" },
   { name: "switch-without-default", rule: "off" }, // @typescript-eslint/switch-exhaustiveness-check works better
   { name: "todo-tag", rule: "off" },

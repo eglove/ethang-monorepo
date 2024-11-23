@@ -916,7 +916,7 @@ export default tseslint.config(
       "sonar/sonar-no-control-regex": "error",
       "sonar/sonar-no-dupe-keys": "error",
       "sonar/sonar-no-empty-character-class": "error",
-      "sonar/sonar-no-fallthrough": "off",
+      "sonar/sonar-no-fallthrough": "error",
       "sonar/sonar-no-invalid-regexp": "error",
       "sonar/sonar-no-magic-numbers": "off",
       "sonar/sonar-no-misleading-character-class": "error",
