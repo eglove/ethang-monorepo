@@ -1,4 +1,5 @@
 import { DocumentTextIcon } from "@sanity/icons";
+import replace from "lodash/replace.js";
 import toLower from "lodash/toLower.js";
 import { defineType, type Rule } from "sanity";
 
@@ -19,13 +20,8 @@ export default defineType({
       name: "slug",
       options: {
         slugify(input: string) {
-          // false positives
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          return toLower(input)
-
-            .replaceAll(/\s+/gu, "-")
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            .slice(MIN_SLUG_CHARS, MAX_SLUG_CHARS) as string;
+          return replace(toLower(input), /\s+/gu, "-")
+            .slice(MIN_SLUG_CHARS, MAX_SLUG_CHARS);
         },
         source: "title",
       },

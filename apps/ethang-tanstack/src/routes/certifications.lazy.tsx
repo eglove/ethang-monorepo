@@ -71,7 +71,7 @@ const RouteComponent = () => {
             return (
               <TableRow key={item._id}>
                 {(columnKey) => {
-                  const value = getKeyValue(item, columnKey) as string;
+                  const value = String(getKeyValue(item, columnKey));
 
                   switch (columnKey) {
                     case "actions": {

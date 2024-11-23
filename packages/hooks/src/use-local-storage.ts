@@ -3,8 +3,8 @@ import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import { useSyncExternalStore } from "react";
 
-type ListenerParameters = Parameters<typeof addEventListener>;
 type ListenerOptions = AddEventListenerOptions | EventListenerOptions;
+type ListenerParameters = Parameters<typeof addEventListener>;
 
 type LocalStorageStoreOptions = {
   defaultValue?: string;

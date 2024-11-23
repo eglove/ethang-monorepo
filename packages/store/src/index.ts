@@ -11,36 +11,18 @@ export class Store<TState,> {
 
   private _state: TState;
 
+  private set state(state: TState) {
+    this._state = state;
+    this.notifySubscribers();
+  }
+
+  private get state() {
+    return this._state;
+  }
+
   public constructor(initialState: TState) {
     this._state = initialState;
     this._initialState = initialState;
-  }
-
-  private cleanup(id: string, updateElement: Listener<TState>): boolean {
-    if (this._elementListeners.has(id) && "undefined" !== typeof globalThis) {
-      const foundElement = document.querySelector(`[data-listener-id="${id}"]`);
-
-      if (!foundElement) {
-        this._elementListeners.delete(id);
-        this._listeners.delete(updateElement);
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  private getElementListenerId() {
-    const genId = (id = 0) => {
-      const idString = `${Date.now()}-${id}`;
-
-      if (this._elementListeners.has(idString)) {
-        return genId(id + 1);
-      }
-      return idString;
-    };
-
-    return genId();
   }
 
   public bind<E,>(
@@ -59,7 +41,9 @@ export class Store<TState,> {
 
         updateElement();
         this._listeners.add(updateElement);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         (element as HTMLElement).dataset["listenerId"] = id;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         this._elementListeners.set(id, element as HTMLElement);
       }
     };
@@ -97,12 +81,30 @@ export class Store<TState,> {
     };
   }
 
-  private set state(state: TState) {
-    this._state = state;
-    this.notifySubscribers();
+  private cleanup(id: string, updateElement: Listener<TState>): boolean {
+    if (this._elementListeners.has(id) && "undefined" !== typeof globalThis) {
+      const foundElement = document.querySelector(`[data-listener-id="${id}"]`);
+
+      if (!foundElement) {
+        this._elementListeners.delete(id);
+        this._listeners.delete(updateElement);
+        return true;
+      }
+    }
+
+    return false;
   }
 
-  private get state() {
-    return this._state;
+  private getElementListenerId() {
+    const genId = (id = 0) => {
+      const idString = `${Date.now()}-${id}`;
+
+      if (this._elementListeners.has(idString)) {
+        return genId(id + 1);
+      }
+      return idString;
+    };
+
+    return genId();
   }
 }

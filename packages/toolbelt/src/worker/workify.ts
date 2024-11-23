@@ -18,6 +18,7 @@ export const workify = <T,>(callback: () => T, signal?: AbortSignal) => {
     return new Promise<T>((resolve, reject) => {
       worker.addEventListener("message",
         (event) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           resolve(event.data as T);
         });
 

@@ -7,11 +7,14 @@ type LinkProperties = Readonly<
 
 export const Link = (properties: LinkProperties) => {
   const { href } = properties;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  const fakeHref = undefined as unknown as string;
+
   return (
     <NextUiLink
       as={TanStackLink}
       {...properties}
-      href={undefined as unknown as string}
+      href={fakeHref}
       to={href}
     />
   );

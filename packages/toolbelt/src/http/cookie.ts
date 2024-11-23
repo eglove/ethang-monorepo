@@ -61,6 +61,7 @@ export const setCookieValue = <T extends string,>({
 
   if (!isNil(config)) {
     for (const key of keys(config)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const value = config[key as keyof typeof config];
 
       if (isString(value) || isNumber(value)) {

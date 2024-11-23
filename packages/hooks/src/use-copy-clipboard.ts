@@ -5,7 +5,7 @@ import { animationInterval } from "./use-animation-interval.ts";
 
 type UseCopyClipboardReturn = {
   copyToClipboard: (text: string) => void;
-  error?: Error;
+  error: Error | undefined;
   isCopied: boolean;
 };
 
@@ -24,6 +24,7 @@ export const useCopyClipboard = (
         setIsCopied(true);
       } catch (writeTextError: unknown) {
         if (isError(error)) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           setError(writeTextError as Error);
         }
 

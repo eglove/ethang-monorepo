@@ -6,7 +6,8 @@ const categorizeResults = <K extends PropertyKey, T,>(
   promiseKeys: readonly K[],
   results: PromiseSettledResult<Awaited<T>>[],
 ) => {
-  let settledPromises = {} as Record<K, Awaited<T> | Error>;
+  // @ts-expect-error init to {}
+  let settledPromises: Record<K, Awaited<T> | Error> = {};
 
   for (const [index, key] of promiseKeys.entries()) {
     const result = results[index];
@@ -23,6 +24,7 @@ const categorizeResults = <K extends PropertyKey, T,>(
     }
 
     if ("rejected" === result.status) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       settledPromises[key] = result.reason as Error;
     }
   }
@@ -36,12 +38,9 @@ export const promiseAllSettled = async <
 >(
   promises: T,
 ) => {
-  const promiseKeys = keys(promises) as K[];
+  const promiseKeys = keys(promises);
   const promiseValues = values(promises);
   const results = await Promise.allSettled(promiseValues);
 
-  return categorizeResults(promiseKeys,
-    results) as {
-    [P in keyof T]: Awaited<T[P]> | Error;
-  };
+  return categorizeResults(promiseKeys, results);
 };

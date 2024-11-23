@@ -422,6 +422,7 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-function-type": "error",
       "@typescript-eslint/no-unsafe-member-access": "error",
       "@typescript-eslint/no-unsafe-return": "error",
+      "@typescript-eslint/no-unsafe-type-assertion": "error",
       "@typescript-eslint/no-unsafe-unary-minus": "error",
       "@typescript-eslint/no-unused-expressions": "error",
       "@typescript-eslint/no-unused-vars": [
@@ -462,6 +463,7 @@ export default tseslint.config(
       "@typescript-eslint/prefer-return-this-type": "error",
       "@typescript-eslint/prefer-string-starts-ends-with": "error",
       "@typescript-eslint/promise-function-async": "error",
+      "@typescript-eslint/related-getter-setter-pairs": "error",
       "@typescript-eslint/require-array-sort-compare": "error",
       "@typescript-eslint/require-await": "error",
       "@typescript-eslint/restrict-plus-operands": "error",
@@ -1120,8 +1122,10 @@ export default tseslint.config(
       "stylistic-ts/type-annotation-spacing": "error",
       "perfectionist/sort-array-includes": "error",
       "perfectionist/sort-classes": "error",
+      "perfectionist/sort-decorators": "error",
       "perfectionist/sort-enums": "error",
       "perfectionist/sort-exports": "error",
+      "perfectionist/sort-heritage-clauses": "error",
       "perfectionist/sort-imports": [
         "error",
         {
@@ -1145,6 +1149,7 @@ export default tseslint.config(
         { groups: ["shorthand", "multiline"] },
       ],
       "perfectionist/sort-maps": "error",
+      "perfectionist/sort-modules": "error",
       "perfectionist/sort-named-exports": "error",
       "perfectionist/sort-named-imports": "error",
       "perfectionist/sort-object-types": "error",
@@ -1320,6 +1325,7 @@ export default tseslint.config(
     rules: {
       "json/no-duplicate-keys": "error",
       "json/no-empty-keys": "error",
+      "json/no-unsafe-values": "error",
     },
   },
   {
@@ -1331,6 +1337,7 @@ export default tseslint.config(
     rules: {
       "json/no-duplicate-keys": "error",
       "json/no-empty-keys": "error",
+      "json/no-unsafe-values": "error",
     },
   },
   {
@@ -1342,6 +1349,7 @@ export default tseslint.config(
     rules: {
       "json/no-duplicate-keys": "error",
       "json/no-empty-keys": "error",
+      "json/no-unsafe-values": "error",
     },
   },
 );

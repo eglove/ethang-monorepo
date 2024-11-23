@@ -1,4 +1,4 @@
-import type { TypedObject } from "@portabletext/types";
+import type { PortableTextBlock } from "@portabletext/types";
 
 import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
@@ -14,17 +14,10 @@ import { AMERICA_CHICAGO, getRelativeDate } from "../../util/date.ts";
 
 export type CalendarEventReturn = {
   _id: string;
-  description: TypedObject | TypedObject[];
+  description: PortableTextBlock;
   endsAt: string;
   relativeStart?: string;
   startsAt: string;
-  title: string;
-};
-
-export type NewsUpdateReturn = {
-  _id: string;
-  date: string;
-  description: TypedObject | TypedObject[];
   title: string;
 };
 
@@ -34,6 +27,13 @@ export type EventsNewsReturn = {
 };
 
 export type NewsAndEvents = (CalendarEventReturn | NewsUpdateReturn)[];
+
+export type NewsUpdateReturn = {
+  _id: string;
+  date: string;
+  description: PortableTextBlock;
+  title: string;
+};
 
 export const getNewsAndEvents = async () => {
   const today = DateTime.fromJSDate(new Date(), {
@@ -80,10 +80,12 @@ const sortNewsAndEvents = (eventsNews: EventsNewsReturn) => {
   const merged: NewsAndEvents = [];
 
   if (!isEmpty(eventsNews.events)) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     merged.push(eventsNews.events as unknown as NewsAndEvents[0]);
   }
 
   if (!isEmpty(eventsNews.updates)) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     merged.push(eventsNews.updates as unknown as NewsAndEvents[0]);
   }
 

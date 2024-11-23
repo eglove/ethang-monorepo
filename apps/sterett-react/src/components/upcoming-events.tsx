@@ -1,5 +1,3 @@
-import type { PortableTextBlock } from "@portabletext/types";
-
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty";
@@ -61,9 +59,7 @@ export const UpcomingEvents = () => {
                     className: "bg-sky-600 text-white mb-4",
                     size: "sm",
                   }}
-                  description={
-                    event.description as unknown as PortableTextBlock
-                  }
+                  description={event.description}
                   end={event.endsAt}
                   start={event.startsAt}
                   title={event.title}

@@ -23,6 +23,7 @@ export const useFileTable = (query: keyof typeof filesRouteQueries) => {
     let sortedItems = [...data];
 
     if (!isNil(sortConfig) && !isNil(sortConfig.direction)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       sortedItems = orderBy(
         sortedItems,
         [sortConfig.column],

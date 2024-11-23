@@ -1,5 +1,3 @@
-import type { PortableTextBlock } from "@portabletext/types";
-
 import { CalendarDaysIcon } from "@heroicons/react/24/solid";
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
@@ -122,7 +120,7 @@ export const Event = ({
               className: "bg-sky-600 text-white",
               size: "sm",
             }}
-            description={data.description as unknown as PortableTextBlock}
+            description={data.description}
             end={data.endsAt}
             start={data.startsAt}
             title={data.title}

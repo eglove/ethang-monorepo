@@ -40,6 +40,7 @@ const Resume = () => {
           );
           queryClient.setQueryData(jobsQuery().queryKey, sorted);
 
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           store.set({
             column,
             direction,
@@ -75,7 +76,7 @@ const Resume = () => {
                       <TableCell key={columnKey}>
                         {isString(getKeyValue(item, columnKey))
                           ? new Date(
-                            getKeyValue(item, columnKey) as string,
+                            String(getKeyValue(item, columnKey)),
                           ).toLocaleDateString(undefined, {
                             month: "long",
                             year: "numeric",

@@ -12,6 +12,7 @@ import { setMeta } from "../util/set-meta.ts";
 import { queryClient } from "./root.tsx";
 
 export const PageIdRoute = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   const { id } = pageIdRoute.useParams() as unknown as { id: string };
   const { data } = useSuspenseQuery(getPageQueryOptions(id));
 

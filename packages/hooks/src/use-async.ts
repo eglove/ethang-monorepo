@@ -12,6 +12,7 @@ export const useAsync = <T, E,>(callback: () => Promise<T>) => {
         setResult(_result);
       })
       .catch((_error: unknown) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         setError(_error as E);
       })
       .finally(() => {

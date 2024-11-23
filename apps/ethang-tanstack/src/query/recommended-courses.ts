@@ -26,6 +26,16 @@ export const recommendedCoursesQuery = () => {
   });
 };
 
+export type Course = {
+  _createdAt: string;
+  _id: string;
+  _rev: string;
+  _type: string;
+  _updatedAt: string;
+  name: string;
+  url: string;
+};
+
 export type CourseList = {
   _createdAt: string;
   _id: string;
@@ -46,14 +56,4 @@ type CourseSection = {
   courses: Course[];
   description: TypedObject | TypedObject[];
   title: string;
-};
-
-export type Course = {
-  _createdAt: string;
-  _id: string;
-  _rev: string;
-  _type: string;
-  _updatedAt: string;
-  name: string;
-  url: string;
 };

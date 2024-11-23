@@ -67,6 +67,7 @@ export const FileTable = ({ query }: FileTableProperties) => {
             return (
               <TableRow key={item._id}>
                 {(columnKey) => {
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                   const value = getKeyValue(item, columnKey) as string;
 
                   if ("date" === columnKey) {

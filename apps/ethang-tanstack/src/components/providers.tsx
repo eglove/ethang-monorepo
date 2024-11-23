@@ -7,6 +7,7 @@ import { lazy, type PropsWithChildren } from "react";
 import { persister, queryClient } from "../clients/query";
 
 const TanStackRouterDevtools =
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     (import.meta as unknown as { env: { DEV: boolean } }).env.DEV
       ? lazy(async () => {
         return import("@tanstack/router-devtools").then((result) => {
@@ -18,6 +19,7 @@ const TanStackRouterDevtools =
       : constant(null);
 
 const QueryDevtools =
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     (import.meta as unknown as { env: { DEV: boolean } }).env.DEV
       ? lazy(async () => {
         return import("@tanstack/react-query-devtools").then((result) => {

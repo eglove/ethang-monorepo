@@ -1,8 +1,8 @@
-import { useEffect, type useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 type UseIsOnscreenReturn<ElementType,> = [boolean, ElementType];
 
-export const useIsOnscreen = <ElementType extends ReturnType<typeof useRef>,>(
+export const useIsOnscreen = <ElementType extends Element,>(
   elementReference: ElementType,
 ): UseIsOnscreenReturn<ElementType> => {
   const [isOnscreen, setIsOnscreen] = useState(false);
@@ -11,10 +11,12 @@ export const useIsOnscreen = <ElementType extends ReturnType<typeof useRef>,>(
     const observer = new IntersectionObserver((entries) => {
       const [entry] = entries;
 
-      setIsOnscreen(entry.isIntersecting);
+      if (entry) {
+        setIsOnscreen(entry.isIntersecting);
+      }
     });
 
-    observer.observe(elementReference as unknown as HTMLElement);
+    observer.observe(elementReference);
 
     return () => {
       observer.disconnect();

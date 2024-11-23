@@ -39,11 +39,7 @@ export const getAcceptLanguage = (
       const [
         language,
         country,
-      ] = split(name,
-        "-") as [
-      string | undefined,
-      string | undefined
-      ];
+      ] = split(name, "-");
       let quality = 1;
       if (!isNil(query)) {
         const [, value] = split(query,

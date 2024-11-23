@@ -52,6 +52,7 @@ export const indexRoute = createRoute({
     return rootRoute;
   },
   async loader() {
+    // @ts-expect-error ugh
     return getRouteQueries(indexRouteQueries);
   },
   path: "/",

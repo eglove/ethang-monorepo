@@ -16,9 +16,9 @@ type SanityContentProperties = {
 const portableTextComponents = {
   types: {
     image({ value }) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-type-assertion
       const asset = value.asset as ImageAsset | undefined;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-type-assertion
       const altText = value.altText as string | undefined;
       if (!isNil(asset)) {
         return (
