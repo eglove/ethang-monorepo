@@ -2,21 +2,24 @@ import { convexQuery } from "@convex-dev/react-query";
 import { Link } from "@nextui-org/link";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map";
 
 import { api } from "../../convex/_generated/api";
-import { ErrorAndLoading } from "../components/common/error-and-loading.tsx";
+import { ContentHandler } from "../components/common/content-handler.tsx";
 import { MainLayout } from "../components/layouts/main-layout";
 
 const HomeComponent = () => {
-  // @ts-expect-error beta
+  // @ts-expect-error in beta
   const blogs = useQuery(convexQuery(api.blogs.getAll, {}));
-
-  console.log(blogs.data);
 
   return (
     <MainLayout>
-      <ErrorAndLoading
+      <ContentHandler
+        isEmpty={() => {
+          return isEmpty(blogs.data);
+        }}
+        emptyPlaceholder="Nothing here yet."
         error={blogs.error}
         isError={blogs.isError}
         isLoading={blogs.isPending}
@@ -34,7 +37,7 @@ const HomeComponent = () => {
             </div>
           );
         })}
-      </ErrorAndLoading>
+      </ContentHandler>
 
     </MainLayout>
   );

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 
 import { api } from "../../../convex/_generated/api";
-import { ErrorAndLoading } from "../common/error-and-loading.tsx";
+import { ContentHandler } from "../common/content-handler.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
 
 type LocalBlogProperties = PropsWithChildren<{
@@ -22,7 +22,7 @@ export const LocalBlog = ({
 
   return (
     <MainLayout>
-      <ErrorAndLoading
+      <ContentHandler
         error={blogQuery.error}
         isError={blogQuery.isError}
         isLoading={blogQuery.isLoading}
@@ -37,7 +37,7 @@ export const LocalBlog = ({
             {children}
           </article>
         )}
-      </ErrorAndLoading>
+      </ContentHandler>
     </MainLayout>
   );
 };

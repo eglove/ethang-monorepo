@@ -5,7 +5,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import isNil from "lodash/isNil";
 
 import { api } from "../../../convex/_generated/api";
-import { ErrorAndLoading } from "../../components/common/error-and-loading.tsx";
+import { ContentHandler } from "../../components/common/content-handler.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 
 const RouteComponent = () => {
@@ -17,7 +17,7 @@ const RouteComponent = () => {
 
   return (
     <MainLayout>
-      <ErrorAndLoading
+      <ContentHandler
         error={blogQuery.error}
         isError={blogQuery.isError}
         isLoading={blogQuery.isLoading}
@@ -31,7 +31,7 @@ const RouteComponent = () => {
             </div>
           </article>
         )}
-      </ErrorAndLoading>
+      </ContentHandler>
     </MainLayout>
   );
 };

@@ -1,16 +1,20 @@
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 import { Spinner } from "@nextui-org/spinner";
 
 type ErrorAndLoadingProperties = PropsWithChildren<{
+  emptyPlaceholder?: ReactNode;
   error: Error | null;
+  isEmpty?: () => boolean;
   isError: boolean;
   isLoading: boolean;
 }>;
 
-export const ErrorAndLoading = ({
+export const ContentHandler = ({
   children,
+  emptyPlaceholder,
   error,
+  isEmpty,
   isError,
   isLoading,
 }: Readonly<ErrorAndLoadingProperties>) => {
@@ -24,6 +28,12 @@ export const ErrorAndLoading = ({
         {error?.message ?? "Unknown Error"}
       </p>
     );
+  }
+
+  if (true === isEmpty?.()) {
+    return (<div className="text-center">
+      {emptyPlaceholder}
+    </div>);
   }
 
   return children;
