@@ -11,7 +11,6 @@ const http = httpRouter();
 
 const validateRequest = async (
   request: Request,
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 ): Promise<null | WebhookEvent> => {
   const payloadString = await request.text();
   const svixHeaders = {
@@ -23,7 +22,6 @@ const validateRequest = async (
   try {
     return wh.verify(payloadString, svixHeaders) as WebhookEvent;
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error("Error verifying webhook event", error);
     return null;
   }
@@ -32,36 +30,34 @@ const validateRequest = async (
 http.route({
   // eslint-disable-next-line max-statements
   handler: httpAction(async (context, request) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const event = await validateRequest(request);
 
     if (isNil(event)) {
       return new Response("unknown error in clerk webhook", { status: 400 });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (event.type) {
       case "user.created": // intentional fallthrough
       case "user.updated": {
         await context.runMutation(internal.users.upsertFromClerk, {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+
           data: event.data,
         });
         break;
       }
 
       case "user.deleted": {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
         const clerkUserId = event.data.id ?? "";
         await context.runMutation(
           internal.users.deleteFromClerk,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
           { clerkUserId },
         );
         break;
       }
+
       default: {
-        // eslint-disable-next-line no-console,@typescript-eslint/no-unsafe-member-access
         console.log("Ignored Clerk webhook event", event.type as string);
       }
     }

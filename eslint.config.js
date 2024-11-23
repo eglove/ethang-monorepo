@@ -11,6 +11,7 @@ export default tseslint.config(
             "apps/**/*.gen.ts",
             "**/.sanity",
             "**/convex/_generated",
+            "**/README.md"
         ],
     },
     ...config,

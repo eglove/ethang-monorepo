@@ -48,6 +48,7 @@ const customRules: CustomRules = [
             "solidjs",
             "labelledby",
             "svix",
+            "blockqoute",
           ],
         },
       },

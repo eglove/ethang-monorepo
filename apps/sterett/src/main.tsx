@@ -9,7 +9,7 @@ const router = createRouter({
 });
 
 declare module "@tanstack/react-router" {
-  // @ts-expect-error globals
+  // @ts-expect-error global types
   type Register = {
     router: typeof router;
   };

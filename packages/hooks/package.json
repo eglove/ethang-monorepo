@@ -24,9 +24,9 @@
     "@ethang/eslint-config": "workspace:^",
     "@ethang/project-builder": "workspace:^",
     "@types/lodash": "^4.17.13",
-    "@types/node": "^22.9.1",
+    "@types/node": "^22.9.2",
     "@types/react": "^18.3.12",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   },
   "engines": {
     "node": ">22.0"

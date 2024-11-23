@@ -90,6 +90,7 @@ export default tseslint.config(
               "solidjs",
               "labelledby",
               "svix",
+              "blockqoute",
             ],
           },
         },

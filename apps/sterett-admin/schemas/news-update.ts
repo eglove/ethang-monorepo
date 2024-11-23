@@ -40,7 +40,7 @@ export default defineType({
           }
 
           const INCREMENT = 1;
-          const dateFieldValue = new Date(context.document.date as string);
+          const dateFieldValue = new Date(context.document["date"] as string);
           dateFieldValue.setDate(dateFieldValue.getDate() + INCREMENT);
           const expireDateValue = new Date(expireDate);
 
