@@ -1,12 +1,15 @@
+import type { SortDescriptor } from "@nextui-org/react";
+
 import { useObservable } from "@legendapp/state/react";
-import { getKeyValue, TableCell, TableRow } from "@nextui-org/react";
 import { Spinner } from "@nextui-org/spinner";
 import {
-  type SortDescriptor,
+  getKeyValue,
   Table,
   TableBody,
+  TableCell,
   TableColumn,
   TableHeader,
+  TableRow,
 } from "@nextui-org/table";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
