@@ -1,4 +1,4 @@
-import type { SortDescriptor } from "@nextui-org/react";
+import type { SortDescriptor } from "@react-types/shared";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import filterer from "lodash/filter";
@@ -14,7 +14,10 @@ import { filesRouteQueries } from "../../routes/files.tsx";
 export const useFileTable = (query: keyof typeof filesRouteQueries) => {
   const { data } = useSuspenseQuery(filesRouteQueries[query]);
   const [filter, setFilter] = useState("");
-  const [sortConfig, setSortConfig] = useState<SortDescriptor>({
+  const [sortConfig, setSortConfig] = useState<{
+    column: SortDescriptor["column"];
+    direction: SortDescriptor["direction"];
+  }>({
     column: "date",
     direction: "descending",
   });
@@ -23,7 +26,6 @@ export const useFileTable = (query: keyof typeof filesRouteQueries) => {
     let sortedItems = [...data];
 
     if (!isNil(sortConfig) && !isNil(sortConfig.direction)) {
-      // @ts-expect-error ignore this
       sortedItems = orderBy(
         sortedItems,
         [sortConfig.column],
