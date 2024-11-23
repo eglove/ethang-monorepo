@@ -7,6 +7,10 @@ import { twMerge } from "tailwind-merge";
 const links = [
   {
     href: "/",
+    label: "Blog",
+  },
+  {
+    href: "/skills",
     label: "Skills",
   },
   {

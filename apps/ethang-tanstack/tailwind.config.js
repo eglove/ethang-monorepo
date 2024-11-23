@@ -8,7 +8,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
     "../../node_modules/@nextui-org/**/*.{js,ts,jsx,tsx}",
-    "./node_modules/@nextui-org/theme/dist/components/(accordion|avatar|button|link|modal|navbar|spinner|table|divider|ripple|checkbox|spacer).js",
+    "./node_modules/@nextui-org/theme/dist/components/(accordion|avatar|button|image|link|modal|navbar|spinner|table|divider|ripple|checkbox|spacer).js"
   ],
   darkMode: "class",
   plugins: [nextui(), tailwind],

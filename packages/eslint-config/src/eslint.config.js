@@ -91,6 +91,8 @@ export default tseslint.config(
               "labelledby",
               "svix",
               "blockqoute",
+              "cortexjs",
+              "mathrm",
             ],
           },
         },

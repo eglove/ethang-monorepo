@@ -16,13 +16,21 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
+const SkillsLazyImport = createFileRoute('/skills')()
 const ResumeLazyImport = createFileRoute('/resume')()
 const ProjectsLazyImport = createFileRoute('/projects')()
 const CoursesLazyImport = createFileRoute('/courses')()
 const CertificationsLazyImport = createFileRoute('/certifications')()
 const IndexLazyImport = createFileRoute('/')()
+const BlogSlugLazyImport = createFileRoute('/blog/$slug')()
 
 // Create/Update Routes
+
+const SkillsLazyRoute = SkillsLazyImport.update({
+  id: '/skills',
+  path: '/skills',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/skills.lazy').then((d) => d.Route))
 
 const ResumeLazyRoute = ResumeLazyImport.update({
   id: '/resume',
@@ -55,6 +63,12 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const BlogSlugLazyRoute = BlogSlugLazyImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/blog/$slug.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -95,6 +109,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResumeLazyImport
       parentRoute: typeof rootRoute
     }
+    '/skills': {
+      id: '/skills'
+      path: '/skills'
+      fullPath: '/skills'
+      preLoaderRoute: typeof SkillsLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -106,6 +134,8 @@ export interface FileRoutesByFullPath {
   '/courses': typeof CoursesLazyRoute
   '/projects': typeof ProjectsLazyRoute
   '/resume': typeof ResumeLazyRoute
+  '/skills': typeof SkillsLazyRoute
+  '/blog/$slug': typeof BlogSlugLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -114,6 +144,8 @@ export interface FileRoutesByTo {
   '/courses': typeof CoursesLazyRoute
   '/projects': typeof ProjectsLazyRoute
   '/resume': typeof ResumeLazyRoute
+  '/skills': typeof SkillsLazyRoute
+  '/blog/$slug': typeof BlogSlugLazyRoute
 }
 
 export interface FileRoutesById {
@@ -123,13 +155,29 @@ export interface FileRoutesById {
   '/courses': typeof CoursesLazyRoute
   '/projects': typeof ProjectsLazyRoute
   '/resume': typeof ResumeLazyRoute
+  '/skills': typeof SkillsLazyRoute
+  '/blog/$slug': typeof BlogSlugLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/certifications' | '/courses' | '/projects' | '/resume'
+  fullPaths:
+    | '/'
+    | '/certifications'
+    | '/courses'
+    | '/projects'
+    | '/resume'
+    | '/skills'
+    | '/blog/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/certifications' | '/courses' | '/projects' | '/resume'
+  to:
+    | '/'
+    | '/certifications'
+    | '/courses'
+    | '/projects'
+    | '/resume'
+    | '/skills'
+    | '/blog/$slug'
   id:
     | '__root__'
     | '/'
@@ -137,6 +185,8 @@ export interface FileRouteTypes {
     | '/courses'
     | '/projects'
     | '/resume'
+    | '/skills'
+    | '/blog/$slug'
   fileRoutesById: FileRoutesById
 }
 
@@ -146,6 +196,8 @@ export interface RootRouteChildren {
   CoursesLazyRoute: typeof CoursesLazyRoute
   ProjectsLazyRoute: typeof ProjectsLazyRoute
   ResumeLazyRoute: typeof ResumeLazyRoute
+  SkillsLazyRoute: typeof SkillsLazyRoute
+  BlogSlugLazyRoute: typeof BlogSlugLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -154,6 +206,8 @@ const rootRouteChildren: RootRouteChildren = {
   CoursesLazyRoute: CoursesLazyRoute,
   ProjectsLazyRoute: ProjectsLazyRoute,
   ResumeLazyRoute: ResumeLazyRoute,
+  SkillsLazyRoute: SkillsLazyRoute,
+  BlogSlugLazyRoute: BlogSlugLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -170,7 +224,9 @@ export const routeTree = rootRoute
         "/certifications",
         "/courses",
         "/projects",
-        "/resume"
+        "/resume",
+        "/skills",
+        "/blog/$slug"
       ]
     },
     "/": {
@@ -187,6 +243,12 @@ export const routeTree = rootRoute
     },
     "/resume": {
       "filePath": "resume.lazy.tsx"
+    },
+    "/skills": {
+      "filePath": "skills.lazy.tsx"
+    },
+    "/blog/$slug": {
+      "filePath": "blog/$slug.lazy.tsx"
     }
   }
 }

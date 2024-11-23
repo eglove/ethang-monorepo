@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite --port=3001",
+    "dev": "concurrently \"vite --port=3001\" \"pnpx convex dev\"",
     "lint": "eslint . --fix",
     "serve": "vite preview",
     "start": "vite dist",
@@ -16,10 +16,13 @@
     "maintained node versions"
   ],
   "dependencies": {
+    "@convex-dev/react-query": "0.0.0-alpha.8",
+    "@cortex-js/compute-engine": "^0.26.4",
     "@legendapp/state": "^3.0.0-beta.17",
     "@nextui-org/accordion": "^2.0.40",
     "@nextui-org/avatar": "^2.0.33",
     "@nextui-org/button": "^2.0.38",
+    "@nextui-org/image": "^2.0.32",
     "@nextui-org/link": "^2.0.35",
     "@nextui-org/modal": "^2.0.41",
     "@nextui-org/navbar": "^2.0.37",
@@ -38,6 +41,7 @@
     "@tanstack/react-router": "^1.82.2",
     "@tanstack/router-devtools": "^1.82.2",
     "bignumber.js": "^9.1.2",
+    "convex": "^1.17.2",
     "framer-motion": "^11.11.13",
     "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",
@@ -46,7 +50,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sanity-image": "^0.2.0",
-    "tailwind-merge": "^2.5.4"
+    "tailwind-merge": "^2.5.4",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@ethang/eslint-config": "workspace:^",
@@ -59,6 +64,7 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.0",
     "eslint": "^9.14.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.14",

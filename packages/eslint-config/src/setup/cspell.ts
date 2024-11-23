@@ -49,6 +49,8 @@ const customRules: CustomRules = [
             "labelledby",
             "svix",
             "blockqoute",
+            "cortexjs",
+            "mathrm",
           ],
         },
       },
