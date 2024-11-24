@@ -74,7 +74,7 @@ export const NavigationSidebar = () => {
                   <SidebarMenuItem key={link.href}>
                     <SidebarMenuButton asChild>
                       <TypographyLink
-                        className="text-foreground"
+                        className="text-foreground no-underline"
                         href={link.href}
                         title={link.label}
                       >
