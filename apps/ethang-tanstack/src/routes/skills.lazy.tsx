@@ -3,6 +3,7 @@ import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map";
 
 import { api } from "../../convex/_generated/api";
@@ -19,6 +20,10 @@ const RouteComponent = () => {
         Years Experience
       </TypographyH1>
       <ContentHandler
+        isEmpty={() => {
+          return isEmpty(experienceQuery.data);
+        }}
+        emptyPlaceholder="Nothing found"
         error={experienceQuery.error}
         isError={experienceQuery.isError}
         isLoading={experienceQuery.isPending}
