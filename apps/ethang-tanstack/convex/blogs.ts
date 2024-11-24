@@ -23,7 +23,7 @@ export const get = query({
 
 export const getAll = query({
   args: {},
-  handler: async (context, _arguments) => {
+  handler: async (context) => {
     return context.db.query("blogMeta").order("desc")
       .collect();
   },

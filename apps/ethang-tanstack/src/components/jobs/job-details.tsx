@@ -1,16 +1,20 @@
-import type { Job } from "@/query/job.ts";
-
-import { SanityContent } from "@/components/sanity/sanity-content.tsx";
-import { TypographyH2 } from "@/components/typography/typography-h2.tsx";
 import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
 import { TypographyP } from "@/components/typography/typography-p.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger } from "@/components/ui/dialog.tsx";
-import map from "lodash/map";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog.tsx";
 import { EyeIcon } from "lucide-react";
 
+import type { api } from "../../../convex/_generated/api";
+
 type JobDetailsProperties = {
-  job: Job;
+  job: (typeof api.jobs.getAll._returnType)[0];
 };
 
 const listFormatter = new Intl.ListFormat(undefined, {
@@ -31,24 +35,24 @@ export const JobDetails = ({ job }: Readonly<JobDetailsProperties>) => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <TypographyH2>
+          <DialogTitle>
             {job.title}
-          </TypographyH2>
+          </DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          <SanityContent value={job.description} />
+          {job.description}
         </DialogDescription>
         <TypographyH3>
           Tech Used
         </TypographyH3>
         <TypographyP className="!mt-0">
-          {listFormatter.format(map(job.techUsed, "name"))}
+          {listFormatter.format(job.technologiesUsed)}
         </TypographyP>
         <TypographyH3>
           Methodologies Used
         </TypographyH3>
         <TypographyP className="!mt-0">
-          {listFormatter.format(map(job.methodologiesUsed, "name"))}
+          {listFormatter.format(job.methodologiesUsed)}
         </TypographyP>
       </DialogContent>
     </Dialog>
