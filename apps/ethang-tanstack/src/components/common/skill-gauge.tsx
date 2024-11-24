@@ -26,7 +26,7 @@ export const SkillGauge = ({
   return (
     <div className="relative size-40">
       <svg
-        className="rotate-135 size-full"
+        className="size-full rotate-135"
         viewBox="0 0 36 36"
         xmlns="http://www.w3.org/2000/svg"
       >
