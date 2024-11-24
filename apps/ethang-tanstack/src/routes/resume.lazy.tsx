@@ -1,113 +1,62 @@
-import type { SortDescriptor } from "@nextui-org/react";
-
-import { useObservable } from "@legendapp/state/react";
-import { Spinner } from "@nextui-org/spinner";
-import {
-  getKeyValue,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@nextui-org/table";
+import { DataTable } from "@/clients/data-table.tsx";
+import { JobDetails } from "@/components/jobs/job-details.tsx";
+import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import isArray from "lodash/isArray.js";
-import isString from "lodash/isString.js";
-import orderBy from "lodash/orderBy.js";
+import { DateTime } from "luxon";
 
-import { queryClient } from "../clients/query";
-import { JobActions } from "../components/jobs/job-actions";
-import { jobsColumns } from "../components/jobs/jobs-columns";
 import { MainLayout } from "../components/layouts/main-layout";
 import { jobsQuery } from "../query/job";
 
 const Resume = () => {
   const { data } = useQuery(jobsQuery());
-  const store = useObservable<SortDescriptor>({
-    column: "endDate",
-    direction: "descending",
-  });
 
   return (
     <MainLayout>
-      <Table
-        onSortChange={({ column, direction }) => {
-          const sorted = orderBy(
-            data,
-            column,
-            "ascending" === direction
-              ? "asc"
-              : "desc",
-          );
-          queryClient.setQueryData(jobsQuery().queryKey, sorted);
+      <TypographyH1 className="my-2">
+        Resume
+      </TypographyH1>
+      <DataTable
+        columns={[{
+          accessorKey: "title",
+          header: "Title",
+          sortingFn: "alphanumeric",
+        }, {
+          accessorKey: "company",
+          header: "Company",
+        }, {
+          accessorKey: "startDate",
+          cell: (info) => {
+            return DateTime.fromISO(String(info.getValue())).toJSDate()
+              .toLocaleString(undefined, {
+                month: "short",
+                year: "numeric",
+              });
+          },
+          header: "Start Date",
+        }, {
+          accessorKey: "endDate",
+          cell: (info) => {
+            if (!Date.parse(String(info.getValue()))) {
+              return null;
+            }
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-          store.set({
-            column,
-            direction,
-          } as SortDescriptor);
-        }}
-        aria-label="Jobs"
-        sortDescriptor={store.get() as SortDescriptor}
-      >
-        <TableHeader columns={jobsColumns}>
-          {(column) => {
-            return (
-              <TableColumn
-                allowsSorting
-                key={column.key}
-              >
-                {column.label}
-              </TableColumn>
-            );
-          }}
-        </TableHeader>
-        <TableBody
-          items={isArray(data)
-            ? data
-            : []}
-          emptyContent={<Spinner />}
-        >
-          {(item) => {
-            return (
-              <TableRow key={item._id}>
-                {(columnKey) => {
-                  if ("startDate" === columnKey || "endDate" === columnKey) {
-                    return (
-                      <TableCell key={columnKey}>
-                        {isString(getKeyValue(item, columnKey))
-                          ? new Date(
-                            String(getKeyValue(item, columnKey)),
-                          ).toLocaleDateString(undefined, {
-                            month: "long",
-                            year: "numeric",
-                          })
-                          : "(Current)"}
-                      </TableCell>
-                    );
-                  }
-
-                  if ("actions" === columnKey) {
-                    return (
-                      <TableCell>
-                        <JobActions job={item} />
-                      </TableCell>
-                    );
-                  }
-
-                  return (
-                    <TableCell key={columnKey}>
-                      {getKeyValue(item, columnKey)}
-                    </TableCell>
-                  );
-                }}
-              </TableRow>
-            );
-          }}
-        </TableBody>
-      </Table>
+            return DateTime.fromISO(String(info.getValue())).toJSDate()
+              .toLocaleString(undefined, {
+                month: "short",
+                year: "numeric",
+              });
+          },
+          header: "End Date",
+        }, {
+          cell: (info) => {
+            return <JobDetails job={info.row.original} />;
+          },
+          header: "Details",
+          id: "details",
+        }]}
+        data={data ?? []}
+      />
     </MainLayout>
   );
 };

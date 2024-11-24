@@ -23,7 +23,7 @@ const RouteComponent = () => {
         isLoading={blogQuery.isLoading}
       >
         {!isNil(blogQuery.data) && (
-          <article className="prose">
+          <article>
             <div className="flex justify-between">
               <h1 className="text-foreground">
                 {blogQuery.data.title}

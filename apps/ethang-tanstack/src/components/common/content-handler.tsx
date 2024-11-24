@@ -1,6 +1,8 @@
 import type { PropsWithChildren, ReactNode } from "react";
 
-import { Spinner } from "@nextui-org/spinner";
+import { TypographyMuted } from "@/components/typography/typography-muted.tsx";
+import { TypographyP } from "@/components/typography/typography-p.tsx";
+import { LoaderCircle } from "lucide-react";
 
 type ErrorAndLoadingProperties = PropsWithChildren<{
   emptyPlaceholder?: ReactNode;
@@ -19,21 +21,23 @@ export const ContentHandler = ({
   isLoading,
 }: Readonly<ErrorAndLoadingProperties>) => {
   if (isLoading) {
-    return <Spinner className="mx-auto my-4 w-full" />;
+    return <LoaderCircle className="mx-auto my-4 w-full animate-spin" />;
   }
 
   if (isError) {
     return (
-      <p className="text-center">
+      <TypographyP className="text-center">
         {error?.message ?? "Unknown Error"}
-      </p>
+      </TypographyP>
     );
   }
 
   if (true === isEmpty?.()) {
-    return (<div className="text-center">
-      {emptyPlaceholder}
-    </div>);
+    return (
+      <TypographyMuted className="text-center">
+        {emptyPlaceholder}
+      </TypographyMuted>
+    );
   }
 
   return children;

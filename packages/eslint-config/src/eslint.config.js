@@ -93,6 +93,7 @@ export default tseslint.config(
               "blockqoute",
               "cortexjs",
               "mathrm",
+              "nums",
             ],
           },
         },

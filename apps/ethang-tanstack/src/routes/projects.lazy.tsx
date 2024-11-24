@@ -1,93 +1,45 @@
-import { Link } from "@nextui-org/link";
-import { Spinner } from "@nextui-org/spinner";
-import {
-  getKeyValue,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@nextui-org/table";
+import { DataTable } from "@/clients/data-table.tsx";
+import { ProjectDetails } from "@/components/project/project-details.tsx";
+import { ProjectLink } from "@/components/project/project-link.tsx";
+import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import isArray from "lodash/isArray.js";
 
 import { MainLayout } from "../components/layouts/main-layout";
-import { ProjectActions } from "../components/project/project-actions";
 import { projectsQuery } from "../query/projects";
-
-const columns = [
-  {
-    key: "name",
-    label: "Name",
-  },
-  {
-    key: "actions",
-    label: "Details",
-  },
-];
 
 const RouteComponent = () => {
   const { data } = useQuery(projectsQuery());
 
   return (
     <MainLayout>
-      <Table aria-label="Projects">
-        <TableHeader columns={columns}>
-          {(column) => {
-            return (
-              <TableColumn key={column.key}>
-                {column.label}
-              </TableColumn>
-            );
-          }}
-        </TableHeader>
-        <TableBody
-          items={isArray(data)
-            ? data
-            : []}
-          emptyContent={<Spinner />}
-        >
-          {(item) => {
-            return (
-              <TableRow key={item._id}>
-                {(columnKey) => {
-                  if ("name" === columnKey) {
-                    return (
-                      <TableCell>
-                        <Link
-                          isExternal
-                          showAnchorIcon
-                          color="foreground"
-                          href={item.url}
-                          underline="always"
-                        >
-                          {getKeyValue(item, columnKey)}
-                        </Link>
-                      </TableCell>
-                    );
-                  }
+      <TypographyH1>
+        Projects
+      </TypographyH1>
+      <DataTable
+        columns={[{
+          accessorKey: "name",
 
-                  if ("actions" === columnKey) {
-                    return (
-                      <TableCell>
-                        <ProjectActions project={item} />
-                      </TableCell>
-                    );
-                  }
-
-                  return (
-                    <TableCell>
-                      {getKeyValue(item, columnKey)}
-                    </TableCell>
-                  );
-                }}
-              </TableRow>
+          cell: (info) => {
+            return (
+              <ProjectLink
+                url={info.row.original.url}
+              >
+                {String(info.getValue())}
+              </ProjectLink>
             );
-          }}
-        </TableBody>
-      </Table>
+          },
+          header: "Name",
+        }, {
+
+          cell: (info) => {
+            return <ProjectDetails project={info.row.original} />;
+          },
+          header: "Details",
+          id: "details",
+        }]}
+        data={data ?? []}
+      />
     </MainLayout>
   );
 };

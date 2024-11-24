@@ -1,6 +1,5 @@
-import { NextUIProvider } from "@nextui-org/react";
+import { ThemeProvider } from "@/components/theme-provider.tsx";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
-import { useNavigate } from "@tanstack/react-router";
 import { ConvexProvider } from "convex/react";
 import constant from "lodash/constant.js";
 import { lazy, type PropsWithChildren } from "react";
@@ -33,23 +32,20 @@ const QueryDevtools =
       : constant(null);
 
 export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
-  const navigate = useNavigate();
-
   return (
     <ConvexProvider client={convex}>
       <PersistQueryClientProvider
         client={queryClient}
         persistOptions={{ persister }}
       >
-        <NextUIProvider navigate={(route) => {
-        // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
-          navigate({ to: route }).catch(console.error);
-        }}
+        <ThemeProvider
+          defaultTheme="dark"
+          storageKey="ui-theme"
         >
           {children}
-        </NextUIProvider>
-        <QueryDevtools />
-        <TanStackRouterDevtools position="bottom-left" />
+          <QueryDevtools />
+          <TanStackRouterDevtools position="bottom-left" />
+        </ThemeProvider>
       </PersistQueryClientProvider>
     </ConvexProvider>
   );

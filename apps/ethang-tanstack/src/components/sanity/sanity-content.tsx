@@ -1,6 +1,7 @@
 import type { TypedObject } from "@portabletext/types";
 
-import { Link } from "@nextui-org/link";
+import { TypographyLink } from "@/components/typography/typography-link.tsx";
+import { TypographyP } from "@/components/typography/typography-p.tsx";
 import { PortableText, type PortableTextReactComponents } from "@portabletext/react";
 import isNil from "lodash/isNil.js";
 import { twMerge } from "tailwind-merge";
@@ -15,18 +16,20 @@ type SanityContentProperties = {
 };
 
 const portableTextComponents: Partial<PortableTextReactComponents> = {
+  block: {
+    normal: TypographyP,
+  },
   marks: {
     link({ children, value }) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const { href } = value as { href: string };
 
       return (
-        <Link
-          isExternal
+        <TypographyLink
           href={href}
         >
           {children}
-        </Link>
+        </TypographyLink>
       );
     },
   },
@@ -54,7 +57,7 @@ export const SanityContent = ({
   styleNames, value,
 }: SanityContentProperties) => {
   return (
-    <div className={twMerge("prose text-foreground", styleNames)}>
+    <div className={twMerge("text-foreground", styleNames)}>
       <PortableText
         components={portableTextComponents}
         value={value}

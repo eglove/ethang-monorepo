@@ -29,6 +29,7 @@ export default tseslint.config(
             "react/no-children-prop": "off",
             "sonar/no-os-command-from-path": "off",
             "sonar/os-command": "off",
+            "sonar/no-unstable-nested-components": "off",
         },
     },
 );

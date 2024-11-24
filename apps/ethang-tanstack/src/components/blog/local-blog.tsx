@@ -28,7 +28,7 @@ export const LocalBlog = ({
         isLoading={blogQuery.isLoading}
       >
         {!isNil(blogQuery.data) && (
-          <article className="prose text-foreground">
+          <article className="text-foreground">
             <div className="flex justify-between">
               <h1 className="text-foreground">
                 {blogQuery.data.title}

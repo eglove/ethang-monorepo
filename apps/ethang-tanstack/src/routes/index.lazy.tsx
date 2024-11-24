@@ -1,5 +1,7 @@
+import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
+import { TypographyLink } from "@/components/typography/typography-link.tsx";
+import { TypographyMuted } from "@/components/typography/typography-muted.tsx";
 import { convexQuery } from "@convex-dev/react-query";
-import { Link } from "@nextui-org/link";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import isEmpty from "lodash/isEmpty.js";
@@ -15,11 +17,18 @@ const HomeComponent = () => {
 
   return (
     <MainLayout>
+      <TypographyH1 className="mb-4">
+        Blog
+      </TypographyH1>
       <ContentHandler
+        emptyPlaceholder={
+          <TypographyMuted>
+            Nothing here yet.
+          </TypographyMuted>
+        }
         isEmpty={() => {
           return isEmpty(blogs.data);
         }}
-        emptyPlaceholder="Nothing here yet."
         error={blogs.error}
         isError={blogs.isError}
         isLoading={blogs.isPending}
@@ -27,13 +36,12 @@ const HomeComponent = () => {
         {map(blogs.data, (blog) => {
           return (
             <div>
-              <Link
-                className="text-foreground text-2xl font-bold"
+              <TypographyLink
+                className="text-2xl font-bold"
                 href={`/blog/${blog.slug}`}
-                underline="always"
               >
                 {blog.title}
-              </Link>
+              </TypographyLink>
             </div>
           );
         })}

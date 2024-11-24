@@ -1,14 +1,16 @@
 import type { PropsWithChildren } from "react";
 
-import { Navigation } from "../navigation/navigation";
+import { NavigationSidebar } from "@/components/navigation/navigation-sidebar.tsx";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar.tsx";
 
 export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
   return (
-    <>
-      <Navigation />
-      <main className="mx-auto my-4 max-w-screen-xl px-4">
+    <SidebarProvider defaultOpen={false}>
+      <NavigationSidebar />
+      <SidebarTrigger className="ml-1" />
+      <main className="m-4">
         {children}
       </main>
-    </>
+    </SidebarProvider>
   );
 };

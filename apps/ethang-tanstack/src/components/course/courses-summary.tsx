@@ -17,7 +17,7 @@ export const CoursesSummary = () => {
   const diff = now.diff(start, "years");
 
   return (
-    <div className="prose max-w-max text-foreground">
+    <div className="text-foreground max-w-max">
       <p>
         I have been maintaining this list of courses for
         {" "}

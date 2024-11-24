@@ -51,6 +51,7 @@ const customRules: CustomRules = [
             "blockqoute",
             "cortexjs",
             "mathrm",
+            "nums",
           ],
         },
       },

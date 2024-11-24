@@ -1,7 +1,8 @@
-import { Spinner } from "@nextui-org/spinner";
+import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import map from "lodash/map";
+import { LoaderCircle } from "lucide-react";
 
 import { SkillGauge } from "../components/common/skill-gauge.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
@@ -12,12 +13,12 @@ const RouteComponent = () => {
 
   return (
     <MainLayout>
-      <h1 className="my-4 text-center text-3xl font-bold">
+      <TypographyH1 className="my-4 font-bold">
         Years Experience
-      </h1>
-      {isPending && <Spinner className="mx-auto my-4 w-full" />}
+      </TypographyH1>
+      {isPending && <LoaderCircle className="mx-auto my-4 w-full animate-spin" />}
       {!isPending && (
-        <div className="mx-auto grid place-items-center gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div className="mx-auto flex flex-wrap items-center justify-center gap-4">
           {map(data?.skills, ({ experience, name }) => {
             return (
               <SkillGauge
