@@ -5,7 +5,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar.tsx";
 
 export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider>
       <NavigationSidebar />
       <SidebarTrigger className="ml-1" />
       <main className="m-4">
