@@ -7,7 +7,7 @@ import {
   SidebarFooter,
   SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
+  SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarTrigger,
 } from "@/components/ui/sidebar.tsx";
 import map from "lodash/map";
 import { CpuIcon, FileUserIcon, HomeIcon, KanbanIcon, SchoolIcon, ShieldCheckIcon } from "lucide-react";
@@ -53,7 +53,10 @@ export const NavigationSidebar = () => {
       <SidebarHeader />
       <SidebarGroup>
         <SidebarGroupContent>
-          <SidebarMenu>
+          <SidebarMenu className="flex flex-row flex-wrap items-center">
+            <SidebarMenuItem>
+              <SidebarTrigger className="ml-1" />
+            </SidebarMenuItem>
             <SidebarMenuItem>
               <ModeToggle />
             </SidebarMenuItem>

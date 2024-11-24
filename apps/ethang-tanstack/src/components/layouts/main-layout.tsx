@@ -7,7 +7,6 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
   return (
     <SidebarProvider>
       <NavigationSidebar />
-      <SidebarTrigger className="ml-1" />
       <main className="m-4">
         {children}
       </main>
