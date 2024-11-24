@@ -55,7 +55,7 @@ export const NavigationSidebar = () => {
         <SidebarGroupContent>
           <SidebarMenu className="flex flex-row flex-wrap items-center">
             <SidebarMenuItem>
-              <SidebarTrigger className="ml-1" />
+              <SidebarTrigger className="ml-1 hidden md:block" />
             </SidebarMenuItem>
             <SidebarMenuItem>
               <ModeToggle />
