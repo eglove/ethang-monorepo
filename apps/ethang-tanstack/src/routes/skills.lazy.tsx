@@ -1,13 +1,14 @@
 import { ContentHandler } from "@/components/common/content-handler.tsx";
+import { SkillGauge } from "@/components/common/skill-gauge.tsx";
 import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map";
 
 import { api } from "../../convex/_generated/api";
-import { SkillGauge } from "../components/common/skill-gauge.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 
 const RouteComponent = () => {
@@ -29,7 +30,7 @@ const RouteComponent = () => {
         isLoading={experienceQuery.isPending}
       >
         <div className="mx-auto flex flex-wrap items-center justify-center gap-4">
-          {map(experienceQuery.data.skills, ({ experience, name }) => {
+          {map(get(experienceQuery, ["data", "skills"], []), ({ experience, name }) => {
             return (
               <SkillGauge
                 key={name}
