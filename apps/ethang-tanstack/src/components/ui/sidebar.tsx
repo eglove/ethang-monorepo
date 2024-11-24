@@ -66,7 +66,6 @@ const SidebarProvider = forwardRef<
   }> & Readonly<ComponentProps<"div">>
 >(
       (
-        // eslint-disable-next-line react/prefer-read-only-props
         {
           children,
           className,
@@ -200,7 +199,6 @@ const Sidebar = forwardRef<
   }> & Readonly<ComponentProps<"div">>
 >(
   (
-    // eslint-disable-next-line react/prefer-read-only-props
     {
       children,
       className,
@@ -241,7 +239,7 @@ const Sidebar = forwardRef<
                 "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
               } as CSSProperties
             }
-            className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            className="bg-sidebar text-sidebar-foreground w-[--sidebar-width] p-0 [&>button]:hidden"
             data-mobile="true"
             data-sidebar="sidebar"
             side={side}
@@ -259,7 +257,7 @@ const Sidebar = forwardRef<
         data-collapsible={"collapsed" === state
           ? collapsible
           : ""}
-        className="group peer hidden text-sidebar-foreground md:block"
+        className="text-sidebar-foreground group peer hidden md:block"
         data-side={side}
         data-state={state}
         data-variant={variant}
@@ -291,7 +289,7 @@ const Sidebar = forwardRef<
           {...properties}
         >
           <div
-            className="flex size-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
+            className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex size-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow"
             data-sidebar="sidebar"
           >
             {children}
@@ -306,7 +304,6 @@ Sidebar.displayName = "Sidebar";
 const SidebarTrigger = forwardRef<
   Readonly<ElementRef<typeof Button>>,
   Readonly<ComponentProps<typeof Button>>
-// eslint-disable-next-line react/prefer-read-only-props
 >(({ className, onClick, ...properties }, reference) => {
   const { toggleSidebar } = useSidebar();
 
@@ -335,7 +332,6 @@ SidebarTrigger.displayName = "SidebarTrigger";
 const SidebarRail = forwardRef<
   Readonly<HTMLButtonElement>,
   Readonly<ComponentProps<"button">>
-// eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   const { toggleSidebar } = useSidebar();
 
@@ -366,7 +362,6 @@ SidebarRail.displayName = "SidebarRail";
 const SidebarInset = forwardRef<
   HTMLDivElement,
   ComponentProps<"main">
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <main
@@ -385,7 +380,6 @@ SidebarInset.displayName = "SidebarInset";
 const SidebarInput = forwardRef<
   Readonly<ElementRef<typeof Input>>,
   Readonly<ComponentProps<typeof Input>>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <Input
@@ -404,7 +398,6 @@ SidebarInput.displayName = "SidebarInput";
 const SidebarHeader = forwardRef<
   Readonly<HTMLDivElement>,
   Readonly<ComponentProps<"div">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <div
@@ -420,7 +413,6 @@ SidebarHeader.displayName = "SidebarHeader";
 const SidebarFooter = forwardRef<
   Readonly<HTMLDivElement>,
   Readonly<ComponentProps<"div">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <div
@@ -436,7 +428,6 @@ SidebarFooter.displayName = "SidebarFooter";
 const SidebarSeparator = forwardRef<
   Readonly<ElementRef<typeof Separator>>,
   Readonly<ComponentProps<typeof Separator>>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <Separator
@@ -452,7 +443,6 @@ SidebarSeparator.displayName = "SidebarSeparator";
 const SidebarContent = forwardRef<
   Readonly<HTMLDivElement>,
   Readonly<ComponentProps<"div">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <div
@@ -471,7 +461,6 @@ SidebarContent.displayName = "SidebarContent";
 const SidebarGroup = forwardRef<
   Readonly<HTMLDivElement>,
   Readonly<ComponentProps<"div">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <div
@@ -487,7 +476,6 @@ SidebarGroup.displayName = "SidebarGroup";
 const SidebarGroupLabel = forwardRef<
   Readonly<HTMLDivElement>,
   Readonly<{ asChild?: boolean } & ComponentProps<"div">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ asChild = false, className, ...properties }, reference) => {
   const Comp = asChild
     ? Slot
@@ -511,7 +499,6 @@ SidebarGroupLabel.displayName = "SidebarGroupLabel";
 const SidebarGroupAction = forwardRef<
   Readonly<HTMLButtonElement>,
   Readonly<{ asChild?: boolean } & ComponentProps<"button">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ asChild = false, className, ...properties }, reference) => {
   const Comp = asChild
     ? Slot
@@ -538,7 +525,6 @@ SidebarGroupAction.displayName = "SidebarGroupAction";
 const SidebarGroupContent = forwardRef<
   Readonly<HTMLDivElement>,
   Readonly<ComponentProps<"div">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <div
@@ -554,7 +540,6 @@ SidebarGroupContent.displayName = "SidebarGroupContent";
 const SidebarMenu = forwardRef<
   Readonly<HTMLUListElement>,
   Readonly<ComponentProps<"ul">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <ul
@@ -570,7 +555,6 @@ SidebarMenu.displayName = "SidebarMenu";
 const SidebarMenuItem = forwardRef<
   Readonly<HTMLLIElement>,
   Readonly<ComponentProps<"li">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <li
@@ -584,7 +568,7 @@ const SidebarMenuItem = forwardRef<
 SidebarMenuItem.displayName = "SidebarMenuItem";
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+  "peer/menu-button ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none transition-[width,height,padding] focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
   {
     defaultVariants: {
       size: "default",
@@ -599,7 +583,7 @@ const sidebarMenuButtonVariants = cva(
       variant: {
         default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
         outline:
-          "bg-white shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))] dark:bg-neutral-950",
+          "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground bg-white shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))] dark:bg-neutral-950",
       },
     },
   },
@@ -614,7 +598,6 @@ const SidebarMenuButton = forwardRef<
   } & ComponentProps<"button"> & VariantProps<typeof sidebarMenuButtonVariants>>
 >(
   (
-    // eslint-disable-next-line react/prefer-read-only-props
     {
       asChild = false,
       className,
@@ -679,7 +662,6 @@ const SidebarMenuAction = forwardRef<
     asChild?: boolean;
     showOnHover?: boolean;
   } & ComponentProps<"button">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({
   asChild = false, className, showOnHover = false, ...properties
 }, reference) => {
@@ -712,7 +694,6 @@ SidebarMenuAction.displayName = "SidebarMenuAction";
 const SidebarMenuBadge = forwardRef<
   Readonly<HTMLDivElement>,
   Readonly<ComponentProps<"div">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <div
@@ -738,7 +719,6 @@ const SidebarMenuSkeleton = forwardRef<
   Readonly<{
     showIcon?: boolean;
   } & ComponentProps<"div">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, showIcon = false, ...properties }, reference) => {
   // Random width between 50 to 90%.
   // eslint-disable-next-line sonar/pseudo-random
@@ -774,7 +754,6 @@ SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton";
 const SidebarMenuSub = forwardRef<
   Readonly<HTMLUListElement>,
   Readonly<ComponentProps<"ul">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ className, ...properties }, reference) => {
   return (
     <ul
@@ -794,7 +773,6 @@ SidebarMenuSub.displayName = "SidebarMenuSub";
 const SidebarMenuSubItem = forwardRef<
   Readonly<HTMLLIElement>,
   Readonly<ComponentProps<"li">>
-  // eslint-disable-next-line react/prefer-read-only-props
 >(({ ...properties }, reference) => {
   return (
     <li
@@ -812,7 +790,6 @@ const SidebarMenuSubButton = forwardRef<
     isActive?: boolean;
     size?: "md" | "sm";
   } & ComponentProps<"a">
-    // eslint-disable-next-line react/prefer-read-only-props
   >>(({ asChild = false, className, isActive, size = "md", ...properties }, reference) => {
   const Comp = asChild
     ? Slot
