@@ -17,7 +17,7 @@ const RouteComponent = () => {
 
   return (
     <MainLayout>
-      <TypographyH1 className="my-4 font-bold">
+      <TypographyH1 className="my-4">
         Years Experience
       </TypographyH1>
       <ContentHandler
