@@ -33,7 +33,7 @@
     "eslint-plugin-lodash": "^8.0.0",
     "eslint-plugin-n": "^17.14.0",
     "eslint-plugin-perfectionist": "^4.0.3",
-    "eslint-plugin-react-compiler": "19.0.0-beta-a7bf2bd-20241110",
+    "eslint-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-solid": "^0.14.4",
     "eslint-plugin-sonarjs": "2.0.4",
@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@ethang/markdown-generator": "workspace:^",
-    "@types/eslint-plugin-jsx-a11y": "^6.9.0",
+    "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/eslint__js": "^8.42.3",
     "@types/node": "^22.9.3",
