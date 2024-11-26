@@ -14,7 +14,7 @@ type GetNumberMetaProperties = {
   value: bigint | number | string;
 };
 
-export const getNumberMeta = ({
+export const getSubbedNumber = ({
   locale,
   maxFractionDigitsAfterZeros,
   maxSubDigits = 4,

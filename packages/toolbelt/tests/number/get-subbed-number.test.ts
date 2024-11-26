@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { getNumberMeta } from "../../src/number/get-number-meta.js";
+import { getSubbedNumber } from "../../src/number/get-subbed-number.js";
 
-describe("getNumberMeta", () => {
+describe("getSubbedNumber", () => {
   it.each([
     [
       {
@@ -49,7 +49,7 @@ describe("getNumberMeta", () => {
     input, expected,
   ) => {
     // @ts-expect-error for test
-    const value = getNumberMeta(input);
+    const value = getSubbedNumber(input);
 
     expect(value).toStrictEqual(expected);
   });
