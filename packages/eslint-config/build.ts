@@ -1,3 +1,5 @@
+import { copyFileSync } from "node:fs";
+
 import { projectBuilder } from "../project-builder/src/project-builder.ts";
 import { updateReadme } from "./src/build/update-readme.js";
 import { updateRules } from "./src/build/update-rules.js";
@@ -14,3 +16,4 @@ await projectBuilder(import.meta.dirname, {
   ],
   outDir: "dist",
 });
+copyFileSync("src/README.md", "dist/README.md");
