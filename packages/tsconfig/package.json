@@ -8,6 +8,6 @@
   "devDependencies": {
     "@tsconfig/node-lts": "^22.0.1",
     "@tsconfig/strictest": "^2.0.5",
-    "@tsconfig/vite-react": "^3.0.2"
+    "@tsconfig/vite-react": "^3.4.0"
   }
 }
