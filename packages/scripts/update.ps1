@@ -5,8 +5,7 @@ docker system prune -af
 
 # Visual Studio Update
 dotnet tool update -g dotnet-vs
-
-choco upgrade all
+winget upgrade --unknown --all
 
 update-node
 
