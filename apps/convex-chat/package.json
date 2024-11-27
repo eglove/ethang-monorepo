@@ -59,7 +59,7 @@
     "@tanstack/react-router": "^1.82.12",
     "@tanstack/router-devtools": "^1.82.12",
     "@tanstack/zod-form-adapter": "^0.37.1",
-    "convex": "^1.17.2",
+    "convex": "^1.17.3",
     "framer-motion": "^11.11.13",
     "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",

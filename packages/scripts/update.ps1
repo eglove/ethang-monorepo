@@ -7,5 +7,3 @@ docker system prune -af
 dotnet tool update -g dotnet-vs
 winget upgrade --unknown --all
 
-update-node
-
