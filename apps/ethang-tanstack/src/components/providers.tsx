@@ -1,35 +1,13 @@
+import type { PropsWithChildren } from "react";
+
 import { ThemeProvider } from "@/components/theme-provider.tsx";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools/build/modern/production.js";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ConvexProvider } from "convex/react";
-import constant from "lodash/constant.js";
-import { lazy, type PropsWithChildren } from "react";
 
 import { convex } from "../clients/convex.ts";
 import { persister, queryClient } from "../clients/query";
-
-const TanStackRouterDevtools =
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    (import.meta as unknown as { env: { DEV: boolean } }).env.DEV
-      ? lazy(async () => {
-        return import("@tanstack/router-devtools").then((result) => {
-          return {
-            default: result.TanStackRouterDevtools,
-          };
-        });
-      })
-      : constant(null);
-
-const QueryDevtools =
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    (import.meta as unknown as { env: { DEV: boolean } }).env.DEV
-      ? lazy(async () => {
-        return import("@tanstack/react-query-devtools").then((result) => {
-          return {
-            default: result.ReactQueryDevtools,
-          };
-        });
-      })
-      : constant(null);
 
 export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   return (
@@ -43,7 +21,7 @@ export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
           storageKey="ui-theme"
         >
           {children}
-          <QueryDevtools />
+          <ReactQueryDevtools />
           <TanStackRouterDevtools position="bottom-left" />
         </ThemeProvider>
       </PersistQueryClientProvider>
