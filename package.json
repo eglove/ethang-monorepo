@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "all": "pnpm i && pnpm deps && pnpm test && pnpm lint && pnpm build",
-    "deps": "pnpm up -r -i --latest",
+    "deps": "pnpm up -r -i --latest && pnpm --filter eslint-config build",
     "lint": "pnpm -r lint",
     "build": "pnpm -r build",
     "test": "pnpm -r test"
