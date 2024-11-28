@@ -13,6 +13,23 @@ export default defineSchema({
   }).index("by_publishedAt", ["publishedAt"])
     .index("by_updatedAt", ["updatedAt"])
     .index("by_slug", ["slug"]),
+  certification: defineTable({
+    description: v.string(),
+    expiresOn: v.optional(v.string()),
+    issuedBy: v.string(),
+    issuedOn: v.string(),
+    name: v.string(),
+    url: v.string(),
+  }),
+  course: defineTable({
+    name: v.string(),
+    url: v.string(),
+  }).index("by_name", ["name"]),
+  courseSection: defineTable({
+    courses: v.array(v.id("course")),
+    order: v.optional(v.number()),
+    title: v.string(),
+  }),
   job: defineTable({
     company: v.string(),
     description: v.string(),
@@ -23,9 +40,18 @@ export default defineSchema({
     title: v.string(),
   }).index("by_title", ["title"])
     .index("by_company", ["company"]),
+  learningProfile: defineTable({
+    name: v.string(),
+    url: v.string(),
+  }),
   methodology: defineTable({
     name: v.string(),
   }).index("by_name", ["name"]),
+  project: defineTable({
+    description: v.string(),
+    name: v.string(),
+    url: v.string(),
+  }),
   technology: defineTable({
     name: v.string(),
   }).index("by_name", ["name"]),

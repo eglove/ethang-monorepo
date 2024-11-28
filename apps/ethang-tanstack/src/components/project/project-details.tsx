@@ -1,15 +1,20 @@
-import type { Project } from "@/query/projects.ts";
-
-import { SanityContent } from "@/components/sanity/sanity-content.tsx";
-import { TypographyH2 } from "@/components/typography/typography-h2.tsx";
 import { TypographyLink } from "@/components/typography/typography-link.tsx";
 import { TypographyP } from "@/components/typography/typography-p.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger } from "@/components/ui/dialog.tsx";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog.tsx";
 import { EyeIcon } from "lucide-react";
 
+import type { api } from "../../../convex/_generated/api";
+
 type ProjectDetailsProperties = {
-  project: Project;
+  project: (typeof api.project.getAll._returnType)[0];
 };
 
 export const ProjectDetails = ({
@@ -28,12 +33,12 @@ export const ProjectDetails = ({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <TypographyH2>
+          <DialogTitle>
             {project.name}
-          </TypographyH2>
+          </DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          <SanityContent value={project.description} />
+          {project.description}
         </DialogDescription>
         <TypographyP>
           <TypographyLink

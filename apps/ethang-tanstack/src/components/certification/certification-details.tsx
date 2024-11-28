@@ -1,13 +1,12 @@
-import type { Certification } from "@/query/certifications.ts";
-
-import { SanityContent } from "@/components/sanity/sanity-content.tsx";
 import { TypographyH2 } from "@/components/typography/typography-h2.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger } from "@/components/ui/dialog.tsx";
 import { EyeIcon } from "lucide-react";
 
+import type { api } from "../../../convex/_generated/api";
+
 type CertificationDetailsProperties = {
-  certification: Certification;
+  certification: (typeof api.certifications.getAll._returnType)[0];
 };
 
 export const CertificationDetails = ({
@@ -31,7 +30,7 @@ export const CertificationDetails = ({
           </TypographyH2>
         </DialogHeader>
         <DialogDescription>
-          <SanityContent value={certification.description} />
+          {certification.description}
         </DialogDescription>
       </DialogContent>
     </Dialog>

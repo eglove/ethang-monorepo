@@ -26,8 +26,6 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.4",
-    "@sanity/client": "^6.22.5",
-    "@sanity/image-url": "^1.1.0",
     "@tanstack/query-async-storage-persister": "^5.61.5",
     "@tanstack/react-query": "^5.61.5",
     "@tanstack/react-query-devtools": "^5.61.5",
@@ -45,7 +43,6 @@
     "luxon": "^3.5.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "sanity-image": "^0.2.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"

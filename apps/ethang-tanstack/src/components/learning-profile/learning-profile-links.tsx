@@ -1,11 +1,15 @@
+import { ContentHandler } from "@/components/common/content-handler.tsx";
 import { TypographyH2 } from "@/components/typography/typography-h2.tsx";
 import { TypographyLink } from "@/components/typography/typography-link.tsx";
-import { learningProfilesQuery } from "@/query/learning-profiles.ts";
+import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import map from "lodash/map.js";
 
+import { api } from "../../../convex/_generated/api";
+
 export const LearningProfileLinks = () => {
-  const { data } = useQuery(learningProfilesQuery());
+  // @ts-expect-error beta
+  const query = useQuery(convexQuery(api.learningProfile.getAll, {}));
 
   return (
     <div>
@@ -13,16 +17,22 @@ export const LearningProfileLinks = () => {
         Learning Profiles:
       </TypographyH2>
       <div className="flex flex-wrap gap-4">
-        {map(data, (link) => {
-          return (
-            <TypographyLink
-              href={link.url}
-              key={link.url}
-            >
-              {link.name}
-            </TypographyLink>
-          );
-        })}
+        <ContentHandler
+          error={query.error}
+          isError={query.isError}
+          isLoading={query.isPending}
+        >
+          {map(query.data, (link) => {
+            return (
+              <TypographyLink
+                href={link.url}
+                key={link.url}
+              >
+                {link.name}
+              </TypographyLink>
+            );
+          })}
+        </ContentHandler>
       </div>
     </div>
   );
