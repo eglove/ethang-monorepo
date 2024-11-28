@@ -1,5 +1,4 @@
 // eslint-disable-next-line barrel/avoid-barrel-files
-import tailwind from "@tailwindcss/typography";
 import animate from "tailwindcss-animate";
 
 /** @type {import('tailwindcss').Config} */
@@ -10,7 +9,7 @@ export default {
     "../../node_modules/@nextui-org/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: ["class"],
-  plugins: [tailwind, animate],
+  plugins: [animate],
   safelist: [
     {
       pattern: /^text-cyan-\d{3}$/u,

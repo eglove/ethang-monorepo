@@ -4,9 +4,6 @@ import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
 import { useKnuthPlass } from "@/hooks/use-knuth-plass.ts";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "@tanstack/react-router";
-import { DiscussionEmbed } from "disqus-react";
-import get from "lodash/get.js";
 import isNil from "lodash/isNil";
 
 import { api } from "../../../convex/_generated/api";
@@ -21,7 +18,6 @@ export const LocalBlog = ({
   children,
   slug,
 }: Readonly<LocalBlogProperties>) => {
-  const location = useLocation();
   const blogQuery =
         // @ts-expect-error in beta
         useQuery(convexQuery(api.blogs.get, { slug }));
@@ -44,15 +40,6 @@ export const LocalBlog = ({
           </article>
         )}
       </ContentHandler>
-      <DiscussionEmbed
-        config={{
-          identifier: slug,
-          language: "en-US",
-          title: get(blogQuery, ["data", "title"]),
-          url: location.href,
-        }}
-        shortname="ethang"
-      />
     </MainLayout>
   );
 };
