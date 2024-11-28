@@ -1,6 +1,7 @@
 import type { PropsWithChildren } from "react";
 
 import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
+import { useKnuthPlass } from "@/hooks/use-knuth-plass.ts";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
@@ -20,6 +21,8 @@ export const LocalBlog = ({
   const blogQuery =
         // @ts-expect-error in beta
         useQuery(convexQuery(api.blogs.get, { slug }));
+
+  useKnuthPlass();
 
   return (
     <MainLayout>

@@ -55,6 +55,7 @@ const customRules: CustomRules = [
             "lifecycles",
             "krausest",
             "Signalis",
+            "Plass",
           ],
         },
       },

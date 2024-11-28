@@ -97,6 +97,7 @@ export default tseslint.config(
               "lifecycles",
               "krausest",
               "Signalis",
+              "Plass",
             ],
           },
         },
