@@ -22,6 +22,7 @@ const ProjectsLazyImport = createFileRoute('/projects')()
 const CoursesLazyImport = createFileRoute('/courses')()
 const CertificationsLazyImport = createFileRoute('/certifications')()
 const IndexLazyImport = createFileRoute('/')()
+const BlogForcingReactLazyImport = createFileRoute('/blog/forcing-react')()
 const BlogSlugLazyImport = createFileRoute('/blog/$slug')()
 
 // Create/Update Routes
@@ -63,6 +64,14 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const BlogForcingReactLazyRoute = BlogForcingReactLazyImport.update({
+  id: '/blog/forcing-react',
+  path: '/blog/forcing-react',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/blog/forcing-react.lazy').then((d) => d.Route),
+)
 
 const BlogSlugLazyRoute = BlogSlugLazyImport.update({
   id: '/blog/$slug',
@@ -123,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugLazyImport
       parentRoute: typeof rootRoute
     }
+    '/blog/forcing-react': {
+      id: '/blog/forcing-react'
+      path: '/blog/forcing-react'
+      fullPath: '/blog/forcing-react'
+      preLoaderRoute: typeof BlogForcingReactLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -136,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/resume': typeof ResumeLazyRoute
   '/skills': typeof SkillsLazyRoute
   '/blog/$slug': typeof BlogSlugLazyRoute
+  '/blog/forcing-react': typeof BlogForcingReactLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -146,6 +163,7 @@ export interface FileRoutesByTo {
   '/resume': typeof ResumeLazyRoute
   '/skills': typeof SkillsLazyRoute
   '/blog/$slug': typeof BlogSlugLazyRoute
+  '/blog/forcing-react': typeof BlogForcingReactLazyRoute
 }
 
 export interface FileRoutesById {
@@ -157,6 +175,7 @@ export interface FileRoutesById {
   '/resume': typeof ResumeLazyRoute
   '/skills': typeof SkillsLazyRoute
   '/blog/$slug': typeof BlogSlugLazyRoute
+  '/blog/forcing-react': typeof BlogForcingReactLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -169,6 +188,7 @@ export interface FileRouteTypes {
     | '/resume'
     | '/skills'
     | '/blog/$slug'
+    | '/blog/forcing-react'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -178,6 +198,7 @@ export interface FileRouteTypes {
     | '/resume'
     | '/skills'
     | '/blog/$slug'
+    | '/blog/forcing-react'
   id:
     | '__root__'
     | '/'
@@ -187,6 +208,7 @@ export interface FileRouteTypes {
     | '/resume'
     | '/skills'
     | '/blog/$slug'
+    | '/blog/forcing-react'
   fileRoutesById: FileRoutesById
 }
 
@@ -198,6 +220,7 @@ export interface RootRouteChildren {
   ResumeLazyRoute: typeof ResumeLazyRoute
   SkillsLazyRoute: typeof SkillsLazyRoute
   BlogSlugLazyRoute: typeof BlogSlugLazyRoute
+  BlogForcingReactLazyRoute: typeof BlogForcingReactLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -208,6 +231,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResumeLazyRoute: ResumeLazyRoute,
   SkillsLazyRoute: SkillsLazyRoute,
   BlogSlugLazyRoute: BlogSlugLazyRoute,
+  BlogForcingReactLazyRoute: BlogForcingReactLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -226,7 +250,8 @@ export const routeTree = rootRoute
         "/projects",
         "/resume",
         "/skills",
-        "/blog/$slug"
+        "/blog/$slug",
+        "/blog/forcing-react"
       ]
     },
     "/": {
@@ -249,6 +274,9 @@ export const routeTree = rootRoute
     },
     "/blog/$slug": {
       "filePath": "blog/$slug.lazy.tsx"
+    },
+    "/blog/forcing-react": {
+      "filePath": "blog/forcing-react.lazy.tsx"
     }
   }
 }

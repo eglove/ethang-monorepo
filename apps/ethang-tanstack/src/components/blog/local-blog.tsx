@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from "react";
 
+import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
@@ -28,12 +29,10 @@ export const LocalBlog = ({
         isLoading={blogQuery.isLoading}
       >
         {!isNil(blogQuery.data) && (
-          <article className="text-foreground">
-            <div className="flex justify-between">
-              <h1 className="text-foreground">
-                {blogQuery.data.title}
-              </h1>
-            </div>
+          <article>
+            <TypographyH1>
+              {blogQuery.data.title}
+            </TypographyH1>
             {children}
           </article>
         )}
