@@ -29,7 +29,7 @@ export const LocalBlog = ({
         isLoading={blogQuery.isLoading}
       >
         {!isNil(blogQuery.data) && (
-          <article>
+          <article className="max-w-prose">
             <TypographyH1>
               {blogQuery.data.title}
             </TypographyH1>

@@ -20,7 +20,7 @@ const Courses = () => {
   const query = useQuery(convexQuery(api.courses.getCourses, {}));
 
   return (
-    <MainLayout>
+    <MainLayout classNames={{ main: "max-w-prose" }}>
       <ContentHandler
         isEmpty={() => {
           return isEmpty(query.data);
