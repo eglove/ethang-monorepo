@@ -1,4 +1,5 @@
 import { ComputeEngine } from "@cortex-js/compute-engine";
+import concat from "lodash/concat.js";
 import find from "lodash/find.js";
 import forEach from "lodash/forEach";
 import isNil from "lodash/isNil";
@@ -48,6 +49,7 @@ export const getExperience = query({
   handler: async (context) => {
     const jobs = await getAllJobs(context);
 
+    const engine = new ComputeEngine();
     const skills = new Map<string, string>();
     const years: number[] = [];
 
@@ -59,28 +61,16 @@ export const getExperience = query({
       const diff = endDate.diff(startDate, "years").years;
       years.push(diff);
 
-      forEach(job.technologiesUsed, (tech) => {
-        if (skills.has(tech)) {
-          const engine = new ComputeEngine();
-          const expression = engine.box(["Add", skills.get(tech) ?? 0, diff]);
-          skills.set(tech, String(expression.value));
-        } else {
-          skills.set(tech, String(diff));
-        }
-      });
-
-      forEach(job.methodologiesUsed, (item) => {
+      for (const item of concat(job.technologiesUsed, job.methodologiesUsed)) {
         if (skills.has(item)) {
-          const engine = new ComputeEngine();
           const expression = engine.box(["Add", skills.get(item) ?? 0, diff]);
           skills.set(item, String(expression.value));
         } else {
           skills.set(item, String(diff));
         }
-      });
+      }
     });
 
-    const engine = new ComputeEngine();
     const max = String(engine.box(["Add", ...years]).value);
 
     const values = map([...skills], ([name, experience]) => {
