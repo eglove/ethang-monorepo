@@ -6,6 +6,8 @@ import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import get from "lodash/get.js";
+import isEmpty from "lodash/isEmpty.js";
 
 import { api } from "../../convex/_generated/api";
 import { MainLayout } from "../components/layouts/main-layout";
@@ -21,6 +23,9 @@ const RouteComponent = () => {
         Certifications
       </TypographyH1>
       <ContentHandler
+        isEmpty={() => {
+          return isEmpty(certQuery.data);
+        }}
         error={certQuery.error}
         isError={certQuery.isError}
         isLoading={certQuery.isLoading}
@@ -53,7 +58,7 @@ const RouteComponent = () => {
             header: "Details",
             id: "details",
           }]}
-          data={certQuery.data ?? []}
+          data={get(certQuery, ["data"], [])}
         />
       </ContentHandler>
       <LearningProfileLinks />
