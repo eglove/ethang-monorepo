@@ -39,6 +39,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "convex": "^1.17.3",
+    "disqus-react": "^1.1.5",
     "framer-motion": "^11.12.0",
     "hyphenation.en-us": "^0.2.1",
     "idb-keyval": "^6.2.1",
