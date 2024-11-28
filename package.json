@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "all": "pnpm deps && pnpm test && pnpm lint && pnpm build",
+    "all": "pnpm i && pnpm deps && pnpm test && pnpm lint && pnpm build",
     "deps": "pnpm up -r -i --latest",
     "lint": "pnpm -r lint",
     "build": "pnpm -r build",
