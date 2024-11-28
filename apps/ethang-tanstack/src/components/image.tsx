@@ -8,7 +8,7 @@ type ImageProperties = {
 
 export const Image = ({
   alt, className, src,
-}: ImageProperties) => {
+}: Readonly<ImageProperties>) => {
   return (
     <img
       alt={alt}
