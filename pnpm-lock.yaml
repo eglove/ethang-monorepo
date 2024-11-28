@@ -84,11 +84,11 @@ importers:
         specifier: ^5.61.5
         version: 5.61.5(@tanstack/react-query@5.61.5(react@18.3.1))(react@18.3.1)
       '@tanstack/react-router':
-        specifier: ^1.84.0
-        version: 1.84.0(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.84.2
+        version: 1.84.2(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/router-devtools':
-        specifier: ^1.84.0
-        version: 1.84.0(@tanstack/react-router@1.84.0(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.84.2
+        version: 1.84.2(@tanstack/react-router@1.84.2(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/zod-form-adapter':
         specifier: ^0.37.1
         version: 0.37.1(zod@3.23.8)
@@ -220,14 +220,14 @@ importers:
         specifier: ^5.61.5
         version: 5.61.5(@tanstack/react-query@5.61.5(react@18.3.1))(react@18.3.1)
       '@tanstack/react-router':
-        specifier: ^1.84.0
-        version: 1.84.0(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.84.2
+        version: 1.84.2(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-table':
         specifier: ^8.20.5
         version: 8.20.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/router-devtools':
-        specifier: ^1.84.0
-        version: 1.84.0(@tanstack/react-router@1.84.0(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.84.2
+        version: 1.84.2(@tanstack/react-router@1.84.2(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -350,8 +350,8 @@ importers:
         specifier: ^2.2.11
         version: 2.2.11(tailwindcss@3.4.15)
       '@portabletext/editor':
-        specifier: ^1.12.0
-        version: 1.12.0(@sanity/block-tools@3.65.1(debug@4.3.7))(@sanity/schema@3.65.1(debug@4.3.7))(@sanity/types@3.65.1(debug@4.3.7))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: ^1.12.2
+        version: 1.12.2(@sanity/block-tools@3.65.1)(@sanity/schema@3.65.1)(@sanity/types@3.65.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@tanstack/query-async-storage-persister':
         specifier: ^5.61.5
         version: 5.61.5
@@ -368,11 +368,11 @@ importers:
         specifier: ^5.61.5
         version: 5.61.5(@tanstack/react-query@5.61.5(react@18.3.1))(react@18.3.1)
       '@tanstack/react-router':
-        specifier: ^1.84.0
-        version: 1.84.0(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.84.2
+        version: 1.84.2(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/router-devtools':
-        specifier: ^1.84.0
-        version: 1.84.0(@tanstack/react-router@1.84.0(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.84.2
+        version: 1.84.2(@tanstack/react-router@1.84.2(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex:
         specifier: ^1.17.3
         version: 1.17.3(@clerk/clerk-react@5.17.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -571,11 +571,11 @@ importers:
         specifier: ^5.61.5
         version: 5.61.5(@tanstack/react-query@5.61.5(react@18.3.1))(react@18.3.1)
       '@tanstack/react-router':
-        specifier: ^1.84.0
-        version: 1.84.0(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.84.2
+        version: 1.84.2(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/router-devtools':
-        specifier: ^1.84.0
-        version: 1.84.0(@tanstack/react-router@1.84.0(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.84.2
+        version: 1.84.2(@tanstack/react-router@1.84.2(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       calendar-link:
         specifier: ^2.7.0
         version: 2.7.0
@@ -3759,6 +3759,17 @@ packages:
       rxjs: ^7.8.1
       styled-components: ^6.1.13
 
+  '@portabletext/editor@1.12.2':
+    resolution: {integrity: sha512-PVZu3LOCMvwBXvhavs6TYfOckk5MX+tZpf3PXmuN/gUIdk7I6JRaojRpNFR/s++ZyJ/PfaXOR8QO+CQwvQNqUw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@sanity/block-tools': ^3.65.1
+      '@sanity/schema': ^3.65.1
+      '@sanity/types': ^3.65.1
+      react: ^16.9 || ^17 || ^18
+      rxjs: ^7.8.1
+      styled-components: ^6.1.13
+
   '@portabletext/patches@1.1.0':
     resolution: {integrity: sha512-2qn4WaRc23m5qRwclT3sAyuHwTyjxCb4Lg0BQyhp7CABd83HtnPPYoP6hycREs6HRdWA48H3sU5gqUVPoxJxdg==}
 
@@ -5398,8 +5409,8 @@ packages:
     peerDependencies:
       react: ^18 || ^19
 
-  '@tanstack/react-router@1.84.0':
-    resolution: {integrity: sha512-JJ6NhktXQHF1oWBSZwPHwq7eRZJGqEbWhtar/Mw1JDwZcNrodZ6mgFSeL07jRax89/K3YAKHPzdVwIuSsllXeg==}
+  '@tanstack/react-router@1.84.2':
+    resolution: {integrity: sha512-wBeeEXe9PZenSU2kdIhpOgXfELrSN52L6MnSqr8m8ZQby+tQMt9DFaA/0wZoxOV8spk2qjFmxjwRc3+/H+bnQw==}
     engines: {node: '>=12'}
     peerDependencies:
       '@tanstack/router-generator': 1.83.1
@@ -5433,11 +5444,11 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
-  '@tanstack/router-devtools@1.84.0':
-    resolution: {integrity: sha512-XCBT1MJNZ7k1h2+E+9Hwg4h21gahYJf92PZZU4JNhKKl3JSrFrIm+ItP5p7dP1hk6LE5eIB1DTDIZifT+meS5w==}
+  '@tanstack/router-devtools@1.84.2':
+    resolution: {integrity: sha512-XVeSb+NJebvz7aC0qgxcO2QMA/TwlebzAEf3SD5vd3PM1XiRtJ0LVxCCedU5Osa3A6ffYFsg7DECD57FT70cTA==}
     engines: {node: '>=12'}
     peerDependencies:
-      '@tanstack/react-router': ^1.84.0
+      '@tanstack/react-router': ^1.84.2
       react: '>=18'
       react-dom: '>=18'
 
@@ -15239,6 +15250,32 @@ snapshots:
       - react-dom
       - supports-color
 
+  '@portabletext/editor@1.12.2(@sanity/block-tools@3.65.1)(@sanity/schema@3.65.1)(@sanity/types@3.65.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+    dependencies:
+      '@portabletext/patches': 1.1.0
+      '@sanity/block-tools': 3.65.1(debug@4.3.7)
+      '@sanity/schema': 3.65.1(debug@4.3.7)
+      '@sanity/types': 3.65.1(debug@4.3.7)
+      '@xstate/react': 5.0.0(@types/react@18.3.12)(react@18.3.1)(xstate@5.19.0)
+      debug: 4.3.7
+      get-random-values-esm: 1.0.2
+      is-hotkey-esm: 1.0.0
+      lodash: 4.17.21
+      lodash.startcase: 4.4.0
+      react: 18.3.1
+      react-compiler-runtime: 19.0.0-beta-df7b47d-20241124(react@18.3.1)
+      rxjs: 7.8.1
+      slate: 0.110.2
+      slate-dom: 0.111.0(slate@0.110.2)
+      slate-react: 0.111.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.111.0(slate@0.110.2))(slate@0.110.2)
+      styled-components: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      use-effect-event: 1.0.2(react@18.3.1)
+      xstate: 5.19.0
+    transitivePeerDependencies:
+      - '@types/react'
+      - react-dom
+      - supports-color
+
   '@portabletext/patches@1.1.0':
     dependencies:
       '@sanity/diff-match-patch': 3.1.1
@@ -17520,7 +17557,7 @@ snapshots:
       '@tanstack/query-core': 5.61.5
       react: 18.3.1
 
-  '@tanstack/react-router@1.84.0(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/react-router@1.84.2(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/history': 1.81.9
       '@tanstack/react-store': 0.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -17557,9 +17594,9 @@ snapshots:
       '@tanstack/virtual-core': 3.0.0-beta.54
       react: 18.3.1
 
-  '@tanstack/router-devtools@1.84.0(@tanstack/react-router@1.84.0(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/router-devtools@1.84.2(@tanstack/react-router@1.84.2(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@tanstack/react-router': 1.84.0(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-router': 1.84.2(@tanstack/router-generator@1.83.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       clsx: 2.1.1
       goober: 2.1.16(csstype@3.1.3)
       react: 18.3.1
