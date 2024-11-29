@@ -72,7 +72,7 @@ const RouteComponent = () => {
       <TypographyP>
         The first thing I see here is an undocumented argument, guard. Digging
         into this deeper, this is just a simple guard to make sure chunk is not
-        called in way similar to other methods. We can ignore it until another
+        called in a way similar to other methods. We can ignore it until another
         day.
       </TypographyP>
       <TypographyP>
@@ -108,7 +108,7 @@ const RouteComponent = () => {
         </TypographyInlineCode>
         . But in lodash, it will simply return an empty array. Unexpectedly,
         while incorrect usage is not handled, the negative size case does return
-        an empty array, but only due to it&apos;s splice usage.  Which makes
+        an empty array, but only due to its splice usage.  Which makes
         this version unreliable.
       </TypographyP>
       <TypographyP>
