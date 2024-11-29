@@ -10,6 +10,7 @@ type ErrorAndLoadingProperties = PropsWithChildren<{
   isEmpty?: () => boolean;
   isError: boolean;
   isLoading: boolean;
+  skipError?: boolean;
 }>;
 
 export const ContentHandler = ({
@@ -19,12 +20,13 @@ export const ContentHandler = ({
   isEmpty,
   isError,
   isLoading,
+  skipError,
 }: Readonly<ErrorAndLoadingProperties>) => {
   if (isLoading) {
     return <LoaderCircle className="mx-auto my-4 w-full animate-spin" />;
   }
 
-  if (isError) {
+  if (isError && true !== skipError) {
     return (
       <TypographyP className="text-center">
         {error?.message ?? "Unknown Error"}

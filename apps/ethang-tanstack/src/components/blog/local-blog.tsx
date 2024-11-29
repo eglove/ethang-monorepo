@@ -27,18 +27,19 @@ export const LocalBlog = ({
   return (
     <MainLayout>
       <ContentHandler
+        skipError
         error={blogQuery.error}
         isError={blogQuery.isError}
         isLoading={blogQuery.isLoading}
       >
-        {!isNil(blogQuery.data) && (
-          <article className="max-w-prose">
+        <article className="max-w-prose">
+          {!isNil(blogQuery.data) && (
             <TypographyH1>
               {blogQuery.data.title}
             </TypographyH1>
-            {children}
-          </article>
-        )}
+          )}
+          {children}
+        </article>
       </ContentHandler>
     </MainLayout>
   );
