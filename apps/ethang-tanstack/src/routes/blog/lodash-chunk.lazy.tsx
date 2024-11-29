@@ -102,13 +102,14 @@ const RouteComponent = () => {
         We can very quickly notice the difference in error and misuse handling.
       </TypographyP>
       <TypographyP>
-        In the naive version will throw and if uncaught, error the page:
+        The naive version will throw and, if uncaught, crash the page:
         <TypographyInlineCode>
           chunk(null)
         </TypographyInlineCode>
         . But in lodash, it will simply return an empty array. Unexpectedly,
         while incorrect usage is not handled, the negative size case does return
-        an empty array, but only due to it&apos;s splice usage.
+        an empty array, but only due to it&apos;s splice usage.  Which makes
+        this version unreliable.
       </TypographyP>
       <TypographyP>
         I would even say the naive version provided by You Might Not Need Lodash
