@@ -29,13 +29,13 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.4",
-    "@tanstack/query-async-storage-persister": "^5.61.5",
-    "@tanstack/react-query": "^5.61.5",
-    "@tanstack/react-query-devtools": "^5.61.5",
-    "@tanstack/react-query-persist-client": "^5.61.5",
-    "@tanstack/react-router": "^1.84.4",
+    "@tanstack/query-async-storage-persister": "^5.62.0",
+    "@tanstack/react-query": "^5.62.0",
+    "@tanstack/react-query-devtools": "^5.62.0",
+    "@tanstack/react-query-persist-client": "^5.62.0",
+    "@tanstack/react-router": "^1.85.0",
     "@tanstack/react-table": "^8.20.5",
-    "@tanstack/router-devtools": "^1.84.4",
+    "@tanstack/router-devtools": "^1.85.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "convex": "^1.17.3",
@@ -70,6 +70,6 @@
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.14",
     "vite": "^6.0.1",
-    "vite-plugin-pwa": "^0.21.0"
+    "vite-plugin-pwa": "^0.21.1"
   }
 }
