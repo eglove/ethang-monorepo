@@ -98,6 +98,7 @@ export default tseslint.config(
               "krausest",
               "Signalis",
               "Plass",
+              "Iteree",
             ],
           },
         },

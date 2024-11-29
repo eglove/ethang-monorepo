@@ -17,7 +17,7 @@ export const MainLayout = ({
     <SidebarProvider>
       <NavigationSidebar />
       <SidebarTrigger className="absolute left-0 top-0 md:hidden" />
-      <main className={cn("mx-4 my-6", classNames?.main)}>
+      <main className={cn("mx-4 my-6 pb-12", classNames?.main)}>
         {children}
       </main>
     </SidebarProvider>

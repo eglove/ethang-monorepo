@@ -22,6 +22,7 @@ const ProjectsLazyImport = createFileRoute('/projects')()
 const CoursesLazyImport = createFileRoute('/courses')()
 const CertificationsLazyImport = createFileRoute('/certifications')()
 const IndexLazyImport = createFileRoute('/')()
+const BlogLodashChunkLazyImport = createFileRoute('/blog/lodash-chunk')()
 const BlogForcingReactLazyImport = createFileRoute('/blog/forcing-react')()
 const BlogSlugLazyImport = createFileRoute('/blog/$slug')()
 
@@ -64,6 +65,14 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const BlogLodashChunkLazyRoute = BlogLodashChunkLazyImport.update({
+  id: '/blog/lodash-chunk',
+  path: '/blog/lodash-chunk',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/blog/lodash-chunk.lazy').then((d) => d.Route),
+)
 
 const BlogForcingReactLazyRoute = BlogForcingReactLazyImport.update({
   id: '/blog/forcing-react',
@@ -139,6 +148,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogForcingReactLazyImport
       parentRoute: typeof rootRoute
     }
+    '/blog/lodash-chunk': {
+      id: '/blog/lodash-chunk'
+      path: '/blog/lodash-chunk'
+      fullPath: '/blog/lodash-chunk'
+      preLoaderRoute: typeof BlogLodashChunkLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -153,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/skills': typeof SkillsLazyRoute
   '/blog/$slug': typeof BlogSlugLazyRoute
   '/blog/forcing-react': typeof BlogForcingReactLazyRoute
+  '/blog/lodash-chunk': typeof BlogLodashChunkLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -164,6 +181,7 @@ export interface FileRoutesByTo {
   '/skills': typeof SkillsLazyRoute
   '/blog/$slug': typeof BlogSlugLazyRoute
   '/blog/forcing-react': typeof BlogForcingReactLazyRoute
+  '/blog/lodash-chunk': typeof BlogLodashChunkLazyRoute
 }
 
 export interface FileRoutesById {
@@ -176,6 +194,7 @@ export interface FileRoutesById {
   '/skills': typeof SkillsLazyRoute
   '/blog/$slug': typeof BlogSlugLazyRoute
   '/blog/forcing-react': typeof BlogForcingReactLazyRoute
+  '/blog/lodash-chunk': typeof BlogLodashChunkLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -189,6 +208,7 @@ export interface FileRouteTypes {
     | '/skills'
     | '/blog/$slug'
     | '/blog/forcing-react'
+    | '/blog/lodash-chunk'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -199,6 +219,7 @@ export interface FileRouteTypes {
     | '/skills'
     | '/blog/$slug'
     | '/blog/forcing-react'
+    | '/blog/lodash-chunk'
   id:
     | '__root__'
     | '/'
@@ -209,6 +230,7 @@ export interface FileRouteTypes {
     | '/skills'
     | '/blog/$slug'
     | '/blog/forcing-react'
+    | '/blog/lodash-chunk'
   fileRoutesById: FileRoutesById
 }
 
@@ -221,6 +243,7 @@ export interface RootRouteChildren {
   SkillsLazyRoute: typeof SkillsLazyRoute
   BlogSlugLazyRoute: typeof BlogSlugLazyRoute
   BlogForcingReactLazyRoute: typeof BlogForcingReactLazyRoute
+  BlogLodashChunkLazyRoute: typeof BlogLodashChunkLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -232,6 +255,7 @@ const rootRouteChildren: RootRouteChildren = {
   SkillsLazyRoute: SkillsLazyRoute,
   BlogSlugLazyRoute: BlogSlugLazyRoute,
   BlogForcingReactLazyRoute: BlogForcingReactLazyRoute,
+  BlogLodashChunkLazyRoute: BlogLodashChunkLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -251,7 +275,8 @@ export const routeTree = rootRoute
         "/resume",
         "/skills",
         "/blog/$slug",
-        "/blog/forcing-react"
+        "/blog/forcing-react",
+        "/blog/lodash-chunk"
       ]
     },
     "/": {
@@ -277,6 +302,9 @@ export const routeTree = rootRoute
     },
     "/blog/forcing-react": {
       "filePath": "blog/forcing-react.lazy.tsx"
+    },
+    "/blog/lodash-chunk": {
+      "filePath": "blog/lodash-chunk.lazy.tsx"
     }
   }
 }

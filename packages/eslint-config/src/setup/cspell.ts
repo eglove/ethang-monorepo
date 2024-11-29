@@ -56,6 +56,7 @@ const customRules: CustomRules = [
             "krausest",
             "Signalis",
             "Plass",
+            "Iteree",
           ],
         },
       },
