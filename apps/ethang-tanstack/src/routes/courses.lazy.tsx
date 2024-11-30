@@ -170,10 +170,10 @@ const Courses = () => {
               />
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value={String(get(query, ["data", 5, "_id"], "5"))}>
+          <AccordionItem value={String(get(query, ["data", 3, "_id"], "5"))}>
             <AccordionTrigger>
               <TypographyH3>
-                {get(query, ["data", 5, "title"])}
+                {get(query, ["data", 3, "title"])}
               </TypographyH3>
             </AccordionTrigger>
             <AccordionContent>
@@ -188,7 +188,7 @@ const Courses = () => {
                   Zero to Mastery
                 </TypographyLink>
               </TypographyP>
-              <TypographyList items={map(get(query, ["data", 5, "courses"], []), (course) => {
+              <TypographyList items={map(get(query, ["data", 3, "courses"], []), (course) => {
                 return (
                   <TypographyLink
                     href={course.url}
@@ -201,10 +201,10 @@ const Courses = () => {
               />
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value={String(get(query, ["data", 3, "_id"], "3"))}>
+          <AccordionItem value={String(get(query, ["data", 4, "_id"], "3"))}>
             <AccordionTrigger>
               <TypographyH3>
-                {get(query, ["data", 3, "title"])}
+                {get(query, ["data", 4, "title"])}
               </TypographyH3>
             </AccordionTrigger>
             <AccordionContent>
@@ -220,7 +220,7 @@ const Courses = () => {
                 The following courses are entirely optional but recommended due
                 to a quality unmatched. But the pricing may be too much.
               </TypographyP>
-              <TypographyList items={map(get(query, ["data", 3, "courses"], []), (course) => {
+              <TypographyList items={map(get(query, ["data", 4, "courses"], []), (course) => {
                 return (
                   <TypographyLink
                     href={course.url}
@@ -233,10 +233,10 @@ const Courses = () => {
               />
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value={String(get(query, ["data", 4, "_id"], "4"))}>
+          <AccordionItem value={String(get(query, ["data", 5, "_id"], "4"))}>
             <AccordionTrigger>
               <TypographyH3>
-                {get(query, ["data", 4, "title"])}
+                {get(query, ["data", 5, "title"])}
               </TypographyH3>
             </AccordionTrigger>
             <AccordionContent>
@@ -245,7 +245,7 @@ const Courses = () => {
                 books in the field. Here are my recommended publishers and
                 authors:
               </TypographyP>
-              <TypographyList items={map(get(query, ["data", 4, "courses"], []), (course) => {
+              <TypographyList items={map(get(query, ["data", 5, "courses"], []), (course) => {
                 return (
                   <TypographyLink
                     href={course.url}
