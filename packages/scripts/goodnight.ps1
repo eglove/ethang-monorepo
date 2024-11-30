@@ -1,2 +1,2 @@
-./update.ps1
+update
 Stop-Computer
