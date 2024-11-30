@@ -23,6 +23,8 @@ export default defineConfig({
       },
       registerType: "autoUpdate",
       workbox: {
+        cleanupOutdatedCaches: true,
+        navigationPreload: true,
         runtimeCaching: [
           {
             handler: "StaleWhileRevalidate",
