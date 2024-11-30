@@ -188,16 +188,18 @@ const Courses = () => {
                   Zero to Mastery
                 </TypographyLink>
               </TypographyP>
-              <TypographyList items={map(get(query, ["data", 3, "courses"], []), (course) => {
-                return (
-                  <TypographyLink
-                    href={course.url}
-                    key={course.url}
-                  >
-                    {course.name}
-                  </TypographyLink>
-                );
-              })}
+              <TypographyList
+                items={map(get(query, ["data", 3, "courses"], []), (course) => {
+                  return (
+                    <TypographyLink
+                      href={course.url}
+                      key={course.url}
+                    >
+                      {course.name}
+                    </TypographyLink>
+                  );
+                })}
+                className="list-decimal"
               />
             </AccordionContent>
           </AccordionItem>
