@@ -46,6 +46,17 @@ export default defineConfig({
             },
             urlPattern: /\.html$/u,
           },
+          {
+            handler: "CacheFirst",
+            options: {
+              cacheName: "image-cache",
+              expiration: {
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+                maxEntries: 60,
+              },
+            },
+            urlPattern: /\.(?:png|jpg|jpeg|gif|svg)/u,
+          },
         ],
       },
     }),
