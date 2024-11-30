@@ -45,7 +45,7 @@ const Courses = () => {
           signing up for Pro accounts instead of buying one-time courses. So in
           the beginner section, check out Udemy Pro. Keep going with Udemy Pro
           for Academind's courses. Once you're through those, cancel it, move on
-          to AlgoExpert, and so on.
+          to the next platform, and so on.
         </TypographyP>
         <Accordion
           collapsible
