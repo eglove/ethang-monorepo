@@ -170,6 +170,37 @@ const Courses = () => {
               />
             </AccordionContent>
           </AccordionItem>
+          <AccordionItem value={String(get(query, ["data", 5, "_id"], "5"))}>
+            <AccordionTrigger>
+              <TypographyH3>
+                {get(query, ["data", 5, "title"])}
+              </TypographyH3>
+            </AccordionTrigger>
+            <AccordionContent>
+              <TypographyP>
+                Through sheer quantity, Zero to Mastery is a great resource to
+                keep your learning going. The quality of instructor here starts
+                to degrade compared to previous courses, the content is very
+                well put together.
+              </TypographyP>
+              <TypographyP>
+                <TypographyLink href="https://zerotomastery.io/">
+                  Zero to Mastery
+                </TypographyLink>
+              </TypographyP>
+              <TypographyList items={map(get(query, ["data", 5, "courses"], []), (course) => {
+                return (
+                  <TypographyLink
+                    href={course.url}
+                    key={course.url}
+                  >
+                    {course.name}
+                  </TypographyLink>
+                );
+              })}
+              />
+            </AccordionContent>
+          </AccordionItem>
           <AccordionItem value={String(get(query, ["data", 3, "_id"], "3"))}>
             <AccordionTrigger>
               <TypographyH3>
