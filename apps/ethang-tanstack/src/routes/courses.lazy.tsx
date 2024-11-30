@@ -105,8 +105,9 @@ const Courses = () => {
               </TypographyP>
               <TypographyP>
                 Academind has its own paid subscription, but most, if not all,
-                the courses are also available on Udemy. I recommend these
-                courses at a minimum, but take as many as you like:
+                the courses are also available on Udemy. I recommend going
+                through their learning paths, but take as many  courses as you
+                like:
               </TypographyP>
               <TypographyP>
                 <TypographyLink href="https://academind.com/">
