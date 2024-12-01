@@ -7,7 +7,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Navigate, useNavigate } from "@tanstack/react-router";
-import { useConvexAuth, useMutation as useConvexMutation } from "convex/react";
+import { useMutation as useConvexMutation } from "convex/react";
 import isError from "lodash/isError";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
