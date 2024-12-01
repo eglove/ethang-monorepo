@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { type ComponentProps, forwardRef } from "react";
 
 const Input = forwardRef<
-  Readonly<HTMLInputElement>,
+  HTMLInputElement,
   Readonly<ComponentProps<"input">>
 >(
 

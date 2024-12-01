@@ -34,4 +34,8 @@ export default tseslint.config(
             "sonar/no-unstable-nested-components": "off",
         },
     },
+    {
+        "files": ["packages/react-components/components/ui"],
+        "rules": {"react/prefer-read-only-props": "off"}
+    }
 );

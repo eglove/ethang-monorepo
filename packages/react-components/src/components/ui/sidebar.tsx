@@ -774,7 +774,6 @@ SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton";
 const SidebarMenuSub = forwardRef<
   HTMLUListElement,
   Readonly<ComponentProps<"ul">>
-
 >(({ className, ...properties }, reference) => {
   return (
     <ul

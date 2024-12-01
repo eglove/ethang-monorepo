@@ -41,8 +41,7 @@ DropdownMenuSubTrigger.displayName = SubTrigger.displayName;
 
 const DropdownMenuSubContent = forwardRef<
   ElementRef<typeof SubContent>,
-  ComponentPropsWithoutRef<typeof SubContent>
-
+  Readonly<ComponentPropsWithoutRef<typeof SubContent>>
 >(({ className, ...properties }, reference) => {
   return (
     <SubContent
@@ -59,8 +58,7 @@ DropdownMenuSubContent.displayName = SubContent.displayName;
 
 const DropdownMenuContent = forwardRef<
   ElementRef<typeof Content>,
-  ComponentPropsWithoutRef<typeof Content>
-
+  Readonly<ComponentPropsWithoutRef<typeof Content>>
 >(({ className, sideOffset = 4, ...properties }, reference) => {
   return (
     <Portal>
@@ -102,8 +100,7 @@ DropdownMenuItem.displayName = Item.displayName;
 
 const DropdownMenuCheckboxItem = forwardRef<
   ElementRef<typeof CheckboxItem>,
-  ComponentPropsWithoutRef<typeof CheckboxItem>
-
+  Readonly<ComponentPropsWithoutRef<typeof CheckboxItem>>
 >(({ checked, children, className, ...properties }, reference) => {
   return (
     <CheckboxItem
@@ -129,8 +126,7 @@ DropdownMenuCheckboxItem.displayName =
 
 const DropdownMenuRadioItem = forwardRef<
   ElementRef<typeof RadioItem>,
-  ComponentPropsWithoutRef<typeof RadioItem>
-
+  Readonly<ComponentPropsWithoutRef<typeof RadioItem>>
 >(({ children, className, ...properties }, reference) => {
   return (
     <RadioItem
@@ -175,8 +171,7 @@ DropdownMenuLabel.displayName = Label.displayName;
 
 const DropdownMenuSeparator = forwardRef<
   ElementRef<typeof Separator>,
-  ComponentPropsWithoutRef<typeof Separator>
-
+  Readonly<ComponentPropsWithoutRef<typeof Separator>>
 >(({ className, ...properties }, reference) => {
   return (
     <Separator
