@@ -9,16 +9,15 @@ const config: TestRunnerConfig = {
         // Get the entire context of a story, including parameters, args, argTypes, etc.
         const storyContext = await getStoryContext(page, context);
 
-        if (storyContext.parameters?.a11y?.disable) {
-            return;
+        if (storyContext.parameters?.a11y?.disable !== true) {
+            await checkA11y(page, '#storybook-root', {
+                verbose: false,
+                detailedReport: true,
+                detailedReportOptions: {
+                    html: true,
+                },
+            });
         }
-        await checkA11y(page, '#storybook-root', {
-            verbose: false,
-            detailedReport: true,
-            detailedReportOptions: {
-                html: true,
-            },
-        });
     },
 };
 

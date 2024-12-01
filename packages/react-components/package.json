@@ -8,8 +8,9 @@
     "preview": "storybook start",
     "dev": "storybook dev -p 6006 --no-open",
     "build": "storybook build",
-    "test-storybook": "test-storybook",
-    "test-storybook:watch": "test-storybook --watch"
+    "test-storybook": "test-storybook --browsers chromium, firefox, webkit",
+    "test-storybook:watch": "test-storybook --watch",
+    "test": "pnpx concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"pnpm dev\" \"pnpx wait-on tcp:127.0.0.1:6006 && pnpm test-storybook\""
   },
   "engines": {
     "node": ">=22"
