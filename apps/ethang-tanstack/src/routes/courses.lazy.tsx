@@ -1,11 +1,11 @@
 import { ContentHandler } from "@/components/common/content-handler.tsx";
-import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
-import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
-import { TypographyLink } from "@/components/typography/typography-link.tsx";
-import { TypographyList } from "@/components/typography/typography-list.tsx";
-import { TypographyP } from "@/components/typography/typography-p.tsx";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion.tsx";
 import { convexQuery } from "@convex-dev/react-query";
+import { TypographyH1 } from "@ethang/react-components/src/components/typography/typography-h1.tsx";
+import { TypographyH3 } from "@ethang/react-components/src/components/typography/typography-h3.tsx";
+import { TypographyLink } from "@ethang/react-components/src/components/typography/typography-link.tsx";
+import { TypographyList } from "@ethang/react-components/src/components/typography/typography-list.tsx";
+import { TypographyP } from "@ethang/react-components/src/components/typography/typography-p.tsx";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@ethang/react-components/src/components/ui/accordion.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import get from "lodash/get.js";

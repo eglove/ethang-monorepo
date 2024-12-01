@@ -1,7 +1,7 @@
 import { ContentHandler } from "@/components/common/content-handler.tsx";
-import { TypographyH2 } from "@/components/typography/typography-h2.tsx";
-import { TypographyLink } from "@/components/typography/typography-link.tsx";
 import { convexQuery } from "@convex-dev/react-query";
+import { TypographyH2 } from "@ethang/react-components/src/components/typography/typography-h2.tsx";
+import { TypographyLink } from "@ethang/react-components/src/components/typography/typography-link.tsx";
 import { useQuery } from "@tanstack/react-query";
 import map from "lodash/map.js";
 

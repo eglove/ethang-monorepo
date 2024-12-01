@@ -6,7 +6,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "../../node_modules/@nextui-org/**/*.{js,ts,jsx,tsx}",
+    "../../packages/react-components/src/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: ["class"],
   plugins: [animate],

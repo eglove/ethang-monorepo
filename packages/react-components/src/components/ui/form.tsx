@@ -1,6 +1,5 @@
 import type { Root } from "@radix-ui/react-label";
 
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import isNil from "lodash/isNil";
@@ -18,6 +17,8 @@ import {
   FormProvider,
   useFormContext,
 } from "react-hook-form";
+
+import { Label } from "./label";
 
 const Form = FormProvider;
 

@@ -1,6 +1,6 @@
-import { TypographyH2 } from "@/components/typography/typography-h2.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger } from "@/components/ui/dialog.tsx";
+import { TypographyH2 } from "@ethang/react-components/src/components/typography/typography-h2.tsx";
+import { Button } from "@ethang/react-components/src/components/ui/button.tsx";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger } from "@ethang/react-components/src/components/ui/dialog.tsx";
 import { EyeIcon } from "lucide-react";
 
 import type { api } from "../../../convex/_generated/api";

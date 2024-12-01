@@ -1,6 +1,6 @@
 import { UpsertCourseForm } from "@/components/admin/upsert-course-form.tsx";
 import { MainLayout } from "@/components/layouts/main-layout.tsx";
-import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
+import { TypographyH1 } from "@ethang/react-components/src/components/typography/typography-h1.tsx";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 const RouteComponent = () => {

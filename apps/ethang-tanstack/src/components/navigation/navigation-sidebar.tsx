@@ -1,6 +1,10 @@
-import { ModeToggle } from "@/components/mode-toggle.tsx";
-import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
-import { TypographyLink } from "@/components/typography/typography-link.tsx";
+import {
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
+import { ModeToggle } from "@ethang/react-components/src/components/theme/mode-toggle.tsx";
+import { TypographyH1 } from "@ethang/react-components/src/components/typography/typography-h1.tsx";
+import { TypographyLink } from "@ethang/react-components/src/components/typography/typography-link.tsx";
 import {
   Sidebar,
   SidebarContent,
@@ -12,11 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
-} from "@/components/ui/sidebar.tsx";
-import {
-  SignInButton,
-  UserButton,
-} from "@clerk/clerk-react";
+} from "@ethang/react-components/src/components/ui/sidebar.tsx";
 import { Authenticated, Unauthenticated } from "convex/react";
 import map from "lodash/map";
 import { CpuIcon, FileUserIcon, HomeIcon, KanbanIcon, SchoolIcon, ShieldCheckIcon } from "lucide-react";

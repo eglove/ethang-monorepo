@@ -2,6 +2,9 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 
 import "../index.css";
+
+import "@ethang/react-components/src/index.css";
+
 import { Providers } from "../components/providers";
 
 const RootComponent = () => {

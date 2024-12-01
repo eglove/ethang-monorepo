@@ -5,8 +5,8 @@ import {
   FormField,
   FormItem,
   FormLabel, FormMessage,
-} from "@/components/ui/form.tsx";
-import { Input } from "@/components/ui/input.tsx";
+} from "../ui/form.tsx";
+import { Input } from "../ui/input.tsx";
 
 type FormInputProperties<T extends FieldValues,> = {
   description?: string;

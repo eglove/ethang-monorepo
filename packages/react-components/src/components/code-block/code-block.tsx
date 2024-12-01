@@ -7,7 +7,7 @@ type CodeProperties = {
   language?: string;
 };
 
-export const Code = ({
+export const CodeBlock = ({
   children,
   className,
   language = "typescript",

@@ -1,10 +1,10 @@
 import { LocalBlog } from "@/components/blog/local-blog.tsx";
-import { Code } from "@/components/common/code.tsx";
+import { CodeBlock } from "@ethang/react-components/src/components/code-block/code-block.tsx";
 import {
   TypographyInlineCode,
-} from "@/components/typography/typography-inline-code.tsx";
-import { TypographyLink } from "@/components/typography/typography-link.tsx";
-import { TypographyP } from "@/components/typography/typography-p.tsx";
+} from "@ethang/react-components/src/components/typography/typography-inline-code.tsx";
+import { TypographyLink } from "@ethang/react-components/src/components/typography/typography-link.tsx";
+import { TypographyP } from "@ethang/react-components/src/components/typography/typography-p.tsx";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 const code1 = `chunk(['a', 'b', 'c', 'd'], 2);
@@ -55,9 +55,9 @@ const RouteComponent = () => {
         {" "}
         we see the following examples:
       </TypographyP>
-      <Code className="mt-6">
+      <CodeBlock className="mt-6">
         {code1}
-      </Code>
+      </CodeBlock>
       <TypographyP>
         Let&apos;s take a look at
         {" "}
@@ -66,9 +66,9 @@ const RouteComponent = () => {
         </TypographyLink>
         .
       </TypographyP>
-      <Code className="mt-6">
+      <CodeBlock className="mt-6">
         {chunkCode}
-      </Code>
+      </CodeBlock>
       <TypographyP>
         The first thing I see here is an undocumented argument, guard. Digging
         into this deeper, this is just a simple guard to make sure chunk is not
@@ -95,9 +95,9 @@ const RouteComponent = () => {
         version looks like this. Which also comes
         with a handy warning.
       </TypographyP>
-      <Code className="mt-5">
+      <CodeBlock className="mt-5">
         {mightNotNeedChunk}
-      </Code>
+      </CodeBlock>
       <TypographyP>
         We can very quickly notice the difference in error and misuse handling.
       </TypographyP>

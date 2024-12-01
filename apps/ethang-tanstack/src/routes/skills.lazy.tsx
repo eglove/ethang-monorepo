@@ -1,7 +1,7 @@
 import { ContentHandler } from "@/components/common/content-handler.tsx";
 import { SkillGauge } from "@/components/common/skill-gauge.tsx";
-import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
 import { convexQuery } from "@convex-dev/react-query";
+import { TypographyH1 } from "@ethang/react-components/src/components/typography/typography-h1.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import get from "lodash/get.js";

@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table.tsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@ethang/react-components/src/components/ui/table.tsx";
 import { type ColumnDef, flexRender, getCoreRowModel, type TableOptions, useReactTable } from "@tanstack/react-table";
 import map from "lodash/map.js";
 import merge from "lodash/merge.js";

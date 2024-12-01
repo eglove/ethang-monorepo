@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from "react";
 
-import { TypographyLink } from "@/components/typography/typography-link.tsx";
+import { TypographyLink } from "@ethang/react-components/src/components/typography/typography-link.tsx";
 
 type ProjectLinkProperties = PropsWithChildren<{
   url: string;

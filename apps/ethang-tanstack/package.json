@@ -23,6 +23,7 @@
     "@clerk/clerk-react": "^5.17.1",
     "@convex-dev/react-query": "0.0.0-alpha.8",
     "@cortex-js/compute-engine": "^0.26.4",
+    "@ethang/react-components": "workspace:^",
     "@ethang/toolbelt": "workspace:^",
     "@hookform/resolvers": "^3.9.1",
     "@legendapp/state": "^3.0.0-beta.17",

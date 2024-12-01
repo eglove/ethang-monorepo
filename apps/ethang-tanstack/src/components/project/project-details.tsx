@@ -1,6 +1,6 @@
-import { TypographyLink } from "@/components/typography/typography-link.tsx";
-import { TypographyP } from "@/components/typography/typography-p.tsx";
-import { Button } from "@/components/ui/button.tsx";
+import { TypographyLink } from "@ethang/react-components/src/components/typography/typography-link.tsx";
+import { TypographyP } from "@ethang/react-components/src/components/typography/typography-p.tsx";
+import { Button } from "@ethang/react-components/src/components/ui/button.tsx";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog.tsx";
+} from "@ethang/react-components/src/components/ui/dialog.tsx";
 import { EyeIcon } from "lucide-react";
 
 import type { api } from "../../../convex/_generated/api";

@@ -1,9 +1,9 @@
 /* eslint-disable react-compiler/react-compiler */
 import type { PropsWithChildren } from "react";
 
-import { ThemeProvider } from "@/components/theme-provider.tsx";
 import { environment } from "@/environment.ts";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
+import { ThemeProvider } from "@ethang/react-components/src/components/theme/theme-provider.tsx";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools/build/modern/production.js";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";

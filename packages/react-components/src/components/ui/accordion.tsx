@@ -7,8 +7,7 @@ const Accordion = Root;
 
 const AccordionItem = forwardRef<
   ElementRef<typeof Item>,
-  ComponentPropsWithoutRef<typeof Item>
-// eslint-disable-next-line react/prefer-read-only-props
+  Readonly<ComponentPropsWithoutRef<typeof Item>>
 >(({ className, ...properties }, reference) => {
   return (
     <Item
@@ -22,8 +21,7 @@ AccordionItem.displayName = "AccordionItem";
 
 const AccordionTrigger = forwardRef<
   ElementRef<typeof Trigger>,
-  ComponentPropsWithoutRef<typeof Trigger>
-// eslint-disable-next-line react/prefer-read-only-props
+  Readonly<ComponentPropsWithoutRef<typeof Trigger>>
 >(({ children, className, ...properties }, reference) => {
   return (
     <Header className="flex">
@@ -45,8 +43,7 @@ AccordionTrigger.displayName = Trigger.displayName;
 
 const AccordionContent = forwardRef<
   ElementRef<typeof Content>,
-  ComponentPropsWithoutRef<typeof Content>
-// eslint-disable-next-line react/prefer-read-only-props
+  Readonly<ComponentPropsWithoutRef<typeof Content>>
 >(({ children, className, ...properties }, reference) => {
   return (
     <Content

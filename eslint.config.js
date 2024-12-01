@@ -8,7 +8,6 @@ export default tseslint.config(
             "**/*/dist",
             "**/*/node_modules",
             "packages/eslint-config/eslint.config.js",
-            'apps/ethang-tanstack/src/components/ui/sidebar.tsx', // TODO move UI components to lib
             "apps/**/*.gen.ts",
             "**/*.d.ts",
             "**/.sanity",

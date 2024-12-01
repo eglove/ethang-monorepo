@@ -1,20 +1,20 @@
-// @ts-expect-error css
 import "reactjs-tiptap-editor/style.css";
 
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form.tsx";
 import RichTextEditor, {
   BaseKit, Blockquote,
   Bold, BulletList, Clear, Code, CodeBlock, Color, Emoji,
   Heading, Highlight, History, Image, Italic, Katex,
   Link, Mermaid, OrderedList, Strike, Table, Underline,
 } from "reactjs-tiptap-editor";
+
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "../ui/form.tsx";
 
 const extensions = [
   BaseKit.configure({
@@ -44,17 +44,17 @@ const extensions = [
   Clear,
 ];
 
-type EditorProperties<T extends FieldValues,> = {
+type FormRichTextProperties<T extends FieldValues,> = {
   fieldName: Path<T>;
   form: UseFormReturn<T>;
   label: string;
 };
 
-export const Editor = <T extends FieldValues,>({
+export const FormRichText = <T extends FieldValues,>({
   fieldName,
   form,
   label,
-}: Readonly<EditorProperties<T>>) => {
+}: Readonly<FormRichTextProperties<T>>) => {
   return (
     <FormField
       render={({ field }) => {

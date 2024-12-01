@@ -1,7 +1,7 @@
-import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
-import { TypographyLink } from "@/components/typography/typography-link.tsx";
-import { TypographyMuted } from "@/components/typography/typography-muted.tsx";
 import { convexQuery } from "@convex-dev/react-query";
+import { TypographyH1 } from "@ethang/react-components/src/components/typography/typography-h1.tsx";
+import { TypographyLink } from "@ethang/react-components/src/components/typography/typography-link.tsx";
+import { TypographyMuted } from "@ethang/react-components/src/components/typography/typography-muted.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import isEmpty from "lodash/isEmpty.js";

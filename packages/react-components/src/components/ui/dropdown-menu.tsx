@@ -42,7 +42,7 @@ DropdownMenuSubTrigger.displayName = SubTrigger.displayName;
 const DropdownMenuSubContent = forwardRef<
   ElementRef<typeof SubContent>,
   ComponentPropsWithoutRef<typeof SubContent>
-// eslint-disable-next-line react/prefer-read-only-props
+
 >(({ className, ...properties }, reference) => {
   return (
     <SubContent
@@ -60,7 +60,7 @@ DropdownMenuSubContent.displayName = SubContent.displayName;
 const DropdownMenuContent = forwardRef<
   ElementRef<typeof Content>,
   ComponentPropsWithoutRef<typeof Content>
-// eslint-disable-next-line react/prefer-read-only-props
+
 >(({ className, sideOffset = 4, ...properties }, reference) => {
   return (
     <Portal>
@@ -103,7 +103,7 @@ DropdownMenuItem.displayName = Item.displayName;
 const DropdownMenuCheckboxItem = forwardRef<
   ElementRef<typeof CheckboxItem>,
   ComponentPropsWithoutRef<typeof CheckboxItem>
-// eslint-disable-next-line react/prefer-read-only-props
+
 >(({ checked, children, className, ...properties }, reference) => {
   return (
     <CheckboxItem
@@ -125,12 +125,12 @@ const DropdownMenuCheckboxItem = forwardRef<
   );
 });
 DropdownMenuCheckboxItem.displayName =
-  CheckboxItem.displayName;
+    CheckboxItem.displayName;
 
 const DropdownMenuRadioItem = forwardRef<
   ElementRef<typeof RadioItem>,
   ComponentPropsWithoutRef<typeof RadioItem>
-// eslint-disable-next-line react/prefer-read-only-props
+
 >(({ children, className, ...properties }, reference) => {
   return (
     <RadioItem
@@ -176,7 +176,7 @@ DropdownMenuLabel.displayName = Label.displayName;
 const DropdownMenuSeparator = forwardRef<
   ElementRef<typeof Separator>,
   ComponentPropsWithoutRef<typeof Separator>
-// eslint-disable-next-line react/prefer-read-only-props
+
 >(({ className, ...properties }, reference) => {
   return (
     <Separator

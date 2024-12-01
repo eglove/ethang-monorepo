@@ -1,9 +1,9 @@
 import type { PropsWithChildren } from "react";
 
 import { NavigationSidebar } from "@/components/navigation/navigation-sidebar.tsx";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar.tsx";
-import { Toaster } from "@/components/ui/sonner.tsx";
 import { cn } from "@/lib/utils.ts";
+import { SidebarProvider, SidebarTrigger } from "@ethang/react-components/src/components/ui/sidebar.tsx";
+import { Toaster } from "@ethang/react-components/src/components/ui/sonner.tsx";
 
 type MainLayoutProperties = PropsWithChildren<{
   classNames?: {

@@ -1,7 +1,7 @@
 import type { PropsWithChildren, ReactNode } from "react";
 
-import { TypographyMuted } from "@/components/typography/typography-muted.tsx";
-import { TypographyP } from "@/components/typography/typography-p.tsx";
+import { TypographyMuted } from "@ethang/react-components/src/components/typography/typography-muted.tsx";
+import { TypographyP } from "@ethang/react-components/src/components/typography/typography-p.tsx";
 import { LoaderCircle } from "lucide-react";
 
 type ErrorAndLoadingProperties = PropsWithChildren<{

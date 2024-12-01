@@ -1,7 +1,7 @@
 import { LocalBlog } from "@/components/blog/local-blog.tsx";
 import { Image } from "@/components/image.tsx";
-import { TypographyLink } from "@/components/typography/typography-link.tsx";
-import { TypographyP } from "@/components/typography/typography-p.tsx";
+import { TypographyLink } from "@ethang/react-components/src/components/typography/typography-link.tsx";
+import { TypographyP } from "@ethang/react-components/src/components/typography/typography-p.tsx";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 const RouteComponent = () => {

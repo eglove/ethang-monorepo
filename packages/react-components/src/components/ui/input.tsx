@@ -5,7 +5,7 @@ const Input = forwardRef<
   Readonly<HTMLInputElement>,
   Readonly<ComponentProps<"input">>
 >(
-  // eslint-disable-next-line react/prefer-read-only-props
+
   ({ className, type, ...properties }, reference) => {
     return (
       <input

@@ -1,8 +1,8 @@
 import type { PropsWithChildren } from "react";
 
-import { TypographyH1 } from "@/components/typography/typography-h1.tsx";
 import { useKnuthPlass } from "@/hooks/use-knuth-plass.ts";
 import { convexQuery } from "@convex-dev/react-query";
+import { TypographyH1 } from "@ethang/react-components/src/components/typography/typography-h1.tsx";
 import { useQuery } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 

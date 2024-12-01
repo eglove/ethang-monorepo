@@ -1,9 +1,9 @@
 // @ts-expect-error css
 import "reactjs-tiptap-editor/style.css";
-import { FormInput } from "@/components/form/form-input.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { Form } from "@/components/ui/form.tsx";
 import { useAuth } from "@clerk/clerk-react";
+import { FormInput } from "@ethang/react-components/src/components/form/form-input.tsx";
+import { Button } from "@ethang/react-components/src/components/ui/button.tsx";
+import { Form } from "@ethang/react-components/src/components/ui/form.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Navigate, useNavigate } from "@tanstack/react-router";
