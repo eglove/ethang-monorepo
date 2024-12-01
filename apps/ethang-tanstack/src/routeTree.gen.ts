@@ -25,9 +25,7 @@ const IndexLazyImport = createFileRoute('/')()
 const BlogLodashChunkLazyImport = createFileRoute('/blog/lodash-chunk')()
 const BlogForcingReactLazyImport = createFileRoute('/blog/forcing-react')()
 const BlogSlugLazyImport = createFileRoute('/blog/$slug')()
-const AdminUpsertCourseListLazyImport = createFileRoute(
-  '/admin/upsert-course-list',
-)()
+const AdminUpsertCourseLazyImport = createFileRoute('/admin/upsert-course')()
 
 // Create/Update Routes
 
@@ -91,12 +89,12 @@ const BlogSlugLazyRoute = BlogSlugLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/blog/$slug.lazy').then((d) => d.Route))
 
-const AdminUpsertCourseListLazyRoute = AdminUpsertCourseListLazyImport.update({
-  id: '/admin/upsert-course-list',
-  path: '/admin/upsert-course-list',
+const AdminUpsertCourseLazyRoute = AdminUpsertCourseLazyImport.update({
+  id: '/admin/upsert-course',
+  path: '/admin/upsert-course',
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
-  import('./routes/admin/upsert-course-list.lazy').then((d) => d.Route),
+  import('./routes/admin/upsert-course.lazy').then((d) => d.Route),
 )
 
 // Populate the FileRoutesByPath interface
@@ -145,11 +143,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SkillsLazyImport
       parentRoute: typeof rootRoute
     }
-    '/admin/upsert-course-list': {
-      id: '/admin/upsert-course-list'
-      path: '/admin/upsert-course-list'
-      fullPath: '/admin/upsert-course-list'
-      preLoaderRoute: typeof AdminUpsertCourseListLazyImport
+    '/admin/upsert-course': {
+      id: '/admin/upsert-course'
+      path: '/admin/upsert-course'
+      fullPath: '/admin/upsert-course'
+      preLoaderRoute: typeof AdminUpsertCourseLazyImport
       parentRoute: typeof rootRoute
     }
     '/blog/$slug': {
@@ -185,7 +183,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsLazyRoute
   '/resume': typeof ResumeLazyRoute
   '/skills': typeof SkillsLazyRoute
-  '/admin/upsert-course-list': typeof AdminUpsertCourseListLazyRoute
+  '/admin/upsert-course': typeof AdminUpsertCourseLazyRoute
   '/blog/$slug': typeof BlogSlugLazyRoute
   '/blog/forcing-react': typeof BlogForcingReactLazyRoute
   '/blog/lodash-chunk': typeof BlogLodashChunkLazyRoute
@@ -198,7 +196,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsLazyRoute
   '/resume': typeof ResumeLazyRoute
   '/skills': typeof SkillsLazyRoute
-  '/admin/upsert-course-list': typeof AdminUpsertCourseListLazyRoute
+  '/admin/upsert-course': typeof AdminUpsertCourseLazyRoute
   '/blog/$slug': typeof BlogSlugLazyRoute
   '/blog/forcing-react': typeof BlogForcingReactLazyRoute
   '/blog/lodash-chunk': typeof BlogLodashChunkLazyRoute
@@ -212,7 +210,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsLazyRoute
   '/resume': typeof ResumeLazyRoute
   '/skills': typeof SkillsLazyRoute
-  '/admin/upsert-course-list': typeof AdminUpsertCourseListLazyRoute
+  '/admin/upsert-course': typeof AdminUpsertCourseLazyRoute
   '/blog/$slug': typeof BlogSlugLazyRoute
   '/blog/forcing-react': typeof BlogForcingReactLazyRoute
   '/blog/lodash-chunk': typeof BlogLodashChunkLazyRoute
@@ -227,7 +225,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/resume'
     | '/skills'
-    | '/admin/upsert-course-list'
+    | '/admin/upsert-course'
     | '/blog/$slug'
     | '/blog/forcing-react'
     | '/blog/lodash-chunk'
@@ -239,7 +237,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/resume'
     | '/skills'
-    | '/admin/upsert-course-list'
+    | '/admin/upsert-course'
     | '/blog/$slug'
     | '/blog/forcing-react'
     | '/blog/lodash-chunk'
@@ -251,7 +249,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/resume'
     | '/skills'
-    | '/admin/upsert-course-list'
+    | '/admin/upsert-course'
     | '/blog/$slug'
     | '/blog/forcing-react'
     | '/blog/lodash-chunk'
@@ -265,7 +263,7 @@ export interface RootRouteChildren {
   ProjectsLazyRoute: typeof ProjectsLazyRoute
   ResumeLazyRoute: typeof ResumeLazyRoute
   SkillsLazyRoute: typeof SkillsLazyRoute
-  AdminUpsertCourseListLazyRoute: typeof AdminUpsertCourseListLazyRoute
+  AdminUpsertCourseLazyRoute: typeof AdminUpsertCourseLazyRoute
   BlogSlugLazyRoute: typeof BlogSlugLazyRoute
   BlogForcingReactLazyRoute: typeof BlogForcingReactLazyRoute
   BlogLodashChunkLazyRoute: typeof BlogLodashChunkLazyRoute
@@ -278,7 +276,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsLazyRoute: ProjectsLazyRoute,
   ResumeLazyRoute: ResumeLazyRoute,
   SkillsLazyRoute: SkillsLazyRoute,
-  AdminUpsertCourseListLazyRoute: AdminUpsertCourseListLazyRoute,
+  AdminUpsertCourseLazyRoute: AdminUpsertCourseLazyRoute,
   BlogSlugLazyRoute: BlogSlugLazyRoute,
   BlogForcingReactLazyRoute: BlogForcingReactLazyRoute,
   BlogLodashChunkLazyRoute: BlogLodashChunkLazyRoute,
@@ -300,7 +298,7 @@ export const routeTree = rootRoute
         "/projects",
         "/resume",
         "/skills",
-        "/admin/upsert-course-list",
+        "/admin/upsert-course",
         "/blog/$slug",
         "/blog/forcing-react",
         "/blog/lodash-chunk"
@@ -324,8 +322,8 @@ export const routeTree = rootRoute
     "/skills": {
       "filePath": "skills.lazy.tsx"
     },
-    "/admin/upsert-course-list": {
-      "filePath": "admin/upsert-course-list.lazy.tsx"
+    "/admin/upsert-course": {
+      "filePath": "admin/upsert-course.lazy.tsx"
     },
     "/blog/$slug": {
       "filePath": "blog/$slug.lazy.tsx"

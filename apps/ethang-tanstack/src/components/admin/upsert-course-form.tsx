@@ -3,6 +3,7 @@ import "reactjs-tiptap-editor/style.css";
 import { FormInput } from "@/components/form/form-input.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Form } from "@/components/ui/form.tsx";
+import { useAuth } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Navigate, useNavigate } from "@tanstack/react-router";
@@ -20,7 +21,7 @@ const upsertCourseFormSchema = z.object({
 });
 
 export const UpsertCourseForm = () => {
-  const { isAuthenticated } = useConvexAuth();
+  const { isSignedIn } = useAuth();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -51,7 +52,7 @@ export const UpsertCourseForm = () => {
     mutate(data);
   };
 
-  if (!isAuthenticated) {
+  if (false === isSignedIn) {
     return <Navigate to="/" />;
   }
 
