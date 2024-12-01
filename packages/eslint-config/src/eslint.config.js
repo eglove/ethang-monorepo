@@ -100,6 +100,7 @@ export default tseslint.config(
               "Plass",
               "Iteree",
               "Sonner",
+              "cmdk",
             ],
           },
         },

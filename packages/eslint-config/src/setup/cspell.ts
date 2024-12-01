@@ -58,6 +58,7 @@ const customRules: CustomRules = [
             "Plass",
             "Iteree",
             "Sonner",
+            "cmdk",
           ],
         },
       },
