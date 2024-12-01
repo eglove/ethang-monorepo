@@ -3,7 +3,17 @@ import type { UserJSON } from "@clerk/backend";
 import { v, type Validator } from "convex/values";
 import isNil from "lodash/isNil";
 
-import { internalMutation, internalQuery } from "./_generated/server";
+import { internalMutation, internalQuery, type QueryCtx as QueryContext } from "./_generated/server";
+
+export const getCurrentUser = async (context: QueryContext) => {
+  const identity = await context.auth.getUserIdentity();
+
+  if (isNil(identity)) {
+    return null;
+  }
+
+  return getUser(context, { subject: identity.subject });
+};
 
 export const getUser = internalQuery({
   args: { subject: v.string() },

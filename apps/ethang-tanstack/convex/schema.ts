@@ -24,7 +24,23 @@ export default defineSchema({
   course: defineTable({
     name: v.string(),
     url: v.string(),
-  }).index("by_name", ["name"]),
+  }).index("by_name_url", ["name", "url"]),
+  courseList: defineTable({
+    description: v.record(v.string(), v.any()),
+    sections: v.object({
+      order: v.number(),
+      section: v.id("courseSection"),
+    }),
+    title: v.string(),
+  }).index("by_title", ["title"]),
+  courseListSection: defineTable({
+    courses: v.object({
+      course: v.id("course"),
+      order: v.number(),
+    }),
+    description: v.record(v.string(), v.any()),
+    title: v.string(),
+  }),
   courseSection: defineTable({
     courses: v.array(v.id("course")),
     order: v.optional(v.number()),
@@ -59,6 +75,7 @@ export default defineSchema({
     clerkId: v.string(),
     email: v.string(),
     imageUrl: v.string(),
+    role: v.optional(v.string()),
     username: v.string(),
   }).index("by_email", ["email"])
     .index("by_clerk_id", ["clerkId"]),

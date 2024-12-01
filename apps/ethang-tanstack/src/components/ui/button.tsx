@@ -54,6 +54,7 @@ const Button = forwardRef<
           variant,
         }))}
         ref={reference}
+        type="button"
         {...properties}
       />
     );
