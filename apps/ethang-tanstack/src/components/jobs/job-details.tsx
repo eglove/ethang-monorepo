@@ -17,6 +17,8 @@ type JobDetailsProperties = {
   job: (typeof api.jobs.getAll._returnType)[0];
 };
 
+// @ts-expect-error it's ok
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-type-assertion
 const listFormatter = new Intl.ListFormat(undefined, {
   type: "unit",
 }) as { format: (values: string[]) => string };

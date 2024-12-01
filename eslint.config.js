@@ -10,7 +10,9 @@ export default tseslint.config(
             "packages/eslint-config/eslint.config.js",
             'apps/ethang-tanstack/src/components/ui/sidebar.tsx', // TODO move UI components to lib
             "apps/**/*.gen.ts",
+            "**/*.d.ts",
             "**/.sanity",
+            "**/storybook-static",
             "**/convex/_generated",
             "**/README.md"
         ],
