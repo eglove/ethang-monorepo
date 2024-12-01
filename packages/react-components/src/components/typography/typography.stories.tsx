@@ -26,13 +26,13 @@ export const Headings = () => {
         Heading H1
       </TypographyH1>
       <TypographyH2>
-        Heading H1
+        Heading H2
       </TypographyH2>
       <TypographyH3>
-        Heading H1
+        Heading H3
       </TypographyH3>
       <TypographyH4>
-        Heading H1
+        Heading H4
       </TypographyH4>
     </div>
   );
@@ -41,12 +41,12 @@ export const Headings = () => {
 export const Sizes = () => {
   return (
     <div>
-      <TypographyLarge>
-        Large
-      </TypographyLarge>
       <TypographyLead>
         Leading
       </TypographyLead>
+      <TypographyLarge>
+        Large
+      </TypographyLarge>
       <TypographySmall>
         Small
       </TypographySmall>
