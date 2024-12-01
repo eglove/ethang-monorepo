@@ -2,7 +2,7 @@ export default {
   providers: [
     {
       applicationID: "convex",
-      domain: "https://ardent-monitor-908.convex.site",
+      domain: "https://clerk.ethang.dev",
     },
   ],
 };
