@@ -1,5 +1,4 @@
-import { HTTP_STATUS } from "@ethang/toolbelt/src/constants/http";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import filter from "lodash/filter.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil";
@@ -37,7 +36,7 @@ export const createCourse = mutation({
     const user = await getCurrentUser(context);
 
     if (isNil(user) || "admin" !== user.role) {
-      return new Response(JSON.stringify({ message: "Unauthenticated" }), { status: HTTP_STATUS.UNAUTHORIZED });
+      return new ConvexError("Unauthorized");
     }
 
     const course = await context.db.query("course").withIndex("by_name_url", (q) => {
@@ -46,7 +45,7 @@ export const createCourse = mutation({
       .unique();
 
     if (!isNil(course)) {
-      return new Response(JSON.stringify({ message: "Course already exists" }), { status: HTTP_STATUS.CONFLICT });
+      return new ConvexError("Course already exists");
     }
 
     const created = await context.db.insert("course", {
@@ -55,11 +54,9 @@ export const createCourse = mutation({
     });
 
     if (isNil(created)) {
-      return new Response(JSON.stringify({ message: "Failed to create course" }), { status: HTTP_STATUS.INTERNAL_SERVER_ERROR });
+      return new ConvexError("Failed to create course");
     }
 
-    return new Response(JSON.stringify(created), {
-      status: HTTP_STATUS.CREATED,
-    });
+    return created;
   },
 });

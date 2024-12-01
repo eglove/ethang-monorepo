@@ -2,6 +2,7 @@ import type { PropsWithChildren } from "react";
 
 import { NavigationSidebar } from "@/components/navigation/navigation-sidebar.tsx";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar.tsx";
+import { Toaster } from "@/components/ui/sonner.tsx";
 import { cn } from "@/lib/utils.ts";
 
 type MainLayoutProperties = PropsWithChildren<{
@@ -20,6 +21,7 @@ export const MainLayout = ({
       <main className={cn("mx-4 my-6 pb-12", classNames?.main)}>
         {children}
       </main>
+      <Toaster />
     </SidebarProvider>
   );
 };

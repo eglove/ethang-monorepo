@@ -99,6 +99,7 @@ export default tseslint.config(
               "Signalis",
               "Plass",
               "Iteree",
+              "Sonner",
             ],
           },
         },
