@@ -35,7 +35,7 @@ const HomeComponent = () => {
       >
         {map(blogs.data, (blog) => {
           return (
-            <div>
+            <div key={blog._id}>
               <TypographyLink
                 className="text-2xl font-bold"
                 href={`/blog/${blog.slug}`}

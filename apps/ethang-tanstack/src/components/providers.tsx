@@ -1,30 +1,38 @@
+/* eslint-disable react-compiler/react-compiler */
 import type { PropsWithChildren } from "react";
 
 import { ThemeProvider } from "@/components/theme-provider.tsx";
+import { environment } from "@/environment.ts";
+import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools/build/modern/production.js";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { ConvexProvider } from "convex/react";
+import { ConvexProviderWithClerk } from "convex/react-clerk";
 
 import { convex } from "../clients/convex.ts";
 import { persister, queryClient } from "../clients/query";
 
 export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   return (
-    <ConvexProvider client={convex}>
-      <PersistQueryClientProvider
-        client={queryClient}
-        persistOptions={{ persister }}
+    <ClerkProvider publishableKey={environment.VITE_CLERK_PUBLISHABLE_KEY}>
+      <ConvexProviderWithClerk
+        client={convex}
+        useAuth={useAuth}
       >
-        <ThemeProvider
-          defaultTheme="dark"
-          storageKey="ui-theme"
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={{ persister }}
         >
-          {children}
-          <ReactQueryDevtools />
-          <TanStackRouterDevtools position="bottom-left" />
-        </ThemeProvider>
-      </PersistQueryClientProvider>
-    </ConvexProvider>
+          <ThemeProvider
+            defaultTheme="dark"
+            storageKey="ui-theme"
+          >
+            {children}
+            <ReactQueryDevtools />
+            <TanStackRouterDevtools position="bottom-left" />
+          </ThemeProvider>
+        </PersistQueryClientProvider>
+      </ConvexProviderWithClerk>
+    </ClerkProvider>
   );
 };

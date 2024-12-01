@@ -177,6 +177,12 @@ importers:
 
   apps/ethang-tanstack:
     dependencies:
+      '@clerk/backend':
+        specifier: ^1.18.0
+        version: 1.18.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/clerk-react':
+        specifier: ^5.17.1
+        version: 5.17.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@convex-dev/react-query':
         specifier: 0.0.0-alpha.8
         version: 0.0.0-alpha.8(@tanstack/react-query@5.62.0(react@18.3.1))(convex@1.17.3(@clerk/clerk-react@5.17.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
@@ -264,6 +270,9 @@ importers:
       react-syntax-highlighter:
         specifier: ^15.6.1
         version: 15.6.1(react@18.3.1)
+      svix:
+        specifier: ^1.42.0
+        version: 1.42.0
       tailwind-merge:
         specifier: ^2.5.5
         version: 2.5.5
@@ -7184,7 +7193,6 @@ packages:
     resolution: {integrity: sha512-NXeHXtFLZd6QGbS5af9tiwIoI+BVptHUcGkkF/ouvEPa+ZiZvK0xek4Yh6cd5jNDEg8P+tIA5xxB2ZC/RnqXyw==}
     peerDependencies:
       eslint: '>= 5'
-    bundledDependencies: []
 
   eslint-plugin-compat@6.0.1:
     resolution: {integrity: sha512-0MeIEuoy8kWkOhW38kK8hU4vkb6l/VvyjpuYDymYOXmUY9NvTgyErF16lYuX+HPS5hkmym7lfA+XpYZiWYWmYA==}

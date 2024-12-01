@@ -55,4 +55,11 @@ export default defineSchema({
   technology: defineTable({
     name: v.string(),
   }).index("by_name", ["name"]),
+  user: defineTable({
+    clerkId: v.string(),
+    email: v.string(),
+    imageUrl: v.string(),
+    username: v.string(),
+  }).index("by_email", ["email"])
+    .index("by_clerk_id", ["clerkId"]),
 });

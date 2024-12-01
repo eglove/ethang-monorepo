@@ -13,6 +13,11 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar.tsx";
+import {
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
+import { Authenticated, Unauthenticated } from "convex/react";
 import map from "lodash/map";
 import { CpuIcon, FileUserIcon, HomeIcon, KanbanIcon, SchoolIcon, ShieldCheckIcon } from "lucide-react";
 
@@ -63,6 +68,14 @@ export const NavigationSidebar = () => {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <ModeToggle />
+            </SidebarMenuItem>
+            <SidebarMenuItem className="grid place-items-center">
+              <Unauthenticated>
+                <SignInButton />
+              </Unauthenticated>
+              <Authenticated>
+                <UserButton />
+              </Authenticated>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroupContent>
