@@ -73,15 +73,9 @@ export const InlineCode = () => {
 export const List = () => {
   return (
     <TypographyList items={[
-      <li key="1">
-        Item 1
-      </li>,
-      <li key="2">
-        Item 2
-      </li>,
-      <li key="3">
-        Item 3
-      </li>,
+      "Item 1",
+      "Item 2",
+      "Item 3",
     ]}
     />
   );

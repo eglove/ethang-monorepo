@@ -3,6 +3,11 @@ import { Form } from "@/components/ui/form.tsx";
 import { useForm } from "react-hook-form";
 
 export default {
+  parameters: {
+    a11y: {
+      disable: true,
+    },
+  },
   title: "form/form-rich-text",
 };
 

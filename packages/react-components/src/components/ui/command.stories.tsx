@@ -2,7 +2,7 @@ import {
   Command,
   CommandEmpty, CommandGroup,
   CommandInput, CommandItem,
-  CommandList, CommandSeparator, CommandShortcut,
+  CommandList, CommandShortcut,
 } from "@/components/ui/command.tsx";
 import {
   Calculator,
@@ -45,7 +45,6 @@ export const Default = () => {
             </span>
           </CommandItem>
         </CommandGroup>
-        <CommandSeparator />
         <CommandGroup heading="Settings" >
           <CommandItem>
             <User />

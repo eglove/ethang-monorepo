@@ -1,3 +1,4 @@
+// @ts-expect-error css
 import "reactjs-tiptap-editor/style.css";
 
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
@@ -23,7 +24,9 @@ const extensions = [
     },
   }),
   Heading,
-  Link,
+  Link.configure({
+    HTMLAttributes: { "aria-label": "link" },
+  }),
   Bold,
   Italic,
   Strike,
