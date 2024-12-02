@@ -16,6 +16,7 @@
     "node": ">=22"
   },
   "dependencies": {
+    "@ethang/hooks": "workspace:2.2.6-beta.0",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-dialog": "^1.1.2",

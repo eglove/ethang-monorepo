@@ -1,0 +1,26 @@
+import { useEffect, useState } from "react";
+
+export const useIsMobile = (mobileBreakPoint = 768) => {
+  const [isMobile, setIsMobile] = useState(() => {
+    if ("undefined" === typeof globalThis) {
+      return false;
+    }
+
+    return window.innerWidth < mobileBreakPoint;
+  });
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const mediaQueryList = globalThis.matchMedia(`(max-width: ${mobileBreakPoint - 1}px)`);
+
+    mediaQueryList.addEventListener("change", () => {
+      setIsMobile(window.innerWidth < mobileBreakPoint);
+    }, { signal: controller.signal });
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
+  return { isMobile };
+};
