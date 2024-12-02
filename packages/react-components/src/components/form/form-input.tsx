@@ -1,4 +1,11 @@
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
+type FormInputProperties<T extends FieldValues,> = {
+  description?: string;
+  fieldName: Path<T>;
+  form: UseFormReturn<T>;
+  label: string;
+  placeholder?: string;
+};
 
 import {
   FormControl, FormDescription,
@@ -7,14 +14,6 @@ import {
   FormLabel, FormMessage,
 } from "../ui/form.tsx";
 import { Input } from "../ui/input.tsx";
-
-type FormInputProperties<T extends FieldValues,> = {
-  description?: string;
-  fieldName: Path<T>;
-  form: UseFormReturn<T>;
-  label: string;
-  placeholder?: string;
-};
 
 export const FormInput = <T extends FieldValues,>({
   description,

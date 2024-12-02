@@ -1,0 +1,46 @@
+{
+  "name": "@ethang/solid-components",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "storybook dev -p 6006 --no-open",
+    "build-storybook": "storybook build"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@ethang/eslint-config": "workspace:^",
+    "@storybook/addon-a11y": "^8.4.6",
+    "@storybook/addon-essentials": "8.4.6",
+    "@storybook/addon-interactions": "8.4.6",
+    "@storybook/blocks": "8.4.6",
+    "@storybook/test": "8.4.6",
+    "@storybook/test-runner": "^0.20.0",
+    "@types/lodash": "^4.17.13",
+    "autoprefixer": "^10.4.20",
+    "axe-playwright": "^2.0.3",
+    "eslint": "^9.16.0",
+    "eslint-plugin-storybook": "^0.11.1",
+    "postcss": "^8.4.49",
+    "storybook": "8.4.6",
+    "storybook-solidjs": "1.0.0-beta.6",
+    "storybook-solidjs-vite": "1.0.0-beta.6",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
+    "vite-plugin-solid": "^2.11.0"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "lodash": "^4.17.21",
+    "lucide-solid": "^0.462.0",
+    "motion": "^11.12.0",
+    "solid-js": "^1.9.3",
+    "tailwind-merge": "^2.5.5"
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
+  }
+}
