@@ -6,4 +6,8 @@
     html {
         @apply dark:bg-black dark:text-white;
     }
+
+    input {
+        @apply dark:bg-black dark:text-white;
+    }
 }
