@@ -1,4 +1,4 @@
-/* eslint-disable sonar/no-unknown-property,react/dom/no-unknown-property */
+/* eslint-disable react/dom/no-unknown-property */
 "use client";
 
 import type { DialogProps } from "@radix-ui/react-dialog";

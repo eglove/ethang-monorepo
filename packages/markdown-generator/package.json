@@ -23,8 +23,8 @@
     "@ethang/eslint-config": "workspace:^",
     "@ethang/project-builder": "workspace:^",
     "@types/lodash": "^4.17.13",
-    "eslint": "^9.14.0",
-    "vitest": "^2.1.6"
+    "eslint": "^9.16.0",
+    "vitest": "^2.1.8"
   },
   "peerDependencies": {
     "lodash": "^4.17.21"

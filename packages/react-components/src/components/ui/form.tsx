@@ -41,7 +41,7 @@ const FormField = <
   ...properties
 }: Readonly<ControllerProps<TFieldValues, TName>>) => {
   return (
-  // eslint-disable-next-line react/no-unstable-context-value,sonar/jsx-no-constructed-context-values
+  // eslint-disable-next-line react/no-unstable-context-value
     <FormFieldContext.Provider value={{ name: properties.name }}>
       <Controller {...properties} />
     </FormFieldContext.Provider>
@@ -87,7 +87,7 @@ const FormItem = forwardRef<
   const id = useId();
 
   return (
-  // eslint-disable-next-line react/no-unstable-context-value,sonar/jsx-no-constructed-context-values
+  // eslint-disable-next-line react/no-unstable-context-value
     <FormItemContext.Provider value={{ id }}>
       <div
         className={cn("space-y-2", className)}

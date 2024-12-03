@@ -58,7 +58,7 @@ export const UpsertCourseForm = () => {
 
   return (
     <Form {...form}>
-      {/* eslint-disable-next-line @typescript-eslint/no-misused-promises,sonar/no-misused-promises */}
+      {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <FormInput
           fieldName="name"

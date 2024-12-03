@@ -22,11 +22,8 @@ const customRules = [
   { name: "new-cap", rule: "off" },
   { name: "no-implicit-dependencies", rule: "off" },
   { name: "no-inconsistent-returns", rule: "off" },
-  { name: "no-reference-error", rule: "off" }, // TODO bug: reports globals
   { name: "no-undefined-assignment", rule: "off" },
   { name: "shorthand-property-grouping", rule: "off" }, // Conflicts with perfectionist sorting
-  { name: "sonar-no-magic-numbers", rule: "off" },
-  { name: "switch-without-default", rule: "off" }, // @typescript-eslint/switch-exhaustiveness-check works better
   { name: "todo-tag", rule: "off" },
 ];
 
