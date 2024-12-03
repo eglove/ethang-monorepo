@@ -39,8 +39,10 @@ export const NavigationLinks = () => {
       {map(navUrls, (item) => {
         return (
           <NavbarItem
+            isActive={
+              noSlash(globalThis.location.pathname) === noSlash(item.url)
+            }
             className="text-sky-700"
-            isActive={noSlash(location.pathname) === noSlash(item.url)}
             key={item.name}
           >
             <Link href={item.url}>
@@ -52,7 +54,7 @@ export const NavigationLinks = () => {
       {1 <= imageCount &&
         <NavbarItem
           className="text-sky-700"
-          isActive={"/gallery" === location.pathname}
+          isActive={"/gallery" === globalThis.location.pathname}
           key="gallery"
         >
           <Link href="/gallery">

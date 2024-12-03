@@ -7,7 +7,9 @@ export default defineConfig({
   dataset: "production",
   name: "default",
   plugins:
-    "development" === process.env["NODE_ENV"]
+  // @ts-expect-error it's fine
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    "development" === import.meta.env.NODE_ENV
       ? developmentPlugins
       : productionPlugins,
   // eslint-disable-next-line cspell/spellchecker

@@ -8,9 +8,9 @@ export const animationInterval = (
   signal: AbortSignal,
   callback: IntervalCallback,
 ): void => {
-  const start = isNil(document.timeline)
-    ? performance.now()
-    : document.timeline.currentTime;
+  const start = isNil(globalThis.document.timeline)
+    ? globalThis.performance.now()
+    : globalThis.document.timeline.currentTime;
 
   const DEFAULT_START = 0;
   const startNumber = null === start
@@ -31,9 +31,9 @@ export const animationInterval = (
       const elapsed = time - startNumber;
       const roundedElapsed = Math.round(elapsed / ms) * ms;
       const targetNext = startNumber + roundedElapsed + ms;
-      const delay = targetNext - performance.now();
-      setTimeout(() => {
-        return requestAnimationFrame(frame);
+      const delay = targetNext - globalThis.performance.now();
+      globalThis.setTimeout(() => {
+        return globalThis.requestAnimationFrame(frame);
       }, delay);
     }
   };

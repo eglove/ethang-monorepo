@@ -42,7 +42,7 @@ export const UpsertCourseForm = () => {
     onSuccess: () => {
       navigate({ to: "/" }).catch((error: unknown) => {
         if (isError(error)) {
-          console.error(error);
+          globalThis.console.error(error);
         }
       });
     },

@@ -14,26 +14,27 @@ export const useWindowSize = (
     width: number;
   }>({
     height: isBrowser
-      ? window.innerHeight
+      ? globalThis.innerHeight
       : initialHeight,
     width: isBrowser
-      ? window.innerWidth
+      ? globalThis.innerWidth
       : initialWidth,
   });
 
-  useEffect((): (() => void) | undefined => {
+  // @ts-expect-error doesn't return
+  useEffect(() => {
     if (isBrowser) {
       const handler = (): void => {
         setState({
-          height: window.innerHeight,
-          width: window.innerWidth,
+          height: globalThis.innerHeight,
+          width: globalThis.innerWidth,
         });
       };
 
-      addEventListener("resize", handler);
+      globalThis.addEventListener("resize", handler);
 
       return (): void => {
-        removeEventListener("resize", handler);
+        globalThis.removeEventListener("resize", handler);
       };
     }
   }, []);

@@ -8,7 +8,7 @@ import ReactDOM from "react-dom/client";
 import { router } from "./routes/route-tree.ts";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-ReactDOM.createRoot(document.querySelector("#root")!).render(
+ReactDOM.createRoot(globalThis.document.querySelector("#root")!).render(
   <StrictMode>
     <RouterProvider router={router} />
   </StrictMode>,

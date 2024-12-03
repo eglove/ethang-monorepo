@@ -10,8 +10,8 @@ type UseFullscreenReturn = {
 };
 
 const closeFullScreen = (): void => {
-  document.exitFullscreen().catch((exitFullscreenError: unknown) => {
-    console.error(exitFullscreenError);
+  globalThis.document.exitFullscreen().catch((exitFullscreenError: unknown) => {
+    globalThis.console.error(exitFullscreenError);
   });
 };
 
@@ -21,19 +21,19 @@ export const useFullscreen = (
   const initialState =
     "undefined" === typeof globalThis
       ? false
-      : Boolean(document.fullscreenElement);
+      : Boolean(globalThis.document.fullscreenElement);
   const [fullScreen, setFullScreen] = useState(initialState);
 
   const openFullScreen = (): void => {
     reference.current
       .requestFullscreen()
       .catch((requestFullscreenError: unknown) => {
-        console.error(requestFullscreenError);
+        globalThis.console.error(requestFullscreenError);
       });
   };
 
   useEventListener("fullscreenchange", () => {
-    setFullScreen(document.fullscreenElement === reference.current);
+    setFullScreen(globalThis.document.fullscreenElement === reference.current);
   });
 
   return {

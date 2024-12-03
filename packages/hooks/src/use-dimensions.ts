@@ -32,7 +32,8 @@ export const useDimensions = ({
     setElement(node);
   }, []);
 
-  useLayoutEffect((): (() => void) | undefined => {
+  // @ts-expect-error it's fine
+  useLayoutEffect(() => {
     if (!element) {
       return;
     }
@@ -40,7 +41,7 @@ export const useDimensions = ({
     const controller = new AbortController();
 
     const measure = (): void => {
-      requestAnimationFrame(() => {
+      globalThis.requestAnimationFrame(() => {
         const boundingRect = element.getBoundingClientRect();
 
         // eslint-disable-next-line sonar/no-nested-functions
@@ -53,12 +54,12 @@ export const useDimensions = ({
     measure();
 
     if (liveMeasure) {
-      addEventListener("resize", measure);
-      addEventListener("scroll", measure);
+      globalThis.addEventListener("resize", measure);
+      globalThis.addEventListener("scroll", measure);
 
       return (): void => {
-        removeEventListener("resize", measure);
-        removeEventListener("scroll", measure);
+        globalThis.removeEventListener("resize", measure);
+        globalThis.removeEventListener("scroll", measure);
         controller.abort();
       };
     }

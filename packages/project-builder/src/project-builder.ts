@@ -1,5 +1,7 @@
 import isNil from "lodash/isNil.js";
 import { copyFileSync, readFileSync, writeFileSync } from "node:fs";
+// eslint-disable-next-line n/prefer-global/process
+import { chdir } from "node:process";
 import { sortPackageJson } from "sort-package-json";
 import { build as tsc } from "tsc-prog";
 import { build as tsup } from "tsup";
@@ -15,7 +17,7 @@ export const projectBuilder = async (
   basePath: string,
   options?: Options,
 ) => {
-  process.chdir(basePath);
+  chdir(basePath);
   const config = isNil(options)
     ? {
       entry: ["src"],

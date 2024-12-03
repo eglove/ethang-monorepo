@@ -19,7 +19,6 @@ const customRules = [
   },
   { name: "function-return-type", rule: "off" },
   { name: "max-union-size", rule: "off" },
-  { name: "new-cap", rule: "off" },
   { name: "no-implicit-dependencies", rule: "off" },
   { name: "no-inconsistent-returns", rule: "off" },
   { name: "no-undefined-assignment", rule: "off" },

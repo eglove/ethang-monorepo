@@ -20,7 +20,8 @@ export const useCopyClipboard = (
   const copyToClipboard = (text: string): void => {
     const asyncCopy = async (): Promise<void> => {
       try {
-        await navigator.clipboard.writeText(text);
+        // eslint-disable-next-line n/no-unsupported-features/node-builtins
+        await globalThis.navigator.clipboard.writeText(text);
         setIsCopied(true);
       } catch (writeTextError: unknown) {
         if (isError(error)) {

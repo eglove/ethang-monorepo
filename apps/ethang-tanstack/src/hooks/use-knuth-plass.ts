@@ -8,7 +8,7 @@ const hyphenate = createHyphenator(enUsPatterns);
 
 export const useKnuthPlass = (querySelector = "p") => {
   useLayoutEffect(() => {
-    const elements = [...document.querySelectorAll(querySelector)];
+    const elements = [...globalThis.document.querySelectorAll(querySelector)];
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     justifyContent(elements as HTMLElement[], hyphenate);
   }, []);

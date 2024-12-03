@@ -30,7 +30,7 @@ export const getUser = internalQuery({
 export const updateOrCreateUser = internalMutation({
   args: { clerkUser: v.any() as Validator<UserJSON> },
   async handler(context, _arguments) {
-    console.log(_arguments.clerkUser);
+    globalThis.console.log(_arguments.clerkUser);
     const userAttributes = {
       clerkId: _arguments.clerkUser.id,
       email: _arguments.clerkUser.email_addresses[0].email_address,
@@ -51,7 +51,7 @@ export const deleteUser = internalMutation({
     const user = await getUser(context, { subject: _arguments.clerkId });
 
     if (isNil(user)) {
-      console.warn("Can't delete user that doesn't exist.");
+      globalThis.console.warn("Can't delete user that doesn't exist.");
     } else {
       await context.db.delete(user._id);
     }

@@ -98,8 +98,8 @@ const SidebarProvider = forwardRef<
             }
 
             // This sets the cookie to keep the sidebar state.
-            // eslint-disable-next-line react-compiler/react-compiler
-            document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+            // eslint-disable-next-line react-compiler/react-compiler,unicorn/no-document-cookie
+            globalThis.document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
           },
           [setOpenProperty, open],
         );

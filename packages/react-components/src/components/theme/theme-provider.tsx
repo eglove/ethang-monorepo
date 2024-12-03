@@ -1,11 +1,11 @@
 import constant from "lodash/constant.js";
 import isNil from "lodash/isNil";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
 
 type Theme = "dark" | "light" | "system";
 
 type ThemeProviderProperties = {
-  children: React.ReactNode;
+  children: ReactNode;
   defaultTheme?: Theme;
   storageKey?: string;
 };
@@ -30,8 +30,9 @@ export const ThemeProvider = ({
 }: Readonly<ThemeProviderProperties>) => {
   const [theme, setTheme] = useState<Theme>(
     () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@typescript-eslint/no-unnecessary-condition
-      return (localStorage.getItem(storageKey) as Theme) ?? defaultTheme;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@typescript-eslint/no-unnecessary-condition,n/no-unsupported-features/node-builtins
+      return (globalThis.localStorage.getItem(storageKey) as Theme) ??
+        defaultTheme;
     },
   );
 
@@ -56,7 +57,8 @@ export const ThemeProvider = ({
   const value = useMemo(() => {
     return {
       setTheme: (_theme: Theme) => {
-        localStorage.setItem(storageKey, _theme);
+        // eslint-disable-next-line n/no-unsupported-features/node-builtins
+        globalThis.localStorage.setItem(storageKey, _theme);
         setTheme(_theme);
       },
       theme,

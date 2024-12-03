@@ -7,12 +7,12 @@ type SetMetaProperties = {
 };
 
 export const setMeta = ({ description, title }: SetMetaProperties) => {
-  document.title = title;
-  const descriptionElement = document.createElement("meta");
+  globalThis.document.title = title;
+  const descriptionElement = globalThis.document.createElement("meta");
   descriptionElement.name = "description";
   descriptionElement.content = description;
   // eslint-disable-next-line @typescript-eslint/no-deprecated
-  const head = attempt(document.querySelector.bind(document), "head");
+  const head = attempt(globalThis.document.querySelector.bind(globalThis.document), "head");
 
   if (isError(head)) {
     return;

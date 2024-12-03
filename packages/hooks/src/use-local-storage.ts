@@ -4,7 +4,7 @@ import isNil from "lodash/isNil.js";
 import { useSyncExternalStore } from "react";
 
 type ListenerOptions = AddEventListenerOptions | EventListenerOptions;
-type ListenerParameters = Parameters<typeof addEventListener>;
+type ListenerParameters = Parameters<typeof globalThis.addEventListener>;
 
 type LocalStorageStoreOptions = {
   defaultValue?: string;
@@ -18,7 +18,10 @@ const localStorageStore = (key: string, options?: LocalStorageStoreOptions) => {
       return options?.defaultValue ?? null;
     },
     getSnapshot: () => {
-      const item = attempt(localStorage.getItem.bind(localStorage), key);
+      const item = attempt(
+        // eslint-disable-next-line n/no-unsupported-features/node-builtins
+        globalThis.localStorage.getItem.bind(globalThis.localStorage), key,
+      );
 
       if (isError(item)) {
         return null;
@@ -30,7 +33,7 @@ const localStorageStore = (key: string, options?: LocalStorageStoreOptions) => {
       const controller = new AbortController();
       const { signal } = controller;
 
-      addEventListener(`useLocalStorage-${key}`, listener, {
+      globalThis.addEventListener(`useLocalStorage-${key}`, listener, {
         signal,
         ...options?.listenerOptions,
       });
@@ -52,6 +55,7 @@ export const useLocalStorage = (
   options?: UseLocalStorageProperties,
 ) => {
   const { event, getServerSnapshot, getSnapshot, subscribe } =
+  // @ts-expect-error allow undefined
     localStorageStore(key, {
       defaultValue: options?.defaultValue,
       listenerOptions: options?.listenerOptions,
@@ -60,8 +64,13 @@ export const useLocalStorage = (
   const value = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const setValue = (newValue: string) => {
-    attempt(localStorage.setItem.bind(localStorage), key, newValue);
-    dispatchEvent(event);
+    attempt(
+      // eslint-disable-next-line n/no-unsupported-features/node-builtins
+      globalThis.localStorage.setItem.bind(globalThis.localStorage),
+      key,
+      newValue,
+    );
+    globalThis.dispatchEvent(event);
   };
 
   if (null === value && !isNil(options?.defaultValue)) {

@@ -45,7 +45,7 @@ export const genRules = (
         }
       } else {
         // eslint-disable-next-line no-console
-        console.error(
+        throw new Error(
           `${rule.name} in ${prefix ?? "(unknown prefix)"} does not exist.`,
         );
       }

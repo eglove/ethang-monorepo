@@ -33,7 +33,7 @@ const Create = () => {
         event.stopPropagation();
         form.handleSubmit().catch((error: unknown) => {
           if (isError(error)) {
-            console.error(error);
+            globalThis.console.error(error);
           }
         });
       }}

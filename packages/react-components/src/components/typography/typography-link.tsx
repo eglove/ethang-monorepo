@@ -19,7 +19,7 @@ export const TypographyLink = ({
   const isExternal = useMemo(() => {
     if (isString(rest.href) && URL.canParse(rest.href) && "undefined" !== typeof globalThis) {
       const url = new URL(rest.href);
-      const baseUrl = new URL(location.href);
+      const baseUrl = new URL(globalThis.location.href);
 
       if (baseUrl.host !== url.host) {
         return true;

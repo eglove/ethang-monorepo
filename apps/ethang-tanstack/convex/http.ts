@@ -19,7 +19,9 @@ const validateRequest = async (
     "svix-timestamp": request.headers.get("svix-timestamp") ?? "",
   };
 
-  const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET ?? "");
+  // @ts-expect-error import meta
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
+  const wh = new Webhook(import.meta.env.CLERK_WEBHOOK_SECRET ?? "");
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
@@ -55,7 +57,7 @@ const handleClerkWebhook = httpAction(async (context, request) => {
     }
 
     default: {
-      console.log("ignored Clerk webhook event", event.type);
+      globalThis.console.log("ignored Clerk webhook event", event.type);
     }
   }
   return new Response(null, { status: 200 });

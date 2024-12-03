@@ -1,3 +1,5 @@
+import type { HTMLAttributes } from "react";
+
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -23,7 +25,7 @@ const badgeVariants = cva(
 
 // eslint-disable-next-line sonar/no-useless-intersection
 export type BadgeProperties = {}
-  & React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof badgeVariants>;
+  & HTMLAttributes<HTMLDivElement> & VariantProps<typeof badgeVariants>;
 
 const Badge = ({
   className, variant, ...properties
