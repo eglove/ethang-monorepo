@@ -10,7 +10,7 @@ export default tseslint.config({
   ignores,
   languageOptions,
   settings: {
-    react: { version: "18.3.1" },
+    react: { version: "19.0.0" },
   },
   plugins: {
     react: react,
