@@ -1,9 +1,13 @@
 import { cn } from "@/lib/utils";
 import { Root } from "@radix-ui/react-separator";
-import { type ComponentPropsWithoutRef, type ElementRef, forwardRef } from "react";
+import {
+  type ComponentPropsWithoutRef,
+  type ComponentRef,
+  forwardRef,
+} from "react";
 
 const Separator = forwardRef<
-  ElementRef<typeof Root>,
+  ComponentRef<typeof Root>,
   Readonly<ComponentPropsWithoutRef<typeof Root>>
 >(
   (

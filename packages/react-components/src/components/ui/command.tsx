@@ -9,13 +9,13 @@ import { Command as CommandPrimitive } from "cmdk";
 import { Search } from "lucide-react";
 import {
   type ComponentPropsWithoutRef,
-  type ElementRef,
+  type ComponentRef,
   forwardRef,
   type HTMLAttributes,
 } from "react";
 
 const Command = forwardRef<
-  ElementRef<typeof CommandPrimitive>,
+  ComponentRef<typeof CommandPrimitive>,
   Readonly<ComponentPropsWithoutRef<typeof CommandPrimitive>>
 >(({ className, ...properties }, reference) => {
   return (
@@ -44,7 +44,7 @@ const CommandDialog = ({ children, ...properties }: Readonly<DialogProps>) => {
 };
 
 const CommandInput = forwardRef<
-  ElementRef<typeof CommandPrimitive.Input>,
+  ComponentRef<typeof CommandPrimitive.Input>,
   Readonly<ComponentPropsWithoutRef<typeof CommandPrimitive.Input>>
 >(({ className, ...properties }, reference) => {
   return (
@@ -68,7 +68,7 @@ const CommandInput = forwardRef<
 CommandInput.displayName = CommandPrimitive.Input.displayName;
 
 const CommandList = forwardRef<
-  ElementRef<typeof CommandPrimitive.List>,
+  ComponentRef<typeof CommandPrimitive.List>,
   Readonly<ComponentPropsWithoutRef<typeof CommandPrimitive.List>>
 >(({ className, ...properties }, reference) => {
   return (
@@ -83,7 +83,7 @@ const CommandList = forwardRef<
 CommandList.displayName = CommandPrimitive.List.displayName;
 
 const CommandEmpty = forwardRef<
-  ElementRef<typeof CommandPrimitive.Empty>,
+  ComponentRef<typeof CommandPrimitive.Empty>,
   Readonly<ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>>
 >((properties, reference) => {
   return (
@@ -98,7 +98,7 @@ const CommandEmpty = forwardRef<
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
 
 const CommandGroup = forwardRef<
-  ElementRef<typeof CommandPrimitive.Group>,
+  ComponentRef<typeof CommandPrimitive.Group>,
   Readonly<ComponentPropsWithoutRef<typeof CommandPrimitive.Group>>
 >(({ className, ...properties }, reference) => {
   return (
@@ -116,7 +116,7 @@ const CommandGroup = forwardRef<
 CommandGroup.displayName = CommandPrimitive.Group.displayName;
 
 const CommandSeparator = forwardRef<
-  ElementRef<typeof CommandPrimitive.Separator>,
+  ComponentRef<typeof CommandPrimitive.Separator>,
   Readonly<ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>>
 >(({ className, ...properties }, reference) => {
   return (
@@ -130,7 +130,7 @@ const CommandSeparator = forwardRef<
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName;
 
 const CommandItem = forwardRef<
-  ElementRef<typeof CommandPrimitive.Item>,
+  ComponentRef<typeof CommandPrimitive.Item>,
   Readonly<ComponentPropsWithoutRef<typeof CommandPrimitive.Item>>
 >(({ className, ...properties }, reference) => {
   return (

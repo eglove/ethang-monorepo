@@ -13,7 +13,7 @@ type ErrorAndLoadingProperties = PropsWithChildren<{
   skipError?: boolean;
 }>;
 
-export const ContentHandler = ({
+export const ContentHandler = async ({
   children,
   emptyPlaceholder,
   error,

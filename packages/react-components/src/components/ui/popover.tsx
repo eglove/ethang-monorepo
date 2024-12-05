@@ -1,6 +1,10 @@
 import { cn } from "@/lib/utils";
 import { Anchor, Content, Portal, Root, Trigger } from "@radix-ui/react-popover";
-import { type ComponentPropsWithoutRef, type ElementRef, forwardRef } from "react";
+import {
+  type ComponentPropsWithoutRef,
+  type ComponentRef,
+  forwardRef,
+} from "react";
 
 const Popover = Root;
 
@@ -9,7 +13,7 @@ const PopoverTrigger = Trigger;
 const PopoverAnchor = Anchor;
 
 const PopoverContent = forwardRef<
-  ElementRef<typeof Content>,
+  ComponentRef<typeof Content>,
   Readonly<ComponentPropsWithoutRef<typeof Content>>
 >(({ align = "center", className, sideOffset = 4, ...properties }, reference) => {
   return (

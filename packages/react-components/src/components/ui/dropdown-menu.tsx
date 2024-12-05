@@ -1,7 +1,12 @@
 import { cn } from "@/lib/utils";
 import { CheckboxItem, Content, Group, Item, ItemIndicator, Label, Portal, RadioGroup, RadioItem, Root, Separator, Sub, SubContent, SubTrigger, Trigger } from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronRight, Circle } from "lucide-react";
-import { type ComponentPropsWithoutRef, type ElementRef, forwardRef, type HTMLAttributes } from "react";
+import {
+  type ComponentPropsWithoutRef,
+  type ComponentRef,
+  forwardRef,
+  type HTMLAttributes,
+} from "react";
 
 const DropdownMenu = Root;
 
@@ -16,7 +21,7 @@ const DropdownMenuSub = Sub;
 const DropdownMenuRadioGroup = RadioGroup;
 
 const DropdownMenuSubTrigger = forwardRef<
-  ElementRef<typeof SubTrigger>,
+  ComponentRef<typeof SubTrigger>,
   {
     inset?: boolean;
   } & ComponentPropsWithoutRef<typeof SubTrigger>
@@ -40,7 +45,7 @@ const DropdownMenuSubTrigger = forwardRef<
 DropdownMenuSubTrigger.displayName = SubTrigger.displayName;
 
 const DropdownMenuSubContent = forwardRef<
-  ElementRef<typeof SubContent>,
+  ComponentRef<typeof SubContent>,
   Readonly<ComponentPropsWithoutRef<typeof SubContent>>
 >(({ className, ...properties }, reference) => {
   return (
@@ -57,7 +62,7 @@ const DropdownMenuSubContent = forwardRef<
 DropdownMenuSubContent.displayName = SubContent.displayName;
 
 const DropdownMenuContent = forwardRef<
-  ElementRef<typeof Content>,
+  ComponentRef<typeof Content>,
   Readonly<ComponentPropsWithoutRef<typeof Content>>
 >(({ className, sideOffset = 4, ...properties }, reference) => {
   return (
@@ -78,7 +83,7 @@ const DropdownMenuContent = forwardRef<
 DropdownMenuContent.displayName = Content.displayName;
 
 const DropdownMenuItem = forwardRef<
-  ElementRef<typeof Item>,
+  ComponentRef<typeof Item>,
   {
     inset?: boolean;
   } & ComponentPropsWithoutRef<typeof Item>
@@ -99,7 +104,7 @@ const DropdownMenuItem = forwardRef<
 DropdownMenuItem.displayName = Item.displayName;
 
 const DropdownMenuCheckboxItem = forwardRef<
-  ElementRef<typeof CheckboxItem>,
+  ComponentRef<typeof CheckboxItem>,
   Readonly<ComponentPropsWithoutRef<typeof CheckboxItem>>
 >(({ checked, children, className, ...properties }, reference) => {
   return (
@@ -125,7 +130,7 @@ DropdownMenuCheckboxItem.displayName =
     CheckboxItem.displayName;
 
 const DropdownMenuRadioItem = forwardRef<
-  ElementRef<typeof RadioItem>,
+  ComponentRef<typeof RadioItem>,
   Readonly<ComponentPropsWithoutRef<typeof RadioItem>>
 >(({ children, className, ...properties }, reference) => {
   return (
@@ -149,7 +154,7 @@ const DropdownMenuRadioItem = forwardRef<
 DropdownMenuRadioItem.displayName = RadioItem.displayName;
 
 const DropdownMenuLabel = forwardRef<
-  ElementRef<typeof Label>,
+  ComponentRef<typeof Label>,
   {
     inset?: boolean;
   } & ComponentPropsWithoutRef<typeof Label>
@@ -170,7 +175,7 @@ const DropdownMenuLabel = forwardRef<
 DropdownMenuLabel.displayName = Label.displayName;
 
 const DropdownMenuSeparator = forwardRef<
-  ElementRef<typeof Separator>,
+  ComponentRef<typeof Separator>,
   Readonly<ComponentPropsWithoutRef<typeof Separator>>
 >(({ className, ...properties }, reference) => {
   return (

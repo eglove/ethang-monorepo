@@ -1,6 +1,10 @@
 import { cn } from "@/lib/utils";
 import { Content, Portal, Provider, Root, Trigger } from "@radix-ui/react-tooltip";
-import { type ComponentPropsWithoutRef, type ElementRef, forwardRef } from "react";
+import {
+  type ComponentPropsWithoutRef,
+  type ComponentRef,
+  forwardRef,
+} from "react";
 
 const TooltipProvider = Provider;
 
@@ -9,7 +13,7 @@ const Tooltip = Root;
 const TooltipTrigger = Trigger;
 
 const TooltipContent = forwardRef<
-  Readonly<ElementRef<typeof Content>>,
+  Readonly<ComponentRef<typeof Content>>,
   Readonly<ComponentPropsWithoutRef<typeof Content>>
 >(({ className, sideOffset = 4, ...properties }, reference) => {
   return (

@@ -4,9 +4,8 @@ import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import isNil from "lodash/isNil";
 import {
-  type ComponentPropsWithoutRef,
+  type ComponentPropsWithoutRef, type ComponentRef,
   createContext,
-  type ElementRef,
   forwardRef, type HTMLAttributes, useContext, useId,
 } from "react";
 import {
@@ -100,7 +99,7 @@ const FormItem = forwardRef<
 FormItem.displayName = "FormItem";
 
 const FormLabel = forwardRef<
-  ElementRef<typeof Root>,
+  ComponentRef<typeof Root>,
   Readonly<ComponentPropsWithoutRef<typeof Root>>
 >(({ className, ...properties }, reference) => {
   const { error, formItemId } = useFormField();
@@ -117,7 +116,7 @@ const FormLabel = forwardRef<
 FormLabel.displayName = "FormLabel";
 
 const FormControl = forwardRef<
-  ElementRef<typeof Slot>,
+  ComponentRef<typeof Slot>,
   Readonly<ComponentPropsWithoutRef<typeof Slot>>
 >(({ ...properties }, reference) => {
   const {

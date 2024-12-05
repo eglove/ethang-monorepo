@@ -1,4 +1,4 @@
-import { type MutableRefObject, useState } from "react";
+import { type RefObject, useState } from "react";
 
 import { useEventListener } from "./use-event-listener.ts";
 
@@ -16,7 +16,7 @@ const closeFullScreen = (): void => {
 };
 
 export const useFullscreen = (
-  reference: MutableRefObject<HTMLElement>,
+  reference: RefObject<HTMLElement>,
 ): UseFullscreenReturn => {
   const initialState =
     "undefined" === typeof globalThis

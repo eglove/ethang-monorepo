@@ -4,7 +4,12 @@ import { cn } from "@/lib/utils";
 import { Close, Content, Description, Overlay, Portal, Root, Title, Trigger } from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
-import { type ComponentPropsWithoutRef, type ElementRef, forwardRef, type HTMLAttributes } from "react";
+import {
+  type ComponentPropsWithoutRef,
+  type ComponentRef,
+  forwardRef,
+  type HTMLAttributes,
+} from "react";
 
 const Sheet = Root;
 
@@ -15,7 +20,7 @@ const SheetClose = Close;
 const SheetPortal = Portal;
 
 const SheetOverlay = forwardRef<
-  Readonly<ElementRef<typeof Overlay>>,
+  Readonly<ComponentRef<typeof Overlay>>,
   Readonly<ComponentPropsWithoutRef<typeof Overlay>>
 >(({ className, ...properties }, reference) => {
   return (
@@ -56,7 +61,7 @@ type SheetContentProperties = {}
   & VariantProps<typeof sheetVariants>;
 
 const SheetContent = forwardRef<
-  Readonly<ElementRef<typeof Content>>,
+  Readonly<ComponentRef<typeof Content>>,
   Readonly<SheetContentProperties>
 >(({ children, className, side = "right", ...properties }, reference) => {
   return (
@@ -113,7 +118,7 @@ const SheetFooter = ({
 SheetFooter.displayName = "SheetFooter";
 
 const SheetTitle = forwardRef<
-  Readonly<ElementRef<typeof Title>>,
+  Readonly<ComponentRef<typeof Title>>,
   Readonly<ComponentPropsWithoutRef<typeof Title>>
 >(({ className, ...properties }, reference) => {
   return (
@@ -127,7 +132,7 @@ const SheetTitle = forwardRef<
 SheetTitle.displayName = Title.displayName;
 
 const SheetDescription = forwardRef<
-  Readonly<ElementRef<typeof Description>>,
+  Readonly<ComponentRef<typeof Description>>,
   Readonly<ComponentPropsWithoutRef<typeof Description>>
 >(({ className, ...properties }, reference) => {
   return (

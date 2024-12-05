@@ -8,9 +8,9 @@ import isNil from "lodash/isNil";
 import isString from "lodash/isString.js";
 import { PanelLeft } from "lucide-react";
 import {
-  type ComponentProps,
+  type ComponentProps, type ComponentRef,
   createContext,
-  type CSSProperties, type ElementRef,
+  type CSSProperties,
   forwardRef,
   useCallback,
   useContext,
@@ -304,7 +304,7 @@ const Sidebar = forwardRef<
 Sidebar.displayName = "Sidebar";
 
 const SidebarTrigger = forwardRef<
-  ElementRef<typeof Button>,
+  ComponentRef<typeof Button>,
   Readonly<ComponentProps<typeof Button>>
 
 >(({ className, onClick, ...properties }, reference) => {
@@ -383,7 +383,7 @@ const SidebarInset = forwardRef<
 SidebarInset.displayName = "SidebarInset";
 
 const SidebarInput = forwardRef<
-  ElementRef<typeof Input>,
+  ComponentRef<typeof Input>,
   Readonly<ComponentProps<typeof Input>>
 
 >(({ className, ...properties }, reference) => {
@@ -434,7 +434,7 @@ const SidebarFooter = forwardRef<
 SidebarFooter.displayName = "SidebarFooter";
 
 const SidebarSeparator = forwardRef<
-  ElementRef<typeof Separator>,
+  ComponentRef<typeof Separator>,
   Readonly<ComponentProps<typeof Separator>>
 
 >(({ className, ...properties }, reference) => {

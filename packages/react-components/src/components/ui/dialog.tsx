@@ -2,8 +2,7 @@ import { cn } from "@/lib/utils";
 import { Close, Content, Description, Overlay, Portal, Root, Title, Trigger } from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import {
-  type ComponentPropsWithoutRef,
-  type ElementRef,
+  type ComponentPropsWithoutRef, type ComponentRef,
   forwardRef,
   type HTMLAttributes,
 } from "react";
@@ -17,7 +16,7 @@ const DialogPortal = Portal;
 const DialogClose = Close;
 
 const DialogOverlay = forwardRef<
-  ElementRef<typeof Overlay>,
+  ComponentRef<typeof Overlay>,
   Readonly<ComponentPropsWithoutRef<typeof Overlay>>
 >(({ className, ...properties }, reference) => {
   return (
@@ -34,7 +33,7 @@ const DialogOverlay = forwardRef<
 DialogOverlay.displayName = Overlay.displayName;
 
 const DialogContent = forwardRef<
-  ElementRef<typeof Content>,
+  ComponentRef<typeof Content>,
   Readonly<ComponentPropsWithoutRef<typeof Content>>
 >(({ children, className, ...properties }, reference) => {
   return (
@@ -94,7 +93,7 @@ const DialogFooter = ({
 DialogFooter.displayName = "DialogFooter";
 
 const DialogTitle = forwardRef<
-  ElementRef<typeof Title>,
+  ComponentRef<typeof Title>,
   Readonly<ComponentPropsWithoutRef<typeof Title>>
 >(({ className, ...properties }, reference) => {
   return (
@@ -111,7 +110,7 @@ const DialogTitle = forwardRef<
 DialogTitle.displayName = Title.displayName;
 
 const DialogDescription = forwardRef<
-  ElementRef<typeof Description>,
+  ComponentRef<typeof Description>,
   Readonly<ComponentPropsWithoutRef<typeof Description>>
 >(({ className, ...properties }, reference) => {
   return (
