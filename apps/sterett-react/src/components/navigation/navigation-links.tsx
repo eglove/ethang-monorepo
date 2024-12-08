@@ -38,12 +38,13 @@ export const NavigationLinks = () => {
     <>
       {
         map(navUrls, (item) => {
+          const isActive =
+              noSlash(globalThis.location.pathname) === noSlash(item.url);
+
           return (
             <NavbarItem
-              isActive={
-                noSlash(globalThis.location.pathname) === noSlash(item.url)
-              }
               className="text-sky-700"
+              isActive={isActive}
               key={item.name}
             >
               <Link href={item.url}>

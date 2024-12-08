@@ -942,7 +942,7 @@ export default tseslint.config(
       "stylistic/jsx-curly-brace-presence": "error",
       "stylistic/jsx-curly-newline": [
         "error",
-        { multiline: "require", singleline: "forbid" },
+        { multiline: "require", singleline: "consistent" },
       ],
       "stylistic/jsx-curly-spacing": "error",
       "stylistic/jsx-equals-spacing": "error",

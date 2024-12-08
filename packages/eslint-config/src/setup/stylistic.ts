@@ -58,7 +58,7 @@ const customRules = [
   { name: "padded-blocks", rule: ["error", "never"] },
   {
     name: "jsx-curly-newline",
-    rule: ["error", { multiline: "require", singleline: "forbid" }],
+    rule: ["error", { multiline: "require", singleline: "consistent" }],
   },
   { name: "jsx-first-prop-new-line", rule: ["error", "multiprop"] },
   { name: "jsx-function-call-newline", rule: ["error", "always"] },

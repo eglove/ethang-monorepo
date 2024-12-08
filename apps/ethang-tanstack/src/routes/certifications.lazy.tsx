@@ -56,7 +56,9 @@ const RouteComponent = () => {
               header: "Expires",
             }, {
               cell: (info) => {
-                return <CertificationDetails certification={info.row.original} />;
+                return (
+                  <CertificationDetails certification={info.row.original} />
+                );
               },
               header: "Details",
               id: "details",
