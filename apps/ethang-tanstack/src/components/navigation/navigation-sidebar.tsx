@@ -56,9 +56,7 @@ const links = [
 
 export const NavigationSidebar = () => {
   return (
-    <Sidebar
-      collapsible="icon"
-    >
+    <Sidebar collapsible="icon">
       <SidebarHeader />
       <SidebarGroup>
         <SidebarGroupContent>
@@ -89,24 +87,26 @@ export const NavigationSidebar = () => {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="my-2">
-              {map(links, (link) => {
-                return (
-                  <SidebarMenuItem key={link.href}>
-                    <SidebarMenuButton asChild>
-                      <TypographyLink
-                        className="text-foreground no-underline"
-                        href={link.href}
-                        title={link.label}
-                      >
-                        <link.Icon />
-                        <span>
-                          {link.label}
-                        </span>
-                      </TypographyLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {
+                map(links, (link) => {
+                  return (
+                    <SidebarMenuItem key={link.href}>
+                      <SidebarMenuButton asChild>
+                        <TypographyLink
+                          className="text-foreground no-underline"
+                          href={link.href}
+                          title={link.label}
+                        >
+                          <link.Icon />
+                          <span>
+                            {link.label}
+                          </span>
+                        </TypographyLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })
+              }
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

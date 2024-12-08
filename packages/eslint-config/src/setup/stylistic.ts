@@ -56,6 +56,12 @@ const customRules = [
     rule: ["error", { max: 1, maxEOF: 1, maxBOF: 0 }],
   },
   { name: "padded-blocks", rule: ["error", "never"] },
+  {
+    name: "jsx-curly-newline",
+    rule: ["error", { multiline: "require", singleline: "forbid" }],
+  },
+  { name: "jsx-first-prop-new-line", rule: ["error", "multiprop"] },
+  { name: "jsx-function-call-newline", rule: ["error", "always"] },
   { name: "jsx-indent-props", rule: ["error", 2] },
   { name: "jsx-newline", rule: ["error", { prevent: true }] },
   { name: "jsx-sort-props", rule: "off" },

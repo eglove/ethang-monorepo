@@ -22,15 +22,17 @@ const RouteComponent = () => {
         isError={blogQuery.isError}
         isLoading={blogQuery.isLoading}
       >
-        {!isNil(blogQuery.data) && (
-          <article>
-            <div className="flex justify-between">
-              <h1 className="text-foreground">
-                {blogQuery.data.title}
-              </h1>
-            </div>
-          </article>
-        )}
+        {
+          !isNil(blogQuery.data) && (
+            <article>
+              <div className="flex justify-between">
+                <h1 className="text-foreground">
+                  {blogQuery.data.title}
+                </h1>
+              </div>
+            </article>
+          )
+        }
       </ContentHandler>
     </MainLayout>
   );

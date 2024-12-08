@@ -33,11 +33,13 @@ export const LocalBlog = ({
         isLoading={blogQuery.isLoading}
       >
         <article className="max-w-prose">
-          {!isNil(blogQuery.data) && (
-            <TypographyH1>
-              {blogQuery.data.title}
-            </TypographyH1>
-          )}
+          {
+            !isNil(blogQuery.data) && (
+              <TypographyH1>
+                {blogQuery.data.title}
+              </TypographyH1>
+            )
+          }
           {children}
         </article>
       </ContentHandler>

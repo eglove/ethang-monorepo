@@ -23,28 +23,32 @@ export const MultiSelectOptions = ({
 }: Readonly<MultiSelectOptionsProperties>) => {
   return (
     <>
-      {map(options, (option) => {
+      {
+        map(options, (option) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        const optionKey = get(option, accessorKey) as string;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        const label = get(option, labelKey) as string;
-        const isSelected = includes(selectedValues, optionKey);
+          const optionKey = get(option, accessorKey) as string;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+          const label = get(option, labelKey) as string;
+          const isSelected = includes(selectedValues, optionKey);
 
-        return (
-          <CommandItem
-            onSelect={() => {
-              toggleOption(optionKey);
-            }}
-            className="cursor-pointer"
-            key={optionKey}
-          >
-            <MultiSelectCheck isSelected={isSelected} />
-            <span>
-              {label}
-            </span>
-          </CommandItem>
-        );
-      })}
+          return (
+            <CommandItem
+              onSelect={
+                () => {
+                  toggleOption(optionKey);
+                }
+              }
+              className="cursor-pointer"
+              key={optionKey}
+            >
+              <MultiSelectCheck isSelected={isSelected} />
+              <span>
+                {label}
+              </span>
+            </CommandItem>
+          );
+        })
+      }
     </>
   );
 };

@@ -41,9 +41,7 @@ export const ProjectDetails = ({
           {project.description}
         </DialogDescription>
         <TypographyP>
-          <TypographyLink
-            href={project.url}
-          >
+          <TypographyLink href={project.url}>
             {project.url}
           </TypographyLink>
         </TypographyP>

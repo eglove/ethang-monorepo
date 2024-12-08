@@ -30,31 +30,33 @@ export const CalendarModal = ({
       onOpenChange={onOpenChange}
     >
       <ModalContent>
-        {(onClose) => {
-          return (
-            <>
-              <ModalHeader>
-                {selectedEvent.title}
-              </ModalHeader>
-              <ModalBody>
-                <CalendarModalContent selectedEvent={selectedEvent} />
-              </ModalBody>
-              <ModalFooter>
-                <AddToCalendar
-                  buttonProps={{ color: "primary" }}
-                  start={selectedEvent.start}
-                  title={selectedEvent.title}
-                />
-                <Button
-                  color="danger"
-                  onClick={onClose}
-                >
-                  Close
-                </Button>
-              </ModalFooter>
-            </>
-          );
-        }}
+        {
+          (onClose) => {
+            return (
+              <>
+                <ModalHeader>
+                  {selectedEvent.title}
+                </ModalHeader>
+                <ModalBody>
+                  <CalendarModalContent selectedEvent={selectedEvent} />
+                </ModalBody>
+                <ModalFooter>
+                  <AddToCalendar
+                    buttonProps={{ color: "primary" }}
+                    start={selectedEvent.start}
+                    title={selectedEvent.title}
+                  />
+                  <Button
+                    color="danger"
+                    onClick={onClose}
+                  >
+                    Close
+                  </Button>
+                </ModalFooter>
+              </>
+            );
+          }
+        }
       </ModalContent>
     </Modal>
   );

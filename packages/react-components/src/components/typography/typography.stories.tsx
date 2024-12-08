@@ -72,11 +72,13 @@ export const InlineCode = () => {
 
 export const List = () => {
   return (
-    <TypographyList items={[
-      "Item 1",
-      "Item 2",
-      "Item 3",
-    ]}
+    <TypographyList items={
+      [
+        "Item 1",
+        "Item 2",
+        "Item 3",
+      ]
+    }
     />
   );
 };

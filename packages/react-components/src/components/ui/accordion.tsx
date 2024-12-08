@@ -1,40 +1,37 @@
+import type {
+  ComponentProps,
+} from "react";
+
 import { cn } from "@/lib/utils";
 import { Content, Header, Item, Root, Trigger } from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
-import {
-  type ComponentPropsWithoutRef,
-  type ComponentRef,
-  forwardRef,
-} from "react";
 
 const Accordion = Root;
 
-const AccordionItem = forwardRef<
-  ComponentRef<typeof Item>,
-  Readonly<ComponentPropsWithoutRef<typeof Item>>
->(({ className, ...properties }, reference) => {
+const AccordionItem = ({
+  className, ...properties
+}: Readonly<ComponentProps<typeof Item>>) => {
   return (
     <Item
       className={cn("border-b", className)}
-      ref={reference}
       {...properties}
     />
   );
-});
+};
 AccordionItem.displayName = "AccordionItem";
 
-const AccordionTrigger = forwardRef<
-  ComponentRef<typeof Trigger>,
-  Readonly<ComponentPropsWithoutRef<typeof Trigger>>
->(({ children, className, ...properties }, reference) => {
+const AccordionTrigger = ({
+  children, className, ...properties
+}: Readonly<ComponentProps<typeof Trigger>>) => {
   return (
     <Header className="flex">
       <Trigger
-        className={cn(
-          "flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all hover:underline text-left [&[data-state=open]>svg]:rotate-180",
-          className,
-        )}
-        ref={reference}
+        className={
+          cn(
+            "flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all hover:underline text-left [&[data-state=open]>svg]:rotate-180",
+            className,
+          )
+        }
         {...properties}
       >
         {children}
@@ -42,17 +39,15 @@ const AccordionTrigger = forwardRef<
       </Trigger>
     </Header>
   );
-});
+};
 AccordionTrigger.displayName = Trigger.displayName;
 
-const AccordionContent = forwardRef<
-  ComponentRef<typeof Content>,
-  Readonly<ComponentPropsWithoutRef<typeof Content>>
->(({ children, className, ...properties }, reference) => {
+const AccordionContent = ({
+  children, className, ...properties
+}: Readonly<ComponentProps<typeof Content>>) => {
   return (
     <Content
       className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
-      ref={reference}
       {...properties}
     >
       <div className={cn("pb-4 pt-0", className)}>
@@ -60,7 +55,7 @@ const AccordionContent = forwardRef<
       </div>
     </Content>
   );
-});
+};
 AccordionContent.displayName = Content.displayName;
 
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger };

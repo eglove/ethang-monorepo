@@ -21,15 +21,17 @@ export const TrusteesRoute = () => {
     <MainLayout>
       <Container>
         <div className="grid gap-4 md:grid-cols-3">
-          {map(data, (trustee, index) => {
-            return (
-              <Trustee
-                index={index}
-                key={trustee._id}
-                trustee={trustee}
-              />
-            );
-          })}
+          {
+            map(data, (trustee, index) => {
+              return (
+                <Trustee
+                  index={index}
+                  key={trustee._id}
+                  trustee={trustee}
+                />
+              );
+            })
+          }
         </div>
       </Container>
     </MainLayout>

@@ -11,9 +11,7 @@ export const ProjectLink = ({
   url,
 }: Readonly<ProjectLinkProperties>) => {
   return (
-    <TypographyLink
-      href={url}
-    >
+    <TypographyLink href={url}>
       {children}
     </TypographyLink>
   );

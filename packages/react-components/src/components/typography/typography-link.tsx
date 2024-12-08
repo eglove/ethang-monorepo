@@ -32,9 +32,11 @@ export const TypographyLink = ({
   return (
     <Link
       {...rest}
-      target={isExternal
-        ? "_blank"
-        : ""}
+      target={
+        isExternal
+          ? "_blank"
+          : ""
+      }
       className={cn("leading-7 underline underline-offset-2", className)}
       href={undefined}
       to={rest.href}

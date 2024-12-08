@@ -60,23 +60,25 @@ export const FormRichText = <T extends FieldValues,>({
 }: Readonly<FormRichTextProperties<T>>) => {
   return (
     <FormField
-      render={({ field }) => {
-        return (
-          <FormItem className="max-w-prose">
-            <FormLabel>
-              {label}
-            </FormLabel>
-            <FormControl>
-              <RichTextEditor
-                content={field.value}
-                extensions={extensions}
-                onChangeContent={field.onChange}
-                output="json"
-              />
-            </FormControl>
-          </FormItem>
-        );
-      }}
+      render={
+        ({ field }) => {
+          return (
+            <FormItem className="max-w-prose">
+              <FormLabel>
+                {label}
+              </FormLabel>
+              <FormControl>
+                <RichTextEditor
+                  content={field.value}
+                  extensions={extensions}
+                  onChangeContent={field.onChange}
+                  output="json"
+                />
+              </FormControl>
+            </FormItem>
+          );
+        }
+      }
       control={form.control}
       name={fieldName}
     />

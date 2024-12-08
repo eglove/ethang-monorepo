@@ -24,25 +24,27 @@ export const Default = () => {
   return (
     <Form {...form}>
       <FormField
-        render={({ field }) => {
-          return (
-            <FormItem>
-              <FormLabel>
-                Name
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Enter your name"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                It's your name
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          );
-        }}
+        render={
+          ({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>
+                  Name
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter your name"
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  It's your name
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            );
+          }
+        }
         control={form.control}
         name="name"
       />

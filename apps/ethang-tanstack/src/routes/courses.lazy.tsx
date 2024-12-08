@@ -22,9 +22,11 @@ const Courses = () => {
   return (
     <MainLayout classNames={{ main: "max-w-prose" }}>
       <ContentHandler
-        isEmpty={() => {
-          return isEmpty(query.data);
-        }}
+        isEmpty={
+          () => {
+            return isEmpty(query.data);
+          }
+        }
         emptyPlaceholder="Nothing found"
         error={query.error}
         isError={query.isError}
@@ -75,23 +77,23 @@ const Courses = () => {
                 highly recommend taking these:
               </TypographyP>
               <TypographyList
-                items={map(get(query, ["data", 0, "courses"], []), (course) => {
-                  return (
-                    <TypographyLink
-                      href={course.url}
-                      key={course.url}
-                    >
-                      {course.name}
-                    </TypographyLink>
-                  );
-                })}
+                items={
+                  map(get(query, ["data", 0, "courses"], []), (course) => {
+                    return (
+                      <TypographyLink
+                        href={course.url}
+                        key={course.url}
+                      >
+                        {course.name}
+                      </TypographyLink>
+                    );
+                  })
+                }
                 className="list-decimal"
               />
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem
-            value={String(get(query, ["data", 1, "_id"], "1"))}
-          >
+          <AccordionItem value={String(get(query, ["data", 1, "_id"], "1"))}>
             <AccordionTrigger>
               <TypographyH3>
                 {get(query, ["data", 1, "title"])}
@@ -115,16 +117,18 @@ const Courses = () => {
                 </TypographyLink>
               </TypographyP>
               <TypographyList
-                items={map(get(query, ["data", 1, "courses"], []), (course) => {
-                  return (
-                    <TypographyLink
-                      href={course.url}
-                      key={course.url}
-                    >
-                      {course.name}
-                    </TypographyLink>
-                  );
-                })}
+                items={
+                  map(get(query, ["data", 1, "courses"], []), (course) => {
+                    return (
+                      <TypographyLink
+                        href={course.url}
+                        key={course.url}
+                      >
+                        {course.name}
+                      </TypographyLink>
+                    );
+                  })
+                }
                 className="list-decimal"
               />
             </AccordionContent>
@@ -156,16 +160,18 @@ const Courses = () => {
                 </TypographyLink>
               </TypographyP>
               <TypographyList
-                items={map(get(query, ["data", 2, "courses"], []), (course) => {
-                  return (
-                    <TypographyLink
-                      href={course.url}
-                      key={course.url}
-                    >
-                      {course.name}
-                    </TypographyLink>
-                  );
-                })}
+                items={
+                  map(get(query, ["data", 2, "courses"], []), (course) => {
+                    return (
+                      <TypographyLink
+                        href={course.url}
+                        key={course.url}
+                      >
+                        {course.name}
+                      </TypographyLink>
+                    );
+                  })
+                }
                 className="list-decimal"
               />
             </AccordionContent>
@@ -189,16 +195,18 @@ const Courses = () => {
                 </TypographyLink>
               </TypographyP>
               <TypographyList
-                items={map(get(query, ["data", 3, "courses"], []), (course) => {
-                  return (
-                    <TypographyLink
-                      href={course.url}
-                      key={course.url}
-                    >
-                      {course.name}
-                    </TypographyLink>
-                  );
-                })}
+                items={
+                  map(get(query, ["data", 3, "courses"], []), (course) => {
+                    return (
+                      <TypographyLink
+                        href={course.url}
+                        key={course.url}
+                      >
+                        {course.name}
+                      </TypographyLink>
+                    );
+                  })
+                }
                 className="list-decimal"
               />
             </AccordionContent>
@@ -222,16 +230,18 @@ const Courses = () => {
                 The following courses are entirely optional but recommended due
                 to a quality unmatched. But the pricing may be too much.
               </TypographyP>
-              <TypographyList items={map(get(query, ["data", 4, "courses"], []), (course) => {
-                return (
-                  <TypographyLink
-                    href={course.url}
-                    key={course.url}
-                  >
-                    {course.name}
-                  </TypographyLink>
-                );
-              })}
+              <TypographyList items={
+                map(get(query, ["data", 4, "courses"], []), (course) => {
+                  return (
+                    <TypographyLink
+                      href={course.url}
+                      key={course.url}
+                    >
+                      {course.name}
+                    </TypographyLink>
+                  );
+                })
+              }
               />
             </AccordionContent>
           </AccordionItem>
@@ -247,16 +257,18 @@ const Courses = () => {
                 books in the field. Here are my recommended publishers and
                 authors:
               </TypographyP>
-              <TypographyList items={map(get(query, ["data", 5, "courses"], []), (course) => {
-                return (
-                  <TypographyLink
-                    href={course.url}
-                    key={course.url}
-                  >
-                    {course.name}
-                  </TypographyLink>
-                );
-              })}
+              <TypographyList items={
+                map(get(query, ["data", 5, "courses"], []), (course) => {
+                  return (
+                    <TypographyLink
+                      href={course.url}
+                      key={course.url}
+                    >
+                      {course.name}
+                    </TypographyLink>
+                  );
+                })
+              }
               />
             </AccordionContent>
           </AccordionItem>

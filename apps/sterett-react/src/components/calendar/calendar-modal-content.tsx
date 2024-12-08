@@ -19,26 +19,32 @@ export const CalendarModalContent = ({
         <p className="leading-relaxed">
           Starts:
           {" "}
-          {DateTime.fromJSDate(selectedEvent.start, {
-            zone: AMERICA_CHICAGO,
-          }).toLocaleString({
-            dateStyle: "medium",
-            timeStyle: "short",
-          })}
+          {
+            DateTime.fromJSDate(selectedEvent.start, {
+              zone: AMERICA_CHICAGO,
+            }).toLocaleString({
+              dateStyle: "medium",
+              timeStyle: "short",
+            })
+          }
         </p>
         <p className="leading-relaxed">
           Ends:
           {" "}
-          {DateTime.fromJSDate(selectedEvent.end, {
-            zone: AMERICA_CHICAGO,
-          }).toLocaleString({
-            dateStyle: "medium",
-            timeStyle: "short",
-          })}
+          {
+            DateTime.fromJSDate(selectedEvent.end, {
+              zone: AMERICA_CHICAGO,
+            }).toLocaleString({
+              dateStyle: "medium",
+              timeStyle: "short",
+            })
+          }
         </p>
       </div>
-      {!isNil(selectedEvent.description) &&
-        <SanityContent value={selectedEvent.description} />}
+      {
+        !isNil(selectedEvent.description) &&
+        <SanityContent value={selectedEvent.description} />
+      }
     </>
   );
 };

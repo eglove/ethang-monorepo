@@ -81,16 +81,18 @@ const items = [
 export const UpdateItems = () => {
   return (
     <>
-      {map(items, (item) => {
-        return (
-          <UpdateItem
-            date={item.date}
-            key={item.id}
-          >
-            {item.children}
-          </UpdateItem>
-        );
-      })}
+      {
+        map(items, (item) => {
+          return (
+            <UpdateItem
+              date={item.date}
+              key={item.id}
+            >
+              {item.children}
+            </UpdateItem>
+          );
+        })
+      }
     </>
   );
 };

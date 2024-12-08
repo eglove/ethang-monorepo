@@ -72,6 +72,7 @@ export default tseslint.config({
     "react/no-default-props": "error",
     "react/no-direct-mutation-state": "error",
     "react/no-duplicate-key": "error",
+    "react/no-forward-ref": "error",
     "react/no-implicit-key": "error",
     "react/no-leaked-conditional-rendering": "error",
     "react/no-missing-component-display-name": "error",

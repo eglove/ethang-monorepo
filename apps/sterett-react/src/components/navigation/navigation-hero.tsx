@@ -10,9 +10,11 @@ export const NavigationHero = ({ isMenuOpen }: NavigationHeroProperties) => {
   return (
     <NavbarContent className="pl-0">
       <NavbarMenuToggle
-        aria-label={isMenuOpen
-          ? "Close menu"
-          : "Open menu"}
+        aria-label={
+          isMenuOpen
+            ? "Close menu"
+            : "Open menu"
+        }
         className="text-foreground md:hidden"
       />
       <NavigationHome />

@@ -26,30 +26,32 @@ const RouteComponent = () => {
         isLoading={query.isPending}
       >
         <DataTable
-          columns={[{
-            accessorKey: "name",
+          columns={
+            [{
+              accessorKey: "name",
 
-            cell: (info) => {
-              return (
-                <ProjectLink
-                  url={info.row.original.url}
-                >
-                  {String(info.getValue())}
-                </ProjectLink>
-              );
-            },
-            header: "Name",
-          }, {
+              cell: (info) => {
+                return (
+                  <ProjectLink url={info.row.original.url}>
+                    {String(info.getValue())}
+                  </ProjectLink>
+                );
+              },
+              header: "Name",
+            }, {
 
-            cell: (info) => {
-              return <ProjectDetails project={info.row.original} />;
-            },
-            header: "Details",
-            id: "details",
-          }]}
-          data={isArray(query.data)
-            ? query.data
-            : []}
+              cell: (info) => {
+                return <ProjectDetails project={info.row.original} />;
+              },
+              header: "Details",
+              id: "details",
+            }]
+          }
+          data={
+            isArray(query.data)
+              ? query.data
+              : []
+          }
         />
       </ContentHandler>
     </MainLayout>

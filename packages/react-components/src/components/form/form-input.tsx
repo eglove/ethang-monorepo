@@ -24,25 +24,27 @@ export const FormInput = <T extends FieldValues,>({
 }: Readonly<FormInputProperties<T>>) => {
   return (
     <FormField
-      render={({ field }) => {
-        return (
-          <FormItem>
-            <FormLabel>
-              {label}
-            </FormLabel>
-            <FormControl>
-              <Input
-                placeholder={placeholder}
-                {...field}
-              />
-            </FormControl>
-            <FormDescription>
-              {description}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        );
-      }}
+      render={
+        ({ field }) => {
+          return (
+            <FormItem>
+              <FormLabel>
+                {label}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={placeholder}
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                {description}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          );
+        }
+      }
       control={form.control}
       name={fieldName}
     />

@@ -13,13 +13,15 @@ export const TypographyList = ({
 }: Readonly<TypographyListProperties>) => {
   return (
     <ul className={cn("my-6 ml-6 list-disc [&>li]:mt-2", className)}>
-      {map(items, (item, key) => {
-        return (
-          <li key={key}>
-            {item}
-          </li>
-        );
-      })}
+      {
+        map(items, (item, key) => {
+          return (
+            <li key={key}>
+              {item}
+            </li>
+          );
+        })
+      }
     </ul>
   );
 };

@@ -15,9 +15,7 @@ export const DefaultEditor = (
 ) => {
   return (
     <EditorProvider>
-      <Editor
-        {...properties}
-      >
+      <Editor {...properties}>
         <Toolbar>
           <BtnUndo />
           <BtnRedo />

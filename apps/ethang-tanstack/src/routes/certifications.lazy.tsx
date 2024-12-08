@@ -23,41 +23,45 @@ const RouteComponent = () => {
         Certifications
       </TypographyH1>
       <ContentHandler
-        isEmpty={() => {
-          return isEmpty(certQuery.data);
-        }}
+        isEmpty={
+          () => {
+            return isEmpty(certQuery.data);
+          }
+        }
         error={certQuery.error}
         isError={certQuery.isError}
         isLoading={certQuery.isLoading}
       >
         <DataTable
-          columns={[{
-            accessorKey: "name",
-            header: "Name",
-          }, {
-            accessorKey: "issuedBy",
+          columns={
+            [{
+              accessorKey: "name",
+              header: "Name",
+            }, {
+              accessorKey: "issuedBy",
 
-            cell: (info) => {
-              return (
-                <CertificationLink url={info.row.original.url}>
-                  {String(info.getValue())}
-                </CertificationLink>
-              );
-            },
-            header: "Issued By",
-          }, {
-            accessorKey: "issuedOn",
-            header: "Issued On",
-          }, {
-            accessorKey: "expiresOn",
-            header: "Expires",
-          }, {
-            cell: (info) => {
-              return <CertificationDetails certification={info.row.original} />;
-            },
-            header: "Details",
-            id: "details",
-          }]}
+              cell: (info) => {
+                return (
+                  <CertificationLink url={info.row.original.url}>
+                    {String(info.getValue())}
+                  </CertificationLink>
+                );
+              },
+              header: "Issued By",
+            }, {
+              accessorKey: "issuedOn",
+              header: "Issued On",
+            }, {
+              accessorKey: "expiresOn",
+              header: "Expires",
+            }, {
+              cell: (info) => {
+                return <CertificationDetails certification={info.row.original} />;
+              },
+              header: "Details",
+              id: "details",
+            }]
+          }
           data={get(certQuery, ["data"], [])}
         />
       </ContentHandler>

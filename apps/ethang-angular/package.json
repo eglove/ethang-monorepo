@@ -7,7 +7,7 @@
     "start": "pnpm run build && wrangler pages dev dist/cloudflare --compatibility-date=2024-12-05",
     "build": "ng build && pnpm run process",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --browsers=ChromeHeadless --watch=false",
+    "test:ci": "ng test --browsers=ChromeHeadless --watch=false",
     "serve:ssr:ethang-angular": "node dist/ethang-angular/server/server.mjs",
     "process": "node ./tools/copy-files.mjs",
     "deploy": "pnpm run build && wrangler pages deploy dist/cloudflare"

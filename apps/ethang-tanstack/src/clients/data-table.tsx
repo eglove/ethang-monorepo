@@ -27,66 +27,78 @@ export const DataTable =
         <div className="my-6 w-full overflow-y-auto">
           <Table className="w-full">
             <TableHeader>
-              {map(table.getHeaderGroups(), (headerGroup) => {
-                return (
-                  <TableRow
-                    className="even:bg-muted m-0 border-t p-0"
-                    key={headerGroup.id}
-                  >
-                    {map(headerGroup.headers, (header) => {
-                      return (
-                        <TableHead
-                          className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right"
-                          key={header.id}
-                        >
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.length
-                ? map(table.getRowModel().rows, (row) => {
+              {
+                map(table.getHeaderGroups(), (headerGroup) => {
                   return (
                     <TableRow
                       className="even:bg-muted m-0 border-t p-0"
-                      data-state={row.getIsSelected() && "selected"}
-                      key={row.id}
+                      key={headerGroup.id}
                     >
-                      {map(row.getVisibleCells(), (cell) => {
-                        return (
-                          <TableCell
-                            className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right"
-                            key={cell.id}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </TableCell>
-                        );
-                      })}
+                      {
+                        map(headerGroup.headers, (header) => {
+                          return (
+                            <TableHead
+                              className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right"
+                              key={header.id}
+                            >
+                              {
+                                header.isPlaceholder
+                                  ? null
+                                  : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext(),
+                                  )
+                              }
+                            </TableHead>
+                          );
+                        })
+                      }
                     </TableRow>
                   );
                 })
-                : (
-                  <TableRow className="even:bg-muted m-0 border-t p-0">
-                    <TableCell
-                      className="h-24 border px-4 py-2 text-center [&[align=center]]:text-center [&[align=right]]:text-right"
-                      colSpan={columns.length}
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
+              }
+            </TableHeader>
+            <TableBody>
+              {
+                table.getRowModel().rows.length
+                  ? map(table.getRowModel().rows, (row) => {
+                    return (
+                      <TableRow
+                        className="even:bg-muted m-0 border-t p-0"
+                        data-state={row.getIsSelected() && "selected"}
+                        key={row.id}
+                      >
+                        {
+                          map(row.getVisibleCells(), (cell) => {
+                            return (
+                              <TableCell
+                                className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right"
+                                key={cell.id}
+                              >
+                                {
+                                  flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext(),
+                                  )
+                                }
+                              </TableCell>
+                            );
+                          })
+                        }
+                      </TableRow>
+                    );
+                  })
+                  : (
+                    <TableRow className="even:bg-muted m-0 border-t p-0">
+                      <TableCell
+                        className="h-24 border px-4 py-2 text-center [&[align=center]]:text-center [&[align=right]]:text-right"
+                        colSpan={columns.length}
+                      >
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )
+              }
             </TableBody>
           </Table>
         </div>

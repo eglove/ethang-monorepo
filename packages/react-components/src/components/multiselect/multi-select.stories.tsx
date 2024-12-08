@@ -41,8 +41,6 @@ const groupedOptions = {
 
 export const Grouped = () => {
   return (
-    <MultiSelect
-      options={groupedOptions}
-    />
+    <MultiSelect options={groupedOptions} />
   );
 };

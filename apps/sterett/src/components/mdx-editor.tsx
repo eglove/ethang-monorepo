@@ -15,13 +15,15 @@ export const MdxEditor = ({
 }: Readonly<MdxEditorProperties>) => {
   return (
     <MDXEditor
-      plugins={[
-        headingsPlugin(),
-        listsPlugin(),
-        quotePlugin(),
-        thematicBreakPlugin(),
-        markdownShortcutPlugin(),
-      ]}
+      plugins={
+        [
+          headingsPlugin(),
+          listsPlugin(),
+          quotePlugin(),
+          thematicBreakPlugin(),
+          markdownShortcutPlugin(),
+        ]
+      }
       {...properties}
     />
   );

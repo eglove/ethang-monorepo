@@ -29,30 +29,32 @@ export const NewsRoute = () => {
     <MainLayout>
       <Container styleNames="p-0">
         <div className="grid w-full p-2">
-          {map(data, (datum) => {
+          {
+            map(data, (datum) => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-            if (!isNil((datum as NewsUpdateReturn).date)) {
+              if (!isNil((datum as NewsUpdateReturn).date)) {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-              const dataValue = datum as NewsUpdateReturn;
+                const dataValue = datum as NewsUpdateReturn;
+
+                return (
+                  <NewsUpdate
+                    data={dataValue}
+                    key={datum._id}
+                  />
+                );
+              }
+
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+              const dataValue = datum as CalendarEventReturn;
 
               return (
-                <NewsUpdate
+                <Event
                   data={dataValue}
                   key={datum._id}
                 />
               );
-            }
-
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-            const dataValue = datum as CalendarEventReturn;
-
-            return (
-              <Event
-                data={dataValue}
-                key={datum._id}
-              />
-            );
-          })}
+            })
+          }
         </div>
       </Container>
     </MainLayout>

@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import isNil from "lodash/isNil";
 import {
-  type ComponentPropsWithoutRef, type ComponentRef,
+  type ComponentProps,
   createContext,
-  forwardRef, type HTMLAttributes, useContext, useId,
+  type HTMLAttributes, useContext, useId,
 } from "react";
 import {
   Controller,
@@ -79,10 +79,10 @@ const FormItemContext = createContext<FormItemContextValue>(
   {} as FormItemContextValue,
 );
 
-const FormItem = forwardRef<
-  HTMLDivElement,
-  Readonly<HTMLAttributes<HTMLDivElement>>
->(({ className, ...properties }, reference) => {
+const FormItem = ({
+  className,
+  ...properties
+}: Readonly<HTMLAttributes<HTMLDivElement>>) => {
   const id = useId();
 
   return (
@@ -90,35 +90,32 @@ const FormItem = forwardRef<
     <FormItemContext.Provider value={{ id }}>
       <div
         className={cn("space-y-2", className)}
-        ref={reference}
         {...properties}
       />
     </FormItemContext.Provider>
   );
-});
+};
 FormItem.displayName = "FormItem";
 
-const FormLabel = forwardRef<
-  ComponentRef<typeof Root>,
-  Readonly<ComponentPropsWithoutRef<typeof Root>>
->(({ className, ...properties }, reference) => {
+const FormLabel = ({
+  className,
+  ...properties
+}: Readonly<ComponentProps<typeof Root>>) => {
   const { error, formItemId } = useFormField();
 
   return (
     <Label
       className={cn(error && "text-red-600 dark:text-red-500", className)}
       htmlFor={formItemId}
-      ref={reference}
       {...properties}
     />
   );
-});
+};
 FormLabel.displayName = "FormLabel";
 
-const FormControl = forwardRef<
-  ComponentRef<typeof Slot>,
-  Readonly<ComponentPropsWithoutRef<typeof Slot>>
->(({ ...properties }, reference) => {
+const FormControl = ({
+  ...properties
+}: Readonly<ComponentProps<typeof Slot>>) => {
   const {
     error,
     formDescriptionId,
@@ -135,34 +132,33 @@ const FormControl = forwardRef<
       }
       aria-invalid={Boolean(error)}
       id={formItemId}
-      ref={reference}
       {...properties}
     />
   );
-});
+};
 FormControl.displayName = "FormControl";
 
-const FormDescription = forwardRef<
-  HTMLParagraphElement,
-  Readonly<HTMLAttributes<HTMLParagraphElement>>
->(({ className, ...properties }, reference) => {
+const FormDescription = ({
+  className,
+  ...properties
+}: Readonly<HTMLAttributes<HTMLParagraphElement>>) => {
   const { formDescriptionId } = useFormField();
 
   return (
     <p
       className={cn("text-[0.8rem] text-neutral-500 dark:text-neutral-400", className)}
       id={formDescriptionId}
-      ref={reference}
       {...properties}
     />
   );
-});
+};
 FormDescription.displayName = "FormDescription";
 
-const FormMessage = forwardRef<
-  HTMLParagraphElement,
-  Readonly<HTMLAttributes<HTMLParagraphElement>>
->(({ children, className, ...properties }, reference) => {
+const FormMessage = ({
+  children,
+  className,
+  ...properties
+}: Readonly<HTMLAttributes<HTMLParagraphElement>>) => {
   const { error, formMessageId } = useFormField();
   const body = error
     ? String(error.message)
@@ -176,13 +172,12 @@ const FormMessage = forwardRef<
     <p
       className={cn("text-[0.8rem] font-medium text-red-600 dark:text-red-500", className)}
       id={formMessageId}
-      ref={reference}
       {...properties}
     >
       {body}
     </p>
   );
-});
+};
 FormMessage.displayName = "FormMessage";
 
 export {

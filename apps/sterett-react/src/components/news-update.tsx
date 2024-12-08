@@ -21,13 +21,15 @@ export const NewsUpdate = ({ data }: NewsUpdateProperties) => {
           {data.title}
         </div>
       </CardHeader>
-      {!isNil(data.description) &&
+      {
+        !isNil(data.description) &&
         <>
           <Divider />
           <CardBody>
             <SanityContent value={data.description} />
           </CardBody>
-        </>}
+        </>
+      }
     </Card>
   );
 };

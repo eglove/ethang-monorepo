@@ -37,13 +37,15 @@ export const Trustee = ({ index, trustee }: TrusteeProperties) => {
       key={trustee._id}
     >
       <User
-        avatarProps={{
-          className: "w-32 h-32",
-          color: colorValues[index] ?? "default",
-          isBordered: true,
-          size: "lg",
-          src: imageUrl,
-        }}
+        avatarProps={
+          {
+            className: "w-32 h-32",
+            color: colorValues[index] ?? "default",
+            isBordered: true,
+            size: "lg",
+            src: imageUrl,
+          }
+        }
         description={
           <>
             <p>

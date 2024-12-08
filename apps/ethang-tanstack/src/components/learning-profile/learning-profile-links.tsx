@@ -22,16 +22,18 @@ export const LearningProfileLinks = () => {
           isError={query.isError}
           isLoading={query.isPending}
         >
-          {map(query.data, (link) => {
-            return (
-              <TypographyLink
-                href={link.url}
-                key={link.url}
-              >
-                {link.name}
-              </TypographyLink>
-            );
-          })}
+          {
+            map(query.data, (link) => {
+              return (
+                <TypographyLink
+                  href={link.url}
+                  key={link.url}
+                >
+                  {link.name}
+                </TypographyLink>
+              );
+            })
+          }
         </ContentHandler>
       </div>
     </div>
