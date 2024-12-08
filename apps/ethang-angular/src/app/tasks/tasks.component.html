@@ -1,0 +1,13 @@
+<section>
+  <header>
+    <h2>{{ name() }}'s Tasks</h2>
+  <menu>
+    <button class="btn">Add Task</button>
+  </menu>
+  </header>
+  <div class="grid gap-4">
+    @for (task of selectedUserTasks(); track task.id) {
+      <app-task [task]="task" (complete)="onCompleteTask($event)" />
+    }
+  </div>
+</section>

@@ -1,0 +1,18 @@
+<div class="drawer gap-4 p-4">
+  <input id="navigation-drawer" type="checkbox" class="drawer-toggle" />
+  <label for="navigation-drawer" class="btn btn-primary btn-circle drawer-button">
+    <lucide-icon class="size-6" aria-label="Menu" [img]="MenuIcon"></lucide-icon>
+  </label>
+  <div class="drawer-content">
+    <ng-content/>
+  </div>
+  <div class="drawer-side">
+    <label for="navigation-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+    <ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4 m-0">
+      <li>
+        Content!
+      </li>
+    </ul>
+  </div>
+
+</div>

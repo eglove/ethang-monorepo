@@ -1,0 +1,12 @@
+<div>
+  <div class="join join-vertical">
+    <button
+      class="join-item btn btn-sm"
+      (click)="onSelectUser()"
+      [class.brightness-125]="selected()"
+    >
+      <lucide-icon aria-label="User" [img]="UserIcon"></lucide-icon>
+      {{ user().name }}
+    </button>
+  </div>
+</div>

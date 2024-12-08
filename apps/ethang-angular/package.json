@@ -1,6 +1,7 @@
 {
   "name": "ethang-angular",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "pnpm run build && wrangler pages dev dist/cloudflare --compatibility-date=2024-12-05",
@@ -14,6 +15,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^19.0.0",
+    "@angular/cdk": "19.0.2",
     "@angular/common": "^19.0.0",
     "@angular/compiler": "^19.0.0",
     "@angular/core": "^19.0.0",
@@ -23,6 +25,7 @@
     "@angular/platform-server": "^19.0.0",
     "@angular/router": "^19.0.0",
     "@angular/ssr": "^19.0.0",
+    "lucide-angular": "^0.468.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
@@ -32,14 +35,19 @@
     "@angular/cli": "^19.0.0",
     "@angular/compiler-cli": "^19.0.0",
     "@cloudflare/workers-types": "^4.20241205.0",
+    "@tailwindcss/typography": "^0.5.15",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^22.10.1",
+    "autoprefixer": "^10.4.20",
+    "daisyui": "^4.12.14",
     "jasmine-core": "~5.5.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
     "typescript": "5.6.3",
     "wrangler": "^3.93.0",
     "xhr2": "^0.2.1"
