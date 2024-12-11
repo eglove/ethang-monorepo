@@ -48,7 +48,7 @@ export const CalendarModal = ({
                   />
                   <Button
                     color="danger"
-                    onClick={onClose}
+                    onPress={onClose}
                   >
                     Close
                   </Button>

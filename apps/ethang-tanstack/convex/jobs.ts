@@ -64,6 +64,7 @@ export const getExperience = query({
       for (const item of concat(job.technologiesUsed, job.methodologiesUsed)) {
         if (skills.has(item)) {
           const expression = engine.box(["Add", skills.get(item) ?? 0, diff]);
+          // eslint-disable-next-line @typescript-eslint/no-base-to-string
           skills.set(item, String(expression.value));
         } else {
           skills.set(item, String(diff));
@@ -71,6 +72,7 @@ export const getExperience = query({
       }
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     const max = String(engine.box(["Add", ...years]).value);
 
     const values = map([...skills], ([name, experience]) => {

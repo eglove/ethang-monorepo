@@ -18,13 +18,13 @@
     "eslint": "^9.16.0",
     "lodash": "^4.17.21",
     "react": "^19.0.0",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@ethang/eslint-config": "workspace:^",
     "@ethang/project-builder": "workspace:^",
     "@types/lodash": "^4.17.13",
-    "@types/node": "^22.10.1",
+    "@types/node": "^22.10.2",
     "@types/react": "^19.0.1",
     "typescript": "^5.7.2"
   },

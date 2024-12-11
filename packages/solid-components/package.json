@@ -34,7 +34,7 @@
     "cmdk-solid": "^1.1.0",
     "lodash": "^4.17.21",
     "lucide-solid": "^0.468.0",
-    "motion": "^11.13.1",
+    "motion": "^11.13.5",
     "solid-js": "^1.9.3",
     "tailwind-merge": "^2.5.5"
   },

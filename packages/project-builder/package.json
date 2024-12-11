@@ -17,8 +17,8 @@
   "devDependencies": {
     "@ethang/eslint-config": "workspace:^",
     "@types/lodash": "^4.17.13",
-    "@types/node": "^22.10.1",
+    "@types/node": "^22.10.2",
     "eslint": "^9.16.0",
-    "typescript-eslint": "^8.17.0"
+    "typescript-eslint": "^8.18.0"
   }
 }

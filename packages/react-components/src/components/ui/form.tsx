@@ -40,10 +40,10 @@ const FormField = <
   ...properties
 }: Readonly<ControllerProps<TFieldValues, TName>>) => {
   return (
-  // eslint-disable-next-line react/no-unstable-context-value
-    <FormFieldContext.Provider value={{ name: properties.name }}>
+
+    <FormFieldContext value={{ name: properties.name }}>
       <Controller {...properties} />
-    </FormFieldContext.Provider>
+    </FormFieldContext>
   );
 };
 
@@ -86,13 +86,13 @@ const FormItem = ({
   const id = useId();
 
   return (
-  // eslint-disable-next-line react/no-unstable-context-value
-    <FormItemContext.Provider value={{ id }}>
+
+    <FormItemContext value={{ id }}>
       <div
         className={cn("space-y-2", className)}
         {...properties}
       />
-    </FormItemContext.Provider>
+    </FormItemContext>
   );
 };
 FormItem.displayName = "FormItem";

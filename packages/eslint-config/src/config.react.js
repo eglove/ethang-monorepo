@@ -68,6 +68,7 @@ export default tseslint.config({
     "react/no-component-will-mount": "error",
     "react/no-component-will-receive-props": "error",
     "react/no-component-will-update": "error",
+    "react/no-context-provider": "error",
     "react/no-create-ref": "error",
     "react/no-default-props": "error",
     "react/no-direct-mutation-state": "error",

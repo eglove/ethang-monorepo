@@ -66,12 +66,12 @@ export const ThemeProvider = ({
   }, [storageKey, theme]);
 
   return (
-    <ThemeProviderContext.Provider
+    <ThemeProviderContext
       {...properties}
       value={value}
     >
       {children}
-    </ThemeProviderContext.Provider>
+    </ThemeProviderContext>
   );
 };
 
