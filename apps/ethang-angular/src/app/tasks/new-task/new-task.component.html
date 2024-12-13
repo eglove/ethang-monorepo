@@ -1,0 +1,40 @@
+<button class="btn" (click)="openModal()">Add Task</button>
+<dialog [open]="isOpen()" class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box">
+    <button type="button" (click)="closeModal()"
+            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕
+    </button>
+    <h3 class="text-lg font-bold">Add Task</h3>
+    <form class="grid gap-4" (ngSubmit)="onSubmit()">
+      <label class="form-control w-full max-w-xs">
+        <div class="label">
+          <span class="label-text">Title</span>
+        </div>
+        <input [(ngModel)]="enteredTitle" type="text"
+               class="input input-bordered w-full max-w-xs"/>
+      </label>
+      <label class="form-control">
+        <div class="label">
+          <span class="label-text">Summary</span>
+        </div>
+        <textarea [(ngModel)]="enteredSummary"
+                  class="textarea textarea-bordered h-24"></textarea>
+      </label>
+      <label class="form-control w-full max-w-xs">
+        <div class="label">
+          <span class="label-text">Due Date</span>
+        </div>
+        <input [(ngModel)]="enteredDate" type="date"
+               class="input input-bordered w-full max-w-xs"/>
+      </label>
+      <div class="flex gap-4 justify-end">
+        <button (click)="closeModal()" type="button"
+                class="btn btn-ghost btn-sm">Cancel
+        </button>
+        <button type="submit" class="btn btn-info btn-sm">Create</button>
+      </div>
+    </form>
+  </div>
+  <button class="modal-backdrop" (click)="closeModal()" type="button">close
+  </button>
+</dialog>
