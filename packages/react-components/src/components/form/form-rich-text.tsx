@@ -1,4 +1,3 @@
-// @ts-expect-error css
 import "reactjs-tiptap-editor/style.css";
 
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";

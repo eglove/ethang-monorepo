@@ -20,7 +20,7 @@
   "devDependencies": {
     "@ethang/eslint-config": "workspace:^",
     "@tailwindcss/typography": "^0.5.15",
-    "@tanstack/router-plugin": "^1.87.7",
+    "@tanstack/router-plugin": "^1.87.13",
     "@types/lodash": "^4.17.13",
     "@types/ms": "^0.7.34",
     "@types/react": "^19.0.1",
@@ -35,8 +35,8 @@
     "vite-plugin-pwa": "^0.21.1"
   },
   "dependencies": {
-    "@clerk/backend": "^1.21.0",
-    "@clerk/clerk-react": "^5.20.0",
+    "@clerk/backend": "^1.21.1",
+    "@clerk/clerk-react": "^5.20.1",
     "@convex-dev/react-query": "0.0.0-alpha.8",
     "@legendapp/state": "^3.0.0-beta.17",
     "@nextui-org/avatar": "^2.2.4",
@@ -56,11 +56,11 @@
     "@tanstack/react-query": "^5.62.7",
     "@tanstack/react-query-devtools": "^5.62.7",
     "@tanstack/react-query-persist-client": "^5.62.7",
-    "@tanstack/react-router": "^1.87.9",
-    "@tanstack/router-devtools": "^1.87.9",
+    "@tanstack/react-router": "^1.87.12",
+    "@tanstack/router-devtools": "^1.87.12",
     "@tanstack/zod-form-adapter": "^0.40.1",
     "convex": "^1.17.3",
-    "framer-motion": "^11.13.5",
+    "framer-motion": "^11.14.1",
     "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.468.0",
@@ -68,7 +68,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-toastify": "^10.0.6",
-    "svix": "^1.43.0",
+    "svix": "^1.44.0",
     "tailwind-merge": "^2.5.5",
     "zod": "^3.24.1"
   }
