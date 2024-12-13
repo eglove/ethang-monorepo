@@ -2,7 +2,7 @@
   <header>
     <h2>{{ name() }}'s Tasks</h2>
   <menu>
-    <button class="btn">Add Task</button>
+    <app-new-task (add)="onAddTask($event)"></app-new-task>
   </menu>
   </header>
   <div class="grid gap-4">
