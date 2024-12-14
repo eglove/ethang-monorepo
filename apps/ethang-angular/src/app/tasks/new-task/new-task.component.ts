@@ -1,6 +1,6 @@
-import {Component, signal, output} from '@angular/core';
+import {Component, signal, output, inject, input} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {NewTask} from '../task/task.model.js';
+import {TasksService} from '../tasks.service.js';
 
 @Component({
   selector: 'app-new-task',
@@ -11,12 +11,14 @@ import {NewTask} from '../task/task.model.js';
   styleUrl: './new-task.component.css'
 })
 export class NewTaskComponent {
-  isOpen = signal(false)
+  private taskService = inject(TasksService);
 
+  userId = input.required<string>();
+
+  isOpen = signal(false)
   enteredTitle = signal('');
   enteredSummary = signal('');
   enteredDate = signal('');
-  add = output<NewTask>()
 
   openModal() {
     this.isOpen.set(true);
@@ -27,11 +29,11 @@ export class NewTaskComponent {
   }
 
   onSubmit() {
-    this.add.emit({
+    this.taskService.addTask({
       title: this.enteredTitle(),
       summary: this.enteredSummary(),
       dueDate: this.enteredDate(),
-    })
+    }, this.userId())
     this.closeModal();
   }
 }

@@ -1,18 +1,21 @@
-import {Component, input, output} from '@angular/core';
+import {Component, inject, input} from '@angular/core';
 import {Task} from './task.model.js';
+import {DatePipe} from '@angular/common';
+import {TasksService} from '../tasks.service.js';
 
 @Component({
   selector: 'app-task',
   imports: [
+    DatePipe
   ],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
 })
 export class TaskComponent {
+  private tasksService = inject(TasksService);
   task = input.required<Task>();
-  complete = output<string>();
 
   onComplete() {
-    this.complete.emit(this.task().id);
+    this.tasksService.removeTask(this.task().id);
   }
 }
