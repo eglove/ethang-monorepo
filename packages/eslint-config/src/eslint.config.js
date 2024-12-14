@@ -1282,6 +1282,7 @@ export default tseslint.config(
       "json/no-empty-keys": "error",
       "json/no-unnormalized-keys": "error",
       "json/no-unsafe-values": "error",
+      "json/top-level-interop": "error",
     },
   },
   {
@@ -1295,6 +1296,7 @@ export default tseslint.config(
       "json/no-empty-keys": "error",
       "json/no-unnormalized-keys": "error",
       "json/no-unsafe-values": "error",
+      "json/top-level-interop": "error",
     },
   },
   {
@@ -1308,6 +1310,7 @@ export default tseslint.config(
       "json/no-empty-keys": "error",
       "json/no-unnormalized-keys": "error",
       "json/no-unsafe-values": "error",
+      "json/top-level-interop": "error",
     },
   },
 );
