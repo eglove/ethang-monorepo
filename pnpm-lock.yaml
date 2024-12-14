@@ -72,8 +72,8 @@ importers:
         specifier: ^5.62.7
         version: 5.62.7
       '@tanstack/react-form':
-        specifier: ^0.40.1
-        version: 0.40.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.2)
+        specifier: ^0.40.2
+        version: 0.40.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.2)
       '@tanstack/react-query':
         specifier: ^5.62.7
         version: 5.62.7(react@19.0.0)
@@ -84,14 +84,14 @@ importers:
         specifier: ^5.62.7
         version: 5.62.7(@tanstack/react-query@5.62.7(react@19.0.0))(react@19.0.0)
       '@tanstack/react-router':
-        specifier: ^1.88.0
-        version: 1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^1.89.0
+        version: 1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/router-devtools':
-        specifier: ^1.88.0
-        version: 1.88.0(@tanstack/react-router@1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(csstype@3.1.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^1.89.0
+        version: 1.89.0(@tanstack/react-router@1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(csstype@3.1.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/zod-form-adapter':
-        specifier: ^0.40.1
-        version: 0.40.1(zod@3.24.1)
+        specifier: ^0.40.2
+        version: 0.40.2(zod@3.24.1)
       convex:
         specifier: ^1.17.3
         version: 1.17.3(@clerk/clerk-react@5.20.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -350,14 +350,14 @@ importers:
         specifier: ^5.62.7
         version: 5.62.7(@tanstack/react-query@5.62.7(react@19.0.0))(react@19.0.0)
       '@tanstack/react-router':
-        specifier: ^1.88.0
-        version: 1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^1.89.0
+        version: 1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/react-table':
         specifier: ^8.20.6
         version: 8.20.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/router-devtools':
-        specifier: ^1.88.0
-        version: 1.88.0(@tanstack/react-router@1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(csstype@3.1.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^1.89.0
+        version: 1.89.0(@tanstack/react-router@1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(csstype@3.1.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -507,8 +507,8 @@ importers:
         specifier: ^5.62.7
         version: 5.62.7
       '@tanstack/react-form':
-        specifier: ^0.40.1
-        version: 0.40.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.2)
+        specifier: ^0.40.2
+        version: 0.40.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.2)
       '@tanstack/react-query':
         specifier: ^5.62.7
         version: 5.62.7(react@19.0.0)
@@ -519,11 +519,11 @@ importers:
         specifier: ^5.62.7
         version: 5.62.7(@tanstack/react-query@5.62.7(react@19.0.0))(react@19.0.0)
       '@tanstack/react-router':
-        specifier: ^1.88.0
-        version: 1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^1.89.0
+        version: 1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/router-devtools':
-        specifier: ^1.88.0
-        version: 1.88.0(@tanstack/react-router@1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(csstype@3.1.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^1.89.0
+        version: 1.89.0(@tanstack/react-router@1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(csstype@3.1.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       convex:
         specifier: ^1.17.3
         version: 1.17.3(@clerk/clerk-react@5.20.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -595,8 +595,8 @@ importers:
         specifier: ^3.67.1
         version: 3.67.1(react@19.0.0)
       '@sanity/code-input':
-        specifier: ^5.1.0
-        version: 5.1.0(@babel/runtime@7.26.0)(@codemirror/lint@6.8.4)(@codemirror/theme-one-dark@6.1.2)(@emotion/is-prop-valid@1.3.1)(@lezer/common@1.2.3)(codemirror@6.0.1(@lezer/common@1.2.3))(react-dom@19.0.0(react@19.0.0))(react-is@19.0.0)(react@19.0.0)(sanity@3.67.1(@emotion/is-prop-valid@1.3.1)(@types/node@22.10.2)(@types/react@19.0.1)(less@4.2.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.80.7)(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(terser@5.37.0))(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
+        specifier: ^5.1.1
+        version: 5.1.1(@babel/runtime@7.26.0)(@codemirror/lint@6.8.4)(@codemirror/theme-one-dark@6.1.2)(@emotion/is-prop-valid@1.3.1)(@lezer/common@1.2.3)(codemirror@6.0.1(@lezer/common@1.2.3))(react-dom@19.0.0(react@19.0.0))(react-is@19.0.0)(react@19.0.0)(sanity@3.67.1(@emotion/is-prop-valid@1.3.1)(@types/node@22.10.2)(@types/react@19.0.1)(less@4.2.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.80.7)(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(terser@5.37.0))(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@sanity/dashboard':
         specifier: ^4.1.2
         version: 4.1.2(@emotion/is-prop-valid@1.3.1)(react-dom@19.0.0(react@19.0.0))(react-is@19.0.0)(react@19.0.0)(sanity@3.67.1(@emotion/is-prop-valid@1.3.1)(@types/node@22.10.2)(@types/react@19.0.1)(less@4.2.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.80.7)(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(terser@5.37.0))(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
@@ -722,11 +722,11 @@ importers:
         specifier: ^5.62.7
         version: 5.62.7(@tanstack/react-query@5.62.7(react@19.0.0))(react@19.0.0)
       '@tanstack/react-router':
-        specifier: ^1.88.0
-        version: 1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^1.89.0
+        version: 1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/router-devtools':
-        specifier: ^1.88.0
-        version: 1.88.0(@tanstack/react-router@1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(csstype@3.1.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^1.89.0
+        version: 1.89.0(@tanstack/react-router@1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(csstype@3.1.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       calendar-link:
         specifier: ^2.7.0
         version: 2.7.0
@@ -1060,8 +1060,8 @@ importers:
         specifier: ^1.1.5
         version: 1.1.5(@types/react-dom@19.0.2(@types/react@19.0.1))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/react-router':
-        specifier: ^1.88.0
-        version: 1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^1.89.0
+        version: 1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -2505,9 +2505,6 @@ packages:
   '@codemirror/language-data@6.5.1':
     resolution: {integrity: sha512-0sWxeUSNlBr6OmkqybUTImADFUP0M3P0IiSde4nc24bz/6jIYzqYSgkOSLS+CBIoW1vU8Q9KUWXscBXeoMVC9w==}
 
-  '@codemirror/language@6.10.3':
-    resolution: {integrity: sha512-kDqEU5sCP55Oabl6E7m5N+vZRoc0iWqgDVhEKifcHzPzjqCegcO4amfrYVL9PmPZpl4G0yjkpTpUO/Ui8CzO8A==}
-
   '@codemirror/language@6.10.5':
     resolution: {integrity: sha512-sECWJyNmwqw6mSO6Qf0IVPHwhEnuYbqHBZaaIbdcXtZ6Y2r5vU/dxgC7K1ppWaJFy8XGtTBC0Pd60qI7NfJreQ==}
 
@@ -2516,9 +2513,6 @@ packages:
 
   '@codemirror/legacy-modes@6.4.2':
     resolution: {integrity: sha512-HsvWu08gOIIk303eZQCal4H4t65O/qp1V4ul4zVa3MHK5FJ0gz3qz3O55FIkm+aQUcshUOjBx38t2hPiJwW5/g==}
-
-  '@codemirror/lint@6.8.2':
-    resolution: {integrity: sha512-PDFG5DjHxSEjOXk9TQYYVjZDqlZTFaDBfhQixHnQOEVDDNHUbEh/hstAjcQJaA6FQdZTD1hquXTK0rVBLADR1g==}
 
   '@codemirror/lint@6.8.4':
     resolution: {integrity: sha512-u4q7PnZlJUojeRe8FJa/njJcMctISGgPQ4PnWsd9268R4ZTtU+tfFYmwkBvgcrK2+QQ8tYFVALVb5fVJykKc5A==}
@@ -2537,12 +2531,6 @@ packages:
 
   '@codemirror/theme-one-dark@6.1.2':
     resolution: {integrity: sha512-F+sH0X16j/qFLMAfbciKTxVOwkdAS336b7AXTKOZhy8BR3eH/RelsnLgLFINrpST63mmN2OuwUt0W2ndUgYwUA==}
-
-  '@codemirror/view@6.34.2':
-    resolution: {integrity: sha512-d6n0WFvL970A9Z+l9N2dO+Hk9ev4hDYQzIx+B9tCyBP0W5wPEszi1rhuyFesNSkLZzXbQE5FPH7F/z/TMJfoPA==}
-
-  '@codemirror/view@6.34.3':
-    resolution: {integrity: sha512-Ph5d+u8DxIeSgssXEakaakImkzBV4+slwIbcxl9oc9evexJhImeu/G8TK7+zp+IFK9KuJ0BdSn6kTBJeH2CHvA==}
 
   '@codemirror/view@6.35.0':
     resolution: {integrity: sha512-I0tYy63q5XkaWsJ8QRv5h6ves7kvtrBWjBcnf/bzohFJQc5c14a1AQRdE8QpPF9eMp5Mq2FMm59TCj1gDfE7kw==}
@@ -4112,8 +4100,8 @@ packages:
   '@lezer/java@1.1.3':
     resolution: {integrity: sha512-yHquUfujwg6Yu4Fd1GNHCvidIvJwi/1Xu2DaKl/pfWIA2c1oXkVvawH3NyXhCaFx4OdlYBVX5wvz2f7Aoa/4Xw==}
 
-  '@lezer/javascript@1.4.19':
-    resolution: {integrity: sha512-j44kbR1QL26l6dMunZ1uhKBFteVGLVCBGNUD2sUaMnic+rbTviVuoK0CD1l9FTW31EueWvFFswCKMH7Z+M3JRA==}
+  '@lezer/javascript@1.4.21':
+    resolution: {integrity: sha512-lL+1fcuxWYPURMM/oFZLEDm0XuLN128QPV+VuGtKpeaOGdcl9F2LYC3nh1S9LkPqx9M0mndZFdXCipNAZpzIkQ==}
 
   '@lezer/json@1.0.2':
     resolution: {integrity: sha512-xHT2P4S5eeCYECyKNPhr4cbEL9tc8w83SPwRC373o9uEdrvGKTZoJVAGxpOsZckMlEh9W23Pc72ew918RWQOBQ==}
@@ -6509,8 +6497,8 @@ packages:
     resolution: {integrity: sha512-k5aW5C8RdqVGnvuX0KZ+AAIlhYueb6sx3edhKkIMmr2UfD8vSTSW3oAXVt+/WlBstlMIqvkc5RCLLWZQcF3gaA==}
     engines: {node: '>=14.18'}
 
-  '@sanity/code-input@5.1.0':
-    resolution: {integrity: sha512-mnRytIZF3a6oVfeiBeY0K6rVHUkiDRk4RdDQwND3MAaO6xc4FUEYjdIJBNq9Se6Gh8wZRDjFoJ8JEO7ozK/hDQ==}
+  '@sanity/code-input@5.1.1':
+    resolution: {integrity: sha512-ZL166Gu5H0XXxjkAVmfTZ7Qvn7ftzjr+cr+T2GOHntsHIMa/AY9qsk11kZB2M2wgp66tABhemph1Adel8iGxdA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || >=19.0.0-0
@@ -7153,8 +7141,8 @@ packages:
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0
 
-  '@tanstack/form-core@0.40.1':
-    resolution: {integrity: sha512-7ufCTuuUyABxABV804uuTsA9Z0192Xb9A2SA0O+SEUwFqQ+Ix5IjlDBnreohSmYIukMfSPl+J987HZjTZyT0xQ==}
+  '@tanstack/form-core@0.40.2':
+    resolution: {integrity: sha512-ecJgr+jRKSClUzYhOixfiJTXqfCxAiWmeMTKKzV848OfCtdzWxEzSasZLDMQG5KlyL9q/GDhk1GRHQmEUxynoA==}
 
   '@tanstack/history@1.87.6':
     resolution: {integrity: sha512-5OPHcc20Ye5XR+RBkFk+64TtRJ83clrpaOcC/S8t4N0k+/xPDJpkPEPnoENb3sQeRI28y1dJaUuvXt/dv/ylaQ==}
@@ -7175,8 +7163,8 @@ packages:
   '@tanstack/query-sync-storage-persister@5.62.7':
     resolution: {integrity: sha512-fcXCT65VgmgKsSM5XfRlk0hXnQMpkHLCMpOjqq7Rl2DMjHZcKjtgSEw+drHZBggJ5dqAhPd5DAcZ/utIE192nw==}
 
-  '@tanstack/react-form@0.40.1':
-    resolution: {integrity: sha512-uv7hqzEdUshO/5/skCZsvUrvtZdsLL4OMynsHS9gnhH9CL00nZGzwCxsL5PJLgfADZuiKr0CGbtxC8IZZ77V5Q==}
+  '@tanstack/react-form@0.40.2':
+    resolution: {integrity: sha512-YHGsnqYLE5lFz5jvoR0RGczhzX0WFLqe8mtFRixk2uN92zdNTcxSgoJHrCV5/q+fWY5+bxtixB/B0cApi8qQmA==}
     peerDependencies:
       '@tanstack/start': ^1.43.13
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -7201,8 +7189,8 @@ packages:
     peerDependencies:
       react: ^18 || ^19
 
-  '@tanstack/react-router@1.88.0':
-    resolution: {integrity: sha512-kC5sqBlMcfAZeHSLyTtPrscmEgjmZiT2GyrfG8muGPzsLhjcMbSbnTrMETdJccPDId/b7aNyJIyseqwxX9CTbA==}
+  '@tanstack/react-router@1.89.0':
+    resolution: {integrity: sha512-Tfqr2RkTGB4D6wQ1FpA70qWO2rxx3iFSMzslPIq7LaYxoRbbP8z1kMAXBIJzjZ9lw79oiol3c+7BIUoaowKoag==}
     engines: {node: '>=12'}
     peerDependencies:
       '@tanstack/router-generator': ^1.87.7
@@ -7243,11 +7231,11 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
 
-  '@tanstack/router-devtools@1.88.0':
-    resolution: {integrity: sha512-5gpv+iSgHWNKzLITHq0bc3ND87PP7Ys0mmcnm99zf+JjSMiwYK4e3GoQ37bsByV0gf2tqJ8iRFd1w2Trgll2sw==}
+  '@tanstack/router-devtools@1.89.0':
+    resolution: {integrity: sha512-waulyCH3ZI3w6vRHPq718G9MRCFOkiQscyM69ZEWzlaruRJL4fcHoo5C9ULHjht4vPYEfvAr7n7B2h4el6QugQ==}
     engines: {node: '>=12'}
     peerDependencies:
-      '@tanstack/react-router': ^1.88.0
+      '@tanstack/react-router': ^1.89.0
       react: '>=18'
       react-dom: '>=18'
 
@@ -7287,8 +7275,8 @@ packages:
     resolution: {integrity: sha512-PTpeM8SHL7AJM0pJOacFvHribbUODS51qe9NsMqku4mogh6BWObY1EeVmeGnp9o3VngAEsf+rJMs2zqIVz3WFA==}
     engines: {node: '>=12'}
 
-  '@tanstack/zod-form-adapter@0.40.1':
-    resolution: {integrity: sha512-94Q1HaCgF2EjpKtmruzt0sITKMOe7Bo6SM5cdetDxCdAIBInlzyLIlcwjPxjbJDpITqL4CHVjdLLbSHPo4Iq+Q==}
+  '@tanstack/zod-form-adapter@0.40.2':
+    resolution: {integrity: sha512-450DAYAb7uN6GwEhMWQlGOvfQzj6ZtgEsZf94M1a3S/lGioKAFuidelRaErXpG4b7lvZiQmfyhlTA0RwNE2r0Q==}
     peerDependencies:
       zod: ^3.x
 
@@ -17645,20 +17633,6 @@ snapshots:
 
   '@cloudflare/workers-types@4.20241205.0': {}
 
-  '@codemirror/autocomplete@6.18.3(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.2)(@lezer/common@1.2.3)':
-    dependencies:
-      '@codemirror/language': 6.10.3
-      '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.34.2
-      '@lezer/common': 1.2.3
-
-  '@codemirror/autocomplete@6.18.3(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.3)(@lezer/common@1.2.3)':
-    dependencies:
-      '@codemirror/language': 6.10.3
-      '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.34.3
-      '@lezer/common': 1.2.3
-
   '@codemirror/autocomplete@6.18.3(@codemirror/language@6.10.5)(@codemirror/state@6.4.1)(@codemirror/view@6.35.2)(@lezer/common@1.2.3)':
     dependencies:
       '@codemirror/language': 6.10.5
@@ -17696,9 +17670,9 @@ snapshots:
 
   '@codemirror/commands@6.7.1':
     dependencies:
-      '@codemirror/language': 6.10.3
-      '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.34.2
+      '@codemirror/language': 6.10.6
+      '@codemirror/state': 6.5.0
+      '@codemirror/view': 6.35.3
       '@lezer/common': 1.2.3
 
   '@codemirror/lang-angular@0.1.3':
@@ -17764,13 +17738,13 @@ snapshots:
 
   '@codemirror/lang-javascript@6.2.2':
     dependencies:
-      '@codemirror/autocomplete': 6.18.3(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.2)(@lezer/common@1.2.3)
-      '@codemirror/language': 6.10.3
-      '@codemirror/lint': 6.8.2
-      '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.34.2
+      '@codemirror/autocomplete': 6.18.3(@codemirror/language@6.10.6)(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)(@lezer/common@1.2.3)
+      '@codemirror/language': 6.10.6
+      '@codemirror/lint': 6.8.4
+      '@codemirror/state': 6.5.0
+      '@codemirror/view': 6.35.3
       '@lezer/common': 1.2.3
-      '@lezer/javascript': 1.4.19
+      '@lezer/javascript': 1.4.21
 
   '@codemirror/lang-json@6.0.1':
     dependencies:
@@ -17800,11 +17774,11 @@ snapshots:
 
   '@codemirror/lang-markdown@6.3.1':
     dependencies:
-      '@codemirror/autocomplete': 6.18.3(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.3)(@lezer/common@1.2.3)
+      '@codemirror/autocomplete': 6.18.3(@codemirror/language@6.10.6)(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)(@lezer/common@1.2.3)
       '@codemirror/lang-html': 6.4.9
-      '@codemirror/language': 6.10.3
-      '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.34.3
+      '@codemirror/language': 6.10.6
+      '@codemirror/state': 6.5.0
+      '@codemirror/view': 6.35.3
       '@lezer/common': 1.2.3
       '@lezer/markdown': 1.3.2
 
@@ -17926,15 +17900,6 @@ snapshots:
     transitivePeerDependencies:
       - '@codemirror/view'
 
-  '@codemirror/language@6.10.3':
-    dependencies:
-      '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.34.2
-      '@lezer/common': 1.2.3
-      '@lezer/highlight': 1.2.1
-      '@lezer/lr': 1.4.2
-      style-mod: 4.1.2
-
   '@codemirror/language@6.10.5':
     dependencies:
       '@codemirror/state': 6.4.1
@@ -17956,12 +17921,6 @@ snapshots:
   '@codemirror/legacy-modes@6.4.2':
     dependencies:
       '@codemirror/language': 6.10.6
-
-  '@codemirror/lint@6.8.2':
-    dependencies:
-      '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.34.3
-      crelt: 1.0.6
 
   '@codemirror/lint@6.8.4':
     dependencies:
@@ -17995,18 +17954,6 @@ snapshots:
       '@codemirror/state': 6.5.0
       '@codemirror/view': 6.35.3
       '@lezer/highlight': 1.2.1
-
-  '@codemirror/view@6.34.2':
-    dependencies:
-      '@codemirror/state': 6.4.1
-      style-mod: 4.1.2
-      w3c-keyname: 2.2.8
-
-  '@codemirror/view@6.34.3':
-    dependencies:
-      '@codemirror/state': 6.4.1
-      style-mod: 4.1.2
-      w3c-keyname: 2.2.8
 
   '@codemirror/view@6.35.0':
     dependencies:
@@ -19603,7 +19550,7 @@ snapshots:
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.2
 
-  '@lezer/javascript@1.4.19':
+  '@lezer/javascript@1.4.21':
     dependencies:
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
@@ -22847,7 +22794,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/code-input@5.1.0(@babel/runtime@7.26.0)(@codemirror/lint@6.8.4)(@codemirror/theme-one-dark@6.1.2)(@emotion/is-prop-valid@1.3.1)(@lezer/common@1.2.3)(codemirror@6.0.1(@lezer/common@1.2.3))(react-dom@19.0.0(react@19.0.0))(react-is@19.0.0)(react@19.0.0)(sanity@3.67.1(@emotion/is-prop-valid@1.3.1)(@types/node@22.10.2)(@types/react@19.0.1)(less@4.2.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.80.7)(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(terser@5.37.0))(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
+  '@sanity/code-input@5.1.1(@babel/runtime@7.26.0)(@codemirror/lint@6.8.4)(@codemirror/theme-one-dark@6.1.2)(@emotion/is-prop-valid@1.3.1)(@lezer/common@1.2.3)(codemirror@6.0.1(@lezer/common@1.2.3))(react-dom@19.0.0(react@19.0.0))(react-is@19.0.0)(react@19.0.0)(sanity@3.67.1(@emotion/is-prop-valid@1.3.1)(@types/node@22.10.2)(@types/react@19.0.1)(less@4.2.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.80.7)(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(terser@5.37.0))(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
     dependencies:
       '@codemirror/autocomplete': 6.18.3(@codemirror/language@6.10.6)(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)(@lezer/common@1.2.3)
       '@codemirror/commands': 6.7.1
@@ -22865,6 +22812,7 @@ snapshots:
       '@codemirror/view': 6.35.3
       '@juggle/resize-observer': 3.4.0
       '@lezer/highlight': 1.2.1
+      '@sanity/icons': 3.5.2(react@19.0.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@sanity/ui': 2.10.9(@emotion/is-prop-valid@1.3.1)(react-dom@19.0.0(react@19.0.0))(react-is@19.0.0)(react@19.0.0)(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@uiw/codemirror-themes': 4.23.6(@codemirror/language@6.10.6)(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)
@@ -23861,7 +23809,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@tanstack/form-core@0.40.1':
+  '@tanstack/form-core@0.40.2':
     dependencies:
       '@tanstack/store': 0.6.0
 
@@ -23884,10 +23832,10 @@ snapshots:
       '@tanstack/query-core': 5.62.7
       '@tanstack/query-persist-client-core': 5.62.7
 
-  '@tanstack/react-form@0.40.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.2)':
+  '@tanstack/react-form@0.40.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.2)':
     dependencies:
       '@remix-run/node': 2.15.1(typescript@5.7.2)
-      '@tanstack/form-core': 0.40.1
+      '@tanstack/form-core': 0.40.2
       '@tanstack/react-store': 0.6.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       decode-formdata: 0.8.0
       react: 19.0.0
@@ -23912,7 +23860,7 @@ snapshots:
       '@tanstack/query-core': 5.62.7
       react: 19.0.0
 
-  '@tanstack/react-router@1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@tanstack/react-router@1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@tanstack/history': 1.87.6
       '@tanstack/react-store': 0.6.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -23954,9 +23902,9 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
-  '@tanstack/router-devtools@1.88.0(@tanstack/react-router@1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(csstype@3.1.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@tanstack/router-devtools@1.89.0(@tanstack/react-router@1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(csstype@3.1.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@tanstack/react-router': 1.88.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@tanstack/react-router': 1.89.0(@tanstack/router-generator@1.87.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       clsx: 2.1.1
       goober: 2.1.16(csstype@3.1.3)
       react: 19.0.0
@@ -24007,9 +23955,9 @@ snapshots:
 
   '@tanstack/virtual-file-routes@1.87.6': {}
 
-  '@tanstack/zod-form-adapter@0.40.1(zod@3.24.1)':
+  '@tanstack/zod-form-adapter@0.40.2(zod@3.24.1)':
     dependencies:
-      '@tanstack/form-core': 0.40.1
+      '@tanstack/form-core': 0.40.2
       zod: 3.24.1
 
   '@testing-library/dom@10.4.0':
