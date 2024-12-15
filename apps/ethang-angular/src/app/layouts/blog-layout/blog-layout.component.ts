@@ -17,14 +17,14 @@ import { MainLayoutComponent } from "../main-layout/main-layout.component";
   templateUrl: "./blog-layout.component.html",
 })
 export class BlogLayoutComponent implements AfterViewInit {
-  private readonly description = input.required<string>();
+  public readonly description = input.required<string>();
+
+  public readonly title = input.required<string>();
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   private readonly hyphenate = createHyphenator(enUsPatterns);
 
   private readonly meta = inject(Meta);
-
-  private readonly title = input.required<string>();
 
   public constructor() {
     this.meta.addTags([
