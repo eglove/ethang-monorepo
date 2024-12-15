@@ -101,6 +101,7 @@ export default tseslint.config(
               "Iteree",
               "Sonner",
               "cmdk",
+              "ngsw",
             ],
           },
         },

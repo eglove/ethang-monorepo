@@ -1,17 +1,25 @@
-import { Component, input, signal } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  signal,
+} from "@angular/core";
 
 import { coltSteeleCourseData } from "../data/colt-steele-courses";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [],
   selector: "app-course-list",
   templateUrl: "./course-list.component.html",
 })
 export class CourseListComponent {
-  public readonly courses = input.required<{
-    name: string;
-    url: string;
-  }[]>();
+  public readonly courses = input.required<
+    {
+      name: string;
+      url: string;
+    }[]
+  >();
 
   public readonly index = input.required<number>();
 

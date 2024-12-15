@@ -7,15 +7,16 @@ import {
 import enUsPatterns from "hyphenation.en-us";
 import { createHyphenator, justifyContent } from "tex-linebreak";
 
-import { BlogLayoutComponent } from "../../layouts/blog-layout/blog-layout.component";
+import { MainLayoutComponent } from "../main-layout/main-layout.component";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BlogLayoutComponent],
-  selector: "app-forcing-react",
-  templateUrl: "./forcing-react.component.html",
+  imports: [MainLayoutComponent],
+  selector: "app-blog-layout",
+  styles: "",
+  templateUrl: "./blog-layout.component.html",
 })
-export class ForcingReactComponent implements AfterViewInit {
+export class BlogLayoutComponent implements AfterViewInit {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   private readonly hyphenate = createHyphenator(enUsPatterns);
 

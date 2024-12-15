@@ -3,14 +3,9 @@ import { RouterLink } from "@angular/router";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-  ],
+  imports: [RouterLink],
   selector: "app-main-layout",
   templateUrl: "./main-layout.component.html",
 })
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class MainLayoutComponent {
-
-}
-
+export class MainLayoutComponent {}

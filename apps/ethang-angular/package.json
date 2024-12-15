@@ -11,7 +11,7 @@
     "serve:ssr:ethang-angular": "node dist/ethang-angular/server/server.mjs",
     "process": "node ./tools/copy-files.mjs",
     "deploy": "pnpm run build && wrangler pages deploy dist/cloudflare",
-    "lint": "eslint src --fix"
+    "lint": "pnpx prettier src --write && eslint src --fix"
   },
   "engines": {
     "node": ">=22"
@@ -33,7 +33,9 @@
     "@angular/router": "^19.0.0",
     "@angular/service-worker": "^19.0.0",
     "@angular/ssr": "^19.0.0",
+    "hyphenation.en-us": "^0.2.1",
     "rxjs": "~7.8.0",
+    "tex-linebreak": "^0.7.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },

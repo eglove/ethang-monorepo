@@ -1,6 +1,13 @@
 import { provideHttpClient, withFetch } from "@angular/common/http";
-import { type ApplicationConfig, isDevMode, provideZoneChangeDetection } from "@angular/core";
-import { provideClientHydration, withEventReplay } from "@angular/platform-browser";
+import {
+  type ApplicationConfig,
+  isDevMode,
+  provideZoneChangeDetection,
+} from "@angular/core";
+import {
+  provideClientHydration,
+  withEventReplay,
+} from "@angular/platform-browser";
 import { provideRouter } from "@angular/router";
 import { provideServiceWorker } from "@angular/service-worker";
 
