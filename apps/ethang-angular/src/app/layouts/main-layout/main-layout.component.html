@@ -1,5 +1,5 @@
-<div class="grid grid-cols-[auto_1fr] gap-4">
-  <div class="border-r-2 min-h-screen">
+<div class="grid sm:grid-cols-[auto_1fr] gap-4">
+  <div class="hidden sm:block border-r-2 min-h-screen">
     <h1 class="px-5 py-1 font-bold text-xl">EthanG</h1>
     <nav class="grid gap-4">
       <ul class="menu menu-sm">
@@ -8,6 +8,19 @@
       </ul>
     </nav>
   </div>
+  <div class="sm:hidden navbar bg-base-100">
+    <div class="navbar-start">
+      <h1 class="px-5 py-1 font-bold text-xl">EthanG</h1>
+    </div>
+    <div class="navbar-center flex">
+      <ul class="menu menu-horizontal px-1">
+        <li><a routerLink="/" class="link">Home</a></li>
+        <li><a routerLink="/courses" class="link">Courses</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="mx-4 sm:mx-0">
   <ng-content/>
+  </div>
 </div>
 
