@@ -13,9 +13,6 @@
     "deploy": "pnpm run build && wrangler pages deploy dist/cloudflare",
     "lint": "eslint src --fix"
   },
-  "engines": {
-    "node": "18.19"
-  },
   "browserslist": [
     "defaults and fully supports es6-module",
     "maintained node versions"
