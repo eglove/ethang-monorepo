@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { RouterLink } from "@angular/router";
 
 import {
   MainLayoutComponent,
@@ -8,6 +9,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MainLayoutComponent,
+    RouterLink,
   ],
   selector: "app-home",
   templateUrl: "./home.component.html",

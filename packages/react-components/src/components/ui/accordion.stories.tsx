@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/accordion.tsx";
 
 export default {
-  title: "ui/accordion",
+  title: "ui/accordion-item",
 };
 
 export const Default = () => {

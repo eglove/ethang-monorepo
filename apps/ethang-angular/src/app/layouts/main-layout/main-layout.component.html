@@ -1,4 +1,13 @@
-<div>
-<ng-content />
+<div class="grid grid-cols-[auto_1fr] gap-4">
+  <div class="border-r-2 min-h-screen">
+    <h1 class="px-5 py-1 font-bold text-xl">EthanG</h1>
+    <nav class="grid gap-4">
+      <ul class="menu menu-sm">
+        <li><a routerLink="/" class="link">Home</a></li>
+        <li><a routerLink="/courses" class="link">Courses</a></li>
+      </ul>
+    </nav>
+  </div>
+  <ng-content/>
 </div>
 

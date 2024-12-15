@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        "accordion-down": "accordion-item-down 0.2s ease-out",
+        "accordion-up": "accordion-item-up 0.2s ease-out",
       },
     },
   },

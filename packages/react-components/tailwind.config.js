@@ -12,8 +12,8 @@ export default {
   theme: {
     extend: {
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        "accordion-down": "accordion-item-down 0.2s ease-out",
+        "accordion-up": "accordion-item-up 0.2s ease-out",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -38,12 +38,12 @@ export default {
             height: "0",
           },
           to: {
-            height: "var(--radix-accordion-content-height)",
+            height: "var(--radix-accordion-item-content-height)",
           },
         },
         "accordion-up": {
           from: {
-            height: "var(--radix-accordion-content-height)",
+            height: "var(--radix-accordion-item-content-height)",
           },
           to: {
             height: "0",
