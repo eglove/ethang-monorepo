@@ -13,5 +13,4 @@ import {
   templateUrl: "./angular-now.component.html",
 })
 export class AngularNowComponent {
-
 }
