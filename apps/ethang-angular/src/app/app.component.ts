@@ -1,30 +1,13 @@
-import {
-  Component,
-  computed,
-  signal
-} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
-import {UserComponent} from './user/user.component.js';
-import {DUMMY_USERS} from './user/dummy-users.js';
-import {NavigationComponent} from './navigation/navigation.component.js';
-import {TasksComponent} from './tasks/tasks.component.js';
+import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
 
 @Component({
-  selector: 'app-root',
-  imports: [RouterOutlet, NavigationComponent, UserComponent, TasksComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterOutlet],
+  selector: "app-root",
+  templateUrl: "./app.component.html",
 })
 export class AppComponent {
-  users = DUMMY_USERS;
-  selectedUserId = signal<string | undefined>(undefined);
-  selectedUser = computed(() => {
-    return this.users.find(user => {
-      return user.id === this.selectedUserId()
-    });
-  })
-
-  onSelectUser(id: string) {
-    this.selectedUserId.set(id);
-  }
+  public title = "ethang-angular";
 }
+
