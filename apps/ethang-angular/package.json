@@ -14,7 +14,7 @@
     "lint": "eslint src --fix"
   },
   "engines": {
-    "node": "18.17.1"
+    "node": "18.19"
   },
   "browserslist": [
     "defaults and fully supports es6-module",
