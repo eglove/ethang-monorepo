@@ -59,6 +59,7 @@ const customRules: CustomRules = [
             "Iteree",
             "Sonner",
             "cmdk",
+            "ngsw",
           ],
         },
       },
