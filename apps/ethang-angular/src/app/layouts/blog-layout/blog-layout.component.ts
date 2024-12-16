@@ -13,7 +13,6 @@ import { MainLayoutComponent } from "../main-layout/main-layout.component";
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MainLayoutComponent],
   selector: "app-blog-layout",
-  styles: "",
   templateUrl: "./blog-layout.component.html",
 })
 export class BlogLayoutComponent implements AfterViewInit {
