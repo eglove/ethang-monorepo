@@ -9,5 +9,4 @@ import { MainLayoutComponent } from "../layouts/main-layout/main-layout.componen
   selector: "app-home",
   templateUrl: "./home.component.html",
 })
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class HomeComponent {}

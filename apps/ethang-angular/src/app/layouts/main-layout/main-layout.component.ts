@@ -7,5 +7,4 @@ import { RouterLink } from "@angular/router";
   selector: "app-main-layout",
   templateUrl: "./main-layout.component.html",
 })
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class MainLayoutComponent {}

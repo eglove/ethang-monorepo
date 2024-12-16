@@ -16,41 +16,41 @@ export default tseslint.config(
       }
     }
   },
-    {
-        files: ["**/*.ts"],
-        extends: [
-            ...angular.configs.tsAll,
-        ],
-        processor: angular.processInlineTemplates,
-        rules: {
-            "@angular-eslint/directive-selector": [
-                "error",
-                {
-                    type: "attribute",
-                    prefix: "app",
-                    style: "camelCase",
-                },
-            ],
-            "@angular-eslint/component-selector": [
-                "error",
-                {
-                    type: "element",
-                    prefix: "app",
-                    style: "kebab-case",
-                },
-            ],
+  {
+    files: ["**/*.ts"],
+    extends: [
+      ...angular.configs.tsAll,
+    ],
+    processor: angular.processInlineTemplates,
+    rules: {
+      "@typescript-eslint/no-extraneous-class": "off",
+      "@angular-eslint/directive-selector": [
+        "error",
+        {
+          type: "attribute",
+          prefix: "app",
+          style: "camelCase",
         },
+      ],
+      "@angular-eslint/component-selector": [
+        "error",
+        {
+          type: "element",
+          prefix: "app",
+          style: "kebab-case",
+        },
+      ],
     },
-    {
-        files: ["**/*.html"],
-        extends: [
-            ...angular.configs.templateAll,
-        ],
-        rules: {
-          "@angular-eslint/template/i18n": "off",
-          "@angular-eslint/template/no-call-expression": "off",
-          "@angular-eslint/template/prefer-ngsrc": "warn",
-          "@typescript-eslint/no-extraneous-class": "off",
-        },
-    }
+  },
+  {
+    files: ["**/*.html"],
+    extends: [
+      ...angular.configs.templateAll,
+    ],
+    rules: {
+      "@angular-eslint/template/i18n": "off",
+      "@angular-eslint/template/no-call-expression": "off",
+      "@angular-eslint/template/prefer-ngsrc": "warn",
+    },
+  }
 );
