@@ -8,10 +8,12 @@ export const routes: Routes = [
     component: HomeComponent,
     path: "",
     pathMatch: "full",
+    title: "EthanG",
   },
   {
     component: CoursesComponent,
     path: "courses",
+    title: "EthanG | Courses",
   },
   {
     loadComponent: async () => {
@@ -20,6 +22,7 @@ export const routes: Routes = [
       });
     },
     path: "blog/forcing-react",
+    title: "EthanG | Forcing React to be What It Isn't",
   },
   {
     loadComponent: async () => {
@@ -28,5 +31,6 @@ export const routes: Routes = [
       });
     },
     path: "blog/angular-now",
+    title: "EthanG | It's Angular Now",
   },
 ];
