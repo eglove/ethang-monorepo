@@ -1,7 +1,5 @@
 import type { Routes } from "@angular/router";
 
-import { AngularNowComponent } from "./blogs/angular-now/angular-now.component";
-import { ForcingReactComponent } from "./blogs/forcing-react/forcing-react.component";
 import { CoursesComponent } from "./courses/courses.component";
 import { HomeComponent } from "./home/home.component";
 
@@ -16,11 +14,19 @@ export const routes: Routes = [
     path: "courses",
   },
   {
-    component: ForcingReactComponent,
+    loadComponent: async () => {
+      return import("./blogs/forcing-react/forcing-react.component").then((module) => {
+        return module.ForcingReactComponent;
+      });
+    },
     path: "blog/forcing-react",
   },
   {
-    component: AngularNowComponent,
+    loadComponent: async () => {
+      return import("./blogs/angular-now/angular-now.component").then((module) => {
+        return module.AngularNowComponent;
+      });
+    },
     path: "blog/angular-now",
   },
 ];
