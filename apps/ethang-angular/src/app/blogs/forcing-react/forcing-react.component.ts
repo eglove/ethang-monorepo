@@ -1,26 +1,25 @@
 import {
-  type AfterViewInit,
   ChangeDetectionStrategy,
-  Component,
+  Component, inject,
 } from "@angular/core";
-// @ts-expect-error no types
-import enUsPatterns from "hyphenation.en-us";
-import { createHyphenator, justifyContent } from "tex-linebreak";
+// eslint-disable-next-line barrel/avoid-importing-barrel-files
+import { CloudinaryModule, placeholder } from "@cloudinary/ng";
 
 import { BlogLayoutComponent } from "../../layouts/blog-layout/blog-layout.component";
+import { CloudinaryService } from "../../services/cloudinary.service";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BlogLayoutComponent],
+  imports: [BlogLayoutComponent, CloudinaryModule],
   selector: "app-forcing-react",
   templateUrl: "./forcing-react.component.html",
 })
-export class ForcingReactComponent implements AfterViewInit {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  private readonly hyphenate = createHyphenator(enUsPatterns);
+export class ForcingReactComponent {
+  private readonly cloudinaryService = inject(CloudinaryService);
 
-  public ngAfterViewInit() {
-    const elements = [...globalThis.document.querySelectorAll("p")];
-    justifyContent(elements, this.hyphenate);
-  }
+  public frameworkBenchMarkImage = this.cloudinaryService.getImage("framework-comparison");
+
+  public reactScheduleImage = this.cloudinaryService.getImage("react-team-schedule");
+
+  protected readonly placeholder = placeholder;
 }
