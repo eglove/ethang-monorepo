@@ -1,6 +1,5 @@
 import {
-  ChangeDetectionStrategy,
-  Component, inject,
+  ChangeDetectionStrategy, Component, inject, type OnInit,
 } from "@angular/core";
 // eslint-disable-next-line barrel/avoid-importing-barrel-files
 import { CloudinaryModule, placeholder } from "@cloudinary/ng";
@@ -22,4 +21,12 @@ export class ForcingReactComponent {
   public reactScheduleImage = this.cloudinaryService.getImage("react-team-schedule");
 
   protected readonly placeholder = placeholder;
+
+  public constructor() {
+    globalThis.document.title = "EthanG | Forcing React to be What It Isn't";
+    const metaDescription = globalThis.document.createElement("meta");
+    metaDescription.name = "description";
+    metaDescription.content = "Forcing React to be What It Isn't";
+    globalThis.document.head.append(metaDescription);
+  }
 }
