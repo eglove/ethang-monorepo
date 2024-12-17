@@ -18,9 +18,9 @@
   },
   "dependencies": {
     "@sanity/cli": "^3.67.1",
-    "@sanity/code-input": "^5.1.1",
+    "@sanity/code-input": "^5.1.2",
     "@sanity/dashboard": "^4.1.2",
-    "@sanity/icons": "^3.5.2",
+    "@sanity/icons": "^3.5.3",
     "@sanity/orderable-document-list": "^1.2.2",
     "@sanity/vision": "^3.67.1",
     "@types/react": "19.0.1",
@@ -33,11 +33,11 @@
   },
   "devDependencies": {
     "@ethang/eslint-config": "workspace:^",
-    "@sanity/eslint-config-studio": "^5.0.0",
+    "@sanity/eslint-config-studio": "^5.0.1",
     "@types/lodash": "^4.17.13",
     "eslint": "^9.17.0",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.18.0"
+    "typescript-eslint": "^8.18.1"
   },
   "engines": {
     "node": ">=20"
