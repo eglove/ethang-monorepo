@@ -1,0 +1,35 @@
+{
+  "name": "auth",
+  "version": "0.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "browserslist": [
+    "defaults and fully supports es6-module",
+    "maintained node versions"
+  ],
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "test": "vitest",
+    "cf-typegen": "wrangler types",
+    "lint": "eslint src --fix"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.5.2",
+    "@cloudflare/workers-types": "^4.20241216.0",
+    "@ethang/eslint-config": "workspace:^",
+    "@types/lodash": "^4.17.13",
+    "eslint": "^9.17.0",
+    "typescript": "^5.5.2",
+    "vitest": "2.1.8",
+    "wrangler": "^3.60.3"
+  },
+  "dependencies": {
+    "@ethang/toolbelt": "workspace:^",
+    "lodash": "^4.17.21",
+    "zod": "^3.24.1"
+  }
+}

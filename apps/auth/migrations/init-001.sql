@@ -1,0 +1,17 @@
+DROP TABLE IF EXISTS Users;
+CREATE TABLE IF NOT EXISTS Users (
+       email TEXT PRIMARY KEY,
+       username TEXT NOT NULL,
+       password TEXT NOT NULL,
+       lastLoggedIn DATETIME,
+       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+       role TEXT
+);
+
+CREATE TRIGGER IF NOT EXISTS UpdateUsersupdatedAt
+AFTER UPDATE ON Users
+      FOR EACH ROW
+      BEGIN
+      UPDATE Users SET updatedAt = CURRENT_TIMESTAMP WHERE email = OLD.email;
+      END;

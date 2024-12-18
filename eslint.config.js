@@ -32,6 +32,7 @@ export default tseslint.config(
             "sonar/no-os-command-from-path": "off",
             "sonar/os-command": "off",
             "sonar/no-unstable-nested-components": "off",
+            "sonar/no-reference-error": "off",
         },
     },
     {
