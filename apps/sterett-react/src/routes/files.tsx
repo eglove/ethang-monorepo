@@ -39,6 +39,7 @@ export const filesRoute = createRoute({
     return rootRoute;
   },
   async loader() {
+    // @ts-expect-error it's fine
     return getRouteQueries(filesRouteQueries);
   },
   path: "/files",

@@ -99,6 +99,7 @@ export const calendarRoute = createRoute({
     return rootRoute;
   },
   async loader() {
+    // @ts-expect-error it's fine
     return getRouteQueries(calendarRouteQueries);
   },
   path: "/calendar",

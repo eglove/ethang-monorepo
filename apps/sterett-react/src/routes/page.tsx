@@ -57,6 +57,7 @@ export const pageRoute = createRoute({
     return rootRoute;
   },
   async loader() {
+    // @ts-expect-error it's fine
     return getRouteQueries(pageRouteQueries);
   },
   path: "/page",

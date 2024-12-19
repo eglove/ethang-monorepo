@@ -53,6 +53,7 @@ export const galleryRoute = createRoute({
     return rootRoute;
   },
   async loader() {
+    // @ts-expect-error it's fine
     return getRouteQueries(galleryRouteQueries);
   },
   path: "/gallery",

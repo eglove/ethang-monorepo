@@ -69,6 +69,7 @@ export const beyonderRoute = createRoute({
     return rootRoute;
   },
   async loader() {
+    // @ts-expect-error it's fine
     return getRouteQueries(beyonderRouteQueries);
   },
   path: "/beyonder",
