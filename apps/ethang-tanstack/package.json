@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "@clerk/backend": "^1.21.4",
-    "@clerk/clerk-react": "^5.20.4",
+    "@clerk/clerk-react": "^5.21.0",
     "@convex-dev/react-query": "0.0.0-alpha.8",
     "@cortex-js/compute-engine": "^0.27.0",
     "@ethang/react-components": "workspace:^",
@@ -50,12 +50,12 @@
     "hyphenation.en-us": "^0.2.1",
     "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.468.0",
+    "lucide-react": "^0.469.0",
     "luxon": "^3.5.0",
     "next-themes": "^0.4.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-hook-form": "^7.54.1",
+    "react-hook-form": "^7.54.2",
     "react-syntax-highlighter": "^15.6.1",
     "reactjs-tiptap-editor": "^0.1.11",
     "sonner": "^1.7.1",
@@ -81,7 +81,7 @@
     "eslint": "^9.17.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
-    "vite": "^6.0.4",
+    "vite": "^6.0.5",
     "vite-plugin-pwa": "^0.21.1"
   }
 }
