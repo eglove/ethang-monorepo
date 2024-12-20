@@ -34,7 +34,6 @@ export const AddToCalendar = ({
           : toPlainText(description),
       };
 
-      // eslint-disable-next-line max-statements
       return () => {
         switch (type) {
           case "google": {

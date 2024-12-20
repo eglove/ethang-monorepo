@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+// eslint-disable-next-line barrel/avoid-importing-barrel-files
 import { CloudinaryModule } from "@cloudinary/ng";
 
 import { BlogLayoutComponent } from "../../layouts/blog-layout/blog-layout.component";

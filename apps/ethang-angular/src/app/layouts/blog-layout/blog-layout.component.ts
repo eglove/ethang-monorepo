@@ -1,7 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 
 import { MainLayoutComponent } from "../main-layout/main-layout.component";
 
@@ -11,6 +8,4 @@ import { MainLayoutComponent } from "../main-layout/main-layout.component";
   selector: "app-blog-layout",
   templateUrl: "./blog-layout.component.html",
 })
-export class BlogLayoutComponent {
-
-}
+export class BlogLayoutComponent {}

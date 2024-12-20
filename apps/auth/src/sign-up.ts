@@ -12,7 +12,6 @@ const signUpSchema = z.object({
   username: z.string(),
 });
 
-// eslint-disable-next-line max-statements
 export const signUp = async (request: Request, environment: Env) => {
   const body = await attemptAsync(async () => {
     return request.json();

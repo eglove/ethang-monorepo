@@ -21,4 +21,3 @@ export class CloudinaryService {
     return this.cloudinary.image(publicId);
   }
 }
-

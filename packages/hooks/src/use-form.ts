@@ -48,7 +48,6 @@ const setAll = <ObjectType extends Record<string, unknown>,>(
   ) as unknown as ObjectType;
 };
 
-// eslint-disable-next-line max-statements
 export const useForm = <StateType extends Record<string, unknown>,>(
   initialState: StateType,
   properties?: UseFormProperties<StateType>,
@@ -82,7 +81,7 @@ export const useForm = <StateType extends Record<string, unknown>,>(
   }, [initialState]);
 
   const handleChange = useCallback(
-    // eslint-disable-next-line max-statements
+
     (event: ChangeEvent): void => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const eventTarget = event.target as unknown as {
@@ -139,7 +138,7 @@ export const useForm = <StateType extends Record<string, unknown>,>(
   }, [formState, properties]);
 
   const handleSubmit = useCallback(
-    // eslint-disable-next-line max-statements
+
     (event: FormEvent): void => {
       event.preventDefault();
 

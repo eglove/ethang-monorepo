@@ -17,18 +17,22 @@ export const routes: Routes = [
   },
   {
     loadComponent: async () => {
-      return import("./blogs/forcing-react/forcing-react.component").then((module) => {
-        return module.ForcingReactComponent;
-      });
+      return import("./blogs/forcing-react/forcing-react.component").then(
+        (module) => {
+          return module.ForcingReactComponent;
+        },
+      );
     },
     path: "blog/forcing-react",
     title: "EthanG | Forcing React to be What It Isn't",
   },
   {
     loadComponent: async () => {
-      return import("./blogs/angular-now/angular-now.component").then((module) => {
-        return module.AngularNowComponent;
-      });
+      return import("./blogs/angular-now/angular-now.component").then(
+        (module) => {
+          return module.AngularNowComponent;
+        },
+      );
     },
     path: "blog/angular-now",
     title: "EthanG | It's Angular Now",

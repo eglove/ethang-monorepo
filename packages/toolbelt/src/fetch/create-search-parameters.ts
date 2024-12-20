@@ -9,7 +9,6 @@ type SearchParametersRecord = Record<
     number | number[] | string | string[] | undefined
 >;
 
-// eslint-disable-next-line max-statements
 export const createSearchParameters = <Z extends ZodSchema,>(
   searchParameters: SearchParametersRecord,
   searchParametersSchema: ZodSchema,

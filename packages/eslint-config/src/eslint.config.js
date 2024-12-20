@@ -146,7 +146,7 @@ export default tseslint.config(
       "max-lines-per-function": "off",
       "max-nested-callbacks": "error",
       "max-params": "off",
-      "max-statements": "error",
+      "max-statements": "off",
       "new-cap": "off",
       "no-alert": "error",
       "no-array-constructor": "off",

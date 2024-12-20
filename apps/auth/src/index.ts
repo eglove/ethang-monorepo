@@ -4,7 +4,7 @@ import { getUser } from "./get-user";
 import { signUp } from "./sign-up";
 
 export default {
-  // eslint-disable-next-line max-statements
+
   async fetch(
     request, environment,
   ): Promise<Response> {

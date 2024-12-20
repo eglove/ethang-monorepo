@@ -1,6 +1,4 @@
-import {
-  ChangeDetectionStrategy, Component, inject,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 // eslint-disable-next-line barrel/avoid-importing-barrel-files
 import { CloudinaryModule, placeholder } from "@cloudinary/ng";
 
@@ -16,9 +14,13 @@ import { CloudinaryService } from "../../services/cloudinary.service";
 export class ForcingReactComponent {
   private readonly cloudinaryService = inject(CloudinaryService);
 
-  public frameworkBenchMarkImage = this.cloudinaryService.getImage("framework-comparison");
+  public frameworkBenchMarkImage = this.cloudinaryService.getImage(
+    "framework-comparison",
+  );
 
-  public reactScheduleImage = this.cloudinaryService.getImage("react-team-schedule");
+  public reactScheduleImage = this.cloudinaryService.getImage(
+    "react-team-schedule",
+  );
 
   protected readonly placeholder = placeholder;
 }

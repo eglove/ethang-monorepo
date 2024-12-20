@@ -89,6 +89,10 @@ const changedRules = [
     rule: "off",
   },
   {
+    name: "max-statements",
+    rule: "off",
+  },
+  {
     name: "new-cap",
     rule: "off",
   },

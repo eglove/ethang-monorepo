@@ -21,7 +21,6 @@ export type UrlConfig<Url extends string,> = {
   urlBase?: string | URL;
 };
 
-// eslint-disable-next-line max-statements
 export const createUrl = <Url extends string,>(
   urlString: Url,
   config?: UrlConfig<Url>,

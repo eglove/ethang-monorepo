@@ -31,7 +31,6 @@ const validateRequest = async (
   }
 };
 
-// eslint-disable-next-line max-statements
 const handleClerkWebhook = httpAction(async (context, request) => {
   const event = await validateRequest(request);
   if (!event) {

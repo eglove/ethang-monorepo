@@ -29,7 +29,6 @@ export default defineType({
       title: "Stop Showing",
       type: "date",
       validation(Rule): Rule {
-        // eslint-disable-next-line max-statements
         return Rule.custom((expireDate: string | undefined, context) => {
           if (expireDate === undefined) {
             return "Value is required";
