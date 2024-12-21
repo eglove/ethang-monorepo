@@ -8,6 +8,7 @@ export default {
   async fetch(
     request, environment,
   ): Promise<Response> {
+    console.log(environment.MY_SECRET);
     const url = new URL(request.url);
 
     if ("/user" === url.pathname && "GET" === request.method) {
