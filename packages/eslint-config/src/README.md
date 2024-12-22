@@ -22,12 +22,16 @@
 - 5 rules from [@eslint/json](https://github.com/eslint/json)
 - 4 rules from [eslint-plugin-barrel-files](https://github.com/thepassle/eslint-plugin-barrel-files)
 - 1 rule from [eslint-plugin-depend](https://github.com/es-tooling/eslint-plugin-depend/tree/main)
-- 1 rule from [@cspell/eslint-plugin](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell-eslint-plugin)
 - 1 rule from [eslint-plugin-compat](https://github.com/amilajack/eslint-plugin-compat)
 - 1 rule from [@tanstack/eslint-plugin-router](https://tanstack.com/router/latest/docs/eslint/eslint-plugin-router)
+- 1 rule from [@cspell/eslint-plugin](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell-eslint-plugin)
 
 # Add Even More!
 
+- 64 rules for **Angular**
+  - `import angularConfig from "@ethang/eslint-config/config.angular.js";`
+  - 38 rules from [@angular-eslint/eslint-plugin](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md)
+  - 26 rules from [@angular-eslint/eslint-plugin-template](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md)
 - 52 rules for **Astro**
   - `import astroConfig from "@ethang/eslint-config/config.astro.js";`
   - 52 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)

@@ -25,6 +25,7 @@ import { unicornRules } from "../setup/unicorn.ts";
 import { cspellRules } from "../setup/cspell.js";
 import { tanstackRouterRules } from "../setup/tanstack-router.js";
 import { stylisticTsRules } from "../setup/stylistic-ts.js";
+import { angularTemplateRules, angularTsRules } from "../setup/angular.js";
 
 export const ruleList = [
   {
@@ -199,6 +200,16 @@ export const ruleList = [
     url: "https://github.com/eslint/eslint/tree/main/packages/js",
   },
   {
+    importString: 'import cspell from "@cspell/eslint-plugin";',
+    list: cspellRules,
+    name: "@cspell/eslint-plugin",
+    order: 17,
+    pluginName: "cspell",
+    pluginValue: "cspell",
+    type: "core",
+    url: "https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell-eslint-plugin",
+  },
+  {
     importString: 'import markdown from "@eslint/markdown";',
     list: markdownRules,
     name: "@eslint/markdown",
@@ -282,12 +293,22 @@ export const ruleList = [
     url: "https://github.com/solidjs-community/eslint-plugin-solid",
   },
   {
-    importString: 'import cspell from "@cspell/eslint-plugin";',
-    list: cspellRules,
-    name: "@cspell/eslint-plugin",
-    pluginName: "cspell",
-    pluginValue: "cspell",
-    type: "core",
-    url: "https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell-eslint-plugin",
+    importString: 'import angularTS from "@angular-eslint/eslint-plugin";',
+    list: angularTsRules,
+    name: "@angular-eslint/eslint-plugin",
+    pluginName: "@angular-eslint",
+    pluginValue: "angularTS",
+    type: "angular",
+    url: "https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md",
+  },
+  {
+    importString:
+      'import angularTemplate from "@angular-eslint/eslint-plugin-template";',
+    list: angularTemplateRules,
+    name: "@angular-eslint/eslint-plugin-template",
+    pluginName: "@angular-eslint/template",
+    pluginValue: "angularTemplate",
+    type: "angular:template",
+    url: "https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md",
   },
 ];

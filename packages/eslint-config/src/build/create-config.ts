@@ -11,7 +11,10 @@ export type ConfigOptions = {
   extraImports?: string[];
   includeIgnores?: boolean;
   includeLanguageOptions?: boolean;
+  includeAngularLanguageOptions?: boolean;
   includeReactVersion?: boolean;
+  globalIgnores?: string[];
+  processor?: string;
 };
 
 export const createConfig = async (
@@ -41,6 +44,14 @@ export const createConfig = async (
     optionals += "\nlanguageOptions,";
   }
 
+  if (options.includeAngularLanguageOptions) {
+    optionals += "\nlanguageOptions: angularLanguageOptions,";
+  }
+
+  if (options.processor) {
+    optionals += `\nprocessor: ${options.processor},`;
+  }
+
   if (options.includeReactVersion && settings) {
     optionals += `\nsettings: {
   ${settings}
@@ -48,6 +59,16 @@ export const createConfig = async (
   }
 
   const language = getTypeLanguage(type);
+
+  if (options.globalIgnores) {
+    config += `{
+      ignores: [${options.globalIgnores
+        .map((ignore) => {
+          return `"${ignore}"`;
+        })
+        .join(", ")}],
+    },`;
+  }
 
   config += `{
     files: ["${getTypeFiles(type)}"],${optionals}${language ? `language: "${language}",` : ""}

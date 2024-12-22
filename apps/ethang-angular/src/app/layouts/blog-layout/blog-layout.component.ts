@@ -8,4 +8,5 @@ import { MainLayoutComponent } from "../main-layout/main-layout.component";
   selector: "app-blog-layout",
   templateUrl: "./blog-layout.component.html",
 })
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class BlogLayoutComponent {}

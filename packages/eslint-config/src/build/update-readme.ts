@@ -64,6 +64,8 @@ export const updateReadme = () => {
   const astroRules = getList("astro");
   const reactRules = getList("react");
   const solidRules = getList("solid");
+  const angularRules = getList("angular");
+  const angularTemplateRules = getList("angular:template");
 
   let astroCount = 0;
   for (const astroRule of astroRules) {
@@ -80,10 +82,33 @@ export const updateReadme = () => {
     solidCount += getRuleCount(solidRule.list);
   }
 
+  let angularCount = 0;
+  for (const angularRule of [...angularRules, ...angularTemplateRules]) {
+    angularCount += getRuleCount(angularRule.list);
+  }
+
   md.unorderedList(ruleDocs);
   md.newLine();
   md.header(1, "Add Even More!", 2);
   md.unorderedList([
+    `${angularCount} rules for **Angular**`,
+    [
+      '`import angularConfig from "@ethang/eslint-config/config.angular.js";`',
+      ...angularRules
+        .filter((rule) => {
+          return 0 < getRuleCount(rule.list);
+        })
+        .map((rule) => {
+          return `${getRuleCount(rule.list)} rules from [${rule.name}](${rule.url})`;
+        }),
+      ...angularTemplateRules
+        .filter((rule) => {
+          return 0 < getRuleCount(rule.list);
+        })
+        .map((rule) => {
+          return `${getRuleCount(rule.list)} rules from [${rule.name}](${rule.url})`;
+        }),
+    ],
     `${astroCount} rules for **Astro**`,
     [
       '`import astroConfig from "@ethang/eslint-config/config.astro.js";`',

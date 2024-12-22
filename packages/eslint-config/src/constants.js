@@ -1,4 +1,5 @@
 import { parser } from "typescript-eslint";
+import angularTemplateParser from "@angular-eslint/template-parser";
 
 export const ignores = ["eslint.config.js", "node_modules", "dist"];
 
@@ -8,4 +9,8 @@ export const languageOptions = {
     project: true,
     tsconfigRootDir: import.meta.dirname,
   },
+};
+
+export const angularLanguageOptions = {
+  parser: angularTemplateParser,
 };

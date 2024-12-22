@@ -12,6 +12,7 @@ await projectBuilder(import.meta.dirname, {
     "src/config.astro.js",
     "src/config.react.js",
     "src/config.solid.js",
+    "src/config.angular.js",
     "src/constants.js",
   ],
   outDir: "dist",

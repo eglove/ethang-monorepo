@@ -83,6 +83,14 @@ export const getTypeFiles = (type: string) => {
       return ["**/*.{jsx,tsx}"];
     }
 
+    case "angular": {
+      return ["**/*.ts"];
+    }
+
+    case "angular:template": {
+      return ["**/*.html"];
+    }
+
     default: {
       return [];
     }

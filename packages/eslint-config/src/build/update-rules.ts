@@ -67,7 +67,7 @@ const reactFile = [
 const solidFile = [
   {
     importString:
-      'import reactConfig from "@ethang/eslint-config/config.solid.ts',
+      'import solidConfig from "@ethang/eslint-config/config.solid.ts',
     label: "Solid",
     name: "solid",
     options: {
@@ -78,16 +78,32 @@ const solidFile = [
   },
 ];
 
-export const secondaryRules = {
-  astro: astroFile,
-  react: reactFile,
-  solid: solidFile,
-};
-
-export const allRules = {
-  core: coreFile,
-  ...secondaryRules,
-};
+const angularFile = [
+  {
+    importString:
+      'import angularConfig from "@ethang/eslint-config/config.angular.ts',
+    label: "Angular",
+    name: "angular",
+    options: {
+      extraImports: [
+        'import tseslint from "typescript-eslint";',
+        'import angular from "angular-eslint";',
+      ],
+      includeIgnores: true,
+      includeLanguageOptions: true,
+      globalIgnores: ["**/*.spec.ts", "src/main.server.ts"],
+      processor: "angular.processInlineTemplates",
+    },
+  },
+  {
+    name: "angular:template",
+    options: {
+      extraImports: ['import { angularLanguageOptions } from "./constants.js"'],
+      includeLanguageOptions: false,
+      includeAngularLanguageOptions: true,
+    },
+  },
+];
 
 export const updateRules = async () => {
   await Promise.all([
@@ -95,6 +111,7 @@ export const updateRules = async () => {
     createConfigFile(astroFile, "config.astro.js"),
     createConfigFile(reactFile, "config.react.js"),
     createConfigFile(solidFile, "config.solid.js"),
+    createConfigFile(angularFile, "config.angular.js"),
   ]);
 };
 
