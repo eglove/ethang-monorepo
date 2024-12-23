@@ -8,6 +8,8 @@ import {
 } from "./gen-rules.ts";
 
 const ruleNames = Object.keys(getNonDeprecatedRules(barrel.rules));
-const customRules: CustomRules = [];
+const customRules: CustomRules = [
+  { name: "avoid-importing-barrel-files", rule: "off" },
+];
 
 export const barrelRules = genRules(ruleNames, customRules, "barrel");
