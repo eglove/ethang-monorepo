@@ -1,4 +1,3 @@
-// eslint-disable-next-line barrel/avoid-barrel-files
 import animate from "tailwindcss-animate";
 
 /** @type {import('tailwindcss').Config} */

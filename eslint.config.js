@@ -25,15 +25,6 @@ export default tseslint.config(
                 tsconfigRootDir: import.meta.dirname,
             },
         },
-        rules: {
-            "barrel/avoid-importing-barrel-files": "off",
-            "no-console": "off",
-            "react/no-children-prop": "off",
-            "sonar/no-os-command-from-path": "off",
-            "sonar/os-command": "off",
-            "sonar/no-unstable-nested-components": "off",
-            "sonar/no-reference-error": "off",
-        },
     },
     {
         "files": ["packages/react-components/components/ui"],

@@ -1,4 +1,3 @@
-// eslint-disable-next-line barrel/avoid-barrel-files
 import typography from "@tailwindcss/typography";
 import daisyui from "daisyui";
 

@@ -3,7 +3,9 @@ import isNil from "lodash/isNil";
 import { getUser } from "./utils/get-user";
 import { createResponse } from "./utils/util";
 
-export const deleteUser = async (request: Request, environment: Env) => {
+export const deleteUser = async (
+  request: Request, environment: Env,
+) => {
   const url = new URL(request.url);
   const email = url.searchParams.get("email");
 

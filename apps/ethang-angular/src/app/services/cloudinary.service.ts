@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-// eslint-disable-next-line barrel/avoid-importing-barrel-files
 import { Cloudinary } from "@cloudinary/url-gen";
 
 @Injectable({

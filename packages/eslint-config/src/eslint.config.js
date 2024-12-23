@@ -2,7 +2,6 @@
 import { fixupPluginRules } from "@eslint/compat";
 import { ignores, languageOptions } from "./constants.js";
 import a11y from "eslint-plugin-jsx-a11y";
-import barrel from "eslint-plugin-barrel-files";
 import compat from "eslint-plugin-compat";
 import cspell from "@cspell/eslint-plugin";
 import depend from "eslint-plugin-depend";
@@ -30,7 +29,6 @@ export default tseslint.config(
     },
     plugins: {
       depend: depend,
-      barrel: barrel,
       compat: compat,
       n: n,
       "@typescript-eslint": tseslint.plugin,
@@ -48,10 +46,6 @@ export default tseslint.config(
     },
     rules: {
       "depend/ban-dependencies": ["error", { allowed: ["lodash", "fs-extra"] }],
-      "barrel/avoid-barrel-files": "error",
-      "barrel/avoid-importing-barrel-files": "error",
-      "barrel/avoid-namespace-import": "error",
-      "barrel/avoid-re-export-all": "error",
       "compat/compat": "error",
       "accessor-pairs": "error",
       "array-callback-return": "error",

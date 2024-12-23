@@ -19,8 +19,6 @@ const Courses = () => {
   // @ts-expect-error beta
   const query = useQuery(convexQuery(api.courses.getCourses, {}));
 
-  console.log(query.data);
-
   return (
     <MainLayout classNames={{ main: "max-w-prose" }}>
       <ContentHandler
