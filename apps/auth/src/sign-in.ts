@@ -42,6 +42,10 @@ export const signIn = async (request: Request, environment: Env) => {
     return createResponse({ error: "Invalid password" }, "UNAUTHORIZED");
   }
 
+  await environment.DB.prepare("UPDATE Users SET lastLoggedIn = ? WHERE email = ?")
+    .bind(new Date().toISOString(), result.data.email)
+    .raw();
+
   // Create JWT token
   const token = await createToken(foundUser, environment);
 
