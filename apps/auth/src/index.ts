@@ -1,6 +1,7 @@
 import { deleteUser } from "./delete-user";
 import { editUser } from "./edit-user";
 import { getUser } from "./get-user";
+import { signIn } from "./sign-in.ts";
 import { signUp } from "./sign-up";
 
 export default {
@@ -24,6 +25,10 @@ export default {
 
     if ("/user" === url.pathname && "DELETE" === request.method) {
       return deleteUser(request, environment);
+    }
+
+    if ("/sign-in" === url.pathname && "POST" === request.method) {
+      return signIn(request, environment);
     }
 
     if ("/login" === url.pathname) {

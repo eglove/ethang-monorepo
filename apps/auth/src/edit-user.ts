@@ -4,11 +4,15 @@ import isNil from "lodash/isNil";
 import { z } from "zod";
 
 import { getUser } from "./utils/get-user";
+import { getIsUser } from "./utils/is-user.ts";
 import { createResponse } from "./utils/util";
 
 const editUserSchema = z.object({
   email: z.string().email(),
   password: z.string().optional()
+    .nullable()
+    .default(null),
+  role: z.string().optional()
     .nullable()
     .default(null),
   username: z.string().optional()
@@ -31,17 +35,24 @@ export const editUser = async (request: Request, environment: Env) => {
     return createResponse({ error: "Invalid arguments" }, "BAD_REQUEST");
   }
 
+  const isUser = await getIsUser(request, environment, result.data.email);
+
+  if (!isUser) {
+    return createResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+  }
+
   const previousUser = await getUser(result.data.email, environment);
 
   if (isNil(previousUser)) {
     return createResponse({ error: "User not found" }, "NOT_FOUND");
   }
 
-  await environment.DB.prepare("UPDATE Users SET email = ?, password = ?, username = ? WHERE email = ?")
+  await environment.DB.prepare("UPDATE Users SET email = ?, password = ?, username = ?, role = ? WHERE email = ?")
     .bind(
       result.data.email,
       result.data.password ?? previousUser.password,
       result.data.username ?? previousUser.username,
+      result.data.role ?? previousUser.role,
       result.data.email,
     )
     .raw();

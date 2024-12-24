@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - dev
+      - master
 jobs:
   ci:
     name: CI
@@ -31,10 +31,3 @@ jobs:
         run: pnpm run test
       - name: Run lint
         run: pnpm run lint
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
-        with:
-          branch: dev
-          base: master
-          title: "Merge Dev"
-          token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,11 +1,18 @@
 import isNil from "lodash/isNil";
 
 import { getUser } from "./utils/get-user";
+import { getIsAdmin } from "./utils/is-user.ts";
 import { createResponse } from "./utils/util";
 
 export const deleteUser = async (
   request: Request, environment: Env,
 ) => {
+  const isAdmin = await getIsAdmin(request, environment);
+
+  if (!isAdmin) {
+    return createResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+  }
+
   const url = new URL(request.url);
   const email = url.searchParams.get("email");
 
