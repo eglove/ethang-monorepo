@@ -55,5 +55,5 @@ jobs:
         run: |
           git fetch origin
           git checkout master
-          git merge origin/dev
+          git merge origin/dev --allow-unrelated-histories
           git push origin master
