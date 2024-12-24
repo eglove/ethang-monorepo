@@ -19,14 +19,6 @@ jobs:
         with:
           node-version: "22"
           cache: "pnpm"
-      - name: Cache pnpm store
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
       - name: Install Dependencies
         run: pnpm install
       - name: Install Playwright
@@ -39,21 +31,10 @@ jobs:
         run: pnpm run test
       - name: Run lint
         run: pnpm run lint
-  merge:
-    name: Auto-Merge
-    needs: ci
-    runs-on: ubuntu-latest
-    if: ${{ success() }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Git
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "github-actions@github.com"
-      - name: Merge dev into master
-        run: |
-          git fetch origin
-          git checkout master
-          git merge origin/dev --allow-unrelated-histories
-          git push origin master
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          branch: dev
+          base: master
+          title: "Merge Dev"
+          token: ${{ secrets.GITHUB_TOKEN }}
