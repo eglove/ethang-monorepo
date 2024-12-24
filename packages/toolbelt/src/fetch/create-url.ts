@@ -47,6 +47,7 @@ export const createUrl = <Url extends string,>(
       return path;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     mutableUrlString = path as Url;
   }
 

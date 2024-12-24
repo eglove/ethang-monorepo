@@ -61,6 +61,7 @@ export const useForm = <StateType extends Record<string, unknown>,>(
           : initialState[key];
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     return defaultState as StateType;
   });
   const [formError, setFormError] = useState<string>();

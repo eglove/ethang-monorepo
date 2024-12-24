@@ -9,6 +9,7 @@ export const attemptAsync = async <
 ): Promise<Awaited<ReturnType<T>> | Error> => {
   try {
     // Assume this is used with async function, force the await to catch the error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     return (await callback(...parameters)) as Awaited<ReturnType<T>>;
   } catch (error: unknown) {
     return isError(error)

@@ -10,7 +10,7 @@
     "build": "storybook build",
     "test-storybook": "test-storybook --browsers chromium, firefox, webkit",
     "test-storybook:watch": "test-storybook --watch",
-    "test": "pnpx concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"pnpm dev\" \"pnpx wait-on tcp:127.0.0.1:6006 && pnpm test-storybook\""
+    "test": "pnpx concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"pnpx http-server storybook-static --port 6007 --silent\" \"pnpx wait-on tcp:127.0.0.1:6007 && pnpm test-storybook --url http://127.0.0.1:6007\""
   },
   "engines": {
     "node": ">=22"
@@ -26,7 +26,7 @@
     "@radix-ui/react-separator": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
-    "@tanstack/react-router": "^1.92.1",
+    "@tanstack/react-router": "^1.92.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
@@ -39,7 +39,7 @@
     "react-syntax-highlighter": "^15.6.1",
     "reactjs-tiptap-editor": "^0.1.11",
     "sonner": "^1.7.1",
-    "tailwind-merge": "^2.5.5",
+    "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.1"
   },
