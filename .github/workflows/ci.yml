@@ -19,14 +19,6 @@ jobs:
         with:
           node-version: "22"
           cache: "pnpm"
-      - name: Cache pnpm store
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
       - name: Install Dependencies
         run: pnpm install
       - name: Install Playwright
