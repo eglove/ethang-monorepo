@@ -1,11 +1,11 @@
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
-import bcrypt from "bcryptjs";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil";
 import { z } from "zod";
 
 import { getUser } from "./utils/get-user.ts";
 import { createToken } from "./utils/jwt.ts";
+import { validatePassword } from "./utils/password.ts";
 import { createResponse } from "./utils/util.ts";
 
 const signInSchema = z.object({
@@ -34,8 +34,9 @@ export const signIn = async (request: Request, environment: Env) => {
     return createResponse({ error: "User not found" }, "NOT_FOUND");
   }
 
-  const isPasswordValid = await bcrypt.compare(
-    result.data.password, foundUser.password,
+  const isPasswordValid = await validatePassword(
+    result.data.password,
+    foundUser.password,
   );
 
   if (!isPasswordValid) {

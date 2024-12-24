@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { getUser } from "./utils/get-user";
 import { getIsUser } from "./utils/is-user.ts";
+import { getHashedPassword } from "./utils/password.ts";
 import { createResponse } from "./utils/util";
 
 const editUserSchema = z.object({
@@ -50,7 +51,7 @@ export const editUser = async (request: Request, environment: Env) => {
   await environment.DB.prepare("UPDATE Users SET email = ?, password = ?, username = ?, role = ? WHERE email = ?")
     .bind(
       result.data.email,
-      result.data.password ?? previousUser.password,
+      getHashedPassword(result.data.password ?? previousUser.password),
       result.data.username ?? previousUser.username,
       result.data.role ?? previousUser.role,
       result.data.email,
