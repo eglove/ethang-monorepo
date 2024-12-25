@@ -3,8 +3,6 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/joho/godotenv"
-	"log"
 	"net/http"
 	"os"
 )
@@ -60,14 +58,9 @@ func authMiddleware(c *gin.Context) {
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading env")
-	}
-
 	router := gin.Default()
 	router.POST("/upload", authMiddleware, uploadImage)
-	err = router.Run(":8080")
+	var err = router.Run(":8080")
 
 	if err != nil {
 		return
