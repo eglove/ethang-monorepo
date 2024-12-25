@@ -1,6 +1,7 @@
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil";
+import set from "lodash/set.js";
 import { z } from "zod";
 
 import { getUser } from "./utils/get-user";
@@ -60,5 +61,6 @@ export const editUser = async (request: Request, environment: Env) => {
 
   const user = await getUser(result.data.email, environment);
 
+  set(user, ["password"], undefined);
   return createResponse(user, "OK");
 };
