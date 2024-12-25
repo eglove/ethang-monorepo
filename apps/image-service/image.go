@@ -17,15 +17,14 @@ import (
 	"math/rand"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"time"
 )
 
-var bucketName = "ethang-images"
-var accountId = "a8f0595f3ed6a751169523771aa503cd"
-var apiToken = "mpxw222VFTcZCJhhtZXZSdtRro93Nd8tVwlncOD0"
-var accessKeyId = "7b5646b6e76c91da16a7e363d06af1ad"
-var secretAccessKey = "81d1eea8ff8bb97c90c906c027753dd49e34a1ba9dfe86070f8be04b1320a761"
-var bucketEndpint = "https://a8f0595f3ed6a751169523771aa503cd.r2.cloudflarestorage.com"
+var bucketName = os.Getenv("BUCKET_NAME")
+var accountId = os.Getenv("ACCOUNT_ID")
+var accessKeyId = os.Getenv("ACCESS_KEY_ID")
+var secretAccessKey = os.Getenv("SECRET_ACCESS_KEY")
 
 var sizes = []struct{ width, height int }{
 	{1, 1},
