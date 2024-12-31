@@ -25,18 +25,13 @@
           "/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
         ]
       }
-    }
-  ],
-  "dataGroups": [
+    },
     {
-      "name": "cloudinary-images",
-      "urls": [
-        "https://res.cloudinary.com/**"
-      ],
-      "cacheConfig": {
-        "strategy": "performance",
-        "maxSize": 50,
-        "maxAge": "7d"
+      "name": "images",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "urls": ["https://images.ethang.dev/**"]
       }
     }
   ]

@@ -32,8 +32,6 @@
     "@angular/router": "^19.0.5",
     "@angular/service-worker": "^19.0.5",
     "@angular/ssr": "^19.0.6",
-    "@cloudinary/ng": "^2.1.1",
-    "@cloudinary/url-gen": "^1.21.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
