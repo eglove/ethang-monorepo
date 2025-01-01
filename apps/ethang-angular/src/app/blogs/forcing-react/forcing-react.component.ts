@@ -9,5 +9,4 @@ import { BlogLayoutComponent } from "../../layouts/blog-layout/blog-layout.compo
   templateUrl: "./forcing-react.component.html",
 })
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class ForcingReactComponent {
-}
+export class ForcingReactComponent {}

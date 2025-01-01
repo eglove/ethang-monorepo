@@ -9,6 +9,4 @@ import { BlogLayoutComponent } from "../../layouts/blog-layout/blog-layout.compo
   templateUrl: "./angular-now.component.html",
 })
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class AngularNowComponent {
-
-}
+export class AngularNowComponent {}
