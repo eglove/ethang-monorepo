@@ -6,7 +6,7 @@ import isNil from "lodash/isNil";
 import ms from "ms";
 import { v7 } from "uuid";
 
-import { database, type RoutineItem } from "../../database";
+import { database, getRoutineItems, type RoutineItem } from "../../database";
 
 type AddRoutineItem = {
   interval: string;
@@ -20,19 +20,10 @@ type AddRoutineItem = {
 export class RoutineService {
   public readonly routineItems = signal<RoutineItem[]>([]);
 
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  private readonly routineItems$ = liveQuery(async () => {
-    return database.routineItems.toArray();
-  });
+  private readonly routineItems$ = liveQuery(getRoutineItems);
 
   public constructor() {
-    this.routineItems$.subscribe((value) => {
-      this.routineItems.set(
-        value.toSorted((a, b) => {
-          return a.due.getTime() - b.due.getTime();
-        }),
-      );
-    });
+    this.init();
   }
 
   public async addRoutineItem(routine: AddRoutineItem) {
@@ -60,7 +51,26 @@ export class RoutineService {
     await database.routineItems.delete(id);
   }
 
+  public init() {
+    getRoutineItems().then((value) => {
+      this.setSorted(value);
+    })
+      .catch(globalThis.console.error);
+
+    this.routineItems$.subscribe((value) => {
+      this.setSorted(value);
+    });
+  }
+
   private findRoutineItem(id: string) {
     return find(this.routineItems(), { id });
+  }
+
+  private setSorted(value: RoutineItem[]) {
+    this.routineItems.set(
+      value.toSorted((a, b) => {
+        return a.due.getTime() - b.due.getTime();
+      }),
+    );
   }
 }

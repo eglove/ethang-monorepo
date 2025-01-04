@@ -19,3 +19,7 @@ export class Database extends Dexie {
 }
 
 export const database = new Database();
+
+export const getRoutineItems = async () => {
+  return database.routineItems.toArray();
+};
