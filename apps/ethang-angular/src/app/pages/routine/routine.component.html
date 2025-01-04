@@ -1,0 +1,63 @@
+<app-main-layout>
+  <main class="my-4">
+    <form [formGroup]="routineForm" (ngSubmit)="handleSubmit()">
+      <label class="form-control w-full max-w-xs">
+        <div class="label">
+          <span class="label-text">Routine Text</span>
+        </div>
+        <input required type="text" formControlName="text"
+               class="input input-sm input-bordered w-full max-w-xs"/>
+      </label>
+
+      <div class="grid grid-cols-2">
+        <label class="form-control w-full max-w-xs">
+          <div class="label">
+            <span class="label-text">Recurs</span>
+          </div>
+          <input required type="number" formControlName="recurs"
+                 class="input input-sm input-bordered w-full max-w-xs"/>
+        </label>
+
+        <label class="form-control w-full max-w-xs">
+          <div class="label">
+            <span class="label-text">Interval</span>
+          </div>
+          <select required formControlName="interval"
+                  class="select select-sm select-bordered">
+            <option value="hours">Hours</option>
+            <option value="days">Days</option>
+            <option value="weeks">Weeks</option>
+            <option value="months">Months</option>
+            <option value="years">Years</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="flex my-4">
+        <button class="btn" type="submit">Add</button>
+      </div>
+    </form>
+
+    <div class="grid gap-4">
+      @for (todo of routineService.routineItems(); track todo.id) {
+        <div class="grid gap-4 grid-cols-2 items-center">
+          <div>
+            <div class="font-bold">{{ todo.text }}</div>
+            <div class="text-sm">Next
+              Due: {{ todo.due.toLocaleString(undefined, {dateStyle: 'medium'}) }}
+            </div>
+            <div>Recurs: {{ms(todo.recurs)}}</div>
+          </div>
+          <div class="flex gap-4">
+            <button class="btn btn-circle btn-success" type="button" (click)="routineService.completeRoutineItem(todo.id)">
+              <lucide-icon class="size-4" [img]="Check"/>
+            </button>
+            <button class="btn btn-circle btn-error" type="button" aria-label="delete" (click)="routineService.deleteRoutineItem(todo.id)">
+              <lucide-icon class="size-4" [img]="Trash2"/>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+</app-main-layout>

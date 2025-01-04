@@ -17,6 +17,15 @@ export const routes: Routes = [
   },
   {
     loadComponent: async () => {
+      return import("./pages/routine/routine.component").then((module) => {
+        return module.RoutineComponent;
+      });
+    },
+    path: "routine",
+    title: "EthanG | Local Routine Todo",
+  },
+  {
+    loadComponent: async () => {
       return import("./blogs/forcing-react/forcing-react.component").then(
         (module) => {
           return module.ForcingReactComponent;

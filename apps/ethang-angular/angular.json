@@ -23,6 +23,9 @@
             "outputPath": "dist",
             "index": "src/index.html",
             "browser": "src/main.ts",
+            "allowedCommonJsDependencies": [
+              "lodash", "ms"
+            ],
             "polyfills": [
               "zone.js"
             ],

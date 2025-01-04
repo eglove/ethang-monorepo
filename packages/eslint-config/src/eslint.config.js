@@ -1251,6 +1251,7 @@ export default tseslint.config(
               "Sonner",
               "cmdk",
               "ngsw",
+              "dexie",
             ],
           },
         },

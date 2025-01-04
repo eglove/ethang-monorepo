@@ -60,6 +60,7 @@ const customRules: CustomRules = [
             "Sonner",
             "cmdk",
             "ngsw",
+            "dexie",
           ],
         },
       },
