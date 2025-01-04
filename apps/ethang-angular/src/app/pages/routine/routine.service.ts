@@ -27,9 +27,11 @@ export class RoutineService {
 
   public constructor() {
     this.routineItems$.subscribe((value) => {
-      this.routineItems.set(value.toSorted((a, b) => {
-        return a.due.getTime() - b.due.getTime();
-      }));
+      this.routineItems.set(
+        value.toSorted((a, b) => {
+          return a.due.getTime() - b.due.getTime();
+        }),
+      );
     });
   }
 

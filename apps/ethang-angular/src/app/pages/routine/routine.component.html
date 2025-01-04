@@ -5,8 +5,12 @@
         <div class="label">
           <span class="label-text">Routine Text</span>
         </div>
-        <input required type="text" formControlName="text"
-               class="input input-sm input-bordered w-full max-w-xs"/>
+        <input
+          required
+          type="text"
+          formControlName="text"
+          class="input input-sm input-bordered w-full max-w-xs"
+        />
       </label>
 
       <div class="grid grid-cols-2">
@@ -14,16 +18,23 @@
           <div class="label">
             <span class="label-text">Recurs</span>
           </div>
-          <input required type="number" formControlName="recurs"
-                 class="input input-sm input-bordered w-full max-w-xs"/>
+          <input
+            required
+            type="number"
+            formControlName="recurs"
+            class="input input-sm input-bordered w-full max-w-xs"
+          />
         </label>
 
         <label class="form-control w-full max-w-xs">
           <div class="label">
             <span class="label-text">Interval</span>
           </div>
-          <select required formControlName="interval"
-                  class="select select-sm select-bordered">
+          <select
+            required
+            formControlName="interval"
+            class="select select-sm select-bordered"
+          >
             <option value="hours">Hours</option>
             <option value="days">Days</option>
             <option value="weeks">Weeks</option>
@@ -43,17 +54,27 @@
         <div class="grid gap-4 grid-cols-2 items-center">
           <div>
             <div class="font-bold">{{ todo.text }}</div>
-            <div class="text-sm">Next
-              Due: {{ todo.due.toLocaleString(undefined, {dateStyle: 'medium'}) }}
+            <div class="text-sm">
+              Next Due:
+              {{ todo.due.toLocaleString(undefined, { dateStyle: "medium" }) }}
             </div>
-            <div>Recurs: {{ms(todo.recurs)}}</div>
+            <div>Recurs: {{ ms(todo.recurs) }}</div>
           </div>
           <div class="flex gap-4">
-            <button class="btn btn-circle btn-success" type="button" (click)="routineService.completeRoutineItem(todo.id)">
-              <lucide-icon class="size-4" [img]="Check"/>
+            <button
+              class="btn btn-circle btn-success"
+              type="button"
+              (click)="routineService.completeRoutineItem(todo.id)"
+            >
+              <lucide-icon class="size-4" [img]="Check" />
             </button>
-            <button class="btn btn-circle btn-error" type="button" aria-label="delete" (click)="routineService.deleteRoutineItem(todo.id)">
-              <lucide-icon class="size-4" [img]="Trash2"/>
+            <button
+              class="btn btn-circle btn-error"
+              type="button"
+              aria-label="delete"
+              (click)="routineService.deleteRoutineItem(todo.id)"
+            >
+              <lucide-icon class="size-4" [img]="Trash2" />
             </button>
           </div>
         </div>

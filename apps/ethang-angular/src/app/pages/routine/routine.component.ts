@@ -1,25 +1,15 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import isNil from "lodash/isNil.js";
 import { Check, LucideAngularModule, Trash2 } from "lucide-angular";
 import ms from "ms";
 
-import {
-  MainLayoutComponent,
-} from "../../layouts/main-layout/main-layout.component";
+import { MainLayoutComponent } from "../../layouts/main-layout/main-layout.component";
 import { RoutineService } from "./routine.service";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MainLayoutComponent,
-    ReactiveFormsModule,
-    LucideAngularModule,
-  ],
+  imports: [MainLayoutComponent, ReactiveFormsModule, LucideAngularModule],
   selector: "app-todo",
   styles: "",
   templateUrl: "./routine.component.html",
