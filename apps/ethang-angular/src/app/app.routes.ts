@@ -46,4 +46,15 @@ export const routes: Routes = [
     path: "blog/angular-now",
     title: "EthanG | It's Angular Now",
   },
+  {
+    loadComponent: async () => {
+      return import("./blogs/motivation/motivation.component").then(
+        (module) => {
+          return module.MotivationComponent;
+        },
+      );
+    },
+    path: "blog/motivation",
+    title: "EthanG | Notes on generating motivation in software engineering.",
+  },
 ];
