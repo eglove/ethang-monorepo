@@ -52,9 +52,10 @@ export class RoutineService {
   }
 
   public init() {
-    getRoutineItems().then((value) => {
-      this.setSorted(value);
-    })
+    getRoutineItems()
+      .then((value) => {
+        this.setSorted(value);
+      })
       .catch(globalThis.console.error);
 
     this.routineItems$.subscribe((value) => {
