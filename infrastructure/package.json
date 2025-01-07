@@ -1,0 +1,15 @@
+{
+    "name": "infrastructure",
+    "main": "index.ts",
+    "devDependencies": {
+        "@ethang/eslint-config": "workspace:^",
+        "@types/node": "^18",
+        "eslint": "^9.17.0",
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@pulumi/aws": "^6.66.2",
+        "@pulumi/pulumi": "^3.113.0",
+        "dotenv": "^16.4.7"
+    }
+}
