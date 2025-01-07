@@ -48,7 +48,7 @@
     "@angular/compiler-cli": "^19.0.5",
     "@cloudflare/workers-types": "^4.20241230.0",
     "@ethang/eslint-config": "workspace:^",
-    "@tailwindcss/typography": "^0.5.15",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/jasmine": "~5.1.0",
     "@types/lodash": "^4.17.14",
     "@types/ms": "^0.7.34",
@@ -68,7 +68,7 @@
     "tailwindcss": "^3.4.17",
     "typescript": "~5.6.2",
     "typescript-eslint": "8.19.1",
-    "wrangler": "^3.99.0",
+    "wrangler": "^3.100.0",
     "xhr2": "^0.2.1"
   }
 }

@@ -18,7 +18,7 @@
     "lint": "pnpm cf-typegen && eslint src --fix"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.5.40",
+    "@cloudflare/vitest-pool-workers": "^0.5.41",
     "@cloudflare/workers-types": "^4.20241230.0",
     "@ethang/eslint-config": "workspace:^",
     "@types/bcryptjs": "^2.4.6",
@@ -26,7 +26,7 @@
     "eslint": "^9.17.0",
     "typescript": "^5.5.2",
     "vitest": "2.1.8",
-    "wrangler": "^3.99.0"
+    "wrangler": "^3.100.0"
   },
   "dependencies": {
     "@ethang/toolbelt": "workspace:^",

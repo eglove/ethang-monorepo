@@ -59,11 +59,11 @@ export const routes: Routes = [
   },
   {
     loadComponent: async () => {
-      return import("./blogs/learning-log-sagemaker-1/learning-log-sagemaker-1.component").then(
-        (module) => {
-          return module.LearningLogSagemaker1Component;
-        },
-      );
+      return import(
+        "./blogs/learning-log-sagemaker-1/learning-log-sagemaker-1.component"
+      ).then((module) => {
+        return module.LearningLogSagemaker1Component;
+      });
     },
     path: "blog/learning-log-sagemaker-1",
     title: "EthanG | Learning Log: AWS Sagemaker Setup",

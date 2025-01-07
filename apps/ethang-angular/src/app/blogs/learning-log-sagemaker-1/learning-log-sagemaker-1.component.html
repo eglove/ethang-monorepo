@@ -1,35 +1,51 @@
 <app-blog-layout>
   <h1>Learning Log: AWS Sagemaker Setup</h1>
-  <p>Pulling from the <a
-    class="link"
-    href="https://zerotomastery.io/career-paths/become-an-ai-developer/"
-    target="_blank">AI Developer learning path</a> on Zero to Mastery I started
-    the AI Engineering Bootcamp to work with AWS SageMaker. I'm not an expert in
-    AI, Python or machine learning. But this is clearly a skillset that only
-    continues to become more important.</p>
-  <p>Getting setup with Sagemaker takes a significant amount of time. I used
-    Pulumi to setup the initial AWS resources, the <a
+  <p>
+    Pulling from the
+    <a
+      class="link"
+      href="https://zerotomastery.io/career-paths/become-an-ai-developer/"
+      target="_blank"
+      >AI Developer learning path</a
+    >
+    on Zero to Mastery I started the AI Engineering Bootcamp to work with AWS
+    SageMaker. I'm not an expert in AI, Python or machine learning. But this is
+    clearly a skillset that only continues to become more important.
+  </p>
+  <p>
+    Getting setup with Sagemaker takes a significant amount of time. I used
+    Pulumi to setup the initial AWS resources, the
+    <a
       class="link"
       href="https://github.com/eglove/ethang-monorepo/blob/master/infrastructure/hugging-face-course.ts"
-      target="_blank">source code for that is
-      here</a>.</p>
-  <p>Once I got the machine up and running and grabbed a sentiment analysis
-    model from HuggingFace it also setup an S3 bucket and EC2
-    instance automatically. This is obviously the most uncomfortable part of
-    cloud platforms. The random resources added start to build up over time and
-    it can be easy to forget things. This is why I use Pulumi, but it's still
-    uncomfortable that resources can and will be allocated from within a Jupyter
-    Notebook in Sagemaker.
+      target="_blank"
+      >source code for that is here</a
+    >.
   </p>
-  <p>When I ran <code class="kbd kbd-sm">pulumi down</code>, the operation
-    failed because there was an app running within the instances I created with
-    Pulumi. I had shut it down, but the files you use are stored with AWS
-    storage (another cost).</p>
-  <p>Still it will be nice to see how this all comes together as the course
+  <p>
+    Once I got the machine up and running and grabbed a sentiment analysis model
+    from HuggingFace it also setup an S3 bucket and EC2 instance automatically.
+    This is obviously the most uncomfortable part of cloud platforms. The random
+    resources added start to build up over time and it can be easy to forget
+    things. This is why I use Pulumi, but it's still uncomfortable that
+    resources can and will be allocated from within a Jupyter Notebook in
+    Sagemaker.
+  </p>
+  <p>
+    When I ran <code class="kbd kbd-sm">pulumi down</code>, the operation failed
+    because there was an app running within the instances I created with Pulumi.
+    I had shut it down, but the files you use are stored with AWS storage
+    (another cost).
+  </p>
+  <p>
+    Still it will be nice to see how this all comes together as the course
     promises to setup the model on AWS Gateway and test through postman rather
-    than a Jupyter Notebook. As well as use custom data and models.</p>
-  <p>Outside of a lot of setup and small charges building up, this feels easy to
+    than a Jupyter Notebook. As well as use custom data and models.
+  </p>
+  <p>
+    Outside of a lot of setup and small charges building up, this feels easy to
     get going. I think largely the challenge here isn't necessarily in the
     software development side of things. But rather in the data science side.
-    I'm hoping to learn more about that as I continue.</p>
+    I'm hoping to learn more about that as I continue.
+  </p>
 </app-blog-layout>
