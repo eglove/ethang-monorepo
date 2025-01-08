@@ -5,7 +5,9 @@
 - sterett-admin
   - Sanity Studio / CMS dashboard for Sterett Creek Village Trustee
 - strett-client
-  - React/TranStack Router frontend for Sterett Creek Village Trustee
+  - React/TanStack Router frontend for Sterett Creek Village Trustee
+- auth
+  - Simple password hashing auth service on Cloudflare Worker/D1 database
 
 # Packages
 
