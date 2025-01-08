@@ -66,6 +66,6 @@ export const routes: Routes = [
       });
     },
     path: "blog/learning-log-sagemaker-1",
-    title: "EthanG | Learning Log: AWS Sagemaker Setup",
+    title: "EthanG | Study Log: AWS Sagemaker Setup",
   },
 ];
