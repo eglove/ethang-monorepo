@@ -2,4 +2,4 @@ import "dotenv/config";
 
 import { huggingFaceCourse } from "./hugging-face-course";
 
-export const { username } = huggingFaceCourse;
+export const { bucketName, username } = huggingFaceCourse;

@@ -1,4 +1,4 @@
-import { iam, sagemaker } from "@pulumi/aws";
+import { iam, s3, sagemaker } from "@pulumi/aws";
 
 import { getDefaultSubnets, getDefaultVpc } from "./util/defaults";
 
@@ -78,6 +78,22 @@ const setupSagemaker = async () => {
 
 setupSagemaker().catch(globalThis.console.error);
 
+// Create S3 bucket for training data
+const bucket = new s3.Bucket("ethang-hugging-face-bucket", {
+  bucket: "ethang-hugging-face-bucket",
+});
+
+new s3.BucketObject("training-data-folder", {
+  bucket: bucket.id,
+  key: "training-data/",
+});
+
+new s3.BucketObject("output-folder", {
+  bucket: bucket.id,
+  key: "output/",
+});
+
 export const huggingFaceCourse = {
+  bucketName: bucket.id,
   username: iamUser.name,
 };
