@@ -20,9 +20,9 @@ export type CustomRules = {
 }[];
 
 const getRuleStrings = (
-    ruleNames: string[],
-    defaultOverride: string,
-    prefix?: string
+  ruleNames: string[],
+  defaultOverride: string,
+  prefix?: string,
 ) => {
   const rules: Record<string, unknown> = {};
 
@@ -35,7 +35,7 @@ const getRuleStrings = (
   }
 
   return rules;
-}
+};
 
 export const genRules = (
   ruleNames: string[],

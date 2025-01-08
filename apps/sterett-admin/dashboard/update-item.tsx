@@ -3,7 +3,7 @@ import type { PropsWithChildren } from "react";
 import { TimeDisplay } from "./time-display.js";
 
 type UpdateItemProperties = {
-  readonly date?: string | undefined;
+  readonly date?: string;
 } & Readonly<PropsWithChildren>;
 
 export const UpdateItem = ({ children, date }: UpdateItemProperties) => {
