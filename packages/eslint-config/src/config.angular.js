@@ -1,5 +1,6 @@
 // @ts-nocheck
-import { ignores, languageOptions, angularLanguageOptions } from "./constants.js";
+import { angularLanguageOptions } from "./constants.js";
+import { ignores, languageOptions } from "./constants.js";
 import angular from "angular-eslint";
 import angularTemplate from "@angular-eslint/eslint-plugin-template";
 import angularTS from "@angular-eslint/eslint-plugin";
