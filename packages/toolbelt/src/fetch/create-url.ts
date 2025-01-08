@@ -1,9 +1,11 @@
 import type { ZodError, ZodSchema } from "zod";
 
 import attempt from "lodash/attempt.js";
+import get from "lodash/get.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 
+import { appendSearchParameters } from "../url/append-search-parameters.js";
 import { createSearchParameters } from "./create-search-parameters.ts";
 import { createUrlPath, type ParseUrlParameters } from "./create-url-path.ts";
 
@@ -13,7 +15,7 @@ export type SearchParametersRecord = Record<
     number | number[] | string | string[] | undefined
 >;
 
-export type UrlConfig<Url extends string,> = {
+export type UrlConfig<Url extends string, > = {
   pathVariables?: ParseUrlParameters<Url>;
   pathVariablesSchema?: ZodSchema;
   searchParams?: SearchParametersRecord;
@@ -21,21 +23,18 @@ export type UrlConfig<Url extends string,> = {
   urlBase?: string | URL;
 };
 
-export const createUrl = <Url extends string,>(
+const hasValidationError = <Url extends string, >(
+  parameterKey: keyof UrlConfig<Url>,
+  schemaKey: keyof UrlConfig<Url>,
+  config?: UrlConfig<Url>,
+) => {
+  return !isNil(get(config, [parameterKey])) && isNil(get(config, [schemaKey]));
+};
+
+const resolvePath = <Url extends string, >(
   urlString: Url,
   config?: UrlConfig<Url>,
-// eslint-disable-next-line sonar/cognitive-complexity
-): Error | URL | ZodError => {
-  if (
-    !isNil(config) &&
-    !isNil(config.pathVariables) &&
-    isNil(config.pathVariablesSchema)
-  ) {
-    return new Error("must provide path variables schema");
-  }
-
-  let mutableUrlString = urlString;
-
+) => {
   if (!isNil(config) && !isNil(config.pathVariables)) {
     const path = createUrlPath(
       urlString,
@@ -48,11 +47,28 @@ export const createUrl = <Url extends string,>(
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    mutableUrlString = path as Url;
+    return path as Url;
+  }
+
+  return urlString;
+};
+
+export const createUrl = <Url extends string, >(
+  urlString: Url,
+  config?: UrlConfig<Url>,
+): Error | URL | ZodError => {
+  if (hasValidationError("pathVariables", "pathVariablesSchema", config)) {
+    return new Error("must provide path variables schema");
+  }
+
+  const resolvedUrlString = resolvePath(urlString, config);
+
+  if (isError(resolvedUrlString)) {
+    return resolvedUrlString;
   }
 
   const url = attempt(() => {
-    return new URL(mutableUrlString,
+    return new URL(resolvedUrlString,
       config?.urlBase);
   });
 
@@ -60,11 +76,7 @@ export const createUrl = <Url extends string,>(
     return url;
   }
 
-  if (
-    !isNil(config) &&
-    !isNil(config.searchParams) &&
-    isNil(config.searchParamsSchema)
-  ) {
+  if (hasValidationError("searchParams", "searchParamsSchema", config)) {
     return new Error("must provide search parameters schema");
   }
 
@@ -83,13 +95,7 @@ export const createUrl = <Url extends string,>(
     }
 
     if (!isNil(parameters)) {
-      for (const [
-        key,
-        value,
-      ] of parameters.entries()) {
-        url.searchParams.append(key,
-          value);
-      }
+      appendSearchParameters(url, parameters);
     }
   }
 

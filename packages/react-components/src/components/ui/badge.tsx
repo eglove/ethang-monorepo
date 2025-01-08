@@ -23,9 +23,8 @@ const badgeVariants = cva(
   },
 );
 
-// eslint-disable-next-line sonar/no-useless-intersection
-export type BadgeProperties = {}
-  & HTMLAttributes<HTMLDivElement> & VariantProps<typeof badgeVariants>;
+export type BadgeProperties = HTMLAttributes<HTMLDivElement>
+  & VariantProps<typeof badgeVariants>;
 
 const Badge = ({
   className, variant, ...properties

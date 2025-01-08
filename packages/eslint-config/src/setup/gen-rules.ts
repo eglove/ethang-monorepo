@@ -19,11 +19,10 @@ export type CustomRules = {
   rule: unknown;
 }[];
 
-export const genRules = (
-  ruleNames: string[],
-  customRules: CustomRules,
-  prefix?: string,
-  defaultOverride = "error",
+const getRuleStrings = (
+    ruleNames: string[],
+    defaultOverride: string,
+    prefix?: string
 ) => {
   const rules: Record<string, unknown> = {};
 
@@ -35,6 +34,17 @@ export const genRules = (
     }
   }
 
+  return rules;
+}
+
+export const genRules = (
+  ruleNames: string[],
+  customRules: CustomRules,
+  prefix?: string,
+  defaultOverride = "error",
+) => {
+  const rules = getRuleStrings(ruleNames, defaultOverride, prefix);
+
   if (customRules) {
     for (const rule of customRules) {
       if (ruleNames.includes(rule.name)) {
@@ -44,7 +54,6 @@ export const genRules = (
           rules[`${prefix}/${rule.name}`] = rule.rule;
         }
       } else {
-        // eslint-disable-next-line no-console
         throw new Error(
           `${rule.name} in ${prefix ?? "(unknown prefix)"} does not exist.`,
         );

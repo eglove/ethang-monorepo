@@ -1,4 +1,8 @@
-import { useCallback, useLayoutEffect, useState } from "react";
+import {
+  useCallback,
+  useLayoutEffect,
+  useState,
+} from "react";
 
 import { animationInterval } from "./use-animation-interval.ts";
 
@@ -32,6 +36,17 @@ export const useDimensions = ({
     setElement(node);
   }, []);
 
+  const handleSetDimensions = (
+    targetElement: Element,
+    signal: AbortSignal,
+  ) => {
+    const boundingRect = targetElement.getBoundingClientRect();
+
+    animationInterval(delay, signal, () => {
+      setDimensions(boundingRect);
+    });
+  };
+
   // @ts-expect-error it's fine
   useLayoutEffect(() => {
     if (!element) {
@@ -42,12 +57,7 @@ export const useDimensions = ({
 
     const measure = (): void => {
       globalThis.requestAnimationFrame(() => {
-        const boundingRect = element.getBoundingClientRect();
-
-        // eslint-disable-next-line sonar/no-nested-functions
-        animationInterval(delay, controller.signal, () => {
-          setDimensions(boundingRect);
-        });
+        handleSetDimensions(element, controller.signal);
       });
     };
 
