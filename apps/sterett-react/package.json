@@ -41,7 +41,7 @@
     "@tanstack/react-router": "^1.95.1",
     "@tanstack/router-devtools": "^1.95.1",
     "calendar-link": "^2.8.0",
-    "framer-motion": "^11.16.1",
+    "framer-motion": "^11.16.4",
     "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",
     "luxon": "^3.5.0",
