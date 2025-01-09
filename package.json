@@ -13,7 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "@ethang/eslint-config": "workspace:^",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "typescript-eslint": "^8.19.1"
   }
 }
