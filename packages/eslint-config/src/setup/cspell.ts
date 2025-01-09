@@ -61,6 +61,7 @@ const customRules: CustomRules = [
             "cmdk",
             "ngsw",
             "dexie",
+            "leetcode",
           ],
         },
       },

@@ -1252,6 +1252,7 @@ export default tseslint.config(
               "cmdk",
               "ngsw",
               "dexie",
+              "leetcode",
             ],
           },
         },
