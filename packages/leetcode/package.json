@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "engines": {
     "node": ">=22"
   },
@@ -22,6 +23,7 @@
     "vitest": "^2.1.8"
   },
   "dependencies": {
+    "@ethang/toolbelt": "workspace:^",
     "lodash": "^4.17.21"
   }
 }
