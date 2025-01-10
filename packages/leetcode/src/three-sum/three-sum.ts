@@ -1,6 +1,33 @@
-import get from "lodash/get";
+import get from "lodash/get.js";
 
-// eslint-disable-next-line sonar/cognitive-complexity
+const incrementLeft = (
+  left: number,
+  right: number,
+  sorted: number[],
+) => {
+  let leftCopy = left;
+
+  while (leftCopy < right && sorted[leftCopy] === sorted[leftCopy + 1]) {
+    leftCopy += 1;
+  }
+
+  return leftCopy;
+};
+
+const incrementRight = (
+  left: number,
+  right: number,
+  sorted: number[],
+) => {
+  let rightCopy = right;
+
+  while (left < rightCopy && sorted[rightCopy] === sorted[rightCopy - 1]) {
+    rightCopy -= 1;
+  }
+
+  return rightCopy;
+};
+
 export const threeSum = (numbers: number[]) => {
   const sorted = numbers.toSorted((a, b) => {
     return a - b;
@@ -24,15 +51,8 @@ export const threeSum = (numbers: number[]) => {
       if (0 === sum) {
         result.push([sorted[index], sorted[left], sorted[right]]);
 
-        // eslint-disable-next-line sonar/nested-control-flow
-        while (left < right && sorted[left] === sorted[left + 1]) {
-          left += 1;
-        }
-
-        // eslint-disable-next-line sonar/nested-control-flow
-        while (left < right && sorted[right] === sorted[right - 1]) {
-          right -= 1;
-        }
+        left = incrementLeft(left, right, sorted);
+        right = incrementRight(left, right, sorted);
 
         left += 1;
         right += 1;
