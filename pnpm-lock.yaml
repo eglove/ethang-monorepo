@@ -219,7 +219,7 @@ importers:
         version: 5.21.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@convex-dev/react-query':
         specifier: 0.0.0-alpha.8
-        version: 0.0.0-alpha.8(@tanstack/react-query@5.63.0(react@19.0.0))(convex@1.17.4(@clerk/clerk-react@5.21.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
+        version: 0.0.0-alpha.8(@tanstack/react-query@5.64.0(react@19.0.0))(convex@1.17.4(@clerk/clerk-react@5.21.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@cortex-js/compute-engine':
         specifier: ^0.27.0
         version: 0.27.0
@@ -263,17 +263,17 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6(@types/react-dom@19.0.2(@types/react@19.0.4))(@types/react@19.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/query-async-storage-persister':
-        specifier: ^5.62.16
-        version: 5.62.16
+        specifier: ^5.64.0
+        version: 5.64.0
       '@tanstack/react-query':
-        specifier: ^5.63.0
-        version: 5.63.0(react@19.0.0)
+        specifier: ^5.64.0
+        version: 5.64.0(react@19.0.0)
       '@tanstack/react-query-devtools':
-        specifier: ^5.63.0
-        version: 5.63.0(@tanstack/react-query@5.63.0(react@19.0.0))(react@19.0.0)
+        specifier: ^5.64.0
+        version: 5.64.0(@tanstack/react-query@5.64.0(react@19.0.0))(react@19.0.0)
       '@tanstack/react-query-persist-client':
-        specifier: ^5.63.0
-        version: 5.63.0(@tanstack/react-query@5.63.0(react@19.0.0))(react@19.0.0)
+        specifier: ^5.64.0
+        version: 5.64.0(@tanstack/react-query@5.64.0(react@19.0.0))(react@19.0.0)
       '@tanstack/react-router':
         specifier: ^1.95.3
         version: 1.95.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -517,20 +517,20 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       '@tanstack/query-async-storage-persister':
-        specifier: ^5.62.16
-        version: 5.62.16
+        specifier: ^5.64.0
+        version: 5.64.0
       '@tanstack/query-sync-storage-persister':
-        specifier: ^5.62.16
-        version: 5.62.16
+        specifier: ^5.64.0
+        version: 5.64.0
       '@tanstack/react-query':
-        specifier: ^5.63.0
-        version: 5.63.0(react@19.0.0)
+        specifier: ^5.64.0
+        version: 5.64.0(react@19.0.0)
       '@tanstack/react-query-devtools':
-        specifier: ^5.63.0
-        version: 5.63.0(@tanstack/react-query@5.63.0(react@19.0.0))(react@19.0.0)
+        specifier: ^5.64.0
+        version: 5.64.0(@tanstack/react-query@5.64.0(react@19.0.0))(react@19.0.0)
       '@tanstack/react-query-persist-client':
-        specifier: ^5.63.0
-        version: 5.63.0(@tanstack/react-query@5.63.0(react@19.0.0))(react@19.0.0)
+        specifier: ^5.64.0
+        version: 5.64.0(@tanstack/react-query@5.64.0(react@19.0.0))(react@19.0.0)
       '@tanstack/react-router':
         specifier: ^1.95.3
         version: 1.95.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -7418,35 +7418,35 @@ packages:
     resolution: {integrity: sha512-FgUauZLg+nRybH5dKyAYokmXs064rHc0qpMizKxTegSTMHj/z2B6T7pjEG2Zd6dBegeYNVL97ROg7Srr9cuBug==}
     engines: {node: '>=12'}
 
-  '@tanstack/query-async-storage-persister@5.62.16':
-    resolution: {integrity: sha512-2vyUz/Z/O8APIVBL1srXQo+KpJzeYTAwYmjLwbP0nSYmCgq+HzzJIXRXAXO95ZrCfv7Hng1JZX5egOSe9V+H0w==}
+  '@tanstack/query-async-storage-persister@5.64.0':
+    resolution: {integrity: sha512-8RMd8g7fI4Z8y1/BVfCtauVfnZdw1orwifvalwnBtkfS7CYm8ozIuzltI+8zh081dXEq46Ro8W9UG8pu0wWRqg==}
 
-  '@tanstack/query-core@5.62.16':
-    resolution: {integrity: sha512-9Sgft7Qavcd+sN0V25xVyo0nfmcZXBuODy3FVG7BMWTg1HMLm8wwG5tNlLlmSic1u7l1v786oavn+STiFaPH2g==}
+  '@tanstack/query-core@5.64.0':
+    resolution: {integrity: sha512-/MPJt/AaaMzdWJZTafgMyYhEX/lGjQrNz8+NDQSk8fNoU5PHqh05FhQaBrEQafW2PeBHsRbefEf//qKMiSAbQQ==}
 
   '@tanstack/query-devtools@5.62.16':
     resolution: {integrity: sha512-3ff6UBJr0H3nIhfLSl9911rvKqXf0u4B58jl0uYdDWLqPk9pCvYIbxC35cGxK2+8INl4IaFVUHb/IdgWrNkg3Q==}
 
-  '@tanstack/query-persist-client-core@5.62.16':
-    resolution: {integrity: sha512-gCBGgXMVpb75N0s+KOtLkaNq/YxlJzW0y++Zn41E0ZkKEthwV54Q7oshrJpA6yUcm4Q6b1+BT8xYRx+PLWDaPg==}
+  '@tanstack/query-persist-client-core@5.64.0':
+    resolution: {integrity: sha512-8ivne4hzwz8ztv5A0OwVWPBZtRfFruHEMJCLPCeNwLnzThGH6+xjblreoSyb8tIm86R0rfBD5xmuVi8EVrGI9A==}
 
-  '@tanstack/query-sync-storage-persister@5.62.16':
-    resolution: {integrity: sha512-clZ+llkIkDtMSwfZ/Ic84zk9dSA2s3JaJW1hFKwkQMHWRJNnUIfvT+5C+8uHXFp0IYkYC2Ja9prNipz9DuljCw==}
+  '@tanstack/query-sync-storage-persister@5.64.0':
+    resolution: {integrity: sha512-rIvA/XGxiDQunbJWkG2+upYswVkCfzshnQKB7UWYx2Ax7xMA/ryvIbZByzoiVvwfNxeFDidlbUtGR00qPRjr3Q==}
 
-  '@tanstack/react-query-devtools@5.63.0':
-    resolution: {integrity: sha512-j3+22r6srSJVy8oiLUpOOupI4g7IHwbISeEGM+5ASIzzOnVUUSsY6e4nu5pxxj7ODJbiag3GpkHU/otG9B9sAA==}
+  '@tanstack/react-query-devtools@5.64.0':
+    resolution: {integrity: sha512-XORJjlbcBwPJaNbWBfZudaVVMi5TtlN1lYkHYU71hlG2c/jYpceO2yfAhZfgeyTNtqmTJ7jXOitgoGqtunsBAA==}
     peerDependencies:
-      '@tanstack/react-query': ^5.63.0
+      '@tanstack/react-query': ^5.64.0
       react: ^18 || ^19
 
-  '@tanstack/react-query-persist-client@5.63.0':
-    resolution: {integrity: sha512-BQu1H4M+6GOkhXZb2RdZfpxF9Oh4RBDFr+XCZUx2q17ulyqhYd7aFhAY8dgUEoRWtWMQVJuXkHYH0o5IN1XBXw==}
+  '@tanstack/react-query-persist-client@5.64.0':
+    resolution: {integrity: sha512-BpSsqUHSqS02AkJAdYztzFWeYnYOO3rFDsbbro426QOLRHS5gbdOzzIyJPVZt1a4Uaaw3v0g/bYn375at0dV6w==}
     peerDependencies:
-      '@tanstack/react-query': ^5.63.0
+      '@tanstack/react-query': ^5.64.0
       react: ^18 || ^19
 
-  '@tanstack/react-query@5.63.0':
-    resolution: {integrity: sha512-QWizLzSiog8xqIRYmuJRok9VELlXVBAwtINgVCgW1SNvamQwWDO5R0XFSkjoBEj53x9Of1KAthLRBUC5xmtVLQ==}
+  '@tanstack/react-query@5.64.0':
+    resolution: {integrity: sha512-tBMzlROROUcTDMpDt1NC3n9ndKnJHPB3RCpa6Bf9f31TFvqhLz879x8jldtKU+6IwMSw1Pn4K1AKA+2SYyA6TA==}
     peerDependencies:
       react: ^18 || ^19
 
@@ -16743,7 +16743,7 @@ snapshots:
       tree-kill: 1.2.2
       tslib: 2.8.1
       typescript: 5.6.3
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
       webpack-dev-middleware: 7.4.2(webpack@5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0))
       webpack-dev-server: 5.1.0(webpack@5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0))
       webpack-merge: 6.0.1
@@ -16780,7 +16780,7 @@ snapshots:
     dependencies:
       '@angular-devkit/architect': 0.1900.7(chokidar@4.0.3)
       rxjs: 7.8.1
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
       webpack-dev-server: 5.1.0(webpack@5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0))
     transitivePeerDependencies:
       - chokidar
@@ -18959,9 +18959,9 @@ snapshots:
 
   '@colors/colors@1.5.0': {}
 
-  '@convex-dev/react-query@0.0.0-alpha.8(@tanstack/react-query@5.63.0(react@19.0.0))(convex@1.17.4(@clerk/clerk-react@5.21.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
+  '@convex-dev/react-query@0.0.0-alpha.8(@tanstack/react-query@5.64.0(react@19.0.0))(convex@1.17.4(@clerk/clerk-react@5.21.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
     dependencies:
-      '@tanstack/react-query': 5.63.0(react@19.0.0)
+      '@tanstack/react-query': 5.64.0(react@19.0.0)
       convex: 1.17.4(@clerk/clerk-react@5.21.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
 
   '@cortex-js/compute-engine@0.27.0':
@@ -21670,7 +21670,7 @@ snapshots:
     dependencies:
       '@angular/compiler-cli': 19.0.6(@angular/compiler@19.0.6(@angular/core@19.0.6(rxjs@7.8.1)(zone.js@0.15.0)))(typescript@5.6.3)
       typescript: 5.6.3
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
 
   '@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1':
     dependencies:
@@ -25069,38 +25069,38 @@ snapshots:
 
   '@tanstack/history@1.95.2': {}
 
-  '@tanstack/query-async-storage-persister@5.62.16':
+  '@tanstack/query-async-storage-persister@5.64.0':
     dependencies:
-      '@tanstack/query-persist-client-core': 5.62.16
+      '@tanstack/query-persist-client-core': 5.64.0
 
-  '@tanstack/query-core@5.62.16': {}
+  '@tanstack/query-core@5.64.0': {}
 
   '@tanstack/query-devtools@5.62.16': {}
 
-  '@tanstack/query-persist-client-core@5.62.16':
+  '@tanstack/query-persist-client-core@5.64.0':
     dependencies:
-      '@tanstack/query-core': 5.62.16
+      '@tanstack/query-core': 5.64.0
 
-  '@tanstack/query-sync-storage-persister@5.62.16':
+  '@tanstack/query-sync-storage-persister@5.64.0':
     dependencies:
-      '@tanstack/query-core': 5.62.16
-      '@tanstack/query-persist-client-core': 5.62.16
+      '@tanstack/query-core': 5.64.0
+      '@tanstack/query-persist-client-core': 5.64.0
 
-  '@tanstack/react-query-devtools@5.63.0(@tanstack/react-query@5.63.0(react@19.0.0))(react@19.0.0)':
+  '@tanstack/react-query-devtools@5.64.0(@tanstack/react-query@5.64.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@tanstack/query-devtools': 5.62.16
-      '@tanstack/react-query': 5.63.0(react@19.0.0)
+      '@tanstack/react-query': 5.64.0(react@19.0.0)
       react: 19.0.0
 
-  '@tanstack/react-query-persist-client@5.63.0(@tanstack/react-query@5.63.0(react@19.0.0))(react@19.0.0)':
+  '@tanstack/react-query-persist-client@5.64.0(@tanstack/react-query@5.64.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@tanstack/query-persist-client-core': 5.62.16
-      '@tanstack/react-query': 5.63.0(react@19.0.0)
+      '@tanstack/query-persist-client-core': 5.64.0
+      '@tanstack/react-query': 5.64.0(react@19.0.0)
       react: 19.0.0
 
-  '@tanstack/react-query@5.63.0(react@19.0.0)':
+  '@tanstack/react-query@5.64.0(react@19.0.0)':
     dependencies:
-      '@tanstack/query-core': 5.62.16
+      '@tanstack/query-core': 5.64.0
       react: 19.0.0
 
   '@tanstack/react-router@1.95.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
@@ -26897,7 +26897,7 @@ snapshots:
       '@babel/core': 7.26.0
       find-cache-dir: 4.0.0
       schema-utils: 4.3.0
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
 
   babel-plugin-istanbul@6.1.1:
     dependencies:
@@ -27588,7 +27588,7 @@ snapshots:
       normalize-path: 3.0.0
       schema-utils: 4.3.0
       serialize-javascript: 6.0.2
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
 
   core-js-compat@3.39.0:
     dependencies:
@@ -27751,7 +27751,7 @@ snapshots:
       postcss-value-parser: 4.2.0
       semver: 7.6.3
     optionalDependencies:
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
 
   css-select@5.1.0:
     dependencies:
@@ -31629,7 +31629,7 @@ snapshots:
     dependencies:
       less: 4.2.0
     optionalDependencies:
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
 
   less@4.2.0:
     dependencies:
@@ -31662,7 +31662,7 @@ snapshots:
     dependencies:
       webpack-sources: 3.2.3
     optionalDependencies:
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
 
   lie@3.3.0:
     dependencies:
@@ -32331,7 +32331,7 @@ snapshots:
     dependencies:
       schema-utils: 4.3.0
       tapable: 2.2.1
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
 
   miniflare@3.20241230.1:
     dependencies:
@@ -33200,7 +33200,7 @@ snapshots:
       postcss: 8.4.49
       semver: 7.6.3
     optionalDependencies:
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
     transitivePeerDependencies:
       - typescript
 
@@ -34522,7 +34522,7 @@ snapshots:
       neo-async: 2.6.2
     optionalDependencies:
       sass: 1.80.7
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
 
   sass@1.80.7:
     dependencies:
@@ -34891,7 +34891,7 @@ snapshots:
     dependencies:
       iconv-lite: 0.6.3
       source-map-js: 1.2.1
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
 
   source-map-support@0.5.13:
     dependencies:
@@ -35434,7 +35434,7 @@ snapshots:
       schema-utils: 4.3.0
       serialize-javascript: 6.0.2
       terser: 5.36.0
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
     optionalDependencies:
       '@swc/core': 1.10.1(@swc/helpers@0.5.15)
       esbuild: 0.24.0
@@ -36401,7 +36401,7 @@ snapshots:
       range-parser: 1.2.1
       schema-utils: 4.3.0
     optionalDependencies:
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
 
   webpack-dev-server@5.1.0(webpack@5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)):
     dependencies:
@@ -36434,7 +36434,7 @@ snapshots:
       webpack-dev-middleware: 7.4.2(webpack@5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0))
       ws: 8.18.0
     optionalDependencies:
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -36452,11 +36452,11 @@ snapshots:
   webpack-subresource-integrity@5.1.0(webpack@5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)):
     dependencies:
       typed-assert: 1.0.9
-      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0)
+      webpack: 5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19)
 
   webpack-virtual-modules@0.6.2: {}
 
-  webpack@5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.24.0):
+  webpack@5.96.1(@swc/core@1.10.1(@swc/helpers@0.5.15))(esbuild@0.17.19):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.6

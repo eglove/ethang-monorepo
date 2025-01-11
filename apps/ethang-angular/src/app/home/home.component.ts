@@ -9,5 +9,23 @@ import { MainLayoutComponent } from "../layouts/main-layout/main-layout.componen
   selector: "app-home",
   templateUrl: "./home.component.html",
 })
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class HomeComponent {}
+export class HomeComponent {
+  public blogs = [
+    {
+      link: "/blog/mimetic-desire",
+      title: "Mimetic Desire",
+    },
+    {
+      link: "/blog/motivation",
+      title: "Notes: Generating motivation in software engineering",
+    },
+    {
+      link: "/blog/angular-now",
+      title: "It's Angular Now",
+    },
+    {
+      link: "/blog/forcing-react",
+      title: "Forcing React to be What It Isn't",
+    },
+  ];
+}
