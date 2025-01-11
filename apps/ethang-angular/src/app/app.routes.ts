@@ -68,4 +68,15 @@ export const routes: Routes = [
     path: "blog/learning-log-sagemaker-1",
     title: "EthanG | Study Log: AWS Sagemaker Setup",
   },
+  {
+    loadComponent: async () => {
+      return import("./blogs/mimetic-desire/mimetic-desire.component").then(
+        (module) => {
+          return module.MimeticDesireComponent;
+        },
+      );
+    },
+    path: "blog/mimetic-desire",
+    title: "EthanG | Mimetic Desire",
+  },
 ];
