@@ -23,7 +23,8 @@ export const knightConnection = (
     const currentPosition = queue.shift();
 
     if (isNil(currentPosition)) {
-      break;
+      // eslint-disable-next-line no-continue
+      continue;
     }
 
     if (
@@ -46,6 +47,4 @@ export const knightConnection = (
       }
     }
   }
-
-  return -1;
 };
