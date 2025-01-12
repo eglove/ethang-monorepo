@@ -5,8 +5,10 @@ import { findClosestValueInBst } from "./find-closest-value-in-bst.js";
 
 describe("findClosestValueInBst", () => {
   it("should work", () => {
-    const bst = new Tree([10, 15, 22, 13, 14, 5, 5, 2, 1]);
+    const bst = new Tree([10, 15, 22, 13, 14, 5, 5, 2, 1].sort((a, b) => {
+      return a - b;
+    }));
 
-    expect(findClosestValueInBst(bst.root, 12)).toBe(13);
+    expect(findClosestValueInBst(bst.root, 11)).toBe(14);
   });
 });

@@ -1,38 +1,50 @@
+import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 
 import { TreeNode } from "./tree-node.js";
 
 export class Tree<T,> {
-  public root!: TreeNode<T>;
+  public root: TreeNode<T>;
 
   public constructor(values: T[]) {
-    this.insertMany(values);
+    this.root = this.buildTree(values);
   }
 
-  private insert(value: T) {
-    const insertNode = (
-      node: null | TreeNode<T>,
-      newValue: T,
-    ): TreeNode<T> => {
-      if (isNil(node)) {
-        return new TreeNode<T>(newValue, null, null);
+  private buildTree(values: T[]): TreeNode<T> {
+    const firstValue = get(values, [0]);
+
+    const root = new TreeNode<T>(firstValue, null, null);
+    const queue = [root];
+    let index = 1;
+
+    while (index < values.length) {
+      const current = queue.shift();
+
+      if (isNil(current)) {
+        break;
       }
 
-      if (newValue < node.value) {
-        node.left = insertNode(node.left, newValue);
-      } else {
-        node.right = insertNode(node.right, newValue);
+      if (index < values.length) {
+        const value = values[index];
+
+        if (!isNil(value)) {
+          current.left = new TreeNode<T>(value, null, null);
+          index += 1;
+          queue.push(current.left);
+        }
       }
 
-      return node;
-    };
+      if (index < values.length) {
+        const value = values[index];
 
-    this.root = insertNode(this.root, value);
-  }
-
-  private insertMany(values: T[]) {
-    for (const value of values) {
-      this.insert(value);
+        if (!isNil(value)) {
+          current.right = new TreeNode<T>(value, null, null);
+          index += 1;
+          queue.push(current.right);
+        }
+      }
     }
+
+    return root;
   }
 }

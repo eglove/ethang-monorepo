@@ -5,9 +5,8 @@ import { branchSums } from "./branch-sums.js";
 
 describe("branchSums", () => {
   it("should work", () => {
-    const tree = new Tree([1, 2, 4, 5, 3, 6, 7, 8, 9, 10]);
+    const tree = new Tree([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
-    // Not actually correct because tree impl isn't balanced
-    expect(branchSums(tree.root)).toStrictEqual([10, 52]);
+    expect(branchSums(tree.root)).toStrictEqual([15, 16, 18, 10, 11]);
   });
 });
