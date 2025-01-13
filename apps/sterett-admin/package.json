@@ -23,7 +23,7 @@
     "@sanity/icons": "^3.5.7",
     "@sanity/orderable-document-list": "^1.2.2",
     "@sanity/vision": "^3.69.0",
-    "@types/react": "19.0.5",
+    "@types/react": "19.0.6",
     "lodash": "^4.17.21",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

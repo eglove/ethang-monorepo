@@ -26,34 +26,42 @@ export const routes: Routes = [
   },
   {
     loadComponent: async () => {
-      return import("./blogs/forcing-react/forcing-react.component").then((module) => {
-        return module.ForcingReactComponent;
-      });
+      return import("./blogs/forcing-react/forcing-react.component").then(
+        (module) => {
+          return module.ForcingReactComponent;
+        },
+      );
     },
     path: "blog/forcing-react",
     title: "EthanG | Forcing React to be What It Isn't",
   },
   {
     loadComponent: async () => {
-      return import("./blogs/angular-now/angular-now.component").then((module) => {
-        return module.AngularNowComponent;
-      });
+      return import("./blogs/angular-now/angular-now.component").then(
+        (module) => {
+          return module.AngularNowComponent;
+        },
+      );
     },
     path: "blog/angular-now",
     title: "EthanG | It's Angular Now",
   },
   {
     loadComponent: async () => {
-      return import("./blogs/motivation/motivation.component").then((module) => {
-        return module.MotivationComponent;
-      });
+      return import("./blogs/motivation/motivation.component").then(
+        (module) => {
+          return module.MotivationComponent;
+        },
+      );
     },
     path: "blog/motivation",
     title: "EthanG | Notes on generating motivation in software engineering.",
   },
   {
     loadComponent: async () => {
-      return import("./blogs/learning-log-sagemaker-1/learning-log-sagemaker-1.component").then((module) => {
+      return import(
+        "./blogs/learning-log-sagemaker-1/learning-log-sagemaker-1.component"
+      ).then((module) => {
         return module.LearningLogSagemaker1Component;
       });
     },
@@ -62,9 +70,11 @@ export const routes: Routes = [
   },
   {
     loadComponent: async () => {
-      return import("./blogs/mimetic-desire/mimetic-desire.component").then((module) => {
-        return module.MimeticDesireComponent;
-      });
+      return import("./blogs/mimetic-desire/mimetic-desire.component").then(
+        (module) => {
+          return module.MimeticDesireComponent;
+        },
+      );
     },
     path: "blog/mimetic-desire",
     title: "EthanG | Mimetic Desire",

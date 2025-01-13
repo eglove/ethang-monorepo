@@ -34,7 +34,7 @@ const customRules = [
   { name: "array-element-newline", rule: ["error", "consistent"] },
   { name: "dot-location", rule: ["error", "property"] },
   { name: "function-call-argument-newline", rule: ["error", "consistent"] },
-  { name: "function-paren-newline", rule: ["error", { minItems: 2 }] },
+  { name: "function-paren-newline", rule: ["error", "consistent"] },
   { name: "line-comment-position", rule: "off" },
   {
     name: "max-len",
