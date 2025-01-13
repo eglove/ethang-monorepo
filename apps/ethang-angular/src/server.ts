@@ -8,7 +8,9 @@ const angularApp = new AngularAppEngine();
 export const requestHandler = createRequestHandler(async (request) => {
   const response = await angularApp.handle(request);
 
-  return response ?? new Response("Page not found.", { status: 404 });
+  return response ?? new Response(
+    "Page not found.", { status: 404 },
+  );
 });
 
 export default { fetch: requestHandler };

@@ -42,9 +42,13 @@ export class RoutineService {
       return;
     }
 
-    await database.routineItems.update(id, {
-      due: addMilliseconds(previous.due, previous.recurs),
-    });
+    await database.routineItems.update(
+      id, {
+        due: addMilliseconds(
+          previous.due, previous.recurs,
+        ),
+      },
+    );
   }
 
   public async deleteRoutineItem(id: string) {
@@ -64,14 +68,16 @@ export class RoutineService {
   }
 
   private findRoutineItem(id: string) {
-    return find(this.routineItems(), { id });
+    return find(
+      this.routineItems(), { id },
+    );
   }
 
   private setSorted(value: RoutineItem[]) {
-    this.routineItems.set(
-      value.toSorted((a, b) => {
-        return a.due.getTime() - b.due.getTime();
-      }),
-    );
+    this.routineItems.set(value.toSorted((
+      a, b,
+    ) => {
+      return a.due.getTime() - b.due.getTime();
+    }));
   }
 }
