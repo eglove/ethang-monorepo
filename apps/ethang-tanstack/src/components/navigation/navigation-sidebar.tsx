@@ -19,7 +19,7 @@ import {
 } from "@ethang/react-components/src/components/ui/sidebar.tsx";
 import { Authenticated, Unauthenticated } from "convex/react";
 import map from "lodash/map";
-import { CpuIcon, FileUserIcon, HomeIcon, KanbanIcon, SchoolIcon, ShieldCheckIcon } from "lucide-react";
+import { CpuIcon, FileUser, HomeIcon, KanbanIcon, SchoolIcon, ShieldCheckIcon } from "lucide-react";
 
 const links = [
   {
@@ -34,7 +34,7 @@ const links = [
   },
   {
     href: "/resume",
-    Icon: FileUserIcon,
+    Icon: FileUser,
     label: "Resume",
   },
   {
