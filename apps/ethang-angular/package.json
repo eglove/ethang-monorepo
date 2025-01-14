@@ -32,6 +32,7 @@
     "@angular/router": "^19.0.6",
     "@angular/service-worker": "^19.0.6",
     "@angular/ssr": "^19.0.7",
+    "@ethang/toolbelt": "workspace:^",
     "date-fns": "^4.1.0",
     "dexie": "^4.0.10",
     "lodash": "^4.17.21",
@@ -40,6 +41,7 @@
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "uuid": "^11.0.5",
+    "zod": "^3.24.1",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {

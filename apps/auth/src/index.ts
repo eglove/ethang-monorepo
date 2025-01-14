@@ -25,9 +25,8 @@ export default {
   ): Promise<Response> {
     const url = new URL(request.url);
     const origin = request.headers.get("Origin");
-    const isAllowedOrigin = !isNil(origin) && (/\.ethang.dev%/u).test(new URL(origin).hostname);
 
-    if (isAllowedOrigin) {
+    if (!isNil(origin) && (/\.ethang.dev%/u).test(new URL(origin).hostname)) {
       store.setOrigin(origin);
     }
 

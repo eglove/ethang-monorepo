@@ -16,6 +16,8 @@
     "experimentalDecorators": true,
     "moduleResolution": "bundler",
     "importHelpers": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
     "target": "ES2022",
     "module": "ES2022",
     "types": [

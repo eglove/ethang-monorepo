@@ -8,12 +8,15 @@ export const createResponse = (
   status: keyof typeof HTTP_STATUS,
   responseInit?: ResponseInit,
 ) => {
-  const headers = merge({ "Content-Type": "application/json" }, responseInit?.headers);
+  const headers = merge(
+    { "Content-Type": "application/json" },
+    responseInit?.headers,
+    store.corsHeaders,
+  );
 
   return new globalThis.Response(JSON.stringify(data), {
     status: HTTP_STATUS[status],
     ...responseInit,
     headers,
-    ...store.corsHeaders,
   });
 };
