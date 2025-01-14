@@ -12,6 +12,10 @@ import { MainLayoutComponent } from "../layouts/main-layout/main-layout.componen
 export class HomeComponent {
   public blogs = [
     {
+      link: "blog/looking-at-no-misused-spread",
+      title: "Looking at: no-misused-spread",
+    },
+    {
       link: "/blog/mimetic-desire",
       title: "Mimetic Desire",
     },

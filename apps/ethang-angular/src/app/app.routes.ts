@@ -79,4 +79,15 @@ export const routes: Routes = [
     path: "blog/mimetic-desire",
     title: "EthanG | Mimetic Desire",
   },
+  {
+    loadComponent: async () => {
+      return import(
+        "./blogs/looking-at-no-misused-spread/looking-at-no-misused-spread.component"
+      ).then((module) => {
+        return module.LookingAtNoMisusedSpreadComponent;
+      });
+    },
+    path: "blog/looking-at-no-misused-spread",
+    title: "EthanG | Looking At: No Misused Spread",
+  },
 ];
