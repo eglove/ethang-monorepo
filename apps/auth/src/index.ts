@@ -26,7 +26,7 @@ export default {
   ): Promise<Response> {
     const url = new URL(request.url);
 
-    if (endsWith(url.hostname, ".ethang.dev")) {
+    if (endsWith(url.hostname, "ethang.dev")) {
       store.setOrigin(url.origin);
     }
 
