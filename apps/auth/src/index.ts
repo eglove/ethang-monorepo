@@ -1,4 +1,6 @@
+import endsWith from "lodash/endsWith";
 import isNil from "lodash/isNil";
+import merge from "lodash/merge.js";
 
 import { deleteUser } from "./delete-user";
 import { editUser } from "./edit-user";
@@ -26,8 +28,17 @@ export default {
     const url = new URL(request.url);
     const origin = request.headers.get("Origin");
 
-    if (!isNil(origin) && (/\.ethang.dev%/u).test(new URL(origin).hostname)) {
+    if (!isNil(origin) && endsWith(new URL(origin).hostname, ".ethang.dev")) {
       store.setOrigin(origin);
+    }
+
+    if ("OPTIONS" === request.method) {
+      return new Response(null, {
+        headers: merge(store.corsHeaders, {
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        }),
+        status: 204,
+      });
     }
 
     if ("/user" === url.pathname && "GET" === request.method) {

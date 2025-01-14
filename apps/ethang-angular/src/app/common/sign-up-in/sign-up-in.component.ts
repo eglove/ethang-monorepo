@@ -51,7 +51,7 @@ export class SignUpInComponent {
     }
 
     const url = this.isSigningIn()
-      ? "https://baeb5aa4-auth.hello-a8f.workers.dev/sign-in"
+      ? "https://auth.ethang.dev/sign-in"
       : "https://auth.ethang.dev/user";
 
     const body = this.isSigningIn()
