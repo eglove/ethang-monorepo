@@ -5,6 +5,7 @@ import set from "lodash/set.js";
 import { z } from "zod";
 
 import { getUser } from "./utils/get-user";
+import { createToken } from "./utils/jwt.ts";
 import { getHashedPassword } from "./utils/password.ts";
 import { createResponse } from "./utils/util";
 
@@ -47,5 +48,7 @@ export const signUp = async (request: Request, environment: Env) => {
   }
 
   set(user, ["password"], undefined);
-  return createResponse(user, "CREATED");
+  const token = await createToken(user, environment);
+
+  return createResponse({ token }, "CREATED");
 };

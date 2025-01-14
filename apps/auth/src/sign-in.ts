@@ -1,6 +1,7 @@
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil";
+import set from "lodash/set.js";
 import { z } from "zod";
 
 import { getUser } from "./utils/get-user.ts";
@@ -48,6 +49,7 @@ export const signIn = async (request: Request, environment: Env) => {
     .raw();
 
   // Create JWT token
+  set(foundUser, ["password"], undefined);
   const token = await createToken(foundUser, environment);
 
   return createResponse({ token }, "OK");
