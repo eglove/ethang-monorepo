@@ -66,7 +66,7 @@ export class LookingAtNoMisusedSpreadComponent {
     "",
     objectStart,
     "  list, // No Error",
-    "  list2: [...list], No Error",
+    "  list2: [...list], // No Error",
     "  map: [...map], // No Error",
     "  set: [...set], // No Error",
     "  ...list, // Error!",

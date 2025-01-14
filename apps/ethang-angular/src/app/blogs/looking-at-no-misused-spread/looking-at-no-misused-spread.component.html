@@ -7,7 +7,7 @@
       target="_blank"
       class="link"
       >no-misused-spread</a
-    >. This prevent accidental use of the spread operator in unintended ways.
+    >. This prevents accidental use of the spread operator in unintended ways.
     From the documentation:
   </p>
   <ul>
@@ -48,13 +48,13 @@
   <p>By spreading a promise, nothing will be added to the final object:</p>
   <app-code-block [code]="promiseExample" />
   <p>
-    Interestingly in the function case, TypeScript seems to be able to check if
+    Interestingly in the function case, TypeScript seems able to check if
     the function has properties on it. At least within the same scope:
   </p>
   <app-code-block [code]="functionExample" />
   <p>
     For spreading an iterable, this is likely a mistake. The intention is more
-    likely that you want to spread it into a new array or assign it's value.
+    likely that you want to spread it into a new array or assign its value.
   </p>
   <app-code-block [code]="iterableExample" />
   <p>
@@ -63,13 +63,13 @@
   </p>
   <app-code-block [code]="stringExample" />
   <p>
-    When you spread a class you will only get static properties, not even static
+    When you spread a class, you will only get static properties, not even static
     methods.
   </p>
   <app-code-block [code]="classExample" />
   <p>
     And of course, the same issue happens when you spread the instance of a
-    class. This, in my opinion, is a very important one as with third-party
+    class. This, in my opinion, very important as with third-party
     libraries, we don't always know if an object is a plain object or a class
     instance.
   </p>
