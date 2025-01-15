@@ -1,11 +1,11 @@
-import endsWith from "lodash/endsWith";
-import isNil from "lodash/isNil";
+import endsWith from "lodash/endsWith.js";
+import isNil from "lodash/isNil.js";
 
-import { deleteUser } from "./delete-user";
-import { editUser } from "./edit-user";
-import { getUser } from "./get-user";
+import { deleteUser } from "./delete-user.ts";
+import { editUser } from "./edit-user.ts";
+import { getUser } from "./get-user.ts";
 import { signIn } from "./sign-in.ts";
-import { signUp } from "./sign-up";
+import { signUp } from "./sign-up.ts";
 import { ORIGIN } from "./utils/jwt.ts";
 import { createResponse } from "./utils/util.ts";
 

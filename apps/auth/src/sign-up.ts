@@ -1,13 +1,13 @@
-import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async";
-import isError from "lodash/isError";
-import isNil from "lodash/isNil";
+import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
+import isError from "lodash/isError.js";
+import isNil from "lodash/isNil.js";
 import set from "lodash/set.js";
 import { z } from "zod";
 
-import { getUser } from "./utils/get-user";
+import { getUser } from "./utils/get-user.ts";
 import { createToken } from "./utils/jwt.ts";
 import { getHashedPassword } from "./utils/password.ts";
-import { createResponse } from "./utils/util";
+import { createResponse } from "./utils/util.ts";
 
 const signUpSchema = z.object({
   email: z.string().email(),

@@ -1,9 +1,9 @@
-import isNil from "lodash/isNil";
-import set from "lodash/set";
+import isNil from "lodash/isNil.js";
+import set from "lodash/set.js";
 
-import { getUser as getUserUtil } from "./utils/get-user";
+import { getUser as getUserUtil } from "./utils/get-user.ts";
 import { getIsUser } from "./utils/is-user.ts";
-import { createResponse } from "./utils/util";
+import { createResponse } from "./utils/util.ts";
 
 export const getUser = async (request: Request, environment: Env) => {
   const url = new URL(request.url);

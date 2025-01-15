@@ -1,5 +1,5 @@
-import isError from "lodash/isError";
-import isNil from "lodash/isNil";
+import isError from "lodash/isError.js";
+import isNil from "lodash/isNil.js";
 
 import { verifyToken } from "./jwt.ts";
 

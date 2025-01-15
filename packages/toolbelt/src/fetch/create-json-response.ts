@@ -1,9 +1,8 @@
-import { HTTP_STATUS } from "@ethang/toolbelt/src/constants/http.ts";
 import merge from "lodash/merge.js";
 
-import { store } from "../index.ts";
+import { HTTP_STATUS } from "../constants/http.ts";
 
-export const createResponse = (
+export const createJsonResponse = (
   data: unknown,
   status: keyof typeof HTTP_STATUS,
   responseInit?: ResponseInit,
@@ -11,10 +10,9 @@ export const createResponse = (
   const headers = merge(
     { "Content-Type": "application/json" },
     responseInit?.headers,
-    store.corsHeaders,
   );
 
-  return new globalThis.Response(JSON.stringify(data), {
+  return globalThis.Response.json(JSON.stringify(data), {
     status: HTTP_STATUS[status],
     ...responseInit,
     headers,

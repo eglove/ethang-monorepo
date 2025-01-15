@@ -1,6 +1,6 @@
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
-import isError from "lodash/isError";
-import isNil from "lodash/isNil";
+import isError from "lodash/isError.js";
+import isNil from "lodash/isNil.js";
 import set from "lodash/set.js";
 import { z } from "zod";
 

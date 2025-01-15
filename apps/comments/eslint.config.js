@@ -15,6 +15,6 @@ export default tseslint.config(
         },
         rules: {
             "sonar/no-reference-error": "off",
-        },
+        }, 
     },
 );

@@ -1,38 +1,37 @@
 {
-  "name": "auth",
+  "name": "comments",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.4"
   },
   "browserslist": [
     "defaults and fully supports es6-module",
     "maintained node versions"
   ],
   "scripts": {
-    "build": "pnpm cf-typegen && wrangler deploy --dry-run --outdir=dist",
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "start": "wrangler dev",
-    "cf-typegen": "wrangler types",
-    "lint": "pnpm cf-typegen && eslint src --fix"
+    "test": "vitest",
+    "cf-typegen": "wrangler types"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.6.1",
+    "@cloudflare/vitest-pool-workers": "^0.5.2",
     "@cloudflare/workers-types": "^4.20250109.0",
     "@ethang/eslint-config": "workspace:^",
-    "@types/bcryptjs": "^2.4.6",
     "@types/lodash": "^4.17.14",
-    "eslint": "^9.18.0",
-    "typescript": "^5.7.3",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.5.2",
     "wrangler": "^3.102.0"
   },
   "dependencies": {
     "@ethang/toolbelt": "workspace:^",
-    "bcryptjs": "^2.4.3",
+    "eslint": "^9.18.0",
     "jose": "^5.9.6",
     "lodash": "^4.17.21",
+    "uuid": "^11.0.5",
     "zod": "^3.24.1"
   }
 }

@@ -1,8 +1,8 @@
-import isNil from "lodash/isNil";
+import isNil from "lodash/isNil.js";
 
-import { getUser } from "./utils/get-user";
+import { getUser } from "./utils/get-user.ts";
 import { getIsAdmin } from "./utils/is-user.ts";
-import { createResponse } from "./utils/util";
+import { createResponse } from "./utils/util.ts";
 
 export const deleteUser = async (
   request: Request, environment: Env,
