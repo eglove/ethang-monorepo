@@ -62,7 +62,7 @@
     "@tsconfig/vite-react": "^3.4.0",
     "@types/lodash": "^4.17.14",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.6",
     "@types/react": "^19.0.7",
     "@types/react-big-calendar": "^1.16.1",
     "@types/react-dom": "^19.0.3",
