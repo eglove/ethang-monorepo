@@ -1,4 +1,4 @@
-# Apps
+# Apps & Services
 
 - ethang-angular
   - Personal website written in Angular
