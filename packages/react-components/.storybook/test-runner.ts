@@ -1,5 +1,5 @@
 import {getStoryContext, TestRunnerConfig} from '@storybook/test-runner';
-import { injectAxe, checkA11y } from 'axe-playwright';
+import {injectAxe, checkA11y, getAxeResults} from 'axe-playwright';
 
 const config: TestRunnerConfig = {
     async preVisit(page) {

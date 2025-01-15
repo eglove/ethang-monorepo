@@ -9,8 +9,7 @@
     "dev": "storybook dev -p 6006 --no-open",
     "build": "storybook build",
     "test-storybook": "test-storybook --browsers chromium, firefox, webkit",
-    "test-storybook:watch": "test-storybook --watch",
-    "test": "concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6007 --silent\" \"wait-on tcp:127.0.0.1:6007 && pnpm test-storybook --url http://127.0.0.1:6007\""
+    "test-storybook:watch": "test-storybook --watch"
   },
   "engines": {
     "node": ">=22"
