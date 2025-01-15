@@ -3,7 +3,7 @@ import { jwtVerify, SignJWT } from "jose";
 
 import type { User } from "../types/database-types.ts";
 
-const ETHANG = "ethang.dev";
+export const ORIGIN = "ethang.dev";
 
 export type Token = {
   email: string;
@@ -22,8 +22,8 @@ export const createToken = async (user: User, environment: Env) => {
     username: user.username,
   })
     .setProtectedHeader({ alg: "HS256" })
-    .setIssuer(ETHANG)
-    .setAudience(ETHANG)
+    .setIssuer(ORIGIN)
+    .setAudience(ORIGIN)
     .setExpirationTime("24h")
     .sign(getSecretKey(environment));
 };
@@ -34,8 +34,8 @@ export const verifyToken = async (token: string, environment: Env) => {
       token,
       getSecretKey(environment),
       {
-        audience: ETHANG,
-        issuer: ETHANG,
+        audience: ORIGIN,
+        issuer: ORIGIN,
       },
     );
     return payload;

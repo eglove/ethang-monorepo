@@ -6,6 +6,7 @@ import { editUser } from "./edit-user";
 import { getUser } from "./get-user";
 import { signIn } from "./sign-in.ts";
 import { signUp } from "./sign-up";
+import { ORIGIN } from "./utils/jwt.ts";
 import { createResponse } from "./utils/util.ts";
 
 class Store {
@@ -29,7 +30,7 @@ export default {
     const url = new URL(request.url);
     const origin = request.headers.get("Origin");
 
-    if (!isNil(origin) && endsWith(origin, "ethang.dev")) {
+    if (!isNil(origin) && endsWith(origin, ORIGIN)) {
       store.setOrigin(origin);
     }
 
