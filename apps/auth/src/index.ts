@@ -1,4 +1,5 @@
 import endsWith from "lodash/endsWith";
+import isNil from "lodash/isNil";
 
 import { deleteUser } from "./delete-user";
 import { editUser } from "./edit-user";
@@ -25,9 +26,10 @@ export default {
     request, environment,
   ): Promise<Response> {
     const url = new URL(request.url);
+    const origin = request.headers.get("Origin");
 
-    if (endsWith(url.hostname, "ethang.dev")) {
-      store.setOrigin(url.origin);
+    if (!isNil(origin) && endsWith(origin, "ethang.dev")) {
+      store.setOrigin(origin);
     }
 
     if ("OPTIONS" === request.method) {
