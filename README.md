@@ -8,6 +8,8 @@
   - React / TanStack Router frontend for Sterett Creek Village Trustee
 - auth
   - Simple password hashing auth service on Cloudflare Worker/D1 database
+- comments
+  - Websocket Cloudflare worker used to add and subscribe to comments.
 
 # Packages
 
