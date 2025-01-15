@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "sort-package-json": "^2.13.0",
+    "sort-package-json": "^2.14.0",
     "tsc-prog": "^2.3.0",
     "tsup": "^8.3.5"
   },

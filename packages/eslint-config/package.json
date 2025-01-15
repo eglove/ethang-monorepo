@@ -9,7 +9,7 @@
   "type": "module",
   "main": "eslint.config.js",
   "scripts": {
-    "build": "pnpx tsx build.ts && pnpm lint",
+    "build": "bun build.ts && pnpm lint",
     "lint": "prettier . -w"
   },
   "dependencies": {
@@ -25,7 +25,7 @@
     "@stylistic/eslint-plugin": "^2.13.0",
     "@stylistic/eslint-plugin-ts": "^2.13.0",
     "@tanstack/eslint-plugin-query": "^5.62.16",
-    "@tanstack/eslint-plugin-router": "^1.92.7",
+    "@tanstack/eslint-plugin-router": "^1.97.0",
     "@typescript-eslint/parser": "^8.20.0",
     "angular-eslint": "19.0.2",
     "eslint": "^9.18.0",
