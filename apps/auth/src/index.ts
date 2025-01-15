@@ -10,6 +10,7 @@ import { createResponse } from "./utils/util.ts";
 
 class Store {
   public corsHeaders = {
+    "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
     "Access-Control-Allow-Origin": "",
   };
