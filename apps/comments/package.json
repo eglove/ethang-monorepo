@@ -17,13 +17,13 @@
     "cf-typegen": "wrangler types"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.6.2",
+    "@cloudflare/vitest-pool-workers": "^0.6.4",
     "@cloudflare/workers-types": "^4.20250109.0",
     "@ethang/eslint-config": "workspace:^",
     "@types/lodash": "^4.17.14",
     "@types/uuid": "^10.0.0",
     "typescript": "^5.5.2",
-    "wrangler": "^3.103.0"
+    "wrangler": "^3.103.2"
   },
   "dependencies": {
     "@ethang/toolbelt": "workspace:^",
