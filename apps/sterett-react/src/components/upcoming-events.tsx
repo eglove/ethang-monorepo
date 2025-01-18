@@ -1,4 +1,4 @@
-import { Accordion, AccordionItem } from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@heroui/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty";
 import isNil from "lodash/isNil";

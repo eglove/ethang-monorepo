@@ -1,6 +1,6 @@
 import { CalendarDaysIcon } from "@heroicons/react/24/solid";
-import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
-import { Divider } from "@nextui-org/divider";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
+import { Divider } from "@heroui/divider";
 import isNil from "lodash/isNil";
 import { DateTime } from "luxon";
 import { Fragment } from "react";

@@ -1,4 +1,4 @@
-import { Navbar, NavbarContent, NavbarMenu } from "@nextui-org/navbar";
+import { Navbar, NavbarContent, NavbarMenu } from "@heroui/navbar";
 import { useCallback, useState } from "react";
 
 import { NavigationHero } from "./navigation-hero.tsx";

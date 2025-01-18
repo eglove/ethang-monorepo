@@ -1,4 +1,4 @@
-import { NavbarContent, NavbarMenuToggle } from "@nextui-org/navbar";
+import { NavbarContent, NavbarMenuToggle } from "@heroui/navbar";
 
 import { NavigationHome } from "./navigation-home.tsx";
 

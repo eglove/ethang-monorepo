@@ -1,6 +1,6 @@
-import type { AvatarProps } from "@nextui-org/avatar";
+import type { AvatarProps } from "@heroui/avatar";
 
-import { User } from "@nextui-org/user";
+import { User } from "@heroui/user";
 import shuffle from "lodash/shuffle";
 
 import type { GetTrusteesReturn } from "../sanity/queries/get-trustees.ts";

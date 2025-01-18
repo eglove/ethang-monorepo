@@ -1,4 +1,4 @@
-import { NextUIProvider } from "@nextui-org/react";
+import { HeroUIProvider } from "@heroui/react";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { Outlet } from "@tanstack/react-router";
@@ -22,11 +22,11 @@ const App = () => {
       client={queryClient}
       persistOptions={{ persister }}
     >
-      <NextUIProvider>
+      <HeroUIProvider>
         <Outlet />
         <RouterDevelopmentTools />
         <QueryDevelopmentTools />
-      </NextUIProvider>
+      </HeroUIProvider>
     </PersistQueryClientProvider>
   );
 };

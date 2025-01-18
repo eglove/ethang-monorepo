@@ -1,4 +1,4 @@
-import { getKeyValue } from "@nextui-org/react";
+import { getKeyValue } from "@heroui/react";
 import {
   Table,
   TableBody,
@@ -6,7 +6,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from "@nextui-org/table";
+} from "@heroui/table";
 
 import type { filesRouteQueries } from "../../routes/files.tsx";
 

@@ -1,13 +1,13 @@
 import type { PortableTextBlock } from "@portabletext/types";
 
-import { Button } from "@nextui-org/button";
-import { Image } from "@nextui-org/image";
+import { Button } from "@heroui/button";
+import { Image } from "@heroui/image";
 import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { toPlainText } from "@portabletext/react";
 import { type CalendarEvent, google, ics, office365, outlook, yahoo } from "calendar-link";
 import isNil from "lodash/isNil";

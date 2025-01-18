@@ -1,4 +1,4 @@
-import { NavbarBrand } from "@nextui-org/navbar";
+import { NavbarBrand } from "@heroui/navbar";
 
 import { Link } from "../link";
 

@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 
-import { Input } from "@nextui-org/react";
+import { Input } from "@heroui/react";
 
 import type { filesRouteQueries } from "../../routes/files.tsx";
 

@@ -1,4 +1,4 @@
-import { Image } from "@nextui-org/image";
+import { Image } from "@heroui/image";
 import toUpper from "lodash/toUpper";
 
 export const BeyonderHero = () => {
