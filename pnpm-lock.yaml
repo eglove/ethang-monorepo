@@ -69,9 +69,6 @@ importers:
       eslint:
         specifier: ^9.18.0
         version: 9.18.0(jiti@2.4.0)
-      jose:
-        specifier: ^5.9.6
-        version: 5.9.6
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
