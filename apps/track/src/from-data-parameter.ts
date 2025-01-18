@@ -24,14 +24,24 @@ export const fromDataParameter = async (
   const base64String = url.searchParams.get("data");
 
   if (isNil(base64String)) {
-    return createJsonResponse({ error: "Invalid Request" }, "BAD_REQUEST");
+    return createJsonResponse(
+      { error: "Invalid Request" },
+      "BAD_REQUEST",
+      undefined,
+      request,
+    );
   }
 
   const decoded = atob(base64String);
   const { data, error } = dataSchema.safeParse(JSON.parse(decoded));
 
   if (error) {
-    return createJsonResponse({ error: "Invalid Request" }, "BAD_REQUEST");
+    return createJsonResponse(
+      { error: "Invalid Request" },
+      "BAD_REQUEST",
+      undefined,
+      request,
+    );
   }
 
   const values = [
@@ -51,8 +61,18 @@ export const fromDataParameter = async (
   });
 
   if (isError(result)) {
-    return createJsonResponse({ error: "Error creating event" }, "INTERNAL_SERVER_ERROR");
+    return createJsonResponse(
+      { error: "Error creating event" },
+      "INTERNAL_SERVER_ERROR",
+      undefined,
+      request,
+    );
   }
 
-  return createJsonResponse({ message: "Created" }, "CREATED");
+  return createJsonResponse(
+    { message: "Created" },
+    "CREATED",
+    undefined,
+    request,
+  );
 };

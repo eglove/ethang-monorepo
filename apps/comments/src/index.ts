@@ -7,10 +7,6 @@ import isNil from "lodash/isNil.js";
 
 import { handleWebSocket } from "./websocket/websocket.ts";
 
-export const getSecretKey = (environment: Env) => {
-  return new TextEncoder().encode(String(environment.JWT_SECRET));
-};
-
 class Store {
   public connections = new Map<string, WebSocket>([]);
 }

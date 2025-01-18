@@ -15,6 +15,11 @@ export default {
       return fromDataParameter(request, environment);
     }
 
-    return createJsonResponse({ error: "Not Found" }, "NOT_FOUND");
+    return createJsonResponse(
+      { error: "Not Found" },
+      "NOT_FOUND",
+      undefined,
+      request,
+    );
   },
 } satisfies ExportedHandler<Env>;
