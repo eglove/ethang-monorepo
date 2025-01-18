@@ -8,6 +8,7 @@ import { signIn } from "./sign-in.ts";
 import { signUp } from "./sign-up.ts";
 import { ORIGIN } from "./utils/jwt.ts";
 import { createResponse } from "./utils/util.ts";
+import { verifyToken } from "./verify-token.js";
 
 class Store {
   public corsHeaders = {
@@ -56,6 +57,10 @@ export default {
 
     if ("/sign-in" === url.pathname && "POST" === request.method) {
       return signIn(request, environment);
+    }
+
+    if ("/verify" === url.pathname && "GET" === request.method) {
+      return verifyToken(request, environment);
     }
 
     return new Response("Not Found", {
