@@ -2,7 +2,6 @@ import {
   createJsonResponse,
 } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
-import { jwtVerify } from "jose";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 
@@ -31,11 +30,14 @@ export default {
       return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
     }
 
+    const verifyUrl = new URL("auth.ethang.dev/verify");
+    verifyUrl.searchParams.set("token", authorization);
+
     const jwtResult = await attemptAsync(async () => {
-      return jwtVerify(authorization, getSecretKey(environment));
+      return fetch(verifyUrl);
     });
 
-    if (isError(jwtResult)) {
+    if (isError(jwtResult) || !jwtResult.ok) {
       return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
     }
 
