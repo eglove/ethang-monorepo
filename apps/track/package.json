@@ -1,0 +1,36 @@
+{
+  "name": "track",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "browserslist": [
+    "defaults and fully supports es6-module",
+    "maintained node versions"
+  ],
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "lint": "eslint ./src --fix",
+    "cf-typegen": "wrangler types"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.5.2",
+    "@cloudflare/workers-types": "^4.20250109.0",
+    "@ethang/eslint-config": "workspace:^",
+    "@types/lodash": "^4.17.14",
+    "@types/uuid": "^10.0.0",
+    "eslint": "^9.18.0",
+    "typescript": "^5.5.2",
+    "wrangler": "^3.103.2"
+  },
+  "dependencies": {
+    "@ethang/toolbelt": "workspace:^",
+    "lodash": "^4.17.21",
+    "uuid": "^11.0.5",
+    "zod": "^3.24.1"
+  }
+}

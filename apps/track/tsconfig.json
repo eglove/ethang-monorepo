@@ -1,0 +1,10 @@
+{
+	"extends": ["../../packages/tsconfig/tsconfig.base.json"],
+	"compilerOptions": {
+		"types": [
+			"@cloudflare/workers-types/2023-07-01"
+		]
+	},
+	"exclude": ["test"],
+	"include": ["worker-configuration.d.ts", "src/**/*.ts"]
+}
