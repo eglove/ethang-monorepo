@@ -12,10 +12,8 @@ const dataSchema = z.object({
   device: z.string().optional(),
   eventName: z.string().optional(),
   location: z.string().optional(),
-  referrer: z.string().url()
-    .optional(),
-  url: z.string().url()
-    .optional(),
+  referrer: z.string().optional(),
+  url: z.string().optional(),
 });
 
 export const fromDataParameter = async (
