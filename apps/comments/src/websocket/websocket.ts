@@ -14,7 +14,7 @@ import { store } from "../index.js";
 import { sendToClients } from "./send-to-clients.js";
 
 const socketEventSchema = z.object({
-  payload: z.unknown(),
+  payload: z.record(z.string(), z.unknown()),
   type: z.string(),
 });
 
@@ -29,7 +29,10 @@ const handleMessages = async (
   }
 
   if ("create-comment" === result.type) {
-    const { data, success } = newCommentSchema.safeParse(result.payload);
+    const { data, success } = newCommentSchema.safeParse({
+      ...result.payload,
+      username: "",
+    });
 
     if (!success) {
       sendToClients("create-comment", { error: "Invalid request" });

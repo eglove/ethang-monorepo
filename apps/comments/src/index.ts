@@ -12,8 +12,6 @@ class Store {
 }
 export const store = new Store();
 
-// eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvQGV0aGFuZy5lbWFpbCIsInJvbGUiOiJhZG1pbiIsInVzZXJuYW1lIjoiZXRoYW5nIiwiaXNzIjoiZXRoYW5nLmRldiIsImF1ZCI6ImV0aGFuZy5kZXYiLCJleHAiOjE3MzY5OTA2MDN9.4vMN47Rkah2rDXScqxHHBG6WeOEVorVxTZNe28nIRQE
-
 export default {
   async fetch(
     request,

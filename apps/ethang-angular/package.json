@@ -13,7 +13,7 @@
     "lint": "prettier src --write && eslint src --fix"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.4.0"
   },
   "browserslist": [
     "defaults and fully supports es6-module",
@@ -35,6 +35,7 @@
     "@ethang/toolbelt": "workspace:^",
     "date-fns": "^4.1.0",
     "dexie": "^4.0.11",
+    "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "lucide-angular": "^0.473.0",
     "ms": "^2.1.3",
