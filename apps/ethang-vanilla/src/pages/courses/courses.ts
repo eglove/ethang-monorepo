@@ -88,6 +88,8 @@ export const coursesTemplate = async () => {
   });
 
   mkdirSync("./dist/courses");
-  writeFileSync("./dist/templates/courses.html", coursesContent, { encoding: "utf8" });
+  writeFileSync("./dist/templates/courses.html", coursesContent, {
+    encoding: "utf8",
+  });
   writeFileSync("./dist/courses/index.html", withLayout, { encoding: "utf8" });
 };

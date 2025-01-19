@@ -42,6 +42,8 @@ export const homeTemplate = async () => {
     title: "Home",
   });
 
-  writeFileSync("./dist/templates/home.html", homeContent, { encoding: "utf8" });
+  writeFileSync("./dist/templates/home.html", homeContent, {
+    encoding: "utf8",
+  });
   writeFileSync("./dist/index.html", withLayout, { encoding: "utf8" });
 };

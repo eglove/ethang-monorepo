@@ -1,157 +1,162 @@
-<h1>It's Angular Now</h1>
-<p>
-  This site has gone through more framework changes than there are JavaScript
-  frameworks. I'm not sure how that's possible either. But it's part of the fun.
-  Maybe if I were smart, I'd just do a separate project instead of rewriting the
-  same one all the time. Maybe then I wouldn't remove content out of laziness.
-</p>
-<p>
-  My first blog was on WordPress, eventually I wrote my own CMS with PHP. Then
-  came NextJS. I started with version 7. And it's what propelled me into
-  obsessing over React. Developing what other developers call "React brain."
-</p>
-<p>
-  But the longer I work with React professionally, the more tired of it I get.
-  Like many, I'm so sick of the reactivity model in particular. Everything
-  rerenders as a default, and to scale we have to memoize everything? We need a
-  compiler for that now? Why is anyone excusing that as an achievement or
-  benefit? Imagine developing a database that is famously slow and telling your
-  users to just memoize queries to speed it up.
-</p>
-<div class="w-full relative">
-  <img
-    class="object-contain"
-    src="https://images.ethang.dev/crazy-pills.gif"
-    alt="I feel like I'm taking crazy pills"
-  />
-</div>
-<p>
-  React server components feel more like React tucking its tails between its
-  legs and running to the server to handle everything for it. "If you stop using
-  our rendering model and just use renderToString() on an express app hidden
-  behind a black triangle, you won't have render issues!"
-</p>
-<p>
-  Every day working with React means another day fighting the framework. We know
-  its performance sucks. We know the only thing good about it is JSX (which
-  isn't exclusive to React). And we know the only reason anyone chooses it these
-  days is because it's popular.
-</p>
-<p>
-  The modern solutions come down to SolidJS and Svelte. I haven't used Svelte to
-  any degree but SolidJS is fantastic. Beautifully done, it fixes the broken
-  reactivity model of React, and keeps the JSX.
-</p>
-<p>So why would I go with Angular and not Solid?</p>
-<h2>Angular 19 Is Hot</h2>
-<p>
-  <a
-    href="https://blog.angular.dev/meet-angular-v19-7b29dfd05FFb84"
-    target="_blank"
-    >The Angular 19 release blog</a
-  >
-  caught my eye for a few reasons:
-</p>
-<h3>Event Replay</h3>
-<p>
-  To make a server side rendered app immediately interactable, events are
-  captured and queued during the hydration process. The event dispatch library
-  used for this is the same one used by Wiz which was developed for Google
-  Search. This feels like a nice answer to Qwik's resumability. Although
-  fine-grained hydration doesn't exist quite yet.
-</p>
-<h3>Route-level render mode</h3>
-<p>
-  This has been something in the back of my mind for a long time. The NextJS
-  model of server rendering seems to have dulled everyone's understanding of
-  exactly what server rendering is. Someone once told me about Dan Abramov's
-  "theory of two computers" as some brilliant innovation. The choice of the word
-  "theory" is a stretch. And this person likely completely misunderstood his
-  <a href="https://conf.react.dev/talks/6" target="_blank"
-    >React for Two Computers</a
-  >
-  talk, which was not an announcement of a profound idea, but a pitch for Reacts
-  direction to server frameworks.
-</p>
-<p>
-  Dan's talk was not a new idea, he was reminding the people who are so afraid
-  of anything other than SPA (and their oxymoron SPA routers) that there's more
-  than one way to template some HTML.
-</p>
-<p>
-  Angular allowing the simple option to server render, client render, or
-  prerender said HTML per route is amazing. And as a reminder related to the
-  small rant above, this has no effect whatsoever on what you do with said
-  prerendered HTML with JS after it gets to the client.
-</p>
-<h3>Reactivity!</h3>
-<p>
-  The entire section on reactivity from the Angular 19 announcement reads nearly
-  word for word as a
-  <a href="https://dev.to/ryansolid" target="_blank">Ryan Carniato blog</a>.
-  Angular, of all frameworks, seems to have beat both major players to full
-  signal support. Vue Vapor mode is still in beta, and React couldn't care less.
-</p>
-<p>
-  SolidJS still does performance optimizations beyond simple signals that will
-  make it faster than Angular for a very long time. But this new reactivity has
-  skyrocketed Angular in terms of performance.
-</p>
-<h3>Dependency Injection is Actually Nice</h3>
-<p>
-  Dealing with React Context for so long, it's an unbelievable relief to be able
-  to create an Injectable service with Angular and use its shared state.
-</p>
-<p>
-  React Context is famous for poor performance and is considered bad practice to
-  even use in most cases. The alternative is to use a third-party
-  state-management library to instantiate an "external" store outside of Reacts
-  lifecycles and go through a lot of effort to control Reacts awareness of
-  changes to this external store.
-  <strong>HUH? This means React doesn't work!</strong>
-</p>
-<h3>It's just HTML and classes.</h3>
-<p>
-  Maybe the biggest turn-off for people seeing Angular for the first time is the
-  number of files per component. Every component has a .ts file, .css file,
-  .html file, and .test file. But add in Tailwind and you can get rid of the
-  .css file. Now what you're left with is a simple class in which to declare
-  signals and logic. It's not much different than every React component having a
-  .tsx file and a hook. Which isn't a terrible idea, btw.
-</p>
-<p>
-  Any shared logic or state can be moved to services, which are again just
-  simple injectable classes. No library needed.
-</p>
-<h2>Signals Are Simplifying Frameworks</h2>
-<p>
-  While React scutters off to hide its faults behind server rendering,
-  client-side rendering is still improving, it's still getting better. Vue has
-  been working on "<a
-    href="https://www.vuemastery.com/blog/the-future-of-vue-vapor-mode/"
-    target="_blank"
-    >Vapor Mode</a
-  >", and of course, innovative libraries like Qwik and SolidJS have been
-  driving amazing ideas.
-</p>
-<p>
-  Angular, too, has been improving on things like server side rendering and
-  partial hydration which will also make a huge difference. But it doesn't feel
-  like they've completely given up on the client like React has.
-</p>
-<p>
-  With Angular, Zone.js is deprecated, and RXJS is completely optional with the
-  same simple signals used by SolidJS taking its place. Including a resource()
-  hook to manage async data. (And yes,
-  <a
-    href="https://tanstack.com/query/latest/docs/framework/angular/overview"
-    target="_blank"
-    >TanStack Query has an Angular adapter too</a
-  >.)
-</p>
-<p>
-  By being able to work with plain HTML, TypeScript classes, and signals, I feel
-  like Angular is the "one of the big 3" framework that feels native but solves
-  the problems with going pure native. Without having to deal with the tradeoffs
-  of something like Astro.
-</p>
+<main class="prose">
+  <h1>It's Angular Now</h1>
+  <p>
+    This site has gone through more framework changes than there are JavaScript
+    frameworks. I'm not sure how that's possible either. But it's part of the
+    fun. Maybe if I were smart, I'd just do a separate project instead of
+    rewriting the same one all the time. Maybe then I wouldn't remove content
+    out of laziness.
+  </p>
+  <p>
+    My first blog was on WordPress, eventually I wrote my own CMS with PHP. Then
+    came NextJS. I started with version 7. And it's what propelled me into
+    obsessing over React. Developing what other developers call "React brain."
+  </p>
+  <p>
+    But the longer I work with React professionally, the more tired of it I get.
+    Like many, I'm so sick of the reactivity model in particular. Everything
+    rerenders as a default, and to scale we have to memoize everything? We need
+    a compiler for that now? Why is anyone excusing that as an achievement or
+    benefit? Imagine developing a database that is famously slow and telling
+    your users to just memoize queries to speed it up.
+  </p>
+  <div class="w-full relative">
+    <img
+      class="object-contain"
+      src="https://images.ethang.dev/crazy-pills.gif"
+      alt="I feel like I'm taking crazy pills"
+    />
+  </div>
+  <p>
+    React server components feel more like React tucking its tails between its
+    legs and running to the server to handle everything for it. "If you stop
+    using our rendering model and just use renderToString() on an express app
+    hidden behind a black triangle, you won't have render issues!"
+  </p>
+  <p>
+    Every day working with React means another day fighting the framework. We
+    know its performance sucks. We know the only thing good about it is JSX
+    (which isn't exclusive to React). And we know the only reason anyone chooses
+    it these days is because it's popular.
+  </p>
+  <p>
+    The modern solutions come down to SolidJS and Svelte. I haven't used Svelte
+    to any degree but SolidJS is fantastic. Beautifully done, it fixes the
+    broken reactivity model of React, and keeps the JSX.
+  </p>
+  <p>So why would I go with Angular and not Solid?</p>
+  <h2>Angular 19 Is Hot</h2>
+  <p>
+    <a
+      href="https://blog.angular.dev/meet-angular-v19-7b29dfd05FFb84"
+      target="_blank"
+      >The Angular 19 release blog</a
+    >
+    caught my eye for a few reasons:
+  </p>
+  <h3>Event Replay</h3>
+  <p>
+    To make a server side rendered app immediately interactable, events are
+    captured and queued during the hydration process. The event dispatch library
+    used for this is the same one used by Wiz which was developed for Google
+    Search. This feels like a nice answer to Qwik's resumability. Although
+    fine-grained hydration doesn't exist quite yet.
+  </p>
+  <h3>Route-level render mode</h3>
+  <p>
+    This has been something in the back of my mind for a long time. The NextJS
+    model of server rendering seems to have dulled everyone's understanding of
+    exactly what server rendering is. Someone once told me about Dan Abramov's
+    "theory of two computers" as some brilliant innovation. The choice of the
+    word "theory" is a stretch. And this person likely completely misunderstood
+    his
+    <a href="https://conf.react.dev/talks/6" target="_blank"
+      >React for Two Computers</a
+    >
+    talk, which was not an announcement of a profound idea, but a pitch for
+    Reacts direction to server frameworks.
+  </p>
+  <p>
+    Dan's talk was not a new idea, he was reminding the people who are so afraid
+    of anything other than SPA (and their oxymoron SPA routers) that there's
+    more than one way to template some HTML.
+  </p>
+  <p>
+    Angular allowing the simple option to server render, client render, or
+    prerender said HTML per route is amazing. And as a reminder related to the
+    small rant above, this has no effect whatsoever on what you do with said
+    prerendered HTML with JS after it gets to the client.
+  </p>
+  <h3>Reactivity!</h3>
+  <p>
+    The entire section on reactivity from the Angular 19 announcement reads
+    nearly word for word as a
+    <a href="https://dev.to/ryansolid" target="_blank">Ryan Carniato blog</a>.
+    Angular, of all frameworks, seems to have beat both major players to full
+    signal support. Vue Vapor mode is still in beta, and React couldn't care
+    less.
+  </p>
+  <p>
+    SolidJS still does performance optimizations beyond simple signals that will
+    make it faster than Angular for a very long time. But this new reactivity
+    has skyrocketed Angular in terms of performance.
+  </p>
+  <h3>Dependency Injection is Actually Nice</h3>
+  <p>
+    Dealing with React Context for so long, it's an unbelievable relief to be
+    able to create an Injectable service with Angular and use its shared state.
+  </p>
+  <p>
+    React Context is famous for poor performance and is considered bad practice
+    to even use in most cases. The alternative is to use a third-party
+    state-management library to instantiate an "external" store outside of
+    Reacts lifecycles and go through a lot of effort to control Reacts awareness
+    of changes to this external store.
+    <strong>HUH? This means React doesn't work!</strong>
+  </p>
+  <h3>It's just HTML and classes.</h3>
+  <p>
+    Maybe the biggest turn-off for people seeing Angular for the first time is
+    the number of files per component. Every component has a .ts file, .css
+    file, .html file, and .test file. But add in Tailwind and you can get rid of
+    the .css file. Now what you're left with is a simple class in which to
+    declare signals and logic. It's not much different than every React
+    component having a .tsx file and a hook. Which isn't a terrible idea, btw.
+  </p>
+  <p>
+    Any shared logic or state can be moved to services, which are again just
+    simple injectable classes. No library needed.
+  </p>
+  <h2>Signals Are Simplifying Frameworks</h2>
+  <p>
+    While React scutters off to hide its faults behind server rendering,
+    client-side rendering is still improving, it's still getting better. Vue has
+    been working on "<a
+      href="https://www.vuemastery.com/blog/the-future-of-vue-vapor-mode/"
+      target="_blank"
+      >Vapor Mode</a
+    >", and of course, innovative libraries like Qwik and SolidJS have been
+    driving amazing ideas.
+  </p>
+  <p>
+    Angular, too, has been improving on things like server side rendering and
+    partial hydration which will also make a huge difference. But it doesn't
+    feel like they've completely given up on the client like React has.
+  </p>
+  <p>
+    With Angular, Zone.js is deprecated, and RXJS is completely optional with
+    the same simple signals used by SolidJS taking its place. Including a
+    resource() hook to manage async data. (And yes,
+    <a
+      href="https://tanstack.com/query/latest/docs/framework/angular/overview"
+      target="_blank"
+      >TanStack Query has an Angular adapter too</a
+    >.)
+  </p>
+  <p>
+    By being able to work with plain HTML, TypeScript classes, and signals, I
+    feel like Angular is the "one of the big 3" framework that feels native but
+    solves the problems with going pure native. Without having to deal with the
+    tradeoffs of something like Astro.
+  </p>
+</main>

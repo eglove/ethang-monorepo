@@ -1,8 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 
-import {
-  blogLayoutTemplate,
-} from "../../layouts/blog-layout.js";
+import { mainLayoutTemplate } from "../../layouts/main-layout.js";
 import { nightOwlStyles } from "../../util/code-highlight.js";
 import {
   compileTemplate,
@@ -48,7 +46,7 @@ export const blogs: BlogTemplateProperties[] = [
 export const blogTemplate = async (properties: BlogTemplateProperties) => {
   const styles = await getStyles();
 
-  const template = blogLayoutTemplate({
+  const template = mainLayoutTemplate({
     baseUrl: "../../",
     content: compileTemplate({
       compileParameters: properties.compileParameters,

@@ -1,74 +1,76 @@
-<h1>Looking At: no-misused-spread</h1>
-<p>
-  &#64;typescript-eslint recently added a new rule
-  <a
-    href="https://typescripteslint.com/rules/no-misused-spread/"
-    target="_blank"
-    class="link"
-    >no-misused-spread</a
-  >. This prevents accidental use of the spread operator in unintended ways.
-  From the documentation:
-</p>
-<ul>
-  <li>
-    Spreading a <span class="kbd kbd-sm">Promise</span> into an object. You
-    probably meant to <span class="kbd kbd-sm">await</span> it.
-  </li>
-  <li>
-    Spreading a function without properties into an object. You probably meant
-    to call it.
-  </li>
-  <li>
-    Spreading an iterable (<span class="kbd kbd-sm">Array</span>,
-    <span class="kbd kbd-sm">Map</span>, etc.) into an object. Iterable objects
-    usually do not have meaningful enumerable properties and you probably meant
-    to spread it into an array instead.
-  </li>
-  <li>
-    Spreading a string into an array. String enumeration behaviors in JavaScript
-    around encoded characters are often surprising.
-  </li>
-  <li>
-    Spreading a <span class="kbd kbd-sm">class</span> into an object. This
-    copies all static own properties of the class, but none of the inheritance
-    chain.
-  </li>
-  <li>
-    Spreading a class instance into an object. This does not faithfully copy the
-    instance because only its own properties are copied, but the inheritance
-    chain is lost, including all its methods.
-  </li>
-</ul>
-<h2>Before & After</h2>
-<p>
-  Let's look at the before and after of incorrect usages of the spread, and the
-  correct usage.
-</p>
-<p>By spreading a promise, nothing will be added to the final object:</p>
-${ promiseExample }
-<p>
-  Interestingly in the function case, TypeScript seems able to check if the
-  function has properties on it. At least within the same scope:
-</p>
-${ functionExample }
-<p>
-  For spreading an iterable, this is likely a mistake. The intention is more
-  likely that you want to spread it into a new array or assign its value.
-</p>
-${ iterableExample }
-<p>
-  For strings, the rule will point out the likely mistake when you try to spread
-  into an array.
-</p>
-${ stringExample }
-<p>
-  When you spread a class, you will only get static properties, not even static
-  methods.
-</p>
-${ classExample }
-<p>
-  And of course, the same issue happens when you spread the instance of a class.
-  This, in my opinion, very important as with third-party libraries, we don't
-  always know if an object is a plain object or a class instance.
-</p>
-${ instanceExample }
+<main class="prose">
+  <h1>Looking At: no-misused-spread</h1>
+  <p>
+    &#64;typescript-eslint recently added a new rule
+    <a
+      href="https://typescripteslint.com/rules/no-misused-spread/"
+      target="_blank"
+      class="link"
+      >no-misused-spread</a
+    >. This prevents accidental use of the spread operator in unintended ways.
+    From the documentation:
+  </p>
+  <ul>
+    <li>
+      Spreading a <span class="kbd kbd-sm">Promise</span> into an object. You
+      probably meant to <span class="kbd kbd-sm">await</span> it.
+    </li>
+    <li>
+      Spreading a function without properties into an object. You probably meant
+      to call it.
+    </li>
+    <li>
+      Spreading an iterable (<span class="kbd kbd-sm">Array</span>,
+      <span class="kbd kbd-sm">Map</span>, etc.) into an object. Iterable
+      objects usually do not have meaningful enumerable properties and you
+      probably meant to spread it into an array instead.
+    </li>
+    <li>
+      Spreading a string into an array. String enumeration behaviors in
+      JavaScript around encoded characters are often surprising.
+    </li>
+    <li>
+      Spreading a <span class="kbd kbd-sm">class</span> into an object. This
+      copies all static own properties of the class, but none of the inheritance
+      chain.
+    </li>
+    <li>
+      Spreading a class instance into an object. This does not faithfully copy
+      the instance because only its own properties are copied, but the
+      inheritance chain is lost, including all its methods.
+    </li>
+  </ul>
+  <h2>Before & After</h2>
+  <p>
+    Let's look at the before and after of incorrect usages of the spread, and
+    the correct usage.
+  </p>
+  <p>By spreading a promise, nothing will be added to the final object:</p>
+  ${ promiseExample }
+  <p>
+    Interestingly in the function case, TypeScript seems able to check if the
+    function has properties on it. At least within the same scope:
+  </p>
+  ${ functionExample }
+  <p>
+    For spreading an iterable, this is likely a mistake. The intention is more
+    likely that you want to spread it into a new array or assign its value.
+  </p>
+  ${ iterableExample }
+  <p>
+    For strings, the rule will point out the likely mistake when you try to
+    spread into an array.
+  </p>
+  ${ stringExample }
+  <p>
+    When you spread a class, you will only get static properties, not even
+    static methods.
+  </p>
+  ${ classExample }
+  <p>
+    And of course, the same issue happens when you spread the instance of a
+    class. This, in my opinion, very important as with third-party libraries, we
+    don't always know if an object is a plain object or a class instance.
+  </p>
+  ${ instanceExample }
+</main>
