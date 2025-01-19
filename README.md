@@ -1,7 +1,10 @@
 # Apps & Services
 
-- ethang-angular
-  - Personal website written in Angular
+- ethang-vanilla
+  - Personal website written in Vanilla HTML/JS and custom build.
+    - Lodash template()
+    - DaisyUI + TailwindCSS
+    - Workbox Service Worker
 - sterett-admin
   - Sanity Studio / CMS dashboard for Sterett Creek Village Trustee
 - strett-client
