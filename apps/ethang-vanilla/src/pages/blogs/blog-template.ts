@@ -10,9 +10,7 @@ import {
   type CompileTemplateProperties,
 } from "../../util/compile-template.js";
 import { getStyles } from "../../util/get-styles.js";
-import {
-  noMisusedSpreadCodeExamples,
-} from "./looking-at-no-misused-spread/looking-at-no-misused-spread.js";
+import { noMisusedSpreadCodeExamples } from "./looking-at-no-misused-spread/looking-at-no-misused-spread.js";
 
 type BlogTemplateProperties = {
   additionalStyles?: string[];
@@ -34,9 +32,7 @@ export const blogs: BlogTemplateProperties[] = [
   { fileSlug: "mimetic-desire" },
 ];
 
-export const blogTemplate = async (
-  properties: BlogTemplateProperties,
-) => {
+export const blogTemplate = async (properties: BlogTemplateProperties) => {
   const styles = await getStyles({
     content: [
       ...blogLayoutStyleDependencies,
@@ -54,5 +50,7 @@ export const blogTemplate = async (
   });
 
   mkdirSync(`./dist/blog/${properties.fileSlug}`, { recursive: true });
-  writeFileSync(`./dist/blog/${properties.fileSlug}/index.html`, template, { encoding: "utf8" });
+  writeFileSync(`./dist/blog/${properties.fileSlug}/index.html`, template, {
+    encoding: "utf8",
+  });
 };

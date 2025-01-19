@@ -5,9 +5,7 @@ type CodeBlockTemplateProperties = {
   languageClass?: string;
 };
 
-export const codeBlockTemplate = (
-  properties: CodeBlockTemplateProperties,
-) => {
+export const codeBlockTemplate = (properties: CodeBlockTemplateProperties) => {
   return compileTemplate({
     compileParameters: {
       code: properties.code,

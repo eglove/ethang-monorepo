@@ -52,10 +52,7 @@ const minifyDistribution = async (directory = "./dist") => {
   }
 };
 
-const copyDirectory = (
-  source: string,
-  destination: string,
-) => {
+const copyDirectory = (source: string, destination: string) => {
   if (!existsSync(destination)) {
     mkdirSync(destination, { recursive: true });
   }
@@ -87,9 +84,7 @@ export const build = async () => {
   await homeTemplate();
   await coursesTemplate();
 
-  await Promise.all(
-    map(blogs, blogTemplate),
-  );
+  await Promise.all(map(blogs, blogTemplate));
 
   await minifyDistribution();
   copyDirectory("./src/public", "./dist");
