@@ -16,20 +16,34 @@ type BlogTemplateProperties = {
   additionalStyles?: string[];
   compileParameters?: CompileTemplateProperties["compileParameters"];
   fileSlug: string;
+  title: string;
 };
 
 export const blogs: BlogTemplateProperties[] = [
-  { fileSlug: "angular-now" },
-  { fileSlug: "forcing-react" },
-  { fileSlug: "motivation" },
+  {
+    fileSlug: "angular-now",
+    title: "It's Angular Now",
+  },
+  {
+    fileSlug: "forcing-react",
+    title: "Forcing React to be What It Isn't",
+  },
+  {
+    fileSlug: "motivation",
+    title: "Notes on Motivation",
+  },
   {
     additionalStyles: [nightOwlStyles],
     compileParameters: {
       ...noMisusedSpreadCodeExamples,
     },
     fileSlug: "looking-at-no-misused-spread",
+    title: "Looking At: no-misused-spread",
   },
-  { fileSlug: "mimetic-desire" },
+  {
+    fileSlug: "mimetic-desire",
+    title: "Mimetic Desire",
+  },
 ];
 
 export const blogTemplate = async (properties: BlogTemplateProperties) => {
@@ -47,6 +61,7 @@ export const blogTemplate = async (properties: BlogTemplateProperties) => {
       filePath: `./src/pages/blogs/${properties.fileSlug}/${properties.fileSlug}.html`,
     }),
     styles: `${styles} ${properties.additionalStyles?.join("") ?? ""}`,
+    title: properties.title,
   });
 
   mkdirSync(`./dist/blog/${properties.fileSlug}`, { recursive: true });

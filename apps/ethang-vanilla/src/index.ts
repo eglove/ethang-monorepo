@@ -16,6 +16,7 @@ import path from "node:path";
 import { blogs, blogTemplate } from "./pages/blogs/blog-template.js";
 import { coursesTemplate } from "./pages/courses/courses.js";
 import { homeTemplate } from "./pages/home/home.js";
+import { createWorkbox } from "./util/create-workbox.js";
 
 const minifyDistribution = async (directory = "./dist") => {
   const distributionFiles = readdirSync(directory);
@@ -88,6 +89,7 @@ export const build = async () => {
 
   await minifyDistribution();
   copyDirectory("./src/public", "./dist");
+  await createWorkbox();
 };
 
 await build();

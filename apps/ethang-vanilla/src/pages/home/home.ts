@@ -14,7 +14,7 @@ export const homeTemplate = async () => {
       blogs: [
         {
           link: "./blog/looking-at-no-misused-spread",
-          title: "Looking at: no-misused-spread",
+          title: "Looking At: no-misused-spread",
         },
         {
           link: "./blog/mimetic-desire",
@@ -41,6 +41,7 @@ export const homeTemplate = async () => {
     baseUrl: "./",
     content: homeContent,
     styles,
+    title: "Home",
   });
 
   writeFileSync("./dist/index.html", withLayout, { encoding: "utf8" });

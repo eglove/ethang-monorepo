@@ -25,5 +25,6 @@ export const blogLayoutTemplate = (
     baseUrl: properties.baseUrl,
     content: blogTemplate,
     styles: properties.styles,
+    title: properties.title,
   });
 };

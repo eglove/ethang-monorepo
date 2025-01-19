@@ -88,6 +88,7 @@ export const coursesTemplate = async () => {
       baseUrl: "../",
       main: coursesContent,
       style: styles,
+      title: "Courses",
     },
     filePath: "./src/layouts/main-layout.html",
   });
