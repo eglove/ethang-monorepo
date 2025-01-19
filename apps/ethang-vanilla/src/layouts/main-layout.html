@@ -1,0 +1,97 @@
+<html lang="en-US">
+  <head>
+    <meta charset="utf8" />
+    <title>EthanG</title>
+    <base href="<%- baseUrl %>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#1976d2" />
+  </head>
+  <style>
+    ${ style }
+  </style>
+  <body>
+    <div class="grid sm:grid-cols-[auto_1fr] gap-4">
+      <div class="hidden sm:block border-r-2 min-h-screen">
+        <h1 class="px-5 py-1 font-bold text-xl mt-4">EthanG</h1>
+        <nav class="grid gap-4" aria-label="Main">
+          <ul class="menu menu-sm">
+            <li><a href="./" class="link">Home</a></li>
+            <li><a href="./courses" class="link">Courses</a></li>
+          </ul>
+        </nav>
+        <div class="divider mx-4"></div>
+        <nav class="grid gap-4" aria-label="Social">
+          <ul class="menu menu-sm">
+            <li>
+              <a
+                href="https://images.ethang.dev/ethan-glover.pdf"
+                target="_blank"
+                class="link"
+                >Resume</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.linkedin.com/in/ethan-glover/"
+                target="_blank"
+                class="link"
+                >LinkedIn</a
+              >
+            </li>
+            <li>
+              <a href="https://github.com/eglove" target="_blank" class="link"
+                >GitHub</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://frontendmasters.com/u/ethang/"
+                target="_blank"
+                class="link"
+                >Frontend Masters</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.credly.com/users/ethan-glover.341d99c5"
+                target="_blank"
+                class="link"
+                >Credly</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.goodreads.com/user/show/6137062-ethan-glover"
+                target="_blank"
+                class="link"
+                >Goodreads</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.khanacademy.org/profile/ethanglover/badges"
+                target="_blank"
+                class="link"
+                >Khan Academy</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="sm:hidden navbar bg-base-100">
+        <div class="navbar-start">
+          <h1 class="px-5 py-1 font-bold text-xl mt-4">EthanG</h1>
+        </div>
+        <nav class="navbar-center flex" aria-label="Main">
+          <ul class="menu menu-horizontal px-1">
+            <li><a href="./" class="link">Home</a></li>
+            <li><a href="./courses" class="link">Courses</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="m-4 sm:mx-0">${ main }</div>
+    </div>
+  </body>
+</html>

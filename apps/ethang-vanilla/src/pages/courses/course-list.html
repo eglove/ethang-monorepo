@@ -1,0 +1,16 @@
+<div class="collapse collapse-arrow join-item border-base-300 border">
+  <input type="radio" name="courses-accordion" aria-labelledby="<%- title %>" />
+  <div class="collapse-title text-xl font-medium" id="<%- title %>">
+    ${ title }
+  </div>
+  <div class="collapse-content">
+    ${ content }
+    <ol>
+      <% _.forEach(courses, function(course) { %>
+      <li>
+        <a target="_blank" href="<%- course.url %>"><%- course.name %></a>
+      </li>
+      <% }); %>
+    </ol>
+  </div>
+</div>
