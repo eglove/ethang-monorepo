@@ -12,7 +12,7 @@
       try {
         mainContent.innerHTML = await blogResponse.text();
         history.pushState(null, null, blogLink.getAttribute("href"));
-        document.title = ${ blog.title }
+        document.title = `${ blog.title }`;
       } catch {
         location.href = blogLink.getAttribute("href");
       }
