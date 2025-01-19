@@ -1,3 +1,4 @@
+import isNil from "lodash/isNil.js";
 import merge from "lodash/merge.js";
 
 import { HTTP_STATUS } from "../constants/http.ts";
@@ -34,7 +35,9 @@ export const createJsonResponse = (
     getCorsHeaders({ origin: request?.headers.get("Origin") }),
   );
 
-  return globalThis.Response.json(data, {
+  return new globalThis.Response(isNil(data)
+    ? null
+    : JSON.stringify(data), {
     status: HTTP_STATUS[status],
     ...responseInit,
     headers,

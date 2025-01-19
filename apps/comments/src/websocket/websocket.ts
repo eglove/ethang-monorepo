@@ -1,4 +1,3 @@
-import { HTTP_STATUS } from "@ethang/toolbelt/src/constants/http.js";
 import {
   createJsonResponse,
 } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
@@ -97,13 +96,5 @@ export const handleWebSocket = (
     store.connections.delete(id);
   });
 
-  return globalThis.Response.json(null, {
-    headers: {
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-      "Access-Control-Allow-Origin": request.headers.get("Origin") ?? "",
-    },
-    status: HTTP_STATUS.SWITCHING_PROTOCOLS,
-    webSocket: client,
-  });
+  return createJsonResponse(null, "SWITCHING_PROTOCOLS", { webSocket: client }, request);
 };
