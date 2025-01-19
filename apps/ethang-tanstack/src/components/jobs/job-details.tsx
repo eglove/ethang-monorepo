@@ -17,11 +17,13 @@ type JobDetailsProperties = {
   job: (typeof api.jobs.getAll._returnType)[0];
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const listFormatter: { format: (values: string[]) => string } =
 // @ts-expect-error exists
-
-const listFormatter = new Intl.ListFormat(undefined, {
-  type: "unit",
-}) as { format: (values: string[]) => string };
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    new Intl.ListFormat(undefined, {
+      type: "unit",
+    });
 
 export const JobDetails = ({ job }: Readonly<JobDetailsProperties>) => {
   return (

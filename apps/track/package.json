@@ -18,7 +18,7 @@
     "lint": "pnpm cf-typegen && eslint src --fix"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.5.2",
+    "@cloudflare/vitest-pool-workers": "^0.6.4",
     "@cloudflare/workers-types": "^4.20250109.0",
     "@ethang/eslint-config": "workspace:^",
     "@types/lodash": "^4.17.14",
