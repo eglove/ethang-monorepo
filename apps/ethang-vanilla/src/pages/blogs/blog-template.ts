@@ -46,17 +46,25 @@ export const blogs: BlogTemplateProperties[] = [
 export const blogTemplate = async (properties: BlogTemplateProperties) => {
   const styles = await getStyles();
 
+  const contentTemplate = compileTemplate({
+    compileParameters: properties.compileParameters,
+    filePath: `./src/pages/blogs/${properties.fileSlug}/${properties.fileSlug}.html`,
+  });
+
   const template = mainLayoutTemplate({
     baseUrl: "../../",
-    content: compileTemplate({
-      compileParameters: properties.compileParameters,
-      filePath: `./src/pages/blogs/${properties.fileSlug}/${properties.fileSlug}.html`,
-    }),
+    content: contentTemplate,
     styles: `${styles} ${properties.additionalStyles?.join("") ?? ""}`,
     title: properties.title,
   });
 
   mkdirSync(`./dist/blog/${properties.fileSlug}`, { recursive: true });
+  mkdirSync(`./dist/templates/blog/${properties.fileSlug}`, { recursive: true });
+
+  writeFileSync(`./dist/templates/blog/${properties.fileSlug}/index.html`, contentTemplate, {
+    encoding: "utf8",
+  });
+
   writeFileSync(`./dist/blog/${properties.fileSlug}/index.html`, template, {
     encoding: "utf8",
   });

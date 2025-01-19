@@ -11,22 +11,27 @@ export const homeTemplate = async () => {
     compileParameters: {
       blogs: [
         {
+          id: "looking-at-no-misused-spread",
           link: "./blog/looking-at-no-misused-spread/",
           title: "Looking At: no-misused-spread",
         },
         {
+          id: "mimetic-desire",
           link: "./blog/mimetic-desire/",
           title: "Mimetic Desire",
         },
         {
+          id: "motivation",
           link: "./blog/motivation/",
           title: "Notes: Generating motivation in software engineering",
         },
         {
+          id: "angular-now",
           link: "./blog/angular-now/",
           title: "It's Angular Now",
         },
         {
+          id: "forcing-react",
           link: "./blog/forcing-react/",
           title: "Forcing React to be What It Isn't",
         },

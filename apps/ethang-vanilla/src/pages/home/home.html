@@ -1,8 +1,24 @@
 <main class="prose">
   <h1>Activity Log</h1>
   <% _.forEach(blogs, function(blog) { %>
-  <h2>
-    <a rel="prefetch" href="<%- blog.link %>"><%- blog.title %></a>
+  <script type="module">
+    const mainContent = document.querySelector("#main-content");
+    const blogLink = document.querySelector(`#${blog.id}`);
+
+    blogLink?.addEventListener('click', async (event) => {
+      event.preventDefault();
+
+      try {
+        const response = await fetch(`./templates/blog/${blog.id}/`);
+        mainContent.innerHTML = await response.text();
+        history.pushState(null, null, blogLink.getAttribute('href'));
+      } catch {
+        location.href = blogLink.getAttribute('href');
+      }
+    });
+  </script>
+  <h2 class="my-4">
+    <a id="<%- blog.id %>" rel="prefetch" href="<%- blog.link %>"><%- blog.title %></a>
   </h2>
   <% }); %>
 </main>
