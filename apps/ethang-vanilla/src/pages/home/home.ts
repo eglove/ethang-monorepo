@@ -13,23 +13,23 @@ export const homeTemplate = async () => {
     compileParameters: {
       blogs: [
         {
-          link: "./blog/looking-at-no-misused-spread",
+          link: "./blog/looking-at-no-misused-spread/",
           title: "Looking At: no-misused-spread",
         },
         {
-          link: "./blog/mimetic-desire",
+          link: "./blog/mimetic-desire/",
           title: "Mimetic Desire",
         },
         {
-          link: "./blog/motivation",
+          link: "./blog/motivation/",
           title: "Notes: Generating motivation in software engineering",
         },
         {
-          link: "./blog/angular-now",
+          link: "./blog/angular-now/",
           title: "It's Angular Now",
         },
         {
-          link: "./blog/forcing-react",
+          link: "./blog/forcing-react/",
           title: "Forcing React to be What It Isn't",
         },
       ],
