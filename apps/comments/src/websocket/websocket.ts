@@ -1,4 +1,3 @@
-import { HTTP_STATUS } from "@ethang/toolbelt/src/constants/http.ts";
 import {
   createJsonResponse,
 } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
@@ -97,8 +96,5 @@ export const handleWebSocket = (
     store.connections.delete(id);
   });
 
-  return new Response(null, {
-    status: HTTP_STATUS.SWITCHING_PROTOCOLS,
-    webSocket: client,
-  });
+  return createJsonResponse(null, "SWITCHING_PROTOCOLS", { webSocket: client }, request);
 };
