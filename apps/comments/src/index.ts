@@ -30,7 +30,7 @@ export default {
       );
     }
 
-    const verifyUrl = new URL("auth.ethang.dev/verify");
+    const verifyUrl = new URL("https://auth.ethang.dev/verify");
     verifyUrl.searchParams.set("token", authorization);
 
     const jwtResult = await attemptAsync(async () => {
