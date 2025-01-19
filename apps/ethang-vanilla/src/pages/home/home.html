@@ -5,20 +5,22 @@
     const mainContent = document.querySelector("#main-content");
     const blogLink = document.querySelector(`#${blog.id}`);
 
-    blogLink?.addEventListener('click', async (event) => {
+    blogLink?.addEventListener("click", async (event) => {
       event.preventDefault();
 
       try {
         const response = await fetch(`./templates/blog/${blog.id}/`);
         mainContent.innerHTML = await response.text();
-        history.pushState(null, null, blogLink.getAttribute('href'));
+        history.pushState(null, null, blogLink.getAttribute("href"));
       } catch {
-        location.href = blogLink.getAttribute('href');
+        location.href = blogLink.getAttribute("href");
       }
     });
   </script>
   <h2 class="my-4">
-    <a id="<%- blog.id %>" rel="prefetch" href="<%- blog.link %>"><%- blog.title %></a>
+    <a id="<%- blog.id %>" rel="prefetch" href="<%- blog.link %>"
+      ><%- blog.title %></a
+    >
   </h2>
   <% }); %>
 </main>
