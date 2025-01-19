@@ -5,9 +5,7 @@ import { compileTemplate } from "../../util/compile-template.js";
 import { getStyles } from "../../util/get-styles.js";
 
 export const homeTemplate = async () => {
-  const styles = await getStyles({
-    content: ["./src/layouts/main-layout.html", "./src/pages/home/home.html"],
-  });
+  const styles = await getStyles();
 
   const homeContent = compileTemplate({
     compileParameters: {
@@ -44,5 +42,6 @@ export const homeTemplate = async () => {
     title: "Home",
   });
 
+  writeFileSync("./dist/templates/home.html", homeContent, { encoding: "utf8" });
   writeFileSync("./dist/index.html", withLayout, { encoding: "utf8" });
 };

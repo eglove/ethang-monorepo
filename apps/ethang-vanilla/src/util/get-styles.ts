@@ -3,14 +3,10 @@ import daisyui from "daisyui";
 import postcss from "postcss";
 import tailwindcss from "tailwindcss";
 
-type GetStylesProperties = {
-  content: string[];
-};
-
-export const getStyles = async (properties: GetStylesProperties) => {
+export const getStyles = async () => {
   const processor = postcss([
     tailwindcss({
-      content: properties.content,
+      content: ["./src/**/*.html"],
       daisyui: {
         themes: ["night"],
       },

@@ -43,6 +43,41 @@
       });
     }
   </script>
+  <script type="module">
+    const mainContent = document.querySelector("#main-content");
+
+    const homeLinks = document.querySelectorAll(".homeLink");
+    for (const homeLink of homeLinks) {
+      homeLink.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const url = "./";
+
+        try {
+          const response = await fetch('./templates/home.html');
+          mainContent.innerHTML = await response.text();
+          history.pushState(null, null, url);
+        } catch {
+          location.href = url;
+        }
+      })
+    }
+
+    const courseLinks = document.querySelectorAll(".courseLink");
+    for (const courseLink of courseLinks) {
+      courseLink.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const url = "./courses/";
+
+        try {
+          const response = await fetch('./templates/courses.html');
+          mainContent.innerHTML = await response.text();
+          history.pushState(null, null, url);
+        } catch {
+          location.href = url;
+        }
+      });
+    }
+  </script>
   <style>
     ${ style }
   </style>
@@ -52,9 +87,9 @@
         <h1 class="px-5 py-1 font-bold text-xl mt-4">EthanG</h1>
         <nav class="grid gap-4" aria-label="Main">
           <ul class="menu menu-sm">
-            <li><a rel="prefetch" href="./" class="link">Home</a></li>
+            <li><a rel="prefetch" href="./" class="homeLink link">Home</a></li>
             <li>
-              <a rel="prefetch" href="./courses/" class="link">Courses</a>
+              <a rel="prefetch" href="./courses/" class="courseLink link">Courses</a>
             </li>
           </ul>
         </nav>
@@ -123,14 +158,14 @@
         </div>
         <nav class="navbar-center flex" aria-label="Main">
           <ul class="menu menu-horizontal px-1">
-            <li><a rel="prefetch" href="./" class="link">Home</a></li>
+            <li><a rel="prefetch" href="./" class="homeLink link">Home</a></li>
             <li>
-              <a rel="prefetch" href="./courses/" class="link">Courses</a>
+              <a rel="prefetch" href="./courses/" class="courseLink link">Courses</a>
             </li>
           </ul>
         </nav>
       </div>
-      <div class="m-4 sm:mx-0">${ main }</div>
+      <div id="main-content" class="m-4 sm:mx-0">${ main }</div>
     </div>
   </body>
 </html>

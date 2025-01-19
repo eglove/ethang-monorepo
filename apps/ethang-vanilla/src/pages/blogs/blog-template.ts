@@ -1,7 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 
 import {
-  blogLayoutStyleDependencies,
   blogLayoutTemplate,
 } from "../../layouts/blog-layout.js";
 import { nightOwlStyles } from "../../util/code-highlight.js";
@@ -47,12 +46,7 @@ export const blogs: BlogTemplateProperties[] = [
 ];
 
 export const blogTemplate = async (properties: BlogTemplateProperties) => {
-  const styles = await getStyles({
-    content: [
-      ...blogLayoutStyleDependencies,
-      `./pages/blogs/${properties.fileSlug}/${properties.fileSlug}.html`,
-    ],
-  });
+  const styles = await getStyles();
 
   const template = blogLayoutTemplate({
     baseUrl: "../../",

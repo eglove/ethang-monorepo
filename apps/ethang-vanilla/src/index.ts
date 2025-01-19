@@ -80,7 +80,7 @@ export const build = async () => {
     recursive: true,
   });
 
-  mkdirSync("./dist");
+  mkdirSync("./dist/templates", { recursive: true });
 
   await homeTemplate();
   await coursesTemplate();

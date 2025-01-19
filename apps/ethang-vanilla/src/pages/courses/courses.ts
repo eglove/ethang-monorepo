@@ -13,13 +13,7 @@ import {
 } from "./data.js";
 
 export const coursesTemplate = async () => {
-  const styles = await getStyles({
-    content: [
-      "./src/layouts/main-layout.html",
-      "./src/pages/courses/courses.html",
-      "./src/pages/courses/course-list.html",
-    ],
-  });
+  const styles = await getStyles();
 
   const courseListTemplates = map(
     [
@@ -94,5 +88,6 @@ export const coursesTemplate = async () => {
   });
 
   mkdirSync("./dist/courses");
+  writeFileSync("./dist/templates/courses.html", coursesContent, { encoding: "utf8" });
   writeFileSync("./dist/courses/index.html", withLayout, { encoding: "utf8" });
 };
