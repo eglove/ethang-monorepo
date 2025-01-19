@@ -2,7 +2,7 @@
   <h1>Activity Log</h1>
   <% _.forEach(blogs, function(blog) { %>
   <h2>
-    <a href="<%- blog.link %>"><%- blog.title %></a>
+    <a rel="prefetch" href="<%- blog.link %>"><%- blog.title %></a>
   </h2>
   <% }); %>
 </main>
