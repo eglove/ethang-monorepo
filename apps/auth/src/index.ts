@@ -1,3 +1,6 @@
+import {
+  createJsonResponse,
+} from "@ethang/toolbelt/src/fetch/create-json-response.ts";
 import endsWith from "lodash/endsWith.js";
 import isNil from "lodash/isNil.js";
 
@@ -7,7 +10,6 @@ import { getUser } from "./get-user.ts";
 import { signIn } from "./sign-in.ts";
 import { signUp } from "./sign-up.ts";
 import { ORIGIN } from "./utils/jwt.ts";
-import { createResponse } from "./utils/util.ts";
 import { verifyToken } from "./verify-token.js";
 
 class Store {
@@ -36,7 +38,7 @@ export default {
     }
 
     if ("OPTIONS" === request.method) {
-      return createResponse(null, "OK");
+      return createJsonResponse(null, "OK", undefined, request);
     }
 
     if ("/user" === url.pathname && "GET" === request.method) {
@@ -63,8 +65,10 @@ export default {
       return verifyToken(request, environment);
     }
 
-    return new Response("Not Found", {
-      status: 404,
-    });
+    return createJsonResponse(
+      { error: "Not Found" },
+      "NOT_FOUND",
+      request,
+    );
   },
 } satisfies ExportedHandler<Env>;

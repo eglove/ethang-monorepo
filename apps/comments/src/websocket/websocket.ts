@@ -62,6 +62,8 @@ export const handleWebSocket = (
     return createJsonResponse(
       { error: "Expected WebSocket" },
       "UPGRADE_REQUIRED",
+      undefined,
+      request,
     );
   }
 
@@ -71,6 +73,8 @@ export const handleWebSocket = (
     return createJsonResponse(
       { error: "Failed to create WebSocket" },
       "INTERNAL_SERVER_ERROR",
+      undefined,
+      request,
     );
   }
 

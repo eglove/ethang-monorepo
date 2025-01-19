@@ -14,8 +14,8 @@
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "start": "wrangler dev",
-    "lint": "eslint ./src --fix",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "lint": "pnpm cf-typegen && eslint src --fix"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.5.2",

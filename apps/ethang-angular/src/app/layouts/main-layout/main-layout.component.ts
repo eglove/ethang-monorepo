@@ -8,7 +8,6 @@ import { UAParser } from "ua-parser-js";
   selector: "app-main-layout",
   templateUrl: "./main-layout.component.html",
 })
-
 export class MainLayoutComponent {
   public async handleResumeClick() {
     // eslint-disable-next-line compat/compat,n/no-unsupported-features/node-builtins
@@ -22,7 +21,6 @@ export class MainLayoutComponent {
       url: globalThis.location.href,
     });
     const base64Data = globalThis.btoa(data);
-    globalThis.console.log(base64Data);
 
     const url = new URL("https://track.ethang.dev/track");
     url.searchParams.set("data", base64Data);

@@ -16,7 +16,7 @@ export const verifyToken = async (
   const token = url.searchParams.get("token");
 
   if (isNil(token)) {
-    return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST");
+    return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST", undefined, request);
   }
 
   const jwtResult = await attemptAsync(async () => {
@@ -24,8 +24,8 @@ export const verifyToken = async (
   });
 
   if (isError(jwtResult)) {
-    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED", undefined, request);
   }
 
-  return createJsonResponse({ message: "OK" }, "OK");
+  return createJsonResponse({ message: "OK" }, "OK", undefined, request);
 };

@@ -1,3 +1,6 @@
+import {
+  createJsonResponse,
+} from "@ethang/toolbelt/src/fetch/create-json-response.ts";
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
@@ -7,7 +10,6 @@ import { z } from "zod";
 import { getUser } from "./utils/get-user.ts";
 import { createToken } from "./utils/jwt.ts";
 import { getHashedPassword } from "./utils/password.ts";
-import { createResponse } from "./utils/util.ts";
 
 const signUpSchema = z.object({
   email: z.string().email(),
@@ -21,19 +23,19 @@ export const signUp = async (request: Request, environment: Env) => {
   });
 
   if (isError(body)) {
-    return createResponse({ error: "Invalid request" }, "BAD_REQUEST");
+    return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST", undefined, request);
   }
 
   const result = signUpSchema.safeParse(body);
 
   if (!result.success) {
-    return createResponse({ error: "Invalid arguments" }, "BAD_REQUEST");
+    return createJsonResponse({ error: "Invalid arguments" }, "BAD_REQUEST", undefined, request);
   }
 
   const foundUser = await getUser(result.data.email, environment);
 
   if (!isNil(foundUser)) {
-    return createResponse({ error: "User already exists" }, "CONFLICT");
+    return createJsonResponse({ error: "User already exists" }, "CONFLICT", undefined, request);
   }
 
   const hashedPassword = getHashedPassword(result.data.password);
@@ -44,11 +46,11 @@ export const signUp = async (request: Request, environment: Env) => {
   const user = await getUser(result.data.email, environment);
 
   if (isNil(user)) {
-    return createResponse({ error: "Failed to create user" }, "INTERNAL_SERVER_ERROR");
+    return createJsonResponse({ error: "Failed to create user" }, "INTERNAL_SERVER_ERROR", undefined, request);
   }
 
   set(user, ["password"], undefined);
   const token = await createToken(user, environment);
 
-  return createResponse({ token }, "CREATED");
+  return createJsonResponse({ token }, "CREATED", undefined, request);
 };

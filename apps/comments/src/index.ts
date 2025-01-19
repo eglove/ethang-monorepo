@@ -23,7 +23,11 @@ export default {
     const authorization = request.headers.get("Authorization");
 
     if (isNil(authorization)) {
-      return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+      return createJsonResponse(
+        { error: "Unauthorized" },
+        "UNAUTHORIZED",
+        request,
+      );
     }
 
     const verifyUrl = new URL("auth.ethang.dev/verify");
@@ -34,13 +38,21 @@ export default {
     });
 
     if (isError(jwtResult) || !jwtResult.ok) {
-      return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+      return createJsonResponse(
+        { error: "Unauthorized" },
+        "UNAUTHORIZED",
+        request,
+      );
     }
 
     if ("/ws" === url.pathname) {
       return handleWebSocket(request, environment);
     }
 
-    return createJsonResponse({ error: "Not Found" }, "NOT_FOUND");
+    return createJsonResponse(
+      { error: "Not Found" },
+      "NOT_FOUND",
+      request,
+    );
   },
 } satisfies ExportedHandler<Env>;

@@ -1,3 +1,6 @@
+import {
+  createJsonResponse,
+} from "@ethang/toolbelt/src/fetch/create-json-response.ts";
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
@@ -7,7 +10,6 @@ import { z } from "zod";
 import { getUser } from "./utils/get-user.ts";
 import { getIsUser } from "./utils/is-user.ts";
 import { getHashedPassword } from "./utils/password.ts";
-import { createResponse } from "./utils/util.ts";
 
 const editUserSchema = z.object({
   email: z.string().email(),
@@ -28,25 +30,45 @@ export const editUser = async (request: Request, environment: Env) => {
   });
 
   if (isError(body)) {
-    return createResponse({ error: "Invalid request" }, "BAD_REQUEST");
+    return createJsonResponse(
+      { error: "Invalid request" },
+      "BAD_REQUEST",
+      undefined,
+      request,
+    );
   }
 
   const result = editUserSchema.safeParse(body);
 
   if (!result.success) {
-    return createResponse({ error: "Invalid arguments" }, "BAD_REQUEST");
+    return createJsonResponse(
+      { error: "Invalid arguments" },
+      "BAD_REQUEST",
+      undefined,
+      request,
+    );
   }
 
   const isUser = await getIsUser(request, environment, result.data.email);
 
   if (!isUser) {
-    return createResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+    return createJsonResponse(
+      { error: "Unauthorized" },
+      "UNAUTHORIZED",
+      undefined,
+      request,
+    );
   }
 
   const previousUser = await getUser(result.data.email, environment);
 
   if (isNil(previousUser)) {
-    return createResponse({ error: "User not found" }, "NOT_FOUND");
+    return createJsonResponse(
+      { error: "User not found" },
+      "NOT_FOUND",
+      undefined,
+      request,
+    );
   }
 
   await environment.DB.prepare("UPDATE Users SET email = ?, password = ?, username = ?, role = ? WHERE email = ?")
@@ -62,5 +84,10 @@ export const editUser = async (request: Request, environment: Env) => {
   const user = await getUser(result.data.email, environment);
 
   set(user, ["password"], undefined);
-  return createResponse(user, "OK");
+  return createJsonResponse(
+    user,
+    "OK",
+    undefined,
+    request,
+  );
 };
