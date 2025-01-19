@@ -2,6 +2,7 @@ import { generateSW } from "workbox-build";
 
 export const createWorkbox = async () => {
   await generateSW({
+    cleanupOutdatedCaches: true,
     clientsClaim: true,
     globDirectory: "./dist",
     globPatterns: ["**/*.{js,css,html}"],
@@ -34,6 +35,7 @@ export const createWorkbox = async () => {
       },
     ],
     skipWaiting: true,
+    sourcemap: false,
     swDest: "./dist/service-worker.js",
   });
 };
