@@ -53,7 +53,7 @@
         const url = "./";
 
         try {
-          const response = await fetch('./templates/home.html');
+          const response = await fetch('./templates/home');
           mainContent.innerHTML = await response.text();
           history.pushState(null, null, url);
         } catch {
@@ -69,7 +69,7 @@
         const url = "./courses/";
 
         try {
-          const response = await fetch('./templates/courses.html');
+          const response = await fetch('./templates/courses');
           mainContent.innerHTML = await response.text();
           history.pushState(null, null, url);
         } catch {
