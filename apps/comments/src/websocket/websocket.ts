@@ -96,5 +96,5 @@ export const handleWebSocket = (
     store.connections.delete(id);
   });
 
-  return createJsonResponse(null, "SWITCHING_PROTOCOLS", { webSocket: client }, request);
+  return createJsonResponse(undefined, "SWITCHING_PROTOCOLS", { webSocket: client }, request);
 };
