@@ -79,13 +79,14 @@ export const build = async () => {
     force: true,
     recursive: true,
   });
+  mkdirSync("./dist/blog", { recursive: true });
+  mkdirSync("./dist/templates/blog", { recursive: true });
 
-  mkdirSync("./dist/templates", { recursive: true });
-
-  await homeTemplate();
-  await coursesTemplate();
-
-  await Promise.all(map(blogs, blogTemplate));
+  await Promise.all([
+    homeTemplate(),
+    coursesTemplate(),
+    ...map(blogs, blogTemplate),
+  ]);
 
   await minifyDistribution();
   copyDirectory("./src/public", "./dist");

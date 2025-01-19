@@ -4,14 +4,15 @@
   <script type="module">
     const mainContent = document.querySelector("#main-content");
     const blogLink = document.querySelector(`#${blog.id}`);
+    const blogResponse = await fetch(`./templates/blog/${blog.id}/`);
 
     blogLink?.addEventListener("click", async (event) => {
       event.preventDefault();
 
       try {
-        const response = await fetch(`./templates/blog/${blog.id}/`);
-        mainContent.innerHTML = await response.text();
+        mainContent.innerHTML = await blogResponse.text();
         history.pushState(null, null, blogLink.getAttribute("href"));
+        document.title = ${ blog.title }
       } catch {
         location.href = blogLink.getAttribute("href");
       }

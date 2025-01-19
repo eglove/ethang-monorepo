@@ -45,6 +45,8 @@
   </script>
   <script type="module">
     const mainContent = document.querySelector("#main-content");
+    const homeResponse = await fetch("./templates/home");
+    const coursesResponse = await fetch("./templates/courses");
 
     const homeLinks = document.querySelectorAll(".homeLink");
     for (const homeLink of homeLinks) {
@@ -53,9 +55,9 @@
         const url = "./";
 
         try {
-          const response = await fetch("./templates/home");
-          mainContent.innerHTML = await response.text();
+          mainContent.innerHTML = await homeResponse.text();
           history.pushState(null, null, url);
+          document.title = "EthanG | Home";
         } catch {
           location.href = url;
         }
@@ -69,9 +71,9 @@
         const url = "./courses/";
 
         try {
-          const response = await fetch("./templates/courses");
-          mainContent.innerHTML = await response.text();
+          mainContent.innerHTML = await coursesResponse.text();
           history.pushState(null, null, url);
+          document.title = "EthanG | Courses";
         } catch {
           location.href = url;
         }
