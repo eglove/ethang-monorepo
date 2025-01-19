@@ -24,7 +24,7 @@
     "@eslint/markdown": "^6.2.1",
     "@stylistic/eslint-plugin": "^2.13.0",
     "@stylistic/eslint-plugin-ts": "^2.13.0",
-    "@tanstack/eslint-plugin-query": "^5.62.16",
+    "@tanstack/eslint-plugin-query": "^5.64.2",
     "@tanstack/eslint-plugin-router": "^1.97.0",
     "@typescript-eslint/parser": "^8.20.0",
     "angular-eslint": "19.0.2",
