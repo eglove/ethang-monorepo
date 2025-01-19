@@ -34,7 +34,7 @@ export const createJsonResponse = (
     getCorsHeaders({ origin: request?.headers.get("Origin") }),
   );
 
-  return globalThis.Response.json(JSON.stringify(data), {
+  return globalThis.Response.json(data, {
     status: HTTP_STATUS[status],
     ...responseInit,
     headers,
