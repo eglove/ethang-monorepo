@@ -20,7 +20,8 @@ export default {
     environment,
   ): Promise<Response> {
     const url = new globalThis.URL(request.url);
-    const authorization = request.headers.get("Authorization");
+    const authorization = request.headers.get("Authorization") ??
+      url.searchParams.get("token");
 
     if (isNil(authorization)) {
       return createJsonResponse(
