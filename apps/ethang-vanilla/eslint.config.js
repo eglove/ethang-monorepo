@@ -3,7 +3,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
     {
-        ignores: [], // Ignored files apply to all following configs
+        ignores: [],
     },
     ...config,
     {
