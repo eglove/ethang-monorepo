@@ -43,41 +43,40 @@
     }
   </script>
   <script type="module">
-    const homeLinks = document.querySelectorAll(".homeLink");
-    const courseLinks = document.querySelectorAll(".courseLink");
+    const startClientRender = () => {
+      for (const link of document.links) {
+        if (new URL(link.href).origin !== location.origin) {
+          continue;
+        }
 
-    const attachListeners = (links, templateUrl, title) => {
-      for (const link of links) {
         link.addEventListener("click", async (event) => {
           event.preventDefault();
 
           try {
-            const homeResponse = await fetch(
-              new URL(templateUrl, location.href).href,
+            const templateResponse = await fetch(
+              `./templates/` + link.dataset.template,
             );
+
+            if (!templateResponse.ok) {
+              throw new Error("Template not found.");
+            }
+
             document.getElementById("main-content").innerHTML =
-              await homeResponse.text();
-            document.title = `Home | ` + title;
+              await templateResponse.text();
+            document.title = `EthanG | ` + link.dataset.title;
             history.pushState(null, null, link.href);
           } catch (error) {
-            console.log("Client side navigation failed", error);
+            console.error("Client side navigation failed:", error);
             location.href = link.href;
           }
         });
       }
     };
 
-    attachListeners(homeLinks, "/templates/home", "Home");
-    attachListeners(courseLinks, "/templates/courses", "Courses");
-  </script>
-  <script type="module">
-    window.addEventListener("popstate", async (event) => {
-      try {
-        const response = await fetch(event.target.location.href);
-        document.documentElement.innerHTML = await response.text();
-      } catch {
-        location.href = event.target.location.href;
-      }
+    startClientRender();
+    window.addEventListener("popstate", (event) => {
+      location.href = event.target.location.href;
+      startClientRender();
     });
   </script>
   <style>
@@ -89,9 +88,23 @@
         <h1 class="px-5 py-1 font-bold text-xl mt-4">EthanG</h1>
         <nav class="grid gap-4" aria-label="Main">
           <ul class="menu menu-sm">
-            <li><a rel="prefetch" href="./" class="homeLink link">Home</a></li>
             <li>
-              <a rel="prefetch" href="./courses/" class="courseLink link"
+              <a
+                data-title="Home"
+                data-template="home"
+                rel="prefetch"
+                href="./"
+                class="link"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a
+                data-title="Courses"
+                data-template="courses"
+                rel="prefetch"
+                href="./courses/"
+                class="courseLink link"
                 >Courses</a
               >
             </li>
@@ -162,9 +175,23 @@
         </div>
         <nav class="navbar-center flex" aria-label="Main">
           <ul class="menu menu-horizontal px-1">
-            <li><a rel="prefetch" href="./" class="homeLink link">Home</a></li>
             <li>
-              <a rel="prefetch" href="./courses/" class="courseLink link"
+              <a
+                data-title="Home"
+                data-template="home"
+                rel="prefetch"
+                href="./"
+                class="link"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a
+                data-title="Courses"
+                data-template="courses"
+                rel="prefetch"
+                href="./courses/"
+                class="courseLink link"
                 >Courses</a
               >
             </li>
