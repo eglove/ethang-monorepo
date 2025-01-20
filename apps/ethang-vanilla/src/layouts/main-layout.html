@@ -32,7 +32,6 @@
   <script type="module">
     if ("serviceWorker" in navigator) {
       const url = new URL("/service-worker.js", location.href).href;
-      console.log(url);
       navigator.serviceWorker
         .register(url)
         .then((registration) => {
@@ -42,6 +41,44 @@
           console.error("SW registration failed:", registrationError);
         });
     }
+  </script>
+  <script type="module">
+    const homeLinks = document.querySelectorAll(".homeLink");
+    const courseLinks = document.querySelectorAll(".courseLink");
+
+    const attachListeners = (links, templateUrl, title) => {
+      for (const link of links) {
+        link.addEventListener("click", async (event) => {
+          event.preventDefault();
+
+          try {
+            const homeResponse = await fetch(
+              new URL(templateUrl, location.href).href,
+            );
+            document.getElementById("main-content").innerHTML =
+              await homeResponse.text();
+            document.title = `Home | ` + title;
+            history.pushState(null, null, link.href);
+          } catch (error) {
+            console.log("Client side navigation failed", error);
+            location.href = link.href;
+          }
+        });
+      }
+    };
+
+    attachListeners(homeLinks, "/templates/home", "Home");
+    attachListeners(courseLinks, "/templates/courses", "Courses");
+  </script>
+  <script type="module">
+    window.addEventListener("popstate", async (event) => {
+      try {
+        const response = await fetch(event.target.location.href);
+        document.documentElement.innerHTML = await response.text();
+      } catch {
+        location.href = event.target.location.href;
+      }
+    });
   </script>
   <style>
     ${ style }

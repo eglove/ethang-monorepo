@@ -1,6 +1,23 @@
 <main class="prose">
   <h1>Activity Log</h1>
   <% _.forEach(blogs, function(blog) { %>
+  <script type="module">
+    const linkElement = document.querySelector(`#${blog.id}`);
+    linkElement.addEventListener("click", async (event) => {
+      event.preventDefault();
+
+      try {
+        const blogTemplate = await fetch(`./templates/blog/${blog.id}`);
+        document.getElementById("main-content").innerHTML =
+          await blogTemplate.text();
+        document.title = `Home | ${blog.title}`;
+        history.pushState(null, null, linkElement.href);
+      } catch (error) {
+        console.log("Client side navigation failed", error);
+        location.href = linkElement.href;
+      }
+    });
+  </script>
   <h2 class="my-4">
     <a id="<%- blog.id %>" rel="prefetch" href="<%- blog.link %>"
       ><%- blog.title %></a
