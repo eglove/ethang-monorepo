@@ -6,7 +6,6 @@ export const createWorkbox = async () => {
     clientsClaim: true,
     globDirectory: "./dist",
     globPatterns: ["**/*.{js,css,html}"],
-    navigationPreload: true,
     runtimeCaching: [
       {
         handler: "StaleWhileRevalidate",
