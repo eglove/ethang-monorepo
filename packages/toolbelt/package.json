@@ -25,11 +25,11 @@
     "@ethang/project-builder": "workspace:^",
     "@types/lodash": "^4.17.14",
     "@types/node": "^22.10.7",
-    "@vitest/coverage-v8": "^3.0.2",
-    "@vitest/ui": "^3.0.2",
+    "@vitest/coverage-v8": "^3.0.3",
+    "@vitest/ui": "^3.0.3",
     "eslint": "^9.18.0",
     "typescript": "^5.7.3",
-    "vitest": "^3.0.2",
+    "vitest": "^3.0.3",
     "vitest-fetch-mock": "^0.4.3"
   },
   "engines": {

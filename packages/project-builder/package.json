@@ -19,6 +19,6 @@
     "@types/lodash": "^4.17.14",
     "@types/node": "^22.10.7",
     "eslint": "^9.18.0",
-    "typescript-eslint": "^8.20.0"
+    "typescript-eslint": "^8.21.0"
   }
 }
