@@ -45,7 +45,7 @@
   <script type="module">
     const startClientRender = () => {
       for (const link of document.links) {
-        if (new URL(link.href).origin !== location.origin) {
+        if (new URL(link.href, location.href).origin !== location.origin) {
           continue;
         }
 
