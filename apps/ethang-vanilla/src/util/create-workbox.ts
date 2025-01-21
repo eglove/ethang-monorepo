@@ -23,7 +23,7 @@ export const createWorkbox = async () => {
             maxEntries: 50,
           },
         },
-        urlPattern: /\.(?:png|jpg|jpeg|svg|gif)$/u,
+        urlPattern: /\.(?:png|jpg|jpeg|svg|gif|ico)$/u,
       },
       {
         handler: "NetworkFirst",
