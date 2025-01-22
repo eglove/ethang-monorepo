@@ -1,11 +1,14 @@
+import { v7 } from "uuid";
 import { generateSW } from "workbox-build";
 
 export const createWorkbox = async () => {
   const result = await generateSW({
+    cacheId: v7(),
     cleanupOutdatedCaches: true,
     clientsClaim: true,
     globDirectory: "./dist",
     globPatterns: ["**/*.{js,css,html}"],
+    navigationPreload: true,
     runtimeCaching: [
       {
         handler: "StaleWhileRevalidate",

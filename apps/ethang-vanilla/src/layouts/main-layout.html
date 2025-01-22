@@ -42,43 +42,6 @@
         });
     }
   </script>
-  <script type="module">
-    const startClientRender = () => {
-      for (const link of document.links) {
-        if (new URL(link.href, location.href).origin !== location.origin) {
-          continue;
-        }
-
-        link.addEventListener("click", async (event) => {
-          event.preventDefault();
-
-          try {
-            const templateResponse = await fetch(
-              `./templates/` + link.dataset.template,
-            );
-
-            if (!templateResponse.ok) {
-              throw new Error("Template not found.");
-            }
-
-            document.getElementById("main-content").innerHTML =
-              await templateResponse.text();
-            document.title = `EthanG | ` + link.dataset.title;
-            history.pushState(null, null, link.href);
-          } catch (error) {
-            console.error("Client side navigation failed:", error);
-            location.href = link.href;
-          }
-        });
-      }
-    };
-
-    startClientRender();
-    window.addEventListener("popstate", (event) => {
-      location.href = event.target.location.href;
-      startClientRender();
-    });
-  </script>
   <style>
     ${ style }
   </style>
