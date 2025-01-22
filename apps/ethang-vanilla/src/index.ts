@@ -80,7 +80,6 @@ export const build = async () => {
     recursive: true,
   });
   mkdirSync("./dist/blog", { recursive: true });
-  mkdirSync("./dist/templates/blog", { recursive: true });
 
   await Promise.all([
     homeTemplate(),

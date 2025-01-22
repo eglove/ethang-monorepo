@@ -3,8 +3,6 @@
   <% _.forEach(blogs, function(blog) { %>
   <h2 class="my-4">
     <a
-      data-title="<%- blog.title %>"
-      data-template="/blog/<%- blog.id %>/"
       rel="prefetch"
       href="<%- blog.link %>"
       ><%- blog.title %></a

@@ -59,17 +59,6 @@ export const blogTemplate = async (properties: BlogTemplateProperties) => {
   });
 
   mkdirSync(`./dist/blog/${properties.fileSlug}`, { recursive: true });
-  mkdirSync(`./dist/templates/blog/${properties.fileSlug}`, {
-    recursive: true,
-  });
-
-  writeFileSync(
-    `./dist/templates/blog/${properties.fileSlug}/index.html`,
-    contentTemplate,
-    {
-      encoding: "utf8",
-    },
-  );
 
   writeFileSync(`./dist/blog/${properties.fileSlug}/index.html`, template, {
     encoding: "utf8",
