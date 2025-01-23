@@ -7,10 +7,8 @@ docker system prune -af
 dotnet tool update -g dotnet-vs
 
 # NPM globals
-$packages = (npm outdated -g --depth=0 --parseable | ForEach-Object { ($_ -split '\\|/')[-1] }) | Select-Object -Unique
-foreach ($package in $packages) {
-    npm i -g $package
-}
+pnpm self-update
+pnpm up -g --latest
 
 # Windows software update
 winget upgrade --unknown --all
