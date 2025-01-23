@@ -597,46 +597,6 @@ importers:
         specifier: ^0.21.1
         version: 0.21.1(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.0)(less@4.2.1)(lightningcss@1.29.1)(sass@1.83.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
 
-  apps/track:
-    dependencies:
-      '@ethang/toolbelt':
-        specifier: workspace:^
-        version: link:../../packages/toolbelt
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      uuid:
-        specifier: ^11.0.5
-        version: 11.0.5
-      zod:
-        specifier: ^3.24.1
-        version: 3.24.1
-    devDependencies:
-      '@cloudflare/vitest-pool-workers':
-        specifier: ^0.6.6
-        version: 0.6.6(@cloudflare/workers-types@4.20250121.0)(@vitest/runner@3.0.4)(@vitest/snapshot@3.0.4)(vitest@3.0.4)
-      '@cloudflare/workers-types':
-        specifier: ^4.20250121.0
-        version: 4.20250121.0
-      '@ethang/eslint-config':
-        specifier: workspace:^
-        version: link:../../packages/eslint-config
-      '@types/lodash':
-        specifier: ^4.17.14
-        version: 4.17.14
-      '@types/uuid':
-        specifier: ^10.0.0
-        version: 10.0.0
-      eslint:
-        specifier: ^9.18.0
-        version: 9.18.0(jiti@2.4.0)
-      typescript:
-        specifier: ^5.5.2
-        version: 5.7.3
-      wrangler:
-        specifier: ^3.105.0
-        version: 3.105.0(@cloudflare/workers-types@4.20250121.0)
-
   packages/eslint-config:
     dependencies:
       '@angular-eslint/eslint-plugin':
