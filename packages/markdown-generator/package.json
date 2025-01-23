@@ -24,7 +24,7 @@
     "@ethang/project-builder": "workspace:^",
     "@types/lodash": "^4.17.14",
     "eslint": "^9.18.0",
-    "vitest": "^3.0.3"
+    "vitest": "^3.0.4"
   },
   "peerDependencies": {
     "lodash": "^4.17.21"
