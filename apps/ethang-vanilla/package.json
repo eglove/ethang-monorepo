@@ -28,7 +28,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "@types/html-minifier-terser": "^7.0.2",
     "@types/lodash": "^4.17.14",
-    "@types/node": "^22.10.9",
+    "@types/node": "^22.10.10",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.20",
     "daisyui": "^4.12.23",
