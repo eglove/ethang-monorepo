@@ -1,21 +1,5 @@
 {
-  "name": "sterett-admin",
-  "version": "1.0.0",
-  "private": true,
-  "description": "",
-  "keywords": [
-    "sanity"
-  ],
-  "license": "MIT",
   "author": "Ethan Glover <hello@ethang.email>",
-  "type": "module",
-  "main": "package.json",
-  "scripts": {
-    "build": "sanity build",
-    "dev": "sanity dev",
-    "lint": "eslint . --fix",
-    "start": "sanity start"
-  },
   "dependencies": {
     "@sanity/cli": "^3.71.2",
     "@sanity/code-input": "^5.1.2",
@@ -31,6 +15,7 @@
     "sanity": "^3.71.2",
     "styled-components": "^6.1.14"
   },
+  "description": "",
   "devDependencies": {
     "@ethang/eslint-config": "workspace:^",
     "@sanity/eslint-config-studio": "^5.0.1",
@@ -41,5 +26,20 @@
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "license": "MIT",
+  "main": "package.json",
+  "name": "sterett-admin",
+  "private": true,
+  "scripts": {
+    "build": "sanity build",
+    "dev": "sanity dev",
+    "lint": "eslint . --fix",
+    "start": "sanity start"
+  },
+  "type": "module",
+  "version": "1.0.0"
 }

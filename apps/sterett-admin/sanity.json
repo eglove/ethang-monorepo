@@ -1,18 +1,8 @@
 {
-  "root": true,
-  "project": {
-    "name": "Sterett Creek Village Trustee Admin"
-  },
   "api": {
-    "projectId": "540gjnt8",
-    "dataset": "production"
+    "dataset": "production",
+    "projectId": "540gjnt8"
   },
-  "plugins": [
-    "@sanity/base",
-    "@sanity/default-layout",
-    "@sanity/default-login",
-    "@sanity/desk-tool"
-  ],
   "env": {
     "development": {
       "plugins": [
@@ -29,5 +19,15 @@
       "name": "part:@sanity/desk-tool/structure",
       "path": "./desk-structure.ts"
     }
-  ]
+  ],
+  "plugins": [
+    "@sanity/base",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/desk-tool"
+  ],
+  "project": {
+    "name": "Sterett Creek Village Trustee Admin"
+  },
+  "root": true
 }

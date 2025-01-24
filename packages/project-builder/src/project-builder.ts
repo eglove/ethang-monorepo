@@ -1,8 +1,7 @@
 import isNil from "lodash/isNil.js";
-import { copyFileSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync } from "node:fs";
 // eslint-disable-next-line n/prefer-global/process
 import { chdir } from "node:process";
-import { sortPackageJson } from "sort-package-json";
 import { build as tsc } from "tsc-prog";
 import { build as tsup } from "tsup";
 
@@ -24,9 +23,6 @@ export const projectBuilder = async (
       outDir: "dist",
     } satisfies Options
     : options;
-
-  const packageJson = readFileSync(packageJsonString, { encoding: "utf8" });
-  writeFileSync(packageJsonString, sortPackageJson(packageJson), "utf8");
 
   tsc({
     basePath,

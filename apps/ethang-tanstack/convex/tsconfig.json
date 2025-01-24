@@ -1,18 +1,25 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "strict": true,
-    "moduleResolution": "Bundler",
-    "jsx": "react-jsx",
-    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ESNext",
-    "lib": ["ES2021", "dom"],
     "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
     "isolatedModules": true,
-    "noEmit": true
+    "jsx": "react-jsx",
+    "lib": [
+      "ES2021",
+      "dom"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ESNext"
   },
-  "include": ["./**/*"],
-  "exclude": ["./_generated"]
+  "exclude": [
+    "./_generated"
+  ],
+  "include": [
+    "./**/*"
+  ]
 }

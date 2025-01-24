@@ -1,9 +1,13 @@
 {
-  "extends": ["../../packages/tsconfig/tsconfig.react.json"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
-  }
+  },
+  "extends": [
+    "../../packages/tsconfig/tsconfig.react.json"
+  ]
 }

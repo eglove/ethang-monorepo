@@ -1,20 +1,21 @@
 {
-  "name": "scripts",
-  "version": "1.0.0",
-  "description": "",
-  "keywords": [],
-  "license": "ISC",
   "author": "",
-  "main": "index.js",
-  "scripts": {
-    "lint": "prettier . --write"
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "sort-package-json": "^2.14.0"
   },
+  "description": "",
   "devDependencies": {
     "@types/lodash": "^4.17.14",
     "@types/node": "^22.10.10",
     "prettier": "^3.4.2"
   },
-  "dependencies": {
-    "lodash": "^4.17.21"
-  }
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "scripts",
+  "scripts": {
+    "lint": "prettier . --write"
+  },
+  "version": "1.0.0"
 }
