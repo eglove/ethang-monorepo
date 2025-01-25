@@ -64,5 +64,5 @@
     "lint": "eslint . --fix"
   },
   "type": "module",
-  "version": "20.1.1"
+  "version": "21.0.0"
 }
