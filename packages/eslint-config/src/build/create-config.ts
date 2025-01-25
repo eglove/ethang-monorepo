@@ -53,7 +53,10 @@ export const createConfig = async (
     optionals += "\nignores,";
   }
 
-  if (!isNil(options.includeLanguageOptions)) {
+  if (
+    !isNil(options.includeLanguageOptions) &&
+    isNil(options.includeAngularLanguageOptions)
+  ) {
     optionals += "\nlanguageOptions,";
   }
 

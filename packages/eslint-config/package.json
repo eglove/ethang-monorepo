@@ -61,7 +61,7 @@
   },
   "scripts": {
     "build": "bun build.ts && pnpm lint",
-    "lint": "eslint . --fix"
+    "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
   "version": "21.0.0"
