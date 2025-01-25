@@ -24,8 +24,6 @@ import { unicornRules } from "../setup/unicorn.ts";
 import { cspellRules } from "../setup/cspell.js";
 import { tanstackRouterRules } from "../setup/tanstack-router.js";
 import { angularTemplateRules, angularTsRules } from "../setup/angular.js";
-import { prettierConfigRules } from "../setup/prettier-config.js";
-import { prettierPluginRules } from "../setup/prettier-plugin.js";
 
 export const ruleList = [
   {
@@ -188,26 +186,6 @@ export const ruleList = [
     pluginValue: "cspell",
     type: "core",
     url: "https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell-eslint-plugin",
-  },
-  {
-    importString: 'import prettierConfig from "eslint-config-prettier";',
-    list: prettierConfigRules,
-    name: "eslint-config-prettier",
-    order: 16,
-    pluginName: "prettierConfig",
-    pluginValue: "prettierConfig",
-    type: "core",
-    url: "https://github.com/prettier/eslint-config-prettier",
-  },
-  {
-    importString: 'import prettierPlugin from "eslint-plugin-prettier";',
-    list: prettierPluginRules,
-    name: "eslint-plugin-prettier",
-    order: 17,
-    pluginName: "prettierPlugin",
-    pluginValue: "prettierPlugin",
-    type: "core",
-    url: "https://github.com/prettier/eslint-plugin-prettier",
   },
   {
     importString: 'import markdown from "@eslint/markdown";',

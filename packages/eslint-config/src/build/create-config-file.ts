@@ -41,6 +41,8 @@ export const createConfigFile = async (
 
   configFile += `\nexport default tseslint.config(
     ${configs.join("\n")}
+    ${fileName === "eslint.config.js" ? "eslintConfigPrettier," : ""}
+    ${fileName === "eslint.config.js" ? "eslintPluginPrettierRecommended," : ""}
   );\n`;
 
   writeFileSync(

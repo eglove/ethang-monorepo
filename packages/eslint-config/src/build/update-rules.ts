@@ -15,7 +15,11 @@ export const coreFile = [
     label: "Core",
     name: "core",
     options: {
-      extraImports: ['import { fixupPluginRules } from "@eslint/compat";'], // TODO remove with v9 compat
+      extraImports: [
+        'import { fixupPluginRules } from "@eslint/compat";', // TODO remove with v9 compat
+        'import eslintConfigPrettier from "eslint-config-prettier";',
+        'import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";',
+      ],
       includeIgnores: true,
       includeLanguageOptions: true,
       includeReactVersion: true,
