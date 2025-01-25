@@ -72,7 +72,7 @@ export const coursesTemplate = async () => {
 
   const coursesContent = compileTemplate({
     compileParameters: {
-      coltSteeleCourses: courseListTemplates.join(""),
+      courses: courseListTemplates.join(""),
     },
     filePath: "./src/pages/courses/courses.html",
   });

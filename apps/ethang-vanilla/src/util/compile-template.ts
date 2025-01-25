@@ -3,7 +3,7 @@ import _ from "lodash";
 import { readFileSync } from "node:fs";
 
 export type CompileTemplateProperties = {
-  compileParameters?: object | undefined;
+  compileParameters?: object;
   filePath: string;
 };
 
