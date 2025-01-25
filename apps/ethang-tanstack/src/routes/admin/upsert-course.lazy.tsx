@@ -6,9 +6,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 const RouteComponent = () => {
   return (
     <MainLayout>
-      <TypographyH1 className="mb-4">
-        Create Course
-      </TypographyH1>
+      <TypographyH1 className="mb-4">Create Course</TypographyH1>
       <UpsertCourseForm />
     </MainLayout>
   );

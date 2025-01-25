@@ -1,13 +1,20 @@
 import react from "@eslint-react/eslint-plugin";
 // @ts-expect-error no types
-import reactHooks from "eslint-plugin-react-hooks";
-// @ts-expect-error no types
 import compiler from "eslint-plugin-react-compiler";
+// @ts-expect-error no types
+import reactHooks from "eslint-plugin-react-hooks";
+import keys from "lodash/keys.js";
 
-import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
+import {
+  type EsLintRules,
+  genRules,
+  getNonDeprecatedRules,
+} from "./gen-rules.ts";
 
-// @ts-expect-error ignore types
-const reactRuleNames = Object.keys(getNonDeprecatedRules(react.rules));
+const reactRuleNames = keys(
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  getNonDeprecatedRules(react.rules as unknown as EsLintRules),
+);
 const customReactRules = [
   {
     name: "avoid-shorthand-boolean",
@@ -44,7 +51,8 @@ const customReactRules = [
 ];
 const reactGen = genRules(reactRuleNames, customReactRules, "react");
 
-const reactHookRuleNames = Object.keys(reactHooks.rules);
+// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@typescript-eslint/no-unsafe-member-access
+const reactHookRuleNames = keys(reactHooks.rules as unknown as EsLintRules);
 const customHookRules = [
   {
     name: "exhaustive-deps",
@@ -57,7 +65,8 @@ const customHookRules = [
 ];
 const hookGen = genRules(reactHookRuleNames, customHookRules, "react-hooks");
 
-const reactCompilerRuleNames = Object.keys(compiler.rules);
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const reactCompilerRuleNames = keys(compiler.rules);
 const compilerGen = genRules(reactCompilerRuleNames, [], "react-compiler");
 
 export const reactRules = {

@@ -23,27 +23,17 @@ export const ProjectDetails = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          aria-label="View Details"
-          size="sm"
-          variant="ghost"
-        >
+        <Button aria-label="View Details" size="sm" variant="ghost">
           <EyeIcon />
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {project.name}
-          </DialogTitle>
+          <DialogTitle>{project.name}</DialogTitle>
         </DialogHeader>
-        <DialogDescription>
-          {project.description}
-        </DialogDescription>
+        <DialogDescription>{project.description}</DialogDescription>
         <TypographyP>
-          <TypographyLink href={project.url}>
-            {project.url}
-          </TypographyLink>
+          <TypographyLink href={project.url}>{project.url}</TypographyLink>
         </TypographyP>
       </DialogContent>
     </Dialog>

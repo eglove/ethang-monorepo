@@ -13,13 +13,9 @@ export const Default = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">
-          Open
-        </Button>
+        <Button variant="outline">Open</Button>
       </PopoverTrigger>
-      <PopoverContent>
-        Popover content
-      </PopoverContent>
+      <PopoverContent>Popover content</PopoverContent>
     </Popover>
   );
 };

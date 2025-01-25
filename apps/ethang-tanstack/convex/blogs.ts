@@ -8,9 +8,11 @@ export const get = query({
     slug: v.string(),
   },
   handler: async (context, _arguments) => {
-    const blog = await context.db.query("blogMeta").withIndex("by_slug", (q) => {
-      return q.eq("slug", _arguments.slug);
-    })
+    const blog = await context.db
+      .query("blogMeta")
+      .withIndex("by_slug", (q) => {
+        return q.eq("slug", _arguments.slug);
+      })
       .first();
 
     if (isNil(blog)) {
@@ -24,7 +26,6 @@ export const get = query({
 export const getAll = query({
   args: {},
   handler: async (context) => {
-    return context.db.query("blogMeta").order("desc")
-      .collect();
+    return context.db.query("blogMeta").order("desc").collect();
   },
 });

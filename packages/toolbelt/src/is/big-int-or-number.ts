@@ -8,7 +8,7 @@ export const isBigIntOrNumber = (value: unknown): value is bigint | number => {
   }
 
   if (isString(value)) {
-    return (/^-?(?:\d+(?:\.\d*)?|\.\d+)$/u).test(value);
+    return /^-?(?:\d+(?:\.\d*)?|\.\d+)$/u.test(value);
   }
 
   return false;

@@ -23,11 +23,13 @@ const badgeVariants = cva(
   },
 );
 
-export type BadgeProperties = HTMLAttributes<HTMLDivElement>
-  & VariantProps<typeof badgeVariants>;
+export type BadgeProperties = HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof badgeVariants>;
 
 const Badge = ({
-  className, variant, ...properties
+  className,
+  variant,
+  ...properties
 }: Readonly<BadgeProperties>) => {
   return (
     <div

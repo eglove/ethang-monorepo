@@ -1,6 +1,4 @@
-import {
-  createJsonResponse,
-} from "@ethang/toolbelt/src/fetch/create-json-response.ts";
+import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
 import endsWith from "lodash/endsWith.js";
 import isNil from "lodash/isNil.js";
 
@@ -26,10 +24,7 @@ class Store {
 export const store = new Store();
 
 export default {
-
-  async fetch(
-    request, environment,
-  ): Promise<Response> {
+  async fetch(request, environment): Promise<Response> {
     const url = new URL(request.url);
     const origin = request.headers.get("Origin");
 
@@ -65,10 +60,6 @@ export default {
       return verifyToken(request, environment);
     }
 
-    return createJsonResponse(
-      { error: "Not Found" },
-      "NOT_FOUND",
-      request,
-    );
+    return createJsonResponse({ error: "Not Found" }, "NOT_FOUND", request);
   },
 } satisfies ExportedHandler<Env>;

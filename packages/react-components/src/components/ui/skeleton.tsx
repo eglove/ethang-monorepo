@@ -8,7 +8,10 @@ const Skeleton = ({
 }: Readonly<HTMLAttributes<HTMLDivElement>>) => {
   return (
     <div
-      className={cn("animate-pulse rounded-md bg-neutral-700 dark:bg-neutral-50/10", className)}
+      className={cn(
+        "animate-pulse rounded-md bg-neutral-700 dark:bg-neutral-50/10",
+        className,
+      )}
       {...properties}
     />
   );

@@ -10,9 +10,5 @@ export const CertificationLink = ({
   children,
   url,
 }: Readonly<CertificationLinkProperties>) => {
-  return (
-    <TypographyLink href={url}>
-      {children}
-    </TypographyLink>
-  );
+  return <TypographyLink href={url}>{children}</TypographyLink>;
 };

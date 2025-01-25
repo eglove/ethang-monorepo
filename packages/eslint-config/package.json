@@ -1,17 +1,9 @@
 {
-  "name": "@ethang/eslint-config",
-  "version": "20.1.1",
-  "repository": {
-    "url": "https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-config"
-  },
-  "license": "ISC",
   "author": "Ethan Glover",
-  "type": "module",
-  "main": "eslint.config.js",
-  "scripts": {
-    "build": "bun build.ts && pnpm lint",
-    "lint": "prettier . -w"
-  },
+  "browserslist": [
+    "defaults and fully supports es6-module",
+    "maintained node versions"
+  ],
   "dependencies": {
     "@angular-eslint/eslint-plugin": "^19.0.2",
     "@angular-eslint/eslint-plugin-template": "^19.0.2",
@@ -43,15 +35,34 @@
     "eslint-plugin-sonarjs": "3.0.1",
     "eslint-plugin-tailwindcss": "^3.18.0",
     "eslint-plugin-unicorn": "^56.0.1",
+    "prettier": "^3.4.2",
     "typescript-eslint": "^8.21.0"
   },
   "devDependencies": {
     "@ethang/markdown-generator": "workspace:^",
+    "@ethang/toolbelt": "workspace:^",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/eslint__js": "^8.42.3",
+    "@types/lodash": "^4.17.14",
     "@types/node": "^22.10.10",
-    "prettier": "^3.4.2",
-    "typescript": "^5.7.3"
-  }
+    "lodash": "^4.17.21",
+    "typescript": "^5.7.3",
+    "zod": "^3.24.1"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "ISC",
+  "main": "eslint.config.js",
+  "name": "@ethang/eslint-config",
+  "repository": {
+    "url": "https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-config"
+  },
+  "scripts": {
+    "build": "bun build.ts && pnpm lint",
+    "lint": "eslint . --fix"
+  },
+  "type": "module",
+  "version": "20.1.1"
 }

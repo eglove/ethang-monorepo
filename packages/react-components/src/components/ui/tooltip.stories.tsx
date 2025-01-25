@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button.tsx";
 import {
-  Tooltip, TooltipContent,
+  Tooltip,
+  TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip.tsx";
@@ -14,14 +15,10 @@ export const Default = () => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline">
-            Hover
-          </Button>
+          <Button variant="outline">Hover</Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>
-            Add to library
-          </p>
+          <p>Add to library</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

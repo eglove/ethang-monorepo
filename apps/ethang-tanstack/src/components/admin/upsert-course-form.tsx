@@ -60,24 +60,12 @@ export const UpsertCourseForm = () => {
     <Form {...form}>
       {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
       <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <FormInput
-          fieldName="name"
-          form={form}
-          label="Name"
-        />
-        <FormInput
-          fieldName="url"
-          form={form}
-          label="URL"
-        />
-        <Button
-          className="my-2"
-          type="submit"
-        >
+        <FormInput fieldName="name" form={form} label="Name" />
+        <FormInput fieldName="url" form={form} label="URL" />
+        <Button className="my-2" type="submit">
           Submit
         </Button>
       </form>
     </Form>
   );
 };
-

@@ -20,8 +20,10 @@ export default defineType({
       name: "slug",
       options: {
         slugify(input: string) {
-          return replace(toLower(input), /\s+/gu, "-")
-            .slice(MIN_SLUG_CHARS, MAX_SLUG_CHARS);
+          return replace(toLower(input), /\s+/gu, "-").slice(
+            MIN_SLUG_CHARS,
+            MAX_SLUG_CHARS,
+          );
         },
         source: "title",
       },

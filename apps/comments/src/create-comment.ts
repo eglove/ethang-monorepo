@@ -13,7 +13,9 @@ export const createComment = async (
   payload: z.infer<typeof newCommentSchema>,
   environment: Env,
 ) => {
-  await environment.DB.prepare("INSERT INTO Comments (id, message, url, username) VALUES (?, ?, ?, ?)")
+  await environment.DB.prepare(
+    "INSERT INTO Comments (id, message, url, username) VALUES (?, ?, ?, ?)",
+  )
     .bind(v7(), payload.message, payload.url, payload.username)
     .first();
 

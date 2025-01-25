@@ -9,9 +9,7 @@ import { httpAction } from "./_generated/server";
 
 const http = httpRouter();
 
-const validateRequest = async (
-  request: Request,
-) => {
+const validateRequest = async (request: Request) => {
   const payload = await request.text();
   const svixHeaders = {
     "svix-id": request.headers.get("svix-id") ?? "",

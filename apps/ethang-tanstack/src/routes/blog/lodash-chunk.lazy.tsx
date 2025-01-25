@@ -1,8 +1,6 @@
 import { LocalBlog } from "@/components/blog/local-blog.tsx";
 import { CodeBlock } from "@ethang/react-components/src/components/code-block/code-block.tsx";
-import {
-  TypographyInlineCode,
-} from "@ethang/react-components/src/components/typography/typography-inline-code.tsx";
+import { TypographyInlineCode } from "@ethang/react-components/src/components/typography/typography-inline-code.tsx";
 import { TypographyLink } from "@ethang/react-components/src/components/typography/typography-link.tsx";
 import { TypographyP } from "@ethang/react-components/src/components/typography/typography-p.tsx";
 import { createLazyFileRoute } from "@tanstack/react-router";
@@ -47,28 +45,21 @@ const RouteComponent = () => {
     <LocalBlog slug="lodash-chunk">
       <TypographyP>
         Lodash Chunk takes an array and splits it into &ldquo;chunks&rdquo; of a
-        given size.
-        {" "}
+        given size.{" "}
         <TypographyLink href="https://lodash.com/docs/4.17.15#chunk">
           From the docs
-        </TypographyLink>
-        {" "}
+        </TypographyLink>{" "}
         we see the following examples:
       </TypographyP>
-      <CodeBlock className="mt-6">
-        {code1}
-      </CodeBlock>
+      <CodeBlock className="mt-6">{code1}</CodeBlock>
       <TypographyP>
-        Let&apos;s take a look at
-        {" "}
+        Let&apos;s take a look at{" "}
         <TypographyLink href="https://github.com/lodash/lodash/blob/4.17.15/lodash.js#L6839">
           the source
         </TypographyLink>
         .
       </TypographyP>
-      <CodeBlock className="mt-6">
-        {chunkCode}
-      </CodeBlock>
+      <CodeBlock className="mt-6">{chunkCode}</CodeBlock>
       <TypographyP>
         The first thing I see here is an undocumented argument, guard. Digging
         into this deeper, this is just a simple guard to make sure chunk is not
@@ -76,8 +67,8 @@ const RouteComponent = () => {
         day.
       </TypographyP>
       <TypographyP>
-        The other guards are checking if size if undefined, and that the size
-        is not negative. A negative number will default to 0 returning an empty
+        The other guards are checking if size if undefined, and that the size is
+        not negative. A negative number will default to 0 returning an empty
         array. Same if the array is nil or has no length.
       </TypographyP>
       <TypographyP>
@@ -86,30 +77,22 @@ const RouteComponent = () => {
         that length and fill it with slices.
       </TypographyP>
       <TypographyP>
-        The
-        {" "}
+        The{" "}
         <TypographyLink href="https://youmightnotneed.com/lodash">
           You Might Not Need Lodash
-        </TypographyLink>
-        {" "}
-        version looks like this. Which also comes
-        with a handy warning.
+        </TypographyLink>{" "}
+        version looks like this. Which also comes with a handy warning.
       </TypographyP>
-      <CodeBlock className="mt-5">
-        {mightNotNeedChunk}
-      </CodeBlock>
+      <CodeBlock className="mt-5">{mightNotNeedChunk}</CodeBlock>
       <TypographyP>
         We can very quickly notice the difference in error and misuse handling.
       </TypographyP>
       <TypographyP>
         The naive version will throw and, if uncaught, crash the page:
-        <TypographyInlineCode>
-          chunk(null)
-        </TypographyInlineCode>
-        . But in lodash, it will simply return an empty array. Unexpectedly,
-        while incorrect usage is not handled, the negative size case does return
-        an empty array, but only due to its splice usage.  Which makes
-        this version unreliable.
+        <TypographyInlineCode>chunk(null)</TypographyInlineCode>. But in lodash,
+        it will simply return an empty array. Unexpectedly, while incorrect
+        usage is not handled, the negative size case does return an empty array,
+        but only due to its splice usage. Which makes this version unreliable.
       </TypographyP>
       <TypographyP>
         I would even say the naive version provided by You Might Not Need Lodash

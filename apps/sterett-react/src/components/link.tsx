@@ -11,11 +11,6 @@ export const Link = (properties: LinkProperties) => {
   const fakeHref = undefined as unknown as string;
 
   return (
-    <NextUiLink
-      as={TanStackLink}
-      {...properties}
-      href={fakeHref}
-      to={href}
-    />
+    <NextUiLink as={TanStackLink} {...properties} href={fakeHref} to={href} />
   );
 };

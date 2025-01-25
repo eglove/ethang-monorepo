@@ -4,10 +4,12 @@ export default defineType({
   name: "blockContent",
   of: [
     {
-      lists: [{
-        title: "Bullet",
-        value: "bullet",
-      }],
+      lists: [
+        {
+          title: "Bullet",
+          value: "bullet",
+        },
+      ],
       marks: {
         annotations: [
           {

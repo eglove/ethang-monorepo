@@ -1,8 +1,9 @@
-/* eslint-disable */
 import sonar from "eslint-plugin-sonarjs";
+import keys from "lodash/keys.js";
+
 import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 
-const ruleNames = Object.keys(getNonDeprecatedRules(sonar.rules));
+const ruleNames = keys(getNonDeprecatedRules(sonar.rules));
 const customRules = [
   { name: "arrow-function-convention", rule: "off" },
   { name: "comment-regex", rule: "off" },
@@ -29,8 +30,8 @@ const customRules = [
 const rules = genRules(ruleNames, customRules, "sonar");
 
 // Turn off duplicate S# rules
-for (const key of Object.keys(rules)) {
-  if (/^sonar\/S\d+/.test(key)) {
+for (const key of keys(rules)) {
+  if (/^sonar\/S\d+/u.test(key)) {
     rules[key] = "off";
   }
 }

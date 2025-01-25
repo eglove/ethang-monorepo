@@ -1,7 +1,4 @@
-import type {
-  ComponentProps,
-  HTMLAttributes,
-} from "react";
+import type { ComponentProps, HTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -40,18 +37,18 @@ const DropdownMenuSubTrigger = ({
   className,
   inset,
   ...properties
-}: Readonly<{
-  inset?: boolean;
-} & ComponentProps<typeof SubTrigger>>) => {
+}: Readonly<
+  {
+    inset?: boolean;
+  } & ComponentProps<typeof SubTrigger>
+>) => {
   return (
     <SubTrigger
-      className={
-        cn(
-          "flex cursor-default gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-neutral-100 data-[state=open]:bg-neutral-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 dark:focus:bg-neutral-800 dark:data-[state=open]:bg-neutral-800",
-          true === inset && "pl-8",
-          className,
-        )
-      }
+      className={cn(
+        "flex cursor-default gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-neutral-100 data-[state=open]:bg-neutral-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 dark:focus:bg-neutral-800 dark:data-[state=open]:bg-neutral-800",
+        true === inset && "pl-8",
+        className,
+      )}
       {...properties}
     >
       {children}
@@ -67,12 +64,10 @@ const DropdownMenuSubContent = ({
 }: Readonly<ComponentProps<typeof SubContent>>) => {
   return (
     <SubContent
-      className={
-        cn(
-          "z-50 min-w-[8rem] overflow-hidden rounded-md border border-neutral-200 bg-white p-1 text-neutral-950 shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50",
-          className,
-        )
-      }
+      className={cn(
+        "z-50 min-w-[8rem] overflow-hidden rounded-md border border-neutral-200 bg-white p-1 text-neutral-950 shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50",
+        className,
+      )}
       {...properties}
     />
   );
@@ -87,13 +82,11 @@ const DropdownMenuContent = ({
   return (
     <Portal>
       <Content
-        className={
-          cn(
-            "z-50 min-w-[8rem] overflow-hidden rounded-md border border-neutral-200 bg-white p-1 text-neutral-950 shadow-md dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50",
-            "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-            className,
-          )
-        }
+        className={cn(
+          "z-50 min-w-[8rem] overflow-hidden rounded-md border border-neutral-200 bg-white p-1 text-neutral-950 shadow-md dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          className,
+        )}
         sideOffset={sideOffset}
         {...properties}
       />
@@ -102,18 +95,22 @@ const DropdownMenuContent = ({
 };
 DropdownMenuContent.displayName = Content.displayName;
 
-const DropdownMenuItem = ({ className, inset, ...properties }: Readonly<{
-  inset?: boolean;
-} & ComponentProps<typeof Item>>) => {
+const DropdownMenuItem = ({
+  className,
+  inset,
+  ...properties
+}: Readonly<
+  {
+    inset?: boolean;
+  } & ComponentProps<typeof Item>
+>) => {
   return (
     <Item
-      className={
-        cn(
-          "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-neutral-100 focus:text-neutral-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 dark:focus:bg-neutral-800 dark:focus:text-neutral-50",
-          true === inset && "pl-8",
-          className,
-        )
-      }
+      className={cn(
+        "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-neutral-100 focus:text-neutral-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 dark:focus:bg-neutral-800 dark:focus:text-neutral-50",
+        true === inset && "pl-8",
+        className,
+      )}
       {...properties}
     />
   );
@@ -128,12 +125,10 @@ const DropdownMenuCheckboxItem = ({
 }: Readonly<ComponentProps<typeof CheckboxItem>>) => {
   return (
     <CheckboxItem
-      className={
-        cn(
-          "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-neutral-100 focus:text-neutral-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-neutral-800 dark:focus:text-neutral-50",
-          className,
-        )
-      }
+      className={cn(
+        "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-neutral-100 focus:text-neutral-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-neutral-800 dark:focus:text-neutral-50",
+        className,
+      )}
       checked={checked ?? false}
       {...properties}
     >
@@ -146,8 +141,7 @@ const DropdownMenuCheckboxItem = ({
     </CheckboxItem>
   );
 };
-DropdownMenuCheckboxItem.displayName =
-    CheckboxItem.displayName;
+DropdownMenuCheckboxItem.displayName = CheckboxItem.displayName;
 
 const DropdownMenuRadioItem = ({
   children,
@@ -156,12 +150,10 @@ const DropdownMenuRadioItem = ({
 }: Readonly<ComponentProps<typeof RadioItem>>) => {
   return (
     <RadioItem
-      className={
-        cn(
-          "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-neutral-100 focus:text-neutral-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-neutral-800 dark:focus:text-neutral-50",
-          className,
-        )
-      }
+      className={cn(
+        "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-neutral-100 focus:text-neutral-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-neutral-800 dark:focus:text-neutral-50",
+        className,
+      )}
       {...properties}
     >
       <span className="absolute left-2 flex size-3.5 items-center justify-center">
@@ -175,18 +167,22 @@ const DropdownMenuRadioItem = ({
 };
 DropdownMenuRadioItem.displayName = RadioItem.displayName;
 
-const DropdownMenuLabel = ({ className, inset, ...properties }: Readonly<{
-  inset?: boolean;
-} & ComponentProps<typeof Label>>) => {
+const DropdownMenuLabel = ({
+  className,
+  inset,
+  ...properties
+}: Readonly<
+  {
+    inset?: boolean;
+  } & ComponentProps<typeof Label>
+>) => {
   return (
     <Label
-      className={
-        cn(
-          "px-2 py-1.5 text-sm font-semibold",
-          true === inset && "pl-8",
-          className,
-        )
-      }
+      className={cn(
+        "px-2 py-1.5 text-sm font-semibold",
+        true === inset && "pl-8",
+        className,
+      )}
       {...properties}
     />
   );
@@ -199,7 +195,10 @@ const DropdownMenuSeparator = ({
 }: Readonly<ComponentProps<typeof Separator>>) => {
   return (
     <Separator
-      className={cn("-mx-1 my-1 h-px bg-neutral-100 dark:bg-neutral-800", className)}
+      className={cn(
+        "-mx-1 my-1 h-px bg-neutral-100 dark:bg-neutral-800",
+        className,
+      )}
       {...properties}
     />
   );

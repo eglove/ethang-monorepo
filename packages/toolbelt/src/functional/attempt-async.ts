@@ -2,8 +2,7 @@ import isError from "lodash/isError.js";
 
 export const attemptAsync = async <
   T extends (...parameters: Parameters<T>) => unknown,
->
-(
+>(
   callback: T,
   ...parameters: Parameters<T>
 ): Promise<Awaited<ReturnType<T>> | Error> => {
@@ -12,8 +11,6 @@ export const attemptAsync = async <
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     return (await callback(...parameters)) as Awaited<ReturnType<T>>;
   } catch (error: unknown) {
-    return isError(error)
-      ? error
-      : new Error(`${callback.name} failed`);
+    return isError(error) ? error : new Error(`${callback.name} failed`);
   }
 };

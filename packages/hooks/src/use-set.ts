@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useSet = <SetType,>(
+export const useSet = <SetType>(
   values?: Readonly<null | SetType[] | undefined>,
 ): Set<SetType> => {
   const [set, setSet] = useState(new Set(values));

@@ -7,7 +7,8 @@ type TypographyPProperties = PropsWithChildren<{
 }>;
 
 export const TypographyP = ({
-  children, className,
+  children,
+  className,
 }: Readonly<TypographyPProperties>) => {
   return (
     <p className={cn("leading-7 [&:not(:first-child)]:mt-6", className)}>

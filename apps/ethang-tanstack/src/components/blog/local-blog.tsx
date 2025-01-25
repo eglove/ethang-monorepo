@@ -19,8 +19,8 @@ export const LocalBlog = ({
   slug,
 }: Readonly<LocalBlogProperties>) => {
   const blogQuery =
-        // @ts-expect-error in beta
-        useQuery(convexQuery(api.blogs.get, { slug }));
+    // @ts-expect-error in beta
+    useQuery(convexQuery(api.blogs.get, { slug }));
 
   useKnuthPlass();
 
@@ -33,13 +33,9 @@ export const LocalBlog = ({
         isLoading={blogQuery.isLoading}
       >
         <article className="max-w-prose">
-          {
-            !isNil(blogQuery.data) && (
-              <TypographyH1>
-                {blogQuery.data.title}
-              </TypographyH1>
-            )
-          }
+          {!isNil(blogQuery.data) && (
+            <TypographyH1>{blogQuery.data.title}</TypographyH1>
+          )}
           {children}
         </article>
       </ContentHandler>

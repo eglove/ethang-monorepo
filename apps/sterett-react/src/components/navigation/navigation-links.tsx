@@ -36,36 +36,29 @@ export const NavigationLinks = () => {
 
   return (
     <>
-      {
-        map(navUrls, (item) => {
-          const isActive =
-              noSlash(globalThis.location.pathname) === noSlash(item.url);
+      {map(navUrls, (item) => {
+        const isActive =
+          noSlash(globalThis.location.pathname) === noSlash(item.url);
 
-          return (
-            <NavbarItem
-              className="text-sky-700"
-              isActive={isActive}
-              key={item.name}
-            >
-              <Link href={item.url}>
-                {item.name}
-              </Link>
-            </NavbarItem>
-          );
-        })
-      }
-      {
-        1 <= imageCount &&
+        return (
+          <NavbarItem
+            className="text-sky-700"
+            isActive={isActive}
+            key={item.name}
+          >
+            <Link href={item.url}>{item.name}</Link>
+          </NavbarItem>
+        );
+      })}
+      {1 <= imageCount && (
         <NavbarItem
           className="text-sky-700"
           isActive={"/gallery" === globalThis.location.pathname}
           key="gallery"
         >
-          <Link href="/gallery">
-            Pictures
-          </Link>
+          <Link href="/gallery">Pictures</Link>
         </NavbarItem>
-      }
+      )}
     </>
   );
 };

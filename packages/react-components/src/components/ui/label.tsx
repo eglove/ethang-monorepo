@@ -1,8 +1,6 @@
 "use client";
 
-import type {
-  ComponentProps,
-} from "react";
+import type { ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
 import { Root } from "@radix-ui/react-label";
@@ -15,14 +13,10 @@ const labelVariants = cva(
 const Label = ({
   className,
   ...properties
-}: Readonly<ComponentProps<typeof Root> &
-VariantProps<typeof labelVariants>>) => {
-  return (
-    <Root
-      className={cn(labelVariants(), className)}
-      {...properties}
-    />
-  );
+}: Readonly<
+  ComponentProps<typeof Root> & VariantProps<typeof labelVariants>
+>) => {
+  return <Root className={cn(labelVariants(), className)} {...properties} />;
 };
 Label.displayName = Root.displayName;
 

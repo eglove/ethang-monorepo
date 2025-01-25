@@ -32,7 +32,7 @@ const minifyDistribution = async (directory = "./dist") => {
     } else {
       // eslint-disable-next-line no-await-in-loop
       await attemptAsync(async () => {
-        if ((/\.(?<files>js|css|html)$/u).test(distributionFile)) {
+        if (/\.(?<files>js|css|html)$/u.test(distributionFile)) {
           const original = readFileSync(filePath, "utf8");
           const minified = await minify(original, {
             collapseBooleanAttributes: true,

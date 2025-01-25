@@ -7,10 +7,16 @@ type TypographyH4Properties = PropsWithChildren<{
 }>;
 
 export const TypographyH4 = ({
-  children, className,
+  children,
+  className,
 }: Readonly<TypographyH4Properties>) => {
   return (
-    <h1 className={cn("scroll-m-20 text-xl font-semibold tracking-tight", className)}>
+    <h1
+      className={cn(
+        "scroll-m-20 text-xl font-semibold tracking-tight",
+        className,
+      )}
+    >
       {children}
     </h1>
   );

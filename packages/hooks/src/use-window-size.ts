@@ -13,12 +13,8 @@ export const useWindowSize = (
     height: number;
     width: number;
   }>({
-    height: isBrowser
-      ? globalThis.innerHeight
-      : initialHeight,
-    width: isBrowser
-      ? globalThis.innerWidth
-      : initialWidth,
+    height: isBrowser ? globalThis.innerHeight : initialHeight,
+    width: isBrowser ? globalThis.innerWidth : initialWidth,
   });
 
   // @ts-expect-error doesn't return

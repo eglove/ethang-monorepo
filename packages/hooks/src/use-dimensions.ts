@@ -1,8 +1,4 @@
-import {
-  useCallback,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 
 import { animationInterval } from "./use-animation-interval.ts";
 
@@ -36,10 +32,7 @@ export const useDimensions = ({
     setElement(node);
   }, []);
 
-  const handleSetDimensions = (
-    targetElement: Element,
-    signal: AbortSignal,
-  ) => {
+  const handleSetDimensions = (targetElement: Element, signal: AbortSignal) => {
     const boundingRect = targetElement.getBoundingClientRect();
 
     animationInterval(delay, signal, () => {

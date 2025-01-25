@@ -16,14 +16,17 @@ export const getCourses = query({
       context.db.query("course").collect(),
     ]);
 
-    return orderBy(map(sections, (section) => {
-      return {
-        ...section,
-        courses: filter(courses, (course) => {
-          return includes(section.courses, course._id);
-        }),
-      };
-    }), ["order"]);
+    return orderBy(
+      map(sections, (section) => {
+        return {
+          ...section,
+          courses: filter(courses, (course) => {
+            return includes(section.courses, course._id);
+          }),
+        };
+      }),
+      ["order"],
+    );
   },
 });
 
@@ -39,9 +42,11 @@ export const createCourse = mutation({
       return new ConvexError("Unauthorized");
     }
 
-    const course = await context.db.query("course").withIndex("by_name_url", (q) => {
-      return q.eq("name", _arguments.name).eq("url", _arguments.url);
-    })
+    const course = await context.db
+      .query("course")
+      .withIndex("by_name_url", (q) => {
+        return q.eq("name", _arguments.name).eq("url", _arguments.url);
+      })
       .unique();
 
     if (!isNil(course)) {

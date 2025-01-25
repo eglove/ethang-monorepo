@@ -20,21 +20,31 @@ const getAllJobs = async (context: QueryContext) => {
     return {
       ...job,
       methodologiesUsed: map(job.methodologiesUsed, (methId) => {
-        return find(methodologies, (item) => {
-          return item._id === methId;
-        })?.name ?? "";
+        return (
+          find(methodologies, (item) => {
+            return item._id === methId;
+          })?.name ?? ""
+        );
       }),
       technologiesUsed: map(job.technologiesUsed, (techId) => {
-        return find(technologies, (item) => {
-          return item._id === techId;
-        })?.name ?? "";
+        return (
+          find(technologies, (item) => {
+            return item._id === techId;
+          })?.name ?? ""
+        );
       }),
     };
   });
 
-  return orderBy(withItems, [(job) => {
-    return new Date(job.startDate);
-  }], ["desc"]);
+  return orderBy(
+    withItems,
+    [
+      (job) => {
+        return new Date(job.startDate);
+      },
+    ],
+    ["desc"],
+  );
 };
 
 export const getAll = query({
@@ -55,9 +65,9 @@ export const getExperience = query({
 
     forEach(jobs, (job) => {
       const startDate = DateTime.fromJSDate(new Date(job.startDate));
-      const endDate = DateTime.fromJSDate(isNil(job.endDate)
-        ? new Date()
-        : new Date(job.endDate));
+      const endDate = DateTime.fromJSDate(
+        isNil(job.endDate) ? new Date() : new Date(job.endDate),
+      );
       const diff = endDate.diff(startDate, "years").years;
       years.push(diff);
 
@@ -90,4 +100,3 @@ export const getExperience = query({
     };
   },
 });
-

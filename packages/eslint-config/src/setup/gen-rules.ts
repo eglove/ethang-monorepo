@@ -1,4 +1,7 @@
-import { Rule } from "eslint";
+import type { Rule } from "eslint";
+
+import includes from "lodash/includes.js";
+import isNil from "lodash/isNil.js";
 
 export type EsLintRules = Record<string, Rule.RuleModule>;
 
@@ -6,7 +9,7 @@ export const getNonDeprecatedRules = (rules: EsLintRules) => {
   const filtered: EsLintRules = {};
 
   for (const [key, value] of Object.entries(rules)) {
-    if (value.meta?.deprecated !== true) {
+    if (true !== value.meta?.deprecated) {
       filtered[key] = value;
     }
   }
@@ -28,9 +31,11 @@ const getRuleStrings = (
 
   for (const rule of ruleNames) {
     if (prefix === undefined) {
-      rules[rule] = defaultOverride ?? "error";
+      rules[rule] = isNil(defaultOverride) ? "error" : defaultOverride;
     } else {
-      rules[`${prefix}/${rule}`] = defaultOverride ?? "error";
+      rules[`${prefix}/${rule}`] = isNil(defaultOverride)
+        ? "error"
+        : defaultOverride;
     }
   }
 
@@ -39,15 +44,16 @@ const getRuleStrings = (
 
 export const genRules = (
   ruleNames: string[],
-  customRules: CustomRules,
+  customRules?: CustomRules,
   prefix?: string,
   defaultOverride = "error",
 ) => {
   const rules = getRuleStrings(ruleNames, defaultOverride, prefix);
 
-  if (customRules) {
+  if (!isNil(customRules)) {
     for (const rule of customRules) {
-      if (ruleNames.includes(rule.name)) {
+      if (includes(ruleNames, rule.name)) {
+        // eslint-disable-next-line sonar/nested-control-flow
         if (prefix === undefined) {
           rules[rule.name] = rule.rule;
         } else {

@@ -10,7 +10,8 @@ export default defineSchema({
     tags: v.array(v.string()),
     title: v.string(),
     updatedAt: v.string(),
-  }).index("by_publishedAt", ["publishedAt"])
+  })
+    .index("by_publishedAt", ["publishedAt"])
     .index("by_updatedAt", ["updatedAt"])
     .index("by_slug", ["slug"]),
   certification: defineTable({
@@ -54,7 +55,8 @@ export default defineSchema({
     startDate: v.string(),
     technologiesUsed: v.optional(v.array(v.id("technology"))),
     title: v.string(),
-  }).index("by_title", ["title"])
+  })
+    .index("by_title", ["title"])
     .index("by_company", ["company"]),
   learningProfile: defineTable({
     name: v.string(),
@@ -77,6 +79,7 @@ export default defineSchema({
     imageUrl: v.string(),
     role: v.optional(v.string()),
     username: v.string(),
-  }).index("by_email", ["email"])
+  })
+    .index("by_email", ["email"])
     .index("by_clerk_id", ["clerkId"]),
 });

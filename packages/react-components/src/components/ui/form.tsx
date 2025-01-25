@@ -6,7 +6,9 @@ import isNil from "lodash/isNil";
 import {
   type ComponentProps,
   createContext,
-  type HTMLAttributes, useContext, useId,
+  type HTMLAttributes,
+  useContext,
+  useId,
 } from "react";
 import {
   Controller,
@@ -40,7 +42,6 @@ const FormField = <
   ...properties
 }: Readonly<ControllerProps<TFieldValues, TName>>) => {
   return (
-
     <FormFieldContext value={{ name: properties.name }}>
       <Controller {...properties} />
     </FormFieldContext>
@@ -86,12 +87,8 @@ const FormItem = ({
   const id = useId();
 
   return (
-
     <FormItemContext value={{ id }}>
-      <div
-        className={cn("space-y-2", className)}
-        {...properties}
-      />
+      <div className={cn("space-y-2", className)} {...properties} />
     </FormItemContext>
   );
 };
@@ -116,19 +113,13 @@ FormLabel.displayName = "FormLabel";
 const FormControl = ({
   ...properties
 }: Readonly<ComponentProps<typeof Slot>>) => {
-  const {
-    error,
-    formDescriptionId,
-    formItemId,
-    formMessageId,
-  } = useFormField();
+  const { error, formDescriptionId, formItemId, formMessageId } =
+    useFormField();
 
   return (
     <Slot
       aria-describedby={
-        error
-          ? `${formDescriptionId} ${formMessageId}`
-          : formDescriptionId
+        error ? `${formDescriptionId} ${formMessageId}` : formDescriptionId
       }
       aria-invalid={Boolean(error)}
       id={formItemId}
@@ -146,7 +137,10 @@ const FormDescription = ({
 
   return (
     <p
-      className={cn("text-[0.8rem] text-neutral-500 dark:text-neutral-400", className)}
+      className={cn(
+        "text-[0.8rem] text-neutral-500 dark:text-neutral-400",
+        className,
+      )}
       id={formDescriptionId}
       {...properties}
     />
@@ -160,9 +154,7 @@ const FormMessage = ({
   ...properties
 }: Readonly<HTMLAttributes<HTMLParagraphElement>>) => {
   const { error, formMessageId } = useFormField();
-  const body = error
-    ? String(error.message)
-    : children;
+  const body = error ? String(error.message) : children;
 
   if (isNil(body)) {
     return null;
@@ -170,7 +162,10 @@ const FormMessage = ({
 
   return (
     <p
-      className={cn("text-[0.8rem] font-medium text-red-600 dark:text-red-500", className)}
+      className={cn(
+        "text-[0.8rem] font-medium text-red-600 dark:text-red-500",
+        className,
+      )}
       id={formMessageId}
       {...properties}
     >

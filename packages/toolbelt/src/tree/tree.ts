@@ -3,7 +3,7 @@ import isNil from "lodash/isNil.js";
 
 import { TreeNode } from "./tree-node.js";
 
-export class Tree<T,> {
+export class Tree<T> {
   public root: TreeNode<T>;
 
   public constructor(values: T[]) {

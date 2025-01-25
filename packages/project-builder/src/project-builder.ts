@@ -12,16 +12,13 @@ type Options = {
   outDir: string;
 };
 
-export const projectBuilder = async (
-  basePath: string,
-  options?: Options,
-) => {
+export const projectBuilder = async (basePath: string, options?: Options) => {
   chdir(basePath);
   const config = isNil(options)
-    ? {
-      entry: ["src"],
-      outDir: "dist",
-    } satisfies Options
+    ? ({
+        entry: ["src"],
+        outDir: "dist",
+      } satisfies Options)
     : options;
 
   tsc({

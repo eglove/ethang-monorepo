@@ -3,7 +3,11 @@ import type { UserJSON } from "@clerk/backend";
 import { v, type Validator } from "convex/values";
 import isNil from "lodash/isNil";
 
-import { internalMutation, internalQuery, type QueryCtx as QueryContext } from "./_generated/server";
+import {
+  internalMutation,
+  internalQuery,
+  type QueryCtx as QueryContext,
+} from "./_generated/server";
 
 export const getCurrentUser = async (context: QueryContext) => {
   const identity = await context.auth.getUserIdentity();

@@ -6,7 +6,11 @@ type NestedStringArray = NestedStringArray[] | string;
 export class MarkdownGenerator {
   private markdown = "";
 
-  public alert(type: "CAUTION" | "IMPORTANT" | "NOTE" | "TIP" | "WARNING", text: string, lineBreaksAfter = 0) {
+  public alert(
+    type: "CAUTION" | "IMPORTANT" | "NOTE" | "TIP" | "WARNING",
+    text: string,
+    lineBreaksAfter = 0,
+  ) {
     this.markdown += `> [!${type}]\n`;
     this.markdown += `> ${text}`;
     this.newLine(lineBreaksAfter);
@@ -108,14 +112,15 @@ ${text}
     this.newLine(lineBreaksAfter);
   }
 
-  public taskList(texts: {
-    isComplete: boolean;
-    label: string;
-  }[], lineBreaksAfter = 0) {
+  public taskList(
+    texts: {
+      isComplete: boolean;
+      label: string;
+    }[],
+    lineBreaksAfter = 0,
+  ) {
     for (const text of texts) {
-      this.markdown += `[${text.isComplete
-        ? "X"
-        : " "}] ${text.label}`;
+      this.markdown += `[${text.isComplete ? "X" : " "}] ${text.label}`;
     }
     this.newLine(lineBreaksAfter);
   }

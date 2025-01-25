@@ -7,11 +7,10 @@ type TypographyMutedProperties = PropsWithChildren<{
 }>;
 
 export const TypographyMuted = ({
-  children, className,
+  children,
+  className,
 }: Readonly<TypographyMutedProperties>) => {
   return (
-    <p className={cn("text-muted-foreground text-sm", className)}>
-      {children}
-    </p>
+    <p className={cn("text-muted-foreground text-sm", className)}>{children}</p>
   );
 };

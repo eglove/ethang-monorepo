@@ -12,10 +12,10 @@ import { createUrlPath, type ParseUrlParameters } from "./create-url-path.ts";
 export type PathVariablesRecord = Record<string, number | string>;
 export type SearchParametersRecord = Record<
   string,
-    number | number[] | string | string[] | undefined
+  number | number[] | string | string[] | undefined
 >;
 
-export type UrlConfig<Url extends string, > = {
+export type UrlConfig<Url extends string> = {
   pathVariables?: ParseUrlParameters<Url>;
   pathVariablesSchema?: ZodSchema;
   searchParams?: SearchParametersRecord;
@@ -23,7 +23,7 @@ export type UrlConfig<Url extends string, > = {
   urlBase?: string | URL;
 };
 
-const hasValidationError = <Url extends string, >(
+const hasValidationError = <Url extends string>(
   parameterKey: keyof UrlConfig<Url>,
   schemaKey: keyof UrlConfig<Url>,
   config?: UrlConfig<Url>,
@@ -31,7 +31,7 @@ const hasValidationError = <Url extends string, >(
   return !isNil(get(config, [parameterKey])) && isNil(get(config, [schemaKey]));
 };
 
-const resolvePath = <Url extends string, >(
+const resolvePath = <Url extends string>(
   urlString: Url,
   config?: UrlConfig<Url>,
 ) => {
@@ -53,7 +53,7 @@ const resolvePath = <Url extends string, >(
   return urlString;
 };
 
-export const createUrl = <Url extends string, >(
+export const createUrl = <Url extends string>(
   urlString: Url,
   config?: UrlConfig<Url>,
 ): Error | URL | ZodError => {
@@ -68,8 +68,7 @@ export const createUrl = <Url extends string, >(
   }
 
   const url = attempt(() => {
-    return new URL(resolvedUrlString,
-      config?.urlBase);
+    return new URL(resolvedUrlString, config?.urlBase);
   });
 
   if (isError(url)) {

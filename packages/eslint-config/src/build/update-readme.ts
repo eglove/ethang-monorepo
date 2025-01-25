@@ -1,42 +1,55 @@
 import { MarkdownGenerator } from "@ethang/markdown-generator/src/markdown-generator.ts";
+import filter from "lodash/filter.js";
+import flow from "lodash/flow.js";
+import isArray from "lodash/isArray.js";
+import map from "lodash/map.js";
+import values from "lodash/values.js";
 import { writeFileSync } from "node:fs";
-import { join } from "node:path";
+import path from "node:path";
 
 import type { genRules } from "../setup/gen-rules.ts";
 
 import { getList } from "./list-utils.ts";
 
+const getRuleCount = (rules: ReturnType<typeof genRules>) => {
+  let count = 0;
+  for (const value of values(rules)) {
+    if ("error" === value || (isArray(value) && "error" === value[0])) {
+      count += 1;
+    }
+  }
+
+  return count;
+};
+
+const getImports = flow(
+  (rules: ReturnType<typeof getList>) => {
+    return filter(rules, (rule) => {
+      return 0 < getRuleCount(rule.list);
+    });
+  },
+  (filteredRules) => {
+    return map(filteredRules, (rule) => {
+      return `${getRuleCount(rule.list)} rules from [${rule.name}](${rule.url})`;
+    });
+  },
+);
+
 export const updateReadme = () => {
   const md = new MarkdownGenerator();
   md.header(1, "Relentless. Unapologetic.", 2);
   md.link("View Config", "https://eslint-config-ethang.pages.dev/rules", 2);
-  md.alert(
-    "CAUTION",
-    "Do not use this with Prettier! Styling rules are included.",
-    2,
+  md.alert("CAUTION", "Prettier is already included for styling!", 2);
+
+  const coreRules = map(
+    [...getList("core"), ...getList("json"), ...getList("markdown")],
+    (rules) => {
+      return {
+        ...rules,
+        count: 0,
+      };
+    },
   );
-
-  const getRuleCount = (rules: ReturnType<typeof genRules>) => {
-    let count = 0;
-    for (const value of Object.values(rules)) {
-      if ("error" === value || (Array.isArray(value) && "error" === value[0])) {
-        count += 1;
-      }
-    }
-
-    return count;
-  };
-
-  const coreRules = [
-    ...getList("core"),
-    ...getList("json"),
-    ...getList("markdown"),
-  ].map((rules) => {
-    return {
-      ...rules,
-      count: 0,
-    };
-  });
 
   let total = 0;
   for (const list of coreRules) {
@@ -48,17 +61,15 @@ export const updateReadme = () => {
     return b.count - a.count;
   });
 
-  const ruleDocs = [`${total} errored rules.`];
+  const ruleDocumentation = [`${total} errored rules.`];
   for (const list of coreRules) {
-    if (1 > list.count) {
-      continue;
+    if (0 < list.count) {
+      ruleDocumentation.push(
+        `${list.count} ${
+          1 >= list.count ? "rule" : "rules"
+        } from [${list.name}](${list.url})`,
+      );
     }
-
-    ruleDocs.push(
-      `${list.count} ${
-        1 >= list.count ? "rule" : "rules"
-      } from [${list.name}](${list.url})`,
-    );
   }
 
   const astroRules = getList("astro");
@@ -87,60 +98,30 @@ export const updateReadme = () => {
     angularCount += getRuleCount(angularRule.list);
   }
 
-  md.unorderedList(ruleDocs);
+  md.unorderedList(ruleDocumentation);
   md.newLine();
   md.header(1, "Add Even More!", 2);
   md.unorderedList([
     `${angularCount} rules for **Angular**`,
     [
       '`import angularConfig from "@ethang/eslint-config/config.angular.js";`',
-      ...angularRules
-        .filter((rule) => {
-          return 0 < getRuleCount(rule.list);
-        })
-        .map((rule) => {
-          return `${getRuleCount(rule.list)} rules from [${rule.name}](${rule.url})`;
-        }),
-      ...angularTemplateRules
-        .filter((rule) => {
-          return 0 < getRuleCount(rule.list);
-        })
-        .map((rule) => {
-          return `${getRuleCount(rule.list)} rules from [${rule.name}](${rule.url})`;
-        }),
+      getImports(angularRules),
+      getImports(angularTemplateRules),
     ],
     `${astroCount} rules for **Astro**`,
     [
       '`import astroConfig from "@ethang/eslint-config/config.astro.js";`',
-      ...astroRules
-        .filter((rule) => {
-          return 0 < getRuleCount(rule.list);
-        })
-        .map((rule) => {
-          return `${getRuleCount(rule.list)} rules from [${rule.name}](${rule.url})`;
-        }),
+      getImports(astroRules),
     ],
     `${reactCount} rules for **React**`,
     [
       '`import reactConfig from "@ethang/eslint-config/config.react.js";`',
-      ...reactRules
-        .filter((rule) => {
-          return 0 < getRuleCount(rule.list);
-        })
-        .map((rule) => {
-          return `${getRuleCount(rule.list)} rules from [${rule.name}](${rule.url})`;
-        }),
+      getImports(reactRules),
     ],
     `${solidCount} rules for **Solid**`,
     [
       '`import solidConfig from "@ethang/eslint-config/config.solid.js";`',
-      ...solidRules
-        .filter((rule) => {
-          return 0 < getRuleCount(rule.list);
-        })
-        .map((rule) => {
-          return `${getRuleCount(rule.list)} rules from [${rule.name}](${rule.url})`;
-        }),
+      getImports(solidRules),
     ],
   ]);
   md.newLine();
@@ -199,7 +180,11 @@ export default tseslint.config(
     "json",
   );
 
-  writeFileSync(join(import.meta.dirname, "../README.md"), md.render(), "utf8");
+  writeFileSync(
+    path.join(import.meta.dirname, "../README.md"),
+    md.render(),
+    "utf8",
+  );
 };
 
 updateReadme();

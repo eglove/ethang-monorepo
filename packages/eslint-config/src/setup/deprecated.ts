@@ -1,12 +1,15 @@
-import { type CustomRules, genRules } from "./gen-rules.ts";
+// eslint-disable-next-line sonar/deprecation
 import { builtinRules } from "eslint/use-at-your-own-risk";
 
-let ruleNames: string[] = [];
-[...builtinRules.entries()].forEach(([key, rule]) => {
-  if (rule.meta?.deprecated === true) {
+import { type CustomRules, genRules } from "./gen-rules.ts";
+
+const ruleNames: string[] = [];
+// eslint-disable-next-line sonar/deprecation,@typescript-eslint/no-deprecated
+for (const [key, rule] of builtinRules.entries()) {
+  if (true === rule.meta?.deprecated) {
     ruleNames.push(key);
   }
-});
+}
 
 const customRules: CustomRules = [];
 

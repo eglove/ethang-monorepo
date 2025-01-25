@@ -17,17 +17,15 @@ const RouteComponent = () => {
 
   return (
     <MainLayout>
-      <TypographyH1>
-        Projects
-      </TypographyH1>
+      <TypographyH1>Projects</TypographyH1>
       <ContentHandler
         error={query.error}
         isError={query.isError}
         isLoading={query.isPending}
       >
         <DataTable
-          columns={
-            [{
+          columns={[
+            {
               accessorKey: "name",
 
               cell: (info) => {
@@ -38,20 +36,16 @@ const RouteComponent = () => {
                 );
               },
               header: "Name",
-            }, {
-
+            },
+            {
               cell: (info) => {
                 return <ProjectDetails project={info.row.original} />;
               },
               header: "Details",
               id: "details",
-            }]
-          }
-          data={
-            isArray(query.data)
-              ? query.data
-              : []
-          }
+            },
+          ]}
+          data={isArray(query.data) ? query.data : []}
         />
       </ContentHandler>
     </MainLayout>

@@ -15,18 +15,12 @@ import { persister, queryClient } from "../clients/query";
 export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   return (
     <ClerkProvider publishableKey={environment.VITE_CLERK_PUBLISHABLE_KEY}>
-      <ConvexProviderWithClerk
-        client={convex}
-        useAuth={useAuth}
-      >
+      <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
         <PersistQueryClientProvider
           client={queryClient}
           persistOptions={{ persister }}
         >
-          <ThemeProvider
-            defaultTheme="dark"
-            storageKey="ui-theme"
-          >
+          <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
             {children}
             <ReactQueryDevtools />
             <TanStackRouterDevtools position="bottom-left" />

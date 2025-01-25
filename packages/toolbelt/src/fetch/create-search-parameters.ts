@@ -6,10 +6,10 @@ import keys from "lodash/keys.js";
 
 type SearchParametersRecord = Record<
   string,
-    number | number[] | string | string[] | undefined
+  number | number[] | string | string[] | undefined
 >;
 
-export const createSearchParameters = <Z extends ZodSchema,>(
+export const createSearchParameters = <Z extends ZodSchema>(
   searchParameters: SearchParametersRecord,
   searchParametersSchema: ZodSchema,
 ): URLSearchParams | ZodError<Z> => {

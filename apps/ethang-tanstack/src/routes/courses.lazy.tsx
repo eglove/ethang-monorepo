@@ -5,7 +5,12 @@ import { TypographyH3 } from "@ethang/react-components/src/components/typography
 import { TypographyLink } from "@ethang/react-components/src/components/typography/typography-link.tsx";
 import { TypographyList } from "@ethang/react-components/src/components/typography/typography-list.tsx";
 import { TypographyP } from "@ethang/react-components/src/components/typography/typography-p.tsx";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@ethang/react-components/src/components/ui/accordion.tsx";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@ethang/react-components/src/components/ui/accordion.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import get from "lodash/get.js";
@@ -22,19 +27,15 @@ const Courses = () => {
   return (
     <MainLayout classNames={{ main: "max-w-prose" }}>
       <ContentHandler
-        isEmpty={
-          () => {
-            return isEmpty(query.data);
-          }
-        }
+        isEmpty={() => {
+          return isEmpty(query.data);
+        }}
         emptyPlaceholder="Nothing found"
         error={query.error}
         isError={query.isError}
         isLoading={query.isPending}
       >
-        <TypographyH1 className="my-4">
-          Recommended Courses
-        </TypographyH1>
+        <TypographyH1 className="my-4">Recommended Courses</TypographyH1>
         <TypographyP>
           This list is meant as a way to provide a straightforward curriculum of
           what you need to learn for development. It's updated constantly, but
@@ -49,15 +50,10 @@ const Courses = () => {
           for Academind's courses. Once you're through those, cancel it, move on
           to the next platform, and so on.
         </TypographyP>
-        <Accordion
-          collapsible
-          type="single"
-        >
+        <Accordion collapsible type="single">
           <AccordionItem value={String(get(query, ["data", 0, "_id"], "0"))}>
             <AccordionTrigger>
-              <TypographyH3>
-                {get(query, ["data", 0, "title"])}
-              </TypographyH3>
+              <TypographyH3>{get(query, ["data", 0, "title"])}</TypographyH3>
             </AccordionTrigger>
             <AccordionContent>
               <TypographyP>
@@ -77,27 +73,20 @@ const Courses = () => {
                 highly recommend taking these:
               </TypographyP>
               <TypographyList
-                items={
-                  map(get(query, ["data", 0, "courses"], []), (course) => {
-                    return (
-                      <TypographyLink
-                        href={course.url}
-                        key={course.url}
-                      >
-                        {course.name}
-                      </TypographyLink>
-                    );
-                  })
-                }
+                items={map(get(query, ["data", 0, "courses"], []), (course) => {
+                  return (
+                    <TypographyLink href={course.url} key={course.url}>
+                      {course.name}
+                    </TypographyLink>
+                  );
+                })}
                 className="list-decimal"
               />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value={String(get(query, ["data", 1, "_id"], "1"))}>
             <AccordionTrigger>
-              <TypographyH3>
-                {get(query, ["data", 1, "title"])}
-              </TypographyH3>
+              <TypographyH3>{get(query, ["data", 1, "title"])}</TypographyH3>
             </AccordionTrigger>
             <AccordionContent>
               <TypographyP>
@@ -108,7 +97,7 @@ const Courses = () => {
               <TypographyP>
                 Academind has its own paid subscription, but most, if not all,
                 the courses are also available on Udemy. I recommend going
-                through their learning paths, but take as many  courses as you
+                through their learning paths, but take as many courses as you
                 like:
               </TypographyP>
               <TypographyP>
@@ -117,27 +106,20 @@ const Courses = () => {
                 </TypographyLink>
               </TypographyP>
               <TypographyList
-                items={
-                  map(get(query, ["data", 1, "courses"], []), (course) => {
-                    return (
-                      <TypographyLink
-                        href={course.url}
-                        key={course.url}
-                      >
-                        {course.name}
-                      </TypographyLink>
-                    );
-                  })
-                }
+                items={map(get(query, ["data", 1, "courses"], []), (course) => {
+                  return (
+                    <TypographyLink href={course.url} key={course.url}>
+                      {course.name}
+                    </TypographyLink>
+                  );
+                })}
                 className="list-decimal"
               />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value={String(get(query, ["data", 2, "_id"], "2"))}>
             <AccordionTrigger>
-              <TypographyH3>
-                {get(query, ["data", 2, "title"])}
-              </TypographyH3>
+              <TypographyH3>{get(query, ["data", 2, "title"])}</TypographyH3>
             </AccordionTrigger>
             <AccordionContent>
               <TypographyP>
@@ -145,10 +127,10 @@ const Courses = () => {
                 style workshops on just about everything.
               </TypographyP>
               <TypographyP>
-                I recommend simply just following the learning paths, even
-                the beginner and professional paths that will feel below your
-                skill level at this point. There is still a lot of good to
-                pick up. However, I would avoid the framework courses
+                I recommend simply just following the learning paths, even the
+                beginner and professional paths that will feel below your skill
+                level at this point. There is still a lot of good to pick up.
+                However, I would avoid the framework courses
                 (React/Angular/Vue). Frontend Masters and its community is
                 notably anti-framework. This isn't the place you want to learn
                 about industry tooling. But their deep dives into vanilla tech
@@ -160,27 +142,20 @@ const Courses = () => {
                 </TypographyLink>
               </TypographyP>
               <TypographyList
-                items={
-                  map(get(query, ["data", 2, "courses"], []), (course) => {
-                    return (
-                      <TypographyLink
-                        href={course.url}
-                        key={course.url}
-                      >
-                        {course.name}
-                      </TypographyLink>
-                    );
-                  })
-                }
+                items={map(get(query, ["data", 2, "courses"], []), (course) => {
+                  return (
+                    <TypographyLink href={course.url} key={course.url}>
+                      {course.name}
+                    </TypographyLink>
+                  );
+                })}
                 className="list-decimal"
               />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value={String(get(query, ["data", 3, "_id"], "5"))}>
             <AccordionTrigger>
-              <TypographyH3>
-                {get(query, ["data", 3, "title"])}
-              </TypographyH3>
+              <TypographyH3>{get(query, ["data", 3, "title"])}</TypographyH3>
             </AccordionTrigger>
             <AccordionContent>
               <TypographyP>
@@ -195,27 +170,20 @@ const Courses = () => {
                 </TypographyLink>
               </TypographyP>
               <TypographyList
-                items={
-                  map(get(query, ["data", 3, "courses"], []), (course) => {
-                    return (
-                      <TypographyLink
-                        href={course.url}
-                        key={course.url}
-                      >
-                        {course.name}
-                      </TypographyLink>
-                    );
-                  })
-                }
+                items={map(get(query, ["data", 3, "courses"], []), (course) => {
+                  return (
+                    <TypographyLink href={course.url} key={course.url}>
+                      {course.name}
+                    </TypographyLink>
+                  );
+                })}
                 className="list-decimal"
               />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value={String(get(query, ["data", 4, "_id"], "3"))}>
             <AccordionTrigger>
-              <TypographyH3>
-                {get(query, ["data", 4, "title"])}
-              </TypographyH3>
+              <TypographyH3>{get(query, ["data", 4, "title"])}</TypographyH3>
             </AccordionTrigger>
             <AccordionContent>
               <TypographyP>
@@ -230,26 +198,20 @@ const Courses = () => {
                 The following courses are entirely optional but recommended due
                 to a quality unmatched. But the pricing may be too much.
               </TypographyP>
-              <TypographyList items={
-                map(get(query, ["data", 4, "courses"], []), (course) => {
+              <TypographyList
+                items={map(get(query, ["data", 4, "courses"], []), (course) => {
                   return (
-                    <TypographyLink
-                      href={course.url}
-                      key={course.url}
-                    >
+                    <TypographyLink href={course.url} key={course.url}>
                       {course.name}
                     </TypographyLink>
                   );
-                })
-              }
+                })}
               />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value={String(get(query, ["data", 5, "_id"], "4"))}>
             <AccordionTrigger>
-              <TypographyH3>
-                {get(query, ["data", 5, "title"])}
-              </TypographyH3>
+              <TypographyH3>{get(query, ["data", 5, "title"])}</TypographyH3>
             </AccordionTrigger>
             <AccordionContent>
               <TypographyP>
@@ -257,18 +219,14 @@ const Courses = () => {
                 books in the field. Here are my recommended publishers and
                 authors:
               </TypographyP>
-              <TypographyList items={
-                map(get(query, ["data", 5, "courses"], []), (course) => {
+              <TypographyList
+                items={map(get(query, ["data", 5, "courses"], []), (course) => {
                   return (
-                    <TypographyLink
-                      href={course.url}
-                      key={course.url}
-                    >
+                    <TypographyLink href={course.url} key={course.url}>
                       {course.name}
                     </TypographyLink>
                   );
-                })
-              }
+                })}
               />
             </AccordionContent>
           </AccordionItem>

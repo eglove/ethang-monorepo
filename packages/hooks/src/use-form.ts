@@ -5,14 +5,21 @@ import isString from "lodash/isString.js";
 import keys from "lodash/keys.js";
 import map from "lodash/map.js";
 import replace from "lodash/replace.js";
-import { type ChangeEvent, type Dispatch, type FormEvent, type SetStateAction, useCallback, useState } from "react";
+import {
+  type ChangeEvent,
+  type Dispatch,
+  type FormEvent,
+  type SetStateAction,
+  useCallback,
+  useState,
+} from "react";
 import { type z, ZodError } from "zod";
 
-export type FieldErrors<StateType,> =
+export type FieldErrors<StateType> =
   | Record<keyof StateType, null | string[] | undefined>
   | undefined;
 
-export type UseFormProperties<StateType,> = {
+export type UseFormProperties<StateType> = {
   onChange?: (event: ChangeEvent) => unknown;
   onError?: (error: unknown) => unknown;
   onFieldError?: (error: FieldErrors<StateType>) => unknown;
@@ -20,7 +27,7 @@ export type UseFormProperties<StateType,> = {
   zodValidator?: z.ZodTypeAny;
 };
 
-export type UseFormReturn<StateType,> = {
+export type UseFormReturn<StateType> = {
   clearFieldErrors: () => void;
   clearForm: () => void;
   fieldErrors: FieldErrors<StateType>;
@@ -36,7 +43,7 @@ export type UseFormReturn<StateType,> = {
   validate: () => boolean;
 };
 
-const setAll = <ObjectType extends Record<string, unknown>,>(
+const setAll = <ObjectType extends Record<string, unknown>>(
   object: ObjectType,
   value?: unknown,
 ): ObjectType => {
@@ -48,7 +55,7 @@ const setAll = <ObjectType extends Record<string, unknown>,>(
   ) as unknown as ObjectType;
 };
 
-export const useForm = <StateType extends Record<string, unknown>,>(
+export const useForm = <StateType extends Record<string, unknown>>(
   initialState: StateType,
   properties?: UseFormProperties<StateType>,
 ): UseFormReturn<StateType> => {
@@ -56,9 +63,7 @@ export const useForm = <StateType extends Record<string, unknown>,>(
     const defaultState: Record<string, unknown> = {};
     for (const key of keys(initialState)) {
       defaultState[key] =
-        initialState[key] === undefined
-          ? ""
-          : initialState[key];
+        initialState[key] === undefined ? "" : initialState[key];
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
@@ -82,7 +87,6 @@ export const useForm = <StateType extends Record<string, unknown>,>(
   }, [initialState]);
 
   const handleChange = useCallback(
-
     (event: ChangeEvent): void => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const eventTarget = event.target as unknown as {
@@ -127,8 +131,8 @@ export const useForm = <StateType extends Record<string, unknown>,>(
 
       if (!result.success && result.error instanceof ZodError) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        const errors = (result
-          .error.formErrors.fieldErrors) as typeof fieldErrors;
+        const errors = result.error.formErrors
+          .fieldErrors as typeof fieldErrors;
         setFieldErrors(errors);
         properties.onFieldError?.(errors);
         return false;
@@ -139,7 +143,6 @@ export const useForm = <StateType extends Record<string, unknown>,>(
   }, [formState, properties]);
 
   const handleSubmit = useCallback(
-
     (event: FormEvent): void => {
       event.preventDefault();
 

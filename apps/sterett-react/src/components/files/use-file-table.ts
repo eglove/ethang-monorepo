@@ -29,9 +29,7 @@ export const useFileTable = (query: keyof typeof filesRouteQueries) => {
       sortedItems = orderBy(
         sortedItems,
         [sortConfig.column],
-        ["ascending" === sortConfig.direction
-          ? "asc"
-          : "desc"],
+        ["ascending" === sortConfig.direction ? "asc" : "desc"],
       );
     }
 

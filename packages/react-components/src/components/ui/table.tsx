@@ -1,8 +1,4 @@
-import type {
-  HTMLAttributes,
-  TdHTMLAttributes,
-  ThHTMLAttributes,
-} from "react";
+import type { HTMLAttributes, TdHTMLAttributes, ThHTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -26,12 +22,7 @@ const TableHeader = ({
   className,
   ...properties
 }: Readonly<HTMLAttributes<HTMLTableSectionElement>>) => {
-  return (
-    <thead
-      className={cn("[&_tr]:border-b", className)}
-      {...properties}
-    />
-  );
+  return <thead className={cn("[&_tr]:border-b", className)} {...properties} />;
 };
 TableHeader.displayName = "TableHeader";
 
@@ -54,12 +45,10 @@ const TableFooter = ({
 }: Readonly<HTMLAttributes<HTMLTableSectionElement>>) => {
   return (
     <tfoot
-      className={
-        cn(
-          "border-t bg-neutral-100/50 font-medium [&>tr]:last:border-b-0 dark:bg-neutral-800/50",
-          className,
-        )
-      }
+      className={cn(
+        "border-t bg-neutral-100/50 font-medium [&>tr]:last:border-b-0 dark:bg-neutral-800/50",
+        className,
+      )}
       {...properties}
     />
   );
@@ -72,12 +61,10 @@ const TableRow = ({
 }: Readonly<HTMLAttributes<HTMLTableRowElement>>) => {
   return (
     <tr
-      className={
-        cn(
-          "border-b transition-colors hover:bg-neutral-100/50 data-[state=selected]:bg-neutral-100 dark:hover:bg-neutral-800/50 dark:data-[state=selected]:bg-neutral-800",
-          className,
-        )
-      }
+      className={cn(
+        "border-b transition-colors hover:bg-neutral-100/50 data-[state=selected]:bg-neutral-100 dark:hover:bg-neutral-800/50 dark:data-[state=selected]:bg-neutral-800",
+        className,
+      )}
       {...properties}
     />
   );
@@ -90,12 +77,10 @@ const TableHead = ({
 }: Readonly<ThHTMLAttributes<HTMLTableCellElement>>) => {
   return (
     <th
-      className={
-        cn(
-          "h-10 px-2 text-left align-middle font-medium text-neutral-500 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] dark:text-neutral-400",
-          className,
-        )
-      }
+      className={cn(
+        "h-10 px-2 text-left align-middle font-medium text-neutral-500 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] dark:text-neutral-400",
+        className,
+      )}
       {...properties}
     />
   );
@@ -108,12 +93,10 @@ const TableCell = ({
 }: Readonly<TdHTMLAttributes<HTMLTableCellElement>>) => {
   return (
     <td
-      className={
-        cn(
-          "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
-          className,
-        )
-      }
+      className={cn(
+        "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        className,
+      )}
       {...properties}
     />
   );
@@ -126,7 +109,10 @@ const TableCaption = ({
 }: Readonly<HTMLAttributes<HTMLTableCaptionElement>>) => {
   return (
     <caption
-      className={cn("mt-4 text-sm text-neutral-500 dark:text-neutral-400", className)}
+      className={cn(
+        "mt-4 text-sm text-neutral-500 dark:text-neutral-400",
+        className,
+      )}
       {...properties}
     />
   );

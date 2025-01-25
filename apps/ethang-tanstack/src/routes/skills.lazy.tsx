@@ -17,23 +17,20 @@ const RouteComponent = () => {
 
   return (
     <MainLayout>
-      <TypographyH1 className="my-4">
-        Years Experience
-      </TypographyH1>
+      <TypographyH1 className="my-4">Years Experience</TypographyH1>
       <ContentHandler
-        isEmpty={
-          () => {
-            return isEmpty(experienceQuery.data);
-          }
-        }
+        isEmpty={() => {
+          return isEmpty(experienceQuery.data);
+        }}
         emptyPlaceholder="Nothing found"
         error={experienceQuery.error}
         isError={experienceQuery.isError}
         isLoading={experienceQuery.isPending}
       >
         <div className="mx-auto flex flex-wrap items-center justify-center gap-4">
-          {
-            map(get(experienceQuery, ["data", "skills"], []), ({ experience, name }) => {
+          {map(
+            get(experienceQuery, ["data", "skills"], []),
+            ({ experience, name }) => {
               return (
                 <SkillGauge
                   key={name}
@@ -42,8 +39,8 @@ const RouteComponent = () => {
                   years={Number(Number(experience).toFixed(2))}
                 />
               );
-            })
-          }
+            },
+          )}
         </div>
       </ContentHandler>
     </MainLayout>

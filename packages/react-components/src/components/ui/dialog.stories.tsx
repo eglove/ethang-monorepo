@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button.tsx";
 import {
   Dialog,
-  DialogContent, DialogDescription, DialogFooter,
-  DialogHeader, DialogTitle,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 
@@ -14,26 +17,16 @@ export const Default = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          Open
-        </Button>
+        <Button variant="outline">Open</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-96">
         <DialogHeader>
-          <DialogTitle>
-            Hello!
-          </DialogTitle>
-          <DialogDescription>
-            Some description here.
-          </DialogDescription>
+          <DialogTitle>Hello!</DialogTitle>
+          <DialogDescription>Some description here.</DialogDescription>
         </DialogHeader>
-        <div>
-          Body content
-        </div>
+        <div>Body content</div>
         <DialogFooter>
-          <Button>
-            Click
-          </Button>
+          <Button>Click</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

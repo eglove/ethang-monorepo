@@ -7,11 +7,10 @@ type TypographyLargeProperties = PropsWithChildren<{
 }>;
 
 export const TypographyLarge = ({
-  children, className,
+  children,
+  className,
 }: Readonly<TypographyLargeProperties>) => {
   return (
-    <div className={cn("text-lg font-semibold", className)}>
-      {children}
-    </div>
+    <div className={cn("text-lg font-semibold", className)}>{children}</div>
   );
 };

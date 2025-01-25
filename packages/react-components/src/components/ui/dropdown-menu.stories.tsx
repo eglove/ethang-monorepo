@@ -14,26 +14,14 @@ export default {
 export const Default = () => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        Open
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger>Open</DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>
-          My Account
-        </DropdownMenuLabel>
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          Billing
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          Team
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          Subscription
-        </DropdownMenuItem>
+        <DropdownMenuItem>Profile</DropdownMenuItem>
+        <DropdownMenuItem>Billing</DropdownMenuItem>
+        <DropdownMenuItem>Team</DropdownMenuItem>
+        <DropdownMenuItem>Subscription</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

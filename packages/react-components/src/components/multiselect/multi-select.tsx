@@ -1,15 +1,13 @@
-import {
-  MultiSelectCheck,
-} from "@/components/multiselect/multi-select-check.tsx";
-import {
-  MultiSelectOptions,
-} from "@/components/multiselect/multi-select-options.tsx";
+import { MultiSelectCheck } from "@/components/multiselect/multi-select-check.tsx";
+import { MultiSelectOptions } from "@/components/multiselect/multi-select-options.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import {
   Command,
-  CommandEmpty, CommandGroup,
-  CommandInput, CommandItem,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
   CommandList,
 } from "@/components/ui/command.tsx";
 import {
@@ -53,8 +51,8 @@ export const MultiSelect = ({
   const toggleOption = (value: string) => {
     const newSelectedValues = includes(selectedValues, value)
       ? filter(selectedValues, (_value) => {
-        return _value !== value;
-      })
+          return _value !== value;
+        })
       : [...selectedValues, value];
 
     setSelectedValues(newSelectedValues);
@@ -94,112 +92,89 @@ export const MultiSelect = ({
   };
 
   return (
-    <Popover
-      onOpenChange={setIsPopoverOpen}
-      open={isPopoverOpen}
-    >
+    <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
       <PopoverTrigger asChild>
         <Button
-          className={
-            cn(
-              "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit [&_svg]:pointer-events-auto",
-            )
-          }
+          className={cn(
+            "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit [&_svg]:pointer-events-auto",
+          )}
           onClick={handleTogglePopover}
         >
-          {
-            !isEmpty(selectedValues) && (
-              <div className="flex w-full items-center justify-between">
-                <div className="flex flex-wrap items-center gap-1">
-                  {
-                    map(slice(selectedValues, 0, maxCount), (value) => {
-                      const option = find(flatOptions, (o) => {
-                        return get(o, accessorKey) === value;
-                      });
+          {!isEmpty(selectedValues) && (
+            <div className="flex w-full items-center justify-between">
+              <div className="flex flex-wrap items-center gap-1">
+                {map(slice(selectedValues, 0, maxCount), (value) => {
+                  const option = find(flatOptions, (o) => {
+                    return get(o, accessorKey) === value;
+                  });
 
-                      return (
-                        <Badge key={value}>
-                          {get(option, labelKey)}
-                          {/* eslint-disable-next-line a11y/prefer-tag-over-role */}
-                          <XCircle
-                            onClick={
-                              (event) => {
-                                event.stopPropagation();
-                                toggleOption(value);
-                              }
-                            }
-                            onKeyDown={
-                              (event) => {
-                                event.stopPropagation();
-                                if ("Enter" === event.key || " " === event.key) {
-                                  toggleOption(value);
-                                }
-                              }
-                            }
-                            className="ml-2 size-4 cursor-pointer"
-                            role="button"
-                            tabIndex={0}
-                          />
-                        </Badge>
-                      );
-                    })
-                  }
-                  {
-                    selectedValues.length > maxCount && (
-                      <Badge className="border-foreground/1 bg-transparent text-black hover:bg-transparent dark:text-white">
-                        {`+ ${selectedValues.length - maxCount} more`}
-                      </Badge>
-                    )
-                  }
-                </div>
-                <div className="flex items-center justify-between">
-                  {/* eslint-disable-next-line a11y/prefer-tag-over-role */}
-                  <XIcon
-                    onClick={
-                      (event) => {
-                        event.stopPropagation();
-                        handleClear();
-                      }
-                    }
-                    onKeyDown={
-                      (event) => {
-                        event.stopPropagation();
-                        if ("Enter" === event.key || " " === event.key) {
-                          handleClear();
-                        }
-                      }
-                    }
-                    className="mx-2 h-4 cursor-pointer text-black dark:text-white"
-                    role="button"
-                    tabIndex={0}
-                  />
-                  <Separator
-                    className="flex h-full min-h-6"
-                    orientation="vertical"
-                  />
-                  <ChevronDown className="mx-2 h-4 cursor-pointer text-black dark:text-white" />
-                </div>
+                  return (
+                    <Badge key={value}>
+                      {get(option, labelKey)}
+                      {/* eslint-disable-next-line a11y/prefer-tag-over-role */}
+                      <XCircle
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          toggleOption(value);
+                        }}
+                        onKeyDown={(event) => {
+                          event.stopPropagation();
+                          if ("Enter" === event.key || " " === event.key) {
+                            toggleOption(value);
+                          }
+                        }}
+                        className="ml-2 size-4 cursor-pointer"
+                        role="button"
+                        tabIndex={0}
+                      />
+                    </Badge>
+                  );
+                })}
+                {selectedValues.length > maxCount && (
+                  <Badge className="border-foreground/1 bg-transparent text-black hover:bg-transparent dark:text-white">
+                    {`+ ${selectedValues.length - maxCount} more`}
+                  </Badge>
+                )}
               </div>
-            )
-          }
-          {
-            isEmpty(selectedValues) && (
-              <div className="mx-auto flex w-full items-center justify-between">
-                <span className="mx-3 text-sm text-black dark:text-white">
-                  {placeholder}
-                </span>
+              <div className="flex items-center justify-between">
+                {/* eslint-disable-next-line a11y/prefer-tag-over-role */}
+                <XIcon
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleClear();
+                  }}
+                  onKeyDown={(event) => {
+                    event.stopPropagation();
+                    if ("Enter" === event.key || " " === event.key) {
+                      handleClear();
+                    }
+                  }}
+                  className="mx-2 h-4 cursor-pointer text-black dark:text-white"
+                  role="button"
+                  tabIndex={0}
+                />
+                <Separator
+                  className="flex h-full min-h-6"
+                  orientation="vertical"
+                />
                 <ChevronDown className="mx-2 h-4 cursor-pointer text-black dark:text-white" />
               </div>
-            )
-          }
+            </div>
+          )}
+          {isEmpty(selectedValues) && (
+            <div className="mx-auto flex w-full items-center justify-between">
+              <span className="mx-3 text-sm text-black dark:text-white">
+                {placeholder}
+              </span>
+              <ChevronDown className="mx-2 h-4 cursor-pointer text-black dark:text-white" />
+            </div>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        onEscapeKeyDown={
-          () => {
-            setIsPopoverOpen(false);
-          }
-        }
+        onEscapeKeyDown={() => {
+          setIsPopoverOpen(false);
+        }}
         align="start"
         className="w-auto p-0"
       >
@@ -209,34 +184,32 @@ export const MultiSelect = ({
             placeholder="Search..."
           />
           <CommandList>
-            <CommandEmpty>
-              NO results found.
-            </CommandEmpty>
+            <CommandEmpty>NO results found.</CommandEmpty>
             <CommandGroup>
               <CommandItem
                 className="cursor-pointer"
                 key="all"
                 onSelect={toggleAll}
               >
-                <MultiSelectCheck isSelected={selectedValues.length === get(flatOptions, ["length"])} />
-                <span>
-                  (Select All)
-                </span>
+                <MultiSelectCheck
+                  isSelected={
+                    selectedValues.length === get(flatOptions, ["length"])
+                  }
+                />
+                <span>(Select All)</span>
               </CommandItem>
-              {
-                isArray(options) && (
-                  <MultiSelectOptions
-                    accessorKey={accessorKey}
-                    labelKey={labelKey}
-                    options={options}
-                    selectedValues={selectedValues}
-                    toggleOption={toggleOption}
-                  />
-                )
-              }
+              {isArray(options) && (
+                <MultiSelectOptions
+                  accessorKey={accessorKey}
+                  labelKey={labelKey}
+                  options={options}
+                  selectedValues={selectedValues}
+                  toggleOption={toggleOption}
+                />
+              )}
             </CommandGroup>
-            {
-              !isArray(options) && map(options, (group, key) => {
+            {!isArray(options) &&
+              map(options, (group, key) => {
                 return (
                   <CommandGroup heading={key}>
                     <MultiSelectOptions
@@ -248,8 +221,7 @@ export const MultiSelect = ({
                     />
                   </CommandGroup>
                 );
-              })
-            }
+              })}
           </CommandList>
         </Command>
       </PopoverContent>

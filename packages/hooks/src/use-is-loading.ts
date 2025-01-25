@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
-type UseIsLoadingReturn<T, E,> = {
+type UseIsLoadingReturn<T, E> = {
   caller: (() => void) | undefined;
   error: E | undefined;
   isLoading: boolean;
   results: T | undefined;
 };
 
-export const useIsLoading = <T, E,>(
+export const useIsLoading = <T, E>(
   callback: () => Promise<T>,
 ): UseIsLoadingReturn<T, E> => {
   const [isLoading, setIsLoading] = useState(false);

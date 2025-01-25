@@ -2,7 +2,10 @@ import type { PropsWithChildren } from "react";
 
 import { NavigationSidebar } from "@/components/navigation/navigation-sidebar.tsx";
 import { cn } from "@/lib/utils.ts";
-import { SidebarProvider, SidebarTrigger } from "@ethang/react-components/src/components/ui/sidebar.tsx";
+import {
+  SidebarProvider,
+  SidebarTrigger,
+} from "@ethang/react-components/src/components/ui/sidebar.tsx";
 import { Toaster } from "@ethang/react-components/src/components/ui/sonner.tsx";
 
 type MainLayoutProperties = PropsWithChildren<{
@@ -12,7 +15,8 @@ type MainLayoutProperties = PropsWithChildren<{
 }>;
 
 export const MainLayout = ({
-  children, classNames,
+  children,
+  classNames,
 }: Readonly<MainLayoutProperties>) => {
   return (
     <SidebarProvider>

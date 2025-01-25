@@ -10,8 +10,9 @@ export const getComments = async (
   payload: z.infer<typeof getCommentsSchema>,
   environment: Env,
 ) => {
-  const data = await environment.DB
-    .prepare("SELECT * FROM Comments WHERE url = ?")
+  const data = await environment.DB.prepare(
+    "SELECT * FROM Comments WHERE url = ?",
+  )
     .bind(payload.url)
     .all();
 

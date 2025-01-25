@@ -37,10 +37,12 @@ export default defineType({
   orderings: [
     orderRankOrdering,
     {
-      by: [{
-        direction: "asc",
-        field: "order",
-      }],
+      by: [
+        {
+          direction: "asc",
+          field: "order",
+        },
+      ],
       name: "order",
       title: "Order",
     },

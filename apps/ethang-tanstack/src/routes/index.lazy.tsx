@@ -17,40 +17,29 @@ const HomeComponent = () => {
 
   return (
     <MainLayout>
-      <TypographyH1 className="mb-4">
-        Blog
-      </TypographyH1>
+      <TypographyH1 className="mb-4">Blog</TypographyH1>
       <ContentHandler
-        emptyPlaceholder={
-          <TypographyMuted>
-            Nothing here yet.
-          </TypographyMuted>
-        }
-        isEmpty={
-          () => {
-            return isEmpty(blogs.data);
-          }
-        }
+        isEmpty={() => {
+          return isEmpty(blogs.data);
+        }}
+        emptyPlaceholder={<TypographyMuted>Nothing here yet.</TypographyMuted>}
         error={blogs.error}
         isError={blogs.isError}
         isLoading={blogs.isPending}
       >
-        {
-          map(blogs.data, (blog) => {
-            return (
-              <div key={blog._id}>
-                <TypographyLink
-                  className="text-2xl font-bold"
-                  href={`/blog/${blog.slug}`}
-                >
-                  {blog.title}
-                </TypographyLink>
-              </div>
-            );
-          })
-        }
+        {map(blogs.data, (blog) => {
+          return (
+            <div key={blog._id}>
+              <TypographyLink
+                className="text-2xl font-bold"
+                href={`/blog/${blog.slug}`}
+              >
+                {blog.title}
+              </TypographyLink>
+            </div>
+          );
+        })}
       </ContentHandler>
-
     </MainLayout>
   );
 };

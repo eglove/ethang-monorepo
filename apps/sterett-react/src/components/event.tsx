@@ -38,11 +38,7 @@ const getIsHappeningNow = (start: string, end: string) => {
 
 const relativeTimes = new Map<string, string>();
 
-export const Event = ({
-  colors,
-  data,
-  iconMeta,
-}: EventProperties) => {
+export const Event = ({ colors, data, iconMeta }: EventProperties) => {
   const isHappeningNow = getIsHappeningNow(data.startsAt, data.endsAt);
   const relativeDate = getRelativeDate(data.startsAt);
 
@@ -59,75 +55,51 @@ export const Event = ({
 
   return (
     <Fragment key={data._id}>
-      {
-        data._id === relativeTimes.get(relativeDate)
-          ? (
-            <Card className={twMerge("text-lg font-bold", backgroundColor, textColor)}>
-              <CardBody>
-                {
-                  isHappeningNow
-                    ? happeningNow
-                    : getRelativeDate(data.startsAt)
-                }
-              </CardBody>
-            </Card>
-          )
-          : null
-      }
+      {data._id === relativeTimes.get(relativeDate) ? (
+        <Card
+          className={twMerge("text-lg font-bold", backgroundColor, textColor)}
+        >
+          <CardBody>
+            {isHappeningNow ? happeningNow : getRelativeDate(data.startsAt)}
+          </CardBody>
+        </Card>
+      ) : null}
       <Card
         className={twMerge("my-4 h-max w-full", backgroundColor)}
         id={data._id}
       >
         <CardHeader className={twMerge("block", textColor)}>
           <strong className="flex flex-wrap gap-2">
-            {
-              isNil(iconMeta)
-                ? (
-                  <CalendarDaysIcon
-                    height={24}
-                    width={24}
-                  />
-                )
-                : (
-                  <img
-                    alt={iconMeta.alt}
-                    height={20}
-                    src={iconMeta.src}
-                    width={20}
-                  />
-                )
-            }
-            <span>
-              {eventRangeFormat(data.startsAt, data.endsAt)}
-            </span>
+            {isNil(iconMeta) ? (
+              <CalendarDaysIcon height={24} width={24} />
+            ) : (
+              <img
+                alt={iconMeta.alt}
+                height={20}
+                src={iconMeta.src}
+                width={20}
+              />
+            )}
+            <span>{eventRangeFormat(data.startsAt, data.endsAt)}</span>
           </strong>
           <br />
-          <div className="font-semibold">
-            {data.title}
-          </div>
+          <div className="font-semibold">{data.title}</div>
         </CardHeader>
-        {
-          !isNil(data.description) && (
-            <>
-              <Divider />
-              <CardBody>
-                <SanityContent
-                  styleNames={textColor}
-                  value={data.description}
-                />
-              </CardBody>
-            </>
-          )
-        }
+        {!isNil(data.description) && (
+          <>
+            <Divider />
+            <CardBody>
+              <SanityContent styleNames={textColor} value={data.description} />
+            </CardBody>
+          </>
+        )}
         <Divider />
         <CardFooter className="flex flex-wrap gap-2">
           <AddToCalendar
-            buttonProps={
-              {
-                className: "bg-sky-600 text-white",
-                size: "sm",
-              }
-            }
+            buttonProps={{
+              className: "bg-sky-600 text-white",
+              size: "sm",
+            }}
             description={data.description}
             end={data.endsAt}
             start={data.startsAt}

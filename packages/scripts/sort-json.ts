@@ -1,48 +1,60 @@
-import { readFileSync, writeFileSync } from "fs";
-import attempt from "lodash/attempt.js";
-import isError from "lodash/isError.js";
+import { parseJson } from "@ethang/toolbelt/src/json/json.ts";
+import get from "lodash/get.js";
 import isArray from "lodash/isArray.js";
-import isObject from "lodash/isObject.js";
+import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
-import * as process from "node:process";
+import isObject from "lodash/isObject.js";
+import keys from "lodash/keys.js";
+import map from "lodash/map.js";
+import reduce from "lodash/reduce.js";
+import set from "lodash/set.js";
+import { readFileSync, writeFileSync } from "node:fs";
+import z from "zod";
 
-const recursiveSort = <T>(obj: T): T => {
-  if (isArray(obj)) {
-    return obj.map(recursiveSort) as T;
-  } else if (isObject(obj)) {
-    return Object.keys(obj)
-      .sort()
-      .reduce((sorted, key) => {
-        // @ts-expect-error ignore
-        sorted[key] = recursiveSort(obj[key]);
-        return sorted;
-      }, {} as T);
+const recursiveSort = <T extends object>(object: T): T => {
+  if (isArray(object)) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    return map(object, recursiveSort) as T;
   }
 
-  return obj as T;
+  if (isObject(object)) {
+    return reduce(
+      keys(object).toSorted((a, b) => a.localeCompare(b)),
+      (sorted, key) => {
+        set(sorted, key, recursiveSort(get(object, [key])));
+        return sorted;
+      },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      {} as T,
+    );
+  }
+
+  return object;
 };
 
 export const sortJson = (filePath: string) => {
   const fileContent = readFileSync(filePath, "utf8");
-  const jsonObject = attempt(JSON.parse, fileContent);
+  const jsonObject = parseJson(fileContent, z.unknown());
 
   if (isError(jsonObject)) {
-    console.error("Failed to parse JSON", jsonObject);
+    globalThis.console.error("Failed to parse JSON", jsonObject);
     return;
   }
 
+  // @ts-expect-error assume object
   const sortedJson = recursiveSort(jsonObject);
 
   writeFileSync(filePath, JSON.stringify(sortedJson, null, 2), "utf8");
 
-  console.log("Sorted JSON");
+  globalThis.console.log("Sorted JSON");
 };
 
-const filePath = process.argv[2];
+// eslint-disable-next-line @typescript-eslint/prefer-destructuring
+const filePath = globalThis.process.argv[2];
 
 if (isNil(filePath)) {
-  console.error("No file path provided");
-  process.exit(1);
+  globalThis.console.error("No file path provided");
+  globalThis.process.exit(1);
 }
 
 sortJson(filePath);

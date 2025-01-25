@@ -38,25 +38,15 @@ export const getLocale = (
   return null;
 };
 
-const getFromAcceptLanguage = (
-  source: Readonly<Headers | string>,
-) => {
+const getFromAcceptLanguage = (source: Readonly<Headers | string>) => {
   const value = getAcceptLanguage(source);
 
   if (isError(value)) {
     return null;
   }
 
-  let language = get(value,
-    [
-      0,
-      "language",
-    ]);
-  const country = get(value,
-    [
-      0,
-      "country",
-    ]);
+  let language = get(value, [0, "language"]);
+  const country = get(value, [0, "country"]);
   if (!isNil(language)) {
     if (!isNil(country)) {
       language += `-${country}`;
@@ -69,7 +59,8 @@ const getFromAcceptLanguage = (
 };
 
 const getFromCookie = (
-  valueName: string, source: Readonly<Headers | string>,
+  valueName: string,
+  source: Readonly<Headers | string>,
 ) => {
   const value = getCookieValue(valueName, source);
 

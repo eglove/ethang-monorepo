@@ -1,6 +1,4 @@
-import {
-  createJsonResponse,
-} from "@ethang/toolbelt/src/fetch/create-json-response.ts";
+import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
 import isNil from "lodash/isNil.js";
 import set from "lodash/set.js";
 
@@ -43,10 +41,5 @@ export const getUser = async (request: Request, environment: Env) => {
   }
 
   set(foundUser, ["password"], undefined);
-  return createJsonResponse(
-    foundUser,
-    "OK",
-    undefined,
-    request,
-  );
+  return createJsonResponse(foundUser, "OK", undefined, request);
 };

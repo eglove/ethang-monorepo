@@ -1,8 +1,9 @@
 import unicorn from "eslint-plugin-unicorn";
+import keys from "lodash/keys.js";
 
 import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 
-const ruleNames = Object.keys(getNonDeprecatedRules(unicorn.rules ?? {}));
+const ruleNames = keys(getNonDeprecatedRules(unicorn.rules ?? {}));
 const customRules = [
   {
     name: "empty-brace-spaces",

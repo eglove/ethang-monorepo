@@ -9,6 +9,8 @@ export type ConfigFile = {
   options?: ConfigOptions;
 };
 
+const importTsEslint = 'import tseslint from "typescript-eslint";';
+
 export const coreFile = [
   {
     importString: 'import config from "@ethang/eslint-config/eslint.config.js',
@@ -46,7 +48,7 @@ const astroFile = [
     label: "Astro",
     name: "astro",
     options: {
-      extraImports: ['import tseslint from "typescript-eslint";'],
+      extraImports: [importTsEslint],
       includeIgnores: true,
       includeLanguageOptions: true,
     },
@@ -60,7 +62,7 @@ const reactFile = [
     label: "React",
     name: "react",
     options: {
-      extraImports: ['import tseslint from "typescript-eslint";'],
+      extraImports: [importTsEslint],
       includeIgnores: true,
       includeLanguageOptions: true,
       includeReactVersion: true,
@@ -75,7 +77,7 @@ const solidFile = [
     label: "Solid",
     name: "solid",
     options: {
-      extraImports: ['import tseslint from "typescript-eslint";'],
+      extraImports: [importTsEslint],
       includeIgnores: true,
       includeLanguageOptions: true,
     },
@@ -89,13 +91,10 @@ const angularFile = [
     label: "Angular",
     name: "angular",
     options: {
-      extraImports: [
-        'import tseslint from "typescript-eslint";',
-        'import angular from "angular-eslint";',
-      ],
+      extraImports: [importTsEslint, 'import angular from "angular-eslint";'],
+      globalIgnores: ["**/*.spec.ts", "src/main.server.ts"],
       includeIgnores: true,
       includeLanguageOptions: true,
-      globalIgnores: ["**/*.spec.ts", "src/main.server.ts"],
       processor: "angular.processInlineTemplates",
     },
   },
@@ -103,8 +102,8 @@ const angularFile = [
     name: "angular:template",
     options: {
       extraImports: ['import { angularLanguageOptions } from "./constants.js"'],
-      includeLanguageOptions: false,
       includeAngularLanguageOptions: true,
+      includeLanguageOptions: false,
     },
   },
 ];

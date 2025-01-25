@@ -1,6 +1,13 @@
 import constant from "lodash/constant.js";
 import isNil from "lodash/isNil";
-import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 type Theme = "dark" | "light" | "system";
 
@@ -28,13 +35,12 @@ export const ThemeProvider = ({
   storageKey = "vite-ui-theme",
   ...properties
 }: Readonly<ThemeProviderProperties>) => {
-  const [theme, setTheme] = useState<Theme>(
-    () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@typescript-eslint/no-unnecessary-condition,n/no-unsupported-features/node-builtins
-      return (globalThis.localStorage.getItem(storageKey) as Theme) ??
-        defaultTheme;
-    },
-  );
+  const [theme, setTheme] = useState<Theme>(() => {
+    return (
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition,@typescript-eslint/no-unsafe-type-assertion,n/no-unsupported-features/node-builtins
+      (globalThis.localStorage.getItem(storageKey) as Theme) ?? defaultTheme
+    );
+  });
 
   useEffect(() => {
     const root = globalThis.document.documentElement;
@@ -66,10 +72,7 @@ export const ThemeProvider = ({
   }, [storageKey, theme]);
 
   return (
-    <ThemeProviderContext
-      {...properties}
-      value={value}
-    >
+    <ThemeProviderContext {...properties} value={value}>
       {children}
     </ThemeProviderContext>
   );

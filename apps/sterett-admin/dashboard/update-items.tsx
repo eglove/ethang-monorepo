@@ -34,16 +34,14 @@ const items = [
   {
     children: (
       <>
-        Expanded size of
-        {" "}
+        Expanded size of{" "}
         <a
           href="https://sterettcreekvillagetrustee.com/news"
           rel="noreferrer"
           target="_blank"
         >
           News page
-        </a>
-        {" "}
+        </a>{" "}
         to find a middle ground between mobile/desktop.
       </>
     ),
@@ -63,8 +61,7 @@ const items = [
   {
     children: (
       <>
-        Style Updates: Home page and calendar text will use same styles via
-        {" "}
+        Style Updates: Home page and calendar text will use same styles via{" "}
         <a
           href="https://tailwindcss.com/docs/typography-plugin"
           rel="noreferrer"
@@ -81,18 +78,13 @@ const items = [
 export const UpdateItems = () => {
   return (
     <>
-      {
-        map(items, (item) => {
-          return (
-            <UpdateItem
-              date={item.date}
-              key={item.id}
-            >
-              {item.children}
-            </UpdateItem>
-          );
-        })
-      }
+      {map(items, (item) => {
+        return (
+          <UpdateItem date={item.date} key={item.id}>
+            {item.children}
+          </UpdateItem>
+        );
+      })}
     </>
   );
 };

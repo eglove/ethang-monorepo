@@ -21,17 +21,11 @@ export const TrusteesRoute = () => {
     <MainLayout>
       <Container>
         <div className="grid gap-4 md:grid-cols-3">
-          {
-            map(data, (trustee, index) => {
-              return (
-                <Trustee
-                  index={index}
-                  key={trustee._id}
-                  trustee={trustee}
-                />
-              );
-            })
-          }
+          {map(data, (trustee, index) => {
+            return (
+              <Trustee index={index} key={trustee._id} trustee={trustee} />
+            );
+          })}
         </div>
       </Container>
     </MainLayout>
@@ -42,7 +36,7 @@ export const trusteesRoute = createRoute({
   beforeLoad() {
     setMeta({
       description:
-          "Trustee contact information for Sterett Creek Village Trustee Board",
+        "Trustee contact information for Sterett Creek Village Trustee Board",
       title: "Sterett Creek Village Trustee | Trustees",
     });
   },

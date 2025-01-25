@@ -5,9 +5,8 @@ export const getHashedPassword = (password: string) => {
 };
 
 export const validatePassword = async (
-  passwordInput: string, password: string,
+  passwordInput: string,
+  password: string,
 ) => {
-  return bcrypt.compare(
-    passwordInput, password,
-  );
+  return bcrypt.compare(passwordInput, password);
 };

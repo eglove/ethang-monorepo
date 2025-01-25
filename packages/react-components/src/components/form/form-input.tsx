@@ -1,5 +1,5 @@
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
-type FormInputProperties<T extends FieldValues,> = {
+type FormInputProperties<T extends FieldValues> = {
   description?: string;
   fieldName: Path<T>;
   form: UseFormReturn<T>;
@@ -8,14 +8,16 @@ type FormInputProperties<T extends FieldValues,> = {
 };
 
 import {
-  FormControl, FormDescription,
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
-  FormLabel, FormMessage,
+  FormLabel,
+  FormMessage,
 } from "../ui/form.tsx";
 import { Input } from "../ui/input.tsx";
 
-export const FormInput = <T extends FieldValues,>({
+export const FormInput = <T extends FieldValues>({
   description,
   fieldName,
   form,
@@ -24,27 +26,18 @@ export const FormInput = <T extends FieldValues,>({
 }: Readonly<FormInputProperties<T>>) => {
   return (
     <FormField
-      render={
-        ({ field }) => {
-          return (
-            <FormItem>
-              <FormLabel>
-                {label}
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={placeholder}
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                {description}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          );
-        }
-      }
+      render={({ field }) => {
+        return (
+          <FormItem>
+            <FormLabel>{label}</FormLabel>
+            <FormControl>
+              <Input placeholder={placeholder} {...field} />
+            </FormControl>
+            <FormDescription>{description}</FormDescription>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
       control={form.control}
       name={fieldName}
     />

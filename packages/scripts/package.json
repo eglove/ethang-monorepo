@@ -1,21 +1,28 @@
 {
   "author": "",
   "dependencies": {
+    "@ethang/toolbelt": "workspace:^",
     "lodash": "^4.17.21",
-    "sort-package-json": "^2.14.0"
+    "sort-package-json": "^2.14.0",
+    "zod": "^3.24.1"
   },
   "description": "",
   "devDependencies": {
+    "@ethang/eslint-config": "workspace:^",
     "@types/lodash": "^4.17.14",
     "@types/node": "^22.10.10",
-    "prettier": "^3.4.2"
+    "eslint": "^9.19.0"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "keywords": [],
   "license": "ISC",
   "main": "index.js",
   "name": "scripts",
   "scripts": {
-    "lint": "prettier . --write"
+    "lint": "eslint . --fix"
   },
+  "type": "module",
   "version": "1.0.0"
 }

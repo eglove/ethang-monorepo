@@ -11,9 +11,7 @@ const formatDate = (date: string): string => {
 export const TimeDisplay = ({ date }: TimeDisplayProperties) => {
   return (
     <time>
-      <strong>
-        {formatDate(date)}
-      </strong>
+      <strong>{formatDate(date)}</strong>
     </time>
   );
 };

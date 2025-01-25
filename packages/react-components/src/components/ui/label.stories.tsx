@@ -9,9 +9,7 @@ export const Default = () => {
   return (
     <div>
       <div className="grid gap-1 space-x-2">
-        <Label htmlFor="name">
-          Name
-        </Label>
+        <Label htmlFor="name">Name</Label>
         <Input id="name" />
       </div>
     </div>

@@ -1,8 +1,9 @@
 import n from "eslint-plugin-n";
+import keys from "lodash/keys.js";
 
 import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 
-const ruleNames = Object.keys(getNonDeprecatedRules(n.rules ?? {}));
+const ruleNames = keys(getNonDeprecatedRules(n.rules ?? {}));
 const changedRules = [
   {
     name: "callback-return",

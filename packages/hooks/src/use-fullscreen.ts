@@ -22,8 +22,8 @@ export const useFullscreen = (
   const initialState =
     "undefined" === typeof globalThis
       ? false
-    // eslint-disable-next-line compat/compat
-      : Boolean(globalThis.document.fullscreenElement);
+      : // eslint-disable-next-line compat/compat
+        Boolean(globalThis.document.fullscreenElement);
   const [fullScreen, setFullScreen] = useState(initialState);
 
   const openFullScreen = (): void => {
@@ -43,8 +43,6 @@ export const useFullscreen = (
     closeFullScreen,
     fullScreen,
     openFullScreen,
-    toggle: fullScreen
-      ? closeFullScreen
-      : openFullScreen,
+    toggle: fullScreen ? closeFullScreen : openFullScreen,
   };
 };

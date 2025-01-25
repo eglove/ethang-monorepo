@@ -90,12 +90,8 @@ const sortNewsAndEvents = (eventsNews: EventsNewsReturn) => {
   }
 
   return merged.flat().sort((a, b) => {
-    const aDate = "startsAt" in a
-      ? new Date(a.startsAt)
-      : new Date(a.date);
-    const bDate = "startsAt" in b
-      ? new Date(b.startsAt)
-      : new Date(b.date);
+    const aDate = "startsAt" in a ? new Date(a.startsAt) : new Date(a.date);
+    const bDate = "startsAt" in b ? new Date(b.startsAt) : new Date(b.date);
 
     return aDate.getTime() - bDate.getTime();
   });

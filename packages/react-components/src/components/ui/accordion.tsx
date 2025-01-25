@@ -1,37 +1,37 @@
-import type {
-  ComponentProps,
-} from "react";
+import type { ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
-import { Content, Header, Item, Root, Trigger } from "@radix-ui/react-accordion";
+import {
+  Content,
+  Header,
+  Item,
+  Root,
+  Trigger,
+} from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
 
 const Accordion = Root;
 
 const AccordionItem = ({
-  className, ...properties
+  className,
+  ...properties
 }: Readonly<ComponentProps<typeof Item>>) => {
-  return (
-    <Item
-      className={cn("border-b", className)}
-      {...properties}
-    />
-  );
+  return <Item className={cn("border-b", className)} {...properties} />;
 };
 AccordionItem.displayName = "AccordionItem";
 
 const AccordionTrigger = ({
-  children, className, ...properties
+  children,
+  className,
+  ...properties
 }: Readonly<ComponentProps<typeof Trigger>>) => {
   return (
     <Header className="flex">
       <Trigger
-        className={
-          cn(
-            "flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all hover:underline text-left [&[data-state=open]>svg]:rotate-180",
-            className,
-          )
-        }
+        className={cn(
+          "flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all hover:underline text-left [&[data-state=open]>svg]:rotate-180",
+          className,
+        )}
         {...properties}
       >
         {children}
@@ -43,16 +43,16 @@ const AccordionTrigger = ({
 AccordionTrigger.displayName = Trigger.displayName;
 
 const AccordionContent = ({
-  children, className, ...properties
+  children,
+  className,
+  ...properties
 }: Readonly<ComponentProps<typeof Content>>) => {
   return (
     <Content
       className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
       {...properties}
     >
-      <div className={cn("pb-4 pt-0", className)}>
-        {children}
-      </div>
+      <div className={cn("pb-4 pt-0", className)}>{children}</div>
     </Content>
   );
 };

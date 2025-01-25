@@ -1,6 +1,4 @@
-import {
-  createJsonResponse,
-} from "@ethang/toolbelt/src/fetch/create-json-response.ts";
+import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
@@ -61,7 +59,9 @@ export const signIn = async (request: Request, environment: Env) => {
     );
   }
 
-  await environment.DB.prepare("UPDATE Users SET lastLoggedIn = ? WHERE email = ?")
+  await environment.DB.prepare(
+    "UPDATE Users SET lastLoggedIn = ? WHERE email = ?",
+  )
     .bind(new Date().toISOString(), result.data.email)
     .raw();
 
@@ -69,10 +69,5 @@ export const signIn = async (request: Request, environment: Env) => {
   set(foundUser, ["password"], undefined);
   const token = await createToken(foundUser, environment);
 
-  return createJsonResponse(
-    { token },
-    "OK",
-    undefined,
-    request,
-  );
+  return createJsonResponse({ token }, "OK", undefined, request);
 };

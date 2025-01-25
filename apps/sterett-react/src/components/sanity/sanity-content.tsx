@@ -1,6 +1,9 @@
 import type { TypedObject } from "@portabletext/types";
 
-import { PortableText, type PortableTextReactComponents } from "@portabletext/react";
+import {
+  PortableText,
+  type PortableTextReactComponents,
+} from "@portabletext/react";
 import isNil from "lodash/isNil.js";
 import { twMerge } from "tailwind-merge";
 
@@ -21,12 +24,7 @@ const portableTextComponents = {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-type-assertion
       const altText = value.altText as string | undefined;
       if (!isNil(asset)) {
-        return (
-          <SanityPortableImage
-            altText={altText ?? ""}
-            image={asset}
-          />
-        );
+        return <SanityPortableImage altText={altText ?? ""} image={asset} />;
       }
 
       return null;
@@ -35,14 +33,12 @@ const portableTextComponents = {
 } satisfies Partial<PortableTextReactComponents>;
 
 export const SanityContent = ({
-  styleNames, value,
+  styleNames,
+  value,
 }: SanityContentProperties) => {
   return (
     <div className={twMerge("prose", styleNames)}>
-      <PortableText
-        components={portableTextComponents}
-        value={value}
-      />
+      <PortableText components={portableTextComponents} value={value} />
     </div>
   );
 };

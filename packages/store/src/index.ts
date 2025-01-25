@@ -1,8 +1,8 @@
 import { type Draft, produce } from "immer";
 
-export type Listener<TState,> = (state: TState) => void;
+export type Listener<TState> = (state: TState) => void;
 
-export class Store<TState,> {
+export class Store<TState> {
   private readonly _elementListeners = new Map<string, HTMLElement>();
 
   private readonly _initialState: TState;
@@ -25,9 +25,7 @@ export class Store<TState,> {
     this._initialState = initialState;
   }
 
-  public bind<E,>(
-    onUpdate: (state: TState, element: E) => void,
-  ) {
+  public bind<E>(onUpdate: (state: TState, element: E) => void) {
     const id = this.getElementListenerId();
 
     return (element: E | null) => {
@@ -50,8 +48,8 @@ export class Store<TState,> {
   }
 
   public get(): TState;
-  public get<T,>(selector: (state: TState) => T): T;
-  public get<T,>(selector?: (state: TState) => T) {
+  public get<T>(selector: (state: TState) => T): T;
+  public get<T>(selector?: (state: TState) => T) {
     if (!selector) {
       return this.state;
     }
@@ -83,7 +81,9 @@ export class Store<TState,> {
 
   private cleanup(id: string, updateElement: Listener<TState>): boolean {
     if (this._elementListeners.has(id) && "undefined" !== typeof globalThis) {
-      const foundElement = globalThis.document.querySelector(`[data-listener-id="${id}"]`);
+      const foundElement = globalThis.document.querySelector(
+        `[data-listener-id="${id}"]`,
+      );
 
       if (!foundElement) {
         this._elementListeners.delete(id);

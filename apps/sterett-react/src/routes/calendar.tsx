@@ -73,14 +73,13 @@ export const CalendarRoute = () => {
           onSelectEvent={handleSelectEvent}
           startAccessor="start"
         />
-        {
-          !isNil(selectedEvent) &&
+        {!isNil(selectedEvent) && (
           <CalendarModal
             isOpen={isOpen}
             onOpenChange={onOpenChange}
             selectedEvent={selectedEvent}
           />
-        }
+        )}
       </div>
     </MainLayout>
   );

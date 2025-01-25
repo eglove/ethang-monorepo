@@ -31,21 +31,15 @@ export const FileTable = ({ query }: FileTableProperties) => {
 
   return (
     <div className="w-full">
-      <FileTableTop
-        filter={filter}
-        query={query}
-        setFilter={setFilter}
-      />
+      <FileTableTop filter={filter} query={query} setFilter={setFilter} />
       <Table
         hideHeader
         isHeaderSticky
         isStriped
         showDragButtons
-        classNames={
-          {
-            base: "max-h-96 overflow-auto",
-          }
-        }
+        classNames={{
+          base: "max-h-96 overflow-auto",
+        }}
         aria-label="Sterett Creek Village Trustee Files"
         color="primary"
         onSortChange={setSortConfig}
@@ -53,58 +47,50 @@ export const FileTable = ({ query }: FileTableProperties) => {
         title="Sterett Creek Village Trustee Files"
       >
         <TableHeader columns={columns}>
-          {
-            (column) => {
-              return (
-                <TableColumn
-                  allowsSorting={"actions" !== column.key}
-                  key={column.key}
-                >
-                  {column.label}
-                </TableColumn>
-              );
-            }
-          }
+          {(column) => {
+            return (
+              <TableColumn
+                allowsSorting={"actions" !== column.key}
+                key={column.key}
+              >
+                {column.label}
+              </TableColumn>
+            );
+          }}
         </TableHeader>
         <TableBody items={sortedData}>
-          {
-            (item) => {
-              return (
-                <TableRow key={item._id}>
-                  {
-                    (columnKey) => {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-                      const value = getKeyValue(item, columnKey) as string;
+          {(item) => {
+            return (
+              <TableRow key={item._id}>
+                {(columnKey) => {
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+                  const value = getKeyValue(item, columnKey) as string;
 
-                      if ("date" === columnKey) {
-                        return (
-                          <TableCell>
-                            {
-                              new Date(value).toLocaleString(undefined, {
-                                dateStyle: "medium",
-                              })
-                            }
-                          </TableCell>
-                        );
-                      }
-
-                      return (
-                        <TableCell>
-                          <Link
-                            isExternal
-                            showAnchorIcon
-                            href={item.file.asset.url}
-                          >
-                            {value}
-                          </Link>
-                        </TableCell>
-                      );
-                    }
+                  if ("date" === columnKey) {
+                    return (
+                      <TableCell>
+                        {new Date(value).toLocaleString(undefined, {
+                          dateStyle: "medium",
+                        })}
+                      </TableCell>
+                    );
                   }
-                </TableRow>
-              );
-            }
-          }
+
+                  return (
+                    <TableCell>
+                      <Link
+                        isExternal
+                        showAnchorIcon
+                        href={item.file.asset.url}
+                      >
+                        {value}
+                      </Link>
+                    </TableCell>
+                  );
+                }}
+              </TableRow>
+            );
+          }}
         </TableBody>
       </Table>
     </div>

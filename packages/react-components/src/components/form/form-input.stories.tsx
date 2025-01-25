@@ -13,11 +13,7 @@ export const Default = () => {
 
   return (
     <Form {...form}>
-      <FormInput
-        fieldName="name"
-        form={form}
-        label="Name"
-      />
+      <FormInput fieldName="name" form={form} label="Name" />
     </Form>
   );
 };

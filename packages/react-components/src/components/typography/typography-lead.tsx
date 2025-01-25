@@ -7,11 +7,10 @@ type TypographyLeadProperties = PropsWithChildren<{
 }>;
 
 export const TypographyLead = ({
-  children, className,
+  children,
+  className,
 }: Readonly<TypographyLeadProperties>) => {
   return (
-    <p className={cn("text-muted-foreground text-xl", className)}>
-      {children}
-    </p>
+    <p className={cn("text-muted-foreground text-xl", className)}>{children}</p>
   );
 };

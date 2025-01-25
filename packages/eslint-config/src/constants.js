@@ -1,5 +1,5 @@
-import { parser } from "typescript-eslint";
 import angularTemplateParser from "@angular-eslint/template-parser";
+import { parser } from "typescript-eslint";
 
 export const ignores = ["eslint.config.js", "node_modules", "dist"];
 

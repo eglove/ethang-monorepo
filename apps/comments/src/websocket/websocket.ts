@@ -1,6 +1,4 @@
-import {
-  createJsonResponse,
-} from "@ethang/toolbelt/src/fetch/create-json-response.ts";
+import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
 import { parseJson } from "@ethang/toolbelt/src/json/json.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
@@ -54,10 +52,7 @@ const handleMessages = async (
   }
 };
 
-export const handleWebSocket = (
-  request: Request,
-  environment: Env,
-) => {
+export const handleWebSocket = (request: Request, environment: Env) => {
   const upgradeHeader = request.headers.get("Upgrade");
 
   if ("websocket" !== upgradeHeader) {
@@ -84,9 +79,7 @@ export const handleWebSocket = (
   store.connections.set(id, server);
   server.accept();
 
-  server.addEventListener("message", (
-    event: MessageEvent<string>,
-  ) => {
+  server.addEventListener("message", (event: MessageEvent<string>) => {
     handleMessages(event, environment).catch(globalThis.console.error);
   });
 
@@ -99,5 +92,10 @@ export const handleWebSocket = (
     store.connections.delete(id);
   });
 
-  return createJsonResponse(null, "SWITCHING_PROTOCOLS", { webSocket: client }, request);
+  return createJsonResponse(
+    null,
+    "SWITCHING_PROTOCOLS",
+    { webSocket: client },
+    request,
+  );
 };

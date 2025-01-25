@@ -21,24 +21,19 @@ export const PageRoute = () => {
   return (
     <MainLayout>
       <Container>
-        {
-          map(data, (page) => {
-            return (
-              <div
-                className="w-full"
+        {map(data, (page) => {
+          return (
+            <div className="w-full" key={page._id}>
+              <Link
+                className="underline"
+                href={`/page/${page.slug.current}`}
                 key={page._id}
               >
-                <Link
-                  className="underline"
-                  href={`/page/${page.slug.current}`}
-                  key={page._id}
-                >
-                  {page.title}
-                </Link>
-              </div>
-            );
-          })
-        }
+                {page.title}
+              </Link>
+            </div>
+          );
+        })}
       </Container>
     </MainLayout>
   );

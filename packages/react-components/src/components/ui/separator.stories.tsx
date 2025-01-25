@@ -5,7 +5,5 @@ export default {
 };
 
 export const Horizontal = () => {
-  return (
-    <Separator />
-  );
+  return <Separator />;
 };

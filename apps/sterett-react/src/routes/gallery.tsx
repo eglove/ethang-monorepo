@@ -21,20 +21,18 @@ export const GalleryRoute = () => {
   return (
     <MainLayout>
       <Container styleNames="flex flex-wrap gap-4">
-        {
-          map(data, (image) => {
-            return (
-              <Image
-                alt={image.description}
-                className="relative h-auto max-w-full rounded-lg"
-                height={Number(image.image.asset.metadata.dimensions.height)}
-                key={image.image.asset.url}
-                src={image.image.asset.url}
-                width={Number(image.image.asset.metadata.dimensions.width)}
-              />
-            );
-          })
-        }
+        {map(data, (image) => {
+          return (
+            <Image
+              alt={image.description}
+              className="relative h-auto max-w-full rounded-lg"
+              height={Number(image.image.asset.metadata.dimensions.height)}
+              key={image.image.asset.url}
+              src={image.image.asset.url}
+              width={Number(image.image.asset.metadata.dimensions.width)}
+            />
+          );
+        })}
       </Container>
     </MainLayout>
   );

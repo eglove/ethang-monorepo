@@ -20,7 +20,8 @@ const localStorageStore = (key: string, options?: LocalStorageStoreOptions) => {
     getSnapshot: () => {
       const item = attempt(
         // eslint-disable-next-line n/no-unsupported-features/node-builtins
-        globalThis.localStorage.getItem.bind(globalThis.localStorage), key,
+        globalThis.localStorage.getItem.bind(globalThis.localStorage),
+        key,
       );
 
       if (isError(item)) {
@@ -55,7 +56,7 @@ export const useLocalStorage = (
   options?: UseLocalStorageProperties,
 ) => {
   const { event, getServerSnapshot, getSnapshot, subscribe } =
-  // @ts-expect-error allow undefined
+    // @ts-expect-error allow undefined
     localStorageStore(key, {
       defaultValue: options?.defaultValue,
       listenerOptions: options?.listenerOptions,

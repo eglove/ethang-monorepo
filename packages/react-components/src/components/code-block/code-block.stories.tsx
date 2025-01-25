@@ -9,9 +9,5 @@ const code = String.raw`const printMessage = () => {
 }`;
 
 export const Default = () => {
-  return (
-    <CodeBlock>
-      {code}
-    </CodeBlock>
-  );
+  return <CodeBlock>{code}</CodeBlock>;
 };

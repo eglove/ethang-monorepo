@@ -1,3 +1,7 @@
+import flow from "lodash/flow.js";
+import isNil from "lodash/isNil.js";
+import map from "lodash/map.js";
+
 import { getLatestReact } from "./get-react-version.ts";
 import {
   getList,
@@ -9,13 +13,22 @@ import {
 
 export type ConfigOptions = {
   extraImports?: string[];
+  globalIgnores?: string[];
+  includeAngularLanguageOptions?: boolean;
   includeIgnores?: boolean;
   includeLanguageOptions?: boolean;
-  includeAngularLanguageOptions?: boolean;
   includeReactVersion?: boolean;
-  globalIgnores?: string[];
   processor?: string;
 };
+
+const getIgnoresString = flow(
+  (globalIgnores: string[] | undefined) => {
+    return map(globalIgnores, (ignore) => {
+      return `"${ignore}"`;
+    });
+  },
+  (list) => list.join(", "),
+);
 
 export const createConfig = async (
   type: string,
@@ -24,10 +37,10 @@ export const createConfig = async (
   let config = "";
   let settings;
 
-  if (options.includeReactVersion) {
+  if (!isNil(options.includeReactVersion)) {
     const react = await getLatestReact();
     settings = JSON.stringify({
-      react: { version: react.version },
+      react: { version: react?.version },
     }).slice(1, -1);
   }
 
@@ -36,23 +49,23 @@ export const createConfig = async (
 
   let optionals = "";
 
-  if (options.includeIgnores) {
+  if (!isNil(options.includeIgnores)) {
     optionals += "\nignores,";
   }
 
-  if (options.includeLanguageOptions) {
+  if (!isNil(options.includeLanguageOptions)) {
     optionals += "\nlanguageOptions,";
   }
 
-  if (options.includeAngularLanguageOptions) {
+  if (!isNil(options.includeAngularLanguageOptions)) {
     optionals += "\nlanguageOptions: angularLanguageOptions,";
   }
 
-  if (options.processor) {
+  if (!isNil(options.processor)) {
     optionals += `\nprocessor: ${options.processor},`;
   }
 
-  if (options.includeReactVersion && settings) {
+  if (!isNil(options.includeReactVersion) && !isNil(settings)) {
     optionals += `\nsettings: {
   ${settings}
 },`;
@@ -62,11 +75,7 @@ export const createConfig = async (
 
   if (options.globalIgnores) {
     config += `{
-      ignores: [${options.globalIgnores
-        .map((ignore) => {
-          return `"${ignore}"`;
-        })
-        .join(", ")}],
+      ignores: [${getIgnoresString(options.globalIgnores)}],
     },`;
   }
 

@@ -7,7 +7,8 @@ type TypographySmallProperties = PropsWithChildren<{
 }>;
 
 export const TypographySmall = ({
-  children, className,
+  children,
+  className,
 }: Readonly<TypographySmallProperties>) => {
   return (
     <small className={cn("text-sm font-medium leading-none", className)}>

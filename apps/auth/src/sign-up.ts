@@ -1,6 +1,4 @@
-import {
-  createJsonResponse,
-} from "@ethang/toolbelt/src/fetch/create-json-response.ts";
+import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
@@ -23,30 +21,52 @@ export const signUp = async (request: Request, environment: Env) => {
   });
 
   if (isError(body)) {
-    return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST", undefined, request);
+    return createJsonResponse(
+      { error: "Invalid request" },
+      "BAD_REQUEST",
+      undefined,
+      request,
+    );
   }
 
   const result = signUpSchema.safeParse(body);
 
   if (!result.success) {
-    return createJsonResponse({ error: "Invalid arguments" }, "BAD_REQUEST", undefined, request);
+    return createJsonResponse(
+      { error: "Invalid arguments" },
+      "BAD_REQUEST",
+      undefined,
+      request,
+    );
   }
 
   const foundUser = await getUser(result.data.email, environment);
 
   if (!isNil(foundUser)) {
-    return createJsonResponse({ error: "User already exists" }, "CONFLICT", undefined, request);
+    return createJsonResponse(
+      { error: "User already exists" },
+      "CONFLICT",
+      undefined,
+      request,
+    );
   }
 
   const hashedPassword = getHashedPassword(result.data.password);
-  await environment.DB.prepare("INSERT INTO Users (email, password, username) VALUES (?, ?, ?)")
+  await environment.DB.prepare(
+    "INSERT INTO Users (email, password, username) VALUES (?, ?, ?)",
+  )
     .bind(result.data.email, hashedPassword, result.data.username)
     .first();
 
   const user = await getUser(result.data.email, environment);
 
   if (isNil(user)) {
-    return createJsonResponse({ error: "Failed to create user" }, "INTERNAL_SERVER_ERROR", undefined, request);
+    return createJsonResponse(
+      { error: "Failed to create user" },
+      "INTERNAL_SERVER_ERROR",
+      undefined,
+      request,
+    );
   }
 
   set(user, ["password"], undefined);

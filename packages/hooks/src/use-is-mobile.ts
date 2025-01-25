@@ -11,11 +11,17 @@ export const useIsMobile = (mobileBreakPoint = 768) => {
 
   useEffect(() => {
     const controller = new AbortController();
-    const mediaQueryList = globalThis.matchMedia(`(max-width: ${mobileBreakPoint - 1}px)`);
+    const mediaQueryList = globalThis.matchMedia(
+      `(max-width: ${mobileBreakPoint - 1}px)`,
+    );
 
-    mediaQueryList.addEventListener("change", () => {
-      setIsMobile(globalThis.window.innerWidth < mobileBreakPoint);
-    }, { signal: controller.signal });
+    mediaQueryList.addEventListener(
+      "change",
+      () => {
+        setIsMobile(globalThis.window.innerWidth < mobileBreakPoint);
+      },
+      { signal: controller.signal },
+    );
 
     return () => {
       controller.abort();

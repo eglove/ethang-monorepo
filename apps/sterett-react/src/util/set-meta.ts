@@ -11,8 +11,11 @@ export const setMeta = ({ description, title }: SetMetaProperties) => {
   const descriptionElement = globalThis.document.createElement("meta");
   descriptionElement.name = "description";
   descriptionElement.content = description;
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  const head = attempt(globalThis.document.querySelector.bind(globalThis.document), "head");
+  const head = attempt(
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    globalThis.document.querySelector.bind(globalThis.document),
+    "head",
+  );
 
   if (isError(head)) {
     return;

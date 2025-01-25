@@ -1,6 +1,4 @@
-import {
-  createJsonResponse,
-} from "@ethang/toolbelt/src/fetch/create-json-response.ts";
+import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
@@ -13,15 +11,9 @@ import { getHashedPassword } from "./utils/password.ts";
 
 const editUserSchema = z.object({
   email: z.string().email(),
-  password: z.string().optional()
-    .nullable()
-    .default(null),
-  role: z.string().optional()
-    .nullable()
-    .default(null),
-  username: z.string().optional()
-    .nullable()
-    .default(null),
+  password: z.string().optional().nullable().default(null),
+  role: z.string().optional().nullable().default(null),
+  username: z.string().optional().nullable().default(null),
 });
 
 export const editUser = async (request: Request, environment: Env) => {
@@ -71,7 +63,9 @@ export const editUser = async (request: Request, environment: Env) => {
     );
   }
 
-  await environment.DB.prepare("UPDATE Users SET email = ?, password = ?, username = ?, role = ? WHERE email = ?")
+  await environment.DB.prepare(
+    "UPDATE Users SET email = ?, password = ?, username = ?, role = ? WHERE email = ?",
+  )
     .bind(
       result.data.email,
       getHashedPassword(result.data.password ?? previousUser.password),
@@ -84,10 +78,5 @@ export const editUser = async (request: Request, environment: Env) => {
   const user = await getUser(result.data.email, environment);
 
   set(user, ["password"], undefined);
-  return createJsonResponse(
-    user,
-    "OK",
-    undefined,
-    request,
-  );
+  return createJsonResponse(user, "OK", undefined, request);
 };

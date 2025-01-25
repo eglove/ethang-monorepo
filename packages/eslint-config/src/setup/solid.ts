@@ -1,8 +1,14 @@
 import solid from "eslint-plugin-solid";
+import keys from "lodash/keys.js";
 
-import { EsLintRules, genRules, getNonDeprecatedRules } from "./gen-rules.ts";
+import {
+  type EsLintRules,
+  genRules,
+  getNonDeprecatedRules,
+} from "./gen-rules.ts";
 
-const ruleNames = Object.keys(
+const ruleNames = keys(
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   getNonDeprecatedRules(solid.rules as unknown as EsLintRules),
 );
 const customRules = [

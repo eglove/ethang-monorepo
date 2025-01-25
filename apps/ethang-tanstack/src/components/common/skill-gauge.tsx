@@ -19,7 +19,9 @@ const getColor = (years: number, maxYears: number) => {
 };
 
 export const SkillGauge = ({
-  label, maxYears, years,
+  label,
+  maxYears,
+  years,
 }: SkillGaugeProperties) => {
   const color = getColor(years, maxYears);
 
@@ -46,13 +48,15 @@ export const SkillGauge = ({
           cy="18"
           fill="none"
           r="16"
-          strokeDasharray={`${years / maxYears * 75} 100`}
+          strokeDasharray={`${(years / maxYears) * 75} 100`}
           strokeLinecap="round"
           strokeWidth="2"
         />
       </svg>
       <div className="absolute start-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-        <span className={`text-${color}-600 dark:text-${color}-500 text-4xl font-bold`}>
+        <span
+          className={`text-${color}-600 dark:text-${color}-500 text-4xl font-bold`}
+        >
           {years}
         </span>
         <span className={`text-${color}-600 dark:text-${color}-500 block`}>

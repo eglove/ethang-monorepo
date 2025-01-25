@@ -19,25 +19,22 @@ const RouteComponent = () => {
 
   return (
     <MainLayout>
-      <TypographyH1>
-        Certifications
-      </TypographyH1>
+      <TypographyH1>Certifications</TypographyH1>
       <ContentHandler
-        isEmpty={
-          () => {
-            return isEmpty(certQuery.data);
-          }
-        }
+        isEmpty={() => {
+          return isEmpty(certQuery.data);
+        }}
         error={certQuery.error}
         isError={certQuery.isError}
         isLoading={certQuery.isLoading}
       >
         <DataTable
-          columns={
-            [{
+          columns={[
+            {
               accessorKey: "name",
               header: "Name",
-            }, {
+            },
+            {
               accessorKey: "issuedBy",
 
               cell: (info) => {
@@ -48,13 +45,16 @@ const RouteComponent = () => {
                 );
               },
               header: "Issued By",
-            }, {
+            },
+            {
               accessorKey: "issuedOn",
               header: "Issued On",
-            }, {
+            },
+            {
               accessorKey: "expiresOn",
               header: "Expires",
-            }, {
+            },
+            {
               cell: (info) => {
                 return (
                   <CertificationDetails certification={info.row.original} />
@@ -62,8 +62,8 @@ const RouteComponent = () => {
               },
               header: "Details",
               id: "details",
-            }]
-          }
+            },
+          ]}
           data={get(certQuery, ["data"], [])}
         />
       </ContentHandler>

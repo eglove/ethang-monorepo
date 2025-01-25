@@ -10,7 +10,11 @@ import { Event } from "../components/event.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { NewsUpdate } from "../components/news-update.tsx";
 import { rootRoute } from "../router/router.ts";
-import { type CalendarEventReturn, getNewsAndEventsQueryOptions, type NewsUpdateReturn } from "../sanity/queries/get-news-and-events.ts";
+import {
+  type CalendarEventReturn,
+  getNewsAndEventsQueryOptions,
+  type NewsUpdateReturn,
+} from "../sanity/queries/get-news-and-events.ts";
 import { getRouteQueries } from "../util/get-route-queries.ts";
 import { setMeta } from "../util/set-meta.ts";
 
@@ -29,32 +33,20 @@ export const NewsRoute = () => {
     <MainLayout>
       <Container styleNames="p-0">
         <div className="grid w-full p-2">
-          {
-            map(data, (datum) => {
+          {map(data, (datum) => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-              if (!isNil((datum as NewsUpdateReturn).date)) {
+            if (!isNil((datum as NewsUpdateReturn).date)) {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-                const dataValue = datum as NewsUpdateReturn;
+              const dataValue = datum as NewsUpdateReturn;
 
-                return (
-                  <NewsUpdate
-                    data={dataValue}
-                    key={datum._id}
-                  />
-                );
-              }
+              return <NewsUpdate data={dataValue} key={datum._id} />;
+            }
 
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-              const dataValue = datum as CalendarEventReturn;
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+            const dataValue = datum as CalendarEventReturn;
 
-              return (
-                <Event
-                  data={dataValue}
-                  key={datum._id}
-                />
-              );
-            })
-          }
+            return <Event data={dataValue} key={datum._id} />;
+          })}
         </div>
       </Container>
     </MainLayout>

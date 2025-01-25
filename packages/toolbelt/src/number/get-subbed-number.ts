@@ -31,15 +31,15 @@ export const getSubbedNumber = ({
     ...options,
     maximumFractionDigits: 100,
   });
-  const parts = formatter.formatToParts(isNumber(value)
-    ? value
-    : Number(value));
+  const parts = formatter.formatToParts(
+    isNumber(value) ? value : Number(value),
+  );
 
   let finalNumber = "";
 
   forEach(parts, (part) => {
     if ("fraction" === part.type && part.value) {
-      const leadingZeroes = get((/^0+/u).exec(part.value), [0, "length"], 0);
+      const leadingZeroes = get(/^0+/u.exec(part.value), [0, "length"], 0);
 
       if (maxSubDigits < leadingZeroes && 1 > Number(value)) {
         const afterZeroes = part.value.slice(leadingZeroes);
@@ -55,8 +55,12 @@ export const getSubbedNumber = ({
         );
         finalNumber += `0:sub:${leadingZeroes - 1}:sub:${afterZerosString}`;
       } else {
-        finalNumber += padEnd(part.value, resolvedOptions.minimumFractionDigits, "0")
-        // eslint-disable-next-line sonar/argument-type
+        finalNumber += padEnd(
+          part.value,
+          resolvedOptions.minimumFractionDigits,
+          "0",
+        )
+          // eslint-disable-next-line sonar/argument-type
           .slice(0, resolvedOptions.maximumFractionDigits);
       }
     } else {

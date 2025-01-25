@@ -1,10 +1,12 @@
 import angularTS from "@angular-eslint/eslint-plugin";
 import angularTemplate from "@angular-eslint/eslint-plugin-template";
+import keys from "lodash/keys.js";
+
 import { genRules, getNonDeprecatedRules } from "./gen-rules.js";
 
 // @ts-expect-error this is ok
-const tsRuleNames = Object.keys(getNonDeprecatedRules(angularTS.rules));
-const templateRuleNames = Object.keys(
+const tsRuleNames = keys(getNonDeprecatedRules(angularTS.rules));
+const templateRuleNames = keys(
   // @ts-expect-error this is ok
   getNonDeprecatedRules(angularTemplate.rules),
 );
@@ -12,11 +14,11 @@ const templateRuleNames = Object.keys(
 const customTsRules = [
   {
     name: "directive-selector",
-    rule: ["error", { type: "attribute", prefix: "app", style: "camelCase" }],
+    rule: ["error", { prefix: "app", style: "camelCase", type: "attribute" }],
   },
   {
     name: "component-selector",
-    rule: ["error", { type: "element", prefix: "app", style: "kebab-case" }],
+    rule: ["error", { prefix: "app", style: "kebab-case", type: "element" }],
   },
 ];
 

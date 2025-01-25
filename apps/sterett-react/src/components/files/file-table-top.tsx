@@ -18,11 +18,7 @@ export const FileTableTop = ({
   return (
     <>
       <h1 className="mb-4 text-center text-2xl font-bold">
-        {
-          "meetingMinutesFiles" === query
-            ? "Meeting Minutes"
-            : "Files"
-        }
+        {"meetingMinutesFiles" === query ? "Meeting Minutes" : "Files"}
       </h1>
       <Input
         className="mb-4"

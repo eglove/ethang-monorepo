@@ -9,13 +9,11 @@ type GetCorsHeadersProperties = {
   origin: null | string | undefined;
 };
 
-const getCorsHeaders = (
-  {
-    headers = "Content-Type",
-    methods = "GET,POST,PUT,DELETE,OPTIONS",
-    origin,
-  }: GetCorsHeadersProperties,
-) => {
+const getCorsHeaders = ({
+  headers = "Content-Type",
+  methods = "GET,POST,PUT,DELETE,OPTIONS",
+  origin,
+}: GetCorsHeadersProperties) => {
   return {
     "Access-Control-Allow-Headers": headers,
     "Access-Control-Allow-Methods": methods,
@@ -35,9 +33,7 @@ export const createJsonResponse = (
     getCorsHeaders({ origin: request?.headers.get("Origin") }),
   );
 
-  return new globalThis.Response(isNil(data)
-    ? null
-    : JSON.stringify(data), {
+  return new globalThis.Response(isNil(data) ? null : JSON.stringify(data), {
     status: HTTP_STATUS[status],
     ...responseInit,
     headers,

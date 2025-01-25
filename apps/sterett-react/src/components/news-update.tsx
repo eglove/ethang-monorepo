@@ -12,24 +12,18 @@ type NewsUpdateProperties = {
 
 export const NewsUpdate = ({ data }: NewsUpdateProperties) => {
   return (
-    <Card
-      className="my-4 h-max w-full"
-      id={data._id}
-    >
+    <Card className="my-4 h-max w-full" id={data._id}>
       <CardHeader className="block">
-        <div className="font-semibold">
-          {data.title}
-        </div>
+        <div className="font-semibold">{data.title}</div>
       </CardHeader>
-      {
-        !isNil(data.description) &&
+      {!isNil(data.description) && (
         <>
           <Divider />
           <CardBody>
             <SanityContent value={data.description} />
           </CardBody>
         </>
-      }
+      )}
     </Card>
   );
 };

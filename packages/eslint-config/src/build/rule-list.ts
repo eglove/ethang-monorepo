@@ -1,7 +1,9 @@
 import { a11yRules } from "../setup/a11y.ts";
+import { angularTemplateRules, angularTsRules } from "../setup/angular.js";
 import { astroRules } from "../setup/astro.ts";
 import { barrelRules } from "../setup/barrel.ts";
 import { compatRules } from "../setup/compat.ts";
+import { cspellRules } from "../setup/cspell.js";
 import { dependRules } from "../setup/depend.ts";
 import { deprecatedRules } from "../setup/deprecated.ts";
 import { eslintRules } from "../setup/eslint.ts";
@@ -19,11 +21,12 @@ import { solidRules } from "../setup/solid.ts";
 import { sonarRules } from "../setup/sonar.ts";
 import { tailwindRules } from "../setup/tailwind.ts";
 import { tanstackQueryRules } from "../setup/tanstack-query.ts";
+import { tanstackRouterRules } from "../setup/tanstack-router.js";
 import { typescriptRules } from "../setup/typescript-eslint.ts";
 import { unicornRules } from "../setup/unicorn.ts";
-import { cspellRules } from "../setup/cspell.js";
-import { tanstackRouterRules } from "../setup/tanstack-router.js";
-import { angularTemplateRules, angularTsRules } from "../setup/angular.js";
+
+const eslintJson = "@eslint/json";
+const eslintJsonGithub = "https://github.com/eslint/json";
 
 export const ruleList = [
   {
@@ -198,32 +201,32 @@ export const ruleList = [
     url: "https://github.com/eslint/markdown",
   },
   {
-    importString: 'import json from "@eslint/json";',
+    importString: `import json from "${eslintJson}";`,
     list: jsonRules,
-    name: "@eslint/json",
+    name: eslintJson,
     order: 0,
     pluginName: "json",
     pluginValue: "json",
     type: "json",
-    url: "https://github.com/eslint/json",
+    url: eslintJsonGithub,
   },
   {
     list: jsonRules,
-    name: "@eslint/json",
+    name: eslintJson,
     order: 0,
     pluginName: "json",
     pluginValue: "json",
     type: "jsonc",
-    url: "https://github.com/eslint/json",
+    url: eslintJsonGithub,
   },
   {
     list: jsonRules,
-    name: "@eslint/json",
+    name: eslintJson,
     order: 0,
     pluginName: "json",
     pluginValue: "json",
     type: "json5",
-    url: "https://github.com/eslint/json",
+    url: eslintJsonGithub,
   },
   {
     importString: 'import astro from "eslint-plugin-astro";',

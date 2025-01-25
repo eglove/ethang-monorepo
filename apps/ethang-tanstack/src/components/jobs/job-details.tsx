@@ -17,44 +17,28 @@ type JobDetailsProperties = {
   job: (typeof api.jobs.getAll._returnType)[0];
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const listFormatter: { format: (values: string[]) => string } =
-// @ts-expect-error exists
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    new Intl.ListFormat(undefined, {
-      type: "unit",
-    });
+const listFormatter = new Intl.ListFormat(undefined, {
+  type: "unit",
+});
 
 export const JobDetails = ({ job }: Readonly<JobDetailsProperties>) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          aria-label="View Details"
-          size="sm"
-          variant="ghost"
-        >
+        <Button aria-label="View Details" size="sm" variant="ghost">
           <EyeIcon />
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {job.title}
-          </DialogTitle>
+          <DialogTitle>{job.title}</DialogTitle>
         </DialogHeader>
-        <DialogDescription>
-          {job.description}
-        </DialogDescription>
-        <TypographyH3>
-          Tech Used
-        </TypographyH3>
+        <DialogDescription>{job.description}</DialogDescription>
+        <TypographyH3>Tech Used</TypographyH3>
         <TypographyP className="!mt-0">
           {listFormatter.format(job.technologiesUsed)}
         </TypographyP>
-        <TypographyH3>
-          Methodologies Used
-        </TypographyH3>
+        <TypographyH3>Methodologies Used</TypographyH3>
         <TypographyP className="!mt-0">
           {listFormatter.format(job.methodologiesUsed)}
         </TypographyP>

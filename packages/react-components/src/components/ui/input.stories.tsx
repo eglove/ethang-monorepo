@@ -5,10 +5,5 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <Input
-      placeholder="Email"
-      type="email"
-    />
-  );
+  return <Input placeholder="Email" type="email" />;
 };

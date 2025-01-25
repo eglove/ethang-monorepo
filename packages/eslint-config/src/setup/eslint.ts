@@ -1,8 +1,9 @@
 import eslint from "@eslint/js";
+import keys from "lodash/keys.js";
 
 import { genRules } from "./gen-rules.ts";
 
-const ruleNames = Object.keys(eslint.configs.all.rules);
+const ruleNames = keys(eslint.configs.all.rules);
 const changedRules = [
   {
     name: "arrow-body-style",

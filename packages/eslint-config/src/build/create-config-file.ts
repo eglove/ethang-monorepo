@@ -1,5 +1,6 @@
+import map from "lodash/map.js";
 import { writeFileSync } from "node:fs";
-import { join } from "node:path";
+import path from "node:path";
 
 import type { ConfigFile } from "./update-rules.ts";
 
@@ -22,6 +23,7 @@ export const createConfigFile = async (
     return importStrings;
   });
 
+  // eslint-disable-next-line compat/compat
   const importList = [
     'import { ignores, languageOptions } from "./constants.js";',
     ...imports,
@@ -34,19 +36,19 @@ export const createConfigFile = async (
   }
 
   const configs = await Promise.all(
-    listConfigs.map(async (list) => {
+    map(listConfigs, async (list) => {
       return createConfig(list.name, list.options);
     }),
   );
 
   configFile += `\nexport default tseslint.config(
     ${configs.join("\n")}
-    ${fileName === "eslint.config.js" ? "eslintConfigPrettier," : ""}
-    ${fileName === "eslint.config.js" ? "eslintPluginPrettierRecommended," : ""}
+    ${"eslint.config.js" === fileName ? "eslintConfigPrettier," : ""}
+    ${"eslint.config.js" === fileName ? "eslintPluginPrettierRecommended," : ""}
   );\n`;
 
   writeFileSync(
-    join(import.meta.dirname, `../${fileName}`),
+    path.join(import.meta.dirname, `../${fileName}`),
     configFile,
     "utf8",
   );

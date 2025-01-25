@@ -342,9 +342,6 @@ importers:
       postcss:
         specifier: ^8.5.1
         version: 8.5.1
-      prettier:
-        specifier: ^3.4.2
-        version: 3.4.2
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.17(ts-node@10.9.2(@swc/core@1.10.1(@swc/helpers@0.5.15))(@types/node@22.10.10)(typescript@5.7.3))
@@ -689,6 +686,9 @@ importers:
       eslint-plugin-unicorn:
         specifier: ^56.0.1
         version: 56.0.1(eslint@9.19.0(jiti@2.4.0))
+      prettier:
+        specifier: ^3.4.2
+        version: 3.4.2
       typescript-eslint:
         specifier: ^8.21.0
         version: 8.21.0(eslint@9.19.0(jiti@2.4.0))(typescript@5.7.3)
@@ -696,6 +696,9 @@ importers:
       '@ethang/markdown-generator':
         specifier: workspace:^
         version: link:../markdown-generator
+      '@ethang/toolbelt':
+        specifier: workspace:^
+        version: link:../toolbelt
       '@types/eslint-plugin-jsx-a11y':
         specifier: ^6.10.0
         version: 6.10.0
@@ -705,15 +708,21 @@ importers:
       '@types/eslint__js':
         specifier: ^8.42.3
         version: 8.42.3
+      '@types/lodash':
+        specifier: ^4.17.14
+        version: 4.17.14
       '@types/node':
         specifier: ^22.10.10
         version: 22.10.10
-      prettier:
-        specifier: ^3.4.2
-        version: 3.4.2
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
 
   packages/hooks:
     dependencies:
@@ -992,22 +1001,31 @@ importers:
 
   packages/scripts:
     dependencies:
+      '@ethang/toolbelt':
+        specifier: workspace:^
+        version: link:../toolbelt
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
       sort-package-json:
         specifier: ^2.14.0
         version: 2.14.0
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
     devDependencies:
+      '@ethang/eslint-config':
+        specifier: workspace:^
+        version: link:../eslint-config
       '@types/lodash':
         specifier: ^4.17.14
         version: 4.17.14
       '@types/node':
         specifier: ^22.10.10
         version: 22.10.10
-      prettier:
-        specifier: ^3.4.2
-        version: 3.4.2
+      eslint:
+        specifier: ^9.19.0
+        version: 9.19.0(jiti@2.4.0)
 
   packages/store:
     dependencies:
@@ -8078,10 +8096,6 @@ packages:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
     engines: {node: '>= 8.10.0'}
 
-  chokidar@4.0.1:
-    resolution: {integrity: sha512-n8enUVCED/KVRQlab1hr3MVpcVMvxtZjmEa956u+4YijlmQED223XMSYj2tLuKvr4jcCTzNNMpQDUer72MMmzA==}
-    engines: {node: '>= 14.16.0'}
-
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
@@ -12630,10 +12644,6 @@ packages:
   readdirp@3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
     engines: {node: '>=8.10.0'}
-
-  readdirp@4.0.2:
-    resolution: {integrity: sha512-yDMz9g+VaZkqBYS/ozoBJwaBhTbZo3UNYQHNRw1D3UFQB8oHB4uS/tAODO+ZLjGWmUbKnIlOWO+aaIiAxrUWHA==}
-    engines: {node: '>= 14.16.0'}
 
   readdirp@4.1.1:
     resolution: {integrity: sha512-h80JrZu/MHUZCyHu5ciuoI0+WxsCxzxJTILn6Fs8rxSnFPh+UVHYfeIxK1nVGugMqkfC4vJcBOYbkfkwYK0+gw==}
@@ -23585,10 +23595,6 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  chokidar@4.0.1:
-    dependencies:
-      readdirp: 4.0.2
-
   chokidar@4.0.3:
     dependencies:
       readdirp: 4.1.1
@@ -29298,8 +29304,6 @@ snapshots:
     dependencies:
       picomatch: 2.3.1
 
-  readdirp@4.0.2: {}
-
   readdirp@4.1.1: {}
 
   recast@0.23.9:
@@ -30699,7 +30703,7 @@ snapshots:
     dependencies:
       bundle-require: 5.0.0(esbuild@0.24.0)
       cac: 6.7.14
-      chokidar: 4.0.1
+      chokidar: 4.0.3
       consola: 3.2.3
       debug: 4.3.7
       esbuild: 0.24.0

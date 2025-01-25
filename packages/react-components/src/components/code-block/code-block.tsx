@@ -14,10 +14,7 @@ export const CodeBlock = ({
 }: Readonly<CodeProperties>) => {
   return (
     <div className={className}>
-      <SyntaxHighlighter
-        language={language}
-        style={nightOwl}
-      >
+      <SyntaxHighlighter language={language} style={nightOwl}>
         {children}
       </SyntaxHighlighter>
     </div>

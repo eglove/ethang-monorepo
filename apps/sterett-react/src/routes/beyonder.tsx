@@ -28,28 +28,22 @@ export const BeyonderRoute = () => {
         <BeyonderLinks />
         <BeyonderAddress />
         <div className="grid w-full gap-4 p-2">
-          {
-            map(data, (datum) => {
-              return (
-                <Event
-                  colors={
-                    {
-                      eventBackground: "beyonderGreen",
-                      eventText: "text-white",
-                    }
-                  }
-                  iconMeta={
-                    {
-                      alt: "Beyonder Camp",
-                      src: "/images/beyonder.png",
-                    }
-                  }
-                  data={datum}
-                  key={datum._id}
-                />
-              );
-            })
-          }
+          {map(data, (datum) => {
+            return (
+              <Event
+                colors={{
+                  eventBackground: "beyonderGreen",
+                  eventText: "text-white",
+                }}
+                iconMeta={{
+                  alt: "Beyonder Camp",
+                  src: "/images/beyonder.png",
+                }}
+                data={datum}
+                key={datum._id}
+              />
+            );
+          })}
         </div>
       </Container>
     </MainLayout>

@@ -1,15 +1,13 @@
 import { cn } from "@/lib/utils.ts";
 import { Link, type LinkComponent } from "@tanstack/react-router";
 import isString from "lodash/isString.js";
-import {
-  type JSX,
-  type PropsWithChildren,
-  useMemo,
-} from "react";
+import { type JSX, type PropsWithChildren, useMemo } from "react";
 
-type TypographyLinkProperties = LinkComponent<"a"> & Omit<JSX.IntrinsicElements["a"], "target"> & PropsWithChildren<{
-  className?: string;
-}>;
+type TypographyLinkProperties = LinkComponent<"a"> &
+  Omit<JSX.IntrinsicElements["a"], "target"> &
+  PropsWithChildren<{
+    className?: string;
+  }>;
 
 export const TypographyLink = ({
   children,
@@ -17,7 +15,11 @@ export const TypographyLink = ({
   ...rest
 }: Readonly<TypographyLinkProperties>) => {
   const isExternal = useMemo(() => {
-    if (isString(rest.href) && URL.canParse(rest.href) && "undefined" !== typeof globalThis) {
+    if (
+      isString(rest.href) &&
+      URL.canParse(rest.href) &&
+      "undefined" !== typeof globalThis
+    ) {
       const url = new URL(rest.href);
       const baseUrl = new URL(globalThis.location.href);
 
@@ -32,13 +34,9 @@ export const TypographyLink = ({
   return (
     <Link
       {...rest}
-      target={
-        isExternal
-          ? "_blank"
-          : ""
-      }
       className={cn("leading-7 underline underline-offset-2", className)}
       href={undefined}
+      target={isExternal ? "_blank" : ""}
       to={rest.href}
     >
       {children}

@@ -1,7 +1,13 @@
 import cspell from "@cspell/eslint-plugin";
-import { CustomRules, genRules, getNonDeprecatedRules } from "./gen-rules.js";
+import keys from "lodash/keys.js";
 
-const ruleNames = Object.keys(getNonDeprecatedRules(cspell.rules));
+import {
+  type CustomRules,
+  genRules,
+  getNonDeprecatedRules,
+} from "./gen-rules.js";
+
+const ruleNames = keys(getNonDeprecatedRules(cspell.rules));
 
 const customRules: CustomRules = [
   {
@@ -62,6 +68,8 @@ const customRules: CustomRules = [
             "ngsw",
             "dexie",
             "leetcode",
+            "ngsrc",
+            "sindresorhus",
           ],
         },
       },
