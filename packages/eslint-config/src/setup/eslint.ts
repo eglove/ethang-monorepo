@@ -6,7 +6,7 @@ const ruleNames = Object.keys(eslint.configs.all.rules);
 const changedRules = [
   {
     name: "arrow-body-style",
-    rule: ["error", "always"],
+    rule: "off",
   },
   {
     name: "camelcase",
@@ -210,6 +210,10 @@ const changedRules = [
   },
   {
     name: "one-var",
+    rule: "off",
+  },
+  {
+    name: "prefer-arrow-callback",
     rule: "off",
   },
   {

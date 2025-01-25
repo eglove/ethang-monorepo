@@ -17,15 +17,15 @@ import {
 } from "../setup/react.ts";
 import { solidRules } from "../setup/solid.ts";
 import { sonarRules } from "../setup/sonar.ts";
-import { stylisticRules } from "../setup/stylistic.ts";
 import { tailwindRules } from "../setup/tailwind.ts";
 import { tanstackQueryRules } from "../setup/tanstack-query.ts";
 import { typescriptRules } from "../setup/typescript-eslint.ts";
 import { unicornRules } from "../setup/unicorn.ts";
 import { cspellRules } from "../setup/cspell.js";
 import { tanstackRouterRules } from "../setup/tanstack-router.js";
-import { stylisticTsRules } from "../setup/stylistic-ts.js";
 import { angularTemplateRules, angularTsRules } from "../setup/angular.js";
+import { prettierConfigRules } from "../setup/prettier-config.js";
+import { prettierPluginRules } from "../setup/prettier-plugin.js";
 
 export const ruleList = [
   {
@@ -129,30 +129,10 @@ export const ruleList = [
     url: "https://github.com/francoismassart/eslint-plugin-tailwindcss",
   },
   {
-    importString: 'import stylistic from "@stylistic/eslint-plugin";',
-    list: stylisticRules,
-    name: "@stylistic/eslint-plugin",
-    order: 10,
-    pluginName: "stylistic",
-    pluginValue: "stylistic",
-    type: "core",
-    url: "https://eslint.style/",
-  },
-  {
-    importString: 'import stylisticTs from "@stylistic/eslint-plugin-ts";',
-    list: stylisticTsRules,
-    name: "@stylistic/eslint-plugin-ts",
-    order: 11,
-    pluginName: "stylistic-ts",
-    pluginValue: "stylisticTs",
-    type: "core",
-    url: "https://eslint.style/",
-  },
-  {
     importString: 'import perfectionist from "eslint-plugin-perfectionist";',
     list: perfectionistRules,
     name: "eslint-plugin-perfectionist",
-    order: 12,
+    order: 10,
     pluginName: "perfectionist",
     pluginValue: "perfectionist",
     type: "core",
@@ -162,7 +142,7 @@ export const ruleList = [
     importString: 'import tanstackQuery from "@tanstack/eslint-plugin-query";',
     list: tanstackQueryRules,
     name: "@tanstack/eslint-plugin-query",
-    order: 13,
+    order: 11,
     pluginName: "@tanstack/query",
     pluginValue: "tanstackQuery",
     type: "core",
@@ -173,7 +153,7 @@ export const ruleList = [
       'import tanstackRouter from "@tanstack/eslint-plugin-router";',
     list: tanstackRouterRules,
     name: "@tanstack/eslint-plugin-router",
-    order: 14,
+    order: 12,
     pluginName: "@tanstack/router",
     pluginValue: "tanstackRouter",
     type: "core",
@@ -183,7 +163,7 @@ export const ruleList = [
     importString: 'import a11y from "eslint-plugin-jsx-a11y";',
     list: a11yRules,
     name: "jsx-a11y",
-    order: 15,
+    order: 13,
     pluginName: "a11y",
     pluginValue: "a11y",
     type: "core",
@@ -193,7 +173,7 @@ export const ruleList = [
     importString: undefined,
     list: deprecatedRules,
     name: "@eslint/js",
-    order: 16,
+    order: 14,
     pluginName: undefined,
     pluginValue: undefined,
     type: "core",
@@ -203,11 +183,31 @@ export const ruleList = [
     importString: 'import cspell from "@cspell/eslint-plugin";',
     list: cspellRules,
     name: "@cspell/eslint-plugin",
-    order: 17,
+    order: 15,
     pluginName: "cspell",
     pluginValue: "cspell",
     type: "core",
     url: "https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell-eslint-plugin",
+  },
+  {
+    importString: 'import prettierConfig from "eslint-config-prettier";',
+    list: prettierConfigRules,
+    name: "eslint-config-prettier",
+    order: 16,
+    pluginName: "prettierConfig",
+    pluginValue: "prettierConfig",
+    type: "core",
+    url: "https://github.com/prettier/eslint-config-prettier",
+  },
+  {
+    importString: 'import prettierPlugin from "eslint-plugin-prettier";',
+    list: prettierPluginRules,
+    name: "eslint-plugin-prettier",
+    order: 17,
+    pluginName: "prettierPlugin",
+    pluginValue: "prettierPlugin",
+    type: "core",
+    url: "https://github.com/prettier/eslint-plugin-prettier",
   },
   {
     importString: 'import markdown from "@eslint/markdown";',
