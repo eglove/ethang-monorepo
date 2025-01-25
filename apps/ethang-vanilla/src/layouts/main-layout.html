@@ -6,7 +6,6 @@
     <base href="<%- baseUrl %>" />
     <meta name="description" content="Messin' around on the web sometimes." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
     <link
       rel="apple-touch-icon"
       sizes="180x180"
@@ -44,6 +43,10 @@
   </script>
   <style>
     ${ style }
+
+    @view-transition {
+      navigation: auto;
+    }
   </style>
   <body>
     <div class="grid sm:grid-cols-[auto_1fr] gap-4">
