@@ -3,9 +3,6 @@ Update-Module PSWindowsUpdate
 Get-WindowsUpdate -MicrosoftUpdate -AcceptAll -Install
 docker system prune -af
 
-# Visual Studio Update
-dotnet tool update -g dotnet-vs
-
 # NPM globals
 pnpm self-update
 pnpm up -g --latest

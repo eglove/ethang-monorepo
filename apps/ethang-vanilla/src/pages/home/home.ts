@@ -11,6 +11,11 @@ export const homeTemplate = async () => {
     compileParameters: {
       blogs: [
         {
+          id: "javascript-standard-library",
+          link: "./blog/javascript-standard-library/",
+          title: "JavaScript Standard Library",
+        },
+        {
           id: "looking-at-no-misused-spread",
           link: "./blog/looking-at-no-misused-spread/",
           title: "Looking At: no-misused-spread",

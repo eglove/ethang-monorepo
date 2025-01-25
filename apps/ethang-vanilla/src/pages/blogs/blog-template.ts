@@ -41,6 +41,10 @@ export const blogs: BlogTemplateProperties[] = [
     fileSlug: "mimetic-desire",
     title: "Mimetic Desire",
   },
+  {
+    fileSlug: "javascript-standard-library",
+    title: "JavaScript Standard Library",
+  },
 ];
 
 export const blogTemplate = async (properties: BlogTemplateProperties) => {
