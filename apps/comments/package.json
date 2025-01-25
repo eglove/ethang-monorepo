@@ -18,17 +18,17 @@
     "lint": "pnpm cf-typegen && eslint src --fix"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.6.6",
+    "@cloudflare/vitest-pool-workers": "^0.6.7",
     "@cloudflare/workers-types": "^4.20250124.3",
     "@ethang/eslint-config": "workspace:^",
     "@types/lodash": "^4.17.14",
     "@types/uuid": "^10.0.0",
     "typescript": "^5.5.2",
-    "wrangler": "^3.105.0"
+    "wrangler": "^3.105.1"
   },
   "dependencies": {
     "@ethang/toolbelt": "workspace:^",
-    "eslint": "^9.18.0",
+    "eslint": "^9.19.0",
     "lodash": "^4.17.21",
     "uuid": "^11.0.5",
     "zod": "^3.24.1"
