@@ -60,7 +60,13 @@ export default {
           return "application/rss+xml" === get(link, ["attribs", "type"]);
         }),
         (element) => {
-          return get(element, ["attribs", "href"]);
+          const hrefText = get(element, ["attribs", "href"]);
+
+          if (URL.canParse(hrefText)) {
+            return hrefText;
+          }
+
+          return new URL(hrefText, url).href;
         },
       );
 
