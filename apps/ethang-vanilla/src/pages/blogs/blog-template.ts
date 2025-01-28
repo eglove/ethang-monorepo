@@ -45,11 +45,16 @@ export const blogs: BlogTemplateProperties[] = [
     fileSlug: "javascript-standard-library",
     title: "JavaScript Standard Library",
   },
+  {
+    fileSlug: "extract",
+    title: "Extract",
+  },
 ];
 
 export const blogTemplate = async (properties: BlogTemplateProperties) => {
   const styles = await getStyles();
 
+  // @ts-expect-error dunno
   const contentTemplate = compileTemplate({
     compileParameters: properties.compileParameters,
     filePath: `./src/pages/blogs/${properties.fileSlug}/${properties.fileSlug}.html`,
