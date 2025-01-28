@@ -22,7 +22,7 @@
   "devDependencies": {
     "@ethang/eslint-config": "workspace:^",
     "@ethang/project-builder": "workspace:^",
-    "@types/lodash": "^4.17.14",
+    "@types/lodash": "^4.17.15",
     "eslint": "^9.19.0",
     "vitest": "^3.0.4"
   },
