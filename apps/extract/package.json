@@ -1,0 +1,36 @@
+{
+  "browserslist": [
+    "defaults and fully supports es6-module",
+    "maintained node versions"
+  ],
+  "dependencies": {
+    "@ethang/toolbelt": "workspace:^",
+    "cheerio": "^1.0.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.6.4",
+    "@cloudflare/workers-types": "^4.20250124.3",
+    "@ethang/eslint-config": "workspace:^",
+    "@types/lodash": "^4.17.15",
+    "eslint": "^9.19.0",
+    "typescript": "^5.5.2",
+    "vitest": "2.1.8",
+    "wrangler": "^3.106.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "name": "extract",
+  "private": true,
+  "scripts": {
+    "cf-typegen": "wrangler types",
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "lint": "eslint src --fix",
+    "start": "wrangler dev",
+    "test": "vitest"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}

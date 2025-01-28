@@ -60,6 +60,11 @@ export default {
       return verifyToken(request, environment);
     }
 
-    return createJsonResponse({ error: "Not Found" }, "NOT_FOUND", request);
+    return createJsonResponse(
+      { error: "Not Found" },
+      "NOT_FOUND",
+      undefined,
+      request,
+    );
   },
 } satisfies ExportedHandler<Env>;
