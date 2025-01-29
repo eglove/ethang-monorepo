@@ -15,7 +15,7 @@
     "@types/lodash": "^4.17.15",
     "eslint": "^9.19.0",
     "typescript": "^5.5.2",
-    "vitest": "2.1.8",
+    "vitest": "3.0.4",
     "wrangler": "^3.106.0"
   },
   "engines": {
@@ -28,8 +28,7 @@
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "lint": "eslint src --fix",
-    "start": "wrangler dev",
-    "test": "vitest"
+    "start": "wrangler dev"
   },
   "type": "module",
   "version": "0.0.0"
