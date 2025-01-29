@@ -43,7 +43,7 @@ export const blogs: BlogTemplateProperties[] = [
   },
   {
     fileSlug: "javascript-standard-library",
-    title: "JavaScript Standard Library",
+    title: "Why You Should Install That JS Library",
   },
   {
     fileSlug: "extract",

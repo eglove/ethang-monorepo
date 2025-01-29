@@ -1,91 +1,100 @@
 <main class="prose">
-    <script type="module">
-        const form = document.querySelector('form');
-        const contentElement = document.querySelector('[data-id=data]');
-        const submitButton = document.querySelector('[data-id=submit-button]');
-        const loadingElement = document.querySelector('[data-id=loading]');
+  <script type="module">
+    const form = document.querySelector("form");
+    const contentElement = document.querySelector("[data-id=data]");
+    const submitButton = document.querySelector("[data-id=submit-button]");
+    const loadingElement = document.querySelector("[data-id=loading]");
 
-        const setContentClass = (className, message) => {
-            contentElement.classList.remove(...contentElement.classList.values());
+    const setContentClass = (className, message) => {
+      contentElement.classList.remove(...contentElement.classList.values());
 
-            contentElement.classList.add(className);
+      contentElement.classList.add(className);
 
-            if (message) {
-                contentElement.textContent = message;
-            }
+      if (message) {
+        contentElement.textContent = message;
+      }
+    };
+
+    const toggleSubmitButton = (isLoading) => {
+      submitButton.disabled = isLoading;
+      loadingElement.classList.toggle("hidden", !isLoading);
+    };
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      toggleSubmitButton(true);
+
+      const formData = new FormData(form);
+      const url = formData.get("url");
+      console.log(url);
+
+      if (!URL.canParse(url)) {
+        setContentClass("text-error", "Invalid URL");
+        toggleSubmitButton(false);
+        return;
+      }
+
+      const extractUrl = new URL("https://extract.ethang.dev/");
+      extractUrl.searchParams.set("url", url);
+
+      const response = await fetch(extractUrl);
+
+      if (!response.ok) {
+        setContentClass("text-error", "Error fetching data");
+        toggleSubmitButton(false);
+        return;
+      }
+
+      const json = await response.json();
+
+      if (!Array.isArray(json.data)) {
+        setContentClass("text-error", "No data found");
+        toggleSubmitButton(false);
+        return;
+      }
+
+      setContentClass("has-links");
+      const ul = document.createElement("ul");
+      contentElement.append(ul);
+      for (const datum of json.data) {
+        const li = document.createElement("li");
+        ul.append(li);
+        const link = document.createElement("a");
+
+        if (URL.canParse(datum)) {
+          link.textContent = datum;
+          link.href = datum;
+        } else {
+          const fullUrl = new URL(datum, url);
+          link.textContent = fullUrl.href;
+          link.href = fullUrl.href;
         }
+        link.target = "_blank";
+        li.append(link);
+      }
 
-        const toggleSubmitButton = (isLoading) => {
-            submitButton.disabled = isLoading;
-            loadingElement.classList.toggle('hidden', !isLoading);
-        }
-
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            toggleSubmitButton(true);
-
-            const formData = new FormData(form);
-            const url = formData.get('url');
-            console.log(url)
-
-            if (!URL.canParse(url)) {
-                setContentClass('text-error', 'Invalid URL');
-                toggleSubmitButton(false);
-                return;
-            }
-
-            const extractUrl = new URL('https://extract.ethang.dev/');
-            extractUrl.searchParams.set('url', url);
-
-            const response = await fetch(extractUrl);
-
-            if (!response.ok) {
-                setContentClass('text-error', 'Error fetching data');
-                toggleSubmitButton(false);
-                return;
-            }
-
-            const json = await response.json();
-
-            if (!Array.isArray(json.data)) {
-                setContentClass('text-error', 'No data found');
-                toggleSubmitButton(false);
-                return;
-            }
-
-            setContentClass('has-links')
-            const ul = document.createElement('ul');
-            contentElement.append(ul);
-            for (const datum of json.data) {
-                const li = document.createElement('li');
-                ul.append(li);
-                const link = document.createElement('a');
-
-                if (URL.canParse(datum)) {
-                    link.textContent = datum;
-                    link.href = datum;
-                } else {
-                    const fullUrl = new URL(datum, url);
-                    link.textContent = fullUrl.href;
-                    link.href = fullUrl.href;
-                }
-                link.target = '_blank';
-                li.append(link);
-            }
-
-            toggleSubmitButton(false);
-        });
-    </script>
-    <p>Grab RSS feeds from the markup of a page. This is a Cloudflare Worker service used by my other apps.</p>
-    <form>
-        <label class="input input-bordered flex items-center gap-2">
-            URL:
-            <input type="text" class="grow" id="url" name="url" placeholder="https://news.ycombinator.com/">
-        </label>
-        <button class="btn btn-neutral my-4" data-id="submit-button" type="submit">
-            Get Feed
-            <span data-id="loading" class="loading loading-spinner hidden"></span>
-        </button>
-    </form>
-    <div data-id="data" class="hidden"></div>
+      toggleSubmitButton(false);
+    });
+  </script>
+  <p>
+    Grab RSS feeds from the markup of a page. This is a Cloudflare Worker
+    service used by my other apps.
+  </p>
+  <form>
+    <label class="input input-bordered flex items-center gap-2">
+      URL:
+      <input
+        type="text"
+        class="grow"
+        id="url"
+        name="url"
+        placeholder="https://news.ycombinator.com/"
+      />
+    </label>
+    <button class="btn btn-neutral my-4" data-id="submit-button" type="submit">
+      Get Feed
+      <span data-id="loading" class="loading loading-spinner hidden"></span>
+    </button>
+  </form>
+  <div data-id="data" class="hidden"></div>
 </main>

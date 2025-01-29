@@ -1,312 +1,331 @@
 <main class="prose">
-    <h1>JavaScript: The Standard Library</h1>
-    <p>
-        One of the most requested features for JavaScript is for a standard
-        library.
-        But what does that mean? Isn't everything on the global window object a
-        part
-        of a "standard library"?
-    </p>
-    <p>
-        JavaScript provides some things like Math, Date, JSON, Intl, and fetch.
-        But
-        these are relatively limited compared to languages like Python, Java,
-        and
-        C#.
-    </p>
-    <p>
-        What would JavaScript need to qualify as "having a standard library"? I
-        don't think there is a definitive answer to this. But below is a set of
-        standard, mature libraries that can help make up for where JS is
-        lacking.
-    </p>
+  <h1>Why You Should Install That JS Library</h1>
+  <p>
+    One of the most requested features for JavaScript is for a standard library.
+    But what does that mean? Isn't everything on the global window object a part
+    of a "standard library"?
+  </p>
+  <p>
+    JavaScript provides some things like Math, Date, JSON, Intl, and fetch. But
+    these are relatively limited compared to languages like Python, Java, and
+    C#.
+  </p>
+  <p>
+    What would JavaScript need to qualify as "having a standard library"? I
+    don't think there is a definitive answer to this. But below is a set of
+    standard, mature libraries that can help make up for where JS is lacking.
+  </p>
 
-    <h2>What makes up a standard library</h2>
-
-    <ul>
-        <li>
-            <strong>Standard Error Handling</strong>: An ergonomic way to handle
-            errors such as via types Result&lt;T&gt;, typed returns, or a build
-            time
-            awareness of uncaught throws.
-        </li>
-        <li>
-            <strong>Data Manipulation</strong>
-            : Advanced data structures such as Map, Set, Queue, Graphs, Trees,
-            etc.,
-            as well as common utilities to handle deep copying, sorting
-            collections
-            efficiently, etc.
-        </li>
-        <li>
-            <strong>Time and Date Handling</strong>
-            : Full support for data and time with timezones as well as utilities
-            to
-            handle calendars.
-        </li>
-        <li>
-            <strong>Networking</strong>: Standardized APIs for sockets,
-            WebSockets,
-            and HTTP.
-        </li>
-        <li>
-            <strong>Concurrency/Asynchrony</strong>: High-level abstractions for
-            managing async workflows. (event emitters, task queues, worker
-            threads)
-        </li>
-        <li>
-            <strong>String and Regular Expression Utilities</strong>: Built-in
-            utilities for efficient manipulation of strings or pattern matching.
-            Standardized functions for natural language processing
-            (tokenization,
-            stemming, etc.)
-        </li>
-        <li>
-            <strong>URL Parsing</strong>: Common utilities for URL parsing, query
-            strings, encoding/decoding structured data types.
-        </li>
-        <li>
-            <strong>Mathematics and Randomness</strong>: Support for working
-            with
-            vectors, matrices, and general numeric computing. As well as PRNG
-            utilities for reproducible randomness.
-        </li>
-        <li>
-            <strong>File I/O</strong>: Methods to write files directly,
-            available for
-            browser environments and server-side. The browser File System API
-            has
-            limited user interaction, limited scope, limited file metadata, no
-            support
-            for watching directories, batch file management, symlinks, file
-            locks, or
-            any standard API to handle remote files. (FTP, HTTP, S3, etc.). The
-            node
-            fs module has inconsistent platform handling, higher level
-            abstractions
-            for temporary directories, atomic writes and retry mechanism are
-            missing.
-            It also has no standard interface to handle remote files and no
-            built-in
-            compression.
-        </li>
-        <li>
-            <strong>Cryptography</strong>: Standardized, secure solution for
-            hashing,
-            encryption, and public/private key operations.
-        </li>
-        <li>
-            <strong>OS Level Control</strong>: Access to environment variables,
-            parallel threads (with robust abstractions), process management.
-        </li>
-    </ul>
-
-    <h2>The Libraries</h2>
-
-    <p>
-        <strong
-        ><a href="https://lodash.com/docs/" target="_blank">lodash</a>:</strong
-        >
-        Safely and elegantly handle JS type coercion without throws. Functional
-        error handling. Deep object cloning. Collection handling. Functional
-        methods
-        such as flow (pipe pattern). Complex string manipulation such as casing
-        and
-        HTML escape.
-    </p>
-
-    <p>
-        <strong
-        ><a href="https://moment.github.io/luxon/#/" target="_blank">Luxon</a
-        >:</strong
-        >
-        (<a
-            href="https://developer.mozilla.org/en-US/blog/javascript-temporal-is-coming/"
-            target="_blank"
-    >Temporal is still experimental</a
-    >). As this article says, "The major issues with JavaScript's Date object
-        are that it only supports the user's local time and UTC, and there's no
-        time
-        zone support. Additionally, its parsing behavior is very unreliable, and
-        Date itself is mutable, which can introduce hard-to-trace bugs. There
-        are
-        other problems like calculations across Daylight Saving Time (DST) and
-        historical calendar changes, which are notoriously difficult to work
-        with."
-    </p>
-
-    <p>
-        <strong
-        ><a href="https://tanstack.com/table/latest" target="_blank"
-        >TanStack Query</a
-        >:</strong
-        >
-        Asynchronous state management, retries, queues, deduplication, error
-        handling, invalidation, etc.
-    </p>
-
-    <p>
-        <strong
-        ><a href="https://tanstack.com/table/latest/" target="_blank"
-        >TanStack Table</a
-        >:</strong
-        >
-        Table data state management and utilities.
-    </p>
-
-    <p>
-        <strong
-        ><a href="https://tanstack.com/form/latest/" target="_blank"
-        >TanStack Form</a
-        >:</strong
-        >
-        Form state management and utilities.
-    </p>
-
-    <p>
-        <strong
-        ><a href="https://tanstack.com/store/latest" target="_blank"
-        >TanStack Store</a
-        >:</strong
-        >
-        Generic reactive state management.
-    </p>
-
-    <p>
-        <strong
-        ><a href="https://github.com/ljharb/qs" target="_blank">qs</a>:</strong
-        >
-        The native URL and URLSearchParams objects are great. But they cannot
-        handle
-        nested objects, arrays, serialization, and provide no utility for
-        relative
-        paths.
-    </p>
-
-    <p>
-        <strong
-        ><a href="https://www.npmjs.com/package/cookie"
-            target="_blank">cookie</a
-        >:</strong
-        >
-        Manipulating cookie headers often involves custom string parsing,
-        combining
-        headers, deduplication, and normalization.
-    </p>
-
-    <p>
-        <strong
-        ><a href="https://data-structure-typed-docs.vercel.app/" target="_blank"
-        >data-structure-typed</a
-        >:</strong
-        >
-        Provides typed interfaces and performant implementations of advanced
-        data
-        structures like queues, graphs, trees, etc.
-    </p>
-
-    <p>
-        <strong
-        ><a href="https://cortexjs.io/compute-engine/" target="_blank"
-        >CortexJS Compute Engine</a
-        >:</strong
-        >
-        Complex math including constants such as ExponentialE and
-        MachineEpsilon,
-        calculus expressions, imaginary and complex number support, numeric
-        domains,
-        mathematical functions, linear algebra support, statistics support,
-        trigonometry support.
-    </p>
-
-    <p>
-        <strong
-        ><a
-                href="https://hyperfetch.bettertyped.com/docs/documentation/getting-started/comparison/"
-                target="_blank"
-        >Hyper Fetch</a
-        >:</strong
-        >
-        Standardized APIs for data exchange including sockets and handling
-        caching,
-        queueing, offline support, and persistence.
-    </p>
-
-    <p>
-        <strong><a href="https://github.com/zen-fs">ZenFS</a>:</strong>
-        Isomorphic
-        virtual file system with standardized API using various backends.
-        (In-memory, IndexedDB, localStorage, etc.)
-    </p>
-
-    <p>
-        <strong
-        ><a href="https://github.com/andywer/threads.js" target="_blank"
-        >threads.js</a
-        >:</strong
-        >
-        Isomorphic way to manage parallel tasks with worker threads.
-    </p>
-
-    <p>
-        <strong
-        ><a href="https://github.com/NaturalNode/natural" target="_blank"
-        >natural</a
-        >:</strong
-        >
-        Natural language processing for Bayesian and Logistic Regression
-        Classifiers, Entropy, Sentiment Analysis, etc.
-    </p>
-
-    <p>
-        <strong><a href="https://tailwindcss.com/"
-                   target="_blank">TailwindCSS</a>:</strong> It's true, CSS best
-        practices don't
-        work. They don't fit modern component driven design, using CSS
-        without theming or post-processing is a nightmare. There is just
-        no reason to use vanilla CSS.
-    </p>
-
-    <p><strong>General serialization and file parsers:</strong></p>
-    <ul>
-        <li>
-            <a href="https://github.com/brianloveswords/base64url"
-               target="_blank"
-            >base64Url</a
+  <div class="overflow-x-auto">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Vanilla</th>
+          <th>Library</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Build Time Features</td>
+          <td class="text-error">None</td>
+          <td class="text-success">
+            <a href="https://www.typescriptlang.org/" target="_blank"
+              >TypeScript</a
+            >, adds build-time type checking, enums, decorators, and namespaces.
+          </td>
+        </tr>
+        <tr>
+          <td>Linting</td>
+          <td class="text-error">None</td>
+          <td class="text-success">
+            <a href="https://eslint.org/" target="_blank">EsLint</a>, broad
+            support and ecosystem
+          </td>
+        </tr>
+        <tr>
+          <td>Standard Formatting</td>
+          <td class="text-error">None</td>
+          <td class="text-success">
+            <a href="https://prettier.io/" target="_blank">Prettier</a>,
+            opinionated formatting standards
+          </td>
+        </tr>
+        <tr>
+          <td>Standard Error Handling</td>
+          <td class="text-error">Error objects do not qualify</td>
+          <td class="text-success">
+            lodash
+            <a href="https://lodash.com/docs/4.17.15#attempt" target="_blank"
+              >attempt</a
+            >/<a href="https://lodash.com/docs/4.17.15#isError" target="_blank"
+              >isError</a
             >
-        </li>
-        <li>
-            <a href="https://github.com/nodeca/js-yaml"
-               target="_blank">js-yaml</a>
-        </li>
-        <li>
-            <a href="https://github.com/Leonidas-from-XIV/node-xml2js"
-               target="_blank"
-            >xml2js</a
+          </td>
+        </tr>
+        <tr>
+          <td>Typed Throws</td>
+          <td class="text-error">
+            JS has no awareness or build time metadata or what throws.
+          </td>
+          <td class="text-error">No known definite solutions.</td>
+        </tr>
+        <tr>
+          <td>Advanced Data Structures</td>
+          <td class="text-warning">
+            Very limited (<a
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map"
+              target="_blank"
+              >Map</a
+            >/<a
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set"
+              target="_blank"
+              >Set</a
+            >)
+          </td>
+          <td class="text-success">
+            Well-supported by
+            <a
+              href="https://data-structure-typed-docs.vercel.app/"
+              target="_blank"
+              >data-structure-typed</a
             >
-        </li>
-        <li>
-            <a href="https://github.com/msgpack/msgpack-javascript"
-               target="_blank"
-            >msgpack</a
+          </td>
+        </tr>
+        <tr>
+          <td>Data Structure Utilities</td>
+          <td class="text-error">
+            Inconsistent interfaces for objects, arrays, strings, etc. Generally
+            throws on error.
+          </td>
+          <td class="text-success">
+            Generic "collection" methods provided by
+            <a href="https://lodash.com/" target="_blank">lodash</a>. Generally
+            uses graceful fallbacks on error.
+          </td>
+        </tr>
+        <tr>
+          <td>Time/Date Handling</td>
+          <td class="text-warning">
+            <a
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
+              target="_blank"
+              >Date</a
             >
-        </li>
-        <li>
-            <a href="https://github.com/protobufjs/protobuf.js" target="_blank"
-            >protobuf.js</a
+            does not support timezones, provide calendar utilities, unreliable
+            parsing behaviors, mutable. (<a
+              href="https://developer.mozilla.org/en-US/blog/javascript-temporal-is-coming/"
+              target="_blank"
+              >See Temporal blog</a
+            >.)
+          </td>
+          <td class="text-success">
+            <a href="https://moment.github.io/luxon/#/" target="_blank">Luxon</a
+            >, standard interface with timezone support, format parsing, and
+            calendar utilities.
+          </td>
+        </tr>
+        <tr>
+          <td>DOM Manipulation</td>
+          <td class="text-warning">Very basic, imperative methods</td>
+          <td class="text-success">
+            <a href="https://react.dev/" target="_blank">React</a> (most
+            popular), reactive and declarative.
+          </td>
+        </tr>
+        <tr>
+          <td>Styling</td>
+          <td class="text-warning">
+            CSS, robust but has not evolved with the web. Contradicts component
+            driven design.
+          </td>
+          <td class="text-success">
+            <a href="https://tailwindcss.com/" target="_blank">TailwindCSS</a>,
+            uses modern best practices like component-driven design, strips
+            unused styles for performance, adds themeing support for consistent
+            design systems.
+          </td>
+        </tr>
+        <tr>
+          <td>Cookies</td>
+          <td class="text-error">
+            Strings only from headers or document.cookie no parsing or
+            utilities.
+          </td>
+          <td class="text-success">
+            <a href="https://www.npmjs.com/package/cookie" target="_blank"
+              >cookie</a
+            >, handles parsing, combining headers, deduplication, and
+            normalization.
+          </td>
+        </tr>
+        <tr>
+          <td>Reactive state management (Observers)</td>
+          <td class="text-error">None</td>
+          <td class="text-success">
+            <a href="https://tanstack.com/store/latest" target="_blank"
+              >TanStack Store</a
+            >, generic state management with framework adapters.
+          </td>
+        </tr>
+        <tr>
+          <td>Forms</td>
+          <td class="text-warning">
+            HTTP forms, limited validation, inconsistent API from AJAX and JSON
+          </td>
+          <td class="text-success">
+            <a href="https://tanstack.com/form/latest" target="_blank"
+              >TanStack Form</a
+            >, complex validation, state management, supports both Form and
+            AJAX.
+          </td>
+        </tr>
+        <tr>
+          <td>Table Data Handling</td>
+          <td class="text-error">None</td>
+          <td class="text-success">
+            <a href="https://tanstack.com/table/latest/" target="_blank"
+              >TanStack Table</a
+            >, provides generic API's for filtering, ordering, sorting, etc. on
+            table data.
+          </td>
+        </tr>
+        <tr>
+          <td>Networking and Async</td>
+          <td class="text-error">
+            Inconsistent interfaces for fetch, sockets, etc., no common
+            utilities.
+          </td>
+          <td class="text-success">
+            <a href="https://tanstack.com/query/latest" target="_blank"
+              >TanStack Query</a
+            >/<a href="https://hyperfetch.bettertyped.com/" target="_blank"
+              >Hyper Fetch</a
+            >, standard interface for network handling, caching, polling,
+            sockets, data storage, prefetching, deduplication, error/retry
+            handling, network status, offline handling, queues, etc.
+          </td>
+        </tr>
+        <tr>
+          <td>Concurrency</td>
+          <td class="text-warning">
+            <a
+              href="https://developer.mozilla.org/en-US/docs/Web/API/Worker"
+              target="_blank"
+              >Worker</a
             >
-        </li>
-        <li>
-            <a href="https://github.com/mafintosh/csv-parser" target="_blank"
-            >csv-parser</a
-            >
-        </li>
-        <li>
-            <a href="https://github.com/Hopding/pdf-lib"
-               target="_blank">pdf-lib</a>
-        </li>
-        <li>
-            <a href="https://github.com/cthackers/adm-zip" target="_blank">adm-zip</a>
-        </li>
-    </ul>
+            allows scripts to run in background, send messages.
+          </td>
+          <td class="text-success">
+            <a href="https://threads.js.org/" target="_blank">threads.js</a>,
+            High level, isomorphic way to use Workers (observables, pooling,
+            queues, serialization, etc.)
+          </td>
+        </tr>
+        <tr>
+          <td>Natural Language Processing</td>
+          <td class="text-error">None</td>
+          <td class="text-success">
+            <a href="https://github.com/NaturalNode/natural" target="_blank"
+              >natural</a
+            >, Bayesian and Logistic Regression Classifiers, Entropy, Sentiment
+            Analysis, etc.
+          </td>
+        </tr>
+        <tr>
+          <td>RegEx</td>
+          <td class="text-warning">
+            Simple, limited support for RegEx testing
+          </td>
+          <td class="text-error">
+            Libraries for building complex regex patterns are limited and not
+            well-supported.
+          </td>
+        </tr>
+        <tr>
+          <td>URL Parsing</td>
+          <td class="text-warning">
+            Basic utilities for URL and SearchParams. No support for paths
+            (beyond new URL('path/1', https://example.com')), nested objects,
+            arrays or serialization.
+          </td>
+          <td class="text-success">
+            <a href="https://github.com/ljharb/qs" target="_blank">qs</a>, Full
+            support for complex URL management.
+          </td>
+        </tr>
+        <tr>
+          <td>Mathematics</td>
+          <td class="text-error">
+            Very limited, poor floating point accuracy.
+          </td>
+          <td class="text-success">
+            <a href="https://cortexjs.io/compute-engine/" target="_blank"
+              >Cortex Compute Engine</a
+            >, mathematical constants, imaginary and complex number support,
+            numeric domains, mathematical functions, utilities for linear
+            algebra, statistics, and trigonometry.
+          </td>
+        </tr>
+        <tr>
+          <td>Pseudo Random Number Generation</td>
+          <td class="text-error">Does not exist</td>
+          <td class="text-error">Some small libraries, no major support</td>
+        </tr>
+        <tr>
+          <td>File read/write (browser and server)</td>
+          <td class="text-error">
+            File System Api has limited user interaction, limited scope, limited
+            metadata, no watch support, no batch file management support, no
+            symlinks, no file locks. Node fs has inconsistent platform handling,
+            poor high level abstractions, no atomic writes, no retry mechanism,
+            no compression.
+          </td>
+          <td class="text-success">
+            <a href="https://github.com/zen-fs" target="_blank">Zen FS</a>,
+            isomorphic virtual file system with standardized API for various
+            backends. (In-memory, IndexedDB, localStorage, etc.)
+          </td>
+        </tr>
+        <tr>
+          <td>Standard remote file API (FTP, HTTP, S3, etc.)</td>
+          <td class="text-error">Does not exist</td>
+          <td class="text-success">
+            <a href="https://github.com/zen-fs" target="_blank">Zen FS</a>,
+            includes interfaces for working with Cloud)
+          </td>
+        </tr>
+        <tr>
+          <td>Cryptography</td>
+          <td class="text-warning">
+            Basic support for encryption and public/private key operations.
+          </td>
+          <td class="text-error">No major popular solutions.</td>
+        </tr>
+        <tr>
+          <td>Process Management</td>
+          <td class="text-error">
+            Node has very basic spawn, exec, and fork methods. Nothing available
+            for browsers.
+          </td>
+          <td class="text-warning">
+            <a href="https://pm2.keymetrics.io/" target="_blank">PM2</a>,
+            process and cluster management. Made specifically to manage Node
+            deployments.
+          </td>
+        </tr>
+        <tr>
+          <td>String manipulation</td>
+          <td class="text-warning">
+            Treats strings as enumerable, good Internationalization support, a
+            few basic utilities like toLowerCase() and toUpperCase()
+          </td>
+          <td class="text-success">
+            <a href="https://lodash.com/docs/" target="_blank">lodash</a>, more
+            complex casing methods, HTML escaping and templating.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </main>

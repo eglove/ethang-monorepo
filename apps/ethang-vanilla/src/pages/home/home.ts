@@ -18,7 +18,7 @@ export const homeTemplate = async () => {
         {
           id: "javascript-standard-library",
           link: "./blog/javascript-standard-library/",
-          title: "JavaScript Standard Library",
+          title: "Why You Should Install That JS Library",
         },
         {
           id: "looking-at-no-misused-spread",
