@@ -432,6 +432,52 @@ importers:
         specifier: ^3.106.0
         version: 3.106.0(@cloudflare/workers-types@4.20250124.3)
 
+  apps/rss:
+    dependencies:
+      '@ethang/toolbelt':
+        specifier: workspace:^
+        version: link:../../packages/toolbelt
+      chanfana:
+        specifier: ^2.0.2
+        version: 2.6.3
+      cheerio:
+        specifier: ^1.0.0
+        version: 1.0.0
+      eslint:
+        specifier: ^9.19.0
+        version: 9.19.0(jiti@2.4.0)
+      hono:
+        specifier: ^4.4.7
+        version: 4.6.19
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      uuid:
+        specifier: ^11.0.5
+        version: 11.0.5
+      zod:
+        specifier: ^3.23.8
+        version: 3.24.1
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20250124.3
+        version: 4.20250124.3
+      '@ethang/eslint-config':
+        specifier: workspace:^
+        version: link:../../packages/eslint-config
+      '@types/lodash':
+        specifier: ^4.17.15
+        version: 4.17.15
+      '@types/node':
+        specifier: 20.8.3
+        version: 20.8.3
+      '@types/service-worker-mock':
+        specifier: ^2.0.1
+        version: 2.0.4
+      wrangler:
+        specifier: ^3.106.0
+        version: 3.106.0(@cloudflare/workers-types@4.20250124.3)
+
   apps/sterett-admin:
     dependencies:
       '@sanity/cli':
@@ -7185,8 +7231,8 @@ packages:
   '@types/node@12.20.55':
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
 
-  '@types/node@20.17.16':
-    resolution: {integrity: sha512-vOTpLduLkZXePLxHiHsBLp98mHGnl8RptV4YAO3HfKO5UHjDvySGbxKtpYfy8Sx5+WKcgc45qNreJJRVM3L6mw==}
+  '@types/node@20.8.3':
+    resolution: {integrity: sha512-jxiZQFpb+NlH5kjW49vXxvxTjeeqlbsnTAdBTKpzEdPs9itay7MscYXz3Fo9VYFEsfQ6LJFitHad3faerLAjCw==}
 
   '@types/node@22.12.0':
     resolution: {integrity: sha512-Fll2FZ1riMjNmlmJOdAyY5pUbkftXslB5DgEzlIuNaiWhXd00FhWxVC/r4yV/4wBb9JfImTu+jiSvXTkJ7F/gA==}
@@ -9370,7 +9416,6 @@ packages:
     resolution: {integrity: sha512-NXeHXtFLZd6QGbS5af9tiwIoI+BVptHUcGkkF/ouvEPa+ZiZvK0xek4Yh6cd5jNDEg8P+tIA5xxB2ZC/RnqXyw==}
     peerDependencies:
       eslint: '>= 5'
-    bundledDependencies: []
 
   eslint-plugin-compat@6.0.2:
     resolution: {integrity: sha512-1ME+YfJjmOz1blH0nPZpHgjMGK4kjgEeoYqGCqoBPQ/mGu/dJzdoP0f1C8H2jcWZjzhZjAMccbM/VdXhPORIfA==}
@@ -13980,9 +14025,6 @@ packages:
     resolution: {integrity: sha512-svtcfoTADIB0nT9nltgjujTi7BzVmwjZClOmskKu/E8FW9BXzg9os8OLr4f8Dlnk0rYWJIWr4wv9eKUXiQvQwQ==}
     peerDependencies:
       react: '>=15.0.0'
-
-  undici-types@6.19.8:
-    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
 
   undici-types@6.20.0:
     resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
@@ -22940,9 +22982,7 @@ snapshots:
 
   '@types/node@12.20.55': {}
 
-  '@types/node@20.17.16':
-    dependencies:
-      undici-types: 6.19.8
+  '@types/node@20.8.3': {}
 
   '@types/node@22.12.0':
     dependencies:
@@ -25164,7 +25204,7 @@ snapshots:
 
   docx@8.6.0:
     dependencies:
-      '@types/node': 20.17.16
+      '@types/node': 20.8.3
       jszip: 3.10.1
       nanoid: 5.0.9
       xml: 1.0.1
@@ -31638,8 +31678,6 @@ snapshots:
       invariant: 2.2.4
       react: 19.0.0
       react-lifecycles-compat: 3.0.4
-
-  undici-types@6.19.8: {}
 
   undici-types@6.20.0: {}
 
