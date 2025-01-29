@@ -325,6 +325,90 @@
             complex casing methods, HTML escaping and templating.
           </td>
         </tr>
+        <tr>
+          <td>Schema Runtime Validation</td>
+          <td class="text-error">None</td>
+          <td class="text-success">
+            <a href="https://zod.dev/" target="_blank">Zod</a>, extensive
+            consistent interface for building schemas and parsing data against
+            them.
+          </td>
+        </tr>
+        <tr>
+          <td>Logging</td>
+          <td class="text-error">console.log is not logging</td>
+          <td class="text-success">
+            <a href="https://github.com/winstonjs/winston">Winston</a>, log
+            levels, file output, remote persistence, JSON structures, etc.
+          </td>
+        </tr>
+        <tr>
+          <td>CLI development</td>
+          <td class="text-error">
+            Node has very limited support for building CLI's
+          </td>
+          <td class="text-success">
+            <a href="https://github.com/SBoudrias/Inquirer.js" target="_blank"
+              >Inquirer</a
+            >, simple consistent APIs with a nice UI.
+          </td>
+        </tr>
+        <tr>
+          <td>Configuration</td>
+          <td class="text-error">None</td>
+          <td class="text-error">
+            Every library uses their own config files. package.json, lock files,
+            tailwind config, .env, vite, etc.
+          </td>
+        </tr>
+        <tr>
+          <td>Authentication and Authorization</td>
+          <td class="text-warning">
+            Crypto basics, Passkeys are native but not well-supported.
+          </td>
+          <td class="text-success">
+            <a href="https://www.npmjs.com/package/jose" target="_blank">Jose</a
+            >/<a href="https://authjs.dev/" target="_blank">Auth.js</a>
+            for JWT tokens and authentication
+          </td>
+        </tr>
+        <tr>
+          <td>Image Processing</td>
+          <td class="text-error">None</td>
+          <td class="text-warning">
+            <a href="https://sharp.pixelplumbing.com/" target="_blank">sharp</a>
+            used for resizing, compression, and format conversion on server only
+          </td>
+        </tr>
+        <tr>
+          <td>Storage</td>
+          <td class="text-warning">
+            Browsers have decent storage, but some interfaces (IndexedDB) are
+            not good. Node has no standard database adapters.
+          </td>
+          <td class="text-warning">
+            <a href="https://github.com/jakearchibald/idb" target="_blank"
+              >idb</a
+            >/<a
+              href="https://github.com/jakearchibald/idb-keyval"
+              target="_blank"
+              >idb-keyval</a
+            >
+            both provide good interfaces for IndexedDB. It is usually up to
+            database maintainers to provide SDKs for Node.
+          </td>
+        </tr>
+        <tr>
+          <td>Object Sync Engine</td>
+          <td class="text-error">None</td>
+          <td class="text-error">
+            This is new and growing within local-first.
+            <a href="https://dexie.org/" target="_blank">Dexie.js</a>,
+            <a href="https://replicache.dev/" target="_blank">replicache</a>,
+            and <a href="https://skiplabs.io/" target="_blank">skip</a>
+            are working in this space.
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
