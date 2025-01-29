@@ -20,6 +20,7 @@ export default {
       return createJsonResponse(
         { error: "Unauthorized" },
         "UNAUTHORIZED",
+        undefined,
         request,
       );
     }
@@ -35,6 +36,7 @@ export default {
       return createJsonResponse(
         { error: "Unauthorized" },
         "UNAUTHORIZED",
+        undefined,
         request,
       );
     }
