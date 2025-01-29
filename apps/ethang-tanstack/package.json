@@ -4,8 +4,8 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "@clerk/backend": "^1.23.8",
-    "@clerk/clerk-react": "^5.22.7",
+    "@clerk/backend": "^1.23.9",
+    "@clerk/clerk-react": "^5.22.8",
     "@convex-dev/react-query": "0.0.0-alpha.8",
     "@cortex-js/compute-engine": "^0.27.0",
     "@ethang/react-components": "workspace:^",
@@ -25,9 +25,9 @@
     "@tanstack/react-query": "^5.65.1",
     "@tanstack/react-query-devtools": "^5.65.1",
     "@tanstack/react-query-persist-client": "^5.65.1",
-    "@tanstack/react-router": "^1.97.26",
+    "@tanstack/react-router": "^1.98.1",
     "@tanstack/react-table": "^8.20.6",
-    "@tanstack/router-devtools": "^1.97.26",
+    "@tanstack/router-devtools": "^1.98.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "convex": "^1.18.2",
@@ -53,7 +53,7 @@
   "devDependencies": {
     "@ethang/eslint-config": "workspace:^",
     "@portabletext/types": "^2.0.13",
-    "@tanstack/router-plugin": "^1.97.26",
+    "@tanstack/router-plugin": "^1.98.1",
     "@types/lodash": "^4.17.15",
     "@types/luxon": "^3.4.2",
     "@types/node": "^22.12.0",
