@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-type-assertion,tailwind/no-arbitrary-value */
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion */
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@ethang/hooks/src/use-is-mobile.ts";
 import { Slot } from "@radix-ui/react-slot";
