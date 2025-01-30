@@ -26,8 +26,6 @@
   - Simple imperative GitHub markdown helpers
 - project-builder
   - Utility for building projects via EsBuild
-- react-components
-  - Reusuable components for React
 - scripts
   - Powershell and Node scripts
 - store
