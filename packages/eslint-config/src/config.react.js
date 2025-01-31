@@ -96,6 +96,7 @@ export default tseslint.config({
     "react/no-unstable-default-props": "error",
     "react/no-unused-class-component-members": "error",
     "react/no-unused-state": "error",
+    "react/no-use-context": "error",
     "react/no-useless-fragment": "error",
     "react/prefer-destructuring-assignment": "error",
     "react/prefer-react-namespace-import": "error",
