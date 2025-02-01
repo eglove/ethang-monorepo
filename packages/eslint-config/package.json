@@ -15,7 +15,7 @@
     "@eslint/json": "^0.10.0",
     "@eslint/markdown": "^6.2.2",
     "@tanstack/eslint-plugin-query": "^5.66.0",
-    "@tanstack/eslint-plugin-router": "^1.98.1",
+    "@tanstack/eslint-plugin-router": "^1.99.0",
     "@typescript-eslint/parser": "^8.22.0",
     "angular-eslint": "19.0.2",
     "eslint": "^9.19.0",
