@@ -41,7 +41,7 @@
     "@tanstack/react-router": "^1.99.0",
     "@tanstack/router-devtools": "^1.99.0",
     "calendar-link": "^2.8.0",
-    "framer-motion": "^12.0.6",
+    "framer-motion": "^12.0.11",
     "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",
     "luxon": "^3.5.0",
@@ -74,7 +74,7 @@
     "rimraf": "^6.0.1",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.22.0",
+    "typescript-eslint": "^8.23.0",
     "vite": "^6.0.11",
     "vite-plugin-pwa": "^0.21.1"
   }

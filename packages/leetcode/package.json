@@ -20,7 +20,7 @@
     "@types/node": "^22.13.0",
     "eslint": "^9.19.0",
     "typescript": "^5.7.3",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.5"
   },
   "dependencies": {
     "@ethang/toolbelt": "workspace:^",
