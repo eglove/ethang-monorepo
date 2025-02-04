@@ -9,14 +9,14 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.6.11",
+    "@cloudflare/vitest-pool-workers": "^0.6.12",
     "@cloudflare/workers-types": "^4.20250124.3",
     "@ethang/eslint-config": "workspace:^",
     "@types/lodash": "^4.17.15",
     "eslint": "^9.19.0",
     "typescript": "^5.5.2",
     "vitest": "3.0.5",
-    "wrangler": "^3.107.2"
+    "wrangler": "^3.107.3"
   },
   "engines": {
     "node": ">=22"

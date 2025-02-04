@@ -18,13 +18,13 @@
     "lint": "pnpm cf-typegen && eslint src --fix"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.6.11",
+    "@cloudflare/vitest-pool-workers": "^0.6.12",
     "@cloudflare/workers-types": "^4.20250124.3",
     "@ethang/eslint-config": "workspace:^",
     "@types/lodash": "^4.17.15",
     "@types/uuid": "^10.0.0",
     "typescript": "^5.5.2",
-    "wrangler": "^3.107.2"
+    "wrangler": "^3.107.3"
   },
   "dependencies": {
     "@ethang/toolbelt": "workspace:^",

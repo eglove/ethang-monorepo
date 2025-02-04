@@ -17,9 +17,9 @@
 		"@cloudflare/workers-types": "^4.20250124.3",
 		"@ethang/eslint-config": "workspace:^",
 		"@types/lodash": "^4.17.15",
-		"@types/node": "22.13.0",
+		"@types/node": "22.13.1",
 		"@types/service-worker-mock": "^2.0.1",
-		"wrangler": "^3.107.2"
+		"wrangler": "^3.107.3"
 	},
 	"engines": {
 		"node": ">=22"
