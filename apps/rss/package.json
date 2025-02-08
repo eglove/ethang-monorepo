@@ -7,7 +7,7 @@
 		"@ethang/toolbelt": "workspace:^",
 		"chanfana": "^2.0.2",
 		"cheerio": "^1.0.0",
-		"eslint": "^9.19.0",
+		"eslint": "^9.20.0",
 		"hono": "^4.7.0",
 		"lodash": "^4.17.21",
 		"uuid": "^11.0.5",
