@@ -7,6 +7,8 @@ import type { ConfigFile } from "./update-rules.ts";
 import { createConfig } from "./create-config.ts";
 import { getTypeImportStrings } from "./list-utils.ts";
 
+const mainFile = "eslint.config.js";
+
 export const createConfigFile = async (
   listConfigs: ConfigFile[],
   fileName: string,
@@ -43,8 +45,9 @@ export const createConfigFile = async (
 
   configFile += `\nexport default tseslint.config(
     ${configs.join("\n")}
-    ${"eslint.config.js" === fileName ? "eslintConfigPrettier," : ""}
-    ${"eslint.config.js" === fileName ? "eslintPluginPrettierRecommended," : ""}
+    ${mainFile === fileName ? "eslintConfigPrettier," : ""}
+    ${mainFile === fileName ? "eslintPluginPrettierRecommended," : ""}
+    ${mainFile === fileName ? "{rules:{'prettier/prettier': ['error', {arrowParens: 'always'}]}}" : ""}
   );\n`;
 
   writeFileSync(

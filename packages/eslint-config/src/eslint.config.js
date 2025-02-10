@@ -1151,4 +1151,5 @@ export default tseslint.config(
   },
   eslintConfigPrettier,
   eslintPluginPrettierRecommended,
+  { rules: { "prettier/prettier": ["error", { arrowParens: "always" }] } },
 );
