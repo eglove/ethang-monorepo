@@ -97,6 +97,7 @@ export default tseslint.config(
       "@angular-eslint/template/prefer-control-flow": "error",
       "@angular-eslint/template/prefer-ngsrc": "warn",
       "@angular-eslint/template/prefer-self-closing-tags": "error",
+      "@angular-eslint/template/prefer-static-string-properties": "error",
       "@angular-eslint/template/role-has-required-aria": "error",
       "@angular-eslint/template/table-scope": "error",
       "@angular-eslint/template/use-track-by-function": "error",

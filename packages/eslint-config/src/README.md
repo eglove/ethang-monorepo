@@ -25,10 +25,10 @@
 
 # Add Even More!
 
-- 64 rules for **Angular**
+- 65 rules for **Angular**
   - `import angularConfig from "@ethang/eslint-config/config.angular.js";`
     - 38 rules from [@angular-eslint/eslint-plugin](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md)
-    - 26 rules from [@angular-eslint/eslint-plugin-template](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md)
+    - 27 rules from [@angular-eslint/eslint-plugin-template](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md)
 - 52 rules for **Astro**
   - `import astroConfig from "@ethang/eslint-config/config.astro.js";`
     - 52 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)

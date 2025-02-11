@@ -70,6 +70,8 @@ const customRules: CustomRules = [
             "leetcode",
             "ngsrc",
             "sindresorhus",
+            "rogan",
+            "heroui",
           ],
         },
       },

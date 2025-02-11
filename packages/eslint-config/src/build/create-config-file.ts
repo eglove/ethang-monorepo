@@ -47,7 +47,6 @@ export const createConfigFile = async (
     ${configs.join("\n")}
     ${mainFile === fileName ? "eslintConfigPrettier," : ""}
     ${mainFile === fileName ? "eslintPluginPrettierRecommended," : ""}
-    ${mainFile === fileName ? "{rules:{'prettier/prettier': ['error', {arrowParens: 'always'}]}}" : ""}
   );\n`;
 
   writeFileSync(
