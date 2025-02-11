@@ -12,6 +12,7 @@ import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil";
+import { DateTime } from "luxon";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,6 +20,7 @@ import { z } from "zod";
 const formSchema = z.object({
   applied: z.string().date(),
   company: z.string(),
+  rejected: z.string().date().optional(),
   title: z.string(),
   url: z.string().url(),
 });
@@ -75,16 +77,26 @@ export const AddEditApplication = ({
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const appliedDate = DateTime.fromFormat(
+      values.applied,
+      "yyyy-MM-dd",
+    ).toJSDate();
+    const rejectedDate = isNil(values.rejected)
+      ? null
+      : DateTime.fromFormat(values.rejected, "yyyy-MM-dd").toJSDate();
+
     if (isNil(id)) {
       addApplication.mutate({
         ...values,
-        applied: new Date(values.applied),
+        applied: appliedDate,
+        rejected: rejectedDate,
       });
     } else {
       updateApplication.mutate({
         ...values,
-        applied: new Date(values.applied),
+        applied: appliedDate,
         id,
+        rejected: rejectedDate,
       });
     }
   };
@@ -104,6 +116,14 @@ export const AddEditApplication = ({
             name="applied"
             type="date"
           />
+          {!isEmpty(id) && (
+            <FormInput
+              form={form}
+              label="Rejected"
+              name="rejected"
+              type="date"
+            />
+          )}
           {!isEmpty(error) && <div className="text-destructive">{error}</div>}
           <div className="flex justify-end gap-4">
             <Button asChild size="sm" variant="secondary">

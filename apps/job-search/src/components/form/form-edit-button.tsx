@@ -34,6 +34,7 @@ export const FormEditButton = ({
           aria-label="Cancel"
           onClick={handleCancel}
           size="icon"
+          title="Cancel"
           variant="secondary"
         >
           <XIcon />
@@ -42,6 +43,7 @@ export const FormEditButton = ({
           aria-label="Confirm Delete"
           onClick={handleDeleteInternal}
           size="icon"
+          title="Confirm Delete"
           variant="destructive"
         >
           <CheckIcon />
@@ -57,6 +59,7 @@ export const FormEditButton = ({
         aria-label="Delete"
         onClick={handleConfirm}
         size="icon"
+        title="Delete"
         variant="destructive"
       >
         <Trash2Icon />

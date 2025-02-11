@@ -1,5 +1,6 @@
 import type { JobApplication } from "@/types/job-application.ts";
 
+import { DownloadData } from "@/components/job-tracker/download-data.tsx";
 import { jobTrackerColumns } from "@/components/job-tracker/job-tracker-columns.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -82,6 +83,12 @@ export const JobTrackerTable = () => {
           )}
         </TableBody>
       </Table>
+      <div className="flex gap-4 justify-end my-4">
+        <DownloadData />
+        <Button asChild size="sm" variant="outline">
+          <Link to="/import-data">Import Data</Link>
+        </Button>
+      </div>
     </div>
   );
 };

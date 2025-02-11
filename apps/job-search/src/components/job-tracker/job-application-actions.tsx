@@ -29,7 +29,12 @@ export const JobApplicationActions = ({
         deleteApplication.mutate(id);
       }}
     >
-      <Button asChild size="icon" variant="secondary">
+      <Button
+        asChild
+        size="icon"
+        title="Update Application"
+        variant="secondary"
+      >
         <Link to={`/upsert-application?id=${id}`}>
           <PencilIcon />
         </Link>

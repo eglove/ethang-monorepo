@@ -1,13 +1,8 @@
 import type { ComponentProps } from "react";
-import type { RefCallBack } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 
-export type InputProperties = Readonly<
-  {
-    ref?: RefCallBack;
-  } & ComponentProps<"input">
->;
+export type InputProperties = Readonly<ComponentProps<"input">>;
 
 const Input = ({ className, ref, type, ...properties }: InputProperties) => {
   return (

@@ -1,6 +1,7 @@
 import type { JobApplication } from "@/types/job-application.ts";
 import type { ColumnDef } from "@tanstack/react-table";
 
+import { DateColumn } from "@/components/job-tracker/date-column.tsx";
 import { JobApplicationActions } from "@/components/job-tracker/job-application-actions.tsx";
 import { Link } from "@tanstack/react-router";
 
@@ -23,19 +24,17 @@ export const jobTrackerColumns: ColumnDef<JobApplication>[] = [
   {
     accessorKey: "applied",
     cell: ({ row }) => {
-      const toDate = new Date(row.original.applied);
-
-      return (
-        <>
-          {toDate.toLocaleString(undefined, {
-            dateStyle: "medium",
-          })}
-        </>
-      );
+      return <DateColumn date={row.original.applied} />;
     },
     header: "Applied",
   },
-  { accessorKey: "rejected", header: "Rejected" },
+  {
+    accessorKey: "rejected",
+    cell: ({ row }) => {
+      return <DateColumn date={row.original.rejected} />;
+    },
+    header: "Rejected",
+  },
   {
     accessorKey: "id",
     cell: ({ row }) => {
