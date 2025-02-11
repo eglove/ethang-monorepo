@@ -11,9 +11,16 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as UpsertApplicationImport } from './routes/upsert-application'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const UpsertApplicationRoute = UpsertApplicationImport.update({
+  id: '/upsert-application',
+  path: '/upsert-application',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -32,6 +39,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/upsert-application': {
+      id: '/upsert-application'
+      path: '/upsert-application'
+      fullPath: '/upsert-application'
+      preLoaderRoute: typeof UpsertApplicationImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -39,32 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/upsert-application': typeof UpsertApplicationRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/upsert-application': typeof UpsertApplicationRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/upsert-application': typeof UpsertApplicationRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/upsert-application'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/upsert-application'
+  id: '__root__' | '/' | '/upsert-application'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  UpsertApplicationRoute: typeof UpsertApplicationRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  UpsertApplicationRoute: UpsertApplicationRoute,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +96,15 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/upsert-application"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/upsert-application": {
+      "filePath": "upsert-application.tsx"
     }
   }
 }
