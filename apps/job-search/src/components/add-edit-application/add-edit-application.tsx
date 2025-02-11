@@ -5,22 +5,34 @@ import { Button } from "@/components/ui/button.tsx";
 import { Form } from "@/components/ui/form.tsx";
 import { mutations } from "@/data/mutations.ts";
 import { queryKeys } from "@/data/queries.ts";
+import { DATE_FORMAT } from "@/routes/upsert-application.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import get from "lodash/get.js";
+import isDate from "lodash/isDate.js";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil";
+import map from "lodash/map.js";
 import { DateTime } from "luxon";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
+import { InterviewRounds } from "./interview-rounds";
+
+export const formSchema = z.object({
   applied: z.string().date(),
   company: z.string(),
-  rejected: z.string().date().optional(),
+  interviewRounds: z
+    .array(
+      z.object({
+        date: z.string(),
+      }),
+    )
+    .optional(),
+  rejected: z.string().optional(),
   title: z.string(),
   url: z.string().url(),
 });
@@ -79,23 +91,30 @@ export const AddEditApplication = ({
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const appliedDate = DateTime.fromFormat(
       values.applied,
-      "yyyy-MM-dd",
+      DATE_FORMAT,
     ).toJSDate();
-    const rejectedDate = isNil(values.rejected)
-      ? null
-      : DateTime.fromFormat(values.rejected, "yyyy-MM-dd").toJSDate();
+    const rejectedDate =
+      isNil(values.rejected) || !isDate(values.rejected)
+        ? null
+        : DateTime.fromFormat(values.rejected, DATE_FORMAT).toJSDate();
 
+    // Create
     if (isNil(id)) {
       addApplication.mutate({
         ...values,
         applied: appliedDate,
+        interviewRounds: [],
         rejected: rejectedDate,
       });
+      // Update
     } else {
       updateApplication.mutate({
         ...values,
         applied: appliedDate,
         id,
+        interviewRounds: map(values.interviewRounds, (round) => {
+          return DateTime.fromFormat(round.date, DATE_FORMAT).toJSDate();
+        }),
         rejected: rejectedDate,
       });
     }
@@ -116,6 +135,7 @@ export const AddEditApplication = ({
             name="applied"
             type="date"
           />
+          {!isEmpty(id) && <InterviewRounds form={form} />}
           {!isEmpty(id) && (
             <FormInput
               form={form}

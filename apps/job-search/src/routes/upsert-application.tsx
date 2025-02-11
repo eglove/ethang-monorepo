@@ -4,15 +4,19 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import get from "lodash/get";
 import isNil from "lodash/isNil";
+import map from "lodash/map.js";
 import { DateTime } from "luxon";
 import { v7 } from "uuid";
 
 const defaultValues = {
   applied: "",
   company: "",
+  interviewRounds: [],
   title: "",
   url: "",
 };
+
+export const DATE_FORMAT = "yyyy-MM-dd";
 
 const RouteComponent = () => {
   const routerState = useRouterState();
@@ -27,10 +31,15 @@ const RouteComponent = () => {
     ? defaultValues
     : {
         ...query.data,
-        applied: DateTime.fromJSDate(query.data.applied).toFormat("yyyy-MM-dd"),
+        applied: DateTime.fromJSDate(query.data.applied).toFormat(DATE_FORMAT),
+        interviewRounds: map(query.data.interviewRounds, (round) => {
+          return {
+            date: DateTime.fromJSDate(round).toFormat(DATE_FORMAT),
+          };
+        }),
         rejected: isNil(query.data.rejected)
           ? ""
-          : DateTime.fromJSDate(query.data.rejected).toFormat("yyyy-MM-dd"),
+          : DateTime.fromJSDate(query.data.rejected).toFormat(DATE_FORMAT),
       };
 
   return <AddEditApplication initialData={initialData} key={v7()} />;
