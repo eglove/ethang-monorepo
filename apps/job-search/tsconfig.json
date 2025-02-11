@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "types": [
+      "@cloudflare/workers-types/2023-07-01"
+    ]
+  },
+  "extends": [
+    "../../packages/tsconfig/tsconfig.base.json",
+    "../../packages/tsconfig/tsconfig.react.json"
+  ]
+}
