@@ -20,7 +20,7 @@
 		"@types/lodash": "^4.17.15",
 		"@types/node": "22.13.1",
 		"@types/service-worker-mock": "^2.0.1",
-		"wrangler": "^3.107.3"
+		"wrangler": "^3.108.0"
 	},
 	"engines": {
 		"node": ">=22"
