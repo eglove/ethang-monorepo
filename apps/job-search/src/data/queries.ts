@@ -28,7 +28,18 @@ export const queries = {
     return queryOptions({
       queryFn: async () => {
         const database = await getJobApplicationsDatabase();
-        return database.getAllFromIndex("jobApplications", "applied");
+        const applied = await database.getAllFromIndex(
+          "jobApplications",
+          "applied",
+        );
+
+        return applied.sort((a, b) => {
+          if (isNil(a.updated) || isNil(b.updated)) {
+            return Number.NEGATIVE_INFINITY;
+          }
+
+          return b.updated.getTime() - a.updated.getTime();
+        });
       },
       queryKey: queryKeys.getApplications(),
     });

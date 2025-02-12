@@ -2,7 +2,12 @@ import { type DBSchema, openDB } from "idb";
 
 type LocalDatabaseSchema = {
   jobApplications: {
-    indexes: { applied: string; position: string[]; url: string };
+    indexes: {
+      applied: string;
+      position: string[];
+      updated: string;
+      url: string;
+    };
     key: string;
     value: {
       applied: Date;
@@ -11,6 +16,7 @@ type LocalDatabaseSchema = {
       interviewRounds?: Date[] | null;
       rejected?: Date | null;
       title: string;
+      updated?: Date | null;
       url: string;
     };
   };
@@ -33,6 +39,7 @@ export const getJobApplicationsDatabase = async () => {
         store.createIndex("url", "url", { unique: true });
         store.createIndex("position", ["title", "company"], { unique: true });
         store.createIndex("applied", "applied");
+        store.createIndex("updated", "updated");
       },
     },
   );

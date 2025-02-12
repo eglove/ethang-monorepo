@@ -6,9 +6,14 @@ import {
   applicationFormStore,
   setApplicationSorting,
   setCompanyFilter,
+  toggleIsShowingInterviewing,
+  toggleIsShowingNoStatus,
+  toggleIsShowingRejected,
 } from "@/components/job-tracker/table-state.ts";
 import { Button } from "@/components/ui/button.tsx";
+import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { Input } from "@/components/ui/input.tsx";
+import { Label } from "@/components/ui/label.tsx";
 import {
   Table,
   TableBody,
@@ -36,6 +41,7 @@ import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
 import map from "lodash/map.js";
 import toLower from "lodash/toLower.js";
+import { XIcon } from "lucide-react";
 import { useMemo } from "react";
 
 export const JobTrackerTable = () => {
@@ -64,14 +70,37 @@ export const JobTrackerTable = () => {
       return [];
     }
 
-    if (isEmpty(store.companyFilter)) {
-      return query.data;
-    }
-
     return filter(query.data, (datum) => {
-      return includes(toLower(datum.company), toLower(store.companyFilter));
+      let condition = true;
+
+      if (!store.isShowingInterviewing) {
+        condition = isEmpty(datum.interviewRounds);
+      }
+
+      if (condition && !store.isShowingRejected) {
+        condition = isNil(datum.rejected);
+      }
+
+      if (condition && !store.isShowingNoStatus) {
+        condition = !isEmpty(datum.interviewRounds) || !isNil(datum.rejected);
+      }
+
+      if (condition && !isEmpty(store.companyFilter)) {
+        condition = includes(
+          toLower(datum.company),
+          toLower(store.companyFilter),
+        );
+      }
+
+      return condition;
     });
-  }, [store.companyFilter, query.data]);
+  }, [
+    query.data,
+    store.companyFilter,
+    store.isShowingInterviewing,
+    store.isShowingNoStatus,
+    store.isShowingRejected,
+  ]);
 
   const table = useReactTable<JobApplication>({
     columns,
@@ -86,15 +115,46 @@ export const JobTrackerTable = () => {
     <div className="m-4">
       <div className="flex justify-between my-4">
         <div className="flex gap-4 items-center">
-          <div>Count: {query.data?.length ?? ""}</div>
-          <Input
-            onChange={(event) => {
-              setCompanyFilter(event.target.value);
-            }}
-            className="max-w-36"
-            placeholder="Filter by Company"
-            value={store.companyFilter}
-          />
+          <Label className="flex items-center gap-1">
+            <Checkbox
+              checked={store.isShowingNoStatus}
+              onClick={toggleIsShowingNoStatus}
+            />
+            Show No Status
+          </Label>
+          <Label className="flex items-center gap-1">
+            <Checkbox
+              checked={store.isShowingInterviewing}
+              onClick={toggleIsShowingInterviewing}
+            />
+            Show Interviewing
+          </Label>
+          <Label className="flex items-center gap-1">
+            <Checkbox
+              checked={store.isShowingRejected}
+              onClick={toggleIsShowingRejected}
+            />
+            Show Rejected
+          </Label>
+          <div className="flex gap-1">
+            <Input
+              onChange={(event) => {
+                setCompanyFilter(event.target.value);
+              }}
+              className="max-w-36"
+              placeholder="Filter by Company"
+              value={store.companyFilter}
+            />
+            <Button
+              onClick={() => {
+                setCompanyFilter("");
+              }}
+              size="icon"
+              variant="outline"
+            >
+              <XIcon />
+            </Button>
+          </div>
         </div>
         <Button asChild size="sm">
           <Link to="/upsert-application">Add Application</Link>
@@ -159,11 +219,14 @@ export const JobTrackerTable = () => {
           </TableBody>
         </Table>
       </div>
-      <div className="flex gap-4 justify-end my-4">
-        <DownloadData />
-        <Button asChild size="sm" variant="outline">
-          <Link to="/import-data">Import Data</Link>
-        </Button>
+      <div className="flex justify-between items-center my-4 mb-12">
+        <div>Count: {query.data?.length ?? ""}</div>
+        <div className="flex gap-4">
+          <DownloadData />
+          <Button asChild size="sm" variant="outline">
+            <Link to="/import-data">Import Data</Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

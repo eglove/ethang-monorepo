@@ -5,6 +5,9 @@ import { produce } from "immer";
 
 type ApplicationFormStoreState = {
   companyFilter: string;
+  isShowingInterviewing: boolean;
+  isShowingNoStatus: boolean;
+  isShowingRejected: boolean;
   sorting: SortingState;
 };
 
@@ -14,6 +17,9 @@ const initialState: ApplicationFormStoreState = (JSON.parse(
   globalThis.localStorage.getItem("applicationTableState") ?? "null",
 ) as ApplicationFormStoreState) ?? {
   companyFilter: "",
+  isShowingInterviewing: true,
+  isShowingNoStatus: false,
+  isShowingRejected: true,
   sorting: [{ desc: true, id: "applied" }] as SortingState,
 };
 
@@ -47,6 +53,30 @@ export const setApplicationSorting: OnChangeFn<SortingState> = (sorting) => {
       // @ts-expect-error it's fine
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       draft.sorting = sorting(draft.sorting) as SortingState;
+    });
+  });
+};
+
+export const toggleIsShowingInterviewing = () => {
+  applicationFormStore.setState((state) => {
+    return produce(state, (draft) => {
+      draft.isShowingInterviewing = !draft.isShowingInterviewing;
+    });
+  });
+};
+
+export const toggleIsShowingRejected = () => {
+  applicationFormStore.setState((state) => {
+    return produce(state, (draft) => {
+      draft.isShowingRejected = !draft.isShowingRejected;
+    });
+  });
+};
+
+export const toggleIsShowingNoStatus = () => {
+  applicationFormStore.setState((state) => {
+    return produce(state, (draft) => {
+      draft.isShowingNoStatus = !draft.isShowingNoStatus;
     });
   });
 };
