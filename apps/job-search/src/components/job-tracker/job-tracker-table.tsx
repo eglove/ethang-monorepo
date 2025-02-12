@@ -2,7 +2,13 @@ import type { JobApplication } from "@/types/job-application.ts";
 
 import { DownloadData } from "@/components/job-tracker/download-data.tsx";
 import { getApplicationTableColumns } from "@/components/job-tracker/job-tracker-columns.tsx";
+import {
+  applicationFormStore,
+  setApplicationSorting,
+  setCompanyFilter,
+} from "@/components/job-tracker/table-state.ts";
 import { Button } from "@/components/ui/button.tsx";
+import { Input } from "@/components/ui/input.tsx";
 import {
   Table,
   TableBody,
@@ -15,23 +21,26 @@ import { queries } from "@/data/queries.ts";
 import { cn } from "@/lib/utils.ts";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { useStore } from "@tanstack/react-store";
 import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import filter from "lodash/filter.js";
 import get from "lodash/get";
+import includes from "lodash/includes.js";
 import isDate from "lodash/isDate.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
 import map from "lodash/map.js";
-import { useMemo, useState } from "react";
+import toLower from "lodash/toLower.js";
+import { useMemo } from "react";
 
 export const JobTrackerTable = () => {
   const query = useQuery(queries.getApplications());
+  const store = useStore(applicationFormStore);
 
   const columns = useMemo(() => {
     let maxInterviewRounds = 0;
@@ -50,21 +59,43 @@ export const JobTrackerTable = () => {
     return getApplicationTableColumns({ rounds: maxInterviewRounds });
   }, [query.data]);
 
-  const [sorting, setSorting] = useState<SortingState>([
-    { desc: true, id: "applied" },
-  ]);
+  const filteredData = useMemo(() => {
+    if (isNil(query.data)) {
+      return [];
+    }
+
+    if (isEmpty(store.companyFilter)) {
+      return query.data;
+    }
+
+    return filter(query.data, (datum) => {
+      return includes(toLower(datum.company), toLower(store.companyFilter));
+    });
+  }, [store.companyFilter, query.data]);
+
   const table = useReactTable<JobApplication>({
     columns,
-    data: query.data ?? [],
+    data: filteredData,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    state: { sorting },
+    onSortingChange: setApplicationSorting,
+    state: { sorting: store.sorting },
   });
 
   return (
     <div className="m-4">
-      <div className="flex justify-end my-4">
+      <div className="flex justify-between my-4">
+        <div className="flex gap-4 items-center">
+          <div>Count: {query.data?.length ?? ""}</div>
+          <Input
+            onChange={(event) => {
+              setCompanyFilter(event.target.value);
+            }}
+            className="max-w-36"
+            placeholder="Filter by Company"
+            value={store.companyFilter}
+          />
+        </div>
         <Button asChild size="sm">
           <Link to="/upsert-application">Add Application</Link>
         </Button>
