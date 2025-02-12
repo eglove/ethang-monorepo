@@ -63,12 +63,12 @@ export const ApplicationsPerDayChart = () => {
   }, [data.length, query.data]);
 
   return (
-    <Card className="m-4 p-4 w-[1000px]">
+    <Card>
       <CardHeader>
         <CardTitle>Applications / Day</CardTitle>
         <CardDescription>
-          Average: {average.toFixed(2)}, Total: {query.data?.length ?? 0}, Days:{" "}
-          {data.length}
+          Average: {average.toLocaleString()}, Total: {query.data?.length ?? 0},
+          Days: {data.length}
         </CardDescription>
       </CardHeader>
       <CardContent>

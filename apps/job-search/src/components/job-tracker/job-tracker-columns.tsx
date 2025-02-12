@@ -1,3 +1,4 @@
+import type { Sorting } from "@/components/job-tracker/table-state.ts";
 import type { JobApplication } from "@/types/job-application.ts";
 import type { ColumnDef } from "@tanstack/react-table";
 
@@ -10,10 +11,14 @@ import isNil from "lodash/isNil";
 
 type GetApplicationTableColumnsProperties = {
   rounds: number;
+  setSorting: (id: string) => void;
+  sorting: Sorting;
 };
 
 export const getApplicationTableColumns = ({
   rounds,
+  setSorting,
+  sorting,
 }: GetApplicationTableColumnsProperties): ColumnDef<JobApplication>[] => {
   const roundColumns: ColumnDef<JobApplication>[] = [];
 
@@ -36,11 +41,13 @@ export const getApplicationTableColumns = ({
   return [
     {
       accessorKey: "title",
-      header: ({ header }) => {
+      header: () => {
         return (
           <SortButton
-            isSorted={header.column.getIsSorted()}
-            sortHandler={header.column.getToggleSortingHandler()}
+            sortHandler={() => {
+              setSorting("title");
+            }}
+            isSorted={"title" === sorting.id ? sorting.direction : false}
           >
             Title
           </SortButton>
@@ -49,11 +56,13 @@ export const getApplicationTableColumns = ({
     },
     {
       accessorKey: "company",
-      header: ({ header }) => {
+      header: () => {
         return (
           <SortButton
-            isSorted={header.column.getIsSorted()}
-            sortHandler={header.column.getToggleSortingHandler()}
+            sortHandler={() => {
+              setSorting("company");
+            }}
+            isSorted={"company" === sorting.id ? sorting.direction : false}
           >
             Company
           </SortButton>
@@ -71,11 +80,13 @@ export const getApplicationTableColumns = ({
           </Link>
         );
       },
-      header: ({ header }) => {
+      header: () => {
         return (
           <SortButton
-            isSorted={header.column.getIsSorted()}
-            sortHandler={header.column.getToggleSortingHandler()}
+            sortHandler={() => {
+              setSorting("url");
+            }}
+            isSorted={"url" === sorting.id ? sorting.direction : false}
           >
             URL
           </SortButton>
@@ -87,11 +98,13 @@ export const getApplicationTableColumns = ({
       cell: ({ row }) => {
         return <DateColumn date={row.original.applied} />;
       },
-      header: ({ header }) => {
+      header: () => {
         return (
           <SortButton
-            isSorted={header.column.getIsSorted()}
-            sortHandler={header.column.getToggleSortingHandler()}
+            sortHandler={() => {
+              setSorting("applied");
+            }}
+            isSorted={"applied" === sorting.id ? sorting.direction : false}
           >
             Applied
           </SortButton>
@@ -104,11 +117,13 @@ export const getApplicationTableColumns = ({
       cell: ({ row }) => {
         return <DateColumn date={row.original.rejected} />;
       },
-      header: ({ header }) => {
+      header: () => {
         return (
           <SortButton
-            isSorted={header.column.getIsSorted()}
-            sortHandler={header.column.getToggleSortingHandler()}
+            sortHandler={() => {
+              setSorting("rejected");
+            }}
+            isSorted={"rejected" === sorting.id ? sorting.direction : false}
           >
             Rejected
           </SortButton>

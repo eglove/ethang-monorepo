@@ -1,19 +1,12 @@
 import type { JobApplication } from "@/types/job-application.ts";
 
-import { DownloadData } from "@/components/job-tracker/download-data.tsx";
 import { getApplicationTableColumns } from "@/components/job-tracker/job-tracker-columns.tsx";
+import { JobTrackerTableFilterHeader } from "@/components/job-tracker/job-tracker-table-filter-header.tsx";
+import { JobTrackerTableFooter } from "@/components/job-tracker/job-tracker-table-footer.tsx";
 import {
   applicationFormStore,
-  setApplicationSorting,
-  setCompanyFilter,
-  toggleIsShowingInterviewing,
-  toggleIsShowingNoStatus,
-  toggleIsShowingRejected,
+  setSorting,
 } from "@/components/job-tracker/table-state.ts";
-import { Button } from "@/components/ui/button.tsx";
-import { Checkbox } from "@/components/ui/checkbox.tsx";
-import { Input } from "@/components/ui/input.tsx";
-import { Label } from "@/components/ui/label.tsx";
 import {
   Table,
   TableBody,
@@ -24,29 +17,48 @@ import {
 } from "@/components/ui/table.tsx";
 import { queries } from "@/data/queries.ts";
 import { cn } from "@/lib/utils.ts";
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import {
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import filter from "lodash/filter.js";
 import get from "lodash/get";
-import includes from "lodash/includes.js";
 import isDate from "lodash/isDate.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
 import map from "lodash/map.js";
-import toLower from "lodash/toLower.js";
-import { XIcon } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export const JobTrackerTable = () => {
-  const query = useQuery(queries.getApplications());
+  const [page, setPage] = useState(1);
+  const queryClient = useQueryClient();
   const store = useStore(applicationFormStore);
+  const filters = useMemo(() => {
+    return {
+      companyFilter: store.companyFilter,
+      hasInterviewing: store.isShowingInterviewing,
+      hasNoStatus: store.isShowingNoStatus,
+      hasRejected: store.isShowingRejected,
+      page,
+      sorting: store.sorting,
+    };
+  }, [
+    page,
+    store.companyFilter,
+    store.isShowingInterviewing,
+    store.isShowingNoStatus,
+    store.isShowingRejected,
+    store.sorting,
+  ]);
+
+  const query = useQuery(queries.getApplications(filters));
+
+  const queryData = useMemo(() => {
+    return query.data ?? [];
+  }, [query.data]);
 
   const columns = useMemo(() => {
     let maxInterviewRounds = 0;
@@ -62,106 +74,48 @@ export const JobTrackerTable = () => {
       }
     }
 
-    return getApplicationTableColumns({ rounds: maxInterviewRounds });
-  }, [query.data]);
-
-  const filteredData = useMemo(() => {
-    if (isNil(query.data)) {
-      return [];
-    }
-
-    return filter(query.data, (datum) => {
-      let condition = true;
-
-      if (!store.isShowingInterviewing) {
-        condition = isEmpty(datum.interviewRounds);
-      }
-
-      if (condition && !store.isShowingRejected) {
-        condition = isNil(datum.rejected);
-      }
-
-      if (condition && !store.isShowingNoStatus) {
-        condition = !isEmpty(datum.interviewRounds) || !isNil(datum.rejected);
-      }
-
-      if (condition && !isEmpty(store.companyFilter)) {
-        condition = includes(
-          toLower(datum.company),
-          toLower(store.companyFilter),
-        );
-      }
-
-      return condition;
+    return getApplicationTableColumns({
+      rounds: maxInterviewRounds,
+      setSorting,
+      sorting: store.sorting,
     });
-  }, [
-    query.data,
-    store.companyFilter,
-    store.isShowingInterviewing,
-    store.isShowingNoStatus,
-    store.isShowingRejected,
-  ]);
+  }, [query.data, store.sorting]);
 
   const table = useReactTable<JobApplication>({
     columns,
-    data: filteredData,
+    data: queryData,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setApplicationSorting,
-    state: { sorting: store.sorting },
   });
+
+  useEffect(() => {
+    queryClient
+      .prefetchQuery(
+        queries.getApplications({
+          ...filters,
+          page: page + 1,
+        }),
+      )
+      // eslint-disable-next-line no-console,sonar/no-reference-error
+      .catch(console.error);
+
+    if (1 < page) {
+      queryClient
+        .prefetchQuery(
+          queries.getApplications({
+            ...filters,
+            page: page - 1,
+          }),
+        )
+        // eslint-disable-next-line no-console
+        .catch(console.error);
+    }
+  }, [filters, page, queryClient]);
 
   return (
     <div className="m-4">
-      <div className="flex justify-between my-4">
-        <div className="flex gap-4 items-center">
-          <Label className="flex items-center gap-1">
-            <Checkbox
-              checked={store.isShowingNoStatus}
-              onClick={toggleIsShowingNoStatus}
-            />
-            Show No Status
-          </Label>
-          <Label className="flex items-center gap-1">
-            <Checkbox
-              checked={store.isShowingInterviewing}
-              onClick={toggleIsShowingInterviewing}
-            />
-            Show Interviewing
-          </Label>
-          <Label className="flex items-center gap-1">
-            <Checkbox
-              checked={store.isShowingRejected}
-              onClick={toggleIsShowingRejected}
-            />
-            Show Rejected
-          </Label>
-          <div className="flex gap-1">
-            <Input
-              onChange={(event) => {
-                setCompanyFilter(event.target.value);
-              }}
-              className="max-w-36"
-              placeholder="Filter by Company"
-              value={store.companyFilter}
-            />
-            <Button
-              onClick={() => {
-                setCompanyFilter("");
-              }}
-              size="icon"
-              variant="outline"
-            >
-              <XIcon />
-            </Button>
-          </div>
-        </div>
-        <Button asChild size="sm">
-          <Link to="/upsert-application">Add Application</Link>
-        </Button>
-      </div>
-      <div className="relative w-full overflow-y-auto max-h-[600px]">
-        <Table>
+      <JobTrackerTableFilterHeader />
+      <div className="relative w-full overflow-y-auto min-h-[400px] max-h-[600px]">
+        <Table className="table-fixed">
           <TableHeader className="sticky top-0 z-10">
             {map(table.getHeaderGroups(), (headerGroup) => {
               return (
@@ -219,15 +173,7 @@ export const JobTrackerTable = () => {
           </TableBody>
         </Table>
       </div>
-      <div className="flex justify-between items-center my-4 mb-12">
-        <div>Count: {query.data?.length ?? ""}</div>
-        <div className="flex gap-4">
-          <DownloadData />
-          <Button asChild size="sm" variant="outline">
-            <Link to="/import-data">Import Data</Link>
-          </Button>
-        </div>
-      </div>
+      <JobTrackerTableFooter page={page} setPage={setPage} />
     </div>
   );
 };

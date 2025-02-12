@@ -48,6 +48,7 @@ const ChartContainer = ({
   ref?: React.RefObject<HTMLDivElement | null>;
 } & React.ComponentProps<"div">) => {
   const uniqueId = React.useId();
+  // @ts-expect-error ignore
   const chartId = `chart-${id || uniqueId.replaceAll(":", "")}`;
 
   return (
@@ -139,6 +140,7 @@ const ChartTooltipContent = ({
     }
 
     const [item] = payload;
+    // @ts-expect-error ignore
     const key = `${labelKey || item.dataKey || item.name || "value"}`;
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
     const value =
