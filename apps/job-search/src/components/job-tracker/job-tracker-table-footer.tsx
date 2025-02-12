@@ -1,13 +1,13 @@
 import type { Dispatch, SetStateAction } from "react";
 
-import { DownloadData } from "@/components/job-tracker/download-data.tsx";
+import { DownloadData } from "@/components/job-tracker/download-data";
 import { Button } from "@/components/ui/button.tsx";
 import { Link } from "@tanstack/react-router";
 
-type JobTrackerTableFooterProperties = {
+type JobTrackerTableFooterProperties = Readonly<{
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
-};
+}>;
 
 export const JobTrackerTableFooter = ({
   page,
