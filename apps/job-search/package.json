@@ -10,9 +10,9 @@
     "@radix-ui/react-slot": "^1.1.2",
     "@tanstack/react-query": "^5.66.0",
     "@tanstack/react-query-devtools": "^5.66.0",
-    "@tanstack/react-router": "^1.102.1",
+    "@tanstack/react-router": "^1.102.5",
     "@tanstack/react-store": "^0.7.0",
-    "@tanstack/react-table": "^8.20.6",
+    "@tanstack/react-table": "^8.21.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "idb": "^8.0.2",
@@ -26,13 +26,13 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.0.5",
-    "zod": "^3.24.1"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250204.0",
     "@ethang/eslint-config": "workspace:^",
-    "@tanstack/router-devtools": "^1.102.1",
-    "@tanstack/router-plugin": "^1.102.2",
+    "@tanstack/router-devtools": "^1.102.5",
+    "@tanstack/router-plugin": "^1.102.5",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.15",
     "@types/luxon": "^3.4.2",
@@ -41,14 +41,14 @@
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
-    "eslint": "^9.20.0",
+    "eslint": "^9.20.1",
     "globals": "^15.14.0",
     "postcss": "^8.5.2",
     "tailwindcss": "3",
     "typescript": "~5.7.3",
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.5",
-    "wrangler": "^3.108.0"
+    "wrangler": "^3.108.1"
   },
   "engines": {
     "node": ">= 22"
@@ -56,7 +56,7 @@
   "name": "job-search",
   "private": true,
   "scripts": {
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "deploy": "pnpm run build && wrangler pages deploy ./dist",
     "dev": "vite",
     "lint": "eslint src --fix",

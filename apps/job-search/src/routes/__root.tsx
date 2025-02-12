@@ -21,8 +21,8 @@ const TanStackRouterDevtools =
   "production" === import.meta.env.MODE
     ? constant(null)
     : lazy(async () =>
-        import("@tanstack/router-devtools").then((res) => ({
-          default: res.TanStackRouterDevtools,
+        import("@tanstack/router-devtools").then((response) => ({
+          default: response.TanStackRouterDevtools,
         })),
       );
 

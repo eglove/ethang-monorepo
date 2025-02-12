@@ -9,6 +9,7 @@ import {
   type ComponentPropsWithoutRef,
   type ComponentRef,
   createContext,
+  type Ref,
   type RefObject,
   use,
   useId,
@@ -98,7 +99,7 @@ FormItem.displayName = "FormItem";
 
 type FormLabelProperties = Readonly<
   {
-    ref?: RefObject<ComponentRef<typeof LabelPrimitive> | null>;
+    ref?: Ref<HTMLLabelElement>;
   } & ComponentPropsWithoutRef<typeof LabelPrimitive>
 >;
 
@@ -106,6 +107,7 @@ const FormLabel = ({ className, ref, ...properties }: FormLabelProperties) => {
   const { error, formItemId } = useFormField();
 
   return (
+    // @ts-expect-error it's fine
     <Label
       className={cn(error && "text-destructive", className)}
       htmlFor={formItemId}

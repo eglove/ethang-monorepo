@@ -33,10 +33,14 @@ const buttonVariants = cva(
   },
 );
 
-export type ButtonProperties = {
-  asChild?: boolean;
-} & ButtonHTMLAttributes<HTMLButtonElement> &
-  VariantProps<typeof buttonVariants>;
+export type ButtonProperties = Readonly<
+  {
+    asChild?: boolean;
+  } & {
+    ref?: RefObject<HTMLButtonElement | null>;
+  } & ButtonHTMLAttributes<HTMLButtonElement> &
+    VariantProps<typeof buttonVariants>
+>;
 
 const Button = ({
   asChild = false,
@@ -45,7 +49,7 @@ const Button = ({
   size,
   variant,
   ...properties
-}: { ref?: RefObject<HTMLButtonElement | null> } & ButtonProperties) => {
+}: ButtonProperties) => {
   const Comp = asChild ? Slot : "button";
   return (
     <Comp
