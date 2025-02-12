@@ -42,13 +42,13 @@ export const CompaniesChart = () => {
       ["count"],
       ["desc"],
     );
-    return slice(allData, 0, 10);
+    return slice(allData, 0, 5);
   }, [query.data]);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Top 10 Companies</CardTitle>
+        <CardTitle>Top 5 Companies</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
