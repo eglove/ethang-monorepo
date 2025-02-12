@@ -1,7 +1,7 @@
 import type { JobApplication } from "@/types/job-application.ts";
 
 import { DownloadData } from "@/components/job-tracker/download-data.tsx";
-import { jobTrackerColumns } from "@/components/job-tracker/job-tracker-columns.tsx";
+import { getApplicationTableColumns } from "@/components/job-tracker/job-tracker-columns.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import {
   Table,
@@ -12,21 +12,54 @@ import {
   TableRow,
 } from "@/components/ui/table.tsx";
 import { queries } from "@/data/queries.ts";
+import { cn } from "@/lib/utils.ts";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import filter from "lodash/filter.js";
+import get from "lodash/get";
+import isDate from "lodash/isDate.js";
+import isEmpty from "lodash/isEmpty.js";
+import isNil from "lodash/isNil";
 import map from "lodash/map.js";
+import { useMemo, useState } from "react";
 
 export const JobTrackerTable = () => {
   const query = useQuery(queries.getApplications());
+
+  const columns = useMemo(() => {
+    let maxInterviewRounds = 0;
+
+    if (isNil(query.data)) {
+      return [];
+    }
+
+    for (const datum of query.data) {
+      const length = get(datum, ["interviewRounds", "length"], 0);
+      if (length > maxInterviewRounds) {
+        maxInterviewRounds = length;
+      }
+    }
+
+    return getApplicationTableColumns({ rounds: maxInterviewRounds });
+  }, [query.data]);
+
+  const [sorting, setSorting] = useState<SortingState>([
+    { desc: true, id: "applied" },
+  ]);
   const table = useReactTable<JobApplication>({
-    columns: jobTrackerColumns,
+    columns,
     data: query.data ?? [],
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: { sorting },
   });
 
   return (
@@ -36,53 +69,65 @@ export const JobTrackerTable = () => {
           <Link to="/upsert-application">Add Application</Link>
         </Button>
       </div>
-      <Table>
-        <TableHeader>
-          {map(table.getHeaderGroups(), (headerGroup) => {
-            return (
-              <TableRow key={headerGroup.id}>
-                {map(headerGroup.headers, (header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
+      <div className="relative w-full overflow-y-auto max-h-[600px]">
+        <Table>
+          <TableHeader className="sticky top-0 z-10">
+            {map(table.getHeaderGroups(), (headerGroup) => {
+              return (
+                <TableRow key={headerGroup.id}>
+                  {map(headerGroup.headers, (header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.length ? (
+              map(table.getRowModel().rows, (row) => (
+                <TableRow
+                  className={cn(
+                    !isNil(row.original.rejected) &&
+                      "bg-destructive hover:bg-destructive text-destructive-foreground",
+                    isNil(row.original.rejected) &&
+                      !isEmpty(filter(row.original.interviewRounds, isDate)) &&
+                      "bg-blue-300 hover:bg-blue-300",
+                  )}
+                  data-state={row.getIsSelected() && "selected"}
+                  key={row.id}
+                >
+                  {map(row.getVisibleCells(), (cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  className="h-24 text-center"
+                  colSpan={columns.length}
+                >
+                  No results.
+                </TableCell>
               </TableRow>
-            );
-          })}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.length ? (
-            map(table.getRowModel().rows, (row) => (
-              <TableRow
-                data-state={row.getIsSelected() && "selected"}
-                key={row.id}
-              >
-                {map(row.getVisibleCells(), (cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                className="h-24 text-center"
-                colSpan={jobTrackerColumns.length}
-              >
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            )}
+          </TableBody>
+        </Table>
+      </div>
       <div className="flex gap-4 justify-end my-4">
         <DownloadData />
         <Button asChild size="sm" variant="outline">

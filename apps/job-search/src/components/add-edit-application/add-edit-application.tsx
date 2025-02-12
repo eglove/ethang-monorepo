@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import get from "lodash/get.js";
-import isDate from "lodash/isDate.js";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil";
@@ -94,7 +93,7 @@ export const AddEditApplication = ({
       DATE_FORMAT,
     ).toJSDate();
     const rejectedDate =
-      isNil(values.rejected) || !isDate(values.rejected)
+      isNil(values.rejected) || Number.isNaN(Date.parse(values.rejected))
         ? null
         : DateTime.fromFormat(values.rejected, DATE_FORMAT).toJSDate();
 
