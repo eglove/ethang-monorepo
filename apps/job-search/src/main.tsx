@@ -1,8 +1,11 @@
 import { createRouter, RouterProvider } from "@tanstack/react-router";
+import isNil from "lodash/isNil";
+
+import "./index.css";
+
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
-import "./index.css";
 import { routeTree } from "./routeTree.gen";
 
 const router = createRouter({ routeTree });
@@ -14,9 +17,8 @@ declare module "@tanstack/react-router" {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion,sonar/no-reference-error
-const rootElement = document.querySelector("#root")!;
-if (!rootElement.innerHTML) {
+const rootElement = globalThis.document.querySelector("#root");
+if (!isNil(rootElement) && !isNil(rootElement.innerHTML)) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>

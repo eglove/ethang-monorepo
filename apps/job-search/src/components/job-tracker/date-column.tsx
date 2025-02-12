@@ -1,7 +1,7 @@
 import isNil from "lodash/isNil";
 
 type DateColumnProperties = Readonly<{
-  date?: Date | null | undefined;
+  date: Date | null | undefined;
 }>;
 
 export const DateColumn = ({ date }: DateColumnProperties) => {
