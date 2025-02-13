@@ -58,11 +58,7 @@ export const queries = {
 
         // eslint-disable-next-line sonar/no-misleading-array-reverse
         const data = applied.sort((a, b) => {
-          if (isNil(a.updated) || isNil(b.updated)) {
-            return Number.NEGATIVE_INFINITY;
-          }
-
-          return b.updated.getTime() - a.updated.getTime();
+          return b.id.localeCompare(a.id);
         });
 
         let filtered = filter(data, (item) => {

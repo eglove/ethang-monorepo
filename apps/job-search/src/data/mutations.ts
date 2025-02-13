@@ -15,7 +15,6 @@ export const mutations = {
           ...application,
           id: v7(),
           interviewRounds: [],
-          updated: new Date(),
         });
       },
     };
@@ -37,7 +36,6 @@ export const mutations = {
         return database.put("jobApplications", {
           ...application,
           interviewRounds: filter(application.interviewRounds, isDate),
-          updated: new Date(),
         });
       },
     };
