@@ -28,7 +28,7 @@ export const getApplicationTableColumns = ({
         const value = get(row, ["original", "interviewRounds", index]);
 
         if (isNil(value)) {
-          return null;
+          return "";
         }
 
         return <DateColumn date={value} />;
@@ -73,7 +73,11 @@ export const getApplicationTableColumns = ({
       accessorKey: "url",
       cell: ({ row }) => {
         return (
-          <Link className="underline" target="_blank" to={row.original.url}>
+          <Link
+            className="underline break-all"
+            target="_blank"
+            to={row.original.url}
+          >
             {URL.canParse(row.original.url)
               ? new URL(row.original.url).hostname
               : row.original.url}

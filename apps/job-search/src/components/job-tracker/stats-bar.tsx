@@ -21,7 +21,7 @@ export const StatsBar = () => {
 
       forEach(query.data, (item) => {
         companies.add(item.company);
-        applicationDays.add(item.applied.toDateString());
+        applicationDays.add(new Date(item.applied).toDateString());
 
         if (!isNil(item.rejected)) {
           const rejectionTime = DateTime.fromJSDate(item.rejected).diff(
@@ -35,7 +35,7 @@ export const StatsBar = () => {
 
         if (!isEmpty(item.interviewRounds)) {
           const firstInterview = item.interviewRounds?.sort((a, b) => {
-            return b.getTime() - a.getTime();
+            return new Date(b).getTime() - new Date(a).getTime();
           })[0];
 
           if (!isNil(firstInterview)) {

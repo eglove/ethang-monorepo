@@ -11,7 +11,7 @@ export const DateColumn = ({ date }: DateColumnProperties) => {
 
   return (
     <>
-      {date.toLocaleString(undefined, {
+      {new Date(date).toLocaleString(undefined, {
         dateStyle: "medium",
       })}
     </>
