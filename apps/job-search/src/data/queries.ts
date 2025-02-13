@@ -20,6 +20,8 @@ type ApplicationsFilter = {
   sorting?: Sorting;
 };
 
+export const APPLICATION_PAGE_SIZE = 5;
+
 export const queryKeys = {
   applications: () => ["application"],
   getApplicationKeys: (id: string | undefined) => ["application", "get", id],
@@ -104,9 +106,12 @@ export const queries = {
           return filtered;
         }
 
-        const pageSize = 5;
-        const currentPage = pageSize * (filters.page - 1);
-        return slice(filtered, currentPage, currentPage + pageSize);
+        const currentPage = APPLICATION_PAGE_SIZE * (filters.page - 1);
+        return slice(
+          filtered,
+          currentPage,
+          currentPage + APPLICATION_PAGE_SIZE,
+        );
       },
       queryKey: queryKeys.getApplications(filters),
     });

@@ -2,16 +2,19 @@ import type { Dispatch, SetStateAction } from "react";
 
 import { DownloadData } from "@/components/job-tracker/download-data";
 import { Button } from "@/components/ui/button.tsx";
+import { APPLICATION_PAGE_SIZE } from "@/data/queries.ts";
 import { Link } from "@tanstack/react-router";
 
 type JobTrackerTableFooterProperties = Readonly<{
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
+  total: number;
 }>;
 
 export const JobTrackerTableFooter = ({
   page,
   setPage,
+  total,
 }: JobTrackerTableFooterProperties) => {
   return (
     <div className="items-center my-4 flex justify-between">
@@ -38,6 +41,7 @@ export const JobTrackerTableFooter = ({
               return previous + 1;
             });
           }}
+          disabled={APPLICATION_PAGE_SIZE > total}
           size="sm"
           variant="outline"
         >

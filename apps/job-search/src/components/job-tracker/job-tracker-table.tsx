@@ -173,7 +173,11 @@ export const JobTrackerTable = () => {
           </TableBody>
         </Table>
       </div>
-      <JobTrackerTableFooter page={page} setPage={setPage} />
+      <JobTrackerTableFooter
+        page={page}
+        setPage={setPage}
+        total={query.data?.length ?? 0}
+      />
     </div>
   );
 };
