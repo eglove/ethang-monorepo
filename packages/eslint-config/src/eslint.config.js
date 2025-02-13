@@ -621,7 +621,6 @@ export default tseslint.config(
       "sonar/block-scoped-var": "error",
       "sonar/bool-param-default": "error",
       "sonar/call-argument-line": "error",
-      "sonar/certificate-transparency": "error",
       "sonar/chai-determinate-assertion": "error",
       "sonar/class-name": "error",
       "sonar/class-prototype": "error",

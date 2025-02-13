@@ -8,7 +8,7 @@
 		"chanfana": "^2.0.2",
 		"cheerio": "^1.0.0",
 		"eslint": "^9.20.1",
-		"hono": "^4.7.0",
+		"hono": "^4.7.1",
 		"lodash": "^4.17.21",
 		"rss-to-json": "^2.1.1",
 		"uuid": "^11.0.5",
@@ -18,9 +18,9 @@
 		"@cloudflare/workers-types": "^4.20250204.0",
 		"@ethang/eslint-config": "workspace:^",
 		"@types/lodash": "^4.17.15",
-		"@types/node": "22.13.1",
+		"@types/node": "22.13.3",
 		"@types/service-worker-mock": "^2.0.1",
-		"wrangler": "^3.108.1"
+		"wrangler": "^3.109.0"
 	},
 	"engines": {
 		"node": ">=22"

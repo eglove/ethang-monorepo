@@ -19,18 +19,18 @@
     "lint": "pnpm cf-typegen && eslint src --fix"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.6.14",
+    "@cloudflare/vitest-pool-workers": "^0.6.15",
     "@cloudflare/workers-types": "^4.20250204.0",
     "@ethang/eslint-config": "workspace:^",
     "@types/bcryptjs": "^2.4.6",
     "@types/lodash": "^4.17.15",
     "eslint": "^9.20.1",
     "typescript": "^5.7.3",
-    "wrangler": "^3.108.1"
+    "wrangler": "^3.109.0"
   },
   "dependencies": {
     "@ethang/toolbelt": "workspace:^",
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.0",
     "jose": "^5.9.6",
     "lodash": "^4.17.21",
     "zod": "^3.24.2"
