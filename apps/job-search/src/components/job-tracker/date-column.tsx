@@ -6,7 +6,7 @@ type DateColumnProperties = Readonly<{
 
 export const DateColumn = ({ date }: DateColumnProperties) => {
   if (isNil(date)) {
-    return null;
+    return "";
   }
 
   return (

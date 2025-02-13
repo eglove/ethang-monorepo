@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table.tsx";
 import { queries } from "@/data/queries.ts";
+import { logger } from "@/lib/logger.ts";
 import { cn } from "@/lib/utils.ts";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
@@ -95,8 +96,7 @@ export const JobTrackerTable = () => {
           page: page + 1,
         }),
       )
-      // eslint-disable-next-line no-console,sonar/no-reference-error
-      .catch(console.error);
+      .catch(logger.error);
 
     if (1 < page) {
       queryClient
@@ -106,8 +106,7 @@ export const JobTrackerTable = () => {
             page: page - 1,
           }),
         )
-        // eslint-disable-next-line no-console
-        .catch(console.error);
+        .catch(logger.error);
     }
   }, [filters, page, queryClient]);
 
