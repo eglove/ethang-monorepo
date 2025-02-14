@@ -1,6 +1,12 @@
 import type { JobApplication } from "@/types/job-application.ts";
 
-import { getJobApplicationsDatabase } from "@/database/indexed-database.ts";
+import {
+  getJobApplicationsDatabase,
+  getQuestionAnswerDatabase,
+  JOB_APPLICATION_STORE_NAME,
+  QUESTION_ANSWER_STORE_NAME,
+  type QuestionAnswerSchema,
+} from "@/database/indexed-database.ts";
 import filter from "lodash/filter.js";
 import isDate from "lodash/isDate.js";
 import { v7 } from "uuid";
@@ -11,10 +17,22 @@ export const mutations = {
       mutationFn: async (application: Omit<JobApplication, "id">) => {
         const database = await getJobApplicationsDatabase();
 
-        return database.add("jobApplications", {
+        return database.add(JOB_APPLICATION_STORE_NAME, {
           ...application,
           id: v7(),
           interviewRounds: [],
+        });
+      },
+    };
+  },
+  addQa: () => {
+    return {
+      mutationFn: async (qa: Omit<QuestionAnswerSchema, "id">) => {
+        const database = await getQuestionAnswerDatabase();
+
+        return database.add(QUESTION_ANSWER_STORE_NAME, {
+          ...qa,
+          id: v7(),
         });
       },
     };
@@ -24,7 +42,7 @@ export const mutations = {
       mutationFn: async (id: string) => {
         const database = await getJobApplicationsDatabase();
 
-        return database.delete("jobApplications", id);
+        return database.delete(JOB_APPLICATION_STORE_NAME, id);
       },
     };
   },
@@ -33,7 +51,7 @@ export const mutations = {
       mutationFn: async (application: JobApplication) => {
         const database = await getJobApplicationsDatabase();
 
-        return database.put("jobApplications", {
+        return database.put(JOB_APPLICATION_STORE_NAME, {
           ...application,
           interviewRounds: filter(application.interviewRounds, isDate),
         });

@@ -5,7 +5,7 @@ import { logger } from "@/lib/logger.ts";
 import { DATE_FORMAT } from "@/routes/upsert-application.tsx";
 import { Button, Form, Input } from "@heroui/react";
 import { useForm } from "@tanstack/react-form";
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import filter from "lodash/filter.js";
 import get from "lodash/get.js";
@@ -39,7 +39,7 @@ type AddEditApplicationProperties = Readonly<{
 export const AddEditApplication = ({
   initialData,
 }: AddEditApplicationProperties) => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const routerState = useRouterState();

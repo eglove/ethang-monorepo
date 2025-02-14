@@ -10,6 +10,12 @@ export type JobApplicationSchema = {
   url: string;
 };
 
+export type QuestionAnswerSchema = {
+  answer: string;
+  id: string;
+  question: string;
+};
+
 type LocalDatabaseSchema = {
   jobApplications: {
     indexes: {
@@ -22,16 +28,21 @@ type LocalDatabaseSchema = {
   };
 } & DBSchema;
 
-export const LOCAL_DATABASE_NAME = "job-application-db";
+type QuestionAnswerDatabaseSchema = {
+  key: string;
+  value: QuestionAnswerSchema;
+};
+
 export const LOCAL_DATABASE_VERSION = 1;
 
+export const JOB_APPLICATION_STORE_NAME = "jobApplications";
 export const getJobApplicationsDatabase = async () => {
   return openDB<LocalDatabaseSchema>(
-    LOCAL_DATABASE_NAME,
+    "job-application-db",
     LOCAL_DATABASE_VERSION,
     {
       upgrade(database) {
-        const store = database.createObjectStore("jobApplications", {
+        const store = database.createObjectStore(JOB_APPLICATION_STORE_NAME, {
           autoIncrement: false,
           keyPath: "id",
         });
@@ -39,6 +50,22 @@ export const getJobApplicationsDatabase = async () => {
         store.createIndex("url", "url", { unique: true });
         store.createIndex("position", ["title", "company"], { unique: true });
         store.createIndex("applied", "applied");
+      },
+    },
+  );
+};
+
+export const QUESTION_ANSWER_STORE_NAME = "questionAnswers";
+export const getQuestionAnswerDatabase = async () => {
+  return openDB<QuestionAnswerDatabaseSchema>(
+    "question-answer-db",
+    LOCAL_DATABASE_VERSION,
+    {
+      upgrade(database) {
+        database.createObjectStore(QUESTION_ANSWER_STORE_NAME, {
+          autoIncrement: false,
+          keyPath: "id",
+        });
       },
     },
   );

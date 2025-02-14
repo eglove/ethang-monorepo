@@ -1,6 +1,11 @@
 import type { SortDescriptor } from "@heroui/react";
 
-import { getJobApplicationsDatabase } from "@/database/indexed-database.ts";
+import {
+  getJobApplicationsDatabase,
+  getQuestionAnswerDatabase,
+  JOB_APPLICATION_STORE_NAME,
+  QUESTION_ANSWER_STORE_NAME,
+} from "@/database/indexed-database.ts";
 import { queryOptions } from "@tanstack/react-query";
 import filter from "lodash/filter.js";
 import includes from "lodash/includes.js";
@@ -30,6 +35,7 @@ export const queryKeys = {
     "get",
     _filter,
   ],
+  getQas: () => ["qa", "get"],
 };
 
 export const queries = {
@@ -42,7 +48,7 @@ export const queries = {
         }
 
         const database = await getJobApplicationsDatabase();
-        return database.get("jobApplications", id);
+        return database.get(JOB_APPLICATION_STORE_NAME, id);
       },
       queryKey: queryKeys.getApplicationKeys(id),
     });
@@ -52,7 +58,7 @@ export const queries = {
       queryFn: async () => {
         const database = await getJobApplicationsDatabase();
         const applied = await database.getAllFromIndex(
-          "jobApplications",
+          JOB_APPLICATION_STORE_NAME,
           "applied",
         );
 
@@ -110,6 +116,16 @@ export const queries = {
         );
       },
       queryKey: queryKeys.getApplications(filters),
+    });
+  },
+  getQas: () => {
+    return queryOptions({
+      queryFn: async () => {
+        const database = await getQuestionAnswerDatabase();
+
+        return database.getAll(QUESTION_ANSWER_STORE_NAME);
+      },
+      queryKey: queryKeys.getQas(),
     });
   },
 };

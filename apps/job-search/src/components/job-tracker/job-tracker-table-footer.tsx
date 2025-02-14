@@ -1,9 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 
-import { DownloadData } from "@/components/job-tracker/download-data";
 import { APPLICATION_PAGE_SIZE } from "@/data/queries.ts";
 import { Button } from "@heroui/react";
-import { Link } from "@tanstack/react-router";
 
 type JobTrackerTableFooterProperties = Readonly<{
   page: number;
@@ -46,12 +44,6 @@ export const JobTrackerTableFooter = ({
           variant="bordered"
         >
           Next
-        </Button>
-      </div>
-      <div className="flex gap-4">
-        <DownloadData />
-        <Button as={Link} color="primary" size="sm" to="/import-data">
-          Import Data
         </Button>
       </div>
     </div>

@@ -2,7 +2,10 @@ import type { JobApplication } from "@/types/job-application.ts";
 
 import { TypographyH2 } from "@/components/typography/typography-h2.tsx";
 import { queryKeys } from "@/data/queries.ts";
-import { getJobApplicationsDatabase } from "@/database/indexed-database.ts";
+import {
+  getJobApplicationsDatabase,
+  JOB_APPLICATION_STORE_NAME,
+} from "@/database/indexed-database.ts";
 import { Button, Input } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -28,7 +31,10 @@ export const ImportApplications = () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const data = attempt(JSON.parse, text) as JobApplication[];
       const database = await getJobApplicationsDatabase();
-      const transaction = database.transaction("jobApplications", "readwrite");
+      const transaction = database.transaction(
+        JOB_APPLICATION_STORE_NAME,
+        "readwrite",
+      );
 
       await Promise.all(
         map(data, async (application) => {

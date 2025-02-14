@@ -5,7 +5,7 @@ const navLinks = [
   { label: "Applications", link: "/" },
   { label: "Q/A", link: "/" },
   { label: "Stats", link: "/stats" },
-  { label: "Data Backup", link: "/" },
+  { label: "Data Backup", link: "/data-backup" },
 ];
 
 export const Navigation = () => {
