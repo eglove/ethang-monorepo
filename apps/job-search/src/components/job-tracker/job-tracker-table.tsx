@@ -111,7 +111,7 @@ export const JobTrackerTable = () => {
   }, [filters, page, queryClient]);
 
   return (
-    <div className="m-4">
+    <>
       <JobTrackerTableFilterHeader />
       <div className="relative w-full overflow-y-auto min-h-[400px] max-h-[600px]">
         <Table className="table-fixed">
@@ -177,6 +177,6 @@ export const JobTrackerTable = () => {
         setPage={setPage}
         total={query.data?.length ?? 0}
       />
-    </div>
+    </>
   );
 };
