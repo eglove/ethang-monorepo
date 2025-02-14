@@ -1,4 +1,4 @@
-import type { Sorting } from "@/components/job-tracker/table-state.ts";
+import type { SortDescriptor } from "@heroui/react";
 
 import { getJobApplicationsDatabase } from "@/database/indexed-database.ts";
 import { queryOptions } from "@tanstack/react-query";
@@ -17,10 +17,10 @@ type ApplicationsFilter = {
   hasNoStatus?: boolean;
   hasRejected?: boolean;
   page?: number;
-  sorting?: Sorting;
+  sorting?: SortDescriptor;
 };
 
-export const APPLICATION_PAGE_SIZE = 5;
+export const APPLICATION_PAGE_SIZE = 10;
 
 export const queryKeys = {
   applications: () => ["application"],
@@ -93,8 +93,8 @@ export const queries = {
         if (isString(filters?.sorting?.direction)) {
           filtered = orderBy(
             filtered,
-            [filters.sorting.id],
-            [filters.sorting.direction],
+            [filters.sorting.column],
+            ["descending" === filters.sorting.direction ? "desc" : "asc"],
           );
         }
 

@@ -1,25 +1,21 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
-import { FormInput } from "@/components/form/form-input.tsx";
 import { TypographyH2 } from "@/components/typography/typography-h2.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { Form } from "@/components/ui/form.tsx";
 import { mutations } from "@/data/mutations.ts";
 import { queryKeys } from "@/data/queries.ts";
+import { logger } from "@/lib/logger.ts";
 import { DATE_FORMAT } from "@/routes/upsert-application.tsx";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Form, Input } from "@heroui/react";
+import { useForm } from "@tanstack/react-form";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import filter from "lodash/filter.js";
 import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil";
-import map from "lodash/map.js";
+import map from "lodash/map";
 import { DateTime } from "luxon";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { type FormEvent, useState } from "react";
 import { z } from "zod";
-
-import { InterviewRounds } from "./interview-rounds";
 
 export const formSchema = z.object({
   applied: z.string().date(),
@@ -52,107 +48,206 @@ export const AddEditApplication = ({
     | string
     | undefined;
 
-  const addApplication = useMutation({
-    ...mutations.addJobApplication(),
-    onError: (_error: unknown) => {
-      if (isError(_error)) {
-        setError(_error.message);
+  const form = useForm({
+    defaultValues: initialData,
+    onSubmit: ({ value }) => {
+      const appliedDate = DateTime.fromFormat(
+        value.applied,
+        DATE_FORMAT,
+      ).toJSDate();
+      const rejectedDate =
+        isNil(value.rejected) || Number.isNaN(Date.parse(value.rejected))
+          ? null
+          : DateTime.fromFormat(value.rejected, DATE_FORMAT).toJSDate();
+
+      // Create
+      if (isNil(id)) {
+        addApplication.mutate({
+          ...value,
+          applied: appliedDate,
+          interviewRounds: [],
+          rejected: rejectedDate,
+        });
+        // Update
+      } else {
+        updateApplication.mutate({
+          ...value,
+          applied: appliedDate,
+          id,
+          interviewRounds: map(
+            filter(value.interviewRounds, (round) => {
+              return !Number.isNaN(Date.parse(round.date));
+            }),
+            (round) => {
+              return DateTime.fromFormat(round.date, DATE_FORMAT).toJSDate();
+            },
+          ),
+          rejected: rejectedDate,
+        });
       }
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.applications(),
-      });
-      await navigate({ to: "/" });
+    validators: {
+      onSubmit: formSchema,
     },
+  });
+
+  const onError = (_error: unknown) => {
+    if (isError(_error)) {
+      setError(_error.message);
+    }
+  };
+
+  const onSuccess = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: queryKeys.applications(),
+    });
+    await navigate({ to: "/" });
+  };
+
+  const addApplication = useMutation({
+    ...mutations.addJobApplication(),
+    onError,
+    onSuccess,
   });
 
   const updateApplication = useMutation({
     ...mutations.updateJobApplication(),
-    onError: (_error: unknown) => {
-      if (isError(_error)) {
-        setError(_error.message);
-      }
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.applications(),
-      });
-      await navigate({ to: "/" });
-    },
+    onError,
+    onSuccess,
   });
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    defaultValues: initialData,
-    resolver: zodResolver(formSchema),
-  });
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const appliedDate = DateTime.fromFormat(
-      values.applied,
-      DATE_FORMAT,
-    ).toJSDate();
-    const rejectedDate =
-      isNil(values.rejected) || Number.isNaN(Date.parse(values.rejected))
-        ? null
-        : DateTime.fromFormat(values.rejected, DATE_FORMAT).toJSDate();
-
-    // Create
-    if (isNil(id)) {
-      addApplication.mutate({
-        ...values,
-        applied: appliedDate,
-        interviewRounds: [],
-        rejected: rejectedDate,
-      });
-      // Update
-    } else {
-      updateApplication.mutate({
-        ...values,
-        applied: appliedDate,
-        id,
-        interviewRounds: map(values.interviewRounds, (round) => {
-          return DateTime.fromFormat(round.date, DATE_FORMAT).toJSDate();
-        }),
-        rejected: rejectedDate,
-      });
-    }
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    form.handleSubmit().catch(logger.error);
   };
 
   return (
     <div className="m-4 max-w-md">
-      <TypographyH2>{isEmpty(id) ? "Add" : "Update"} Application</TypographyH2>
-      <Form {...form}>
-        <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
-          <FormInput required form={form} label="Title" name="title" />
-          <FormInput required form={form} label="Company" name="company" />
-          <FormInput required form={form} label="URL" name="url" />
-          <FormInput
-            required
-            form={form}
-            label="Applied"
-            name="applied"
-            type="date"
-          />
-          {!isEmpty(id) && <InterviewRounds form={form} />}
-          {!isEmpty(id) && (
-            <FormInput
-              form={form}
-              label="Rejected"
-              name="rejected"
-              type="date"
-            />
-          )}
-          {!isEmpty(error) && <div className="text-destructive">{error}</div>}
-          <div className="flex justify-end gap-4">
-            <Button asChild size="sm" variant="secondary">
-              <Link to="/">Go Back</Link>
-            </Button>
-            <Button size="sm" type="submit">
-              {isEmpty(id) ? "Add" : "Update"}
-            </Button>
-          </div>
-        </form>
+      <TypographyH2 className="mb-4">
+        {isEmpty(id) ? "Add" : "Update"} Application
+      </TypographyH2>
+      <Form onSubmit={onSubmit}>
+        <form.Field name="title">
+          {(field) => {
+            return (
+              <Input
+                isRequired
+                label="Title"
+                name={field.name}
+                onBlur={field.handleBlur}
+                onValueChange={field.handleChange}
+                value={field.state.value}
+              />
+            );
+          }}
+        </form.Field>
+        <form.Field name="company">
+          {(field) => {
+            return (
+              <Input
+                isRequired
+                label="Company"
+                name={field.name}
+                onBlur={field.handleBlur}
+                onValueChange={field.handleChange}
+                value={field.state.value}
+              />
+            );
+          }}
+        </form.Field>
+        <form.Field name="url">
+          {(field) => {
+            return (
+              <Input
+                isRequired
+                label="URL"
+                name={field.name}
+                onBlur={field.handleBlur}
+                onValueChange={field.handleChange}
+                value={field.state.value}
+              />
+            );
+          }}
+        </form.Field>
+        <form.Field name="applied">
+          {(field) => {
+            return (
+              <Input
+                isRequired
+                label="Applied"
+                name={field.name}
+                onBlur={field.handleBlur}
+                onValueChange={field.handleChange}
+                type="date"
+                value={field.state.value}
+              />
+            );
+          }}
+        </form.Field>
+        {!isEmpty(id) && (
+          <form.Field name="rejected">
+            {(field) => {
+              return (
+                <Input
+                  label="Rejected"
+                  name={field.name}
+                  onBlur={field.handleBlur}
+                  onValueChange={field.handleChange}
+                  type="date"
+                  value={field.state.value ?? ""}
+                />
+              );
+            }}
+          </form.Field>
+        )}
+        {!isEmpty(id) && (
+          <form.Field mode="array" name="interviewRounds">
+            {(field) => {
+              return (
+                <>
+                  {map(field.state.value, (_, index) => {
+                    return (
+                      <form.Field
+                        key={index}
+                        name={`interviewRounds[${index}].date`}
+                      >
+                        {(subfield) => {
+                          return (
+                            <Input
+                              label={`Interview Round ${index + 1}`}
+                              name={subfield.name}
+                              onBlur={subfield.handleBlur}
+                              onValueChange={subfield.handleChange}
+                              type="date"
+                              value={subfield.state.value}
+                            />
+                          );
+                        }}
+                      </form.Field>
+                    );
+                  })}
+                  <Button
+                    onPress={() => {
+                      field.pushValue({ date: "" });
+                    }}
+                  >
+                    Add Interview Round
+                  </Button>
+                </>
+              );
+            }}
+          </form.Field>
+        )}
+        {!isEmpty(error) && <div className="text-destructive">{error}</div>}
+        <div className="flex w-full justify-end gap-4">
+          <Button as={Link} color="primary" to="/">
+            Go Back
+          </Button>
+          <Button color="primary" type="submit">
+            {isEmpty(id) ? "Add" : "Update"}
+          </Button>
+        </div>
       </Form>
     </div>
   );

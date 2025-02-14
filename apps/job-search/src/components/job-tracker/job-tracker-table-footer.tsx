@@ -1,8 +1,8 @@
 import type { Dispatch, SetStateAction } from "react";
 
 import { DownloadData } from "@/components/job-tracker/download-data";
-import { Button } from "@/components/ui/button.tsx";
 import { APPLICATION_PAGE_SIZE } from "@/data/queries.ts";
+import { Button } from "@heroui/react";
 import { Link } from "@tanstack/react-router";
 
 type JobTrackerTableFooterProperties = Readonly<{
@@ -20,7 +20,7 @@ export const JobTrackerTableFooter = ({
     <div className="items-center my-4 flex justify-between">
       <div className="flex gap-4">
         <Button
-          onClick={() => {
+          onPress={() => {
             setPage((previous) => {
               if (1 === previous) {
                 return previous;
@@ -29,29 +29,29 @@ export const JobTrackerTableFooter = ({
               return previous - 1;
             });
           }}
-          disabled={1 === page}
+          isDisabled={1 === page}
           size="sm"
-          variant="outline"
+          variant="bordered"
         >
           Previous
         </Button>
         <Button
-          onClick={() => {
+          onPress={() => {
             setPage((previous) => {
               return previous + 1;
             });
           }}
-          disabled={APPLICATION_PAGE_SIZE > total}
+          isDisabled={APPLICATION_PAGE_SIZE > total}
           size="sm"
-          variant="outline"
+          variant="bordered"
         >
           Next
         </Button>
       </div>
       <div className="flex gap-4">
         <DownloadData />
-        <Button asChild size="sm" variant="outline">
-          <Link to="/import-data">Import Data</Link>
+        <Button as={Link} color="primary" size="sm" to="/import-data">
+          Import Data
         </Button>
       </div>
     </div>

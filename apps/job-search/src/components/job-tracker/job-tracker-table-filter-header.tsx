@@ -5,10 +5,7 @@ import {
   toggleIsShowingNoStatus,
   toggleIsShowingRejected,
 } from "@/components/job-tracker/table-state.ts";
-import { Button } from "@/components/ui/button.tsx";
-import { Checkbox } from "@/components/ui/checkbox.tsx";
-import { Input } from "@/components/ui/input.tsx";
-import { Label } from "@/components/ui/label.tsx";
+import { Button, Checkbox, Input } from "@heroui/react";
 import { Link } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { XIcon } from "lucide-react";
@@ -19,49 +16,48 @@ export const JobTrackerTableFilterHeader = () => {
   return (
     <div className="flex justify-between my-4">
       <div className="flex gap-4 items-center">
-        <Label className="flex items-center gap-1">
-          <Checkbox
-            checked={store.isShowingNoStatus}
-            onClick={toggleIsShowingNoStatus}
-          />
+        <Checkbox
+          isSelected={store.isShowingNoStatus}
+          onValueChange={toggleIsShowingNoStatus}
+        >
           Show No Status
-        </Label>
-        <Label className="flex items-center gap-1">
-          <Checkbox
-            checked={store.isShowingInterviewing}
-            onClick={toggleIsShowingInterviewing}
-          />
+        </Checkbox>
+        <Checkbox
+          isSelected={store.isShowingInterviewing}
+          onValueChange={toggleIsShowingInterviewing}
+        >
           Show Interviewing
-        </Label>
-        <Label className="flex items-center gap-1">
-          <Checkbox
-            checked={store.isShowingRejected}
-            onClick={toggleIsShowingRejected}
-          />
+        </Checkbox>
+        <Checkbox
+          isSelected={store.isShowingRejected}
+          onValueChange={toggleIsShowingRejected}
+        >
           Show Rejected
-        </Label>
+        </Checkbox>
         <div className="flex gap-1">
           <Input
-            onChange={(event) => {
-              setCompanyFilter(event.target.value);
+            endContent={
+              <Button
+                isIconOnly
+                onPress={() => {
+                  setCompanyFilter("");
+                }}
+                size="sm"
+                variant="light"
+              >
+                <XIcon />
+              </Button>
+            }
+            onValueChange={(value) => {
+              setCompanyFilter(value);
             }}
-            className="max-w-36"
             placeholder="Filter by Company"
             value={store.companyFilter}
           />
-          <Button
-            onClick={() => {
-              setCompanyFilter("");
-            }}
-            size="icon"
-            variant="outline"
-          >
-            <XIcon />
-          </Button>
         </div>
       </div>
-      <Button asChild size="sm">
-        <Link to="/upsert-application">Add Application</Link>
+      <Button as={Link} color="primary" to="/upsert-application">
+        Add Application
       </Button>
     </div>
   );

@@ -1,4 +1,5 @@
 import { AddEditApplication } from "@/components/add-edit-application/add-edit-application.tsx";
+import { MainLayout } from "@/components/layouts/main-layout.tsx";
 import { queries } from "@/data/queries.ts";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
@@ -42,7 +43,11 @@ const RouteComponent = () => {
           : DateTime.fromJSDate(query.data.rejected).toFormat(DATE_FORMAT),
       };
 
-  return <AddEditApplication initialData={initialData} key={v7()} />;
+  return (
+    <MainLayout>
+      <AddEditApplication initialData={initialData} key={v7()} />
+    </MainLayout>
+  );
 };
 
 export const Route = createFileRoute("/upsert-application")({

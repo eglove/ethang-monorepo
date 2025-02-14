@@ -2,11 +2,11 @@ import type { PropsWithChildren } from "react";
 
 import { Navigation } from "@/components/common/navigation.tsx";
 
-type MainLayoutProperties = PropsWithChildren;
+type MainLayoutProperties = Readonly<PropsWithChildren>;
 
 export const MainLayout = ({ children }: MainLayoutProperties) => {
   return (
-    <main className="m-4 mb-24">
+    <main className="dark text-foreground bg-background p-4 pb-24 min-h-screen">
       <Navigation />
       {children}
     </main>

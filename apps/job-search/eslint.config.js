@@ -4,11 +4,7 @@ import reactConfig from "@ethang/eslint-config/src/config.react.js";
 
 export default tseslint.config(
   {
-    ignores: [
-      "src/routeTree.gen.ts",
-      "src/vite-env.d.ts",
-      "src/components/ui/chart.tsx",
-    ],
+    ignores: ["src/routeTree.gen.ts", "src/vite-env.d.ts"],
   },
   ...config,
   ...reactConfig,

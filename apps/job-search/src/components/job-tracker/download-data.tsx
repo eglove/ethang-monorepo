@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button.tsx";
 import { queries } from "@/data/queries.ts";
+import { Button } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
@@ -31,10 +31,10 @@ export const DownloadData = () => {
 
   return (
     <Button
+      color="primary"
       disabled={isEmpty(query.data)}
-      onClick={handleDownload}
+      onPress={handleDownload}
       size="sm"
-      variant="outline"
     >
       Download Data
     </Button>

@@ -1,13 +1,8 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
 import { queries } from "@/data/queries.ts";
+import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import forEach from "lodash/forEach.js";
 import get from "lodash/get";
@@ -16,14 +11,15 @@ import orderBy from "lodash/orderBy.js";
 import set from "lodash/set.js";
 import slice from "lodash/slice.js";
 import { useMemo } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-
-const chartConfig = {
-  count: {
-    color: "hsl(var(--chart-1))",
-    label: "Count",
-  },
-} satisfies ChartConfig;
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 export const CompaniesChart = () => {
   const query = useQuery(queries.getApplications());
@@ -48,10 +44,10 @@ export const CompaniesChart = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Top 5 Companies</CardTitle>
+        <TypographyH3>Top 5 Companies</TypographyH3>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
+      <CardBody>
+        <ResponsiveContainer height={300}>
           <BarChart accessibilityLayer data={companyData}>
             <CartesianGrid vertical={false} />
             <XAxis
@@ -60,14 +56,32 @@ export const CompaniesChart = () => {
               tickLine={false}
               tickMargin={10}
             />
-            <ChartTooltip
-              content={<ChartTooltipContent hideLabel />}
+            <YAxis
+              axisLine={false}
+              dataKey="count"
+              tickLine={false}
+              tickMargin={10}
+            />
+            <Tooltip
+              content={({ label, payload }) => {
+                const count = get(
+                  payload,
+                  [0, "payload", "count"],
+                  "",
+                ) as unknown;
+
+                return (
+                  <div className="bg-background py-2 px-4 rounded">
+                    {label}: {count}
+                  </div>
+                );
+              }}
               cursor={false}
             />
-            <Bar dataKey="count" fill="var(--color-count)" radius={8} />
+            <Bar dataKey="count" fill="hsl(var(--heroui-primary))" radius={8} />
           </BarChart>
-        </ChartContainer>
-      </CardContent>
+        </ResponsiveContainer>
+      </CardBody>
     </Card>
   );
 };

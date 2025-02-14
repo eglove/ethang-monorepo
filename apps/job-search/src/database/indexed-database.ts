@@ -1,5 +1,15 @@
 import { type DBSchema, openDB } from "idb";
 
+export type JobApplicationSchema = {
+  applied: Date;
+  company: string;
+  id: string;
+  interviewRounds?: Date[] | null;
+  rejected?: Date | null;
+  title: string;
+  url: string;
+};
+
 type LocalDatabaseSchema = {
   jobApplications: {
     indexes: {
@@ -8,15 +18,7 @@ type LocalDatabaseSchema = {
       url: string;
     };
     key: string;
-    value: {
-      applied: Date;
-      company: string;
-      id: string;
-      interviewRounds?: Date[] | null;
-      rejected?: Date | null;
-      title: string;
-      url: string;
-    };
+    value: JobApplicationSchema;
   };
 } & DBSchema;
 

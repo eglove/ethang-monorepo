@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button.tsx";
+import { Button } from "@heroui/react";
 import { CheckIcon, Trash2Icon, XIcon } from "lucide-react";
 import { type PropsWithChildren, useState } from "react";
 
@@ -31,22 +31,24 @@ export const FormEditButton = ({
     return (
       <div className="flex gap-2">
         <Button
+          isIconOnly
           aria-label="Cancel"
-          onClick={handleCancel}
-          size="icon"
+          color="primary"
+          onPress={handleCancel}
+          size="sm"
           title="Cancel"
-          variant="secondary"
         >
-          <XIcon />
+          <XIcon className="size-4" />
         </Button>
         <Button
+          isIconOnly
           aria-label="Confirm Delete"
-          onClick={handleDeleteInternal}
-          size="icon"
+          color="danger"
+          onPress={handleDeleteInternal}
+          size="sm"
           title="Confirm Delete"
-          variant="destructive"
         >
-          <CheckIcon />
+          <CheckIcon className="size-4" />
         </Button>
       </div>
     );
@@ -56,13 +58,14 @@ export const FormEditButton = ({
     <div className="flex gap-2">
       {children}
       <Button
+        isIconOnly
         aria-label="Delete"
-        onClick={handleConfirm}
-        size="icon"
+        color="danger"
+        onPress={handleConfirm}
+        size="sm"
         title="Delete"
-        variant="destructive"
       >
-        <Trash2Icon />
+        <Trash2Icon className="size-4" />
       </Button>
     </div>
   );

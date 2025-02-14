@@ -1,37 +1,35 @@
-import type { JobApplication } from "@/types/job-application.ts";
-
-import { getApplicationTableColumns } from "@/components/job-tracker/job-tracker-columns.tsx";
+import { DateColumn } from "@/components/job-tracker/date-column.tsx";
+import { JobApplicationActions } from "@/components/job-tracker/job-application-actions.tsx";
+import { getApplicationTableColumns } from "@/components/job-tracker/job-tracker-columns.ts";
 import { JobTrackerTableFilterHeader } from "@/components/job-tracker/job-tracker-table-filter-header.tsx";
 import { JobTrackerTableFooter } from "@/components/job-tracker/job-tracker-table-footer.tsx";
 import {
   applicationFormStore,
   setSorting,
 } from "@/components/job-tracker/table-state.ts";
+import { queries } from "@/data/queries.ts";
+import { logger } from "@/lib/logger.ts";
 import {
+  getKeyValue,
+  Link,
   Table,
   TableBody,
   TableCell,
-  TableHead,
+  TableColumn,
   TableHeader,
   TableRow,
-} from "@/components/ui/table.tsx";
-import { queries } from "@/data/queries.ts";
-import { logger } from "@/lib/logger.ts";
-import { cn } from "@/lib/utils.ts";
+} from "@heroui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import filter from "lodash/filter.js";
 import get from "lodash/get";
 import isDate from "lodash/isDate.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
-import map from "lodash/map.js";
+import isString from "lodash/isString.js";
+import split from "lodash/split.js";
+import startsWith from "lodash/startsWith.js";
 import { useEffect, useMemo, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 export const JobTrackerTable = () => {
   const [page, setPage] = useState(1);
@@ -56,37 +54,6 @@ export const JobTrackerTable = () => {
   ]);
 
   const query = useQuery(queries.getApplications(filters));
-
-  const queryData = useMemo(() => {
-    return query.data ?? [];
-  }, [query.data]);
-
-  const columns = useMemo(() => {
-    let maxInterviewRounds = 0;
-
-    if (isNil(query.data)) {
-      return [];
-    }
-
-    for (const datum of query.data) {
-      const length = get(datum, ["interviewRounds", "length"], 0);
-      if (length > maxInterviewRounds) {
-        maxInterviewRounds = length;
-      }
-    }
-
-    return getApplicationTableColumns({
-      rounds: maxInterviewRounds,
-      setSorting,
-      sorting: store.sorting,
-    });
-  }, [query.data, store.sorting]);
-
-  const table = useReactTable<JobApplication>({
-    columns,
-    data: queryData,
-    getCoreRowModel: getCoreRowModel(),
-  });
 
   useEffect(() => {
     queryClient
@@ -113,65 +80,98 @@ export const JobTrackerTable = () => {
   return (
     <>
       <JobTrackerTableFilterHeader />
-      <div className="relative w-full overflow-y-auto min-h-[400px] max-h-[600px]">
-        <Table className="table-fixed">
-          <TableHeader className="sticky top-0 z-10">
-            {map(table.getHeaderGroups(), (headerGroup) => {
-              return (
-                <TableRow key={headerGroup.id}>
-                  {map(headerGroup.headers, (header) => {
+      <Table
+        isHeaderSticky
+        onSortChange={(descriptor) => {
+          setSorting(String(descriptor.column));
+        }}
+        aria-label="Job Applications"
+        className="h-[560px]"
+        sortDescriptor={store.sorting}
+      >
+        <TableHeader columns={getApplicationTableColumns(query.data)}>
+          {(item) => {
+            return (
+              <TableColumn
+                allowsSorting={
+                  "actions" !== item.key && !startsWith(item.key, "round")
+                }
+                key={item.key}
+              >
+                {item.label}
+              </TableColumn>
+            );
+          }}
+        </TableHeader>
+        <TableBody items={query.data ?? []}>
+          {(item) => {
+            return (
+              <TableRow
+                className={twMerge(
+                  !isNil(item.rejected) && "text-danger",
+                  isNil(item.rejected) &&
+                    !isEmpty(item.interviewRounds) &&
+                    "text-warning",
+                )}
+                key={item.id}
+              >
+                {(columnKey) => {
+                  const value = getKeyValue(item, columnKey) as unknown;
+
+                  if ("url" === columnKey && isString(value)) {
                     return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
+                      <TableCell>
+                        <Link
+                          isExternal
+                          showAnchorIcon
+                          className="break-all"
+                          href={value}
+                          underline="always"
+                        >
+                          {URL.canParse(value)
+                            ? new URL(value).hostname
+                            : value}
+                        </Link>
+                      </TableCell>
                     );
-                  })}
-                </TableRow>
-              );
-            })}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              map(table.getRowModel().rows, (row) => (
-                <TableRow
-                  className={cn(
-                    !isNil(row.original.rejected) &&
-                      "bg-destructive hover:bg-destructive text-destructive-foreground",
-                    isNil(row.original.rejected) &&
-                      !isEmpty(filter(row.original.interviewRounds, isDate)) &&
-                      "bg-blue-300 hover:bg-blue-300",
-                  )}
-                  data-state={row.getIsSelected() && "selected"}
-                  key={row.id}
-                >
-                  {map(row.getVisibleCells(), (cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  className="h-24 text-center"
-                  colSpan={columns.length}
-                >
-                  No results.
-                </TableCell>
+                  }
+
+                  if ("actions" === columnKey) {
+                    return (
+                      <TableCell className="flex gap-2">
+                        <JobApplicationActions id={item.id} />
+                      </TableCell>
+                    );
+                  }
+
+                  if (startsWith(String(columnKey), "round")) {
+                    const date = get(item, [
+                      "interviewRounds",
+                      Number(split(String(columnKey), "-")[1]) - 1,
+                    ]);
+
+                    return (
+                      <TableCell>
+                        <DateColumn date={date} />
+                      </TableCell>
+                    );
+                  }
+
+                  if (isDate(value)) {
+                    return (
+                      <TableCell>
+                        <DateColumn date={value} />
+                      </TableCell>
+                    );
+                  }
+
+                  return <TableCell>{getKeyValue(item, columnKey)}</TableCell>;
+                }}
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            );
+          }}
+        </TableBody>
+      </Table>
       <JobTrackerTableFooter
         page={page}
         setPage={setPage}

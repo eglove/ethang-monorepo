@@ -1,10 +1,9 @@
 import type { JobApplication } from "@/types/job-application.ts";
 
 import { TypographyH2 } from "@/components/typography/typography-h2.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { Input } from "@/components/ui/input.tsx";
 import { queryKeys } from "@/data/queries.ts";
 import { getJobApplicationsDatabase } from "@/database/indexed-database.ts";
+import { Button, Input } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import attempt from "lodash/attempt.js";
@@ -55,15 +54,15 @@ export const ImportApplications = () => {
         type="file"
       />
       <div className="flex justify-end gap-4">
-        <Button asChild size="sm">
-          <Link to="/">Go Back</Link>
+        <Button as={Link} color="primary" size="sm" to="/">
+          Go Back
         </Button>
         <Button
-          onClick={() => {
+          onPress={() => {
             mutate();
           }}
+          color="primary"
           size="sm"
-          variant="outline"
         >
           Import
         </Button>

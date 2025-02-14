@@ -1,3 +1,4 @@
+import type { SortDescriptor } from "@heroui/react";
 import type { OnChangeFn } from "@tanstack/react-table";
 
 import { Store } from "@tanstack/react-store";
@@ -13,7 +14,7 @@ type ApplicationFormStoreState = {
   isShowingInterviewing: boolean;
   isShowingNoStatus: boolean;
   isShowingRejected: boolean;
-  sorting: Sorting;
+  sorting: SortDescriptor;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition,@typescript-eslint/no-unsafe-type-assertion
@@ -89,17 +90,12 @@ export const toggleIsShowingNoStatus = () => {
 export const setSorting = (id: string) => {
   applicationFormStore.setState((state) => {
     return produce(state, (draft) => {
-      if (id === state.sorting.id) {
-        if ("desc" === state.sorting.direction) {
-          draft.sorting.direction = "asc";
-        } else if ("asc" === state.sorting.direction) {
-          draft.sorting.direction = false;
-        } else {
-          draft.sorting.direction = "desc";
-        }
+      if (id === state.sorting.column) {
+        draft.sorting.direction =
+          "descending" === state.sorting.direction ? "ascending" : "descending";
       } else {
-        draft.sorting.id = id;
-        draft.sorting.direction = "desc";
+        draft.sorting.column = id;
+        draft.sorting.direction = "descending";
       }
     });
   });

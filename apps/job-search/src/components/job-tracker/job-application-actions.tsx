@@ -1,7 +1,7 @@
 import { FormEditButton } from "@/components/form/form-edit-button.tsx";
-import { Button } from "@/components/ui/button.tsx";
 import { mutations } from "@/data/mutations.ts";
 import { queryKeys } from "@/data/queries.ts";
+import { Button } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { PencilIcon } from "lucide-react";
@@ -30,14 +30,13 @@ export const JobApplicationActions = ({
       }}
     >
       <Button
-        asChild
-        size="icon"
+        isIconOnly
+        as={Link}
+        size="sm"
         title="Update Application"
-        variant="secondary"
+        to={`/upsert-application?id=${id}`}
       >
-        <Link to={`/upsert-application?id=${id}`}>
-          <PencilIcon />
-        </Link>
+        <PencilIcon className="size-4" />
       </Button>
     </FormEditButton>
   );
