@@ -12,6 +12,7 @@ import { logger } from "@/lib/logger.ts";
 import {
   getKeyValue,
   Link,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -79,13 +80,15 @@ export const JobTrackerTable = () => {
   return (
     <>
       <JobTrackerTableFilterHeader />
-      <JobTrackerTableFooter
-        page={page}
-        setPage={setPage}
-        total={query.data?.length ?? 0}
-      />
       <Table
         isHeaderSticky
+        bottomContent={
+          <JobTrackerTableFooter
+            page={page}
+            setPage={setPage}
+            total={query.data?.length ?? 0}
+          />
+        }
         onSortChange={(descriptor) => {
           setSorting(String(descriptor.column));
         }}
@@ -106,7 +109,12 @@ export const JobTrackerTable = () => {
             );
           }}
         </TableHeader>
-        <TableBody items={query.data ?? []}>
+        <TableBody
+          emptyContent="Nothing to display"
+          items={query.data ?? []}
+          loadingContent={<Spinner />}
+          loadingState={query.isPending ? "loading" : "idle"}
+        >
           {(item) => {
             return (
               <TableRow

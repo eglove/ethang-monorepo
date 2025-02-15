@@ -32,15 +32,19 @@ const RouteComponent = () => {
     ? defaultValues
     : {
         ...query.data,
-        applied: DateTime.fromJSDate(query.data.applied).toFormat(DATE_FORMAT),
+        applied: DateTime.fromJSDate(new Date(query.data.applied)).toFormat(
+          DATE_FORMAT,
+        ),
         interviewRounds: map(query.data.interviewRounds, (round) => {
           return {
-            date: DateTime.fromJSDate(round).toFormat(DATE_FORMAT),
+            date: DateTime.fromJSDate(new Date(round)).toFormat(DATE_FORMAT),
           };
         }),
         rejected: isNil(query.data.rejected)
           ? ""
-          : DateTime.fromJSDate(query.data.rejected).toFormat(DATE_FORMAT),
+          : DateTime.fromJSDate(new Date(query.data.rejected)).toFormat(
+              DATE_FORMAT,
+            ),
       };
 
   return (
