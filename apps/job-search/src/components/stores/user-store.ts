@@ -1,30 +1,21 @@
-import { Store } from "@tanstack/react-store";
-import { produce } from "immer";
+import { Store } from "@ethang/store/src/index.ts";
+import { useSyncExternalStore } from "react";
 
 export const userStore = new Store(
   {
+    isSignedIn: false,
     isSyncing: false,
+    token: "",
   },
   {
-    updateFn: (previous) => {
-      return (updater) => {
-        const updatedState = updater(previous);
-
-        globalThis.localStorage.setItem(
-          "userStore",
-          JSON.stringify(updatedState),
-        );
-
-        return updatedState;
-      };
-    },
+    localStorageKey: "userStore",
+    syncToLocalStorage: true,
   },
 );
 
-export const setIsUserSyncing = (isSyncing: boolean) => {
-  userStore.setState((state) => {
-    return produce(state, (draft) => {
-      draft.isSyncing = isSyncing;
-    });
-  });
-};
+export const useUserStore = () =>
+  useSyncExternalStore(
+    (listener) => userStore.subscribe(listener),
+    () => userStore.get(),
+    () => userStore.get(),
+  );

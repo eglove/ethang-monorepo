@@ -2,7 +2,16 @@ import { type Draft, produce } from "immer";
 
 export type Listener<TState> = (state: TState) => void;
 
+type StoreConfig = {
+  localStorageKey?: string;
+  syncToLocalStorage?: boolean;
+};
+
 export class Store<TState> {
+  private readonly _config?:
+    | ({ localStorageKey: string } & StoreConfig)
+    | undefined;
+
   private readonly _elementListeners = new Map<string, HTMLElement>();
 
   private readonly _initialState: TState;
@@ -20,8 +29,13 @@ export class Store<TState> {
     return this._state;
   }
 
-  public constructor(initialState: TState) {
-    this._state = initialState;
+  public constructor(initialState: TState, config?: StoreConfig) {
+    this._config = {
+      ...config,
+      localStorageKey: config?.localStorageKey ?? "store",
+    };
+
+    this._state = this.getInitialState(initialState);
     this._initialState = initialState;
   }
 
@@ -56,7 +70,6 @@ export class Store<TState> {
 
     return selector(this.state);
   }
-
   public notifySubscribers() {
     for (const listener of this._listeners) {
       listener(this.state);
@@ -68,7 +81,15 @@ export class Store<TState> {
   }
 
   public set(updater: (draft: Draft<TState>) => void) {
-    this.state = produce(this.state, updater);
+    const value = produce(this.state, updater);
+    this.state = value;
+
+    if (true === this._config?.syncToLocalStorage) {
+      globalThis.localStorage.setItem(
+        this._config.localStorageKey,
+        JSON.stringify(value),
+      );
+    }
   }
 
   public subscribe(listener: Listener<TState>) {
@@ -106,5 +127,22 @@ export class Store<TState> {
     };
 
     return genId();
+  }
+
+  private getInitialState(initialState: TState) {
+    if (this._config && true === this._config.syncToLocalStorage) {
+      const storedState = globalThis.localStorage.getItem(
+        this._config.localStorageKey,
+      );
+
+      if (null === storedState) {
+        return initialState;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      return JSON.parse(storedState) as TState;
+    }
+
+    return initialState;
   }
 }

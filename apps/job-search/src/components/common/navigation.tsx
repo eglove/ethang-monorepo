@@ -1,10 +1,7 @@
+import { SignInModal } from "@/components/common/sign-in-modal.tsx";
+import { userStore, useUserStore } from "@/components/stores/user-store.ts";
 import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/clerk-react";
-import {
+  Button,
   Link,
   Navbar,
   NavbarBrand,
@@ -20,7 +17,16 @@ const navLinks = [
   { label: "Data Backup", link: "/data-backup" },
 ];
 
+const handleSignOut = () => {
+  userStore.set((state) => {
+    state.isSignedIn = false;
+    state.token = "";
+  });
+};
+
 export const Navigation = () => {
+  const store = useUserStore();
+
   return (
     <Navbar>
       <NavbarBrand>Job Track</NavbarBrand>
@@ -40,12 +46,12 @@ export const Navigation = () => {
         })}
       </NavbarContent>
       <NavbarContent justify="end">
-        <SignedOut>
-          <SignInButton mode="modal" />
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+        {!store.isSignedIn && <SignInModal />}
+        {store.isSignedIn && (
+          <Button color="primary" onPress={handleSignOut} size="sm">
+            Sign Out
+          </Button>
+        )}
       </NavbarContent>
     </Navbar>
   );

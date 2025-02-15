@@ -1,0 +1,16 @@
+{
+  "author": "Ethan Glover",
+  "dependencies": {
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "workspace:^",
+    "eslint": "^9.20.1"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "name": "@ethang/schemas",
+  "scripts": {},
+  "type": "module",
+  "version": "1.0.0"
+}
