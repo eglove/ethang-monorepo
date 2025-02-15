@@ -21,7 +21,6 @@ export const DownloadData = () => {
     const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
     });
-    // eslint-disable-next-line n/no-unsupported-features/node-builtins
     const url = URL.createObjectURL(blob);
     const link = globalThis.document.createElement("a");
     link.href = url;
@@ -31,7 +30,6 @@ export const DownloadData = () => {
     link.click();
 
     link.remove();
-    // eslint-disable-next-line n/no-unsupported-features/node-builtins
     URL.revokeObjectURL(url);
   };
 

@@ -10,7 +10,6 @@ export const userStore = new Store(
       return (updater) => {
         const updatedState = updater(previous);
 
-        // eslint-disable-next-line n/no-unsupported-features/node-builtins
         globalThis.localStorage.setItem(
           "userStore",
           JSON.stringify(updatedState),

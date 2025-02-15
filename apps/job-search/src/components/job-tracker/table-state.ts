@@ -19,7 +19,6 @@ type ApplicationFormStoreState = {
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition,@typescript-eslint/no-unsafe-type-assertion
 const initialState: ApplicationFormStoreState = (JSON.parse(
-  // eslint-disable-next-line n/no-unsupported-features/node-builtins
   globalThis.localStorage.getItem("applicationTableState") ?? "null",
 ) as ApplicationFormStoreState) ?? {
   companyFilter: "",
@@ -34,7 +33,6 @@ export const applicationFormStore = new Store(initialState, {
     return (updater) => {
       const updatedState = updater(previous);
 
-      // eslint-disable-next-line n/no-unsupported-features/node-builtins
       globalThis.localStorage.setItem(
         "applicationTableState",
         JSON.stringify(updatedState),
