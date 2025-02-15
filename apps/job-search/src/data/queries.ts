@@ -36,6 +36,7 @@ export const queryKeys = {
     "get",
     _filter,
   ],
+  getApplicationsLast30Days: () => ["application", "get", "last30Days"],
   getQas: () => ["qa", "get"],
 };
 

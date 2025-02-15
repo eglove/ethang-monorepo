@@ -7,20 +7,21 @@ import {
   QUESTION_ANSWER_STORE_NAME,
   type QuestionAnswerSchema,
 } from "@/database/indexed-database.ts";
+import { useToggle } from "@ethang/hooks/src/use-toggle.ts";
 import { Button, Input } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import attempt from "lodash/attempt.js";
 import isNil from "lodash/isNil";
 import map from "lodash/map.js";
+import { CheckIcon } from "lucide-react";
 import { useRef } from "react";
 
 export const ImportApplications = () => {
   const inputReference = useRef<HTMLInputElement | null>(null);
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [isSuccessfulImport, toggleSuccessfulImport] = useToggle(false);
 
-  const { mutate } = useMutation({
+  const { isPending, mutate } = useMutation({
     mutationFn: async () => {
       const [file] = inputReference.current?.files ?? [];
 
@@ -58,29 +59,32 @@ export const ImportApplications = () => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.applications(),
       });
-      await navigate({ to: "/" });
+
+      toggleSuccessfulImport();
+      globalThis.setTimeout(toggleSuccessfulImport, 1000);
     },
   });
 
   return (
-    <div className="max-w-sm m-4 grid gap-4">
+    <div className="mt-4">
       <Input
         accept="application/json"
         name="file"
         ref={inputReference}
         type="file"
       />
-      <div className="flex justify-end gap-4">
-        <Button
-          onPress={() => {
-            mutate();
-          }}
-          color="primary"
-          size="sm"
-        >
-          Import
-        </Button>
-      </div>
+      <Button
+        onPress={() => {
+          mutate();
+        }}
+        className="mt-4"
+        color="primary"
+        disabled={isPending}
+        size="sm"
+      >
+        {isSuccessfulImport && <CheckIcon />}
+        {!isSuccessfulImport && "Import Data"}
+      </Button>
     </div>
   );
 };

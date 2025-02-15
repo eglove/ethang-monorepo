@@ -3,10 +3,12 @@ import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
 import { queries } from "@/data/queries.ts";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
-import forEach from "lodash/forEach";
+import filter from "lodash/filter.js";
+import findIndex from "lodash/findIndex.js";
 import get from "lodash/get";
 import isNil from "lodash/isNil";
-import map from "lodash/map";
+import slice from "lodash/slice.js";
+import { DateTime } from "luxon";
 import { useMemo } from "react";
 import {
   CartesianGrid,
@@ -22,28 +24,39 @@ export const ApplicationsPerDayChart = () => {
   const query = useQuery(queries.getApplications());
 
   const data = useMemo(() => {
-    const results: Record<string, number> = {};
+    const today = DateTime.now();
+    let start = DateTime.now().minus({ days: 30 });
 
-    forEach(query.data, (item) => {
-      const date = new Date(item.applied).toLocaleString(undefined, {
-        day: "numeric",
-        month: "short",
-        weekday: "short",
-        year: "2-digit",
+    const getFilteredList = () => {
+      return filter(query.data, (datum) => {
+        return (
+          new Date(datum.applied).toDateString() ===
+          start.toJSDate().toDateString()
+        );
+      });
+    };
+
+    const chartData = [];
+    while (start.toMillis() <= today.toMillis()) {
+      const dayApplications = getFilteredList();
+
+      chartData.push({
+        applications: dayApplications.length,
+        date: start.toLocaleString({
+          day: "numeric",
+          month: "short",
+          weekday: "short",
+          year: "2-digit",
+        }),
       });
 
-      if (isNil(results[date])) {
-        results[date] = 1;
-      } else {
-        results[date] += 1;
-      }
-    });
+      start = start.plus({ days: 1 });
+    }
 
-    return map(results, (value, key) => {
-      return { applications: value, date: key };
-    }).sort((a, b) => {
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
-    });
+    return slice(
+      chartData,
+      findIndex(chartData, (d) => 0 < d.applications),
+    );
   }, [query.data]);
 
   const average = useMemo(() => {
@@ -59,11 +72,11 @@ export const ApplicationsPerDayChart = () => {
       <CardHeader className="p-0">
         <div className="flex flex-col gap-y-1 p-4">
           <dt>
-            <TypographyH3>Applications / Day</TypographyH3>
+            <TypographyH3>Applications / Day ({data.length} Days)</TypographyH3>
           </dt>
           <dd className="text-sm">
             Average: {Number(average).toLocaleString()}, Total:{" "}
-            {get(query, ["data", "length"], 0)}, Days: {data.length}
+            {get(query, ["data", "length"], 0)}
           </dd>
         </div>
       </CardHeader>

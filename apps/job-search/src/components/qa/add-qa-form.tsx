@@ -41,59 +41,57 @@ export const AddQaForm = () => {
   };
 
   return (
-    <div className="max-w-sm">
-      <Accordion isCompact>
-        <AccordionItem
-          title={
-            <div className="underline underline-offset-2">
-              Add Application Question / Answer
-            </div>
-          }
-          aria-label="Add Application Question / Answer"
-          key="1"
-        >
-          <Form onSubmit={handleSubmit}>
-            <form.Field name="question">
-              {(field) => {
-                return (
-                  <Input
-                    isRequired
-                    id={field.name}
-                    label="Question"
-                    name={field.name}
-                    onBlur={field.handleBlur}
-                    onValueChange={field.handleChange}
-                    value={field.state.value}
-                  />
-                );
-              }}
-            </form.Field>
-            <form.Field name="answer">
-              {(field) => {
-                return (
-                  <Textarea
-                    isRequired
-                    id={field.name}
-                    label="Answer"
-                    name={field.name}
-                    onBlur={field.handleBlur}
-                    onValueChange={field.handleChange}
-                    value={field.state.value}
-                  />
-                );
-              }}
-            </form.Field>
-            <Button
-              className="self-end"
-              color="primary"
-              isLoading={addQa.isPending}
-              type="submit"
-            >
-              Add
-            </Button>
-          </Form>
-        </AccordionItem>
-      </Accordion>
-    </div>
+    <Accordion isCompact>
+      <AccordionItem
+        title={
+          <div className="underline underline-offset-2">
+            Add Application Question / Answer
+          </div>
+        }
+        aria-label="Add Application Question / Answer"
+        key="1"
+      >
+        <Form onSubmit={handleSubmit}>
+          <form.Field name="question">
+            {(field) => {
+              return (
+                <Input
+                  isRequired
+                  id={field.name}
+                  label="Question"
+                  name={field.name}
+                  onBlur={field.handleBlur}
+                  onValueChange={field.handleChange}
+                  value={field.state.value}
+                />
+              );
+            }}
+          </form.Field>
+          <form.Field name="answer">
+            {(field) => {
+              return (
+                <Textarea
+                  isRequired
+                  id={field.name}
+                  label="Answer"
+                  name={field.name}
+                  onBlur={field.handleBlur}
+                  onValueChange={field.handleChange}
+                  value={field.state.value}
+                />
+              );
+            }}
+          </form.Field>
+          <Button
+            className="self-end"
+            color="primary"
+            isLoading={addQa.isPending}
+            type="submit"
+          >
+            Add
+          </Button>
+        </Form>
+      </AccordionItem>
+    </Accordion>
   );
 };

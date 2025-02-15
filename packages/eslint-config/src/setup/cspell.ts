@@ -72,6 +72,7 @@ const customRules: CustomRules = [
             "sindresorhus",
             "rogan",
             "heroui",
+            "millis",
           ],
         },
       },

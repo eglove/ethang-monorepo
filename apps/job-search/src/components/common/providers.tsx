@@ -1,9 +1,7 @@
 import { logger } from "@/lib/logger.ts";
 import { ComputeEngine } from "@cortex-js/compute-engine";
 import { HeroUIProvider } from "@heroui/react";
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { QueryClient } from "@tanstack/react-query";
-import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, useNavigate } from "@tanstack/react-router";
 import constant from "lodash/constant";
 import ms from "ms";
@@ -20,11 +18,6 @@ export const queryClient = new QueryClient({
       staleTime: ONE_HOUR,
     },
   },
-});
-
-const persister = createSyncStoragePersister({
-  // eslint-disable-next-line n/no-unsupported-features/node-builtins
-  storage: globalThis.localStorage,
 });
 
 export const ReactQueryDevtools =
@@ -51,10 +44,7 @@ export const Providers = () => {
   const navigate = useNavigate();
 
   return (
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{ persister }}
-    >
+    <QueryClientProvider client={queryClient}>
       <HeroUIProvider
         navigate={(path) => {
           navigate({ to: path }).catch(logger.error);
@@ -64,6 +54,6 @@ export const Providers = () => {
         <TanStackRouterDevtools />
         <ReactQueryDevtools />
       </HeroUIProvider>
-    </PersistQueryClientProvider>
+    </QueryClientProvider>
   );
 };

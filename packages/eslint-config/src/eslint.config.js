@@ -1084,6 +1084,7 @@ export default tseslint.config(
               "sindresorhus",
               "rogan",
               "heroui",
+              "millis",
             ],
           },
         },

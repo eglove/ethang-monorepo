@@ -51,26 +51,6 @@ export const QaItem = ({ qa }: QaItemHeaderProperties) => {
 
   return (
     <>
-      <div className="my-2 flex gap-2 justify-between items-center">
-        <div className="flex gap-2">
-          <QaCopyButton text={qa.answer} />{" "}
-          <Button
-            endContent={
-              isEditing ? (
-                <XIcon className="size-5" />
-              ) : (
-                <PencilIcon className="size-5" />
-              )
-            }
-            onPress={() => {
-              setIsEditing((previous) => !previous);
-            }}
-          >
-            {isEditing ? "Cancel Edit" : "Edit"}
-          </Button>
-        </div>
-        <DeleteQa id={qa.id} />
-      </div>
       <div>
         {!isEditing &&
           map(answerLines, (line, index) => {
@@ -118,6 +98,26 @@ export const QaItem = ({ qa }: QaItemHeaderProperties) => {
             </Button>
           </Form>
         )}
+      </div>
+      <div className="my-4 flex gap-2 justify-between items-center">
+        <div className="flex gap-2">
+          <QaCopyButton text={qa.answer} />{" "}
+          <Button
+            endContent={
+              isEditing ? (
+                <XIcon className="size-5" />
+              ) : (
+                <PencilIcon className="size-5" />
+              )
+            }
+            onPress={() => {
+              setIsEditing((previous) => !previous);
+            }}
+          >
+            {isEditing ? "Cancel Edit" : "Edit"}
+          </Button>
+        </div>
+        <DeleteQa id={qa.id} />
       </div>
     </>
   );
