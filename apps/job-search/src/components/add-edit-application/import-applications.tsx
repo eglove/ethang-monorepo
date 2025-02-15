@@ -1,7 +1,6 @@
 import { queryKeys } from "@/data/queries.ts";
 import {
-  getJobApplicationsDatabase,
-  getQuestionAnswerDatabase,
+  getDatabase,
   JOB_APPLICATION_STORE_NAME,
   type JobApplicationSchema,
   QUESTION_ANSWER_STORE_NAME,
@@ -11,15 +10,17 @@ import { useToggle } from "@ethang/hooks/src/use-toggle.ts";
 import { Button, Input } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import attempt from "lodash/attempt.js";
+import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
 import map from "lodash/map.js";
 import { CheckIcon } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export const ImportApplications = () => {
   const inputReference = useRef<HTMLInputElement | null>(null);
   const queryClient = useQueryClient();
   const [isSuccessfulImport, toggleSuccessfulImport] = useToggle(false);
+  const [importErrorMessage, setImportErrorMessage] = useState("");
 
   const { isPending, mutate } = useMutation({
     mutationFn: async () => {
@@ -35,13 +36,13 @@ export const ImportApplications = () => {
         applications: JobApplicationSchema[];
         qas: QuestionAnswerSchema[];
       };
-      const applicationDatabase = await getJobApplicationsDatabase();
-      const qaDatabase = await getQuestionAnswerDatabase();
-      const applicationTransaction = applicationDatabase.transaction(
+      const database = await getDatabase();
+
+      const applicationTransaction = database.transaction(
         JOB_APPLICATION_STORE_NAME,
         "readwrite",
       );
-      const qaTransaction = qaDatabase.transaction(
+      const qaTransaction = database.transaction(
         QUESTION_ANSWER_STORE_NAME,
         "readwrite",
       );
@@ -62,6 +63,9 @@ export const ImportApplications = () => {
 
       toggleSuccessfulImport();
       globalThis.setTimeout(toggleSuccessfulImport, 1000);
+    },
+    onError: (error) => {
+      setImportErrorMessage(error.message);
     },
   });
 
@@ -85,6 +89,9 @@ export const ImportApplications = () => {
         {isSuccessfulImport && <CheckIcon />}
         {!isSuccessfulImport && "Import Data"}
       </Button>
+      {!isEmpty(importErrorMessage) && (
+        <div className="text-danger mt-1">{importErrorMessage}</div>
+      )}
     </div>
   );
 };

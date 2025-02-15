@@ -1,8 +1,7 @@
 import type { SortDescriptor } from "@heroui/react";
 
 import {
-  getJobApplicationsDatabase,
-  getQuestionAnswerDatabase,
+  getDatabase,
   JOB_APPLICATION_STORE_NAME,
   QUESTION_ANSWER_STORE_NAME,
   type QuestionAnswerSchema,
@@ -49,7 +48,7 @@ export const queries = {
           return;
         }
 
-        const database = await getJobApplicationsDatabase();
+        const database = await getDatabase();
         return database.get(JOB_APPLICATION_STORE_NAME, id);
       },
       queryKey: queryKeys.getApplicationKeys(id),
@@ -58,7 +57,7 @@ export const queries = {
   getApplications: (filters?: ApplicationsFilter) => {
     return queryOptions({
       queryFn: async () => {
-        const database = await getJobApplicationsDatabase();
+        const database = await getDatabase();
         const applied = await database.getAllFromIndex(
           JOB_APPLICATION_STORE_NAME,
           "applied",
@@ -123,7 +122,7 @@ export const queries = {
   getQas: () => {
     return queryOptions({
       queryFn: async () => {
-        const database = await getQuestionAnswerDatabase();
+        const database = await getDatabase();
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         return database.getAll(

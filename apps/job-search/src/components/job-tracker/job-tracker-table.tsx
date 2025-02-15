@@ -26,6 +26,7 @@ import get from "lodash/get";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
 import isString from "lodash/isString.js";
+import sortBy from "lodash/sortBy.js";
 import split from "lodash/split.js";
 import startsWith from "lodash/startsWith.js";
 import { useEffect, useMemo, useState } from "react";
@@ -156,8 +157,8 @@ export const JobTrackerTable = () => {
                   }
 
                   if (startsWith(String(columnKey), "round")) {
-                    const date = get(item, [
-                      "interviewRounds",
+                    const rounds = sortBy(get(item, ["interviewRounds"], []));
+                    const date = get(rounds, [
                       Number(split(String(columnKey), "-")[1]) - 1,
                     ]);
 

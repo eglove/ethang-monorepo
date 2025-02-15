@@ -1,8 +1,10 @@
+import { CLERK_PUBLIC_KEY } from "@/lib/keys.ts";
 import { logger } from "@/lib/logger.ts";
+import { ClerkProvider } from "@clerk/clerk-react";
 import { ComputeEngine } from "@cortex-js/compute-engine";
 import { HeroUIProvider } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Outlet, useNavigate } from "@tanstack/react-router";
+import { Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import constant from "lodash/constant";
 import ms from "ms";
 import { lazy } from "react";
@@ -42,18 +44,26 @@ export const TanStackRouterDevtools =
 
 export const Providers = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <HeroUIProvider
-        navigate={(path) => {
-          navigate({ to: path }).catch(logger.error);
-        }}
-      >
-        <Outlet />
-        <TanStackRouterDevtools />
-        <ReactQueryDevtools />
-      </HeroUIProvider>
-    </QueryClientProvider>
+    <ClerkProvider
+      afterSignOutUrl={location.href}
+      publishableKey={CLERK_PUBLIC_KEY}
+      signInForceRedirectUrl={location.href}
+      signUpForceRedirectUrl={location.href}
+    >
+      <QueryClientProvider client={queryClient}>
+        <HeroUIProvider
+          navigate={(path) => {
+            navigate({ to: path }).catch(logger.error);
+          }}
+        >
+          <Outlet />
+          <TanStackRouterDevtools />
+          <ReactQueryDevtools />
+        </HeroUIProvider>
+      </QueryClientProvider>
+    </ClerkProvider>
   );
 };

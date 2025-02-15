@@ -4,6 +4,7 @@
     "maintained node versions"
   ],
   "dependencies": {
+    "@clerk/clerk-react": "^5.22.13",
     "@cortex-js/compute-engine": "^0.28.0",
     "@ethang/hooks": "workspace:2.2.6-beta.0",
     "@ethang/toolbelt": "workspace:^",
@@ -54,6 +55,7 @@
     "typescript": "~5.7.3",
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.5",
+    "vite-plugin-pwa": "^0.21.1",
     "wrangler": "^3.109.1"
   },
   "engines": {

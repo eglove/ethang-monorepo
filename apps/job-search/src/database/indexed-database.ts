@@ -10,8 +10,14 @@ export type JobApplicationSchema = {
   url: string;
 };
 
+export type QuestionAnswerSchema = {
+  answer: string;
+  id: string;
+  question: string;
+};
+
 type LocalDatabaseSchema = {
-  jobApplications: {
+  [JOB_APPLICATION_STORE_NAME]: {
     indexes: {
       applied: string;
       position: string[];
@@ -20,48 +26,36 @@ type LocalDatabaseSchema = {
     key: string;
     value: JobApplicationSchema;
   };
+  [QUESTION_ANSWER_STORE_NAME]: {
+    key: string;
+    value: QuestionAnswerSchema;
+  };
 } & DBSchema;
 
 export const LOCAL_DATABASE_VERSION = 1;
-
 export const JOB_APPLICATION_STORE_NAME = "jobApplications";
-export const getJobApplicationsDatabase = async () => {
+export const QUESTION_ANSWER_STORE_NAME = "questionAnswers";
+
+export const getDatabase = async () => {
   return openDB<LocalDatabaseSchema>(
     "job-application-db",
     LOCAL_DATABASE_VERSION,
     {
       upgrade(database) {
-        const store = database.createObjectStore(JOB_APPLICATION_STORE_NAME, {
-          autoIncrement: false,
-          keyPath: "id",
+        const applicationStore = database.createObjectStore(
+          JOB_APPLICATION_STORE_NAME,
+          {
+            autoIncrement: false,
+            keyPath: "id",
+          },
+        );
+
+        applicationStore.createIndex("url", "url", { unique: true });
+        applicationStore.createIndex("position", ["title", "company"], {
+          unique: true,
         });
+        applicationStore.createIndex("applied", "applied");
 
-        store.createIndex("url", "url", { unique: true });
-        store.createIndex("position", ["title", "company"], { unique: true });
-        store.createIndex("applied", "applied");
-      },
-    },
-  );
-};
-
-export type QuestionAnswerSchema = {
-  answer: string;
-  id: string;
-  question: string;
-};
-
-type QuestionAnswerDatabaseSchema = {
-  key: string;
-  value: QuestionAnswerSchema;
-};
-
-export const QUESTION_ANSWER_STORE_NAME = "questionAnswers";
-export const getQuestionAnswerDatabase = async () => {
-  return openDB<QuestionAnswerDatabaseSchema>(
-    "question-answer-db",
-    LOCAL_DATABASE_VERSION,
-    {
-      upgrade(database) {
         database.createObjectStore(QUESTION_ANSWER_STORE_NAME, {
           autoIncrement: false,
           keyPath: "id",

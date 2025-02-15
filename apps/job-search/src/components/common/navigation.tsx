@@ -1,4 +1,16 @@
-import { Link, Navbar, NavbarContent, NavbarItem } from "@heroui/react";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
+import {
+  Link,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+} from "@heroui/react";
 import map from "lodash/map.js";
 
 const navLinks = [
@@ -11,6 +23,7 @@ const navLinks = [
 export const Navigation = () => {
   return (
     <Navbar>
+      <NavbarBrand>Job Track</NavbarBrand>
       <NavbarContent justify="center">
         {map(navLinks, (link) => {
           return (
@@ -25,6 +38,14 @@ export const Navigation = () => {
             </NavbarItem>
           );
         })}
+      </NavbarContent>
+      <NavbarContent justify="end">
+        <SignedOut>
+          <SignInButton mode="modal" />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </NavbarContent>
     </Navbar>
   );

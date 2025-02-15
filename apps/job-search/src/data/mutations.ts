@@ -1,6 +1,5 @@
 import {
-  getJobApplicationsDatabase,
-  getQuestionAnswerDatabase,
+  getDatabase,
   JOB_APPLICATION_STORE_NAME,
   type JobApplicationSchema,
   QUESTION_ANSWER_STORE_NAME,
@@ -14,7 +13,7 @@ export const mutations = {
   addJobApplication: () => {
     return {
       mutationFn: async (application: Omit<JobApplicationSchema, "id">) => {
-        const database = await getJobApplicationsDatabase();
+        const database = await getDatabase();
 
         return database.add(JOB_APPLICATION_STORE_NAME, {
           ...application,
@@ -27,7 +26,7 @@ export const mutations = {
   addQa: () => {
     return {
       mutationFn: async (qa: Omit<QuestionAnswerSchema, "id">) => {
-        const database = await getQuestionAnswerDatabase();
+        const database = await getDatabase();
 
         return database.add(QUESTION_ANSWER_STORE_NAME, {
           ...qa,
@@ -39,7 +38,7 @@ export const mutations = {
   deleteJobApplication: () => {
     return {
       mutationFn: async (id: string) => {
-        const database = await getJobApplicationsDatabase();
+        const database = await getDatabase();
 
         return database.delete(JOB_APPLICATION_STORE_NAME, id);
       },
@@ -48,7 +47,7 @@ export const mutations = {
   deleteQa: () => {
     return {
       mutationFn: async (id: string) => {
-        const database = await getQuestionAnswerDatabase();
+        const database = await getDatabase();
 
         return database.delete(QUESTION_ANSWER_STORE_NAME, id);
       },
@@ -57,7 +56,7 @@ export const mutations = {
   updateJobApplication: () => {
     return {
       mutationFn: async (application: JobApplicationSchema) => {
-        const database = await getJobApplicationsDatabase();
+        const database = await getDatabase();
 
         return database.put(JOB_APPLICATION_STORE_NAME, {
           ...application,
@@ -69,7 +68,7 @@ export const mutations = {
   updateQa: () => {
     return {
       mutationFn: async (qa: QuestionAnswerSchema) => {
-        const database = await getQuestionAnswerDatabase();
+        const database = await getDatabase();
 
         return database.put(QUESTION_ANSWER_STORE_NAME, qa);
       },
