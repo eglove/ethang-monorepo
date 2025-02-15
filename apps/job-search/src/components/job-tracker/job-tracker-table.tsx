@@ -4,8 +4,8 @@ import { getApplicationTableColumns } from "@/components/job-tracker/job-tracker
 import { JobTrackerTableFilterHeader } from "@/components/job-tracker/job-tracker-table-filter-header.tsx";
 import { JobTrackerTableFooter } from "@/components/job-tracker/job-tracker-table-footer.tsx";
 import {
-  applicationFormStore,
   setSorting,
+  useApplicationFormStore,
 } from "@/components/job-tracker/table-state.ts";
 import { queries } from "@/data/queries.ts";
 import { logger } from "@/lib/logger.ts";
@@ -21,7 +21,6 @@ import {
   TableRow,
 } from "@heroui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useStore } from "@tanstack/react-store";
 import get from "lodash/get";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
@@ -35,7 +34,7 @@ import { twMerge } from "tailwind-merge";
 export const JobTrackerTable = () => {
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
-  const store = useStore(applicationFormStore);
+  const store = useApplicationFormStore();
   const filters = useMemo(() => {
     return {
       companyFilter: store.companyFilter,

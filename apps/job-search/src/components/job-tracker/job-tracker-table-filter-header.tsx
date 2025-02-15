@@ -1,17 +1,16 @@
 import {
-  applicationFormStore,
   setCompanyFilter,
   toggleIsShowingInterviewing,
   toggleIsShowingNoStatus,
   toggleIsShowingRejected,
+  useApplicationFormStore,
 } from "@/components/job-tracker/table-state.ts";
 import { Button, Checkbox, Input } from "@heroui/react";
 import { Link } from "@tanstack/react-router";
-import { useStore } from "@tanstack/react-store";
 import { XIcon } from "lucide-react";
 
 export const JobTrackerTableFilterHeader = () => {
-  const store = useStore(applicationFormStore);
+  const store = useApplicationFormStore();
 
   return (
     <div className="flex flex-wrap justify-between my-4 gap-2">

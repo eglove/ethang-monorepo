@@ -1,8 +1,8 @@
 import type { SortDescriptor } from "@heroui/react";
 import type { OnChangeFn } from "@tanstack/react-table";
 
-import { Store } from "@tanstack/react-store";
-import { produce } from "immer";
+import { Store } from "@ethang/store/src/index.ts";
+import { useSyncExternalStore } from "react";
 
 export type Sorting = {
   direction: "asc" | "desc" | false;
@@ -29,72 +29,57 @@ const initialState: ApplicationFormStoreState = (JSON.parse(
 };
 
 export const applicationFormStore = new Store(initialState, {
-  updateFn: (previous) => {
-    return (updater) => {
-      const updatedState = updater(previous);
-
-      globalThis.localStorage.setItem(
-        "applicationTableState",
-        JSON.stringify(updatedState),
-      );
-
-      return updatedState;
-    };
-  },
+  localStorageKey: "applicationTableState",
+  syncToLocalStorage: true,
 });
 
+export const useApplicationFormStore = () =>
+  useSyncExternalStore(
+    (listener) => applicationFormStore.subscribe(listener),
+    () => applicationFormStore.get(),
+    () => applicationFormStore.get(),
+  );
+
 export const setCompanyFilter = (companyFilter: string) => {
-  applicationFormStore.setState((state) => {
-    return produce(state, (draft) => {
-      draft.companyFilter = companyFilter;
-    });
+  applicationFormStore.set((state) => {
+    state.companyFilter = companyFilter;
   });
 };
 
 export const setApplicationSorting: OnChangeFn<Sorting> = (sorting) => {
-  applicationFormStore.setState((state) => {
-    return produce(state, (draft) => {
-      // @ts-expect-error it's fine
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      draft.sorting = sorting(draft.sorting) as Sorting;
-    });
+  applicationFormStore.set((state) => {
+    // @ts-expect-error it's fine
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    state.sorting = sorting(state.sorting) as Sorting;
   });
 };
 
 export const toggleIsShowingInterviewing = () => {
-  applicationFormStore.setState((state) => {
-    return produce(state, (draft) => {
-      draft.isShowingInterviewing = !draft.isShowingInterviewing;
-    });
+  applicationFormStore.set((state) => {
+    state.isShowingInterviewing = !state.isShowingInterviewing;
   });
 };
 
 export const toggleIsShowingRejected = () => {
-  applicationFormStore.setState((state) => {
-    return produce(state, (draft) => {
-      draft.isShowingRejected = !draft.isShowingRejected;
-    });
+  applicationFormStore.set((state) => {
+    state.isShowingRejected = !state.isShowingRejected;
   });
 };
 
 export const toggleIsShowingNoStatus = () => {
-  applicationFormStore.setState((state) => {
-    return produce(state, (draft) => {
-      draft.isShowingNoStatus = !draft.isShowingNoStatus;
-    });
+  applicationFormStore.set((state) => {
+    state.isShowingNoStatus = !state.isShowingNoStatus;
   });
 };
 
 export const setSorting = (id: string) => {
-  applicationFormStore.setState((state) => {
-    return produce(state, (draft) => {
-      if (id === state.sorting.column) {
-        draft.sorting.direction =
-          "descending" === state.sorting.direction ? "ascending" : "descending";
-      } else {
-        draft.sorting.column = id;
-        draft.sorting.direction = "descending";
-      }
-    });
+  applicationFormStore.set((state) => {
+    if (id === state.sorting.column) {
+      state.sorting.direction =
+        "descending" === state.sorting.direction ? "ascending" : "descending";
+    } else {
+      state.sorting.column = id;
+      state.sorting.direction = "descending";
+    }
   });
 };
