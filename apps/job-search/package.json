@@ -4,6 +4,9 @@
     "maintained node versions"
   ],
   "dependencies": {
+    "@cortex-js/compute-engine": "^0.28.0",
+    "@ethang/hooks": "workspace:2.2.6-beta.0",
+    "@ethang/toolbelt": "workspace:^",
     "@heroui/react": "2.6.14",
     "@heroui/system": "2.4.7",
     "@heroui/theme": "2.4.6",

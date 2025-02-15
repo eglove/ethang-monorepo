@@ -1,3 +1,4 @@
+import { computeEngine } from "@/components/common/providers.tsx";
 import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
 import { queries } from "@/data/queries.ts";
 import { Card, CardBody, CardHeader } from "@heroui/react";
@@ -24,7 +25,7 @@ export const ApplicationsPerDayChart = () => {
     const results: Record<string, number> = {};
 
     forEach(query.data, (item) => {
-      const date = item.applied.toLocaleString(undefined, {
+      const date = new Date(item.applied).toLocaleString(undefined, {
         day: "numeric",
         month: "short",
         weekday: "short",
@@ -50,7 +51,7 @@ export const ApplicationsPerDayChart = () => {
       return 0;
     }
 
-    return query.data.length / data.length;
+    return computeEngine.box(["Divide", query.data.length, data.length]).value;
   }, [data.length, query.data]);
 
   return (
@@ -61,7 +62,7 @@ export const ApplicationsPerDayChart = () => {
             <TypographyH3>Applications / Day</TypographyH3>
           </dt>
           <dd className="text-sm">
-            Average: {average.toLocaleString()}, Total:{" "}
+            Average: {Number(average).toLocaleString()}, Total:{" "}
             {get(query, ["data", "length"], 0)}, Days: {data.length}
           </dd>
         </div>

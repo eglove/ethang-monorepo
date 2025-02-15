@@ -3,7 +3,7 @@ import map from "lodash/map.js";
 
 const navLinks = [
   { label: "Applications", link: "/" },
-  { label: "Q/A", link: "/" },
+  { label: "Q/A", link: "/qa" },
   { label: "Stats", link: "/stats" },
   { label: "Data Backup", link: "/data-backup" },
 ];
@@ -14,7 +14,7 @@ export const Navigation = () => {
       <NavbarContent justify="center">
         {map(navLinks, (link) => {
           return (
-            <NavbarItem>
+            <NavbarItem key={link.label}>
               <Link
                 className="text-foreground"
                 href={link.link}

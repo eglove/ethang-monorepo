@@ -22,7 +22,6 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import get from "lodash/get";
-import isDate from "lodash/isDate.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
 import isString from "lodash/isString.js";
@@ -80,13 +79,17 @@ export const JobTrackerTable = () => {
   return (
     <>
       <JobTrackerTableFilterHeader />
+      <JobTrackerTableFooter
+        page={page}
+        setPage={setPage}
+        total={query.data?.length ?? 0}
+      />
       <Table
         isHeaderSticky
         onSortChange={(descriptor) => {
           setSorting(String(descriptor.column));
         }}
         aria-label="Job Applications"
-        className="h-[560px]"
         sortDescriptor={store.sorting}
       >
         <TableHeader columns={getApplicationTableColumns(query.data)}>
@@ -157,7 +160,7 @@ export const JobTrackerTable = () => {
                     );
                   }
 
-                  if (isDate(value)) {
+                  if ("applied" === columnKey || "rejected" === columnKey) {
                     return (
                       <TableCell>
                         <DateColumn date={value} />
@@ -172,11 +175,6 @@ export const JobTrackerTable = () => {
           }}
         </TableBody>
       </Table>
-      <JobTrackerTableFooter
-        page={page}
-        setPage={setPage}
-        total={query.data?.length ?? 0}
-      />
     </>
   );
 };

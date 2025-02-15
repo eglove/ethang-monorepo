@@ -5,6 +5,7 @@ import {
   getQuestionAnswerDatabase,
   JOB_APPLICATION_STORE_NAME,
   QUESTION_ANSWER_STORE_NAME,
+  type QuestionAnswerSchema,
 } from "@/database/indexed-database.ts";
 import { queryOptions } from "@tanstack/react-query";
 import filter from "lodash/filter.js";
@@ -123,7 +124,10 @@ export const queries = {
       queryFn: async () => {
         const database = await getQuestionAnswerDatabase();
 
-        return database.getAll(QUESTION_ANSWER_STORE_NAME);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        return database.getAll(
+          QUESTION_ANSWER_STORE_NAME,
+        ) as unknown as Promise<QuestionAnswerSchema[]>;
       },
       queryKey: queryKeys.getQas(),
     });

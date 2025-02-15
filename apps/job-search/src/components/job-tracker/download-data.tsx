@@ -5,21 +5,27 @@ import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
 
 export const DownloadData = () => {
-  const query = useQuery(queries.getApplications());
+  const applications = useQuery(queries.getApplications());
+  const qas = useQuery(queries.getQas());
 
   const handleDownload = () => {
-    if (isNil(query.data)) {
+    if (isNil(applications.data)) {
       return;
     }
 
-    const blob = new Blob([JSON.stringify(query.data, null, 2)], {
+    const data = {
+      applications: applications.data,
+      qas: qas.data,
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
     });
     // eslint-disable-next-line n/no-unsupported-features/node-builtins
     const url = URL.createObjectURL(blob);
     const link = globalThis.document.createElement("a");
     link.href = url;
-    link.download = "job-applications.json";
+    link.download = "data-backup.json";
     // @ts-expect-error it's fine
     globalThis.document.body.append(link);
     link.click();
@@ -32,7 +38,7 @@ export const DownloadData = () => {
   return (
     <Button
       color="primary"
-      disabled={isEmpty(query.data)}
+      disabled={isEmpty(applications.data)}
       onPress={handleDownload}
       size="sm"
     >

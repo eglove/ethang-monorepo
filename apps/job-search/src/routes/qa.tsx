@@ -1,15 +1,17 @@
-import { ImportApplications } from "@/components/add-edit-application/import-applications.tsx";
 import { MainLayout } from "@/components/layouts/main-layout.tsx";
+import { AddQaForm } from "@/components/qa/add-qa-form.tsx";
+import { QaList } from "@/components/qa/qa-list.tsx";
 import { createFileRoute } from "@tanstack/react-router";
 
 const RouteComponent = () => {
   return (
     <MainLayout>
-      <ImportApplications />
+      <AddQaForm />
+      <QaList />
     </MainLayout>
   );
 };
 
-export const Route = createFileRoute("/import-data")({
+export const Route = createFileRoute("/qa")({
   component: RouteComponent,
 });

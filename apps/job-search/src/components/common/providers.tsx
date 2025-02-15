@@ -1,4 +1,5 @@
 import { logger } from "@/lib/logger.ts";
+import { ComputeEngine } from "@cortex-js/compute-engine";
 import { HeroUIProvider } from "@heroui/react";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
@@ -9,6 +10,8 @@ import ms from "ms";
 import { lazy } from "react";
 
 const ONE_HOUR = ms("1 Hr");
+
+export const computeEngine = new ComputeEngine();
 
 export const queryClient = new QueryClient({
   defaultOptions: {

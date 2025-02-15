@@ -10,12 +10,6 @@ export type JobApplicationSchema = {
   url: string;
 };
 
-export type QuestionAnswerSchema = {
-  answer: string;
-  id: string;
-  question: string;
-};
-
 type LocalDatabaseSchema = {
   jobApplications: {
     indexes: {
@@ -27,11 +21,6 @@ type LocalDatabaseSchema = {
     value: JobApplicationSchema;
   };
 } & DBSchema;
-
-type QuestionAnswerDatabaseSchema = {
-  key: string;
-  value: QuestionAnswerSchema;
-};
 
 export const LOCAL_DATABASE_VERSION = 1;
 
@@ -53,6 +42,17 @@ export const getJobApplicationsDatabase = async () => {
       },
     },
   );
+};
+
+export type QuestionAnswerSchema = {
+  answer: string;
+  id: string;
+  question: string;
+};
+
+type QuestionAnswerDatabaseSchema = {
+  key: string;
+  value: QuestionAnswerSchema;
 };
 
 export const QUESTION_ANSWER_STORE_NAME = "questionAnswers";

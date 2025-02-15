@@ -14,8 +14,8 @@ export const JobTrackerTableFilterHeader = () => {
   const store = useStore(applicationFormStore);
 
   return (
-    <div className="flex justify-between my-4">
-      <div className="flex gap-4 items-center">
+    <div className="flex flex-wrap justify-between my-4 gap-2">
+      <div className="flex flex-wrap gap-4 items-center">
         <Checkbox
           isSelected={store.isShowingNoStatus}
           onValueChange={toggleIsShowingNoStatus}
