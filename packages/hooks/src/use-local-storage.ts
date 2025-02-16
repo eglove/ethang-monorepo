@@ -19,7 +19,6 @@ const localStorageStore = (key: string, options?: LocalStorageStoreOptions) => {
     },
     getSnapshot: () => {
       const item = attempt(
-        // eslint-disable-next-line n/no-unsupported-features/node-builtins
         globalThis.localStorage.getItem.bind(globalThis.localStorage),
         key,
       );
@@ -66,7 +65,6 @@ export const useLocalStorage = (
 
   const setValue = (newValue: string) => {
     attempt(
-      // eslint-disable-next-line n/no-unsupported-features/node-builtins
       globalThis.localStorage.setItem.bind(globalThis.localStorage),
       key,
       newValue,

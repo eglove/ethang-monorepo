@@ -32,5 +32,5 @@ export const verifyToken = async (request: Request, environment: Env) => {
     );
   }
 
-  return createJsonResponse({ message: "OK" }, "OK", undefined, request);
+  return createJsonResponse(jwtResult.payload, "OK", undefined, request);
 };

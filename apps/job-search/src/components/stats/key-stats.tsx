@@ -1,15 +1,17 @@
 import { computeEngine } from "@/components/common/providers.tsx";
 import { TrendCard } from "@/components/common/trend-card.tsx";
 import { queries } from "@/data/queries.ts";
-import { isNumber } from "@ethang/toolbelt/src/is/number.ts";
 import { useQuery } from "@tanstack/react-query";
 import forEach from "lodash/forEach";
 import isEmpty from "lodash/isEmpty";
 import isNil from "lodash/isNil";
-import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import { DateTime } from "luxon";
 import { useMemo } from "react";
+
+const percentFormatter = Intl.NumberFormat(undefined, {
+  style: "percent",
+});
 
 export const KeyStats = () => {
   const query = useQuery(queries.getApplications());
@@ -19,8 +21,11 @@ export const KeyStats = () => {
     const applicationDays = new Set<string>();
     const interviewTimes: number[] = [];
     const rejectionTimes: number[] = [];
+    let hasResponse = 0;
 
     forEach(query.data, (item) => {
+      hasResponse += 1;
+
       companies.add(item.company);
       applicationDays.add(new Date(item.applied).toDateString());
 
@@ -34,6 +39,8 @@ export const KeyStats = () => {
       }
 
       if (!isEmpty(item.interviewRounds)) {
+        hasResponse += 1;
+
         const firstInterview = item.interviewRounds?.sort((a, b) => {
           return new Date(b).getTime() - new Date(a).getTime();
         })[0];
@@ -60,25 +67,28 @@ export const KeyStats = () => {
       interviewTimes.length,
     ]).value;
 
+    const currentResponseRate = computeEngine.box([
+      "Divide",
+      ["Divide", hasResponse, query.data?.length ?? 1],
+      100,
+    ]).value;
+
     return {
-      "Avg. Days to Interview": averageInterviewTime,
-      "Avg. Days to Rejection": averageRejectionTime,
+      "Avg. Days to Interview": Number(averageInterviewTime).toLocaleString(),
+      "Avg. Days to Rejection": Number(averageRejectionTime).toLocaleString(),
       Companies: companies.size,
+      "Current Response Rate": percentFormatter.format(
+        Number(currentResponseRate),
+      ),
       "Days Tracked": applicationDays.size,
       "Total Applications": query.data?.length ?? 0,
-    };
+    } as const;
   }, [query.data]);
 
   return (
     <dl className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {map(data, (value, key) => {
-        if (!isString(value) && !isNumber(value)) {
-          return null;
-        }
-
-        return (
-          <TrendCard key={key} title={key} value={value.toLocaleString()} />
-        );
+        return <TrendCard key={key} title={key} value={value} />;
       })}
     </dl>
   );

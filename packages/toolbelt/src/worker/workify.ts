@@ -5,7 +5,6 @@ export const workify = <T>(callback: () => T, signal?: AbortSignal) => {
     [`onmessage = function(e) { postMessage((${code})(e.data)) }`],
     { type: "text/javascript" },
   );
-  // eslint-disable-next-line n/no-unsupported-features/node-builtins
   const url = URL.createObjectURL(blob);
   const worker = new Worker(url);
 

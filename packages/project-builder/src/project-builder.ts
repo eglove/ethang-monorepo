@@ -1,6 +1,5 @@
 import isNil from "lodash/isNil.js";
 import { copyFileSync } from "node:fs";
-// eslint-disable-next-line n/prefer-global/process
 import { chdir } from "node:process";
 import { build as tsc } from "tsc-prog";
 import { build as tsup } from "tsup";

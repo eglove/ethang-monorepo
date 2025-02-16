@@ -2,7 +2,7 @@ import { Card } from "@heroui/react";
 
 type TrendCardProperties = Readonly<{
   title: string;
-  value: string;
+  value: number | string;
 }>;
 
 export const TrendCard = ({ title, value }: TrendCardProperties) => {
