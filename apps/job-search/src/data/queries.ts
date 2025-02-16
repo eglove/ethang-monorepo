@@ -176,7 +176,6 @@ export const queries = {
               "Content-Type": "application/json",
             },
           });
-          console.log(await response.json());
           const data = await parseFetchJson(
             response,
             z.array(questionAnswerSchema),

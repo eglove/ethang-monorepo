@@ -2,8 +2,13 @@ import type { TokenSchema } from "@ethang/schemas/src/auth/token.js";
 
 import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.js";
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
+import { parseJson } from "@ethang/toolbelt/src/json/json.js";
+import get from "lodash/get.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
+import isString from "lodash/isString.js";
+import map from "lodash/map.js";
+import { z } from "zod";
 
 export const getApplications = async (
   request: Request,
@@ -31,7 +36,20 @@ export const getApplications = async (
       );
     }
 
-    return createJsonResponse(applications.results, "OK");
+    return createJsonResponse(
+      map(applications.results, (result) => {
+        const interviewRounds = get(result, ["interviewRounds"]);
+        const parsed = isString(interviewRounds)
+          ? parseJson(interviewRounds, z.array(z.string()))
+          : [];
+
+        return {
+          ...result,
+          interviewRounds: isError(parsed) ? [] : parsed,
+        };
+      }),
+      "OK",
+    );
   }
 
   const application = await attemptAsync(async () => {
