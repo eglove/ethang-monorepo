@@ -18,15 +18,15 @@ const urls = {
   questionAnswers: "/question-answers",
 };
 
-const unauthorizedResponse = createJsonResponse(
-  { error: "Unauthorized" },
-  "UNAUTHORIZED",
-);
-
 export default {
   // eslint-disable-next-line sonar/cognitive-complexity
   async fetch(request, environment) {
     const url = new URL(request.url);
+
+    const unauthorizedResponse = createJsonResponse(
+      { error: "Unauthorized" },
+      "UNAUTHORIZED",
+    );
 
     if ("OPTIONS" === request.method) {
       return createJsonResponse(null, "OK");
