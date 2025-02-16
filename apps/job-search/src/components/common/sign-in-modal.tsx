@@ -1,5 +1,5 @@
-import { userStore } from "@/components/stores/user-store.ts";
 import { TypographyP } from "@/components/typography/typography-p.tsx";
+import { mutations } from "@/data/mutations.ts";
 import { logger } from "@/lib/logger";
 import {
   Button,
@@ -14,7 +14,6 @@ import {
 } from "@heroui/react";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import get from "lodash/get";
 import isEmpty from "lodash/isEmpty.js";
 import { type FormEvent, useState } from "react";
 
@@ -34,28 +33,9 @@ export const SignInModal = () => {
   });
 
   const { isPending, mutate } = useMutation({
-    mutationFn: async (value: { email: string; password: string }) => {
-      const response = await globalThis.fetch(
-        "https://auth.ethang.dev/sign-in",
-        {
-          body: JSON.stringify(value),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-        },
-      );
-
-      if (!response.ok) {
-        setErrorMessage("Failed to sign in.");
-      }
-
-      const data = await response.json();
-      userStore.set((state) => {
-        state.isSignedIn = true;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        state.token = get(data, ["token"], "") as unknown as string;
-      });
+    ...mutations.signIn(),
+    onError: (error) => {
+      setErrorMessage(error.message);
     },
   });
 

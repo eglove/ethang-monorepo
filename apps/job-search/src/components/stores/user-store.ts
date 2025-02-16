@@ -5,6 +5,7 @@ export const userStore = new Store(
   {
     isSignedIn: false,
     isSyncing: false,
+    lastSynced: null as null | string,
     token: "",
   },
   {
@@ -19,3 +20,9 @@ export const useUserStore = () =>
     () => userStore.get(),
     () => userStore.get(),
   );
+
+export const setLastSynced = () => {
+  userStore.set((state) => {
+    state.lastSynced = new Date().toISOString();
+  });
+};

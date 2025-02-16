@@ -19,6 +19,8 @@ export const DeleteQa = ({ id }: DeleteQaProperties) => {
     },
   });
 
+  console.log(id);
+
   if (isConfirming) {
     return (
       <div className="flex gap-2">

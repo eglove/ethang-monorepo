@@ -1,4 +1,4 @@
-import type { QuestionAnswerSchema } from "@/database/indexed-database.ts";
+import type { QuestionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema";
 
 import { DeleteQa } from "@/components/qa/delete-qa.tsx";
 import { QaCopyButton } from "@/components/qa/qa-copy-button.tsx";

@@ -1,10 +1,10 @@
+import type { QuestionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
 import type { SortDescriptor } from "@heroui/react";
 
 import {
   getDatabase,
   JOB_APPLICATION_STORE_NAME,
   QUESTION_ANSWER_STORE_NAME,
-  type QuestionAnswerSchema,
 } from "@/database/indexed-database.ts";
 import { queryOptions } from "@tanstack/react-query";
 import filter from "lodash/filter.js";

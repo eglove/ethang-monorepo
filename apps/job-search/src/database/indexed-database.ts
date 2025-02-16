@@ -1,14 +1,6 @@
-import { type DBSchema, openDB } from "idb";
+import type { JobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
 
-export type JobApplicationSchema = {
-  applied: Date;
-  company: string;
-  id: string;
-  interviewRounds?: Date[] | null;
-  rejected?: Date | null;
-  title: string;
-  url: string;
-};
+import { type DBSchema, openDB } from "idb";
 
 export type QuestionAnswerSchema = {
   answer: string;

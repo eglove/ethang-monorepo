@@ -1,10 +1,11 @@
+import type { JobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema";
+import type { QuestionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema";
+
 import { queryKeys } from "@/data/queries.ts";
 import {
   getDatabase,
   JOB_APPLICATION_STORE_NAME,
-  type JobApplicationSchema,
   QUESTION_ANSWER_STORE_NAME,
-  type QuestionAnswerSchema,
 } from "@/database/indexed-database.ts";
 import { useToggle } from "@ethang/hooks/src/use-toggle.ts";
 import { Button, Input } from "@heroui/react";
@@ -70,7 +71,7 @@ export const ImportApplications = () => {
   });
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 max-w-sm">
       <Input
         accept="application/json"
         name="file"

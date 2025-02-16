@@ -40,7 +40,7 @@ export const DownloadData = () => {
       onPress={handleDownload}
       size="sm"
     >
-      Download Data
+      Backup Data
     </Button>
   );
 };

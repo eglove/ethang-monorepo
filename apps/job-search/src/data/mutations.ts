@@ -1,13 +1,19 @@
+import type { JobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
+import type { QuestionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
+
+import { queryClient } from "@/components/common/providers.tsx";
+import { userStore } from "@/components/stores/user-store.ts";
+import { queries } from "@/data/queries.ts";
 import {
   getDatabase,
   JOB_APPLICATION_STORE_NAME,
-  type JobApplicationSchema,
   QUESTION_ANSWER_STORE_NAME,
-  type QuestionAnswerSchema,
 } from "@/database/indexed-database.ts";
+import { logger } from "@/lib/logger.ts";
+import { syncUrl } from "@/lib/query/backup.ts";
 import filter from "lodash/filter.js";
-import isDate from "lodash/isDate.js";
-import { v7 } from "uuid";
+import get from "lodash/get";
+import isNil from "lodash/isNil";
 
 export const mutationMetaTypes = {
   addApplication: "addApplication",
@@ -22,12 +28,11 @@ export const mutations = {
   addJobApplication: () => {
     return {
       meta: { type: mutationMetaTypes.addApplication },
-      mutationFn: async (application: Omit<JobApplicationSchema, "id">) => {
+      mutationFn: async (application: JobApplicationSchema) => {
         const database = await getDatabase();
 
         return database.add(JOB_APPLICATION_STORE_NAME, {
           ...application,
-          id: v7(),
           interviewRounds: [],
         });
       },
@@ -36,13 +41,10 @@ export const mutations = {
   addQa: () => {
     return {
       meta: { type: mutationMetaTypes.addQa },
-      mutationFn: async (qa: Omit<QuestionAnswerSchema, "id">) => {
+      mutationFn: async (qa: QuestionAnswerSchema) => {
         const database = await getDatabase();
 
-        return database.add(QUESTION_ANSWER_STORE_NAME, {
-          ...qa,
-          id: v7(),
-        });
+        return database.add(QUESTION_ANSWER_STORE_NAME, qa);
       },
     };
   },
@@ -66,6 +68,49 @@ export const mutations = {
       },
     };
   },
+  signIn: () => {
+    return {
+      mutationFn: async (value: { email: string; password: string }) => {
+        const response = await globalThis.fetch(
+          "https://auth.ethang.dev/sign-in",
+          {
+            body: JSON.stringify(value),
+            headers: {
+              "Content-Type": "application/json",
+            },
+            method: "POST",
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to sign in.");
+        }
+
+        const data = await response.json();
+        userStore.set((state) => {
+          state.isSignedIn = true;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+          state.token = get(data, ["token"], "") as unknown as string;
+        });
+
+        const url = new URL("/data-sync", syncUrl);
+        const qas = await queryClient.fetchQuery(queries.getQas());
+        const applications = await queryClient.fetchQuery(
+          queries.getApplications(),
+        );
+        globalThis
+          .fetch(url, {
+            body: JSON.stringify({ applications, qas }),
+            headers: {
+              Authorization: userStore.get().token,
+              "Content-Type": "application/json",
+            },
+            method: "POST",
+          })
+          .catch(logger.error);
+      },
+    };
+  },
   updateJobApplication: () => {
     return {
       meta: { type: mutationMetaTypes.updateApplication },
@@ -74,7 +119,10 @@ export const mutations = {
 
         return database.put(JOB_APPLICATION_STORE_NAME, {
           ...application,
-          interviewRounds: filter(application.interviewRounds, isDate),
+          interviewRounds: filter(
+            application.interviewRounds,
+            (value) => !isNil(value),
+          ),
         });
       },
     };

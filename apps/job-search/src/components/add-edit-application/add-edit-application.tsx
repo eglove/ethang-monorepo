@@ -15,6 +15,7 @@ import isNil from "lodash/isNil";
 import map from "lodash/map";
 import { DateTime } from "luxon";
 import { type FormEvent, useState } from "react";
+import { v7 } from "uuid";
 import { z } from "zod";
 
 export const formSchema = z.object({
@@ -64,25 +65,26 @@ export const AddEditApplication = ({
       if (isNil(id)) {
         addApplication.mutate({
           ...value,
-          applied: appliedDate,
+          applied: appliedDate.toISOString(),
+          id: v7(),
           interviewRounds: [],
-          rejected: rejectedDate,
+          rejected: rejectedDate?.toISOString() ?? undefined,
         });
         // Update
       } else {
         updateApplication.mutate({
           ...value,
-          applied: appliedDate,
+          applied: appliedDate.toISOString(),
           id,
           interviewRounds: map(
             filter(value.interviewRounds, (round) => {
               return !Number.isNaN(Date.parse(round.date));
             }),
             (round) => {
-              return DateTime.fromFormat(round.date, DATE_FORMAT).toJSDate();
+              return DateTime.fromFormat(round.date, DATE_FORMAT).toISO() ?? "";
             },
           ),
-          rejected: rejectedDate,
+          rejected: rejectedDate?.toISOString() ?? undefined,
         });
       }
     },

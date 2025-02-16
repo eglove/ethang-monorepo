@@ -4,8 +4,8 @@ export const jobApplicationSchema = z.object({
   applied: z.string(),
   company: z.string(),
   id: z.string(),
-  interviewRounds: z.array(z.string()).optional(),
-  rejected: z.string().optional(),
+  interviewRounds: z.array(z.string()).nullable().optional(),
+  rejected: z.string().nullable().optional(),
   title: z.string(),
   url: z.string(),
 });

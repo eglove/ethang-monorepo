@@ -1,4 +1,4 @@
-import type { JobApplicationSchema } from "@/database/indexed-database.ts";
+import type { JobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema";
 
 import isNil from "lodash/isNil";
 import times from "lodash/times";

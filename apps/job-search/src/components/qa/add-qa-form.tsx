@@ -13,6 +13,7 @@ import {
 } from "@heroui/react";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { v7 } from "uuid";
 
 export const AddQaForm = () => {
   const queryClient = useQueryClient();
@@ -30,7 +31,10 @@ export const AddQaForm = () => {
       question: "",
     },
     onSubmit: ({ value }) => {
-      addQa.mutate(value);
+      addQa.mutate({
+        ...value,
+        id: v7(),
+      });
     },
   });
 
