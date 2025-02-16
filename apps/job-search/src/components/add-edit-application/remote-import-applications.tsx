@@ -1,3 +1,4 @@
+import { useUserStore } from "@/components/stores/user-store.ts";
 import { getCallData } from "@/lib/sync-requests.ts";
 import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
@@ -7,6 +8,7 @@ import { useState } from "react";
 
 export const RemoteImportApplications = () => {
   const [importErrorMessage, setImportErrorMessage] = useState("");
+  const userStore = useUserStore();
 
   const remoteImport = useMutation({
     mutationFn: async () => {
@@ -17,6 +19,14 @@ export const RemoteImportApplications = () => {
       setImportErrorMessage(error.message);
     },
   });
+
+  if (!userStore.isSignedIn) {
+    return (
+      <Button isDisabled startContent={<CloudIcon className="size-5" />}>
+        Sign In to import cloud data
+      </Button>
+    );
+  }
 
   return (
     <>
