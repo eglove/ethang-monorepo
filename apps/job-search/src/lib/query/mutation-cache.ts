@@ -12,7 +12,7 @@ export const mutationCache = new MutationCache({
       | (typeof mutationMetaTypes)[keyof typeof mutationMetaTypes]
       | undefined;
 
-    if (userStore.get().isSyncing) {
+    if (userStore.get().isSignedIn) {
       switch (type) {
         case "addApplication": {
           upsert({ method: "POST", path: "/applications", variables });

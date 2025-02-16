@@ -21,7 +21,6 @@ const handleSignOut = () => {
   userStore.set((state) => {
     state.isSignedIn = false;
     state.token = "";
-    state.isSyncing = false;
   });
 };
 

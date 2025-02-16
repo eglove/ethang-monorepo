@@ -4,7 +4,6 @@ import { useSyncExternalStore } from "react";
 export const userStore = new Store(
   {
     isSignedIn: false,
-    isSyncing: false,
     lastSynced: null as null | string,
     token: "",
   },
