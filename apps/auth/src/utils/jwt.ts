@@ -1,21 +1,16 @@
+import type { TokenSchema } from "@ethang/schemas/src/auth/token.js";
+import type { UserSchema } from "@ethang/schemas/src/auth/user.js";
+
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
 import { jwtVerify, SignJWT } from "jose";
 
-import type { User } from "../types/database-types.ts";
-
 export const ORIGIN = "ethang.dev";
-
-export type Token = {
-  email: string;
-  role: string;
-  username: string;
-};
 
 export const getSecretKey = (environment: Env) => {
   return new TextEncoder().encode(String(environment.JWT_SECRET));
 };
 
-export const createToken = async (user: User, environment: Env) => {
+export const createToken = async (user: UserSchema, environment: Env) => {
   return new SignJWT({
     email: user.email,
     role: user.role,
@@ -30,7 +25,7 @@ export const createToken = async (user: User, environment: Env) => {
 
 export const verifyToken = async (token: string, environment: Env) => {
   return attemptAsync(async () => {
-    const { payload } = await jwtVerify<Token>(
+    const { payload } = await jwtVerify<TokenSchema>(
       token,
       getSecretKey(environment),
       {

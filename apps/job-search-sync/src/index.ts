@@ -1,6 +1,10 @@
+import { tokenSchema } from "@ethang/schemas/src/auth/token.js";
 import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
+import { parseFetchJson } from "@ethang/toolbelt/src/fetch/json.js";
+import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 
+import { getData } from "./get-data.ts";
 import { syncData } from "./sync-data.js";
 
 const unauthorizedResponse = (request: Request) =>
@@ -12,7 +16,7 @@ const unauthorizedResponse = (request: Request) =>
   );
 
 export default {
-  async fetch(request) {
+  async fetch(request, environment) {
     const url = new URL(request.url);
 
     if ("OPTIONS" === request.method) {
@@ -27,17 +31,24 @@ export default {
 
     const verifyUrl = new URL("https://auth.ethang.dev/verify");
     verifyUrl.searchParams.set("token", authorization);
-    const verifyResponse = await globalThis.fetch(verifyUrl, {
-      method: "POST",
-    });
+    const verifyResponse = await globalThis.fetch(verifyUrl);
 
-    // TODO readd on reploy
-    // if (!verifyResponse.ok) {
-    //   return unauthorizedResponse(request);
-    // }
+    if (!verifyResponse.ok) {
+      return unauthorizedResponse(request);
+    }
+
+    const tokenData = await parseFetchJson(verifyResponse, tokenSchema);
+
+    if (isError(tokenData)) {
+      return unauthorizedResponse(request);
+    }
 
     if ("/data-sync" === url.pathname && "POST" === request.method) {
-      return syncData(request);
+      return syncData(request, tokenData, environment);
+    }
+
+    if ("/get-data" === url.pathname && "GET" === request.method) {
+      return getData(request, tokenData, environment);
     }
 
     return createJsonResponse(

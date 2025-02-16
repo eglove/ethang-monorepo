@@ -1,36 +1,15 @@
 import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
-import endsWith from "lodash/endsWith.js";
-import isNil from "lodash/isNil.js";
 
 import { deleteUser } from "./delete-user.ts";
 import { editUser } from "./edit-user.ts";
 import { getUser } from "./get-user.ts";
 import { signIn } from "./sign-in.ts";
 import { signUp } from "./sign-up.ts";
-import { ORIGIN } from "./utils/jwt.ts";
 import { verifyToken } from "./verify-token.js";
-
-class Store {
-  public corsHeaders = {
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-    "Access-Control-Allow-Origin": "",
-  };
-
-  public setOrigin(origin: string) {
-    this.corsHeaders["Access-Control-Allow-Origin"] = origin;
-  }
-}
-export const store = new Store();
 
 export default {
   async fetch(request, environment): Promise<Response> {
     const url = new URL(request.url);
-    const origin = request.headers.get("Origin");
-
-    if (!isNil(origin) && endsWith(origin, ORIGIN)) {
-      store.setOrigin(origin);
-    }
 
     if ("OPTIONS" === request.method) {
       return createJsonResponse(null, "OK", undefined, request);
