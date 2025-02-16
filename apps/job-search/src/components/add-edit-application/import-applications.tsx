@@ -5,7 +5,6 @@ import {
   QUESTION_ANSWER_STORE_NAME,
 } from "@/database/indexed-database.ts";
 import { backupAllData, getCallData } from "@/lib/sync-requests.ts";
-import { useToggle } from "@ethang/hooks/src/use-toggle.ts";
 import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema";
 import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema";
 import { parseJson } from "@ethang/toolbelt/src/json/json.ts";
@@ -15,14 +14,12 @@ import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil";
 import map from "lodash/map.js";
-import { CheckIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { z } from "zod";
 
 export const ImportApplications = () => {
   const inputReference = useRef<HTMLInputElement | null>(null);
   const queryClient = useQueryClient();
-  const [isSuccessfulImport, toggleSuccessfulImport] = useToggle(false);
   const [importErrorMessage, setImportErrorMessage] = useState("");
 
   const localImport = useMutation({
@@ -77,8 +74,6 @@ export const ImportApplications = () => {
       ]);
       await backupAllData();
       setImportErrorMessage("");
-      toggleSuccessfulImport();
-      globalThis.setTimeout(toggleSuccessfulImport, 1000);
     },
     onError: (error) => {
       setImportErrorMessage(error.message);
@@ -89,8 +84,6 @@ export const ImportApplications = () => {
     mutationFn: async () => {
       await getCallData();
       setImportErrorMessage("");
-      toggleSuccessfulImport();
-      globalThis.setTimeout(toggleSuccessfulImport, 1000);
     },
     onError: (error) => {
       setImportErrorMessage(error.message);
@@ -109,8 +102,7 @@ export const ImportApplications = () => {
           isLoading={remoteImport.isPending}
           size="sm"
         >
-          {isSuccessfulImport && <CheckIcon />}
-          {!isSuccessfulImport && "Cloud Import"}
+          Cloud Import
         </Button>
       </div>
       <div className="flex flex-col gap-4">
@@ -133,8 +125,7 @@ export const ImportApplications = () => {
             isLoading={localImport.isPending}
             size="sm"
           >
-            {isSuccessfulImport && <CheckIcon />}
-            {!isSuccessfulImport && "Import from File"}
+            Import from File
           </Button>
         </div>
         {!isEmpty(importErrorMessage) && (

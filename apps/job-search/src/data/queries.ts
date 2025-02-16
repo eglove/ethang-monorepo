@@ -33,11 +33,6 @@ type ApplicationsFilter = {
 
 export const APPLICATION_PAGE_SIZE = 10;
 
-const authHeaders = {
-  Authorization: userStore.get().token,
-  "Content-Type": "application/json",
-};
-
 export const queryKeys = {
   applications: () => ["application"],
   getApplicationKeys: (id: string | undefined) => ["application", "get", id],
@@ -66,7 +61,10 @@ export const queries = {
           const url = new URL("/applications", syncUrl);
           url.searchParams.append("id", id);
           const response = await globalThis.fetch(url, {
-            headers: authHeaders,
+            headers: {
+              Authorization: userStore.get().token,
+              "Content-Type": "application/json",
+            },
           });
           const data = await parseFetchJson(response, jobApplicationSchema);
 
@@ -94,12 +92,17 @@ export const queries = {
         if (isEmpty(applications)) {
           const url = new URL("/applications", syncUrl);
           const response = await globalThis.fetch(url, {
-            headers: authHeaders,
+            headers: {
+              Authorization: userStore.get().token,
+              "Content-Type": "application/json",
+            },
           });
+          console.log(response);
           const data = await parseFetchJson(
             response,
             z.array(jobApplicationSchema),
           );
+          console.log(data);
 
           if (!isError(data)) {
             applications = data;
@@ -170,7 +173,10 @@ export const queries = {
         if (isEmpty(qas)) {
           const url = new URL("/question-answers", syncUrl);
           const response = await globalThis.fetch(url, {
-            headers: authHeaders,
+            headers: {
+              Authorization: userStore.get().token,
+              "Content-Type": "application/json",
+            },
           });
           const data = await parseFetchJson(
             response,

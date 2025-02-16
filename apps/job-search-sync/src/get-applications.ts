@@ -13,7 +13,7 @@ export const getApplications = async (
   const url = new URL(request.url);
   const id = url.searchParams.get("id");
 
-  if (!isNil(id)) {
+  if (isNil(id)) {
     const applications = await attemptAsync(async () => {
       return environment.DB.prepare(
         `select *
