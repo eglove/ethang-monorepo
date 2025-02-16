@@ -19,7 +19,7 @@ export const updateQuestionAnswer = async (
 
   const result = await attemptAsync(async () => {
     return environment.DB.prepare(
-      `update questionAnswers question = ?, answer = ? where id = ? and userEmail = ?`,
+      `update questionAnswers set question = ?, answer = ? where id = ? and userEmail = ?`,
     )
       .bind(
         requestData.question,

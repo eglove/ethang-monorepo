@@ -6,7 +6,7 @@
   "observability": {
     "enabled": true
   },
-  "node_compat": true,
+  "nodejs_compat": true,
    "placement": { "mode": "smart" },
   "d1_databases": [
     {

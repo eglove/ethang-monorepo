@@ -25,7 +25,7 @@ export const mutationCache = new MutationCache({
       await globalThis.fetch(url, {
         body: JSON.stringify(body.data),
         headers: {
-          Authentication: userStore.get().token,
+          Authorization: userStore.get().token,
           "Content-Type": "application/json",
         },
         method: "PUT",
