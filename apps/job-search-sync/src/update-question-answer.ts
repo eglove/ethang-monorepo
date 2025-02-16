@@ -7,7 +7,7 @@ import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 
-import { addApplication } from "./add-application.js";
+import { addQuestionAnswerNoCheck } from "./add-question-answer.js";
 
 export const updateQuestionAnswer = async (
   request: Request,
@@ -41,7 +41,7 @@ export const updateQuestionAnswer = async (
   }
 
   if (isNil(result)) {
-    return addApplication(request, tokenData, environment);
+    return addQuestionAnswerNoCheck(requestData, tokenData, environment);
   }
 
   return createJsonResponse(requestData, "OK");

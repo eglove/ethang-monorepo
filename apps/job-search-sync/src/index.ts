@@ -13,15 +13,15 @@ import { syncData } from "./sync-data.js";
 import { updateApplication } from "./update-application.js";
 import { updateQuestionAnswer } from "./update-question-answer.js";
 
-const urls = {
-  applications: "/applications",
-  questionAnswers: "/question-answers",
-};
-
 export default {
   // eslint-disable-next-line sonar/cognitive-complexity
   async fetch(request, environment) {
     const url = new URL(request.url);
+
+    const urls = {
+      applications: "/applications",
+      questionAnswers: "/question-answers",
+    };
 
     const unauthorizedResponse = createJsonResponse(
       { error: "Unauthorized" },

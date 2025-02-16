@@ -1,6 +1,9 @@
 import type { TokenSchema } from "@ethang/schemas/src/auth/token.js";
 
-import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.js";
+import {
+  type JobApplicationSchema,
+  jobApplicationSchema,
+} from "@ethang/schemas/src/job-search/job-application-schema.js";
 import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.js";
 import { parseFetchJson } from "@ethang/toolbelt/src/fetch/json.js";
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
@@ -17,6 +20,14 @@ export const addApplication = async (
     return createJsonResponse({ message: requestData.message }, "BAD_REQUEST");
   }
 
+  return addApplicationNoCheck(requestData, tokenData, environment);
+};
+
+export const addApplicationNoCheck = async (
+  requestData: JobApplicationSchema,
+  tokenData: TokenSchema,
+  environment: Env,
+) => {
   const result = await attemptAsync(async () =>
     environment.DB.prepare(
       `

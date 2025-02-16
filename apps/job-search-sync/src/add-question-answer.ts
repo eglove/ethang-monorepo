@@ -1,6 +1,9 @@
 import type { TokenSchema } from "@ethang/schemas/src/auth/token.js";
 
-import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.js";
+import {
+  type QuestionAnswerSchema,
+  questionAnswerSchema,
+} from "@ethang/schemas/src/job-search/question-answer-schema.js";
 import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.js";
 import { parseFetchJson } from "@ethang/toolbelt/src/fetch/json.js";
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
@@ -17,6 +20,14 @@ export const addQuestionAnswer = async (
     return createJsonResponse({ message: requestData.message }, "BAD_REQUEST");
   }
 
+  return addQuestionAnswerNoCheck(requestData, tokenData, environment);
+};
+
+export const addQuestionAnswerNoCheck = async (
+  requestData: QuestionAnswerSchema,
+  tokenData: TokenSchema,
+  environment: Env,
+) => {
   const result = await attemptAsync(async () => {
     return environment.DB.prepare(
       `insert into questionAnswers (id, question, answer, userEmail) values (?, ?, ?, ?)`,
