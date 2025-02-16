@@ -20,7 +20,7 @@ export const getData = async (tokenData: TokenSchema, environment: Env) => {
 
   if (isError(results)) {
     return createJsonResponse(
-      { message: results.message },
+      { error: results.message },
       "INTERNAL_SERVER_ERROR",
     );
   }

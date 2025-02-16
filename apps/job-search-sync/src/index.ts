@@ -8,7 +8,9 @@ import { addApplication } from "./add-application.js";
 import { addQuestionAnswer } from "./add-question-answer.js";
 import { deleteApplication } from "./delete-application.js";
 import { deleteQuestionAnswer } from "./delete-question-answer.js";
+import { getApplications } from "./get-applications.js";
 import { getData } from "./get-data.ts";
+import { getQas } from "./get-qas.js";
 import { syncData } from "./sync-data.js";
 import { updateApplication } from "./update-application.js";
 import { updateQuestionAnswer } from "./update-question-answer.js";
@@ -60,6 +62,10 @@ export default {
       return getData(tokenData, environment);
     }
 
+    if (urls.applications === url.pathname && "GET" === request.method) {
+      return getApplications(request, tokenData, environment);
+    }
+
     if (urls.applications === url.pathname && "POST" === request.method) {
       return addApplication(request, tokenData, environment);
     }
@@ -70,6 +76,10 @@ export default {
 
     if (urls.applications === url.pathname && "DELETE" === request.method) {
       return deleteApplication(request, tokenData, environment);
+    }
+
+    if (urls.questionAnswers === url.pathname && "GET" === request.method) {
+      return getQas(tokenData, environment);
     }
 
     if (urls.questionAnswers === url.pathname && "POST" === request.method) {
