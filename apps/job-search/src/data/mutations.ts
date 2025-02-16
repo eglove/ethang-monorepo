@@ -9,9 +9,19 @@ import filter from "lodash/filter.js";
 import isDate from "lodash/isDate.js";
 import { v7 } from "uuid";
 
+export const metaTypes = {
+  addApplication: "addApplication",
+  addQa: "addQa",
+  deleteApplication: "deleteApplication",
+  deleteQa: "deleteQa",
+  updateApplication: "updateApplication",
+  updateQa: "updateQa",
+};
+
 export const mutations = {
   addJobApplication: () => {
     return {
+      meta: { type: metaTypes.addApplication },
       mutationFn: async (application: Omit<JobApplicationSchema, "id">) => {
         const database = await getDatabase();
 
@@ -25,6 +35,7 @@ export const mutations = {
   },
   addQa: () => {
     return {
+      meta: { type: metaTypes.addQa },
       mutationFn: async (qa: Omit<QuestionAnswerSchema, "id">) => {
         const database = await getDatabase();
 
@@ -37,6 +48,7 @@ export const mutations = {
   },
   deleteJobApplication: () => {
     return {
+      meta: { type: metaTypes.deleteApplication },
       mutationFn: async (id: string) => {
         const database = await getDatabase();
 
@@ -46,6 +58,7 @@ export const mutations = {
   },
   deleteQa: () => {
     return {
+      meta: { type: metaTypes.deleteQa },
       mutationFn: async (id: string) => {
         const database = await getDatabase();
 
@@ -55,6 +68,7 @@ export const mutations = {
   },
   updateJobApplication: () => {
     return {
+      meta: { type: metaTypes.updateApplication },
       mutationFn: async (application: JobApplicationSchema) => {
         const database = await getDatabase();
 
@@ -67,6 +81,7 @@ export const mutations = {
   },
   updateQa: () => {
     return {
+      meta: { type: metaTypes.updateQa },
       mutationFn: async (qa: QuestionAnswerSchema) => {
         const database = await getDatabase();
 
