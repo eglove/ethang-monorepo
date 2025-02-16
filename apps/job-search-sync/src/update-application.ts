@@ -5,6 +5,9 @@ import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-respo
 import { parseFetchJson } from "@ethang/toolbelt/src/fetch/json.js";
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
 import isError from "lodash/isError.js";
+import isNil from "lodash/isNil.js";
+
+import { addQuestionAnswer } from "./add-question-answer.js";
 
 export const updateApplication = async (
   request: Request,
@@ -47,6 +50,10 @@ export const updateApplication = async (
       { message: result.message },
       "INTERNAL_SERVER_ERROR",
     );
+  }
+
+  if (isNil(result)) {
+    return addQuestionAnswer(request, tokenData, environment);
   }
 
   return createJsonResponse(requestData, "OK");
