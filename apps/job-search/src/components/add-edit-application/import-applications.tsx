@@ -76,7 +76,7 @@ export const ImportApplications = () => {
         }),
       ]);
       await backupAllData();
-
+      setImportErrorMessage("");
       toggleSuccessfulImport();
       globalThis.setTimeout(toggleSuccessfulImport, 1000);
     },
@@ -88,7 +88,7 @@ export const ImportApplications = () => {
   const remoteImport = useMutation({
     mutationFn: async () => {
       await getCallData();
-
+      setImportErrorMessage("");
       toggleSuccessfulImport();
       globalThis.setTimeout(toggleSuccessfulImport, 1000);
     },
