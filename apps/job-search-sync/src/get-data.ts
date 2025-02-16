@@ -25,5 +25,8 @@ export const getData = async (tokenData: TokenSchema, environment: Env) => {
     );
   }
 
-  return createJsonResponse(results, "OK");
+  return createJsonResponse(
+    { applications: results[0].results, qas: results[1].results },
+    "OK",
+  );
 };

@@ -15,11 +15,9 @@ export const DeleteQa = ({ id }: DeleteQaProperties) => {
   const deleteQa = useMutation({
     ...mutations.deleteQa(),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.getQas() });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.qas() });
     },
   });
-
-  console.log(id);
 
   if (isConfirming) {
     return (

@@ -1,20 +1,26 @@
-import type { QuestionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
 import type { SortDescriptor } from "@heroui/react";
 
+import { userStore } from "@/components/stores/user-store.ts";
 import {
   getDatabase,
   JOB_APPLICATION_STORE_NAME,
   QUESTION_ANSWER_STORE_NAME,
 } from "@/database/indexed-database.ts";
+import { syncUrl } from "@/lib/query/backup.ts";
+import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
+import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
+import { parseFetchJson } from "@ethang/toolbelt/src/fetch/json.ts";
 import { queryOptions } from "@tanstack/react-query";
 import filter from "lodash/filter.js";
 import includes from "lodash/includes.js";
 import isEmpty from "lodash/isEmpty";
+import isError from "lodash/isError.js";
 import isNil from "lodash/isNil";
 import isString from "lodash/isString.js";
 import orderBy from "lodash/orderBy.js";
 import slice from "lodash/slice.js";
 import toLower from "lodash/toLower.js";
+import { z } from "zod";
 
 type ApplicationsFilter = {
   companyFilter?: string;
@@ -27,6 +33,11 @@ type ApplicationsFilter = {
 
 export const APPLICATION_PAGE_SIZE = 10;
 
+const authHeaders = {
+  Authorization: userStore.get().token,
+  "Content-Type": "application/json",
+};
+
 export const queryKeys = {
   applications: () => ["application"],
   getApplicationKeys: (id: string | undefined) => ["application", "get", id],
@@ -35,8 +46,8 @@ export const queryKeys = {
     "get",
     _filter,
   ],
-  getApplicationsLast30Days: () => ["application", "get", "last30Days"],
   getQas: () => ["qa", "get"],
+  qas: () => ["qa"],
 };
 
 export const queries = {
@@ -49,7 +60,24 @@ export const queries = {
         }
 
         const database = await getDatabase();
-        return database.get(JOB_APPLICATION_STORE_NAME, id);
+        const application = await database.get(JOB_APPLICATION_STORE_NAME, id);
+
+        if (isNil(application)) {
+          const url = new URL("/applications", syncUrl);
+          url.searchParams.append("id", id);
+          const response = await globalThis.fetch(url, {
+            headers: authHeaders,
+          });
+          const data = await parseFetchJson(response, jobApplicationSchema);
+
+          if (isError(data)) {
+            return;
+          }
+
+          return data;
+        }
+
+        return application;
       },
       queryKey: queryKeys.getApplicationKeys(id),
     });
@@ -58,17 +86,31 @@ export const queries = {
     return queryOptions({
       queryFn: async () => {
         const database = await getDatabase();
-        const applied = await database.getAllFromIndex(
+        let applications = await database.getAllFromIndex(
           JOB_APPLICATION_STORE_NAME,
           "applied",
         );
 
-        // eslint-disable-next-line sonar/no-misleading-array-reverse
-        const data = applied.sort((a, b) => {
+        if (isEmpty(applications)) {
+          const url = new URL("/applications", syncUrl);
+          const response = await globalThis.fetch(url, {
+            headers: authHeaders,
+          });
+          const data = await parseFetchJson(
+            response,
+            z.array(jobApplicationSchema),
+          );
+
+          if (!isError(data)) {
+            applications = data;
+          }
+        }
+
+        applications = applications.sort((a, b) => {
           return b.id.localeCompare(a.id);
         });
 
-        let filtered = filter(data, (item) => {
+        let filtered = filter(applications, (item) => {
           let condition = true;
 
           if (false === filters?.hasInterviewing) {
@@ -123,11 +165,24 @@ export const queries = {
     return queryOptions({
       queryFn: async () => {
         const database = await getDatabase();
+        let qas = await database.getAll(QUESTION_ANSWER_STORE_NAME);
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        return database.getAll(
-          QUESTION_ANSWER_STORE_NAME,
-        ) as unknown as Promise<QuestionAnswerSchema[]>;
+        if (isEmpty(qas)) {
+          const url = new URL("/question-answers", syncUrl);
+          const response = await globalThis.fetch(url, {
+            headers: authHeaders,
+          });
+          const data = await parseFetchJson(
+            response,
+            z.array(questionAnswerSchema),
+          );
+
+          if (!isError(data)) {
+            qas = data;
+          }
+        }
+
+        return qas;
       },
       queryKey: queryKeys.getQas(),
     });

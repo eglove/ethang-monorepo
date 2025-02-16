@@ -25,7 +25,7 @@ export const QaItem = ({ qa }: QaItemHeaderProperties) => {
   const updatedQa = useMutation({
     ...mutations.updateQa(),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.getQas() });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.qas() });
       setIsEditing(false);
     },
   });

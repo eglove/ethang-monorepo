@@ -30,15 +30,15 @@ const RouteComponent = () => {
             <div>Applications: {get(applications, ["data", "length"], 0)}</div>
             <div>Q/A's: {get(qas, ["data", "length"], 0)}</div>
             {!store.isSignedIn && (
-              <div className="flex justify-between gap-4 my-4">
-                <div>Sign In for Cloud Backup</div>
+              <div className="flex gap-4 my-4">
+                <div>Sign In for Cloud Backup:</div>
                 <div>
                   <SignInModal />
                 </div>
               </div>
             )}
             {store.isSignedIn && (
-              <div className="flex justify-between gap-4 my-4">
+              <div className="flex gap-4 my-4">
                 <div>Automatic Cloud Backup:</div>
                 <div>
                   {isNil(store.lastSynced)

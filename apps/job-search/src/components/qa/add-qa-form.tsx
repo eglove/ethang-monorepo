@@ -21,7 +21,7 @@ export const AddQaForm = () => {
     ...mutations.addQa(),
     onSuccess: async () => {
       form.reset();
-      await queryClient.invalidateQueries({ queryKey: queryKeys.getQas() });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.qas() });
     },
   });
 
