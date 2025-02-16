@@ -4,7 +4,7 @@ import {
   JOB_APPLICATION_STORE_NAME,
   QUESTION_ANSWER_STORE_NAME,
 } from "@/database/indexed-database.ts";
-import { backupAllData, getCallData } from "@/lib/sync-requests.ts";
+import { backupAllData } from "@/lib/sync-requests.ts";
 import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema";
 import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema";
 import { parseJson } from "@ethang/toolbelt/src/json/json.ts";
@@ -14,10 +14,11 @@ import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil";
 import map from "lodash/map.js";
+import { UploadIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { z } from "zod";
 
-export const ImportApplications = () => {
+export const LocalImportApplications = () => {
   const inputReference = useRef<HTMLInputElement | null>(null);
   const queryClient = useQueryClient();
   const [importErrorMessage, setImportErrorMessage] = useState("");
@@ -80,58 +81,30 @@ export const ImportApplications = () => {
     },
   });
 
-  const remoteImport = useMutation({
-    mutationFn: async () => {
-      await getCallData();
-      setImportErrorMessage("");
-    },
-    onError: (error) => {
-      setImportErrorMessage(error.message);
-    },
-  });
-
   return (
-    <div className="grid gap-4">
-      <div>
-        <Button
-          onPress={() => {
-            remoteImport.mutate();
-          }}
-          color="primary"
-          disabled={localImport.isPending || remoteImport.isPending}
-          isLoading={remoteImport.isPending}
-          size="sm"
-        >
-          Cloud Import
-        </Button>
-      </div>
-      <div className="flex flex-col gap-4">
-        <Input
-          accept="application/json"
-          className="max-w-sm"
-          label="Backup File"
-          name="file"
-          ref={inputReference}
-          size="sm"
-          type="file"
-        />
-        <div>
-          <Button
-            onPress={() => {
-              localImport.mutate();
-            }}
-            color="primary"
-            disabled={localImport.isPending || remoteImport.isPending}
-            isLoading={localImport.isPending}
-            size="sm"
-          >
-            Import from File
-          </Button>
-        </div>
-        {!isEmpty(importErrorMessage) && (
-          <div className="text-danger mt-1">{importErrorMessage}</div>
-        )}
-      </div>
+    <div className="flex flex-col gap-4">
+      <Input
+        accept="application/json"
+        label="Backup File"
+        name="file"
+        ref={inputReference}
+        size="sm"
+        type="file"
+      />
+      <Button
+        onPress={() => {
+          localImport.mutate();
+        }}
+        color="default"
+        disabled={localImport.isPending}
+        isLoading={localImport.isPending}
+        startContent={<UploadIcon className="size-5" />}
+      >
+        Import from File
+      </Button>
+      {!isEmpty(importErrorMessage) && (
+        <div className="text-danger mt-1">{importErrorMessage}</div>
+      )}
     </div>
   );
 };

@@ -63,4 +63,7 @@ export const getCallData = async () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.applications() }),
     queryClient.invalidateQueries({ queryKey: queryKeys.qas() }),
   ]);
+  userStore.set((state) => {
+    state.lastSynced = new Date().toISOString();
+  });
 };

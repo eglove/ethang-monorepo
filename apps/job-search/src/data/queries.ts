@@ -1,6 +1,6 @@
 import type { SortDescriptor } from "@heroui/react";
 
-import { userStore } from "@/components/stores/user-store.ts";
+import { setLastSynced, userStore } from "@/components/stores/user-store.ts";
 import {
   getDatabase,
   JOB_APPLICATION_STORE_NAME,
@@ -55,7 +55,7 @@ export const queries = {
         }
 
         const database = await getDatabase();
-        const application = await database.get(JOB_APPLICATION_STORE_NAME, id);
+        let application = await database.get(JOB_APPLICATION_STORE_NAME, id);
 
         if (isNil(application)) {
           const url = new URL("/applications", syncUrl);
@@ -68,11 +68,10 @@ export const queries = {
           });
           const data = await parseFetchJson(response, jobApplicationSchema);
 
-          if (isError(data)) {
-            return;
+          if (!isError(data)) {
+            setLastSynced();
+            application = data;
           }
-
-          return data;
         }
 
         return application;
@@ -104,6 +103,7 @@ export const queries = {
 
           if (!isError(data)) {
             applications = data;
+            setLastSynced();
           }
         }
 
@@ -183,6 +183,7 @@ export const queries = {
 
           if (!isError(data)) {
             qas = data;
+            setLastSynced();
           }
         }
 

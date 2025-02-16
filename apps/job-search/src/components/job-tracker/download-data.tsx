@@ -3,6 +3,7 @@ import { Button } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
+import { DownloadIcon } from "lucide-react";
 
 export const DownloadData = () => {
   const applications = useQuery(queries.getApplications());
@@ -38,7 +39,7 @@ export const DownloadData = () => {
       color="primary"
       disabled={isEmpty(applications.data)}
       onPress={handleDownload}
-      size="sm"
+      startContent={<DownloadIcon className="size-5" />}
     >
       Backup Data
     </Button>

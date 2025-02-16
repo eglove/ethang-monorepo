@@ -1,6 +1,7 @@
 import { computeEngine } from "@/components/common/providers.tsx";
 import { TrendCard } from "@/components/common/trend-card.tsx";
 import { queries } from "@/data/queries.ts";
+import { isNumber } from "@ethang/toolbelt/src/is/number.ts";
 import { useQuery } from "@tanstack/react-query";
 import forEach from "lodash/forEach";
 import isEmpty from "lodash/isEmpty";
@@ -74,12 +75,16 @@ export const KeyStats = () => {
     ]).value;
 
     return {
-      "Avg. Days to Interview": Number(averageInterviewTime).toLocaleString(),
-      "Avg. Days to Rejection": Number(averageRejectionTime).toLocaleString(),
+      "Avg. Days to Interview": isNumber(averageInterviewTime)
+        ? Number(averageInterviewTime).toLocaleString()
+        : "N/A",
+      "Avg. Days to Rejection": isNumber(averageRejectionTime)
+        ? Number(averageRejectionTime).toLocaleString()
+        : "N/A",
       Companies: companies.size,
-      "Current Response Rate": percentFormatter.format(
-        Number(currentResponseRate),
-      ),
+      "Current Response Rate": isNumber(currentResponseRate)
+        ? percentFormatter.format(Number(currentResponseRate))
+        : "N/A",
       "Days Tracked": applicationDays.size,
       "Total Applications": query.data?.length ?? 0,
     } as const;

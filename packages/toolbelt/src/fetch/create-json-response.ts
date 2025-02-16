@@ -21,8 +21,8 @@ const getCorsHeaders = ({
   };
 };
 
-export const createJsonResponse = (
-  data: unknown,
+export const createJsonResponse = <T>(
+  data: T,
   status: keyof typeof HTTP_STATUS,
   responseInit?: ResponseInit,
 ) => {
