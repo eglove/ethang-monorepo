@@ -46,7 +46,7 @@ export const syncData = async (
   `);
 
   const questionAnswerStatement = environment.DB.prepare(`
-    insert into questionAnswers (applicationId, question, answer, userEmail)
+    insert into questionAnswers (id, question, answer, userEmail)
     values (?, ?, ?, ?)
   `);
 

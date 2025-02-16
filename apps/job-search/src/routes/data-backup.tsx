@@ -29,10 +29,6 @@ const RouteComponent = () => {
           <CardBody>
             <div>Applications: {get(applications, ["data", "length"], 0)}</div>
             <div>Q/A's: {get(qas, ["data", "length"], 0)}</div>
-            <div className="my-4">
-              <DownloadData />
-            </div>
-            <ImportApplications />
             {!store.isSignedIn && (
               <div className="flex justify-between gap-4 my-4">
                 <div>Sign In for Cloud Backup</div>
@@ -54,6 +50,12 @@ const RouteComponent = () => {
                 </div>
               </div>
             )}
+            <div className="my-4">
+              <DownloadData />
+            </div>
+            <div className="my-4">
+              <ImportApplications />
+            </div>
           </CardBody>
         </Card>
         <Card>
