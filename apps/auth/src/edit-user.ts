@@ -22,45 +22,25 @@ export const editUser = async (request: Request, environment: Env) => {
   });
 
   if (isError(body)) {
-    return createJsonResponse(
-      { error: "Invalid request" },
-      "BAD_REQUEST",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST");
   }
 
   const result = editUserSchema.safeParse(body);
 
   if (!result.success) {
-    return createJsonResponse(
-      { error: "Invalid arguments" },
-      "BAD_REQUEST",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Invalid arguments" }, "BAD_REQUEST");
   }
 
   const isUser = await getIsUser(request, environment, result.data.email);
 
   if (!isUser) {
-    return createJsonResponse(
-      { error: "Unauthorized" },
-      "UNAUTHORIZED",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
   }
 
   const previousUser = await getUser(result.data.email, environment);
 
   if (isNil(previousUser)) {
-    return createJsonResponse(
-      { error: "User not found" },
-      "NOT_FOUND",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "User not found" }, "NOT_FOUND");
   }
 
   await environment.DB.prepare(
@@ -78,5 +58,5 @@ export const editUser = async (request: Request, environment: Env) => {
   const user = await getUser(result.data.email, environment);
 
   set(user, ["password"], undefined);
-  return createJsonResponse(user, "OK", undefined, request);
+  return createJsonResponse(user, "OK");
 };

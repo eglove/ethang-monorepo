@@ -18,13 +18,10 @@ const urls = {
   questionAnswers: "/question-answers",
 };
 
-const unauthorizedResponse = (request: Request) =>
-  createJsonResponse(
-    { error: "Unauthorized" },
-    "UNAUTHORIZED",
-    undefined,
-    request,
-  );
+const unauthorizedResponse = createJsonResponse(
+  { error: "Unauthorized" },
+  "UNAUTHORIZED",
+);
 
 export default {
   // eslint-disable-next-line sonar/cognitive-complexity
@@ -32,13 +29,13 @@ export default {
     const url = new URL(request.url);
 
     if ("OPTIONS" === request.method) {
-      return createJsonResponse(null, "OK", undefined, request);
+      return createJsonResponse(null, "OK");
     }
 
     const authorization = request.headers.get("Authorization");
 
     if (isNil(authorization)) {
-      return unauthorizedResponse(request);
+      return unauthorizedResponse;
     }
 
     const verifyUrl = new URL("https://auth.ethang.dev/verify");
@@ -46,13 +43,13 @@ export default {
     const verifyResponse = await globalThis.fetch(verifyUrl);
 
     if (!verifyResponse.ok) {
-      return unauthorizedResponse(request);
+      return unauthorizedResponse;
     }
 
     const tokenData = await parseFetchJson(verifyResponse, tokenSchema);
 
     if (isError(tokenData)) {
-      return unauthorizedResponse(request);
+      return unauthorizedResponse;
     }
 
     if ("/data-sync" === url.pathname && "POST" === request.method) {
@@ -60,7 +57,7 @@ export default {
     }
 
     if ("/get-data" === url.pathname && "GET" === request.method) {
-      return getData(request, tokenData, environment);
+      return getData(tokenData, environment);
     }
 
     if (urls.applications === url.pathname && "POST" === request.method) {
@@ -87,11 +84,6 @@ export default {
       return deleteQuestionAnswer(request, tokenData, environment);
     }
 
-    return createJsonResponse(
-      { error: "Not Found" },
-      "NOT_FOUND",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Not Found" }, "NOT_FOUND");
   },
 } satisfies ExportedHandler<Env>;

@@ -20,12 +20,7 @@ export const signIn = async (request: Request, environment: Env) => {
   });
 
   if (isError(body)) {
-    return createJsonResponse(
-      { error: "Invalid request" },
-      "BAD_REQUEST",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST");
   }
 
   const result = signInSchema.safeParse(body);
@@ -37,12 +32,7 @@ export const signIn = async (request: Request, environment: Env) => {
   const foundUser = await getUser(result.data.email, environment);
 
   if (isNil(foundUser)) {
-    return createJsonResponse(
-      { error: "User not found" },
-      "NOT_FOUND",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "User not found" }, "NOT_FOUND");
   }
 
   const isPasswordValid = await validatePassword(
@@ -51,12 +41,7 @@ export const signIn = async (request: Request, environment: Env) => {
   );
 
   if (!isPasswordValid) {
-    return createJsonResponse(
-      { error: "Invalid password" },
-      "UNAUTHORIZED",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Invalid password" }, "UNAUTHORIZED");
   }
 
   await environment.DB.prepare(
@@ -69,5 +54,5 @@ export const signIn = async (request: Request, environment: Env) => {
   set(foundUser, ["password"], undefined);
   const token = await createToken(foundUser, environment);
 
-  return createJsonResponse({ token }, "OK", undefined, request);
+  return createJsonResponse({ token }, "OK");
 };

@@ -14,12 +14,7 @@ export const addApplication = async (
   const requestData = await parseFetchJson(request, jobApplicationSchema);
 
   if (isError(requestData)) {
-    return createJsonResponse(
-      { message: requestData.message },
-      "BAD_REQUEST",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ message: requestData.message }, "BAD_REQUEST");
   }
 
   const result = await attemptAsync(async () =>
@@ -46,10 +41,8 @@ export const addApplication = async (
     return createJsonResponse(
       { message: result.message },
       "INTERNAL_SERVER_ERROR",
-      undefined,
-      request,
     );
   }
 
-  return createJsonResponse(requestData, "OK", undefined, request);
+  return createJsonResponse(requestData, "OK");
 };

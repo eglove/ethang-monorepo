@@ -23,12 +23,7 @@ export const syncData = async (
   );
 
   if (isError(requestData)) {
-    return createJsonResponse(
-      { message: requestData.message },
-      "BAD_REQUEST",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ message: requestData.message }, "BAD_REQUEST");
   }
 
   const applicationStatement = environment.DB.prepare(`
@@ -76,10 +71,8 @@ export const syncData = async (
     return createJsonResponse(
       { message: sqlResult.message },
       "INTERNAL_SERVER_ERROR",
-      undefined,
-      request,
     );
   }
 
-  return createJsonResponse(requestData, "OK", undefined, request);
+  return createJsonResponse(requestData, "OK");
 };

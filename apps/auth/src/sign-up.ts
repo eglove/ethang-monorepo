@@ -21,34 +21,19 @@ export const signUp = async (request: Request, environment: Env) => {
   });
 
   if (isError(body)) {
-    return createJsonResponse(
-      { error: "Invalid request" },
-      "BAD_REQUEST",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST");
   }
 
   const result = signUpSchema.safeParse(body);
 
   if (!result.success) {
-    return createJsonResponse(
-      { error: "Invalid arguments" },
-      "BAD_REQUEST",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Invalid arguments" }, "BAD_REQUEST");
   }
 
   const foundUser = await getUser(result.data.email, environment);
 
   if (!isNil(foundUser)) {
-    return createJsonResponse(
-      { error: "User already exists" },
-      "CONFLICT",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "User already exists" }, "CONFLICT");
   }
 
   const hashedPassword = getHashedPassword(result.data.password);
@@ -64,13 +49,11 @@ export const signUp = async (request: Request, environment: Env) => {
     return createJsonResponse(
       { error: "Failed to create user" },
       "INTERNAL_SERVER_ERROR",
-      undefined,
-      request,
     );
   }
 
   set(user, ["password"], undefined);
   const token = await createToken(user, environment);
 
-  return createJsonResponse({ token }, "CREATED", undefined, request);
+  return createJsonResponse({ token }, "CREATED");
 };

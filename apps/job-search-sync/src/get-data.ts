@@ -4,11 +4,7 @@ import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-respo
 import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
 import isError from "lodash/isError.js";
 
-export const getData = async (
-  request: Request,
-  tokenData: TokenSchema,
-  environment: Env,
-) => {
+export const getData = async (tokenData: TokenSchema, environment: Env) => {
   const results = await attemptAsync(async () =>
     Promise.all([
       environment.DB.prepare("select * from applications where userEmail = ?")
@@ -26,10 +22,8 @@ export const getData = async (
     return createJsonResponse(
       { message: results.message },
       "INTERNAL_SERVER_ERROR",
-      undefined,
-      request,
     );
   }
 
-  return createJsonResponse(results, "OK", undefined, request);
+  return createJsonResponse(results, "OK");
 };

@@ -9,19 +9,19 @@ import filter from "lodash/filter.js";
 import isDate from "lodash/isDate.js";
 import { v7 } from "uuid";
 
-export const metaTypes = {
+export const mutationMetaTypes = {
   addApplication: "addApplication",
   addQa: "addQa",
   deleteApplication: "deleteApplication",
   deleteQa: "deleteQa",
   updateApplication: "updateApplication",
   updateQa: "updateQa",
-};
+} as const;
 
 export const mutations = {
   addJobApplication: () => {
     return {
-      meta: { type: metaTypes.addApplication },
+      meta: { type: mutationMetaTypes.addApplication },
       mutationFn: async (application: Omit<JobApplicationSchema, "id">) => {
         const database = await getDatabase();
 
@@ -35,7 +35,7 @@ export const mutations = {
   },
   addQa: () => {
     return {
-      meta: { type: metaTypes.addQa },
+      meta: { type: mutationMetaTypes.addQa },
       mutationFn: async (qa: Omit<QuestionAnswerSchema, "id">) => {
         const database = await getDatabase();
 
@@ -48,7 +48,7 @@ export const mutations = {
   },
   deleteJobApplication: () => {
     return {
-      meta: { type: metaTypes.deleteApplication },
+      meta: { type: mutationMetaTypes.deleteApplication },
       mutationFn: async (id: string) => {
         const database = await getDatabase();
 
@@ -58,7 +58,7 @@ export const mutations = {
   },
   deleteQa: () => {
     return {
-      meta: { type: metaTypes.deleteQa },
+      meta: { type: mutationMetaTypes.deleteQa },
       mutationFn: async (id: string) => {
         const database = await getDatabase();
 
@@ -68,7 +68,7 @@ export const mutations = {
   },
   updateJobApplication: () => {
     return {
-      meta: { type: metaTypes.updateApplication },
+      meta: { type: mutationMetaTypes.updateApplication },
       mutationFn: async (application: JobApplicationSchema) => {
         const database = await getDatabase();
 
@@ -81,7 +81,7 @@ export const mutations = {
   },
   updateQa: () => {
     return {
-      meta: { type: metaTypes.updateQa },
+      meta: { type: mutationMetaTypes.updateQa },
       mutationFn: async (qa: QuestionAnswerSchema) => {
         const database = await getDatabase();
 

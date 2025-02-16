@@ -8,24 +8,14 @@ export const deleteUser = async (request: Request, environment: Env) => {
   const isAdmin = await getIsAdmin(request, environment);
 
   if (!isAdmin) {
-    return createJsonResponse(
-      { error: "Unauthorized" },
-      "UNAUTHORIZED",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
   }
 
   const url = new URL(request.url);
   const email = url.searchParams.get("email");
 
   if (isNil(email)) {
-    return createJsonResponse(
-      { error: "Invalid request" },
-      "BAD_REQUEST",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST");
   }
 
   await environment.DB.prepare("DELETE FROM Users WHERE email = ?")
@@ -38,10 +28,8 @@ export const deleteUser = async (request: Request, environment: Env) => {
     return createJsonResponse(
       { error: "Failed to delete user" },
       "INTERNAL_SERVER_ERROR",
-      undefined,
-      request,
     );
   }
 
-  return createJsonResponse({ data: "User deleted" }, "OK", undefined, request);
+  return createJsonResponse({ data: "User deleted" }, "OK");
 };

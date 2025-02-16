@@ -10,36 +10,21 @@ export const getUser = async (request: Request, environment: Env) => {
   const email = url.searchParams.get("email");
 
   if (isNil(email)) {
-    return createJsonResponse(
-      { error: "Invalid request" },
-      "BAD_REQUEST",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST");
   }
 
   const isUser = await getIsUser(request, environment, email);
 
   if (!isUser) {
-    return createJsonResponse(
-      { error: "Unauthorized" },
-      "UNAUTHORIZED",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
   }
 
   const foundUser = await getUserUtil(email, environment);
 
   if (isNil(foundUser)) {
-    return createJsonResponse(
-      { error: "User not found" },
-      "NOT_FOUND",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "User not found" }, "NOT_FOUND");
   }
 
   set(foundUser, ["password"], undefined);
-  return createJsonResponse(foundUser, "OK", undefined, request);
+  return createJsonResponse(foundUser, "OK");
 };

@@ -12,7 +12,7 @@ export default {
     const url = new URL(request.url);
 
     if ("OPTIONS" === request.method) {
-      return createJsonResponse(null, "OK", undefined, request);
+      return createJsonResponse(null, "OK");
     }
 
     if ("/user" === url.pathname && "GET" === request.method) {
@@ -39,11 +39,6 @@ export default {
       return verifyToken(request, environment);
     }
 
-    return createJsonResponse(
-      { error: "Not Found" },
-      "NOT_FOUND",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Not Found" }, "NOT_FOUND");
   },
 } satisfies ExportedHandler<Env>;

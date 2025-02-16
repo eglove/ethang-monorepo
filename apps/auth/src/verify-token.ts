@@ -11,12 +11,7 @@ export const verifyToken = async (request: Request, environment: Env) => {
   const token = url.searchParams.get("token");
 
   if (isNil(token)) {
-    return createJsonResponse(
-      { error: "Invalid request" },
-      "BAD_REQUEST",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST");
   }
 
   const jwtResult = await attemptAsync(async () => {
@@ -24,13 +19,8 @@ export const verifyToken = async (request: Request, environment: Env) => {
   });
 
   if (isError(jwtResult)) {
-    return createJsonResponse(
-      { error: "Unauthorized" },
-      "UNAUTHORIZED",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
   }
 
-  return createJsonResponse(jwtResult.payload, "OK", undefined, request);
+  return createJsonResponse(jwtResult.payload, "OK");
 };
