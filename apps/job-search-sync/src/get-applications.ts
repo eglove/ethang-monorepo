@@ -69,5 +69,16 @@ export const getApplications = async (
     );
   }
 
-  return createJsonResponse(application, "OK");
+  const interviewRounds = get(application, ["interviewRounds"]);
+  const parsed = isString(interviewRounds)
+    ? parseJson(interviewRounds, z.array(z.string()))
+    : [];
+
+  return createJsonResponse(
+    {
+      ...application,
+      interviewRounds: isError(parsed) ? [] : parsed,
+    },
+    "OK",
+  );
 };
