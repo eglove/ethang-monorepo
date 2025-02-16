@@ -31,7 +31,7 @@ export const getApplications = async (
       );
     }
 
-    return createJsonResponse(applications, "OK");
+    return createJsonResponse(applications.results, "OK");
   }
 
   const application = await attemptAsync(async () => {

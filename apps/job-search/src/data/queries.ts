@@ -97,12 +97,10 @@ export const queries = {
               "Content-Type": "application/json",
             },
           });
-          console.log(response);
           const data = await parseFetchJson(
             response,
             z.array(jobApplicationSchema),
           );
-          console.log(data);
 
           if (!isError(data)) {
             applications = data;
@@ -178,6 +176,7 @@ export const queries = {
               "Content-Type": "application/json",
             },
           });
+          console.log(await response.json());
           const data = await parseFetchJson(
             response,
             z.array(questionAnswerSchema),

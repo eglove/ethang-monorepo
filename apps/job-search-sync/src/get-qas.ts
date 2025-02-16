@@ -19,5 +19,5 @@ export const getQas = async (tokenData: TokenSchema, environment: Env) => {
     return createJsonResponse({ error: qas.message }, "INTERNAL_SERVER_ERROR");
   }
 
-  return createJsonResponse(qas, "OK");
+  return createJsonResponse(qas.results, "OK");
 };
