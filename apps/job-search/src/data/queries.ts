@@ -56,13 +56,14 @@ export const queries = {
 
         const database = await getDatabase();
         let application = await database.get(JOB_APPLICATION_STORE_NAME, id);
+        const store = userStore.get();
 
-        if (isNil(application)) {
+        if (isNil(application) && store.isSignedIn) {
           const url = new URL("/applications", syncUrl);
           url.searchParams.append("id", id);
           const response = await globalThis.fetch(url, {
             headers: {
-              Authorization: userStore.get().token,
+              Authorization: store.token,
               "Content-Type": "application/json",
             },
           });
@@ -87,12 +88,13 @@ export const queries = {
           JOB_APPLICATION_STORE_NAME,
           "applied",
         );
+        const store = userStore.get();
 
-        if (isEmpty(applications)) {
+        if (isEmpty(applications) && store.isSignedIn) {
           const url = new URL("/applications", syncUrl);
           const response = await globalThis.fetch(url, {
             headers: {
-              Authorization: userStore.get().token,
+              Authorization: store.token,
               "Content-Type": "application/json",
             },
           });
@@ -167,12 +169,13 @@ export const queries = {
       queryFn: async () => {
         const database = await getDatabase();
         let qas = await database.getAll(QUESTION_ANSWER_STORE_NAME);
+        const store = userStore.get();
 
-        if (isEmpty(qas)) {
+        if (isEmpty(qas) && store.isSignedIn) {
           const url = new URL("/question-answers", syncUrl);
           const response = await globalThis.fetch(url, {
             headers: {
-              Authorization: userStore.get().token,
+              Authorization: store.token,
               "Content-Type": "application/json",
             },
           });

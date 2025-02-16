@@ -1,7 +1,9 @@
 import type { JobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
 import type { QuestionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
 
+import { queryClient } from "@/components/common/providers.tsx";
 import { userStore } from "@/components/stores/user-store.ts";
+import { queries } from "@/data/queries.ts";
 import {
   getDatabase,
   JOB_APPLICATION_STORE_NAME,
@@ -88,6 +90,12 @@ export const mutations = {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           state.token = get(data, ["token"], "") as unknown as string;
         });
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: queries.getApplications(),
+          }),
+          queryClient.invalidateQueries({ queryKey: queries.getQas() }),
+        ]);
       },
     };
   },
