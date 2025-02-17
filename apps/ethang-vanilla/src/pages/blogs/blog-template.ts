@@ -49,6 +49,10 @@ export const blogs: BlogTemplateProperties[] = [
     fileSlug: "extract",
     title: "Extract",
   },
+  {
+    fileSlug: "local-first",
+    title: "A Local First Approach",
+  },
 ];
 
 export const blogTemplate = async (properties: BlogTemplateProperties) => {

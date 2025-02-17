@@ -11,9 +11,9 @@ export const homeTemplate = async () => {
     compileParameters: {
       blogs: [
         {
-          id: "extract",
-          link: "./blog/extract/",
-          title: "RSS Extraction Tool",
+          id: "local-first",
+          link: "./blog/local-first/",
+          title: "The Local First Stack",
         },
         {
           id: "javascript-standard-library",
