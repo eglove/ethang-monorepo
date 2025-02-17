@@ -37,16 +37,16 @@ export const JobTrackerTable = () => {
   const store = useApplicationFormStore();
   const filters = useMemo(() => {
     return {
-      companyFilter: store.companyFilter,
       hasInterviewing: store.isShowingInterviewing,
       hasNoStatus: store.isShowingNoStatus,
       hasRejected: store.isShowingRejected,
       page,
+      search: store.search,
       sorting: store.sorting,
     };
   }, [
     page,
-    store.companyFilter,
+    store.search,
     store.isShowingInterviewing,
     store.isShowingNoStatus,
     store.isShowingRejected,
@@ -86,16 +86,22 @@ export const JobTrackerTable = () => {
           <JobTrackerTableFooter
             page={page}
             setPage={setPage}
-            total={query.data?.length ?? 0}
+            total={get(query, ["data", "total"])}
           />
         }
         onSortChange={(descriptor) => {
           setSorting(String(descriptor.column));
         }}
+        sortDescriptor={{
+          column: store.sorting.id,
+          direction:
+            "desc" === store.sorting.direction ? "descending" : "ascending",
+        }}
         aria-label="Job Applications"
-        sortDescriptor={store.sorting}
       >
-        <TableHeader columns={getApplicationTableColumns(query.data)}>
+        <TableHeader
+          columns={getApplicationTableColumns(query.data?.applications)}
+        >
           {(item) => {
             return (
               <TableColumn
@@ -111,7 +117,7 @@ export const JobTrackerTable = () => {
         </TableHeader>
         <TableBody
           emptyContent="Nothing to display"
-          items={query.data ?? []}
+          items={query.data?.applications ?? []}
           loadingContent={<Spinner />}
           loadingState={query.isPending ? "loading" : "idle"}
         >

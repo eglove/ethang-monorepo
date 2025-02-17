@@ -6,16 +6,16 @@ import isNil from "lodash/isNil";
 import { DownloadIcon } from "lucide-react";
 
 export const DownloadData = () => {
-  const applications = useQuery(queries.getApplications());
+  const applicationsQuery = useQuery(queries.getApplications());
   const qas = useQuery(queries.getQas());
 
   const handleDownload = () => {
-    if (isNil(applications.data)) {
+    if (isNil(applicationsQuery.data?.applications)) {
       return;
     }
 
     const data = {
-      applications: applications.data,
+      applications: applicationsQuery.data.applications,
       qas: qas.data,
     };
 
@@ -36,8 +36,10 @@ export const DownloadData = () => {
 
   return (
     <Button
+      disabled={
+        isEmpty(applicationsQuery.data?.applications) && isEmpty(qas.data)
+      }
       color="primary"
-      disabled={isEmpty(applications.data)}
       onPress={handleDownload}
       startContent={<DownloadIcon className="size-5" />}
     >

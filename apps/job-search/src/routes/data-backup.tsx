@@ -14,12 +14,12 @@ import isNil from "lodash/isNil";
 import { DatabaseIcon } from "lucide-react";
 
 const RouteComponent = () => {
-  const applications = useQuery(queries.getApplications());
+  const applicationsQuery = useQuery(queries.getApplications());
   const qas = useQuery(queries.getQas());
   const store = useUserStore();
 
   return (
-    <MainLayout>
+    <MainLayout classNames={{ container: "max-w-screen-md" }}>
       <Card>
         <CardHeader>
           <TypographyH3>Backup and Restore</TypographyH3>
@@ -30,7 +30,12 @@ const RouteComponent = () => {
               <div>
                 <TypographyLead>Current Data</TypographyLead>
                 <div>
-                  Applications: {get(applications, ["data", "length"], 0)}
+                  Applications:{" "}
+                  {get(
+                    applicationsQuery,
+                    ["data", "applications", "length"],
+                    0,
+                  )}
                 </div>
                 <div>Q/As: {get(qas, ["data", "length"], 0)}</div>
               </div>

@@ -28,7 +28,7 @@ export const ApplicationsPerDayChart = () => {
     let start = DateTime.now().minus({ days: 30 });
 
     const getFilteredList = () => {
-      return filter(query.data, (datum) => {
+      return filter(query.data?.applications, (datum) => {
         return (
           new Date(datum.applied).toDateString() ===
           start.toJSDate().toDateString()
@@ -57,15 +57,19 @@ export const ApplicationsPerDayChart = () => {
       chartData,
       findIndex(chartData, (d) => 0 < d.applications),
     );
-  }, [query.data]);
+  }, [query.data?.applications]);
 
   const average = useMemo(() => {
-    if (isNil(query.data)) {
+    if (isNil(query.data?.applications)) {
       return 0;
     }
 
-    return computeEngine.box(["Divide", query.data.length, data.length]).value;
-  }, [data.length, query.data]);
+    return computeEngine.box([
+      "Divide",
+      query.data.applications.length,
+      data.length,
+    ]).value;
+  }, [data.length, query.data?.applications]);
 
   return (
     <Card className="p-4 border border-transparent dark:border-default-100">
@@ -76,7 +80,7 @@ export const ApplicationsPerDayChart = () => {
           </dt>
           <dd className="text-sm">
             Average: {Number(average).toLocaleString()}, Total:{" "}
-            {get(query, ["data", "length"], 0)}
+            {get(query, ["data", "applications", "length"], 0)}
           </dd>
         </div>
       </CardHeader>

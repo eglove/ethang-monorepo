@@ -27,7 +27,7 @@ export const CompaniesChart = () => {
   const companyData = useMemo(() => {
     const results: Record<string, number> = {};
 
-    forEach(query.data, (item) => {
+    forEach(query.data?.applications, (item) => {
       set(results, [item.company], get(results, [item.company], 0) + 1);
     });
 
@@ -39,7 +39,7 @@ export const CompaniesChart = () => {
       ["desc"],
     );
     return slice(allData, 0, 5);
-  }, [query.data]);
+  }, [query.data?.applications]);
 
   return (
     <Card>

@@ -1,4 +1,4 @@
-import type { SortDescriptor } from "@heroui/react";
+import type { Sorting } from "@/components/job-tracker/table-state.ts";
 
 import { setLastSynced, userStore } from "@/components/stores/user-store.ts";
 import {
@@ -23,12 +23,12 @@ import toLower from "lodash/toLower.js";
 import { z } from "zod";
 
 type ApplicationsFilter = {
-  companyFilter?: string;
   hasInterviewing?: boolean;
   hasNoStatus?: boolean;
   hasRejected?: boolean;
   page?: number;
-  sorting?: SortDescriptor;
+  search?: string;
+  sorting?: Sorting;
 };
 
 export const APPLICATION_PAGE_SIZE = 10;
@@ -130,13 +130,12 @@ export const queries = {
 
           if (
             condition &&
-            !isNil(filters?.companyFilter) &&
-            !isEmpty(filters.companyFilter)
+            !isNil(filters?.search) &&
+            !isEmpty(filters.search)
           ) {
-            condition = includes(
-              toLower(item.company),
-              toLower(filters.companyFilter),
-            );
+            condition =
+              includes(toLower(item.company), toLower(filters.search)) ||
+              includes(toLower(item.title), toLower(filters.search));
           }
 
           return condition;
@@ -145,21 +144,24 @@ export const queries = {
         if (isString(filters?.sorting?.direction)) {
           filtered = orderBy(
             filtered,
-            [filters.sorting.column],
-            ["descending" === filters.sorting.direction ? "desc" : "asc"],
+            [filters.sorting.id],
+            [filters.sorting.direction],
           );
         }
 
         if (isNil(filters?.page)) {
-          return filtered;
+          return { applications: filtered, total: filtered.length };
         }
 
         const currentPage = APPLICATION_PAGE_SIZE * (filters.page - 1);
-        return slice(
-          filtered,
-          currentPage,
-          currentPage + APPLICATION_PAGE_SIZE,
-        );
+        return {
+          applications: slice(
+            filtered,
+            currentPage,
+            currentPage + APPLICATION_PAGE_SIZE,
+          ),
+          total: filtered.length,
+        };
       },
       queryKey: queryKeys.getApplications(filters),
     });

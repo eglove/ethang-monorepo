@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 const Index = () => {
   return (
-    <MainLayout>
+    <MainLayout classNames={{ container: "max-w-screen" }}>
       <JobTrackerTable />
     </MainLayout>
   );

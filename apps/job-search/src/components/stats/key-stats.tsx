@@ -24,7 +24,7 @@ export const KeyStats = () => {
     const rejectionTimes: number[] = [];
     let hasResponse = 0;
 
-    forEach(query.data, (item) => {
+    forEach(query.data?.applications, (item) => {
       hasResponse += 1;
 
       companies.add(item.company);
@@ -70,7 +70,7 @@ export const KeyStats = () => {
 
     const currentResponseRate = computeEngine.box([
       "Divide",
-      ["Divide", hasResponse, query.data?.length ?? 1],
+      ["Divide", hasResponse, query.data?.applications.length ?? 1],
       100,
     ]).value;
 
@@ -86,9 +86,9 @@ export const KeyStats = () => {
         ? percentFormatter.format(Number(currentResponseRate))
         : "N/A",
       "Days Tracked": applicationDays.size,
-      "Total Applications": query.data?.length ?? 0,
+      "Total Applications": query.data?.applications.length ?? 0,
     } as const;
-  }, [query.data]);
+  }, [query.data?.applications]);
 
   return (
     <dl className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

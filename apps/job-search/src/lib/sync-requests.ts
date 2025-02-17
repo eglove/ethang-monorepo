@@ -23,10 +23,15 @@ export const backupAllData = async () => {
 
   const url = new URL("/data-sync", syncUrl);
   const qas = await queryClient.fetchQuery(queries.getQas());
-  const applications = await queryClient.fetchQuery(queries.getApplications());
+  const applicationsQuery = await queryClient.fetchQuery(
+    queries.getApplications(),
+  );
   await globalThis
     .fetch(url, {
-      body: JSON.stringify({ applications, qas }),
+      body: JSON.stringify({
+        applications: applicationsQuery.applications,
+        qas,
+      }),
       headers: {
         Authorization: userState.token,
         "Content-Type": "application/json",
