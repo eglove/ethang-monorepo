@@ -30,7 +30,7 @@ export const backupAllData = async () => {
     .then(setLastSynced);
 };
 
-export const getCallData = async () => {
+export const getAllData = async () => {
   const url = new URL("/get-data", syncUrl);
   const response = await globalThis.fetch(url, {
     headers: {

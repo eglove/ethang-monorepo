@@ -1,5 +1,5 @@
 import { useUserStore } from "@/components/stores/user-store.ts";
-import { getCallData } from "@/lib/sync-requests.ts";
+import { getAllData } from "@/lib/sync-requests.ts";
 import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty";
@@ -12,7 +12,7 @@ export const RemoteImportApplications = () => {
 
   const remoteImport = useMutation({
     mutationFn: async () => {
-      await getCallData();
+      await getAllData();
       setImportErrorMessage("");
     },
     onError: (error) => {

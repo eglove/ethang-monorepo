@@ -1,5 +1,8 @@
 import { SignInModal } from "@/components/common/sign-in-modal.tsx";
 import { userStore, useUserStore } from "@/components/stores/user-store.ts";
+import { logger } from "@/lib/logger.ts";
+import { backupAllData } from "@/lib/sync-requests.ts";
+import { useOnline } from "@ethang/hooks/src/use-online.ts";
 import {
   Button,
   Link,
@@ -9,6 +12,7 @@ import {
   NavbarItem,
 } from "@heroui/react";
 import map from "lodash/map.js";
+import { CircleIcon } from "lucide-react";
 
 const navLinks = [
   { label: "Applications", link: "/" },
@@ -26,6 +30,15 @@ const handleSignOut = () => {
 
 export const Navigation = () => {
   const store = useUserStore();
+  const { isOnline } = useOnline({
+    onOnline: () => {
+      backupAllData()
+        .then(() => {
+          logger.info("Backup successful");
+        })
+        .catch(logger.error);
+    },
+  });
 
   return (
     <Navbar>
@@ -46,6 +59,16 @@ export const Navigation = () => {
         })}
       </NavbarContent>
       <NavbarContent justify="end">
+        {isOnline && (
+          <div className="flex items-center text-success gap-1">
+            <CircleIcon className="size-3 fill-success" /> Online
+          </div>
+        )}
+        {!isOnline && (
+          <div className="flex items-center text-danger gap-1">
+            <CircleIcon className="size-3 fill-danger" /> Offline
+          </div>
+        )}
         {!store.isSignedIn && <SignInModal />}
         {store.isSignedIn && (
           <Button color="primary" onPress={handleSignOut} size="sm">

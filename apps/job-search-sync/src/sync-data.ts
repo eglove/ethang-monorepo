@@ -26,27 +26,13 @@ export const syncData = async (
     return createJsonResponse({ message: requestData.message }, "BAD_REQUEST");
   }
 
-  const deleteApplications = environment.DB.prepare(
-    `delete from applications where userEmail = ?`,
-  )
-    .bind(tokenData.email)
-    .first();
-
-  const deleteQuestionAnswers = environment.DB.prepare(
-    `delete from questionAnswers where userEmail = ?`,
-  )
-    .bind(tokenData.email)
-    .first();
-
-  await Promise.all([deleteApplications, deleteQuestionAnswers]);
-
   const applicationStatement = environment.DB.prepare(`
-    insert into applications (id, applied, company, title, url, rejected, interviewRounds, userEmail)
+    insert or replace into applications (id, applied, company, title, url, rejected, interviewRounds, userEmail)
     values (?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const questionAnswerStatement = environment.DB.prepare(`
-    insert into questionAnswers (id, question, answer, userEmail)
+    insert or replace into questionAnswers (id, question, answer, userEmail)
     values (?, ?, ?, ?)
   `);
 
