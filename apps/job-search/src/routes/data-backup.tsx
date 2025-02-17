@@ -26,16 +26,15 @@ const RouteComponent = () => {
         </CardHeader>
         <CardBody>
           <div className="grid gap-4">
+            <div className="flex items-center gap-2">
+              <DatabaseIcon className="size-5" /> Ensure your data is backed up
+              regularly.
+            </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <TypographyLead>Current Data</TypographyLead>
                 <div>
-                  Applications:{" "}
-                  {get(
-                    applicationsQuery,
-                    ["data", "applications", "length"],
-                    0,
-                  )}
+                  Applications: {get(applicationsQuery, ["data", "total"], 0)}
                 </div>
                 <div>Q/As: {get(qas, ["data", "length"], 0)}</div>
               </div>
@@ -52,10 +51,6 @@ const RouteComponent = () => {
             <DownloadData />
             <RemoteImportApplications />
             <LocalImportApplications />
-            <div className="flex items-center gap-2">
-              <DatabaseIcon className="size-5" /> Ensure your data is backed up
-              regularly.
-            </div>
           </div>
         </CardBody>
       </Card>

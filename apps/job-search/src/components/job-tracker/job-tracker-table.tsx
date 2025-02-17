@@ -37,21 +37,12 @@ export const JobTrackerTable = () => {
   const store = useApplicationFormStore();
   const filters = useMemo(() => {
     return {
-      hasInterviewing: store.isShowingInterviewing,
-      hasNoStatus: store.isShowingNoStatus,
-      hasRejected: store.isShowingRejected,
       page,
       search: store.search,
       sorting: store.sorting,
+      tableFilters: store.tableFilters,
     };
-  }, [
-    page,
-    store.search,
-    store.isShowingInterviewing,
-    store.isShowingNoStatus,
-    store.isShowingRejected,
-    store.sorting,
-  ]);
+  }, [page, store.search, store.tableFilters, store.sorting]);
 
   const query = useQuery(queries.getApplications(filters));
 

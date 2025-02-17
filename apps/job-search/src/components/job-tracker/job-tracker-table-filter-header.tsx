@@ -3,6 +3,7 @@ import type { Key } from "@react-types/shared";
 
 import {
   applicationFormStore,
+  type ApplicationTableFilter,
   setSearch,
   useApplicationFormStore,
 } from "@/components/job-tracker/table-state.ts";
@@ -15,6 +16,7 @@ import {
   Input,
 } from "@heroui/react";
 import { Link } from "@tanstack/react-router";
+import includes from "lodash/includes";
 import { FilterIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -24,15 +26,15 @@ export const JobTrackerTableFilterHeader = () => {
     const set = new Set<Key>();
     const state = applicationFormStore.get();
 
-    if (state.isShowingInterviewing) {
+    if (includes(state.tableFilters, "interviewing")) {
       set.add("interviewing");
     }
 
-    if (state.isShowingRejected) {
+    if (includes(state.tableFilters, "rejected")) {
       set.add("rejected");
     }
 
-    if (state.isShowingNoStatus) {
+    if (includes(state.tableFilters, "noStatus")) {
       set.add("noStatus");
     }
 
@@ -40,15 +42,13 @@ export const JobTrackerTableFilterHeader = () => {
   });
 
   const handleSelectionChange = (value: SharedSelection) => {
-    const set = new Set(value);
-
     applicationFormStore.set((state) => {
-      state.isShowingInterviewing = set.has("interviewing");
-      state.isShowingRejected = set.has("rejected");
-      state.isShowingNoStatus = set.has("noStatus");
-    });
+      const valueSet = new Set(value);
 
-    setSelectedFilterKeys(set);
+      setSelectedFilterKeys(valueSet);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      state.tableFilters = [...valueSet] as ApplicationTableFilter;
+    });
   };
 
   return (

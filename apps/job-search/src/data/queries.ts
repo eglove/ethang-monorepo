@@ -1,4 +1,7 @@
-import type { Sorting } from "@/components/job-tracker/table-state.ts";
+import type {
+  ApplicationTableFilter,
+  Sorting,
+} from "@/components/job-tracker/table-state.ts";
 
 import { setLastSynced, userStore } from "@/components/stores/user-store.ts";
 import {
@@ -23,12 +26,10 @@ import toLower from "lodash/toLower.js";
 import { z } from "zod";
 
 type ApplicationsFilter = {
-  hasInterviewing?: boolean;
-  hasNoStatus?: boolean;
-  hasRejected?: boolean;
   page?: number;
   search?: string;
   sorting?: Sorting;
+  tableFilters?: ApplicationTableFilter;
 };
 
 export const APPLICATION_PAGE_SIZE = 10;
@@ -116,16 +117,19 @@ export const queries = {
         let filtered = filter(applications, (item) => {
           let condition = true;
 
-          if (false === filters?.hasInterviewing) {
-            condition = isEmpty(item.interviewRounds);
-          }
+          if (!isEmpty(filters?.tableFilters)) {
+            if (!includes(filters?.tableFilters, "interviewing")) {
+              condition = isEmpty(item.interviewRounds);
+            }
 
-          if (condition && false === filters?.hasRejected) {
-            condition = isNil(item.rejected);
-          }
+            if (condition && !includes(filters?.tableFilters, "rejected")) {
+              condition = isNil(item.rejected);
+            }
 
-          if (condition && false === filters?.hasNoStatus) {
-            condition = !isEmpty(item.interviewRounds) || !isNil(item.rejected);
+            if (condition && !includes(filters?.tableFilters, "noStatus")) {
+              condition =
+                !isEmpty(item.interviewRounds) || !isNil(item.rejected);
+            }
           }
 
           if (

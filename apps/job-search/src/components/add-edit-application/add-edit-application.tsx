@@ -125,7 +125,7 @@ export const AddEditApplication = ({
   };
 
   return (
-    <div className="m-4 max-w-md">
+    <div className="m-4 max-w-md mx-auto">
       <TypographyH2 className="mb-4">
         {isEmpty(id) ? "Add" : "Update"} Application
       </TypographyH2>

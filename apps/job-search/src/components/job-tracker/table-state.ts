@@ -1,6 +1,12 @@
 import { Store } from "@ethang/store/src/index.ts";
 import { useSyncExternalStore } from "react";
 
+export type ApplicationTableFilter = (
+  | "interviewing"
+  | "noStatus"
+  | "rejected"
+)[];
+
 export type Sorting = {
   direction: "asc" | "desc" | false;
   id: string;
@@ -8,12 +14,9 @@ export type Sorting = {
 
 export const applicationFormStore = new Store(
   {
-    isShowingInterviewing: true,
-    isShowingNoStatus: false,
-    isShowingRejected: true,
     search: "",
     sorting: { direction: "desc", id: "applied" } as Sorting,
-    tableFilters: ["interviewing", "rejected"],
+    tableFilters: ["interviewing", "rejected"] as ApplicationTableFilter,
   },
   {
     localStorageKey: "applicationTableState",

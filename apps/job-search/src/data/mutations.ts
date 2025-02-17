@@ -9,6 +9,7 @@ import {
   JOB_APPLICATION_STORE_NAME,
   QUESTION_ANSWER_STORE_NAME,
 } from "@/database/indexed-database.ts";
+import { backupAllData } from "@/lib/sync-requests.ts";
 import filter from "lodash/filter.js";
 import get from "lodash/get";
 import isNil from "lodash/isNil";
@@ -95,6 +96,7 @@ export const mutations = {
             queryKey: queries.getApplications(),
           }),
           queryClient.invalidateQueries({ queryKey: queries.getQas() }),
+          backupAllData(),
         ]);
       },
     };
