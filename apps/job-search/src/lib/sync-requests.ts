@@ -15,6 +15,12 @@ import map from "lodash/map.js";
 import { z } from "zod";
 
 export const backupAllData = async () => {
+  const userState = userStore.get();
+
+  if (!userState.isSignedIn) {
+    return;
+  }
+
   const url = new URL("/data-sync", syncUrl);
   const qas = await queryClient.fetchQuery(queries.getQas());
   const applications = await queryClient.fetchQuery(queries.getApplications());
@@ -22,7 +28,7 @@ export const backupAllData = async () => {
     .fetch(url, {
       body: JSON.stringify({ applications, qas }),
       headers: {
-        Authorization: userStore.get().token,
+        Authorization: userState.token,
         "Content-Type": "application/json",
       },
       method: "POST",
@@ -31,10 +37,16 @@ export const backupAllData = async () => {
 };
 
 export const getAllData = async () => {
+  const userState = userStore.get();
+
+  if (!userState.isSignedIn) {
+    return;
+  }
+
   const url = new URL("/get-data", syncUrl);
   const response = await globalThis.fetch(url, {
     headers: {
-      Authorization: userStore.get().token,
+      Authorization: userState.token,
       "Content-Type": "application/json",
     },
   });
@@ -62,8 +74,5 @@ export const getAllData = async () => {
     }),
     queryClient.invalidateQueries({ queryKey: queryKeys.applications() }),
     queryClient.invalidateQueries({ queryKey: queryKeys.qas() }),
-  ]);
-  userStore.set((state) => {
-    state.lastSynced = new Date().toISOString();
-  });
+  ]).then(setLastSynced);
 };
