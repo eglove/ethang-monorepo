@@ -7,8 +7,8 @@ type ListenerOptions = AddEventListenerOptions | EventListenerOptions;
 type ListenerParameters = Parameters<typeof globalThis.addEventListener>;
 
 type LocalStorageStoreOptions = {
-  defaultValue?: string;
-  listenerOptions?: ListenerOptions;
+  defaultValue?: string | undefined;
+  listenerOptions?: ListenerOptions | undefined;
 };
 
 const localStorageStore = (key: string, options?: LocalStorageStoreOptions) => {
@@ -55,7 +55,6 @@ export const useLocalStorage = (
   options?: UseLocalStorageProperties,
 ) => {
   const { event, getServerSnapshot, getSnapshot, subscribe } =
-    // @ts-expect-error allow undefined
     localStorageStore(key, {
       defaultValue: options?.defaultValue,
       listenerOptions: options?.listenerOptions,
