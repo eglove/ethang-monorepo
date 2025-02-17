@@ -18,10 +18,9 @@ const localStorageStore = (key: string, options?: LocalStorageStoreOptions) => {
       return options?.defaultValue ?? null;
     },
     getSnapshot: () => {
-      const item = attempt(
-        globalThis.localStorage.getItem.bind(globalThis.localStorage),
-        key,
-      );
+      const item = attempt(() => {
+        return globalThis.localStorage.getItem(key);
+      });
 
       if (isError(item)) {
         return null;
@@ -63,11 +62,9 @@ export const useLocalStorage = (
   const value = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const setValue = (newValue: string) => {
-    attempt(
-      globalThis.localStorage.setItem.bind(globalThis.localStorage),
-      key,
-      newValue,
-    );
+    attempt(() => {
+      globalThis.localStorage.setItem(key, newValue);
+    });
     globalThis.dispatchEvent(event);
   };
 
