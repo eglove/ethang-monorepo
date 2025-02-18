@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "job-search",
+  "observability": {
+    "enabled": true
+  },
+  "nodejs_compat": true,
+  "pages_build_output_dir": "dist",
+  "placement": { "mode": "smart" }
+}

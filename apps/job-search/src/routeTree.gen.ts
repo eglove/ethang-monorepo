@@ -11,19 +11,12 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as UpsertApplicationImport } from './routes/upsert-application'
 import { Route as StatsImport } from './routes/stats'
 import { Route as QaImport } from './routes/qa'
 import { Route as DataBackupImport } from './routes/data-backup'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
-
-const UpsertApplicationRoute = UpsertApplicationImport.update({
-  id: '/upsert-application',
-  path: '/upsert-application',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const StatsRoute = StatsImport.update({
   id: '/stats',
@@ -81,13 +74,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatsImport
       parentRoute: typeof rootRoute
     }
-    '/upsert-application': {
-      id: '/upsert-application'
-      path: '/upsert-application'
-      fullPath: '/upsert-application'
-      preLoaderRoute: typeof UpsertApplicationImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -98,7 +84,6 @@ export interface FileRoutesByFullPath {
   '/data-backup': typeof DataBackupRoute
   '/qa': typeof QaRoute
   '/stats': typeof StatsRoute
-  '/upsert-application': typeof UpsertApplicationRoute
 }
 
 export interface FileRoutesByTo {
@@ -106,7 +91,6 @@ export interface FileRoutesByTo {
   '/data-backup': typeof DataBackupRoute
   '/qa': typeof QaRoute
   '/stats': typeof StatsRoute
-  '/upsert-application': typeof UpsertApplicationRoute
 }
 
 export interface FileRoutesById {
@@ -115,21 +99,14 @@ export interface FileRoutesById {
   '/data-backup': typeof DataBackupRoute
   '/qa': typeof QaRoute
   '/stats': typeof StatsRoute
-  '/upsert-application': typeof UpsertApplicationRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/data-backup' | '/qa' | '/stats' | '/upsert-application'
+  fullPaths: '/' | '/data-backup' | '/qa' | '/stats'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/data-backup' | '/qa' | '/stats' | '/upsert-application'
-  id:
-    | '__root__'
-    | '/'
-    | '/data-backup'
-    | '/qa'
-    | '/stats'
-    | '/upsert-application'
+  to: '/' | '/data-backup' | '/qa' | '/stats'
+  id: '__root__' | '/' | '/data-backup' | '/qa' | '/stats'
   fileRoutesById: FileRoutesById
 }
 
@@ -138,7 +115,6 @@ export interface RootRouteChildren {
   DataBackupRoute: typeof DataBackupRoute
   QaRoute: typeof QaRoute
   StatsRoute: typeof StatsRoute
-  UpsertApplicationRoute: typeof UpsertApplicationRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -146,7 +122,6 @@ const rootRouteChildren: RootRouteChildren = {
   DataBackupRoute: DataBackupRoute,
   QaRoute: QaRoute,
   StatsRoute: StatsRoute,
-  UpsertApplicationRoute: UpsertApplicationRoute,
 }
 
 export const routeTree = rootRoute
@@ -162,8 +137,7 @@ export const routeTree = rootRoute
         "/",
         "/data-backup",
         "/qa",
-        "/stats",
-        "/upsert-application"
+        "/stats"
       ]
     },
     "/": {
@@ -177,9 +151,6 @@ export const routeTree = rootRoute
     },
     "/stats": {
       "filePath": "stats.tsx"
-    },
-    "/upsert-application": {
-      "filePath": "upsert-application.tsx"
     }
   }
 }

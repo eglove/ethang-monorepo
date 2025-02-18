@@ -1,6 +1,7 @@
 import type { SharedSelection } from "@heroui/system";
 import type { Key } from "@react-types/shared";
 
+import { AddEditApplication } from "@/components/add-edit-application/add-edit-application.tsx";
 import {
   type ApplicationTableFilter,
   applicationTableStore,
@@ -15,7 +16,6 @@ import {
   DropdownTrigger,
   Input,
 } from "@heroui/react";
-import { Link } from "@tanstack/react-router";
 import includes from "lodash/includes";
 import { FilterIcon, XIcon } from "lucide-react";
 import { useState } from "react";
@@ -81,7 +81,7 @@ export const JobTrackerTableFilterHeader = () => {
               startContent={<FilterIcon className="size-3" />}
               variant="bordered"
             >
-              Filters
+              Status
             </Button>
           </DropdownTrigger>
           <DropdownMenu
@@ -91,15 +91,13 @@ export const JobTrackerTableFilterHeader = () => {
             selectedKeys={selectedFilterKeys}
             selectionMode="multiple"
           >
-            <DropdownItem key="noStatus">Show No Status</DropdownItem>
-            <DropdownItem key="interviewing">Show Interviewing</DropdownItem>
-            <DropdownItem key="rejected">Show Rejected</DropdownItem>
+            <DropdownItem key="noStatus">No Status</DropdownItem>
+            <DropdownItem key="interviewing">Interviewing</DropdownItem>
+            <DropdownItem key="rejected">Rejected</DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </div>
-      <Button as={Link} color="primary" to="/upsert-application">
-        Add Application
-      </Button>
+      <AddEditApplication>Add Application</AddEditApplication>
     </div>
   );
 };

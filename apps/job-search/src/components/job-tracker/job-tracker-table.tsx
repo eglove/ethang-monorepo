@@ -132,7 +132,7 @@ export const JobTrackerTable = () => {
                         <Link
                           isExternal
                           showAnchorIcon
-                          className="break-all"
+                          className="break-all min-w-24"
                           href={value}
                           underline="always"
                         >

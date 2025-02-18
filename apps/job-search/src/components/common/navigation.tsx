@@ -10,9 +10,13 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
 } from "@heroui/react";
 import map from "lodash/map.js";
 import { CircleIcon } from "lucide-react";
+import { useState } from "react";
 
 const navLinks = [
   { label: "Applications", link: "/" },
@@ -30,6 +34,7 @@ const handleSignOut = () => {
 
 export const Navigation = () => {
   const store = useUserStore();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isOnline } = useOnline({
     onOnline: () => {
       backupAllData()
@@ -41,9 +46,15 @@ export const Navigation = () => {
   });
 
   return (
-    <Navbar>
-      <NavbarBrand>Job Track</NavbarBrand>
-      <NavbarContent justify="center">
+    <Navbar onMenuOpenChange={setIsMenuOpen}>
+      <NavbarContent>
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="sm:hidden"
+        />
+        <NavbarBrand>Job Track</NavbarBrand>
+      </NavbarContent>
+      <NavbarContent className="hidden sm:flex gap-4" justify="center">
         {map(navLinks, (link) => {
           return (
             <NavbarItem key={link.label}>
@@ -61,12 +72,14 @@ export const Navigation = () => {
       <NavbarContent justify="end">
         {isOnline && (
           <div className="flex items-center text-success gap-1">
-            <CircleIcon className="size-3 fill-success" /> Online
+            <CircleIcon className="size-3 fill-success" />{" "}
+            <span className="hidden sm:inline">Online</span>
           </div>
         )}
         {!isOnline && (
           <div className="flex items-center text-danger gap-1">
-            <CircleIcon className="size-3 fill-danger" /> Offline
+            <CircleIcon className="size-3 fill-danger" />{" "}
+            <span className="hidden sm:inline">Offline</span>
           </div>
         )}
         {!store.isSignedIn && <SignInModal />}
@@ -76,6 +89,21 @@ export const Navigation = () => {
           </Button>
         )}
       </NavbarContent>
+      <NavbarMenu className="dark">
+        {map(navLinks, (link) => {
+          return (
+            <NavbarMenuItem key={link.label}>
+              <Link
+                className="text-foreground"
+                href={link.link}
+                underline="hover"
+              >
+                {link.label}
+              </Link>
+            </NavbarMenuItem>
+          );
+        })}
+      </NavbarMenu>
     </Navbar>
   );
 };
