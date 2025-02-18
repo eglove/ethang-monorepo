@@ -5,7 +5,7 @@ import { JobTrackerTableFilterHeader } from "@/components/job-tracker/job-tracke
 import { JobTrackerTableFooter } from "@/components/job-tracker/job-tracker-table-footer.tsx";
 import {
   setSorting,
-  useApplicationFormStore,
+  useApplicationTableStore,
 } from "@/components/job-tracker/table-state.ts";
 import { queries } from "@/data/queries.ts";
 import { logger } from "@/lib/logger.ts";
@@ -34,7 +34,7 @@ import { twMerge } from "tailwind-merge";
 export const JobTrackerTable = () => {
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
-  const store = useApplicationFormStore();
+  const store = useApplicationTableStore();
   const filters = useMemo(() => {
     return {
       page,

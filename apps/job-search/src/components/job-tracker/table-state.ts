@@ -12,11 +12,15 @@ export type Sorting = {
   id: string;
 };
 
-export const applicationFormStore = new Store(
+export const applicationTableStore = new Store(
   {
     search: "",
     sorting: { direction: "desc", id: "applied" } as Sorting,
-    tableFilters: ["interviewing", "rejected"] as ApplicationTableFilter,
+    tableFilters: [
+      "noStatus",
+      "interviewing",
+      "rejected",
+    ] as ApplicationTableFilter,
   },
   {
     localStorageKey: "applicationTableState",
@@ -24,21 +28,21 @@ export const applicationFormStore = new Store(
   },
 );
 
-export const useApplicationFormStore = () =>
+export const useApplicationTableStore = () =>
   useSyncExternalStore(
-    (listener) => applicationFormStore.subscribe(listener),
-    () => applicationFormStore.get(),
-    () => applicationFormStore.get(),
+    (listener) => applicationTableStore.subscribe(listener),
+    () => applicationTableStore.get(),
+    () => applicationTableStore.get(),
   );
 
 export const setSearch = (search: string) => {
-  applicationFormStore.set((state) => {
+  applicationTableStore.set((state) => {
     state.search = search;
   });
 };
 
 export const setSorting = (id: string) => {
-  applicationFormStore.set((state) => {
+  applicationTableStore.set((state) => {
     if (id === state.sorting.id) {
       state.sorting.direction =
         "desc" === state.sorting.direction ? "asc" : "desc";

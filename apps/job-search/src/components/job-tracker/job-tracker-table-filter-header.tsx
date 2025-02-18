@@ -2,10 +2,10 @@ import type { SharedSelection } from "@heroui/system";
 import type { Key } from "@react-types/shared";
 
 import {
-  applicationFormStore,
   type ApplicationTableFilter,
+  applicationTableStore,
   setSearch,
-  useApplicationFormStore,
+  useApplicationTableStore,
 } from "@/components/job-tracker/table-state.ts";
 import {
   Button,
@@ -21,10 +21,10 @@ import { FilterIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 
 export const JobTrackerTableFilterHeader = () => {
-  const store = useApplicationFormStore();
+  const store = useApplicationTableStore();
   const [selectedFilterKeys, setSelectedFilterKeys] = useState(() => {
     const set = new Set<Key>();
-    const state = applicationFormStore.get();
+    const state = applicationTableStore.get();
 
     if (includes(state.tableFilters, "interviewing")) {
       set.add("interviewing");
@@ -42,7 +42,7 @@ export const JobTrackerTableFilterHeader = () => {
   });
 
   const handleSelectionChange = (value: SharedSelection) => {
-    applicationFormStore.set((state) => {
+    applicationTableStore.set((state) => {
       const valueSet = new Set(value);
 
       setSelectedFilterKeys(valueSet);
