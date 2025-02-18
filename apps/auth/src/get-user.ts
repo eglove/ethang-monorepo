@@ -2,7 +2,7 @@ import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-respo
 import isNil from "lodash/isNil.js";
 import set from "lodash/set.js";
 
-import { getUser as getUserUtil } from "./utils/get-user.ts";
+import { getUser as getUserUtility } from "./utils/get-user.ts";
 import { getIsUser } from "./utils/is-user.ts";
 
 export const getUser = async (request: Request, environment: Env) => {
@@ -19,7 +19,7 @@ export const getUser = async (request: Request, environment: Env) => {
     return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
   }
 
-  const foundUser = await getUserUtil(email, environment);
+  const foundUser = await getUserUtility(email, environment);
 
   if (isNil(foundUser)) {
     return createJsonResponse({ error: "User not found" }, "NOT_FOUND");

@@ -9,7 +9,7 @@ import path from "node:path";
 
 import type { genRules } from "../setup/gen-rules.ts";
 
-import { getList } from "./list-utils.ts";
+import { getList } from "./list-utilities.ts";
 
 const getRuleCount = (rules: ReturnType<typeof genRules>) => {
   let count = 0;

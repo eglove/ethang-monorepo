@@ -9,7 +9,7 @@ import {
   getListPlugins,
   getTypeFiles,
   getTypeLanguage,
-} from "./list-utils.ts";
+} from "./list-utilities.ts";
 
 export type ConfigOptions = {
   extraImports?: string[];

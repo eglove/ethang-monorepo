@@ -16,7 +16,7 @@
     "@eslint/markdown": "^6.2.2",
     "@tanstack/eslint-plugin-query": "^5.66.1",
     "@tanstack/eslint-plugin-router": "^1.105.0",
-    "@typescript-eslint/parser": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.1",
     "angular-eslint": "19.1.0",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
@@ -34,9 +34,9 @@
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "3.0.2",
     "eslint-plugin-tailwindcss": "^3.18.0",
-    "eslint-plugin-unicorn": "^56.0.1",
+    "eslint-plugin-unicorn": "^57.0.0",
     "prettier": "^3.5.1",
-    "typescript-eslint": "^8.24.0"
+    "typescript-eslint": "^8.24.1"
   },
   "devDependencies": {
     "@ethang/markdown-generator": "workspace:^",

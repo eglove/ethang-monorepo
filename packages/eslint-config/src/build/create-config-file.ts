@@ -5,7 +5,7 @@ import path from "node:path";
 import type { ConfigFile } from "./update-rules.ts";
 
 import { createConfig } from "./create-config.ts";
-import { getTypeImportStrings } from "./list-utils.ts";
+import { getTypeImportStrings } from "./list-utilities.ts";
 
 const mainFile = "eslint.config.js";
 

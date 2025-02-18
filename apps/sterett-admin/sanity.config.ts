@@ -1,7 +1,10 @@
 import { defineConfig } from "sanity";
 
+import {
+  developmentPlugins,
+  productionPlugins,
+} from "./sanity-config-utilities.ts";
 import schema from "./schemas/schema.ts";
-import { developmentPlugins, productionPlugins } from "./util-sanity-config.ts";
 
 export default defineConfig({
   dataset: "production",
