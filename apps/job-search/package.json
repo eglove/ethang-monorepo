@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250214.0",
-    "@ethang/eslint-config": "workspace:^",
+    "@ethang/eslint-config": "^21.1.0",
     "@react-types/shared": "^3.27.0",
     "@tanstack/router-devtools": "^1.105.0",
     "@tanstack/router-plugin": "^1.105.0",

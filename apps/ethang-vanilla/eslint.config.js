@@ -1,20 +1,20 @@
-import config from "@ethang/eslint-config/src/eslint.config.js";
+import config from "@ethang/eslint-config/eslint.config.js";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-    {
-        ignores: [],
+  {
+    ignores: [],
+  },
+  ...config,
+  {
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
-    ...config,
-    {
-        languageOptions: {
-            parserOptions: {
-                project: true,
-                tsconfigRootDir: import.meta.dirname,
-            },
-        },
-        rules: {
-            "sonar/no-reference-error": "off",
-        },
+    rules: {
+      "sonar/no-reference-error": "off",
     },
+  },
 );

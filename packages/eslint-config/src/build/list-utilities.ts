@@ -49,7 +49,9 @@ export const getTypeLanguage = (type: string) => {
       return "json/jsonc";
     }
 
-    default:
+    default: {
+      return null;
+    }
   }
 };
 
