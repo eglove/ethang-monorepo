@@ -4,8 +4,7 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "@clerk/backend": "^1.24.1",
-    "@ethang/schemas": "workspace:^",
+    "@ethang/schemas": "^1.0.1",
     "@ethang/toolbelt": "^4.3.2",
     "lodash": "^4.17.21",
     "zod": "^3.24.2"

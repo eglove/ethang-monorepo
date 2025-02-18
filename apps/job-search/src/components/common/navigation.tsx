@@ -2,7 +2,7 @@ import { SignInModal } from "@/components/common/sign-in-modal.tsx";
 import { userStore, useUserStore } from "@/components/stores/user-store.ts";
 import { logger } from "@/lib/logger.ts";
 import { backupAllData } from "@/lib/sync-requests.ts";
-import { useOnline } from "@ethang/hooks/src/use-online.ts";
+import { useOnline } from "@ethang/hooks/use-online.js";
 import {
   Button,
   Link,

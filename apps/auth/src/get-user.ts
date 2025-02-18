@@ -1,4 +1,4 @@
-import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
+import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
 import isNil from "lodash/isNil.js";
 import set from "lodash/set.js";
 

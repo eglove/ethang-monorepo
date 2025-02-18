@@ -1,5 +1,5 @@
-import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
-import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
+import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { load } from "cheerio";
 import filter from "lodash/filter.js";
 import get from "lodash/get.js";

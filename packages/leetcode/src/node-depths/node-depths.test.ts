@@ -1,4 +1,4 @@
-import { Tree } from "@ethang/toolbelt/src/tree/tree.js";
+import { Tree } from "@ethang/toolbelt/tree/tree.js";
 import { describe, expect, it } from "vitest";
 
 import { nodeDepths } from "./node-depths.js";

@@ -39,7 +39,7 @@
     "typescript-eslint": "^8.24.1"
   },
   "devDependencies": {
-    "@ethang/markdown-generator": "workspace:^",
+    "@ethang/markdown-generator": "^1.1.5",
     "@ethang/toolbelt": "^4.3.2",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",

@@ -1,6 +1,6 @@
 import { mutations } from "@/data/mutations.ts";
 import { queryKeys } from "@/data/queries";
-import { useToggle } from "@ethang/hooks/src/use-toggle.ts";
+import { useToggle } from "@ethang/hooks/use-toggle.js";
 import { Button } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2Icon, XIcon } from "lucide-react";

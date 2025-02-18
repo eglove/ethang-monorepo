@@ -1,5 +1,5 @@
-import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
-import { parseJson } from "@ethang/toolbelt/src/json/json.js";
+import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
+import { parseJson } from "@ethang/toolbelt/json/json.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import values from "lodash/values.js";

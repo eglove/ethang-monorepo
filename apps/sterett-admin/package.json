@@ -1,18 +1,18 @@
 {
   "author": "Ethan Glover <hello@ethang.email>",
   "dependencies": {
-    "@sanity/cli": "^3.75.1",
+    "@sanity/cli": "^3.76.0",
     "@sanity/code-input": "^5.1.2",
     "@sanity/dashboard": "^4.1.2",
     "@sanity/icons": "^3.6.0",
     "@sanity/orderable-document-list": "^1.2.3",
-    "@sanity/vision": "^3.75.1",
+    "@sanity/vision": "^3.76.0",
     "@types/react": "19.0.10",
     "lodash": "^4.17.21",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-is": "^19.0.0",
-    "sanity": "^3.75.1",
+    "sanity": "^3.76.0",
     "styled-components": "^6.1.15"
   },
   "description": "",

@@ -1,5 +1,5 @@
-import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
-import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
+import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { jwtVerify } from "jose";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";

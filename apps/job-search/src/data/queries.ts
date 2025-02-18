@@ -10,9 +10,9 @@ import {
   QUESTION_ANSWER_STORE_NAME,
 } from "@/database/indexed-database.ts";
 import { syncUrl } from "@/lib/query/backup.ts";
-import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
-import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
-import { parseFetchJson } from "@ethang/toolbelt/src/fetch/json.ts";
+import { jobApplicationSchema } from "@ethang/schemas/job-search/job-application-schema.js";
+import { questionAnswerSchema } from "@ethang/schemas/job-search/question-answer-schema.js";
+import { parseFetchJson } from "@ethang/toolbelt/fetch/json.js";
 import { queryOptions } from "@tanstack/react-query";
 import filter from "lodash/filter.js";
 import includes from "lodash/includes.js";
@@ -111,7 +111,7 @@ export const queries = {
         }
 
         applications = applications.sort((a, b) => {
-          return b.id.localeCompare(a.id);
+          return String(b.id).localeCompare(String(a.id));
         });
 
         let filtered = filter(applications, (item) => {

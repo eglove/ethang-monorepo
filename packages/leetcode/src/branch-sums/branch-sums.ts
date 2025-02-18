@@ -1,4 +1,4 @@
-import type { TreeNode } from "@ethang/toolbelt/src/tree/tree-node.ts";
+import type { TreeNode } from "@ethang/toolbelt/tree/tree-node.js";
 
 import isNil from "lodash/isNil.js";
 
@@ -22,12 +22,9 @@ const calculateBranchSums = (
   calculateBranchSums(node.right, newRunningSum, sums);
 };
 
-export const branchSums = (
-  root: TreeNode<number>,
-) => {
+export const branchSums = (root: TreeNode<number>) => {
   const sums: number[] = [];
   calculateBranchSums(root, 0, sums);
 
   return sums;
 };
-

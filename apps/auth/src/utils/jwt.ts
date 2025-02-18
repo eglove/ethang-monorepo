@@ -1,7 +1,7 @@
-import type { TokenSchema } from "@ethang/schemas/src/auth/token.js";
-import type { UserSchema } from "@ethang/schemas/src/auth/user.js";
+import type { TokenSchema } from "@ethang/schemas/auth/token.js";
+import type { UserSchema } from "@ethang/schemas/auth/user.js";
 
-import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { jwtVerify, SignJWT } from "jose";
 
 export const ORIGIN = "ethang.dev";

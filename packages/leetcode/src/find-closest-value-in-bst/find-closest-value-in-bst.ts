@@ -1,7 +1,9 @@
-import type { TreeNode } from "@ethang/toolbelt/src/tree/tree-node.js";
+import type { TreeNode } from "@ethang/toolbelt/tree/tree-node.js";
 
 const findClosestValueInBstHelper = (
-  tree: null | TreeNode<number>, target: number, closestValue: number,
+  tree: null | TreeNode<number>,
+  target: number,
+  closestValue: number,
 ) => {
   let currentNode = tree;
   let currentClosestValue = closestValue;
@@ -26,8 +28,8 @@ const findClosestValueInBstHelper = (
 };
 
 export const findClosestValueInBst = (
-  tree: TreeNode<number>, target: number,
+  tree: TreeNode<number>,
+  target: number,
 ) => {
   return findClosestValueInBstHelper(tree, target, tree.value);
 };
-

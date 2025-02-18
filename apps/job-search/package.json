@@ -6,8 +6,8 @@
   "dependencies": {
     "@cortex-js/compute-engine": "^0.28.0",
     "@ethang/hooks": "^2.2.7",
-    "@ethang/schemas": "workspace:^",
-    "@ethang/store": "workspace:^",
+    "@ethang/schemas": "^1.0.1",
+    "@ethang/store": "^1.0.15",
     "@ethang/toolbelt": "^4.3.2",
     "@heroui/react": "2.6.14",
     "@heroui/system": "2.4.7",

@@ -1,5 +1,5 @@
-import { HTTP_STATUS } from "@ethang/toolbelt/src/constants/http.js";
-import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
+import { HTTP_STATUS } from "@ethang/toolbelt/constants/http.js";
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { OpenAPIRoute } from "chanfana";
 import { load } from "cheerio";
 import isError from "lodash/isError.js";

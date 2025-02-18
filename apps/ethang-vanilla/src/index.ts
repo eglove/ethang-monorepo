@@ -1,4 +1,4 @@
-import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { minify } from "html-minifier-terser";
 import map from "lodash/map.js";
 import {

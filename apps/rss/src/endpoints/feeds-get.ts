@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from "@ethang/toolbelt/src/constants/http.js";
+import { HTTP_STATUS } from "@ethang/toolbelt/constants/http.js";
 import { Bool, OpenAPIRoute, Str } from "chanfana";
 import isError from "lodash/isError.js";
 import { z } from "zod";

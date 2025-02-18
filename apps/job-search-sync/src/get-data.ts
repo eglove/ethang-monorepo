@@ -1,8 +1,8 @@
-import type { TokenSchema } from "@ethang/schemas/src/auth/token.js";
+import type { TokenSchema } from "@ethang/schemas/auth/token.js";
 
-import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.js";
-import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
-import { parseJson } from "@ethang/toolbelt/src/json/json.js";
+import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
+import { parseJson } from "@ethang/toolbelt/json/json.js";
 import { get, isString } from "lodash";
 import isError from "lodash/isError.js";
 import map from "lodash/map.js";

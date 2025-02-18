@@ -1,4 +1,4 @@
-import type { UserSchema } from "@ethang/schemas/src/auth/user.js";
+import type { UserSchema } from "@ethang/schemas/auth/user.js";
 
 export const getUser = async (email: string, environment: Env) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion

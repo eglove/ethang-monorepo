@@ -1,7 +1,7 @@
-import type { TokenSchema } from "@ethang/schemas/src/auth/token.js";
+import type { TokenSchema } from "@ethang/schemas/auth/token.js";
 
-import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.js";
-import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
+import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import isError from "lodash/isError.js";
 
 export const getQas = async (tokenData: TokenSchema, environment: Env) => {

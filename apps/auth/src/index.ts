@@ -1,4 +1,4 @@
-import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.ts";
+import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
 
 import { deleteUser } from "./delete-user.ts";
 import { editUser } from "./edit-user.ts";

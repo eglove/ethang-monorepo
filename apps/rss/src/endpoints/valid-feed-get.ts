@@ -1,6 +1,6 @@
 import type { Context } from "hono";
 
-import { HTTP_STATUS } from "@ethang/toolbelt/src/constants/http.js";
+import { HTTP_STATUS } from "@ethang/toolbelt/constants/http.js";
 import { OpenAPIRoute } from "chanfana";
 import isError from "lodash/isError.js";
 import { z } from "zod";

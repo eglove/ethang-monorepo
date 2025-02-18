@@ -1,4 +1,4 @@
-import { useCopyClipboard } from "@ethang/hooks/src/use-copy-clipboard.ts";
+import { useCopyClipboard } from "@ethang/hooks/use-copy-clipboard.js";
 import { Button } from "@heroui/react";
 import { CheckIcon, ClipboardCopyIcon } from "lucide-react";
 

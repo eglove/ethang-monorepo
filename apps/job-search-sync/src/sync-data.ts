@@ -1,10 +1,10 @@
-import type { TokenSchema } from "@ethang/schemas/src/auth/token.js";
+import type { TokenSchema } from "@ethang/schemas/auth/token.js";
 
-import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.js";
-import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.js";
-import { createJsonResponse } from "@ethang/toolbelt/src/fetch/create-json-response.js";
-import { parseFetchJson } from "@ethang/toolbelt/src/fetch/json.js";
-import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.js";
+import { jobApplicationSchema } from "@ethang/schemas/job-search/job-application-schema.js";
+import { questionAnswerSchema } from "@ethang/schemas/job-search/question-answer-schema.js";
+import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
+import { parseFetchJson } from "@ethang/toolbelt/fetch/json.js";
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import isError from "lodash/isError.js";
 import map from "lodash/map.js";
 import { z } from "zod";

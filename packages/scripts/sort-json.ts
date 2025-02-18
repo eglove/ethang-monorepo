@@ -1,4 +1,4 @@
-import { parseJson } from "@ethang/toolbelt/src/json/json.ts";
+import { parseJson } from "@ethang/toolbelt/json/json.js";
 import get from "lodash/get.js";
 import isArray from "lodash/isArray.js";
 import isError from "lodash/isError.js";

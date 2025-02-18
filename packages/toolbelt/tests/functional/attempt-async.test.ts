@@ -1,7 +1,7 @@
 import isError from "lodash/isError.js";
 import { describe, expect, it } from "vitest";
 
-import { attemptAsync } from "../../src/functional/attempt-async.ts";
+import { attemptAsync } from "../../src/functional/attempt-async.js";
 
 describe("attemptAsync", () => {
   it("should return result with successful response", async () => {

@@ -1,4 +1,4 @@
-import { MarkdownGenerator } from "@ethang/markdown-generator/src/markdown-generator.ts";
+import { MarkdownGenerator } from "@ethang/markdown-generator/markdown-generator.js";
 import filter from "lodash/filter.js";
 import flow from "lodash/flow.js";
 import isArray from "lodash/isArray.js";

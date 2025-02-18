@@ -1,4 +1,4 @@
-import { Store } from "@ethang/store/src/index.ts";
+import { Store } from "@ethang/store/index.js";
 import { useSyncExternalStore } from "react";
 
 export const userStore = new Store(

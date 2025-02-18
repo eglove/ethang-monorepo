@@ -1,4 +1,4 @@
-import { parseFetchJson } from "@ethang/toolbelt/src/fetch/json.js";
+import { parseFetchJson } from "@ethang/toolbelt/fetch/json.js";
 import isError from "lodash/isError.js";
 import { z } from "zod";
 

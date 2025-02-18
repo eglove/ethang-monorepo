@@ -1,4 +1,4 @@
-import { attemptAsync } from "@ethang/toolbelt/src/functional/attempt-async.ts";
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { load } from "cheerio";
 import filter from "lodash/filter.js";
 import get from "lodash/get.js";

@@ -1,6 +1,6 @@
 {
   "name": "@ethang/markdown-generator",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Markdown Generator following GitHub syntax.",
   "repository": {
     "url": "git+https://github.com/eglove/markdown-generator.git"

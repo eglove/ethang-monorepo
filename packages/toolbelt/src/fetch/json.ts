@@ -4,7 +4,7 @@ import isError from "lodash/isError.js";
 
 import type { ZodValidator } from "../types/zod-validator.ts";
 
-import { attemptAsync } from "../functional/attempt-async.ts";
+import { attemptAsync } from "../functional/attempt-async.js";
 
 export const parseFetchJson = async <Z extends ZodValidator<Z>>(
   value: Request | Response,

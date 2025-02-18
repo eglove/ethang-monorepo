@@ -1,7 +1,7 @@
 import { computeEngine } from "@/components/common/providers.tsx";
 import { TrendCard } from "@/components/common/trend-card.tsx";
 import { queries } from "@/data/queries.ts";
-import { isNumber } from "@ethang/toolbelt/src/is/number.ts";
+import { isNumber } from "@ethang/toolbelt/is/number.js";
 import { useQuery } from "@tanstack/react-query";
 import forEach from "lodash/forEach";
 import isEmpty from "lodash/isEmpty";
