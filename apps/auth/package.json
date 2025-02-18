@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@ethang/schemas": "workspace:^",
-    "@ethang/toolbelt": "workspace:^",
+    "@ethang/toolbelt": "^4.3.2",
     "bcryptjs": "^3.0.1",
     "jose": "^5.10.0",
     "lodash": "^4.17.21",

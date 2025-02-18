@@ -27,7 +27,7 @@
     "wrangler": "^3.109.1"
   },
   "dependencies": {
-    "@ethang/toolbelt": "workspace:^",
+    "@ethang/toolbelt": "^4.3.2",
     "eslint": "^9.20.1",
     "lodash": "^4.17.21",
     "uuid": "^11.0.5",

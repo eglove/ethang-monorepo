@@ -8,7 +8,7 @@
     "@ethang/hooks": "workspace:2.2.6-beta.0",
     "@ethang/schemas": "workspace:^",
     "@ethang/store": "workspace:^",
-    "@ethang/toolbelt": "workspace:^",
+    "@ethang/toolbelt": "^4.3.2",
     "@heroui/react": "2.6.14",
     "@heroui/system": "2.4.7",
     "@heroui/theme": "2.4.6",

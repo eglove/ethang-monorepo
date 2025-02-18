@@ -24,8 +24,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/schemas
       '@ethang/toolbelt':
-        specifier: workspace:^
-        version: link:../../packages/toolbelt
+        specifier: ^4.3.2
+        version: 4.3.2
       bcryptjs:
         specifier: ^3.0.1
         version: 3.0.1
@@ -67,8 +67,8 @@ importers:
   apps/comments:
     dependencies:
       '@ethang/toolbelt':
-        specifier: workspace:^
-        version: link:../../packages/toolbelt
+        specifier: ^4.3.2
+        version: 4.3.2
       eslint:
         specifier: ^9.20.1
         version: 9.20.1(jiti@2.4.2)
@@ -107,8 +107,8 @@ importers:
   apps/ethang-vanilla:
     dependencies:
       '@ethang/toolbelt':
-        specifier: workspace:^
-        version: link:../../packages/toolbelt
+        specifier: ^4.3.2
+        version: 4.3.2
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
@@ -165,8 +165,8 @@ importers:
   apps/extract:
     dependencies:
       '@ethang/toolbelt':
-        specifier: workspace:^
-        version: link:../../packages/toolbelt
+        specifier: ^4.3.2
+        version: 4.3.2
       cheerio:
         specifier: ^1.0.0
         version: 1.0.0
@@ -214,8 +214,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/store
       '@ethang/toolbelt':
-        specifier: workspace:^
-        version: link:../../packages/toolbelt
+        specifier: ^4.3.2
+        version: 4.3.2
       '@heroui/react':
         specifier: 2.6.14
         version: 2.6.14(@types/react@19.0.10)(framer-motion@12.4.4(@emotion/is-prop-valid@1.3.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.10.1(@swc/helpers@0.5.15))(@types/node@22.13.4)(typescript@5.7.3)))
@@ -368,8 +368,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/schemas
       '@ethang/toolbelt':
-        specifier: workspace:^
-        version: link:../../packages/toolbelt
+        specifier: ^4.3.2
+        version: 4.3.2
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -405,8 +405,8 @@ importers:
   apps/rss:
     dependencies:
       '@ethang/toolbelt':
-        specifier: workspace:^
-        version: link:../../packages/toolbelt
+        specifier: ^4.3.2
+        version: 4.3.2
       chanfana:
         specifier: ^2.0.2
         version: 2.6.3
@@ -799,8 +799,8 @@ importers:
         specifier: workspace:^
         version: link:../markdown-generator
       '@ethang/toolbelt':
-        specifier: workspace:^
-        version: link:../toolbelt
+        specifier: ^4.3.2
+        version: 4.3.2
       '@types/eslint-plugin-jsx-a11y':
         specifier: ^6.10.0
         version: 6.10.0
@@ -863,8 +863,8 @@ importers:
   packages/leetcode:
     dependencies:
       '@ethang/toolbelt':
-        specifier: workspace:^
-        version: link:../toolbelt
+        specifier: ^4.3.2
+        version: 4.3.2
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -957,8 +957,8 @@ importers:
   packages/scripts:
     dependencies:
       '@ethang/toolbelt':
-        specifier: workspace:^
-        version: link:../toolbelt
+        specifier: ^4.3.2
+        version: 4.3.2
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -2964,6 +2964,10 @@ packages:
 
   '@ethang/eslint-config@21.1.0':
     resolution: {integrity: sha512-enzmf5bBHzziTLPw0ywh+Agc+MEAUTzl6QuN2cPdYGmdo1bVVzs0fOnSaYcQjbfKGTPfmqXv0//g8/R23nf0Vw==}
+    engines: {node: '>=22'}
+
+  '@ethang/toolbelt@4.3.2':
+    resolution: {integrity: sha512-RyvVxMAi63IWA6L9g+J0perPl+6AhxS1lFWLq5cUdk0q8N8eOh6lViuk90ywUpgFplGxWEj0PJ0ImdDzW2qncQ==}
     engines: {node: '>=22'}
 
   '@fastify/busboy@2.1.1':
@@ -14937,6 +14941,12 @@ snapshots:
       - tailwindcss
       - ts-api-utils
       - typescript
+
+  '@ethang/toolbelt@4.3.2':
+    dependencies:
+      '@total-typescript/ts-reset': 0.6.1
+      lodash: 4.17.21
+      zod: 3.24.2
 
   '@fastify/busboy@2.1.1': {}
 
