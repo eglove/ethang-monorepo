@@ -845,8 +845,8 @@ importers:
         specifier: ^21.1.0
         version: 21.1.0(@types/eslint@9.6.1)(@typescript-eslint/types@8.24.1)(@typescript-eslint/utils@8.24.1(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3))(jiti@2.4.2)(tailwindcss@4.0.6)(typescript@5.7.3)
       '@ethang/project-builder':
-        specifier: workspace:^
-        version: link:../project-builder
+        specifier: ^3.0.2
+        version: 3.0.2(@microsoft/api-extractor@7.49.0(@types/node@22.13.4))(@swc/core@1.10.1(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.5.2)(tsx@4.19.2)(typescript@5.7.3)(yaml@2.7.0)
       '@types/lodash':
         specifier: ^4.17.15
         version: 4.17.15
@@ -898,8 +898,8 @@ importers:
         specifier: ^21.1.0
         version: 21.1.0(@types/eslint@9.6.1)(@typescript-eslint/types@8.24.1)(@typescript-eslint/utils@8.24.1(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3))(jiti@2.4.2)(tailwindcss@4.0.6)(typescript@5.7.3)
       '@ethang/project-builder':
-        specifier: workspace:^
-        version: link:../project-builder
+        specifier: ^3.0.2
+        version: 3.0.2(@microsoft/api-extractor@7.49.0(@types/node@22.13.4))(@swc/core@1.10.1(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.5.2)(tsx@4.19.2)(typescript@5.7.3)(yaml@2.7.0)
       '@types/lodash':
         specifier: ^4.17.15
         version: 4.17.15
@@ -989,8 +989,8 @@ importers:
         version: 10.1.1
     devDependencies:
       '@ethang/project-builder':
-        specifier: workspace:^
-        version: link:../project-builder
+        specifier: ^3.0.2
+        version: 3.0.2(@microsoft/api-extractor@7.49.0(@types/node@22.13.4))(@swc/core@1.10.1(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.5.2)(tsx@4.19.2)(typescript@5.7.3)(yaml@2.7.0)
       eslint:
         specifier: ^9.20.1
         version: 9.20.1(jiti@2.4.2)
@@ -1011,8 +1011,8 @@ importers:
         specifier: ^21.1.0
         version: 21.1.0(@types/eslint@9.6.1)(@typescript-eslint/types@8.24.1)(@typescript-eslint/utils@8.24.1(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3))(jiti@2.4.2)(tailwindcss@4.0.6)(typescript@5.7.3)
       '@ethang/project-builder':
-        specifier: workspace:^
-        version: link:../project-builder
+        specifier: ^3.0.2
+        version: 3.0.2(@microsoft/api-extractor@7.49.0(@types/node@22.13.4))(@swc/core@1.10.1(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.5.2)(tsx@4.19.2)(typescript@5.7.3)(yaml@2.7.0)
       '@types/lodash':
         specifier: ^4.17.15
         version: 4.17.15
@@ -2969,6 +2969,9 @@ packages:
   '@ethang/hooks@2.2.7':
     resolution: {integrity: sha512-YKzXdtRPXWpPvzRnVpul1NUJaABTVICbkRMT10qhG7NY6iwOd7rnqpzRDOvekEtlOYhLRpEL84k7K08HrZxTAw==}
     engines: {node: '>22.0'}
+
+  '@ethang/project-builder@3.0.2':
+    resolution: {integrity: sha512-5hf/Ns25JyBFqfN/+NshVvPAYHzzpEJXjGPPGHx7WED/aFIaKT4hgYSFSxIrZVXwa2BukTI5HbUHBvNN1NXjyA==}
 
   '@ethang/toolbelt@4.3.2':
     resolution: {integrity: sha512-RyvVxMAi63IWA6L9g+J0perPl+6AhxS1lFWLq5cUdk0q8N8eOh6lViuk90ywUpgFplGxWEj0PJ0ImdDzW2qncQ==}
@@ -14955,6 +14958,21 @@ snapshots:
     transitivePeerDependencies:
       - jiti
       - supports-color
+
+  '@ethang/project-builder@3.0.2(@microsoft/api-extractor@7.49.0(@types/node@22.13.4))(@swc/core@1.10.1(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.5.2)(tsx@4.19.2)(typescript@5.7.3)(yaml@2.7.0)':
+    dependencies:
+      lodash: 4.17.21
+      tsc-prog: 2.3.0(typescript@5.7.3)
+      tsup: 8.3.6(@microsoft/api-extractor@7.49.0(@types/node@22.13.4))(@swc/core@1.10.1(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.5.2)(tsx@4.19.2)(typescript@5.7.3)(yaml@2.7.0)
+    transitivePeerDependencies:
+      - '@microsoft/api-extractor'
+      - '@swc/core'
+      - jiti
+      - postcss
+      - supports-color
+      - tsx
+      - typescript
+      - yaml
 
   '@ethang/toolbelt@4.3.2':
     dependencies:
