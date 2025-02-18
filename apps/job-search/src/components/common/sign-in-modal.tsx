@@ -50,11 +50,7 @@ export const SignInModal = () => {
       <Button color="primary" onPress={onOpen} size="sm">
         Sign In
       </Button>
-      <Modal
-        className="dark text-foreground"
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-      >
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(_onClose) => {
             return (

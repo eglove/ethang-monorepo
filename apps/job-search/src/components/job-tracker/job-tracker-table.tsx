@@ -73,6 +73,7 @@ export const JobTrackerTable = () => {
       <JobTrackerTableFilterHeader />
       <Table
         isHeaderSticky
+        isStriped
         bottomContent={
           <JobTrackerTableFooter
             page={page}
@@ -173,7 +174,13 @@ export const JobTrackerTable = () => {
                     );
                   }
 
-                  return <TableCell>{getKeyValue(item, columnKey)}</TableCell>;
+                  return (
+                    <TableCell
+                      className={twMerge("title" === columnKey && "max-w-96")}
+                    >
+                      {getKeyValue(item, columnKey)}
+                    </TableCell>
+                  );
                 }}
               </TableRow>
             );

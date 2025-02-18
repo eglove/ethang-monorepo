@@ -75,7 +75,7 @@ export const JobTrackerTableFilterHeader = () => {
             value={store.search}
           />
         </div>
-        <Dropdown className="dark text-foreground">
+        <Dropdown>
           <DropdownTrigger>
             <Button
               startContent={<FilterIcon className="size-3" />}

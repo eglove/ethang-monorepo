@@ -15,7 +15,8 @@ import {
   NavbarMenuToggle,
 } from "@heroui/react";
 import map from "lodash/map.js";
-import { CircleIcon } from "lucide-react";
+import { CircleIcon, MoonIcon, SunIcon } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useState } from "react";
 
 const navLinks = [
@@ -34,6 +35,7 @@ const handleSignOut = () => {
 
 export const Navigation = () => {
   const store = useUserStore();
+  const theme = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isOnline } = useOnline({
     onOnline: () => {
@@ -71,33 +73,57 @@ export const Navigation = () => {
       </NavbarContent>
       <NavbarContent justify="end">
         {isOnline && (
-          <div className="flex items-center text-success gap-1">
+          <NavbarItem className="flex items-center text-success gap-1">
             <CircleIcon className="size-3 fill-success" />{" "}
             <span className="hidden sm:inline">Online</span>
-          </div>
+          </NavbarItem>
         )}
         {!isOnline && (
-          <div className="flex items-center text-danger gap-1">
+          <NavbarItem className="flex items-center text-danger gap-1">
             <CircleIcon className="size-3 fill-danger" />{" "}
             <span className="hidden sm:inline">Offline</span>
-          </div>
+          </NavbarItem>
         )}
-        {!store.isSignedIn && <SignInModal />}
+        {!store.isSignedIn && (
+          <NavbarItem>
+            <SignInModal />
+          </NavbarItem>
+        )}
         {store.isSignedIn && (
-          <Button color="primary" onPress={handleSignOut} size="sm">
-            Sign Out
+          <NavbarItem>
+            <Button color="primary" onPress={handleSignOut} size="sm">
+              Sign Out
+            </Button>
+          </NavbarItem>
+        )}
+        {"dark" === theme.resolvedTheme && (
+          <Button
+            isIconOnly
+            onPress={() => {
+              theme.setTheme("light");
+            }}
+            size="sm"
+          >
+            <SunIcon />
+          </Button>
+        )}
+        {"light" === theme.resolvedTheme && (
+          <Button
+            isIconOnly
+            onPress={() => {
+              theme.setTheme("dark");
+            }}
+            size="sm"
+          >
+            <MoonIcon />
           </Button>
         )}
       </NavbarContent>
-      <NavbarMenu className="dark">
+      <NavbarMenu>
         {map(navLinks, (link) => {
           return (
             <NavbarMenuItem key={link.label}>
-              <Link
-                className="text-foreground"
-                href={link.link}
-                underline="hover"
-              >
+              <Link href={link.link} underline="hover">
                 {link.label}
               </Link>
             </NavbarMenuItem>

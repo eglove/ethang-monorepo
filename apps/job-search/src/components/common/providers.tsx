@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, useNavigate } from "@tanstack/react-router";
 import constant from "lodash/constant";
 import ms from "ms";
+import { ThemeProvider } from "next-themes";
 import { lazy } from "react";
 
 const ONE_HOUR = ms("1 Hr");
@@ -52,9 +53,11 @@ export const Providers = () => {
           navigate({ to: path }).catch(logger.error);
         }}
       >
-        <Outlet />
-        <TanStackRouterDevtools />
-        <ReactQueryDevtools />
+        <ThemeProvider enableSystem attribute="class">
+          <Outlet />
+          <TanStackRouterDevtools />
+          <ReactQueryDevtools />
+        </ThemeProvider>
       </HeroUIProvider>
     </QueryClientProvider>
   );

@@ -170,11 +170,7 @@ export const AddEditApplication = ({
       <Button color="primary" onPress={onOpen} size="sm" {...triggerProperties}>
         {children}
       </Button>
-      <Modal
-        className="dark text-foreground"
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-      >
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => {
             return (
