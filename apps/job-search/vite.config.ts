@@ -6,6 +6,11 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      external: ["@ethang/toolbelt"],
+    },
+  },
   plugins: [
     TanStackRouterVite({ autoCodeSplitting: true }),
     react(),
