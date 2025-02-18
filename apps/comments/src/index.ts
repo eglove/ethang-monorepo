@@ -1,4 +1,4 @@
-import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.ts";
+import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
@@ -17,12 +17,7 @@ export default {
       request.headers.get("Authorization") ?? url.searchParams.get("token");
 
     if (isNil(authorization)) {
-      return createJsonResponse(
-        { error: "Unauthorized" },
-        "UNAUTHORIZED",
-        undefined,
-        request,
-      );
+      return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
     }
 
     const verifyUrl = new URL("https://auth.ethang.dev/verify");
@@ -33,12 +28,7 @@ export default {
     });
 
     if (isError(jwtResult) || !jwtResult.ok) {
-      return createJsonResponse(
-        { error: "Unauthorized" },
-        "UNAUTHORIZED",
-        undefined,
-        request,
-      );
+      return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
     }
 
     if ("/ws" === url.pathname) {
