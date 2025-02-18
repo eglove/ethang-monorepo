@@ -1,5 +1,5 @@
-import type { JobApplicationSchema } from "@ethang/schemas/job-search/job-application-schema.js";
-import type { QuestionAnswerSchema } from "@ethang/schemas/job-search/question-answer-schema.js";
+import type { JobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
+import type { QuestionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
 
 import { queryClient } from "@/components/common/providers.tsx";
 import { userStore } from "@/components/stores/user-store.ts";

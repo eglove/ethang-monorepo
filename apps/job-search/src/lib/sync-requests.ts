@@ -7,8 +7,8 @@ import {
   QUESTION_ANSWER_STORE_NAME,
 } from "@/database/indexed-database.ts";
 import { syncUrl } from "@/lib/query/backup.ts";
-import { jobApplicationSchema } from "@ethang/schemas/job-search/job-application-schema.js";
-import { questionAnswerSchema } from "@ethang/schemas/job-search/question-answer-schema.js";
+import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
+import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json.js";
 import isError from "lodash/isError.js";
 import map from "lodash/map.js";

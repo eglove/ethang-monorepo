@@ -1,8 +1,23 @@
-import type { UserSchema } from "@ethang/schemas/auth/user.js";
+import { userSchema } from "@ethang/schemas/src/auth/user.ts";
+import isError from "lodash/isError.js";
+import isNil from "lodash/isNil.js";
 
 export const getUser = async (email: string, environment: Env) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  return environment.DB.prepare("SELECT * FROM Users where email = ?")
+  const data = await environment.DB.prepare(
+    "SELECT * FROM Users where email = ?",
+  )
     .bind(email)
-    .first() as Promise<UserSchema>;
+    .first();
+
+  if (isNil(data)) {
+    return null;
+  }
+
+  const user = userSchema.parse(data);
+
+  if (isError(user)) {
+    return null;
+  }
+
+  return user;
 };

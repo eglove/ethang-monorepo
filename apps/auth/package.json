@@ -29,7 +29,7 @@
     "wrangler": "^3.109.1"
   },
   "dependencies": {
-    "@ethang/schemas": "^1.0.1",
+    "@ethang/schemas": "workspace:^",
     "@ethang/toolbelt": "^4.3.2",
     "bcryptjs": "^3.0.1",
     "jose": "^5.10.0",

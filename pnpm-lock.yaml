@@ -21,8 +21,8 @@ importers:
   apps/auth:
     dependencies:
       '@ethang/schemas':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: workspace:^
+        version: link:../../packages/schemas
       '@ethang/toolbelt':
         specifier: ^4.3.2
         version: 4.3.2
@@ -208,8 +208,8 @@ importers:
         specifier: ^2.2.7
         version: 2.2.7(jiti@2.4.2)
       '@ethang/schemas':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: workspace:^
+        version: link:../../packages/schemas
       '@ethang/store':
         specifier: ^1.0.15
         version: 1.0.15
@@ -362,8 +362,8 @@ importers:
   apps/job-search-sync:
     dependencies:
       '@ethang/schemas':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: workspace:^
+        version: link:../../packages/schemas
       '@ethang/toolbelt':
         specifier: ^4.3.2
         version: 4.3.2
@@ -2957,9 +2957,6 @@ packages:
 
   '@ethang/project-builder@3.0.2':
     resolution: {integrity: sha512-5hf/Ns25JyBFqfN/+NshVvPAYHzzpEJXjGPPGHx7WED/aFIaKT4hgYSFSxIrZVXwa2BukTI5HbUHBvNN1NXjyA==}
-
-  '@ethang/schemas@1.0.1':
-    resolution: {integrity: sha512-BkhqxvXgn6xXErffDCvBIQX1hZHTJ75ccAyurPyi1F1lxCBAhUOXdHLQJT/Xj0O+g7hxem49h8jvkuhqRIrP5w==}
 
   '@ethang/store@1.0.15':
     resolution: {integrity: sha512-VDuwNr4gu5vYtg35OrltnZZFtL/SDDfqIa3R8Oks3N3UgAFOwARUmBaLqcwGbygYM8m2ROoyyWn6u9YHW1qgkQ==}
@@ -14841,11 +14838,6 @@ snapshots:
       - tsx
       - typescript
       - yaml
-
-  '@ethang/schemas@1.0.1':
-    dependencies:
-      jose: 5.10.0
-      zod: 3.24.2
 
   '@ethang/store@1.0.15':
     dependencies:

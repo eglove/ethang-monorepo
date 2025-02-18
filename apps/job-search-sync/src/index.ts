@@ -1,4 +1,4 @@
-import { tokenSchema } from "@ethang/schemas/auth/token.js";
+import { tokenSchema } from "@ethang/schemas/src/auth/token.ts";
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json.js";
 import isError from "lodash/isError.js";

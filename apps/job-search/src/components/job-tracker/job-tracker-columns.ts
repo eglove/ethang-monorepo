@@ -1,4 +1,4 @@
-import type { JobApplicationSchema } from "@ethang/schemas/job-search/job-application-schema";
+import type { JobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
 
 import isNil from "lodash/isNil";
 import times from "lodash/times";

@@ -1,9 +1,9 @@
-import type { TokenSchema } from "@ethang/schemas/auth/token.js";
+import type { TokenSchema } from "@ethang/schemas/src/auth/token.ts";
 
 import {
   type JobApplicationSchema,
   jobApplicationSchema,
-} from "@ethang/schemas/job-search/job-application-schema.js";
+} from "@ethang/schemas/src/job-search/job-application-schema.ts";
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json.js";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";

@@ -15,7 +15,6 @@
     "access": "public"
   },
   "scripts": {
-    "build": "bun build.ts"
   },
   "type": "module",
   "version": "1.0.1"

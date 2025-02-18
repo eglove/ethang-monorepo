@@ -1,4 +1,4 @@
-import type { JobApplicationSchema } from "@ethang/schemas/job-search/job-application-schema.js";
+import type { JobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
 
 import { type DBSchema, openDB } from "idb";
 

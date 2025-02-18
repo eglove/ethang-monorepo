@@ -5,8 +5,8 @@ import {
   QUESTION_ANSWER_STORE_NAME,
 } from "@/database/indexed-database.ts";
 import { backupAllData } from "@/lib/sync-requests.ts";
-import { jobApplicationSchema } from "@ethang/schemas/job-search/job-application-schema";
-import { questionAnswerSchema } from "@ethang/schemas/job-search/question-answer-schema";
+import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
+import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
 import { parseJson } from "@ethang/toolbelt/json/json.js";
 import { Button, Input } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

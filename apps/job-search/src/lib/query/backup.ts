@@ -1,7 +1,7 @@
 import { setLastSynced, userStore } from "@/components/stores/user-store.ts";
 import { logger } from "@/lib/logger.ts";
-import { jobApplicationSchema } from "@ethang/schemas/job-search/job-application-schema.js";
-import { questionAnswerSchema } from "@ethang/schemas/job-search/question-answer-schema.js";
+import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
+import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
 import { z } from "zod";
 
 export const syncUrl = "https://job-search-sync.ethang.dev";
