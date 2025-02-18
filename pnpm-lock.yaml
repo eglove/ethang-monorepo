@@ -205,8 +205,8 @@ importers:
         specifier: ^0.28.0
         version: 0.28.0
       '@ethang/hooks':
-        specifier: workspace:2.2.6-beta.0
-        version: link:../../packages/hooks
+        specifier: ^2.2.7
+        version: 2.2.7(jiti@2.4.2)
       '@ethang/schemas':
         specifier: workspace:^
         version: link:../../packages/schemas
@@ -515,8 +515,8 @@ importers:
   apps/sterett-react:
     dependencies:
       '@ethang/hooks':
-        specifier: workspace:^
-        version: link:../../packages/hooks
+        specifier: ^2.2.7
+        version: 2.2.7(jiti@2.4.2)
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@19.0.0)
@@ -2965,6 +2965,10 @@ packages:
   '@ethang/eslint-config@21.1.0':
     resolution: {integrity: sha512-enzmf5bBHzziTLPw0ywh+Agc+MEAUTzl6QuN2cPdYGmdo1bVVzs0fOnSaYcQjbfKGTPfmqXv0//g8/R23nf0Vw==}
     engines: {node: '>=22'}
+
+  '@ethang/hooks@2.2.7':
+    resolution: {integrity: sha512-YKzXdtRPXWpPvzRnVpul1NUJaABTVICbkRMT10qhG7NY6iwOd7rnqpzRDOvekEtlOYhLRpEL84k7K08HrZxTAw==}
+    engines: {node: '>22.0'}
 
   '@ethang/toolbelt@4.3.2':
     resolution: {integrity: sha512-RyvVxMAi63IWA6L9g+J0perPl+6AhxS1lFWLq5cUdk0q8N8eOh6lViuk90ywUpgFplGxWEj0PJ0ImdDzW2qncQ==}
@@ -14941,6 +14945,16 @@ snapshots:
       - tailwindcss
       - ts-api-utils
       - typescript
+
+  '@ethang/hooks@2.2.7(jiti@2.4.2)':
+    dependencies:
+      eslint: 9.20.1(jiti@2.4.2)
+      lodash: 4.17.21
+      react: 19.0.0
+      zod: 3.24.2
+    transitivePeerDependencies:
+      - jiti
+      - supports-color
 
   '@ethang/toolbelt@4.3.2':
     dependencies:
