@@ -25,12 +25,11 @@ export const KeyStats = () => {
     let hasResponse = 0;
 
     forEach(query.data?.applications, (item) => {
-      hasResponse += 1;
-
       companies.add(item.company);
       applicationDays.add(new Date(item.applied).toDateString());
 
       if (!isNil(item.rejected)) {
+        hasResponse += 1;
         const rejectionTime = DateTime.fromJSDate(new Date(item.rejected)).diff(
           DateTime.fromJSDate(new Date(item.applied)),
           ["days"],
@@ -70,8 +69,8 @@ export const KeyStats = () => {
 
     const currentResponseRate = computeEngine.box([
       "Divide",
-      ["Divide", hasResponse, query.data?.applications.length ?? 1],
-      100,
+      hasResponse,
+      query.data?.applications.length ?? 1,
     ]).value;
 
     return {

@@ -9,15 +9,15 @@ import map from "lodash/map.js";
 import { DateTime } from "luxon";
 import { v7 } from "uuid";
 
+export const DATE_FORMAT = "yyyy-MM-dd";
+
 const defaultValues = {
-  applied: "",
+  applied: DateTime.now().toFormat(DATE_FORMAT),
   company: "",
   interviewRounds: [],
   title: "",
   url: "",
 };
-
-export const DATE_FORMAT = "yyyy-MM-dd";
 
 const RouteComponent = () => {
   const routerState = useRouterState();
