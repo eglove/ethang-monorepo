@@ -15,7 +15,6 @@ import {
 } from "@heroui/react";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import filter from "lodash/filter.js";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
@@ -64,10 +63,9 @@ export const AddEditApplication = ({
   id,
   triggerProperties,
 }: AddEditApplicationProperties) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
   const queryClient = useQueryClient();
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const query = useQuery(queries.getApplicationById(id));
 
@@ -141,10 +139,14 @@ export const AddEditApplication = ({
   };
 
   const onSuccess = async () => {
-    await queryClient.invalidateQueries({
-      queryKey: queryKeys.applications(),
-    });
-    await navigate({ to: "/" });
+    await queryClient
+      .invalidateQueries({
+        queryKey: queryKeys.applications(),
+      })
+      .then(() => {
+        form.reset();
+        onClose();
+      });
   };
 
   const addApplication = useMutation({
@@ -172,7 +174,7 @@ export const AddEditApplication = ({
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
-          {(onClose) => {
+          {(_onClose) => {
             return (
               <>
                 <ModalHeader>
@@ -298,7 +300,7 @@ export const AddEditApplication = ({
                     )}
                   </ModalBody>
                   <ModalFooter>
-                    <Button color="danger" onPress={onClose}>
+                    <Button color="danger" onPress={_onClose}>
                       Go Back
                     </Button>
                     <Button color="primary" type="submit">
