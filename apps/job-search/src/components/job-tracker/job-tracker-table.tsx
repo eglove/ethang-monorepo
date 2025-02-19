@@ -120,7 +120,7 @@ export const JobTrackerTable = () => {
                   !isNil(item.rejected) && "text-danger",
                   isNil(item.rejected) &&
                     !isEmpty(item.interviewRounds) &&
-                    "text-secondary",
+                    "text-secondary-400",
                 )}
                 key={item.id}
               >
