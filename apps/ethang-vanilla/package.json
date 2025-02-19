@@ -9,11 +9,11 @@
     "highlight.js": "^11.11.1",
     "html-minifier-terser": "^7.2.0",
     "lodash": "^4.17.21",
-    "uuid": "^11.0.5"
+    "uuid": "^11.1.0"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^21.2.0",
+    "@ethang/eslint-config": "^21.2.1",
     "@tailwindcss/typography": "^0.5.16",
     "@types/html-minifier-terser": "^7.0.2",
     "@types/lodash": "^4.17.15",
@@ -34,7 +34,7 @@
   "scripts": {
     "build": "bun src/index.ts",
     "dev": "pnpm build && http-server dist",
-    "lint": "pnpx prettier src -w && eslint src --fix"
+    "lint": "pnpm dlx prettier src -w && eslint src --fix"
   },
   "type": "module",
   "version": "1.0.0"

@@ -11,7 +11,6 @@ export default defineConfig({
   name: "default",
   plugins:
     // @ts-expect-error it's fine
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     "development" === import.meta.env.NODE_ENV
       ? developmentPlugins
       : productionPlugins,

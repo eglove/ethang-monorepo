@@ -32,12 +32,12 @@
     "react-dom": "^19.0.0",
     "recharts": "^2.15.1",
     "tailwind-merge": "^2.6.0",
-    "uuid": "^11.0.5",
+    "uuid": "^11.1.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250214.0",
-    "@ethang/eslint-config": "^21.2.0",
+    "@ethang/eslint-config": "^21.2.1",
     "@react-types/shared": "^3.27.0",
     "@tanstack/router-devtools": "^1.105.0",
     "@tanstack/router-plugin": "^1.105.0",

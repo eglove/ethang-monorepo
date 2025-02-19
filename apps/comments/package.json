@@ -20,7 +20,7 @@
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.7.0",
     "@cloudflare/workers-types": "^4.20250214.0",
-    "@ethang/eslint-config": "^21.2.0",
+    "@ethang/eslint-config": "^21.2.1",
     "@types/lodash": "^4.17.15",
     "@types/uuid": "^10.0.0",
     "typescript": "^5.5.2",
@@ -30,7 +30,7 @@
     "@ethang/toolbelt": "^4.3.2",
     "eslint": "^9.20.1",
     "lodash": "^4.17.21",
-    "uuid": "^11.0.5",
+    "uuid": "^11.1.0",
     "zod": "^3.24.2"
   }
 }

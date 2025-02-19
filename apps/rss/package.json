@@ -11,12 +11,12 @@
 		"hono": "^4.7.1",
 		"lodash": "^4.17.21",
 		"rss-to-json": "^2.1.1",
-		"uuid": "^11.0.5",
+		"uuid": "^11.1.0",
 		"zod": "^3.24.2"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20250214.0",
-		"@ethang/eslint-config": "^21.2.0",
+		"@ethang/eslint-config": "^21.2.1",
 		"@types/lodash": "^4.17.15",
 		"@types/node": "22.13.4",
 		"@types/service-worker-mock": "^2.0.1",
