@@ -5,6 +5,7 @@ import a11y from "eslint-plugin-jsx-a11y";
 import barrel from "eslint-plugin-barrel-files";
 import compat from "eslint-plugin-compat";
 import cspell from "@cspell/eslint-plugin";
+import css from "@eslint/css";
 import depend from "eslint-plugin-depend";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
@@ -1068,6 +1069,19 @@ export default tseslint.config(
       "markdown/no-html": "error",
       "markdown/no-invalid-label-refs": "error",
       "markdown/no-missing-label-refs": "error",
+    },
+  },
+  {
+    files: ["**/*.css"],
+    language: "css/css",
+    plugins: {
+      css: css,
+    },
+    rules: {
+      "css/no-duplicate-imports": "error",
+      "css/no-empty-blocks": "error",
+      "css/no-invalid-at-rules": "error",
+      "css/no-invalid-properties": "error",
     },
   },
   {

@@ -37,6 +37,10 @@ export const getListJson = flow(
 
 export const getTypeLanguage = (type: string) => {
   switch (type) {
+    case "css": {
+      return "css/css";
+    }
+
     case "json": {
       return "json/json";
     }
@@ -71,6 +75,10 @@ export const getTypeFiles = (type: string) => {
 
     case "core": {
       return "**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}";
+    }
+
+    case "css": {
+      return "**/*.css";
     }
 
     case "json": {

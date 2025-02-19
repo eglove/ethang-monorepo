@@ -42,7 +42,12 @@ export const updateReadme = () => {
   md.alert("CAUTION", "Prettier is already included for styling!", 2);
 
   const coreRules = map(
-    [...getList("core"), ...getList("json"), ...getList("markdown")],
+    [
+      ...getList("core"),
+      ...getList("json"),
+      ...getList("css"),
+      ...getList("markdown"),
+    ],
     (rules) => {
       return {
         ...rules,

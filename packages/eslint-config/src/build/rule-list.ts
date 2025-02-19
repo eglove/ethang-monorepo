@@ -4,6 +4,7 @@ import { astroRules } from "../setup/astro.ts";
 import { barrelRules } from "../setup/barrel.ts";
 import { compatRules } from "../setup/compat.ts";
 import { cspellRules } from "../setup/cspell.js";
+import { cssRules } from "../setup/css.js";
 import { dependRules } from "../setup/depend.ts";
 import { deprecatedRules } from "../setup/deprecated.ts";
 import { eslintRules } from "../setup/eslint.ts";
@@ -178,6 +179,16 @@ export const ruleList = [
     pluginValue: "cspell",
     type: "core",
     url: "https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell-eslint-plugin",
+  },
+  {
+    importString: "import css from '@eslint/css';",
+    list: cssRules,
+    name: "@eslint/css",
+    order: 0,
+    pluginName: "css",
+    pluginValue: "css",
+    type: "css",
+    url: "https://github.com/eslint/css",
   },
   {
     importString: 'import markdown from "@eslint/markdown";',

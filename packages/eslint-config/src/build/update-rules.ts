@@ -31,6 +31,9 @@ export const coreFile = [
     name: "markdown",
   },
   {
+    name: "css",
+  },
+  {
     name: "json",
   },
   {
