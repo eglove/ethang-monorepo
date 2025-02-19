@@ -41,8 +41,8 @@ export const addApplicationNoCheck = async (
         requestData.company,
         requestData.title,
         requestData.url,
-        requestData.rejected,
-        requestData.interviewRounds,
+        requestData.rejected ?? null,
+        requestData.interviewRounds ?? [],
         tokenData.email,
       )
       .first(),
