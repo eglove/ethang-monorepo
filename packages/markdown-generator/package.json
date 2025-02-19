@@ -1,17 +1,5 @@
 {
-  "name": "@ethang/markdown-generator",
-  "version": "1.1.5",
-  "description": "Markdown Generator following GitHub syntax.",
-  "repository": {
-    "url": "git+https://github.com/eglove/markdown-generator.git"
-  },
-  "license": "ISC",
   "author": "Ethan Glover",
-  "type": "module",
-  "scripts": {
-    "build": "bun build.ts",
-    "lint": "eslint src --fix"
-  },
   "browserslist": [
     "defaults and fully supports es6-module",
     "maintained node versions"
@@ -19,6 +7,7 @@
   "dependencies": {
     "lodash": "^4.17.21"
   },
+  "description": "Markdown Generator following GitHub syntax.",
   "devDependencies": {
     "@ethang/eslint-config": "^21.2.1",
     "@ethang/project-builder": "^3.0.2",
@@ -26,7 +15,18 @@
     "eslint": "^9.20.1",
     "vitest": "^3.0.6"
   },
+  "license": "ISC",
+  "name": "@ethang/markdown-generator",
   "peerDependencies": {
     "lodash": "^4.17.21"
-  }
+  },
+  "repository": {
+    "url": "git+https://github.com/eglove/markdown-generator.git"
+  },
+  "scripts": {
+    "build": "bun build.ts",
+    "lint": "eslint src --fix"
+  },
+  "type": "module",
+  "version": "1.1.5"
 }

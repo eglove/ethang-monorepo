@@ -73,15 +73,13 @@ export const Navigation = () => {
       </NavbarContent>
       <NavbarContent justify="end">
         {isOnline && (
-          <NavbarItem className="flex items-center text-success gap-1">
-            <CircleIcon className="size-3 fill-success" />{" "}
-            <span className="hidden sm:inline">Online</span>
+          <NavbarItem className="items-center text-success gap-1 hidden sm:flex">
+            <CircleIcon className="size-3 fill-success" /> Online
           </NavbarItem>
         )}
         {!isOnline && (
-          <NavbarItem className="flex items-center text-danger gap-1">
-            <CircleIcon className="size-3 fill-danger" />{" "}
-            <span className="hidden sm:inline">Offline</span>
+          <NavbarItem className="items-center text-danger gap-1 hidden sm:flex">
+            <CircleIcon className="size-3 fill-danger" /> Offline
           </NavbarItem>
         )}
         {!store.isSignedIn && (
@@ -119,16 +117,32 @@ export const Navigation = () => {
           </Button>
         )}
       </NavbarContent>
-      <NavbarMenu>
-        {map(navLinks, (link) => {
-          return (
-            <NavbarMenuItem key={link.label}>
-              <Link href={link.link} underline="hover">
-                {link.label}
-              </Link>
-            </NavbarMenuItem>
-          );
-        })}
+      <NavbarMenu className="justify-between">
+        <div>
+          {map(navLinks, (link) => {
+            return (
+              <NavbarMenuItem key={link.label}>
+                <Link href={link.link} underline="hover">
+                  {link.label}
+                </Link>
+              </NavbarMenuItem>
+            );
+          })}
+        </div>
+        <div>
+          <NavbarMenuItem>
+            {isOnline && (
+              <div className="items-center text-success gap-1 flex">
+                <CircleIcon className="size-3 fill-success" /> Online
+              </div>
+            )}
+            {!isOnline && (
+              <div className="flex items-center text-danger gap-1">
+                <CircleIcon className="size-3 fill-danger" /> Offline
+              </div>
+            )}
+          </NavbarMenuItem>
+        </div>
       </NavbarMenu>
     </Navbar>
   );

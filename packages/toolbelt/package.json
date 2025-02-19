@@ -1,16 +1,5 @@
 {
-  "name": "@ethang/toolbelt",
-  "version": "4.3.2",
-  "license": "ISC",
   "author": "Ethan Glover",
-  "type": "module",
-  "scripts": {
-    "build": "bun build.ts",
-    "lint": "eslint src --fix",
-    "test": "vitest run --coverage.enabled=true",
-    "test:ui": "vitest --ui --coverage.enabled=true --open=false",
-    "test:watch": "vitest"
-  },
   "browserslist": [
     "defaults and fully supports es6-module",
     "maintained node versions"
@@ -34,5 +23,16 @@
   },
   "engines": {
     "node": ">=22"
-  }
+  },
+  "license": "ISC",
+  "name": "@ethang/toolbelt",
+  "scripts": {
+    "build": "bun build.ts",
+    "lint": "eslint src --fix",
+    "test": "vitest run --coverage.enabled=true",
+    "test:ui": "vitest --ui --coverage.enabled=true --open=false",
+    "test:watch": "vitest"
+  },
+  "type": "module",
+  "version": "4.3.2"
 }

@@ -1,15 +1,5 @@
 {
-  "name": "@ethang/store",
-  "version": "1.0.15",
-  "description": "Fine grained state management",
-  "license": "ISC",
   "author": "Ethan Glover",
-  "type": "module",
-  "main": "index.js",
-  "scripts": {
-    "build": "bun build.ts",
-    "lint": "eslint ./src --fix"
-  },
   "browserslist": [
     "defaults and fully supports es6-module",
     "maintained node versions"
@@ -17,8 +7,18 @@
   "dependencies": {
     "immer": "^10.1.1"
   },
+  "description": "Fine grained state management",
   "devDependencies": {
     "@ethang/project-builder": "^3.0.2",
     "eslint": "^9.20.1"
-  }
+  },
+  "license": "ISC",
+  "main": "index.js",
+  "name": "@ethang/store",
+  "scripts": {
+    "build": "bun build.ts",
+    "lint": "eslint ./src --fix"
+  },
+  "type": "module",
+  "version": "1.0.15"
 }

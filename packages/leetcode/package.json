@@ -1,19 +1,10 @@
 {
-  "name": "leetcode",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
-  "engines": {
-    "node": ">=22"
-  },
-  "scripts": {
-    "test": "vitest run",
-    "bench": "vitest bench"
-  },
-  "keywords": [],
   "author": "",
-  "license": "ISC",
+  "dependencies": {
+    "@ethang/toolbelt": "^4.3.2",
+    "lodash": "^4.17.21"
+  },
+  "description": "",
   "devDependencies": {
     "@ethang/eslint-config": "^21.2.1",
     "@types/lodash": "^4.17.15",
@@ -22,8 +13,17 @@
     "typescript": "^5.7.3",
     "vitest": "^3.0.6"
   },
-  "dependencies": {
-    "@ethang/toolbelt": "^4.3.2",
-    "lodash": "^4.17.21"
-  }
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "leetcode",
+  "scripts": {
+    "bench": "vitest bench",
+    "test": "vitest run"
+  },
+  "type": "module",
+  "version": "1.0.0"
 }

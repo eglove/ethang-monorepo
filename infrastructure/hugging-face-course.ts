@@ -10,10 +10,13 @@ const iamUser = new iam.User(userName, {
   permissionsBoundary: undefined,
 });
 
-const adminPolicyAttachment = new iam.UserPolicyAttachment(`${userName}-admin-policy`, {
-  policyArn: "arn:aws:iam::aws:policy/AdministratorAccess",
-  user: iamUser.name,
-});
+const adminPolicyAttachment = new iam.UserPolicyAttachment(
+  `${userName}-admin-policy`,
+  {
+    policyArn: "arn:aws:iam::aws:policy/AdministratorAccess",
+    user: iamUser.name,
+  },
+);
 
 const loginProfile = new iam.UserLoginProfile(`${userName}-login-profile`, {
   passwordResetRequired: false,

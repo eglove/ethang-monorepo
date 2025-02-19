@@ -1,16 +1,12 @@
 {
-  "name": "ethang-monorepo",
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "all": "pnpm i && pnpm deps && pnpm test && pnpm lint && pnpm build",
-    "deps": "pnpm up -r -i --latest && pnpm --filter eslint-config build",
-    "lint": "pnpm -r lint",
-    "build": "pnpm -r build",
-    "test": "pnpm -r test"
-  },
   "author": "Ethan Glover",
+  "devDependencies": {
+    "@ethang/eslint-config": "^21.2.1",
+    "eslint": "^9.20.1",
+    "typescript-eslint": "^8.24.1"
+  },
   "license": "ISC",
+  "name": "ethang-monorepo",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@swc/core",
@@ -19,9 +15,13 @@
       "workerd"
     ]
   },
-  "devDependencies": {
-    "@ethang/eslint-config": "^21.2.1",
-    "eslint": "^9.20.1",
-    "typescript-eslint": "^8.24.1"
-  }
+  "scripts": {
+    "all": "pnpm i && pnpm deps && pnpm test && pnpm lint && pnpm build",
+    "build": "pnpm -r build",
+    "deps": "pnpm up -r -i --latest && pnpm --filter eslint-config build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test"
+  },
+  "type": "module",
+  "version": "1.0.0"
 }

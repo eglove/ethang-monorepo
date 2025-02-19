@@ -1,15 +1,4 @@
 {
-  "name": "sterett-react",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "rimraf dist && tsc -b && vite build",
-    "start": "vite dist",
-    "dev": "vite",
-    "lint": "eslint \"src/**/*\" --fix",
-    "preview": "vite preview"
-  },
   "browserslist": [
     "defaults and fully supports es6-module",
     "maintained node versions"
@@ -77,5 +66,16 @@
     "typescript-eslint": "^8.24.1",
     "vite": "^6.1.1",
     "vite-plugin-pwa": "^0.21.1"
-  }
+  },
+  "name": "sterett-react",
+  "private": true,
+  "scripts": {
+    "build": "rimraf dist && tsc -b && vite build",
+    "dev": "vite",
+    "lint": "eslint \"src/**/*\" --fix",
+    "preview": "vite preview",
+    "start": "vite dist"
+  },
+  "type": "module",
+  "version": "0.0.0"
 }

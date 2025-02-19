@@ -1,13 +1,13 @@
 {
-  "name": "@ethang/tsconfig",
-  "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
   "author": "Ethan Glover",
-  "license": "ISC",
   "devDependencies": {
     "@tsconfig/node-lts": "^22.0.1",
     "@tsconfig/strictest": "^2.0.5",
     "@tsconfig/vite-react": "^3.4.0"
-  }
+  },
+  "license": "ISC",
+  "main": "index.js",
+  "name": "@ethang/tsconfig",
+  "type": "module",
+  "version": "1.0.0"
 }

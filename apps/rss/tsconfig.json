@@ -1,15 +1,24 @@
 {
-	"compilerOptions": {
-		"baseUrl": "src",
-		"outDir": "dist",
-		"rootDir": ".",
-		"types": [
-			"@types/node",
-			"@types/service-worker-mock",
-			"@cloudflare/workers-types/2023-07-01"
-		]
-	},
-	"exclude": ["node_modules", "dist", "tests"],
-	"extends": ["../../packages/tsconfig/tsconfig.base.json"],
-	"include": ["src", "scripts"]
+  "compilerOptions": {
+    "baseUrl": "src",
+    "outDir": "dist",
+    "rootDir": ".",
+    "types": [
+      "@types/node",
+      "@types/service-worker-mock",
+      "@cloudflare/workers-types/2023-07-01"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests"
+  ],
+  "extends": [
+    "../../packages/tsconfig/tsconfig.base.json"
+  ],
+  "include": [
+    "src",
+    "scripts"
+  ]
 }
