@@ -18,9 +18,9 @@
     "lint": "pnpm cf-typegen && eslint src --fix"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.6.16",
+    "@cloudflare/vitest-pool-workers": "^0.7.0",
     "@cloudflare/workers-types": "^4.20250214.0",
-    "@ethang/eslint-config": "^21.1.0",
+    "@ethang/eslint-config": "^21.2.0",
     "@types/lodash": "^4.17.15",
     "@types/uuid": "^10.0.0",
     "typescript": "^5.5.2",

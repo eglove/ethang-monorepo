@@ -27,15 +27,6 @@ import { z } from "zod";
 
 export const DATE_FORMAT = "yyyy-MM-dd";
 
-const defaultValues = {
-  applied: DateTime.now().toFormat(DATE_FORMAT),
-  company: "",
-  interviewRounds: [],
-  rejected: "",
-  title: "",
-  url: "",
-};
-
 export const formSchema = z.object({
   applied: z.string().date(),
   company: z.string(),
@@ -70,7 +61,14 @@ export const AddEditApplication = ({
   const query = useQuery(queries.getApplicationById(id));
 
   const initialData = isNil(query.data)
-    ? defaultValues
+    ? {
+        applied: DateTime.now().toFormat(DATE_FORMAT),
+        company: "",
+        interviewRounds: [],
+        rejected: "",
+        title: "",
+        url: "",
+      }
     : {
         ...query.data,
         applied: DateTime.fromJSDate(new Date(query.data.applied)).toFormat(
@@ -172,7 +170,14 @@ export const AddEditApplication = ({
       <Button color="primary" onPress={onOpen} size="sm" {...triggerProperties}>
         {children}
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        onOpenChange={() => {
+          form.reset();
+          setError("");
+          onOpenChange();
+        }}
+        isOpen={isOpen}
+      >
         <ModalContent>
           {(_onClose) => {
             return (
