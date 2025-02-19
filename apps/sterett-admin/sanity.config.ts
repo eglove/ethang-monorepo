@@ -1,3 +1,4 @@
+import get from "lodash/get.js";
 import { defineConfig } from "sanity";
 
 import {
@@ -10,8 +11,7 @@ export default defineConfig({
   dataset: "production",
   name: "default",
   plugins:
-    // @ts-expect-error it's fine
-    "development" === import.meta.env.NODE_ENV
+    "development" === get(import.meta, ["env", "NODE_ENV"])
       ? developmentPlugins
       : productionPlugins,
   // eslint-disable-next-line cspell/spellchecker
