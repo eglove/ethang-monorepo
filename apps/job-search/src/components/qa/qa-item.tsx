@@ -50,56 +50,49 @@ export const QaItem = ({ qa }: QaItemHeaderProperties) => {
   };
 
   return (
-    <>
-      <div>
-        {!isEditing &&
-          map(answerLines, (line, index) => {
+    <Form onSubmit={handleSubmit}>
+      {!isEditing && (
+        <div className="max-h-96 overflow-y-auto border-1 p-2">
+          {map(answerLines, (line, index) => {
             return <TypographyP key={index}>{line}</TypographyP>;
           })}
-        {isEditing && (
-          <Form onSubmit={handleSubmit}>
-            <form.Field name="question">
-              {(field) => {
-                return (
-                  <Input
-                    isRequired
-                    id={field.name}
-                    label="Question"
-                    name={field.name}
-                    onBlur={field.handleBlur}
-                    onValueChange={field.handleChange}
-                    value={field.state.value}
-                  />
-                );
-              }}
-            </form.Field>
-            <form.Field name="answer">
-              {(field) => {
-                return (
-                  <Textarea
-                    isRequired
-                    id={field.name}
-                    label="Answer"
-                    name={field.name}
-                    onBlur={field.handleBlur}
-                    onValueChange={field.handleChange}
-                    value={field.state.value}
-                  />
-                );
-              }}
-            </form.Field>
-            <Button
-              className="self-end"
-              color="primary"
-              isLoading={updatedQa.isPending}
-              type="submit"
-            >
-              Update
-            </Button>
-          </Form>
-        )}
-      </div>
-      <div className="my-4 flex gap-2 justify-between items-center">
+        </div>
+      )}
+      {isEditing && (
+        <div className="grid gap-2 w-full">
+          <form.Field name="question">
+            {(field) => {
+              return (
+                <Input
+                  isRequired
+                  id={field.name}
+                  label="Question"
+                  name={field.name}
+                  onBlur={field.handleBlur}
+                  onValueChange={field.handleChange}
+                  value={field.state.value}
+                />
+              );
+            }}
+          </form.Field>
+          <form.Field name="answer">
+            {(field) => {
+              return (
+                <Textarea
+                  isRequired
+                  id={field.name}
+                  label="Answer"
+                  name={field.name}
+                  onBlur={field.handleBlur}
+                  onValueChange={field.handleChange}
+                  value={field.state.value}
+                />
+              );
+            }}
+          </form.Field>
+        </div>
+      )}
+      <div className="flex gap-2 justify-between items-center my-4 w-full">
         <div className="flex gap-2">
           <QaCopyButton text={qa.answer} />{" "}
           <Button
@@ -117,8 +110,20 @@ export const QaItem = ({ qa }: QaItemHeaderProperties) => {
             {isEditing ? "Cancel Edit" : "Edit"}
           </Button>
         </div>
-        <DeleteQa id={qa.id} />
+        <div>
+          {isEditing && (
+            <Button
+              className="self-end"
+              color="primary"
+              isLoading={updatedQa.isPending}
+              type="submit"
+            >
+              Update
+            </Button>
+          )}
+          {!isEditing && <DeleteQa id={qa.id} />}
+        </div>
       </div>
-    </>
+    </Form>
   );
 };

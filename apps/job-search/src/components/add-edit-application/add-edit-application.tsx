@@ -1,3 +1,4 @@
+/* eslint-disable lodash/prefer-lodash-method */
 import { mutations } from "@/data/mutations.ts";
 import { queries, queryKeys } from "@/data/queries.ts";
 import { logger } from "@/lib/logger.ts";
@@ -28,18 +29,18 @@ import { z } from "zod";
 export const DATE_FORMAT = "yyyy-MM-dd";
 
 export const formSchema = z.object({
-  applied: z.string().date(),
-  company: z.string(),
+  applied: z.string().trim().date(),
+  company: z.string().trim(),
   interviewRounds: z
     .array(
       z.object({
-        date: z.string(),
+        date: z.string().trim(),
       }),
     )
     .optional(),
-  rejected: z.string().optional(),
-  title: z.string(),
-  url: z.string().url(),
+  rejected: z.string().trim().optional(),
+  title: z.string().trim(),
+  url: z.string().trim().url(),
 });
 
 type AddEditApplicationProperties = Readonly<

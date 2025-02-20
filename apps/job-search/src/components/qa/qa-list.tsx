@@ -1,7 +1,6 @@
 import { QaItem } from "@/components/qa/qa-item.tsx";
-import { TypographyLead } from "@/components/typography/typography-lead.tsx";
 import { queries } from "@/data/queries.ts";
-import { Card, CardBody, CardHeader } from "@heroui/react";
+import { Accordion, AccordionItem } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import map from "lodash/map";
 
@@ -9,19 +8,18 @@ export const QaList = () => {
   const qas = useQuery(queries.getQas());
 
   return (
-    <>
+    <Accordion>
       {map(qas.data, (qa) => {
         return (
-          <Card className="my-4" key={qa.id}>
-            <CardHeader>
-              <TypographyLead>{qa.question}</TypographyLead>
-            </CardHeader>
-            <CardBody>
-              <QaItem qa={qa} />
-            </CardBody>
-          </Card>
+          <AccordionItem
+            aria-label={qa.question}
+            key={qa.id}
+            title={qa.question}
+          >
+            <QaItem key={qa.id} qa={qa} />
+          </AccordionItem>
         );
       })}
-    </>
+    </Accordion>
   );
 };
