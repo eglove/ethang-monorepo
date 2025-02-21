@@ -226,7 +226,12 @@ export class Cosmos {
         callback(id, listener);
       } else if (isEventNameEqual && isTargetEqual) {
         callback(id, listener);
-      } else if (isEventNameEqual || isTargetEqual) {
+      } else if (
+        isEventNameEqual ||
+        isTargetEqual ||
+        isListenerEqual ||
+        isOptionsEqual
+      ) {
         callback(id, listener);
       } else if (isEmpty(filters)) {
         callback(id, listener);
