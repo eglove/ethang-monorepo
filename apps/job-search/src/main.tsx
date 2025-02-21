@@ -1,8 +1,7 @@
-import { createRouter, RouterProvider } from "@tanstack/react-router";
-import isNil from "lodash/isNil";
-
 import "./index.css";
 
+import { createRouter, RouterProvider } from "@tanstack/react-router";
+import isNil from "lodash/isNil";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 

@@ -3,7 +3,6 @@ import get from "lodash/get.js";
 import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
 import isError from "lodash/isError.js";
-import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import keys from "lodash/keys.js";
 import map from "lodash/map.js";
@@ -76,11 +75,3 @@ export const findFilesRecursively = (
 
   return results;
 };
-
-const directory = get(globalThis, ["process", "argv", 2]);
-const filename = get(globalThis, ["process", "argv", 3]);
-
-if (isNil(directory) || isNil(filename)) {
-  globalThis.console.error("No directory or filename provided");
-  globalThis.process.exit(1);
-}
