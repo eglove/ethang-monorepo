@@ -11,6 +11,7 @@ export default tseslint.config(
       "src/config.react.js",
       "src/config.astro.js",
       "src/config.angular.js",
+      "**/*.d.ts",
     ],
   },
   ...config,

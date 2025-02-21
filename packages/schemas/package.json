@@ -5,7 +5,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^21.2.3",
+    "@ethang/eslint-config": "^21.2.4",
     "@ethang/project-builder": "^3.0.2",
     "eslint": "^9.21.0"
   },
