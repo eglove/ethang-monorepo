@@ -65,5 +65,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "21.2.1"
+  "version": "21.2.2"
 }
