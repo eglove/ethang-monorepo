@@ -5,7 +5,7 @@
   ],
   "dependencies": {
     "@ethang/schemas": "workspace:^",
-    "@ethang/toolbelt": "^4.3.2",
+    "@ethang/toolbelt": "^4.4.0",
     "bcryptjs": "^3.0.1",
     "jose": "^5.10.0",
     "lodash": "^4.17.21",
@@ -14,7 +14,7 @@
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.7.1",
     "@cloudflare/workers-types": "^4.20250214.0",
-    "@ethang/eslint-config": "^21.2.1",
+    "@ethang/eslint-config": "^21.2.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/lodash": "^4.17.15",
     "eslint": "^9.21.0",

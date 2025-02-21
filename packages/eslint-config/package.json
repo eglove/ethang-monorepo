@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@ethang/markdown-generator": "^1.1.5",
-    "@ethang/toolbelt": "^4.3.2",
+    "@ethang/toolbelt": "^4.4.0",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/eslint__js": "^9.14.0",

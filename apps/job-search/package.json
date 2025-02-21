@@ -8,7 +8,7 @@
     "@ethang/hooks": "^2.3.0",
     "@ethang/schemas": "workspace:^",
     "@ethang/store": "^1.0.15",
-    "@ethang/toolbelt": "^4.3.2",
+    "@ethang/toolbelt": "^4.4.0",
     "@heroui/react": "2.7.2",
     "@heroui/system": "2.4.10",
     "@heroui/theme": "2.4.9",
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250214.0",
-    "@ethang/eslint-config": "^21.2.1",
+    "@ethang/eslint-config": "^21.2.2",
     "@react-types/shared": "^3.27.0",
     "@tanstack/router-devtools": "^1.109.2",
     "@tanstack/router-plugin": "^1.109.2",
