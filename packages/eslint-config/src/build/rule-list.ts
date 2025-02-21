@@ -6,7 +6,6 @@ import { compatRules } from "../setup/compat.ts";
 import { cspellRules } from "../setup/cspell.js";
 import { cssRules } from "../setup/css.js";
 import { dependRules } from "../setup/depend.ts";
-import { deprecatedRules } from "../setup/deprecated.ts";
 import { eslintRules } from "../setup/eslint.ts";
 import { jsonRules } from "../setup/json.ts";
 import { lodashRules } from "../setup/lodash.ts";
@@ -161,20 +160,10 @@ export const ruleList = [
     url: "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y",
   },
   {
-    importString: undefined,
-    list: deprecatedRules,
-    name: "@eslint/js",
-    order: 13,
-    pluginName: undefined,
-    pluginValue: undefined,
-    type: "core",
-    url: "https://github.com/eslint/eslint/tree/main/packages/js",
-  },
-  {
     importString: 'import cspell from "@cspell/eslint-plugin";',
     list: cspellRules,
     name: "@cspell/eslint-plugin",
-    order: 14,
+    order: 13,
     pluginName: "cspell",
     pluginValue: "cspell",
     type: "core",

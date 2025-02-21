@@ -8,8 +8,8 @@
   "devDependencies": {
     "@ethang/eslint-config": "^21.2.1",
     "@types/lodash": "^4.17.15",
-    "@types/node": "^22.13.4",
-    "eslint": "^9.20.1",
+    "@types/node": "^22.13.5",
+    "eslint": "^9.21.0",
     "typescript-eslint": "^8.24.1"
   },
   "license": "ISC",

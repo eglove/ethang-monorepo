@@ -10,7 +10,7 @@
   "description": "Fine grained state management",
   "devDependencies": {
     "@ethang/project-builder": "^3.0.2",
-    "eslint": "^9.20.1"
+    "eslint": "^9.21.0"
   },
   "license": "ISC",
   "main": "index.js",

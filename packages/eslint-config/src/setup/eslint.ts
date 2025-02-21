@@ -4,7 +4,7 @@ import keys from "lodash/keys.js";
 import { genRules } from "./gen-rules.ts";
 
 const ruleNames = keys(eslint.configs.all.rules);
-const changedRules = [
+const customRules = [
   {
     name: "arrow-body-style",
     rule: "off",
@@ -243,4 +243,4 @@ const changedRules = [
   },
 ];
 
-export const eslintRules = genRules(ruleNames, changedRules);
+export const eslintRules = genRules(ruleNames, customRules);
