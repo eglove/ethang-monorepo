@@ -81,6 +81,7 @@ export default tseslint.config({
     "react/no-implicit-key": "error",
     "react/no-leaked-conditional-rendering": "error",
     "react/no-missing-component-display-name": "error",
+    "react/no-missing-context-display-name": "error",
     "react/no-missing-key": "error",
     "react/no-nested-components": "error",
     "react/no-prop-types": "error",

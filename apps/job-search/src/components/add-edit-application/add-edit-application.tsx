@@ -61,7 +61,7 @@ export const AddEditApplication = ({
 
   const query = useQuery(queries.getApplicationById(id));
 
-  const initialData = isNil(query.data)
+  const initialData: z.infer<typeof formSchema> = isNil(query.data)
     ? {
         applied: DateTime.now().toFormat(DATE_FORMAT),
         company: "",
