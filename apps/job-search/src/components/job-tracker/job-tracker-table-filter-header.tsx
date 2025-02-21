@@ -52,8 +52,8 @@ export const JobTrackerTableFilterHeader = () => {
   };
 
   return (
-    <div className="flex flex-wrap justify-between my-4 gap-2">
-      <div className="flex flex-wrap gap-4 items-center">
+    <div className="my-4 flex flex-wrap justify-between gap-2">
+      <div className="flex flex-wrap items-center gap-4">
         <div className="flex gap-1">
           <Input
             endContent={

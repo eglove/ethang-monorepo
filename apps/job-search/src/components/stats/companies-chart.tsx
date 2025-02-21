@@ -71,7 +71,7 @@ export const CompaniesChart = () => {
                 ) as unknown;
 
                 return (
-                  <div className="bg-background py-2 px-4 rounded">
+                  <div className="rounded bg-background px-4 py-2">
                     {label}: {count}
                   </div>
                 );

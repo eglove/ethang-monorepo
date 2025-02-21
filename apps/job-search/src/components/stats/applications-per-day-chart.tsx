@@ -72,7 +72,7 @@ export const ApplicationsPerDayChart = () => {
   }, [data.length, query.data?.applications]);
 
   return (
-    <Card className="p-4 border border-transparent dark:border-default-100">
+    <Card className="border border-transparent p-4 dark:border-default-100">
       <CardHeader className="p-0">
         <div className="flex flex-col gap-y-1 p-4">
           <dt>
@@ -112,7 +112,7 @@ export const ApplicationsPerDayChart = () => {
                   | undefined;
 
                 return (
-                  <div className="bg-background py-2 px-4">
+                  <div className="bg-background px-4 py-2">
                     <div>
                       {isNil(data?.date)
                         ? ""

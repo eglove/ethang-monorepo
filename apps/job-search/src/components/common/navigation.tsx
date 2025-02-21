@@ -56,7 +56,7 @@ export const Navigation = () => {
         />
         <NavbarBrand>Job Track</NavbarBrand>
       </NavbarContent>
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+      <NavbarContent className="hidden gap-4 sm:flex" justify="center">
         {map(navLinks, (link) => {
           return (
             <NavbarItem key={link.label}>
@@ -73,12 +73,12 @@ export const Navigation = () => {
       </NavbarContent>
       <NavbarContent justify="end">
         {isOnline && (
-          <NavbarItem className="items-center text-success gap-1 hidden sm:flex">
+          <NavbarItem className="hidden items-center gap-1 text-success sm:flex">
             <CircleIcon className="size-3 fill-success" /> Online
           </NavbarItem>
         )}
         {!isOnline && (
-          <NavbarItem className="items-center text-danger gap-1 hidden sm:flex">
+          <NavbarItem className="hidden items-center gap-1 text-danger sm:flex">
             <CircleIcon className="size-3 fill-danger" /> Offline
           </NavbarItem>
         )}
@@ -132,12 +132,12 @@ export const Navigation = () => {
         <div>
           <NavbarMenuItem>
             {isOnline && (
-              <div className="items-center text-success gap-1 flex">
+              <div className="flex items-center gap-1 text-success">
                 <CircleIcon className="size-3 fill-success" /> Online
               </div>
             )}
             {!isOnline && (
-              <div className="flex items-center text-danger gap-1">
+              <div className="flex items-center gap-1 text-danger">
                 <CircleIcon className="size-3 fill-danger" /> Offline
               </div>
             )}

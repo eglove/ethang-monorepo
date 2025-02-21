@@ -59,7 +59,7 @@ export const QaItem = ({ qa }: QaItemHeaderProperties) => {
         </div>
       )}
       {isEditing && (
-        <div className="grid gap-2 w-full">
+        <div className="grid w-full gap-2">
           <form.Field name="question">
             {(field) => {
               return (
@@ -92,7 +92,7 @@ export const QaItem = ({ qa }: QaItemHeaderProperties) => {
           </form.Field>
         </div>
       )}
-      <div className="flex gap-2 justify-between items-center my-4 w-full">
+      <div className="my-4 flex w-full items-center justify-between gap-2">
         <div className="flex gap-2">
           <QaCopyButton text={qa.answer} />{" "}
           <Button

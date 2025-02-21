@@ -30,7 +30,7 @@ const RouteComponent = () => {
               <DatabaseIcon className="size-5" /> Ensure your data is backed up
               regularly.
             </div>
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <TypographyLead>Current Data</TypographyLead>
                 <div>

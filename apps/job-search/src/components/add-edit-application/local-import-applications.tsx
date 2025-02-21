@@ -103,7 +103,7 @@ export const LocalImportApplications = () => {
         Import from File
       </Button>
       {!isEmpty(importErrorMessage) && (
-        <div className="text-danger mt-1">{importErrorMessage}</div>
+        <div className="mt-1 text-danger">{importErrorMessage}</div>
       )}
     </div>
   );

@@ -14,6 +14,7 @@ import lodashConfig from "eslint-plugin-lodash";
 import markdown from "@eslint/markdown";
 import perfectionist from "eslint-plugin-perfectionist";
 import sonar from "eslint-plugin-sonarjs";
+import tailwind from "eslint-plugin-tailwindcss";
 import tanstackQuery from "@tanstack/eslint-plugin-query";
 import tanstackRouter from "@tanstack/eslint-plugin-router";
 import tseslint from "typescript-eslint";
@@ -35,6 +36,7 @@ export default tseslint.config(
       unicorn: unicorn,
       lodash: lodashConfig,
       sonar: fixupPluginRules(sonar),
+      tailwind: tailwind,
       perfectionist: perfectionist,
       "@tanstack/query": tanstackQuery,
       "@tanstack/router": tanstackRouter,
@@ -810,6 +812,14 @@ export default tseslint.config(
       "sonar/weak-ssl": "error",
       "sonar/x-powered-by": "error",
       "sonar/xml-parser-xxe": "error",
+      "tailwind/classnames-order": "error",
+      "tailwind/enforces-negative-arbitrary-values": "error",
+      "tailwind/enforces-shorthand": "error",
+      "tailwind/migration-from-tailwind-2": "error",
+      "tailwind/no-arbitrary-value": "error",
+      "tailwind/no-contradicting-classname": "error",
+      "tailwind/no-custom-classname": "off",
+      "tailwind/no-unnecessary-arbitrary-value": "error",
       "perfectionist/sort-array-includes": "error",
       "perfectionist/sort-classes": "error",
       "perfectionist/sort-decorators": "error",

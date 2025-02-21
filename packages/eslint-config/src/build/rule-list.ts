@@ -18,6 +18,7 @@ import {
 } from "../setup/react.ts";
 import { solidRules } from "../setup/solid.ts";
 import { sonarRules } from "../setup/sonar.ts";
+import { tailwindRules } from "../setup/tailwind.js";
 import { tanstackQueryRules } from "../setup/tanstack-query.ts";
 import { tanstackRouterRules } from "../setup/tanstack-router.js";
 import { typescriptRules } from "../setup/typescript-eslint.ts";
@@ -107,17 +108,16 @@ export const ruleList = [
     type: "core",
     url: "https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md",
   },
-  //   TODO re-add with v4 support
-  // {
-  //   importString: 'import tailwind from "eslint-plugin-tailwindcss";',
-  //   list: tailwindRules,
-  //   name: "eslint-plugin-tailwindcss",
-  //   order: 8,
-  //   pluginName: "tailwind",
-  //   pluginValue: "tailwind",
-  //   type: "core",
-  //   url: "https://github.com/francoismassart/eslint-plugin-tailwindcss",
-  // },
+  {
+    importString: 'import tailwind from "eslint-plugin-tailwindcss";',
+    list: tailwindRules,
+    name: "eslint-plugin-tailwindcss",
+    order: 8,
+    pluginName: "tailwind",
+    pluginValue: "tailwind",
+    type: "core",
+    url: "https://github.com/francoismassart/eslint-plugin-tailwindcss",
+  },
   {
     importString: 'import perfectionist from "eslint-plugin-perfectionist";',
     list: perfectionistRules,
