@@ -33,7 +33,15 @@ export const upsert = ({ method, path, variables }: UpsertProperties) => {
       },
       method,
     })
-    .then(setLastSynced)
+    .then((response) => {
+      if (response.ok) {
+        setLastSynced();
+      } else {
+        userStore.set((state) => {
+          state.isSignedIn = false;
+        });
+      }
+    })
     .catch(logger.error);
 };
 
@@ -54,6 +62,14 @@ export const deleteItem = (variables: unknown) => {
       },
       method: "DELETE",
     })
-    .then(setLastSynced)
+    .then((response) => {
+      if (response.ok) {
+        setLastSynced();
+      } else {
+        userStore.set((state) => {
+          state.isSignedIn = false;
+        });
+      }
+    })
     .catch(logger.error);
 };
