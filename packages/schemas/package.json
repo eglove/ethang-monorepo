@@ -1,7 +1,7 @@
 {
   "author": "Ethan Glover",
   "dependencies": {
-    "jose": "^5.10.0",
+    "jose": "^6.0.4",
     "zod": "^3.24.2"
   },
   "devDependencies": {
