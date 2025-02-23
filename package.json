@@ -1,7 +1,7 @@
 {
   "author": "Ethan Glover",
   "devDependencies": {
-    "@ethang/eslint-config": "^21.2.4",
+    "@ethang/eslint-config": "^21.2.5",
     "eslint": "^9.21.0",
     "typescript-eslint": "^8.24.1"
   },
