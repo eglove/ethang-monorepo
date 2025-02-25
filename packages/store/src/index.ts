@@ -2,15 +2,23 @@ import { type Draft, produce } from "immer";
 
 export type Listener<TState> = (state: TState) => void;
 
+type Derived<TState> = {
+  compute: (state: TState) => unknown;
+  dependencies: Set<keyof TState>;
+  value: unknown;
+};
+
 type StoreConfig = {
   localStorageKey?: string;
   syncToLocalStorage?: boolean;
 };
 
-export class Store<TState> {
+export class Store<TState extends object> {
   private readonly _config?:
     | ({ localStorageKey: string } & StoreConfig)
     | undefined;
+
+  private readonly _derived = new Map<string, Derived<TState>>();
 
   private readonly _elementListeners = new Map<string, HTMLElement>();
 
@@ -37,6 +45,35 @@ export class Store<TState> {
 
     this._state = this.getInitialState(initialState);
     this._initialState = initialState;
+  }
+
+  public addDerived<TValue>(key: string, compute: (state: TState) => TValue) {
+    if (this._derived.has(key)) {
+      globalThis.console.error(
+        `Derived value with key "${key}" already exists`,
+      );
+      return;
+    }
+
+    const dependencies = new Set<keyof TState>();
+
+    const proxy = new Proxy(this.state, {
+      // @ts-expect-error TState extends object
+      get: (target: TState, property: keyof TState) => {
+        dependencies.add(property);
+        return target[property];
+      },
+    });
+
+    const initialValue = compute(proxy);
+
+    this._derived.set(key, {
+      compute,
+      dependencies,
+      value: initialValue,
+    });
+
+    return initialValue;
   }
 
   public bind<E>(onUpdate: (state: TState, element: E) => void) {
@@ -70,7 +107,21 @@ export class Store<TState> {
 
     return selector(this.state);
   }
+
+  public getDerived<TValue>(key: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    return this._derived.get(key)?.value as TValue | undefined;
+  }
+
   public notifySubscribers() {
+    for (const derived of this._derived.values()) {
+      const newValue = derived.compute(this.state);
+
+      if (!Object.is(derived.value, newValue)) {
+        derived.value = newValue;
+      }
+    }
+
     for (const listener of this._listeners) {
       listener(this.state);
     }
