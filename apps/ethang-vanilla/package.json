@@ -20,7 +20,7 @@
     "@types/node": "^22.13.5",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.20",
-    "daisyui": "^4.12.23",
+    "daisyui": "^4.12.24",
     "eslint": "^9.21.0",
     "http-server": "^14.1.1",
     "postcss": "^8.5.3",

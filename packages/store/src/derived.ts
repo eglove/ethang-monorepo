@@ -1,6 +1,5 @@
 import every from "lodash/every.js";
 import get from "lodash/get.js";
-import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map.js";
 
 export type ComputeFunction<T, R> = (source: T) => R;
@@ -28,11 +27,9 @@ export class Derived<T extends object, R> {
       return get(source, path) as unknown;
     });
 
-    const hasChanged = isEmpty(this._lastDependencyValues)
-      ? false
-      : !every(this._lastDependencyValues, (value, index) => {
-          return Object.is(value, currentDependencyValues[index]);
-        });
+    const hasChanged = !every(this._lastDependencyValues, (value, index) => {
+      return Object.is(value, currentDependencyValues[index]);
+    });
 
     if (hasChanged || this._lastValue === undefined) {
       this._lastValue = this._computeFunction(source);

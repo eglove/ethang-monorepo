@@ -21,6 +21,7 @@ export class Store<TState extends object> {
     | undefined;
 
   private readonly _derived = new Map<string, Derived<TState, unknown>>();
+
   private readonly _effects = new Map<string, Effect<TState>>();
 
   private readonly _elementListeners = new Map<string, HTMLElement>();
@@ -97,7 +98,6 @@ export class Store<TState extends object> {
 
     return selector(this.state);
   }
-
   public getDerived<TValue>(key: string) {
     const value = this._derived.get(key);
 
@@ -114,6 +114,14 @@ export class Store<TState extends object> {
     for (const listener of this._listeners) {
       listener(this.state);
     }
+  }
+
+  public removeDerived(key: string) {
+    this._derived.delete(key);
+  }
+
+  public removeEffect(key: string) {
+    this._effects.delete(key);
   }
 
   public resetState() {

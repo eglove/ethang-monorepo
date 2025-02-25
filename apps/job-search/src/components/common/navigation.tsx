@@ -1,8 +1,5 @@
 import { SignInModal } from "@/components/common/sign-in-modal.tsx";
 import { userStore, useUserStore } from "@/components/stores/user-store.ts";
-import { logger } from "@/lib/logger.ts";
-import { backupAllData } from "@/lib/sync-requests.ts";
-import { useOnline } from "@ethang/hooks/use-online.js";
 import {
   Button,
   Link,
@@ -37,15 +34,6 @@ export const Navigation = () => {
   const store = useUserStore();
   const theme = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isOnline } = useOnline({
-    onOnline: () => {
-      backupAllData()
-        .then(() => {
-          logger.info("Backup successful");
-        })
-        .catch(logger.error);
-    },
-  });
 
   return (
     <Navbar onMenuOpenChange={setIsMenuOpen}>
@@ -72,12 +60,12 @@ export const Navigation = () => {
         })}
       </NavbarContent>
       <NavbarContent justify="end">
-        {isOnline && (
+        {store.isSignedIn && (
           <NavbarItem className="hidden items-center gap-1 text-success sm:flex">
             <CircleIcon className="size-3 fill-success" /> Online
           </NavbarItem>
         )}
-        {!isOnline && (
+        {!store.isSignedIn && (
           <NavbarItem className="hidden items-center gap-1 text-danger sm:flex">
             <CircleIcon className="size-3 fill-danger" /> Offline
           </NavbarItem>
@@ -131,12 +119,12 @@ export const Navigation = () => {
         </div>
         <div>
           <NavbarMenuItem>
-            {isOnline && (
+            {store.isSignedIn && (
               <div className="flex items-center gap-1 text-success">
                 <CircleIcon className="size-3 fill-success" /> Online
               </div>
             )}
-            {!isOnline && (
+            {!store.isSignedIn && (
               <div className="flex items-center gap-1 text-danger">
                 <CircleIcon className="size-3 fill-danger" /> Offline
               </div>

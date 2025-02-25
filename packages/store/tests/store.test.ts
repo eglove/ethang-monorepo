@@ -106,6 +106,17 @@ describe("Store", () => {
 
       expect(store.getDerived<number>("doubleCount")).toBe(10);
     });
+
+    it("should remove derived values", () => {
+      store.addDerived("doubleCount", (state) => state.count * 2, "count");
+      store.removeDerived("doubleCount");
+
+      store.set((draft) => {
+        draft.count = 5;
+      });
+
+      expect(store.getDerived<number>("doubleCount")).toBe(undefined);
+    });
   });
 
   describe("effects", () => {
@@ -118,6 +129,24 @@ describe("Store", () => {
       });
 
       expect(effectFunction).toHaveBeenCalledWith(
+        expect.objectContaining({ count: 1 }),
+      );
+    });
+
+    it("should remove derived effects", () => {
+      const effectFunction = vi.fn();
+      store.addEffect("testEffect", effectFunction, "count");
+      store.removeEffect("testEffect");
+
+      store.set((draft) => {
+        draft.count = 5;
+      });
+
+      store.set((draft) => {
+        draft.count = 1;
+      });
+
+      expect(effectFunction).not.toHaveBeenCalledWith(
         expect.objectContaining({ count: 1 }),
       );
     });

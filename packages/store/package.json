@@ -16,6 +16,9 @@
     "eslint": "^9.21.0",
     "vitest": "^3.0.7"
   },
+  "engines": {
+    "node": ">=22"
+  },
   "license": "ISC",
   "main": "index.js",
   "name": "@ethang/store",
