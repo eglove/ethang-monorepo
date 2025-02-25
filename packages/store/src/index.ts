@@ -1,12 +1,14 @@
 import { type Draft, produce } from "immer";
+import isNil from "lodash/isNil.js";
+
+import {
+  type ComputeFunction,
+  type DependencyPaths,
+  Derived,
+} from "./derived.js";
+import { Effect } from "./effect.js";
 
 export type Listener<TState> = (state: TState) => void;
-
-type Derived<TState> = {
-  compute: (state: TState) => unknown;
-  dependencies: Set<keyof TState>;
-  value: unknown;
-};
 
 type StoreConfig = {
   localStorageKey?: string;
@@ -18,7 +20,8 @@ export class Store<TState extends object> {
     | ({ localStorageKey: string } & StoreConfig)
     | undefined;
 
-  private readonly _derived = new Map<string, Derived<TState>>();
+  private readonly _derived = new Map<string, Derived<TState, unknown>>();
+  private readonly _effects = new Map<string, Effect<TState>>();
 
   private readonly _elementListeners = new Map<string, HTMLElement>();
 
@@ -47,33 +50,20 @@ export class Store<TState extends object> {
     this._initialState = initialState;
   }
 
-  public addDerived<TValue>(key: string, compute: (state: TState) => TValue) {
-    if (this._derived.has(key)) {
-      globalThis.console.error(
-        `Derived value with key "${key}" already exists`,
-      );
-      return;
-    }
+  public addDerived(
+    key: string,
+    computeFunction: ComputeFunction<TState, unknown>,
+    ...dependencyPaths: DependencyPaths<TState>
+  ) {
+    this._derived.set(key, new Derived(computeFunction, ...dependencyPaths));
+  }
 
-    const dependencies = new Set<keyof TState>();
-
-    const proxy = new Proxy(this.state, {
-      // @ts-expect-error TState extends object
-      get: (target: TState, property: keyof TState) => {
-        dependencies.add(property);
-        return target[property];
-      },
-    });
-
-    const initialValue = compute(proxy);
-
-    this._derived.set(key, {
-      compute,
-      dependencies,
-      value: initialValue,
-    });
-
-    return initialValue;
+  public addEffect(
+    key: string,
+    effectFunction: (state: TState) => void,
+    ...dependencyPaths: DependencyPaths<TState>
+  ) {
+    this._effects.set(key, new Effect(effectFunction, ...dependencyPaths));
   }
 
   public bind<E>(onUpdate: (state: TState, element: E) => void) {
@@ -109,19 +99,18 @@ export class Store<TState extends object> {
   }
 
   public getDerived<TValue>(key: string) {
+    const value = this._derived.get(key);
+
+    if (isNil(value)) {
+      globalThis.console.error(`No derived value found for key "${key}"`);
+      return;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    return this._derived.get(key)?.value as TValue | undefined;
+    return value.compute(this.state) as TValue;
   }
 
   public notifySubscribers() {
-    for (const derived of this._derived.values()) {
-      const newValue = derived.compute(this.state);
-
-      if (!Object.is(derived.value, newValue)) {
-        derived.value = newValue;
-      }
-    }
-
     for (const listener of this._listeners) {
       listener(this.state);
     }
@@ -133,6 +122,11 @@ export class Store<TState extends object> {
 
   public set(updater: (draft: Draft<TState>) => void) {
     const value = produce(this.state, updater);
+
+    for (const effect of this._effects.values()) {
+      effect.execute(value);
+    }
+
     this.state = value;
 
     if (true === this._config?.syncToLocalStorage) {

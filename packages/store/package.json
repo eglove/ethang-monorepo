@@ -5,21 +5,25 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "immer": "^10.1.1"
+    "immer": "^10.1.1",
+    "lodash": "^4.17.21"
   },
   "description": "Fine grained state management",
   "devDependencies": {
     "@ethang/eslint-config": "^21.2.5",
     "@ethang/project-builder": "^3.0.2",
-    "eslint": "^9.21.0"
+    "@types/lodash": "^4.17.15",
+    "eslint": "^9.21.0",
+    "vitest": "^3.0.7"
   },
   "license": "ISC",
   "main": "index.js",
   "name": "@ethang/store",
   "scripts": {
     "build": "bun build.ts",
-    "lint": "eslint ./src --fix"
+    "lint": "eslint ./src --fix",
+    "test": "vitest run"
   },
   "type": "module",
-  "version": "1.0.15"
+  "version": "1.2.0"
 }

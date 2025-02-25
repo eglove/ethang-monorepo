@@ -28,6 +28,35 @@ store.get(); // { count: 1 }
 store.get(state => state.count); // 1
 ```
 
+## Add Derived Value
+
+```ts
+store.addDerived('fullName', (state) => {
+    return `${state.firstName} ${state.lastName}`
+}, ['firstName'], ['lastName']); // spreads lodash property selectors
+
+store.set((state) => {
+    state.firstName = 'John'; // Triggers re-computation of derived value
+});
+```
+
+## Get Derived Value
+
+```ts
+store.getDerived('fullName');
+```
+
+## Add Effect
+```ts
+store.addEffect('loggedIn', (state) => {
+    console.log('User logged in/out');
+}, ['loggedIn']); // spreads lodash property selectors
+
+store.set((state) => {
+    state.isLoggedIn = true; // triggers effect
+});
+```
+
 ## Subscribe to changes
 
 ```ts
