@@ -214,8 +214,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/schemas
       '@ethang/store':
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^1.2.1
+        version: 1.2.1
       '@ethang/toolbelt':
         specifier: ^4.4.0
         version: 4.4.0
@@ -2843,8 +2843,9 @@ packages:
   '@ethang/project-builder@3.0.2':
     resolution: {integrity: sha512-5hf/Ns25JyBFqfN/+NshVvPAYHzzpEJXjGPPGHx7WED/aFIaKT4hgYSFSxIrZVXwa2BukTI5HbUHBvNN1NXjyA==}
 
-  '@ethang/store@1.2.0':
-    resolution: {integrity: sha512-C/RK9joLN7kdLOqhwfxThBF7sa/LocdMdkVZSvvWvR9tQE+V4DB+iNhPlzHZhrIkAAZW5FvWHvk4OaTCfDdAYQ==}
+  '@ethang/store@1.2.1':
+    resolution: {integrity: sha512-P6olN0ZehzKgX/DrrnI13EIi6ddB9DTu28qN05BXtLM59EffKE2I4QtU6jBtaRZrAvEm7bYg9V1NHUN1gF5K8A==}
+    engines: {node: '>=22'}
 
   '@ethang/toolbelt@4.4.0':
     resolution: {integrity: sha512-z9OShR4r4lGf7adsa0gWqEeIiaxuPoT9DsET5kXYfL0mFTyHqHKmespFHY5IUKHwZKwE0cHQEiYnXn+WcO1KGQ==}
@@ -12640,7 +12641,7 @@ snapshots:
       - typescript
       - yaml
 
-  '@ethang/store@1.2.0':
+  '@ethang/store@1.2.1':
     dependencies:
       immer: 10.1.1
       lodash: 4.17.21

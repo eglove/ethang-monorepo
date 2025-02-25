@@ -7,7 +7,7 @@
     "@cortex-js/compute-engine": "^0.28.0",
     "@ethang/hooks": "^2.3.0",
     "@ethang/schemas": "workspace:^",
-    "@ethang/store": "^1.2.0",
+    "@ethang/store": "^1.2.1",
     "@ethang/toolbelt": "^4.4.0",
     "@heroui/react": "2.7.2",
     "@heroui/system": "2.4.10",
