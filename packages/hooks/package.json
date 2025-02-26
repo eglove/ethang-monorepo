@@ -12,7 +12,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^21.2.5",
+    "@ethang/eslint-config": "^21.4.1",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.15",
     "@types/node": "^22.13.5",
@@ -30,5 +30,5 @@
     "lint": "eslint src/ --fix"
   },
   "type": "module",
-  "version": "2.3.0"
+  "version": "2.3.1"
 }
