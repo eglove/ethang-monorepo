@@ -4,7 +4,7 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "@ethang/hooks": "^2.3.0",
+    "@ethang/hooks": "^2.3.1",
     "@heroicons/react": "^2.2.0",
     "@heroui/avatar": "2.2.10",
     "@heroui/button": "2.2.13",
@@ -43,7 +43,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^21.2.5",
+    "@ethang/eslint-config": "^21.4.1",
     "@portabletext/types": "^2.0.13",
     "@react-types/shared": "^3.27.0",
     "@tailwindcss/typography": "^0.5.16",

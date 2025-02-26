@@ -5,7 +5,7 @@
   ],
   "dependencies": {
     "@cortex-js/compute-engine": "^0.28.0",
-    "@ethang/hooks": "^2.3.0",
+    "@ethang/hooks": "^2.3.1",
     "@ethang/schemas": "workspace:^",
     "@ethang/store": "^1.2.1",
     "@ethang/toolbelt": "^4.4.0",
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250224.0",
-    "@ethang/eslint-config": "^21.2.5",
+    "@ethang/eslint-config": "^21.4.1",
     "@react-types/shared": "^3.27.0",
     "@tanstack/router-devtools": "^1.111.11",
     "@tanstack/router-plugin": "^1.111.12",
