@@ -29,6 +29,7 @@ export default tseslint.config({
     "react/dom/no-dangerously-set-innerhtml": "error",
     "react/dom/no-dangerously-set-innerhtml-with-children": "error",
     "react/dom/no-find-dom-node": "error",
+    "react/dom/no-flush-sync": "error",
     "react/dom/no-missing-button-type": "error",
     "react/dom/no-missing-iframe-sandbox": "error",
     "react/dom/no-namespace": "error",
