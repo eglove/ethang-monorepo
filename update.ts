@@ -38,10 +38,10 @@ if (changeLength > 1) {
 }
 
 if (changeLength > 0) {
-  runCommand("pnpm --filter build eslint-config");
+  runCommand("pnpm --filter eslint-config build");
   runCommandInEslint("npm publish");
 }
 
 runCommand("git add .");
-runCommand("git commit -m 'Update EsLint Config'");
+runCommand("git commit -m 'Update'");
 runCommand("git push");
