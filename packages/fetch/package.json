@@ -1,0 +1,29 @@
+{
+  "author": "Ethan Glover",
+  "browserslist": [
+    "defaults and fully supports es6-module",
+    "maintained node versions"
+  ],
+  "dependencies": {
+    "@ethang/toolbelt": "^4.4.1",
+    "idb": "^8.0.2",
+    "lodash": "^4.17.21",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "^21.4.2",
+    "@ethang/project-builder": "^3.0.2",
+    "@total-typescript/ts-reset": "^0.6.1",
+    "@types/lodash": "^4.17.15",
+    "eslint": "^9.21.0",
+    "typescript-eslint": "^8.25.0"
+  },
+  "license": "ISC",
+  "name": "@ethang/fetch",
+  "scripts": {
+    "build": "bun build.ts",
+    "lint": "eslint src --fix"
+  },
+  "type": "module",
+  "version": "1.0.0"
+}
