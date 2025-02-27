@@ -10,6 +10,7 @@ import { syncUrl } from "@/lib/query/backup.ts";
 import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
 import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json.js";
+import chunk from "lodash/chunk.js";
 import isError from "lodash/isError.js";
 import map from "lodash/map.js";
 import { z } from "zod";
@@ -26,19 +27,41 @@ export const backupAllData = async () => {
   const applicationsQuery = await queryClient.fetchQuery(
     queries.getApplications(),
   );
-  await globalThis
-    .fetch(url, {
+
+  const qaPromises = map(chunk(qas, 100), async (qaChunk) => {
+    return globalThis.fetch(url, {
       body: JSON.stringify({
-        applications: applicationsQuery.applications,
-        qas,
+        applications: [],
+        qas: qaChunk,
       }),
       headers: {
         Authorization: userState.token,
         "Content-Type": "application/json",
       },
       method: "POST",
-    })
-    .then(setLastSynced);
+    });
+  });
+
+  const applicationPromises = map(
+    chunk(applicationsQuery.applications, 100),
+    async (applicationChunk) => {
+      return globalThis.fetch(url, {
+        body: JSON.stringify({
+          applications: applicationChunk,
+          qas: [],
+        }),
+        headers: {
+          Authorization: userState.token,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+      });
+    },
+  );
+
+  await Promise.all([...qaPromises, ...applicationPromises]).then(
+    setLastSynced,
+  );
 };
 
 export const getAllData = async () => {

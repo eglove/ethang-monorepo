@@ -52,7 +52,10 @@ describe("Effect", () => {
   it("should not execute effect if dependencies have not changed", () => {
     const effect = new Effect(effectFunction, ["count"]);
     effect.execute(initialState);
-    effect.execute(initialState);
+    effect.execute({
+      ...initialState,
+      nested: { value: "untracked" },
+    });
     expect(effectFunction).toHaveBeenCalledTimes(1);
   });
 

@@ -76,9 +76,7 @@ export const LocalImportApplications = () => {
       await backupAllData();
       setImportErrorMessage("");
     },
-    onError: (error) => {
-      setImportErrorMessage(error.message);
-    },
+    retry: false,
   });
 
   return (

@@ -73,6 +73,8 @@ const customRules: CustomRules = [
             "rogan",
             "heroui",
             "millis",
+              "duckdb",
+              "pthread",
           ],
         },
       },

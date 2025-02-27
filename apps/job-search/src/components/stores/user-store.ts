@@ -1,5 +1,3 @@
-import { logger } from "@/lib/logger.ts";
-import { backupAllData } from "@/lib/sync-requests.ts";
 import { Store } from "@ethang/store/index.js";
 import { useSyncExternalStore } from "react";
 
@@ -14,18 +12,20 @@ export const userStore = new Store(
     syncToLocalStorage: true,
   },
 );
-
-userStore.addEffect(
-  "onSignIn",
-  () => {
-    backupAllData()
-      .then(() => {
-        logger.info("Backup successful");
-      })
-      .catch(logger.error);
-  },
-  ["isSignedIn"],
-);
+//
+// userStore.addEffect(
+//   "onSignIn",
+//   (state) => {
+//     if (state.isSignedIn) {
+//       backupAllData()
+//         .then(() => {
+//           logger.info("Backup successful");
+//         })
+//         .catch(logger.error);
+//     }
+//   },
+//   ["isSignedIn"],
+// );
 
 export const useUserStore = () =>
   useSyncExternalStore(
