@@ -5,6 +5,7 @@ import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-an
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json.js";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
+import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
 import map from "lodash/map.js";
 import { z } from "zod";
@@ -26,52 +27,68 @@ export const syncData = async (
     return createJsonResponse({ message: requestData.message }, "BAD_REQUEST");
   }
 
-  const applicationStatement = environment.DB.prepare(`
+  if (isEmpty(requestData.applications) && isEmpty(requestData.qas)) {
+    return createJsonResponse({ message: "No data to sync" }, "BAD_REQUEST");
+  }
+
+  if (!isEmpty(requestData.applications)) {
+    const applicationStatement = environment.DB.prepare(`
     insert or replace into applications (id, applied, company, title, url, rejected, interviewRounds, userEmail)
     values (?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  const questionAnswerStatement = environment.DB.prepare(`
+    const applicationBatch = map(requestData.applications, (application) => {
+      return applicationStatement.bind(
+        application.id,
+        application.applied,
+        application.company,
+        application.title,
+        application.url,
+        application.rejected ?? null,
+        application.interviewRounds
+          ? JSON.stringify(application.interviewRounds)
+          : null,
+        tokenData.email,
+      );
+    });
+
+    const applicationResult = await attemptAsync(async () => {
+      return environment.DB.batch(applicationBatch);
+    });
+
+    if (isError(applicationResult)) {
+      return createJsonResponse(
+        { message: applicationResult.message },
+        "INTERNAL_SERVER_ERROR",
+      );
+    }
+  }
+
+  if (!isEmpty(requestData.qas)) {
+    const questionAnswerStatement = environment.DB.prepare(`
     insert or replace into questionAnswers (id, question, answer, userEmail)
     values (?, ?, ?, ?)
   `);
 
-  const applicationBatch = map(requestData.applications, (application) => {
-    return applicationStatement.bind(
-      application.id,
-      application.applied,
-      application.company,
-      application.title,
-      application.url,
-      application.rejected ?? null,
-      application.interviewRounds
-        ? JSON.stringify(application.interviewRounds)
-        : null,
-      tokenData.email,
-    );
-  });
+    const questionAnswerBatch = map(requestData.qas, (qa) => {
+      return questionAnswerStatement.bind(
+        qa.id,
+        qa.question,
+        qa.answer,
+        tokenData.email,
+      );
+    });
 
-  const questionAnswerBatch = map(requestData.qas, (qa) => {
-    return questionAnswerStatement.bind(
-      qa.id,
-      qa.question,
-      qa.answer,
-      tokenData.email,
-    );
-  });
+    const qaResult = await attemptAsync(async () => {
+      return environment.DB.batch(questionAnswerBatch);
+    });
 
-  const sqlResult = await attemptAsync(async () => {
-    return Promise.all([
-      environment.DB.batch(applicationBatch),
-      environment.DB.batch(questionAnswerBatch),
-    ]);
-  });
-
-  if (isError(sqlResult)) {
-    return createJsonResponse(
-      { message: sqlResult.message },
-      "INTERNAL_SERVER_ERROR",
-    );
+    if (isError(qaResult)) {
+      return createJsonResponse(
+        { message: qaResult.message },
+        "INTERNAL_SERVER_ERROR",
+      );
+    }
   }
 
   return createJsonResponse(requestData, "OK");
