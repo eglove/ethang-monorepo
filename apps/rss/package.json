@@ -16,11 +16,11 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250224.0",
-    "@ethang/eslint-config": "^21.4.1",
+    "@ethang/eslint-config": "^21.4.2",
     "@types/lodash": "^4.17.15",
     "@types/node": "22.13.5",
     "@types/service-worker-mock": "^2.0.1",
-    "wrangler": "^3.110.0"
+    "wrangler": "^3.111.0"
   },
   "engines": {
     "node": ">=22"

@@ -967,6 +967,8 @@ export default tseslint.config(
               "rogan",
               "heroui",
               "millis",
+              "duckdb",
+              "pthread",
             ],
           },
         },

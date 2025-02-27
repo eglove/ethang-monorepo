@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250224.0",
-    "@ethang/eslint-config": "^21.4.1",
+    "@ethang/eslint-config": "^21.4.2",
     "@react-types/shared": "^3.27.0",
     "@tanstack/router-devtools": "^1.111.11",
     "@tanstack/router-plugin": "^1.111.12",
@@ -58,7 +58,7 @@
     "typescript-eslint": "^8.25.0",
     "vite": "^6.2.0",
     "vite-plugin-pwa": "^0.21.1",
-    "wrangler": "^3.110.0"
+    "wrangler": "^3.111.0"
   },
   "engines": {
     "node": ">= 22"

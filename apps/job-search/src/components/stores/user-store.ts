@@ -1,3 +1,4 @@
+/* eslint-disable sonar/no-commented-code */
 import { Store } from "@ethang/store/index.js";
 import { useSyncExternalStore } from "react";
 
@@ -12,7 +13,7 @@ export const userStore = new Store(
     syncToLocalStorage: true,
   },
 );
-//
+
 // userStore.addEffect(
 //   "onSignIn",
 //   (state) => {
