@@ -144,6 +144,7 @@ export const AddEditApplication = ({
       })
       .then(() => {
         form.reset();
+        setError("");
         onClose();
       });
   };

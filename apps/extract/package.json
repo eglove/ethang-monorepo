@@ -4,7 +4,7 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "@ethang/toolbelt": "^4.4.0",
+    "@ethang/toolbelt": "^4.4.1",
     "cheerio": "^1.0.0",
     "lodash": "^4.17.21"
   },
@@ -14,7 +14,7 @@
     "@ethang/eslint-config": "^21.4.2",
     "@types/lodash": "^4.17.15",
     "eslint": "^9.21.0",
-    "typescript": "^5.5.2",
+    "typescript": "^5.8.2",
     "typescript-eslint": "^8.25.0",
     "vitest": "3.0.7",
     "wrangler": "^3.111.0"

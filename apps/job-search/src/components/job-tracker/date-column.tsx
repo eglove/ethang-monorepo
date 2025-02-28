@@ -11,7 +11,8 @@ export const DateColumn = ({ date }: DateColumnProperties) => {
 
   return (
     <>
-      {new Date(String(date)).toLocaleString(undefined, {
+      {/* eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion */}
+      {new Date(String(date as string)).toLocaleString(undefined, {
         dateStyle: "medium",
       })}
     </>

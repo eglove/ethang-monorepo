@@ -31,7 +31,7 @@
     "eslint-plugin-perfectionist": "^4.9.0",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
-    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "3.0.2",
     "eslint-plugin-tailwindcss": "^3.18.0",
@@ -41,13 +41,13 @@
   },
   "devDependencies": {
     "@ethang/markdown-generator": "^1.1.5",
-    "@ethang/toolbelt": "^4.4.0",
+    "@ethang/toolbelt": "^4.4.1",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.15",
     "@types/node": "^22.13.5",
     "lodash": "^4.17.21",
-    "typescript": "^5.7.3",
+    "typescript": "^5.8.2",
     "zod": "^3.24.2"
   },
   "engines": {

@@ -9,6 +9,7 @@
   "name": "ethang-monorepo",
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@heroui/shared-utils",
       "@swc/core",
       "esbuild",
       "sharp",
@@ -16,7 +17,7 @@
     ]
   },
   "scripts": {
-    "all": "pnpm i && pnpm deps && pnpm test && pnpm lint && pnpm build",
+    "all": "pnpm approve-builds && pnpm i && pnpm deps && pnpm test && pnpm lint && pnpm build && pnpm prune",
     "build": "pnpm -r build",
     "deps": "pnpm up -r -i --latest && pnpm --filter eslint-config build",
     "lint": "pnpm -r lint",

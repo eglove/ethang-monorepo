@@ -51,7 +51,7 @@ const customReactRules = [
 ];
 const reactGen = genRules(reactRuleNames, customReactRules, "react");
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@typescript-eslint/no-unsafe-member-access
+// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 const reactHookRuleNames = keys(reactHooks.rules as unknown as EsLintRules);
 const customHookRules = [
   {

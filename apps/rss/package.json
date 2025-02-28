@@ -4,7 +4,7 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "@ethang/toolbelt": "^4.4.0",
+    "@ethang/toolbelt": "^4.4.1",
     "chanfana": "^2.0.2",
     "cheerio": "^1.0.0",
     "eslint": "^9.21.0",
