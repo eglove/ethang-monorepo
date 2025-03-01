@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250224.0",
-    "@ethang/eslint-config": "^21.4.2",
+    "@ethang/eslint-config": "^21.4.3",
     "@types/lodash": "^4.17.16",
     "@types/node": "22.13.8",
     "@types/service-worker-mock": "^2.0.1",
