@@ -53,6 +53,7 @@ export default tseslint.config({
     "react/jsx-no-duplicate-props": "error",
     "react/jsx-uses-vars": "error",
     "react/naming-convention/component-name": "error",
+    "react/naming-convention/context-name": "error",
     "react/naming-convention/filename": ["error", { rule: "kebab-case" }],
     "react/naming-convention/filename-extension": "error",
     "react/naming-convention/use-state": "error",
