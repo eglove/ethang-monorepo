@@ -56,7 +56,7 @@ export default tseslint.config({
     "react/naming-convention/context-name": "error",
     "react/naming-convention/filename": ["error", { rule: "kebab-case" }],
     "react/naming-convention/filename-extension": "error",
-    "react/naming-convention/use-state": "error",
+    "react/naming-convention/use-state": "off",
     "react/no-access-state-in-setstate": "error",
     "react/no-array-index-key": "error",
     "react/no-children-count": "error",

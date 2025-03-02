@@ -36,6 +36,7 @@ const localizer = momentLocalizer(moment);
 
 export const CalendarRoute = () => {
   const { data } = useSuspenseQuery(calendarRouteQueries.calendarEvents);
+
   const [selectedEvent, setSelectedEvent] = useState<CalendarComponentEvent>();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 

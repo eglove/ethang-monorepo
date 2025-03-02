@@ -1,7 +1,6 @@
 import react from "@eslint-react/eslint-plugin";
 // @ts-expect-error no types
 import compiler from "eslint-plugin-react-compiler";
-// @ts-expect-error no types
 import reactHooks from "eslint-plugin-react-hooks";
 import keys from "lodash/keys.js";
 
@@ -47,6 +46,10 @@ const customReactRules = [
   {
     name: "naming-convention/filename",
     rule: ["error", { rule: "kebab-case" }],
+  },
+  {
+    name: "naming-convention/use-state", // TODO bugged, check on update
+    rule: "off",
   },
 ];
 const reactGen = genRules(reactRuleNames, customReactRules, "react");

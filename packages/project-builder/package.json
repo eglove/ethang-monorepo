@@ -6,7 +6,7 @@
     "tsup": "^8.4.0"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^21.4.3",
+    "@ethang/eslint-config": "^21.4.4",
     "@types/lodash": "^4.17.16",
     "@types/node": "^22.13.8",
     "eslint": "^9.21.0",
