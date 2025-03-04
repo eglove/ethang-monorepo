@@ -19,7 +19,7 @@ export const createToken = async (user: UserSchema, environment: Env) => {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuer(ORIGIN)
     .setAudience(ORIGIN)
-    .setExpirationTime("24h")
+    .setExpirationTime("365d")
     .sign(getSecretKey(environment));
 };
 
