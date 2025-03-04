@@ -3,7 +3,7 @@ export const globalStatsQuery = `WITH topCompanies AS (SELECT company,
                                                        FROM applications
                                                        GROUP BY company
                                                        ORDER BY count DESC
-                                                       LIMIT 10),
+                                                       LIMIT 5),
                                       totals
                                           as (select count(distinct applications.company) as totalCompanies,
                                                      count(*)                             as totalApplications
