@@ -21,6 +21,7 @@ const navLinks = [
   { label: "Q/A", link: "/qa" },
   { label: "Stats", link: "/stats" },
   { label: "Data Backup", link: "/data-backup" },
+  { label: "Global Stats", link: "/global-stats" },
 ];
 
 const handleSignOut = () => {
@@ -42,7 +43,7 @@ export const Navigation = () => {
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           className="sm:hidden"
         />
-        <NavbarBrand>Job Track</NavbarBrand>
+        <NavbarBrand className="text-2xl font-bold">Job Track</NavbarBrand>
       </NavbarContent>
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">
         {map(navLinks, (link) => {

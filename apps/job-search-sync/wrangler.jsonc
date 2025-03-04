@@ -6,8 +6,9 @@
   "observability": {
     "enabled": true
   },
-  "nodejs_compat": true,
-   "placement": { "mode": "smart" },
+  "placement": {
+    "mode": "smart"
+  },
   "d1_databases": [
     {
       "binding": "DB",

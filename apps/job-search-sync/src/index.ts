@@ -11,6 +11,8 @@ import { deleteQuestionAnswer } from "./delete-question-answer.js";
 import { getApplications } from "./get-applications.js";
 import { getData } from "./get-data.ts";
 import { getQas } from "./get-qas.js";
+import { globalStats } from "./global-stats.js";
+import { localSeed } from "./local-seed/seed.js";
 import { syncData } from "./sync-data.js";
 import { updateApplication } from "./update-application.js";
 import { updateQuestionAnswer } from "./update-question-answer.js";
@@ -22,6 +24,7 @@ export default {
 
     const urls = {
       applications: "/applications",
+      globalStats: "/global-stats",
       questionAnswers: "/question-answers",
     };
 
@@ -92,6 +95,18 @@ export default {
 
     if (urls.questionAnswers === url.pathname && "DELETE" === request.method) {
       return deleteQuestionAnswer(request, tokenData, environment);
+    }
+
+    if (urls.globalStats === url.pathname && "GET" === request.method) {
+      return globalStats(environment);
+    }
+
+    if (
+      "/seed" === url.pathname &&
+      "127.0.0.1:8787" === url.host &&
+      "POST" === request.method
+    ) {
+      return localSeed(request, environment);
     }
 
     return createJsonResponse({ error: "Not Found" }, "NOT_FOUND");

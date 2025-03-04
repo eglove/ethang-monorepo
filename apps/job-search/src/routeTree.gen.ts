@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as StatsImport } from './routes/stats'
 import { Route as QaImport } from './routes/qa'
+import { Route as GlobalStatsImport } from './routes/global-stats'
 import { Route as DataBackupImport } from './routes/data-backup'
 import { Route as IndexImport } from './routes/index'
 
@@ -27,6 +28,12 @@ const StatsRoute = StatsImport.update({
 const QaRoute = QaImport.update({
   id: '/qa',
   path: '/qa',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const GlobalStatsRoute = GlobalStatsImport.update({
+  id: '/global-stats',
+  path: '/global-stats',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataBackupImport
       parentRoute: typeof rootRoute
     }
+    '/global-stats': {
+      id: '/global-stats'
+      path: '/global-stats'
+      fullPath: '/global-stats'
+      preLoaderRoute: typeof GlobalStatsImport
+      parentRoute: typeof rootRoute
+    }
     '/qa': {
       id: '/qa'
       path: '/qa'
@@ -82,6 +96,7 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/data-backup': typeof DataBackupRoute
+  '/global-stats': typeof GlobalStatsRoute
   '/qa': typeof QaRoute
   '/stats': typeof StatsRoute
 }
@@ -89,6 +104,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/data-backup': typeof DataBackupRoute
+  '/global-stats': typeof GlobalStatsRoute
   '/qa': typeof QaRoute
   '/stats': typeof StatsRoute
 }
@@ -97,22 +113,24 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/data-backup': typeof DataBackupRoute
+  '/global-stats': typeof GlobalStatsRoute
   '/qa': typeof QaRoute
   '/stats': typeof StatsRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/data-backup' | '/qa' | '/stats'
+  fullPaths: '/' | '/data-backup' | '/global-stats' | '/qa' | '/stats'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/data-backup' | '/qa' | '/stats'
-  id: '__root__' | '/' | '/data-backup' | '/qa' | '/stats'
+  to: '/' | '/data-backup' | '/global-stats' | '/qa' | '/stats'
+  id: '__root__' | '/' | '/data-backup' | '/global-stats' | '/qa' | '/stats'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DataBackupRoute: typeof DataBackupRoute
+  GlobalStatsRoute: typeof GlobalStatsRoute
   QaRoute: typeof QaRoute
   StatsRoute: typeof StatsRoute
 }
@@ -120,6 +138,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DataBackupRoute: DataBackupRoute,
+  GlobalStatsRoute: GlobalStatsRoute,
   QaRoute: QaRoute,
   StatsRoute: StatsRoute,
 }
@@ -136,6 +155,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/data-backup",
+        "/global-stats",
         "/qa",
         "/stats"
       ]
@@ -145,6 +165,9 @@ export const routeTree = rootRoute
     },
     "/data-backup": {
       "filePath": "data-backup.tsx"
+    },
+    "/global-stats": {
+      "filePath": "global-stats.tsx"
     },
     "/qa": {
       "filePath": "qa.tsx"

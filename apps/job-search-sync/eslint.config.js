@@ -4,7 +4,11 @@ import reactConfig from "@ethang/eslint-config/config.react.js";
 
 export default tseslint.config(
   {
-    ignores: ["vitest.config.mts", "**/*.d.ts"],
+    ignores: [
+      "vitest.config.mts",
+      "**/*.d.ts",
+      "src/local-seed/data-backup.ts",
+    ],
   },
   ...config,
   ...reactConfig,

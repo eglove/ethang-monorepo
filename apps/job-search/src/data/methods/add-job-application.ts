@@ -25,7 +25,9 @@ export const addJobApplication = async (application: JobApplicationSchema) => {
       .then((response) => {
         if (response.ok) {
           setLastSynced();
-        } else {
+        }
+
+        if (401 === response.status) {
           userStore.set((state) => {
             state.isSignedIn = false;
           });

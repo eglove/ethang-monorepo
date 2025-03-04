@@ -25,7 +25,9 @@ export const addQa = async (qa: QuestionAnswerSchema) => {
       .then((response) => {
         if (response.ok) {
           setLastSynced();
-        } else {
+        }
+
+        if (401 === response.status) {
           userStore.set((state) => {
             state.isSignedIn = false;
           });
