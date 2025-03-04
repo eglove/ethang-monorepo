@@ -3,7 +3,7 @@
   "devDependencies": {
     "@ethang/eslint-config": "^21.4.4",
     "eslint": "^9.21.0",
-    "typescript-eslint": "^8.25.0"
+    "typescript-eslint": "^8.26.0"
   },
   "license": "ISC",
   "name": "ethang-monorepo",

@@ -16,7 +16,7 @@
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.16",
     "eslint": "^9.21.0",
-    "typescript-eslint": "^8.25.0"
+    "typescript-eslint": "^8.26.0"
   },
   "license": "ISC",
   "name": "@ethang/fetch",

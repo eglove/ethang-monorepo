@@ -55,6 +55,7 @@ export default tseslint.config(
       "@angular-eslint/prefer-signals": "error",
       "@angular-eslint/prefer-standalone": "error",
       "@angular-eslint/relative-url-prefix": "error",
+      "@angular-eslint/require-lifecycle-on-prototype": "error",
       "@angular-eslint/require-localize-metadata": "error",
       "@angular-eslint/runtime-localize": "error",
       "@angular-eslint/sort-lifecycle-methods": "error",
