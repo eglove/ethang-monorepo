@@ -1,8 +1,7 @@
 import { AddEditApplication } from "@/components/add-edit-application/add-edit-application.tsx";
 import { FormEditButton } from "@/components/form/form-edit-button.tsx";
-import { mutations } from "@/data/mutations.ts";
-import { queryKeys } from "@/data/queries.ts";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteJobApplication } from "@/data/methods/delete-job-application.ts";
+import { useMutation } from "@tanstack/react-query";
 import { PencilIcon } from "lucide-react";
 
 type DeleteJobApplicationProperties = Readonly<{
@@ -12,14 +11,8 @@ type DeleteJobApplicationProperties = Readonly<{
 export const JobApplicationActions = ({
   id,
 }: DeleteJobApplicationProperties) => {
-  const queryClient = useQueryClient();
   const deleteApplication = useMutation({
-    ...mutations.deleteJobApplication(),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.applications(),
-      });
-    },
+    mutationFn: deleteJobApplication,
   });
 
   return (

@@ -4,7 +4,7 @@
   "observability": {
     "enabled": true
   },
-  "nodejs_compat": true,
+  "compatibility_flags": ["nodejs"],
   "pages_build_output_dir": "dist",
   "placement": { "mode": "smart" }
 }

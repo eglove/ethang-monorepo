@@ -1,12 +1,12 @@
 import { queryClient } from "@/components/common/providers";
 import { setLastSynced, userStore } from "@/components/stores/user-store.ts";
 import { queries, queryKeys } from "@/data/queries";
+import { syncUrls } from "@/data/urls";
 import {
   getDatabase,
   JOB_APPLICATION_STORE_NAME,
   QUESTION_ANSWER_STORE_NAME,
 } from "@/database/indexed-database.ts";
-import { syncUrl } from "@/lib/query/backup.ts";
 import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
 import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json.js";
@@ -22,14 +22,13 @@ export const backupAllData = async () => {
     return;
   }
 
-  const url = new URL("/data-sync", syncUrl);
   const qas = await queryClient.fetchQuery(queries.getQas());
   const applicationsQuery = await queryClient.fetchQuery(
     queries.getApplications(),
   );
 
   const qaPromises = map(chunk(qas, 100), async (qaChunk) => {
-    return globalThis.fetch(url, {
+    return globalThis.fetch(syncUrls.dataSync, {
       body: JSON.stringify({
         applications: [],
         qas: qaChunk,
@@ -45,7 +44,7 @@ export const backupAllData = async () => {
   const applicationPromises = map(
     chunk(applicationsQuery.applications, 100),
     async (applicationChunk) => {
-      return globalThis.fetch(url, {
+      return globalThis.fetch(syncUrls.dataSync, {
         body: JSON.stringify({
           applications: applicationChunk,
           qas: [],
@@ -71,8 +70,7 @@ export const getAllData = async () => {
     return;
   }
 
-  const url = new URL("/get-data", syncUrl);
-  const response = await globalThis.fetch(url, {
+  const response = await globalThis.fetch(syncUrls.getData, {
     headers: {
       Authorization: userState.token,
       "Content-Type": "application/json",

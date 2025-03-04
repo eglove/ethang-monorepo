@@ -1,7 +1,6 @@
 import type { FormEvent } from "react";
 
-import { mutations } from "@/data/mutations.ts";
-import { queryKeys } from "@/data/queries.ts";
+import { addQa as addQaFunction } from "@/data/methods/add-qa.ts";
 import { logger } from "@/lib/logger.ts";
 import {
   Accordion,
@@ -12,16 +11,14 @@ import {
   Textarea,
 } from "@heroui/react";
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { v7 } from "uuid";
 
 export const AddQaForm = () => {
-  const queryClient = useQueryClient();
   const addQa = useMutation({
-    ...mutations.addQa(),
-    onSuccess: async () => {
+    mutationFn: addQaFunction,
+    onSuccess: () => {
       form.reset();
-      await queryClient.invalidateQueries({ queryKey: queryKeys.qas() });
     },
   });
 

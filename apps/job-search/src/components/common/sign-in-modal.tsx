@@ -1,5 +1,5 @@
 import { TypographyP } from "@/components/typography/typography-p.tsx";
-import { mutations } from "@/data/mutations.ts";
+import { signIn } from "@/data/methods/sign-in.ts";
 import { logger } from "@/lib/logger";
 import {
   Button,
@@ -33,7 +33,7 @@ export const SignInModal = () => {
   });
 
   const { isPending, mutate } = useMutation({
-    ...mutations.signIn(),
+    mutationFn: signIn,
     onError: (error) => {
       setErrorMessage(error.message);
     },

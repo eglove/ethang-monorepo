@@ -3,12 +3,11 @@ import type { QuestionAnswerSchema } from "@ethang/schemas/src/job-search/questi
 import { DeleteQa } from "@/components/qa/delete-qa.tsx";
 import { QaCopyButton } from "@/components/qa/qa-copy-button.tsx";
 import { TypographyP } from "@/components/typography/typography-p.tsx";
-import { mutations } from "@/data/mutations.ts";
-import { queryKeys } from "@/data/queries";
+import { updateQa } from "@/data/methods/update-qa.ts";
 import { logger } from "@/lib/logger.ts";
 import { Button, Form, Input, Textarea } from "@heroui/react";
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import map from "lodash/map";
 import split from "lodash/split";
 import { PencilIcon, XIcon } from "lucide-react";
@@ -19,13 +18,11 @@ type QaItemHeaderProperties = Readonly<{
 }>;
 
 export const QaItem = ({ qa }: QaItemHeaderProperties) => {
-  const queryClient = useQueryClient();
   const answerLines = split(qa.answer, "\n");
   const [isEditing, setIsEditing] = useState(false);
   const updatedQa = useMutation({
-    ...mutations.updateQa(),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.qas() });
+    mutationFn: updateQa,
+    onSuccess: () => {
       setIsEditing(false);
     },
   });

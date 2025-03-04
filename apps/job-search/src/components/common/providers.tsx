@@ -1,5 +1,4 @@
 import { logger } from "@/lib/logger.ts";
-import { mutationCache } from "@/lib/query/mutation-cache.ts";
 import { ComputeEngine } from "@cortex-js/compute-engine";
 import { HeroUIProvider } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -20,7 +19,6 @@ export const queryClient = new QueryClient({
       staleTime: ONE_HOUR,
     },
   },
-  mutationCache,
 });
 
 export const ReactQueryDevtools =

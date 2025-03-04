@@ -1,6 +1,7 @@
 /* eslint-disable lodash/prefer-lodash-method */
-import { mutations } from "@/data/mutations.ts";
-import { queries, queryKeys } from "@/data/queries.ts";
+import { addJobApplication } from "@/data/methods/add-job-application.ts";
+import { updateJobApplication } from "@/data/methods/update-job-application.ts";
+import { queries } from "@/data/queries.ts";
 import { logger } from "@/lib/logger.ts";
 import {
   Button,
@@ -15,7 +16,7 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import filter from "lodash/filter.js";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
@@ -56,7 +57,6 @@ export const AddEditApplication = ({
   triggerProperties,
 }: AddEditApplicationProperties) => {
   const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
-  const queryClient = useQueryClient();
   const [error, setError] = useState("");
 
   const query = useQuery(queries.getApplicationById(id));
@@ -137,26 +137,20 @@ export const AddEditApplication = ({
     }
   };
 
-  const onSuccess = async () => {
-    await queryClient
-      .invalidateQueries({
-        queryKey: queryKeys.applications(),
-      })
-      .then(() => {
-        form.reset();
-        setError("");
-        onClose();
-      });
+  const onSuccess = () => {
+    form.reset();
+    setError("");
+    onClose();
   };
 
   const addApplication = useMutation({
-    ...mutations.addJobApplication(),
+    mutationFn: addJobApplication,
     onError,
     onSuccess,
   });
 
   const updateApplication = useMutation({
-    ...mutations.updateJobApplication(),
+    mutationFn: updateJobApplication,
     onError,
     onSuccess,
   });
@@ -283,7 +277,7 @@ export const AddEditApplication = ({
                                           onBlur={subfield.handleBlur}
                                           onValueChange={subfield.handleChange}
                                           type="date"
-                                          value={subfield.state.value}
+                                          value={String(subfield.state.value)}
                                         />
                                       );
                                     }}

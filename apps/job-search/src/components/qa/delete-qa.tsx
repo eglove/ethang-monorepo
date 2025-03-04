@@ -1,8 +1,7 @@
-import { mutations } from "@/data/mutations.ts";
-import { queryKeys } from "@/data/queries";
+import { deleteQa as deleteQaFunction } from "@/data/methods/delete-qa.ts";
 import { useToggle } from "@ethang/hooks/use-toggle.js";
 import { Button } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Trash2Icon, XIcon } from "lucide-react";
 
 type DeleteQaProperties = Readonly<{
@@ -11,12 +10,8 @@ type DeleteQaProperties = Readonly<{
 
 export const DeleteQa = ({ id }: DeleteQaProperties) => {
   const [isConfirming, toggleIsConfirming] = useToggle(false);
-  const queryClient = useQueryClient();
   const deleteQa = useMutation({
-    ...mutations.deleteQa(),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.qas() });
-    },
+    mutationFn: deleteQaFunction,
   });
 
   if (isConfirming) {
