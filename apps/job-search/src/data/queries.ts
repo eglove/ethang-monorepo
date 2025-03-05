@@ -3,6 +3,7 @@ import {
   type ApplicationsFilter,
   getApplications,
 } from "@/data/methods/get-applications.ts";
+import { getGlobalStats } from "@/data/methods/get-global-stats.ts";
 import { getQas } from "@/data/methods/get-qas.ts";
 
 export const APPLICATION_PAGE_SIZE = 10;
@@ -17,10 +18,14 @@ export const queryKeys = {
   ],
   getQas: () => ["qa", "get"],
   qas: () => ["qa"],
+  stats: () => ["stats"],
+  statsGlobal: () => ["stats", "global"],
+  statsUser: () => ["stats", "user"],
 };
 
 export const queries = {
   getApplicationById,
   getApplications,
+  getGlobalStats,
   getQas,
 };

@@ -20,8 +20,8 @@ const navLinks = [
   { label: "Applications", link: "/" },
   { label: "Q/A", link: "/qa" },
   { label: "Stats", link: "/stats" },
-  { label: "Data Backup", link: "/data-backup" },
   { label: "Global Stats", link: "/global-stats" },
+  { label: "Data Backup", link: "/data-backup" },
 ];
 
 const handleSignOut = () => {

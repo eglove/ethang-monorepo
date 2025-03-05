@@ -1,16 +1,8 @@
-"use client";
+import type { StatsSchema } from "@ethang/schemas/src/job-search/stats.ts";
 
 import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
-import { queries } from "@/data/queries.ts";
 import { Card, CardBody, CardHeader } from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
-import forEach from "lodash/forEach.js";
 import get from "lodash/get";
-import map from "lodash/map.js";
-import orderBy from "lodash/orderBy.js";
-import set from "lodash/set.js";
-import slice from "lodash/slice.js";
-import { useMemo } from "react";
 import {
   Bar,
   BarChart,
@@ -21,34 +13,25 @@ import {
   YAxis,
 } from "recharts";
 
-export const CompaniesChart = () => {
-  const query = useQuery(queries.getApplications());
+type TopCompaniesChartProperties = Readonly<{
+  color?: "primary" | "secondary";
+  stats?: StatsSchema | undefined;
+}>;
 
-  const companyData = useMemo(() => {
-    const results: Record<string, number> = {};
-
-    forEach(query.data?.applications, (item) => {
-      set(results, [item.company], get(results, [item.company], 0) + 1);
-    });
-
-    const allData = orderBy(
-      map(results, (count, company) => {
-        return { company, count };
-      }),
-      ["count"],
-      ["desc"],
-    );
-    return slice(allData, 0, 5);
-  }, [query.data?.applications]);
+export const TopCompaniesChart = ({
+  color = "primary",
+  stats,
+}: TopCompaniesChartProperties) => {
+  const topCompanies = get(stats, ["topCompanies"], []);
 
   return (
     <Card>
       <CardHeader>
-        <TypographyH3>Top 5 Companies</TypographyH3>
+        <TypographyH3>Top {topCompanies.length} Companies</TypographyH3>
       </CardHeader>
       <CardBody>
         <ResponsiveContainer height={300}>
-          <BarChart accessibilityLayer data={companyData}>
+          <BarChart accessibilityLayer data={topCompanies}>
             <CartesianGrid vertical={false} />
             <XAxis
               axisLine={false}
@@ -78,7 +61,11 @@ export const CompaniesChart = () => {
               }}
               cursor={false}
             />
-            <Bar dataKey="count" fill="hsl(var(--heroui-primary))" radius={8} />
+            <Bar
+              dataKey="count"
+              fill={`hsl(var(--heroui-${color}))`}
+              radius={8}
+            />
           </BarChart>
         </ResponsiveContainer>
       </CardBody>
