@@ -22,10 +22,12 @@ import { useCallback } from "react";
 
 import { openNewTab } from "../util/url.ts";
 
-type AddToCalendarProperties = {
-  readonly buttonProps?: Parameters<typeof Button>[0];
-  readonly description?: PortableTextBlock;
-} & Readonly<Omit<CalendarEvent, "description">>;
+type AddToCalendarProperties = Readonly<
+  {
+    readonly buttonProps?: Parameters<typeof Button>[0];
+    readonly description?: PortableTextBlock;
+  } & Omit<CalendarEvent, "description">
+>;
 
 export const AddToCalendar = ({
   buttonProps,

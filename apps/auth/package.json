@@ -14,7 +14,7 @@
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.7.5",
     "@cloudflare/workers-types": "^4.20250303.0",
-    "@ethang/eslint-config": "^21.4.4",
+    "@ethang/eslint-config": "^21.4.6",
     "@types/bcryptjs": "^2.4.6",
     "@types/lodash": "^4.17.16",
     "eslint": "^9.21.0",

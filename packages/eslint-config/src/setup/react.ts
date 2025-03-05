@@ -51,6 +51,10 @@ const customReactRules = [
     name: "naming-convention/use-state", // TODO bugged, check on update
     rule: "off",
   },
+  {
+    name: "prefer-read-only-props", // TODO bugged, check on update
+    rule: "off",
+  },
 ];
 const reactGen = genRules(reactRuleNames, customReactRules, "react");
 
