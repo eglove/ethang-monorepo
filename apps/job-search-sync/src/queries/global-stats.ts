@@ -10,11 +10,14 @@ export const globalStatsQuery = `WITH topCompanies AS (SELECT company,
                                               from applications),
                                       averageResponseRate AS (SELECT AVG(case
                                                                              WHEN
-                                                                                 applications.interviewRounds IS NOT NULL
-                                                                                     AND
-                                                                                 applications.interviewRounds !=
-                                                                                 '[]'
-                                                                                     AND
+                                                                                 interviewRounds is not null
+                                                                                     and
+                                                                                 json_valid(interviewRounds) =
+                                                                                 1
+                                                                                     and
+                                                                                 json_array_length(interviewRounds) >
+                                                                                 0
+                                                                                     and
                                                                                  applications.rejected IS NOT NULL
                                                                                  THEN 1
                                                                              ELSE 0
