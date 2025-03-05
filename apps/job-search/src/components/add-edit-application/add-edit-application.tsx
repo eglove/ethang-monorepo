@@ -1,7 +1,7 @@
 /* eslint-disable lodash/prefer-lodash-method */
 import { addJobApplication } from "@/data/methods/add-job-application.ts";
+import { getApplicationById } from "@/data/methods/get-application-by-id.ts";
 import { updateJobApplication } from "@/data/methods/update-job-application.ts";
-import { queries } from "@/data/queries.ts";
 import { logger } from "@/lib/logger.ts";
 import {
   Button,
@@ -59,7 +59,7 @@ export const AddEditApplication = ({
   const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
   const [error, setError] = useState("");
 
-  const query = useQuery(queries.getApplicationById(id));
+  const query = useQuery(getApplicationById(id));
 
   const initialData: z.infer<typeof formSchema> = isNil(query.data)
     ? {

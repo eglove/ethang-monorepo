@@ -1,4 +1,5 @@
-import { queries } from "@/data/queries.ts";
+import { getApplications } from "@/data/methods/get-applications.ts";
+import { getQas } from "@/data/methods/get-qas.ts";
 import { Button } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
@@ -6,8 +7,8 @@ import isNil from "lodash/isNil";
 import { DownloadIcon } from "lucide-react";
 
 export const DownloadData = () => {
-  const applicationsQuery = useQuery(queries.getApplications());
-  const qas = useQuery(queries.getQas());
+  const applicationsQuery = useQuery(getApplications());
+  const qas = useQuery(getQas());
 
   const handleDownload = () => {
     if (isNil(applicationsQuery.data?.applications)) {

@@ -7,7 +7,7 @@ import {
   setSorting,
   useApplicationTableStore,
 } from "@/components/job-tracker/table-state.ts";
-import { queries } from "@/data/queries.ts";
+import { getApplications } from "@/data/methods/get-applications.ts";
 import { logger } from "@/lib/logger.ts";
 import {
   getKeyValue,
@@ -44,12 +44,12 @@ export const JobTrackerTable = () => {
     };
   }, [page, store.search, store.tableFilters, store.sorting]);
 
-  const query = useQuery(queries.getApplications(filters));
+  const query = useQuery(getApplications(filters));
 
   useEffect(() => {
     queryClient
       .prefetchQuery(
-        queries.getApplications({
+        getApplications({
           ...filters,
           page: page + 1,
         }),
@@ -59,7 +59,7 @@ export const JobTrackerTable = () => {
     if (1 < page) {
       queryClient
         .prefetchQuery(
-          queries.getApplications({
+          getApplications({
             ...filters,
             page: page - 1,
           }),

@@ -1,6 +1,8 @@
 import { queryClient } from "@/components/common/providers";
 import { setLastSynced, userStore } from "@/components/stores/user-store.ts";
-import { queries, queryKeys } from "@/data/queries";
+import { getApplications } from "@/data/methods/get-applications.ts";
+import { getQas } from "@/data/methods/get-qas.ts";
+import { queryKeys } from "@/data/queries";
 import { syncUrls } from "@/data/urls";
 import {
   getDatabase,
@@ -22,10 +24,8 @@ export const backupAllData = async () => {
     return;
   }
 
-  const qas = await queryClient.fetchQuery(queries.getQas());
-  const applicationsQuery = await queryClient.fetchQuery(
-    queries.getApplications(),
-  );
+  const qas = await queryClient.fetchQuery(getQas());
+  const applicationsQuery = await queryClient.fetchQuery(getApplications());
 
   const qaPromises = map(chunk(qas, 100), async (qaChunk) => {
     return globalThis.fetch(syncUrls.dataSync, {

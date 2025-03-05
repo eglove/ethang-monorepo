@@ -5,7 +5,8 @@ import { MainLayout } from "@/components/layouts/main-layout.tsx";
 import { useUserStore } from "@/components/stores/user-store.ts";
 import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
 import { TypographyLead } from "@/components/typography/typography-lead.tsx";
-import { queries } from "@/data/queries.ts";
+import { getApplications } from "@/data/methods/get-applications.ts";
+import { getQas } from "@/data/methods/get-qas.ts";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -14,8 +15,8 @@ import isNil from "lodash/isNil";
 import { DatabaseIcon } from "lucide-react";
 
 const RouteComponent = () => {
-  const applicationsQuery = useQuery(queries.getApplications());
-  const qas = useQuery(queries.getQas());
+  const applicationsQuery = useQuery(getApplications());
+  const qas = useQuery(getQas());
   const store = useUserStore();
 
   return (

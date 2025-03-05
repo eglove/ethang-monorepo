@@ -1,10 +1,4 @@
-import { getApplicationById } from "@/data/methods/get-application-by-id.ts";
-import {
-  type ApplicationsFilter,
-  getApplications,
-} from "@/data/methods/get-applications.ts";
-import { getGlobalStats } from "@/data/methods/get-global-stats.ts";
-import { getQas } from "@/data/methods/get-qas.ts";
+import type { ApplicationsFilter } from "@/data/methods/get-applications.ts";
 
 export const APPLICATION_PAGE_SIZE = 10;
 
@@ -21,11 +15,4 @@ export const queryKeys = {
   stats: () => ["stats"],
   statsGlobal: () => ["stats", "global"],
   statsUser: () => ["stats", "user"],
-};
-
-export const queries = {
-  getApplicationById,
-  getApplications,
-  getGlobalStats,
-  getQas,
 };
