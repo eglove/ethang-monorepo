@@ -42,11 +42,14 @@ export const globalStatsQuery = `WITH topCompanies AS (SELECT company,
                                               from applications
                                               where applied >= date('now', '-30 days')
                                               group by date(applied)
-                                              order by date(applied))
-                                 SELECT (SELECT json_group_array(json_object(
-                                         'company', company, 'count', count))
-                                         FROM topCompanies)                    AS topCompanies,
-                                        (SELECT averageResponseRate
+                                              order by date(applied)),
+                                      averageApplicationsPerDay
+                                          as (select sum(totalApplications) / 30.0 as averageApplicationsPerDay
+                                              from (select count(*) as totalApplications
+                                                    from applications
+                                                    where applied >= date('now', '-30 days')
+                                                    group by date(applications.applied)))
+                                 SELECT (SELECT averageResponseRate
                                          FROM averageResponseRate)             AS averageResponseRate,
                                         (SELECT averageTimeToInterview
                                          FROM averageTimeToInterview)          AS averageTimeToInterview,
@@ -54,8 +57,14 @@ export const globalStatsQuery = `WITH topCompanies AS (SELECT company,
                                          FROM averageTimeToRejection)          AS averageTimeToRejection,
                                         (select totalCompanies from totals)    as totalCompanies,
                                         (select totalApplications from totals) as totalApplications,
+                                        (select averageApplicationsPerDay
+                                         from averageApplicationsPerDay)       as averageApplicationsPerDay,
                                         (select json_group_array(json_object(
                                                 'date', date,
                                                 'count',
                                                 totalApplications))
-                                         from dailyApplications)               as applicationsPerDay`;
+                                         from dailyApplications)               as applicationsPerDay,
+                                        (SELECT json_group_array(json_object(
+                                                'company', company, 'count',
+                                                count))
+                                         FROM topCompanies)                    AS topCompanies`;
