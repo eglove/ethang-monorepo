@@ -16,6 +16,7 @@ import { localSeed } from "./local-seed/seed.js";
 import { syncData } from "./sync-data.js";
 import { updateApplication } from "./update-application.js";
 import { updateQuestionAnswer } from "./update-question-answer.js";
+import { userStats } from "./user-stats.js";
 
 export default {
   // eslint-disable-next-line sonar/cognitive-complexity
@@ -26,6 +27,7 @@ export default {
       applications: "/applications",
       globalStats: "/global-stats",
       questionAnswers: "/question-answers",
+      userStats: "/user-stats",
     };
 
     const unauthorizedResponse = createJsonResponse(
@@ -99,6 +101,10 @@ export default {
 
     if (urls.globalStats === url.pathname && "GET" === request.method) {
       return globalStats(environment);
+    }
+
+    if (urls.userStats === url.pathname && "GET" === request.method) {
+      return userStats(tokenData, environment);
     }
 
     if (

@@ -7,6 +7,7 @@ export const statsSchema = z.object({
       date: z.string(),
     }),
   ),
+  averageApplicationsPerDay: z.number(),
   averageResponseRate: z.number(),
   averageTimeToInterview: z.number(),
   averageTimeToRejection: z.number(),
