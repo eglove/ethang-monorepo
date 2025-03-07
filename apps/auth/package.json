@@ -12,14 +12,14 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.7.5",
+    "@cloudflare/vitest-pool-workers": "^0.7.7",
     "@cloudflare/workers-types": "^4.20250303.0",
-    "@ethang/eslint-config": "^21.4.6",
+    "@ethang/eslint-config": "^21.4.7",
     "@types/bcryptjs": "^2.4.6",
     "@types/lodash": "^4.17.16",
     "eslint": "^9.21.0",
     "typescript": "^5.8.2",
-    "wrangler": "^3.112.0"
+    "wrangler": "^3.114.0"
   },
   "engines": {
     "node": ">=22"

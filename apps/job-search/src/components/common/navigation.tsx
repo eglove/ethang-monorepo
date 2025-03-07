@@ -43,7 +43,7 @@ export const Navigation = () => {
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           className="sm:hidden"
         />
-        <NavbarBrand className="text-2xl font-bold">Job Track</NavbarBrand>
+        <NavbarBrand className="text-2xl font-bold">Applynetic</NavbarBrand>
       </NavbarContent>
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">
         {map(navLinks, (link) => {

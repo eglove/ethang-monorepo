@@ -40,7 +40,7 @@ export const StatsCards = ({ stats }: StatsBoardProperties) => {
         value={getStringValue(stats?.totalApplications)}
       />
       <TrendCard
-        title="Total Applications"
+        title="Total Companies"
         value={getStringValue(stats?.totalCompanies)}
       />
     </div>

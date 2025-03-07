@@ -911,6 +911,7 @@ export default tseslint.config(
         {
           cspell: {
             words: [
+              "Applynetic",
               "julianday",
               "typicode",
               "toolbelt",

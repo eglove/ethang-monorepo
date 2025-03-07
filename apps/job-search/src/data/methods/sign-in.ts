@@ -1,6 +1,5 @@
 import { queryClient } from "@/components/common/providers.tsx";
 import { userStore } from "@/components/stores/user-store.ts";
-import { queryKeys } from "@/data/queries.ts";
 import { backupAllData } from "@/lib/sync-requests.ts";
 import get from "lodash/get";
 
@@ -24,12 +23,7 @@ export const signIn = async (value: { email: string; password: string }) => {
     state.token = get(data, ["token"], "") as unknown as string;
   });
   await backupAllData();
-  await Promise.all([
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.applications(),
-    }),
-    queryClient.invalidateQueries({ queryKey: queryKeys.qas() }),
-  ]);
+  await queryClient.invalidateQueries();
 
   return data;
 };

@@ -11,15 +11,15 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^21.4.6",
+    "@ethang/eslint-config": "^21.4.7",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.16",
     "@types/node": "^22.13.9",
-    "@vitest/coverage-v8": "^3.0.7",
-    "@vitest/ui": "^3.0.7",
+    "@vitest/coverage-v8": "^3.0.8",
+    "@vitest/ui": "^3.0.8",
     "eslint": "^9.21.0",
     "typescript": "^5.8.2",
-    "vitest": "^3.0.7",
+    "vitest": "^3.0.8",
     "vitest-fetch-mock": "^0.4.5"
   },
   "engines": {
