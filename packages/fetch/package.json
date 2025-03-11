@@ -15,8 +15,8 @@
     "@ethang/project-builder": "^3.0.2",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.16",
-    "eslint": "^9.21.0",
-    "typescript-eslint": "^8.26.0"
+    "eslint": "^9.22.0",
+    "typescript-eslint": "^8.26.1"
   },
   "license": "ISC",
   "name": "@ethang/fetch",

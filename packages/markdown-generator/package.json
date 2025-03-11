@@ -12,7 +12,7 @@
     "@ethang/eslint-config": "^21.4.7",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.16",
-    "eslint": "^9.21.0",
+    "eslint": "^9.22.0",
     "vitest": "^3.0.8"
   },
   "license": "ISC",
