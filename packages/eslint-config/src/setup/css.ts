@@ -7,6 +7,9 @@ const ruleNames = keys(getNonDeprecatedRules(css.rules));
 
 export const cssRules = genRules(
   ruleNames,
-  [{ name: "no-invalid-at-rules", rule: "off" }],
+  [
+    { name: "no-invalid-at-rules", rule: "off" },
+    { name: "require-baseline", rule: ["error", { available: "newly" }] },
+  ],
   "css",
 );
