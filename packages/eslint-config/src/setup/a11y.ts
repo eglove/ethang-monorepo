@@ -3,6 +3,7 @@ import keys from "lodash/keys.js";
 
 import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 
+// @ts-expect-error its ok
 const ruleNames = keys(getNonDeprecatedRules(a11y.rules ?? {}));
 const customRules = [
   {

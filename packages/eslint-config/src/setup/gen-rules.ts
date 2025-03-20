@@ -1,5 +1,6 @@
 import type { Rule } from "eslint";
 
+import get from "lodash/get.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
 
@@ -9,7 +10,10 @@ export const getNonDeprecatedRules = (rules: EsLintRules) => {
   const filtered: EsLintRules = {};
 
   for (const [key, value] of Object.entries(rules)) {
-    if (true !== value.meta?.deprecated) {
+    if (
+      true !== value.meta?.deprecated &&
+      isNil(get(value, ["meta", "deprecated", "deprecatedSince"]))
+    ) {
       filtered[key] = value;
     }
   }
