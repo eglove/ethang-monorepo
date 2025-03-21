@@ -10,10 +10,14 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "@heroui/shared-utils",
+      "@prisma/client",
       "@swc/core",
       "esbuild",
+      "msw",
+      "scrollmirror",
       "sharp",
-      "workerd"
+      "workerd",
+      "yarn"
     ]
   },
   "scripts": {
