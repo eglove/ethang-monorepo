@@ -13,7 +13,7 @@
     "@ethang/eslint-config": "^21.5.2",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.16",
-    "eslint": "^9.22.0",
+    "eslint": "^9.23.0",
     "vitest": "^3.0.9"
   },
   "engines": {

@@ -5,7 +5,7 @@
   ],
   "dependencies": {
     "@ethang/toolbelt": "^4.4.1",
-    "eslint": "^9.22.0",
+    "eslint": "^9.23.0",
     "lodash": "^4.17.21",
     "uuid": "^11.1.0",
     "zod": "^3.24.2"

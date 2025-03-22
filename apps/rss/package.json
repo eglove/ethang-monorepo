@@ -7,7 +7,7 @@
     "@ethang/toolbelt": "^4.4.1",
     "chanfana": "^2.7.2",
     "cheerio": "^1.0.0",
-    "eslint": "^9.22.0",
+    "eslint": "^9.23.0",
     "hono": "^4.7.5",
     "lodash": "^4.17.21",
     "rss-to-json": "^2.1.1",

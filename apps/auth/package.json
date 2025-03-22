@@ -17,7 +17,7 @@
     "@ethang/eslint-config": "^21.5.2",
     "@types/bcryptjs": "^3.0.0",
     "@types/lodash": "^4.17.16",
-    "eslint": "^9.22.0",
+    "eslint": "^9.23.0",
     "typescript": "^5.8.2",
     "wrangler": "^4.3.0"
   },
