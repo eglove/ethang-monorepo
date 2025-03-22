@@ -1,4 +1,5 @@
 import typography from "@tailwindcss/typography";
+// @ts-expect-error no types
 import daisyui from "daisyui";
 import postcss from "postcss";
 import tailwindcss from "tailwindcss";
@@ -10,7 +11,7 @@ export const getStyles = async () => {
       daisyui: {
         themes: ["night"],
       },
-      // @ts-expect-error don't worry about it
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       plugins: [daisyui, typography],
       theme: {
         extend: {},

@@ -18,10 +18,10 @@ export const eventRangeFormat = (start: string, end: string) => {
   }
 
   if (!endDate.isValid) {
-    return `${startDate.toLocaleString({
+    return startDate.toLocaleString({
       dateStyle: "medium",
       timeStyle: "short",
-    })}`
+    });
   }
 
   return `${startDate.toLocaleString({
