@@ -17,6 +17,13 @@ export const eventRangeFormat = (start: string, end: string) => {
     })} - ${endDate.toLocaleString({ timeStyle: "short" })}`;
   }
 
+  if (!endDate.isValid) {
+    return `${startDate.toLocaleString({
+      dateStyle: "medium",
+      timeStyle: "short",
+    })}`
+  }
+
   return `${startDate.toLocaleString({
     dateStyle: "medium",
     timeStyle: "short",
