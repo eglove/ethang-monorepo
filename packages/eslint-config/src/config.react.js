@@ -55,6 +55,7 @@ export default tseslint.config({
     "react/hooks-extra/no-useless-custom-hooks": "error",
     "react/hooks-extra/prefer-use-state-lazy-initialization": "error",
     "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-undef": "error",
     "react/jsx-uses-vars": "error",
     "react/naming-convention/component-name": "error",
     "react/naming-convention/context-name": "error",

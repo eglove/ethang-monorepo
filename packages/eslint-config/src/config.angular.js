@@ -95,6 +95,7 @@ export default tseslint.config(
       "@angular-eslint/template/no-interpolation-in-attributes": "error",
       "@angular-eslint/template/no-negated-async": "error",
       "@angular-eslint/template/no-positive-tabindex": "error",
+      "@angular-eslint/template/prefer-contextual-for-variables": "error",
       "@angular-eslint/template/prefer-control-flow": "error",
       "@angular-eslint/template/prefer-ngsrc": "warn",
       "@angular-eslint/template/prefer-self-closing-tags": "error",
