@@ -8,6 +8,7 @@ import { addApplication } from "./add-application.js";
 import { addQuestionAnswer } from "./add-question-answer.js";
 import { deleteApplication } from "./delete-application.js";
 import { deleteQuestionAnswer } from "./delete-question-answer.js";
+import { deleteUserData } from "./delete-user-data.js";
 import { getApplications } from "./get-applications.js";
 import { getData } from "./get-data.ts";
 import { getQas } from "./get-qas.js";
@@ -24,6 +25,7 @@ export default {
 
     const urls = {
       applications: "/applications",
+      clearUserData: "/user-data",
       globalStats: "/global-stats",
       questionAnswers: "/question-answers",
       userStats: "/user-stats",
@@ -104,6 +106,10 @@ export default {
 
     if (urls.userStats === url.pathname && "GET" === request.method) {
       return userStats(tokenData, environment);
+    }
+
+    if (urls.clearUserData === url.pathname && "DELETE" === request.method) {
+      return deleteUserData(request, tokenData, environment);
     }
 
     return createJsonResponse({ error: "Not Found" }, "NOT_FOUND");
