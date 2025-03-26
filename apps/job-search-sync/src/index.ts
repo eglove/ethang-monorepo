@@ -25,9 +25,9 @@ export default {
 
     const urls = {
       applications: "/applications",
-      clearUserData: "/user-data",
       globalStats: "/global-stats",
       questionAnswers: "/question-answers",
+      userData: "/user-data",
       userStats: "/user-stats",
     };
 
@@ -108,7 +108,7 @@ export default {
       return userStats(tokenData, environment);
     }
 
-    if (urls.clearUserData === url.pathname && "DELETE" === request.method) {
+    if (urls.userData === url.pathname && "DELETE" === request.method) {
       return deleteUserData(request, tokenData, environment);
     }
 

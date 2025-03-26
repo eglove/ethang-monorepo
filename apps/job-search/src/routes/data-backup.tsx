@@ -1,5 +1,6 @@
 import { LocalImportApplications } from "@/components/add-edit-application/local-import-applications.tsx";
 import { RemoteImportApplications } from "@/components/add-edit-application/remote-import-applications.tsx";
+import { DeleteUserData } from "@/components/delete-user-data/delete-user-data.tsx";
 import { DownloadData } from "@/components/job-tracker/download-data.tsx";
 import { MainLayout } from "@/components/layouts/main-layout.tsx";
 import { useUserStore } from "@/components/stores/user-store.ts";
@@ -53,6 +54,7 @@ const RouteComponent = () => {
               <DownloadData />
               <RemoteImportApplications />
               <LocalImportApplications />
+              <DeleteUserData />
             </div>
           </CardBody>
         </Card>

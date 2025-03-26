@@ -6,5 +6,6 @@ export const syncUrls = {
   getData: new URL("/get-data", syncUrl),
   globalStats: new URL("/global-stats", syncUrl),
   qas: new URL("/question-answers", syncUrl),
+  userData: new URL("/user-data", syncUrl),
   userStats: new URL("/user-stats", syncUrl),
 } as const;
