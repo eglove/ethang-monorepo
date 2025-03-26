@@ -15,7 +15,7 @@ import {
 
 type TopCompaniesChartProperties = Readonly<{
   color?: "primary" | "secondary";
-  stats?: StatsSchema | undefined;
+  stats?: null | StatsSchema | undefined;
 }>;
 
 export const TopCompaniesChart = ({

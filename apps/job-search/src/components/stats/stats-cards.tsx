@@ -4,11 +4,11 @@ import { TrendCard } from "@/components/common/trend-card.tsx";
 import isNil from "lodash/isNil";
 
 type StatsBoardProperties = Readonly<{
-  stats?: StatsSchema | undefined;
+  stats?: null | StatsSchema | undefined;
 }>;
 
 const getStringValue = (
-  value: number | undefined,
+  value: null | number | undefined,
   options?: Intl.NumberFormatOptions,
 ) => {
   if (isNil(value)) {
