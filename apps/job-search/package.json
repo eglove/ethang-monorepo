@@ -19,9 +19,9 @@
     "@tanstack/react-query": "^5.69.0",
     "@tanstack/react-query-devtools": "^5.69.0",
     "@tanstack/react-query-persist-client": "^5.69.0",
-    "@tanstack/react-router": "^1.114.27",
+    "@tanstack/react-router": "^1.114.29",
     "@tanstack/react-table": "^8.21.2",
-    "framer-motion": "^12.6.0",
+    "framer-motion": "^12.6.2",
     "idb": "^8.0.2",
     "immer": "^10.1.1",
     "jose": "^6.0.10",
@@ -42,13 +42,13 @@
     "@cloudflare/workers-types": "^4.20250321.0",
     "@ethang/eslint-config": "^21.5.3",
     "@react-types/shared": "^3.28.0",
-    "@tanstack/router-devtools": "^1.114.27",
-    "@tanstack/router-plugin": "^1.114.27",
+    "@tanstack/router-devtools": "^1.114.29",
+    "@tanstack/router-plugin": "^1.114.29",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.4.2",
     "@types/ms": "^2.1.0",
-    "@types/node": "^22.13.13",
+    "@types/node": "^22.13.14",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
@@ -61,7 +61,7 @@
     "typescript-eslint": "^8.28.0",
     "vite": "^6.2.3",
     "vite-plugin-pwa": "^0.21.2",
-    "wrangler": "^4.4.0"
+    "wrangler": "^4.5.0"
   },
   "engines": {
     "node": ">= 22"
