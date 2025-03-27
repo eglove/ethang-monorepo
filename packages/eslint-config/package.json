@@ -57,12 +57,12 @@
   "main": "eslint.config.js",
   "name": "@ethang/eslint-config",
   "repository": {
-    "url": "https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-config"
+    "url": "git+https://github.com/eglove/ethang-monorepo.git#master"
   },
   "scripts": {
     "build": "bun build.ts && pnpm lint",
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "21.5.3"
+  "version": "21.5.5"
 }
