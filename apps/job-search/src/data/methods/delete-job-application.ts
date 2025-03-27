@@ -15,7 +15,7 @@ export const deleteJobApplication = async (id: string) => {
       .fetch(syncUrls.applications, {
         body: JSON.stringify({ id }),
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: user.token,
           "Content-Type": "application/json",
         },
         method: "DELETE",

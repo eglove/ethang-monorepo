@@ -21,7 +21,7 @@ export const updateJobApplication = async (
       .fetch(syncUrls.applications, {
         body: JSON.stringify(application),
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: user.token,
           "Content-Type": "application/json",
         },
         method: "PUT",

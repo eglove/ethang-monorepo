@@ -17,7 +17,7 @@ export const updateQa = async (qa: QuestionAnswerSchema) => {
       .fetch(syncUrls.qas, {
         body: JSON.stringify(qa),
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: user.token,
           "Content-Type": "application/json",
         },
         method: "PUT",

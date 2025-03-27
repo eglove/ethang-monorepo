@@ -15,7 +15,7 @@ export const deleteQa = async (id: string) => {
       .fetch(syncUrls.qas, {
         body: JSON.stringify({ id }),
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: user.token,
           "Content-Type": "application/json",
         },
         method: "DELETE",
