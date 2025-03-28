@@ -12,7 +12,7 @@ export default {
     const url = new URL(request.url);
 
     if ("OPTIONS" === request.method) {
-      return createJsonResponse(null, "OK", undefined, request);
+      return createJsonResponse(null, "OK");
     }
 
     const extractUrl = url.searchParams.get("url");
@@ -21,8 +21,6 @@ export default {
       return createJsonResponse(
         { error: "Missing url parameter" },
         "BAD_REQUEST",
-        undefined,
-        request,
       );
     }
 
@@ -35,8 +33,6 @@ export default {
         return createJsonResponse(
           { error: "Failed to get data from url" },
           "BAD_REQUEST",
-          undefined,
-          request,
         );
       }
 
@@ -48,8 +44,6 @@ export default {
         return createJsonResponse(
           { error: "Failed to get text from page" },
           "BAD_REQUEST",
-          undefined,
-          request,
         );
       }
 
@@ -70,14 +64,9 @@ export default {
         },
       );
 
-      return createJsonResponse({ data: rssLinks }, "OK", undefined, request);
+      return createJsonResponse({ data: rssLinks }, "OK");
     }
 
-    return createJsonResponse(
-      { error: "Not Found" },
-      "NOT_FOUND",
-      undefined,
-      request,
-    );
+    return createJsonResponse({ error: "Not Found" }, "NOT_FOUND");
   },
 } satisfies ExportedHandler<Env>;
