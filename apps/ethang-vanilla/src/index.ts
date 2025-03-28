@@ -1,4 +1,3 @@
-import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { minify } from "html-minifier-terser";
 import map from "lodash/map.js";
 import {
@@ -25,30 +24,27 @@ const minifyDistribution = async (directory = "./dist") => {
     const filePath = path.join(directory, distributionFile);
     const stats = statSync(filePath);
 
-    // eslint-disable-next-line unicorn/prefer-ternary
     if (stats.isDirectory()) {
       // eslint-disable-next-line no-await-in-loop
       await minifyDistribution(filePath);
-    } else {
+    } else if (/\.(?<files>js|css|html)$/u.test(distributionFile)) {
+      const original = readFileSync(filePath, "utf8");
       // eslint-disable-next-line no-await-in-loop
-      await attemptAsync(async () => {
-        if (/\.(?<files>js|css|html)$/u.test(distributionFile)) {
-          const original = readFileSync(filePath, "utf8");
-          const minified = await minify(original, {
-            collapseBooleanAttributes: true,
-            collapseWhitespace: true,
-            decodeEntities: true,
-            html5: true,
-            minifyCSS: true,
-            minifyJS: true,
-            minifyURLs: true,
-            removeComments: true,
-            sortAttributes: true,
-            sortClassName: true,
-          });
-          writeFileSync(filePath, minified, "utf8");
-        }
+      const minified = await minify(original, {
+        collapseBooleanAttributes: true,
+        collapseWhitespace: true,
+        decodeEntities: true,
+        html5: true,
+        minifyCSS: true,
+        minifyJS: true,
+        minifyURLs: true,
+        removeComments: true,
+        sortAttributes: true,
+        sortClassName: true,
       });
+      writeFileSync(filePath, minified, "utf8");
+    } else {
+      // Do nothing
     }
   }
 };
