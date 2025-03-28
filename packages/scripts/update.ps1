@@ -5,6 +5,7 @@ docker system prune -af
 
 # NPM globals
 pnpm self-update
+pnpm i -g wrangler
 pnpm up -g --latest
 
 # Windows software update

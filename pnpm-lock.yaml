@@ -121,6 +121,9 @@ importers:
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
+      wrangler:
+        specifier: ^4.5.1
+        version: 4.5.1(@cloudflare/workers-types@4.20250327.0)
     devDependencies:
       '@ethang/eslint-config':
         specifier: ^21.5.5
@@ -7980,7 +7983,6 @@ packages:
     resolution: {integrity: sha512-/baBXDqkfW8x0UlqfYAfRCkmVWiH8qFZ4uhT6yLVBLssiypDTbe78W6lNBse7huBFv1ipR5PG9evkxEnIXDxjA==}
     peerDependencies:
       eslint: '>= 5'
-    bundledDependencies: []
 
   eslint-plugin-compat@6.0.2:
     resolution: {integrity: sha512-1ME+YfJjmOz1blH0nPZpHgjMGK4kjgEeoYqGCqoBPQ/mGu/dJzdoP0f1C8H2jcWZjzhZjAMccbM/VdXhPORIfA==}
@@ -20457,7 +20459,7 @@ snapshots:
       consola: 3.4.2
       defu: 6.1.4
       get-port-please: 3.1.2
-      h3: 1.13.0
+      h3: 1.15.1
       http-shutdown: 1.2.2
       jiti: 1.21.7
       mlly: 1.7.4

@@ -1,8 +1,10 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
+  "assets": {
+    "directory": "./dist"
+  },
   "compatibility_date": "2025-01-24",
-  "main": "src/index.ts",
-  "name": "extract",
+  "name": "ethang-website",
   "observability": {
     "enabled": true
   },
