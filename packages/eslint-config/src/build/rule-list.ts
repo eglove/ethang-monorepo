@@ -103,7 +103,7 @@ export const ruleList = [
     name: "eslint-plugin-sonarjs",
     order: 7,
     pluginName: "sonar",
-    pluginValue: "fixupPluginRules(sonar)", // TODO remove with v9 compat
+    pluginValue: "sonar", // TODO remove with v9 compat
     type: "core",
     url: "https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md",
   },

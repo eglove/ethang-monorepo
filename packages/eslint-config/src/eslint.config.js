@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { fixupPluginRules } from "@eslint/compat";
 import { ignores, languageOptions } from "./constants.js";
 import a11y from "eslint-plugin-jsx-a11y";
 import barrel from "eslint-plugin-barrel-files";
@@ -34,7 +33,7 @@ export default tseslint.config(
       "@typescript-eslint": tseslint.plugin,
       unicorn: unicorn,
       lodash: lodashConfig,
-      sonar: fixupPluginRules(sonar),
+      sonar: sonar,
       perfectionist: perfectionist,
       "@tanstack/query": tanstackQuery,
       "@tanstack/router": tanstackRouter,

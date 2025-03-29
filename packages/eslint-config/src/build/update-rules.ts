@@ -18,7 +18,6 @@ export const coreFile = [
     name: "core",
     options: {
       extraImports: [
-        'import { fixupPluginRules } from "@eslint/compat";', // TODO remove with v9 compat
         'import eslintConfigPrettier from "eslint-config-prettier";',
         'import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";',
       ],
