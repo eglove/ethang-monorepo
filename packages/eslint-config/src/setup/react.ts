@@ -72,7 +72,6 @@ const customHookRules = [
 ];
 const hookGen = genRules(reactHookRuleNames, customHookRules, "react-hooks");
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const reactCompilerRuleNames = keys(compiler.rules);
 const compilerGen = genRules(reactCompilerRuleNames, [], "react-compiler");
 
