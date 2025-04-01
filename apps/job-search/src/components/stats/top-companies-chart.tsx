@@ -1,5 +1,6 @@
 import type { StatsSchema } from "@ethang/schemas/src/job-search/stats.ts";
 
+import { DailyApplicationsChartTooltip } from "@/components/stats/top-companies-chart-tooltip.tsx";
 import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import get from "lodash/get";
@@ -15,7 +16,7 @@ import {
 
 type TopCompaniesChartProperties = Readonly<{
   color?: "primary" | "secondary";
-  stats?: null | StatsSchema | undefined;
+  stats: null | StatsSchema | undefined;
 }>;
 
 export const TopCompaniesChart = ({
@@ -45,22 +46,7 @@ export const TopCompaniesChart = ({
               tickLine={false}
               tickMargin={10}
             />
-            <Tooltip
-              content={({ label, payload }) => {
-                const count = get(
-                  payload,
-                  [0, "payload", "count"],
-                  "",
-                ) as unknown;
-
-                return (
-                  <div className="rounded bg-background px-4 py-2">
-                    {label}: {count}
-                  </div>
-                );
-              }}
-              cursor={false}
-            />
+            <Tooltip content={DailyApplicationsChartTooltip} cursor={false} />
             <Bar
               dataKey="count"
               fill={`hsl(var(--heroui-${color}))`}

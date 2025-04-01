@@ -1,10 +1,9 @@
 import type { StatsSchema } from "@ethang/schemas/src/job-search/stats.ts";
 
+import { DailyApplicationsChartTooltip } from "@/components/stats/daily-applications-chart-tooltip.tsx";
 import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import get from "lodash/get";
-import isNil from "lodash/isNil";
-import { DateTime } from "luxon";
 import {
   CartesianGrid,
   Line,
@@ -16,7 +15,7 @@ import {
 
 type DailyApplicationsChartProperties = Readonly<{
   color?: "primary" | "secondary";
-  stats?: null | StatsSchema | undefined;
+  stats: null | StatsSchema | undefined;
 }>;
 
 export const DailyApplicationsChart = ({
@@ -61,28 +60,7 @@ export const DailyApplicationsChart = ({
               tickLine={false}
               tickMargin={8}
             />
-            <Tooltip
-              content={({ payload }) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-                const data = get(payload, [0, "payload"]) as unknown as
-                  | {
-                      count: number;
-                      date: string;
-                    }
-                  | undefined;
-
-                return (
-                  <div className="bg-background px-4 py-2">
-                    <div>
-                      {isNil(data?.date)
-                        ? ""
-                        : DateTime.fromISO(data.date).toJSDate().toDateString()}
-                    </div>
-                    <div>{get(data, ["count"], 0)} Applications</div>
-                  </div>
-                );
-              }}
-            />
+            <Tooltip content={DailyApplicationsChartTooltip} />
             <Line
               dot={{
                 fill: `hsl(var(--heroui-${color}))`,
