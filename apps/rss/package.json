@@ -15,10 +15,10 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250327.0",
-    "@ethang/eslint-config": "^21.5.8",
+    "@cloudflare/workers-types": "^4.20250402.0",
+    "@ethang/eslint-config": "^21.5.9",
     "@types/lodash": "^4.17.16",
-    "@types/node": "22.13.16",
+    "@types/node": "22.13.17",
     "@types/service-worker-mock": "^2.0.1",
     "wrangler": "^4.6.0"
   },

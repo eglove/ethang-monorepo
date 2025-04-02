@@ -7,9 +7,9 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^21.5.8",
+    "@ethang/eslint-config": "^21.5.9",
     "@types/lodash": "^4.17.16",
-    "@types/node": "^22.13.16",
+    "@types/node": "^22.13.17",
     "eslint": "^9.23.0"
   },
   "engines": {

@@ -27,7 +27,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-lodash": "^8.0.0",
     "eslint-plugin-n": "^17.17.0",
-    "eslint-plugin-perfectionist": "^4.10.1",
+    "eslint-plugin-perfectionist": "^4.11.0",
     "eslint-plugin-prettier": "^5.2.5",
     "eslint-plugin-react-compiler": "19.0.0-beta-e993439-20250328",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -44,7 +44,7 @@
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.16",
-    "@types/node": "^22.13.16",
+    "@types/node": "^22.13.17",
     "lodash": "^4.17.21",
     "typescript": "^5.8.2",
     "zod": "^3.24.2"
@@ -63,5 +63,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "21.5.8"
+  "version": "21.5.9"
 }
