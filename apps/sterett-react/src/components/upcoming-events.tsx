@@ -10,7 +10,7 @@ import { AddToCalendar } from "./add-to-calendar.tsx";
 import { SanityContent } from "./sanity/sanity-content.tsx";
 
 export const UpcomingEvents = () => {
-  const { data: events } = useSuspenseQuery(indexRouteQueries.newsAndEvents);
+  const { data: events } = useSuspenseQuery(indexRouteQueries.events);
 
   if (isNil(events) || isEmpty(events)) {
     return null;

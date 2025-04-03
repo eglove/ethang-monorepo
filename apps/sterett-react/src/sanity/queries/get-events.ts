@@ -1,4 +1,4 @@
-import type { TypedObject } from "@portabletext/types";
+import type { PortableTextBlock } from "@portabletext/types";
 
 import { queryOptions } from "@tanstack/react-query";
 import { DateTime } from "luxon";
@@ -10,9 +10,9 @@ import {
 } from "../../clients/sanity/sanity-client.ts";
 import { AMERICA_CHICAGO } from "../../util/date.ts";
 
-type CalendarEventSchema = {
+export type CalendarEventSchema = {
   _id: string;
-  description: TypedObject | TypedObject[];
+  description: PortableTextBlock;
   endsAt: string;
   startsAt: string;
   title: string;
