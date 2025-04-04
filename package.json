@@ -8,9 +8,6 @@
   "license": "ISC",
   "name": "ethang-monorepo",
   "pnpm": {
-    "overrides": {
-      "tailwindcss": "<4"
-    },
     "onlyBuiltDependencies": [
       "@heroui/shared-utils",
       "@prisma/client",
@@ -21,10 +18,13 @@
       "sharp",
       "workerd",
       "yarn"
-    ]
+    ],
+    "overrides": {
+      "tailwindcss": "<4"
+    }
   },
   "scripts": {
-    "all": "pnpm approve-builds && pnpm i && pnpm deps && pnpm test && pnpm lint && pnpm build && pnpm prune",
+    "all": "pnpm approve-builds && pnpm i && pnpm deps && pnpm -r cf-typegen && pnpm build && pnpm test && pnpm lint && pnpm prune",
     "build": "pnpm -r build",
     "deps": "pnpm up -r -i --latest",
     "lint": "pnpm -r lint",

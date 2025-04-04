@@ -5,7 +5,6 @@ Get-WindowsUpdate -MicrosoftUpdate -AcceptAll -Install
 
 # NPM globals
 pnpm store prune
-pnpm self-update
 pnpm i -g wrangler
 pnpm up -g --latest
 

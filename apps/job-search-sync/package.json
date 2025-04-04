@@ -10,14 +10,14 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.9",
-    "@cloudflare/workers-types": "^4.20250403.0",
+    "@cloudflare/vitest-pool-workers": "^0.8.10",
+    "@cloudflare/workers-types": "^4.20250404.0",
     "@ethang/eslint-config": "^21.5.9",
     "@types/lodash": "^4.17.16",
     "eslint": "^9.23.0",
     "typescript": "^5.8.2",
     "vitest": "~3.1.1",
-    "wrangler": "^4.7.0"
+    "wrangler": "^4.7.1"
   },
   "name": "job-search-sync",
   "private": true,
@@ -25,7 +25,7 @@
     "cf-typegen": "wrangler types",
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "lint": "pnpm cf-typegen && eslint src --fix",
+    "lint": "eslint src --fix",
     "start": "wrangler dev"
   },
   "type": "module",

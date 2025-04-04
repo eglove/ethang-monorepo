@@ -15,12 +15,12 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250403.0",
+    "@cloudflare/workers-types": "^4.20250404.0",
     "@ethang/eslint-config": "^21.5.9",
     "@types/lodash": "^4.17.16",
     "@types/node": "22.14.0",
     "@types/service-worker-mock": "^2.0.1",
-    "wrangler": "^4.7.0"
+    "wrangler": "^4.7.1"
   },
   "engines": {
     "node": ">=22"
@@ -31,7 +31,7 @@
     "cf-typegen": "wrangler types",
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "lint": "pnpm cf-typegen && eslint src --fix",
+    "lint": "eslint src --fix",
     "start": "wrangler dev"
   },
   "type": "module",
