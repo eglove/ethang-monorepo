@@ -7,7 +7,7 @@
   "devDependencies": {
     "@ethang/eslint-config": "^21.5.9",
     "@ethang/project-builder": "^3.0.2",
-    "eslint": "^9.23.0"
+    "eslint": "^9.24.0"
   },
   "license": "ISC",
   "name": "@ethang/schemas",

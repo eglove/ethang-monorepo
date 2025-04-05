@@ -5,19 +5,19 @@
   ],
   "dependencies": {
     "@ethang/toolbelt": "^4.4.1",
-    "eslint": "^9.23.0",
+    "eslint": "^9.24.0",
     "lodash": "^4.17.21",
     "uuid": "^11.1.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.10",
-    "@cloudflare/workers-types": "^4.20250404.0",
+    "@cloudflare/vitest-pool-workers": "^0.8.11",
+    "@cloudflare/workers-types": "^4.20250405.0",
     "@ethang/eslint-config": "^21.5.9",
     "@types/lodash": "^4.17.16",
     "@types/uuid": "^10.0.0",
-    "typescript": "^5.8.2",
-    "wrangler": "^4.7.1"
+    "typescript": "^5.8.3",
+    "wrangler": "^4.7.2"
   },
   "engines": {
     "node": ">=22.4"

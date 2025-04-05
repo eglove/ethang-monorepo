@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "compatibility_date": "2025-04-04",
+  "compatibility_date": "2025-04-05",
   "main": "src/index.ts",
   "name": "extract",
   "observability": {
