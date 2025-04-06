@@ -1,11 +1,15 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "compatibility_date": "2025-04-05",
+  "compatibility_date": "2025-04-06",
+  "compatibility_flags": [
+    "nodejs"
+  ],
   "name": "job-search",
   "observability": {
     "enabled": true
   },
-  "compatibility_flags": ["nodejs"],
   "pages_build_output_dir": "dist",
-  "placement": { "mode": "smart" }
+  "placement": {
+    "mode": "smart"
+  }
 }

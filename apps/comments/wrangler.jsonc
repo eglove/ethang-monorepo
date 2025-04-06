@@ -4,16 +4,13 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_id": "fdce8bd6-b4ec-4c86-a36e-1233dfd96881",
-      "database_name": "job-sync"
+      "database_id": "ceea7c26-79b2-49bd-88cd-4b6f52b94d31",
+      "database_name": "comments-db"
     }
   ],
   "main": "src/index.ts",
-  "name": "job-search-sync",
+  "name": "comments",
   "observability": {
     "enabled": true
-  },
-  "placement": {
-    "mode": "smart"
   }
 }

@@ -13,8 +13,6 @@
   - Simple password hashing auth service on Cloudflare Worker/D1 database
 - comments
   - Websocket Cloudflare worker used to add and subscribe to comments.
-- extract
-  - Service to extract RSS feeds from URL's. [Demo](https://ethang.dev/blog/extract/)
 
 # Packages
 

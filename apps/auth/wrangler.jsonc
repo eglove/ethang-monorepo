@@ -4,12 +4,12 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_id": "fdce8bd6-b4ec-4c86-a36e-1233dfd96881",
-      "database_name": "job-sync"
+      "database_id": "76d8c700-ba4d-49fe-a6c8-587f940f6960",
+      "database_name": "auth-db"
     }
   ],
   "main": "src/index.ts",
-  "name": "job-search-sync",
+  "name": "comments",
   "observability": {
     "enabled": true
   },

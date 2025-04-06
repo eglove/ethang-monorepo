@@ -26,8 +26,4 @@ export default tseslint.config(
       },
     },
   },
-  {
-    files: ["packages/react-components/components/ui"],
-    rules: { "react/prefer-read-only-props": "off" },
-  },
 );
