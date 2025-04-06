@@ -11,8 +11,8 @@
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.11",
-    "@cloudflare/workers-types": "^4.20250405.0",
-    "@ethang/eslint-config": "^21.5.9",
+    "@cloudflare/workers-types": "^4.20250406.0",
+    "@ethang/eslint-config": "^21.5.10",
     "@types/lodash": "^4.17.16",
     "eslint": "^9.24.0",
     "typescript": "^5.8.3",

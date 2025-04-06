@@ -15,8 +15,8 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250405.0",
-    "@ethang/eslint-config": "^21.5.9",
+    "@cloudflare/workers-types": "^4.20250406.0",
+    "@ethang/eslint-config": "^21.5.10",
     "@types/lodash": "^4.17.16",
     "@types/node": "22.14.0",
     "@types/service-worker-mock": "^2.0.1",
