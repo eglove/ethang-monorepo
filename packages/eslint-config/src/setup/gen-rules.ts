@@ -6,10 +6,11 @@ import isNil from "lodash/isNil.js";
 
 export type EsLintRules = Record<string, Rule.RuleModule>;
 
-export const getNonDeprecatedRules = (rules: EsLintRules) => {
+export const getNonDeprecatedRules = (rules: unknown) => {
   const filtered: EsLintRules = {};
 
-  for (const [key, value] of Object.entries(rules)) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  for (const [key, value] of Object.entries(rules as EsLintRules)) {
     if (
       true !== value.meta?.deprecated &&
       isNil(get(value, ["meta", "deprecated", "deprecatedSince"]))

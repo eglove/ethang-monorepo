@@ -82,6 +82,7 @@ export const updateReadme = () => {
   const solidRules = getList("solid");
   const angularRules = getList("angular");
   const angularTemplateRules = getList("angular:template");
+  const storybookRules = getList("storybook");
 
   let astroCount = 0;
   for (const astroRule of astroRules) {
@@ -101,6 +102,11 @@ export const updateReadme = () => {
   let angularCount = 0;
   for (const angularRule of [...angularRules, ...angularTemplateRules]) {
     angularCount += getRuleCount(angularRule.list);
+  }
+
+  let storybookCount = 0;
+  for (const storybookRule of storybookRules) {
+    storybookCount += getRuleCount(storybookRule.list);
   }
 
   md.unorderedList(ruleDocumentation);
@@ -127,6 +133,11 @@ export const updateReadme = () => {
     [
       '`import solidConfig from "@ethang/eslint-config/config.solid.js";`',
       getImports(solidRules),
+    ],
+    `${storybookCount} rules from **Storybook**`,
+    [
+      '`import storybookConfig from "@ethang/eslint-config/config.storybook.js";`',
+      getImports(storybookRules),
     ],
   ]);
   md.newLine();

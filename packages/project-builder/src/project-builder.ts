@@ -1,7 +1,6 @@
 import isNil from "lodash/isNil.js";
 import { copyFileSync } from "node:fs";
 import { chdir } from "node:process";
-import { build as tsc } from "tsc-prog";
 import { build as tsup } from "tsup";
 
 const packageJsonString = "package.json";
@@ -20,22 +19,10 @@ export const projectBuilder = async (basePath: string, options?: Options) => {
       } satisfies Options)
     : options;
 
-  tsc({
-    basePath,
-    clean: [config.outDir],
-    compilerOptions: {
-      allowSyntheticDefaultImports: true,
-      declaration: true,
-      emitDeclarationOnly: true,
-      moduleResolution: "node",
-      outDir: config.outDir,
-      target: "esnext",
-    },
-    include: config.entry,
-  });
-
   await tsup({
     bundle: true,
+    clean: true,
+    dts: true,
     entry: config.entry,
     format: ["esm"],
     minify: true,

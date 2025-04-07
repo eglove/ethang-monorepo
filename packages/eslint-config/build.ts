@@ -11,6 +11,7 @@ const configFiles = [
   "src/config.react.js",
   "src/config.solid.js",
   "src/config.angular.js",
+  "src/config.storybook.js",
 ];
 
 await updateRules();

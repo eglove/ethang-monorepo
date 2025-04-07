@@ -110,6 +110,20 @@ const angularFile = [
   },
 ];
 
+const storybookFile = [
+  {
+    importString:
+      'import storybookConfig from "@ethang/eslint-config/config.storybook.ts',
+    label: "Storybook",
+    name: "storybook",
+    options: {
+      extraImports: [importTsEslint],
+      includeIgnores: true,
+      includeLanguageOptions: true,
+    },
+  },
+];
+
 export const updateRules = async () => {
   await Promise.all([
     createConfigFile(coreFile, "eslint.config.js"),
@@ -117,6 +131,7 @@ export const updateRules = async () => {
     createConfigFile(reactFile, "config.react.js"),
     createConfigFile(solidFile, "config.solid.js"),
     createConfigFile(angularFile, "config.angular.js"),
+    createConfigFile(storybookFile, "config.storybook.js"),
   ]);
 };
 

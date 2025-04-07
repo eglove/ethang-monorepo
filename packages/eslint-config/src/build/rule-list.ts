@@ -18,6 +18,7 @@ import {
 } from "../setup/react.ts";
 import { solidRules } from "../setup/solid.ts";
 import { sonarRules } from "../setup/sonar.ts";
+import { storybookRules } from "../setup/storybook.js";
 import { tanstackQueryRules } from "../setup/tanstack-query.ts";
 import { tanstackRouterRules } from "../setup/tanstack-router.js";
 import { typescriptRules } from "../setup/typescript-eslint.ts";
@@ -279,5 +280,14 @@ export const ruleList = [
     pluginValue: "angularTemplate",
     type: "angular:template",
     url: "https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md",
+  },
+  {
+    importString: 'import storybook from "eslint-plugin-storybook";',
+    list: storybookRules,
+    name: "eslint-plugin-storybook",
+    pluginName: "storybook",
+    pluginValue: "storybook",
+    type: "storybook",
+    url: "https://github.com/storybookjs/eslint-plugin-storybook",
   },
 ];

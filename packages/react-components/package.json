@@ -1,0 +1,65 @@
+{
+  "browserslist": [
+    "defaults and fully supports es6-module",
+    "maintained node versions"
+  ],
+  "dependencies": {
+    "@ethang/store": "^1.2.1",
+    "@heroui/button": "2.2.17",
+    "@heroui/dropdown": "^2.3.17",
+    "@heroui/modal": "2.2.14",
+    "@heroui/select": "^2.4.17",
+    "@heroui/system": "2.4.13",
+    "@heroui/theme": "2.4.13",
+    "@radix-ui/react-scroll-area": "^1.2.3",
+    "calendar-link": "^2.8.0",
+    "framer-motion": "^12.6.3",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.487.0",
+    "luxon": "^3.6.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "^21.7.1",
+    "@ethang/project-builder": "^3.0.2",
+    "@storybook/addon-essentials": "8.6.12",
+    "@storybook/blocks": "8.6.12",
+    "@storybook/experimental-addon-test": "8.6.12",
+    "@storybook/react": "8.6.12",
+    "@storybook/react-vite": "8.6.12",
+    "@storybook/test": "8.6.12",
+    "@types/lodash": "^4.17.16",
+    "@types/luxon": "^3.6.2",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/browser": "^3.1.1",
+    "@vitest/coverage-v8": "^3.1.1",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.24.0",
+    "globals": "^16.0.0",
+    "playwright": "^1.51.1",
+    "postcss": "^8.5.3",
+    "storybook": "8.6.12",
+    "tailwindcss": "3",
+    "tsc-prog": "^2.3.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.29.0",
+    "vite": "^6.2.0",
+    "vitest": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "name": "react-components",
+  "private": true,
+  "scripts": {
+    "build-storybook": "storybook build",
+    "dev": "storybook dev -p 6006 --no-open",
+    "lint": "eslint . --fix"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}

@@ -33,6 +33,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "3.0.2",
+    "eslint-plugin-storybook": "^0.12.0",
     "eslint-plugin-tailwindcss": "^3.18.0",
     "eslint-plugin-unicorn": "^58.0.0",
     "prettier": "^3.5.3",
@@ -63,5 +64,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "21.6.0"
+  "version": "21.7.1"
 }

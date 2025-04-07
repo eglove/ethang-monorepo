@@ -105,6 +105,10 @@ export const getTypeFiles = (type: string) => {
       return "**/*.{jsx,tsx}";
     }
 
+    case "storybook": {
+      return "**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)";
+    }
+
     default: {
       return "";
     }
