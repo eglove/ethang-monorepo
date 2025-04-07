@@ -1,12 +1,12 @@
+import { getKeyValue } from "@heroui/react";
 import {
-  getKeyValue,
   Table,
   TableBody,
   TableCell,
   TableColumn,
   TableHeader,
   TableRow,
-} from "@heroui/react";
+} from "@heroui/table";
 
 import type { filesRouteQueries } from "../../routes/files.tsx";
 

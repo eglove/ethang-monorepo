@@ -1,4 +1,4 @@
-import type { SharedSelection } from "@heroui/react";
+import type { SharedSelection } from "@heroui/system";
 import type { Key } from "@react-types/shared";
 
 import { AddEditApplication } from "@/components/add-edit-application/add-edit-application.tsx";

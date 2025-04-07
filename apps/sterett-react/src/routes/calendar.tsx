@@ -1,6 +1,6 @@
 import type { TypedObject } from "@portabletext/types";
 
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@heroui/modal";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createRoute } from "@tanstack/react-router";
 import isNil from "lodash/isNil.js";

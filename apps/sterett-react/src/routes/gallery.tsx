@@ -1,4 +1,4 @@
-import { Image } from "@heroui/react";
+import { Image } from "@heroui/image";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createRoute } from "@tanstack/react-router";
 import map from "lodash/map";

@@ -1,4 +1,5 @@
-import { Card, CardBody, CardHeader, Divider } from "@heroui/react";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Divider } from "@heroui/divider";
 import isNil from "lodash/isNil";
 
 import type { NewsUpdateReturn } from "../sanity/queries/get-news-and-events.ts";

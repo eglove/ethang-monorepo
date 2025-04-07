@@ -1,4 +1,4 @@
-import { NavbarBrand } from "@heroui/react";
+import { NavbarBrand } from "@heroui/navbar";
 
 import { Link } from "../link";
 
