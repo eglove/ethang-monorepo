@@ -27,7 +27,7 @@ export const CalendarWeekViewHeading = () => {
               {first(day.weekdayShort)}{" "}
               <span
                 className={twMerge(
-                  "mt-1 flex size-8 items-center justify-center font-semibold",
+                  "mt-1 flex size-6 items-center justify-center font-semibold",
                   !isToday && "text-gray-900",
                   isToday && "bg-primary text-primary-foreground rounded-full",
                 )}
@@ -56,7 +56,7 @@ export const CalendarWeekViewHeading = () => {
                     "items-center justify-center font-semibold",
                     !isToday && "text-gray-900",
                     isToday &&
-                      "ml-1.5 flex size-8 rounded-full bg-primary text-primary-foreground",
+                      "ml-1.5 flex size-6 rounded-full bg-primary text-primary-foreground",
                   )}
                 >
                   {day.day}

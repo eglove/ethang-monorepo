@@ -1,3 +1,4 @@
+import { useIsMobile } from "@ethang/hooks/use-is-mobile";
 import { Button } from "@heroui/button";
 import {
   Dropdown,
@@ -21,15 +22,22 @@ import {
   useCalendarStore,
 } from "./calendar-store.ts";
 
-const viewDropdowns = [
-  { label: "Day View", value: "day" },
-  { label: "Week View", value: "week" },
-  { label: "Month View", value: "month" },
-  { label: "Year View", value: "year" },
-] satisfies { label: string; value: CalendarView }[];
-
 export const CalendarViewSelect = () => {
   const calendarStoreSubscription = useCalendarStore();
+  const { isMobile } = useIsMobile(640);
+
+  const viewDropdowns: { label: string; value: CalendarView }[] = isMobile
+    ? [
+        { label: "Day View", value: "day" },
+        { label: "Month View", value: "month" },
+        { label: "Year View", value: "year" },
+      ]
+    : [
+        { label: "Day View", value: "day" },
+        { label: "Week View", value: "week" },
+        { label: "Month View", value: "month" },
+        { label: "Year View", value: "year" },
+      ];
 
   return (
     <>
@@ -52,10 +60,9 @@ export const CalendarViewSelect = () => {
           selectedKeys={[calendarStoreSubscription.selectedView]}
           variant="bordered"
         >
-          <SelectItem key="day">Day View</SelectItem>
-          <SelectItem key="week">Week View</SelectItem>
-          <SelectItem key="month">Month View</SelectItem>
-          <SelectItem key="year">Year View</SelectItem>
+          {map(viewDropdowns, (view) => {
+            return <SelectItem key={view.value}>{view.label}</SelectItem>;
+          })}
         </Select>
       </div>
       <div className="relative ml-6 md:hidden">

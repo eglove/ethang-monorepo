@@ -5,9 +5,11 @@ import { useSyncExternalStore } from "react";
 import type { CalendarView } from "./calendar-types.ts";
 
 export const calendarStore = new Store({
+  selectedDay: DateTime.local(),
   selectedMonth: DateTime.local(),
   selectedView: "month" as CalendarView,
   selectedWeek: DateTime.local(),
+  selectedYear: DateTime.local(),
 });
 
 export const useCalendarStore = () => {
@@ -18,37 +20,34 @@ export const useCalendarStore = () => {
   );
 };
 
+const scrollOperations = {
+  next: (unit: string, value: DateTime) => value.plus({ [unit]: 1 }),
+  previous: (unit: string, value: DateTime) => value.minus({ [unit]: 1 }),
+  today: (_: string, __: DateTime) => DateTime.local(),
+};
+
+const viewToStateMap = {
+  day: "selectedDay",
+  month: "selectedMonth",
+  week: "selectedWeek",
+  year: "selectedYear",
+} as const;
+
+const viewUnits = {
+  day: "days",
+  month: "months",
+  week: "weeks",
+  year: "years",
+} as const;
+
 export const handleScroll =
   (direction: "next" | "previous" | "today") => () => {
     calendarStore.set((state) => {
-      switch (direction) {
-        case "next": {
-          if ("week" === state.selectedView) {
-            state.selectedWeek = state.selectedWeek.plus({ weeks: 1 });
-          } else {
-            state.selectedMonth = state.selectedMonth.plus({ months: 1 });
-          }
-          break;
-        }
+      const unit = viewUnits[state.selectedView];
+      const stateProperty = viewToStateMap[state.selectedView];
 
-        case "previous": {
-          if ("week" === state.selectedView) {
-            state.selectedWeek = state.selectedWeek.minus({ weeks: 1 });
-          } else {
-            state.selectedMonth = state.selectedMonth.minus({ months: 1 });
-          }
-          break;
-        }
-
-        case "today": {
-          if ("week" === state.selectedView) {
-            state.selectedWeek = DateTime.local();
-          } else {
-            state.selectedMonth = DateTime.local();
-          }
-          break;
-        }
-      }
+      const updater = scrollOperations[direction];
+      state[stateProperty] = updater(unit, state[stateProperty]);
     });
   };
 
