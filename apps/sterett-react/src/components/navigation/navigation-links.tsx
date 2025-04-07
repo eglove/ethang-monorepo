@@ -1,4 +1,4 @@
-import { NavbarItem } from "@heroui/navbar";
+import { NavbarItem } from "@heroui/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import map from "lodash/map";
 

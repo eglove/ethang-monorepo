@@ -1,4 +1,4 @@
-import type { AvatarProps } from "@heroui/avatar";
+import type { AvatarProps } from "@heroui/react";
 
 import { User } from "@heroui/user";
 import shuffle from "lodash/shuffle";

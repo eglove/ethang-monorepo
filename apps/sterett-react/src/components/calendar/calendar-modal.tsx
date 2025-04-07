@@ -1,11 +1,11 @@
-import { Button } from "@heroui/button";
 import {
+  Button,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-} from "@heroui/modal";
+} from "@heroui/react";
 
 import type { CalendarComponentEvent } from "../../routes/calendar.tsx";
 

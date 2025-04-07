@@ -1,6 +1,5 @@
 import { CalendarDaysIcon } from "@heroicons/react/24/solid";
-import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
-import { Divider } from "@heroui/divider";
+import { Card, CardBody, CardFooter, CardHeader, Divider } from "@heroui/react";
 import isNil from "lodash/isNil";
 import { DateTime } from "luxon";
 import { Fragment } from "react";

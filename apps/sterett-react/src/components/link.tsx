@@ -1,4 +1,4 @@
-import { Link as NextUiLink } from "@heroui/link";
+import { Link as NextUiLink } from "@heroui/react";
 import { Link as TanStackLink } from "@tanstack/react-router";
 
 type LinkProperties = Readonly<

@@ -1,4 +1,4 @@
-import { NavbarContent, NavbarMenuToggle } from "@heroui/navbar";
+import { NavbarContent, NavbarMenuToggle } from "@heroui/react";
 
 import { NavigationHome } from "./navigation-home.tsx";
 

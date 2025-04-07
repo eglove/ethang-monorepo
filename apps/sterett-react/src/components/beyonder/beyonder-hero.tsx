@@ -1,4 +1,4 @@
-import { Image } from "@heroui/image";
+import { Image } from "@heroui/react";
 import toUpper from "lodash/toUpper";
 
 export const BeyonderHero = () => {

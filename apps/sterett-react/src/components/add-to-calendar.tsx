@@ -1,12 +1,12 @@
 import type { PortableTextBlock } from "@portabletext/types";
 
-import { Button } from "@heroui/button";
-import { Image } from "@heroui/image";
 import {
+  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Image,
 } from "@heroui/react";
 import { toPlainText } from "@portabletext/react";
 import {
