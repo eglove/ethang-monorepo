@@ -858,6 +858,7 @@ export default tseslint.config(
       "@tanstack/query/infinite-query-property-order": "error",
       "@tanstack/query/no-rest-destructuring": "error",
       "@tanstack/query/no-unstable-deps": "error",
+      "@tanstack/query/no-void-query-fn": "error",
       "@tanstack/query/stable-query-client": "error",
       "@tanstack/router/create-route-property-order": "error",
       "a11y/alt-text": "error",

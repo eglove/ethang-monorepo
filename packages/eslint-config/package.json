@@ -9,12 +9,12 @@
     "@angular-eslint/eslint-plugin-template": "^19.3.0",
     "@angular-eslint/template-parser": "^19.3.0",
     "@cspell/eslint-plugin": "^8.18.1",
-    "@eslint-react/eslint-plugin": "^1.40.3",
+    "@eslint-react/eslint-plugin": "^1.40.4",
     "@eslint/css": "0.6.0",
     "@eslint/js": "^9.24.0",
     "@eslint/json": "^0.11.0",
     "@eslint/markdown": "^6.3.0",
-    "@tanstack/eslint-plugin-query": "^5.71.5",
+    "@tanstack/eslint-plugin-query": "^5.72.0",
     "@tanstack/eslint-plugin-router": "^1.115.0",
     "@typescript-eslint/parser": "^8.29.0",
     "angular-eslint": "19.3.0",
@@ -29,7 +29,7 @@
     "eslint-plugin-n": "^17.17.0",
     "eslint-plugin-perfectionist": "^4.11.0",
     "eslint-plugin-prettier": "^5.2.6",
-    "eslint-plugin-react-compiler": "19.0.0-beta-e993439-20250328",
+    "eslint-plugin-react-compiler": "19.0.0-beta-e993439-20250405",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "3.0.2",
@@ -63,5 +63,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "21.5.11"
+  "version": "21.6.0"
 }

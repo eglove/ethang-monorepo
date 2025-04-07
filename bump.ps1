@@ -3,7 +3,9 @@ $eslintConfigDirectory = Join-Path $scriptDir "packages\eslint-config"
 
 Set-Location $eslintConfigDirectory
 Write-Host "Updating dependencies in eslint-config..."
+webstorm ../../
 pnpm up -i --latest
+pnpm build
 
 $updateTypeOptions = @(
     [PSCustomObject]@{Name = "patch"; Value = "patch"},
