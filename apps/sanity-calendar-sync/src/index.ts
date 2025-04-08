@@ -2,6 +2,7 @@ import type { PortableTextBlock } from "@portabletext/types";
 
 import { toPlainText } from "@portabletext/react";
 import { createClient } from "@sanity/client";
+import isNil from "lodash/isNil";
 import map from "lodash/map.js";
 import { DateTime } from "luxon";
 import { generateIcsCalendar, type IcsEvent } from "ts-ics";
@@ -19,16 +20,6 @@ export default {
   async fetch(): Promise<Response> {
     const zone = "America/Chicago";
 
-    const today = DateTime.fromJSDate(new Date(), {
-      zone,
-    }).set({
-      hour: 0,
-      millisecond: 0,
-      minute: 0,
-      second: 0,
-    });
-    const formattedDate = today.toFormat("yyyy-LL-dd");
-
     const client = createClient({
       apiVersion: "1",
       dataset: "production",
@@ -39,7 +30,6 @@ export default {
 
     const eventQuery = `
 			*[_type == "calendarEvent"
-			&& (startsAt >= "${formattedDate}" || endsAt >= "${formattedDate}")
 			&& !(_id in path('drafts.**'))] | order(startsAt asc){_id, title, startsAt, endsAt, description}`;
 
     const data = await client.fetch<CalendarEventReturn[]>(eventQuery);
@@ -50,7 +40,11 @@ export default {
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       return {
-        description: toPlainText(item.description),
+        description: isNil(item.description)
+          ? ""
+          : toPlainText(item.description)
+              .replaceAll("\n", " ")
+              .replaceAll("\\", ""),
         end: endDate.isValid
           ? { date: endDate.toJSDate(), type: "DATE-TIME" }
           : undefined,
