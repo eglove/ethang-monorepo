@@ -12,7 +12,7 @@ export const getGlobalStats = () => {
       const user = userStore.get();
 
       if (!user.isSignedIn) {
-        return;
+        return null;
       }
 
       const response = await globalThis.fetch(syncUrls.globalStats, {
@@ -26,17 +26,17 @@ export const getGlobalStats = () => {
         userStore.set((state) => {
           state.isSignedIn = false;
         });
-        return;
+        return null;
       }
 
       if (!response.ok) {
-        return;
+        return null;
       }
 
       const data = await parseFetchJson(response, statsSchema);
 
       if (isError(data)) {
-        return;
+        return null;
       }
 
       return data;

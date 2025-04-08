@@ -17,7 +17,7 @@ export const getApplicationById = (id: string | undefined) => {
     enabled: !isEmpty(id),
     queryFn: async () => {
       if (isNil(id)) {
-        return;
+        return null;
       }
 
       const database = await getDatabase();
@@ -41,7 +41,7 @@ export const getApplicationById = (id: string | undefined) => {
         }
       }
 
-      return application;
+      return application ?? null;
     },
     queryKey: queryKeys.getApplication(id),
   });
