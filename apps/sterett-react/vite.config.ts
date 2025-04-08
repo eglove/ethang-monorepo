@@ -6,32 +6,42 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
       workbox: {
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        globDirectory: "./dist",
+        globPatterns: ["**/*.{js,css,html}"],
+        navigationPreload: true,
         runtimeCaching: [
           {
             handler: "StaleWhileRevalidate",
             options: {
-              cacheName: "js-css-cache",
-              expiration: {
-                maxAgeSeconds: 60 * 60 * 24 * 30,
-                maxEntries: 100,
-              },
+              cacheName: "static-resources",
             },
             urlPattern: /\.(?:js|css)$/u,
+          },
+          {
+            handler: "CacheFirst",
+            options: {
+              cacheName: "image-cache",
+              expiration: {
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+                maxEntries: 50,
+              },
+            },
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|ico)$/u,
           },
           {
             handler: "NetworkFirst",
             options: {
               cacheName: "html-cache",
-              expiration: {
-                maxAgeSeconds: 60 * 60 * 24 * 7,
-                maxEntries: 50,
-              },
             },
             urlPattern: /\.html$/u,
           },
         ],
+        skipWaiting: true,
+        sourcemap: false,
+        swDest: "./dist/service-worker.js",
       },
     }),
   ],
