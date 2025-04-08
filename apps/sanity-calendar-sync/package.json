@@ -1,28 +1,29 @@
 {
-	"name": "sanity-calendar-sync",
-	"version": "0.0.0",
-	"private": true,
-	"scripts": {
-		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
-		"start": "wrangler dev",
-		"test": "vitest",
-		"cf-typegen": "wrangler types"
-	},
-	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.7.5",
-		"@cloudflare/workers-types": "^4.20250407.0",
-		"@types/lodash": "^4.17.16",
-		"@types/luxon": "^3.6.2",
-		"typescript": "^5.5.2",
-		"vitest": "~3.0.7",
-		"wrangler": "^4.8.0"
-	},
-	"dependencies": {
-		"@portabletext/types": "^2.0.13",
-		"@sanity/client": "^6.28.4",
-		"lodash": "^4.17.21",
-		"luxon": "^3.6.1",
-		"ts-ics": "^2.0.1"
-	}
+  "dependencies": {
+    "@portabletext/react": "^3.2.1",
+    "@portabletext/types": "^2.0.13",
+    "@sanity/client": "^6.28.4",
+    "lodash": "^4.17.21",
+    "luxon": "^3.6.1",
+    "ts-ics": "^2.0.1"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.7.5",
+    "@cloudflare/workers-types": "^4.20250407.0",
+    "@types/lodash": "^4.17.16",
+    "@types/luxon": "^3.6.2",
+    "typescript": "^5.5.2",
+    "vitest": "~3.0.7",
+    "wrangler": "^4.8.0"
+  },
+  "name": "sanity-calendar-sync",
+  "private": true,
+  "scripts": {
+    "cf-typegen": "wrangler types",
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "test": "vitest"
+  },
+  "version": "0.0.0"
 }

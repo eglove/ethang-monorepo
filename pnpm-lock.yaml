@@ -383,6 +383,9 @@ importers:
 
   apps/sanity-calendar-sync:
     dependencies:
+      '@portabletext/react':
+        specifier: ^3.2.1
+        version: 3.2.1(react@19.1.0)
       '@portabletext/types':
         specifier: ^2.0.13
         version: 2.0.13
