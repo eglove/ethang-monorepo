@@ -9,14 +9,14 @@
     "@angular-eslint/eslint-plugin-template": "^19.3.0",
     "@angular-eslint/template-parser": "^19.3.0",
     "@cspell/eslint-plugin": "^8.18.1",
-    "@eslint-react/eslint-plugin": "^1.40.4",
+    "@eslint-react/eslint-plugin": "^1.42.1",
     "@eslint/css": "0.6.0",
     "@eslint/js": "^9.24.0",
     "@eslint/json": "^0.11.0",
     "@eslint/markdown": "^6.3.0",
-    "@tanstack/eslint-plugin-query": "^5.72.0",
+    "@tanstack/eslint-plugin-query": "^5.72.1",
     "@tanstack/eslint-plugin-router": "^1.115.0",
-    "@typescript-eslint/parser": "^8.29.0",
+    "@typescript-eslint/parser": "^8.29.1",
     "angular-eslint": "19.3.0",
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.1",
@@ -37,7 +37,7 @@
     "eslint-plugin-tailwindcss": "^3.18.0",
     "eslint-plugin-unicorn": "^58.0.0",
     "prettier": "^3.5.3",
-    "typescript-eslint": "^8.29.0"
+    "typescript-eslint": "^8.29.1"
   },
   "devDependencies": {
     "@ethang/markdown-generator": "^1.1.5",
@@ -64,5 +64,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "21.7.1"
+  "version": "21.7.2"
 }

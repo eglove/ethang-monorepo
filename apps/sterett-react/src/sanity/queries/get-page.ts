@@ -43,7 +43,8 @@ export const getPage = async (slug: string) => {
 export const getPageQueryOptions = (slug: string) => {
   return queryOptions({
     queryFn: async () => {
-      return getPage(slug);
+      const result = await getPage(slug);
+      return result ?? null;
     },
     queryKey: [queryKeys.sterett, queryKeys.getPage, slug],
   });

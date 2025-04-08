@@ -24,6 +24,7 @@ export default tseslint.config({
     "react/debug/function-component": "off",
     "react/debug/hook": "off",
     "react/debug/is-from-react": "off",
+    "react/debug/jsx": "off",
     "react/debug/react-hooks": "off",
     "react/dom/no-children-in-void-dom-elements": "error",
     "react/dom/no-dangerously-set-innerhtml": "error",

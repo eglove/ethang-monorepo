@@ -39,6 +39,10 @@ const customReactRules = [
     rule: "off",
   },
   {
+    name: "debug/jsx",
+    rule: "off",
+  },
+  {
     name: "debug/react-hooks",
     rule: "off",
   },

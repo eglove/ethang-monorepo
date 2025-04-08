@@ -29,7 +29,7 @@ export const CalendarRoute = () => {
         <iframe
           className="border-0 w-full"
           height="600"
-          src="https://calendar.google.com/calendar/embed?src=8nuhhppu7uuasur8teo01k6dgg62a4bu%40import.calendar.google.com&ctz=America%2FChicago"
+          src="https://calendar.google.com/calendar/embed?src=mnutc60ri0h45lj454ap6vca5961oqdp%40import.calendar.google.com&ctz=America%2FChicago"
           title="Sterett Creek Village Trustee Calendar"
           width="800"
         ></iframe>

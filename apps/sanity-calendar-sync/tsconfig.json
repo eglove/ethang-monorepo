@@ -1,17 +1,17 @@
 {
-	"compilerOptions": {
-		"types": [
-			"@cloudflare/workers-types/2025-04-07"
-		]
-	},
-	"exclude": [
-		"test"
-	],
-	"extends": [
-		"../../packages/tsconfig/tsconfig.base.json"
-	],
-	"include": [
-		"worker-configuration.d.ts",
-		"src/**/*.ts"
-	]
+  "compilerOptions": {
+    "types": [
+      "@cloudflare/workers-types/2025-04-07"
+    ]
+  },
+  "exclude": [
+    "test"
+  ],
+  "extends": [
+    "../../packages/tsconfig/tsconfig.base.json"
+  ],
+  "include": [
+    "worker-configuration.d.ts",
+    "src/**/*.ts"
+  ]
 }

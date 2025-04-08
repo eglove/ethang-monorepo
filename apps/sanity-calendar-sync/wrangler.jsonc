@@ -1,10 +1,12 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "sanity-calendar-sync",
-	"main": "src/index.ts",
-	"compatibility_date": "2025-04-07",
-	"observability": {
-		"enabled": true
-	},
-	"placement": { "mode": "smart" }
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2025-04-07",
+  "main": "src/index.ts",
+  "name": "sanity-calendar-sync",
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "mode": "smart"
+  }
 }
