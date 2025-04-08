@@ -36,19 +36,6 @@
         "eagerness": "eager"
       }]
     }</script>
-    <script type="module">
-      if ("serviceWorker" in navigator) {
-        const url = new URL("/service-worker.js", location.href).href;
-        navigator.serviceWorker
-                .register(url)
-                .then((registration) => {
-                  console.log("SW registered:", registration);
-                })
-                .catch((registrationError) => () => {
-                  console.error("SW registration failed:", registrationError);
-                });
-      }
-    </script>
   </head>
   <body class="min-h-screen bg-gradient-to-b from-sky-600 to-sky-50 pt-4">
     <div id="root"></div>

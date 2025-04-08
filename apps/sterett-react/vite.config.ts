@@ -32,6 +32,17 @@ export default defineConfig({
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|ico)$/u,
           },
           {
+            handler: "CacheFirst",
+            options: {
+              cacheName: "sanity-image-cache",
+              expiration: {
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+                maxEntries: 100,
+              },
+            },
+            urlPattern: /^https:\/\/cdn\.sanity\.io\/images\//u,
+          },
+          {
             handler: "NetworkFirst",
             options: {
               cacheName: "html-cache",
@@ -41,7 +52,6 @@ export default defineConfig({
         ],
         skipWaiting: true,
         sourcemap: false,
-        swDest: "./dist/service-worker.js",
       },
     }),
   ],
