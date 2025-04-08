@@ -2,13 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
-    "types": [
-      "@cloudflare/workers-types/2025-04-07"
-    ]
+    "types": ["@cloudflare/workers-types/2025-04-08"]
   },
   "extends": [
     "../../packages/tsconfig/tsconfig.base.json",
