@@ -1,7 +1,6 @@
 import type { TypedObject } from "@portabletext/types";
 
 import { createRoute } from "@tanstack/react-router";
-import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import { EmptyContent } from "../components/empty-content.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
