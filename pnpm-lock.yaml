@@ -68,46 +68,6 @@ importers:
         specifier: ^4.9.0
         version: 4.9.0(@cloudflare/workers-types@4.20250408.0)
 
-  apps/comments:
-    dependencies:
-      '@ethang/toolbelt':
-        specifier: ^4.4.1
-        version: 4.4.1
-      eslint:
-        specifier: ^9.24.0
-        version: 9.24.0(jiti@2.4.2)
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-      zod:
-        specifier: ^3.24.2
-        version: 3.24.2
-    devDependencies:
-      '@cloudflare/vitest-pool-workers':
-        specifier: ^0.8.13
-        version: 0.8.13(@cloudflare/workers-types@4.20250408.0)(@vitest/runner@3.1.1)(@vitest/snapshot@3.1.1)(vitest@3.1.1)
-      '@cloudflare/workers-types':
-        specifier: ^4.20250408.0
-        version: 4.20250408.0
-      '@ethang/eslint-config':
-        specifier: ^21.7.2
-        version: 21.7.2(@types/eslint@9.6.1)(@typescript-eslint/types@8.29.1)(@typescript-eslint/utils@8.29.1(eslint@9.24.0(jiti@2.4.2))(typescript@5.8.3))(jiti@2.4.2)(tailwindcss@4.0.17)(typescript@5.8.3)
-      '@types/lodash':
-        specifier: ^4.17.16
-        version: 4.17.16
-      '@types/uuid':
-        specifier: ^10.0.0
-        version: 10.0.0
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-      wrangler:
-        specifier: ^4.9.0
-        version: 4.9.0(@cloudflare/workers-types@4.20250408.0)
-
   apps/ethang-vanilla:
     dependencies:
       '@ethang/toolbelt':
@@ -19845,7 +19805,7 @@ snapshots:
       consola: 3.4.2
       defu: 6.1.4
       get-port-please: 3.1.2
-      h3: 1.13.0
+      h3: 1.15.1
       http-shutdown: 1.2.2
       jiti: 1.21.7
       mlly: 1.7.4
