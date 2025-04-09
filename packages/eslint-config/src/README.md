@@ -100,3 +100,11 @@ This config will also lint for browserslist features. Make sure to set this in p
   "maintained node versions"
 ]
 ```
+
+**Engines**
+
+```json
+"engines": {
+  "node": ">=22"
+},
+```

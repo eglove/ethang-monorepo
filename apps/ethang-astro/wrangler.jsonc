@@ -1,17 +1,17 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"assets": {
-		"binding": "ASSETS",
-		"directory": "./dist"
-	},
-	"compatibility_date": "2025-04-08",
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
-	"main": "./dist/_worker.js/index.js",
-	"name": "ethang-astro",
-	"observability": {
-		"enabled": true
-	},
-	"placement": { "mode": "smart" }
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "compatibility_date": "2025-04-09",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./dist/_worker.js/index.js",
+  "name": "ethang-astro",
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "mode": "smart"
+  }
 }
