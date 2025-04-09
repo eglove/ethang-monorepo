@@ -99,32 +99,12 @@ function Update-WranglerTypes
         {
             Set-Location $dirPath
 
-            if (Test-Path "package.json")
+            if (Test-Path "wrangler.jsonc")
             {
-                $packageJson = Get-Content -Path "package.json" -Raw | ConvertFrom-Json
-                $workersTypes = $packageJson.devDependencies."@cloudflare/workers-types"
-
-                if ($workersTypes)
-                {
-                    $dateString = $workersTypes.Split('.')[1]
-                    $workersTypeVersion = "$($dateString.Substring(0, 4) )-$($dateString.Substring(4, 2) )-$($dateString.Substring(6, 2) )"
-
-                    if (Test-Path "wrangler.jsonc")
-                    {
-                        $wranglerJson = Get-Content -Path "wrangler.jsonc" -Raw | ConvertFrom-Json | Sort-Object
-                        $wranglerJson."compatibility_date" = $workersTypeVersion
-                        $wranglerJson | ConvertTo-Json -Depth 100 | Set-Content -Path "wrangler.jsonc"
-                        pnpm dlx prettier --write --trailing-comma none wrangler.jsonc
-                    }
-
-                    if (Test-Path "tsconfig.json")
-                    {
-                        $tsconfigJson = Get-Content -Path "tsconfig.json" -Raw | ConvertFrom-Json | Sort-Object
-                        $tsconfigJson.compilerOptions.types = @("@cloudflare/workers-types/$workersTypeVersion")
-                        $tsconfigJson | ConvertTo-Json -Depth 100 | Set-Content -Path "tsconfig.json"
-                        pnpm dlx prettier --write --trailing-comma none tsconfig.json
-                    }
-                }
+                $wranglerJson = Get-Content -Path "wrangler.jsonc" -Raw | ConvertFrom-Json | Sort-Object
+                $wranglerJson."compatibility_date" = Get-Date -Format "yyyy-MM-dd"
+                $wranglerJson | ConvertTo-Json -Depth 100 | Set-Content -Path "wrangler.jsonc"
+                pnpm dlx prettier --write --trailing-comma none wrangler.jsonc
             }
         }
     }

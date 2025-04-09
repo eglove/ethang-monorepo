@@ -1,7 +1,4 @@
 {
-  "compilerOptions": {
-    "types": ["@cloudflare/workers-types/2025-04-09"]
-  },
   "exclude": ["dist"],
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"]

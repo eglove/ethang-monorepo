@@ -4,7 +4,6 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["@cloudflare/workers-types/2025-04-09"]
   },
   "extends": [
     "../../packages/tsconfig/tsconfig.base.json",

@@ -145,7 +145,7 @@ export const updateReadme = () => {
   md.inlineCode("pnpm i -D eslint typescript-eslint @ethang/eslint-config", 2);
   md.bold("Requires TypesScript and tsconfig.json at root directory.", 2);
   md.header(1, "Config", 2);
-  md.text("In **eslint.config.js**", 2);
+  md.text("In **eslint.config.ts**", 2);
   md.codeBlock(
     `import config from "@ethang/eslint-config/eslint.config.js";
 import tseslint from "typescript-eslint";
@@ -177,8 +177,7 @@ export default tseslint.config(
   md.bold("Scripts", 2);
   md.codeBlock(
     `"scripts": {
-  "lint": "eslint",
-  "lint:fix": "eslint . --fix",
+  "lint": "eslint . --fix"
 }`,
     "json",
     2,
@@ -192,7 +191,7 @@ export default tseslint.config(
     `"browserslist": [
   "defaults and fully supports es6-module",
   "maintained node versions"
-]`,
+],`,
     "json",
     2,
   );

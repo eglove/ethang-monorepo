@@ -52,7 +52,7 @@
 
 # Config
 
-In **eslint.config.js**
+In **eslint.config.ts**
 
 ```js
 import config from "@ethang/eslint-config/eslint.config.js";
@@ -85,8 +85,7 @@ export default tseslint.config(
 
 ```json
 "scripts": {
-  "lint": "eslint",
-  "lint:fix": "eslint . --fix",
+  "lint": "eslint . --fix"
 }
 ```
 
@@ -98,7 +97,7 @@ This config will also lint for browserslist features. Make sure to set this in p
 "browserslist": [
   "defaults and fully supports es6-module",
   "maintained node versions"
-]
+],
 ```
 
 **Engines**
