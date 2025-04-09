@@ -32,7 +32,7 @@
     "cf-typegen": "wrangler types",
     "deploy": "astro build && wrangler deploy",
     "dev": "astro dev",
-    "lint": "eslint . --fix",
+    "lint": "eslint src --fix",
     "preview": "astro build && wrangler dev"
   },
   "type": "module",
