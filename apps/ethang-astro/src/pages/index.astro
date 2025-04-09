@@ -1,0 +1,53 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const blogs = [
+  {
+    id: "local-first",
+    link: "/blog/local-first",
+    title: "The Local First Stack",
+  },
+  {
+    id: "javascript-standard-library",
+    link: "/blog/javascript-standard-library",
+    title: "Why You Should Install That JS Library",
+  },
+  {
+    id: "looking-at-no-misused-spread",
+    link: "/blog/looking-at-no-misused-spread",
+    title: "Looking At: no-misused-spread",
+  },
+  {
+    id: "mimetic-desire",
+    link: "/blog/mimetic-desire",
+    title: "Mimetic Desire",
+  },
+  {
+    id: "motivation",
+    link: "/blog/motivation",
+    title: "Notes: Generating motivation in software engineering",
+  },
+  {
+    id: "forcing-react",
+    link: "/blog/forcing-react",
+    title: "Forcing React to be What It Isn't",
+  },
+] as const;
+---
+
+<Layout>
+  <main class="prose">
+    <h1>Activity Log</h1>
+    {
+      blogs.map((blog) => {
+        return (
+          <h2 class="my-4">
+            <a rel="prefetch" href={blog.link}>
+              {blog.title}
+            </a>
+          </h2>
+        );
+      })
+    }
+  </main>
+</Layout>

@@ -1,0 +1,22 @@
+---
+import hljs from "highlight.js";
+
+type Props = {
+  code: string;
+  language?: string;
+};
+
+const { code, language } = Astro.props;
+const resolvedLanguage = language ?? "typescript";
+
+const codeHtml = hljs.highlight(code, {
+  language: resolvedLanguage,
+}).value;
+---
+
+<pre
+  class="whitespace-pre-wrap">
+    <code class={resolvedLanguage}>
+    <Fragment set:html={codeHtml} />
+    </code>
+</pre>

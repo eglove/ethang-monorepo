@@ -1,0 +1,40 @@
+{
+  "browserslist": [
+    "defaults and fully supports es6-module",
+    "maintained node versions"
+  ],
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.4.0",
+    "astro": "^5.6.1",
+    "highlight.js": "^11.11.1"
+  },
+  "devDependencies": {
+    "@astrojs/tailwind": "^6.0.2",
+    "@cloudflare/workers-types": "^4.20250408.0",
+    "@ethang/eslint-config": "^21.7.2",
+    "@tailwindcss/typography": "^0.5.16",
+    "daisyui": "^5.0.16",
+    "eslint": "^9.24.0",
+    "prettier": "^3.5.3",
+    "prettier-plugin-astro": "^0.14.1",
+    "sharp": "^0.34.1",
+    "tailwindcss": "3",
+    "typescript-eslint": "^8.29.1",
+    "wrangler": "^4.9.1"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "name": "ethang-astro",
+  "scripts": {
+    "astro": "astro",
+    "build": "astro build",
+    "cf-typegen": "wrangler types",
+    "deploy": "astro build && wrangler deploy",
+    "dev": "astro dev",
+    "lint": "eslint . --fix",
+    "preview": "astro build && wrangler dev"
+  },
+  "type": "module",
+  "version": "0.0.1"
+}

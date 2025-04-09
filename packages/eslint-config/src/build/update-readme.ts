@@ -194,7 +194,13 @@ export default tseslint.config(
   "maintained node versions"
 ]`,
     "json",
+      2,
   );
+
+  md.bold("Engines", 2);
+  md.codeBlock(`"engines": {
+    "node": ">=22"
+  },`, "json");
 
   writeFileSync(
     path.join(import.meta.dirname, "../README.md"),

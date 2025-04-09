@@ -26,7 +26,6 @@
     "eslint-plugin-depend": "^0.12.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-lodash": "^8.0.0",
-    "eslint-plugin-n": "^17.17.0",
     "eslint-plugin-perfectionist": "^4.11.0",
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react-compiler": "19.0.0-beta-e993439-20250405",

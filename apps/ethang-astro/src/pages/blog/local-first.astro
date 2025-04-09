@@ -1,0 +1,167 @@
+---
+import Image from "astro/components/Image.astro";
+import backupAndRestorImage from "../../images/backup-and-restore.png";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+  <main class="prose">
+    <h1>The Local First Stack</h1>
+    <p>
+      Through a recent side project, I realized how comfortable my workflow has
+      become. And it's not by using a service like Firebase, Supabase, Convex,
+      Vercel, or even a full-stack framework like Next.js. It's by building a
+      system that works for me.
+    </p>
+    <p><strong>The Stack</strong></p>
+    <ul>
+      <li>
+        <a href="https://tanstack.com/router/latest" target="_blank"
+          >TanStack Router</a
+        >
+      </li>
+      <li><a href="https://www.heroui.com/" target="_blank">HeroUI</a></li>
+      <li>
+        <a href="https://tanstack.com/form/latest" target="_blank"
+          >TanStack Form</a
+        >
+      </li>
+      <li>
+        <a href="https://zod.dev/" target="_blank">Zod</a>
+        <a
+          href="https://github.com/eglove/ethang-monorepo/tree/master/packages/schemas/src"
+          target="_blank">schema package on monorepo</a
+        >
+      </li>
+      <li>
+        <a href="https://github.com/jakearchibald/idb" target="_blank">IDB</a>
+        (local-first data!)
+      </li>
+      <li>
+        <a href="https://tanstack.com/query/latest" target="_blank"
+          >TanStack Query</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://github.com/eglove/ethang-monorepo/tree/master/packages/store"
+          target="_blank">@ethang/store</a
+        >
+        (My own state management)
+      </li>
+      <li>
+        <a
+          href="https://github.com/eglove/ethang-monorepo/tree/master/apps/auth"
+          target="_blank">auth.ethang.dev</a
+        >
+        (My own auth)
+      </li>
+      <li>
+        <a href="https://workers.cloudflare.com/" target="_blank"
+          >Cloudflare workers</a
+        >/microservices w/
+        <a
+          href="https://www.cloudflare.com/developer-platform/products/d1/"
+          target="_blank">D1</a
+        >
+        (backend sync)
+      </li>
+      <li>
+        <a href="https://vite-pwa-org.netlify.app/" target="_blank">Vite PWA</a>
+      </li>
+    </ul>
+    <p>
+      The project starts with a frontend with TanStack Router. I see no need for
+      TanStack Start, and I think working with it starts to introduce
+      unimportant opinions. Router is exactly what I need to get going for a
+      React app.
+    </p>
+    <p>
+      When it comes to UI component libraries, I've used Shadcn, and it's fine,
+      but too minimal. It's also too opinionated when it comes to the libraries
+      it introduces to a code base. By using react-hook-form and TanStack Table
+      and forcing my hand when I want to use something else down the road. I
+      could install both, but that gets very messy in terms of dependency
+      management.
+    </p>
+    <p>
+      As opposed to TanStack Table, I'd rather use server side filtering and
+      pagination or just TansStack Query. This gives far better performance than
+      trying to work with all data on every render.
+    </p>
+    <p>
+      Instead, I go to the tried and true HeroUI. It's complete, mature, easy to
+      use and themeable. Its form components integrate very well with TanStack
+      Form.
+    </p>
+    <p>
+      When it comes to validating forms, I stick with Zod, keeping schemas in a
+      separate package on my monorepo so they can be used on both frontend and
+      backend services.
+    </p>
+    <p>
+      When we get to data, there's nothing better than TanStack Query. Treating
+      the results of async calls as a synchronous store. This pairs very well
+      with IDB, sets up an environment where custom middlewares can be written.
+    </p>
+    <p>
+      For local state management, I much prefer my own store. I like the DX of
+      TanStack Store, it's very much an inspiration for my own. But my own is
+      built to work with vanilla/refs, and make use of immer. I love being able
+      to grab current state out of a store in any function without tricks. And
+      simple render function sync via useSyncExternalStore. Why would you ever
+      want anything else from local stage management?
+    </p>
+    <p>
+      On auth, I appreciate what Clerk does. As well as Auth.js. But all I need
+      is a rest API to work with JWT tokens and verification. Custom components
+      are nice, but not necessary. I feel like the basics get lost with a lot of
+      Auth libraries and packages. I wrote my own auth service to sign up and
+      verify auth headers without the headache of having to learn a complex
+      library for a very simple function.
+    </p>
+    <p>
+      Syncing data. This is the part I most feared about building a local first
+      app. All the scary talk about object sync engines. I thought about using
+      Dexie Cloud for this project but wondered how I'd be able to call into
+      that data from other backend services down the line. As well as other
+      features I needed. I decided stressing about implementing my own features
+      first outweighed the cost of figuring out how to deal with third-party
+      integrations.
+    </p>
+    <p>
+      But by simply writing a Cloudflare Worker with a D1 database, I found it
+      was easy to add synchronization methods into the already existing IDB
+      queries I have on the frontend. I can get more complex with the sync, but
+      for now it seems reasonable to make a few simplifications.
+    </p>
+    <ol>
+      <li>All mutations/changes are also sent to the backup service.</li>
+      <li>
+        If the user imports data from a saved file, it appends backend data but
+        does not delete.
+      </li>
+      <li>
+        If the user imports cloud data, it appends local data but does not
+        delete.
+      </li>
+      <li>
+        If queries return empty data, they attempt to get the backed-up data
+        from the backup service.
+      </li>
+      <li>All local data is synced to the backup service on reconnect.</li>
+    </ol>
+    <div class="relative w-full h-auto overflow-hidden">
+      <Image
+        class="size-full object-contain"
+        src={backupAndRestorImage}
+        alt="Backup and restore UI"
+      />
+    </div>
+    <p>
+      These simple rules give users enough control to avoid most issues with
+      data conflicts, provide the performance of local first, and keep good
+      backups.
+    </p>
+  </main>
+</Layout>
