@@ -137,6 +137,8 @@ Update-WranglerTypes -prefix "packages" -directories $packages
 
 # Return to root directory and run final commands
 Set-Location $scriptDir
+Write-Host "Updating CloudFlare types..."
+pnpm -r cf-typegen
 Write-Host "Building monorepo..."
 pnpm build
 Write-Host "Running tests..."
