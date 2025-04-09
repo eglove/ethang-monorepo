@@ -5,16 +5,20 @@ import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 
 import { addApplication } from "./add-application.js";
+import { addContact } from "./add-contact.js";
 import { addQuestionAnswer } from "./add-question-answer.js";
 import { deleteApplication } from "./delete-application.js";
+import { deleteContact } from "./delete-contact.js";
 import { deleteQuestionAnswer } from "./delete-question-answer.js";
 import { deleteUserData } from "./delete-user-data.js";
 import { getApplications } from "./get-applications.js";
+import { getContacts } from "./get-contacts.js";
 import { getData } from "./get-data.ts";
 import { getQas } from "./get-qas.js";
 import { globalStats } from "./global-stats.js";
 import { syncData } from "./sync-data.js";
 import { updateApplication } from "./update-application.js";
+import { updateContact } from "./update-contact.js";
 import { updateQuestionAnswer } from "./update-question-answer.js";
 import { userStats } from "./user-stats.js";
 
@@ -25,6 +29,7 @@ export default {
 
     const urls = {
       applications: "/applications",
+      contacts: "/contacts",
       globalStats: "/global-stats",
       questionAnswers: "/question-answers",
       userData: "/user-data",
@@ -102,6 +107,22 @@ export default {
 
     if (urls.questionAnswers === url.pathname && "DELETE" === request.method) {
       return deleteQuestionAnswer(request, tokenData, environment);
+    }
+
+    if (urls.contacts === url.pathname && "GET" === request.method) {
+      return getContacts(tokenData, environment);
+    }
+
+    if (urls.contacts === url.pathname && "POST" === request.method) {
+      return addContact(request, tokenData, environment);
+    }
+
+    if (urls.contacts === url.pathname && "PUT" === request.method) {
+      return updateContact(request, tokenData, environment);
+    }
+
+    if (urls.contacts === url.pathname && "DELETE" === request.method) {
+      return deleteContact(request, tokenData, environment);
     }
 
     if (urls.userStats === url.pathname && "GET" === request.method) {
