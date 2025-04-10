@@ -35,16 +35,16 @@ export const DailyApplicationsChart = ({
     ["applicationsPerDay", 0, "date"],
     DateTime.now().toISO(),
   );
-  const totalDays = DateTime.fromISO(earliestDate).diffNow(["days"]);
+  const totalDays = DateTime.now()
+    .diff(DateTime.fromISO(earliestDate), ["days"])
+    .days.toFixed(0);
 
   return (
     <Card className="border border-transparent p-4 dark:border-default-100">
       <CardHeader className="p-0">
         <div className="flex flex-col gap-y-1 p-4">
           <dt>
-            <TypographyH3>
-              Applications / Day ({Math.abs(totalDays.days).toFixed(0)} Days)
-            </TypographyH3>
+            <TypographyH3>Applications / Day ({totalDays} Days)</TypographyH3>
           </dt>
           <dd className="text-sm">
             Average: {averageApplicationsPerDay.toLocaleString()}, Total:{" "}

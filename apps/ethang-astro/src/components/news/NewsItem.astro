@@ -1,0 +1,22 @@
+---
+type Props = {
+  originalLink: string;
+  title: string;
+};
+
+const { originalLink, title } = Astro.props;
+---
+
+<h2>{title}</h2>
+
+{
+  Astro.slots?.["quote"] && (
+    <blockquote cite={originalLink}>
+      <slot name="quote" />
+    </blockquote>
+  )
+}
+
+{Astro.slots?.["content"] && <slot name="content" />}
+
+<a class="link my-4" href={originalLink} target="_blank">Full story</a>

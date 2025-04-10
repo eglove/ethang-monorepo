@@ -1,0 +1,98 @@
+---
+import { DateTime } from "luxon";
+import Layout from "../../layouts/Layout.astro";
+import NewsItem from "../../components/news/NewsItem.astro";
+import YouTube from "../../components/YouTube.astro";
+
+const date = DateTime.fromObject({ month: 4, day: 10, year: 2025 });
+---
+
+<Layout>
+  <main class="prose">
+    <h1>Reads {date.toLocaleString({ dateStyle: "medium" })}</h1>
+
+    <NewsItem
+      title="Lost Mortem: The Autopsy of Missed Opportunities"
+      originalLink="https://avivbenyosef.com/lost-mortem-the-autopsy-of-missed-opportunities/"
+    >
+      <Fragment slot="quote">
+        After all, most startups don’t fail due to bad decisions—they die
+        because of slow ones. When we’re complacent or vacillating, postponing a
+        move till we’re forced to make it, momentum is lost. By the time you’re
+        reacting, you’ve already lost the high ground.
+      </Fragment>
+    </NewsItem>
+
+    <NewsItem
+      title="CloudFlare: Read replication of D1 databases is in public beta!"
+      originalLink="https://blog.cloudflare.com/d1-read-replication-beta/"
+    >
+      <Fragment slot="quote">
+        The sessions implementation ensures sequential consistency for all
+        queries in the session, no matter what copy of the database each query
+        is routed to. The sequential consistency model has important properties
+        like "read my own writes" and "writes follow reads," as well as a total
+        ordering of writes. The total ordering of writes means that every
+        replica will see transactions committed in the same order, which is
+        exactly the behavior we want in a transactional system. Said another
+        way, sequential consistency guarantees that the reads and writes are
+        executed in the order in which you write them in your code.
+      </Fragment>
+    </NewsItem>
+
+    <NewsItem
+      title="HubSpot announces Breeze AI Agents and 200+ new features"
+      originalLink="https://www.searchenginejournal.com/hubspot-announces-200-features-at-spring-spotlight-2025/544063/"
+    >
+      <Fragment slot="quote">
+        SMBs don’t need more AI hype—they need technology that helps. The
+        products we’re launching at the Spring 2025 Spotlight are helping teams
+        move fast on AI and solve their go-to-market challenges. We’ve embedded
+        AI throughout our entire platform so businesses of any size can start
+        seeing value immediately, without massive teams or budgets.
+      </Fragment>
+    </NewsItem>
+
+    <NewsItem
+      title="Google: Announcing the Agent2Agent Protocol (A2A)"
+      originalLink="https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/"
+    >
+      <Fragment slot="quote">
+        A2A is an open protocol that provides a standard way for agents to
+        collaborate with each other, regardless of the underlying framework or
+        vendor.
+      </Fragment>
+
+      <Fragment slot="content">
+        <YouTube
+          title="Making sense of Google's A2A Protocol (and how A2A relates to MCP)"
+          src="https://www.youtube.com/embed/WGeHYPLbXMk?si=6aQ1CJiL1b4PSab-"
+        />
+      </Fragment>
+    </NewsItem>
+
+    <NewsItem
+      title="Google: Annoucing AI Mode"
+      originalLink="https://www.youtube.com/watch?v=qbqZQFOVfA8"
+    >
+      <Fragment slot="content">
+        <YouTube
+          src="https://www.youtube.com/embed/qbqZQFOVfA8?si=Umo0DT_9jTgQBDKn"
+          title="Introducing AI Mode: a new experiment in Google Search"
+        />
+      </Fragment>
+    </NewsItem>
+
+    <NewsItem
+      title="Global markets rally after Trump pauses ‘reciprocal’ tariffs"
+      originalLink="https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqa3V2eDBFVkFCeDdyUW5UVVhHdWtxaVpfYi13d3xBQ3Jtc0tsRVJPanVVS1lfcURzNkdyOTBvejNhRzlBbDhHQ0lpSlRGZ25YU1J1WFdEM202Nkx4Umx2V3NUQkgxVGdqRlpad2UyQ2oxSnJ2Rk5Vb2tEaFB5aVR5NFhCZzZ3NXNZVFluZkFVNDltSEtRbGNqR1U5Yw&q=https%3A%2F%2Fsan.com%2Fcc%2Fglobal-markets-rally-after-trump-pauses-reciprocal-tariffs-unbiased-updates-april-10-2025%2F&v=BDO-SYoswhg"
+    >
+      <Fragment slot="content">
+        <YouTube
+          title="Global markets rally after Trump pauses ‘reciprocal’ tariffs"
+          src="https://www.youtube.com/embed/BDO-SYoswhg?si=a2TENteRklPmzOjb"
+        />
+      </Fragment>
+    </NewsItem>
+  </main>
+</Layout>
