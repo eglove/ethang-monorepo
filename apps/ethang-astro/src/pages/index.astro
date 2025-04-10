@@ -1,11 +1,17 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { DateTime } from "luxon";
+
+const recentReadDate = "2025-04-10";
+const recentRead = DateTime.fromFormat(recentReadDate, "yyyy-MM-dd", {
+  zone: "America/Chicago",
+});
 
 const blogs = [
   {
-    id: "reads-04-10-2025",
-    link: "/blog/reads-04-10-2025",
-    title: "Reads 04/10/2025",
+    id: `reads-${recentReadDate}`,
+    link: `/blog/reads-${recentReadDate}`,
+    title: `Reads ${recentRead.toLocaleString({ dateStyle: "medium" })}`,
   },
   {
     id: "local-first",
@@ -37,7 +43,7 @@ const blogs = [
     link: "/blog/forcing-react",
     title: "Forcing React to be What It Isn't",
   },
-] as const;
+];
 ---
 
 <Layout>
