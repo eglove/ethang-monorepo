@@ -19,7 +19,7 @@
     "@typescript-eslint/parser": "^8.29.1",
     "angular-eslint": "19.3.0",
     "eslint": "^9.24.0",
-    "eslint-config-prettier": "^10.1.1",
+    "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-astro": "^1.3.1",
     "eslint-plugin-barrel-files": "^3.0.1",
     "eslint-plugin-compat": "^6.0.2",
@@ -63,5 +63,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "21.7.4"
+  "version": "21.7.5"
 }
