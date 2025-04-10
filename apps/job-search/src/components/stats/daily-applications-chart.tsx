@@ -4,6 +4,7 @@ import { DailyApplicationsChartTooltip } from "@/components/stats/daily-applicat
 import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import get from "lodash/get";
+import { DateTime } from "luxon";
 import {
   CartesianGrid,
   Line,
@@ -29,13 +30,21 @@ export const DailyApplicationsChart = ({
     ["averageApplicationsPerDay"],
     0,
   );
+  const earliestDate = get(
+    stats,
+    ["applicationsPerDay", 0, "date"],
+    DateTime.now().toISO(),
+  );
+  const totalDays = DateTime.fromISO(earliestDate).diffNow(["days"]);
 
   return (
     <Card className="border border-transparent p-4 dark:border-default-100">
       <CardHeader className="p-0">
         <div className="flex flex-col gap-y-1 p-4">
           <dt>
-            <TypographyH3>Applications / Day (30 Days)</TypographyH3>
+            <TypographyH3>
+              Applications / Day ({Math.abs(totalDays.days).toFixed(0)} Days)
+            </TypographyH3>
           </dt>
           <dd className="text-sm">
             Average: {averageApplicationsPerDay.toLocaleString()}, Total:{" "}
