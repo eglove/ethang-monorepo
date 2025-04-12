@@ -12,11 +12,11 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^21.7.5",
+    "@ethang/eslint-config": "^21.8.0",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.16",
-    "@types/node": "^22.14.0",
-    "@types/react": "^19.1.0",
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.1.1",
     "typescript": "^5.8.3"
   },
   "engines": {
