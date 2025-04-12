@@ -4,7 +4,9 @@ import Layout from "../../layouts/Layout.astro";
 import NewsItem from "../../components/news/NewsItem.astro";
 import YouTube from "../../components/YouTube.astro";
 
-const date = DateTime.fromObject({ month: 4, day: 10, year: 2025 });
+const date = DateTime.fromObject({ month: 4, day: 10, year: 2025 }).setZone(
+  "America/Chicago",
+);
 ---
 
 <Layout>
