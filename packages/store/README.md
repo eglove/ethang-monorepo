@@ -109,7 +109,8 @@ bindFn(counterButton);
 
 ## React useSyncExternalStore*
 
-* Sync w/ React reconciliation, triggers component function calls on state changes (rerenders).
+* Sync w/ React reconciliation, triggers component function calls on state
+  changes (rerenders).
 
 ```tsx
 import {useSyncExternalStore} from "react";
@@ -208,34 +209,39 @@ const MyComponent = () => {
 
 Use [TanStack Query](https://tanstack.com/query/latest)
 
-## Experimental (Subject to change)
+### Features that won't be implemented
 
-### Add Derived Value
+Part of what this library highlights is that the deeper you get into "state
+management" the deeper you get into "reactive programming." And that the
+problems we're often solving with "state management" are more often than not
+problems with React. This library is meant to ignore the issues of what is
+really React render management, and explore the concepts behind state management
+and reactive programming.
+
+#### Derived Values
 
 ```ts
-store.addDerived('fullName', (state) => {
-    return `${state.firstName} ${state.lastName}`
-}, ['firstName'], ['lastName']); // spreads lodash property selectors
-
-store.set((state) => {
-    state.firstName = 'John'; // Triggers re-computation of derived value
+const store = new Store({
+    firstName: 'John',
+    lastName: 'Doe',
+    fullName() { // Do not use arrow functions here, otherwise `this` well have a lexical binding.
+        return `${this.firstName} ${this.lastName}`;
+    }
 });
+
+const fullName = store.get(state => {
+    return state.fullName();
+})
 ```
 
-### Get Derived Value
+#### Effects (they're just subscriptions)
 
 ```ts
-store.getDerived('fullName');
-```
-
-### Add Effect
-
-```ts
-store.addEffect('loggedIn', (state) => {
-    console.log('User logged in/out');
-}, ['loggedIn']); // spreads lodash property selectors
-
-store.set((state) => {
-    state.isLoggedIn = true; // triggers effect
-});
+const unsubscribe = store.subscrie(state => {
+    if (state.isLoggedIn) {
+        console.log('User logged in');
+    } else {
+        console.log('User logged out');
+    }
+})
 ```

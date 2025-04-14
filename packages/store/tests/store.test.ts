@@ -4,6 +4,7 @@ import { Store } from "../src/index.js";
 
 type TestState = {
   count: number;
+  doubleCount: () => number;
   name: string;
   nested: {
     value: string;
@@ -14,6 +15,9 @@ describe("Store", () => {
   let store: Store<TestState>;
   const initialState: TestState = {
     count: 0,
+    doubleCount() {
+      return this.count * 2;
+    },
     name: "test",
     nested: {
       value: "initial",
@@ -98,31 +102,24 @@ describe("Store", () => {
 
   describe("derived values", () => {
     it("should compute derived values based on state", () => {
-      store.addDerived("doubleCount", (state) => state.count * 2, "count");
-
       store.set((draft) => {
         draft.count = 5;
       });
 
-      expect(store.getDerived<number>("doubleCount")).toBe(10);
-    });
-
-    it("should remove derived values", () => {
-      store.addDerived("doubleCount", (state) => state.count * 2, "count");
-      store.removeDerived("doubleCount");
-
-      store.set((draft) => {
-        draft.count = 5;
-      });
-
-      expect(store.getDerived<number>("doubleCount")).toBe(undefined);
+      expect(
+        store.get((state) => {
+          return state.doubleCount();
+        }),
+      ).toBe(10);
     });
   });
 
   describe("effects", () => {
     it("should execute effects when state changes", () => {
       const effectFunction = vi.fn();
-      store.addEffect("testEffect", effectFunction, "count");
+      const unsubscribe = store.subscribe((state) => {
+        effectFunction(state);
+      });
 
       store.set((draft) => {
         draft.count = 1;
@@ -131,12 +128,16 @@ describe("Store", () => {
       expect(effectFunction).toHaveBeenCalledWith(
         expect.objectContaining({ count: 1 }),
       );
+
+      unsubscribe();
     });
 
     it("should remove derived effects", () => {
       const effectFunction = vi.fn();
-      store.addEffect("testEffect", effectFunction, "count");
-      store.removeEffect("testEffect");
+      const unsubscribe = store.subscribe((state) => {
+        effectFunction(state);
+      });
+      unsubscribe();
 
       store.set((draft) => {
         draft.count = 5;

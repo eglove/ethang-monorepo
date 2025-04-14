@@ -1,12 +1,4 @@
 import { type Draft, produce } from "immer";
-import isNil from "lodash/isNil.js";
-
-import {
-  type ComputeFunction,
-  type DependencyPaths,
-  Derived,
-} from "./derived.js";
-import { Effect } from "./effect.js";
 
 export type Listener<TState> = (state: TState) => void;
 
@@ -19,10 +11,6 @@ export class Store<TState extends object> {
   private readonly _config?:
     | ({ localStorageKey: string } & StoreConfig)
     | undefined;
-
-  private readonly _derived = new Map<string, Derived<TState, unknown>>();
-
-  private readonly _effects = new Map<string, Effect<TState>>();
 
   private readonly _elementListeners = new Map<string, HTMLElement>();
 
@@ -49,22 +37,6 @@ export class Store<TState extends object> {
 
     this._state = this.getInitialState(initialState);
     this._initialState = initialState;
-  }
-
-  public addDerived(
-    key: string,
-    computeFunction: ComputeFunction<TState, unknown>,
-    ...dependencyPaths: DependencyPaths<TState>
-  ) {
-    this._derived.set(key, new Derived(computeFunction, ...dependencyPaths));
-  }
-
-  public addEffect(
-    key: string,
-    effectFunction: (state: TState) => void,
-    ...dependencyPaths: DependencyPaths<TState>
-  ) {
-    this._effects.set(key, new Effect(effectFunction, ...dependencyPaths));
   }
 
   public bind<E>(onUpdate: (state: TState, element: E) => void) {
@@ -98,30 +70,11 @@ export class Store<TState extends object> {
 
     return selector(this.state);
   }
-  public getDerived<TValue>(key: string) {
-    const value = this._derived.get(key);
-
-    if (isNil(value)) {
-      globalThis.console.error(`No derived value found for key "${key}"`);
-      return;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    return value.compute(this.state) as TValue;
-  }
 
   public notifySubscribers() {
     for (const listener of this._listeners) {
       listener(this.state);
     }
-  }
-
-  public removeDerived(key: string) {
-    this._derived.delete(key);
-  }
-
-  public removeEffect(key: string) {
-    this._effects.delete(key);
   }
 
   public resetState() {
@@ -130,10 +83,6 @@ export class Store<TState extends object> {
 
   public set(updater: (draft: Draft<TState>) => void) {
     const value = produce(this.state, updater);
-
-    for (const effect of this._effects.values()) {
-      effect.execute(value);
-    }
 
     this.state = value;
 
