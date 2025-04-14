@@ -1,5 +1,39 @@
 # "state management"
 
+This library was primarily created with the realization of how simple state
+management actually is. While I see great value in current libraries (I love
+Redux Toolkit), and populus alternatives like Zustand, we can do even better.
+
+In fact, it is so simple I would argue we should be comfortable with regularly
+rolling our own.
+
+"State Management" is objects in an observer pattern. Things like derived values
+and effects are secondary features. The current implementation of derived values
+and effects here are incomplete. All changes are made through immer for
+immutability.
+
+### With vanilla HTML/JS
+
+This library can be used to add subscriptions to HTML
+elements. Subscriptions will be automatically cleaned up when the event fires
+and no element is found. Note that you still need a modern bundler with
+dependency management such as vite to work with vanilla.
+
+### With React Refs
+
+This library can act the same as it does in vanilla. By
+using refs to point to an exact element you can prevent React from rerunning
+render functions for simple state changes such as form inputs with dynamic error
+handling.
+
+### With React State
+
+This library implements a useSyncExternalStore interface to
+trigger rerenders on state changes. You can even use React's official
+useSyncExternalStoreWithSelector
+shim ([using this package](https://www.npmjs.com/package/use-sync-external-store))
+to prevent some rerenders.
+
 ```shell
 pnpm i @ethang/store
 ```
@@ -7,9 +41,9 @@ pnpm i @ethang/store
 ## Create a store:
 
 ```ts
-import { Store } from "@ethang/store";
+import {Store} from "@ethang/store";
 
-const store = new Store({ count: 0 });
+const store = new Store({count: 0});
 ```
 
 ## Update store
@@ -26,35 +60,6 @@ store.set((state) => {
 store.get(); // { count: 1 }
 
 store.get(state => state.count); // 1
-```
-
-## Add Derived Value
-
-```ts
-store.addDerived('fullName', (state) => {
-    return `${state.firstName} ${state.lastName}`
-}, ['firstName'], ['lastName']); // spreads lodash property selectors
-
-store.set((state) => {
-    state.firstName = 'John'; // Triggers re-computation of derived value
-});
-```
-
-## Get Derived Value
-
-```ts
-store.getDerived('fullName');
-```
-
-## Add Effect
-```ts
-store.addEffect('loggedIn', (state) => {
-    console.log('User logged in/out');
-}, ['loggedIn']); // spreads lodash property selectors
-
-store.set((state) => {
-    state.isLoggedIn = true; // triggers effect
-});
 ```
 
 ## Subscribe to changes
@@ -77,7 +82,7 @@ counterButton.onclick = () => store.set(state => {
 })
 
 const bindFn = store.bind((state, element) => {
-    element.textContent = state.count; 
+    element.textContent = state.count;
 })
 
 bindFn(counterButton);
@@ -104,10 +109,10 @@ bindFn(counterButton);
 
 ## React useSyncExternalStore*
 
-* Sync w/ React reconciliation, triggers component rerenders on state changes.
+* Sync w/ React reconciliation, triggers component function calls on state changes (rerenders).
 
 ```tsx
-import { useSyncExternalStore } from "react";
+import {useSyncExternalStore} from "react";
 
 const state = useSyncExternalStore(
     listener => store.subcribe(listener),
@@ -123,7 +128,9 @@ const state = useSyncExternalStore(
 * A few less rerenders.
 
 ```tsx
-import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector.js";
+import {
+    useSyncExternalStoreWithSelector
+} from "use-sync-external-store/with-selector.js";
 
 const count = useSyncExternalStoreWithSelector(
     listener => store.subscribe(listener),
@@ -149,8 +156,10 @@ store.set(state => {
 ## Altogether Now
 
 ```tsx
-import { Store } from "@ethang/store";
-import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector.js";
+import {Store} from "@ethang/store";
+import {
+    useSyncExternalStoreWithSelector
+} from "use-sync-external-store/with-selector.js";
 
 const initialCountStoreState = {count: 0};
 const initialTextStoreState = {hello: "Hello", world: "World!"};
@@ -158,7 +167,7 @@ const initialTextStoreState = {hello: "Hello", world: "World!"};
 const countStore = new Store(initialCountStoreState);
 const textStore = new Store(initialTextStoreState)
 
-const useCountStore = <T,>(selector: (state: typeof initialTextStoreState) => T) => {
+const useCountStore = <T, >(selector: (state: typeof initialTextStoreState) => T) => {
     return useSyncExternalStoreWithSelector(
         listener => textStore.subscribe(listener),
         () => textStore.get(),
@@ -179,7 +188,7 @@ const MyComponent = () => {
             hello: state.hello,
         }
     });
-    
+
     return (
         <div>
             <div>Count</div>
@@ -189,7 +198,7 @@ const MyComponent = () => {
                     element.textContent = state.count;
                 })}
             />
-            <ThirdPartyComponent text={hello} />
+            <ThirdPartyComponent text={hello}/>
         </div>
     );
 }
@@ -198,3 +207,35 @@ const MyComponent = () => {
 ## Async
 
 Use [TanStack Query](https://tanstack.com/query/latest)
+
+## Experimental (Subject to change)
+
+### Add Derived Value
+
+```ts
+store.addDerived('fullName', (state) => {
+    return `${state.firstName} ${state.lastName}`
+}, ['firstName'], ['lastName']); // spreads lodash property selectors
+
+store.set((state) => {
+    state.firstName = 'John'; // Triggers re-computation of derived value
+});
+```
+
+### Get Derived Value
+
+```ts
+store.getDerived('fullName');
+```
+
+### Add Effect
+
+```ts
+store.addEffect('loggedIn', (state) => {
+    console.log('User logged in/out');
+}, ['loggedIn']); // spreads lodash property selectors
+
+store.set((state) => {
+    state.isLoggedIn = true; // triggers effect
+});
+```
