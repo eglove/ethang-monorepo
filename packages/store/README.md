@@ -237,7 +237,7 @@ const fullName = store.get(state => {
 #### Effects (they're just subscriptions)
 
 ```ts
-const unsubscribe = store.subscrie(state => {
+const unsubscribe = store.subscribe(state => {
     if (state.isLoggedIn) {
         console.log('User logged in');
     } else {
