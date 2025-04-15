@@ -107,3 +107,11 @@ This config will also lint for browserslist features. Make sure to set this in p
   "node": ">=22"
 },
 ```
+
+**Package Type**
+
+This config does not support CommonJS, make sure to specify ESM in package.json
+
+```json
+"type": "module",
+```
