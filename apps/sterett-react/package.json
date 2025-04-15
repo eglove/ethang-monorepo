@@ -31,7 +31,7 @@
     "@tanstack/react-router": "^1.116.0",
     "@tanstack/router-devtools": "^1.116.0",
     "calendar-link": "^2.8.0",
-    "framer-motion": "^12.7.2",
+    "framer-motion": "^12.7.3",
     "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",
     "luxon": "^3.6.1",
@@ -43,7 +43,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^21.8.3",
+    "@ethang/eslint-config": "^21.8.4",
     "@portabletext/types": "^2.0.13",
     "@react-types/shared": "^3.29.0",
     "@tailwindcss/typography": "^0.5.16",
@@ -52,9 +52,9 @@
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",
     "@types/node": "^22.14.1",
-    "@types/react": "^19.1.1",
+    "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^4.4.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.24.0",
     "postcss": "^8.5.3",
@@ -62,7 +62,7 @@
     "rimraf": "^6.0.1",
     "tailwindcss": "<4",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.29.1",
+    "typescript-eslint": "^8.30.1",
     "vite": "^6.2.6",
     "vite-plugin-pwa": "^1.0.0"
   },
