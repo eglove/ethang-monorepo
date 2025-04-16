@@ -7,7 +7,7 @@ const ruleNames = keys(eslint.configs.all.rules);
 const customRules = [
   {
     name: "arrow-body-style",
-    rule: "off",
+    rule: ["error", "always"],
   },
   {
     name: "camelcase",

@@ -49,7 +49,7 @@ export default tseslint.config(
       "compat/compat": "error",
       "accessor-pairs": "error",
       "array-callback-return": "error",
-      "arrow-body-style": "off",
+      "arrow-body-style": ["error", "always"],
       "block-scoped-var": "error",
       camelcase: "off",
       "capitalized-comments": "off",

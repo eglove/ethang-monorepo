@@ -5,9 +5,9 @@
 > [!CAUTION]
 > Prettier is already included for styling!
 
-- 726 errored rules.
+- 727 errored rules.
 - 240 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
-- 141 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
+- 142 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
 - 121 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
 - 106 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
 - 34 rules from [jsx-a11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)
@@ -106,12 +106,4 @@ This config will also lint for browserslist features. Make sure to set this in p
 "engines": {
   "node": ">=22"
 },
-```
-
-**Package Type**
-
-This config does not support CommonJS, make sure to specify ESM in package.json
-
-```json
-"type": "module",
 ```

@@ -18,7 +18,6 @@ export const CalendarRoute = () => {
   return (
     <MainLayout>
       <div className="mx-auto my-4 max-w-7xl rounded-lg bg-gray-50 shadow-sm shadow-sky-50">
-        {/* eslint-disable-next-line react/dom/no-missing-iframe-sandbox */}
         <iframe
           className="border-0 w-full sm:aspect-video min-h-[80vh] sm:min-h-fit"
           src="https://calendar.google.com/calendar/embed?src=mnutc60ri0h45lj454ap6vca5961oqdp%40import.calendar.google.com&ctz=America%2FChicago"

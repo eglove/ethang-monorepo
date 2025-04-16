@@ -1,9 +1,9 @@
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $eslintConfigDirectory = Join-Path $scriptDir "packages\eslint-config"
 
+webstorm .
 Set-Location $eslintConfigDirectory
 Write-Host "Updating dependencies in eslint-config..."
-webstorm ../../
 pnpm up -i --latest
 pnpm build
 
