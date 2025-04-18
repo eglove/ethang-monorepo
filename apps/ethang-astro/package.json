@@ -5,16 +5,16 @@
   ],
   "dependencies": {
     "@astrojs/cloudflare": "^12.5.0",
-    "astro": "^5.7.3",
+    "astro": "^5.7.4",
     "highlight.js": "^11.11.1",
     "luxon": "^3.6.1"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
-    "@ethang/eslint-config": "^21.8.6",
+    "@ethang/eslint-config": "^21.8.7",
     "@tailwindcss/typography": "^0.5.16",
     "@types/luxon": "^3.6.2",
-    "daisyui": "^5.0.24",
+    "daisyui": "^5.0.27",
     "eslint": "^9.24.0",
     "prettier": "^3.5.3",
     "prettier-plugin-astro": "^0.14.1",
