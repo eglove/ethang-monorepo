@@ -5,14 +5,14 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "eslint": "^9.24.0",
+    "eslint": "^9.25.0",
     "lodash": "^4.17.21",
     "react": "^19.1.0",
     "zod": "^3.24.3"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^21.8.7",
+    "@ethang/eslint-config": "^21.8.8",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.16",
     "@types/node": "^22.14.1",

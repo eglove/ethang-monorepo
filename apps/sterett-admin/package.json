@@ -17,10 +17,10 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^21.8.7",
+    "@ethang/eslint-config": "^21.8.8",
     "@sanity/eslint-config-studio": "^5.0.2",
     "@types/lodash": "^4.17.16",
-    "eslint": "^9.24.0",
+    "eslint": "^9.25.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.30.1"
   },

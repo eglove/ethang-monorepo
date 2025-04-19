@@ -11,11 +11,11 @@
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
-    "@ethang/eslint-config": "^21.8.7",
+    "@ethang/eslint-config": "^21.8.8",
     "@tailwindcss/typography": "^0.5.16",
     "@types/luxon": "^3.6.2",
     "daisyui": "^5.0.27",
-    "eslint": "^9.24.0",
+    "eslint": "^9.25.0",
     "prettier": "^3.5.3",
     "prettier-plugin-astro": "^0.14.1",
     "sharp": "^0.34.1",

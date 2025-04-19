@@ -43,7 +43,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^21.8.7",
+    "@ethang/eslint-config": "^21.8.8",
     "@portabletext/types": "^2.0.13",
     "@react-types/shared": "^3.29.0",
     "@tailwindcss/typography": "^0.5.16",
@@ -54,9 +54,9 @@
     "@types/node": "^22.14.1",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
-    "@vitejs/plugin-react": "^4.4.0",
+    "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.21",
-    "eslint": "^9.24.0",
+    "eslint": "^9.25.0",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
