@@ -75,7 +75,7 @@ type UserProfile = {
   name: string;
 }
 
-class UserProfileStore implements Observable<UserPofile> {
+class UserProfileStore implements Observable<UserProfile> {
     private state: UserProfile;
     private subscribers: Set<(newState: UserProfile) => void> 
         = new Set();
@@ -146,22 +146,16 @@ const state = useSyncExternalStore(
 
 <div>{state.name}</div>`;
 
-const viteVanillaBasic = `
-import {store} from './counter.ts';
+const useSyncExternalStoreSelectorExample = `
+import {useSyncExternalStore} from "react";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML 
-    = \`<button id="counter" type="button" />\`
+const name = useSyncExternalStore(
+    listener => userProfile.subscribe(listener),
+    () => userProfile.state.name,
+    () => userProfile.state.name,
+);
 
-const element 
-    = document.querySelector<HTMLButtonElement>('#counter')!;
-element.innerHTML = \`count is \${store.state.count}\`
-element.addEventListener('click', () => {
-    store.increment();
-})
-
-store.subscribe(state => {
-    element.innerHTML = \`count is \${state.count}\`
-})`;
+<div>{name}</div>`;
 ---
 
 <Layout>
@@ -206,13 +200,13 @@ store.subscribe(state => {
     </nav>
     <h2 id={headers.introduction.id}>{headers.introduction.label}</h2>
     <p>
-      I'm never one to just say, "we should should only use vanilla JavaScript
-      and never use dependencies." I think this ignores the fact that JavaScript
-      has no standard library. And that JavaScript is not a programming
-      language. Or to be more specific it falls under the subcategory of
-      scripting language while extensions like TypeScript has helped elevate it
-      into proper programming. I will always be the first to remind people that
-      in the real world you're better off using a
+      I'm never one to just say, "we should only use vanilla JavaScript and
+      never use dependencies." I think this ignores the fact that JavaScript has
+      no standard library. And that JavaScript is not a programming language. Or
+      to be more specific it falls under the subcategory of scripting language
+      while extensions like TypeScript has helped elevate it into proper
+      programming. I will always be the first to remind people that in the real
+      world you're better off using a
       <a
         href="https://ethang.dev/blog/javascript-standard-library/"
         target="_blank"
@@ -224,7 +218,8 @@ store.subscribe(state => {
       explaining the jargon and complexities of different state management
       libraries, praising Zustand over Redux as Reacts savior, the more
       concerned I am that these tools, which helped the broader community during
-      a time of exploration, have lulled us into a false sense of security.
+      a time of exploration, have lulled us into unnecessary complexity. (Yes,
+      even Zustand.)
     </p>
     <p>
       In some sense I feel like Ryan Carniato's exploration of building reactive
@@ -234,7 +229,7 @@ store.subscribe(state => {
       > broke through the matrix. Sure, what SolidJS does as a framework for "state
       management" is quite complex, but it's built upon and discovered a few simple
       primitives. State and Effects. "Derived" values are just memoized state, and
-      Effects and just "Derived" values that don't set their own state. AKA, they
+      Effects are just "Derived" values that don't set their own state. AKA, they
       don't return a value.
     </p>
     <p>
@@ -266,8 +261,11 @@ store.subscribe(state => {
       get that performance back.
     </p>
     <p>
-      Given these realizations, I believe UI libraries should only do one thing.
-      <strong>Provide a mechanism to subscribe HTML to our own state.</strong>
+      Given these realizations, I believe UI libraries should not provide any
+      aid to "state management". Nor should we use any library that attempts to
+      abstract this out. Instead, UI libraries should <strong
+        >provide a mechanism to subscribe HTML to our own state.</strong
+      >
       They should not try to abstract away memoization, performance, derivation,
       or "effects".
     </p>
@@ -304,6 +302,11 @@ store.subscribe(state => {
       >
     </p>
     <p>
+      In fact, if were in React, I would not use the above class at all and use
+      only TanStack Query. But the example is only used to illustrate error
+      handling.
+    </p>
+    <p>
       The purpose of this is not to have a magic all-in-one library abstraction
       that "just works." It is to give developers the power to do what they need
       to do. And I think the jargon and complexities of state management
@@ -326,7 +329,7 @@ store.subscribe(state => {
       >
     </p>
     <p>
-      How do we generate ids? How do we manage unsubscription? How do we want to
+      How do we generate ids? How do we manage unsubscription? How do we know to
       change textContent and not innerHTML with composition? How do we handle
       component composition and component driven design at all?
     </p>
@@ -338,23 +341,44 @@ store.subscribe(state => {
     </p>
     <CodeBlock code={useSyncExternalStoreExample} />
     <p>
-      The only issue is that React would rather you call component functions on
-      every state change wherever this hook is used ("rerender") than to allow
-      you to at the very least make sure it only happens when the property name
-      changes. Selectors may be used with <a
+      The only issue with useSyncExternalStore is that it's a hook and therefore
+      will call the component function (rerender) everytime state changes. React
+      would rather you call component functions on every state change wherever
+      this hook is used ("rerender") than to allow you to at the very least make
+      sure it only happens when the property name changes. Selectors may be used
+      with <a
         href="https://www.npmjs.com/package/use-sync-external-store"
         target="_blank">a shim</a
       > that they maintain for "legacy purposes".
     </p>
     <p>
+      Every solution to React rerendering too much revolves around massaging
+      explicit selectors, generating specific subscriptions, attaching
+      subscriptions to refs (in the case of form libraries), using proxies for
+      property detection, and a whole host of other trickeries hidden away and
+      out of the app developers control. <strong
+        >All of these solutions, by the way, are of equal mediocrity due to
+        their generic nature and the fact that they are built on top of hacking
+        or "fixing" React's render process.</strong
+      >
+    </p>
+    <p>
+      React's official answer to all of this is to just memoize. Their affinity
+      towards component wrappers (Suspense, ErrorBoundary, Context, etc.) have
+      never been great DX and the hacks provided by the libraries that are
+      attempting to introduce simple Observer patterns to React still just work
+      better than any official solution.
+    </p>
+    <p>
       This is something I don't understand about React, why they are so against
-      fine-grained reactivity. Instead, it's what I believe is the only real
-      purpose of a UI library. Provide the transformations to declaratively
-      define subscriptions. And allow us to maintain the logic for notification.
+      fine-grained reactivity. I believe this is one of the few purposes of a UI
+      library. Provide the transformations to declaratively define
+      subscriptions. Allow app developers to maintain the logic for notification
+      of subscribers and what each subscriber should do with notifications.
     </p>
     <p>
       SolidJS is fantastic, but the interfaces aren't quite so open. While data
-      is seperated from UI, we still have to go through Solid mechanisms and
+      is separated from UI, we still have to go through Solid mechanisms and
       jargon to get to the results we want.
     </p>
     <p>
@@ -385,7 +409,7 @@ store.subscribe(state => {
     </h3>
     <ul>
       <li>
-        Bake in opinions about whether all state should be "fined-grained" or
+        Bake in opinions about whether all state should be "fine-grained" or
         "coarse-grained".
       </li>
       <li>Block modern declarative patterns.</li>
@@ -403,7 +427,7 @@ store.subscribe(state => {
     </h3>
     <ul>
       <li>Unique element id generation</li>
-      <li>Accepting state subscription/unsubscription</li>
+      <li>Interfacing with external state subscription/unsubscription</li>
       <li>Composition (templates/components)</li>
       <li>
         Knowing what needs to change (textContent, nested
@@ -418,11 +442,11 @@ store.subscribe(state => {
       {headers.findingASolution.label}
     </h2>
     <p>
-      Let's think about this in practicality. We don't want React which builds
-      large objects of recursive functions and a hard to control process. We
-      don't want Astro which purposefully doesn't provide the mechanisms for SPA
-      logic and instead opts to build multiple HTML entry points. We don't want
-      HTMX which doesn't allow for any sort of templating and is instead just a
+      Let's think about this practically. We don't want React which builds large
+      objects of recursive functions and a hard to control process. We don't
+      want Astro which purposefully doesn't provide the mechanisms for SPA logic
+      and instead opts to build multiple HTML entry points. We don't want HTMX
+      which doesn't allow for any sort of templating and is instead just a
       simple utility library (I would say it is not a UI library at all).
       SolidJS is great, but we want to simplify and think more about using
       generic logic which plugs into the framework, not a framework which
@@ -449,16 +473,16 @@ store.subscribe(state => {
     </p>
     <p>
       So the answer is more likely a DSL similar to Angular or Svelte. You just
-      an interface for subscriptions rather than your UI library managing it all
-      and locking people into your opinions. I would want to avoid solving
-      problems like routing as well. Instead I'd want a routing library to point
-      to my libraries components.
+      need an interface for subscriptions rather than your UI library managing
+      it all and locking people into your opinions. I would want to avoid
+      solving problems like routing as well. Instead I'd want a routing library
+      to point to my libraries components.
     </p>
     <p>
       And here we have the crux of the matter. Why UI libraries quickly turn
-      into "frameworks". For simple declarative and reactive templating, so many
-      hurdles very quickly jump in the way before you've even thought of an
-      approach to prototype.
+      into "frameworks", and why we have so many choices. For simple declarative
+      and reactive templating, so many hurdles very quickly jump in the way
+      before you've even thought of an approach to prototype.
     </p>
   </main>
 </Layout>
