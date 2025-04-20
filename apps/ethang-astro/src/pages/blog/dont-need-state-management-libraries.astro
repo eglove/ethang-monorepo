@@ -302,7 +302,7 @@ const name = useSyncExternalStore(
       >
     </p>
     <p>
-      In fact, if were in React, I would not use the above class at all and use
+      In fact, if we're in React, I would not use the above class at all and use
       only TanStack Query. But the example is only used to illustrate error
       handling.
     </p>
@@ -364,8 +364,8 @@ const name = useSyncExternalStore(
     </p>
     <p>
       React's official answer to all of this is to just memoize. Their affinity
-      towards component wrappers (Suspense, ErrorBoundary, Context, etc.) have
-      never been great DX and the hacks provided by the libraries that are
+      towards component wrappers (Suspense, ErrorBoundary, Context, memo, etc.)
+      have never been great DX and the hacks provided by the libraries that are
       attempting to introduce simple Observer patterns to React still just work
       better than any official solution.
     </p>
