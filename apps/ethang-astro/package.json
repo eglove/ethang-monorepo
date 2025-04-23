@@ -4,24 +4,24 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "@astrojs/cloudflare": "^12.5.0",
-    "astro": "^5.7.4",
+    "@astrojs/cloudflare": "^12.5.1",
+    "astro": "^5.7.5",
     "highlight.js": "^11.11.1",
     "luxon": "^3.6.1"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
-    "@ethang/eslint-config": "^21.8.10",
+    "@ethang/eslint-config": "^21.8.11",
     "@tailwindcss/typography": "^0.5.16",
     "@types/luxon": "^3.6.2",
-    "daisyui": "^5.0.27",
+    "daisyui": "^5.0.28",
     "eslint": "^9.25.1",
     "prettier": "^3.5.3",
     "prettier-plugin-astro": "^0.14.1",
     "sharp": "^0.34.1",
     "tailwindcss": "<4",
     "typescript-eslint": "^8.31.0",
-    "wrangler": "^4.12.1"
+    "wrangler": "^4.13.0"
   },
   "engines": {
     "node": ">=22"

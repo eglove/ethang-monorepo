@@ -9,5 +9,5 @@ pnpm i -g wrangler
 pnpm up -g --latest
 
 # Windows software update
-winget upgrade --unknown --all --accept-package-agreements --accept-source-agreements --uninstall-previous
+winget upgrade --unknown --all --accept-package-agreements --accept-source-agreements
 
