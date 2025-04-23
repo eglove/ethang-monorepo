@@ -1,3 +1,14 @@
+---
+type Props = {
+  title?: string;
+  description?: string;
+};
+
+const { title, description } = Astro.props;
+const pageTitle = title ? `${title} | EthanG` : "EthanG";
+const pageDescription = description ?? "Messin' around on the web sometimes.";
+---
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -12,8 +23,8 @@
     <meta name="theme-color" content="#1976d2" />
 
     <meta name="generator" content={Astro.generator} />
-    <title>EthanG</title>
-    <meta name="description" content="Messin' around on the web sometimes." />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
   </head>
   <body>
     <div class="grid sm:grid-cols-[auto_1fr] gap-4">

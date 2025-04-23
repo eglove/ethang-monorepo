@@ -816,22 +816,7 @@ export default tseslint.config(
       "perfectionist/sort-enums": "error",
       "perfectionist/sort-exports": "error",
       "perfectionist/sort-heritage-clauses": "error",
-      "perfectionist/sort-imports": [
-        "error",
-        {
-          groups: [
-            "type",
-            ["builtin", "external"],
-            "internal-type",
-            "internal",
-            ["parent-type", "sibling-type", "index-type"],
-            ["parent", "sibling", "index"],
-            "object",
-            "unknown",
-          ],
-          newlinesBetween: "always",
-        },
-      ],
+      "perfectionist/sort-imports": "error",
       "perfectionist/sort-interfaces": "error",
       "perfectionist/sort-intersection-types": "error",
       "perfectionist/sort-jsx-props": [

@@ -13,25 +13,6 @@ const ruleNames = keys(
 );
 const customRules = [
   {
-    name: "sort-imports",
-    rule: [
-      "error",
-      {
-        groups: [
-          "type",
-          ["builtin", "external"],
-          "internal-type",
-          "internal",
-          ["parent-type", "sibling-type", "index-type"],
-          ["parent", "sibling", "index"],
-          "object",
-          "unknown",
-        ],
-        newlinesBetween: "always",
-      },
-    ],
-  },
-  {
     name: "sort-jsx-props",
     rule: ["error", { groups: ["shorthand", "multiline"] }],
   },
