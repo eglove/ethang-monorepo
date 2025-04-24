@@ -26,7 +26,7 @@
     "eslint-plugin-depend": "^1.0.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-lodash": "^8.0.0",
-    "eslint-plugin-perfectionist": "^4.12.1",
+    "eslint-plugin-perfectionist": "^4.12.3",
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react-compiler": "19.1.0-rc.1",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -63,5 +63,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "21.8.11"
+  "version": "21.8.12"
 }

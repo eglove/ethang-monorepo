@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
-    "@ethang/eslint-config": "^21.8.11",
+    "@ethang/eslint-config": "^21.8.12",
     "@tailwindcss/typography": "^0.5.16",
     "@types/luxon": "^3.6.2",
     "daisyui": "^5.0.28",
@@ -21,7 +21,7 @@
     "sharp": "^0.34.1",
     "tailwindcss": "<4",
     "typescript-eslint": "^8.31.0",
-    "wrangler": "^4.13.0"
+    "wrangler": "^4.13.1"
   },
   "engines": {
     "node": ">=22"
