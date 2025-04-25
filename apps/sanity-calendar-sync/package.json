@@ -2,18 +2,18 @@
   "dependencies": {
     "@portabletext/react": "^3.2.1",
     "@portabletext/types": "^2.0.13",
-    "@sanity/client": "^6.29.0",
+    "@sanity/client": "^6.29.1",
     "lodash": "^4.17.21",
     "luxon": "^3.6.1",
     "ts-ics": "^2.0.5"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.21",
+    "@cloudflare/vitest-pool-workers": "^0.8.22",
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",
     "typescript": "^5.5.2",
     "vitest": "~3.1.2",
-    "wrangler": "^4.13.1"
+    "wrangler": "^4.13.2"
   },
   "name": "sanity-calendar-sync",
   "private": true,
