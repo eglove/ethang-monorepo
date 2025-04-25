@@ -11,11 +11,7 @@ import { jsonRules } from "../setup/json.ts";
 import { lodashRules } from "../setup/lodash.ts";
 import { markdownRules } from "../setup/markdown.ts";
 import { perfectionistRules } from "../setup/perfectionist.ts";
-import {
-  reactCompilerRules,
-  reactHookRules,
-  reactRules,
-} from "../setup/react.ts";
+import { reactHookRules, reactRules } from "../setup/react.ts";
 import { solidRules } from "../setup/solid.ts";
 import { sonarRules } from "../setup/sonar.ts";
 import { storybookRules } from "../setup/storybook.js";
@@ -243,15 +239,6 @@ export const ruleList = [
     pluginValue: "reactHooks",
     type: "react",
     url: "https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks",
-  },
-  {
-    importString: 'import reactCompiler from "eslint-plugin-react-compiler";',
-    list: reactCompilerRules,
-    name: "eslint-plugin-react-compiler",
-    pluginName: "react-compiler",
-    pluginValue: "reactCompiler",
-    type: "react",
-    url: "https://github.com/facebook/react/tree/main/compiler/packages/eslint-plugin-react-compiler",
   },
   {
     importString: 'import solid from "eslint-plugin-solid";',
