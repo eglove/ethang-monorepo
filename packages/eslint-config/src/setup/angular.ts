@@ -4,12 +4,8 @@ import keys from "lodash/keys.js";
 
 import { genRules, getNonDeprecatedRules } from "./gen-rules.js";
 
-// @ts-expect-error this is ok
 const tsRuleNames = keys(getNonDeprecatedRules(angularTS.rules));
-const templateRuleNames = keys(
-  // @ts-expect-error this is ok
-  getNonDeprecatedRules(angularTemplate.rules),
-);
+const templateRuleNames = keys(getNonDeprecatedRules(angularTemplate.rules));
 
 const customTsRules = [
   {

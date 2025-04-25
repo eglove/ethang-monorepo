@@ -1,4 +1,3 @@
-// @ts-expect-error export exists
 import tanstack from "@tanstack/eslint-plugin-query";
 import keys from "lodash/keys.js";
 
