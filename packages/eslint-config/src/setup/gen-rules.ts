@@ -11,10 +11,9 @@ export const getNonDeprecatedRules = (rules: unknown) => {
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   for (const [key, value] of Object.entries(rules as EsLintRules)) {
-    if (
-      true !== value.meta?.deprecated &&
-      isNil(get(value, ["meta", "deprecated", "deprecatedSince"]))
-    ) {
+    const deprecated = get(value, ["meta", "deprecated"]);
+
+    if (false === deprecated || isNil(deprecated)) {
       filtered[key] = value;
     }
   }
