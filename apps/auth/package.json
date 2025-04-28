@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.22",
-    "@ethang/eslint-config": "^21.8.13",
+    "@ethang/eslint-config": "^21.9.0",
     "@types/lodash": "^4.17.16",
     "eslint": "^9.25.1",
     "typescript": "^5.8.3",

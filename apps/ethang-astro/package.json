@@ -5,13 +5,13 @@
   ],
   "dependencies": {
     "@astrojs/cloudflare": "^12.5.1",
-    "astro": "^5.7.5",
+    "astro": "^5.7.7",
     "highlight.js": "^11.11.1",
     "luxon": "^3.6.1"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
-    "@ethang/eslint-config": "^21.8.13",
+    "@ethang/eslint-config": "^21.9.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/luxon": "^3.6.2",
     "daisyui": "^5.0.28",

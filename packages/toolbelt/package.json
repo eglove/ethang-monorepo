@@ -11,10 +11,10 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^21.8.13",
+    "@ethang/eslint-config": "^21.9.0",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.16",
-    "@types/node": "^22.15.2",
+    "@types/node": "^22.15.3",
     "@vitest/coverage-v8": "^3.1.2",
     "@vitest/ui": "^3.1.2",
     "eslint": "^9.25.1",
