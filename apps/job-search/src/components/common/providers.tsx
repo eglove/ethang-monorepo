@@ -1,7 +1,5 @@
 import { logger } from "@/lib/logger.ts";
-import { paypalProviderOptions } from "@/lib/paypal.ts";
 import { HeroUIProvider } from "@heroui/react";
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, useNavigate } from "@tanstack/react-router";
 import constant from "lodash/constant";
@@ -44,20 +42,18 @@ export const Providers = () => {
   const navigate = useNavigate();
 
   return (
-    <PayPalScriptProvider options={paypalProviderOptions}>
-      <QueryClientProvider client={queryClient}>
-        <HeroUIProvider
-          navigate={(path) => {
-            navigate({ to: path }).catch(logger.error);
-          }}
-        >
-          <ThemeProvider enableSystem attribute="class">
-            <Outlet />
-            <TanStackRouterDevtools />
-            <ReactQueryDevtools />
-          </ThemeProvider>
-        </HeroUIProvider>
-      </QueryClientProvider>
-    </PayPalScriptProvider>
+    <QueryClientProvider client={queryClient}>
+      <HeroUIProvider
+        navigate={(path) => {
+          navigate({ to: path }).catch(logger.error);
+        }}
+      >
+        <ThemeProvider enableSystem attribute="class">
+          <Outlet />
+          <TanStackRouterDevtools />
+          <ReactQueryDevtools />
+        </ThemeProvider>
+      </HeroUIProvider>
+    </QueryClientProvider>
   );
 };

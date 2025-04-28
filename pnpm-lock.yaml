@@ -143,12 +143,6 @@ importers:
       '@heroui/theme':
         specifier: 2.4.13
         version: 2.4.13(tailwindcss@3.4.17)
-      '@paypal/paypal-js':
-        specifier: ^8.2.0
-        version: 8.2.0
-      '@paypal/react-paypal-js':
-        specifier: ^8.8.3
-        version: 8.8.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@tanstack/query-sync-storage-persister':
         specifier: ^5.74.7
         version: 5.74.7
@@ -4630,18 +4624,6 @@ packages:
   '@parcel/watcher@2.5.1':
     resolution: {integrity: sha512-dfUnCxiN9H4ap84DvD2ubjw+3vUNpstxa0TneY/Paat8a3R4uQZDLSvWjmznAY/DoahqTHl9V46HF/Zs3F29pg==}
     engines: {node: '>= 10.0.0'}
-
-  '@paypal/paypal-js@8.2.0':
-    resolution: {integrity: sha512-hLg5wNORW3WiyMiRNJOm6cN2IqjPlClpxd971bEdm0LNpbbejQZYtesb0/0arTnySSbGcxg7MxjkZ/N5Z5qBNQ==}
-
-  '@paypal/react-paypal-js@8.8.3':
-    resolution: {integrity: sha512-H5s3EU7S+RFaLad3BmV9nSAmD3iaJI14mCtbngpqMm4ruMNGHjOTaSTX3jAAk/ghmzGAda2GMfyiYondO4F21Q==}
-    peerDependencies:
-      react: ^16.8.0 || ^17 || ^18 || ^19
-      react-dom: ^16.8.0 || ^17 || ^18 || ^19
-
-  '@paypal/sdk-constants@1.0.153':
-    resolution: {integrity: sha512-wrPXK9ckwYBOOLyHfsGGtYjf9vOQgPSOh08DEeGRr/KBamQgvHYEG2soSMPlJuLfker32n1x5wvnWCcYP+ea9w==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -9229,9 +9211,6 @@ packages:
   headers-polyfill@4.0.3:
     resolution: {integrity: sha512-IScLbePpkvO846sIwOtOTDjutRMWdXdJmXdMvk6gCBHxFO8d+QKOQedyZSxFTTFYRSmlgSTDtXqqq4pcenBXLQ==}
 
-  hi-base32@0.5.1:
-    resolution: {integrity: sha512-EmBBpvdYh/4XxsnUybsPag6VikPYnN30td+vQk+GI3qpahVEG9+gTkG0aXVxTjBqQ5T6ijbWIu77O+C5WFWsnA==}
-
   highlight.js@11.11.1:
     resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
     engines: {node: '>=12.0.0'}
@@ -11177,9 +11156,6 @@ packages:
 
   progress-stream@2.0.0:
     resolution: {integrity: sha512-xJwOWR46jcXUq6EH9yYyqp+I52skPySOeHfkxOZ2IY1AiBi/sFJhbhAKHoV3OTw/omQ45KTio9215dRJ2Yxd3Q==}
-
-  promise-polyfill@8.3.0:
-    resolution: {integrity: sha512-H5oELycFml5yto/atYqmjyigJoAo3+OXwolYiH7OfQuYlAqhxNvTfiNMbV9hsC6Yp83yE5r2KTVmtrG6R9i6Pg==}
 
   prompts@2.4.2:
     resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}
@@ -17872,21 +17848,6 @@ snapshots:
       '@parcel/watcher-win32-x64': 2.5.1
     optional: true
 
-  '@paypal/paypal-js@8.2.0':
-    dependencies:
-      promise-polyfill: 8.3.0
-
-  '@paypal/react-paypal-js@8.8.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
-    dependencies:
-      '@paypal/paypal-js': 8.2.0
-      '@paypal/sdk-constants': 1.0.153
-      react: 19.1.0
-      react-dom: 19.1.0(react@19.1.0)
-
-  '@paypal/sdk-constants@1.0.153':
-    dependencies:
-      hi-base32: 0.5.1
-
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
@@ -21023,7 +20984,7 @@ snapshots:
       consola: 3.4.2
       defu: 6.1.4
       get-port-please: 3.1.2
-      h3: 1.13.0
+      h3: 1.15.3
       http-shutdown: 1.2.2
       jiti: 1.21.7
       mlly: 1.7.4
@@ -24348,8 +24309,6 @@ snapshots:
   headers-polyfill@4.0.3:
     optional: true
 
-  hi-base32@0.5.1: {}
-
   highlight.js@11.11.1: {}
 
   history@5.3.0:
@@ -26607,8 +26566,6 @@ snapshots:
     dependencies:
       speedometer: 1.0.0
       through2: 2.0.5
-
-  promise-polyfill@8.3.0: {}
 
   prompts@2.4.2:
     dependencies:
