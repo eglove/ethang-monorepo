@@ -16,7 +16,7 @@
     "@eslint/markdown": "^6.4.0",
     "@tanstack/eslint-plugin-query": "^5.74.7",
     "@tanstack/eslint-plugin-router": "^1.115.0",
-    "@typescript-eslint/parser": "^8.31.0",
+    "@typescript-eslint/parser": "^8.31.1",
     "angular-eslint": "19.3.0",
     "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.2",
@@ -35,7 +35,7 @@
     "eslint-plugin-tailwindcss": "^3.18.0",
     "eslint-plugin-unicorn": "^59.0.0",
     "prettier": "^3.5.3",
-    "typescript-eslint": "^8.31.0"
+    "typescript-eslint": "^8.31.1"
   },
   "devDependencies": {
     "@ethang/markdown-generator": "^1.1.5",
@@ -62,5 +62,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "21.9.1"
+  "version": "21.9.2"
 }
