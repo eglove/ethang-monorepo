@@ -4,8 +4,8 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "@astrojs/cloudflare": "^12.5.1",
-    "astro": "^5.7.7",
+    "@astrojs/cloudflare": "^12.5.2",
+    "astro": "^5.7.10",
     "highlight.js": "^11.11.1",
     "luxon": "^3.6.1"
   },
@@ -14,7 +14,7 @@
     "@ethang/eslint-config": "^21.9.2",
     "@tailwindcss/typography": "^0.5.16",
     "@types/luxon": "^3.6.2",
-    "daisyui": "^5.0.28",
+    "daisyui": "^5.0.35",
     "eslint": "^9.25.1",
     "prettier": "^3.5.3",
     "prettier-plugin-astro": "^0.14.1",

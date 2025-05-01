@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "compatibility_date": "2025-04-29",
+  "compatibility_date": "2025-05-01",
   "compatibility_flags": ["nodejs"],
   "name": "job-search",
   "observability": {
