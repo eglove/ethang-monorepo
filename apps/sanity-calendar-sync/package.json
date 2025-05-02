@@ -5,15 +5,15 @@
     "@sanity/client": "^7.0.0",
     "lodash": "^4.17.21",
     "luxon": "^3.6.1",
-    "ts-ics": "^2.0.5"
+    "ts-ics": "^2.1.0"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.23",
+    "@cloudflare/vitest-pool-workers": "^0.8.24",
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",
     "typescript": "^5.5.2",
     "vitest": "~3.1.2",
-    "wrangler": "^4.14.0"
+    "wrangler": "^4.14.1"
   },
   "name": "sanity-calendar-sync",
   "private": true,
