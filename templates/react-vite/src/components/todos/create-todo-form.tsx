@@ -25,7 +25,8 @@ export const CreateTodoForm = () => {
     mutationFn: createTodo,
     onSuccess: () => {
       form.reset();
-      queryClient.invalidateQueries(getTodos()).catch(globalThis.console.error);
+      // eslint-disable-next-line no-console,sonar/no-reference-error
+      queryClient.invalidateQueries(getTodos()).catch(console.error);
     },
   });
 
@@ -42,7 +43,8 @@ export const CreateTodoForm = () => {
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        form.handleSubmit().catch(globalThis.console.error);
+        // eslint-disable-next-line no-console
+        form.handleSubmit().catch(console.error);
       }}
       className="my-4 max-w-sm grid gap-4"
     >

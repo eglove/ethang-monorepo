@@ -12,6 +12,7 @@ See [full list of standard libraries](https://ethang.dev/blog/javascript-standar
 | Data Persistence         | [idb-keyval](https://github.com/jakearchibald/idb-keyval)                                                 |
 | Data Structure Utilities | [lodash](https://lodash.com/docs/)                                                                        |
 | DOM Manipulation         | [React](https://react.dev/)                                                                               |
+| Forms                    | [TanStack Form](https://tanstack.com/form/latest/docs/overview)                                           |
 | Icons                    | [lucide](https://lucide.dev/)                                                                             |
 | ID Generation            | [uuid (v7)](https://github.com/uuidjs/uuid)                                                               |
 | Error Handling           | [lodash](https://lodash.com/docs/)                                                                        |
