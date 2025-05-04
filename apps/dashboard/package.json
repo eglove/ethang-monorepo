@@ -4,19 +4,30 @@
     "maintained node versions"
   ],
   "dependencies": {
+    "@fontsource/inter": "^5.2.5",
+    "@kobalte/core": "^0.13.9",
     "@solidjs/start": "^1.1.2",
     "@tanstack/router-plugin": "^1.112.0",
     "@tanstack/solid-router": "^1.114.1",
     "@tanstack/solid-router-devtools": "^1.114.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "lodash": "^4.17.21",
+    "lucide-solid": "^0.507.0",
     "solid-js": "^1.9.5",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7",
     "vinxi": "^0.5.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250503.0",
     "@ethang/eslint-config": "^21.9.2",
     "@types/lodash": "^4.17.16",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9.26.0",
+    "jiti": "^2.4.2",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
     "typescript-eslint": "^8.31.1",
     "wrangler": "^4.14.1"
   },

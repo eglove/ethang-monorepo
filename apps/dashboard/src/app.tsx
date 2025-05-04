@@ -1,8 +1,11 @@
 import { RouterProvider } from "@tanstack/solid-router";
+import "@fontsource/inter";
 
-import { router } from "./router";
 import "./app.css";
+import { router } from "./router";
 
-const App = () => <RouterProvider router={router} />;
+const App = () => {
+  return <RouterProvider router={router} />;
+};
 
 export default App;

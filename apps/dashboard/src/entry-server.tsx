@@ -34,6 +34,7 @@ export default createHandler(
               name="viewport"
             />
             <link href="/favicon.ico" rel="icon" />
+            <title>EthanG</title>
             {assets}
           </head>
           <body>

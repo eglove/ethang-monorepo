@@ -3,13 +3,9 @@ import { createFileRoute } from "@tanstack/solid-router";
 import { MainLayout } from "~/components/layouts/main-layout.tsx";
 
 const RouteComponent = () => {
-  return (
-    <MainLayout>
-      <h1 class="bg-red-500">Hello world!</h1>
-    </MainLayout>
-  );
+  return <MainLayout>Hello "/workout"!</MainLayout>;
 };
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/workout")({
   component: RouteComponent,
 });
