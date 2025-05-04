@@ -5,6 +5,8 @@
   ],
   "dependencies": {
     "@heroui/react": "2.7.8",
+    "@tanstack/react-router": "^1.119.0",
+    "@tanstack/react-router-devtools": "^1.119.1",
     "framer-motion": "^12.9.4",
     "lodash": "^4.17.21",
     "react": "^19.0.0",
@@ -15,6 +17,7 @@
     "@cloudflare/workers-types": "^4.20250504.0",
     "@eslint/js": "^9.22.0",
     "@ethang/eslint-config": "^21.9.2",
+    "@tanstack/router-plugin": "^1.119.0",
     "@types/lodash": "^4.17.16",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
