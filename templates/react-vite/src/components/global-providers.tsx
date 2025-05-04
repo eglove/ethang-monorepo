@@ -4,7 +4,7 @@ import { Outlet, useNavigate } from "@tanstack/react-router";
 import constant from "lodash/constant";
 import { lazy } from "react";
 
-import { persister, queryClient } from "../clients/react-query";
+import { persister, queryClient } from "../lib/react-query.ts";
 
 const QueryDevelopmentTools =
   "production" === import.meta.env.MODE
