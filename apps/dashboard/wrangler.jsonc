@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2025-05-03",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "name": "dashboard",
+  "observability": {
+    "enabled": true
+  },
+  "pages_build_output_dir": "./dist",
+  "placement": {
+    "mode": "smart"
+  }
+}

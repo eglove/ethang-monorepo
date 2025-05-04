@@ -1,0 +1,37 @@
+{
+  "browserslist": [
+    "defaults and fully supports es6-module",
+    "maintained node versions"
+  ],
+  "dependencies": {
+    "@solidjs/start": "^1.1.2",
+    "@tanstack/router-plugin": "^1.112.0",
+    "@tanstack/solid-router": "^1.114.1",
+    "@tanstack/solid-router-devtools": "^1.114.1",
+    "lodash": "^4.17.21",
+    "solid-js": "^1.9.5",
+    "vinxi": "^0.5.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250503.0",
+    "@ethang/eslint-config": "^21.9.2",
+    "@types/lodash": "^4.17.16",
+    "eslint": "^9.26.0",
+    "typescript-eslint": "^8.31.1",
+    "wrangler": "^4.14.1"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "name": "with-tanstack-router",
+  "scripts": {
+    "build": "vinxi build",
+    "deploy": "pnpm run build && wrangler pages deploy",
+    "dev": "vinxi dev",
+    "lint": "eslint . --fix",
+    "preview": "pnpm run build && npx wrangler pages dev",
+    "start": "vinxi start",
+    "version": "vinxi version"
+  },
+  "type": "module"
+}

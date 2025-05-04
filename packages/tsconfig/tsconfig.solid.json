@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "target": "ESNext",
+    "types": [
+      "vinxi/types/client",
+      "@cloudflare/workers-types/2023-07-01"
+    ]
+  },
+  "extends": [
+    "./tsconfig.base.json"
+  ]
+}

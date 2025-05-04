@@ -4,7 +4,7 @@ Get-WindowsUpdate -MicrosoftUpdate -AcceptAll -Install
 #docker system prune -af
 
 # NPM globals
-corepack install -g pnpm
+corepack install -g pnpm npm yarn
 pnpm store prune
 pnpm i -g wrangler
 pnpm up -g --latest
