@@ -5,7 +5,7 @@ export const createTodoSchema = z.object({
   due: z.string().transform((value) => {
     return DateTime.fromJSDate(new Date(value)).toISO() ?? "";
   }),
-  name: z.string(),
+  name: z.string().min(1),
 });
 
 export const deleteTodoSchema = z.object({

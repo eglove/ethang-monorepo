@@ -1,4 +1,4 @@
-import { HeroUIProvider } from "@heroui/react";
+import { HeroUIProvider, ToastProvider } from "@heroui/react";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { Outlet, useNavigate } from "@tanstack/react-router";
 import constant from "lodash/constant";
@@ -36,9 +36,11 @@ export const GlobalProviders = () => {
     >
       <HeroUIProvider
         navigate={(url) => {
-          navigate({ to: url }).catch(globalThis.console.error);
+          // eslint-disable-next-line no-console,sonar/no-reference-error
+          navigate({ to: url }).catch(console.error);
         }}
       >
+        <ToastProvider />
         <Outlet />
       </HeroUIProvider>
       <TanStackRouterDevtools />
