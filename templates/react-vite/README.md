@@ -4,3 +4,4 @@
 * Vite + React
 * TypeScript
 * @ethang/eslint-config
+* Tailwind CSS
