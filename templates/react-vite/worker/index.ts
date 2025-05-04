@@ -5,17 +5,17 @@ import isError from "lodash/isError.js";
 import startsWith from "lodash/startsWith.js";
 import { v7 } from "uuid";
 
-import { createTodoSchema } from "./create-todo-schema.ts";
-import { getTodos } from "./database.ts";
+import { createTodoSchema, deleteTodoSchema } from "./create-todo-schema.ts";
+import { getTodoModel } from "./database.ts";
 
 export default {
   async fetch(request, environment) {
     const url = new URL(request.url);
-    const todos = getTodos(environment);
+    const todos = getTodoModel(environment);
 
-    const isUser = startsWith(url.pathname, "/api/user");
+    const isTodo = startsWith(url.pathname, "/api/todo");
 
-    if (isUser && "POST" === request.method) {
+    if (isTodo && "POST" === request.method) {
       const data = await parseFetchJson(request, createTodoSchema);
 
       if (isError(data)) {
@@ -42,7 +42,31 @@ export default {
       return Response.json({ data: todo });
     }
 
-    if (isUser && "GET" === request.method) {
+    if (isTodo && "DELETE" === request.method) {
+      const data = await parseFetchJson(request, deleteTodoSchema);
+
+      if (isError(data)) {
+        return Response.json(
+          { error: "Invalid Request" },
+          { status: HTTP_STATUS.BAD_REQUEST },
+        );
+      }
+
+      const result = await attemptAsync(async () => {
+        return todos.Delete({ where: { id: data.id } });
+      });
+
+      if (isError(data)) {
+        return Response.json(
+          { error: "Failed to create todo" },
+          { status: HTTP_STATUS.INTERNAL_SERVER_ERROR },
+        );
+      }
+
+      return Response.json({ data: result });
+    }
+
+    if (isTodo && "GET" === request.method) {
       const data = await todos.All({ orderBy: "id" });
       return Response.json({ data: data.results });
     }

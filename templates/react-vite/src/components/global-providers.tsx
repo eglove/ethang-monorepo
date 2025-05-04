@@ -1,7 +1,10 @@
 import { HeroUIProvider } from "@heroui/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, useNavigate } from "@tanstack/react-router";
 import constant from "lodash/constant";
 import { lazy } from "react";
+
+export const queryClient = new QueryClient();
 
 const TanStackRouterDevtools =
   "production" === import.meta.env.MODE
@@ -16,7 +19,7 @@ export const GlobalProviders = () => {
   const navigate = useNavigate();
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <HeroUIProvider
         navigate={(url) => {
           navigate({ to: url }).catch(globalThis.console.error);
@@ -25,6 +28,6 @@ export const GlobalProviders = () => {
         <Outlet />
       </HeroUIProvider>
       <TanStackRouterDevtools />
-    </>
+    </QueryClientProvider>
   );
 };

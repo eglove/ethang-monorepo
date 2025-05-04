@@ -5,7 +5,7 @@ export const getDatabase = (environment: Env) => {
   return new D1Orm(environment.DB);
 };
 
-export const getTodos = (environment: Env) => {
+export const getTodoModel = (environment: Env) => {
   const database = getDatabase(environment);
 
   return new Model(
