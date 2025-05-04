@@ -10,8 +10,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_id": "da6110de-49cc-47e0-bb4c-d338c4a21339",
-      "database_name": "react-vite-template"
+      "database_id": "<id>",
+      "database_name": "<db_name>"
     }
   ],
   "main": "worker/index.ts",
