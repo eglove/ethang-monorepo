@@ -1,19 +1,9 @@
 {
-	"files": [],
-	"references": [
-		{
-			"path": "./tsconfig.app.json"
-		},
-		{
-			"path": "./tsconfig.node.json"
-		},
-		{
-			"path": "./tsconfig.worker.json"
-		}
-	],
 	"compilerOptions": {
 		"types": [
-			"@cloudflare/workers-types/2023-07-01"
+			"@cloudflare/workers-types/2023-07-01",
+			"vite/client"
 		]
-	}
+	},
+	"extends": ["../../packages/tsconfig/tsconfig.react.json"],
 }
