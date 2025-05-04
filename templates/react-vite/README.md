@@ -8,10 +8,11 @@ See [full list of standard libraries](https://ethang.dev/blog/javascript-standar
 | Backend                  | [Cloudflare Worker](https://workers.cloudflare.com/)                                                      |                                                                                     
 | Build-Time Type Checking | [TypeScript](https://www.typescriptlang.org/)                                                             |
 | Component Library        | [HeroUI](https://www.heroui.com/)                                                                         |
-| Data Structure Utilities | [lodash](https://lodash.com/docs/)                                                                        |
 | Database                 | [Cloudflare D1](https://developers.cloudflare.com/d1/)                                                    |
+| Data Persistence         | [idb-keyval](https://github.com/jakearchibald/idb-keyval)                                                 |
+| Data Structure Utilities | [lodash](https://lodash.com/docs/)                                                                        |
 | DOM Manipulation         | [React](https://react.dev/)                                                                               |
-| Icons                    | [lucide](https://lucide.dev/)                                                                                                |
+| Icons                    | [lucide](https://lucide.dev/)                                                                             |
 | ID Generation            | [uuid (v7)](https://github.com/uuidjs/uuid)                                                               |
 | Error Handling           | [lodash](https://lodash.com/docs/)                                                                        |
 | Formatting               | [@ethang/eslint-config](https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-config/src) |

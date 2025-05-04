@@ -1,10 +1,21 @@
 import { HeroUIProvider } from "@heroui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { Outlet, useNavigate } from "@tanstack/react-router";
 import constant from "lodash/constant";
 import { lazy } from "react";
 
-export const queryClient = new QueryClient();
+import { persister, queryClient } from "../clients/react-query";
+
+const QueryDevelopmentTools =
+  "production" === import.meta.env.MODE
+    ? constant(null)
+    : lazy(async () => {
+        return import("@tanstack/react-query-devtools").then((result) => {
+          return {
+            default: result.ReactQueryDevtools,
+          };
+        });
+      });
 
 const TanStackRouterDevtools =
   "production" === import.meta.env.MODE
@@ -19,7 +30,10 @@ export const GlobalProviders = () => {
   const navigate = useNavigate();
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister }}
+    >
       <HeroUIProvider
         navigate={(url) => {
           navigate({ to: url }).catch(globalThis.console.error);
@@ -28,6 +42,7 @@ export const GlobalProviders = () => {
         <Outlet />
       </HeroUIProvider>
       <TanStackRouterDevtools />
-    </QueryClientProvider>
+      <QueryDevelopmentTools />
+    </PersistQueryClientProvider>
   );
 };
