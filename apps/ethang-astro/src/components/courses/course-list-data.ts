@@ -112,6 +112,10 @@ export const zeroToMasteryCourseData = [
 
 export const bonusCourseData = [
   {
+    name: "Patterns.dev",
+    url: "https://www.patterns.dev/#patterns",
+  },
+  {
     name: "Query.gg",
     url: "https://query.gg/",
   },
