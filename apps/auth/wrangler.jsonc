@@ -9,7 +9,7 @@
     }
   ],
   "main": "src/index.ts",
-  "name": "comments",
+  "name": "auth",
   "observability": {
     "enabled": true
   },

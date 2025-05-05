@@ -1,6 +1,7 @@
 import { Image } from "@heroui/image";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createRoute } from "@tanstack/react-router";
+import get from "lodash/get.js";
 import map from "lodash/map";
 
 import { Container } from "../components/container.tsx";
@@ -22,14 +23,22 @@ export const GalleryRoute = () => {
     <MainLayout>
       <Container styleNames="flex flex-wrap gap-4">
         {map(data, (image) => {
+          const dimensions = get(image, [
+            "image",
+            "asset",
+            "metadata",
+            "dimensions",
+          ]);
+          const url = get(image, ["image", "asset", "url"]);
+
           return (
             <Image
               alt={image.description}
               className="relative h-auto max-w-full rounded-lg"
-              height={Number(image.image.asset.metadata.dimensions.height)}
-              key={image.image.asset.url}
-              src={image.image.asset.url}
-              width={Number(image.image.asset.metadata.dimensions.width)}
+              height={dimensions.height}
+              key={url}
+              src={url}
+              width={dimensions.width}
             />
           );
         })}

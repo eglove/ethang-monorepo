@@ -418,7 +418,7 @@ export class FetchIdb<Schema extends DBSchema> {
     }
 
     if (!isNil(search?.indexName)) {
-      url.searchParams.set("index", String(search.indexName));
+      url.searchParams.set("index", search.indexName);
     }
 
     return url;

@@ -18,7 +18,7 @@ export const createUrlPath = <T extends string>(
   parameters: ParseUrlParameters<T>,
   parametersSchema?: ZodSchema,
 ): Error | string | ZodError<typeof parametersSchema> => {
-  let url = String(path);
+  let url = path;
 
   if (!isEmpty(parameters) && isNil(parametersSchema)) {
     return new Error("must provide path variables schema");
@@ -33,7 +33,8 @@ export const createUrlPath = <T extends string>(
   }
 
   for (const [key, value] of Object.entries<string>(parameters)) {
-    url = replace(path, `:${key}`, value);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    url = replace(path, `:${key}`, value) as T;
   }
 
   return url.replaceAll(/(?<group>\(|\)|\/?:[^/]+)/gu, "");
