@@ -9,15 +9,17 @@ type GetCorsHeadersProperties = {
   origin?: null | string | undefined;
 };
 
-const getCorsHeaders = ({
-  headers = "*",
-  methods = "*",
-  origin = "*",
-}: GetCorsHeadersProperties) => {
+const defaultHeaders: GetCorsHeadersProperties = {
+  headers: "*",
+  methods: "*",
+  origin: "*",
+};
+
+const getCorsHeaders = (headers = defaultHeaders) => {
   return {
-    "Access-Control-Allow-Headers": headers,
-    "Access-Control-Allow-Methods": methods,
-    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Headers": headers.headers,
+    "Access-Control-Allow-Methods": headers.methods,
+    "Access-Control-Allow-Origin": headers.origin,
   };
 };
 
@@ -29,7 +31,7 @@ export const createJsonResponse = <T>(
   const headers = merge(
     { "Content-Type": "application/json" },
     responseInit?.headers,
-    getCorsHeaders({}),
+    getCorsHeaders(),
   );
 
   return new globalThis.Response(isNil(data) ? null : JSON.stringify(data), {
