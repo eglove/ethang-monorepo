@@ -7,7 +7,7 @@ import { jwtVerify, SignJWT } from "jose";
 export const ORIGIN = "ethang.dev";
 
 export const getSecretKey = (environment: Env) => {
-  return new TextEncoder().encode(String(environment.JWT_SECRET));
+  return new TextEncoder().encode(environment.JWT_SECRET);
 };
 
 export const createToken = async (user: UserSchema, environment: Env) => {

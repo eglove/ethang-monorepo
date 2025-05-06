@@ -60,7 +60,7 @@ export const getApplications = (filters?: ApplicationsFilter) => {
       }
 
       applications = applications.sort((a, b) => {
-        return String(b.id).localeCompare(String(a.id));
+        return b.id.localeCompare(a.id);
       });
 
       let filtered = filter(applications, (item) => {

@@ -8,7 +8,7 @@ $template = $null
 while ($null -eq $template)
 {
     Write-Host "Chooose template:"
-    for ($i = 0; $i -lt $array.Count; $i++) {
+    for ($i = 0; $i -lt $templateOptions.Count; $i++) {
         Write-Host "$( $i + 1 ). $( $templateOptions[$i].Name )"
     }
 
@@ -32,14 +32,16 @@ if ($template -eq "react-vite")
         New-Item -ItemType Directory -Path $directory | Out-Null
     }
 
-    $sourcePath = "./templates/react-vite/"
+    $sourcePath = Join-Path -Path $PSScriptRoot -ChildPath "../../templates/react-vite/"
 
     $excludeItems = @(
         ".wrangler",
+        "migrations",
         "dist",
         "node_modules",
         ".env"
     )
 
     Copy-Item -Path ($sourcePath + "*") -Destination $directory -Recurse -Exclude $excludeItems -Container -Force
+    Write-Host "Done"
 }

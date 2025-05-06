@@ -1,18 +1,18 @@
 import isNil from "lodash/isNil";
+import isString from "lodash/isString";
 
 type DateColumnProperties = Readonly<{
   date: unknown;
 }>;
 
 export const DateColumn = ({ date }: DateColumnProperties) => {
-  if (isNil(date)) {
+  if (isNil(date) || !isString(date)) {
     return "";
   }
 
   return (
     <>
-      {/* eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion */}
-      {new Date(String(date as string)).toLocaleString(undefined, {
+      {new Date(date).toLocaleString(undefined, {
         dateStyle: "medium",
       })}
     </>

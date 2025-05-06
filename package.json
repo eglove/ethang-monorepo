@@ -1,7 +1,7 @@
 {
   "author": "Ethan Glover",
   "devDependencies": {
-    "@ethang/eslint-config": "^21.11.0",
+    "@ethang/eslint-config": "^21.11.1",
     "@types/node": "^22.15.3",
     "eslint": "^9.25.1",
     "typescript-eslint": "^8.31.0"
@@ -13,13 +13,9 @@
     "onlyBuiltDependencies": [
       "@heroui/shared-utils",
       "@parcel/watcher",
-      "@prisma/client",
-      "@prisma/engines",
       "@swc/core",
-      "better-sqlite3",
       "esbuild",
       "msw",
-      "prisma",
       "scrollmirror",
       "sharp",
       "workerd",
