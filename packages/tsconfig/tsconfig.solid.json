@@ -7,8 +7,7 @@
     "noEmit": true,
     "target": "ESNext",
     "types": [
-      "vinxi/types/client",
-      "@cloudflare/workers-types/2023-07-01"
+      "vinxi/types/client"
     ]
   },
   "extends": [
