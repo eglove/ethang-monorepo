@@ -3,11 +3,11 @@ Update-Module PSWindowsUpdate
 Get-WindowsUpdate -MicrosoftUpdate -AcceptAll -Install
 #docker system prune -af
 
+# Windows software update
+winget upgrade --unknown --all --accept-package-agreements --accept-source-agreements --silent
+
 # NPM globals
 corepack install -g pnpm npm yarn
 pnpm store prune
 pnpm i -g wrangler
 pnpm up -g --latest
-
-# Windows software update
-winget upgrade --unknown --all --accept-package-agreements --accept-source-agreements --silent
