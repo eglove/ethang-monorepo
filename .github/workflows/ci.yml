@@ -23,7 +23,7 @@ jobs:
           cache: "pnpm"
 
       - name: Install Dependencies
-        run: pnpm install && pnpm approve-builds
+        run: pnpm install
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
