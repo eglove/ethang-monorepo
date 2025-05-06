@@ -129,6 +129,7 @@ pnpm test
 Write-Host "Running linter..."
 pnpm lint
 Write-Host "Pruning dependencies..."
-pnpm prune
+pnpm deupe
+pnpm store prune
 
 Write-Host "Bump process completed successfully!"

@@ -13,9 +13,12 @@
     "onlyBuiltDependencies": [
       "@heroui/shared-utils",
       "@parcel/watcher",
+      "@prisma/client",
+      "@prisma/engines",
       "@swc/core",
       "esbuild",
       "msw",
+      "prisma",
       "scrollmirror",
       "sharp",
       "workerd",
