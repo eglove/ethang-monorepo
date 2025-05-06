@@ -8,27 +8,22 @@ jobs:
     name: CI
     runs-on: ubuntu-latest
     steps:
-      # Setup steps
       - name: Checkout
         uses: actions/checkout@v4
-        id: checkout
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39
-        id: install-pnpm
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "pnpm"
-        id: setup-node
 
       - name: Install Dependencies
-        run: pnpm install
-        id: install-dependencies
+        run: pnpm install && pnpm approve-builds
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -37,11 +32,9 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             playwright-${{ runner.os }}-
-        id: cache-playwright
 
       - name: Install Playwright
         run: pnpx playwright install --with-deps
-        id: install-playwright
 
       - name: Cache Bun installation
         uses: actions/cache@v4
@@ -50,13 +43,10 @@ jobs:
           key: bun-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             bun-${{ runner.os }}-
-        id: cache-bun
 
       - name: Install Bun
         run: pnpm i -g bun
-        id: install-bun
 
-      # Build step - depends on setup steps
       - name: Cache build outputs
         uses: actions/cache@v4
         with:
@@ -68,22 +58,12 @@ jobs:
           key: build-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
             build-${{ runner.os }}-
-        id: cache-build-outputs
-        if: success()
 
       - name: Build
         run: pnpm run build
-        id: build
-        if: success()
 
-      # Test step - depends on build step
       - name: Run Tests
         run: pnpm run test
-        id: test
-        if: success() && steps.build.outcome == 'success'
 
-      # Lint step - depends on build step
       - name: Run lint
         run: pnpm run lint
-        id: lint
-        if: success() && steps.build.outcome == 'success'
