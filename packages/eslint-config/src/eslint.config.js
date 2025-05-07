@@ -1,11 +1,9 @@
 // @ts-nocheck
 import { ignores, languageOptions } from "./constants.js";
 import a11y from "eslint-plugin-jsx-a11y";
-import barrel from "eslint-plugin-barrel-files";
 import compat from "eslint-plugin-compat";
 import cspell from "@cspell/eslint-plugin";
 import css from "@eslint/css";
-import depend from "eslint-plugin-depend";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import json from "@eslint/json";
@@ -27,8 +25,6 @@ export default tseslint.config(
       react: { version: "19.1.0" },
     },
     plugins: {
-      depend: depend,
-      barrel: barrel,
       compat: compat,
       "@typescript-eslint": tseslint.plugin,
       unicorn: unicorn,
@@ -41,11 +37,6 @@ export default tseslint.config(
       cspell: cspell,
     },
     rules: {
-      "depend/ban-dependencies": ["error", { allowed: ["lodash", "fs-extra"] }],
-      "barrel/avoid-barrel-files": "error",
-      "barrel/avoid-importing-barrel-files": "off",
-      "barrel/avoid-namespace-import": "error",
-      "barrel/avoid-re-export-all": "error",
       "compat/compat": "error",
       "accessor-pairs": "error",
       "array-callback-return": "error",

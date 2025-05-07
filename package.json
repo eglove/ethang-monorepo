@@ -1,7 +1,7 @@
 {
   "author": "Ethan Glover",
   "devDependencies": {
-    "@ethang/eslint-config": "^21.11.1",
+    "@ethang/eslint-config": "^21.11.3",
     "@types/node": "^22.15.3",
     "eslint": "^9.25.1",
     "typescript-eslint": "^8.31.0"
@@ -10,20 +10,6 @@
   "name": "ethang-monorepo",
   "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39",
   "pnpm": {
-    "onlyBuiltDependencies": [
-      "@heroui/shared-utils",
-      "@parcel/watcher",
-      "@prisma/client",
-      "@prisma/engines",
-      "@swc/core",
-      "esbuild",
-      "msw",
-      "prisma",
-      "scrollmirror",
-      "sharp",
-      "workerd",
-      "yarn"
-    ],
     "overrides": {
       "tailwind-merge": "<3",
       "tailwindcss": "<4"
