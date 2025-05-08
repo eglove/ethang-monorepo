@@ -1,7 +1,7 @@
 {
   "author": "Ethan Glover",
   "devDependencies": {
-    "@ethang/eslint-config": "^21.11.3",
+    "@ethang/eslint-config": "^21.12.0",
     "@types/node": "^22.15.3",
     "eslint": "^9.25.1",
     "typescript-eslint": "^8.31.0"
@@ -13,7 +13,19 @@
     "overrides": {
       "tailwind-merge": "<3",
       "tailwindcss": "<4"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@prisma/client",
+      "@prisma/engines",
+      "@swc/core",
+      "better-sqlite3",
+      "esbuild",
+      "msw",
+      "prisma",
+      "sharp",
+      "workerd"
+    ]
   },
   "scripts": {
     "build": "pnpm -r build",
