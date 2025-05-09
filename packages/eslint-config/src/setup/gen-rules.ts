@@ -75,5 +75,5 @@ export const genRules = (
     Object.entries(rules).sort(([a], [b]) => {
       return a.localeCompare(b);
     }),
-  );
+  ) as Record<string, unknown>;
 };

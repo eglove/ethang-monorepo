@@ -21,7 +21,18 @@ import { unicornRules } from "../setup/unicorn.ts";
 const eslintJson = "@eslint/json";
 const eslintJsonGithub = "https://github.com/eslint/json";
 
-export const ruleList = [
+type RuleConfig = {
+  importString?: string | undefined;
+  list: Record<string, unknown>;
+  name: string;
+  order?: number;
+  pluginName?: string | undefined;
+  pluginValue?: string | undefined;
+  type: string;
+  url: string;
+};
+
+export const ruleList: RuleConfig[] = [
   {
     importString: 'import compat from "eslint-plugin-compat";',
     list: compatRules,
