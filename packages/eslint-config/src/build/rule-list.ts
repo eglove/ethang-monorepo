@@ -1,3 +1,5 @@
+import type { Linter } from "eslint";
+
 import { a11yRules } from "../setup/a11y.ts";
 import { angularTemplateRules, angularTsRules } from "../setup/angular.js";
 import { astroRules } from "../setup/astro.ts";
@@ -23,7 +25,7 @@ const eslintJsonGithub = "https://github.com/eslint/json";
 
 type RuleConfig = {
   importString?: string | undefined;
-  list: Record<string, unknown>;
+  list: Linter.RulesRecord;
   name: string;
   order?: number;
   pluginName?: string | undefined;

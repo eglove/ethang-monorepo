@@ -1,4 +1,4 @@
-import type { Rule } from "eslint";
+import type { Linter, Rule } from "eslint";
 
 import get from "lodash/get.js";
 import includes from "lodash/includes.js";
@@ -23,7 +23,7 @@ export const getNonDeprecatedRules = (rules: unknown) => {
 
 export type CustomRules = {
   name: string;
-  rule: unknown;
+  rule: Linter.RulesRecord;
 }[];
 
 const getRuleStrings = (
@@ -71,9 +71,10 @@ export const genRules = (
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   return Object.fromEntries(
     Object.entries(rules).sort(([a], [b]) => {
       return a.localeCompare(b);
     }),
-  ) as Record<string, unknown>;
+  ) as Linter.RulesRecord;
 };
