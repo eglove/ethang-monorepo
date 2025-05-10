@@ -195,16 +195,19 @@ it(\`should return the default value when path is empty\`, () => {
              alt="bench is 1.63x faster" />
     </div>
     <p>But let's start adding some test cases from the lodash source. I should
-      mention that the lodash soruce code has been going through some major
+      mention that the lodash source code has been going through some major
       changes (such as going to TS first instead of depending on @types/lodash)
       and I pulled these tests from the v5 WIP. As the current version
       is being stripped down for rewrites, making the codebase confusing to
       traverse. But these v5 tests will
       make the point nicely.</p>
-    <p><a href="https://github.com/lodash/lodash/blob/v5-wip/test/get-and-result.spec.js" target="_blank">See the lodash tests here.</a></p>
+    <p><a
+      href="https://github.com/lodash/lodash/blob/v5-wip/test/get-and-result.spec.js"
+      target="_blank">See the lodash tests here.</a></p>
     <p>The first failure is here:</p>
     <CodeBlock code={failTest1} />
-    <p>The first issue is that the {lodashAcronym} doesn't support number keys.
+    <p>The first issue is that the {lodashAcronym} version doesn't support
+      number keys.
       <strong>It hasn't even taken into account what is and isn't a valid key in
         JavaScript and naively only supports strings!</strong> So what is a
       valid JS object key? What does our get function need to support?</p>
@@ -217,8 +220,9 @@ it(\`should return the default value when path is empty\`, () => {
       <li>Strings (including "address.street" or "items[0]"</li>
       <li>Plain key objects Object(0), Object(-0)</li>
     </ul>
-    <p>So to pass this test, the implementation needs to support numbers... and
-      don't get me started on the edge cases there. Determining what is and
+    <p>So to pass this test, the implementation needs to support numbers...
+      which means it needs to determine whether a key path is a number at all.
+      And don't get me started on the edge cases there. Determining what is and
       isn't
       something in a language like JS is no easy task.</p>
     <p>This first test doesn't just fail on numbers, but on Object(0), and
