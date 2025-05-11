@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.1.0",
-    "@ethang/eslint-config": "^21.12.1",
+    "@ethang/eslint-config": "^21.12.2",
     "@tanstack/router-plugin": "^1.119.0",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.16",

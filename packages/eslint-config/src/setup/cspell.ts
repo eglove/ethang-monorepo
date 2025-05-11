@@ -77,6 +77,8 @@ const customRules: CustomRules = [
             "millis",
             "duckdb",
             "pthread",
+            "remeda",
+            "radash",
           ],
         },
       },

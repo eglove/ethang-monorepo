@@ -941,6 +941,8 @@ export default tseslint.config(
               "millis",
               "duckdb",
               "pthread",
+              "remeda",
+              "radash",
             ],
           },
         },
