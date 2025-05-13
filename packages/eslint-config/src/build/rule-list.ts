@@ -7,6 +7,7 @@ import { compatRules } from "../setup/compat.ts";
 import { cspellRules } from "../setup/cspell.js";
 import { cssRules } from "../setup/css.js";
 import { eslintRules } from "../setup/eslint.ts";
+import { htmlRules } from "../setup/html.js";
 import { jsonRules } from "../setup/json.ts";
 import { lodashRules } from "../setup/lodash.ts";
 import { markdownRules } from "../setup/markdown.ts";
@@ -155,6 +156,16 @@ export const ruleList: RuleConfig[] = [
     pluginValue: "cspell",
     type: "core",
     url: "https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell-eslint-plugin",
+  },
+  {
+    importString: 'import html from "@html-eslint/eslint-plugin";',
+    list: htmlRules,
+    name: "@html-eslint/eslint-plugin",
+    order: 0,
+    pluginName: "html",
+    pluginValue: "html",
+    type: "html",
+    url: "https://github.com/html-eslint/html-eslint",
   },
   {
     importString: "import css from '@eslint/css';",

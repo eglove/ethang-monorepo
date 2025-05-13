@@ -45,6 +45,7 @@ export const updateReadme = () => {
     [
       ...getList("core"),
       ...getList("json"),
+      ...getList("html"),
       ...getList("css"),
       ...getList("markdown"),
     ],

@@ -41,6 +41,10 @@ export const getTypeLanguage = (type: string) => {
       return "css/css";
     }
 
+    case "html": {
+      return "html/html";
+    }
+
     case "json": {
       return "json/json";
     }
@@ -79,6 +83,10 @@ export const getTypeFiles = (type: string) => {
 
     case "css": {
       return "**/*.css";
+    }
+
+    case "html": {
+      return "**/*.html";
     }
 
     case "json": {
