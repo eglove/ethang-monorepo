@@ -1,7 +1,8 @@
+import get from "lodash/get";
+
 import { queryClient } from "@/components/common/providers.tsx";
 import { userStore } from "@/components/stores/user-store.ts";
 import { backupAllData } from "@/lib/sync-requests.ts";
-import get from "lodash/get";
 
 export const signIn = async (value: { email: string; password: string }) => {
   const response = await globalThis.fetch("https://auth.ethang.dev/sign-in", {

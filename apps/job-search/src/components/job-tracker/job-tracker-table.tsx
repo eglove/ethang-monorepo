@@ -1,14 +1,3 @@
-import { DateColumn } from "@/components/job-tracker/date-column.tsx";
-import { JobApplicationActions } from "@/components/job-tracker/job-application-actions.tsx";
-import { getApplicationTableColumns } from "@/components/job-tracker/job-tracker-columns.ts";
-import { JobTrackerTableFilterHeader } from "@/components/job-tracker/job-tracker-table-filter-header.tsx";
-import { JobTrackerTableFooter } from "@/components/job-tracker/job-tracker-table-footer.tsx";
-import {
-  setSorting,
-  useApplicationTableStore,
-} from "@/components/job-tracker/table-state.ts";
-import { getApplications } from "@/data/methods/get-applications.ts";
-import { logger } from "@/lib/logger.ts";
 import {
   getKeyValue,
   Link,
@@ -30,6 +19,18 @@ import split from "lodash/split.js";
 import startsWith from "lodash/startsWith.js";
 import { useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
+
+import { DateColumn } from "@/components/job-tracker/date-column.tsx";
+import { JobApplicationActions } from "@/components/job-tracker/job-application-actions.tsx";
+import { getApplicationTableColumns } from "@/components/job-tracker/job-tracker-columns.ts";
+import { JobTrackerTableFilterHeader } from "@/components/job-tracker/job-tracker-table-filter-header.tsx";
+import { JobTrackerTableFooter } from "@/components/job-tracker/job-tracker-table-footer.tsx";
+import {
+  setSorting,
+  useApplicationTableStore,
+} from "@/components/job-tracker/table-state.ts";
+import { getApplications } from "@/data/methods/get-applications.ts";
+import { logger } from "@/lib/logger.ts";
 
 export const JobTrackerTable = () => {
   const [page, setPage] = useState(1);

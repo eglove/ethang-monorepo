@@ -1,15 +1,3 @@
-import type {
-  ApplicationTableFilter,
-  Sorting,
-} from "@/components/job-tracker/table-state.ts";
-
-import { setLastSynced, userStore } from "@/components/stores/user-store.ts";
-import { APPLICATION_PAGE_SIZE, queryKeys } from "@/data/queries.ts";
-import { syncUrls } from "@/data/urls.ts";
-import {
-  getDatabase,
-  JOB_APPLICATION_STORE_NAME,
-} from "@/database/indexed-database.ts";
 import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
 import { queryOptions } from "@tanstack/react-query";
@@ -23,6 +11,19 @@ import orderBy from "lodash/orderBy";
 import slice from "lodash/slice";
 import toLower from "lodash/toLower";
 import { z } from "zod";
+
+import type {
+  ApplicationTableFilter,
+  Sorting,
+} from "@/components/job-tracker/table-state.ts";
+
+import { setLastSynced, userStore } from "@/components/stores/user-store.ts";
+import { APPLICATION_PAGE_SIZE, queryKeys } from "@/data/queries.ts";
+import { syncUrls } from "@/data/urls.ts";
+import {
+  getDatabase,
+  JOB_APPLICATION_STORE_NAME,
+} from "@/database/indexed-database.ts";
 
 export type ApplicationsFilter = {
   page?: number;

@@ -1,3 +1,8 @@
+import { Button } from "@heroui/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { decodeJwt } from "jose";
+import { XIcon } from "lucide-react";
+
 import { userStore } from "@/components/stores/user-store.ts";
 import { queryKeys } from "@/data/queries.ts";
 import { syncUrls } from "@/data/urls.ts";
@@ -6,10 +11,6 @@ import {
   JOB_APPLICATION_STORE_NAME,
   QUESTION_ANSWER_STORE_NAME,
 } from "@/database/indexed-database.ts";
-import { Button } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { decodeJwt } from "jose";
-import { XIcon } from "lucide-react";
 
 export const DeleteUserData = () => {
   const queryClient = useQueryClient();

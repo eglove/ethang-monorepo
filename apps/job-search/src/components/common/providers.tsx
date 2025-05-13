@@ -1,4 +1,3 @@
-import { logger } from "@/lib/logger.ts";
 import { HeroUIProvider } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, useNavigate } from "@tanstack/react-router";
@@ -6,6 +5,8 @@ import constant from "lodash/constant";
 import ms from "ms";
 import { ThemeProvider } from "next-themes";
 import { lazy } from "react";
+
+import { logger } from "@/lib/logger.ts";
 
 const ONE_HOUR = ms("1 Hr");
 

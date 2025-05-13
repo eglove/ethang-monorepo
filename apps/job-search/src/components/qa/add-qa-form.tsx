@@ -1,7 +1,5 @@
 import type { FormEvent } from "react";
 
-import { addQa as addQaFunction } from "@/data/methods/add-qa.ts";
-import { logger } from "@/lib/logger.ts";
 import {
   Accordion,
   AccordionItem,
@@ -13,6 +11,9 @@ import {
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { v7 } from "uuid";
+
+import { addQa as addQaFunction } from "@/data/methods/add-qa.ts";
+import { logger } from "@/lib/logger.ts";
 
 export const AddQaForm = () => {
   const addQa = useMutation({

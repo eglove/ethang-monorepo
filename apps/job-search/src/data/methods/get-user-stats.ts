@@ -1,10 +1,11 @@
-import { userStore } from "@/components/stores/user-store.ts";
-import { queryKeys } from "@/data/queries.ts";
-import { syncUrls } from "@/data/urls.ts";
 import { statsSchema } from "@ethang/schemas/src/job-search/stats.ts";
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json.js";
 import { queryOptions } from "@tanstack/react-query";
 import isError from "lodash/isError.js";
+
+import { userStore } from "@/components/stores/user-store.ts";
+import { queryKeys } from "@/data/queries.ts";
+import { syncUrls } from "@/data/urls.ts";
 
 export const getUserStats = () => {
   return queryOptions({

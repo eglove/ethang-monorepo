@@ -1,7 +1,5 @@
 import type { StatsSchema } from "@ethang/schemas/src/job-search/stats.ts";
 
-import { DailyApplicationsChartTooltip } from "@/components/stats/daily-applications-chart-tooltip.tsx";
-import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import get from "lodash/get";
 import { DateTime } from "luxon";
@@ -13,6 +11,9 @@ import {
   Tooltip,
   XAxis,
 } from "recharts";
+
+import { DailyApplicationsChartTooltip } from "@/components/stats/daily-applications-chart-tooltip.tsx";
+import { TypographyH3 } from "@/components/typography/typography-h3.tsx";
 
 type DailyApplicationsChartProperties = Readonly<{
   color?: "primary" | "secondary";

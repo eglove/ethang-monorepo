@@ -1,5 +1,8 @@
 import type { JobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
 
+import filter from "lodash/filter";
+import isNil from "lodash/isNil";
+
 import { queryClient } from "@/components/common/providers.tsx";
 import { setLastSynced, userStore } from "@/components/stores/user-store.ts";
 import { queryKeys } from "@/data/queries.ts";
@@ -9,8 +12,6 @@ import {
   JOB_APPLICATION_STORE_NAME,
 } from "@/database/indexed-database.ts";
 import { logger } from "@/lib/logger.ts";
-import filter from "lodash/filter";
-import isNil from "lodash/isNil";
 
 export const updateJobApplication = async (
   application: JobApplicationSchema,

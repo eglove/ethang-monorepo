@@ -1,8 +1,9 @@
+import { useMutation } from "@tanstack/react-query";
+import { PencilIcon } from "lucide-react";
+
 import { AddEditApplication } from "@/components/add-edit-application/add-edit-application.tsx";
 import { FormEditButton } from "@/components/form/form-edit-button.tsx";
 import { deleteJobApplication } from "@/data/methods/delete-job-application.ts";
-import { useMutation } from "@tanstack/react-query";
-import { PencilIcon } from "lucide-react";
 
 type DeleteJobApplicationProperties = Readonly<{
   id: string;

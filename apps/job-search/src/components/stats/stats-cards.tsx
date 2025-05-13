@@ -1,7 +1,8 @@
 import type { StatsSchema } from "@ethang/schemas/src/job-search/stats.ts";
 
-import { TrendCard } from "@/components/common/trend-card.tsx";
 import isNil from "lodash/isNil";
+
+import { TrendCard } from "@/components/common/trend-card.tsx";
 
 type StatsBoardProperties = Readonly<{
   stats: null | StatsSchema | undefined;

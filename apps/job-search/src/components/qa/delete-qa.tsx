@@ -1,8 +1,9 @@
-import { deleteQa as deleteQaFunction } from "@/data/methods/delete-qa.ts";
 import { useToggle } from "@ethang/hooks/use-toggle.js";
 import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { Trash2Icon, XIcon } from "lucide-react";
+
+import { deleteQa as deleteQaFunction } from "@/data/methods/delete-qa.ts";
 
 type DeleteQaProperties = Readonly<{
   id: string;

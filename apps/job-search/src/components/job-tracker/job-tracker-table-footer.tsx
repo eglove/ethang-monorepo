@@ -1,8 +1,9 @@
 import type { Dispatch, SetStateAction } from "react";
 
-import { APPLICATION_PAGE_SIZE } from "@/data/queries.ts";
 import { Pagination } from "@heroui/react";
 import isNil from "lodash/isNil";
+
+import { APPLICATION_PAGE_SIZE } from "@/data/queries.ts";
 
 type JobTrackerTableFooterProperties = Readonly<{
   page: number;

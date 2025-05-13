@@ -1,10 +1,5 @@
 import type { QuestionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
 
-import { DeleteQa } from "@/components/qa/delete-qa.tsx";
-import { QaCopyButton } from "@/components/qa/qa-copy-button.tsx";
-import { TypographyP } from "@/components/typography/typography-p.tsx";
-import { updateQa } from "@/data/methods/update-qa.ts";
-import { logger } from "@/lib/logger.ts";
 import { Button, Form, Input, Textarea } from "@heroui/react";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
@@ -12,6 +7,12 @@ import map from "lodash/map";
 import split from "lodash/split";
 import { PencilIcon, XIcon } from "lucide-react";
 import { type FormEvent, useState } from "react";
+
+import { DeleteQa } from "@/components/qa/delete-qa.tsx";
+import { QaCopyButton } from "@/components/qa/qa-copy-button.tsx";
+import { TypographyP } from "@/components/typography/typography-p.tsx";
+import { updateQa } from "@/data/methods/update-qa.ts";
+import { logger } from "@/lib/logger.ts";
 
 type QaItemHeaderProperties = Readonly<{
   qa: QuestionAnswerSchema;

@@ -1,3 +1,10 @@
+import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
+import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
+import { queryOptions } from "@tanstack/react-query";
+import isEmpty from "lodash/isEmpty";
+import isError from "lodash/isError";
+import isNil from "lodash/isNil";
+
 import { setLastSynced, userStore } from "@/components/stores/user-store.ts";
 import { queryKeys } from "@/data/queries.ts";
 import { syncUrls } from "@/data/urls.ts";
@@ -5,12 +12,6 @@ import {
   getDatabase,
   JOB_APPLICATION_STORE_NAME,
 } from "@/database/indexed-database.ts";
-import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
-import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
-import { queryOptions } from "@tanstack/react-query";
-import isEmpty from "lodash/isEmpty";
-import isError from "lodash/isError";
-import isNil from "lodash/isNil";
 
 export const getApplicationById = (id: string | undefined) => {
   return queryOptions({

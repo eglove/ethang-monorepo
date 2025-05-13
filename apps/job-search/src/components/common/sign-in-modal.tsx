@@ -1,6 +1,3 @@
-import { TypographyP } from "@/components/typography/typography-p.tsx";
-import { signIn } from "@/data/methods/sign-in.ts";
-import { logger } from "@/lib/logger";
 import {
   Button,
   Form,
@@ -16,6 +13,10 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import { type FormEvent, useState } from "react";
+
+import { TypographyP } from "@/components/typography/typography-p.tsx";
+import { signIn } from "@/data/methods/sign-in.ts";
+import { logger } from "@/lib/logger";
 
 export const SignInModal = () => {
   const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();

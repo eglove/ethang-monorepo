@@ -1,5 +1,3 @@
-import { SignInModal } from "@/components/common/sign-in-modal.tsx";
-import { userStore, useUserStore } from "@/components/stores/user-store.ts";
 import {
   Button,
   Link,
@@ -15,6 +13,9 @@ import map from "lodash/map.js";
 import { CircleIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
+
+import { SignInModal } from "@/components/common/sign-in-modal.tsx";
+import { userStore, useUserStore } from "@/components/stores/user-store.ts";
 
 const navLinks = [
   { label: "Applications", link: "/" },

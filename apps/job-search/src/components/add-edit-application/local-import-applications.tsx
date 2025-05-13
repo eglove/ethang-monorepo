@@ -1,10 +1,3 @@
-import { queryKeys } from "@/data/queries.ts";
-import {
-  getDatabase,
-  JOB_APPLICATION_STORE_NAME,
-  QUESTION_ANSWER_STORE_NAME,
-} from "@/database/indexed-database.ts";
-import { backupAllData } from "@/lib/sync-requests.ts";
 import { jobApplicationSchema } from "@ethang/schemas/src/job-search/job-application-schema.ts";
 import { questionAnswerSchema } from "@ethang/schemas/src/job-search/question-answer-schema.ts";
 import { parseJson } from "@ethang/toolbelt/json/json.js";
@@ -17,6 +10,14 @@ import map from "lodash/map.js";
 import { UploadIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { z } from "zod";
+
+import { queryKeys } from "@/data/queries.ts";
+import {
+  getDatabase,
+  JOB_APPLICATION_STORE_NAME,
+  QUESTION_ANSWER_STORE_NAME,
+} from "@/database/indexed-database.ts";
+import { backupAllData } from "@/lib/sync-requests.ts";
 
 export const LocalImportApplications = () => {
   const inputReference = useRef<HTMLInputElement | null>(null);

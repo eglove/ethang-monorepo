@@ -1,7 +1,8 @@
 import type { PropsWithChildren } from "react";
 
-import { Navigation } from "@/components/common/navigation.tsx";
 import { twMerge } from "tailwind-merge";
+
+import { Navigation } from "@/components/common/navigation.tsx";
 
 type MainLayoutProperties = Readonly<
   PropsWithChildren<{

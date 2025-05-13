@@ -1,8 +1,4 @@
 /* eslint-disable lodash/prefer-lodash-method */
-import { addJobApplication } from "@/data/methods/add-job-application.ts";
-import { getApplicationById } from "@/data/methods/get-application-by-id.ts";
-import { updateJobApplication } from "@/data/methods/update-job-application.ts";
-import { logger } from "@/lib/logger.ts";
 import {
   Button,
   type ButtonProps,
@@ -26,6 +22,11 @@ import { DateTime } from "luxon";
 import { type FormEvent, type PropsWithChildren, useState } from "react";
 import { v7 } from "uuid";
 import { z } from "zod";
+
+import { addJobApplication } from "@/data/methods/add-job-application.ts";
+import { getApplicationById } from "@/data/methods/get-application-by-id.ts";
+import { updateJobApplication } from "@/data/methods/update-job-application.ts";
+import { logger } from "@/lib/logger.ts";
 
 export const DATE_FORMAT = "yyyy-MM-dd";
 

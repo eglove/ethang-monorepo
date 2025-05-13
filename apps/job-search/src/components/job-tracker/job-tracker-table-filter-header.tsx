@@ -1,13 +1,6 @@
 import type { SharedSelection } from "@heroui/system";
 import type { Key } from "@react-types/shared";
 
-import { AddEditApplication } from "@/components/add-edit-application/add-edit-application.tsx";
-import {
-  type ApplicationTableFilter,
-  applicationTableStore,
-  setSearch,
-  useApplicationTableStore,
-} from "@/components/job-tracker/table-state.ts";
 import {
   Button,
   Dropdown,
@@ -19,6 +12,14 @@ import {
 import includes from "lodash/includes";
 import { FilterIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+
+import { AddEditApplication } from "@/components/add-edit-application/add-edit-application.tsx";
+import {
+  type ApplicationTableFilter,
+  applicationTableStore,
+  setSearch,
+  useApplicationTableStore,
+} from "@/components/job-tracker/table-state.ts";
 
 export const JobTrackerTableFilterHeader = () => {
   const store = useApplicationTableStore();
