@@ -11,103 +11,105 @@ const pageDescription = description ?? "Messin' around on the web sometimes.";
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf8" />
-    <meta name="viewport" content="width=device-width" />
+<head>
+  <meta charset="utf8" />
+  <meta name="viewport" content="width=device-width" />
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#1976d2" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#1976d2" />
 
-    <meta name="generator" content={Astro.generator} />
-    <title>{pageTitle}</title>
-    <meta name="description" content={pageDescription} />
-  </head>
-  <body>
-    <div class="grid sm:grid-cols-[auto_1fr] gap-4">
-      <div class="hidden sm:block border-r-2 min-h-screen">
-        <h1 class="px-5 py-1 font-bold text-xl mt-4">EthanG</h1>
-        <nav class="grid gap-4" aria-label="Main">
-          <ul class="menu menu-sm">
-            <li>
-              <a rel="prefetch" href="/" class="link">Home</a>
-            </li>
-            <li>
-              <a rel="prefetch" href="/courses" class="courseLink link"
-                >Courses</a
-              >
-            </li>
-          </ul>
-        </nav>
-        <div class="divider mx-4"></div>
-        <nav class="grid gap-4" aria-label="Social">
-          <ul class="menu menu-sm">
-            <li>
-              <a
-                href="https://www.linkedin.com/in/ethan-glover/"
-                target="_blank"
-                class="link">LinkedIn</a
-              >
-            </li>
-            <li>
-              <a href="https://github.com/eglove" target="_blank" class="link"
-                >GitHub</a
-              >
-            </li>
-            <li>
-              <a
-                href="https://frontendmasters.com/u/ethang/"
-                target="_blank"
-                class="link">Frontend Masters</a
-              >
-            </li>
-            <li>
-              <a
-                href="https://www.credly.com/users/ethang"
-                target="_blank"
-                class="link">Credly</a
-              >
-            </li>
-            <li>
-              <a
-                href="https://www.goodreads.com/user/show/6137062-ethan-glover"
-                target="_blank"
-                class="link">Goodreads</a
-              >
-            </li>
-            <li>
-              <a
-                href="https://www.khanacademy.org/profile/ethanglover/badges"
-                target="_blank"
-                class="link">Khan Academy</a
-              >
-            </li>
-          </ul>
-        </nav>
-      </div>
-      <div class="sm:hidden navbar bg-base-100">
-        <div class="navbar-start">
-          <h1 class="px-5 py-1 font-bold text-xl mt-4">EthanG</h1>
-        </div>
-        <nav class="navbar-center flex" aria-label="Main">
-          <ul class="menu menu-horizontal px-1">
-            <li>
-              <a rel="prefetch" href="/" class="link">Home</a>
-            </li>
-            <li>
-              <a rel="prefetch" href="/courses" class="courseLink link"
-                >Courses</a
-              >
-            </li>
-          </ul>
-        </nav>
-      </div>
-      <div id="main-content" class="m-4 sm:mx-0">
-        <slot />
-      </div>
+  <meta name="generator" content={Astro.generator} />
+  <title>{pageTitle}</title>
+  <meta name="description" content={pageDescription} />
+</head>
+<body>
+<div class="grid sm:grid-cols-[auto_1fr] gap-4">
+  <div class="hidden sm:block border-r-2 min-h-screen">
+    <h1 class="px-5 py-1 font-bold text-xl mt-4">EthanG</h1>
+    <nav class="grid gap-4" aria-label="Main">
+      <ul class="menu menu-sm">
+        <li>
+          <a rel="prefetch" href="/" class="link">Home</a>
+        </li>
+        <li><a href="https://utility.hello-a8f.workers.dev/#/"
+               target="_blank" class="link">Utility Libs</a></li>
+        <li>
+          <a rel="prefetch" href="/courses" class="courseLink link"
+          >Courses</a
+          >
+        </li>
+      </ul>
+    </nav>
+    <div class="divider mx-4"></div>
+    <nav class="grid gap-4" aria-label="Social">
+      <ul class="menu menu-sm">
+        <li>
+          <a
+            href="https://www.linkedin.com/in/ethan-glover/"
+            target="_blank"
+            class="link">LinkedIn</a
+          >
+        </li>
+        <li>
+          <a href="https://github.com/eglove" target="_blank" class="link"
+          >GitHub</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://frontendmasters.com/u/ethang/"
+            target="_blank"
+            class="link">Frontend Masters</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.credly.com/users/ethang"
+            target="_blank"
+            class="link">Credly</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.goodreads.com/user/show/6137062-ethan-glover"
+            target="_blank"
+            class="link">Goodreads</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.khanacademy.org/profile/ethanglover/badges"
+            target="_blank"
+            class="link">Khan Academy</a
+          >
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="sm:hidden navbar bg-base-100">
+    <div class="navbar-start">
+      <h1 class="px-5 py-1 font-bold text-xl mt-4">EthanG</h1>
     </div>
-  </body>
+    <nav class="navbar-center flex" aria-label="Main">
+      <ul class="menu menu-horizontal px-1">
+        <li>
+          <a rel="prefetch" href="/" class="link">Home</a>
+        </li>
+        <li>
+          <a rel="prefetch" href="/courses" class="courseLink link"
+          >Courses</a
+          >
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div id="main-content" class="m-4 sm:mx-0">
+    <slot />
+  </div>
+</div>
+</body>
 </html>
