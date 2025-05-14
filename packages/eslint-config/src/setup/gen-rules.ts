@@ -23,8 +23,17 @@ export const getNonDeprecatedRules = (rules: unknown) => {
 
 export type CustomRules = {
   name: string;
-  rule: Linter.RulesRecord;
+  rule: CustomRule;
 }[];
+
+type CustomRule =
+  | (
+      | {
+          rule: string;
+        }
+      | string
+    )[]
+  | string;
 
 const getRuleStrings = (
   ruleNames: string[],

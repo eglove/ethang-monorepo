@@ -8,6 +8,7 @@ export default tseslint.config(
       ".wrangler",
       "public",
       "tests/you-might-not-need-lodash.ts",
+      "tests/utilities.ts",
     ],
   },
   ...config,

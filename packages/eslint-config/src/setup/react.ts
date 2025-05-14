@@ -1,5 +1,7 @@
 import react from "@eslint-react/eslint-plugin";
 import reactHooks from "eslint-plugin-react-hooks";
+// @ts-expect-error no types
+import reactEffect from "eslint-plugin-react-you-might-not-need-an-effect";
 import keys from "lodash/keys.js";
 
 import {
@@ -66,10 +68,21 @@ const customHookRules = [
 ];
 const hookGen = genRules(reactHookRuleNames, customHookRules, "react-hooks");
 
+const effectGen = genRules(
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  keys(reactEffect.rules),
+  [],
+  "react-you-might-not-need-an-effect",
+);
+
 export const reactRules = {
   ...reactGen,
 };
 
 export const reactHookRules = {
   ...hookGen,
+};
+
+export const effectRules = {
+  ...effectGen,
 };
