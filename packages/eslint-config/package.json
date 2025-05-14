@@ -42,7 +42,7 @@
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.16",
-    "@types/node": "^22.15.17",
+    "@types/node": "^22.15.18",
     "lodash": "^4.17.21",
     "typescript": "^5.8.3",
     "zod": "^3.24.4"
