@@ -1,12 +1,12 @@
 import { chunk as esToolkitChunk } from "es-toolkit/array";
 import chunk from "lodash/chunk.js";
-import each from "lodash/each.js";
 import isUndefined from "lodash/isUndefined.js";
 import map from "lodash/map.js";
 import reject from "lodash/reject.js";
 import { chunk as remedaChunk } from "remeda";
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
+import { runTests, type TestCases } from "./run-tests.js";
 import { falsy, stubArray } from "./utilities.js";
 
 const array = [0, 1, 2, 3, 4, 5];
@@ -49,7 +49,6 @@ const testCases = [
       const values = [...reject(falsy, isUndefined), -1, -Infinity];
       const expected = map(values, stubArray);
 
-      // @ts-expect-error ignore for test
       const actual = map(values, (n) => method(array, n));
 
       expect(actual).toEqual(expected);
@@ -67,24 +66,12 @@ const testCases = [
       ]);
     });
   },
+] as TestCases;
+
+const libraries = [
+  { library: "lodash", method: chunk },
+  { library: "es-toolkit", method: esToolkitChunk },
+  { library: "Remeda", method: remedaChunk },
 ];
 
-describe("chunk", () => {
-  describe("lodash", () => {
-    each(testCases, (testCase) => {
-      testCase(chunk);
-    });
-  });
-
-  describe("es-toolkit", () => {
-    each(testCases, (testCase) => {
-      testCase(esToolkitChunk);
-    });
-  });
-
-  describe("Remeda", () => {
-    each(testCases, (testCase) => {
-      testCase(remedaChunk);
-    });
-  });
-});
+runTests("chunk", libraries, testCases);

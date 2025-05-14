@@ -1,8 +1,8 @@
 import { compact as esToolkitCompact } from "es-toolkit/array";
 import compact from "lodash/compact.js";
-import each from "lodash/each.js";
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
+import { runTests } from "./run-tests.js";
 import { falsy } from "./utilities.js";
 import { compact as youMightNotNeedLodashCompact } from "./you-might-not-need-lodash.ts";
 
@@ -16,22 +16,13 @@ const testCases = [
   },
 ];
 
-describe("compact", () => {
-  describe("lodash", () => {
-    each(testCases, (testCase) => {
-      testCase(compact);
-    });
-  });
+const libraries = [
+  { library: "lodash", method: compact },
+  { library: "es-toolkit", method: esToolkitCompact },
+  {
+    library: "You Might Not Need Lodash",
+    method: youMightNotNeedLodashCompact,
+  },
+];
 
-  describe("es-toolkit", () => {
-    each(testCases, (testCase) => {
-      testCase(esToolkitCompact);
-    });
-  });
-
-  describe("You Might Not Need Lodash", () => {
-    each(testCases, (testCase) => {
-      testCase(youMightNotNeedLodashCompact);
-    });
-  });
-});
+runTests("compact", libraries, testCases);

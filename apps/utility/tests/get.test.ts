@@ -2,8 +2,9 @@ import { get as esToolkitGet } from "es-toolkit/compat";
 import each from "lodash/each.js";
 import get from "lodash/get.js";
 import map from "lodash/map.js";
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
+import { runTests } from "./run-tests.js";
 import { empties } from "./utilities.js";
 import { get as youMightNotNeedLodashGet } from "./you-might-not-need-lodash.ts";
 
@@ -78,9 +79,7 @@ const testCases = [
           [[], [""]],
         ],
         (pair) => {
-          // @ts-expect-error ignore for test
           expect(method({}, pair[0])).toBe(undefined);
-          // @ts-expect-error ignore for test
           expect(method({ "": 3 }, pair[1])).toBe(3);
         },
       );
@@ -173,23 +172,10 @@ const testCases = [
   },
 ];
 
-describe("get", () => {
-  describe("lodash", () => {
-    each(testCases, (testCase) => {
-      testCase(get);
-    });
-  });
+const libraries = [
+  { library: "lodash", method: get },
+  { library: "es-toolkit", method: esToolkitGet },
+  { library: "You Might Not Need Lodash", method: youMightNotNeedLodashGet },
+];
 
-  describe("es-toolkit", () => {
-    each(testCases, (testCase) => {
-      testCase(esToolkitGet);
-    });
-  });
-
-  describe("You Might Not Need Lodash", () => {
-    each(testCases, (testCase) => {
-      // @ts-expect-error ignore types
-      testCase(youMightNotNeedLodashGet);
-    });
-  });
-});
+runTests("get", libraries, testCases);

@@ -1,15 +1,15 @@
 import { difference as esToolkitDifference } from "es-toolkit/array";
 import constant from "lodash/constant.js";
 import difference from "lodash/difference.js";
-import each from "lodash/each.js";
 import map from "lodash/map.js";
 import range from "lodash/range.js";
 import times from "lodash/times.js";
 // eslint-disable-next-line sonar/no-built-in-override
 import toString from "lodash/toString.js";
 import { difference as remedaDifference } from "remeda";
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
+import { runTests } from "./run-tests.js";
 import { _arguments, LARGE_ARRAY_SIZE, stubNaN, stubOne } from "./utilities.js";
 import { difference as youMightNotNeedLodashDifference } from "./you-might-not-need-lodash.ts";
 
@@ -106,29 +106,14 @@ const testCases = [
   },
 ];
 
-describe("difference", () => {
-  describe("lodash", () => {
-    each(testCases, (testCase) => {
-      testCase(difference);
-    });
-  });
+const libraries = [
+  { library: "lodash", method: difference },
+  { library: "es-toolkit", method: esToolkitDifference },
+  { library: "Remeda", method: remedaDifference },
+  {
+    library: "You Might Not Need Lodash",
+    method: youMightNotNeedLodashDifference,
+  },
+];
 
-  describe("es-toolkit", () => {
-    each(testCases, (testCase) => {
-      testCase(esToolkitDifference);
-    });
-  });
-
-  describe("Remeda", () => {
-    each(testCases, (testCase) => {
-      testCase(remedaDifference);
-    });
-  });
-
-  describe("You Might Not Need Lodash", () => {
-    each(testCases, (testCase) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      testCase(youMightNotNeedLodashDifference);
-    });
-  });
-});
+runTests("difference", libraries, testCases);

@@ -1,10 +1,10 @@
 import { concat as esToolkitConcat } from "es-toolkit/compat";
 import concat from "lodash/concat.js";
-import each from "lodash/each.js";
 import map from "lodash/map.js";
 import { concat as remedaConcat } from "remeda";
-import { assert, describe, expect, it } from "vitest";
+import { assert, expect, it } from "vitest";
 
+import { runTests } from "./run-tests.js";
 import { concat as youMightNotNeedLodashConcat } from "./you-might-not-need-lodash.ts";
 
 const testCases = [
@@ -64,28 +64,11 @@ const testCases = [
   },
 ];
 
-describe("concat", () => {
-  describe("lodash", () => {
-    each(testCases, (testCase) => {
-      testCase(concat);
-    });
-  });
+const libraries = [
+  { library: "lodash", method: concat },
+  { library: "es-toolkit", method: esToolkitConcat },
+  { library: "Remeda", method: remedaConcat },
+  { library: "You Might Not Need Lodash", method: youMightNotNeedLodashConcat },
+];
 
-  describe("es-toolkit", () => {
-    each(testCases, (testCase) => {
-      testCase(esToolkitConcat);
-    });
-  });
-
-  describe("Remeda", () => {
-    each(testCases, (testCase) => {
-      testCase(remedaConcat);
-    });
-  });
-
-  describe("You Might Not Need Lodash", () => {
-    each(testCases, (testCase) => {
-      testCase(youMightNotNeedLodashConcat);
-    });
-  });
-});
+runTests("concat", libraries, testCases);
