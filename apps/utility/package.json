@@ -23,7 +23,6 @@
   "name": "utility",
   "private": true,
   "scripts": {
-    "build": "vitest run",
     "deploy": "wrangler deploy",
     "dev": "vitest",
     "lint": "eslint ./tests --fix",
