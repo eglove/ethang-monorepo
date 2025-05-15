@@ -22,6 +22,9 @@ eslintConfigDirectory="$scriptDir/packages/eslint-config"
 # This command is the same in corepack-managed environments.
 echo -e "${BLUE}📦 Ensuring corepack is set up...${NC}"
 corepack up
+corepack install -g pnpm npm yarn
+pnpm i -g wrangler
+pnpm up -g --latest
 
 # Start WebStorm using the user-provided command.
 echo -e "${BLUE}🚀 Starting WebStorm...${NC}"
@@ -148,6 +151,7 @@ update_wrangler_types() {
                 # Update the compatibility_date using jq.
                 # This requires jq to be installed.
                 # Read the JSON, update the key, and write it back.
+                # shellcheck disable=SC2046
                 jq '."compatibility_date" = "'$(date +%Y-%m-%d)'"' wrangler.jsonc > wrangler.jsonc.tmp && mv wrangler.jsonc.tmp wrangler.jsonc
 
                 # Ensure prettier is installed or available via pnpm dlx.

@@ -12635,6 +12635,7 @@ packages:
   wrangler@4.15.1:
     resolution: {integrity: sha512-dzCdGWJUqjZAeR6kmAF28iD19VyDfD9nP1JiAw9NNlG1pEVzaY4Pr6egYyQcGj98N7WTv/tXoCk1R/L3eU3iwg==}
     engines: {node: '>=18.0.0'}
+    deprecated: '⚠️ Deprecated: 4.15.1 has a regression with R2 bucket validation with wrangler pages dev. Please downgrade to 4.14.4 or upgrade to 4.15.2 when it is published.'
     hasBin: true
     peerDependencies:
       '@cloudflare/workers-types': ^4.20250508.0
