@@ -15,5 +15,12 @@
   },
   "placement": {
     "mode": "smart"
-  }
+  },
+  "secrets_store_secrets": [
+    {
+      "binding": "auth-token",
+      "store_id": "737fce8854f042e4905cb36a696dd3c2",
+      "secret_name": "auth-token"
+    }
+  ]
 }

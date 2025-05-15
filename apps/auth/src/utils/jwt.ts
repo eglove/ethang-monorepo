@@ -6,11 +6,14 @@ import { jwtVerify, SignJWT } from "jose";
 
 export const ORIGIN = "ethang.dev";
 
-export const getSecretKey = (environment: Env) => {
-  return new TextEncoder().encode(environment.JWT_SECRET);
+export const getSecretKey = async (environment: Env) => {
+  const key = await environment["auth-token"].get();
+  return new TextEncoder().encode(key);
 };
 
 export const createToken = async (user: UserSchema, environment: Env) => {
+  const key = await getSecretKey(environment);
+
   return new SignJWT({
     email: user.email,
     role: user.role,
@@ -20,19 +23,17 @@ export const createToken = async (user: UserSchema, environment: Env) => {
     .setIssuer(ORIGIN)
     .setAudience(ORIGIN)
     .setExpirationTime("365d")
-    .sign(getSecretKey(environment));
+    .sign(key);
 };
 
 export const verifyToken = async (token: string, environment: Env) => {
+  const key = await getSecretKey(environment);
+
   return attemptAsync(async () => {
-    const { payload } = await jwtVerify<TokenSchema>(
-      token,
-      getSecretKey(environment),
-      {
-        audience: ORIGIN,
-        issuer: ORIGIN,
-      },
-    );
+    const { payload } = await jwtVerify<TokenSchema>(token, key, {
+      audience: ORIGIN,
+      issuer: ORIGIN,
+    });
     return payload;
   });
 };

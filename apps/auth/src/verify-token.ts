@@ -15,7 +15,8 @@ export const verifyToken = async (request: Request, environment: Env) => {
   }
 
   const jwtResult = await attemptAsync(async () => {
-    return jwtVerify(token, getSecretKey(environment));
+    const key = await getSecretKey(environment);
+    return jwtVerify(token, key);
   });
 
   if (isError(jwtResult)) {
