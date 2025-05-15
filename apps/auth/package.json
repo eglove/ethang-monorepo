@@ -12,12 +12,12 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.24",
-    "@ethang/eslint-config": "^22.1.0",
+    "@cloudflare/vitest-pool-workers": "^0.8.29",
+    "@ethang/eslint-config": "^22.1.1",
     "@types/lodash": "^4.17.16",
     "eslint": "^9.25.1",
     "typescript": "^5.8.3",
-    "wrangler": "^4.14.1"
+    "wrangler": "^4.15.1"
   },
   "engines": {
     "node": ">=22"
