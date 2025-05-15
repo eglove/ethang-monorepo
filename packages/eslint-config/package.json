@@ -43,7 +43,7 @@
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.16",
     "@types/node": "^22.15.18",
-    "eslint-plugin-react-you-might-not-need-an-effect": "^0.0.20",
+    "eslint-plugin-react-you-might-not-need-an-effect": "^0.0.21",
     "lodash": "^4.17.21",
     "typescript": "^5.8.3",
     "zod": "^3.24.4"
@@ -62,5 +62,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "22.1.2"
+  "version": "22.1.4"
 }

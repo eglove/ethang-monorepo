@@ -21,14 +21,10 @@ eslintConfigDirectory="$scriptDir/packages/eslint-config"
 # Ensure corepack is set up.
 # This command is the same in corepack-managed environments.
 echo -e "${BLUE}📦 Ensuring corepack is set up...${NC}"
-corepack up
 corepack install -g pnpm npm yarn
+corepack up
 pnpm i -g wrangler
 pnpm up -g --latest
-
-# Start WebStorm using the user-provided command.
-echo -e "${BLUE}🚀 Starting WebStorm...${NC}"
-webstorm . & # Use '&' to run in the background so the script continues
 
 # Change to the eslint-config directory.
 # Use '|| { ...; exit 1; }' to exit the script if the directory change fails.
