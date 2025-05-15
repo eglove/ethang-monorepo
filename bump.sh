@@ -160,6 +160,10 @@ update_wrangler_types() {
     done
 }
 
+# Update Repo dependencies
+echo -e "${BLUE}☁️ Updating dependencies...${NC}"
+pnpm up -i -r --latest
+
 # Update wrangler types in apps, packages, and templates directories.
 echo -e "${BLUE}☁️ Updating wrangler types...${NC}"
 # Pass the prefix and the space-separated directory names (which Bash expands into separate arguments for the array).
