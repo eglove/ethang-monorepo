@@ -11,3 +11,4 @@ corepack install -g pnpm npm yarn
 pnpm store prune
 pnpm i -g wrangler
 pnpm up -g --latest
+pnpm approve-builds -g
