@@ -3,13 +3,13 @@
   "assets": {
     "not_found_handling": "single-page-application"
   },
-  "compatibility_date": "2025-05-15",
+  "compatibility_date": "2025-05-16",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {
       "binding": "DB",
-      "database_id": "<id>",
-      "database_name": "<db_name>"
+      "database_id": "\u003cid\u003e",
+      "database_name": "\u003cdb_name\u003e"
     }
   ],
   "main": "worker/index.ts",

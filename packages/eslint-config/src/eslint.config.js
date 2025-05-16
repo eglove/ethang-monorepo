@@ -174,6 +174,7 @@ export default tseslint.config(
       "no-ternary": "off",
       "no-this-before-super": "error",
       "no-throw-literal": "off",
+      "no-unassigned-vars": "error",
       "no-undef": "off",
       "no-undef-init": "error",
       "no-undefined": "off",
