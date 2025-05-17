@@ -1,12 +1,12 @@
 import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark.ts";
 
-import { useUser } from "@clerk/clerk-react";
 import { Button } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
 import { queryKeys } from "../../data/queries/queries.ts";
+import { getToken } from "../../utilities/token.ts";
 import { UpdateBookmark } from "./update-bookmark.tsx";
 
 type UpdateDeleteBookmarkProperties = {
@@ -17,19 +17,21 @@ export const UpdateDeleteBookmark = ({
   bookmark,
 }: Readonly<UpdateDeleteBookmarkProperties>) => {
   const queryClient = useQueryClient();
-  const { user } = useUser();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { isPending, mutate } = useMutation({
     mutationFn: async () => {
       const response = await globalThis.fetch("/api/bookmark", {
         body: JSON.stringify({ id: bookmark.id, userId: bookmark.userId }),
+        headers: {
+          Authorization: getToken(),
+        },
         method: "DELETE",
       });
 
       if (response.ok) {
         await queryClient.invalidateQueries({
-          queryKey: queryKeys.bookmarks(user?.id),
+          queryKey: queryKeys.bookmarks(bookmark.userId),
         });
         setIsDeleting(false);
       }

@@ -1,3 +1,3 @@
 export const queryKeys = {
-  bookmarks: (userId?: string) => ["bookmarks", userId ?? ""],
+  bookmarks: (userId?: string) => ["bookmarks", userId],
 };

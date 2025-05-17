@@ -4,9 +4,10 @@ import { queryOptions } from "@tanstack/react-query";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil.js";
 
+import { getToken } from "../../utilities/token.ts";
 import { queryKeys } from "./queries.ts";
 
-export const getBookmarks = (userId?: string) => {
+export const getBookmarks = (userId = "") => {
   return queryOptions({
     enabled: !isNil(userId),
     queryFn: async () => {
@@ -14,7 +15,14 @@ export const getBookmarks = (userId?: string) => {
         return null;
       }
 
-      const response = await globalThis.fetch(`/api/bookmark?userId=${userId}`);
+      const response = await globalThis.fetch(
+        `/api/bookmark?userId=${userId}`,
+        {
+          headers: {
+            Authorization: getToken(),
+          },
+        },
+      );
       const data = await parseFetchJson(response, bookmarksSchema);
 
       if (isError(data)) {

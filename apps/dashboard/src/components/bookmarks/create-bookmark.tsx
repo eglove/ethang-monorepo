@@ -18,6 +18,7 @@ import { PlusIcon } from "lucide-react";
 import { z } from "zod";
 
 import { queryKeys } from "../../data/queries/queries.ts";
+import { getToken } from "../../utilities/token.ts";
 
 export const CreateBookmark = () => {
   const { user } = useUser();
@@ -32,6 +33,9 @@ export const CreateBookmark = () => {
           url: data.url,
           userId: user?.id,
         }),
+        headers: {
+          Authorization: getToken(),
+        },
         method: "POST",
       });
       await queryClient.invalidateQueries({

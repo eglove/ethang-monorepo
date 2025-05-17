@@ -19,6 +19,7 @@ import { type FormEvent, useState } from "react";
 import { z } from "zod";
 
 import { queryKeys } from "../../data/queries/queries.ts";
+import { getToken } from "../../utilities/token.ts";
 
 type UpdateBookmarkProperties = {
   bookmark: Bookmark;
@@ -49,6 +50,9 @@ export const UpdateBookmark = ({
     mutationFn: async (data: Bookmark) => {
       const response = await fetch("/api/bookmark", {
         body: JSON.stringify(data),
+        headers: {
+          Authorization: getToken(),
+        },
         method: "PUT",
       });
 

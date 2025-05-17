@@ -1,3 +1,8 @@
+import { createClerkClient } from "@clerk/backend";
+import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response";
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
+import isError from "lodash/isError";
+import isNil from "lodash/isNil.js";
 import startsWith from "lodash/startsWith";
 
 import { bookmarkRouter } from "./bookmarks/bookmark-router.ts";
@@ -6,6 +11,41 @@ import { paths } from "./paths.ts";
 export default {
   async fetch(request, environment) {
     const url = new URL(request.url);
+    const authHeader = request.headers.get("Authorization");
+
+    if (isNil(authHeader)) {
+      return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+    }
+
+    const isDevelopment = "development" === import.meta.env.MODE;
+    const keys = isDevelopment
+      ? ([environment.CLERK_PUBLIC_KEY, environment.CLERK_SECRET_KEY] as [
+          string,
+          string,
+        ])
+      : await attemptAsync(async () => {
+          return Promise.all([
+            environment.clerkPublishableKey.get(),
+            environment.clerkSecretKey.get(),
+          ]);
+        });
+
+    if (isError(keys)) {
+      return createJsonResponse({ error: keys.message }, "UNAUTHORIZED");
+    }
+
+    const [pk, sk] = keys;
+
+    const clerkClient = createClerkClient({
+      publishableKey: pk,
+      secretKey: sk,
+    });
+
+    const { isSignedIn } = await clerkClient.authenticateRequest(request);
+
+    if (!isSignedIn) {
+      return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+    }
 
     if (startsWith(url.pathname, paths.bookmark)) {
       return bookmarkRouter(request, environment);
