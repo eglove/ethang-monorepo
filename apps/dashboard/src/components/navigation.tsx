@@ -6,6 +6,7 @@ import {
 } from "@clerk/clerk-react";
 import {
   Button,
+  Link,
   Navbar,
   NavbarBrand,
   NavbarContent,
@@ -15,7 +16,11 @@ import {
 export const Navigation = () => {
   return (
     <Navbar>
-      <NavbarBrand>Dashboard</NavbarBrand>
+      <NavbarBrand className="font-bold">
+        <Link className="text-foreground" href="/">
+          Dashboard
+        </Link>
+      </NavbarBrand>
       <NavbarContent justify="end">
         <NavbarItem>
           <SignedOut>

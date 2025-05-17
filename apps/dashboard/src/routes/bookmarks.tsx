@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import {
   getKeyValue,
+  Link,
   Table,
   TableBody,
   TableCell,
@@ -18,7 +19,6 @@ import { getBookmarks } from "../data/queries/bookmark.ts";
 
 const columns = [
   { key: "title", label: "Title" },
-  { key: "url", label: "URL" },
   { key: "actions", label: "Actions" },
 ];
 
@@ -49,15 +49,31 @@ const BookMarks = () => {
             return (
               <TableRow key={item.id}>
                 {(columnKey) => {
-                  if ("actions" === columnKey) {
-                    return (
-                      <TableCell>
-                        <UpdateDeleteBookmark bookmark={item} />
-                      </TableCell>
-                    );
-                  }
+                  switch (columnKey) {
+                    case "actions": {
+                      return (
+                        <TableCell>
+                          <UpdateDeleteBookmark bookmark={item} />
+                        </TableCell>
+                      );
+                    }
 
-                  return <TableCell>{getKeyValue(item, columnKey)}</TableCell>;
+                    case "title": {
+                      return (
+                        <TableCell>
+                          <Link isExternal href={item.url} underline="always">
+                            {item.title}
+                          </Link>
+                        </TableCell>
+                      );
+                    }
+
+                    default: {
+                      return (
+                        <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+                      );
+                    }
+                  }
                 }}
               </TableRow>
             );
