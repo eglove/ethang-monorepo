@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "assets": {
+    "not_found_handling": "single-page-application"
+  },
+  "compatibility_date": "2025-05-15",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_id": "fff3cd3b-4700-46cd-84b0-44857e156379",
+      "database_name": "dashboard"
+    }
+  ],
+  "main": "worker/index.ts",
+  "name": "dashboard",
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "mode": "smart"
+  }
+}

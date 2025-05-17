@@ -6,7 +6,6 @@
     },
   },
   "extends": [
-    "../../packages/tsconfig/tsconfig.base.json",
     "../../packages/tsconfig/tsconfig.react.json"
   ]
 }
