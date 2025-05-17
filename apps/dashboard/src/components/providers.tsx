@@ -21,11 +21,14 @@ const ReactRouterDevtoolsProduction = lazy(async () =>
   })),
 );
 
+// eslint-disable-next-line cspell/spellchecker
+const publishableKey = "pk_live_Y2xlcmsuZXRoYW5nLmRldiQ";
+
 export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   const router = useRouter();
 
   return (
-    <ClerkProvider publishableKey="pk_test_d2VsY29tZS1lYWdsZS03OC5jbGVyay5hY2NvdW50cy5kZXYk">
+    <ClerkProvider publishableKey={publishableKey}>
       <QueryClientProvider client={queryClient}>
         <HeroUIProvider
           navigate={(url, options) => {
