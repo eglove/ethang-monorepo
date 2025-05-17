@@ -79,6 +79,7 @@ const customRules: CustomRules = [
             "pthread",
             "remeda",
             "radash",
+            "noto",
           ],
         },
       },

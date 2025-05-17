@@ -1,63 +1,41 @@
 ---
 import Layout from "../layouts/Layout.astro";
-
-const blogs = [
-  {
-    id: "notes-on-burnout",
-    link: "/blog/notes-on-burnout",
-    title: "Notes On: Burnout"
-  },
-  {
-    id: 'your-lodash-get-implementation-sucks',
-    link: '/blog/your-lodash-get-implementation-sucks',
-    title: "You lodash.get Implementation Sucks"
-  },
-  {
-    id: "dont-need-state-management-libraries",
-    link: "/blog/dont-need-state-management-libraries",
-    title: "We Don't Need State Management Libraries",
-  },
-  {
-    id: "local-first",
-    link: "/blog/local-first",
-    title: "The Local First Stack",
-  },
-  {
-    id: "javascript-standard-library",
-    link: "/blog/javascript-standard-library",
-    title: "Why You Should Install That JS Library",
-  },
-  {
-    id: "looking-at-no-misused-spread",
-    link: "/blog/looking-at-no-misused-spread",
-    title: "Looking At: no-misused-spread",
-  },
-  {
-    id: "mimetic-desire",
-    link: "/blog/mimetic-desire",
-    title: "Mimetic Desire",
-  },
-  {
-    id: "forcing-react",
-    link: "/blog/forcing-react",
-    title: "Forcing React to be What It Isn't",
-  },
-];
 ---
 
 <Layout>
-  <main class="prose">
-    <h1>Activity Log</h1>
-    {
-      blogs.map((blog) => {
-        return (
-          <h2 class="my-4">
-            <a rel="prefetch" href={blog.link}>
-              {blog.title}
-            </a>
-          </h2>
-        );
-      })
-    }
-  </main>
+    <main class="prose">
+        <h1 class="mb-4">Reflections on Tech</h1>
+        <ul>
+            <li>
+                <a rel="prefetch" href="/blog/javascript-standard-library">Why You Should Install That JS Library</a>
+            </li>
+            <li>
+                <a rel="prefetch" href="/blog/dont-need-state-management-libraries">We Don't Need State Management
+                    Libraries</a>
+            </li>
+            <li>
+                <a rel="prefetch" href="/blog/your-lodash-get-implementation-sucks">You lodash.get Implementation
+                    Sucks</a>
+            </li>
+            <li>
+                <a rel="prefetch" href="/blog/forcing-react">Forcing React to be What It Isn't</a>
+            </li>
+            <li>
+                <a rel="prefetch" href="/blog/local-first">The Local First Stack</a>
+            </li>
+            <li>
+                <a rel="prefetch" href="/blog/looking-at-no-misused-spread">Looking At: no-misused-spread</a>
+            </li>
+        </ul>
+
+        <h1 class="mb-4">Notes</h1>
+        <ul>
+            <li>
+                <a rel="prefetch" href="/blog/notes-on-burnout">Notes On: Burnout</a>
+            </li>
+            <li>
+                <a rel="prefetch" href="/blog/mimetic-desire">Mimetic Desire</a>
+            </li>
+        </ul>
+    </main>
 </Layout>

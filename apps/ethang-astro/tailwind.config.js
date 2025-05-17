@@ -1,6 +1,6 @@
-// eslint-disable-next-line barrel/avoid-barrel-files
 import typography from "@tailwindcss/typography";
 import daisyui from "daisyui";
+import { fontFamily } from "tailwindcss/defaultTheme.js";
 
 export default {
   content: ["./src/**/*.{astro,html,js,jsx,ts,tsx}"],
@@ -9,6 +9,12 @@ export default {
   },
   plugins: [daisyui, typography],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        mono: ["Noto Sans Mono", ...fontFamily.mono],
+        sans: ["Noto Sans", ...fontFamily.sans],
+        serif: ["Noto Serif", ...fontFamily.serif],
+      },
+    },
   },
 };

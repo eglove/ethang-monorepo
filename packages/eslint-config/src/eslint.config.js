@@ -945,6 +945,7 @@ export default tseslint.config(
               "pthread",
               "remeda",
               "radash",
+              "noto",
             ],
           },
         },
