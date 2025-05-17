@@ -15,6 +15,7 @@ const customRules: CustomRules = [
     rule: [
       "error",
       {
+        // @ts-expect-error valid rule
         cspell: {
           words: [
             "Applynetic",

@@ -1,0 +1,258 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LocalImage from "../../components/LocalImage.astro";
+import wingetSearch from "../../images/windows/winget-search.png";
+import everythingTools from "../../images/windows/everything-tools.png";
+import commandPalette from "../../images/windows/command-pallette.png"
+import screenRuler from "../../images/windows/screen-ruler.png";
+import fancyZones from "../../images/windows/fancy-zones.png";
+import envVariables from "../../images/windows/env-variables.png";
+import hostsFileEditor from "../../images/windows/hosts-file-editor.png";
+import snippingTool from "../../images/windows/snipping-tool.png";
+import greenshot from "../../images/windows/greenshot.png";
+import powershellBash11 from "../../images/windows/powershell-bash-1-1.png";
+import powershellBash12 from "../../images/windows/powershell-bash-1-2.png";
+import powershellBash21 from "../../images/windows/powershell-bash-2-1.png";
+import powershellBash22 from "../../images/windows/powershell-bash-2-2.png";
+import windowsGui from "../../images/windows/windows-gui.png";
+import ubuntuGui from "../../images/windows/ubuntu-gui.png";
+import macGui from "../../images/windows/mac-gui.png";
+import winGetList from "../../images/windows/winget-list.png";
+import promotion1 from "../../images/windows/promotion-1.png";
+import promotion2 from "../../images/windows/promotion-2.png";
+import {v7} from "uuid";
+import map from 'lodash/map.js';
+
+const toc = [
+    {label: "WinGet > apt", id: 'wingetApt'},
+    {label: "Everything Search", id: 'everythingSearch'},
+    {label: "PowerToys", id: `powerTosy`},
+    {label: "Screenshot and Video Tools", id: `screenshotVideo`},
+    {label: "Powershell > bash", id: `powershellBash`},
+    {label: "GUI Customization", id: `guiCustomization`},
+    {label: "Removing the Branding", id: `removingBranding`},
+    {label: "Conclusion", id: `conclusion`},
+]
+---
+
+<Layout>
+    <main class="prose">
+        <h1>You Should Use Windows</h1>
+        <p>I recently took a trip down memory lane and installed Ubuntu on my desktop. I was instantly hit with
+            nostalgia. Googling commands to install every app. (Is this in the apt registry? Or do I need to download a
+            .tar.gz? .appimage? I don't like it.) This was followed by remembering the days of watching torrented TV shows on VLC and finding the best Cowboy Bebop
+            wallpaper. It felt good to revisit the days of simplicity.</p>
+        <p>But it's easy to miss what makes Windows a much more productive OS.</p>
+        <h2>Table of Contents</h2>
+        <ul>
+            {map(toc, (item) => {
+                return (
+                        <li><a href={`#${item.id}`}>{item.label}</a></li>
+                );
+            })}
+        </ul>
+        <h2 id={toc[0].id}>{toc[0].label}</h2>
+        <p>The first issue I came across is that Ubuntu's apt repository is very limited. And it's not so easy to
+            search. I found it's more efficient to just Google "install Chrome on Ubuntu" than it is to stay in the
+            terminal and search for it.</p>
+        <p>Whereas with WinGet:</p>
+        <LocalImage alt="winget app search" src={wingetSearch}/>
+        <p>That's what I'm talking about. Not only do we quickly find Google Chrome, but we're subtly made aware of how
+            much is available on WinGet. Are those... chrome extensions? I don't know how that works, but it's cool
+            they're there.</p>
+        <p>One of the apps I could not find via the Ubuntu repository was JetBrains Toolbox. If you go to the JetBrains
+            website there is a download for a .tar.gz. But it doesn't exactly contain a .deb file. I eventually found <a
+                    target="_blank"
+                    href="https://github.com/nagygergo/jetbrains-toolbox-install/blob/master/jetbrains-toolbox.sh">this
+                script</a> to help me install it properly. Of course, it still doesn't tell you that Toolbox also has
+            many dependencies. So the final solution were these two commands <strong>which includes a user made
+                script:</strong></p>
+        <div class="mockup-code">
+            <pre data-prefix="~">sudo apt install libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin</pre>
+            <pre data-prefix="~">curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install/master/jetbrains-toolbox.sh | bash</pre>
+        </div>
+        <p>With WinGet?</p>
+        <div class="mockup-code">
+            <pre data-prefix="~">winget install JetBrains.Toolbox</pre>
+        </div>
+        <p>The id "JetBrains.Toolbox" is easily findable with a quick search via CLI. For Ubuntu, it took multiple
+            Google searches to find a simple install.</p>
+        <p>Mac? Mac has no built in package manager and brew is meh. Similar to Chocolately, Homebrew only tracks what's installed through it, not the entire system.</p>
+        <h2 id={toc[1].id}>{toc[1].label}</h2>
+        <p>Need to quickly find out where an installation is, or where anything is on the file system? Introducing <a
+                target="_blank" href="https://www.voidtools.com">Everything Search</a>.</p>
+        <video controls src="/videos/everything-search.mp4"></video>
+        <div class="mockup-code">
+            <pre data-prefix="~">winget install voidtools.Everything</pre>
+        </div>
+        <p>There are multiple alternatives for linux to include FSearch and Catfish. For CLI Everything Search has a
+            command line tool which acts as a faster/indexed version of PowerShell's own <code>Get-ChildItem</code></p>
+        <p>Everything Search also introduces you to a small ecosystem of plugins that can hook into it's indexed database of
+            your filesystem. These will become relevant in a moment.</p>
+        <LocalImage alt="everything search plugins" src={everythingTools}/>
+        <p>Mac? Mac has no alternative.</p>
+        <h2 id={toc[2].id}>{toc[2].label}</h2>
+        <p><a href="https://learn.microsoft.com/en-us/windows/powertoys/" target="_blank">PowerToys</a> is one of the
+            coolest projects for Windows. A set of utilities for power users that once you use them, you can't live
+            without. Constantly updated, new features nearly every week. Here's a short list of what it has right now:
+        </p>
+        <ul>
+            <li><strong>Advanced Paste:</strong> Paste as plain text, markdown, or json. There is also an AI powered
+                option.
+            </li>
+            <li><strong>Awake:</strong> Similar to Caffeine for Mac, this is meant to override your Power Settings and
+                keep your screen on
+                indefinitely. It's worth noting, that unlike Mac, you can set your Windows power settings to
+                keep you
+                screen on. This is more of a temporary override with quick access.
+            </li>
+            <li><strong>Command Palette:</strong> Shortcut driven quick launcher for apps and commands. There is an
+                Everything Search plugin that integrates with this.
+                <LocalImage alt="comand palette" src={commandPalette}/>
+            </li>
+            <li><strong>Color Picker:</strong> It's a color picker.</li>
+            <li><strong>PowerToys Run:</strong> A legacy version of Command Palette. There is an Everything Search
+                plugin that integrates with this.
+            </li>
+            <li><strong>Screen Ruler:</strong> Pixel measurements.
+                <LocalImage alt="screen ruler" src={screenRuler}/>
+            </li>
+            <li><strong>Shortcut Guide:</strong> An overlay that acts as reference for Windows shortcuts.</li>
+            <li><strong>Text Extractor:</strong> Copy text from images with OCR.</li>
+            <li><strong>ZoomIt:</strong> Screen zoom, annotation, and recording for presentations and demos. Even
+                complete with a break timer that overlays your screen.
+            </li>
+            <li><strong>Always On Top:</strong> Pin any window the the top.</li>
+            <li><strong>Crop and Lock:</strong> Used to create a smaller but live version of a window.</li>
+            <li><strong>FancyZones:</strong> Create custom window layouts.
+                <LocalImage alt="fancy zones" src={fancyZones}/>
+            </li>
+            <li><strong>Workspaces:</strong> Quickly launch a group of applications to custom positions and
+                configurations.
+            </li>
+            <li><strong>Keyboard Manager:</strong> Completely remap any key or shortcut. No limits. I always laughed at
+                Mac's keyboard settings which allow you to swap two keys. Macs shortcut require finger jujitsu. Its
+                command/control setup is not comfortable under any configuration.
+            </li>
+            <li><strong>Mouse utilities:</strong> Includes find my mouse (shortcut to highlight it), add a highlight on
+                click (good for presentations), mouse jump (maybe good if you have an abnormal amount of monitors), and
+                mouse pointer crosshairs.
+            </li>
+            <li><strong>Mouse Without Borders:</strong> Move your mouse across multiple devices. (I can't imagine the
+                use case either.)
+            </li>
+            <li><strong>Quick Accent:</strong> Quick UI for typing accented characters.</li>
+            <li><strong>File Explorer add-ons:</strong> Previews for SVG, source code, markdown, pdf, geometric code,
+                Quite OK images, and Stereolithography.
+            </li>
+            <li><strong>File Locksmith:</strong> Can't delete a file because it's being used by another process? Right
+                click to find out what process is using it.
+            </li>
+            <li><strong>Image Resizer:</strong> Resize images by right clicking them.</li>
+            <li><strong>New +:</strong> Create files and folders from a personalized set of templates.</li>
+            <li><strong>Peek:</strong> Open a quick file preview with a shortcut. There's not much this doesn't work
+                with.
+            </li>
+            <li><strong>PowerRename:</strong> Advanced bulk renaming with search & replace or RegEx.</li>
+            <li><strong>Command Not Found:</strong> Suggests WinGet packages when an error is thrown in PowerShell.</li>
+            <li><strong>Environment Variables:</strong> Quick and easy UI to modifying environment variables.
+                <LocalImage alt="environment variables ui" src={envVariables}/>
+            </li>
+            <li><strong>Hosts File Editor:</strong> Quick and easy UI for modifying your hosts file.
+                <LocalImage alt="hossts file editor" src={hostsFileEditor}/>
+            </li>
+            <li><strong>Registry Preview:</strong> Quick utility to visualize and edit complex Registry files.</li>
+        </ul>
+        <p>Still here? Have you installed Windows yet?</p>
+        <p>For Ubuntu, you're not likely to find an alternative for most of these things, and the quality won't be
+            nearly as good.</p>
+        <p>Mac? Pay <span class="text-green-500">$$$</span> for dozens of equivalents. Again, you won't find
+            alternatives for everything, and the money you pay is likely to go towards lower quality apps.</p>
+        <h2 id={toc[3].id}>{toc[3].label}</h2>
+        <p>When it comes to video recording, OBS is available on every platform and easy to learn for simple uses.
+            There's nothing wrong with having it on standby, but sometimes we just want to hit a shortcut, select a
+            window, and get a quick .mp4. This is exactly what the built in <a
+                    href="https://support.microsoft.com/en-us/windows/use-snipping-tool-to-capture-screenshots-00246869-1843-655f-f220-97299b865f6b"
+                    target="_blank">Windows Snipping Tool</a> excels at.</p>
+        <LocalImage alt="windows snipping tool" src={snippingTool}/>
+        <p>It also excels at screenshots and editing, but personally I prefer <a href="https://getgreenshot.org"
+                                                                                 target="_blank">Greenshot</a>.</p>
+        <LocalImage alt="greenshot" src={greenshot}/>
+        <p>Ubuntu has the equivalent Flameshot</p>
+        <p>Mac? Either use Linux apps such as Flameshot or <span class="text-green-500">$$$</span></p>
+        <h2 id={toc[4].id}>{toc[4].label}</h2>
+        <p>It's weird to me that this is the controversial one. When it comes to OS, I sense there is a preference for
+            making your own life more difficult. PowerShell is an expressive programming language that is actually
+            readable and writable.</p>
+        <p>While the syntax between the two may seem similar, it's the subtle differences that stand out. Modern syntax
+            coupled with less need for additional dependencies such as curl and jq.</p>
+        <LocalImage alt="powershell 1" src={powershellBash11}/>
+        <LocalImage alt="bash 1" src={powershellBash12}/>
+        <LocalImage alt="powershell 2" src={powershellBash21}/>
+        <LocalImage alt="bash 2" src={powershellBash22}/>
+        <p>Powershell is open-source and available on all OS's. But it does tend to run slightly slower on Linux and
+            Mac. As for just using Node to write CLI's... Node API's are pretty bad tbh. These languages built for CLI's
+            tend to work much better.</p>
+        <p>Mac? Mac is just Linux with a terrible UI triggering feelings of claustrophobia. It uses bash.</p>
+        <h2 id={toc[5].id}>{toc[5].label}</h2>
+        <p>Customization is something Linux is known for. Although I feel like this comes from a period when many people
+            were experimenting with it at the same time. People would spend weeks on GNOME tweaks customizing every
+            detail. Transparent windows, custom mouse behaviors, overhauling file system UIs.</p>
+        <p>If you search for tutorials or themes on this today, what you'll find is mostly outdated or unsupported.
+            There is one notable project called <a href="https://github.com/eythaann/Seelen-UI" target="_blank">Seelen
+                UI for Windows</a> that keeps this idea alive.</p>
+        <p>The problem is they all follow the same, outdated theme/look. When you compare the defaults of Ubuntu, Mac,
+            and Windows, Windows is the only one that feels comfortable and modern. It doesn't get in your way, or give
+            you a cluttered, messy taskbar like Mac. And it's not using the old school rounded/greyish colors found in
+            Ubuntu.</p>
+        <p>So while heavy customization is possible in Windows, similar to the old days of Ubuntu, I feel like this is a
+            lost art. So realistically, most people are going to stick with defaults.</p>
+        <LocalImage alt="windows" src={windowsGui}/>
+        <LocalImage alt="ubuntu" src={ubuntuGui}/>
+        <p>Mac... man that taskbar makes me so uncomfortable. There's something about it that makes me physically
+            cringe. And there is no overhaul fix for Mac like you can get with Ubuntu and Windows.</p>
+        <LocalImage alt="mac" src={macGui}/>
+        <h2 id={toc[6].id}>{toc[6].label}</h2>
+        <p>Here's the part that annoys me about both Windows and Mac. Both are constantly trying to upsell and lock you
+            into their ecosystems of productivity apps. Ubuntu has Ubuntu Pro for security updates, but beyond that it's
+            entirely reliant on open source. This is both a positive and a negative. As Linux never really took off or
+            compares to the tools built into Windows, or as people started using Google Docs over Office, the drive to
+            build open source desktop apps has degraded over time.</p>
+        <p>It's the same phenomenon with mobile apps. While more and more people have smartphones, the number of apps
+            people install on their phones has steadily decreased overtime. They opt for the defaults and browser.</p>
+        <p>That being said, in order to have a comfortable, healthy experience with your OS, you need to be able to
+            remove the constant advertising.</p>
+        <p>CoPilot for example... no, thank you. Removing the base installation took a few minutes, but I was able to
+            remove it thanks to WinGet.</p>
+        <video controls src="/videos/remove-copilot.mp4"></video>
+        <p>In fact, WinGet gives you a dangerous level of access to uninstalling all the Microsoft junk. I wouldn't
+            recommend doing so unless something is specifically annoying you. The Xbox Game Bar, for example, if you
+            were to remove it and launch a game, you'll get an error popup. This didn't break anything for me, but it
+            did turn into an even bigger annoyance. It's this level of control that Linux users often want.</p>
+        <LocalImage alt="winget list results" src={winGetList}/>
+        <p>Unlike package managers like Chocolatey and Homebrew, this gives access to everything on the system. Not just
+            what you installed through it.</p>
+        <p>While there's no one click solution to safely turning off these features, you can take the time to go through
+            Windows settings to turn off
+            intrusive features rather than just dangerously removing them. It takes time, but it's worth it to have
+            peace of mind when using your own PC.</p>
+        <LocalImage alt="Promotion content 1" src={promotion1}/>
+        <LocalImage alt="Promotion content 2" src={promotion2}/>
+        <p>Mac, I have found that Mac users seem to prefer being advertised to and purchasing apps when more popular
+            free alternatives exist. I do not get peace of mind from that OS, I always feel like I am being pushed
+            something. But this seems to be praised by that community. Even though the same people compain about the
+            same things on
+            Windows.</p>
+        <h2 id={toc[7].id}>{toc[7].label}</h2>
+        <p>Windows gets an odd amount of hate, it's cool to hate Windows. But I implore people to actually explore and
+            experiment for themselves. I have had to work with Macs more than once, they stress me out. I can never get
+            used to them, find the right modifications to make, everything on them looks ugly, it is a terrible OS.
+            Linux distros with GUI's like
+            Ubuntu are great to work with. They make for good work machines. But they are still quite limited in terms
+            of productivity. And you are likely to struggle to get a video conference with headphones and microphone
+            working. (Although, secretly I think this is a good thing.) Sometimes "simplicity" doesn't mean "clean,"
+            sometimes it
+            means less features to make your life
+            easier.</p>
+    </main>
+</Layout>

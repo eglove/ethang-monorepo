@@ -203,9 +203,15 @@ importers:
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       luxon:
         specifier: ^3.6.1
         version: 3.6.1
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
     devDependencies:
       '@astrojs/tailwind':
         specifier: ^6.0.2
@@ -216,6 +222,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.16
         version: 0.5.16(tailwindcss@3.4.17)
+      '@types/lodash':
+        specifier: ^4.17.16
+        version: 4.17.16
       '@types/luxon':
         specifier: ^3.6.2
         version: 3.6.2

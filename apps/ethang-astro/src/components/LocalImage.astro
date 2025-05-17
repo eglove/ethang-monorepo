@@ -1,0 +1,36 @@
+---
+import {Image} from "astro:assets";
+import type {ImageMetadata} from "astro";
+import {v7} from 'uuid';
+
+type Props = {
+    alt: string;
+    src: ImageMetadata;
+}
+
+const {alt, src} = Astro.props;
+const id = `modal${v7().replaceAll('-', '')}`;
+---
+
+<button class="relative w-full h-auto overflow-hidden" onclick={`${id}.showModal()`}>
+    <Image
+            class="size-full object-contain"
+            src={src}
+            alt={alt}
+    />
+</button>
+<dialog id={id} class="modal">
+    <div class="modal-box p-0 max-w-none w-11/12">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <Image
+                class="size-full object-contain m-0"
+                src={src}
+                alt={alt}
+        />
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
