@@ -4,7 +4,13 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: [".wrangler", "node_modules", "dist", "**/*.d.ts"],
+    ignores: [
+      ".wrangler",
+      "node_modules",
+      "dist",
+      "**/*.d.ts",
+      "./src/routeTree.gen.ts",
+    ],
   },
   ...config,
   ...reactConfig,
