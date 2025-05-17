@@ -61,11 +61,9 @@ export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
         persistOptions={{ persister }}
       >
         <HeroUIProvider
-          navigate={(url, options) => {
+          navigate={(url) => {
             attemptAsync(async () => {
-              // @ts-expect-error lib -> router compat
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              return router.navigate({ to: url, ...options });
+              return router.navigate({ to: url });
             }).catch(globalThis.console.error);
           }}
           useHref={(url) => {
