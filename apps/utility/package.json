@@ -4,7 +4,7 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "es-toolkit": "^1.37.2",
+    "es-toolkit": "^1.38.0",
     "lodash": "^4.17.21",
     "remeda": "^2.21.6"
   },

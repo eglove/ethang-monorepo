@@ -39,7 +39,7 @@
   "devDependencies": {
     "@ethang/eslint-config": "^22.2.2",
     "@react-types/shared": "^3.29.0",
-    "@tanstack/router-devtools": "^1.119.1",
+    "@tanstack/router-devtools": "^1.120.6",
     "@tanstack/router-plugin": "^1.119.0",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.16",
