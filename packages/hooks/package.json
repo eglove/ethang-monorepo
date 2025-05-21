@@ -16,7 +16,7 @@
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.16",
     "@types/node": "^22.15.3",
-    "@types/react": "^19.1.4",
+    "@types/react": "^19.1.5",
     "typescript": "^5.8.3"
   },
   "engines": {

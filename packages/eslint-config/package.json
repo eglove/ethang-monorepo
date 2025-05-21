@@ -42,11 +42,11 @@
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.17",
-    "@types/node": "^22.15.20",
+    "@types/node": "^22.15.21",
     "eslint-plugin-react-you-might-not-need-an-effect": "^0.0.31",
     "lodash": "^4.17.21",
     "typescript": "^5.8.3",
-    "zod": "^3.25.7"
+    "zod": "^3.25.20"
   },
   "engines": {
     "node": ">=22"
