@@ -5,7 +5,7 @@
   ],
   "dependencies": {
     "@astrojs/cloudflare": "^12.5.3",
-    "astro": "^5.7.13",
+    "astro": "^5.8.0",
     "highlight.js": "^11.11.1",
     "lodash": "^4.17.21",
     "luxon": "^3.6.1",
@@ -17,14 +17,14 @@
     "@tailwindcss/typography": "^0.5.16",
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",
-    "daisyui": "^5.0.35",
+    "daisyui": "^5.0.37",
     "eslint": "^9.25.1",
     "prettier": "^3.5.3",
     "prettier-plugin-astro": "^0.14.1",
     "sharp": "^0.34.1",
     "tailwindcss": "<4",
     "typescript-eslint": "^8.31.0",
-    "wrangler": "^4.15.1"
+    "wrangler": "^4.16.1"
   },
   "engines": {
     "node": ">=22"

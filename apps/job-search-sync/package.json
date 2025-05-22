@@ -10,13 +10,13 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.29",
+    "@cloudflare/vitest-pool-workers": "^0.8.32",
     "@ethang/eslint-config": "^22.2.3",
     "@types/lodash": "^4.17.16",
     "eslint": "^9.25.1",
     "typescript": "^5.8.3",
     "vitest": "~3.1.2",
-    "wrangler": "^4.15.1"
+    "wrangler": "^4.16.1"
   },
   "name": "job-search-sync",
   "private": true,
