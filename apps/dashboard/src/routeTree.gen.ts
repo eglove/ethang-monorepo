@@ -11,10 +11,17 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as JobSearchImport } from './routes/job-search'
 import { Route as BookmarksImport } from './routes/bookmarks'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const JobSearchRoute = JobSearchImport.update({
+  id: '/job-search',
+  path: '/job-search',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const BookmarksRoute = BookmarksImport.update({
   id: '/bookmarks',
@@ -46,6 +53,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookmarksImport
       parentRoute: typeof rootRoute
     }
+    '/job-search': {
+      id: '/job-search'
+      path: '/job-search'
+      fullPath: '/job-search'
+      preLoaderRoute: typeof JobSearchImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -54,36 +68,41 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
+  '/job-search': typeof JobSearchRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
+  '/job-search': typeof JobSearchRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
+  '/job-search': typeof JobSearchRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/bookmarks'
+  fullPaths: '/' | '/bookmarks' | '/job-search'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bookmarks'
-  id: '__root__' | '/' | '/bookmarks'
+  to: '/' | '/bookmarks' | '/job-search'
+  id: '__root__' | '/' | '/bookmarks' | '/job-search'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BookmarksRoute: typeof BookmarksRoute
+  JobSearchRoute: typeof JobSearchRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BookmarksRoute: BookmarksRoute,
+  JobSearchRoute: JobSearchRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,7 +116,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/bookmarks"
+        "/bookmarks",
+        "/job-search"
       ]
     },
     "/": {
@@ -105,6 +125,9 @@ export const routeTree = rootRoute
     },
     "/bookmarks": {
       "filePath": "bookmarks.tsx"
+    },
+    "/job-search": {
+      "filePath": "job-search.tsx"
     }
   }
 }

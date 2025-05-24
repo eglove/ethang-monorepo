@@ -17,3 +17,38 @@ model bookmarks {
   url String
   userId String
 }
+
+model applications {
+  id String @id @default(uuid(7))
+  userId String
+  applied DateTime
+  company String
+  title String
+  url String
+  rejected DateTime?
+  interviewRounds String
+
+  @@index([id, userId])
+}
+
+model contacts {
+  id String @id @default(uuid(7))
+  userId String
+  name String
+  phone String?
+  email String?
+  linkedIn String?
+  lastContact DateTime
+  expectedNextContact DateTime?
+
+  @@index([id, userId])
+}
+
+model questionAnswers {
+  id String @id @default(uuid(7))
+  userId String
+  answer String
+  question String
+
+  @@index([id, userId])
+}

@@ -1,38 +1,29 @@
 import { useUser } from "@clerk/clerk-react";
-import { Card, CardBody, CardHeader, Link } from "@heroui/react";
-import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { HomeNavigationCard } from "../components/home-navigation-card.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
 
 const Index = () => {
-  const queryClient = useQueryClient();
   const { user } = useUser();
 
   return (
     <MainLayout>
-      <div className="grid md:grid-cols-3">
-        <Link
-          onMouseEnter={() => {
-            queryClient
-              .prefetchQuery({
-                queryKey: queryKeys.bookmarks(user?.id),
-              })
-              .catch(globalThis.console.error);
-          }}
+      <div className="grid md:grid-cols-3 gap-4">
+        <HomeNavigationCard
+          description="Keep all your favorite links in one convenient place for easy
+              access anytime."
           href="/bookmarks"
-        >
-          <Card>
-            <CardHeader className="prose">
-              <h2 className="text-foreground">Bookmarks</h2>
-            </CardHeader>
-            <CardBody>
-              Keep all your favorite links in one convenient place for easy
-              access anytime.
-            </CardBody>
-          </Card>
-        </Link>
+          queryKey={queryKeys.bookmarks(user?.id)}
+          title="Bookmarks"
+        />
+        <HomeNavigationCard
+          description="Keep track of your job applications and Q/A's."
+          href="/job-search"
+          queryKey={[]}
+          title="Job Search"
+        />
       </div>
     </MainLayout>
   );

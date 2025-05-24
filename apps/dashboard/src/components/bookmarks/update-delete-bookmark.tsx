@@ -2,12 +2,12 @@ import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark.ts";
 
 import { Button } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckIcon, Trash2Icon, XIcon } from "lucide-react";
+import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
 import { queryKeys } from "../../data/queries/queries.ts";
+import { modalStore } from "../../global-stores/modal-store.ts";
 import { getToken } from "../../utilities/token.ts";
-import { UpdateBookmark } from "./update-bookmark.tsx";
 
 type UpdateDeleteBookmarkProperties = {
   bookmark: Bookmark;
@@ -42,7 +42,18 @@ export const UpdateDeleteBookmark = ({
     <div className="flex gap-2 items-center">
       {!isDeleting && (
         <>
-          <UpdateBookmark bookmark={bookmark} />
+          <Button
+            isIconOnly
+            onPress={() => {
+              modalStore.setBookmarkToUpdate(bookmark);
+              modalStore.openModal("updateBookmark");
+            }}
+            aria-label="Update bookmark"
+            color="primary"
+            size="sm"
+          >
+            <PencilIcon />
+          </Button>
           <Button
             isIconOnly
             onPress={() => {

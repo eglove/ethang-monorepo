@@ -1,5 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
 import {
+  Button,
   getKeyValue,
   Link,
   Table,
@@ -11,11 +12,12 @@ import {
 } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { PlusIcon } from "lucide-react";
 
-import { CreateBookmark } from "../components/bookmarks/create-bookmark.tsx";
 import { UpdateDeleteBookmark } from "../components/bookmarks/update-delete-bookmark.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { getBookmarks } from "../data/queries/bookmark.ts";
+import { modalStore } from "../global-stores/modal-store.ts";
 
 const columns = [
   { key: "title", label: "Title" },
@@ -33,7 +35,17 @@ const BookMarks = () => {
         <div className="prose">
           <h2 className="text-foreground">Bookmarks</h2>
         </div>
-        <CreateBookmark />
+        <Button
+          isIconOnly
+          onPress={() => {
+            modalStore.openModal("createBookmark");
+          }}
+          aria-label="Add Bookmark"
+          color="primary"
+          size="sm"
+        >
+          <PlusIcon />
+        </Button>
       </div>
       <Table isStriped aria-label="Bookmarks">
         <TableHeader columns={columns}>
