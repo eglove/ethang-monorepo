@@ -46,19 +46,15 @@ class ModalStore {
   }
 
   public setApplicationToUpdate(application: JobApplication) {
-    this.update(
-      produce(this.state, (draft) => {
-        draft.applicationToUpdate = application;
-      }),
-    );
+    this.update((draft) => {
+      draft.applicationToUpdate = application;
+    });
   }
 
   public setBookmarkToUpdate(bookmark: Bookmark) {
-    this.update(
-      produce(this.state, (draft) => {
-        draft.bookmarkToUpdate = bookmark;
-      }),
-    );
+    this.update((draft) => {
+      draft.bookmarkToUpdate = bookmark;
+    });
   }
 
   public setIsModalOpen(key: IsOpenKeys, value: boolean) {
@@ -67,11 +63,9 @@ class ModalStore {
     }
 
     this.closeAllModals();
-    this.update(
-      produce(this.state, (draft) => {
-        draft[key] = value;
-      }),
-    );
+    this.update((draft) => {
+      draft[key] = value;
+    });
   }
 
   public subscribe(callback: (state: ModalState) => void) {
@@ -82,8 +76,8 @@ class ModalStore {
     };
   }
 
-  public update(newState: ModalState, shouldNotify = true) {
-    this.state = newState;
+  public update(updater: (draft: ModalState) => void, shouldNotify = true) {
+    this.state = produce(this.state, updater);
 
     if (shouldNotify) {
       this.notifySubscribers();
@@ -91,14 +85,11 @@ class ModalStore {
   }
 
   private closeAllModals() {
-    this.update(
-      produce(this.state, (draft) => {
-        forEach(isOpenKeys, (key) => {
-          draft[key] = false;
-        });
-      }),
-      false,
-    );
+    this.update((draft) => {
+      forEach(isOpenKeys, (key) => {
+        draft[key] = false;
+      });
+    }, false);
   }
 
   private notifySubscribers() {
