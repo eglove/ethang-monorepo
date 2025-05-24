@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client"
+  previewFeatures = ["queryCompiler", "driverAdapters"]
+  output   = "../generated/prisma"
+  runtime = "workerd"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = ""
+}
+
+model bookmarks {
+  id String @id @default(uuid(7))
+  title String
+  url String
+  userId String
+}
