@@ -1,5 +1,6 @@
-import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
+import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
 
+import { useUser } from "@clerk/clerk-react";
 import { Button } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
@@ -9,20 +10,20 @@ import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore } from "../../global-stores/modal-store.ts";
 import { getToken } from "../../utilities/token.ts";
 
-type UpdateDeleteBookmarkProperties = {
-  bookmark: Bookmark;
-};
-
-export const UpdateDeleteBookmark = ({
-  bookmark,
-}: Readonly<UpdateDeleteBookmarkProperties>) => {
+export const UpdateDeleteApplication = ({
+  application,
+}: Readonly<{ application: JobApplication }>) => {
   const queryClient = useQueryClient();
+  const { user } = useUser();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { isPending, mutate } = useMutation({
     mutationFn: async () => {
-      const response = await globalThis.fetch("/api/bookmark", {
-        body: JSON.stringify({ id: bookmark.id, userId: bookmark.userId }),
+      const response = await globalThis.fetch("/api/application", {
+        body: JSON.stringify({
+          id: application.id,
+          userId: application.userId,
+        }),
         headers: {
           Authorization: getToken(),
         },
@@ -31,7 +32,7 @@ export const UpdateDeleteBookmark = ({
 
       if (response.ok) {
         await queryClient.invalidateQueries({
-          queryKey: queryKeys.bookmarks(bookmark.userId),
+          queryKey: queryKeys.allUserApplications(user?.id),
         });
         setIsDeleting(false);
       }
@@ -45,10 +46,10 @@ export const UpdateDeleteBookmark = ({
           <Button
             isIconOnly
             onPress={() => {
-              modalStore.setBookmarkToUpdate(bookmark);
-              modalStore.openModal("updateBookmark");
+              modalStore.setApplicationToUpdate(application);
+              modalStore.openModal("updateApplication");
             }}
-            aria-label="Update bookmark"
+            aria-label="Update Application"
             color="primary"
             size="sm"
           >

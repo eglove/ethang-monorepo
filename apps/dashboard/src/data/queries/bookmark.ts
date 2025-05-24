@@ -1,4 +1,4 @@
-import { bookmarksSchema } from "@ethang/schemas/src/dashboard/bookmark.ts";
+import { bookmarksSchema } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
 import { queryOptions } from "@tanstack/react-query";
 import isError from "lodash/isError";

@@ -1,4 +1,4 @@
-import { deleteBookmarkSchema } from "@ethang/schemas/src/dashboard/bookmark.ts";
+import { deleteBookmarkSchema } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response";
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";

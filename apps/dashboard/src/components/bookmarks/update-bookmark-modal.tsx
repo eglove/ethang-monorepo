@@ -1,4 +1,4 @@
-import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark.ts";
+import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";

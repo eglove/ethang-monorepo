@@ -1,22 +1,34 @@
-import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark.ts";
+import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
+import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 
 import { produce } from "immer";
 import forEach from "lodash/forEach";
 import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
 
-const isOpenKeys = ["createBookmark", "updateBookmark"] as const;
+const isOpenKeys = [
+  "createBookmark",
+  "updateBookmark",
+  "updateApplication",
+  "createJobApplication",
+] as const;
 type IsOpenKeys = (typeof isOpenKeys)[number];
 
 type ModalState = {
+  applicationToUpdate: JobApplication | undefined;
   bookmarkToUpdate: Bookmark | undefined;
   createBookmark: boolean;
+  createJobApplication: boolean;
+  updateApplication: boolean;
   updateBookmark: boolean;
 };
 
 class ModalStore {
   private state: ModalState = {
+    applicationToUpdate: undefined,
     bookmarkToUpdate: undefined,
     createBookmark: false,
+    createJobApplication: false,
+    updateApplication: false,
     updateBookmark: false,
   };
   private readonly subscribers = new Set<(state: ModalState) => void>();
@@ -31,6 +43,14 @@ class ModalStore {
 
   public openModal(key: IsOpenKeys) {
     this.setIsModalOpen(key, true);
+  }
+
+  public setApplicationToUpdate(application: JobApplication) {
+    this.update(
+      produce(this.state, (draft) => {
+        draft.applicationToUpdate = application;
+      }),
+    );
   }
 
   public setBookmarkToUpdate(bookmark: Bookmark) {

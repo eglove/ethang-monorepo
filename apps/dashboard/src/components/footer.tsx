@@ -23,10 +23,15 @@ export const Footer = () => {
             if ("bookmark" === key) {
               modalStore.openModal("createBookmark");
             }
+
+            if ("jobApplication" === key) {
+              modalStore.openModal("createJobApplication");
+            }
           }}
           aria-label="Select item to create"
         >
           <DropdownItem key="bookmark">Bookmark</DropdownItem>
+          <DropdownItem key="jobApplication">Job Application</DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </div>

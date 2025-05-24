@@ -5,6 +5,7 @@ import isError from "lodash/isError";
 import isNil from "lodash/isNil.js";
 import startsWith from "lodash/startsWith";
 
+import { applicationRouter } from "./applications/application-router.ts";
 import { bookmarkRouter } from "./bookmarks/bookmark-router.ts";
 import { paths } from "./paths.ts";
 
@@ -49,6 +50,10 @@ export default {
 
     if (startsWith(url.pathname, paths.bookmark)) {
       return bookmarkRouter(request, environment);
+    }
+
+    if (startsWith(url.pathname, paths.application)) {
+      return applicationRouter(request, environment);
     }
 
     return new Response(null, { status: 404 });

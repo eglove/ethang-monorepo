@@ -5,6 +5,7 @@ import { SignedIn } from "@clerk/clerk-react";
 import { CreateBookmarkModal } from "../bookmarks/create-bookmark-modal.tsx";
 import { UpdateBookmarkModal } from "../bookmarks/update-bookmark-modal.tsx";
 import { Footer } from "../footer.tsx";
+import { CreateJobApplicationModel } from "../job-application/create-job-application-model.tsx";
 import { Navigation } from "../navigation.tsx";
 
 export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
@@ -16,6 +17,7 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
         <Footer />
         <CreateBookmarkModal />
         <UpdateBookmarkModal />
+        <CreateJobApplicationModel />
       </SignedIn>
     </>
   );

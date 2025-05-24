@@ -26,7 +26,7 @@ model applications {
   title String
   url String
   rejected DateTime?
-  interviewRounds String
+  interviewRounds String?
 
   @@index([id, userId])
 }
