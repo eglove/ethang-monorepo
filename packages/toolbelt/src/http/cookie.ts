@@ -10,9 +10,15 @@ export const getCookieValue = <T extends string>(
   cookieName: T,
   cookieSource: Headers | string,
 ): Error | string => {
-  const cookies = isString(cookieSource)
-    ? cookieSource
-    : cookieSource.get("Cookie");
+  let cookies: null | string = null;
+
+  if (isString(cookieSource)) {
+    cookies = cookieSource;
+  }
+
+  if (cookieSource instanceof Headers) {
+    cookies = cookieSource.get("Cookie");
+  }
 
   if (isNil(cookies)) {
     return new Error("cookies not found");

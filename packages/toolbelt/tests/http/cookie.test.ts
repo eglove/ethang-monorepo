@@ -9,7 +9,7 @@ describe("get cookie", () => {
     // @ts-expect-error allow for test
     globalThis.document = { cookie: "token=123; Secure;" };
 
-    const value = getCookieValue("token", document.cookie);
+    const value = getCookieValue("token", globalThis.document.cookie);
 
     expect(isError(value)).toBe(false);
     expect(value).toBe("123");
@@ -71,7 +71,7 @@ describe("get cookie", () => {
         get: constant(null),
       },
     };
-    const value = getCookieValue("nonexistent", document.cookie);
+    const value = getCookieValue("nonexistent", globalThis.document.cookie);
 
     expect(isError(value)).toBe(true);
     expect(value).toBeInstanceOf(Error);
@@ -88,5 +88,31 @@ describe("get cookie", () => {
     if (isError(value)) {
       expect(value.message).toBe("failed to get cookie");
     }
+  });
+
+  // eslint-disable-next-line no-sparse-arrays
+  it.each([null, undefined, {}, [], , Number.NaN])(
+    "shouldn't crash with bad inputs",
+    (value) => {
+      // @ts-expect-error allow for test
+      const result1 = getCookieValue(value, "cookie=mmm");
+      // @ts-expect-error allow for test
+      const result2 = getCookieValue("cookieName", value);
+
+      expect(isError(result1)).toBe(true);
+      expect(isError(result2)).toBe(true);
+    },
+  );
+
+  it("should return an empty string for a cookie with an empty value", () => {
+    const value = getCookieValue("emptyCookie", "emptyCookie=; other=value");
+    expect(isError(value)).toBe(false);
+    expect(value).toBe("");
+  });
+
+  it("should return an empty string for a cookie name with no equals sign", () => {
+    const value = getCookieValue("noValue", "noValue; other=value");
+    expect(isError(value)).toBe(false);
+    expect(value).toBe("");
   });
 });
