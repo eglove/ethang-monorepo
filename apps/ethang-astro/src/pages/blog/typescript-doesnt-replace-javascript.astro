@@ -187,7 +187,18 @@ console.log(processUserName(123 as any)); // Warns, "Guest" (TypeScript would ca
             runtime type checks and emphasizing why comprehensive testing for runtime edge cases remains essential, even
             in
             a meticulously validated TypeScript codebase.</p>
-        <h2>Build-Time vs. Runtime Type Checks: A Fundamental Difference</h2>
+
+        <h2>Table of Contents</h2>
+        <ul>
+            <li><a href="#build-time-vs-runtime-type-checks-a-fundamental-difference">Build-Time vs. Runtime Type Checks: A Fundamental Difference</a></li>
+            <li><a href="#the-misconception-once-validated-always-safe">The Misconception: "Once Validated, Always Safe"</a></li>
+            <li><a href="#why-runtime-edge-cases-matter-even-for-safe-data">Why Runtime Edge Cases Matter (Even for "Safe" Data)</a></li>
+            <li><a href="#implementing-robust-runtime-checks-beyond-the-boundary">Implementing Robust Runtime Checks (Beyond the Boundary)</a></li>
+            <li><a href="#strategic-validation-where-and-how-much">Strategic Validation: Where and How Much?</a></li>
+            <li><a href="#testing-for-runtime-edge-cases">Testing for Runtime Edge Cases</a></li>
+            <li><a href="#conclusion">Conclusion</a></li>
+        </ul>
+        <h2 id="build-time-vs-runtime-type-checks-a-fundamental-difference">Build-Time vs. Runtime Type Checks: A Fundamental Difference</h2>
         <p><strong>Build-time type checks</strong> are TypeScript's domain. They happen during compilation, before our
             code ever runs. TypeScript analyzes our code, inferring types, and flags mismatches based on our
             annotations. If a function expects numbers but gets a string, TypeScript stops us cold, preventing
@@ -199,7 +210,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest" (TypeScript would ca
             development, but it offers no inherent guarantees about the data our application will encounter live. The
             compiled JavaScript simply runs based on the values present at that moment, stripped of any TypeScript type
             information.</p>
-        <h2>The Misconception: "Once Validated, Always Safe"</h2>
+        <h2 id="the-misconception-once-validated-always-safe">The Misconception: "Once Validated, Always Safe"</h2>
         <LocalImage imgClass="max-h-96" src={glassShatter} alt="Glass passing through hole, on one side it's ok, on the other shattered." />
         <p>Many developers, especially those using TypeScript with runtime validation libraries like Zod, assume that
             data,
@@ -213,7 +224,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest" (TypeScript would ca
             state changes can introduce issues. Even data perfectly valid at the boundary can cause runtime problems if
             our
             internal logic doesn't account for JavaScript's dynamic nature.</p>
-        <h2>Why Runtime Edge Cases Matter (Even for "Safe" Data)</h2>
+        <h2 id="why-runtime-edge-cases-matter-even-for-safe-data">Why Runtime Edge Cases Matter (Even for "Safe" Data)</h2>
         <p>JavaScript's dynamic nature means that even with TypeScript and initial validation, our code can encounter
             "garbage" data or unexpected states that static checks and initial runtime validators simply can't foresee
             in
@@ -280,7 +291,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest" (TypeScript would ca
             process orders because of missing object properties after complex data transformations, vividly underscore
             this point. In such scenarios, failures stem not from initial external data validation, but from runtime
             data integrity issues within our application's core logic.</p>
-        <h2>Implementing Robust Runtime Checks (Beyond the Boundary)</h2>
+        <h2 id="implementing-robust-runtime-checks-beyond-the-boundary">Implementing Robust Runtime Checks (Beyond the Boundary)</h2>
         <p>Since TypeScript's static checks are removed at runtime, and initial validation only covers the entry point,
             consciously implementing robust runtime validation within our application becomes essential. This involves
             several practical approaches:</p>
@@ -306,7 +317,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest" (TypeScript would ca
                 <CodeBlock code={code9}/>
             </li>
         </ul>
-        <h2>Strategic Validation: Where and How Much?</h2>
+        <h2 id="strategic-validation-where-and-how-much">Strategic Validation: Where and How Much?</h2>
         <LocalImage imgClass="max-h-96" src={battleMap} alt="The Battle opf Koniggratz map" />
         <p>Where we place runtime validation is crucial. While "entry point validation" — validating data as it first
             enters our application (e.g., at an API gateway, a serverless function handler, or a form submission
@@ -331,7 +342,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest" (TypeScript would ca
         <p>The key is balance. We validate thoroughly at the boundaries of untrusted data, but we also implement
             targeted, defensive checks within core logic and reusable components to ensure their robustness and
             predictable behavior.</p>
-        <h2>Testing for Runtime Edge Cases</h2>
+        <h2 id="testing-for-runtime-edge-cases">Testing for Runtime Edge Cases</h2>
         <p>This brings us to the crucial role of runtime testing. While TypeScript ensures our code adheres to its
             defined types during development, and Zod validates at the entry point, tests are needed to verify how our
             code behaves when confronted with data that doesn't conform to those ideal types at runtime within our
@@ -360,7 +371,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest" (TypeScript would ca
             resilient, regardless of where their data originates. Libraries like lodash are prime examples of this
             philosophy, with extensive tests dedicated to covering every conceivable edge case for their utility
             functions.</p>
-        <h2>Conclusion</h2>
+        <h2 id="conclusion">Conclusion</h2>
         <LocalImage imgClass="max-h-96" src={shield} alt="shield" />
         <p>TypeScript is an invaluable asset for modern JavaScript development, providing strong type guarantees at
             build time that significantly reduce common programming errors. When combined with powerful runtime
