@@ -173,7 +173,7 @@ console.log(processUserName("  Alice  ")); // "ALICE"
 console.log(processUserName(null));       // Warns, "Guest"
 console.log(processUserName(undefined));  // Warns, "Guest"
 console.log(processUserName(""));         // Warns, "Guest"
-console.log(processUserName(123 as any)); // Warns, "Guest" (TypeScript would catch this at compile time if type was strict)`;
+console.log(processUserName(123 as any)); // Warns, "Guest"`;
 ---
 <Layout title="TypeScript Is An Additional Layer of Protection, Not a Replacement">
     <main class="prose">
