@@ -9,12 +9,12 @@
     "highlight.js": "^11.11.1",
     "lodash": "^4.17.21",
     "luxon": "^3.6.1",
-    "tailwind-merge": "^2.6.0",
+    "tailwind-merge": "<3",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
-    "@ethang/eslint-config": "^22.2.5",
+    "@ethang/eslint-config": "^22.3.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",

@@ -3,7 +3,7 @@
   "devDependencies": {
     "@tsconfig/node-lts": "^22.0.1",
     "@tsconfig/strictest": "^2.0.5",
-    "@tsconfig/vite-react": "^3.4.0"
+    "@tsconfig/vite-react": "^6.3.5"
   },
   "license": "ISC",
   "main": "index.js",
