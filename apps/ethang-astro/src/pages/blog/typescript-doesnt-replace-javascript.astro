@@ -2,6 +2,10 @@
 import Layout from "../../layouts/Layout.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
 import "highlight.js/styles/night-owl.css";
+import glassShatter from "../../images/glass-shattering-on-side.png";
+import LocalImage from "../../components/LocalImage.astro";
+import battleMap from "../../images/koniggratz-battle-map.png"
+import shield from "../../images/shield.png"
 
 const code1 = `
 // Example: NaN propagation
@@ -196,6 +200,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest" (TypeScript would ca
             compiled JavaScript simply runs based on the values present at that moment, stripped of any TypeScript type
             information.</p>
         <h2>The Misconception: "Once Validated, Always Safe"</h2>
+        <LocalImage imgClass="max-h-96" src={glassShatter} alt="Glass passing through hole, on one side it's ok, on the other shattered." />
         <p>Many developers, especially those using TypeScript with runtime validation libraries like Zod, assume that
             data,
             once validated at entry points (e.g., API requests, form submissions), is perfectly typed and "safe"
@@ -302,6 +307,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest" (TypeScript would ca
             </li>
         </ul>
         <h2>Strategic Validation: Where and How Much?</h2>
+        <LocalImage imgClass="max-h-96" src={battleMap} alt="The Battle opf Koniggratz map" />
         <p>Where we place runtime validation is crucial. While "entry point validation" — validating data as it first
             enters our application (e.g., at an API gateway, a serverless function handler, or a form submission
             endpoint) — is paramount, it's not the only place to consider.</p>
@@ -355,6 +361,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest" (TypeScript would ca
             philosophy, with extensive tests dedicated to covering every conceivable edge case for their utility
             functions.</p>
         <h2>Conclusion</h2>
+        <LocalImage imgClass="max-h-96" src={shield} alt="shield" />
         <p>TypeScript is an invaluable asset for modern JavaScript development, providing strong type guarantees at
             build time that significantly reduce common programming errors. When combined with powerful runtime
             validation libraries like Zod, it creates a formidable first line of defense. However, this combination is

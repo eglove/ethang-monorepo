@@ -2,19 +2,21 @@
 import {Image} from "astro:assets";
 import type {ImageMetadata} from "astro";
 import {v7} from 'uuid';
+import {twMerge} from "tailwind-merge";
 
 type Props = {
     alt: string;
     src: ImageMetadata;
+    imgClass?: string;
 }
 
-const {alt, src} = Astro.props;
+const {alt, src, imgClass} = Astro.props;
 const id = `modal${v7().replaceAll('-', '')}`;
 ---
 
 <button class="relative w-full h-auto overflow-hidden" onclick={`${id}.showModal()`}>
     <Image
-            class="size-full object-contain"
+            class={twMerge("size-full object-contain", imgClass)}
             src={src}
             alt={alt}
     />
