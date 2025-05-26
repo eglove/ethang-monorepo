@@ -15,7 +15,7 @@
     "@eslint/json": "^0.12.0",
     "@eslint/markdown": "^6.4.0",
     "@html-eslint/eslint-plugin": "^0.41.0",
-    "@tanstack/eslint-plugin-query": "^5.74.7",
+    "@tanstack/eslint-plugin-query": "^5.78.0",
     "@tanstack/eslint-plugin-router": "^1.115.0",
     "@typescript-eslint/parser": "^8.32.1",
     "angular-eslint": "19.5.0",
@@ -62,5 +62,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "22.3.2"
+  "version": "22.4.0"
 }
