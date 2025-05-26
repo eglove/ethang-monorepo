@@ -14,8 +14,8 @@ const isOpenKeys = [
 type IsOpenKeys = (typeof isOpenKeys)[number];
 
 type ModalState = {
-  applicationToUpdate: JobApplication | undefined;
-  bookmarkToUpdate: Bookmark | undefined;
+  applicationToUpdate: JobApplication | null;
+  bookmarkToUpdate: Bookmark | null;
   createBookmark: boolean;
   createJobApplication: boolean;
   updateApplication: boolean;
@@ -24,8 +24,8 @@ type ModalState = {
 
 class ModalStore {
   private state: ModalState = {
-    applicationToUpdate: undefined,
-    bookmarkToUpdate: undefined,
+    applicationToUpdate: null,
+    bookmarkToUpdate: null,
     createBookmark: false,
     createJobApplication: false,
     updateApplication: false,
@@ -45,13 +45,13 @@ class ModalStore {
     this.setIsModalOpen(key, true);
   }
 
-  public setApplicationToUpdate(application: JobApplication) {
+  public setApplicationToUpdate(application: JobApplication | null) {
     this.update((draft) => {
       draft.applicationToUpdate = application;
     });
   }
 
-  public setBookmarkToUpdate(bookmark: Bookmark) {
+  public setBookmarkToUpdate(bookmark: Bookmark | null) {
     this.update((draft) => {
       draft.bookmarkToUpdate = bookmark;
     });

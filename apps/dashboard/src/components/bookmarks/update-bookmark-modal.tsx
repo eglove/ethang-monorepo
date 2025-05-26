@@ -82,65 +82,57 @@ export const UpdateBookmarkModal = () => {
   return (
     <Modal
       onOpenChange={(value) => {
+        if (!value) {
+          modalStore.setBookmarkToUpdate(null);
+        }
         modalStore.setIsModalOpen("updateBookmark", value);
       }}
       isOpen={isOpen}
+      scrollBehavior="outside"
     >
       <ModalContent>
-        {() => {
-          return (
-            <>
-              <ModalHeader>Update Bookmark</ModalHeader>
-              <Form className="grid gap-2" onSubmit={handleSubmit}>
-                <ModalBody>
-                  <Input
-                    isRequired
-                    errorMessage={({ validationErrors }) => {
-                      return validationErrors;
-                    }}
-                    label="Title"
-                    name="title"
-                    onValueChange={handleChange("title")}
-                    value={bookmark?.title ?? ""}
-                  />
-                  <Input
-                    isRequired
-                    errorMessage={({ validationErrors }) => {
-                      return validationErrors;
-                    }}
-                    validate={(value) => {
-                      const parsed = z.string().url().safeParse(value);
+        <ModalHeader>Update Bookmark</ModalHeader>
+        <Form className="grid gap-2" onSubmit={handleSubmit}>
+          <ModalBody>
+            <Input
+              isRequired
+              label="Title"
+              name="title"
+              onValueChange={handleChange("title")}
+              value={bookmark?.title ?? ""}
+            />
+            <Input
+              isRequired
+              validate={(value) => {
+                const parsed = z.string().url().safeParse(value);
 
-                      if (!parsed.success) {
-                        return "Invalid url";
-                      }
+                if (!parsed.success) {
+                  return "Invalid url";
+                }
 
-                      return null;
-                    }}
-                    label="URL"
-                    name="url"
-                    onValueChange={handleChange("url")}
-                    value={bookmark?.url ?? ""}
-                  />
-                </ModalBody>
-                <ModalFooter>
-                  <Button
-                    onPress={() => {
-                      modalStore.closeModal("updateBookmark");
-                    }}
-                    color="danger"
-                    variant="light"
-                  >
-                    Close
-                  </Button>
-                  <Button color="primary" isLoading={isPending} type="submit">
-                    Update
-                  </Button>
-                </ModalFooter>
-              </Form>
-            </>
-          );
-        }}
+                return null;
+              }}
+              label="URL"
+              name="url"
+              onValueChange={handleChange("url")}
+              value={bookmark?.url ?? ""}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              onPress={() => {
+                modalStore.closeModal("updateBookmark");
+              }}
+              color="danger"
+              variant="light"
+            >
+              Close
+            </Button>
+            <Button color="primary" isLoading={isPending} type="submit">
+              Update
+            </Button>
+          </ModalFooter>
+        </Form>
       </ModalContent>
     </Modal>
   );

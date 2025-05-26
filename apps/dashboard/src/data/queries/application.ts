@@ -14,7 +14,7 @@ export const getApplications = (userId = "", filters?: Filters) => {
     enabled: !isEmpty(userId),
     queryFn: async () => {
       if (isEmpty(userId)) {
-        return null;
+        throw new Error("No user found");
       }
 
       const url = createUrl("/api/application", {
@@ -26,7 +26,7 @@ export const getApplications = (userId = "", filters?: Filters) => {
       });
 
       if (isError(url)) {
-        return null;
+        throw new Error("Failed to create url");
       }
 
       const data = await fetchJson(
@@ -37,7 +37,7 @@ export const getApplications = (userId = "", filters?: Filters) => {
       );
 
       if (isError(data)) {
-        return null;
+        throw new Error("Failed to fetch applications");
       }
 
       return data;

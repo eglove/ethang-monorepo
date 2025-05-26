@@ -3,6 +3,8 @@ import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
 import isError from "lodash/isError";
 import isNotANumber from "lodash/isNaN";
 import isNil from "lodash/isNil.js";
+import isString from "lodash/isString";
+import map from "lodash/map.js";
 import toUpper from "lodash/toUpper";
 
 export const getAllApplications = async (
@@ -65,5 +67,17 @@ export const getAllApplications = async (
     );
   }
 
-  return createJsonResponse(applications.results, "OK");
+  const converted = map(applications.results, (application) => {
+    return {
+      ...application,
+      // @ts-expect-error ignore
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      interviewRounds: isString(application.interviewRounds)
+        ? // @ts-expect-error ignore
+          JSON.parse(application.interviewRounds)
+        : [],
+    };
+  });
+
+  return createJsonResponse(converted, "OK");
 };

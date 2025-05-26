@@ -68,6 +68,7 @@ export const CreateBookmarkModal = () => {
         modalStore.setIsModalOpen("createBookmark", value);
       }}
       isOpen={isCreateBookmarkOpen}
+      scrollBehavior="outside"
     >
       <ModalContent>
         <ModalHeader>Add Bookmark</ModalHeader>

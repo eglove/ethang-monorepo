@@ -1,4 +1,5 @@
 import { applicationSchema } from "@ethang/schemas/src/dashboard/application-schema.ts";
+import isArray from "lodash/isArray.js";
 
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
@@ -16,7 +17,9 @@ export const updateJobApplication = async (
           body.url,
           body.company,
           body.applied,
-          body.interviewRounds,
+          isArray(body.interviewRounds)
+            ? JSON.stringify(body.interviewRounds)
+            : body.interviewRounds,
           body.rejected,
           body.id,
           body.userId,

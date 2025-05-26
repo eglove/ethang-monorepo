@@ -21,7 +21,7 @@ import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.js";
 import { getToken } from "../../utilities/token.ts";
 
-export const CreateJobApplicationModel = () => {
+export const CreateJobApplicationModal = () => {
   const { user } = useUser();
   const queryClient = useQueryClient();
   const isOpen = useModalStore((snapshot) => {
@@ -76,6 +76,7 @@ export const CreateJobApplicationModel = () => {
         modalStore.setIsModalOpen("createJobApplication", value);
       }}
       isOpen={isOpen}
+      scrollBehavior="outside"
     >
       <ModalContent>
         <ModalHeader>Add Job Application</ModalHeader>
