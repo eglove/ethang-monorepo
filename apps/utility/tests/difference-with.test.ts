@@ -43,7 +43,7 @@ const testCases = [
 const libraries = [
   { library: "lodash", method: differenceWith },
   { library: "es-toolkit", method: esToolkitDifferenceWith },
-  { library: "remeda", method: remedaDifferenceWith },
+  { library: "Remeda", method: remedaDifferenceWith },
 ];
 
 // @ts-expect-error allow

@@ -178,4 +178,5 @@ const libraries = [
   { library: "You Might Not Need Lodash", method: youMightNotNeedLodashGet },
 ];
 
+// @ts-expect-error allow
 runTests("get", libraries, testCases);

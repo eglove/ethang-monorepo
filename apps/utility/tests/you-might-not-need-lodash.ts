@@ -33,3 +33,9 @@ export const differenceBy = (arr1, arr2, iteratee) => {
 
 
 export const drop = (arr, n = 1) => arr.slice(n);
+
+export const dropRight = (arr, n = 1) => arr.slice(0, -n || arr.length);
+
+export const fill = (arr, value) => {
+    return arr.fill(value);
+}

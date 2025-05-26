@@ -11,11 +11,11 @@ type TestMethod = (...properties: unknown[]) => void;
 
 export const runTests = (
   methodName: string,
-  libraryTests: Library[],
+  libraries: Library[],
   testCases: TestCases,
 ) => {
   describe(methodName, () => {
-    each(libraryTests, ({ library, method }) => {
+    each(libraries, ({ library, method }) => {
       describe(library, () => {
         // eslint-disable-next-line sonar/no-nested-functions
         each(testCases, (testCase) => {
