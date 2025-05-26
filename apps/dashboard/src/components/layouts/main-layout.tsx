@@ -9,6 +9,7 @@ import { CreateJobApplicationModal } from "../job-application/create-job-applica
 import { UpdateJobApplicationModal } from "../job-application/update-job-application-modal.tsx";
 import { Navigation } from "../navigation.tsx";
 import { CreateQaModal } from "../qa/create-qa-modal.tsx";
+import { UpdateQaModal } from "../qa/update-qa-modal.tsx";
 
 export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
   return (
@@ -22,6 +23,7 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
         <CreateJobApplicationModal />
         <UpdateJobApplicationModal />
         <CreateQaModal />
+        <UpdateQaModal />
       </SignedIn>
     </>
   );

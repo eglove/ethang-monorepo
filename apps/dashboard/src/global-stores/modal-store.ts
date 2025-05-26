@@ -1,5 +1,6 @@
 import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
 import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
+import type { QuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
 
 import { produce } from "immer";
 import forEach from "lodash/forEach";
@@ -21,6 +22,7 @@ type ModalState = {
   createBookmark: boolean;
   createJobApplication: boolean;
   createQa: boolean;
+  qaToUpdate: null | QuestionAnswer;
   updateApplication: boolean;
   updateBookmark: boolean;
   updateQa: boolean;
@@ -33,6 +35,7 @@ class ModalStore {
     createBookmark: false,
     createJobApplication: false,
     createQa: false,
+    qaToUpdate: null,
     updateApplication: false,
     updateBookmark: false,
     updateQa: false,
@@ -71,6 +74,12 @@ class ModalStore {
     this.closeAllModals();
     this.update((draft) => {
       draft[key] = value;
+    });
+  }
+
+  public setQaToUpdate(qa: null | QuestionAnswer) {
+    this.update((draft) => {
+      draft.qaToUpdate = qa;
     });
   }
 

@@ -1,4 +1,4 @@
-import type { CreateQuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
+import type { QuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
@@ -15,70 +15,91 @@ import {
 } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
-import { z } from "zod";
 
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
 import { getToken } from "../../utilities/token.ts";
 
-export const CreateQaModal = () => {
-  const { user } = useUser();
+export const UpdateQaModal = () => {
   const queryClient = useQueryClient();
+  const { user } = useUser();
   const isOpen = useModalStore((state) => {
-    return state.createQa;
+    return state.updateQa;
+  });
+  const qa = useModalStore((state) => {
+    return state.qaToUpdate;
   });
 
+  const handleChange = (key: keyof QuestionAnswer) => (value: string) => {
+    if (isNil(qa)) {
+      return;
+    }
+
+    modalStore.setQaToUpdate({
+      ...qa,
+      [key]: value,
+    });
+  };
+
   const { isPending, mutate } = useMutation({
-    mutationFn: async (data: CreateQuestionAnswer) => {
+    mutationFn: async () => {
       const response = await fetch("/api/question-answer", {
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...qa, userId: user?.id }),
         headers: {
           Authorization: getToken(),
         },
-        method: "POST",
+        method: "PUT",
       });
 
       if (response.ok) {
         await queryClient.invalidateQueries({
           queryKey: queryKeys.allUserQuestionAnswers(user?.id),
         });
-        modalStore.closeModal("createQa");
+        modalStore.closeModal("updateQa");
       }
     },
   });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const parsed = z
-      .object({ answer: z.string(), question: z.string() })
-      .safeParse(Object.fromEntries(new FormData(event.currentTarget)));
-
-    if (isNil(user?.id) || !parsed.success) {
-      return;
-    }
-
-    mutate({ ...parsed.data, userId: user.id });
+    mutate();
   };
 
   return (
     <Modal
       onOpenChange={(value) => {
-        modalStore.setIsModalOpen("createQa", value);
+        if (!value) {
+          modalStore.setQaToUpdate(null);
+        }
+
+        modalStore.setIsModalOpen("updateQa", value);
       }}
       isOpen={isOpen}
       scrollBehavior="outside"
     >
       <ModalContent>
-        <ModalHeader>Add Q/A</ModalHeader>
+        <ModalHeader>Update Q/A</ModalHeader>
         <Form className="grid gap-2" onSubmit={handleSubmit}>
           <ModalBody>
-            <Input isRequired label="Question" name="question" />
-            <Textarea isRequired label="Answer" name="answer" />
+            <Input
+              isRequired
+              label="Question"
+              name="question"
+              onValueChange={handleChange("question")}
+              value={qa?.question ?? ""}
+            />
+            <Textarea
+              isRequired
+              label="Answer"
+              name="answer"
+              onValueChange={handleChange("answer")}
+              value={qa?.answer ?? ""}
+            />
           </ModalBody>
           <ModalFooter>
             <Button
               onPress={() => {
-                modalStore.closeModal("createQa");
+                modalStore.closeModal("updateQa");
               }}
               color="danger"
               variant="light"
@@ -86,7 +107,7 @@ export const CreateQaModal = () => {
               Close
             </Button>
             <Button color="primary" isLoading={isPending} type="submit">
-              Create
+              Update
             </Button>
           </ModalFooter>
         </Form>
