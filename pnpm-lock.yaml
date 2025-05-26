@@ -73,6 +73,9 @@ importers:
       '@clerk/clerk-react':
         specifier: ^5.31.4
         version: 5.31.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@ethang/hooks':
+        specifier: ^2.3.1
+        version: 2.3.1(jiti@2.4.2)
       '@ethang/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas

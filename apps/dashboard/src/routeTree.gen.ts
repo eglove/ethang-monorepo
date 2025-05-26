@@ -11,17 +11,12 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as JobSearchImport } from './routes/job-search'
 import { Route as BookmarksImport } from './routes/bookmarks'
 import { Route as IndexImport } from './routes/index'
+import { Route as JobSearchIndexImport } from './routes/job-search/index'
+import { Route as JobSearchQaImport } from './routes/job-search/qa'
 
 // Create/Update Routes
-
-const JobSearchRoute = JobSearchImport.update({
-  id: '/job-search',
-  path: '/job-search',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const BookmarksRoute = BookmarksImport.update({
   id: '/bookmarks',
@@ -32,6 +27,18 @@ const BookmarksRoute = BookmarksImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const JobSearchIndexRoute = JobSearchIndexImport.update({
+  id: '/job-search/',
+  path: '/job-search/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const JobSearchQaRoute = JobSearchQaImport.update({
+  id: '/job-search/qa',
+  path: '/job-search/qa',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -53,11 +60,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookmarksImport
       parentRoute: typeof rootRoute
     }
-    '/job-search': {
-      id: '/job-search'
+    '/job-search/qa': {
+      id: '/job-search/qa'
+      path: '/job-search/qa'
+      fullPath: '/job-search/qa'
+      preLoaderRoute: typeof JobSearchQaImport
+      parentRoute: typeof rootRoute
+    }
+    '/job-search/': {
+      id: '/job-search/'
       path: '/job-search'
       fullPath: '/job-search'
-      preLoaderRoute: typeof JobSearchImport
+      preLoaderRoute: typeof JobSearchIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -68,41 +82,46 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
-  '/job-search': typeof JobSearchRoute
+  '/job-search/qa': typeof JobSearchQaRoute
+  '/job-search': typeof JobSearchIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
-  '/job-search': typeof JobSearchRoute
+  '/job-search/qa': typeof JobSearchQaRoute
+  '/job-search': typeof JobSearchIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
-  '/job-search': typeof JobSearchRoute
+  '/job-search/qa': typeof JobSearchQaRoute
+  '/job-search/': typeof JobSearchIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/bookmarks' | '/job-search'
+  fullPaths: '/' | '/bookmarks' | '/job-search/qa' | '/job-search'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bookmarks' | '/job-search'
-  id: '__root__' | '/' | '/bookmarks' | '/job-search'
+  to: '/' | '/bookmarks' | '/job-search/qa' | '/job-search'
+  id: '__root__' | '/' | '/bookmarks' | '/job-search/qa' | '/job-search/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BookmarksRoute: typeof BookmarksRoute
-  JobSearchRoute: typeof JobSearchRoute
+  JobSearchQaRoute: typeof JobSearchQaRoute
+  JobSearchIndexRoute: typeof JobSearchIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BookmarksRoute: BookmarksRoute,
-  JobSearchRoute: JobSearchRoute,
+  JobSearchQaRoute: JobSearchQaRoute,
+  JobSearchIndexRoute: JobSearchIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -117,7 +136,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/bookmarks",
-        "/job-search"
+        "/job-search/qa",
+        "/job-search/"
       ]
     },
     "/": {
@@ -126,8 +146,11 @@ export const routeTree = rootRoute
     "/bookmarks": {
       "filePath": "bookmarks.tsx"
     },
-    "/job-search": {
-      "filePath": "job-search.tsx"
+    "/job-search/qa": {
+      "filePath": "job-search/qa.tsx"
+    },
+    "/job-search/": {
+      "filePath": "job-search/index.tsx"
     }
   }
 }

@@ -1,4 +1,4 @@
-import type { CreateJobApplication } from "@ethang/schemas/src/dashboard/application-schema";
+import type { CreateQuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
@@ -11,80 +11,72 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Textarea,
 } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
-import { DateTime } from "luxon";
 import { z } from "zod";
 
 import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../global-stores/modal-store.js";
+import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
 import { getToken } from "../../utilities/token.ts";
 
-export const CreateJobApplicationModal = () => {
+export const CreateQaModal = () => {
   const { user } = useUser();
   const queryClient = useQueryClient();
-  const isOpen = useModalStore((snapshot) => {
-    return snapshot.createJobApplication;
+  const isOpen = useModalStore((state) => {
+    return state.createQa;
   });
 
   const { isPending, mutate } = useMutation({
-    mutationFn: async (data: CreateJobApplication) => {
-      await globalThis.fetch("/api/application", {
-        body: JSON.stringify(data),
+    mutationFn: async (data: CreateQuestionAnswer) => {
+      const response = await fetch("/api/question-answer", {
+        body: JSON.stringify({
+          ...data,
+          userId: user?.id,
+        }),
         headers: {
           Authorization: getToken(),
         },
         method: "POST",
       });
 
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.allUserApplications(user?.id),
-      });
-      modalStore.closeModal("createJobApplication");
+      if (response.ok) {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.allUserQuestionAnswers(user?.id),
+        });
+        modalStore.closeModal("createQa");
+      }
     },
   });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const parsed = z
-      .object({
-        company: z.string(),
-        title: z.string(),
-        url: z.string(),
-      })
+      .object({ answer: z.string(), question: z.string() })
       .safeParse(Object.fromEntries(new FormData(event.currentTarget)));
 
     if (isNil(user?.id) || !parsed.success) {
       return;
     }
 
-    mutate({
-      applied: DateTime.now().toISO(),
-      company: parsed.data.company,
-      interviewRounds: [],
-      rejected: null,
-      title: parsed.data.title,
-      url: parsed.data.url,
-      userId: user.id,
-    });
+    mutate(parsed.data);
   };
 
   return (
     <Modal
       onOpenChange={(value) => {
-        modalStore.setIsModalOpen("createJobApplication", value);
+        modalStore.setIsModalOpen("createQa", value);
       }}
       isOpen={isOpen}
       scrollBehavior="outside"
     >
       <ModalContent>
-        <ModalHeader>Add Job Application</ModalHeader>
+        <ModalHeader>Add Q/A</ModalHeader>
         <Form className="grid gap-2" onSubmit={handleSubmit}>
           <ModalBody>
-            <Input isRequired label="Title" name="title" />
-            <Input isRequired label="Company" name="company" />
-            <Input isRequired label="URL" name="url" type="url" />
+            <Input isRequired label="Question" name="question" />
+            <Textarea isRequired label="Answer" name="answer" />
           </ModalBody>
           <ModalFooter>
             <Button

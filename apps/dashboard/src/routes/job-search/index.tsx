@@ -17,11 +17,11 @@ import isString from "lodash/isString";
 import { PlusIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
-import { DateColumn } from "../components/data-column.tsx";
-import { UpdateDeleteApplication } from "../components/job-application/update-delete-application.tsx";
-import { MainLayout } from "../components/layouts/main-layout.tsx";
-import { getApplications } from "../data/queries/application.ts";
-import { modalStore } from "../global-stores/modal-store.ts";
+import { DateColumn } from "../../components/data-column.tsx";
+import { UpdateDeleteApplication } from "../../components/job-application/update-delete-application.tsx";
+import { MainLayout } from "../../components/layouts/main-layout.tsx";
+import { getApplications } from "../../data/queries/application.ts";
+import { modalStore } from "../../global-stores/modal-store.ts";
 
 const columns = [
   { key: "title", label: "Title" },
@@ -124,6 +124,6 @@ const RouteComponent = () => {
   );
 };
 
-export const Route = createFileRoute("/job-search")({
+export const Route = createFileRoute("/job-search/")({
   component: RouteComponent,
 });

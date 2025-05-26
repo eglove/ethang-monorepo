@@ -10,6 +10,8 @@ const isOpenKeys = [
   "updateBookmark",
   "updateApplication",
   "createJobApplication",
+  "createQa",
+  "updateQa",
 ] as const;
 type IsOpenKeys = (typeof isOpenKeys)[number];
 
@@ -18,8 +20,10 @@ type ModalState = {
   bookmarkToUpdate: Bookmark | null;
   createBookmark: boolean;
   createJobApplication: boolean;
+  createQa: boolean;
   updateApplication: boolean;
   updateBookmark: boolean;
+  updateQa: boolean;
 };
 
 class ModalStore {
@@ -28,8 +32,10 @@ class ModalStore {
     bookmarkToUpdate: null,
     createBookmark: false,
     createJobApplication: false,
+    createQa: false,
     updateApplication: false,
     updateBookmark: false,
+    updateQa: false,
   };
   private readonly subscribers = new Set<(state: ModalState) => void>();
 

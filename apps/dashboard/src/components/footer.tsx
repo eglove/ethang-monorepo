@@ -20,18 +20,27 @@ export const Footer = () => {
         </DropdownTrigger>
         <DropdownMenu
           onAction={(key) => {
-            if ("bookmark" === key) {
-              modalStore.openModal("createBookmark");
-            }
+            switch (key) {
+              case "bookmark": {
+                modalStore.openModal("createBookmark");
+                break;
+              }
 
-            if ("jobApplication" === key) {
-              modalStore.openModal("createJobApplication");
+              case "jobApplication": {
+                modalStore.openModal("createJobApplication");
+                break;
+              }
+
+              case "qa": {
+                modalStore.openModal("createQa");
+              }
             }
           }}
           aria-label="Select item to create"
         >
           <DropdownItem key="bookmark">Bookmark</DropdownItem>
           <DropdownItem key="jobApplication">Job Application</DropdownItem>
+          <DropdownItem key="qa">Job Application Q/A</DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </div>

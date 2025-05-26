@@ -8,6 +8,7 @@ import startsWith from "lodash/startsWith";
 import { applicationRouter } from "./applications/application-router.ts";
 import { bookmarkRouter } from "./bookmarks/bookmark-router.ts";
 import { paths } from "./paths.ts";
+import { questionAnswerRouter } from "./question-answers/question-answer-router.ts";
 
 export default {
   async fetch(request, environment) {
@@ -54,6 +55,10 @@ export default {
 
     if (startsWith(url.pathname, paths.application)) {
       return applicationRouter(request, environment);
+    }
+
+    if (startsWith(url.pathname, paths.questionAnswer)) {
+      return questionAnswerRouter(request, environment);
     }
 
     return new Response(null, { status: 404 });
