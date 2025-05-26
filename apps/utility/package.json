@@ -9,7 +9,7 @@
     "remeda": "^2.21.6"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.3.0",
+    "@ethang/eslint-config": "^22.3.2",
     "@types/lodash": "^4.17.16",
     "@vitest/ui": "^3.1.4",
     "eslint": "^9.26.0",
@@ -26,7 +26,7 @@
     "deploy": "wrangler deploy",
     "dev": "vitest",
     "lint": "eslint ./tests --fix",
-    "build": "vitest run"
+    "start": "vitest run"
   },
   "type": "module",
   "version": "0.0.0"
