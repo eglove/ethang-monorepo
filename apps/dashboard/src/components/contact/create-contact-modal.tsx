@@ -23,6 +23,7 @@ import isNil from "lodash/isNil.js";
 import set from "lodash/set";
 import { DateTime } from "luxon";
 
+import { getDateTimeInputNow } from "../../../worker/utilities/heroui.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
 import { getToken } from "../../utilities/token.ts";
@@ -92,6 +93,7 @@ export const CreateContactModal = () => {
             <Input isRequired label="Name" name="name" />
             <DateInput
               isRequired
+              defaultValue={getDateTimeInputNow()}
               granularity="minute"
               label="Last Contacted"
               name="lastContact"

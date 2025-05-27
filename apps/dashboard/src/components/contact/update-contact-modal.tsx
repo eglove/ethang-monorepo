@@ -13,24 +13,17 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { parseAbsoluteToLocal } from "@internationalized/date";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 
+import {
+  convertIsoToDateTimeInput,
+  type DateInputValue,
+} from "../../../worker/utilities/heroui.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
 import { getToken } from "../../utilities/token.ts";
-
-const getDateTimeInputConversion = (value: null | string | undefined) => {
-  return isNil(value)
-    ? null
-    : // @ts-expect-error HeroUI types suck
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      (parseAbsoluteToLocal(
-        DateTime.fromISO(value).toUTC().toString(),
-      ) as Parameters<typeof DateInput>[0]["value"]);
-};
 
 export const UpdateContactModal = () => {
   const queryClient = useQueryClient();
@@ -54,8 +47,7 @@ export const UpdateContactModal = () => {
   };
 
   const handleDateInputChange =
-    (key: keyof Contact) =>
-    (value: Parameters<typeof DateInput>[0]["value"]) => {
+    (key: keyof Contact) => (value: DateInputValue) => {
       if (isNil(contact)) {
         return;
       }
@@ -97,8 +89,8 @@ export const UpdateContactModal = () => {
     mutate();
   };
 
-  const lastContactDateTime = getDateTimeInputConversion(contact?.lastContact);
-  const expectedNextContact = getDateTimeInputConversion(
+  const lastContactDateTime = convertIsoToDateTimeInput(contact?.lastContact);
+  const expectedNextContact = convertIsoToDateTimeInput(
     contact?.expectedNextContact,
   );
 
@@ -124,7 +116,6 @@ export const UpdateContactModal = () => {
               onValueChange={handleChange("name")}
               value={contact?.name ?? ""}
             />
-            {/* @ts-expect-error HeroUI types suck */}
             <DateInput
               isRequired
               granularity="minute"
@@ -154,7 +145,6 @@ export const UpdateContactModal = () => {
               type="url"
               value={contact?.linkedIn ?? ""}
             />
-            {/* @ts-expect-error HeroUI types suck */}
             <DateInput
               granularity="minute"
               label="Expected Next Contact"

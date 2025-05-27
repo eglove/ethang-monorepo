@@ -1,8 +1,8 @@
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response";
 
-import { getAllContacts } from "../contacts/get-all-contacts.ts";
 import { createTodo } from "./create-todo.ts";
 import { deleteTodo } from "./delete-todo.ts";
+import { getAllTodos } from "./get-all-todos.ts";
 import { updateTodo } from "./update-todo.ts";
 
 export const todoRouter = async (
@@ -16,7 +16,7 @@ export const todoRouter = async (
     }
 
     case "GET": {
-      return getAllContacts(environment, userId);
+      return getAllTodos(environment, userId);
     }
 
     case "POST": {

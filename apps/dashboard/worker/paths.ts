@@ -3,4 +3,5 @@ export const paths = {
   bookmark: "/api/bookmark",
   contact: "/api/contact",
   questionAnswer: "/api/question-answer",
+  todo: "/api/todo",
 };

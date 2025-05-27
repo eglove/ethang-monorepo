@@ -11,6 +11,7 @@ import { UpdateJobApplicationModal } from "../job-application/update-job-applica
 import { Navigation } from "../navigation.tsx";
 import { CreateQaModal } from "../qa/create-qa-modal.tsx";
 import { UpdateQaModal } from "../qa/update-qa-modal.tsx";
+import { CreateTodoModal } from "../todo/create-todo-modal.tsx";
 
 export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
   return (
@@ -26,6 +27,7 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
         <UpdateQaModal />
         <CreateContactModal />
         <UpdateContactModal />
+        <CreateTodoModal />
       </SignedIn>
     </>
   );

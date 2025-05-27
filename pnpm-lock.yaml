@@ -136,6 +136,9 @@ importers:
       luxon:
         specifier: ^3.6.1
         version: 3.6.1
+      ms:
+        specifier: ^2.1.3
+        version: 2.1.3
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -179,6 +182,9 @@ importers:
       '@types/luxon':
         specifier: ^3.6.2
         version: 3.6.2
+      '@types/ms':
+        specifier: ^2.1.0
+        version: 2.1.0
       '@types/react':
         specifier: ^19.1.6
         version: 19.1.6
