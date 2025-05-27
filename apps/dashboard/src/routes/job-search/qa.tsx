@@ -12,6 +12,7 @@ import { QaCopyButton } from "../../components/qa/qa-copy-button.tsx";
 import { QaDeleteButton } from "../../components/qa/qa-delete-button.tsx";
 import { getQuestionAnswers } from "../../data/queries/question-answer.ts";
 import { modalStore } from "../../global-stores/modal-store.ts";
+import { SectionHeader } from "../../section-header.tsx";
 
 const RouteComponent = () => {
   const { user } = useUser();
@@ -19,22 +20,11 @@ const RouteComponent = () => {
 
   return (
     <MainLayout>
-      <div className="flex justify-between items-center my-4">
-        <div className="prose">
-          <h2 className="text-foreground">Application Q/A</h2>
-        </div>
-        <Button
-          isIconOnly
-          onPress={() => {
-            modalStore.openModal("createQa");
-          }}
-          aria-label="Add Q/A"
-          color="primary"
-          size="sm"
-        >
-          <PlusIcon />
-        </Button>
-      </div>
+      <SectionHeader
+        header="Application Q/A"
+        modalKey="createQa"
+        modalLabel="Add Q/A"
+      />
       <Accordion isCompact variant="bordered">
         {map(data, (qa) => {
           return (

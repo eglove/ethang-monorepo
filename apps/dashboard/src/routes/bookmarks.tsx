@@ -18,6 +18,7 @@ import { UpdateDeleteBookmark } from "../components/bookmarks/update-delete-book
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { getBookmarks } from "../data/queries/bookmark.ts";
 import { modalStore } from "../global-stores/modal-store.ts";
+import { SectionHeader } from "../section-header.tsx";
 
 const columns = [
   { key: "title", label: "Title" },
@@ -31,22 +32,11 @@ const BookMarks = () => {
 
   return (
     <MainLayout>
-      <div className="flex justify-between items-center my-4">
-        <div className="prose">
-          <h2 className="text-foreground">Bookmarks</h2>
-        </div>
-        <Button
-          isIconOnly
-          onPress={() => {
-            modalStore.openModal("createBookmark");
-          }}
-          aria-label="Add Bookmark"
-          color="primary"
-          size="sm"
-        >
-          <PlusIcon />
-        </Button>
-      </div>
+      <SectionHeader
+        header="Bookmarks"
+        modalKey="createBookmark"
+        modalLabel="Add Bookmark"
+      />
       <Table isStriped aria-label="Bookmarks">
         <TableHeader columns={columns}>
           {(column) => {

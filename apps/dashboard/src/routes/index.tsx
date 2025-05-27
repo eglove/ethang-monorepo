@@ -14,7 +14,7 @@ const Index = () => {
         <HomeNavigationCard
           description="Keep track of your todos."
           href="/todo"
-          queryKey={[]}
+          queryKey={queryKeys.todos(user?.id)}
           title="Todos"
         />
         <HomeNavigationCard

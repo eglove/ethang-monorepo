@@ -22,6 +22,7 @@ import { UpdateDeleteApplication } from "../../components/job-application/update
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { getApplications } from "../../data/queries/application.ts";
 import { modalStore } from "../../global-stores/modal-store.ts";
+import { SectionHeader } from "../../section-header.tsx";
 
 const columns = [
   { key: "title", label: "Title" },
@@ -39,22 +40,11 @@ const RouteComponent = () => {
 
   return (
     <MainLayout>
-      <div className="flex justify-between items-center my-4">
-        <div className="prose">
-          <h2 className="text-foreground">Job Search</h2>
-        </div>
-        <Button
-          isIconOnly
-          onPress={() => {
-            modalStore.openModal("createJobApplication");
-          }}
-          aria-label="Add Application"
-          color="primary"
-          size="sm"
-        >
-          <PlusIcon />
-        </Button>
-      </div>
+      <SectionHeader
+        header="Job Search"
+        modalKey="createJobApplication"
+        modalLabel="Add Application"
+      />
       <Table isHeaderSticky isStriped aria-label="Job Search">
         <TableHeader columns={columns}>
           {(item) => {

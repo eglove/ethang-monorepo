@@ -10,7 +10,6 @@ export default tseslint.config(
       "dist",
       "**/*.d.ts",
       "./src/routeTree.gen.ts",
-      "./generated/prisma",
     ],
   },
   ...config,

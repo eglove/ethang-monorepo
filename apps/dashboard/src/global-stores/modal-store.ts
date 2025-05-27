@@ -13,8 +13,10 @@ const isOpenKeys = [
   "createJobApplication",
   "createQa",
   "updateQa",
+  "createTodo",
+  "updateTodo",
 ] as const;
-type IsOpenKeys = (typeof isOpenKeys)[number];
+export type IsOpenKeys = (typeof isOpenKeys)[number];
 
 type ModalState = {
   applicationToUpdate: JobApplication | null;
@@ -22,10 +24,12 @@ type ModalState = {
   createBookmark: boolean;
   createJobApplication: boolean;
   createQa: boolean;
+  createTodo: boolean;
   qaToUpdate: null | QuestionAnswer;
   updateApplication: boolean;
   updateBookmark: boolean;
   updateQa: boolean;
+  updateTodo: boolean;
 };
 
 class ModalStore {

@@ -14,13 +14,10 @@
       "@clerk/shared",
       "@heroui/shared-utils",
       "@parcel/watcher",
-      "@prisma/client",
-      "@prisma/engines",
       "@swc/core",
       "better-sqlite3",
       "esbuild",
       "msw",
-      "prisma",
       "sharp",
       "workerd"
     ],
