@@ -19,6 +19,9 @@ const filterOutNil = (array: unknown[]) => {
 };
 
 export const queryKeys = {
+  allContacts: (userId?: string) => {
+    return filterOutNil(["contacts", userId]);
+  },
   allUserApplications: (userId?: string) => {
     return filterOutNil(["applications", userId]);
   },
@@ -33,6 +36,9 @@ export const queryKeys = {
   },
   bookmarks: (userId?: string) => {
     return filterOutNil(["bookmarks", userId]);
+  },
+  contacts: (userId?: string, filters?: Filters) => {
+    return filterOutNil(["contacts", userId, filters]);
   },
   questionAnswers: (userId?: string, filters?: Filters) => {
     return filterOutNil(["questionAnswers", userId, filters]);

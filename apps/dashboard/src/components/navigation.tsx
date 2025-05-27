@@ -46,6 +46,15 @@ export const Navigation = () => {
               Q/A
             </Link>
           </NavbarItem>
+          <NavbarItem>
+            <Link
+              className="text-foreground"
+              href="/job-search/contact"
+              underline="hover"
+            >
+              Contacts
+            </Link>
+          </NavbarItem>
         </NavbarContent>
       )}
       <NavbarContent justify="end">

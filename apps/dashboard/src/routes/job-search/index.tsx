@@ -1,6 +1,5 @@
 import { useUser } from "@clerk/clerk-react";
 import {
-  Button,
   getKeyValue,
   Link,
   Spinner,
@@ -14,14 +13,12 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import isString from "lodash/isString";
-import { PlusIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 import { DateColumn } from "../../components/data-column.tsx";
 import { UpdateDeleteApplication } from "../../components/job-application/update-delete-application.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { getApplications } from "../../data/queries/application.ts";
-import { modalStore } from "../../global-stores/modal-store.ts";
 import { SectionHeader } from "../../section-header.tsx";
 
 const columns = [
@@ -41,7 +38,7 @@ const RouteComponent = () => {
   return (
     <MainLayout>
       <SectionHeader
-        header="Job Search"
+        header="Applications"
         modalKey="createJobApplication"
         modalLabel="Add Application"
       />

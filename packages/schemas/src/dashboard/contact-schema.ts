@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 export const contactSchema = z.object({
-  email: z.string().nullable(),
-  expectedNextContact: z.string().nullable(),
+  email: z.string().optional().nullable(),
+  expectedNextContact: z.string().optional().nullable(),
   id: z.string(),
   lastContact: z.string(),
-  linkedIn: z.string().nullable(),
+  linkedIn: z.string().optional().nullable(),
   name: z.string(),
-  phone: z.string().nullable(),
+  phone: z.string().optional().nullable(),
   userId: z.string(),
 });
 

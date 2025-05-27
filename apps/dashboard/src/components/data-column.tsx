@@ -3,18 +3,18 @@ import isString from "lodash/isString";
 
 type DateColumnProperties = Readonly<{
   date: unknown;
+  dateTimeFormatOptions?: Intl.DateTimeFormatOptions;
 }>;
 
-export const DateColumn = ({ date }: DateColumnProperties) => {
+const defaultOptions: Intl.DateTimeFormatOptions = { dateStyle: "medium" };
+
+export const DateColumn = ({
+  date,
+  dateTimeFormatOptions = defaultOptions,
+}: DateColumnProperties) => {
   if (isNil(date) || !isString(date)) {
     return "";
   }
 
-  return (
-    <>
-      {new Date(date).toLocaleString(undefined, {
-        dateStyle: "medium",
-      })}
-    </>
-  );
+  return <>{new Date(date).toLocaleString(undefined, dateTimeFormatOptions)}</>;
 };

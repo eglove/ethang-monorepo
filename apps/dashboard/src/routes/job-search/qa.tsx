@@ -5,7 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map.js";
 import split from "lodash/split.js";
-import { PencilIcon, PlusIcon } from "lucide-react";
+import { PencilIcon } from "lucide-react";
 
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { QaCopyButton } from "../../components/qa/qa-copy-button.tsx";

@@ -4,6 +4,8 @@ import { SignedIn } from "@clerk/clerk-react";
 
 import { CreateBookmarkModal } from "../bookmarks/create-bookmark-modal.tsx";
 import { UpdateBookmarkModal } from "../bookmarks/update-bookmark-modal.tsx";
+import { CreateContactModal } from "../contact/create-contact-modal.tsx";
+import { UpdateContactModal } from "../contact/update-contact-modal.tsx";
 import { CreateJobApplicationModal } from "../job-application/create-job-application-modal.tsx";
 import { UpdateJobApplicationModal } from "../job-application/update-job-application-modal.tsx";
 import { Navigation } from "../navigation.tsx";
@@ -22,6 +24,8 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
         <UpdateJobApplicationModal />
         <CreateQaModal />
         <UpdateQaModal />
+        <CreateContactModal />
+        <UpdateContactModal />
       </SignedIn>
     </>
   );

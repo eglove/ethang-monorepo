@@ -1,9 +1,9 @@
-import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
+import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 
 import { useUser } from "@clerk/clerk-react";
 import { Button } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import isNil from "lodash/isNil";
+import isNil from "lodash/isNil.js";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -11,9 +11,13 @@ import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore } from "../../global-stores/modal-store.ts";
 import { getToken } from "../../utilities/token.ts";
 
-export const UpdateDeleteApplication = ({
-  application,
-}: Readonly<{ application: JobApplication }>) => {
+type UpdateDeleteContactProperties = {
+  contact: Contact;
+};
+
+export const UpdateDeleteContact = ({
+  contact,
+}: Readonly<UpdateDeleteContactProperties>) => {
   const queryClient = useQueryClient();
   const { user } = useUser();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -24,11 +28,8 @@ export const UpdateDeleteApplication = ({
         return;
       }
 
-      const response = await globalThis.fetch("/api/application", {
-        body: JSON.stringify({
-          id: application.id,
-          userId: user.id,
-        }),
+      const response = await globalThis.fetch("/api/contact", {
+        body: JSON.stringify({ id: contact.id, userId: user.id }),
         headers: {
           Authorization: getToken(),
         },
@@ -37,7 +38,7 @@ export const UpdateDeleteApplication = ({
 
       if (response.ok) {
         await queryClient.invalidateQueries({
-          queryKey: queryKeys.allUserApplications(user.id),
+          queryKey: queryKeys.allContacts(user.id),
         });
         setIsDeleting(false);
       }
@@ -51,10 +52,10 @@ export const UpdateDeleteApplication = ({
           <Button
             isIconOnly
             onPress={() => {
-              modalStore.setApplicationToUpdate(application);
-              modalStore.openModal("updateApplication");
+              modalStore.setContactToUpdate(contact);
+              modalStore.openModal("updateContact");
             }}
-            aria-label="Update Application"
+            aria-label="Update Contact"
             color="primary"
             size="sm"
           >

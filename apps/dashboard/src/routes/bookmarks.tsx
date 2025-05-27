@@ -1,6 +1,5 @@
 import { useUser } from "@clerk/clerk-react";
 import {
-  Button,
   getKeyValue,
   Link,
   Table,
@@ -12,12 +11,10 @@ import {
 } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { PlusIcon } from "lucide-react";
 
 import { UpdateDeleteBookmark } from "../components/bookmarks/update-delete-bookmark.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { getBookmarks } from "../data/queries/bookmark.ts";
-import { modalStore } from "../global-stores/modal-store.ts";
 import { SectionHeader } from "../section-header.tsx";
 
 const columns = [

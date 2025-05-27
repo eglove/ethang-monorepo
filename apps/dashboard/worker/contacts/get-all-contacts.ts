@@ -6,7 +6,17 @@ import isError from "lodash/isError";
 
 export const getAllContacts = async (environment: Env, userId: string) => {
   const contacts = await attemptAsync(async () =>
-    environment.DB.prepare("select * from contacts where userId = ?")
+    environment.DB.prepare(
+      `select *
+       from contacts
+       where userId = ?
+       order by case
+                    when expectedNextContact < date('now') then 1
+                    else 0
+                    end,
+                expectedNextContact,
+                lastContact`,
+    )
       .bind(userId)
       .all<Contact>(),
   );

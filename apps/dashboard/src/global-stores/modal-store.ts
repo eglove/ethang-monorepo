@@ -1,5 +1,6 @@
 import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
 import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
+import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 import type { QuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
 
 import { produce } from "immer";
@@ -15,19 +16,24 @@ const isOpenKeys = [
   "updateQa",
   "createTodo",
   "updateTodo",
+  "createContact",
+  "updateContact",
 ] as const;
 export type IsOpenKeys = (typeof isOpenKeys)[number];
 
 type ModalState = {
   applicationToUpdate: JobApplication | null;
   bookmarkToUpdate: Bookmark | null;
+  contactToUpdate: Contact | null;
   createBookmark: boolean;
+  createContact: boolean;
   createJobApplication: boolean;
   createQa: boolean;
   createTodo: boolean;
   qaToUpdate: null | QuestionAnswer;
   updateApplication: boolean;
   updateBookmark: boolean;
+  updateContact: boolean;
   updateQa: boolean;
   updateTodo: boolean;
 };
@@ -36,13 +42,18 @@ class ModalStore {
   private state: ModalState = {
     applicationToUpdate: null,
     bookmarkToUpdate: null,
+    contactToUpdate: null,
     createBookmark: false,
+    createContact: false,
     createJobApplication: false,
     createQa: false,
+    createTodo: false,
     qaToUpdate: null,
     updateApplication: false,
     updateBookmark: false,
+    updateContact: false,
     updateQa: false,
+    updateTodo: false,
   };
   private readonly subscribers = new Set<(state: ModalState) => void>();
 
@@ -67,6 +78,12 @@ class ModalStore {
   public setBookmarkToUpdate(bookmark: Bookmark | null) {
     this.update((draft) => {
       draft.bookmarkToUpdate = bookmark;
+    });
+  }
+
+  public setContactToUpdate(contact: Contact | null) {
+    this.update((draft) => {
+      draft.contactToUpdate = contact;
     });
   }
 

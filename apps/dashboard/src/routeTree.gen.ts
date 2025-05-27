@@ -16,6 +16,7 @@ import { Route as BookmarksImport } from './routes/bookmarks'
 import { Route as IndexImport } from './routes/index'
 import { Route as JobSearchIndexImport } from './routes/job-search/index'
 import { Route as JobSearchQaImport } from './routes/job-search/qa'
+import { Route as JobSearchContactImport } from './routes/job-search/contact'
 
 // Create/Update Routes
 
@@ -49,6 +50,12 @@ const JobSearchQaRoute = JobSearchQaImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const JobSearchContactRoute = JobSearchContactImport.update({
+  id: '/job-search/contact',
+  path: '/job-search/contact',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -74,6 +81,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TodoImport
       parentRoute: typeof rootRoute
     }
+    '/job-search/contact': {
+      id: '/job-search/contact'
+      path: '/job-search/contact'
+      fullPath: '/job-search/contact'
+      preLoaderRoute: typeof JobSearchContactImport
+      parentRoute: typeof rootRoute
+    }
     '/job-search/qa': {
       id: '/job-search/qa'
       path: '/job-search/qa'
@@ -97,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
   '/todo': typeof TodoRoute
+  '/job-search/contact': typeof JobSearchContactRoute
   '/job-search/qa': typeof JobSearchQaRoute
   '/job-search': typeof JobSearchIndexRoute
 }
@@ -105,6 +120,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
   '/todo': typeof TodoRoute
+  '/job-search/contact': typeof JobSearchContactRoute
   '/job-search/qa': typeof JobSearchQaRoute
   '/job-search': typeof JobSearchIndexRoute
 }
@@ -114,20 +130,34 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
   '/todo': typeof TodoRoute
+  '/job-search/contact': typeof JobSearchContactRoute
   '/job-search/qa': typeof JobSearchQaRoute
   '/job-search/': typeof JobSearchIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/bookmarks' | '/todo' | '/job-search/qa' | '/job-search'
+  fullPaths:
+    | '/'
+    | '/bookmarks'
+    | '/todo'
+    | '/job-search/contact'
+    | '/job-search/qa'
+    | '/job-search'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bookmarks' | '/todo' | '/job-search/qa' | '/job-search'
+  to:
+    | '/'
+    | '/bookmarks'
+    | '/todo'
+    | '/job-search/contact'
+    | '/job-search/qa'
+    | '/job-search'
   id:
     | '__root__'
     | '/'
     | '/bookmarks'
     | '/todo'
+    | '/job-search/contact'
     | '/job-search/qa'
     | '/job-search/'
   fileRoutesById: FileRoutesById
@@ -137,6 +167,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BookmarksRoute: typeof BookmarksRoute
   TodoRoute: typeof TodoRoute
+  JobSearchContactRoute: typeof JobSearchContactRoute
   JobSearchQaRoute: typeof JobSearchQaRoute
   JobSearchIndexRoute: typeof JobSearchIndexRoute
 }
@@ -145,6 +176,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BookmarksRoute: BookmarksRoute,
   TodoRoute: TodoRoute,
+  JobSearchContactRoute: JobSearchContactRoute,
   JobSearchQaRoute: JobSearchQaRoute,
   JobSearchIndexRoute: JobSearchIndexRoute,
 }
@@ -162,6 +194,7 @@ export const routeTree = rootRoute
         "/",
         "/bookmarks",
         "/todo",
+        "/job-search/contact",
         "/job-search/qa",
         "/job-search/"
       ]
@@ -174,6 +207,9 @@ export const routeTree = rootRoute
     },
     "/todo": {
       "filePath": "todo.tsx"
+    },
+    "/job-search/contact": {
+      "filePath": "job-search/contact.tsx"
     },
     "/job-search/qa": {
       "filePath": "job-search/qa.tsx"
