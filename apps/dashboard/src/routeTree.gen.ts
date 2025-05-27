@@ -11,12 +11,19 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TodoImport } from './routes/todo'
 import { Route as BookmarksImport } from './routes/bookmarks'
 import { Route as IndexImport } from './routes/index'
 import { Route as JobSearchIndexImport } from './routes/job-search/index'
 import { Route as JobSearchQaImport } from './routes/job-search/qa'
 
 // Create/Update Routes
+
+const TodoRoute = TodoImport.update({
+  id: '/todo',
+  path: '/todo',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const BookmarksRoute = BookmarksImport.update({
   id: '/bookmarks',
@@ -60,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookmarksImport
       parentRoute: typeof rootRoute
     }
+    '/todo': {
+      id: '/todo'
+      path: '/todo'
+      fullPath: '/todo'
+      preLoaderRoute: typeof TodoImport
+      parentRoute: typeof rootRoute
+    }
     '/job-search/qa': {
       id: '/job-search/qa'
       path: '/job-search/qa'
@@ -82,6 +96,7 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
+  '/todo': typeof TodoRoute
   '/job-search/qa': typeof JobSearchQaRoute
   '/job-search': typeof JobSearchIndexRoute
 }
@@ -89,6 +104,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
+  '/todo': typeof TodoRoute
   '/job-search/qa': typeof JobSearchQaRoute
   '/job-search': typeof JobSearchIndexRoute
 }
@@ -97,22 +113,30 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
+  '/todo': typeof TodoRoute
   '/job-search/qa': typeof JobSearchQaRoute
   '/job-search/': typeof JobSearchIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/bookmarks' | '/job-search/qa' | '/job-search'
+  fullPaths: '/' | '/bookmarks' | '/todo' | '/job-search/qa' | '/job-search'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bookmarks' | '/job-search/qa' | '/job-search'
-  id: '__root__' | '/' | '/bookmarks' | '/job-search/qa' | '/job-search/'
+  to: '/' | '/bookmarks' | '/todo' | '/job-search/qa' | '/job-search'
+  id:
+    | '__root__'
+    | '/'
+    | '/bookmarks'
+    | '/todo'
+    | '/job-search/qa'
+    | '/job-search/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BookmarksRoute: typeof BookmarksRoute
+  TodoRoute: typeof TodoRoute
   JobSearchQaRoute: typeof JobSearchQaRoute
   JobSearchIndexRoute: typeof JobSearchIndexRoute
 }
@@ -120,6 +144,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BookmarksRoute: BookmarksRoute,
+  TodoRoute: TodoRoute,
   JobSearchQaRoute: JobSearchQaRoute,
   JobSearchIndexRoute: JobSearchIndexRoute,
 }
@@ -136,6 +161,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/bookmarks",
+        "/todo",
         "/job-search/qa",
         "/job-search/"
       ]
@@ -145,6 +171,9 @@ export const routeTree = rootRoute
     },
     "/bookmarks": {
       "filePath": "bookmarks.tsx"
+    },
+    "/todo": {
+      "filePath": "todo.tsx"
     },
     "/job-search/qa": {
       "filePath": "job-search/qa.tsx"
