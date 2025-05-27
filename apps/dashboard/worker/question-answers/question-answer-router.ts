@@ -8,22 +8,23 @@ import { updateQuestionAnswer } from "./update-question-answer.ts";
 export const questionAnswerRouter = async (
   request: Request,
   environment: Env,
+  userId: string,
 ) => {
   switch (request.method) {
     case "DELETE": {
-      return deleteQuestionAnswer(request, environment);
+      return deleteQuestionAnswer(request, environment, userId);
     }
 
     case "GET": {
-      return getAllQuestionAnswers(request, environment);
+      return getAllQuestionAnswers(request, environment, userId);
     }
 
     case "POST": {
-      return createQuestionAnswer(request, environment);
+      return createQuestionAnswer(request, environment, userId);
     }
 
     case "PUT": {
-      return updateQuestionAnswer(request, environment);
+      return updateQuestionAnswer(request, environment, userId);
     }
 
     default: {

@@ -5,22 +5,26 @@ import { deleteBookmark } from "./delete-bookmark.ts";
 import { getAllBookmarks } from "./get-all-bookmarks.ts";
 import { updateBookmark } from "./update-bookmark.ts";
 
-export const bookmarkRouter = async (request: Request, environment: Env) => {
+export const bookmarkRouter = async (
+  request: Request,
+  environment: Env,
+  userId: string,
+) => {
   switch (request.method) {
     case "DELETE": {
-      return deleteBookmark(request, environment);
+      return deleteBookmark(request, environment, userId);
     }
 
     case "GET": {
-      return getAllBookmarks(request, environment);
+      return getAllBookmarks(environment, userId);
     }
 
     case "POST": {
-      return createBookmark(request, environment);
+      return createBookmark(request, environment, userId);
     }
 
     case "PUT": {
-      return updateBookmark(request, environment);
+      return updateBookmark(request, environment, userId);
     }
 
     default: {

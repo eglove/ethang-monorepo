@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 type HomeNavigationCardProperties = {
   description: string;
   href: string;
-  queryKey: (string | undefined)[];
+  queryKey: unknown[];
   title: string;
 };
 
@@ -27,7 +27,7 @@ export const HomeNavigationCard = ({
       }}
       href={href}
     >
-      <Card className="h-full">
+      <Card className="size-full">
         <CardHeader className="prose">
           <h2 className="text-foreground">{title}</h2>
         </CardHeader>

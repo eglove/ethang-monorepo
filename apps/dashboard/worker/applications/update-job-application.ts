@@ -6,6 +6,7 @@ import { queryOnBody } from "../utilities/query-on-body.ts";
 export const updateJobApplication = async (
   request: Request,
   environment: Env,
+  userId: string,
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
@@ -22,7 +23,7 @@ export const updateJobApplication = async (
             : body.interviewRounds,
           body.rejected,
           body.id,
-          body.userId,
+          userId,
         )
         .first();
     },

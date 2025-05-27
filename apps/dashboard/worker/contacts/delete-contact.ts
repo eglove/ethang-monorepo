@@ -1,8 +1,8 @@
-import { deleteBookmarkSchema } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
+import { deleteContactSchema } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
-export const deleteBookmark = async (
+export const deleteContact = async (
   request: Request,
   environment: Env,
   userId: string,
@@ -10,12 +10,12 @@ export const deleteBookmark = async (
   return queryOnBody({
     dbFunction: async (body) => {
       return environment.DB.prepare(
-        "delete from bookmarks where id = ? and userId = ?",
+        "delete from contacts where id = ? and userId = ?",
       )
         .bind(body.id, userId)
         .first();
     },
     request,
-    requestSchema: deleteBookmarkSchema,
+    requestSchema: deleteContactSchema,
   });
 };

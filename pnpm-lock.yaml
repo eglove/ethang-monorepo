@@ -127,6 +127,9 @@ importers:
       immer:
         specifier: ^10.1.1
         version: 10.1.1
+      jwt-decode:
+        specifier: ^4.0.0
+        version: 4.0.0
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -23547,8 +23550,7 @@ snapshots:
   junk@4.0.1:
     optional: true
 
-  jwt-decode@4.0.0:
-    optional: true
+  jwt-decode@4.0.0: {}
 
   kebab-case@1.0.2: {}
 

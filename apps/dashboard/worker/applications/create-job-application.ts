@@ -9,6 +9,7 @@ import { queryOnBody } from "../utilities/query-on-body.ts";
 export const createJobApplication = async (
   request: Request,
   environment: Env,
+  userId: string,
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
@@ -17,7 +18,7 @@ export const createJobApplication = async (
       )
         .bind(
           v7(),
-          body.userId,
+          userId,
           body.applied,
           body.company,
           body.title,

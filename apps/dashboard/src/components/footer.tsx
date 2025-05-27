@@ -11,7 +11,7 @@ import { modalStore } from "../global-stores/modal-store.ts";
 
 export const Footer = () => {
   return (
-    <div className="absolute bottom-0 right-1/2 m-4 z-5">
+    <div className="absolute bottom-0 right-0 m-4 z-5">
       <Dropdown>
         <DropdownTrigger>
           <Button color="primary" size="sm">

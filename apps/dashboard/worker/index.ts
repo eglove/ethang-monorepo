@@ -1,12 +1,14 @@
 import { createClerkClient } from "@clerk/backend";
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
+import { jwtDecode } from "jwt-decode";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil.js";
 import startsWith from "lodash/startsWith";
 
 import { applicationRouter } from "./applications/application-router.ts";
 import { bookmarkRouter } from "./bookmarks/bookmark-router.ts";
+import { contactRouter } from "./contacts/contact-router.ts";
 import { paths } from "./paths.ts";
 import { questionAnswerRouter } from "./question-answers/question-answer-router.ts";
 
@@ -43,22 +45,34 @@ export default {
       secretKey: sk,
     });
 
-    const { isSignedIn } = await clerkClient.authenticateRequest(request);
+    const { isSignedIn, token } =
+      await clerkClient.authenticateRequest(request);
 
-    if (!isSignedIn) {
+    if (!isSignedIn || isNil(token)) {
+      return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+    }
+
+    const decoded = jwtDecode(token);
+    const userId = decoded.sub;
+
+    if (isNil(userId)) {
       return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
     }
 
     if (startsWith(url.pathname, paths.bookmark)) {
-      return bookmarkRouter(request, environment);
+      return bookmarkRouter(request, environment, userId);
     }
 
     if (startsWith(url.pathname, paths.application)) {
-      return applicationRouter(request, environment);
+      return applicationRouter(request, environment, userId);
     }
 
     if (startsWith(url.pathname, paths.questionAnswer)) {
-      return questionAnswerRouter(request, environment);
+      return questionAnswerRouter(request, environment, userId);
+    }
+
+    if (startsWith(url.pathname, paths.contact)) {
+      return contactRouter(request, environment, userId);
     }
 
     return new Response(null, { status: 404 });

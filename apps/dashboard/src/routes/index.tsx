@@ -12,6 +12,12 @@ const Index = () => {
     <MainLayout>
       <div className="grid md:grid-cols-3 gap-4">
         <HomeNavigationCard
+          description="Keep track of your todos."
+          href="/todo"
+          queryKey={[]}
+          title="Todos"
+        />
+        <HomeNavigationCard
           description="Keep all your favorite links in one convenient place for easy
               access anytime."
           href="/bookmarks"
@@ -21,7 +27,7 @@ const Index = () => {
         <HomeNavigationCard
           description="Keep track of your job applications and Q/A's."
           href="/job-search"
-          queryKey={[]}
+          queryKey={queryKeys.applications(user?.id)}
           title="Job Search"
         />
       </div>

@@ -8,9 +8,9 @@ import toUpper from "lodash/toUpper";
 export const getAllQuestionAnswers = async (
   request: Request,
   environment: Env,
+  userId: string,
 ) => {
   const url = new URL(request.url);
-  const userId = url.searchParams.get("userId");
   let page = Number(url.searchParams.get("page") ?? 1);
   let limit = Number(url.searchParams.get("limit") ?? 10);
   const search = url.searchParams.get("search");

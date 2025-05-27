@@ -1,37 +1,20 @@
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
 import isError from "lodash/isError";
-import isNotANumber from "lodash/isNaN";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
 import map from "lodash/map.js";
 import toUpper from "lodash/toUpper";
 
+import { getUrlFilters } from "../utilities/get-url-filters.ts";
+
 export const getAllApplications = async (
   request: Request,
   environment: Env,
+  userId: string,
 ) => {
-  const url = new URL(request.url);
-  const userId = url.searchParams.get("userId");
-  let page = Number(url.searchParams.get("page") ?? 1);
-  let limit = Number(url.searchParams.get("limit") ?? 10);
-  const search = url.searchParams.get("search");
-  const sortBy = url.searchParams.get("sortBy");
-  const sortOrder = url.searchParams.get("sortOrder") ?? "asc";
-  const filterBy = url.searchParams.get("filterBy");
-  const filterValue = url.searchParams.get("filterValue");
-
-  if (isNotANumber(page)) {
-    page = 1;
-  }
-
-  if (isNotANumber(limit)) {
-    limit = 10;
-  }
-
-  if (isNil(userId)) {
-    return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST");
-  }
+  const { filterBy, filterValue, limit, page, search, sortBy, sortOrder } =
+    getUrlFilters(request.url);
 
   let query = "select * from applications where userId = ?";
   const parameters = [userId];

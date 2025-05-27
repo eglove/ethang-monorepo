@@ -72,8 +72,10 @@ export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
         >
           {children}
         </HeroUIProvider>
-        {isDevelopment && <ReactRouterDevtoolsProduction />}
-        {isDevelopment && <ReactQueryDevtoolsProduction />}
+        {isDevelopment && <ReactRouterDevtoolsProduction position="top-left" />}
+        {isDevelopment && (
+          <ReactQueryDevtoolsProduction buttonPosition="top-right" />
+        )}
       </PersistQueryClientProvider>
     </ClerkProvider>
   );
