@@ -1,0 +1,826 @@
+---
+import "highlight.js/styles/night-owl.css";
+import Layout from "../../layouts/Layout.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+---
+
+<Layout title="How I Code">
+    <main class="prose">
+        <h1>How I Code</h1>
+        <p>The following is an exploration of the opinion and lessons I've learned over the years of programming and
+            building web applications. All of these opinions are based on personal experience, mistakes, and problems
+            fixed
+            through consulting on projects in need of help.</p>
+        <ul>
+            <li><a href="#javaScriptIsNotAProgrammingLanguage">JavaScript Is Not a Programming Language</a></li>
+            <li><a href="#typescriptIsAdditional">TypeScript Is An Additional Layer of Protection, Not a Replacement</a>
+            </li>
+            <li><a href="#waitYouStillUseLodash">Wait, You Still Use lodash?</a></li>
+            <li><a href="#unitTestingAndTdd">Unit Testing and TDD: Engineering for Reusability and Resilience</a></li>
+            <li><a href="#endToEndTesting">The Indispensable Role of End-to-End (E2E) Testing</a></li>
+            <li><a href="#eslint">ESLint: More Than Just Code Style – It's About Engineering Discipline</a></li>
+        </ul>
+
+        <h2 id="javaScriptIsNotAProgrammingLanguage">JavaScript Is Not a Programming Language</h2>
+        <p>When we talk about web development, JavaScript is undeniably at the core of nearly everything interactive we
+            see
+            online. It's the language that makes pages dynamic, handles user input, and powers complex web applications.
+            But
+            despite its pervasive influence and incredible capabilities, I want to challenge a common perception: is
+            JavaScript truly a "programming language" in the same vein as C++, Java, or Python, or is it something else
+            entirely—a highly effective scripting language that acts as an API to more robust, lower-level systems?</p>
+        <h3>JavaScript as the Ultimate API</h3>
+        <p>Think about it: what does JavaScript do? In a browser environment, it manipulates the Document Object Model
+            (DOM), fetches data, responds to events, and interacts with various Web APIs like <code>localStorage</code>,
+            <code>fetch</code>, or <code>WebGL</code>. It's the conductor of an orchestra, but the instruments
+            themselves—the browser's rendering engine, the network stack, the underlying operating system—are built
+            using
+            languages like C++, Rust, or assembly.</p>
+        <p>From this perspective, JavaScript functions less like a foundational programming language and more like a
+            powerful scripting interface. It's the language we use to tell the browser (which is itself a complex
+            application written in low-level languages) what to do. It's an API, a set of commands and conventions, that
+            allows us to interact with the browser's core functionalities. Robust programming languages typically
+            provide
+            their own comprehensive set of tools and direct control over system resources; JavaScript, by design,
+            largely
+            abstracts this away, operating within the confines of its host environment.</p>
+        <h3>The Missing Standard Library: A Key Indicator</h3>
+        <p>One of the strongest arguments for viewing JavaScript this way is its inherent lack of a comprehensive
+            standard
+            library. What do we mean by a "standard library"? It's a collection of pre-built functions, modules, and
+            data
+            structures that come bundled with a programming language, providing common functionalities like file system
+            access, networking, advanced data manipulation, or date/time utilities. Python has a vast standard library,
+            Java
+            has its rich API, and even C++ has a well-defined standard library.</p>
+        <p>JavaScript? Not so much. When I'm working on a project, if I need robust date manipulation, I'm reaching for
+            <code>luxon</code>. If I need utility functions for arrays or objects, I'm often considering
+            <code>lodash</code>.
+            For
+            proper async management, I'm using <code>TanStack Query</code>. I cover these in, "<a
+                    href="https://ethang.dev/blog/javascript-standard-library/" target="_blank">Why You Should Install
+                That
+                JS Library</a>," which acts as a testament to this reality. We <i>rely</i> on the vast ecosystem of NPM
+            packages precisely because core JavaScript doesn't natively provide many of these essential functionalities.
+        </p>
+        <p>This reliance on third-party packages, while incredibly powerful and flexible, highlights that JavaScript
+            itself
+            doesn't offer the self-contained, batteries-included environment we associate with traditional programming
+            languages. It needs to be <i>supplemented</i>.</p>
+        <h3>The Inevitable Supplementation</h3>
+        <p>This brings us to the core of why JavaScript, in its most effective forms, must always be supplemented by
+            other
+            "programming language" paradigms or tools:</p>
+        <ol>
+            <li><strong>Backend Logic and Templating:</strong> Historically and still frequently, complex application
+                logic,
+                database interactions, and server-side templating are handled by backend programming languages like
+                Python
+                (Django, Flask), Ruby (Rails), Java (Spring), or Node.js (which, while using JavaScript syntax, operates
+                on
+                a runtime environment like V8, which is written in C++). These languages are designed for robust data
+                processing, security, and managing persistent state outside the client's browser. JavaScript on the
+                frontend
+                acts as the interface, displaying data and sending requests to these more robust backend systems.
+            </li>
+            <li><strong>The "Modern JS Ecosystem": A Programming Language Stack in Disguise:</strong> The rise of
+                TypeScript
+                and powerful bundlers like Vite, Webpack, and Parcel further reinforces this idea.
+                <ul>
+                    <li><strong>TypeScript:</strong> This isn't just "JavaScript with types." It's a superset that
+                        compiles
+                        down to JavaScript, introducing static typing, interfaces, enums, and other features common in
+                        strongly-typed programming languages. We use TypeScript to bring robustness, scalability, and
+                        maintainability—qualities often lacking in pure, untyped JavaScript for large projects. It's
+                        almost
+                        like we're building a more robust "programming language" on top of JavaScript.
+                    </li>
+                    <li><strong>Bundlers (Vite, Webpack, Parcel):</strong> These tools transform, optimize, and combine
+                        our
+                        JavaScript, CSS, and other assets. They handle module resolution, transpilation (converting
+                        modern
+                        JavaScript to older versions for browser compatibility), code splitting, and more. While they
+                        work
+                        with JavaScript, they are complex applications themselves, often written in lower-level
+                        languages or
+                        leveraging Node.js APIs, and are essential for delivering performant and production-ready web
+                        applications.
+                    </li>
+                    <li><strong>NPM Packages:</strong> As mentioned, the sheer volume and necessity of NPM packages for
+                        common tasks underscore JavaScript's reliance on external modules to fill the gaps that a
+                        comprehensive standard library would typically address. These packages collectively form a
+                        de-facto,
+                        community-driven "standard library," but it's not inherent to the language itself.
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <strong>Beyond "Vanilla JS" for Production Apps:</strong>
+                A common misconception is that modern production-grade web applications can be built with "pure vanilla
+                JavaScript." This often stems from a perspective where a backend language handles all the "real
+                programming"
+                and HTML templating, with JavaScript playing a minimal, decorative role. However, for any production
+                application aiming for a rich, interactive, and maintainable user experience, "pure vanilla JavaScript"
+                is
+                simply not a viable option.
+                <br>
+                You essentially have two primary paths to build a robust web application, and both involve significant
+                supplementation:
+                <ul>
+                    <li><strong>Path A: Embrace the Modern JavaScript Ecosystem:</strong> This involves leveraging tools
+                        like TypeScript for type safety and scalability, JavaScript frameworks (React, Angular, Vue) for
+                        component-based architecture and efficient UI updates, and the vast NPM ecosystem for libraries
+                        that
+                        fill the gaps of JavaScript's non-existent standard library. Bundlers like Vite or Webpack are
+                        then
+                        crucial for optimizing and packaging your client-side code for deployment. In this scenario,
+                        JavaScript (or TypeScript) is doing a significant amount of the "programming" on the
+                        client-side,
+                        managing complex UI states, handling routing, and making asynchronous API calls.
+                    </li>
+                    <li><strong>Path B: Rely on a Backend Programming Language and its Ecosystem:</strong> In this
+                        approach,
+                        a backend language (e.g., Python with Django/Flask, Ruby with Rails, Java with Spring, PHP with
+                        Laravel) takes on the primary role of generating HTML templates, managing server-side logic,
+                        database interactions, and authentication. Client-side JavaScript's role might be limited to
+                        small,
+                        isolated interactive elements or form validations. Here, the "real programming" for the
+                        application's core logic and structure is handled by the backend language and its comprehensive
+                        frameworks and libraries, effectively serving in place of the modern JavaScript ecosystem for
+                        much
+                        of the application's functionality.
+                    </li>
+                </ul>
+                There is <strong>never</strong> a case where a production-ready application can be built solely with
+                "pure
+                vanilla JavaScript" without any form of supplementation from either a robust backend programming
+                language or
+                the modern JavaScript ecosystem. The demands of performance, scalability, maintainability, and user
+                experience in today's web necessitate the structure, tools, and libraries that these ecosystems provide.
+            </li>
+        </ol>
+        <h3>So, Is JavaScript "Not a Programming Language" Then?</h3>
+        <p>My argument isn't that JavaScript is "bad" or "incapable." Far from it! It's incredibly powerful and has
+            revolutionized the web. The distinction I'm drawing is one of fundamental design and role.</p>
+        <p>I believe it's more accurate to view JavaScript as an extraordinarily versatile and high-level scripting
+            language, purpose-built for interacting with and manipulating web environments. It excels as an API layer,
+            allowing us to orchestrate complex user experiences. However, for the underlying heavy lifting, the
+            foundational
+            system interactions, and the robust structuring of large-scale applications, JavaScript frequently leans on
+            or
+            necessitates the support of environments and tools that are themselves built upon or emulate the
+            characteristics
+            of traditional programming languages.</p>
+        <p>This perspective helps us appreciate JavaScript for what it is: an incredibly effective, adaptable, and
+            indispensable scripting interface that, when combined with its powerful ecosystem, enables us to build the
+            dynamic and interactive web we know and love. It's a language that thrives on collaboration—with browsers,
+            with
+            backend systems, and with its ever-expanding universe of tools and libraries. And in that, there's a unique
+            beauty and strength.</p>
+        <h2 id="typescriptIsAdditional">TypeScript Is An Additional Layer of Protection, Not a Replacement</h2>
+        <p>TypeScript is a powerful tool, catching errors early and boosting productivity. When we combine it with
+            runtime validation libraries like Zod, we often establish robust data contracts at our application
+            boundaries. This can lead to a common assumption: once data passes these initial checks, it's "safe" and
+            needs no further runtime scrutiny. In this section, I'll challenge that notion, exploring the crucial
+            distinction between build-time and runtime type checks and emphasizing why comprehensive testing for runtime
+            edge cases remains essential, even in a meticulously validated TypeScript codebase.</p>
+        <h3>Build-Time vs. Runtime Type Checks: A Fundamental Difference</h3>
+        <p>Build-time type checks are TypeScript's domain. They happen during compilation, before our code ever runs.
+            TypeScript analyzes our code, inferring types, and flags mismatches based on our annotations. If a function
+            expects numbers but gets a string, TypeScript stops us cold, preventing compilation until we fix it. This
+            static analysis is incredibly powerful for early bug detection.</p>
+        <p>However, remember this critical point: TypeScript's types are erased when our code compiles to plain
+            JavaScript. At runtime, our application executes dynamic JavaScript. TypeScript ensures type safety during
+            development, but it offers no inherent guarantees about the data our application will encounter live. The
+            compiled JavaScript simply runs based on the values present at that moment, stripped of any TypeScript type
+            information.</p>
+        <h3>The Misconception: "Once Validated, Always Safe"</h3>
+        <p>Many developers, especially those using TypeScript with runtime validation libraries like Zod, assume that
+            data, once validated at entry points (e.g., API requests, form submissions), is perfectly typed and "safe"
+            throughout its journey. This often leads to the belief that internal functions, having received
+            Zod-validated data, no longer need defensive checks.</p>
+        <p>This perspective, while understandable, overlooks a crucial reality: data can become "untyped" or
+            unexpectedly malformed after initial validation. Internal transformations, coercions, or complex state
+            changes can introduce issues. Even data perfectly valid at the boundary can cause runtime problems if our
+            internal logic doesn't account for JavaScript's dynamic nature.</p>
+        <h3>Why Runtime Edge Cases Matter (Even for "Safe" Data)</h3>
+        <p>JavaScript's dynamic nature means that even with TypeScript and initial validation, our code can encounter
+            "garbage" data or unexpected states that static checks and initial runtime validators simply can't foresee
+            in all internal contexts. TypeScript operates on assumptions about our code's structure, and Zod validates a
+            snapshot of data. Neither guarantees data integrity throughout its entire lifecycle. Here's how data can
+            still lead to runtime issues:</p>
+        <ul>
+            <li><code>NaN</code> <strong>(Not-A-Number):</strong> A numeric field might pass Zod validation, but
+                subsequent arithmetic (e.g., division by zero, internal string parsing) can introduce <code>NaN</code>.
+                TypeScript still sees a <code>number</code>, but <code>NaN</code> propagates silently, leading to
+                incorrect results or unpredictable behavior if unchecked.
+                <CodeBlock code={`
+// Example: NaN propagation
+let validNumber = 10;
+let result = validNumber / 0; // result is Infinity
+
+// If 'result' is then used in further calculations without checks
+// and an unexpected non-numeric value is introduced
+let anotherResult = result * "hello"; // anotherResult becomes NaN
+console.log(anotherResult); // NaN`}/>
+            </li>
+            <li><strong>Nullish Values (<code class="!font-normal">null</code>, <code
+                    class="!font-normal">undefined</code>):</strong> TypeScript is excellent at identifying optional
+                properties (e.g., <code>user.address?</code>). However, in complex systems, <code>null</code> or <code>undefined</code>
+                can still appear unexpectedly where we might assume a value exists due to prior logic or
+                transformations. This often happens as systems scale, and data flows through multiple layers, merges, or
+                default assignments. A developer might overlook a potential <code>undefined</code> in a deeply nested or
+                conditionally assigned property, leading to runtime errors.
+                <CodeBlock code={`
+// Example: Nullish value in a complex abstraction
+interface UserProfile {
+  id: string;
+  contactInfo?: {
+    email: string;
+    phone?: string;
+  };
+  preferences?: {
+    theme: 'dark' | 'light';
+  };
+}
+
+// Imagine this function aggregates data from multiple sources
+// and might return a partial UserProfile
+function getUserProfileFromSources(userId: string): UserProfile {
+  // In a real app, this would involve fetching from DB, API, etc.
+  // For demonstration, let's simulate a case where contactInfo might be missing
+  if (userId === 'user123') {
+    return {
+      id: 'user123',
+      preferences: { theme: 'dark' } // contactInfo is missing
+    };
+  }
+  return {
+    id: userId,
+    contactInfo: { email: 'test@example.com' }
+  };
+}
+
+const currentUser = getUserProfileFromSources('user123');
+
+// Later in the application, a component or service might assume contactInfo exists
+// for all logged-in users, perhaps after a "default" assignment that wasn't always applied.
+// TypeScript might warn, but in a large codebase, such warnings can be overlooked
+// or implicitly bypassed by casting or non-null assertions (!).
+try {
+  // Developer might have assumed contactInfo is always present due to a previous step
+  // that was supposed to ensure it, but failed for certain user types/data.
+  console.log(currentUser.contactInfo.email); // TypeError: Cannot read properties of undefined (reading 'email')
+} catch (e) {
+  console.error("Runtime error accessing contact info:", e);
+}`}/>
+            </li>
+            <li><strong>Empty Values:</strong> An array or string might pass Zod validation as present and typed
+                correctly, but subsequent filtering, mapping, or string manipulation can result in an empty array
+                (<code>[]</code>) or empty string (<code>""</code>). Logic expecting content (e.g., iterating, parsing)
+                might break or yield unintended results if these empty values aren't handled in internal functions.
+                <CodeBlock code={`
+// Example: Empty array causing unexpected behavior
+function processItems(items: string[]) {
+  // Zod might validate items as string[]
+  // But if items becomes empty after filtering
+  const filteredItems = items.filter(item => item.length > 5); // Could be []
+
+  // This loop won't run, or subsequent logic might fail if it expects at least one item
+  filteredItems.forEach(item => console.log(\`Processing $\{item\}\`));
+
+  if (filteredItems.length === 0) {
+    console.log("No items to process after filtering.");
+  }
+}
+
+processItems(["short", "longer_string"]); // "Processing longer_string"
+processItems(["short", "tiny"]); // "No items to process after filtering."`}/>
+            </li>
+            <li><strong>Unexpected Data Structures from Internal Transformations:</strong> Even with validated external
+                data, internal transformations can produce unexpected structures if not meticulously coded. A complex
+                aggregation or a function dynamically building objects might, under certain conditions, return an object
+                missing a crucial property, or an array where a single object was expected.
+                <CodeBlock code={`
+// Example: Internal transformation leading to missing property
+function transformData(data: { valueA: number; valueB: number; isSpecial: boolean }) {
+  // Assume 'data' is initially validated by Zod
+  let transformed: any = {};
+  transformed.calculatedValue = data.valueA + data.valueB;
+
+  if (data.isSpecial) {
+    transformed.specialKey = "extra info";
+  }
+  // If later code expects 'specialKey' to always exist, it will fail when isSpecial is false
+  return transformed;
+}
+
+const result = transformData({ valueA: 1, valueB: 2, isSpecial: false });
+// If another function tries to use result.specialKey, it will be undefined
+// and might cause errors if not checked.
+console.log(result.specialKey); // undefined`}/>
+            </li>
+            <li><strong>JavaScript's Automatic Coercions:</strong> Despite TypeScript, JavaScript's flexible type
+                coercion rules can lead to surprising behavior within our application. If a <code>number</code> is
+                implicitly concatenated with a <code>string</code> deep in our logic (<code>someNumber + ""</code>), it
+                becomes a string. If a subsequent function expects a number, this hidden coercion can cause unexpected
+                runtime outcomes not caught by static analysis.
+                <CodeBlock code={`
+// Example: Automatic coercion
+function calculateTotal(price: number, quantity: number) {
+  return price * quantity;
+}
+
+let itemPrice = 10;
+let itemQuantity: any = "5"; // This might bypass TypeScript if it's from a dynamic source or internal string conversion
+
+// If not explicitly converted, JavaScript might coerce in unexpected ways
+let total = calculateTotal(itemPrice, itemQuantity); // 10 * "5" -> 50 (works here, but can be unpredictable)
+console.log(total); // 50
+
+itemQuantity = "five";
+total = calculateTotal(itemPrice, itemQuantity); // 10 * "five" -> NaN
+console.log(total); // NaN, which could then propagate`}/>
+            </li>
+            <li><strong>Native Methods with Undocumented Throws:</strong> Many native JavaScript methods can throw
+                errors under specific, sometimes poorly documented, conditions. For instance, certain string or array
+                methods might throw if called on <code>null</code> or <code>undefined</code>, even if prior code seemed
+                to ensure a valid type. TypeScript doesn't predict or prevent these runtime exceptions, making testing
+                crucial.
+                <CodeBlock code={`
+// Example: Native method throwing on unexpected input
+function parseJsonString(jsonString: string) {
+  // Assume jsonString is validated by Zod as a string
+  // But what if an internal process passes an invalid JSON string?
+  try {
+    return JSON.parse(jsonString);
+  } catch (e) {
+    console.error("Failed to parse JSON:", e);
+    // Handle gracefully, e.g., return a default object or null
+    return null;
+  }
+}
+
+parseJsonString('{"key": "value"}'); // Works
+parseJsonString('invalid json'); // Throws SyntaxError, caught by try/catch`}/>
+            </li>
+        </ul>
+        <p>The notion that our internal code is immune to these issues is a misdirection. If a function, even deep
+            within our application, can receive input that causes it to crash or behave unpredictably, it is ultimately
+            our responsibility as developers to gracefully handle that input. A robust application anticipates and
+            mitigates such scenarios. Real-world examples, like a financial dashboard displaying incorrect calculations
+            due to unhandled <code>NaN</code>s introduced during internal data processing, or an e-commerce platform
+            failing to process orders because of missing object properties after complex data transformations, vividly
+            underscore this point. In such scenarios, failures stem not from initial external data validation, but from
+            runtime data integrity issues within our application's core logic.</p>
+        <h3>Implementing Robust Runtime Checks (Beyond the Boundary)</h3>
+        <p>Since TypeScript's static checks are removed at runtime, and initial validation only covers the entry point,
+            consciously implementing robust runtime validation within our application becomes essential. This involves
+            several practical approaches:</p>
+        <ul>
+            <li><strong>Leveraging TypeScript's Type Guards and Assertion Functions:</strong> Within our TypeScript
+                codebase, we can write custom <a
+                        href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates"
+                        target="_blank">type guards</a> or <a
+                        href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#assertion-functions"
+                        target="_blank">assertion functions</a> to perform runtime checks and inform
+                the TypeScript compiler about a variable's type after the check. This allows us to combine dynamic
+                runtime safety with static type inference. For example:
+                <CodeBlock code={`
+function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+function processInput(input: unknown) {
+  if (isString(input)) {
+    // TypeScript now knows 'input' is a string here
+    console.log(input.toUpperCase());
+  } else {
+    console.error("Input was not a string!");
+  }
+}
+`}/>
+                Or better yet, use lodash which also accounts for new String().
+                <CodeBlock code={`
+function isString(value) {
+    const type = typeof value;
+    return (
+        type === 'string' ||
+        (type === 'object' &&
+            value != null &&
+            !Array.isArray(value) &&
+            getTag(value) === '[object String]')
+    );
+}`}/>
+            </li>
+            <li><strong>Adopting Defensive Programming Patterns:</strong> Basic JavaScript checks remain powerful.
+                Explicitly check for <code>typeof</code>, <code>instanceof</code>, <code>Array.isArray()</code>, <code>Object.prototype.hasOwnProperty.call()</code>,
+                and other conditions directly within our functions, especially those that are critical, complex, or
+                highly reused. This ensures that even if a value unexpectedly deviates from its expected type or
+                structure, our code can handle it gracefully.
+                <CodeBlock code={`
+// Example: Processing a string defensively
+function processUserName(name: string | null | undefined): string {
+  if (typeof name !== 'string' || name.trim() === '') {
+    console.warn("Invalid or empty user name provided. Using default.");
+    return "Guest"; // Provide a safe default or throw a specific error
+  }
+  return name.trim().toUpperCase();
+}
+
+console.log(processUserName("  Alice  ")); // "ALICE"
+console.log(processUserName(null));       // Warns, "Guest"
+console.log(processUserName(undefined));  // Warns, "Guest"
+console.log(processUserName(""));         // Warns, "Guest"
+console.log(processUserName(123 as any)); // Warns, "Guest"`}/>
+            </li>
+        </ul>
+        <h3>Strategic Validation: Where and How Much?</h3>
+        <p>Where we place runtime validation is crucial. While "entry point validation" — validating data as it first
+            enters our application (e.g., at an API gateway, a serverless function handler, or a form submission
+            endpoint) — is paramount, it's not the only place to consider.</p>
+        <ul>
+            <li><strong>Application Boundaries:</strong> This is the primary layer for comprehensive validation using
+                schema libraries like Zod. Here, we ensure all external inputs meet our application's fundamental data
+                contracts.
+            </li>
+            <li><strong>Service or Business Logic Layers:</strong> Even after initial validation, data might be
+                transformed or composed internally. Robust services or core business logic functions, especially those
+                handling critical operations or consuming data from multiple internal sources, might include internal
+                defensive checks to ensure data integrity.
+            </li>
+            <li><strong>Utility Functions:</strong> As lodash demonstrates, generic utility functions benefit immensely
+                from being highly defensive. They should be resilient to a wide range of inputs, as they are often
+                reused across many contexts and may receive data that has undergone various transformations or subtle
+                coercions.
+            </li>
+        </ul>
+        <p>The key is balance. We validate thoroughly at the boundaries of untrusted data, but we also implement
+            targeted, defensive checks within core logic and reusable components to ensure their robustness and
+            predictable behavior.</p>
+        <h3>Testing for Runtime Edge Cases</h3>
+        <p>This brings us to the crucial role of runtime testing. While TypeScript ensures our code adheres to its
+            defined types during development, and Zod validates at the entry point, tests are needed to verify how our
+            code behaves when confronted with data that doesn't conform to those ideal types at runtime within our
+            application's internal flow, or when it encounters other unexpected conditions.</p>
+        <p>Consider how a robust utility library like lodash approaches this. For a function like <code>get(object,
+            path, [defaultValue])</code>, which safely retrieves a value at a given <code>path</code> from
+            <code>object</code>, its tests don't just cover the "happy path" where <code>object</code> and
+            <code>path</code> are perfectly valid. Instead, lodash's extensive test suite includes scenarios where:</p>
+        <ul>
+            <li><code>object</code> is <code>null</code>, <code>undefined</code>, a number, a string, or a boolean,
+                rather than an object, possibly due to a prior transformation.
+            </li>
+            <li><code>path</code> is an empty string, an array containing <code>null</code> or <code>undefined</code>
+                elements, a non-existent path, or a path that leads to a non-object value where further traversal is
+                attempted, even if the initial <code>object</code> was validated.
+            </li>
+            <li>The function is called with too few or too many arguments.</li>
+        </ul>
+        <p>These tests reveal how <code>get</code> gracefully handles various invalid inputs, typically returning <code>undefined</code>
+            (or the specified <code>defaultValue</code>) rather than throwing an error or crashing the application. This
+            meticulous approach to testing for runtime resilience is a hallmark of well-engineered code. Such runtime
+            checks, combined with TypeScript's compile-time safety, create a layered defense against errors, ensuring
+            our application remains stable even when confronted with imperfect data.</p>
+        <p>Furthermore, relying solely on "entry point validation" isn't sufficient for complex applications if internal
+            components are brittle. Unit tests that probe these edge cases ensure that individual "units" of code are
+            resilient, regardless of where their data originates. Libraries like lodash are prime examples of this
+            philosophy, with extensive tests dedicated to covering every conceivable edge case for their utility
+            functions.</p>
+        <h3>TypeScript's Role: A Conclusion</h3>
+        <p>TypeScript is an invaluable asset for modern JavaScript development, providing strong type guarantees at
+            build time that significantly reduce common programming errors. When combined with powerful runtime
+            validation libraries like Zod, it creates a formidable first line of defense. However, this combination is
+            not a silver bullet that eliminates the need for further runtime validation and comprehensive testing within
+            our application's internal logic. JavaScript's dynamic nature means that unexpected data and edge cases can
+            still arise during execution, even with initially "safe" data.</p>
+        <p>True engineering involves understanding both the static safety provided by TypeScript and the dynamic
+            realities of JavaScript. By embracing robust runtime checks—through TypeScript's type guards, defensive
+            programming patterns, and strategic use of validation where data transformations occur—and rigorously
+            testing for edge cases, we can build applications that are not only type-safe but also resilient, graceful,
+            and truly robust in the face of real-world data. This layered approach leads to improved user experience by
+            preventing unexpected errors, easier debugging and maintenance due to predictable behavior, and ultimately,
+            enhanced system reliability and security. It's about building code that works reliably, even when the
+            "unhappy path" presents itself within our own codebase.</p>
+        <h2 id="waitYouStillUseLodash">Wait, You Still Use lodash?</h2>
+        <p>Yes, and understanding why is key to understanding how I approach building with TypeScript. In an era where
+            "You Might Not Need Lodash" is a common refrain and modern JavaScript has adopted many utility-like
+            features, sticking with a library like lodash might seem anachronistic. However, my reliance on lodash,
+            particularly functions like <code>get</code>, <code>isEmpty</code>, <code>isEqual</code>, and its collection
+            manipulation utilities, stems from a deep appreciation for its battle-tested robustness and comprehensive
+            handling of edge cases—qualities that are often underestimated or poorly replicated in custom
+            implementations.</p>
+        <h3>The Perils of "Rolling Your Own"</h3>
+        <p>The argument that one can easily replicate lodash functions with a few lines of native JavaScript often
+            overlooks the sheer number of edge cases and nuances that a library like lodash has been engineered to
+            handle over years of widespread use. Consider a seemingly simple function like <code>get(object, path,
+                defaultValue)</code>. A naive custom implementation might look something like this:</p>
+        <CodeBlock code={`
+function customGet(obj, path, defaultValue) {
+  const keys = Array.isArray(path) ? path : path.split('.');
+  let result = obj;
+  for (const key of keys) {
+    if (result && typeof result === 'object' && key in result) {
+      result = result[key];
+    } else {
+      return defaultValue;
+    }
+  }
+  return result;
+}
+`}/>
+        <p>This custom <code>get</code> might work for straightforward cases. However, it quickly falls apart when faced
+            with the myriad of scenarios lodash's <code>get</code> handles gracefully:</p>
+        <ul>
+            <li><strong>Null or Undefined Objects/Paths:</strong> What if <code>obj</code> is <code>null</code> or
+                <code>undefined</code>? What if <code>path</code> is <code>null</code>, <code>undefined</code>, or an
+                empty string/array? lodash handles these without throwing errors.
+            </li>
+            <li><strong>Non-Object Values in Path:</strong> What if an intermediate key in the path points to a
+                primitive value (e.g., <code>a.b.c</code> where <code>b</code> is a number)? Custom solutions often fail
+                or throw errors.
+            </li>
+            <li><strong>Array Paths with Non-String Keys:</strong> lodash's <code>get</code> can handle paths like
+                <code>['a', 0, 'b']</code> correctly.
+            </li>
+            <li><strong><code>__proto__</code> or <code>constructor</code> in Path:</strong> lodash specifically guards
+                against prototype pollution vulnerabilities.
+            </li>
+            <li><strong>Performance:</strong> lodash functions are often highly optimized.</li>
+        </ul>
+        <p>As I talk about in, "<a href="/blog/your-lodash-get-implementation-sucks">You lodash.get implementation
+            Sucks</a>," creating a truly robust equivalent to <code>get</code> that covers all these edge cases is a
+            non-trivial
+            task. Developers often underestimate this complexity, leading to buggy, unreliable utility functions that
+            introduce subtle issues into their applications. The time and effort spent reinventing and debugging these
+            wheels is rarely a good investment.</p>
+        <h3>The Edge Case Gauntlet: Why lodash Wins</h3>
+        <p><a href="https://utility.hello-a8f.workers.dev/#/" target="_blank">This vitest report</a> comparing lodash,
+            es-toolkit, Remeda, and snippets from "You Might Not Need Lodash" provides compelling evidence of this. The
+            report systematically tests various utility functions against a battery of edge cases. Time and again,
+            lodash demonstrates superior coverage. While newer libraries or native JavaScript features might cover the
+            "happy path" and some common edge cases, lodash consistently handles the more obscure, yet critical,
+            scenarios that can lead to unexpected runtime failures.</p>
+        <p>For example, consider <code>isEmpty</code>. It correctly identifies not just empty objects (<code>{}</code>),
+            arrays (<code>[]</code>), and strings (<code>""</code>) as empty, but also <code>null</code>, <code>undefined</code>,
+            <code>NaN</code>, empty <code>Map</code>s, empty <code>Set</code>s, and even
+            <code>arguments</code> objects with no arguments. Replicating this breadth of coverage accurately is
+            surprisingly difficult. Similarly,<code>isEqual</code> performs deep comparisons, handling circular
+            references and comparing a wide variety of types correctly—a task notoriously difficult to implement
+            flawlessly from scratch.</p>
+        <h3>TypeScript Doesn't Eliminate Runtime Realities</h3>
+        <p>One might argue that TypeScript's static type checking reduces the need for such robust runtime handling.
+            While TypeScript is invaluable, as discussed in the previous section, it doesn't eliminate runtime
+            uncertainties. Data can still come from external APIs with unexpected shapes, undergo transformations that
+            subtly alter its structure, or encounter JavaScript's own type coercion quirks.</p>
+        <p>lodash functions act as a hardened layer of defense at runtime. They are designed with the understanding that
+            JavaScript is dynamic and that data can be unpredictable. When I use <code>get(user, ['profile', 'street',
+                'address.1'])</code>, I 100% confidence that it will not throw an error if
+            <code>user</code>, <code>profile</code>, or <code>address.1</code> is <code>null</code> or
+            <code>undefined</code>, or if <code>street</code> doesn't exist. It will simply return undefined (or the
+            provided default value), allowing my application to proceed gracefully. This predictability is immensely
+            valuable.</p>
+        <h3>Focusing on Business Logic, Not Utility Plumbing</h3>
+        <p>By relying on lodash, I can focus my development efforts on the unique business logic of my application,
+            rather than getting bogged down in the minutiae of writing and debugging low-level utility functions. The
+            developers behind lodash have already invested thousands of hours into perfecting these utilities, testing
+            them against countless scenarios, and optimizing them for performance. Leveraging their expertise is a
+            pragmatic choice.</p>
+        <p>While it's true that tree-shaking can mitigate the bundle size impact of including lodash (especially when
+            importing individual functions like <code>import get from 'lodash/get'</code>), the primary benefit isn't
+            just about
+            bundle size; it's about reliability, developer productivity, and reducing the surface area for bugs.</p>
+        <p>In conclusion, my continued use of lodash in a TypeScript world is a conscious decision rooted in a pragmatic
+            approach to software engineering. It's about valuing battle-tested robustness, comprehensive edge-case
+            handling, and the ability to focus on higher-level concerns, knowing that the foundational utility layer is
+            solid and reliable. The cost of a poorly implemented custom utility is often far greater than the perceived
+            overhead of using a well-established library.</p>
+        <h2 id="unitTestingAndTdd">Unit Testing and TDD: Engineering for Reusability and Resilience</h2>
+        <p>The principles discussed so far—the need for robust runtime checks even with TypeScript, and the value of
+            battle-tested utilities like lodash—converge on a broader philosophy of software engineering: building for
+            resilience and reusability. This naturally leads us to the indispensable practice of unit testing, and more
+            specifically, Test-Driven Development (TDD).</p>
+        <h3>The E2E Fallacy: "If it Works, It's Good"</h3>
+        <p>A common misconception, particularly in teams that prioritize rapid feature delivery, is that comprehensive
+            End-to-End (E2E) tests are sufficient. The thinking goes: "If the user can click through the application and
+            achieve their goal, then the underlying code must be working correctly." While E2E tests are crucial for
+            validating user flows and integration points, relying on them solely is a shortcut that often signals a lack
+            of deeper engineering discipline. This approach fundamentally misunderstands a key goal of good software:
+            reusability.</p>
+        <p>E2E tests primarily confirm that a specific pathway through the application behaves as expected at that
+            moment. They do little to guarantee that the individual components, functions, or modules ("units") that
+            make up that pathway are independently robust, correct across a range of inputs, or easily reusable in other
+            contexts. Code that "just works" for E2E scenarios might be brittle, riddled with hidden dependencies, or
+            prone to breaking when its internal logic is slightly perturbed or when it's leveraged elsewhere.</p>
+        <h3>Unit Tests: Forging Reusable, Reliable Components</h3>
+        <p>Unit testing forces us to think about code in terms of isolated, well-defined units with clear inputs and
+            outputs. Each unit test verifies that a specific piece of code (a function, a method, a class) behaves
+            correctly for a given set of inputs, including edge cases and invalid data. This is precisely the same
+            discipline that makes libraries like lodash so valuable. lodash functions are reliable because they are, in
+            essence, collections of extremely well-unit-tested pieces of code.</p>
+        <p>Consider the arguments for using lodash even when data is validated at application boundaries: internal
+            transformations can still introduce unexpected data, and JavaScript's dynamic nature can lead to subtle
+            bugs. The same logic applies to our own code. A function that receives data, even if that data was validated
+            by Zod at an API endpoint, might perform internal operations that could lead to errors if not handled
+            correctly. Unit tests for that function ensure it is resilient to these internal variations and potential
+            misuses.</p>
+        <p>When we write unit tests, we are not just checking for correctness; we are:</p>
+        <ul>
+            <li><strong>Designing for Testability:</strong> This often leads to better-designed code—more modular, with
+                fewer side effects, and clearer interfaces. Code that is hard to unit test is often a sign of poor
+                design.
+            </li>
+            <li><strong>Documenting Behavior:</strong> Unit tests serve as executable documentation, clearly
+                demonstrating how a unit of code is intended to be used and how it behaves under various conditions.
+            </li>
+            <li><strong>Enabling Safe Refactoring:</strong> A comprehensive suite of unit tests gives us the confidence
+                to refactor and improve code, knowing that if we break existing functionality, the tests will catch it
+                immediately.
+            </li>
+            <li><strong>Isolating Failures:</strong> When a unit test fails, it points directly to the specific unit of
+                code that has a problem, making debugging significantly faster and more efficient than trying to
+                diagnose a failure in a complex E2E test.
+            </li>
+        </ul>
+        <h3>Test-Driven Development (TDD): Building Quality In</h3>
+        <p>Test-Driven Development takes this a step further by advocating writing tests before writing the
+            implementation code. The TDD cycle is often summarized as "Red-Green-Refactor":</p>
+        <ol>
+            <li><strong>Red:</strong> Write a failing unit test that defines a small piece of desired functionality.
+            </li>
+            <li><strong>Green:</strong> Write the minimum amount of code necessary to make the test pass.</li>
+            <li><strong>Refactor:</strong> Improve the code (e.g., for clarity, performance, removing duplication) while
+                ensuring all tests still pass.
+            </li>
+        </ol>
+        <p>TDD is not just a testing technique; it's a design methodology. By thinking about the requirements and edge
+            cases from the perspective of a test first, we are forced to design our code with clarity, testability, and
+            correctness in mind from the outset. It encourages building small, focused units of functionality that are
+            inherently robust.</p>
+        <h3>The Cumulative Effect: System Resilience</h3>
+        <p>Just as a single, poorly implemented utility function can introduce subtle, cascading bugs throughout a
+            system, a collection of well-unit-tested components contributes to overall system resilience. When
+            individual units are known to be reliable across a wide range of inputs and edge cases, the likelihood of
+            unexpected interactions and failures at a higher level decreases significantly.</p>
+        <p>If a function is used in multiple places, and its behavior subtly changes or breaks due to an untested edge
+            case, the impact can propagate throughout the application. This is where the "shortcut" of relying only on
+            E2E tests becomes particularly dangerous. An E2E test might only cover one specific path through that
+            function, leaving other usages vulnerable. Thorough unit testing, especially when guided by TDD, ensures
+            that each unit is a solid building block, contributing to a more stable and maintainable system.</p>
+        <p>The argument isn't to abandon E2E tests—they serve a vital purpose. Rather, it's to recognize that unit
+            testing is a foundational engineering practice essential for building high-quality, reusable, and resilient
+            software. It's about applying the same rigor to our own code that we expect from well-regarded libraries,
+            ensuring that each piece, no matter how small, is engineered to be dependable. This disciplined approach is
+            a hallmark of true software engineering, moving beyond simply making things "work" to making them work
+            reliably and sustainably.</p>
+        <h2 id="endToEndTesting">The Indispensable Role of End-to-End (E2E) Testing</h2>
+        <p>While unit tests are foundational for ensuring the reliability and reusability of individual components,
+            End-to-End (E2E) tests play a distinct, yet equally crucial, role in the software quality assurance
+            spectrum. They are not a replacement for unit tests, by any stretch of the imagination, but rather a
+            complementary practice that validates the application from a different, higher-level perspective.</p>
+        <h3>E2E Tests: Validating the Entire User Journey</h3>
+        <p>E2E tests simulate real user scenarios from start to finish. They interact with the application through its
+            UI, just as a user would, clicking buttons, filling out forms, navigating between pages, and verifying that
+            the entire integrated system behaves as expected. This means they test the interplay between the frontend,
+            backend services, databases, and any other external integrations.</p>
+        <p>Their primary purpose is to answer the question: "Does the application, as a whole, meet the high-level
+            business requirements and deliver the intended user experience?" If a user is supposed to be able to log in,
+            add an item to their cart, and complete a purchase, an E2E test will automate this entire workflow to
+            confirm its success.</p>
+        <h3>Why E2E Testing is Important (But Not a Substitute for Unit Tests):</h3>
+        <ul>
+            <li><strong>Confidence in Releases:</strong> Successful E2E test suites provide a high degree of confidence
+                that the main user flows are working correctly before deploying new versions of the application. They
+                act as a final safety net, catching integration issues that unit or integration tests (which test
+                interactions between smaller groups of components) might miss.
+            </li>
+            <li><strong>Testing User Experience:</strong> E2E tests are the closest automated approximation to how a
+                real user experiences the application. They can catch issues related to UI rendering, navigation, and
+                overall workflow usability that are outside the scope of unit tests.
+            </li>
+            <li><strong>Verifying Critical Paths:</strong> They are particularly valuable for ensuring that the most
+                critical paths and core functionalities of the application (e.g., user registration, checkout process,
+                core data submission) are always operational.
+            </li>
+        </ul>
+        <h3>The High-Level View and the Overlooking of Unit Tests</h3>
+        <p>The fact that E2E tests focus on these high-level requirements and observable user behavior might, in part,
+            explain why the more granular and arguably more critical practice of unit testing is sometimes overlooked or
+            undervalued. Stakeholders and even some developers might see a passing E2E test suite as sufficient proof
+            that "everything works." This perspective is tempting because E2E tests often map directly to visible
+            features and user stories.</p>
+        <p>However, this overlooks the fundamental difference in purpose:</p>
+        <ul>
+            <li><strong>E2E tests</strong> verify that the assembled system meets external requirements.</li>
+            <li><strong>Unit tests</strong> verify that individual components are internally correct, robust, and
+                reusable.
+            </li>
+        </ul>
+        <p>A system can have passing E2E tests for its main flows while still being composed of poorly designed,
+            brittle, and non-reusable units. These underlying weaknesses might not surface until a minor change breaks
+            an obscure part of a unit, or until an attempt is made to reuse a component in a new context, leading to
+            unexpected bugs that are hard to trace because the E2E tests for the original flow might still pass.</p>
+        <h3>The Complementary Nature of Testing Layers</h3>
+        <p>A robust testing strategy employs multiple layers, each with its own focus:</p>
+        <ol>
+            <li><strong>Unit Tests:</strong> Form the base, ensuring individual building blocks are solid. They are
+                fast, provide precise feedback, and facilitate refactoring.
+            </li>
+            <li><strong>Integration Tests:</strong> Verify the interaction between groups of components or services.
+            </li>
+            <li><strong>End-to-End Tests:</strong> Sit at the top, validating complete user flows through the entire
+                application stack.
+            </li>
+        </ol>
+        <p>E2E tests are an essential final check, ensuring all the well-unit-tested and integrated parts come together
+            to deliver the expected high-level functionality. They confirm that the user can successfully navigate and
+            use the application to achieve their goals. But their strength in verifying the "big picture" should never
+            be mistaken as a reason to neglect the meticulous, foundational work of unit testing, which is paramount for
+            building a truly engineered, maintainable, and resilient software system.</p>
+        <h2 id="eslint">ESLint: More Than Just Code Style – It's About Engineering Discipline</h2>
+        <p>A common misconception surrounding ESLint is that its primary, or even sole, purpose is to enforce basic code
+            formatting and inconsequential stylistic opinions. While ESLint can be configured to manage code style via
+            Prettier and other plugins, its true power and core value lie significantly deeper: ESLint is a powerful
+            static
+            analysis tool designed to identify problematic patterns, potential bugs, and deviations from best practices
+            directly in your code. It's an automated guardian that helps uphold engineering discipline.</p>
+        <h3>The Misconception: ESLint as a Style Nanny</h3>
+        <p>If your only interaction with ESLint has been to fix complaints about spacing, semicolons, or quote styles,
+            it's easy to dismiss it as a nitpicky style enforcer. In fact, EsLint's core include no stylistic rules at
+            all.
+            To see it only in this light is to miss its profound impact on code quality, maintainability, and
+            robustness. The most impactful ESLint configurations, especially for complex applications, leverage rules
+            and plugins that have little to do with mere aesthetics and everything to do with preventing errors and
+            promoting sound engineering.</p>
+        <h3>The Reality: ESLint as a Powerful Bug Detector and Best Practice Enforcer</h3>
+        <p>The real strength of ESLint emerges when it's augmented with specialized plugins that target specific areas
+            of concern:</p>
+        <ul>
+            <li><code>@eslint/js</code> <strong>(ESLint's Recommended Rules):</strong> This foundational set
+                catches a wide array of common JavaScript errors and logical mistakes, such as
+                using variables before they are defined, unreachable code, or duplicate keys in object literals.
+            </li>
+            <li><code>@typescript-eslint/eslint-plugin</code><strong>:</strong> Absolutely essential for TypeScript
+                projects. This plugin allows ESLint to understand TypeScript syntax and apply rules that leverage
+                TypeScript's type information. It can go far beyond what the TypeScript compiler (<code>tsc</code>)
+                alone might enforce. They can flag potential runtime errors, misuse of promises (<code>no-floating-promises</code>,
+                <code>no-misused-promises</code>), improper handling of <code>any</code> types, and enforce best
+                practices for writing clear and safe TypeScript code.
+            </li>
+            <li><code>eslint-plugin-sonarjs</code><strong>:</strong> This plugin is laser-focused on detecting bugs and
+                "code smells" – patterns that indicate deeper potential issues. Rules like
+                <code>sonarjs/no-all-duplicated-branches</code> (which finds if/else chains where all branches are
+                identical), <code>sonarjs/no-identical-expressions</code> (detects redundant comparisons), or <code>sonarjs/no-element-overwrite</code>
+                (prevents accidentally overwriting array elements) help catch subtle logical flaws that might otherwise
+                slip into production.
+            </li>
+            <li><code>eslint-plugin-unicorn</code><strong>:</strong> While some of its rules are indeed stylistic or
+                highly opinionated, many others in the recommended set promote writing more modern, readable, and
+                robust JavaScript. For example, rules like <code>unicorn/no-unsafe-regex</code> help prevent regular
+                expressions that could lead to ReDoS attacks, <code>unicorn/throw-new-error</code> enforces using new
+                with Error objects, and <code>unicorn/prefer-modern-dom-apis</code> encourages the use of newer, safer
+                DOM APIs. The goal is often to guide developers towards clearer and less error-prone patterns.
+            </li>
+            <li><strong>Other Specialized Plugins:</strong> The ESLint ecosystem is vast. Other plugins used in <a
+                    href="https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-config/src"
+                    target="_blank">my own config</a> includes <code>@html-eslint/eslint-plugin</code>,
+                <code>jsx-a11y</code>, <code>eslint-plugin-lodash</code>, <code>eslint-plugin-perfectionist</code>,
+                <code>@tanstack/eslint-plugin-query</code>, <code>@eslint/css</code>, <code>@eslint/json</code>, <code>eslint-plugin-compat</code>,
+                <code>@tanstack/eslint-plugin-router</code>, <code>@cspell/eslint-plugin</code>, and others specific to
+                Angular, Astro, React, Solid, and StoryBook.
+            </li>
+        </ul>
+        <h3>A Config Example: Engineering Intent</h3>
+        <p>A well-curated ESLint configuration, such as the one <a
+                href="https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-config/src"
+                target="_blank">I've developed</a>, is a testament to an intentional approach to software quality. By
+            carefully selecting and configuring plugins for TypeScript, SonarJS, Unicorn, security, and more, and by
+            opting for strict rule sets, I've embedded engineering best practices directly into the development
+            workflow. This isn't about arbitrary style choices; it's about a deliberate effort to minimize bugs, improve
+            code clarity, and ensure long-term maintainability.</p>
+        <h3>ESLint's Role in the Engineering Lifecycle</h3>
+        <p>Integrating ESLint deeply into the development process provides several key benefits:</p>
+        <ul>
+            <li><strong>Automated First Line of Defense:</strong> ESLint catches many common errors and bad practices
+                automatically, often directly in the IDE, before code is even committed or reviewed.
+            </li>
+            <li><strong>Enforcing Consistency:</strong> It ensures that all code contributed to a project adheres to a
+                consistent set of quality standards, which is invaluable for team collaboration and onboarding new
+                developers.
+            </li>
+            <li><strong>Reducing Cognitive Load in Reviews:</strong> By automating the detection of many common issues,
+                ESLint allows code reviewers to focus their attention on more complex aspects of the code, such as the
+                business logic, architectural design, and algorithmic efficiency.
+            </li>
+            <li><strong>Proactive Improvement:</strong> ESLint rules can guide developers towards better coding habits
+                and introduce them to new language features or patterns that improve code quality.
+            </li>
+        </ul>
+        <h3>Conclusion: ESLint as a Pillar of Quality</h3>
+        <p>ESLint, when wielded effectively, transcends its reputation as a mere style checker. It becomes a critical
+            component of a robust software engineering practice. By automatically enforcing rules that target bug
+            prevention, code clarity, security, and best practices, ESLint helps teams build software that is not just
+            functional but also more reliable, maintainable, and secure. It's a proactive tool that fosters a culture of
+            quality and discipline, contributing significantly to the overall health and longevity of a codebase.</p>
+    </main>
+</Layout>
