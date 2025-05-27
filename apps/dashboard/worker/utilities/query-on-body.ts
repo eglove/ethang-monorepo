@@ -19,7 +19,6 @@ export const queryOnBody = async <Z extends ZodValidator<Z>, R>({
 }: QueryProperties<Z, R>) => {
   const body = await parseFetchJson(request, requestSchema);
 
-  console.log(body);
   if (isError(body)) {
     return createJsonResponse({ error: "Invalid request" }, "BAD_REQUEST");
   }
