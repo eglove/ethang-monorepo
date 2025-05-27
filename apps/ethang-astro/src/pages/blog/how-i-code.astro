@@ -18,16 +18,21 @@ import CodeBlock from "../../components/CodeBlock.astro";
                     <li><a href="#javascriptAsTheUltimateApi">JavaScript as the Ultimate API</a></li>
                     <li><a href="#theMissingStandardLibrary">The Missing Standard Library: A Key Indicator</a></li>
                     <li><a href="#theInevitableSupplementation">The Inevitable Supplementation</a></li>
-                    <li><a href="#isJavaScriptNotAProgrammingLanguage">So, Is JavaScript "Not a Programming Language" Then?</a></li>
+                    <li><a href="#isJavaScriptNotAProgrammingLanguage">So, Is JavaScript "Not a Programming Language"
+                        Then?</a></li>
                 </ul>
             </li>
             <li>
                 <a href="#typescriptIsAdditional">TypeScript Is An Additional Layer of Protection, Not a Replacement</a>
                 <ul>
-                    <li><a href="#buildTimeVsRuntime">Build-Time vs. Runtime Type Checks: A Fundamental Difference</a></li>
-                    <li><a href="#theMisconceptionOnceValidated">The Misconception: "Once Validated, Always Safe"</a></li>
-                    <li><a href="#whyRuntimeEdgeCasesMatter">Why Runtime Edge Cases Matter (Even for "Safe" Data)</a></li>
-                    <li><a href="#implementingRobustRuntime">Implementing Robust Runtime Checks (Beyond the Boundary)</a></li>
+                    <li><a href="#buildTimeVsRuntime">Build-Time vs. Runtime Type Checks: A Fundamental Difference</a>
+                    </li>
+                    <li><a href="#theMisconceptionOnceValidated">The Misconception: "Once Validated, Always Safe"</a>
+                    </li>
+                    <li><a href="#whyRuntimeEdgeCasesMatter">Why Runtime Edge Cases Matter (Even for "Safe" Data)</a>
+                    </li>
+                    <li><a href="#implementingRobustRuntime">Implementing Robust Runtime Checks (Beyond the
+                        Boundary)</a></li>
                     <li><a href="#strategicValidation">Strategic Validation: Where and How Much?</a></li>
                     <li><a href="#testingForRuntimeEdgeCases">Testing for Runtime Edge Cases</a></li>
                     <li><a href="#typescriptsRoleConclusion">TypeScript's Role: A Conclusion</a></li>
@@ -38,7 +43,8 @@ import CodeBlock from "../../components/CodeBlock.astro";
                 <ul>
                     <li><a href="#thePerilsOfRollingYourOwn">The Perils of "Rolling Your Own"</a></li>
                     <li><a href="#theEdgeCaseGauntlet">The Edge Case Gauntlet: Why lodash Wins</a></li>
-                    <li><a href="#typescriptDoesntEliminateRuntime">TypeScript Doesn't Eliminate Runtime Realities</a></li>
+                    <li><a href="#typescriptDoesntEliminateRuntime">TypeScript Doesn't Eliminate Runtime Realities</a>
+                    </li>
                     <li><a href="#focusingOnBusinessLogic">Focusing on Business Logic, Not Utility Plumbing</a></li>
                 </ul>
             </li>
@@ -55,7 +61,8 @@ import CodeBlock from "../../components/CodeBlock.astro";
                 <a href="#endToEndTesting">The Indispensable Role of End-to-End (E2E) Testing</a>
                 <ul>
                     <li><a href="#e2eTestsValidating">E2E Tests: Validating the Entire User Journey</a></li>
-                    <li><a href="#whyE2ETestingIsImportant">Why E2E Testing is Important (But Not a Substitute for Unit Tests)</a></li>
+                    <li><a href="#whyE2ETestingIsImportant">Why E2E Testing is Important (But Not a Substitute for Unit
+                        Tests)</a></li>
                     <li><a href="#theHighLevelView">The High-Level View and the Overlooking of Unit Tests</a></li>
                     <li><a href="#theComplementaryNature">The Complementary Nature of Testing Layers</a></li>
                 </ul>
@@ -64,7 +71,8 @@ import CodeBlock from "../../components/CodeBlock.astro";
                 <a href="#eslint">ESLint: More Than Just Code Style – It's About Engineering Discipline</a>
                 <ul>
                     <li><a href="#theMisconceptionESLint">The Misconception: ESLint as a Style Nanny</a></li>
-                    <li><a href="#theRealityESLint">The Reality: ESLint as a Powerful Bug Detector and Best Practice Enforcer</a></li>
+                    <li><a href="#theRealityESLint">The Reality: ESLint as a Powerful Bug Detector and Best Practice
+                        Enforcer</a></li>
                     <li><a href="#aConfigExample">A Config Example: Engineering Intent</a></li>
                     <li><a href="#eslintsRole">ESLint's Role in the Engineering Lifecycle</a></li>
                     <li><a href="#conclusionESLint">Conclusion: ESLint as a Pillar of Quality</a></li>
@@ -76,8 +84,10 @@ import CodeBlock from "../../components/CodeBlock.astro";
                     <li><a href="#whyReactDominates">Why React Dominates the Frontend Landscape</a></li>
                     <li><a href="#lowBarrierToEntry">Low Barrier to Entry: React's Approachable Learning Curve</a></li>
                     <li><a href="#wideUIEcosystem">The Wide UI Ecosystem: Building Blocks for Every Need</a></li>
-                    <li><a href="#performanceLimitations">Performance Limitations: React's Struggle with Signals</a></li>
-                    <li><a href="#stateManagementUnnecessary">State Management Libraries: An Unnecessary Abstraction</a></li>
+                    <li><a href="#performanceLimitations">Performance Limitations: React's Struggle with Signals</a>
+                    </li>
+                    <li><a href="#stateManagementUnnecessary">State Management Libraries: An Unnecessary Abstraction</a>
+                    </li>
                     <li><a href="#reactFutureProof">React as a Future-Proof Investment</a></li>
                 </ul>
             </li>
@@ -98,21 +108,26 @@ import CodeBlock from "../../components/CodeBlock.astro";
             themselves—the browser's rendering engine, the network stack, the underlying operating system—are built
             using
             languages like C++, Rust, or assembly.</p>
-        <p>From this perspective, I believe JavaScript functions less like a foundational programming language and more like a
+        <p>From this perspective, I believe JavaScript functions less like a foundational programming language and more
+            like a
             powerful scripting interface. It's the language we use to tell the browser (which is itself a complex
-            application written in low-level languages) what to do. I see it as an API, a set of commands and conventions, that
-            allows us to interact with the browser's core functionalities. In my view, robust programming languages typically
+            application written in low-level languages) what to do. I see it as an API, a set of commands and
+            conventions, that
+            allows us to interact with the browser's core functionalities. In my view, robust programming languages
+            typically
             provide
             their own comprehensive set of tools and direct control over system resources; JavaScript, by design,
             largely
             abstracts this away, operating within the confines of its host environment.</p>
         <h3 id="theMissingStandardLibrary">The Missing Standard Library: A Key Indicator</h3>
-        <p>I think one of the strongest arguments for viewing JavaScript this way is its inherent lack of a comprehensive
+        <p>I think one of the strongest arguments for viewing JavaScript this way is its inherent lack of a
+            comprehensive
             standard
             library. What do I mean by a "standard library"? It's a collection of pre-built functions, modules, and
             data
             structures that come bundled with a programming language, providing common functionalities like file system
-            access, networking, advanced data manipulation, or date/time utilities. When I look at other languages, I see that Python has a vast standard library,
+            access, networking, advanced data manipulation, or date/time utilities. When I look at other languages, I
+            see that Python has a vast standard library,
             Java
             has its rich API, and even C++ has a well-defined standard library.</p>
         <p>JavaScript? Not so much. When I'm working on a project, if I need robust date manipulation, I'm reaching for
@@ -125,12 +140,14 @@ import CodeBlock from "../../components/CodeBlock.astro";
                 JS Library</a>," which acts as a testament to this reality. We <i>rely</i> on the vast ecosystem of NPM
             packages precisely because core JavaScript doesn't natively provide many of these essential functionalities.
         </p>
-        <p>I find that this reliance on third-party packages, while incredibly powerful and flexible, highlights that JavaScript
+        <p>I find that this reliance on third-party packages, while incredibly powerful and flexible, highlights that
+            JavaScript
             itself
             doesn't offer the self-contained, batteries-included environment we associate with traditional programming
             languages. In my experience, it needs to be <i>supplemented</i>.</p>
         <h3 id="theInevitableSupplementation">The Inevitable Supplementation</h3>
-        <p>This brings me to the core of why I believe JavaScript, in its most effective forms, must always be supplemented by
+        <p>This brings me to the core of why I believe JavaScript, in its most effective forms, must always be
+            supplemented by
             other
             "programming language" paradigms or tools:</p>
         <ol>
@@ -222,11 +239,14 @@ import CodeBlock from "../../components/CodeBlock.astro";
             </li>
         </ol>
         <h3 id="isJavaScriptNotAProgrammingLanguage">So, Is JavaScript "Not a Programming Language" Then?</h3>
-        <p>My argument isn't that JavaScript is "bad" or "incapable." Far from it! I think it's incredibly powerful and has
+        <p>My argument isn't that JavaScript is "bad" or "incapable." Far from it! I think it's incredibly powerful and
+            has
             revolutionized the web. The distinction I'm drawing is one of fundamental design and role.</p>
         <p>I believe it's more accurate to view JavaScript as an extraordinarily versatile and high-level scripting
-            language, purpose-built for interacting with and manipulating web environments. In my view, it excels as an API layer,
-            allowing us to orchestrate complex user experiences. However, I've found that for the underlying heavy lifting, the
+            language, purpose-built for interacting with and manipulating web environments. In my view, it excels as an
+            API layer,
+            allowing us to orchestrate complex user experiences. However, I've found that for the underlying heavy
+            lifting, the
             foundational
             system interactions, and the robust structuring of large-scale applications, JavaScript frequently leans on
             or
@@ -235,9 +255,11 @@ import CodeBlock from "../../components/CodeBlock.astro";
             of traditional programming languages.</p>
         <p>This perspective helps me appreciate JavaScript for what it is: an incredibly effective, adaptable, and
             indispensable scripting interface that, when combined with its powerful ecosystem, enables us to build the
-            dynamic and interactive web we know and love. I see it as a language that thrives on collaboration—with browsers,
+            dynamic and interactive web we know and love. I see it as a language that thrives on collaboration—with
+            browsers,
             with
-            backend systems, and with its ever-expanding universe of tools and libraries. And in that, I find there's a unique
+            backend systems, and with its ever-expanding universe of tools and libraries. And in that, I find there's a
+            unique
             beauty and strength.</p>
         <h2 id="typescriptIsAdditional">TypeScript Is An Additional Layer of Protection, Not a Replacement</h2>
         <p>TypeScript is a powerful tool, catching errors early and boosting productivity. When we combine it with
@@ -248,28 +270,40 @@ import CodeBlock from "../../components/CodeBlock.astro";
             edge cases remains essential, even in a meticulously validated TypeScript codebase.</p>
         <h3 id="buildTimeVsRuntime">Build-Time vs. Runtime Type Checks: A Fundamental Difference</h3>
         <p>Build-time type checks are TypeScript's domain. They happen during compilation, before our code ever runs.
-            I've seen how TypeScript analyzes our code, inferring types, and flags mismatches based on our annotations. If a function
-            expects numbers but gets a string, TypeScript stops us cold, preventing compilation until we fix it. I find this
+            I've seen how TypeScript analyzes our code, inferring types, and flags mismatches based on our annotations.
+            If a function
+            expects numbers but gets a string, TypeScript stops us cold, preventing compilation until we fix it. I find
+            this
             static analysis incredibly powerful for early bug detection.</p>
-        <p>However, I want to emphasize this critical point: TypeScript's types are erased when our code compiles to plain
-            JavaScript. At runtime, our application executes dynamic JavaScript. In my experience, TypeScript ensures type safety during
-            development, but it offers no inherent guarantees about the data our application will encounter live. I've observed that the
+        <p>However, I want to emphasize this critical point: TypeScript's types are erased when our code compiles to
+            plain
+            JavaScript. At runtime, our application executes dynamic JavaScript. In my experience, TypeScript ensures
+            type safety during
+            development, but it offers no inherent guarantees about the data our application will encounter live. I've
+            observed that the
             compiled JavaScript simply runs based on the values present at that moment, stripped of any TypeScript type
             information.</p>
         <h3 id="theMisconceptionOnceValidated">The Misconception: "Once Validated, Always Safe"</h3>
-        <p>I've noticed that many developers, especially those using TypeScript with runtime validation libraries like Zod, assume that
+        <p>I've noticed that many developers, especially those using TypeScript with runtime validation libraries like
+            Zod, assume that
             data, once validated at entry points (e.g., API requests, form submissions), is perfectly typed and "safe"
-            throughout its journey. In my experience, this often leads to the belief that internal functions, having received
+            throughout its journey. In my experience, this often leads to the belief that internal functions, having
+            received
             Zod-validated data, no longer need defensive checks.</p>
         <p>I understand this perspective, but I believe it overlooks a crucial reality: data can become "untyped" or
-            unexpectedly malformed after initial validation. I've seen how internal transformations, coercions, or complex state
-            changes can introduce issues. Even data that I've verified as perfectly valid at the boundary can cause runtime problems if our
+            unexpectedly malformed after initial validation. I've seen how internal transformations, coercions, or
+            complex state
+            changes can introduce issues. Even data that I've verified as perfectly valid at the boundary can cause
+            runtime problems if our
             internal logic doesn't account for JavaScript's dynamic nature.</p>
         <h3 id="whyRuntimeEdgeCasesMatter">Why Runtime Edge Cases Matter (Even for "Safe" Data)</h3>
-        <p>I've learned that JavaScript's dynamic nature means that even with TypeScript and initial validation, our code can encounter
+        <p>I've learned that JavaScript's dynamic nature means that even with TypeScript and initial validation, our
+            code can encounter
             "garbage" data or unexpected states that static checks and initial runtime validators simply can't foresee
-            in all internal contexts. In my experience, TypeScript operates on assumptions about our code's structure, and Zod validates a
-            snapshot of data. I've found that neither guarantees data integrity throughout its entire lifecycle. Here's how I've seen data
+            in all internal contexts. In my experience, TypeScript operates on assumptions about our code's structure,
+            and Zod validates a
+            snapshot of data. I've found that neither guarantees data integrity throughout its entire lifecycle. Here's
+            how I've seen data
             still lead to runtime issues:</p>
         <ul>
             <li><code>NaN</code> <strong>(Not-A-Number):</strong> A numeric field might pass Zod validation, but
@@ -427,17 +461,24 @@ parseJsonString('{"key": "value"}'); // Works
 parseJsonString('invalid json'); // Throws SyntaxError, caught by try/catch`}/>
             </li>
         </ul>
-        <p>I believe the notion that our internal code is immune to these issues is a misdirection. In my view, if a function, even deep
+        <p>I believe the notion that our internal code is immune to these issues is a misdirection. In my view, if a
+            function, even deep
             within our application, can receive input that causes it to crash or behave unpredictably, it is ultimately
-            our responsibility as developers to gracefully handle that input. I've found that a robust application anticipates and
-            mitigates such scenarios. I've seen real-world examples, like a financial dashboard displaying incorrect calculations
+            our responsibility as developers to gracefully handle that input. I've found that a robust application
+            anticipates and
+            mitigates such scenarios. I've seen real-world examples, like a financial dashboard displaying incorrect
+            calculations
             due to unhandled <code>NaN</code>s introduced during internal data processing, or an e-commerce platform
-            failing to process orders because of missing object properties after complex data transformations, which vividly
-            underscore this point. In my experience with such scenarios, failures stem not from initial external data validation, but from
+            failing to process orders because of missing object properties after complex data transformations, which
+            vividly
+            underscore this point. In my experience with such scenarios, failures stem not from initial external data
+            validation, but from
             runtime data integrity issues within our application's core logic.</p>
         <h3 id="implementingRobustRuntime">Implementing Robust Runtime Checks (Beyond the Boundary)</h3>
-        <p>I've realized that since TypeScript's static checks are removed at runtime, and initial validation only covers the entry point,
-            consciously implementing robust runtime validation within our application becomes essential. In my development practice, this involves
+        <p>I've realized that since TypeScript's static checks are removed at runtime, and initial validation only
+            covers the entry point,
+            consciously implementing robust runtime validation within our application becomes essential. In my
+            development practice, this involves
             several practical approaches that I recommend:</p>
         <ul>
             <li><strong>Leveraging TypeScript's Type Guards and Assertion Functions:</strong> Within our TypeScript
@@ -498,21 +539,27 @@ console.log(processUserName(123 as any)); // Warns, "Guest"`}/>
             </li>
         </ul>
         <h3 id="strategicValidation">Strategic Validation: Where and How Much?</h3>
-        <p>I believe where we place runtime validation is crucial. While "entry point validation" — validating data as it first
+        <p>I believe where we place runtime validation is crucial. While "entry point validation" — validating data as
+            it first
             enters our application (e.g., at an API gateway, a serverless function handler, or a form submission
             endpoint) — is paramount, I've found it's not the only place to consider.</p>
         <ul>
-            <li><strong>Application Boundaries:</strong> In my approach, this is the primary layer for comprehensive validation using
+            <li><strong>Application Boundaries:</strong> In my approach, this is the primary layer for comprehensive
+                validation using
                 schema libraries like Zod. Here, I ensure all external inputs meet our application's fundamental data
                 contracts.
             </li>
-            <li><strong>Service or Business Logic Layers:</strong> I've observed that even after initial validation, data might be
-                transformed or composed internally. I recommend that robust services or core business logic functions, especially those
+            <li><strong>Service or Business Logic Layers:</strong> I've observed that even after initial validation,
+                data might be
+                transformed or composed internally. I recommend that robust services or core business logic functions,
+                especially those
                 handling critical operations or consuming data from multiple internal sources, include internal
                 defensive checks to ensure data integrity.
             </li>
-            <li><strong>Utility Functions:</strong> As I've seen with lodash, generic utility functions benefit immensely
-                from being highly defensive. I believe they should be resilient to a wide range of inputs, as they are often
+            <li><strong>Utility Functions:</strong> As I've seen with lodash, generic utility functions benefit
+                immensely
+                from being highly defensive. I believe they should be resilient to a wide range of inputs, as they are
+                often
                 reused across many contexts and may receive data that has undergone various transformations or subtle
                 coercions.
             </li>
@@ -521,14 +568,17 @@ console.log(processUserName(123 as any)); // Warns, "Guest"`}/>
             targeted, defensive checks within core logic and reusable components to ensure their robustness and
             predictable behavior.</p>
         <h3 id="testingForRuntimeEdgeCases">Testing for Runtime Edge Cases</h3>
-        <p>This brings me to the crucial role of runtime testing. While I know TypeScript ensures our code adheres to its
-            defined types during development, and Zod validates at the entry point, I believe tests are needed to verify how our
+        <p>This brings me to the crucial role of runtime testing. While I know TypeScript ensures our code adheres to
+            its
+            defined types during development, and Zod validates at the entry point, I believe tests are needed to verify
+            how our
             code behaves when confronted with data that doesn't conform to those ideal types at runtime within our
             application's internal flow, or when it encounters other unexpected conditions.</p>
         <p>I like to consider how a robust utility library like lodash approaches this. For a function like <code>get(object,
             path, [defaultValue])</code>, which safely retrieves a value at a given <code>path</code> from
             <code>object</code>, I've noticed its tests don't just cover the "happy path" where <code>object</code> and
-            <code>path</code> are perfectly valid. Instead, I've studied how lodash's extensive test suite includes scenarios where:</p>
+            <code>path</code> are perfectly valid. Instead, I've studied how lodash's extensive test suite includes
+            scenarios where:</p>
         <ul>
             <li><code>object</code> is <code>null</code>, <code>undefined</code>, a number, a string, or a boolean,
                 rather than an object, possibly due to a prior transformation.
@@ -539,30 +589,41 @@ console.log(processUserName(123 as any)); // Warns, "Guest"`}/>
             </li>
             <li>The function is called with too few or too many arguments.</li>
         </ul>
-        <p>I've observed how these tests reveal how <code>get</code> gracefully handles various invalid inputs, typically returning <code>undefined</code>
-            (or the specified <code>defaultValue</code>) rather than throwing an error or crashing the application. I consider this
-            meticulous approach to testing for runtime resilience a hallmark of well-engineered code. In my experience, such runtime
+        <p>I've observed how these tests reveal how <code>get</code> gracefully handles various invalid inputs,
+            typically returning <code>undefined</code>
+            (or the specified <code>defaultValue</code>) rather than throwing an error or crashing the application. I
+            consider this
+            meticulous approach to testing for runtime resilience a hallmark of well-engineered code. In my experience,
+            such runtime
             checks, combined with TypeScript's compile-time safety, create a layered defense against errors, ensuring
             our application remains stable even when confronted with imperfect data.</p>
-        <p>Furthermore, I've learned that relying solely on "entry point validation" isn't sufficient for complex applications if internal
-            components are brittle. I believe unit tests that probe these edge cases ensure that individual "units" of code are
+        <p>Furthermore, I've learned that relying solely on "entry point validation" isn't sufficient for complex
+            applications if internal
+            components are brittle. I believe unit tests that probe these edge cases ensure that individual "units" of
+            code are
             resilient, regardless of where their data originates. I see libraries like lodash as prime examples of this
             philosophy, with extensive tests dedicated to covering every conceivable edge case for their utility
             functions.</p>
         <h3 id="typescriptsRoleConclusion">TypeScript's Role: A Conclusion</h3>
-        <p>I've found that TypeScript is an invaluable asset for modern JavaScript development, providing strong type guarantees at
+        <p>I've found that TypeScript is an invaluable asset for modern JavaScript development, providing strong type
+            guarantees at
             build time that significantly reduce common programming errors. When I combine it with powerful runtime
-            validation libraries like Zod, I create a formidable first line of defense. However, I've learned that this combination is
+            validation libraries like Zod, I create a formidable first line of defense. However, I've learned that this
+            combination is
             not a silver bullet that eliminates the need for further runtime validation and comprehensive testing within
-            our application's internal logic. In my experience, JavaScript's dynamic nature means that unexpected data and edge cases can
+            our application's internal logic. In my experience, JavaScript's dynamic nature means that unexpected data
+            and edge cases can
             still arise during execution, even with initially "safe" data.</p>
-        <p>I believe true engineering involves understanding both the static safety provided by TypeScript and the dynamic
+        <p>I believe true engineering involves understanding both the static safety provided by TypeScript and the
+            dynamic
             realities of JavaScript. By embracing robust runtime checks—through TypeScript's type guards, defensive
             programming patterns, and strategic use of validation where data transformations occur—and rigorously
             testing for edge cases, I can build applications that are not only type-safe but also resilient, graceful,
-            and truly robust in the face of real-world data. I've seen how this layered approach leads to improved user experience by
+            and truly robust in the face of real-world data. I've seen how this layered approach leads to improved user
+            experience by
             preventing unexpected errors, easier debugging and maintenance due to predictable behavior, and ultimately,
-            enhanced system reliability and security. For me, it's about building code that works reliably, even when the
+            enhanced system reliability and security. For me, it's about building code that works reliably, even when
+            the
             "unhappy path" presents itself within our own codebase.</p>
         <h2 id="waitYouStillUseLodash">Wait, You Still Use lodash?</h2>
         <p>Yes, and understanding why is key to understanding how I approach building with TypeScript. In an era where
@@ -800,22 +861,28 @@ function customGet(obj, path, defaultValue) {
             be mistaken as a reason to neglect the meticulous, foundational work of unit testing, which is paramount for
             building a truly engineered, maintainable, and resilient software system.</p>
         <h2 id="eslint">ESLint: More Than Just Code Style – It's About Engineering Discipline</h2>
-        <p>I've noticed a common misconception surrounding ESLint is that its primary, or even sole, purpose is to enforce basic code
-            formatting and inconsequential stylistic opinions. While I know ESLint can be configured to manage code style via
-            Prettier and other plugins, I believe its true power and core value lie significantly deeper: I see ESLint as a powerful
+        <p>I've noticed a common misconception surrounding ESLint is that its primary, or even sole, purpose is to
+            enforce basic code
+            formatting and inconsequential stylistic opinions. While I know ESLint can be configured to manage code
+            style via
+            Prettier and other plugins, I believe its true power and core value lie significantly deeper: I see ESLint
+            as a powerful
             static
             analysis tool designed to identify problematic patterns, potential bugs, and deviations from best practices
             directly in your code. For me, it's an automated guardian that helps uphold engineering discipline.</p>
         <h3 id="theMisconceptionESLint">The Misconception: ESLint as a Style Nanny</h3>
         <p>If your only interaction with ESLint has been to fix complaints about spacing, semicolons, or quote styles,
-            I understand it's easy to dismiss it as a nitpicky style enforcer. In fact, I've learned that ESLint's core includes no stylistic rules at
+            I understand it's easy to dismiss it as a nitpicky style enforcer. In fact, I've learned that ESLint's core
+            includes no stylistic rules at
             all.
             I think to see it only in this light is to miss its profound impact on code quality, maintainability, and
-            robustness. In my experience, the most impactful ESLint configurations, especially for complex applications, leverage rules
+            robustness. In my experience, the most impactful ESLint configurations, especially for complex applications,
+            leverage rules
             and plugins that have little to do with mere aesthetics and everything to do with preventing errors and
             promoting sound engineering.</p>
         <h3 id="theRealityESLint">The Reality: ESLint as a Powerful Bug Detector and Best Practice Enforcer</h3>
-        <p>I've discovered that the real strength of ESLint emerges when it's augmented with specialized plugins that target specific areas
+        <p>I've discovered that the real strength of ESLint emerges when it's augmented with specialized plugins that
+            target specific areas
             of concern. Here are the ones I find most valuable:</p>
         <ul>
             <li><code>@eslint/js</code> <strong>(ESLint's Recommended Rules):</strong> This foundational set
@@ -879,79 +946,198 @@ function customGet(obj, path, defaultValue) {
             </li>
         </ul>
         <h3 id="conclusionESLint">Conclusion: ESLint as a Pillar of Quality</h3>
-        <p>I believe ESLint, when wielded effectively, transcends its reputation as a mere style checker. In my development practice, it becomes a critical
+        <p>I believe ESLint, when wielded effectively, transcends its reputation as a mere style checker. In my
+            development practice, it becomes a critical
             component of a robust software engineering approach. By automatically enforcing rules that target bug
-            prevention, code clarity, security, and best practices, I've seen how ESLint helps teams build software that is not just
-            functional but also more reliable, maintainable, and secure. I consider it a proactive tool that fosters a culture of
+            prevention, code clarity, security, and best practices, I've seen how ESLint helps teams build software that
+            is not just
+            functional but also more reliable, maintainable, and secure. I consider it a proactive tool that fosters a
+            culture of
             quality and discipline, contributing significantly to the overall health and longevity of a codebase.</p>
 
         <h2 id="letsTalkAboutReact">Let's Talk About React</h2>
-        <p>In the ever-evolving landscape of frontend development, React has emerged as a dominant force, powering countless websites and applications across the web. While numerous frameworks and libraries compete for developers' attention, I've found that React consistently stands out for its balance of power, simplicity, and ecosystem support. This section explores why React has become my preferred choice for building user interfaces and why it continues to thrive in an industry known for rapid change and shifting preferences.</p>
+        <p>In the ever-evolving landscape of frontend development, React has emerged as a dominant force, powering
+            countless websites and applications across the web. While numerous frameworks and libraries compete for
+            developers' attention, I've found that React consistently stands out for its balance of power, simplicity,
+            and ecosystem support. This section explores why React has become my preferred choice for building user
+            interfaces and why it continues to thrive in an industry known for rapid change and shifting
+            preferences.</p>
 
         <h3 id="whyReactDominates">Why React Dominates the Frontend Landscape</h3>
-        <p>React's dominance isn't accidental. I believe it stems from a combination of thoughtful design decisions and community momentum that have created a virtuous cycle of adoption, contribution, and improvement. At its core, React introduced a paradigm shift in how we think about building user interfaces—moving from imperative DOM manipulation to declarative component-based architecture.</p>
-        <p>The component model, where UI elements are broken down into reusable, self-contained pieces, aligns perfectly with modern software engineering principles. I've found that this approach encourages:</p>
+        <p>React's dominance isn't accidental. I believe it stems from a combination of thoughtful design decisions and
+            community momentum that have created a virtuous cycle of adoption, contribution, and improvement. At its
+            core, React introduced a paradigm shift in how we think about building user interfaces—moving from
+            imperative DOM manipulation to declarative component-based architecture.</p>
+        <p>The component model, where UI elements are broken down into reusable, self-contained pieces, aligns perfectly
+            with modern software engineering principles. I've found that this approach encourages:</p>
         <ul>
-            <li><strong>Reusability:</strong> Components can be shared across different parts of an application or even across projects, reducing duplication and ensuring consistency.</li>
-            <li><strong>Maintainability:</strong> Isolated components are easier to understand, test, and modify without affecting other parts of the application.</li>
-            <li><strong>Collaboration:</strong> Teams can work on different components simultaneously with minimal conflicts, accelerating development.</li>
+            <li><strong>Reusability:</strong> Components can be shared across different parts of an application or even
+                across projects, reducing duplication and ensuring consistency.
+            </li>
+            <li><strong>Maintainability:</strong> Isolated components are easier to understand, test, and modify without
+                affecting other parts of the application.
+            </li>
+            <li><strong>Collaboration:</strong> Teams can work on different components simultaneously with minimal
+                conflicts, accelerating development.
+            </li>
         </ul>
 
         <h3 id="lowBarrierToEntry">Low Barrier to Entry: React's Approachable Learning Curve</h3>
-        <p>One of React's most significant advantages is its relatively gentle learning curve, especially for developers already familiar with JavaScript. Unlike some frameworks that require learning entirely new templating languages or complex architectural patterns, React builds upon existing JavaScript knowledge, extending it rather than replacing it.</p>
+        <p>One of React's most significant advantages is its relatively gentle learning curve, especially for developers
+            already familiar with JavaScript. Unlike some frameworks that require learning entirely new templating
+            languages or complex architectural patterns, React builds upon existing JavaScript knowledge, extending it
+            rather than replacing it.</p>
         <p>I've observed several factors that contribute to React's accessibility:</p>
         <ul>
-            <li><strong>Minimal API Surface:</strong> React's core API is surprisingly small. The fundamental concepts of components and props can be grasped quickly, allowing developers to start building meaningful applications early in their learning journey.</li>
-            <li><strong>JSX as an Intuitive Extension:</strong> While JSX might look strange at first glance, it quickly becomes intuitive for most developers. It combines the familiarity of HTML-like syntax with the full power of JavaScript, creating a natural way to describe UI components.</li>
-            <li><strong>Incremental Adoption:</strong> React doesn't demand a complete application rewrite. It can be integrated gradually into existing projects, allowing teams to learn and adopt at their own pace.</li>
-            <li><strong>Exceptional Documentation:</strong> React's official documentation is comprehensive, well-structured, and includes numerous examples and interactive tutorials. The React team has invested heavily in educational resources, making self-learning accessible.</li>
+            <li><strong>Minimal API Surface:</strong> React's core API is surprisingly small. The fundamental concepts
+                of components and props can be grasped quickly, allowing developers to start building meaningful
+                applications early in their learning journey.
+            </li>
+            <li><strong>JSX as an Intuitive Extension:</strong> While JSX might look strange at first glance, it quickly
+                becomes intuitive for most developers. It combines the familiarity of HTML-like syntax with the full
+                power of JavaScript, creating a natural way to describe UI components.
+            </li>
+            <li><strong>Incremental Adoption:</strong> React doesn't demand a complete application rewrite. It can be
+                integrated gradually into existing projects, allowing teams to learn and adopt at their own pace.
+            </li>
+            <li><strong>Exceptional Documentation:</strong> React's official documentation is comprehensive,
+                well-structured, and includes numerous examples and interactive tutorials. The React team has invested
+                heavily in educational resources, making self-learning accessible.
+            </li>
         </ul>
-        <p>This low barrier to entry has significant practical implications. Teams can onboard new developers more quickly, reducing training costs and accelerating project timelines. The pool of available React developers is larger, making hiring easier. And the community's size ensures that almost any question or problem has already been addressed somewhere, with solutions readily available through a quick search.</p>
+        <p>This low barrier to entry has significant practical implications. Teams can onboard new developers more
+            quickly, reducing training costs and accelerating project timelines. The pool of available React developers
+            is larger, making hiring easier. And the community's size ensures that almost any question or problem has
+            already been addressed somewhere, with solutions readily available through a quick search.</p>
 
         <h3 id="wideUIEcosystem">The Wide UI Ecosystem: Building Blocks for Every Need</h3>
-        <p>Perhaps one of React's most compelling advantages is its vast ecosystem of UI libraries and components. This rich landscape allows developers to leverage pre-built, well-tested components rather than building everything from scratch. I've found this ecosystem particularly valuable for accelerating development while maintaining high-quality standards.</p>
+        <p>Perhaps one of React's most compelling advantages is its vast ecosystem of UI libraries and components. This
+            rich landscape allows developers to leverage pre-built, well-tested components rather than building
+            everything from scratch. I've found this ecosystem particularly valuable for accelerating development while
+            maintaining high-quality standards.</p>
         <p>Some notable players in this ecosystem include:</p>
         <ul>
-            <li><strong>Headless UI Libraries:</strong> Libraries like <a href="https://headlessui.com/" target="_blank">Headless UI</a> and <a href="https://www.radix-ui.com/" target="_blank">Radix UI</a> provide unstyled, accessible component primitives that handle complex interactions and behaviors while giving developers complete control over styling.</li>
-            <li><strong>Comprehensive Component Libraries:</strong> <a href="https://www.heroui.com/" target="_blank">HeroUI</a>, <a href="https://mui.com/" target="_blank">Material-UI</a>, <a href="https://chakra-ui.com/" target="_blank">Chakra UI</a>, and <a href="https://ant.design/" target="_blank">Ant Design</a> offer complete design systems with styled components that can be customized to match brand guidelines.</li>
-            <li><strong>Specialized Solutions:</strong> Libraries like <a href="https://tanstack.com/table/v8" target="_blank">TanStack Table</a> (formerly React Table) provide sophisticated implementations of specific UI patterns, handling edge cases and accessibility concerns that would be time-consuming to address from scratch.</li>
-            <li><strong>Animation Libraries:</strong> <a href="https://www.framer.com/motion/" target="_blank">Framer Motion</a> and <a href="https://react-spring.dev/" target="_blank">React Spring</a> make complex animations approachable, with declarative APIs that integrate seamlessly with React's component model.</li>
+            <li><strong>Headless UI Libraries:</strong> Libraries like <a href="https://headlessui.com/"
+                                                                          target="_blank">Headless UI</a> and <a
+                    href="https://www.radix-ui.com/" target="_blank">Radix UI</a> provide unstyled, accessible component
+                primitives that handle complex interactions and behaviors while giving developers complete control over
+                styling.
+            </li>
+            <li><strong>Comprehensive Component Libraries:</strong> <a href="https://www.heroui.com/" target="_blank">HeroUI</a>,
+                <a href="https://mui.com/" target="_blank">Material-UI</a>, <a href="https://chakra-ui.com/"
+                                                                               target="_blank">Chakra UI</a>, and <a
+                        href="https://ant.design/" target="_blank">Ant Design</a> offer complete design systems with
+                styled components that can be customized to match brand guidelines.
+            </li>
+            <li><strong>Specialized Solutions:</strong> Libraries like <a href="https://tanstack.com/table/v8"
+                                                                          target="_blank">TanStack Table</a> (formerly
+                React Table) provide sophisticated implementations of specific UI patterns, handling edge cases and
+                accessibility concerns that would be time-consuming to address from scratch.
+            </li>
+            <li><strong>Animation Libraries:</strong> <a href="https://www.framer.com/motion/" target="_blank">Framer
+                Motion</a> and <a href="https://react-spring.dev/" target="_blank">React Spring</a> make complex
+                animations approachable, with declarative APIs that integrate seamlessly with React's component model.
+            </li>
         </ul>
-        <p>This ecosystem doesn't just save development time; it also promotes best practices. Many of these libraries prioritize accessibility and cross-browser compatibility, ensuring that applications built with them meet modern web standards without requiring developers to be experts in every area.</p>
-        <p>The modular nature of the React ecosystem also means developers can mix and match libraries based on project requirements, rather than being locked into a single framework's opinions. This flexibility allows for tailored solutions that address specific needs without unnecessary bloat.</p>
+        <p>This ecosystem doesn't just save development time; it also promotes best practices. Many of these libraries
+            prioritize accessibility and cross-browser compatibility, ensuring that applications built with them meet
+            modern web standards without requiring developers to be experts in every area.</p>
+        <p>The modular nature of the React ecosystem also means developers can mix and match libraries based on project
+            requirements, rather than being locked into a single framework's opinions. This flexibility allows for
+            tailored solutions that address specific needs without unnecessary bloat.</p>
 
         <h3 id="performanceLimitations">Performance Limitations: React's Struggle with Signals</h3>
-        <p>Despite React's many strengths, it's important to acknowledge an area where it has fallen behind other modern frameworks: performance optimization through fine-grained reactivity. While React revolutionized UI development with its component model and virtual DOM, this same architecture now presents inherent limitations in an era where signal-based reactivity has become the gold standard for performance.</p>
+        <p>Despite React's many strengths, it's important to acknowledge an area where it has fallen behind other modern
+            frameworks: performance optimization through fine-grained reactivity. While React revolutionized UI
+            development with its component model and virtual DOM, this same architecture now presents inherent
+            limitations in an era where signal-based reactivity has become the gold standard for performance.</p>
 
-        <p>At its core, React's rendering model follows a "blow away the entire UI and rerender all of it" approach. When state changes, React rebuilds the virtual DOM, compares it with the previous version, and then updates only the necessary parts of the actual DOM. While this was groundbreaking when introduced, it now appears increasingly inefficient compared to the signal-based approaches adopted by frameworks like SolidJS, Svelte, Angular, Vue, Preact, and Qwik.</p>
+        <p>At its core, React's rendering model follows a "blow away the entire UI and rerender all of it" approach.
+            When state changes, React rebuilds the virtual DOM, compares it with the previous version, and then updates
+            only the necessary parts of the actual DOM. While this was groundbreaking when introduced, it now appears
+            increasingly inefficient compared to the signal-based approaches adopted by frameworks like SolidJS, Svelte,
+            Angular, Vue, Preact, and Qwik.</p>
 
-        <p>The fundamental issue lies in React's architecture being incompatible with signals—a reactive programming pattern that enables truly fine-grained updates. In signal-based frameworks, dependencies are tracked at the level of individual variables or properties, allowing the framework to update only the specific DOM elements affected by a change, without the overhead of diffing entire component trees.</p>
+        <p>The fundamental issue lies in React's architecture being incompatible with signals—a reactive programming
+            pattern that enables truly fine-grained updates. In signal-based frameworks, dependencies are tracked at the
+            level of individual variables or properties, allowing the framework to update only the specific DOM elements
+            affected by a change, without the overhead of diffing entire component trees.</p>
 
         <ul>
-            <li><strong>The Memoization Tax:</strong> React developers must constantly employ <code>useMemo</code>, <code>useCallback</code>, and <code>React.memo</code> to prevent unnecessary rerenders. This "memoization tax" adds complexity to codebases and places the burden of performance optimization on developers rather than the framework itself.</li>
-            <li><strong>Complex State Management Workarounds:</strong> The limitations of React's built-in state management have spawned an entire ecosystem of libraries (Redux, Zustand, Jotai, Recoil, etc.) that essentially work around React's core update model. These libraries either attempt to make the Context API more performant or use external state with <code>useSyncExternalStore</code> to control React's awareness of state changes.</li>
-            <li><strong>Fighting the Framework:</strong> Many performance optimizations in React feel like fighting against its natural behavior. Developers spend an inordinate amount of time trying to prevent React from rerendering, when not rerendering everything on every change should ideally be the default behavior.</li>
+            <li><strong>The Memoization Tax:</strong> React developers must constantly employ <code>useMemo</code>,
+                <code>useCallback</code>, and <code>React.memo</code> to prevent unnecessary rerenders. This
+                "memoization tax" adds complexity to codebases and places the burden of performance optimization on
+                developers rather than the framework itself.
+            </li>
+            <li><strong>Complex State Management Workarounds:</strong> The limitations of React's built-in state
+                management have spawned an entire ecosystem of libraries (Redux, Zustand, Jotai, Recoil, etc.) that
+                essentially work around React's core update model. These libraries either attempt to make the Context
+                API more performant or use external state with <code>useSyncExternalStore</code> to control React's
+                awareness of state changes.
+            </li>
+            <li><strong>Fighting the Framework:</strong> Many performance optimizations in React feel like fighting
+                against its natural behavior. Developers spend an inordinate amount of time trying to prevent React from
+                rerendering, when not rerendering everything on every change should ideally be the default behavior.
+            </li>
         </ul>
 
-        <p>Even libraries that attempt to bring signal-like patterns to React, such as Signalis or Legend State, ultimately hit a performance ceiling because they must still work within React's reconciliation process. No matter how optimized the state management, all updates must eventually flow through React's diffing algorithm.</p>
+        <p>Even libraries that attempt to bring signal-like patterns to React, such as Signalis or Legend State,
+            ultimately hit a performance ceiling because they must still work within React's reconciliation process. No
+            matter how optimized the state management, all updates must eventually flow through React's diffing
+            algorithm. In my own explorations with <a
+                    href="https://github.com/eglove/ethang-monorepo/tree/master/packages/store" target="_blank">custom
+                state management utilities</a>, including approaches that use refs to manipulate the DOM directly, I've
+            found that performance improvements are modest at best, still falling within the same performance category
+            as libraries like Zustand.</p>
 
-        <p>This performance gap is particularly noticeable in data-heavy applications with frequent updates, where signal-based frameworks can be significantly more efficient. Benchmarks consistently show React lagging behind its signal-based competitors in update performance, sometimes by substantial margins.</p>
+        <p>This performance gap is particularly noticeable in data-heavy applications with frequent updates, where
+            signal-based frameworks can be significantly more efficient. Benchmarks, such as the <a
+                    href="https://github.com/krausest/js-framework-benchmark" target="_blank">JS Framework Benchmark</a>,
+            consistently show React lagging behind its signal-based competitors in update performance, sometimes by
+            substantial margins. The benchmark results clearly demonstrate how frameworks like SolidJS, Svelte, Angular,
+            Vue, Preact, and Qwik outperform React in various performance metrics.</p>
 
-        <p>Interestingly, the React team seems aware of these limitations. Their focus on server components and server-side rendering suggests a preference for moving state management to the server rather than addressing the fundamental client-side performance issues. This aligns with how Facebook itself uses React—not as a pure SPA framework but as part of a more server-oriented architecture.</p>
+        <p>Interestingly, the React team seems aware of these limitations. Their focus on server components and
+            server-side rendering suggests a preference for moving state management to the server rather than addressing
+            the fundamental client-side performance issues. This aligns with how Facebook itself uses React—not as a
+            pure SPA framework but as part of a more server-oriented architecture.</p>
 
-        <p>For developers committed to the React ecosystem, this means accepting these performance trade-offs and either embracing the necessary optimization patterns or considering alternative frameworks for performance-critical applications. It also means recognizing that while React excels in many areas, its architecture makes it inherently less suited for highly dynamic, state-heavy client-side applications compared to more modern, signal-based alternatives.</p>
+        <p>For developers committed to the React ecosystem, this means accepting these performance trade-offs and either
+            embracing the necessary optimization patterns or considering alternative frameworks for performance-critical
+            applications. It also means recognizing that while React excels in many areas, its architecture makes it
+            inherently less suited for highly dynamic, state-heavy client-side applications compared to more modern,
+            signal-based alternatives.</p>
 
         <h3 id="stateManagementUnnecessary">State Management Libraries: An Unnecessary Abstraction</h3>
-        <p>Despite React's performance limitations, there's a common misconception that complex state management libraries are necessary to build robust React applications. I've observed that many developers, especially those new to React, quickly adopt libraries like Redux, Zustand, Jotai, or Recoil without first exploring simpler alternatives. While these libraries served an important purpose during React's evolution, I believe they've now become an unnecessary layer of complexity for most applications.</p>
+        <p>Despite React's performance limitations, there's a common misconception that complex state management
+            libraries are necessary to build robust React applications. I've observed that many developers, especially
+            those new to React, quickly adopt libraries like Redux, Zustand, Jotai, or Recoil without first exploring
+            simpler alternatives. While these libraries served an important purpose during React's evolution, I believe
+            they've now become an unnecessary layer of complexity for most applications.</p>
 
-        <p>The core issue isn't state management itself—it's the transformation of declarative code to imperative JavaScript and HTML. React's component model inherently mixes data with UI, leading to the "rerendering" problem we discussed earlier. This has spawned an entire ecosystem of libraries attempting to work around React's update model, but I've found that these solutions often introduce their own complexities without addressing the fundamental architectural limitations.</p>
+        <p>The core issue isn't state management itself—it's the transformation of declarative code to imperative
+            JavaScript and HTML. React's component model inherently mixes data with UI, leading to the "rerendering"
+            problem we discussed earlier. This has spawned an entire ecosystem of libraries attempting to work around
+            React's update model, but I've found that these solutions often introduce their own complexities without
+            addressing the fundamental architectural limitations.</p>
 
-        <p>Instead of reaching for a third-party state management library, I recommend a simpler approach: using React's built-in <code>useSyncExternalStore</code> hook with your own custom state implementation. This approach gives you several advantages:</p>
+        <p>Instead of reaching for a third-party state management library, I recommend a simpler approach: using React's
+            built-in <code>useSyncExternalStore</code> hook with your own custom state implementation. This approach
+            gives you several advantages:</p>
 
         <ul>
-            <li><strong>Control Over Reactivity:</strong> While we'll never have fine-grained reactivity in React (as discussed in the previous section), external state at least gives us the power to decide when and when not to notify React components of state changes. This control is crucial for optimizing performance in data-heavy applications.</li>
-            <li><strong>Simplified Mental Model:</strong> By implementing a simple subscription interface rather than learning the specific patterns and jargon of a state management library, you reduce cognitive overhead and make your code more accessible to other developers.</li>
-            <li><strong>Tailored Solutions:</strong> You can implement state management that perfectly fits your application's needs, rather than conforming to the opinions and constraints of a third-party library.</li>
+            <li><strong>Control Over Reactivity:</strong> While we'll never have fine-grained reactivity in React (as
+                discussed in the previous section), external state at least gives us the power to decide when and when
+                not to notify React components of state changes. This control is crucial for optimizing performance in
+                data-heavy applications.
+            </li>
+            <li><strong>Simplified Mental Model:</strong> By implementing a simple subscription interface rather than
+                learning the specific patterns and jargon of a state management library, you reduce cognitive overhead
+                and make your code more accessible to other developers.
+            </li>
+            <li><strong>Tailored Solutions:</strong> You can implement state management that perfectly fits your
+                application's needs, rather than conforming to the opinions and constraints of a third-party library.
+            </li>
         </ul>
 
         <p>A minimal implementation might look something like this:</p>
@@ -991,9 +1177,10 @@ class StateManager<T> {
     private notifySubscribers() {
         this.subscribers.forEach(subscriber => subscriber());
     }
-}`} />
+}`}/>
 
-        <p>This simple class implements the subscription interface needed to work with <code>useSyncExternalStore</code>. In your React components, you can then use it like this:</p>
+        <p>This simple class implements the subscription interface needed to work with <code>useSyncExternalStore</code>.
+            In your React components, you can then use it like this:</p>
 
         <CodeBlock code={`
 import { useSyncExternalStore } from "react";
@@ -1007,24 +1194,52 @@ function UserProfile() {
     );
 
     return <div>{state.name}</div>;
-}`} />
+}`}/>
 
-        <p>The beauty of this approach is its simplicity and flexibility. You have complete control over when to notify subscribers, how to handle updates, and what optimizations to apply. For example, you might implement deep equality checks to prevent unnecessary updates, or add specific methods for common operations on your state.</p>
+        <p>The beauty of this approach is its simplicity and flexibility. You have complete control over when to notify
+            subscribers, how to handle updates, and what optimizations to apply. For example, you might implement deep
+            equality checks to prevent unnecessary updates, or add specific methods for common operations on your
+            state.</p>
 
-        <p>For async operations, I still recommend using TanStack Query (formerly React Query), which excels at handling data fetching, caching, and synchronization with server state. It complements this approach perfectly, focusing on what it does best while leaving local state management to your custom implementation.</p>
+        <p>For async operations, I still recommend using TanStack Query (formerly React Query), which excels at handling
+            data fetching, caching, and synchronization with server state. It complements this approach perfectly,
+            focusing on what it does best while leaving local state management to your custom implementation.</p>
 
-        <p>This pattern gives you the best of both worlds: the simplicity and control of a custom solution, with the power to optimize performance by controlling exactly when React components rerender. While we can't overcome React's fundamental limitations around fine-grained reactivity, this approach at least puts you in control of the rerendering process, rather than fighting against the framework or adding unnecessary abstractions.</p>
+        <p>This pattern gives you the best of both worlds: the simplicity and control of a custom solution, with the
+            power to optimize performance by controlling exactly when React components rerender. While we can't overcome
+            React's fundamental limitations around fine-grained reactivity, this approach at least puts you in control
+            of the rerendering process, rather than fighting against the framework or adding unnecessary
+            abstractions.</p>
 
         <h3 id="reactFutureProof">React as a Future-Proof Investment</h3>
-        <p>Investing time in learning and building with React has proven to be a sound long-term decision for many developers and organizations. Several factors contribute to React's staying power:</p>
+        <p>Investing time in learning and building with React has proven to be a sound long-term decision for many
+            developers and organizations. Several factors contribute to React's staying power:</p>
         <ul>
-            <li><strong>Backed by Meta:</strong> While being open-source, React benefits from significant investment and use by Meta (formerly Facebook), ensuring continued development and stability.</li>
-            <li><strong>Thoughtful Evolution:</strong> The React team has demonstrated a commitment to backward compatibility while still innovating. Major changes, like the introduction of Hooks in React 16.8, are implemented with gradual migration paths rather than forcing breaking changes.</li>
-            <li><strong>Cross-Platform Potential:</strong> React's component model has extended beyond the web with React Native, allowing developers to leverage their React knowledge for mobile app development. This cross-platform capability increases the value of React expertise.</li>
-            <li><strong>Industry Adoption:</strong> React's widespread use across industries and company sizes means that React skills remain in high demand, making it a valuable addition to any developer's toolkit.</li>
+            <li><strong>Backed by Meta:</strong> While being open-source, React benefits from significant investment and
+                use by Meta (formerly Facebook), ensuring continued development and stability.
+            </li>
+            <li><strong>Thoughtful Evolution:</strong> The React team has demonstrated a commitment to backward
+                compatibility while still innovating. Major changes, like the introduction of Hooks in React 16.8, are
+                implemented with gradual migration paths rather than forcing breaking changes.
+            </li>
+            <li><strong>Cross-Platform Potential:</strong> React's component model has extended beyond the web with
+                React Native, allowing developers to leverage their React knowledge for mobile app development. This
+                cross-platform capability increases the value of React expertise.
+            </li>
+            <li><strong>Industry Adoption:</strong> React's widespread use across industries and company sizes means
+                that React skills remain in high demand, making it a valuable addition to any developer's toolkit.
+            </li>
         </ul>
-        <p>The React team's focus on developer experience, evidenced by ongoing work on features like Server Components, Suspense, and concurrent rendering, suggests that React will continue to evolve to meet the changing needs of web development.</p>
-        <p>Furthermore, React's influence extends beyond its own ecosystem. Many of its core ideas—component-based architecture—have influenced other frameworks and libraries, becoming standard patterns in modern frontend development. This means that even if another technology eventually supersedes React, the fundamental concepts learned will likely remain relevant.</p>
-        <p>In conclusion, React's combination of a low barrier to entry, a rich ecosystem, and long-term stability make it an excellent choice for a wide range of web development projects. While no technology is perfect for every use case, React's balance of simplicity and power, coupled with its thriving community, positions it as a reliable foundation for building modern web applications.</p>
+        <p>The React team's focus on developer experience, evidenced by ongoing work on features like Server Components,
+            Suspense, and concurrent rendering, suggests that React will continue to evolve to meet the changing needs
+            of web development.</p>
+        <p>Furthermore, React's influence extends beyond its own ecosystem. Many of its core ideas—component-based
+            architecture—have influenced other frameworks and libraries, becoming standard patterns in modern frontend
+            development. This means that even if another technology eventually supersedes React, the fundamental
+            concepts learned will likely remain relevant.</p>
+        <p>In conclusion, React's combination of a low barrier to entry, a rich ecosystem, and long-term stability make
+            it an excellent choice for a wide range of web development projects. While no technology is perfect for
+            every use case, React's balance of simplicity and power, coupled with its thriving community, positions it
+            as a reliable foundation for building modern web applications.</p>
     </main>
 </Layout>
