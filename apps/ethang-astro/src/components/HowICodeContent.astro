@@ -7,7 +7,6 @@ import greenshot from "../images/windows/greenshot.png";
 
 /*
  * TODO add sections on:
- * Prisma as the best ORM, and why you should use ORMs
  * Documentation should never be used to explain how to work on something. It should only ever be used to explain how to use something. If documentation is the only form of onboarding a team has, it suggests other problems. Every developer knows how to start a project and read code. But other teams may need a simple definition of APIs and schemas. Data contracts are many times more important than documentation. (Add if you follow everything above, testing, linting, etc. this is even more true as these will act as a true living documentation. It is impossible to do this via Jira or Google Docs, the term "living documentation" is being used incorrectly here, it is by definition dead.
  */
 ---
@@ -408,6 +407,33 @@ import greenshot from "../images/windows/greenshot.png";
           <li>
             <a href="#pluginsVsIntegration"
               >Why Plugins Can't Match True Integration</a
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#whyPrismaIsBestORM"
+          >Why Prisma Is the Best ORM</a
+        >
+        <ul>
+          <li>
+            <a href="#whyUseORM"
+              >Why You Should Use an ORM in the First Place</a
+            >
+          </li>
+          <li>
+            <a href="#comparingPrismaToAlternatives"
+              >Comparing Prisma to Alternatives</a
+            >
+          </li>
+          <li>
+            <a href="#prismaAdvantages"
+              >Prisma's Advantages: Migrations, Types, and Simplicity</a
+            >
+          </li>
+          <li>
+            <a href="#prismaEdgeCompatibility"
+              >Prisma's Compatibility with Edge Platforms</a
             >
           </li>
         </ul>
@@ -3059,6 +3085,216 @@ curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install
       benefits that make developers loyal to the platform. If you value productivity, 
       code quality, and a seamless development experience, JetBrains IDEs represent 
       an investment that consistently pays dividends throughout your development career.
+    </p>
+
+    <h2 id="whyPrismaIsBestORM">Why Prisma Is the Best ORM</h2>
+    <p>
+      When building modern web applications, how you interact with your database can 
+      significantly impact development speed, code quality, and application performance. 
+      Object-Relational Mapping (ORM) tools have become essential in this ecosystem, 
+      and among them, Prisma stands out as the superior choice. Let's explore why 
+      Prisma has become the go-to ORM for developers who value both productivity and 
+      performance.
+    </p>
+
+    <h3 id="whyUseORM">Why You Should Use an ORM in the First Place</h3>
+    <p>
+      Before diving into Prisma specifically, it's worth understanding why ORMs are 
+      valuable in modern development:
+    </p>
+    <ul>
+      <li>
+        <strong>Abstraction of database complexity:</strong> ORMs shield developers 
+        from having to write raw SQL queries, allowing them to work with familiar 
+        programming paradigms
+      </li>
+      <li>
+        <strong>Type safety:</strong> Modern ORMs provide type definitions that catch 
+        errors at compile time rather than runtime
+      </li>
+      <li>
+        <strong>Query building:</strong> ORMs offer intuitive APIs for constructing 
+        complex queries without string concatenation or manual parameter binding
+      </li>
+      <li>
+        <strong>Migration management:</strong> Database schema changes can be tracked, 
+        versioned, and applied consistently across environments
+      </li>
+      <li>
+        <strong>Security:</strong> ORMs typically handle parameter sanitization, 
+        reducing the risk of SQL injection attacks
+      </li>
+      <li>
+        <strong>Cross-database compatibility:</strong> The same code can often work 
+        with different database engines with minimal changes
+      </li>
+    </ul>
+    <p>
+      While some developers argue for using raw SQL for performance reasons, the 
+      productivity and safety benefits of a well-designed ORM typically outweigh 
+      any performance considerations for most applications. The question isn't whether 
+      to use an ORM, but which one provides the best balance of developer experience, 
+      type safety, and performance.
+    </p>
+
+    <h3 id="comparingPrismaToAlternatives">Comparing Prisma to Alternatives</h3>
+    <p>
+      The JavaScript/TypeScript ecosystem has several ORM options, each with different 
+      approaches and trade-offs:
+    </p>
+    <ul>
+      <li>
+        <strong>TypeORM:</strong> Once popular, TypeORM placed a bet on active record 
+        patterns and has fallen very far behind the rest of the ecosystem. Its patterns 
+        are really only relevant to NestJS applications. NestJS itself has put significant 
+        effort into maintaining compatibility with adapters and polyfills that require 
+        outdated dependencies like "reflect-metadata" – technologies that are no longer 
+        relevant in a modern JavaScript ecosystem.
+      </li>
+      <li>
+        <strong>Sequelize:</strong> One of the oldest JavaScript ORMs, Sequelize suffers 
+        from outdated patterns, limited TypeScript support, and complex configuration 
+        requirements.
+      </li>
+      <li>
+        <strong>Drizzle:</strong> A newer entrant that has captured developer attention 
+        with its performance claims. However, Drizzle still requires manual model definition 
+        and while it does handle migrations, it does so at a superficial level that doesn't 
+        map directly to the types and client API generation in the way that Prisma does.
+      </li>
+      <li>
+        <strong>Kysely:</strong> Similar to Drizzle, Kysely offers a type-safe query 
+        builder but lacks the comprehensive feature set of a full ORM. It requires 
+        significant manual setup and while it does include migration capabilities, they're 
+        implemented at a superficial level that doesn't integrate with types and client 
+        API generation like Prisma's approach.
+      </li>
+    </ul>
+    <p>
+      These "modern" alternatives like Drizzle and Kysely have gained attention, but 
+      they still require considerable manual wiring and setup. You have to manually 
+      define models, and while they do offer migration capabilities, they handle them 
+      at a superficial level that doesn't map directly to the types and client API 
+      generation in the way that Prisma does – missing a key integration that's 
+      critical for efficient database management in a team environment.
+    </p>
+
+    <h3 id="prismaAdvantages">Prisma's Advantages: Migrations, Types, and Simplicity</h3>
+    <p>
+      Prisma takes a fundamentally different approach that addresses the limitations 
+      of other ORMs:
+    </p>
+    <ul>
+      <li>
+        <strong>Schema-driven development:</strong> Prisma's schema file is a declarative, 
+        human-readable definition of your data model that serves as the single source of 
+        truth for both database schema and TypeScript types.
+      </li>
+      <li>
+        <strong>Automatic migrations:</strong> From your schema, Prisma can automatically 
+        generate and apply database migrations, keeping your database in sync with your 
+        code without manual SQL writing.
+      </li>
+      <li>
+        <strong>Type generation:</strong> Prisma generates TypeScript types that perfectly 
+        match your database schema, providing end-to-end type safety from database to API.
+      </li>
+      <li>
+        <strong>Intuitive query API:</strong> Prisma's client API is designed to be 
+        intuitive and discoverable, with excellent IDE autocompletion support.
+      </li>
+      <li>
+        <strong>Relations handling:</strong> Prisma makes working with related data 
+        straightforward, with support for eager loading, nested writes, and cascading 
+        operations.
+      </li>
+    </ul>
+    <p>
+      Consider this simple Prisma schema example:
+    </p>
+    <CodeBlock code={`
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  posts     Post[]
+  profile   Profile?
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+}
+
+model Profile {
+  id        Int     @id @default(autoincrement())
+  bio       String?
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int     @unique
+}`} />
+    <p>
+      From this single schema file, Prisma generates:
+    </p>
+    <ol>
+      <li>Database migrations to create these tables with proper constraints</li>
+      <li>TypeScript types for all models and their relations</li>
+      <li>A fully type-safe client for querying and manipulating data</li>
+    </ol>
+    <p>
+      This approach dramatically reduces boilerplate code and ensures consistency 
+      between your database schema and application code. The schema file serves as 
+      both documentation and executable code, eliminating the drift that often occurs 
+      between models and database structure in other ORMs.
+    </p>
+    <p>
+      Prisma has also recently made significant improvements to address its historical 
+      limitations:
+    </p>
+    <ul>
+      <li>
+        <strong>ESM support:</strong> Prisma now fully supports ECMAScript modules, 
+        aligning with the modern JavaScript ecosystem.
+      </li>
+      <li>
+        <strong>Improved performance:</strong> Prisma has dropped what has been the 
+        biggest reason most people decided not to use it – the Rust client. This change 
+        has significantly improved its performance and startup time.
+      </li>
+    </ul>
+
+    <h3 id="prismaEdgeCompatibility">Prisma's Compatibility with Edge Platforms</h3>
+    <p>
+      With the shift away from the Rust client and toward a more lightweight JavaScript 
+      implementation, Prisma is now fully compatible with edge platforms like Cloudflare 
+      Workers, Vercel Edge Functions, and Deno Deploy. This compatibility opens up new 
+      possibilities for building high-performance applications that leverage the global 
+      distribution of edge computing while maintaining the developer experience benefits 
+      of a sophisticated ORM.
+    </p>
+    <p>
+      Edge compatibility means you can:
+    </p>
+    <ul>
+      <li>Deploy database-connected applications to CDN edge nodes worldwide</li>
+      <li>Reduce latency by processing data closer to your users</li>
+      <li>Maintain a consistent development experience across all deployment targets</li>
+    </ul>
+    <p>
+      This advantage is particularly important as more applications move toward edge-first 
+      architectures to improve performance and reduce costs.
+    </p>
+    <p>
+      In conclusion, while there are many ORM options available in the JavaScript ecosystem, 
+      Prisma stands out for its comprehensive approach that handles both migrations and types 
+      through one very simple schema file. Its recent performance improvements and edge 
+      compatibility make it suitable for virtually any modern web application. By choosing 
+      Prisma, you're not just selecting a database tool – you're adopting a development 
+      workflow that emphasizes type safety, reduces boilerplate, and ensures consistency 
+      between your code and database.
     </p>
   </main>
 </Fragment>
