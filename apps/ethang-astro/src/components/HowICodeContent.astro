@@ -9,8 +9,6 @@ import greenshot from "../images/windows/greenshot.png";
  * TODO add sections on:
  * Why Cloudflare is best for development
  * Prisma as the best ORM, and why you should use ORMs
- * Mention playwright as the best E2E tool
- * Why you should use JetBrains IDE's over the trend chase text editors (Sublime - customization/themes, VS Code - plugins, Cursor - AI)
  * Documentation should never be used to explain how to work on something. It should only ever be used to explain how to use something. If documentation is the only form of onboarding a team has, it suggests other problems. Every developer knows how to start a project and read code. But other teams may need a simple definition of APIs and schemas. Data contracts are many times more important than documentation. (Add if you follow everything above, testing, linting, etc. this is even more true as these will act as a true living documentation. It is impossible to do this via Jira or Google Docs, the term "living documentation" is being used incorrectly here, it is by definition dead.
  */
 ---
@@ -344,6 +342,36 @@ import greenshot from "../images/windows/greenshot.png";
           <li>
             <a href="#customizationAndControl"
               >Removing the Branding and Taking Control</a
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#whyYouShouldUseJetBrainsIDEs">Why You Should Use JetBrains IDEs</a>
+        <ul>
+          <li>
+            <a href="#ideVsTextEditor"
+              >IDE vs. Text Editor: Understanding the Real Difference</a
+            >
+          </li>
+          <li>
+            <a href="#jetBrainsLoyalty"
+              >The JetBrains Loyalty Phenomenon</a
+            >
+          </li>
+          <li>
+            <a href="#fullIntegrationAdvantages"
+              >The Power of Full Integration</a
+            >
+          </li>
+          <li>
+            <a href="#jetBrainsJunie"
+              >JetBrains Junie: AI That Understands Your Code</a
+            >
+          </li>
+          <li>
+            <a href="#pluginsVsIntegration"
+              >Why Plugins Can't Match True Integration</a
             >
           </li>
         </ul>
@@ -2617,6 +2645,183 @@ curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install
       developer. Its package management, productivity tools, modern
       command-line, and balanced customization make it excellent if you value
       both productivity and polish.
+    </p>
+
+    <h2 id="whyYouShouldUseJetBrainsIDEs">Why You Should Use JetBrains IDEs</h2>
+    <p>
+      In the world of code editors and development environments, there's a clear 
+      distinction between those who constantly switch tools and those who find their 
+      perfect match and never look back. JetBrains IDEs fall firmly in the latter 
+      category, creating a loyal user base that rarely feels the need to explore 
+      alternatives. Let's explore why JetBrains IDEs stand apart from the trend-chasing 
+      cycle of text editors and why they represent a superior development experience.
+    </p>
+
+    <h3 id="ideVsTextEditor">IDE vs. Text Editor: Understanding the Real Difference</h3>
+    <p>
+      The terms "IDE" (Integrated Development Environment) and "text editor" are often 
+      used interchangeably, but they represent fundamentally different approaches to 
+      software development. A text editor, even with plugins, primarily focuses on 
+      editing text files with syntax highlighting and basic code assistance. An IDE, 
+      however, provides a comprehensive environment that understands your entire project 
+      at a deep level.
+    </p>
+    <p>
+      This distinction becomes clear when you consider what JetBrains offers:
+    </p>
+    <ul>
+      <li>
+        <strong>Project-wide awareness:</strong> JetBrains IDEs understand the relationships 
+        between all files in your project, not just the one you're currently editing
+      </li>
+      <li>
+        <strong>Language-specific intelligence:</strong> Deep understanding of language semantics, 
+        not just syntax highlighting
+      </li>
+      <li>
+        <strong>Integrated tooling:</strong> Debugging, profiling, testing, and deployment 
+        tools built directly into the environment
+      </li>
+      <li>
+        <strong>Refactoring capabilities:</strong> Intelligent code transformations that 
+        understand your codebase's structure
+      </li>
+    </ul>
+
+    <h3 id="jetBrainsLoyalty">The JetBrains Loyalty Phenomenon</h3>
+    <p>
+      While many developers have hopped from one text editor to another following 
+      industry trends—Sublime Text for its customization and themes, VS Code for its 
+      plugin ecosystem, and now Cursor for its AI integration—JetBrains users display 
+      a remarkable loyalty. This isn't accidental or merely habitual; it's because 
+      JetBrains consistently delivers value that transcends these trends.
+    </p>
+    <p>
+      JetBrains has demonstrated an ability to adapt and incorporate new features as 
+      they emerge in the development landscape. When customization became popular, 
+      JetBrains already offered extensive theming and personalization. When plugins 
+      became essential, JetBrains had a robust marketplace. And now, as AI assistance 
+      becomes the new frontier, JetBrains has integrated these capabilities without 
+      requiring users to switch platforms.
+    </p>
+    <p>
+      This adaptability means JetBrains users don't experience FOMO (fear of missing out) 
+      that drives the constant tool-switching behavior seen elsewhere in the industry. 
+      They know their IDE will evolve to incorporate valuable new capabilities while 
+      maintaining the deep integration and intelligence they rely on.
+    </p>
+
+    <h3 id="fullIntegrationAdvantages">The Power of Full Integration</h3>
+    <p>
+      The true power of JetBrains IDEs becomes apparent when you experience the 
+      seamless integration of advanced development features:
+    </p>
+    <ul>
+      <li>
+        <strong>Interactive debugging:</strong> Set breakpoints in a React application 
+        and step through code execution while inspecting component state and props in 
+        real-time
+      </li>
+      <li>
+        <strong>Database tools:</strong> Connect to, query, and modify databases directly 
+        within your IDE, with schema visualization and query optimization
+      </li>
+      <li>
+        <strong>Version control:</strong> Git operations with visual diff tools, conflict 
+        resolution, and branch management integrated into your workflow
+      </li>
+      <li>
+        <strong>Deployment tools:</strong> Deploy applications to various environments 
+        with configuration management and monitoring
+      </li>
+      <li>
+        <strong>Profiling and performance analysis:</strong> Identify bottlenecks and 
+        optimize code without leaving your development environment
+      </li>
+    </ul>
+    <p>
+      These aren't just conveniences; they fundamentally change how you approach 
+      development problems. When your debugging tools understand your application 
+      structure, you can diagnose issues more effectively. When your database tools 
+      are aware of your data models, you can work with your data more intelligently.
+    </p>
+
+    <h3 id="jetBrainsJunie">JetBrains Junie: AI That Understands Your Code</h3>
+    <p>
+      JetBrains has entered the AI assistant space with Junie, a sophisticated AI 
+      tool that demonstrates the advantage of deep integration. Unlike generic AI 
+      coding assistants, Junie leverages JetBrains' deep understanding of code 
+      structure and project context.
+    </p>
+    <p>
+      What sets Junie apart is its multimodal approach—it adapts its assistance 
+      based on context:
+    </p>
+    <ul>
+      <li>
+        When you're writing code, it offers intelligent completions that respect your 
+        project's architecture and coding conventions
+      </li>
+      <li>
+        When you're debugging, it can analyze the execution flow and suggest potential 
+        fixes for issues
+      </li>
+      <li>
+        When you're refactoring, it understands the implications across your entire 
+        codebase
+      </li>
+      <li>
+        When you're learning a new API or framework, it can provide contextual 
+        documentation and examples
+      </li>
+    </ul>
+    <p>
+      This context-aware assistance is only possible because Junie operates within 
+      an environment that already has deep knowledge of your code, not just as text 
+      but as structured, meaningful entities with relationships and semantics.
+    </p>
+
+    <h3 id="pluginsVsIntegration">Why Plugins Can't Match True Integration</h3>
+    <p>
+      A common misconception is that you can replicate the JetBrains experience by 
+      installing dozens of plugins in a text editor like VS Code. While plugins can 
+      add features, they can't achieve the same level of integration for several reasons:
+    </p>
+    <ul>
+      <li>
+        <strong>Fragmented development:</strong> Plugins are developed independently, 
+        often with different design philosophies and update cycles
+      </li>
+      <li>
+        <strong>Limited interoperability:</strong> Plugins may not communicate effectively 
+        with each other, creating silos of functionality
+      </li>
+      <li>
+        <strong>Performance overhead:</strong> Each plugin adds its own processing and 
+        memory requirements, often leading to a sluggish experience
+      </li>
+      <li>
+        <strong>Inconsistent user experience:</strong> Different plugins introduce 
+        varying UI patterns and keyboard shortcuts, creating cognitive load
+      </li>
+      <li>
+        <strong>Shallow integration:</strong> Plugins typically operate at a surface 
+        level, lacking the deep project understanding that comes from a unified architecture
+      </li>
+    </ul>
+    <p>
+      JetBrains IDEs are built from the ground up with integration in mind. Every feature 
+      is aware of and can interact with other features, creating a cohesive environment 
+      rather than a collection of disparate tools.
+    </p>
+    <p>
+      In conclusion, while text editors have their place and may be sufficient for 
+      simpler tasks, JetBrains IDEs offer a fundamentally different development experience. 
+      Their deep integration, language intelligence, and comprehensive tooling create 
+      a productive environment that adapts to new trends without sacrificing the core 
+      benefits that make developers loyal to the platform. If you value productivity, 
+      code quality, and a seamless development experience, JetBrains IDEs represent 
+      an investment that consistently pays dividends throughout your development career.
     </p>
   </main>
 </Fragment>
