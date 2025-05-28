@@ -4,11 +4,6 @@ import CodeBlock from "../components/CodeBlock.astro";
 import LocalImage from "../components/LocalImage.astro";
 import snippingTool from "../images/windows/snipping-tool.png";
 import greenshot from "../images/windows/greenshot.png";
-
-/*
- * TODO add sections on:
- * Documentation should never be used to explain how to work on something. It should only ever be used to explain how to use something. If documentation is the only form of onboarding a team has, it suggests other problems. Every developer knows how to start a project and read code. But other teams may need a simple definition of APIs and schemas. Data contracts are many times more important than documentation. (Add if you follow everything above, testing, linting, etc. this is even more true as these will act as a true living documentation. It is impossible to do this via Jira or Google Docs, the term "living documentation" is being used incorrectly here, it is by definition dead.
- */
 ---
 
 <Fragment>
@@ -255,6 +250,33 @@ import greenshot from "../images/windows/greenshot.png";
           <li>
             <a href="#conclusionESLint"
               >Conclusion: ESLint as a Pillar of Quality</a
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#documentationIsForUsers"
+          >Documentation Is For Users, Not Developers</a
+        >
+        <ul>
+          <li>
+            <a href="#documentationPurpose"
+              >The True Purpose of Documentation</a
+            >
+          </li>
+          <li>
+            <a href="#livingDocumentation"
+              >Code as Living Documentation</a
+            >
+          </li>
+          <li>
+            <a href="#documentationDevelopersActuallyRead"
+              >Documentation Developers Actually Read</a
+            >
+          </li>
+          <li>
+            <a href="#documentationConclusion"
+              >Conclusion: Focus on What Matters</a
             >
           </li>
         </ul>
@@ -1889,6 +1911,102 @@ function customGet(obj, path, defaultValue) {
       more reliable, maintainable, and secure. It's a proactive tool that
       fosters a culture of quality and discipline, contributing significantly to
       the overall health and longevity of a codebase.
+    </p>
+
+    <h2 id="documentationIsForUsers">Documentation Is For Users, Not Developers</h2>
+    <p>
+      In the software development world, there's a common misconception about the purpose and audience of documentation. Many teams invest significant time creating extensive internal documentation, believing it's the key to onboarding new developers and maintaining knowledge about their codebase. However, this approach often misses the mark on what documentation should actually accomplish and who it should serve.
+    </p>
+
+    <h3 id="documentationPurpose">The True Purpose of Documentation</h3>
+    <p>
+      Documentation should never be used to explain how to work on something. It should only ever be used to explain how to use something. This distinction is crucial: documentation is for users of your system, not for the developers building it.
+    </p>
+    <p>
+      If documentation is the only form of onboarding a team has, it suggests other problems in the development process. Every experienced developer knows how to start a project and read code—these are fundamental skills. What they need isn't a document explaining the codebase structure, but rather a well-organized, self-documenting codebase with proper testing, linting, and clear patterns.
+    </p>
+    <p>
+      External teams and users, however, do need clear documentation on how to interact with your system. They need simple definitions of APIs, schemas, and integration points. Data contracts—the explicit agreements about what data structures look like and how they behave—are many times more important than narrative documentation.
+    </p>
+
+    <h3 id="livingDocumentation">Code as Living Documentation</h3>
+    <p>
+      If you've followed the practices outlined in previous sections—comprehensive testing, strict linting, and component visualization—you've already created the most valuable form of documentation: living documentation embedded in your code. This doesn't mean writing narrative comments, but rather letting your tests, types, and linting rules serve as the documentation.
+    </p>
+    <p>
+      This type of documentation is superior for several reasons:
+    </p>
+    <ul>
+      <li>
+        <strong>It's always current:</strong> Unlike separate documentation that quickly becomes outdated, tests and type definitions must remain in sync with the code to function.
+      </li>
+      <li>
+        <strong>It's executable:</strong> Tests don't just describe behavior—they verify it. If something changes, tests will fail, alerting developers immediately.
+      </li>
+      <li>
+        <strong>It's contextual:</strong> Tests and type definitions near the relevant code provide context exactly where developers need it, eliminating the need for separate narrative documentation.
+      </li>
+      <li>
+        <strong>It's enforced:</strong> Linting rules and type checks are enforced by the build system, ensuring compliance.
+      </li>
+    </ul>
+    <p>
+      It's important to note that the term "living documentation" is often misused in the industry. Documents in Jira, Confluence, or Google Docs are not truly "living"—they are by definition static and prone to becoming outdated. True living documentation exists only in the codebase itself, where it evolves naturally with the code.
+    </p>
+
+    <h3 id="documentationDevelopersActuallyRead">Documentation Developers Actually Read</h3>
+    <p>
+      The reality is that developers rarely read comprehensive documentation about internal systems. What they do read and rely on are:
+    </p>
+    <ul>
+      <li>
+        <strong>API specifications:</strong> Tools like Swagger/OpenAPI that provide interactive, up-to-date documentation of service endpoints.
+      </li>
+      <li>
+        <strong>Type definitions:</strong> Well-defined types that explain data structures and function signatures.
+      </li>
+      <li>
+        <strong>Test cases:</strong> Examples of how code is expected to behave in various scenarios.
+      </li>
+      <li>
+        <strong>Usage examples:</strong> Short, focused examples showing how to use a component or function.
+      </li>
+      <li>
+        <strong>Self-documenting code:</strong> Well-structured code with descriptive function and variable names that make the intent clear without requiring comments. Comments are often a code smell - if something needs explanation, consider abstracting it into a function with a descriptive name instead.
+      </li>
+    </ul>
+
+    <h4>Building a Self-Documenting Codebase</h4>
+    <p>
+      When we talk about a "self-documenting codebase," we're referring to a comprehensive approach that goes beyond just well-named functions. A truly self-documenting codebase describes itself through multiple complementary practices:
+    </p>
+    <ul>
+      <li>
+        <strong>Clearly written code:</strong> Code that follows consistent patterns and conventions, with thoughtful naming and organization that reveals its intent and purpose.
+      </li>
+      <li>
+        <strong>Robust tests:</strong> Comprehensive test suites that serve as executable specifications, demonstrating how components and functions are meant to be used and what outcomes to expect.
+      </li>
+      <li>
+        <strong>Storybook integration:</strong> Interactive component libraries that showcase UI elements in various states and configurations, providing visual documentation that's always in sync with the actual code. Storybook is particularly valuable as it combines documentation, testing, and visual exploration in one tool.
+      </li>
+      <li>
+        <strong>Strict linting:</strong> Enforced code quality rules that maintain consistency and prevent common errors, creating a predictable codebase that's easier to navigate and understand.
+      </li>
+      <li>
+        <strong>Industry standards:</strong> Following established patterns and practices that experienced developers will immediately recognize, reducing the learning curve for new team members.
+      </li>
+    </ul>
+    <p>
+      For working on the actual application or library, it's more efficient and helpful to discover tests and linting rules on a per-feature basis than to crawl through extensive documentation. This approach allows developers to understand the system organically, focusing on the specific parts they need to modify.
+    </p>
+
+    <h3 id="documentationConclusion">Conclusion: Focus on What Matters</h3>
+    <p>
+      The most valuable documentation efforts should focus on external-facing aspects of your system—the parts that users and integrators need to understand. For internal development, invest in self-documenting code practices: comprehensive tests, strict typing, clear naming conventions, consistent patterns, and interactive component libraries with Storybook.
+    </p>
+    <p>
+      By shifting your documentation strategy to focus on users rather than developers, you'll not only save time but also create more valuable resources that actually get used. And by embracing code as documentation through a self-documenting codebase with robust tests, linting, and Storybook, you'll ensure that your internal knowledge remains accurate, useful, and truly "living."
     </p>
 
     <h2 id="letsTalkAboutReact">Let's Talk About React</h2>
