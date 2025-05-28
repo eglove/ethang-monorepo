@@ -1,6 +1,5 @@
 ---
 import "highlight.js/styles/night-owl.css";
-import Layout from "../layouts/Layout.astro";
 import CodeBlock from "../components/CodeBlock.astro";
 import LocalImage from "../components/LocalImage.astro";
 import snippingTool from "../images/windows/snipping-tool.png";
@@ -9,8 +8,8 @@ import greenshot from "../images/windows/greenshot.png";
 
 <main class="prose">
     <h1>How I Code</h1>
-    <p>The following is an exploration of the opinion and lessons I've learned over the years of programming and
-        building web applications. All of these opinions are based on personal experience, mistakes, and problems
+    <p>The following is an exploration of opinions and lessons learned over the years of programming and
+        building web applications. All of these perspectives are based on real-world experience, mistakes, and problems
         fixed
         through consulting on projects in need of help.</p>
     <ul>
@@ -121,55 +120,55 @@ import greenshot from "../images/windows/greenshot.png";
         see
         online. It's the language that makes pages dynamic, handles user input, and powers complex web applications.
         But
-        despite its pervasive influence and incredible capabilities, I want to challenge a common perception: is
+        despite its pervasive influence and incredible capabilities, let's challenge a common perception: is
         JavaScript truly a "programming language" in the same vein as C++, Java, or Python, or is it something else
         entirely—a highly effective scripting language that acts as an API to more robust, lower-level systems?</p>
     <h3 id="javascriptAsTheUltimateApi">JavaScript as the Ultimate API</h3>
     <p>Think about it: what does JavaScript do? In a browser environment, it manipulates the Document Object Model
         (DOM), fetches data, responds to events, and interacts with various Web APIs like <code>localStorage</code>,
-        <code>fetch</code>, or <code>WebGL</code>. I see it as the conductor of an orchestra, but the instruments
+        <code>fetch</code>, or <code>WebGL</code>. You can think of it as the conductor of an orchestra, but the instruments
         themselves—the browser's rendering engine, the network stack, the underlying operating system—are built
         using
         languages like C++, Rust, or assembly.</p>
-    <p>From this perspective, I believe JavaScript functions less like a foundational programming language and more
+    <p>From this perspective, JavaScript functions less like a foundational programming language and more
         like a
         powerful scripting interface. It's the language we use to tell the browser (which is itself a complex
-        application written in low-level languages) what to do. I see it as an API, a set of commands and
+        application written in low-level languages) what to do. Consider it as an API, a set of commands and
         conventions, that
-        allows us to interact with the browser's core functionalities. In my view, robust programming languages
+        allows you to interact with the browser's core functionalities. Robust programming languages
         typically
         provide
         their own comprehensive set of tools and direct control over system resources; JavaScript, by design,
         largely
         abstracts this away, operating within the confines of its host environment.</p>
     <h3 id="theMissingStandardLibrary">The Missing Standard Library: A Key Indicator</h3>
-    <p>I think one of the strongest arguments for viewing JavaScript this way is its inherent lack of a
+    <p>One of the strongest arguments for viewing JavaScript this way is its inherent lack of a
         comprehensive
         standard
-        library. What do I mean by a "standard library"? It's a collection of pre-built functions, modules, and
+        library. What is a "standard library"? It's a collection of pre-built functions, modules, and
         data
         structures that come bundled with a programming language, providing common functionalities like file system
-        access, networking, advanced data manipulation, or date/time utilities. When I look at other languages, I
-        see that Python has a vast standard library,
+        access, networking, advanced data manipulation, or date/time utilities. Looking at other languages,
+        you'll notice that Python has a vast standard library,
         Java
         has its rich API, and even C++ has a well-defined standard library.</p>
-    <p>JavaScript? Not so much. When I'm working on a project, if I need robust date manipulation, I'm reaching for
-        <code>luxon</code>. If I need utility functions for arrays or objects, I'm often considering
+    <p>JavaScript? Not so much. When working on a project, if you need robust date manipulation, you'll reach for
+        <code>luxon</code>. If you need utility functions for arrays or objects, you might consider
         <code>lodash</code>.
         For
-        proper async management, I'm using <code>TanStack Query</code>. I cover these in, "<a
+        proper async management, <code>TanStack Query</code> becomes essential. These are covered in "<a
                 href="https://ethang.dev/blog/javascript-standard-library/" target="_blank">Why You Should Install
             That
-            JS Library</a>," which acts as a testament to this reality. We <i>rely</i> on the vast ecosystem of NPM
+            JS Library</a>," which acts as a testament to this reality. Developers <i>rely</i> on the vast ecosystem of NPM
         packages precisely because core JavaScript doesn't natively provide many of these essential functionalities.
     </p>
-    <p>I find that this reliance on third-party packages, while incredibly powerful and flexible, highlights that
+    <p>This reliance on third-party packages, while incredibly powerful and flexible, highlights that
         JavaScript
         itself
         doesn't offer the self-contained, batteries-included environment we associate with traditional programming
-        languages. In my experience, it needs to be <i>supplemented</i>.</p>
+        languages. From practical experience, it needs to be <i>supplemented</i>.</p>
     <h3 id="theInevitableSupplementation">The Inevitable Supplementation</h3>
-    <p>This brings me to the core of why I believe JavaScript, in its most effective forms, must always be
+    <p>This brings us to the core reason why JavaScript, in its most effective forms, must always be
         supplemented by
         other
         "programming language" paradigms or tools:</p>
@@ -262,13 +261,13 @@ import greenshot from "../images/windows/greenshot.png";
         </li>
     </ol>
     <h3 id="isJavaScriptNotAProgrammingLanguage">So, Is JavaScript "Not a Programming Language" Then?</h3>
-    <p>My argument isn't that JavaScript is "bad" or "incapable." Far from it! I think it's incredibly powerful and
+    <p>The argument isn't that JavaScript is "bad" or "incapable." Far from it! It's incredibly powerful and
         has
-        revolutionized the web. The distinction I'm drawing is one of fundamental design and role.</p>
-    <p>I believe it's more accurate to view JavaScript as an extraordinarily versatile and high-level scripting
-        language, purpose-built for interacting with and manipulating web environments. In my view, it excels as an
+        revolutionized the web. The distinction being drawn is one of fundamental design and role.</p>
+    <p>It's more accurate to view JavaScript as an extraordinarily versatile and high-level scripting
+        language, purpose-built for interacting with and manipulating web environments. It excels as an
         API layer,
-        allowing us to orchestrate complex user experiences. However, I've found that for the underlying heavy
+        allowing developers to orchestrate complex user experiences. However, for the underlying heavy
         lifting, the
         foundational
         system interactions, and the robust structuring of large-scale applications, JavaScript frequently leans on
@@ -276,57 +275,55 @@ import greenshot from "../images/windows/greenshot.png";
         necessitates the support of environments and tools that are themselves built upon or emulate the
         characteristics
         of traditional programming languages.</p>
-    <p>This perspective helps me appreciate JavaScript for what it is: an incredibly effective, adaptable, and
-        indispensable scripting interface that, when combined with its powerful ecosystem, enables us to build the
-        dynamic and interactive web we know and love. I see it as a language that thrives on collaboration—with
+    <p>This perspective helps you appreciate JavaScript for what it is: an incredibly effective, adaptable, and
+        indispensable scripting interface that, when combined with its powerful ecosystem, enables the creation of
+        dynamic and interactive web experiences we know and love. You can see it as a language that thrives on collaboration—with
         browsers,
         with
-        backend systems, and with its ever-expanding universe of tools and libraries. And in that, I find there's a
+        backend systems, and with its ever-expanding universe of tools and libraries. And in that, there's a
         unique
         beauty and strength.</p>
     <h2 id="typescriptIsAdditional">TypeScript Is An Additional Layer of Protection, Not a Replacement</h2>
-    <p>TypeScript is a powerful tool, catching errors early and boosting productivity. When we combine it with
-        runtime validation libraries like Zod, we often establish robust data contracts at our application
+    <p>TypeScript is a powerful tool, catching errors early and boosting productivity. When combining it with
+        runtime validation libraries like Zod, developers often establish robust data contracts at application
         boundaries. This can lead to a common assumption: once data passes these initial checks, it's "safe" and
-        needs no further runtime scrutiny. In this section, I'll challenge that notion, exploring the crucial
+        needs no further runtime scrutiny. This section challenges that notion, exploring the crucial
         distinction between build-time and runtime type checks and emphasizing why comprehensive testing for runtime
         edge cases remains essential, even in a meticulously validated TypeScript codebase.</p>
     <h3 id="buildTimeVsRuntime">Build-Time vs. Runtime Type Checks: A Fundamental Difference</h3>
-    <p>Build-time type checks are TypeScript's domain. They happen during compilation, before our code ever runs.
-        I've seen how TypeScript analyzes our code, inferring types, and flags mismatches based on our annotations.
+    <p>Build-time type checks are TypeScript's domain. They happen during compilation, before your code ever runs.
+        TypeScript analyzes code, inferring types, and flags mismatches based on annotations.
         If a function
-        expects numbers but gets a string, TypeScript stops us cold, preventing compilation until we fix it. I find
-        this
-        static analysis incredibly powerful for early bug detection.</p>
-    <p>However, I want to emphasize this critical point: TypeScript's types are erased when our code compiles to
+        expects numbers but gets a string, TypeScript stops the process, preventing compilation until it's fixed. This
+        static analysis is incredibly powerful for early bug detection.</p>
+    <p>However, it's important to emphasize this critical point: TypeScript's types are erased when code compiles to
         plain
-        JavaScript. At runtime, our application executes dynamic JavaScript. In my experience, TypeScript ensures
+        JavaScript. At runtime, the application executes dynamic JavaScript. TypeScript ensures
         type safety during
-        development, but it offers no inherent guarantees about the data our application will encounter live. I've
-        observed that the
+        development, but it offers no inherent guarantees about the data your application will encounter live. The
         compiled JavaScript simply runs based on the values present at that moment, stripped of any TypeScript type
         information.</p>
     <h3 id="theMisconceptionOnceValidated">The Misconception: "Once Validated, Always Safe"</h3>
-    <p>I've noticed that many developers, especially those using TypeScript with runtime validation libraries like
+    <p>Many developers, especially those using TypeScript with runtime validation libraries like
         Zod, assume that
         data, once validated at entry points (e.g., API requests, form submissions), is perfectly typed and "safe"
-        throughout its journey. In my experience, this often leads to the belief that internal functions, having
+        throughout its journey. This often leads to the belief that internal functions, having
         received
         Zod-validated data, no longer need defensive checks.</p>
-    <p>I understand this perspective, but I believe it overlooks a crucial reality: data can become "untyped" or
-        unexpectedly malformed after initial validation. I've seen how internal transformations, coercions, or
+    <p>While understandable, this perspective overlooks a crucial reality: data can become "untyped" or
+        unexpectedly malformed after initial validation. Internal transformations, coercions, or
         complex state
-        changes can introduce issues. Even data that I've verified as perfectly valid at the boundary can cause
-        runtime problems if our
+        changes can introduce issues. Even data that's perfectly valid at the boundary can cause
+        runtime problems if the
         internal logic doesn't account for JavaScript's dynamic nature.</p>
     <h3 id="whyRuntimeEdgeCasesMatter">Why Runtime Edge Cases Matter (Even for "Safe" Data)</h3>
-    <p>I've learned that JavaScript's dynamic nature means that even with TypeScript and initial validation, our
+    <p>JavaScript's dynamic nature means that even with TypeScript and initial validation, your
         code can encounter
         "garbage" data or unexpected states that static checks and initial runtime validators simply can't foresee
-        in all internal contexts. In my experience, TypeScript operates on assumptions about our code's structure,
+        in all internal contexts. TypeScript operates on assumptions about code structure,
         and Zod validates a
-        snapshot of data. I've found that neither guarantees data integrity throughout its entire lifecycle. Here's
-        how I've seen data
+        snapshot of data. Neither guarantees data integrity throughout its entire lifecycle. Here's
+        how data can
         still lead to runtime issues:</p>
     <ul>
         <li><code>NaN</code> <strong>(Not-A-Number):</strong> A numeric field might pass Zod validation, but
@@ -484,33 +481,32 @@ parseJsonString('{"key": "value"}'); // Works
 parseJsonString('invalid json'); // Throws SyntaxError, caught by try/catch`}/>
         </li>
     </ul>
-    <p>I believe the notion that our internal code is immune to these issues is a misdirection. In my view, if a
+    <p>The notion that internal code is immune to these issues is a misdirection. If a
         function, even deep
-        within our application, can receive input that causes it to crash or behave unpredictably, it is ultimately
-        our responsibility as developers to gracefully handle that input. I've found that a robust application
+        within an application, can receive input that causes it to crash or behave unpredictably, it is ultimately
+        the responsibility of developers to gracefully handle that input. A robust application
         anticipates and
-        mitigates such scenarios. I've seen real-world examples, like a financial dashboard displaying incorrect
+        mitigates such scenarios. Real-world examples, like a financial dashboard displaying incorrect
         calculations
         due to unhandled <code>NaN</code>s introduced during internal data processing, or an e-commerce platform
-        failing to process orders because of missing object properties after complex data transformations, which
+        failing to process orders because of missing object properties after complex data transformations, 
         vividly
-        underscore this point. In my experience with such scenarios, failures stem not from initial external data
+        underscore this point. In these scenarios, failures stem not from initial external data
         validation, but from
-        runtime data integrity issues within our application's core logic.</p>
+        runtime data integrity issues within the application's core logic.</p>
     <h3 id="implementingRobustRuntime">Implementing Robust Runtime Checks (Beyond the Boundary)</h3>
-    <p>I've realized that since TypeScript's static checks are removed at runtime, and initial validation only
+    <p>Since TypeScript's static checks are removed at runtime, and initial validation only
         covers the entry point,
-        consciously implementing robust runtime validation within our application becomes essential. In my
-        development practice, this involves
-        several practical approaches that I recommend:</p>
+        consciously implementing robust runtime validation within your application becomes essential. This involves
+        several practical approaches:</p>
     <ul>
-        <li><strong>Leveraging TypeScript's Type Guards and Assertion Functions:</strong> Within our TypeScript
-            codebase, we can write custom <a
+        <li><strong>Leveraging TypeScript's Type Guards and Assertion Functions:</strong> Within a TypeScript
+            codebase, you can write custom <a
                     href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates"
                     target="_blank">type guards</a> or <a
                     href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#assertion-functions"
                     target="_blank">assertion functions</a> to perform runtime checks and inform
-            the TypeScript compiler about a variable's type after the check. This allows us to combine dynamic
+            the TypeScript compiler about a variable's type after the check. This allows you to combine dynamic
             runtime safety with static type inference. For example:
             <CodeBlock code={`
 function isString(value: unknown): value is string {
@@ -562,45 +558,45 @@ console.log(processUserName(123 as any)); // Warns, "Guest"`}/>
         </li>
     </ul>
     <h3 id="strategicValidation">Strategic Validation: Where and How Much?</h3>
-    <p>I believe where we place runtime validation is crucial. While "entry point validation" — validating data as
+    <p>Where you place runtime validation is crucial. While "entry point validation" — validating data as
         it first
-        enters our application (e.g., at an API gateway, a serverless function handler, or a form submission
-        endpoint) — is paramount, I've found it's not the only place to consider.</p>
+        enters your application (e.g., at an API gateway, a serverless function handler, or a form submission
+        endpoint) — is paramount, it's not the only place to consider.</p>
     <ul>
-        <li><strong>Application Boundaries:</strong> In my approach, this is the primary layer for comprehensive
+        <li><strong>Application Boundaries:</strong> This is the primary layer for comprehensive
             validation using
-            schema libraries like Zod. Here, I ensure all external inputs meet our application's fundamental data
+            schema libraries like Zod. Here, ensure all external inputs meet your application's fundamental data
             contracts.
         </li>
-        <li><strong>Service or Business Logic Layers:</strong> I've observed that even after initial validation,
+        <li><strong>Service or Business Logic Layers:</strong> Even after initial validation,
             data might be
-            transformed or composed internally. I recommend that robust services or core business logic functions,
+            transformed or composed internally. Robust services or core business logic functions,
             especially those
-            handling critical operations or consuming data from multiple internal sources, include internal
+            handling critical operations or consuming data from multiple internal sources, should include internal
             defensive checks to ensure data integrity.
         </li>
-        <li><strong>Utility Functions:</strong> As I've seen with lodash, generic utility functions benefit
+        <li><strong>Utility Functions:</strong> As seen with lodash, generic utility functions benefit
             immensely
-            from being highly defensive. I believe they should be resilient to a wide range of inputs, as they are
+            from being highly defensive. They should be resilient to a wide range of inputs, as they are
             often
             reused across many contexts and may receive data that has undergone various transformations or subtle
             coercions.
         </li>
     </ul>
-    <p>The key is balance. I validate thoroughly at the boundaries of untrusted data, but I also implement
+    <p>The key is balance. Validate thoroughly at the boundaries of untrusted data, but also implement
         targeted, defensive checks within core logic and reusable components to ensure their robustness and
         predictable behavior.</p>
     <h3 id="testingForRuntimeEdgeCases">Testing for Runtime Edge Cases</h3>
-    <p>This brings me to the crucial role of runtime testing. While I know TypeScript ensures our code adheres to
+    <p>This brings us to the crucial role of runtime testing. While TypeScript ensures code adheres to
         its
-        defined types during development, and Zod validates at the entry point, I believe tests are needed to verify
-        how our
-        code behaves when confronted with data that doesn't conform to those ideal types at runtime within our
+        defined types during development, and Zod validates at the entry point, tests are needed to verify
+        how your
+        code behaves when confronted with data that doesn't conform to those ideal types at runtime within your
         application's internal flow, or when it encounters other unexpected conditions.</p>
-    <p>I like to consider how a robust utility library like lodash approaches this. For a function like <code>get(object,
+    <p>Consider how a robust utility library like lodash approaches this. For a function like <code>get(object,
         path, [defaultValue])</code>, which safely retrieves a value at a given <code>path</code> from
-        <code>object</code>, I've noticed its tests don't just cover the "happy path" where <code>object</code> and
-        <code>path</code> are perfectly valid. Instead, I've studied how lodash's extensive test suite includes
+        <code>object</code>, its tests don't just cover the "happy path" where <code>object</code> and
+        <code>path</code> are perfectly valid. Instead, lodash's extensive test suite includes
         scenarios where:</p>
     <ul>
         <li><code>object</code> is <code>null</code>, <code>undefined</code>, a number, a string, or a boolean,
@@ -612,46 +608,45 @@ console.log(processUserName(123 as any)); // Warns, "Guest"`}/>
         </li>
         <li>The function is called with too few or too many arguments.</li>
     </ul>
-    <p>I've observed how these tests reveal how <code>get</code> gracefully handles various invalid inputs,
+    <p>These tests reveal how <code>get</code> gracefully handles various invalid inputs,
         typically returning <code>undefined</code>
-        (or the specified <code>defaultValue</code>) rather than throwing an error or crashing the application. I
-        consider this
-        meticulous approach to testing for runtime resilience a hallmark of well-engineered code. In my experience,
-        such runtime
+        (or the specified <code>defaultValue</code>) rather than throwing an error or crashing the application. This
+        meticulous approach to testing for runtime resilience is a hallmark of well-engineered code.
+        Such runtime
         checks, combined with TypeScript's compile-time safety, create a layered defense against errors, ensuring
-        our application remains stable even when confronted with imperfect data.</p>
-    <p>Furthermore, I've learned that relying solely on "entry point validation" isn't sufficient for complex
+        your application remains stable even when confronted with imperfect data.</p>
+    <p>Furthermore, relying solely on "entry point validation" isn't sufficient for complex
         applications if internal
-        components are brittle. I believe unit tests that probe these edge cases ensure that individual "units" of
+        components are brittle. Unit tests that probe these edge cases ensure that individual "units" of
         code are
-        resilient, regardless of where their data originates. I see libraries like lodash as prime examples of this
+        resilient, regardless of where their data originates. Libraries like lodash are prime examples of this
         philosophy, with extensive tests dedicated to covering every conceivable edge case for their utility
         functions.</p>
     <h3 id="typescriptsRoleConclusion">TypeScript's Role: A Conclusion</h3>
-    <p>I've found that TypeScript is an invaluable asset for modern JavaScript development, providing strong type
+    <p>TypeScript is an invaluable asset for modern JavaScript development, providing strong type
         guarantees at
-        build time that significantly reduce common programming errors. When I combine it with powerful runtime
-        validation libraries like Zod, I create a formidable first line of defense. However, I've learned that this
+        build time that significantly reduce common programming errors. When combined with powerful runtime
+        validation libraries like Zod, it creates a formidable first line of defense. However, this
         combination is
         not a silver bullet that eliminates the need for further runtime validation and comprehensive testing within
-        our application's internal logic. In my experience, JavaScript's dynamic nature means that unexpected data
+        your application's internal logic. JavaScript's dynamic nature means that unexpected data
         and edge cases can
         still arise during execution, even with initially "safe" data.</p>
-    <p>I believe true engineering involves understanding both the static safety provided by TypeScript and the
+    <p>True engineering involves understanding both the static safety provided by TypeScript and the
         dynamic
         realities of JavaScript. By embracing robust runtime checks—through TypeScript's type guards, defensive
         programming patterns, and strategic use of validation where data transformations occur—and rigorously
-        testing for edge cases, I can build applications that are not only type-safe but also resilient, graceful,
-        and truly robust in the face of real-world data. I've seen how this layered approach leads to improved user
+        testing for edge cases, you can build applications that are not only type-safe but also resilient, graceful,
+        and truly robust in the face of real-world data. This layered approach leads to improved user
         experience by
         preventing unexpected errors, easier debugging and maintenance due to predictable behavior, and ultimately,
-        enhanced system reliability and security. For me, it's about building code that works reliably, even when
+        enhanced system reliability and security. It's about building code that works reliably, even when
         the
-        "unhappy path" presents itself within our own codebase.</p>
-    <h2 id="waitYouStillUseLodash">Wait, You Still Use lodash?</h2>
-    <p>Yes, and understanding why is key to understanding how I approach building with TypeScript. In an era where
+        "unhappy path" presents itself within your codebase.</p>
+    <h2 id="waitYouStillUseLodash">Why Still Use lodash?</h2>
+    <p>Understanding why lodash remains valuable is key to understanding a robust approach to building with TypeScript. In an era where
         "You Might Not Need Lodash" is a common refrain and modern JavaScript has adopted many utility-like
-        features, sticking with a library like lodash might seem anachronistic. However, my reliance on lodash,
+        features, sticking with a library like lodash might seem anachronistic. However, relying on lodash,
         particularly functions like <code>get</code>, <code>isEmpty</code>, <code>isEqual</code>, and its collection
         manipulation utilities, stems from a deep appreciation for its battle-tested robustness and comprehensive
         handling of edge cases—qualities that are often underestimated or poorly replicated in custom
@@ -694,7 +689,7 @@ function customGet(obj, path, defaultValue) {
         </li>
         <li><strong>Performance:</strong> lodash functions are often highly optimized.</li>
     </ul>
-    <p>As I talk about in, "<a href="/blog/your-lodash-get-implementation-sucks">You lodash.get implementation
+    <p>As I talk about in, "<a href="/blog/your-lodash-get-implementation-sucks">Your lodash.get implementation
         Sucks</a>," creating a truly robust equivalent to <code>get</code> that covers all these edge cases is a
         non-trivial
         task. Developers often underestimate this complexity, leading to buggy, unreliable utility functions that
