@@ -12,8 +12,8 @@ export default {
     extend: {
       fontFamily: {
         mono: ["Noto Sans Mono", ...fontFamily.mono],
-        sans: ["Noto Sans", ...fontFamily.sans],
-        serif: ["Noto Serif", ...fontFamily.serif],
+        sans: ["Funnel Sans", ...fontFamily.sans],
+        serif: ["Funnel Display", ...fontFamily.serif],
       },
     },
   },
