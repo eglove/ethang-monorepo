@@ -87,10 +87,6 @@ const customRules = [
     rule: "off",
   },
   {
-    name: "typedef",
-    rule: "off",
-  },
-  {
     name: "max-params",
     rule: "off",
   },

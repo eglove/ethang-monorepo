@@ -73,6 +73,9 @@ export const genRules = (
           rules[`${prefix}/${rule.name}`] = rule.rule;
         }
       } else {
+        globalThis.console.error(
+          `${rule.name} in ${prefix ?? "(unknown prefix)"} does not exist.`,
+        );
         throw new Error(
           `${rule.name} in ${prefix ?? "(unknown prefix)"} does not exist.`,
         );
