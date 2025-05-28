@@ -733,7 +733,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest"`}/>
         enhanced system reliability and security. It's about building code that works reliably, even when
         the
         "unhappy path" presents itself within your codebase.</p>
-    <h2 id="waitYouStillUseLodash">Why Still Use lodash?</h2>
+    <h2 id="waitYouStillUseLodash">Wait, You Still Use lodash?</h2>
     <p>Understanding why lodash remains valuable is key to understanding a robust approach to building with TypeScript. In an era where
         "You Might Not Need Lodash" is a common refrain and modern JavaScript has adopted many utility-like
         features, sticking with a library like lodash might seem anachronistic. However, relying on lodash,
@@ -833,141 +833,141 @@ function customGet(obj, path, defaultValue) {
         resilience and reusability. This naturally leads us to the indispensable practice of unit testing, and more
         specifically, Test-Driven Development (TDD).</p>
     <h3 id="theE2EFallacy">The E2E Fallacy: "If it Works, It's Good"</h3>
-    <p>I've observed a common misconception, particularly in teams that prioritize rapid feature delivery, that comprehensive
+    <p>There's a common misconception, particularly in teams that prioritize rapid feature delivery, that comprehensive
         End-to-End (E2E) tests are sufficient. The thinking goes: "If the user can click through the application and
-        achieve their goal, then the underlying code must be working correctly." While I believe E2E tests are crucial for
-        validating user flows and integration points, I've found that relying on them solely is a shortcut that often signals a lack
-        of deeper engineering discipline. In my experience, this approach fundamentally misunderstands a key goal of good software:
+        achieve their goal, then the underlying code must be working correctly." While E2E tests are crucial for
+        validating user flows and integration points, relying on them solely is a shortcut that often signals a lack
+        of deeper engineering discipline. This approach fundamentally misunderstands a key goal of good software:
         reusability.</p>
-    <p>I've seen how E2E tests primarily confirm that a specific pathway through the application behaves as expected at that
+    <p>E2E tests primarily confirm that a specific pathway through the application behaves as expected at that
         moment. They do little to guarantee that the individual components, functions, or modules ("units") that
         make up that pathway are independently robust, correct across a range of inputs, or easily reusable in other
-        contexts. In my view, code that "just works" for E2E scenarios might be brittle, riddled with hidden dependencies, or
+        contexts. Code that "just works" for E2E scenarios might be brittle, riddled with hidden dependencies, or
         prone to breaking when its internal logic is slightly perturbed or when it's leveraged elsewhere.</p>
     <h3 id="unitTestsForgingReusable">Unit Tests: Forging Reusable, Reliable Components</h3>
-    <p>I've found that unit testing forces me to think about code in terms of isolated, well-defined units with clear inputs and
+    <p>Unit testing forces you to think about code in terms of isolated, well-defined units with clear inputs and
         outputs. Each unit test verifies that a specific piece of code (a function, a method, a class) behaves
         correctly for a given set of inputs, including edge cases and invalid data. This is precisely the same
-        discipline that I believe makes libraries like lodash so valuable. In my view, lodash functions are reliable because they are, in
+        discipline that makes libraries like lodash so valuable. Lodash functions are reliable because they are, in
         essence, collections of extremely well-unit-tested pieces of code.</p>
-    <p>I consider the arguments for using lodash even when data is validated at application boundaries: internal
+    <p>Consider the arguments for using lodash even when data is validated at application boundaries: internal
         transformations can still introduce unexpected data, and JavaScript's dynamic nature can lead to subtle
-        bugs. I apply the same logic to my own code. A function that receives data, even if that data was validated
+        bugs. The same logic applies to your own code. A function that receives data, even if that data was validated
         by Zod at an API endpoint, might perform internal operations that could lead to errors if not handled
-        correctly. I've seen how unit tests for that function ensure it is resilient to these internal variations and potential
+        correctly. Unit tests for that function ensure it is resilient to these internal variations and potential
         misuses.</p>
-    <p>When I write unit tests, I'm not just checking for correctness; I'm:</p>
+    <p>When writing unit tests, you're not just checking for correctness; you're:</p>
     <ul>
-        <li><strong>Designing for Testability:</strong> I've noticed this often leads to better-designed code—more modular, with
-            fewer side effects, and clearer interfaces. In my experience, code that is hard to unit test is often a sign of poor
+        <li><strong>Designing for Testability:</strong> This often leads to better-designed code—more modular, with
+            fewer side effects, and clearer interfaces. Code that is hard to unit test is often a sign of poor
             design.
         </li>
-        <li><strong>Documenting Behavior:</strong> I see unit tests serve as executable documentation, clearly
+        <li><strong>Documenting Behavior:</strong> Unit tests serve as executable documentation, clearly
             demonstrating how a unit of code is intended to be used and how it behaves under various conditions.
         </li>
-        <li><strong>Enabling Safe Refactoring:</strong> I've found that a comprehensive suite of unit tests gives me the confidence
-            to refactor and improve code, knowing that if I break existing functionality, the tests will catch it
+        <li><strong>Enabling Safe Refactoring:</strong> A comprehensive suite of unit tests gives you the confidence
+            to refactor and improve code, knowing that if you break existing functionality, the tests will catch it
             immediately.
         </li>
-        <li><strong>Isolating Failures:</strong> I appreciate how when a unit test fails, it points directly to the specific unit of
+        <li><strong>Isolating Failures:</strong> When a unit test fails, it points directly to the specific unit of
             code that has a problem, making debugging significantly faster and more efficient than trying to
             diagnose a failure in a complex E2E test.
         </li>
     </ul>
     <h3 id="testDrivenDevelopment">Test-Driven Development (TDD): Building Quality In</h3>
-    <p>I've found that Test-Driven Development takes this a step further by advocating writing tests before writing the
-        implementation code. I like to think of the TDD cycle as "Red-Green-Refactor":</p>
+    <p>Test-Driven Development takes this a step further by advocating writing tests before writing the
+        implementation code. Think of the TDD cycle as "Red-Green-Refactor":</p>
     <ol>
-        <li><strong>Red:</strong> I write a failing unit test that defines a small piece of desired functionality.
+        <li><strong>Red:</strong> Write a failing unit test that defines a small piece of desired functionality.
         </li>
-        <li><strong>Green:</strong> I write the minimum amount of code necessary to make the test pass.</li>
-        <li><strong>Refactor:</strong> I improve the code (e.g., for clarity, performance, removing duplication) while
+        <li><strong>Green:</strong> Write the minimum amount of code necessary to make the test pass.</li>
+        <li><strong>Refactor:</strong> Improve the code (e.g., for clarity, performance, removing duplication) while
             ensuring all tests still pass.
         </li>
     </ol>
-    <p>In my view, TDD is not just a testing technique; it's a design methodology. By thinking about the requirements and edge
-        cases from the perspective of a test first, I'm forced to design my code with clarity, testability, and
-        correctness in mind from the outset. I've seen how it encourages building small, focused units of functionality that are
+    <p>TDD is not just a testing technique; it's a design methodology. By thinking about the requirements and edge
+        cases from the perspective of a test first, you're forced to design your code with clarity, testability, and
+        correctness in mind from the outset. It encourages building small, focused units of functionality that are
         inherently robust.</p>
     <h3 id="theCumulativeEffect">The Cumulative Effect: System Resilience</h3>
-    <p>I've observed that just as a single, poorly implemented utility function can introduce subtle, cascading bugs throughout a
-        system, a collection of well-unit-tested components contributes to overall system resilience. In my experience, when
+    <p>Just as a single, poorly implemented utility function can introduce subtle, cascading bugs throughout a
+        system, a collection of well-unit-tested components contributes to overall system resilience. When
         individual units are known to be reliable across a wide range of inputs and edge cases, the likelihood of
         unexpected interactions and failures at a higher level decreases significantly.</p>
-    <p>I've seen how if a function is used in multiple places, and its behavior subtly changes or breaks due to an untested edge
-        case, the impact can propagate throughout the application. This is where I believe the "shortcut" of relying only on
+    <p>If a function is used in multiple places, and its behavior subtly changes or breaks due to an untested edge
+        case, the impact can propagate throughout the application. This is where the "shortcut" of relying only on
         E2E tests becomes particularly dangerous. An E2E test might only cover one specific path through that
-        function, leaving other usages vulnerable. I'm convinced that thorough unit testing, especially when guided by TDD, ensures
+        function, leaving other usages vulnerable. Thorough unit testing, especially when guided by TDD, ensures
         that each unit is a solid building block, contributing to a more stable and maintainable system.</p>
-    <p>My argument isn't to abandon E2E tests—they serve a vital purpose. Rather, I want to emphasize that unit
+    <p>The argument isn't to abandon E2E tests—they serve a vital purpose. Rather, it's to emphasize that unit
         testing is a foundational engineering practice essential for building high-quality, reusable, and resilient
-        software. I believe it's about applying the same rigor to our own code that we expect from well-regarded libraries,
-        ensuring that each piece, no matter how small, is engineered to be dependable. In my opinion, this disciplined approach is
+        software. It's about applying the same rigor to our own code that we expect from well-regarded libraries,
+        ensuring that each piece, no matter how small, is engineered to be dependable. This disciplined approach is
         a hallmark of true software engineering, moving beyond simply making things "work" to making them work
         reliably and sustainably.</p>
     <h2 id="endToEndTesting">The Indispensable Role of End-to-End (E2E) Testing</h2>
-    <p>While I believe unit tests are foundational for ensuring the reliability and reusability of individual components,
-        I've found that End-to-End (E2E) tests play a distinct, yet equally crucial, role in the software quality assurance
-        spectrum. In my view, they are not a replacement for unit tests, by any stretch of the imagination, but rather a
+    <p>While unit tests are foundational for ensuring the reliability and reusability of individual components,
+        End-to-End (E2E) tests play a distinct, yet equally crucial, role in the software quality assurance
+        spectrum. They are not a replacement for unit tests, by any stretch of the imagination, but rather a
         complementary practice that validates the application from a different, higher-level perspective.</p>
     <h3 id="e2eTestsValidating">E2E Tests: Validating the Entire User Journey</h3>
-    <p>I've seen how E2E tests simulate real user scenarios from start to finish. They interact with the application through its
+    <p>E2E tests simulate real user scenarios from start to finish. They interact with the application through its
         UI, just as a user would, clicking buttons, filling out forms, navigating between pages, and verifying that
-        the entire integrated system behaves as expected. In my experience, this means they test the interplay between the frontend,
+        the entire integrated system behaves as expected. This means they test the interplay between the frontend,
         backend services, databases, and any other external integrations.</p>
-    <p>I believe their primary purpose is to answer the question: "Does the application, as a whole, meet the high-level
+    <p>Their primary purpose is to answer the question: "Does the application, as a whole, meet the high-level
         business requirements and deliver the intended user experience?" If a user is supposed to be able to log in,
-        add an item to their cart, and complete a purchase, I use an E2E test to automate this entire workflow to
+        add an item to their cart, and complete a purchase, you'd use an E2E test to automate this entire workflow to
         confirm its success.</p>
     <h3 id="whyE2ETestingIsImportant">Why E2E Testing is Important (But Not a Substitute for Unit Tests):</h3>
     <ul>
-        <li><strong>Confidence in Releases:</strong> I've found that successful E2E test suites provide a high degree of confidence
-            that the main user flows are working correctly before deploying new versions of the application. In my experience, they
+        <li><strong>Confidence in Releases:</strong> Successful E2E test suites provide a high degree of confidence
+            that the main user flows are working correctly before deploying new versions of the application. They
             act as a final safety net, catching integration issues that unit or integration tests (which test
             interactions between smaller groups of components) might miss.
         </li>
-        <li><strong>Testing User Experience:</strong> I see E2E tests as the closest automated approximation to how a
-            real user experiences the application. I've observed how they can catch issues related to UI rendering, navigation, and
+        <li><strong>Testing User Experience:</strong> E2E tests are the closest automated approximation to how a
+            real user experiences the application. They can catch issues related to UI rendering, navigation, and
             overall workflow usability that are outside the scope of unit tests.
         </li>
-        <li><strong>Verifying Critical Paths:</strong> I find them particularly valuable for ensuring that the most
+        <li><strong>Verifying Critical Paths:</strong> They're particularly valuable for ensuring that the most
             critical paths and core functionalities of the application (e.g., user registration, checkout process,
             core data submission) are always operational.
         </li>
     </ul>
     <h3 id="theHighLevelView">The High-Level View and the Overlooking of Unit Tests</h3>
-    <p>I've noticed that the fact that E2E tests focus on these high-level requirements and observable user behavior might, in part,
+    <p>The fact that E2E tests focus on these high-level requirements and observable user behavior might, in part,
         explain why the more granular and arguably more critical practice of unit testing is sometimes overlooked or
-        undervalued. In my observations, stakeholders and even some developers might see a passing E2E test suite as sufficient proof
-        that "everything works." I understand this perspective is tempting because E2E tests often map directly to visible
+        undervalued. Stakeholders and even some developers might see a passing E2E test suite as sufficient proof
+        that "everything works." This perspective is tempting because E2E tests often map directly to visible
         features and user stories.</p>
-    <p>However, I believe this overlooks the fundamental difference in purpose:</p>
+    <p>However, this overlooks the fundamental difference in purpose:</p>
     <ul>
         <li><strong>E2E tests</strong> verify that the assembled system meets external requirements.</li>
         <li><strong>Unit tests</strong> verify that individual components are internally correct, robust, and
             reusable.
         </li>
     </ul>
-    <p>I've seen systems that have passing E2E tests for their main flows while still being composed of poorly designed,
-        brittle, and non-reusable units. I've observed how these underlying weaknesses might not surface until a minor change breaks
+    <p>Systems can have passing E2E tests for their main flows while still being composed of poorly designed,
+        brittle, and non-reusable units. These underlying weaknesses might not surface until a minor change breaks
         an obscure part of a unit, or until an attempt is made to reuse a component in a new context, leading to
         unexpected bugs that are hard to trace because the E2E tests for the original flow might still pass.</p>
     <h3 id="theComplementaryNature">The Complementary Nature of Testing Layers</h3>
-    <p>I believe a robust testing strategy employs multiple layers, each with its own focus:</p>
+    <p>A robust testing strategy employs multiple layers, each with its own focus:</p>
     <ol>
-        <li><strong>Unit Tests:</strong> In my approach, these form the base, ensuring individual building blocks are solid. I find they are
+        <li><strong>Unit Tests:</strong> These form the base, ensuring individual building blocks are solid. They are
             fast, provide precise feedback, and facilitate refactoring.
         </li>
-        <li><strong>Integration Tests:</strong> I use these to verify the interaction between groups of components or services.
+        <li><strong>Integration Tests:</strong> These verify the interaction between groups of components or services.
         </li>
-        <li><strong>End-to-End Tests:</strong> In my testing strategy, these sit at the top, validating complete user flows through the entire
+        <li><strong>End-to-End Tests:</strong> These sit at the top, validating complete user flows through the entire
             application stack.
         </li>
     </ol>
-    <p>I consider E2E tests an essential final check, ensuring all the well-unit-tested and integrated parts come together
+    <p>E2E tests are an essential final check, ensuring all the well-unit-tested and integrated parts come together
         to deliver the expected high-level functionality. They confirm that the user can successfully navigate and
-        use the application to achieve their goals. But I strongly believe their strength in verifying the "big picture" should never
-        be mistaken as a reason to neglect the meticulous, foundational work of unit testing, which I see as paramount for
+        use the application to achieve their goals. But their strength in verifying the "big picture" should never
+        be mistaken as a reason to neglect the meticulous, foundational work of unit testing, which is paramount for
         building a truly engineered, maintainable, and resilient software system.</p>
     <h2 id="eslint">ESLint: More Than Just Code Style – It's About Engineering Discipline</h2>
     <p>I've noticed a common misconception surrounding ESLint is that its primary, or even sole, purpose is to
