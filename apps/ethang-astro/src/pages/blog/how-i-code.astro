@@ -2,6 +2,9 @@
 import "highlight.js/styles/night-owl.css";
 import Layout from "../../layouts/Layout.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
+import LocalImage from "../../components/LocalImage.astro";
+import snippingTool from "../../images/windows/snipping-tool.png";
+import greenshot from "../../images/windows/greenshot.png";
 ---
 
 <Layout title="How I Code">
@@ -89,6 +92,17 @@ import CodeBlock from "../../components/CodeBlock.astro";
                     <li><a href="#stateManagementUnnecessary">State Management Libraries: An Unnecessary Abstraction</a>
                     </li>
                     <li><a href="#reactFutureProof">React as a Future-Proof Investment</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#whyYouShouldUseWindows">Why You Should Use Windows</a>
+                <ul>
+                    <li><a href="#packageManagementAdvantages">Package Management Advantages: WinGet vs. apt</a></li>
+                    <li><a href="#productivityTools">Productivity Tools That Make a Difference</a></li>
+                    <li><a href="#screenshotAndVideoTools">Screenshot and Video Tools That Just Work</a></li>
+                    <li><a href="#powerShellAdvantages">PowerShell: A Superior Command-Line Experience</a></li>
+                    <li><a href="#guiCustomization">GUI Customization: Practical vs. Time-Consuming</a></li>
+                    <li><a href="#customizationAndControl">Removing the Branding and Taking Control</a></li>
                 </ul>
             </li>
         </ul>
@@ -1241,5 +1255,124 @@ function UserProfile() {
             it an excellent choice for a wide range of web development projects. While no technology is perfect for
             every use case, React's balance of simplicity and power, coupled with its thriving community, positions it
             as a reliable foundation for building modern web applications.</p>
+
+        <h2 id="whyYouShouldUseWindows">Why You Should Use Windows</h2>
+        <p>I recently took a trip down memory lane and installed Ubuntu on my desktop. I was instantly hit with
+            nostalgia. Googling commands to install every app (Is this in the apt registry? Or do I need to download a
+            .tar.gz? .appimage? I don't like it.) This was followed by remembering the days of watching torrented TV shows on VLC and finding the best Cowboy Bebop
+            wallpaper. It felt good to revisit the days of simplicity.</p>
+        <p>But it's easy to miss what makes Windows a much more productive OS, especially compared to the limitations of Ubuntu and the frustrating experience of Mac.</p>
+
+        <h3 id="packageManagementAdvantages">Package Management Advantages: WinGet vs. apt</h3>
+        <p>The first issue I came across is that Ubuntu's apt repository is very limited. And it's not so easy to
+            search. I found it's more efficient to just Google "install Chrome on Ubuntu" than it is to stay in the
+            terminal and search for it.</p>
+        <p>Whereas with WinGet, a simple search reveals not just Chrome but a wealth of available applications. The contrast is striking - WinGet offers a comprehensive, easily searchable package ecosystem that makes Ubuntu's apt feel archaic by comparison.</p>
+
+        <p>One of the apps I could not find via the Ubuntu repository was JetBrains Toolbox. If you go to the JetBrains
+            website there is a download for a .tar.gz. But it doesn't exactly contain a .deb file. I eventually found a user-made script to help me install it properly. Of course, it still doesn't tell you that Toolbox also has
+            many dependencies. So the final solution required multiple commands and a custom script.</p>
+
+        <CodeBlock code={`
+sudo apt install libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin
+
+curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install/master/jetbrains-toolbox.sh | bash`} />
+
+        <p>With WinGet? Just <code>winget install JetBrains.Toolbox</code> - that's it. The ID is easily findable with a quick search via CLI. For Ubuntu, it took multiple Google searches to find a simple install.</p>
+
+        <p>Mac? Mac has no built-in package manager, and Homebrew is mediocre at best. Similar to Chocolatey, Homebrew only tracks what's installed through it, not the entire system.</p>
+
+        <h3 id="productivityTools">Productivity Tools That Make a Difference</h3>
+        <p>Need to quickly find out where an installation is, or where anything is on the file system? Everything Search is a lightning-fast file indexing and search utility that dramatically outperforms the native search capabilities of any other operating system.</p>
+
+        <video controls src="/videos/everything-search.mp4"></video>
+
+        <p>With Everything Search, you get:</p>
+        <ul>
+            <li>Instantaneous file and directory location across your entire system</li>
+            <li>Advanced filtering options for precise searches</li>
+            <li>An ecosystem of plugins that extend its functionality</li>
+            <li>Integration with other Windows tools like PowerToys</li>
+        </ul>
+
+        <p>There are alternatives for Linux like FSearch and Catfish, but they don't match the speed and integration of Everything Search. And Mac? Mac has no alternative whatsoever.</p>
+
+        <p>PowerToys is one of the coolest projects for Windows - a set of utilities for power users that once you use them, you can't live without. Constantly updated with new features nearly every week, it includes:</p>
+        <ul>
+            <li><strong>FancyZones:</strong> A window manager that allows for complex, customized layouts far beyond what
+                macOS or Linux offer natively</li>
+            <li><strong>PowerToys Run/Command Palette:</strong> Quick launchers that integrate with Everything Search for
+                unparalleled system navigation</li>
+            <li><strong>Text Extractor:</strong> OCR capabilities built right into the OS</li>
+            <li><strong>Keyboard Manager:</strong> Complete keyboard remapping without limitations - I always laugh at
+                Mac's keyboard settings which allow you to swap only two keys</li>
+            <li><strong>Environment Variables and Hosts File Editors:</strong> GUI interfaces for common development
+                configuration tasks</li>
+            <li><strong>File Explorer Add-ons:</strong> Preview handlers for development-related file formats</li>
+            <li><strong>Advanced Paste, Awake, Color Picker, Screen Ruler</strong> and many more utilities that make your workflow smoother</li>
+        </ul>
+
+        <p>For Ubuntu, you're not likely to find alternatives for most of these things, and the quality won't be
+            nearly as good. As for Mac? You'll need to pay for dozens of equivalents, and the money you spend will likely go towards lower quality apps.</p>
+
+        <h3 id="screenshotAndVideoTools">Screenshot and Video Tools That Just Work</h3>
+        <p>When it comes to video recording and screenshots, Windows excels with built-in tools that are both powerful and easy to use. The Windows Snipping Tool lets you hit a shortcut, select a window, and instantly get a video or screenshot - no complex setup required.</p>
+
+        <LocalImage alt="windows snipping tool" src={snippingTool}/>
+
+        <p>For more advanced screenshot needs, Greenshot offers powerful editing and sharing capabilities that make capturing and annotating your screen effortless.</p>
+
+        <LocalImage alt="greenshot" src={greenshot}/>
+
+        <p>Ubuntu has equivalents like Flameshot, but Mac users are once again left reaching for their wallets or settling for inferior options.</p>
+
+        <h3 id="powerShellAdvantages">PowerShell: A Superior Command-Line Experience</h3>
+        <p>It's weird that this is the controversial one. When it comes to OS, I sense there is a preference for
+            making your own life more difficult. PowerShell is an expressive programming language that is actually
+            readable and writable, unlike the cryptic syntax of Bash.</p>
+
+        <p>While the syntax between the two may seem similar, it's the subtle differences that stand out:</p>
+        <ul>
+            <li><strong>Object-Based Pipeline:</strong> Unlike text-based Unix shells, PowerShell works with objects,
+                allowing for more precise manipulation of data without resorting to text parsing</li>
+            <li><strong>Consistent Syntax:</strong> PowerShell's verb-noun command structure (e.g., Get-Process,
+                Set-Location) creates a more intuitive and discoverable command set</li>
+            <li><strong>Modern Language Features:</strong> As a full programming language, PowerShell includes features
+                like exception handling, advanced data structures, and strong typing when needed</li>
+            <li><strong>Built-in JSON and XML Handling:</strong> No need for additional tools like jq for parsing
+                structured data</li>
+        </ul>
+
+        <p>PowerShell is open-source and available on all OS's. But it does tend to run slightly slower on Linux and
+            Mac. As for Mac's terminal experience? Mac is just Linux with a terrible UI triggering feelings of claustrophobia. It uses bash, with all its limitations and cryptic syntax.</p>
+
+        <h3 id="guiCustomization">GUI Customization: Practical vs. Time-Consuming</h3>
+        <p>Customization is something Linux is known for. Although I feel like this comes from a period when many people
+            were experimenting with it at the same time. People would spend weeks on GNOME tweaks customizing every
+            detail - transparent windows, custom mouse behaviors, overhauling file system UIs.</p>
+
+        <p>If you search for tutorials or themes today, what you'll find is mostly outdated or unsupported. When you compare the defaults of Ubuntu, Mac, and Windows, Windows is the only one that feels comfortable and modern. It doesn't get in your way or give you a cluttered, messy taskbar like Mac. And it's not using the old school rounded/greyish colors found in Ubuntu.</p>
+
+        <p>Mac's taskbar makes me physically cringe. There's something about it that's deeply uncomfortable, and there is no overhaul fix for Mac like you can get with Ubuntu and Windows.</p>
+
+        <h3 id="customizationAndControl">Removing the Branding and Taking Control</h3>
+        <p>Here's the part that annoys me about both Windows and Mac. Both are constantly trying to upsell and lock you
+            into their ecosystems of productivity apps. Ubuntu has Ubuntu Pro for security updates, but beyond that it's
+            entirely reliant on open source.</p>
+
+        <p>That being said, in order to have a comfortable, healthy experience with your OS, you need to be able to
+            remove the constant advertising. With Windows, WinGet gives you a dangerous level of access to uninstalling all the Microsoft junk. Unlike package managers like Chocolatey and Homebrew, this gives access to everything on the system, not just what you installed through it.</p>
+
+        <p>While there's no one-click solution to safely turning off these features, you can take the time to go through
+            Windows settings to turn off intrusive features rather than just dangerously removing them. It takes time, but it's worth it to have peace of mind when using your own PC.</p>
+
+        <p>Mac? I have found that Mac users seem to prefer being advertised to and purchasing apps when more popular
+            free alternatives exist. I do not get peace of mind from that OS; I always feel like I am being pushed
+            something. But this seems to be praised by that community, even though the same people complain about the
+            same things on Windows.</p>
+
+        <p>In conclusion, Windows gets an odd amount of hate - it's cool to hate Windows. But I implore people to actually explore and experiment for themselves. I have had to work with Macs more than once, and they stress me out. I can never get used to them, find the right modifications to make, and everything on them looks ugly - it is a terrible OS. Linux distros with GUI's like Ubuntu are great to work with and make for good work machines, but they are still quite limited in terms of productivity. Sometimes "simplicity" doesn't mean "clean;" sometimes it means fewer features to make your life easier.</p>
+
+        <p>Windows has evolved into a powerful, flexible development platform that combines the stability and software support of a mainstream OS with powerful tools and customization that developers need. Its package management, productivity tools, modern command-line experience, and balanced approach to customization make it an excellent choice for developers who value both productivity and a polished experience.</p>
     </main>
 </Layout>
