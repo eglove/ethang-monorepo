@@ -27,19 +27,22 @@ import greenshot from "../images/windows/greenshot.png";
 
   const formatter = Intl.NumberFormat(undefined)
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const mainElement = document.querySelector('main.prose');
+  const calculate = () => {
+      const mainElement = document.querySelector('main.prose');
 
-    if (mainElement) {
-      const wordCount = countWords(mainElement.innerHTML);
-      const readTimeMinutes = Math.ceil(wordCount / 225);
+      if (mainElement) {
+          const wordCount = countWords(mainElement.innerHTML);
+          const readTimeMinutes = Math.ceil(wordCount / 225);
 
-      const wordCountElement = document.querySelector('.word-count-display');
-      if (wordCountElement) {
-        wordCountElement.textContent = `${formatter.format(wordCount)} words · ${readTimeMinutes} min read`;
+          const wordCountElement = document.querySelector('.word-count-display');
+          if (wordCountElement) {
+              wordCountElement.textContent = `${formatter.format(wordCount)} words · ${readTimeMinutes} min read`;
+          }
       }
-    }
-  });
+  }
+
+  document.addEventListener('DOMContentLoaded', calculate);
+  document.addEventListener('animationend', calculate);
 </script>
 
 <main class="prose">
