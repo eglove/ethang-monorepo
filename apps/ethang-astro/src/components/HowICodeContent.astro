@@ -6,8 +6,41 @@ import snippingTool from "../images/windows/snipping-tool.png";
 import greenshot from "../images/windows/greenshot.png";
 ---
 
+<Fragment>
+<script>
+  function countWords(text: string) {
+    const textContent = text.replace(/<[^>]*>/g, ' ');
+
+    const words = textContent.split(/\s+/).filter(word => word.length > 0);
+    return words.length;
+  }
+
+  const formatter = Intl.NumberFormat(undefined)
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const mainElement = document.querySelector('main.prose');
+
+    if (mainElement) {
+      const children = mainElement.children;
+      let contentHTML = '';
+      for (let i = 0; i < children.length; i++) {
+        contentHTML += children[i].outerHTML;
+      }
+
+      const wordCount = countWords(contentHTML);
+      const readTimeMinutes = Math.ceil(wordCount / 225);
+
+      const wordCountElement = document.querySelector('.word-count-display');
+      if (wordCountElement) {
+        wordCountElement.textContent = `${formatter.format(wordCount)} words · ${readTimeMinutes} min read`;
+      }
+    }
+  });
+</script>
+
 <main class="prose">
     <h1>How I Code</h1>
+    <p class="text-sm text-gray-500 mb-4 word-count-display">Calculating...</p>
     <p>The following is an exploration of opinions and lessons learned over the years of programming and
         building web applications. All of these perspectives are based on real-world experience, mistakes, and problems
         fixed
@@ -1518,3 +1551,4 @@ curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install
 
     <p>In my view, Windows has evolved into a powerful development platform that combines mainstream stability with the tools and customization developers like me need. I find its package management, productivity tools, modern command-line, and balanced customization make it excellent for those who value both productivity and polish as I do.</p>
 </main>
+</Fragment>
