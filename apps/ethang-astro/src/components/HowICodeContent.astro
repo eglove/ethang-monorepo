@@ -30,13 +30,7 @@ import greenshot from "../images/windows/greenshot.png";
     const mainElement = document.querySelector('main.prose');
 
     if (mainElement) {
-      const children = mainElement.children;
-      let contentHTML = '';
-      for (let i = 0; i < children.length; i++) {
-        contentHTML += children[i].outerHTML;
-      }
-
-      const wordCount = countWords(contentHTML);
+      const wordCount = countWords(mainElement.innerHTML);
       const readTimeMinutes = Math.ceil(wordCount / 225);
 
       const wordCountElement = document.querySelector('.word-count-display');
