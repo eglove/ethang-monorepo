@@ -4,7 +4,7 @@ import CodeBlock from "../components/CodeBlock.astro";
 import LocalImage from "../components/LocalImage.astro";
 import snippingTool from "../images/windows/snipping-tool.png";
 import greenshot from "../images/windows/greenshot.png";
-import techImage from "../images/tech.png"
+import techImage from "../images/tech.png";
 ---
 
 <Fragment>
@@ -39,10 +39,16 @@ import techImage from "../images/tech.png"
     <p class="text-sm text-gray-500 mb-4 word-count-display">Calculating...</p>
     <LocalImage src={techImage} imgClass="max-w-md" alt="tech abstract" />
     <p>
-      What follows are my personal opinions formed through years of hands-on experience in software development. These perspectives work well for me, but I fully acknowledge that different approaches can be equally valid—there's rarely just one right way to code.
+      What follows are my personal opinions formed through years of hands-on
+      experience in software development. These perspectives work well for me,
+      but I fully acknowledge that different approaches can be equally
+      valid—there's rarely just one right way to code.
     </p>
     <p>
-      This guide explores key aspects of modern web development, from JavaScript's unique nature to TypeScript's role, utility libraries, and testing practices—all aimed at building more maintainable and robust applications.
+      This guide explores key aspects of modern web development, from
+      JavaScript's unique nature to TypeScript's role, utility libraries, and
+      testing practices—all aimed at building more maintainable and robust
+      applications.
     </p>
     <ul class="select-none">
       <li>
@@ -262,14 +268,11 @@ import techImage from "../images/tech.png"
         >
         <ul>
           <li>
-            <a href="#documentationPurpose"
-              >The True Purpose of Documentation</a
+            <a href="#documentationPurpose">The True Purpose of Documentation</a
             >
           </li>
           <li>
-            <a href="#livingDocumentation"
-              >Code as Living Documentation</a
-            >
+            <a href="#livingDocumentation">Code as Living Documentation</a>
           </li>
           <li>
             <a href="#documentationDevelopersActuallyRead"
@@ -334,8 +337,7 @@ import techImage from "../images/tech.png"
         </ul>
       </li>
       <li>
-        <a href="#whyCloudflareIsBest"
-          >Why Cloudflare Is Best for Development</a
+        <a href="#whyCloudflareIsBest">Why Cloudflare Is Best for Development</a
         >
         <ul>
           <li>
@@ -406,7 +408,9 @@ import techImage from "../images/tech.png"
         </ul>
       </li>
       <li>
-        <a href="#whyYouShouldUseJetBrainsIDEs">Why You Should Use JetBrains IDEs</a>
+        <a href="#whyYouShouldUseJetBrainsIDEs"
+          >Why You Should Use JetBrains IDEs</a
+        >
         <ul>
           <li>
             <a href="#ideVsTextEditor"
@@ -414,9 +418,7 @@ import techImage from "../images/tech.png"
             >
           </li>
           <li>
-            <a href="#jetBrainsLoyalty"
-              >The JetBrains Loyalty Phenomenon</a
-            >
+            <a href="#jetBrainsLoyalty">The JetBrains Loyalty Phenomenon</a>
           </li>
           <li>
             <a href="#fullIntegrationAdvantages"
@@ -436,13 +438,10 @@ import techImage from "../images/tech.png"
         </ul>
       </li>
       <li>
-        <a href="#whyPrismaIsBestORM"
-          >Why Prisma Is the Best ORM</a
-        >
+        <a href="#whyPrismaIsBestORM">Why Prisma Is the Best ORM</a>
         <ul>
           <li>
-            <a href="#whyUseORM"
-              >Why You Should Use an ORM in the First Place</a
+            <a href="#whyUseORM">Why You Should Use an ORM in the First Place</a
             >
           </li>
           <li>
@@ -1454,38 +1453,45 @@ function customGet(obj, path, defaultValue) {
       focused units of functionality that are inherently robust.
     </p>
 
-    <h3 id="vitestOverJest">Vitest: A Superior Choice for Modern Unit Testing</h3>
+    <h3 id="vitestOverJest">
+      Vitest: A Superior Choice for Modern Unit Testing
+    </h3>
     <p>
-      When it comes to choosing a unit testing framework for JavaScript and TypeScript projects, 
-      Vitest stands out as a superior alternative to Jest for several compelling reasons:
+      When it comes to choosing a unit testing framework for JavaScript and
+      TypeScript projects, Vitest stands out as a superior alternative to Jest
+      for several compelling reasons:
     </p>
     <ul>
       <li>
-        <strong>Speed and Performance:</strong> Vitest is significantly faster than Jest, 
-        leveraging Vite's native ESM-based architecture to provide near-instantaneous hot module 
-        replacement (HMR) during testing. This speed advantage becomes increasingly apparent in 
-        larger codebases, where test execution time can be reduced by orders of magnitude.
+        <strong>Speed and Performance:</strong> Vitest is significantly faster than
+        Jest, leveraging Vite's native ESM-based architecture to provide near-instantaneous
+        hot module replacement (HMR) during testing. This speed advantage becomes
+        increasingly apparent in larger codebases, where test execution time can
+        be reduced by orders of magnitude.
       </li>
       <li>
-        <strong>Jest API Compatibility:</strong> Vitest offers full compatibility with Jest's API, 
-        making migration from Jest straightforward. This means you can leverage your existing 
-        knowledge of Jest's matchers, mocks, and test structure while benefiting from Vitest's 
-        performance improvements.
+        <strong>Jest API Compatibility:</strong> Vitest offers full compatibility
+        with Jest's API, making migration from Jest straightforward. This means you
+        can leverage your existing knowledge of Jest's matchers, mocks, and test
+        structure while benefiting from Vitest's performance improvements.
       </li>
       <li>
-        <strong>Modern Architecture:</strong> Built on top of Vite, Vitest inherits its modern, 
-        ESM-first approach, which aligns better with contemporary JavaScript development practices 
-        and provides better support for TypeScript without the need for transpilation.
+        <strong>Modern Architecture:</strong> Built on top of Vite, Vitest inherits
+        its modern, ESM-first approach, which aligns better with contemporary JavaScript
+        development practices and provides better support for TypeScript without
+        the need for transpilation.
       </li>
       <li>
-        <strong>Integrated Watch Mode:</strong> Vitest's watch mode is more intelligent and 
-        responsive, providing a smoother developer experience when iterating on tests.
+        <strong>Integrated Watch Mode:</strong> Vitest's watch mode is more intelligent
+        and responsive, providing a smoother developer experience when iterating
+        on tests.
       </li>
     </ul>
     <p>
-      By choosing Vitest for your unit testing needs, you're not only gaining performance benefits 
-      but also adopting a tool that's designed for the modern JavaScript ecosystem while maintaining 
-      compatibility with the familiar Jest APIs that many developers already know.
+      By choosing Vitest for your unit testing needs, you're not only gaining
+      performance benefits but also adopting a tool that's designed for the
+      modern JavaScript ecosystem while maintaining compatibility with the
+      familiar Jest APIs that many developers already know.
     </p>
 
     <h3 id="theCumulativeEffect">The Cumulative Effect: System Resilience</h3>
@@ -1638,137 +1644,159 @@ function customGet(obj, path, defaultValue) {
       Playwright: The Superior Choice for Modern E2E Testing
     </h3>
     <p>
-      When it comes to selecting an E2E testing framework, Playwright stands out as the 
-      superior choice for modern web applications, offering significant advantages over 
-      alternatives like Cypress:
+      When it comes to selecting an E2E testing framework, Playwright stands out
+      as the superior choice for modern web applications, offering significant
+      advantages over alternatives like Cypress:
     </p>
     <ul>
       <li>
-        <strong>Microsoft Backing:</strong> Developed and maintained by Microsoft, Playwright 
-        benefits from the resources, expertise, and long-term commitment of one of the world's 
-        leading technology companies. This ensures ongoing development, regular updates, and 
-        enterprise-grade reliability.
+        <strong>Microsoft Backing:</strong> Developed and maintained by Microsoft,
+        Playwright benefits from the resources, expertise, and long-term commitment
+        of one of the world's leading technology companies. This ensures ongoing
+        development, regular updates, and enterprise-grade reliability.
       </li>
       <li>
-        <strong>Cost-Effective Parallel Testing:</strong> Unlike Cypress, which charges premium 
-        fees for parallel test execution in their cloud service, Playwright allows you to run 
-        tests in parallel without any additional costs. This can significantly reduce testing 
-        time and CI/CD pipeline expenses, especially for larger projects.
+        <strong>Cost-Effective Parallel Testing:</strong> Unlike Cypress, which charges
+        premium fees for parallel test execution in their cloud service, Playwright
+        allows you to run tests in parallel without any additional costs. This can
+        significantly reduce testing time and CI/CD pipeline expenses, especially
+        for larger projects.
       </li>
       <li>
-        <strong>Multi-Browser Support:</strong> Playwright provides native support for all major 
-        browsers (Chromium, Firefox, and WebKit) with a single API, allowing you to ensure your 
-        application works consistently across different browser engines without writing separate 
-        test code.
+        <strong>Multi-Browser Support:</strong> Playwright provides native support
+        for all major browsers (Chromium, Firefox, and WebKit) with a single API,
+        allowing you to ensure your application works consistently across different
+        browser engines without writing separate test code.
       </li>
       <li>
-        <strong>Superior Architecture:</strong> Playwright's architecture enables testing of complex 
-        scenarios that are challenging with other frameworks, including testing across multiple 
-        pages, domains, and browser contexts, as well as handling iframes and shadow DOM with ease.
+        <strong>Superior Architecture:</strong> Playwright's architecture enables
+        testing of complex scenarios that are challenging with other frameworks,
+        including testing across multiple pages, domains, and browser contexts, as
+        well as handling iframes and shadow DOM with ease.
       </li>
       <li>
-        <strong>Mobile Emulation:</strong> Playwright offers robust mobile emulation capabilities, 
-        allowing you to test how your application behaves on various mobile devices without 
-        requiring separate mobile-specific testing infrastructure.
+        <strong>Mobile Emulation:</strong> Playwright offers robust mobile emulation
+        capabilities, allowing you to test how your application behaves on various
+        mobile devices without requiring separate mobile-specific testing infrastructure.
       </li>
     </ul>
     <p>
-      By choosing Playwright for E2E testing, you're not only selecting a technically superior 
-      tool but also making a financially prudent decision that avoids the escalating costs 
-      associated with parallel testing in cloud-based services like those offered by Cypress.
+      By choosing Playwright for E2E testing, you're not only selecting a
+      technically superior tool but also making a financially prudent decision
+      that avoids the escalating costs associated with parallel testing in
+      cloud-based services like those offered by Cypress.
     </p>
 
     <h2 id="storybookTestingFramework">
       Storybook: Not Just a Component Library, But a Full Testing Framework
     </h2>
     <p>
-      When most developers think of Storybook, they picture a tool for building and 
-      showcasing UI components in isolation. And yes, it excels at that. But if that's 
-      all you're using Storybook for, you're missing out on one of the most powerful 
-      testing frameworks available for frontend development.
+      When most developers think of Storybook, they picture a tool for building
+      and showcasing UI components in isolation. And yes, it excels at that. But
+      if that's all you're using Storybook for, you're missing out on one of the
+      most powerful testing frameworks available for frontend development.
     </p>
     <h3 id="storybookBeyondDocumentation">
       Beyond Documentation: Storybook's Testing Capabilities
     </h3>
     <p>
-      Storybook has evolved far beyond its origins as a simple component documentation 
-      tool. Today, it offers a comprehensive suite of testing capabilities that can 
-      transform how you validate your UI components. Think about it - your components 
-      are already in Storybook, so why not test them right there too?
+      Storybook has evolved far beyond its origins as a simple component
+      documentation tool. Today, it offers a comprehensive suite of testing
+      capabilities that can transform how you validate your UI components. Think
+      about it - your components are already in Storybook, so why not test them
+      right there too?
     </p>
     <p>
-      The beauty of Storybook's approach is that it allows you to test components in 
-      their natural environment - rendered in the browser, with all their visual 
-      properties intact. This is something that traditional unit tests, which run in 
-      a Node.js environment, simply can't match.
+      The beauty of Storybook's approach is that it allows you to test
+      components in their natural environment - rendered in the browser, with
+      all their visual properties intact. This is something that traditional
+      unit tests, which run in a Node.js environment, simply can't match.
     </p>
-    <h3 id="storybookTestingTypes">
-      Comprehensive Testing Types in One Place
-    </h3>
+    <h3 id="storybookTestingTypes">Comprehensive Testing Types in One Place</h3>
     <p>
-      Storybook now supports multiple types of tests, all within the same ecosystem:
+      Storybook now supports multiple types of tests, all within the same
+      ecosystem:
     </p>
     <ul>
       <li>
-        <strong>Interaction Tests:</strong> These function like unit tests but for visual 
-        components. You can simulate user interactions (clicks, typing, etc.) and verify 
-        that components respond correctly. The best part? These tests run in a real browser 
-        environment, giving you confidence that your components will work as expected in 
-        production. <a href="https://storybook.js.org/docs/writing-tests/interaction-testing" target="_blank">Learn more about interaction testing</a>.
+        <strong>Interaction Tests:</strong> These function like unit tests but for
+        visual components. You can simulate user interactions (clicks, typing, etc.)
+        and verify that components respond correctly. The best part? These tests
+        run in a real browser environment, giving you confidence that your components
+        will work as expected in production. <a
+          href="https://storybook.js.org/docs/writing-tests/interaction-testing"
+          target="_blank">Learn more about interaction testing</a
+        >.
       </li>
       <li>
-        <strong>Accessibility Testing:</strong> Storybook's accessibility tools automatically 
-        check your components against WCAG guidelines, helping you catch accessibility issues 
-        before they reach production. This isn't just a nice-to-have - it's essential for 
-        building inclusive applications. <a href="https://storybook.js.org/docs/writing-tests/accessibility-testing" target="_blank">Learn more about accessibility testing</a>.
+        <strong>Accessibility Testing:</strong> Storybook's accessibility tools automatically
+        check your components against WCAG guidelines, helping you catch accessibility
+        issues before they reach production. This isn't just a nice-to-have - it's
+        essential for building inclusive applications. <a
+          href="https://storybook.js.org/docs/writing-tests/accessibility-testing"
+          target="_blank">Learn more about accessibility testing</a
+        >.
       </li>
       <li>
-        <strong>Snapshot Testing:</strong> Capture the rendered output of your components and 
-        detect unexpected changes. This is particularly valuable for preventing regression 
-        issues in your UI. <a href="https://storybook.js.org/docs/writing-tests/snapshot-testing" target="_blank">Learn more about snapshot testing</a>.
+        <strong>Snapshot Testing:</strong> Capture the rendered output of your components
+        and detect unexpected changes. This is particularly valuable for preventing
+        regression issues in your UI. <a
+          href="https://storybook.js.org/docs/writing-tests/snapshot-testing"
+          target="_blank">Learn more about snapshot testing</a
+        >.
       </li>
       <li>
-        <strong>Test Coverage:</strong> Just like with traditional unit tests, you can track 
-        and enforce test coverage for your Storybook tests. This helps ensure that your 
-        components are thoroughly tested. <a href="https://storybook.js.org/docs/writing-tests/test-coverage" target="_blank">Learn more about test coverage</a>.
+        <strong>Test Coverage:</strong> Just like with traditional unit tests, you
+        can track and enforce test coverage for your Storybook tests. This helps
+        ensure that your components are thoroughly tested. <a
+          href="https://storybook.js.org/docs/writing-tests/test-coverage"
+          target="_blank">Learn more about test coverage</a
+        >.
       </li>
     </ul>
     <p>
-      What makes this approach powerful is that you're testing components in a way that 
-      closely resembles how they'll actually be used. Traditional unit tests might tell 
-      you if a function returns the expected value, but they can't tell you if a dropdown 
-      menu appears correctly when clicked or if a form is accessible to screen readers.
+      What makes this approach powerful is that you're testing components in a
+      way that closely resembles how they'll actually be used. Traditional unit
+      tests might tell you if a function returns the expected value, but they
+      can't tell you if a dropdown menu appears correctly when clicked or if a
+      form is accessible to screen readers.
     </p>
     <h3 id="storybookIntegration">
       Seamless Integration with Your Testing Workflow
     </h3>
     <p>
-      One of the most compelling aspects of Storybook's testing capabilities is how 
-      seamlessly they integrate with your existing workflow:
+      One of the most compelling aspects of Storybook's testing capabilities is
+      how seamlessly they integrate with your existing workflow:
     </p>
     <ul>
       <li>
-        <strong>CI Integration:</strong> Run your Storybook tests in continuous integration 
-        environments, just like your other tests. This ensures that UI components are 
-        validated with every code change. <a href="https://storybook.js.org/docs/writing-tests/in-ci" target="_blank">Learn more about CI integration</a>.
+        <strong>CI Integration:</strong> Run your Storybook tests in continuous integration
+        environments, just like your other tests. This ensures that UI components
+        are validated with every code change. <a
+          href="https://storybook.js.org/docs/writing-tests/in-ci"
+          target="_blank">Learn more about CI integration</a
+        >.
       </li>
       <li>
-        <strong>Vitest Compatibility:</strong> If you're using Vitest for your logic tests, 
-        you can integrate Storybook tests into the same system. This means you don't need 
-        separate setups for different types of tests. <a href="https://storybook.js.org/docs/writing-tests/integrations/vitest-addon" target="_blank">Learn more about Vitest integration</a>.
+        <strong>Vitest Compatibility:</strong> If you're using Vitest for your logic
+        tests, you can integrate Storybook tests into the same system. This means
+        you don't need separate setups for different types of tests. <a
+          href="https://storybook.js.org/docs/writing-tests/integrations/vitest-addon"
+          target="_blank">Learn more about Vitest integration</a
+        >.
       </li>
     </ul>
     <p>
-      The real power here is that Storybook isn't trying to replace your existing testing 
-      tools - it's complementing them. You can still use Vitest or Jest for pure logic 
-      tests, while leveraging Storybook for what it does best: testing the visual and 
-      interactive aspects of your components.
+      The real power here is that Storybook isn't trying to replace your
+      existing testing tools - it's complementing them. You can still use Vitest
+      or Jest for pure logic tests, while leveraging Storybook for what it does
+      best: testing the visual and interactive aspects of your components.
     </p>
     <p>
-      By embracing Storybook as a testing framework, you're not just documenting your 
-      components - you're ensuring they work correctly, look right, and are accessible 
-      to all users. That's a powerful combination that can significantly improve the 
-      quality of your frontend code.
+      By embracing Storybook as a testing framework, you're not just documenting
+      your components - you're ensuring they work correctly, look right, and are
+      accessible to all users. That's a powerful combination that can
+      significantly improve the quality of your frontend code.
     </p>
     <h2 id="eslint">
       ESLint: More Than Just Code Style – It's About Engineering Discipline
@@ -1915,100 +1943,170 @@ function customGet(obj, path, defaultValue) {
       the overall health and longevity of a codebase.
     </p>
 
-    <h2 id="documentationIsForUsers">Documentation Is For Users, Not Developers</h2>
+    <h2 id="documentationIsForUsers">
+      Documentation Is For Users, Not Developers
+    </h2>
     <p>
-      In the software development world, there's a common misconception about the purpose and audience of documentation. Many teams invest significant time creating extensive internal documentation, believing it's the key to onboarding new developers and maintaining knowledge about their codebase. However, this approach often misses the mark on what documentation should actually accomplish and who it should serve.
+      In the software development world, there's a common misconception about
+      the purpose and audience of documentation. Many teams invest significant
+      time creating extensive internal documentation, believing it's the key to
+      onboarding new developers and maintaining knowledge about their codebase.
+      However, this approach often misses the mark on what documentation should
+      actually accomplish and who it should serve.
     </p>
 
     <h3 id="documentationPurpose">The True Purpose of Documentation</h3>
     <p>
-      Documentation should never be used to explain how to work on something. It should only ever be used to explain how to use something. This distinction is crucial: documentation is for users of your system, not for the developers building it.
+      Documentation should never be used to explain how to work on something. It
+      should only ever be used to explain how to use something. This distinction
+      is crucial: documentation is for users of your system, not for the
+      developers building it.
     </p>
     <p>
-      If documentation is the only form of onboarding a team has, it suggests other problems in the development process. Every experienced developer knows how to start a project and read code—these are fundamental skills. What they need isn't a document explaining the codebase structure, but rather a well-organized, self-documenting codebase with proper testing, linting, and clear patterns.
+      If documentation is the only form of onboarding a team has, it suggests
+      other problems in the development process. Every experienced developer
+      knows how to start a project and read code—these are fundamental skills.
+      What they need isn't a document explaining the codebase structure, but
+      rather a well-organized, self-documenting codebase with proper testing,
+      linting, and clear patterns.
     </p>
     <p>
-      External teams and users, however, do need clear documentation on how to interact with your system. They need simple definitions of APIs, schemas, and integration points. Data contracts—the explicit agreements about what data structures look like and how they behave—are many times more important than narrative documentation.
+      External teams and users, however, do need clear documentation on how to
+      interact with your system. They need simple definitions of APIs, schemas,
+      and integration points. Data contracts—the explicit agreements about what
+      data structures look like and how they behave—are many times more
+      important than narrative documentation.
     </p>
 
     <h3 id="livingDocumentation">Code as Living Documentation</h3>
     <p>
-      If you've followed the practices outlined in previous sections—comprehensive testing, strict linting, and component visualization—you've already created the most valuable form of documentation: living documentation embedded in your code. This doesn't mean writing narrative comments, but rather letting your tests, types, and linting rules serve as the documentation.
+      If you've followed the practices outlined in previous
+      sections—comprehensive testing, strict linting, and component
+      visualization—you've already created the most valuable form of
+      documentation: living documentation embedded in your code. This doesn't
+      mean writing narrative comments, but rather letting your tests, types, and
+      linting rules serve as the documentation.
     </p>
-    <p>
-      This type of documentation is superior for several reasons:
-    </p>
+    <p>This type of documentation is superior for several reasons:</p>
     <ul>
       <li>
-        <strong>It's always current:</strong> Unlike separate documentation that quickly becomes outdated, tests and type definitions must remain in sync with the code to function.
+        <strong>It's always current:</strong> Unlike separate documentation that
+        quickly becomes outdated, tests and type definitions must remain in sync
+        with the code to function.
       </li>
       <li>
-        <strong>It's executable:</strong> Tests don't just describe behavior—they verify it. If something changes, tests will fail, alerting developers immediately.
+        <strong>It's executable:</strong> Tests don't just describe behavior—they
+        verify it. If something changes, tests will fail, alerting developers immediately.
       </li>
       <li>
-        <strong>It's contextual:</strong> Tests and type definitions near the relevant code provide context exactly where developers need it, eliminating the need for separate narrative documentation.
+        <strong>It's contextual:</strong> Tests and type definitions near the relevant
+        code provide context exactly where developers need it, eliminating the need
+        for separate narrative documentation.
       </li>
       <li>
-        <strong>It's enforced:</strong> Linting rules and type checks are enforced by the build system, ensuring compliance.
+        <strong>It's enforced:</strong> Linting rules and type checks are enforced
+        by the build system, ensuring compliance.
       </li>
     </ul>
     <p>
-      It's important to note that the term "living documentation" is often misused in the industry. Documents in Jira, Confluence, or Google Docs are not truly "living"—they are by definition static and prone to becoming outdated. True living documentation exists only in the codebase itself, where it evolves naturally with the code.
+      It's important to note that the term "living documentation" is often
+      misused in the industry. Documents in Jira, Confluence, or Google Docs are
+      not truly "living"—they are by definition static and prone to becoming
+      outdated. True living documentation exists only in the codebase itself,
+      where it evolves naturally with the code.
     </p>
 
-    <h3 id="documentationDevelopersActuallyRead">Documentation Developers Actually Read</h3>
+    <h3 id="documentationDevelopersActuallyRead">
+      Documentation Developers Actually Read
+    </h3>
     <p>
-      The reality is that developers rarely read comprehensive documentation about internal systems. What they do read and rely on are:
+      The reality is that developers rarely read comprehensive documentation
+      about internal systems. What they do read and rely on are:
     </p>
     <ul>
       <li>
-        <strong>API specifications:</strong> Tools like Swagger/OpenAPI that provide interactive, up-to-date documentation of service endpoints.
+        <strong>API specifications:</strong> Tools like Swagger/OpenAPI that provide
+        interactive, up-to-date documentation of service endpoints.
       </li>
       <li>
-        <strong>Type definitions:</strong> Well-defined types that explain data structures and function signatures.
+        <strong>Type definitions:</strong> Well-defined types that explain data structures
+        and function signatures.
       </li>
       <li>
-        <strong>Test cases:</strong> Examples of how code is expected to behave in various scenarios.
+        <strong>Test cases:</strong> Examples of how code is expected to behave in
+        various scenarios.
       </li>
       <li>
-        <strong>Usage examples:</strong> Short, focused examples showing how to use a component or function.
+        <strong>Usage examples:</strong> Short, focused examples showing how to use
+        a component or function.
       </li>
       <li>
-        <strong>Self-documenting code:</strong> Well-structured code with descriptive function and variable names that make the intent clear without requiring comments. Comments are often a code smell - if something needs explanation, consider abstracting it into a function with a descriptive name instead.
+        <strong>Self-documenting code:</strong> Well-structured code with descriptive
+        function and variable names that make the intent clear without requiring
+        comments. Comments are often a code smell - if something needs explanation,
+        consider abstracting it into a function with a descriptive name instead.
       </li>
     </ul>
 
     <h4>Building a Self-Documenting Codebase</h4>
     <p>
-      When we talk about a "self-documenting codebase," we're referring to a comprehensive approach that goes beyond just well-named functions. A truly self-documenting codebase describes itself through multiple complementary practices:
+      When we talk about a "self-documenting codebase," we're referring to a
+      comprehensive approach that goes beyond just well-named functions. A truly
+      self-documenting codebase describes itself through multiple complementary
+      practices:
     </p>
     <ul>
       <li>
-        <strong>Clearly written code:</strong> Code that follows consistent patterns and conventions, with thoughtful naming and organization that reveals its intent and purpose.
+        <strong>Clearly written code:</strong> Code that follows consistent patterns
+        and conventions, with thoughtful naming and organization that reveals its
+        intent and purpose.
       </li>
       <li>
-        <strong>Robust tests:</strong> Comprehensive test suites that serve as executable specifications, demonstrating how components and functions are meant to be used and what outcomes to expect.
+        <strong>Robust tests:</strong> Comprehensive test suites that serve as executable
+        specifications, demonstrating how components and functions are meant to be
+        used and what outcomes to expect.
       </li>
       <li>
-        <strong>Storybook integration:</strong> Interactive component libraries that showcase UI elements in various states and configurations, providing visual documentation that's always in sync with the actual code. Storybook is particularly valuable as it combines documentation, testing, and visual exploration in one tool.
+        <strong>Storybook integration:</strong> Interactive component libraries that
+        showcase UI elements in various states and configurations, providing visual
+        documentation that's always in sync with the actual code. Storybook is particularly
+        valuable as it combines documentation, testing, and visual exploration in
+        one tool.
       </li>
       <li>
-        <strong>Strict linting:</strong> Enforced code quality rules that maintain consistency and prevent common errors, creating a predictable codebase that's easier to navigate and understand.
+        <strong>Strict linting:</strong> Enforced code quality rules that maintain
+        consistency and prevent common errors, creating a predictable codebase that's
+        easier to navigate and understand.
       </li>
       <li>
-        <strong>Industry standards:</strong> Following established patterns and practices that experienced developers will immediately recognize, reducing the learning curve for new team members.
+        <strong>Industry standards:</strong> Following established patterns and practices
+        that experienced developers will immediately recognize, reducing the learning
+        curve for new team members.
       </li>
     </ul>
     <p>
-      For working on the actual application or library, it's more efficient and helpful to discover tests and linting rules on a per-feature basis than to crawl through extensive documentation. This approach allows developers to understand the system organically, focusing on the specific parts they need to modify.
+      For working on the actual application or library, it's more efficient and
+      helpful to discover tests and linting rules on a per-feature basis than to
+      crawl through extensive documentation. This approach allows developers to
+      understand the system organically, focusing on the specific parts they
+      need to modify.
     </p>
 
     <h3 id="documentationConclusion">Conclusion: Focus on What Matters</h3>
     <p>
-      The most valuable documentation efforts should focus on external-facing aspects of your system—the parts that users and integrators need to understand. For internal development, invest in self-documenting code practices: comprehensive tests, strict typing, clear naming conventions, consistent patterns, and interactive component libraries with Storybook.
+      The most valuable documentation efforts should focus on external-facing
+      aspects of your system—the parts that users and integrators need to
+      understand. For internal development, invest in self-documenting code
+      practices: comprehensive tests, strict typing, clear naming conventions,
+      consistent patterns, and interactive component libraries with Storybook.
     </p>
     <p>
-      By shifting your documentation strategy to focus on users rather than developers, you'll not only save time but also create more valuable resources that actually get used. And by embracing code as documentation through a self-documenting codebase with robust tests, linting, and Storybook, you'll ensure that your internal knowledge remains accurate, useful, and truly "living."
+      By shifting your documentation strategy to focus on users rather than
+      developers, you'll not only save time but also create more valuable
+      resources that actually get used. And by embracing code as documentation
+      through a self-documenting codebase with robust tests, linting, and
+      Storybook, you'll ensure that your internal knowledge remains accurate,
+      useful, and truly "living."
     </p>
 
     <h2 id="letsTalkAboutReact">Let's Talk About React</h2>
@@ -2584,74 +2682,76 @@ function UserProfile() {
       behind the scenes.
     </p>
 
-    <h2 id="whyCloudflareIsBest">
-      Why Cloudflare Is Best for Development
-    </h2>
+    <h2 id="whyCloudflareIsBest">Why Cloudflare Is Best for Development</h2>
     <p>
-      When it comes to cloud platforms, developers often default to AWS or Azure due to their market dominance. 
-      However, Cloudflare offers a developer experience that's fundamentally different and, in many ways, 
-      superior for modern web development. Let's explore why Cloudflare has become an increasingly compelling 
-      choice for developers looking to build and deploy applications efficiently.
+      When it comes to cloud platforms, developers often default to AWS or Azure
+      due to their market dominance. However, Cloudflare offers a developer
+      experience that's fundamentally different and, in many ways, superior for
+      modern web development. Let's explore why Cloudflare has become an
+      increasingly compelling choice for developers looking to build and deploy
+      applications efficiently.
     </p>
 
     <h3 id="jsonConfigsAndWranglerCLI">
       JSON Configs and Wrangler CLI: Simplicity Over Abstraction
     </h3>
     <p>
-      One of Cloudflare's most significant advantages is its straightforward configuration approach. 
-      Unlike the complex console interfaces of AWS and Azure, Cloudflare embraces simple JSON configuration 
-      files and a powerful CLI tool called Wrangler.
+      One of Cloudflare's most significant advantages is its straightforward
+      configuration approach. Unlike the complex console interfaces of AWS and
+      Azure, Cloudflare embraces simple JSON configuration files and a powerful
+      CLI tool called Wrangler.
     </p>
-    <p>
-      This approach offers several benefits:
-    </p>
+    <p>This approach offers several benefits:</p>
     <ul>
       <li>
-        <strong>Version Control Friendly:</strong> JSON configs can be easily committed to your repository, 
-        making infrastructure changes trackable and reviewable alongside code changes.
+        <strong>Version Control Friendly:</strong> JSON configs can be easily committed
+        to your repository, making infrastructure changes trackable and reviewable
+        alongside code changes.
       </li>
       <li>
-        <strong>Reduced Abstraction Layers:</strong> While tools like Terraform are essential for managing 
-        complex AWS or Azure deployments, Cloudflare's simpler model often makes such abstraction tools unnecessary. 
-        You can directly interact with the platform using its native configuration format.
+        <strong>Reduced Abstraction Layers:</strong> While tools like Terraform are
+        essential for managing complex AWS or Azure deployments, Cloudflare's simpler
+        model often makes such abstraction tools unnecessary. You can directly interact
+        with the platform using its native configuration format.
       </li>
       <li>
-        <strong>Declarative Approach:</strong> The JSON configuration files clearly declare what you want, 
-        not how to achieve it, making your infrastructure intentions explicit and readable.
+        <strong>Declarative Approach:</strong> The JSON configuration files clearly
+        declare what you want, not how to achieve it, making your infrastructure
+        intentions explicit and readable.
       </li>
     </ul>
     <p>
-      This simplicity doesn't mean sacrificing power. Rather, it reflects Cloudflare's developer-centric 
-      philosophy: provide powerful capabilities with minimal complexity.
+      This simplicity doesn't mean sacrificing power. Rather, it reflects
+      Cloudflare's developer-centric philosophy: provide powerful capabilities
+      with minimal complexity.
     </p>
 
-    <h3 id="workersSimplicity">
-      Workers: Serverless Computing Simplified
-    </h3>
+    <h3 id="workersSimplicity">Workers: Serverless Computing Simplified</h3>
     <p>
-      Cloudflare Workers represent a significant evolution in serverless computing. Unlike AWS Lambda or 
-      Azure Functions, which can feel bolted onto their respective platforms, Workers are a core part of 
-      Cloudflare's architecture, running on their global network of data centers.
+      Cloudflare Workers represent a significant evolution in serverless
+      computing. Unlike AWS Lambda or Azure Functions, which can feel bolted
+      onto their respective platforms, Workers are a core part of Cloudflare's
+      architecture, running on their global network of data centers.
     </p>
-    <p>
-      What makes Workers particularly compelling:
-    </p>
+    <p>What makes Workers particularly compelling:</p>
     <ul>
       <li>
-        <strong>Instant Cold Starts:</strong> Workers execute in microseconds, not seconds, eliminating the 
-        cold start problem that plagues other serverless platforms.
+        <strong>Instant Cold Starts:</strong> Workers execute in microseconds, not
+        seconds, eliminating the cold start problem that plagues other serverless
+        platforms.
       </li>
       <li>
-        <strong>Edge Execution:</strong> Your code runs close to your users, dramatically reducing latency 
-        compared to region-specific deployments on other platforms.
+        <strong>Edge Execution:</strong> Your code runs close to your users, dramatically
+        reducing latency compared to region-specific deployments on other platforms.
       </li>
       <li>
-        <strong>Standard Web APIs:</strong> Workers use standard web interfaces like Request and Response, 
-        making them intuitive for web developers without requiring platform-specific knowledge.
+        <strong>Standard Web APIs:</strong> Workers use standard web interfaces like
+        Request and Response, making them intuitive for web developers without requiring
+        platform-specific knowledge.
       </li>
       <li>
-        <strong>Seamless Integration:</strong> Workers naturally integrate with other Cloudflare services 
-        like KV storage, Durable Objects, and R2 storage.
+        <strong>Seamless Integration:</strong> Workers naturally integrate with other
+        Cloudflare services like KV storage, Durable Objects, and R2 storage.
       </li>
     </ul>
 
@@ -2659,130 +2759,127 @@ function UserProfile() {
       Full-Stack Development with Framework Integration
     </h3>
     <p>
-      Cloudflare has embraced modern JavaScript frameworks, making it remarkably simple to deploy full-stack 
-      applications. When you run <code>pnpm create cloudflare</code> and select a JavaScript framework like 
-      React, you're not just getting a static site deployment—you're getting a complete full-stack solution.
+      Cloudflare has embraced modern JavaScript frameworks, making it remarkably
+      simple to deploy full-stack applications. When you run <code
+        >pnpm create cloudflare</code
+      > and select a JavaScript framework like React, you're not just getting a static
+      site deployment—you're getting a complete full-stack solution.
     </p>
-    <p>
-      This integration provides:
-    </p>
+    <p>This integration provides:</p>
     <ul>
       <li>
-        <strong>Automatic API Routes:</strong> Your Worker can serve both your frontend assets and act as 
-        your API backend, eliminating the need for separate services.
+        <strong>Automatic API Routes:</strong> Your Worker can serve both your frontend
+        assets and act as your API backend, eliminating the need for separate services.
       </li>
       <li>
-        <strong>Unified Development:</strong> Both frontend and backend code live in the same project, 
-        simplifying development workflows.
+        <strong>Unified Development:</strong> Both frontend and backend code live
+        in the same project, simplifying development workflows.
       </li>
       <li>
-        <strong>Framework-Specific Optimizations:</strong> Cloudflare's templates are optimized for each 
-        framework's specific requirements and best practices.
+        <strong>Framework-Specific Optimizations:</strong> Cloudflare's templates
+        are optimized for each framework's specific requirements and best practices.
       </li>
       <li>
-        <strong>Streamlined Deployment:</strong> A single command deploys your entire application, from 
-        frontend to backend.
+        <strong>Streamlined Deployment:</strong> A single command deploys your entire
+        application, from frontend to backend.
       </li>
     </ul>
     <p>
-      This approach dramatically reduces the complexity of building and deploying full-stack applications 
-      compared to the multi-service architectures typically required on AWS or Azure.
+      This approach dramatically reduces the complexity of building and
+      deploying full-stack applications compared to the multi-service
+      architectures typically required on AWS or Azure.
     </p>
 
     <h3 id="bindingsAndTypeGeneration">
       Bindings and Type Generation: Developer Experience First
     </h3>
     <p>
-      Cloudflare's focus on developer experience is particularly evident in its approach to bindings and 
-      type generation. These features keep you productive within your code editor, rather than constantly 
+      Cloudflare's focus on developer experience is particularly evident in its
+      approach to bindings and type generation. These features keep you
+      productive within your code editor, rather than constantly
       context-switching to a complex web console.
     </p>
-    <p>
-      Key advantages include:
-    </p>
+    <p>Key advantages include:</p>
     <ul>
       <li>
-        <strong>Type-Safe Resource Access:</strong> Cloudflare automatically generates TypeScript types for 
-        your bindings, providing autocomplete and type checking when accessing resources like KV stores or 
-        Durable Objects.
+        <strong>Type-Safe Resource Access:</strong> Cloudflare automatically generates
+        TypeScript types for your bindings, providing autocomplete and type checking
+        when accessing resources like KV stores or Durable Objects.
       </li>
       <li>
-        <strong>Local Development Parity:</strong> The same bindings work consistently between local 
-        development and production environments.
+        <strong>Local Development Parity:</strong> The same bindings work consistently
+        between local development and production environments.
       </li>
       <li>
-        <strong>Reduced Context Switching:</strong> Unlike AWS and Azure, which often require extensive 
-        console configuration, Cloudflare lets you define most resources directly in your code or 
-        configuration files.
+        <strong>Reduced Context Switching:</strong> Unlike AWS and Azure, which often
+        require extensive console configuration, Cloudflare lets you define most
+        resources directly in your code or configuration files.
       </li>
       <li>
-        <strong>IDE Integration:</strong> The strong typing and consistent interfaces make IDE features like 
-        code completion and refactoring more effective.
+        <strong>IDE Integration:</strong> The strong typing and consistent interfaces
+        make IDE features like code completion and refactoring more effective.
       </li>
     </ul>
     <p>
-      This approach stands in stark contrast to the confusing, messy UIs of AWS and Azure, where finding the 
-      right service or configuration option often feels like navigating a labyrinth.
+      This approach stands in stark contrast to the confusing, messy UIs of AWS
+      and Azure, where finding the right service or configuration option often
+      feels like navigating a labyrinth.
     </p>
 
-    <h3 id="futureInnovations">
-      Future Innovations: Beyond JavaScript
-    </h3>
+    <h3 id="futureInnovations">Future Innovations: Beyond JavaScript</h3>
     <p>
-      Cloudflare continues to push the boundaries of what's possible at the edge. One particularly exciting 
-      development is their work on supporting Docker containers within Workers, which will allow developers 
-      to run services written in any language on Cloudflare's edge network.
+      Cloudflare continues to push the boundaries of what's possible at the
+      edge. One particularly exciting development is their work on supporting
+      Docker containers within Workers, which will allow developers to run
+      services written in any language on Cloudflare's edge network.
     </p>
-    <p>
-      This innovation will:
-    </p>
+    <p>This innovation will:</p>
     <ul>
       <li>
-        <strong>Expand Language Support:</strong> Run code in Python, Ruby, Go, or any other language that 
-        can be containerized.
+        <strong>Expand Language Support:</strong> Run code in Python, Ruby, Go, or
+        any other language that can be containerized.
       </li>
       <li>
-        <strong>Enable Legacy Application Migration:</strong> Move existing applications to the edge without 
-        rewriting them.
+        <strong>Enable Legacy Application Migration:</strong> Move existing applications
+        to the edge without rewriting them.
       </li>
       <li>
-        <strong>Provide Consistent Deployment Model:</strong> Use the same deployment and scaling model 
-        regardless of your technology stack.
+        <strong>Provide Consistent Deployment Model:</strong> Use the same deployment
+        and scaling model regardless of your technology stack.
       </li>
     </ul>
     <p>
-      This development represents Cloudflare's commitment to meeting developers where they are, rather than 
-      forcing them to adapt to platform limitations.
+      This development represents Cloudflare's commitment to meeting developers
+      where they are, rather than forcing them to adapt to platform limitations.
     </p>
 
     <h3 id="industryRecognition">
       Industry Recognition: Security and Innovation
     </h3>
     <p>
-      Cloudflare's approach is gaining significant industry recognition. Their recent inclusion in the 2025 
-      Gartner Magic Quadrant for Security Service Edge highlights their growing importance in the cloud 
-      ecosystem.
+      Cloudflare's approach is gaining significant industry recognition. Their
+      recent inclusion in the 2025 Gartner Magic Quadrant for Security Service
+      Edge highlights their growing importance in the cloud ecosystem.
     </p>
-    <p>
-      This recognition reflects:
-    </p>
+    <p>This recognition reflects:</p>
     <ul>
       <li>
-        <strong>Security-First Architecture:</strong> Security is built into Cloudflare's platform at every 
-        level, not added as an afterthought.
+        <strong>Security-First Architecture:</strong> Security is built into Cloudflare's
+        platform at every level, not added as an afterthought.
       </li>
       <li>
-        <strong>Innovative Approach:</strong> Cloudflare consistently introduces new capabilities that 
-        challenge traditional cloud models.
+        <strong>Innovative Approach:</strong> Cloudflare consistently introduces
+        new capabilities that challenge traditional cloud models.
       </li>
       <li>
-        <strong>Developer Adoption:</strong> The growing preference for Cloudflare among developers who 
-        value simplicity and performance.
+        <strong>Developer Adoption:</strong> The growing preference for Cloudflare
+        among developers who value simplicity and performance.
       </li>
     </ul>
     <p>
-      As cloud platforms continue to evolve, Cloudflare's developer-centric approach positions it as an 
-      increasingly compelling alternative to the complexity of traditional cloud providers.
+      As cloud platforms continue to evolve, Cloudflare's developer-centric
+      approach positions it as an increasingly compelling alternative to the
+      complexity of traditional cloud providers.
     </p>
 
     <h2 id="whyYouShouldUseWindows">Why You Should Use Windows</h2>
@@ -3032,307 +3129,321 @@ curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install
 
     <h2 id="whyYouShouldUseJetBrainsIDEs">Why You Should Use JetBrains IDEs</h2>
     <p>
-      In the world of code editors and development environments, there's a clear 
-      distinction between those who constantly switch tools and those who find their 
-      perfect match and never look back. JetBrains IDEs fall firmly in the latter 
-      category, creating a loyal user base that rarely feels the need to explore 
-      alternatives. Let's explore why JetBrains IDEs stand apart from the trend-chasing 
-      cycle of text editors and why they represent a superior development experience.
+      In the world of code editors and development environments, there's a clear
+      distinction between those who constantly switch tools and those who find
+      their perfect match and never look back. JetBrains IDEs fall firmly in the
+      latter category, creating a loyal user base that rarely feels the need to
+      explore alternatives. Let's explore why JetBrains IDEs stand apart from
+      the trend-chasing cycle of text editors and why they represent a superior
+      development experience.
     </p>
 
-    <h3 id="ideVsTextEditor">IDE vs. Text Editor: Understanding the Real Difference</h3>
+    <h3 id="ideVsTextEditor">
+      IDE vs. Text Editor: Understanding the Real Difference
+    </h3>
     <p>
-      The terms "IDE" (Integrated Development Environment) and "text editor" are often 
-      used interchangeably, but they represent fundamentally different approaches to 
-      software development. A text editor, even with plugins, primarily focuses on 
-      editing text files with syntax highlighting and basic code assistance. An IDE, 
-      however, provides a comprehensive environment that understands your entire project 
-      at a deep level.
+      The terms "IDE" (Integrated Development Environment) and "text editor" are
+      often used interchangeably, but they represent fundamentally different
+      approaches to software development. A text editor, even with plugins,
+      primarily focuses on editing text files with syntax highlighting and basic
+      code assistance. An IDE, however, provides a comprehensive environment
+      that understands your entire project at a deep level.
     </p>
     <p>
       This distinction becomes clear when you consider what JetBrains offers:
     </p>
     <ul>
       <li>
-        <strong>Project-wide awareness:</strong> JetBrains IDEs understand the relationships 
+        <strong>Project-wide awareness:</strong> JetBrains IDEs understand the relationships
         between all files in your project, not just the one you're currently editing
       </li>
       <li>
-        <strong>Language-specific intelligence:</strong> Deep understanding of language semantics, 
-        not just syntax highlighting
+        <strong>Language-specific intelligence:</strong> Deep understanding of language
+        semantics, not just syntax highlighting
       </li>
       <li>
-        <strong>Integrated tooling:</strong> Debugging, profiling, testing, and deployment 
+        <strong>Integrated tooling:</strong> Debugging, profiling, testing, and deployment
         tools built directly into the environment
       </li>
       <li>
-        <strong>Refactoring capabilities:</strong> Intelligent code transformations that 
-        understand your codebase's structure
+        <strong>Refactoring capabilities:</strong> Intelligent code transformations
+        that understand your codebase's structure
       </li>
     </ul>
 
     <h3 id="jetBrainsLoyalty">The JetBrains Loyalty Phenomenon</h3>
     <p>
-      While many developers have hopped from one text editor to another following 
-      industry trends—Sublime Text for its customization and themes, VS Code for its 
-      plugin ecosystem, and now Cursor for its AI integration—JetBrains users display 
-      a remarkable loyalty. This isn't accidental or merely habitual; it's because 
-      JetBrains consistently delivers value that transcends these trends.
+      While many developers have hopped from one text editor to another
+      following industry trends—Sublime Text for its customization and themes,
+      VS Code for its plugin ecosystem, and now Cursor for its AI
+      integration—JetBrains users display a remarkable loyalty. This isn't
+      accidental or merely habitual; it's because JetBrains consistently
+      delivers value that transcends these trends.
     </p>
     <p>
-      JetBrains has demonstrated an ability to adapt and incorporate new features as 
-      they emerge in the development landscape. When customization became popular, 
-      JetBrains already offered extensive theming and personalization. When plugins 
-      became essential, JetBrains had a robust marketplace. And now, as AI assistance 
-      becomes the new frontier, JetBrains has integrated these capabilities without 
-      requiring users to switch platforms.
+      JetBrains has demonstrated an ability to adapt and incorporate new
+      features as they emerge in the development landscape. When customization
+      became popular, JetBrains already offered extensive theming and
+      personalization. When plugins became essential, JetBrains had a robust
+      marketplace. And now, as AI assistance becomes the new frontier, JetBrains
+      has integrated these capabilities without requiring users to switch
+      platforms.
     </p>
     <p>
-      This adaptability means JetBrains users don't experience FOMO (fear of missing out) 
-      that drives the constant tool-switching behavior seen elsewhere in the industry. 
-      They know their IDE will evolve to incorporate valuable new capabilities while 
-      maintaining the deep integration and intelligence they rely on.
+      This adaptability means JetBrains users don't experience FOMO (fear of
+      missing out) that drives the constant tool-switching behavior seen
+      elsewhere in the industry. They know their IDE will evolve to incorporate
+      valuable new capabilities while maintaining the deep integration and
+      intelligence they rely on.
     </p>
 
     <h3 id="fullIntegrationAdvantages">The Power of Full Integration</h3>
     <p>
-      The true power of JetBrains IDEs becomes apparent when you experience the 
+      The true power of JetBrains IDEs becomes apparent when you experience the
       seamless integration of advanced development features:
     </p>
     <ul>
       <li>
-        <strong>Interactive debugging:</strong> Set breakpoints in a React application 
-        and step through code execution while inspecting component state and props in 
-        real-time
+        <strong>Interactive debugging:</strong> Set breakpoints in a React application
+        and step through code execution while inspecting component state and props
+        in real-time
       </li>
       <li>
-        <strong>Database tools:</strong> Connect to, query, and modify databases directly 
-        within your IDE, with schema visualization and query optimization
+        <strong>Database tools:</strong> Connect to, query, and modify databases
+        directly within your IDE, with schema visualization and query optimization
       </li>
       <li>
-        <strong>Version control:</strong> Git operations with visual diff tools, conflict 
-        resolution, and branch management integrated into your workflow
+        <strong>Version control:</strong> Git operations with visual diff tools,
+        conflict resolution, and branch management integrated into your workflow
       </li>
       <li>
-        <strong>Deployment tools:</strong> Deploy applications to various environments 
+        <strong>Deployment tools:</strong> Deploy applications to various environments
         with configuration management and monitoring
       </li>
       <li>
-        <strong>Profiling and performance analysis:</strong> Identify bottlenecks and 
-        optimize code without leaving your development environment
+        <strong>Profiling and performance analysis:</strong> Identify bottlenecks
+        and optimize code without leaving your development environment
       </li>
     </ul>
     <p>
-      These aren't just conveniences; they fundamentally change how you approach 
-      development problems. When your debugging tools understand your application 
-      structure, you can diagnose issues more effectively. When your database tools 
-      are aware of your data models, you can work with your data more intelligently.
+      These aren't just conveniences; they fundamentally change how you approach
+      development problems. When your debugging tools understand your
+      application structure, you can diagnose issues more effectively. When your
+      database tools are aware of your data models, you can work with your data
+      more intelligently.
     </p>
 
     <h3 id="jetBrainsJunie">JetBrains Junie: AI That Understands Your Code</h3>
     <p>
-      JetBrains has entered the AI assistant space with Junie, a sophisticated AI 
-      tool that demonstrates the advantage of deep integration. Unlike generic AI 
-      coding assistants, Junie leverages JetBrains' deep understanding of code 
-      structure and project context.
+      JetBrains has entered the AI assistant space with Junie, a sophisticated
+      AI tool that demonstrates the advantage of deep integration. Unlike
+      generic AI coding assistants, Junie leverages JetBrains' deep
+      understanding of code structure and project context.
     </p>
     <p>
-      What sets Junie apart is its multimodal approach—it adapts its assistance 
+      What sets Junie apart is its multimodal approach—it adapts its assistance
       based on context:
     </p>
     <ul>
       <li>
-        When you're writing code, it offers intelligent completions that respect your 
-        project's architecture and coding conventions
+        When you're writing code, it offers intelligent completions that respect
+        your project's architecture and coding conventions
       </li>
       <li>
-        When you're debugging, it can analyze the execution flow and suggest potential 
-        fixes for issues
+        When you're debugging, it can analyze the execution flow and suggest
+        potential fixes for issues
       </li>
       <li>
-        When you're refactoring, it understands the implications across your entire 
-        codebase
+        When you're refactoring, it understands the implications across your
+        entire codebase
       </li>
       <li>
-        When you're learning a new API or framework, it can provide contextual 
+        When you're learning a new API or framework, it can provide contextual
         documentation and examples
       </li>
     </ul>
     <p>
-      This context-aware assistance is only possible because Junie operates within 
-      an environment that already has deep knowledge of your code, not just as text 
-      but as structured, meaningful entities with relationships and semantics.
+      This context-aware assistance is only possible because Junie operates
+      within an environment that already has deep knowledge of your code, not
+      just as text but as structured, meaningful entities with relationships and
+      semantics.
     </p>
 
     <h3 id="pluginsVsIntegration">Why Plugins Can't Match True Integration</h3>
     <p>
-      A common misconception is that you can replicate the JetBrains experience by 
-      installing dozens of plugins in a text editor like VS Code. While plugins can 
-      add features, they can't achieve the same level of integration for several reasons:
+      A common misconception is that you can replicate the JetBrains experience
+      by installing dozens of plugins in a text editor like VS Code. While
+      plugins can add features, they can't achieve the same level of integration
+      for several reasons:
     </p>
     <ul>
       <li>
-        <strong>Fragmented development:</strong> Plugins are developed independently, 
+        <strong>Fragmented development:</strong> Plugins are developed independently,
         often with different design philosophies and update cycles
       </li>
       <li>
-        <strong>Limited interoperability:</strong> Plugins may not communicate effectively 
+        <strong>Limited interoperability:</strong> Plugins may not communicate effectively
         with each other, creating silos of functionality
       </li>
       <li>
-        <strong>Performance overhead:</strong> Each plugin adds its own processing and 
-        memory requirements, often leading to a sluggish experience
+        <strong>Performance overhead:</strong> Each plugin adds its own processing
+        and memory requirements, often leading to a sluggish experience
       </li>
       <li>
-        <strong>Inconsistent user experience:</strong> Different plugins introduce 
+        <strong>Inconsistent user experience:</strong> Different plugins introduce
         varying UI patterns and keyboard shortcuts, creating cognitive load
       </li>
       <li>
-        <strong>Shallow integration:</strong> Plugins typically operate at a surface 
+        <strong>Shallow integration:</strong> Plugins typically operate at a surface
         level, lacking the deep project understanding that comes from a unified architecture
       </li>
     </ul>
     <p>
-      JetBrains IDEs are built from the ground up with integration in mind. Every feature 
-      is aware of and can interact with other features, creating a cohesive environment 
-      rather than a collection of disparate tools.
+      JetBrains IDEs are built from the ground up with integration in mind.
+      Every feature is aware of and can interact with other features, creating a
+      cohesive environment rather than a collection of disparate tools.
     </p>
     <p>
-      In conclusion, while text editors have their place and may be sufficient for 
-      simpler tasks, JetBrains IDEs offer a fundamentally different development experience. 
-      Their deep integration, language intelligence, and comprehensive tooling create 
-      a productive environment that adapts to new trends without sacrificing the core 
-      benefits that make developers loyal to the platform. If you value productivity, 
-      code quality, and a seamless development experience, JetBrains IDEs represent 
-      an investment that consistently pays dividends throughout your development career.
+      In conclusion, while text editors have their place and may be sufficient
+      for simpler tasks, JetBrains IDEs offer a fundamentally different
+      development experience. Their deep integration, language intelligence, and
+      comprehensive tooling create a productive environment that adapts to new
+      trends without sacrificing the core benefits that make developers loyal to
+      the platform. If you value productivity, code quality, and a seamless
+      development experience, JetBrains IDEs represent an investment that
+      consistently pays dividends throughout your development career.
     </p>
 
     <h2 id="whyPrismaIsBestORM">Why Prisma Is the Best ORM</h2>
     <p>
-      When building modern web applications, how you interact with your database can 
-      significantly impact development speed, code quality, and application performance. 
-      Object-Relational Mapping (ORM) tools have become essential in this ecosystem, 
-      and among them, Prisma stands out as the superior choice. Let's explore why 
-      Prisma has become the go-to ORM for developers who value both productivity and 
-      performance.
+      When building modern web applications, how you interact with your database
+      can significantly impact development speed, code quality, and application
+      performance. Object-Relational Mapping (ORM) tools have become essential
+      in this ecosystem, and among them, Prisma stands out as the superior
+      choice. Let's explore why Prisma has become the go-to ORM for developers
+      who value both productivity and performance.
     </p>
 
     <h3 id="whyUseORM">Why You Should Use an ORM in the First Place</h3>
     <p>
-      Before diving into Prisma specifically, it's worth understanding why ORMs are 
-      valuable in modern development:
+      Before diving into Prisma specifically, it's worth understanding why ORMs
+      are valuable in modern development:
     </p>
     <ul>
       <li>
-        <strong>Abstraction of database complexity:</strong> ORMs shield developers 
-        from having to write raw SQL queries, allowing them to work with familiar 
+        <strong>Abstraction of database complexity:</strong> ORMs shield developers
+        from having to write raw SQL queries, allowing them to work with familiar
         programming paradigms
       </li>
       <li>
-        <strong>Type safety:</strong> Modern ORMs provide type definitions that catch 
+        <strong>Type safety:</strong> Modern ORMs provide type definitions that catch
         errors at compile time rather than runtime
       </li>
       <li>
-        <strong>Query building:</strong> ORMs offer intuitive APIs for constructing 
+        <strong>Query building:</strong> ORMs offer intuitive APIs for constructing
         complex queries without string concatenation or manual parameter binding
       </li>
       <li>
-        <strong>Migration management:</strong> Database schema changes can be tracked, 
+        <strong>Migration management:</strong> Database schema changes can be tracked,
         versioned, and applied consistently across environments
       </li>
       <li>
-        <strong>Security:</strong> ORMs typically handle parameter sanitization, 
+        <strong>Security:</strong> ORMs typically handle parameter sanitization,
         reducing the risk of SQL injection attacks
       </li>
       <li>
-        <strong>Cross-database compatibility:</strong> The same code can often work 
+        <strong>Cross-database compatibility:</strong> The same code can often work
         with different database engines with minimal changes
       </li>
     </ul>
     <p>
-      While some developers argue for using raw SQL for performance reasons, the 
-      productivity and safety benefits of a well-designed ORM typically outweigh 
-      any performance considerations for most applications. The question isn't whether 
-      to use an ORM, but which one provides the best balance of developer experience, 
-      type safety, and performance.
+      While some developers argue for using raw SQL for performance reasons, the
+      productivity and safety benefits of a well-designed ORM typically outweigh
+      any performance considerations for most applications. The question isn't
+      whether to use an ORM, but which one provides the best balance of
+      developer experience, type safety, and performance.
     </p>
 
     <h3 id="comparingPrismaToAlternatives">Comparing Prisma to Alternatives</h3>
     <p>
-      The JavaScript/TypeScript ecosystem has several ORM options, each with different 
-      approaches and trade-offs:
+      The JavaScript/TypeScript ecosystem has several ORM options, each with
+      different approaches and trade-offs:
     </p>
     <ul>
       <li>
-        <strong>TypeORM:</strong> Once popular, TypeORM placed a bet on active record 
-        patterns and has fallen very far behind the rest of the ecosystem. Its patterns 
-        are really only relevant to NestJS applications. NestJS itself has put significant 
-        effort into maintaining compatibility with adapters and polyfills that require 
-        outdated dependencies like "reflect-metadata" – technologies that are no longer 
-        relevant in a modern JavaScript ecosystem.
+        <strong>TypeORM:</strong> Once popular, TypeORM placed a bet on active record
+        patterns and has fallen very far behind the rest of the ecosystem. Its patterns
+        are really only relevant to NestJS applications. NestJS itself has put significant
+        effort into maintaining compatibility with adapters and polyfills that require
+        outdated dependencies like "reflect-metadata" – technologies that are no
+        longer relevant in a modern JavaScript ecosystem.
       </li>
       <li>
-        <strong>Sequelize:</strong> One of the oldest JavaScript ORMs, Sequelize suffers 
-        from outdated patterns, limited TypeScript support, and complex configuration 
+        <strong>Sequelize:</strong> One of the oldest JavaScript ORMs, Sequelize
+        suffers from outdated patterns, limited TypeScript support, and complex configuration
         requirements.
       </li>
       <li>
-        <strong>Drizzle:</strong> A newer entrant that has captured developer attention 
-        with its performance claims. However, Drizzle still requires manual model definition 
-        and while it does handle migrations, it does so at a superficial level that doesn't 
-        map directly to the types and client API generation in the way that Prisma does.
+        <strong>Drizzle:</strong> A newer entrant that has captured developer attention
+        with its performance claims. However, Drizzle still requires manual model
+        definition and while it does handle migrations, it does so at a superficial
+        level that doesn't map directly to the types and client API generation in
+        the way that Prisma does.
       </li>
       <li>
-        <strong>Kysely:</strong> Similar to Drizzle, Kysely offers a type-safe query 
-        builder but lacks the comprehensive feature set of a full ORM. It requires 
-        significant manual setup and while it does include migration capabilities, they're 
-        implemented at a superficial level that doesn't integrate with types and client 
-        API generation like Prisma's approach.
+        <strong>Kysely:</strong> Similar to Drizzle, Kysely offers a type-safe query
+        builder but lacks the comprehensive feature set of a full ORM. It requires
+        significant manual setup and while it does include migration capabilities,
+        they're implemented at a superficial level that doesn't integrate with types
+        and client API generation like Prisma's approach.
       </li>
     </ul>
     <p>
-      These "modern" alternatives like Drizzle and Kysely have gained attention, but 
-      they still require considerable manual wiring and setup. You have to manually 
-      define models, and while they do offer migration capabilities, they handle them 
-      at a superficial level that doesn't map directly to the types and client API 
-      generation in the way that Prisma does – missing a key integration that's 
-      critical for efficient database management in a team environment.
+      These "modern" alternatives like Drizzle and Kysely have gained attention,
+      but they still require considerable manual wiring and setup. You have to
+      manually define models, and while they do offer migration capabilities,
+      they handle them at a superficial level that doesn't map directly to the
+      types and client API generation in the way that Prisma does – missing a
+      key integration that's critical for efficient database management in a
+      team environment.
     </p>
 
-    <h3 id="prismaAdvantages">Prisma's Advantages: Migrations, Types, and Simplicity</h3>
+    <h3 id="prismaAdvantages">
+      Prisma's Advantages: Migrations, Types, and Simplicity
+    </h3>
     <p>
-      Prisma takes a fundamentally different approach that addresses the limitations 
-      of other ORMs:
+      Prisma takes a fundamentally different approach that addresses the
+      limitations of other ORMs:
     </p>
     <ul>
       <li>
-        <strong>Schema-driven development:</strong> Prisma's schema file is a declarative, 
-        human-readable definition of your data model that serves as the single source of 
-        truth for both database schema and TypeScript types.
+        <strong>Schema-driven development:</strong> Prisma's schema file is a declarative,
+        human-readable definition of your data model that serves as the single source
+        of truth for both database schema and TypeScript types.
       </li>
       <li>
-        <strong>Automatic migrations:</strong> From your schema, Prisma can automatically 
-        generate and apply database migrations, keeping your database in sync with your 
-        code without manual SQL writing.
+        <strong>Automatic migrations:</strong> From your schema, Prisma can automatically
+        generate and apply database migrations, keeping your database in sync with
+        your code without manual SQL writing.
       </li>
       <li>
-        <strong>Type generation:</strong> Prisma generates TypeScript types that perfectly 
-        match your database schema, providing end-to-end type safety from database to API.
+        <strong>Type generation:</strong> Prisma generates TypeScript types that
+        perfectly match your database schema, providing end-to-end type safety from
+        database to API.
       </li>
       <li>
-        <strong>Intuitive query API:</strong> Prisma's client API is designed to be 
-        intuitive and discoverable, with excellent IDE autocompletion support.
+        <strong>Intuitive query API:</strong> Prisma's client API is designed to
+        be intuitive and discoverable, with excellent IDE autocompletion support.
       </li>
       <li>
-        <strong>Relations handling:</strong> Prisma makes working with related data 
-        straightforward, with support for eager loading, nested writes, and cascading 
+        <strong>Relations handling:</strong> Prisma makes working with related data
+        straightforward, with support for eager loading, nested writes, and cascading
         operations.
       </li>
     </ul>
-    <p>
-      Consider this simple Prisma schema example:
-    </p>
-    <CodeBlock code={`
+    <p>Consider this simple Prisma schema example:</p>
+    <CodeBlock
+      code={`
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -3355,66 +3466,75 @@ model Profile {
   bio       String?
   user      User    @relation(fields: [userId], references: [id])
   userId    Int     @unique
-}`} />
-    <p>
-      From this single schema file, Prisma generates:
-    </p>
+}`}
+    />
+    <p>From this single schema file, Prisma generates:</p>
     <ol>
-      <li>Database migrations to create these tables with proper constraints</li>
+      <li>
+        Database migrations to create these tables with proper constraints
+      </li>
       <li>TypeScript types for all models and their relations</li>
       <li>A fully type-safe client for querying and manipulating data</li>
     </ol>
     <p>
-      This approach dramatically reduces boilerplate code and ensures consistency 
-      between your database schema and application code. The schema file serves as 
-      both documentation and executable code, eliminating the drift that often occurs 
-      between models and database structure in other ORMs.
+      This approach dramatically reduces boilerplate code and ensures
+      consistency between your database schema and application code. The schema
+      file serves as both documentation and executable code, eliminating the
+      drift that often occurs between models and database structure in other
+      ORMs.
     </p>
     <p>
-      Prisma has also recently made significant improvements to address its historical 
-      limitations:
+      Prisma has also recently made significant improvements to address its
+      historical limitations:
     </p>
     <ul>
       <li>
-        <strong>ESM support:</strong> Prisma now fully supports ECMAScript modules, 
+        <strong>ESM support:</strong> Prisma now fully supports ECMAScript modules,
         aligning with the modern JavaScript ecosystem.
       </li>
       <li>
-        <strong>Improved performance:</strong> Prisma has dropped what has been the 
-        biggest reason most people decided not to use it – the Rust client. This change 
-        has significantly improved its performance and startup time.
+        <strong>Improved performance:</strong> Prisma has dropped what has been the
+        biggest reason most people decided not to use it – the Rust client. This
+        change has significantly improved its performance and startup time.
       </li>
     </ul>
 
-    <h3 id="prismaEdgeCompatibility">Prisma's Compatibility with Edge Platforms</h3>
+    <h3 id="prismaEdgeCompatibility">
+      Prisma's Compatibility with Edge Platforms
+    </h3>
     <p>
-      With the shift away from the Rust client and toward a more lightweight JavaScript 
-      implementation, Prisma is now fully compatible with edge platforms like Cloudflare 
-      Workers, Vercel Edge Functions, and Deno Deploy. This compatibility opens up new 
-      possibilities for building high-performance applications that leverage the global 
-      distribution of edge computing while maintaining the developer experience benefits 
-      of a sophisticated ORM.
+      With the shift away from the Rust client and toward a more lightweight
+      JavaScript implementation, Prisma is now fully compatible with edge
+      platforms like Cloudflare Workers, Vercel Edge Functions, and Deno Deploy.
+      This compatibility opens up new possibilities for building
+      high-performance applications that leverage the global distribution of
+      edge computing while maintaining the developer experience benefits of a
+      sophisticated ORM.
     </p>
-    <p>
-      Edge compatibility means you can:
-    </p>
+    <p>Edge compatibility means you can:</p>
     <ul>
-      <li>Deploy database-connected applications to CDN edge nodes worldwide</li>
+      <li>
+        Deploy database-connected applications to CDN edge nodes worldwide
+      </li>
       <li>Reduce latency by processing data closer to your users</li>
-      <li>Maintain a consistent development experience across all deployment targets</li>
+      <li>
+        Maintain a consistent development experience across all deployment
+        targets
+      </li>
     </ul>
     <p>
-      This advantage is particularly important as more applications move toward edge-first 
-      architectures to improve performance and reduce costs.
+      This advantage is particularly important as more applications move toward
+      edge-first architectures to improve performance and reduce costs.
     </p>
     <p>
-      In conclusion, while there are many ORM options available in the JavaScript ecosystem, 
-      Prisma stands out for its comprehensive approach that handles both migrations and types 
-      through one very simple schema file. Its recent performance improvements and edge 
-      compatibility make it suitable for virtually any modern web application. By choosing 
-      Prisma, you're not just selecting a database tool – you're adopting a development 
-      workflow that emphasizes type safety, reduces boilerplate, and ensures consistency 
-      between your code and database.
+      In conclusion, while there are many ORM options available in the
+      JavaScript ecosystem, Prisma stands out for its comprehensive approach
+      that handles both migrations and types through one very simple schema
+      file. Its recent performance improvements and edge compatibility make it
+      suitable for virtually any modern web application. By choosing Prisma,
+      you're not just selecting a database tool – you're adopting a development
+      workflow that emphasizes type safety, reduces boilerplate, and ensures
+      consistency between your code and database.
     </p>
   </main>
 </Fragment>
