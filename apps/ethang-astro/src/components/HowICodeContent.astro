@@ -8,7 +8,6 @@ import greenshot from "../images/windows/greenshot.png";
 /*
  * TODO add sections on:
  * Why Cloudflare is best for development
- * Storybook as a frontend testing framework
  * Prisma as the best ORM, and why you should use ORMs
  * Mention playwright as the best E2E tool
  * Why you should use JetBrains IDE's over the trend chase text editors (Sublime - customization/themes, VS Code - plugins, Cursor - AI)
@@ -168,6 +167,11 @@ import greenshot from "../images/windows/greenshot.png";
             >
           </li>
           <li>
+            <a href="#vitestOverJest"
+              >Vitest: A Superior Choice for Modern Unit Testing</a
+            >
+          </li>
+          <li>
             <a href="#theCumulativeEffect"
               >The Cumulative Effect: System Resilience</a
             >
@@ -198,6 +202,11 @@ import greenshot from "../images/windows/greenshot.png";
           <li>
             <a href="#theComplementaryNature"
               >The Complementary Nature of Testing Layers</a
+            >
+          </li>
+          <li>
+            <a href="#playwrightForE2E"
+              >Playwright: The Superior Choice for Modern E2E Testing</a
             >
           </li>
         </ul>
@@ -1330,6 +1339,41 @@ function customGet(obj, path, defaultValue) {
       and correctness in mind from the outset. It encourages building small,
       focused units of functionality that are inherently robust.
     </p>
+
+    <h3 id="vitestOverJest">Vitest: A Superior Choice for Modern Unit Testing</h3>
+    <p>
+      When it comes to choosing a unit testing framework for JavaScript and TypeScript projects, 
+      Vitest stands out as a superior alternative to Jest for several compelling reasons:
+    </p>
+    <ul>
+      <li>
+        <strong>Speed and Performance:</strong> Vitest is significantly faster than Jest, 
+        leveraging Vite's native ESM-based architecture to provide near-instantaneous hot module 
+        replacement (HMR) during testing. This speed advantage becomes increasingly apparent in 
+        larger codebases, where test execution time can be reduced by orders of magnitude.
+      </li>
+      <li>
+        <strong>Jest API Compatibility:</strong> Vitest offers full compatibility with Jest's API, 
+        making migration from Jest straightforward. This means you can leverage your existing 
+        knowledge of Jest's matchers, mocks, and test structure while benefiting from Vitest's 
+        performance improvements.
+      </li>
+      <li>
+        <strong>Modern Architecture:</strong> Built on top of Vite, Vitest inherits its modern, 
+        ESM-first approach, which aligns better with contemporary JavaScript development practices 
+        and provides better support for TypeScript without the need for transpilation.
+      </li>
+      <li>
+        <strong>Integrated Watch Mode:</strong> Vitest's watch mode is more intelligent and 
+        responsive, providing a smoother developer experience when iterating on tests.
+      </li>
+    </ul>
+    <p>
+      By choosing Vitest for your unit testing needs, you're not only gaining performance benefits 
+      but also adopting a tool that's designed for the modern JavaScript ecosystem while maintaining 
+      compatibility with the familiar Jest APIs that many developers already know.
+    </p>
+
     <h3 id="theCumulativeEffect">The Cumulative Effect: System Resilience</h3>
     <p>
       Just as a single, poorly implemented utility function can introduce
@@ -1475,6 +1519,51 @@ function customGet(obj, path, defaultValue) {
       paramount for building a truly engineered, maintainable, and resilient
       software system.
     </p>
+
+    <h3 id="playwrightForE2E">
+      Playwright: The Superior Choice for Modern E2E Testing
+    </h3>
+    <p>
+      When it comes to selecting an E2E testing framework, Playwright stands out as the 
+      superior choice for modern web applications, offering significant advantages over 
+      alternatives like Cypress:
+    </p>
+    <ul>
+      <li>
+        <strong>Microsoft Backing:</strong> Developed and maintained by Microsoft, Playwright 
+        benefits from the resources, expertise, and long-term commitment of one of the world's 
+        leading technology companies. This ensures ongoing development, regular updates, and 
+        enterprise-grade reliability.
+      </li>
+      <li>
+        <strong>Cost-Effective Parallel Testing:</strong> Unlike Cypress, which charges premium 
+        fees for parallel test execution in their cloud service, Playwright allows you to run 
+        tests in parallel without any additional costs. This can significantly reduce testing 
+        time and CI/CD pipeline expenses, especially for larger projects.
+      </li>
+      <li>
+        <strong>Multi-Browser Support:</strong> Playwright provides native support for all major 
+        browsers (Chromium, Firefox, and WebKit) with a single API, allowing you to ensure your 
+        application works consistently across different browser engines without writing separate 
+        test code.
+      </li>
+      <li>
+        <strong>Superior Architecture:</strong> Playwright's architecture enables testing of complex 
+        scenarios that are challenging with other frameworks, including testing across multiple 
+        pages, domains, and browser contexts, as well as handling iframes and shadow DOM with ease.
+      </li>
+      <li>
+        <strong>Mobile Emulation:</strong> Playwright offers robust mobile emulation capabilities, 
+        allowing you to test how your application behaves on various mobile devices without 
+        requiring separate mobile-specific testing infrastructure.
+      </li>
+    </ul>
+    <p>
+      By choosing Playwright for E2E testing, you're not only selecting a technically superior 
+      tool but also making a financially prudent decision that avoids the escalating costs 
+      associated with parallel testing in cloud-based services like those offered by Cypress.
+    </p>
+
     <h2 id="storybookTestingFramework">
       Storybook: Not Just a Component Library, But a Full Testing Framework
     </h2>
