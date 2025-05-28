@@ -18,20 +18,16 @@ import greenshot from "../images/windows/greenshot.png";
 
 <Fragment>
 <script>
-  function countWords(text: string) {
-    const textContent = text.replace(/<[^>]*>/g, ' ');
-
-    const words = textContent.split(/\s+/).filter(word => word.length > 0);
-    return words.length;
-  }
-
   const formatter = Intl.NumberFormat(undefined)
 
   const calculate = () => {
       const mainElement = document.querySelector('main.prose');
 
       if (mainElement) {
-          const wordCount = countWords(mainElement.innerHTML);
+          const textContent = mainElement.innerHTML.replace(/<[^>]*>/g, ' ');
+          const words = textContent.split(/\s+/).filter(word => word.length > 0);
+          const wordCount = words.length;
+
           const readTimeMinutes = Math.ceil(wordCount / 225);
 
           const wordCountElement = document.querySelector('.word-count-display');
@@ -196,7 +192,7 @@ import greenshot from "../images/windows/greenshot.png";
         <code>luxon</code>. If you need utility functions for arrays or objects, you might consider
         <code>lodash</code>.
         For
-        proper async management, <code>TanStack Query</code> becomes essential. These are covered in "<a
+        proper async management, <code>@tanstack/query</code> becomes essential. These are covered in "<a
                 href="https://ethang.dev/blog/javascript-standard-library/" target="_blank">Why You Should Install
             That
             JS Library</a>," which acts as a testament to this reality. Developers <i>rely</i> on the vast ecosystem of NPM
@@ -371,14 +367,22 @@ import greenshot from "../images/windows/greenshot.png";
             TypeScript still sees a <code>number</code>, but <code>NaN</code> propagates silently, leading to
             incorrect results or unpredictable behavior if unchecked.
             <CodeBlock code={`
-// Example: NaN propagation
-let validNumber = 10;
-let result = validNumber / 0; // result is Infinity
+// Example: NaN propagation that TypeScript won't catch
+function calculateAverage(values: number[]): number {
+  // TypeScript is happy with this function's type safety
+  const sum = values.reduce((acc, val) => acc + val, 0);
+  const avg = sum / values.length; // This can be NaN if values.length is 0
+  return avg;
+}
 
-// If 'result' is then used in further calculations without checks
-// and an unexpected non-numeric value is introduced
-let anotherResult = result * "hello"; // anotherResult becomes NaN
-console.log(anotherResult); // NaN`}/>
+// This passes TypeScript checks but produces NaN at runtime
+const emptyArray: number[] = [];
+const average = calculateAverage(emptyArray); // NaN
+console.log(average); // NaN
+
+// NaN then silently propagates through further calculations
+const doubledAverage = average * 2; // NaN
+console.log(doubledAverage); // NaN`}/>
         </li>
         <li><strong>Nullish Values (<code class="!font-normal">null</code>, <code
                 class="!font-normal">undefined</code>):</strong> TypeScript is excellent at identifying optional
@@ -458,23 +462,40 @@ processItems(["short", "tiny"]); // "No items to process after filtering."`}/>
             aggregation or a function dynamically building objects might, under certain conditions, return an object
             missing a crucial property, or an array where a single object was expected.
             <CodeBlock code={`
-// Example: Internal transformation leading to missing property
-function transformData(data: { valueA: number; valueB: number; isSpecial: boolean }) {
+// Example: Internal transformation leading to missing property that TypeScript won't catch
+interface TransformedData {
+  calculatedValue: number;
+  specialKey?: string; // Note the optional property
+}
+
+function transformData(data: { valueA: number; valueB: number; isSpecial: boolean }): TransformedData {
   // Assume 'data' is initially validated by Zod
-  let transformed: any = {};
-  transformed.calculatedValue = data.valueA + data.valueB;
+  const transformed: TransformedData = {
+    calculatedValue: data.valueA + data.valueB
+  };
 
   if (data.isSpecial) {
     transformed.specialKey = "extra info";
   }
-  // If later code expects 'specialKey' to always exist, it will fail when isSpecial is false
+
   return transformed;
 }
 
+// In another part of the codebase:
+function processSpecialData(data: TransformedData) {
+  // Developer might forget that specialKey is optional
+  // TypeScript would warn here, but it's easy to silence with non-null assertion
+  const specialKeyLength = data.specialKey!.length; // Runtime error if specialKey is undefined
+  console.log(\`Special key length: \${specialKeyLength}\`);
+}
+
 const result = transformData({ valueA: 1, valueB: 2, isSpecial: false });
-// If another function tries to use result.specialKey, it will be undefined
-// and might cause errors if not checked.
-console.log(result.specialKey); // undefined`}/>
+// This will compile but fail at runtime
+try {
+  processSpecialData(result);
+} catch (e) {
+  console.error("Runtime error:", e); // TypeError: Cannot read property 'length' of undefined
+}`}/>
         </li>
         <li><strong>JavaScript's Automatic Coercions:</strong> Despite TypeScript, JavaScript's flexible type
             coercion rules can lead to surprising behavior within our application. If a <code>number</code> is
@@ -482,21 +503,50 @@ console.log(result.specialKey); // undefined`}/>
             becomes a string. If a subsequent function expects a number, this hidden coercion can cause unexpected
             runtime outcomes not caught by static analysis.
             <CodeBlock code={`
-// Example: Automatic coercion
-function calculateTotal(price: number, quantity: number) {
+// Example: Automatic coercion that TypeScript won't catch
+function calculateTotal(price: number, quantity: number): number {
   return price * quantity;
 }
 
-let itemPrice = 10;
-let itemQuantity: any = "5"; // This might bypass TypeScript if it's from a dynamic source or internal string conversion
+// This function gets data from a form or API and returns numbers
+function getOrderData(): { price: number; quantity: number } {
+  // In a real app, this might come from form inputs or API responses
+  // where values might be strings that get parsed to numbers
 
-// If not explicitly converted, JavaScript might coerce in unexpected ways
-let total = calculateTotal(itemPrice, itemQuantity); // 10 * "5" -> 50 (works here, but can be unpredictable)
-console.log(total); // 50
+  // Imagine this is from an HTML input with type="number"
+  // Even with input type="number", values come as strings from forms
+  const priceFromForm = "10";
+  const quantityFromForm = "5";
 
-itemQuantity = "five";
-total = calculateTotal(itemPrice, itemQuantity); // 10 * "five" -> NaN
-console.log(total); // NaN, which could then propagate`}/>
+  // Implicit coercion happens here - the + operator converts strings to numbers
+  // TypeScript doesn't catch this because the return type matches
+  return {
+    price: +priceFromForm,     // Correct conversion
+    quantity: quantityFromForm as unknown as number  // Incorrect - string passed as number
+  };
+}
+
+const { price, quantity } = getOrderData();
+// TypeScript thinks both are numbers, but quantity is actually a string
+// JavaScript will coerce the string to a number during multiplication
+const total = calculateTotal(price, quantity);
+console.log(total); // 50 - works by coincidence
+
+// But what if the form data was invalid?
+function getInvalidOrderData(): { price: number; quantity: number } {
+  const priceFromForm = "10";
+  const quantityFromForm = "five"; // Invalid input
+
+  return {
+    price: +priceFromForm,
+    quantity: quantityFromForm as unknown as number // This bypasses TypeScript's checks
+  };
+}
+
+const invalidOrder = getInvalidOrderData();
+// This compiles fine but fails at runtime
+const invalidTotal = calculateTotal(invalidOrder.price, invalidOrder.quantity);
+console.log(invalidTotal); // NaN`}/>
         </li>
         <li><strong>Native Methods with Undocumented Throws:</strong> Many native JavaScript methods can throw
             errors under specific, sometimes poorly documented, conditions. For instance, certain string or array
