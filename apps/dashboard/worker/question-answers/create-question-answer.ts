@@ -1,9 +1,6 @@
-import {
-  createQuestionAnswerSchema,
-  type QuestionAnswer,
-} from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
-import { v7 } from "uuid";
+import { createQuestionAnswerSchema } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
 
+import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
 export const createQuestionAnswer = async (
@@ -13,11 +10,15 @@ export const createQuestionAnswer = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      return environment.DB.prepare(
-        "insert into questionAnswers (id, userId, question, answer) values (?, ?, ?, ?)",
-      )
-        .bind(v7(), userId, body.question, body.answer)
-        .first<QuestionAnswer>();
+      const prisma = await getPrismaClient(environment);
+
+      return prisma.questionAnswers.create({
+        data: {
+          answer: body.answer,
+          question: body.question,
+          userId,
+        },
+      });
     },
     request,
     requestSchema: createQuestionAnswerSchema,

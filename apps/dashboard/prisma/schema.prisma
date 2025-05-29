@@ -1,0 +1,68 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  previewFeatures = ["queryCompiler" ,"driverAdapters"]
+
+  runtime = "cloudflare"
+  moduleFormat = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../.wrangler/state/v3/d1/miniflare-D1DatabaseObject/4bb12a55097ef0a39af3c2cfe4dbaa2b3bb1a60b23da4ca35efb3a8e1918f7fa.sqlite"
+}
+
+model applications {
+  id              String    @id @default(uuid(7))
+  userId          String
+  applied         DateTime
+  company         String
+  title           String
+  url             String
+  rejected        DateTime?
+  interviewRounds String?
+
+  @@index([id, userId])
+}
+
+model bookmarks {
+  id     String @id @default(uuid(7))
+  title  String
+  url    String
+  userId String
+}
+
+model contacts {
+  id                  String    @id @default(uuid(7))
+  userId              String
+  name                String
+  phone               String?
+  email               String?
+  linkedIn            String?
+  lastContact         DateTime
+  expectedNextContact DateTime?
+
+  @@index([id, userId])
+}
+
+model questionAnswers {
+  id       String @id @default(uuid(7))
+  userId   String
+  answer   String
+  question String
+
+  @@index([id, userId])
+}
+
+model todos {
+  id          String    @id @default(uuid(7))
+  userId      String
+  title       String
+  description String?
+  recurs      Int?
+  dueDate     DateTime?
+
+  @@index([id, userId])
+}

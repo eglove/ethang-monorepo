@@ -1,5 +1,6 @@
 import { deleteQuestionAnswerSchema } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
 
+import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
 export const deleteQuestionAnswer = async (
@@ -9,11 +10,9 @@ export const deleteQuestionAnswer = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      return environment.DB.prepare(
-        "delete from questionAnswers where id = ? and userId = ?",
-      )
-        .bind(body.id, userId)
-        .first();
+      const prisma = await getPrismaClient(environment);
+
+      return prisma.questionAnswers.delete({ where: { id: body.id, userId } });
     },
     request,
     requestSchema: deleteQuestionAnswerSchema,

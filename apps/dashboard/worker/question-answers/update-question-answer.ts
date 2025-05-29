@@ -1,5 +1,6 @@
 import { questionAnswerSchema } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
 
+import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
 export const updateQuestionAnswer = async (
@@ -9,11 +10,18 @@ export const updateQuestionAnswer = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      return environment.DB.prepare(
-        "update questionAnswers set question = ?, answer = ? where id = ? and userId = ?",
-      )
-        .bind(body.question, body.answer, body.id, userId)
-        .first();
+      const prisma = await getPrismaClient(environment);
+
+      return prisma.questionAnswers.update({
+        data: {
+          answer: body.answer,
+          question: body.question,
+        },
+        where: {
+          id: body.id,
+          userId,
+        },
+      });
     },
     request,
     requestSchema: questionAnswerSchema,

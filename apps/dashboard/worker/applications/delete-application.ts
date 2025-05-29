@@ -1,5 +1,6 @@
 import { deleteApplicationSchema } from "@ethang/schemas/src/dashboard/application-schema.ts";
 
+import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
 export const deleteApplication = async (
@@ -9,11 +10,9 @@ export const deleteApplication = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      return environment.DB.prepare(
-        "delete from applications where id = ? and userId = ?",
-      )
-        .bind(body.id, userId)
-        .first();
+      const prisma = await getPrismaClient(environment);
+
+      return prisma.applications.delete({ where: { id: body.id, userId } });
     },
     request,
     requestSchema: deleteApplicationSchema,

@@ -16,7 +16,7 @@ export const applicationRouter = async (
     }
 
     case "GET": {
-      return getAllApplications(request, environment, userId);
+      return getAllApplications(environment, userId);
     }
 
     case "POST": {

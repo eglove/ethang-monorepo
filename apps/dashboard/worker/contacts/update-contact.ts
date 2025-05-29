@@ -1,5 +1,6 @@
 import { contactSchema } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 
+import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
 export const updateContact = async (
@@ -9,20 +10,19 @@ export const updateContact = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      return environment.DB.prepare(
-        "update contacts set name = ?, phone = ?, email = ?, linkedIn = ?, lastContact = ?, expectedNextContact = ? where id = ? and userId = ?",
-      )
-        .bind(
-          body.name,
-          body.phone,
-          body.email,
-          body.linkedIn,
-          body.lastContact,
-          body.expectedNextContact,
-          body.id,
-          userId,
-        )
-        .first();
+      const prisma = await getPrismaClient(environment);
+
+      return prisma.contacts.update({
+        data: {
+          email: body.email,
+          expectedNextContact: body.expectedNextContact,
+          lastContact: body.lastContact,
+          linkedIn: body.linkedIn,
+          name: body.name,
+          phone: body.phone,
+        },
+        where: { id: body.id, userId },
+      });
     },
     request,
     requestSchema: contactSchema,

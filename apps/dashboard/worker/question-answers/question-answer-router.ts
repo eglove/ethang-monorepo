@@ -16,7 +16,7 @@ export const questionAnswerRouter = async (
     }
 
     case "GET": {
-      return getAllQuestionAnswers(request, environment, userId);
+      return getAllQuestionAnswers(environment, userId);
     }
 
     case "POST": {

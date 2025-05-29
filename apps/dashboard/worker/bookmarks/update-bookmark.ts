@@ -1,5 +1,6 @@
 import { bookmarkSchema } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 
+import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
 export const updateBookmark = async (
@@ -9,11 +10,18 @@ export const updateBookmark = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      return environment.DB.prepare(
-        "update bookmarks set title = ?, url = ? where id = ? and userId = ?",
-      )
-        .bind(body.title, body.url, body.id, userId)
-        .first();
+      const prisma = await getPrismaClient(environment);
+
+      return prisma.bookmarks.update({
+        data: {
+          title: body.title,
+          url: body.url,
+        },
+        where: {
+          id: body.id,
+          userId,
+        },
+      });
     },
     request,
     requestSchema: bookmarkSchema,

@@ -1,5 +1,6 @@
 import { todoSchema } from "@ethang/schemas/src/dashboard/todo-schema.ts";
 
+import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
 export const updateTodo = async (
@@ -9,18 +10,17 @@ export const updateTodo = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      return environment.DB.prepare(
-        "update todos set title = ?, description = ?, recurs = ?, dueDate = ? where id = ? and userId = ?",
-      )
-        .bind(
-          body.title,
-          body.description,
-          body.recurs,
-          body.dueDate,
-          body.id,
-          userId,
-        )
-        .first();
+      const prisma = await getPrismaClient(environment);
+
+      return prisma.todos.update({
+        data: {
+          description: body.description,
+          dueDate: body.dueDate,
+          recurs: body.recurs,
+          title: body.title,
+        },
+        where: { id: body.id, userId },
+      });
     },
     request,
     requestSchema: todoSchema,

@@ -1,64 +1,26 @@
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response";
-import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
+import { parseJson } from "@ethang/toolbelt/json/json";
 import isError from "lodash/isError";
-import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
 import map from "lodash/map.js";
-import toUpper from "lodash/toUpper";
+import { z } from "zod";
 
-import { getUrlFilters } from "../utilities/get-url-filters.ts";
+import { getPrismaClient } from "../prisma-client.ts";
 
-export const getAllApplications = async (
-  request: Request,
-  environment: Env,
-  userId: string,
-) => {
-  const { filterBy, filterValue, limit, page, search, sortBy, sortOrder } =
-    getUrlFilters(request.url);
-
-  let query = "select * from applications where userId = ?";
-  const parameters = [userId];
-
-  if (!isNil(search)) {
-    query += " and (company like ? or title like ?)";
-    parameters.push(`%${search}%`, `%${search}%`);
-  }
-
-  if (!isNil(filterBy) && !isNil(filterValue)) {
-    query += ` and ${filterBy} = ?`;
-    parameters.push(filterValue);
-  }
-
-  if (!isNil(sortBy)) {
-    query += ` order by ${sortBy} ${toUpper(sortOrder)}`;
-  }
-
-  const offset = (page - 1) * limit;
-  query += ` limit ? offset ?`;
-  parameters.push(String(limit), String(offset));
-
-  const applications = await attemptAsync(async () => {
-    return environment.DB.prepare(query)
-      .bind(...parameters)
-      .all();
+export const getAllApplications = async (environment: Env, userId: string) => {
+  const prisma = await getPrismaClient(environment);
+  const applications = await prisma.applications.findMany({
+    where: { userId },
   });
 
-  if (isError(applications)) {
-    return createJsonResponse(
-      { error: "Unable to get applications" },
-      "INTERNAL_SERVER_ERROR",
-    );
-  }
+  const converted = map(applications, (application) => {
+    const interviewRounds = isString(application.interviewRounds)
+      ? parseJson(application.interviewRounds, z.array(z.string()))
+      : [];
 
-  const converted = map(applications.results, (application) => {
     return {
       ...application,
-      // @ts-expect-error ignore
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      interviewRounds: isString(application.interviewRounds)
-        ? // @ts-expect-error ignore
-          JSON.parse(application.interviewRounds)
-        : [],
+      interviewRounds: isError(interviewRounds) ? [] : interviewRounds,
     };
   });
 

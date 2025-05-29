@@ -1,9 +1,6 @@
-import {
-  type Contact,
-  createContactSchema,
-} from "@ethang/schemas/src/dashboard/contact-schema.ts";
-import { v7 } from "uuid";
+import { createContactSchema } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 
+import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
 export const createContact = async (
@@ -13,20 +10,19 @@ export const createContact = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      return environment.DB.prepare(
-        "insert into contacts (id, userId, name, phone, email, linkedIn, lastContact, expectedNextContact) values (?, ?, ?, ?, ?, ?, ?, ?)",
-      )
-        .bind(
-          v7(),
+      const prisma = await getPrismaClient(environment);
+
+      return prisma.contacts.create({
+        data: {
+          email: body.email,
+          expectedNextContact: body.expectedNextContact,
+          lastContact: body.lastContact,
+          linkedIn: body.linkedIn,
+          name: body.name,
+          phone: body.phone,
           userId,
-          body.name,
-          body.phone,
-          body.email,
-          body.linkedIn,
-          body.lastContact,
-          body.expectedNextContact,
-        )
-        .first<Contact>();
+        },
+      });
     },
     request,
     requestSchema: createContactSchema,

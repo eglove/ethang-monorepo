@@ -1,5 +1,6 @@
 import { deleteTodoSchema } from "@ethang/schemas/src/dashboard/todo-schema.ts";
 
+import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
 export const deleteTodo = async (
@@ -9,11 +10,11 @@ export const deleteTodo = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      return environment.DB.prepare(
-        "delete from todos where id = ? and userId = ?",
-      )
-        .bind(body.id, userId)
-        .first();
+      const prisma = await getPrismaClient(environment);
+
+      return prisma.todos.delete({
+        where: { id: body.id, userId },
+      });
     },
     request,
     requestSchema: deleteTodoSchema,

@@ -1,5 +1,6 @@
 import { deleteBookmarkSchema } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 
+import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";
 
 export const deleteBookmark = async (
@@ -9,11 +10,14 @@ export const deleteBookmark = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      return environment.DB.prepare(
-        "delete from bookmarks where id = ? and userId = ?",
-      )
-        .bind(body.id, userId)
-        .first();
+      const prisma = await getPrismaClient(environment);
+
+      return prisma.bookmarks.delete({
+        where: {
+          id: body.id,
+          userId,
+        },
+      });
     },
     request,
     requestSchema: deleteBookmarkSchema,

@@ -1,32 +1,16 @@
-import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
-
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response";
-import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
-import isError from "lodash/isError";
+
+import { getPrismaClient } from "../prisma-client";
 
 export const getAllContacts = async (environment: Env, userId: string) => {
-  const contacts = await attemptAsync(async () =>
-    environment.DB.prepare(
-      `select *
-       from contacts
-       where userId = ?
-       order by case
-                    when expectedNextContact < date('now') then 1
-                    else 0
-                    end,
-                expectedNextContact,
-                lastContact`,
-    )
-      .bind(userId)
-      .all<Contact>(),
-  );
+  const prisma = await getPrismaClient(environment);
 
-  if (isError(contacts)) {
-    return createJsonResponse(
-      { error: "Unable to get contacts" },
-      "INTERNAL_SERVER_ERROR",
-    );
-  }
+  const contacts = await prisma.contacts.findMany({
+    orderBy: [{ expectedNextContact: "asc" }, { lastContact: "asc" }],
+    where: {
+      userId,
+    },
+  });
 
-  return createJsonResponse(contacts.results, "OK");
+  return createJsonResponse(contacts, "OK");
 };
