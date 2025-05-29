@@ -5,6 +5,9 @@ import { getPrismaClient } from "../prisma-client.ts";
 export const getAllApplications = async (environment: Env, userId: string) => {
   const prisma = getPrismaClient(environment);
   const applications = await prisma.applications.findMany({
+    orderBy: {
+      applied: "desc",
+    },
     where: { userId },
   });
 
