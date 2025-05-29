@@ -1,5 +1,4 @@
 import { applicationSchema } from "@ethang/schemas/src/dashboard/application-schema.ts";
-import isArray from "lodash/isArray.js";
 
 import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";
@@ -17,9 +16,6 @@ export const updateJobApplication = async (
         data: {
           applied: body.applied,
           company: body.company,
-          interviewRounds: isArray(body.interviewRounds)
-            ? JSON.stringify(body.interviewRounds)
-            : null,
           rejected: body.rejected,
           title: body.title,
           url: body.url,

@@ -14,16 +14,23 @@ datasource db {
 }
 
 model applications {
-  id              String    @id @default(uuid(7))
+  id              String            @id @default(uuid(7))
   userId          String
   applied         DateTime
   company         String
   title           String
   url             String
   rejected        DateTime?
-  interviewRounds String?
+  interviewRounds interviewRounds[]
 
   @@index([id, userId])
+}
+
+model interviewRounds {
+  id             String        @id @default(uuid(7))
+  dateTime       DateTime
+  applicationsId String?
+  applications   applications? @relation(fields: [applicationsId], references: [id])
 }
 
 model bookmarks {

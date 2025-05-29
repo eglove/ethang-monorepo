@@ -14,13 +14,11 @@ import {
 } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
-import map from "lodash/map.js";
 
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
 import { formDateToIso, getFormDate } from "../../utilities/form.ts";
 import { getToken } from "../../utilities/token.ts";
-import { UpdateJobApplicationRoundInput } from "./update-job-application-round-input.tsx";
 
 export const UpdateJobApplicationModal = () => {
   const queryClient = useQueryClient();
@@ -50,9 +48,6 @@ export const UpdateJobApplicationModal = () => {
         body: JSON.stringify({
           ...data,
           applied: formDateToIso(data.applied),
-          interviewRounds: map(data.interviewRounds, (round) => {
-            return formDateToIso(round);
-          }),
           rejected: isNil(data.rejected) ? null : formDateToIso(data.rejected),
         }),
         headers: {
@@ -131,31 +126,6 @@ export const UpdateJobApplicationModal = () => {
               type="date"
               value={getFormDate(jobApplication?.rejected)}
             />
-            {map(jobApplication?.interviewRounds, (round, index) => {
-              return (
-                <UpdateJobApplicationRoundInput
-                  index={index}
-                  key={`${round}-${index}`}
-                  round={round}
-                />
-              );
-            })}
-            <Button
-              onPress={() => {
-                if (isNil(jobApplication)) {
-                  return;
-                }
-
-                modalStore.setApplicationToUpdate({
-                  ...jobApplication,
-                  interviewRounds: isNil(jobApplication.interviewRounds)
-                    ? [""]
-                    : [...jobApplication.interviewRounds, ""],
-                });
-              }}
-            >
-              Add Interview Round
-            </Button>
           </ModalBody>
           <ModalFooter>
             <Button

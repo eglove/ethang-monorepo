@@ -5,7 +5,6 @@ export const applicationSchema = z.object({
   applied: z.string().trim(),
   company: z.string().trim(),
   id: z.string().trim(),
-  interviewRounds: z.array(z.string().trim()).nullable(),
   rejected: z.string().trim().nullable(),
   title: z.string().trim(),
   url: z.string().trim(),

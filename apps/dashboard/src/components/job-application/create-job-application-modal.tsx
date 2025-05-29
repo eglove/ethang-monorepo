@@ -62,7 +62,6 @@ export const CreateJobApplicationModal = () => {
     mutate({
       applied: DateTime.now().toISO(),
       company: parsed.data.company,
-      interviewRounds: [],
       rejected: null,
       title: parsed.data.title,
       url: parsed.data.url,
