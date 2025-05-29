@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const todoSchema = z.object({
   description: z.string().nullable(),
-  dueDate: z.string().nullable(),
+  dueDate: z.string(),
   id: z.string(),
   recurs: z.number().int().nullable(),
   title: z.string(),

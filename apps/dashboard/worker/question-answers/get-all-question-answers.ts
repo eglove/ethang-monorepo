@@ -6,7 +6,7 @@ export const getAllQuestionAnswers = async (
   environment: Env,
   userId: string,
 ) => {
-  const prisma = await getPrismaClient(environment);
+  const prisma = getPrismaClient(environment);
   const questionAnswers = await prisma.questionAnswers.findMany({
     where: { userId },
   });

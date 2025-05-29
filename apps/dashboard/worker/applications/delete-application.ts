@@ -10,7 +10,7 @@ export const deleteApplication = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      const prisma = await getPrismaClient(environment);
+      const prisma = getPrismaClient(environment);
 
       return prisma.applications.delete({ where: { id: body.id, userId } });
     },

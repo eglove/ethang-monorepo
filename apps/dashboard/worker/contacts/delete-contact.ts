@@ -10,7 +10,7 @@ export const deleteContact = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      const prisma = await getPrismaClient(environment);
+      const prisma = getPrismaClient(environment);
 
       return prisma.contacts.delete({ where: { id: body.id, userId } });
     },

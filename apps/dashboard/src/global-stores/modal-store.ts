@@ -2,6 +2,7 @@ import type { JobApplication } from "@ethang/schemas/src/dashboard/application-s
 import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 import type { QuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
+import type { Todo } from "@ethang/schemas/src/dashboard/todo-schema.ts";
 
 import { produce } from "immer";
 import forEach from "lodash/forEach";
@@ -31,6 +32,7 @@ type ModalState = {
   createQa: boolean;
   createTodo: boolean;
   qaToUpdate: null | QuestionAnswer;
+  todoToUpdate: null | Todo;
   updateApplication: boolean;
   updateBookmark: boolean;
   updateContact: boolean;
@@ -49,6 +51,7 @@ class ModalStore {
     createQa: false,
     createTodo: false,
     qaToUpdate: null,
+    todoToUpdate: null,
     updateApplication: false,
     updateBookmark: false,
     updateContact: false,
@@ -101,6 +104,12 @@ class ModalStore {
   public setQaToUpdate(qa: null | QuestionAnswer) {
     this.update((draft) => {
       draft.qaToUpdate = qa;
+    });
+  }
+
+  public setTodoToUpdate(todo: null | Todo) {
+    this.update((draft) => {
+      draft.todoToUpdate = todo;
     });
   }
 

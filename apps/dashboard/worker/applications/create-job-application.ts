@@ -11,7 +11,7 @@ export const createJobApplication = async (
 ) => {
   return queryOnBody({
     dbFunction: async (body) => {
-      const prisma = await getPrismaClient(environment);
+      const prisma = getPrismaClient(environment);
 
       return prisma.applications.create({
         data: {

@@ -27,7 +27,6 @@ export const UpdateDeleteApplication = ({
       const response = await globalThis.fetch("/api/application", {
         body: JSON.stringify({
           id: application.id,
-          userId: user.id,
         }),
         headers: {
           Authorization: getToken(),

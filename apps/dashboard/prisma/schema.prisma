@@ -1,12 +1,11 @@
 generator client {
-  provider        = "prisma-client"
-  output          = "../generated/prisma"
-  previewFeatures = ["queryCompiler" ,"driverAdapters"]
-
-  runtime = "cloudflare"
-  moduleFormat = "esm"
+  provider               = "prisma-client"
+  output                 = "../generated/prisma"
+  previewFeatures        = ["driverAdapters", "queryCompiler"]
   generatedFileExtension = "ts"
   importFileExtension    = "ts"
+  moduleFormat           = "esm"
+  runtime                = "cloudflare"
 }
 
 datasource db {
@@ -57,12 +56,12 @@ model questionAnswers {
 }
 
 model todos {
-  id          String    @id @default(uuid(7))
+  id          String   @id @default(uuid(7))
   userId      String
   title       String
   description String?
   recurs      Int?
-  dueDate     DateTime?
+  dueDate     DateTime
 
   @@index([id, userId])
 }

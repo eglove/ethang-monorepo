@@ -35,13 +35,7 @@ import {
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
 import { getToken } from "../../utilities/token.ts";
-
-const timeIntervals: { key: Unit; label: string }[] = [
-  { key: "Hours", label: "Hours" },
-  { key: "Days", label: "Days" },
-  { key: "Weeks", label: "Weeks" },
-  { key: "Years", label: "Years" },
-];
+import { timeIntervals } from "./time-intervals.ts";
 
 const createTodoFormSchema = createTodoSchema
   .omit({

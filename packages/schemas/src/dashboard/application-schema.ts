@@ -18,7 +18,6 @@ export const createApplicationSchema = applicationSchema.omit({
 
 export const deleteApplicationSchema = z.object({
   id: z.string(),
-  userId: z.string(),
 });
 
 export type CreateJobApplication = z.infer<typeof createApplicationSchema>;

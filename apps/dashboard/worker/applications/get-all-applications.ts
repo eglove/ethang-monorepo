@@ -8,7 +8,7 @@ import { z } from "zod";
 import { getPrismaClient } from "../prisma-client.ts";
 
 export const getAllApplications = async (environment: Env, userId: string) => {
-  const prisma = await getPrismaClient(environment);
+  const prisma = getPrismaClient(environment);
   const applications = await prisma.applications.findMany({
     where: { userId },
   });

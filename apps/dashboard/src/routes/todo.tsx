@@ -16,6 +16,7 @@ import { DateTime } from "luxon";
 
 import { DateColumn } from "../components/data-column.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
+import { UpdateDeleteTodo } from "../components/todo/update-delete-todo.tsx";
 import { getTodos } from "../data/queries/todo.ts";
 import { SectionHeader } from "../section-header.tsx";
 
@@ -24,6 +25,7 @@ const columns = [
   { key: "description", label: "Description" },
   { key: "dueDate", label: "Due Date" },
   { key: "recurs", label: "Next Due" },
+  { key: "actions", label: "Actions" },
 ];
 
 const Todo = () => {
@@ -69,7 +71,13 @@ const Todo = () => {
                   if ("dueDate" === columnKey && isString(value)) {
                     return (
                       <TableCell>
-                        <DateColumn date={value} />
+                        <DateColumn
+                          dateTimeFormatOptions={{
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          }}
+                          date={value}
+                        />
                       </TableCell>
                     );
                   }
@@ -85,7 +93,21 @@ const Todo = () => {
 
                     return (
                       <TableCell>
-                        <DateColumn date={nextDue} />
+                        <DateColumn
+                          dateTimeFormatOptions={{
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          }}
+                          date={nextDue}
+                        />
+                      </TableCell>
+                    );
+                  }
+
+                  if ("actions" === columnKey) {
+                    return (
+                      <TableCell>
+                        <UpdateDeleteTodo todo={item} />
                       </TableCell>
                     );
                   }
