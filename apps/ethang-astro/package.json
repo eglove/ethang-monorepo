@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
-    "@ethang/eslint-config": "^22.5.0",
+    "@ethang/eslint-config": "^22.6.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",

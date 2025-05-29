@@ -39,9 +39,9 @@
 - 18 rules for **Solid**
   - `import solidConfig from "@ethang/eslint-config/config.solid.js";`
     - 18 rules from [eslint-plugin-solid](https://github.com/solidjs-community/eslint-plugin-solid)
-- 15 rules from **Storybook**
+- 16 rules from **Storybook**
   - `import storybookConfig from "@ethang/eslint-config/config.storybook.js";`
-    - 15 rules from [eslint-plugin-storybook](https://github.com/storybookjs/eslint-plugin-storybook)
+    - 16 rules from [eslint-plugin-storybook](https://github.com/storybookjs/eslint-plugin-storybook)
 
 # Install
 
