@@ -15,14 +15,11 @@ export const getBookmarks = (userId = "") => {
         return null;
       }
 
-      const response = await globalThis.fetch(
-        `/api/bookmark?userId=${userId}`,
-        {
-          headers: {
-            Authorization: getToken(),
-          },
+      const response = await globalThis.fetch(`/api/bookmark`, {
+        headers: {
+          Authorization: getToken(),
         },
-      );
+      });
       const data = await parseFetchJson(response, bookmarksSchema);
 
       if (isError(data)) {

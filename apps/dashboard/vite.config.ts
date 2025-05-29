@@ -4,7 +4,6 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     TanStackRouterVite({ autoCodeSplitting: true, target: "react" }),
@@ -44,14 +43,6 @@ export default defineConfig({
               cacheName: "html-cache",
             },
             urlPattern: /\.html$/u,
-          },
-          {
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "api-cache",
-              networkTimeoutSeconds: 10,
-            },
-            urlPattern: /\/api\//u,
           },
           {
             handler: "StaleWhileRevalidate",

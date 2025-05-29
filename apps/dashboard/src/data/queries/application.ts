@@ -18,7 +18,7 @@ export const getApplications = (userId = "", filters?: Filters) => {
       }
 
       const url = createUrl("/api/application", {
-        searchParams: { userId, ...filters },
+        searchParams: { ...filters },
         searchParamsSchema: z.object({
           filterBy: z.string().optional(),
         }),
