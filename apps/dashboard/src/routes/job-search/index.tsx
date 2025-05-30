@@ -24,6 +24,7 @@ import { DateColumn } from "../../components/data-column.tsx";
 import { UpdateDeleteApplication } from "../../components/job-application/update-delete-application.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { getApplications } from "../../data/queries/application.ts";
+import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
 
 const columns = [
@@ -51,6 +52,7 @@ const RouteComponent = () => {
         header="Applications"
         modalKey="createJobApplication"
         modalLabel="Add Application"
+        refreshKeys={queryKeys.allUserApplications(user?.id)}
       >
         <div>
           <Input

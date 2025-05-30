@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
 import { Button } from "@heroui/react";
-import { PlusIcon } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { PlusIcon, RotateCwIcon } from "lucide-react";
 
 import { type IsOpenKeys, modalStore } from "./global-stores/modal-store.ts";
 
@@ -10,6 +11,7 @@ type SectionHeaderProperties = {
   header: string;
   modalKey: IsOpenKeys;
   modalLabel: string;
+  refreshKeys: (object | string)[];
 };
 
 export const SectionHeader = ({
@@ -17,24 +19,44 @@ export const SectionHeader = ({
   header,
   modalKey,
   modalLabel,
+  refreshKeys,
 }: Readonly<SectionHeaderProperties>) => {
+  const queryClient = useQueryClient();
+
   return (
     <div className="flex justify-between items-center my-4 gap-4">
       <div className="prose">
         <h2 className="text-foreground">{header}</h2>
       </div>
       {children}
-      <Button
-        isIconOnly
-        onPress={() => {
-          modalStore.openModal(modalKey);
-        }}
-        aria-label={modalLabel}
-        color="primary"
-        size="sm"
-      >
-        <PlusIcon />
-      </Button>
+      <div className="flex gap-2">
+        <Button
+          isIconOnly
+          isLoading={
+            "fetching" === queryClient.getQueryState(refreshKeys)?.fetchStatus
+          }
+          onPress={() => {
+            queryClient
+              .invalidateQueries({ queryKey: refreshKeys })
+              .catch(globalThis.console.error);
+          }}
+          color="primary"
+          size="sm"
+        >
+          <RotateCwIcon />
+        </Button>
+        <Button
+          isIconOnly
+          onPress={() => {
+            modalStore.openModal(modalKey);
+          }}
+          aria-label={modalLabel}
+          color="primary"
+          size="sm"
+        >
+          <PlusIcon />
+        </Button>
+      </div>
     </div>
   );
 };

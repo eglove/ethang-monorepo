@@ -20,6 +20,7 @@ import { useState } from "react";
 import { DateColumn } from "../components/data-column.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { UpdateDeleteTodo } from "../components/todo/update-delete-todo.tsx";
+import { queryKeys } from "../data/queries/queries.ts";
 import { getTodos } from "../data/queries/todo.ts";
 import { SectionHeader } from "../section-header.tsx";
 
@@ -50,7 +51,12 @@ const Todo = () => {
 
   return (
     <MainLayout>
-      <SectionHeader header="Todos" modalKey="createTodo" modalLabel="Add Todo">
+      <SectionHeader
+        header="Todos"
+        modalKey="createTodo"
+        modalLabel="Add Todo"
+        refreshKeys={queryKeys.allUserTodos(user?.id)}
+      >
         <div className="font-bold underline underline-offset-2">
           {currentTime}
         </div>

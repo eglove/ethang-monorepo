@@ -10,6 +10,7 @@ import { PencilIcon } from "lucide-react";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { QaCopyButton } from "../../components/qa/qa-copy-button.tsx";
 import { QaDeleteButton } from "../../components/qa/qa-delete-button.tsx";
+import { queryKeys } from "../../data/queries/queries.ts";
 import { getQuestionAnswers } from "../../data/queries/question-answer.ts";
 import { modalStore } from "../../global-stores/modal-store.ts";
 import { SectionHeader } from "../../section-header.tsx";
@@ -24,6 +25,7 @@ const RouteComponent = () => {
         header="Application Q/A"
         modalKey="createQa"
         modalLabel="Add Q/A"
+        refreshKeys={queryKeys.allUserQuestionAnswers(user?.id)}
       />
       <Accordion isCompact variant="bordered">
         {map(data, (qa) => {

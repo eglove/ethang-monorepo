@@ -15,6 +15,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { UpdateDeleteBookmark } from "../components/bookmarks/update-delete-bookmark.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { getBookmarks } from "../data/queries/bookmark.ts";
+import { queryKeys } from "../data/queries/queries.ts";
 import { SectionHeader } from "../section-header.tsx";
 
 const columns = [
@@ -33,6 +34,7 @@ const BookMarks = () => {
         header="Bookmarks"
         modalKey="createBookmark"
         modalLabel="Add Bookmark"
+        refreshKeys={queryKeys.bookmarks(user?.id)}
       />
       <Table isStriped aria-label="Bookmarks">
         <TableHeader columns={columns}>
