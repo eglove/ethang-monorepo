@@ -31,22 +31,19 @@ const columns = [
   { key: "actions", label: "Actions" },
 ];
 
+const getCurrentTime = () => {
+  return DateTime.now().toLocaleString({
+    dateStyle: "medium",
+    timeStyle: "long",
+  });
+};
+
 const Todo = () => {
   const { user } = useUser();
-  const [currentTime, setCurrentTime] = useState(
-    DateTime.now().toLocaleString({
-      dateStyle: "medium",
-      timeStyle: "short",
-    }),
-  );
+  const [currentTime, setCurrentTime] = useState(getCurrentTime);
 
   useAnimationInterval(1000, () => {
-    setCurrentTime(
-      DateTime.now().toLocaleString({
-        dateStyle: "medium",
-        timeStyle: "long",
-      }),
-    );
+    setCurrentTime(getCurrentTime);
   });
 
   const { data, isPending } = useQuery(getTodos(user?.id));
