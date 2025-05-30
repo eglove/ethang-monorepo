@@ -24,6 +24,8 @@ model applications {
   interviewRounds interviewRounds[]
 
   @@index([id, userId])
+  @@unique([title, company])
+  @@unique(url)
 }
 
 model interviewRounds {
