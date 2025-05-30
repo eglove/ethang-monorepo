@@ -1,4 +1,5 @@
 import { useUser } from "@clerk/clerk-react";
+import { useAnimationInterval } from "@ethang/hooks/use-animation-interval";
 import { isNumber } from "@ethang/toolbelt/is/number";
 import {
   getKeyValue,
@@ -14,6 +15,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
 import { DateTime } from "luxon";
+import { useState } from "react";
 
 import { DateColumn } from "../components/data-column.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
@@ -31,16 +33,31 @@ const columns = [
 
 const Todo = () => {
   const { user } = useUser();
+  const [currentTime, setCurrentTime] = useState(
+    DateTime.now().toLocaleString({
+      dateStyle: "medium",
+      timeStyle: "short",
+    }),
+  );
+
+  useAnimationInterval(1000, () => {
+    setCurrentTime(
+      DateTime.now().toLocaleString({
+        dateStyle: "medium",
+        timeStyle: "long",
+      }),
+    );
+  });
 
   const { data, isPending } = useQuery(getTodos(user?.id));
 
   return (
     <MainLayout>
-      <SectionHeader
-        header="Todos"
-        modalKey="createTodo"
-        modalLabel="Add Todo"
-      />
+      <SectionHeader header="Todos" modalKey="createTodo" modalLabel="Add Todo">
+        <div className="font-bold underline underline-offset-2">
+          {currentTime}
+        </div>
+      </SectionHeader>
       <Table isStriped aria-label="Todos">
         <TableHeader columns={columns}>
           {(column) => {
