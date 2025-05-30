@@ -37,7 +37,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.6.0",
+    "@ethang/eslint-config": "^22.6.1",
     "@react-types/shared": "^3.29.0",
     "@tanstack/router-devtools": "^1.120.12",
     "@tanstack/router-plugin": "^1.120.12",
