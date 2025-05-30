@@ -1,5 +1,4 @@
 import { useUser } from "@clerk/clerk-react";
-import { useAnimationInterval } from "@ethang/hooks/use-animation-interval";
 import { isNumber } from "@ethang/toolbelt/is/number";
 import {
   getKeyValue,
@@ -15,10 +14,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
 import { DateTime } from "luxon";
-import { useState } from "react";
 
 import { DateColumn } from "../components/data-column.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
+import { useTodoTimerStore } from "../components/todo/todo-timer-store.ts";
 import { UpdateDeleteTodo } from "../components/todo/update-delete-todo.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
 import { getTodos } from "../data/queries/todo.ts";
@@ -32,20 +31,10 @@ const columns = [
   { key: "actions", label: "Actions" },
 ];
 
-const getCurrentTime = () => {
-  return DateTime.now().toLocaleString({
-    dateStyle: "medium",
-    timeStyle: "long",
-  });
-};
-
 const Todo = () => {
   const { user } = useUser();
-  const [currentTime, setCurrentTime] = useState(getCurrentTime);
 
-  useAnimationInterval(1000, () => {
-    setCurrentTime(getCurrentTime);
-  });
+  const todoTimerStore = useTodoTimerStore();
 
   const { data, isPending } = useQuery(getTodos(user?.id));
 
@@ -58,7 +47,7 @@ const Todo = () => {
         refreshKeys={queryKeys.allUserTodos(user?.id)}
       >
         <div className="font-bold underline underline-offset-2">
-          {currentTime}
+          {todoTimerStore.currentTime}
         </div>
       </SectionHeader>
       <Table isStriped aria-label="Todos">

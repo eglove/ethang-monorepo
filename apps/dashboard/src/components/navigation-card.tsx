@@ -6,7 +6,7 @@ type HomeNavigationCardProperties = {
   title: string;
 };
 
-export const HomeNavigationCard = ({
+export const NavigationCard = ({
   description,
   href,
   title,

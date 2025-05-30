@@ -1,3 +1,5 @@
+import type { PropsWithChildren } from "react";
+
 import { ClerkProvider } from "@clerk/clerk-react";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
@@ -6,7 +8,6 @@ import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { useRouter } from "@tanstack/react-router";
 import { del, get, set } from "idb-keyval";
-import { lazy, type PropsWithChildren } from "react";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,20 +33,6 @@ const persister = createAsyncStoragePersister({
     },
   },
 });
-
-const ReactQueryDevtoolsProduction = lazy(async () =>
-  import("@tanstack/react-query-devtools/build/modern/production.js").then(
-    (d) => ({
-      default: d.ReactQueryDevtools,
-    }),
-  ),
-);
-
-const ReactRouterDevtoolsProduction = lazy(async () =>
-  import("@tanstack/react-router-devtools").then((d) => ({
-    default: d.TanStackRouterDevtools,
-  })),
-);
 
 const publishableKey = isDevelopment
   ? "pk_test_d2VsY29tZS1lYWdsZS03OC5jbGVyay5hY2NvdW50cy5kZXYk"
@@ -74,8 +61,6 @@ export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
           <ToastProvider />
           {children}
         </HeroUIProvider>
-        {isDevelopment && <ReactRouterDevtoolsProduction />}
-        {isDevelopment && <ReactQueryDevtoolsProduction />}
       </PersistQueryClientProvider>
     </ClerkProvider>
   );
