@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import {
   getKeyValue,
+  Input,
   Link,
   Pagination,
   Spinner,
@@ -50,9 +51,17 @@ const RouteComponent = () => {
         header="Applications"
         modalKey="createJobApplication"
         modalLabel="Add Application"
-        search={search}
-        setSearch={setSearch}
-      />
+      >
+        <div>
+          <Input
+            aria-label="Search"
+            onValueChange={setSearch}
+            placeholder="Search"
+            size="sm"
+            value={search}
+          />
+        </div>
+      </SectionHeader>
       <Table
         isHeaderSticky
         isStriped
