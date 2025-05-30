@@ -25,7 +25,7 @@ import { openNewTab } from "../util/url.ts";
 type AddToCalendarProperties = Readonly<
   {
     readonly buttonProps?: Parameters<typeof Button>[0];
-    readonly description?: PortableTextBlock;
+    readonly description?: PortableTextBlock | undefined;
   } & Omit<CalendarEvent, "description">
 >;
 

@@ -1,3 +1,5 @@
+import type { PortableTextBlock } from "@portabletext/types";
+
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -23,6 +25,11 @@ export const CalendarModal = ({
   onOpenChange,
   selectedEvent,
 }: CalendarModalProperties) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  const description = selectedEvent.description as
+    | PortableTextBlock
+    | undefined;
+
   return (
     <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
@@ -36,6 +43,7 @@ export const CalendarModal = ({
               <ModalFooter>
                 <AddToCalendar
                   buttonProps={{ color: "primary" }}
+                  description={description}
                   start={selectedEvent.start}
                   title={selectedEvent.title}
                 />
