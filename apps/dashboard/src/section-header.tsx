@@ -19,7 +19,7 @@ export const SectionHeader = ({
   modalLabel,
 }: Readonly<SectionHeaderProperties>) => {
   return (
-    <div className="flex justify-between items-center my-4">
+    <div className="flex justify-between items-center my-4 gap-4">
       <div className="prose">
         <h2 className="text-foreground">{header}</h2>
       </div>
