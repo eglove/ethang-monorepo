@@ -11,6 +11,7 @@ import {
 } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
 import { DateTime } from "luxon";
 
@@ -85,6 +86,7 @@ const Todo = () => {
                   if (
                     "recurs" === columnKey &&
                     isString(item.dueDate) &&
+                    !isNil(item.recurs) &&
                     isNumber(value)
                   ) {
                     const nextDue = DateTime.now()
