@@ -5,9 +5,9 @@ import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
 
 import { getToken } from "../../utilities/token.ts";
-import { type Filters, queryKeys } from "./queries.ts";
+import { queryKeys } from "./queries.ts";
 
-export const getContacts = (userId = "", filters?: Filters) => {
+export const getContacts = (userId = "") => {
   return queryOptions({
     enabled: !isEmpty(userId),
     queryFn: async () => {
@@ -28,6 +28,6 @@ export const getContacts = (userId = "", filters?: Filters) => {
 
       return data;
     },
-    queryKey: queryKeys.contacts(userId, filters),
+    queryKey: queryKeys.contacts(userId),
   });
 };

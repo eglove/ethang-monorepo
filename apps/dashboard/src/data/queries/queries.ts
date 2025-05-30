@@ -1,20 +1,11 @@
 import filter from "lodash/filter.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
-
-export type Filters = {
-  filterBy?: string;
-  filterValue?: string;
-  limit?: number;
-  page?: number;
-  search?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-};
+import isString from "lodash/isString";
 
 const filterOutNil = (array: unknown[]) => {
   return filter(array, (value) => {
-    return !isNil(value) && !isEmpty(value);
+    return !isNil(value) || (isString(value) && !isEmpty(value));
   });
 };
 
@@ -31,19 +22,19 @@ export const queryKeys = {
   allUserTodos: (userId?: string) => {
     return filterOutNil(["todos", userId]);
   },
-  applications: (userId?: string, filters?: Filters) => {
-    return filterOutNil(["applications", userId, filters]);
+  applications: (userId?: string, page?: number, search?: string) => {
+    return filterOutNil(["applications", userId, page, search]);
   },
   bookmarks: (userId?: string) => {
     return filterOutNil(["bookmarks", userId]);
   },
-  contacts: (userId?: string, filters?: Filters) => {
-    return filterOutNil(["contacts", userId, filters]);
+  contacts: (userId?: string) => {
+    return filterOutNil(["contacts", userId]);
   },
-  questionAnswers: (userId?: string, filters?: Filters) => {
-    return filterOutNil(["questionAnswers", userId, filters]);
+  questionAnswers: (userId?: string) => {
+    return filterOutNil(["questionAnswers", userId]);
   },
-  todos: (userId?: string, filters?: Filters) => {
-    return filterOutNil(["todos", userId, filters]);
+  todos: (userId?: string) => {
+    return filterOutNil(["todos", userId]);
   },
 };

@@ -1,15 +1,16 @@
-import { applicationSchema } from "@ethang/schemas/src/dashboard/application-schema.ts";
+import { getAllApplicationsSchema } from "@ethang/schemas/src/dashboard/application-schema.ts";
 import { createUrl } from "@ethang/toolbelt/fetch/create-url";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
+import convertToString from "lodash/toString";
 import { z } from "zod";
 
 import { getToken } from "../../utilities/token.ts";
-import { type Filters, queryKeys } from "./queries.ts";
+import { queryKeys } from "./queries.ts";
 
-export const getApplications = (userId = "", filters?: Filters) => {
+export const getApplications = (userId = "", page = 1, search = "") => {
   return queryOptions({
     enabled: !isEmpty(userId),
     queryFn: async () => {
@@ -18,9 +19,10 @@ export const getApplications = (userId = "", filters?: Filters) => {
       }
 
       const url = createUrl("/api/application", {
-        searchParams: { ...filters },
+        searchParams: { page: convertToString(page), search },
         searchParamsSchema: z.object({
-          filterBy: z.string().optional(),
+          page: z.string().optional(),
+          search: z.string().optional(),
         }),
         urlBase: globalThis.location.origin,
       });
@@ -33,7 +35,7 @@ export const getApplications = (userId = "", filters?: Filters) => {
         new Request(url, {
           headers: { Authorization: getToken() },
         }),
-        z.array(applicationSchema),
+        getAllApplicationsSchema,
       );
 
       if (isError(data)) {
@@ -42,6 +44,6 @@ export const getApplications = (userId = "", filters?: Filters) => {
 
       return data;
     },
-    queryKey: queryKeys.applications(userId, filters),
+    queryKey: queryKeys.applications(userId, page, search),
   });
 };

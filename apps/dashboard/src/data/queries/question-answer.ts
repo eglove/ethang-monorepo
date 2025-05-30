@@ -7,9 +7,9 @@ import isError from "lodash/isError";
 import { z } from "zod";
 
 import { getToken } from "../../utilities/token.ts";
-import { type Filters, queryKeys } from "./queries.ts";
+import { queryKeys } from "./queries.ts";
 
-export const getQuestionAnswers = (userId = "", filters?: Filters) => {
+export const getQuestionAnswers = (userId = "") => {
   return queryOptions({
     enabled: !isEmpty(userId),
     queryFn: async () => {
@@ -18,7 +18,6 @@ export const getQuestionAnswers = (userId = "", filters?: Filters) => {
       }
 
       const url = createUrl("/api/question-answer", {
-        searchParams: { userId, ...filters },
         searchParamsSchema: z.object({
           filterBy: z.string().optional(),
         }),
@@ -42,6 +41,6 @@ export const getQuestionAnswers = (userId = "", filters?: Filters) => {
 
       return data;
     },
-    queryKey: queryKeys.questionAnswers(userId, filters),
+    queryKey: queryKeys.questionAnswers(userId),
   });
 };

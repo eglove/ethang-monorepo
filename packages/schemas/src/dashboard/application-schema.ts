@@ -11,6 +11,16 @@ export const applicationSchema = z.object({
   userId: z.string().trim(),
 });
 
+export const getAllApplicationsSchema = z.object({
+  data: z.array(applicationSchema),
+  pagination: z.object({
+    limit: z.number(),
+    page: z.number(),
+    total: z.number(),
+    totalPages: z.number(),
+  }),
+});
+
 export const createApplicationSchema = applicationSchema.omit({
   id: true,
 });

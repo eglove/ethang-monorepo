@@ -1,6 +1,6 @@
 import { ClerkProvider } from "@clerk/clerk-react";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
-import { HeroUIProvider } from "@heroui/react";
+import { HeroUIProvider, ToastProvider } from "@heroui/react";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
@@ -70,6 +70,7 @@ export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
             return router.buildLocation({ to: url }).href;
           }}
         >
+          <ToastProvider />
           {children}
         </HeroUIProvider>
         {isDevelopment && <ReactRouterDevtoolsProduction />}

@@ -2,6 +2,7 @@ import { useUser } from "@clerk/clerk-react";
 import {
   getKeyValue,
   Link,
+  Pagination,
   Spinner,
   Table,
   TableBody,
@@ -13,7 +14,10 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import isString from "lodash/isString";
+import toInteger from "lodash/toInteger";
+import { useState } from "react";
 import { twMerge } from "tailwind-merge";
+import { useDebounce } from "use-debounce";
 
 import { DateColumn } from "../../components/data-column.tsx";
 import { UpdateDeleteApplication } from "../../components/job-application/update-delete-application.tsx";
@@ -32,8 +36,13 @@ const columns = [
 
 const RouteComponent = () => {
   const { user } = useUser();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch] = useDebounce(search, 500);
 
-  const { data, isPending } = useQuery(getApplications(user?.id));
+  const { data: applications, isPending } = useQuery(
+    getApplications(user?.id, page, debouncedSearch),
+  );
 
   return (
     <MainLayout>
@@ -41,8 +50,27 @@ const RouteComponent = () => {
         header="Applications"
         modalKey="createJobApplication"
         modalLabel="Add Application"
+        search={search}
+        setSearch={setSearch}
       />
-      <Table isHeaderSticky isStriped aria-label="Job Search">
+      <Table
+        isHeaderSticky
+        isStriped
+        bottomContent={
+          <div className="flex w-full justify-center">
+            <Pagination
+              isCompact
+              showControls
+              showShadow
+              color="secondary"
+              onChange={setPage}
+              page={page}
+              total={toInteger(applications?.pagination.totalPages)}
+            />
+          </div>
+        }
+        aria-label="Job Search"
+      >
         <TableHeader columns={columns}>
           {(item) => {
             return <TableColumn key={item.key}>{item.label}</TableColumn>;
@@ -50,7 +78,7 @@ const RouteComponent = () => {
         </TableHeader>
         <TableBody
           emptyContent="Nothing to Display"
-          items={data ?? []}
+          items={applications?.data ?? []}
           loadingContent={<Spinner />}
           loadingState={isPending ? "loading" : "idle"}
         >

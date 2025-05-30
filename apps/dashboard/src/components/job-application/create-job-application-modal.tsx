@@ -2,7 +2,9 @@ import type { CreateJobApplication } from "@ethang/schemas/src/dashboard/applica
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
+import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
 import {
+  addToast,
   Button,
   Form,
   Input,
@@ -13,6 +15,7 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import isError from "lodash/isError";
 import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 import { z } from "zod";
@@ -30,7 +33,7 @@ export const CreateJobApplicationModal = () => {
 
   const { isPending, mutate } = useMutation({
     mutationFn: async (data: CreateJobApplication) => {
-      await globalThis.fetch("/api/application", {
+      const response = await globalThis.fetch("/api/application", {
         body: JSON.stringify(data),
         headers: {
           Authorization: getToken(),
@@ -38,10 +41,23 @@ export const CreateJobApplicationModal = () => {
         method: "POST",
       });
 
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.allUserApplications(user?.id),
-      });
-      modalStore.closeModal("createJobApplication");
+      if (response.ok) {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.allUserApplications(user?.id),
+        });
+        modalStore.closeModal("createJobApplication");
+      } else {
+        const body = await parseFetchJson(
+          response,
+          z.object({ error: z.string() }),
+        );
+
+        addToast({
+          color: "danger",
+          description: isError(body) ? "Unknown error" : body.error,
+          title: "Failed to create application.",
+        });
+      }
     },
   });
 
