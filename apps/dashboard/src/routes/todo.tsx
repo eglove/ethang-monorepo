@@ -87,7 +87,7 @@ const Todo = () => {
                     isString(item.dueDate) &&
                     isNumber(value)
                   ) {
-                    const nextDue = DateTime.fromISO(item.dueDate)
+                    const nextDue = DateTime.now()
                       .plus({ millisecond: value })
                       .toISO();
 

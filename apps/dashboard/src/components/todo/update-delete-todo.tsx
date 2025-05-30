@@ -68,7 +68,7 @@ export const UpdateDeleteTodo = ({
 
         isOk = response.ok;
       } else {
-        const nextDue = DateTime.fromISO(todo.dueDate)
+        const nextDue = DateTime.now()
           .plus({ millisecond: todo.recurs })
           .toISO();
 

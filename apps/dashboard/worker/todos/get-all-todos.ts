@@ -5,7 +5,14 @@ import { getPrismaClient } from "../prisma-client";
 export const getAllTodos = async (environment: Env, userId: string) => {
   const prisma = getPrismaClient(environment);
 
-  const todos = await prisma.todos.findMany({ where: { userId } });
+  const todos = await prisma.todos.findMany({
+    orderBy: {
+      dueDate: "asc",
+    },
+    where: {
+      userId,
+    },
+  });
 
   return createJsonResponse(todos, "OK");
 };
