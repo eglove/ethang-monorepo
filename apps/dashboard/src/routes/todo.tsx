@@ -109,7 +109,7 @@ const Todo = () => {
                     !isNil(item.recurs) &&
                     isNumber(value)
                   ) {
-                    const nextDue = DateTime.now()
+                    const nextDue = DateTime.fromISO(item.dueDate)
                       .plus({ millisecond: value })
                       .toISO();
 
