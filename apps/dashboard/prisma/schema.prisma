@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:../.wrangler/state/v3/d1/miniflare-D1DatabaseObject/4bb12a55097ef0a39af3c2cfe4dbaa2b3bb1a60b23da4ca35efb3a8e1918f7fa.sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model applications {
