@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Button } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { PlusIcon, RotateCwIcon } from "lucide-react";
+import { useDebouncedCallback } from "use-debounce";
 
 import { type IsOpenKeys, modalStore } from "./global-stores/modal-store.ts";
 
@@ -22,6 +23,11 @@ export const SectionHeader = ({
   refreshKeys,
 }: Readonly<SectionHeaderProperties>) => {
   const queryClient = useQueryClient();
+  const invalidate = useDebouncedCallback(() => {
+    queryClient
+      .invalidateQueries({ queryKey: refreshKeys })
+      .catch(globalThis.console.error);
+  }, 1000);
 
   return (
     <div className="flex justify-between items-center my-4 gap-4">
@@ -35,12 +41,8 @@ export const SectionHeader = ({
           isLoading={
             "fetching" === queryClient.getQueryState(refreshKeys)?.fetchStatus
           }
-          onPress={() => {
-            queryClient
-              .invalidateQueries({ queryKey: refreshKeys })
-              .catch(globalThis.console.error);
-          }}
           color="primary"
+          onPress={invalidate}
           size="sm"
         >
           <RotateCwIcon />
