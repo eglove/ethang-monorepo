@@ -43,7 +43,13 @@ export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   const router = useRouter();
 
   return (
-    <ClerkProvider publishableKey={publishableKey}>
+    <ClerkProvider
+      experimental={{
+        persistClient: true,
+        rethrowOfflineNetworkErrors: false,
+      }}
+      publishableKey={publishableKey}
+    >
       <PersistQueryClientProvider
         client={queryClient}
         persistOptions={{ persister }}

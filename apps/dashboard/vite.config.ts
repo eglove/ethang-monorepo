@@ -1,3 +1,4 @@
+/* eslint-disable lodash/prefer-lodash-method */
 import { cloudflare } from "@cloudflare/vite-plugin";
 import TanStackRouterVite from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
@@ -22,9 +23,18 @@ export default defineConfig({
           {
             handler: "StaleWhileRevalidate",
             options: {
-              cacheName: "static-resources",
+              cacheName: "swr-cache",
+              expiration: {
+                maxAgeSeconds: 60 * 60 * 24, // 1 day
+                maxEntries: 50,
+              },
             },
-            urlPattern: /\.(?:js|css)$/u,
+            urlPattern: ({ url }) => {
+              return (
+                /\.(?:js|css|woff|woff2|ttf|otf|eot|ico)$/u.test(url.href) ||
+                url.pathname.startsWith("/api/")
+              );
+            },
           },
           {
             handler: "CacheFirst",
@@ -35,7 +45,7 @@ export default defineConfig({
                 maxEntries: 50,
               },
             },
-            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|ico)$/u,
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|ico|avif)$/u,
           },
           {
             handler: "NetworkFirst",
@@ -47,9 +57,15 @@ export default defineConfig({
           {
             handler: "StaleWhileRevalidate",
             options: {
-              cacheName: "font-cache",
+              cacheName: "clerk-cache",
+              expiration: {
+                maxAgeSeconds: 60 * 60, // 1 hour
+                maxEntries: 50,
+              },
             },
-            urlPattern: /\.(?:woff|woff2|ttf|otf|eot)$/u,
+            urlPattern: ({ url }) => {
+              return url.href.startsWith("https://clerk.ethang.dev/");
+            },
           },
         ],
         skipWaiting: true,
