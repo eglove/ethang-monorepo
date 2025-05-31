@@ -12,6 +12,8 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { CreateBookmarkModal } from "../components/bookmarks/create-bookmark-modal.tsx";
+import { UpdateBookmarkModal } from "../components/bookmarks/update-bookmark-modal.tsx";
 import { UpdateDeleteBookmark } from "../components/bookmarks/update-delete-bookmark.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { getBookmarks } from "../data/queries/bookmark.ts";
@@ -81,6 +83,8 @@ const BookMarks = () => {
           }}
         </TableBody>
       </Table>
+      <CreateBookmarkModal />
+      <UpdateBookmarkModal />
     </MainLayout>
   );
 };

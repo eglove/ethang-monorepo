@@ -14,6 +14,8 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import isString from "lodash/isString";
 
+import { CreateContactModal } from "../../components/contact/create-contact-modal.tsx";
+import { UpdateContactModal } from "../../components/contact/update-contact-modal.tsx";
 import { UpdateDeleteContact } from "../../components/contact/update-delete-contact.tsx";
 import { DateColumn } from "../../components/data-column.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
@@ -128,6 +130,8 @@ const RouteComponent = () => {
           }}
         </TableBody>
       </Table>
+      <CreateContactModal />
+      <UpdateContactModal />
     </MainLayout>
   );
 };

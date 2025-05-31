@@ -17,8 +17,10 @@ import { DateTime } from "luxon";
 
 import { DateColumn } from "../components/data-column.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
+import { CreateTodoModal } from "../components/todo/create-todo-modal.tsx";
 import { useTodoTimerStore } from "../components/todo/todo-timer-store.ts";
 import { UpdateDeleteTodo } from "../components/todo/update-delete-todo.tsx";
+import { UpdateTodoModal } from "../components/todo/update-todo-modal.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
 import { getTodos } from "../data/queries/todo.ts";
 import { SectionHeader } from "../section-header.tsx";
@@ -130,6 +132,8 @@ const Todo = () => {
           }}
         </TableBody>
       </Table>
+      <CreateTodoModal />
+      <UpdateTodoModal />
     </MainLayout>
   );
 };

@@ -8,8 +8,10 @@ import split from "lodash/split.js";
 import { PencilIcon } from "lucide-react";
 
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
+import { CreateQaModal } from "../../components/qa/create-qa-modal.tsx";
 import { QaCopyButton } from "../../components/qa/qa-copy-button.tsx";
 import { QaDeleteButton } from "../../components/qa/qa-delete-button.tsx";
+import { UpdateQaModal } from "../../components/qa/update-qa-modal.tsx";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { getQuestionAnswers } from "../../data/queries/question-answer.ts";
 import { modalStore } from "../../global-stores/modal-store.ts";
@@ -68,6 +70,8 @@ const RouteComponent = () => {
           );
         })}
       </Accordion>
+      <CreateQaModal />
+      <UpdateQaModal />
     </MainLayout>
   );
 };

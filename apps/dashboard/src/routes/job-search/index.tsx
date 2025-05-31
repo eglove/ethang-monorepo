@@ -21,7 +21,9 @@ import { twMerge } from "tailwind-merge";
 import { useDebounce } from "use-debounce";
 
 import { DateColumn } from "../../components/data-column.tsx";
+import { CreateJobApplicationModal } from "../../components/job-application/create-job-application-modal.tsx";
 import { UpdateDeleteApplication } from "../../components/job-application/update-delete-application.tsx";
+import { UpdateJobApplicationModal } from "../../components/job-application/update-job-application-modal.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { getApplications } from "../../data/queries/application.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
@@ -146,6 +148,8 @@ const RouteComponent = () => {
           }}
         </TableBody>
       </Table>
+      <CreateJobApplicationModal />
+      <UpdateJobApplicationModal />
     </MainLayout>
   );
 };
