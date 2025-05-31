@@ -30,10 +30,7 @@ export default defineConfig({
               },
             },
             urlPattern: ({ url }) => {
-              return (
-                /\.(?:js|css|woff|woff2|ttf|otf|eot|ico)$/u.test(url.href) ||
-                url.pathname.startsWith("/api/")
-              );
+              return /\.(?:js|css|woff|woff2|ttf|otf|eot|ico)$/u.test(url.href);
             },
           },
           {
