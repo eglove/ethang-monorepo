@@ -36,7 +36,12 @@ const RouteComponent = () => {
   const { data, isPending } = useQuery(getContacts(user?.id));
 
   return (
-    <MainLayout>
+    <MainLayout
+      breadcrumbPaths={[
+        { href: "/job-search", label: "Job Search" },
+        { href: "/job-search/contact", label: "Contact" },
+      ]}
+    >
       <SectionHeader
         header="Contacts"
         modalKey="createContact"

@@ -47,7 +47,7 @@ const RouteComponent = () => {
   );
 
   return (
-    <MainLayout>
+    <MainLayout breadcrumbPaths={[{ href: "/job-stats", label: "Job Search" }]}>
       <SectionHeader
         header="Applications"
         modalKey="createJobApplication"

@@ -29,7 +29,7 @@ const BookMarks = () => {
   const { data: bookmarks, isPending } = useQuery(getBookmarks(user?.id));
 
   return (
-    <MainLayout>
+    <MainLayout breadcrumbPaths={[{ href: "/bookmarks", label: "Bookmarks" }]}>
       <SectionHeader
         header="Bookmarks"
         modalKey="createBookmark"

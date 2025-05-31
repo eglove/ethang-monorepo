@@ -15,6 +15,7 @@ import { Route as TodoImport } from './routes/todo'
 import { Route as BookmarksImport } from './routes/bookmarks'
 import { Route as IndexImport } from './routes/index'
 import { Route as JobSearchIndexImport } from './routes/job-search/index'
+import { Route as JobSearchStatsImport } from './routes/job-search/stats'
 import { Route as JobSearchQaImport } from './routes/job-search/qa'
 import { Route as JobSearchContactImport } from './routes/job-search/contact'
 
@@ -41,6 +42,12 @@ const IndexRoute = IndexImport.update({
 const JobSearchIndexRoute = JobSearchIndexImport.update({
   id: '/job-search/',
   path: '/job-search/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const JobSearchStatsRoute = JobSearchStatsImport.update({
+  id: '/job-search/stats',
+  path: '/job-search/stats',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -95,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JobSearchQaImport
       parentRoute: typeof rootRoute
     }
+    '/job-search/stats': {
+      id: '/job-search/stats'
+      path: '/job-search/stats'
+      fullPath: '/job-search/stats'
+      preLoaderRoute: typeof JobSearchStatsImport
+      parentRoute: typeof rootRoute
+    }
     '/job-search/': {
       id: '/job-search/'
       path: '/job-search'
@@ -113,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/todo': typeof TodoRoute
   '/job-search/contact': typeof JobSearchContactRoute
   '/job-search/qa': typeof JobSearchQaRoute
+  '/job-search/stats': typeof JobSearchStatsRoute
   '/job-search': typeof JobSearchIndexRoute
 }
 
@@ -122,6 +137,7 @@ export interface FileRoutesByTo {
   '/todo': typeof TodoRoute
   '/job-search/contact': typeof JobSearchContactRoute
   '/job-search/qa': typeof JobSearchQaRoute
+  '/job-search/stats': typeof JobSearchStatsRoute
   '/job-search': typeof JobSearchIndexRoute
 }
 
@@ -132,6 +148,7 @@ export interface FileRoutesById {
   '/todo': typeof TodoRoute
   '/job-search/contact': typeof JobSearchContactRoute
   '/job-search/qa': typeof JobSearchQaRoute
+  '/job-search/stats': typeof JobSearchStatsRoute
   '/job-search/': typeof JobSearchIndexRoute
 }
 
@@ -143,6 +160,7 @@ export interface FileRouteTypes {
     | '/todo'
     | '/job-search/contact'
     | '/job-search/qa'
+    | '/job-search/stats'
     | '/job-search'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -151,6 +169,7 @@ export interface FileRouteTypes {
     | '/todo'
     | '/job-search/contact'
     | '/job-search/qa'
+    | '/job-search/stats'
     | '/job-search'
   id:
     | '__root__'
@@ -159,6 +178,7 @@ export interface FileRouteTypes {
     | '/todo'
     | '/job-search/contact'
     | '/job-search/qa'
+    | '/job-search/stats'
     | '/job-search/'
   fileRoutesById: FileRoutesById
 }
@@ -169,6 +189,7 @@ export interface RootRouteChildren {
   TodoRoute: typeof TodoRoute
   JobSearchContactRoute: typeof JobSearchContactRoute
   JobSearchQaRoute: typeof JobSearchQaRoute
+  JobSearchStatsRoute: typeof JobSearchStatsRoute
   JobSearchIndexRoute: typeof JobSearchIndexRoute
 }
 
@@ -178,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   TodoRoute: TodoRoute,
   JobSearchContactRoute: JobSearchContactRoute,
   JobSearchQaRoute: JobSearchQaRoute,
+  JobSearchStatsRoute: JobSearchStatsRoute,
   JobSearchIndexRoute: JobSearchIndexRoute,
 }
 
@@ -196,6 +218,7 @@ export const routeTree = rootRoute
         "/todo",
         "/job-search/contact",
         "/job-search/qa",
+        "/job-search/stats",
         "/job-search/"
       ]
     },
@@ -213,6 +236,9 @@ export const routeTree = rootRoute
     },
     "/job-search/qa": {
       "filePath": "job-search/qa.tsx"
+    },
+    "/job-search/stats": {
+      "filePath": "job-search/stats.tsx"
     },
     "/job-search/": {
       "filePath": "job-search/index.tsx"

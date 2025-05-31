@@ -39,7 +39,7 @@ const Todo = () => {
   const { data, isPending } = useQuery(getTodos(user?.id));
 
   return (
-    <MainLayout>
+    <MainLayout breadcrumbPaths={[{ href: "/todo", label: "Todo" }]}>
       <SectionHeader
         header="Todos"
         modalKey="createTodo"

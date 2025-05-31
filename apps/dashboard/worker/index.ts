@@ -6,6 +6,7 @@ import { bookmarkRouter } from "./bookmarks/bookmark-router.ts";
 import { contactRouter } from "./contacts/contact-router.ts";
 import { paths } from "./paths.ts";
 import { questionAnswerRouter } from "./question-answers/question-answer-router.ts";
+import { statsRouter } from "./stats/stats-router.ts";
 import { todoRouter } from "./todos/todo-router.ts";
 import { getIsAuthenticated } from "./utilities/get-is-authenticated.ts";
 
@@ -36,6 +37,10 @@ export default {
 
     if (startsWith(url.pathname, paths.todo)) {
       return todoRouter(request, environment, userId);
+    }
+
+    if (startsWith(url.pathname, paths.stats)) {
+      return statsRouter(request, environment, userId);
     }
 
     return new Response(null, { status: 404 });

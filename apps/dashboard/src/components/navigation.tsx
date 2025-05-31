@@ -55,6 +55,15 @@ export const Navigation = () => {
               Contacts
             </Link>
           </NavbarItem>
+          <NavbarItem>
+            <Link
+              className="text-foreground"
+              href="/job-search/stats"
+              underline="hover"
+            >
+              Stats
+            </Link>
+          </NavbarItem>
         </NavbarContent>
       )}
       <NavbarContent justify="end">

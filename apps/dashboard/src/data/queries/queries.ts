@@ -34,6 +34,9 @@ export const queryKeys = {
   questionAnswers: (userId?: string) => {
     return filterOutNil(["questionAnswers", userId]);
   },
+  stats: (userId?: string) => {
+    return filterOutNil(["stats", userId]);
+  },
   todos: (userId?: string) => {
     return filterOutNil(["todos", userId]);
   },

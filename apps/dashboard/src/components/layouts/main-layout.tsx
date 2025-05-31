@@ -2,14 +2,7 @@ import type { PropsWithChildren } from "react";
 
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import { BreadcrumbItem, Breadcrumbs } from "@heroui/react";
-import { useLocation } from "@tanstack/react-router";
-import capitalize from "lodash/capitalize.js";
-import filter from "lodash/filter.js";
-import isEmpty from "lodash/isEmpty.js";
-import join from "lodash/join.js";
 import map from "lodash/map.js";
-import slice from "lodash/slice.js";
-import split from "lodash/split.js";
 
 import { CreateBookmarkModal } from "../bookmarks/create-bookmark-modal.tsx";
 import { UpdateBookmarkModal } from "../bookmarks/update-bookmark-modal.tsx";
@@ -23,13 +16,17 @@ import { UpdateQaModal } from "../qa/update-qa-modal.tsx";
 import { CreateTodoModal } from "../todo/create-todo-modal.tsx";
 import { UpdateTodoModal } from "../todo/update-todo-modal.tsx";
 
-export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
-  const location = useLocation();
-  const paths = filter(
-    split(location.pathname, "/"),
-    (value) => !isEmpty(value),
-  );
+type MainLayoutProperties = PropsWithChildren<{
+  breadcrumbPaths?: {
+    href: string;
+    label: string;
+  }[];
+}>;
 
+export const MainLayout = ({
+  breadcrumbPaths,
+  children,
+}: Readonly<MainLayoutProperties>) => {
   return (
     <div className="grid grid-rows-[auto_1fr_auto] h-lvh">
       <Navigation />
@@ -53,7 +50,7 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
           </h1>
         </SignedOut>
       </main>
-      <footer>
+      <footer className="mt-4">
         <Breadcrumbs
           classNames={{ base: "w-full", list: "max-w-full" }}
           itemsAfterCollapse={2}
@@ -65,13 +62,10 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
           <BreadcrumbItem href="/" underline="hover">
             Home
           </BreadcrumbItem>
-          {map(paths, (path, index) => {
+          {map(breadcrumbPaths, (path) => {
             return (
-              <BreadcrumbItem
-                href={join(slice(paths, 0, index + 1), "/")}
-                underline="hover"
-              >
-                {capitalize(path)}
+              <BreadcrumbItem href={path.href} underline="hover">
+                {path.label}
               </BreadcrumbItem>
             );
           })}

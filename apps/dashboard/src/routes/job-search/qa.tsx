@@ -20,7 +20,12 @@ const RouteComponent = () => {
   const { data } = useQuery(getQuestionAnswers(user?.id));
 
   return (
-    <MainLayout>
+    <MainLayout
+      breadcrumbPaths={[
+        { href: "/job-search", label: "Job Search" },
+        { href: "/job-search/qa", label: "QA" },
+      ]}
+    >
       <SectionHeader
         header="Application Q/A"
         modalKey="createQa"
