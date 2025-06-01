@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getAverageResponseRate } from "../../../../worker/stats/utitilies/get-average-response-rate.ts";
+import { getAverageResponseRate } from "./get-average-response-rate.ts";
 
 describe("getAverageResponseRate", () => {
   it("should return '0' when allUserApplications is empty", () => {

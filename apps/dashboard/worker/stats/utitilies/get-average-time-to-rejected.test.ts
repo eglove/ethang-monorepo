@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getAverageTimeToRejected } from "../../../../worker/stats/utitilies/get-average-time-to-rejected.ts";
+import { getAverageTimeToRejected } from "./get-average-time-to-rejected.ts";
 
 describe("getAverageTimeToRejected", () => {
   it("should return '0' when there are no applications in the last 30 days", () => {

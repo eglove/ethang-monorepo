@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getAverageTimeToInterview } from "../../../../worker/stats/utitilies/get-average-time-to-interview.ts";
+import { getAverageTimeToInterview } from "./get-average-time-to-interview.ts";
 
 describe("getAverageTimeToInterview", () => {
   it("should return '0' when there are no applications with active interviews", () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getDailyApplicationsMap } from "../../../../worker/stats/utitilies/get-daily-applications-map.ts";
+import { getDailyApplicationsMap } from "./get-daily-applications-map.ts";
 
 describe("getDailyApplicationsMap", () => {
   it("should return an empty array when given an empty applications array", () => {

@@ -82,7 +82,8 @@
     "deploy": "pnpm run build && wrangler deploy",
     "dev": "vite",
     "lint": "eslint src --fix && eslint worker --fix",
-    "preview": "pnpm run build && vite preview"
+    "preview": "pnpm run build && vite preview",
+    "test": "vitest run"
   },
   "type": "module",
   "version": "0.0.0"
