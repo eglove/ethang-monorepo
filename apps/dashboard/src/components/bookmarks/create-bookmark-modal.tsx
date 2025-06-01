@@ -2,7 +2,6 @@ import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
 import {
-  addToast,
   Button,
   Form,
   Input,
@@ -29,7 +28,7 @@ export const CreateBookmarkModal = () => {
 
   const { isPending, mutate } = useMutation({
     mutationFn: async (data: { title: string; url: string }) => {
-      const response = await globalThis.fetch("/api/bookmark", {
+      await globalThis.fetch("/api/bookmark", {
         body: JSON.stringify({
           title: data.title,
           url: data.url,
@@ -40,20 +39,10 @@ export const CreateBookmarkModal = () => {
         },
         method: "POST",
       });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.bookmarks(user?.id),
-        });
-        modalStore.closeModal("createBookmark");
-      } else {
-        addToast({
-          color: "danger",
-          description: response.statusText,
-          timeout: Infinity,
-          title: "Error",
-        });
-      }
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.bookmarks(user?.id),
+      });
+      modalStore.closeModal("createBookmark");
     },
   });
 

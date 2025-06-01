@@ -1,5 +1,4 @@
 import reactConfig from "@ethang/eslint-config/config.react.js"; // OPTIONAL
-import storybookConfig from "@ethang/eslint-config/config.storybook.js";
 import config from "@ethang/eslint-config/eslint.config.js";
 import tseslint from "typescript-eslint";
 
@@ -16,7 +15,6 @@ export default tseslint.config(
   },
   ...config,
   ...reactConfig,
-  ...storybookConfig,
   {
     languageOptions: {
       parserOptions: {
