@@ -1,7 +1,7 @@
 import { getAllApplicationsSchema } from "@ethang/schemas/src/dashboard/application-schema.ts";
 import { createUrl } from "@ethang/toolbelt/fetch/create-url";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
 import convertToString from "lodash/toString";
@@ -13,6 +13,7 @@ import { queryKeys } from "./queries.ts";
 export const getApplications = (userId = "", page = 1, search = "") => {
   return queryOptions({
     enabled: !isEmpty(userId),
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       if (isEmpty(userId)) {
         throw new Error("No user found");
