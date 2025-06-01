@@ -87,8 +87,26 @@ const RouteComponent = () => {
       <Table
         isHeaderSticky
         isStriped
+        BaseComponent={(properties) => {
+          return (
+            <TableBaseComponent
+              {...properties}
+              bottomContent={
+                <Pagination
+                  isCompact
+                  showControls
+                  showShadow
+                  classNames={{ base: "mx-auto" }}
+                  color="secondary"
+                  onChange={setPage}
+                  page={page}
+                  total={toInteger(applications?.pagination.totalPages)}
+                />
+              }
+            />
+          );
+        }}
         aria-label="Job Search"
-        BaseComponent={TableBaseComponent}
       >
         <TableHeader columns={columns}>
           {(item) => {
@@ -154,17 +172,6 @@ const RouteComponent = () => {
           }}
         </TableBody>
       </Table>
-      <div className="flex w-full justify-center my-4">
-        <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="secondary"
-          onChange={setPage}
-          page={page}
-          total={toInteger(applications?.pagination.totalPages)}
-        />
-      </div>
       <CreateJobApplicationModal />
       <UpdateJobApplicationModal />
     </MainLayout>
