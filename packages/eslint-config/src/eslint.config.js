@@ -946,6 +946,7 @@ export default tseslint.config(
               "remeda",
               "radash",
               "noto",
+              "autodocs",
             ],
           },
         },

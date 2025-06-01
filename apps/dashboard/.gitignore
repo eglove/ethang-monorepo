@@ -28,3 +28,6 @@ dist-ssr
 .dev.vars*
 
 /generated/prisma
+
+*storybook.log
+storybook-static
