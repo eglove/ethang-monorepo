@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.MainLayout {
+    display: grid;
+    height: 100vh;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "header"
+        "main"
+        "footer";
+}
+
+.Header {
+    grid-area: header;
+}
+
+.Main {
+    grid-area: main;
+    overflow: auto;
+}
+
+.Footer {
+    grid-area: footer;
+
+}

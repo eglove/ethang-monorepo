@@ -12,17 +12,23 @@ export const MainLayout = ({
   children,
 }: Readonly<MainLayoutProperties>) => {
   return (
-    <div className="flex flex-col h-lvh">
-      <Navigation />
-      <main className="px-4 max-w-5xl mx-auto w-full">
-        <SignedIn>{children}</SignedIn>
-        <SignedOut>
-          <h1 className="text-3xl font-bold text-center">
-            Sign In to Get Started
-          </h1>
-        </SignedOut>
-      </main>
-      <Footer breadcrumbPaths={breadcrumbPaths} />
+    <div className="MainLayout">
+      <div className="Header">
+        <Navigation />
+      </div>
+      <div className="Main">
+        <main className="px-4 max-w-5xl mx-auto w-full">
+          <SignedIn>{children}</SignedIn>
+          <SignedOut>
+            <h1 className="text-3xl font-bold text-center">
+              Sign In to Get Started
+            </h1>
+          </SignedOut>
+        </main>
+      </div>
+      <div className="Footer">
+        <Footer breadcrumbPaths={breadcrumbPaths} />
+      </div>
     </div>
   );
 };
