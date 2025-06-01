@@ -9,7 +9,7 @@
     "remeda": "^2.21.6"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.6.3",
+    "@ethang/eslint-config": "^22.6.4",
     "@types/lodash": "^4.17.16",
     "@vitest/ui": "^3.1.4",
     "eslint": "^9.26.0",
