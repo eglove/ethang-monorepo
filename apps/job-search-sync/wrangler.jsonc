@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "compatibility_date": "2025-05-31",
+  "compatibility_date": "2025-06-01",
   "d1_databases": [
     {
       "binding": "DB",

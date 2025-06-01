@@ -31,7 +31,7 @@
     "eslint-plugin-react-you-might-not-need-an-effect": "^0.0.38",
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "3.0.2",
-    "eslint-plugin-storybook": "^9.0.2",
+    "eslint-plugin-storybook": "^9.0.3",
     "eslint-plugin-tailwindcss": "^3.18.0",
     "eslint-plugin-unicorn": "^59.0.1",
     "prettier": "^3.5.3",
@@ -46,7 +46,7 @@
     "@types/node": "^22.15.29",
     "lodash": "^4.17.21",
     "typescript": "^5.8.3",
-    "zod": "^3.25.42"
+    "zod": "^3.25.46"
   },
   "engines": {
     "node": ">=22"
@@ -62,5 +62,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "22.6.2"
+  "version": "22.6.3"
 }
