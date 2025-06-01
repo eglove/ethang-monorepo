@@ -38,7 +38,6 @@ export const TopCompaniesChart = () => {
             />
             <YAxis
               dataKey={(value: (typeof topCompanies)[0]) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                 return get(value, ["_count", "id"], 0);
               }}
               axisLine={false}
@@ -48,7 +47,6 @@ export const TopCompaniesChart = () => {
             <Tooltip content={TopCompaniesChartTooltip} cursor={false} />
             <Bar
               dataKey={(value: (typeof topCompanies)[0]) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                 return get(value, ["_count", "id"], 0);
               }}
               fill={`hsl(var(--heroui-primary))`}

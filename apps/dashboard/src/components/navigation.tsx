@@ -11,61 +11,74 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
+  NavbarMenu,
+  NavbarMenuToggle,
 } from "@heroui/react";
-import { useLocation } from "@tanstack/react-router";
-import startsWith from "lodash/startsWith";
+import { useState } from "react";
 
 export const Navigation = () => {
-  const location = useLocation();
-  const isJobSearch = startsWith(location.pathname, "/job-search");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <Navbar>
-      <NavbarBrand className="font-bold">
-        <Link className="text-foreground" href="/">
-          Dashboard
-        </Link>
-      </NavbarBrand>
-      {isJobSearch && (
-        <NavbarContent justify="center">
-          <NavbarItem>
-            <Link
-              className="text-foreground"
-              href="/job-search"
-              underline="hover"
-            >
-              Applications
-            </Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link
-              className="text-foreground"
-              href="/job-search/qa"
-              underline="hover"
-            >
-              Q/A
-            </Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link
-              className="text-foreground"
-              href="/job-search/contact"
-              underline="hover"
-            >
-              Contacts
-            </Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link
-              className="text-foreground"
-              href="/job-search/stats"
-              underline="hover"
-            >
-              Stats
-            </Link>
-          </NavbarItem>
-        </NavbarContent>
-      )}
+    <Navbar onMenuOpenChange={setIsMenuOpen}>
+      <NavbarContent>
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close Menu" : "Open Menu"}
+        />
+        <NavbarBrand className="font-bold">
+          <Link className="text-foreground" href="/">
+            Dashboard
+          </Link>
+        </NavbarBrand>
+      </NavbarContent>
+      <NavbarMenu>
+        <NavbarItem>
+          <Link className="text-foreground" href="/todo" underline="hover">
+            Todos
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link className="text-foreground" href="/bookmarks" underline="hover">
+            Bookmarks
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link
+            className="text-foreground"
+            href="/job-search"
+            underline="hover"
+          >
+            Applications
+          </Link>
+        </NavbarItem>
+        <NavbarItem className="ml-4">
+          <Link
+            className="text-foreground"
+            href="/job-search/qa"
+            underline="hover"
+          >
+            Q/A
+          </Link>
+        </NavbarItem>
+        <NavbarItem className="ml-4">
+          <Link
+            className="text-foreground"
+            href="/job-search/contact"
+            underline="hover"
+          >
+            Contacts
+          </Link>
+        </NavbarItem>
+        <NavbarItem className="ml-4">
+          <Link
+            className="text-foreground"
+            href="/job-search/stats"
+            underline="hover"
+          >
+            Stats
+          </Link>
+        </NavbarItem>
+      </NavbarMenu>
       <NavbarContent justify="end">
         <NavbarItem>
           <SignedOut>

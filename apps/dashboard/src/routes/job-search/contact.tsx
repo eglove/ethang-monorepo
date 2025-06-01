@@ -19,6 +19,7 @@ import { UpdateContactModal } from "../../components/contact/update-contact-moda
 import { UpdateDeleteContact } from "../../components/contact/update-delete-contact.tsx";
 import { DateColumn } from "../../components/data-column.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
+import { TableBaseComponent } from "../../components/table-base-component.tsx";
 import { getContacts } from "../../data/queries/contact.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
@@ -50,7 +51,12 @@ const RouteComponent = () => {
         modalLabel="Create Contact"
         refreshKeys={queryKeys.allContacts(user?.id)}
       />
-      <Table isHeaderSticky isStriped aria-label="Contacts">
+      <Table
+        isHeaderSticky
+        isStriped
+        aria-label="Contacts"
+        BaseComponent={TableBaseComponent}
+      >
         <TableHeader columns={columns}>
           {(item) => {
             return <TableColumn key={item.key}>{item.label}</TableColumn>;

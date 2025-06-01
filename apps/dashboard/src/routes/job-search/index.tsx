@@ -25,6 +25,7 @@ import { CreateJobApplicationModal } from "../../components/job-application/crea
 import { UpdateDeleteApplication } from "../../components/job-application/update-delete-application.tsx";
 import { UpdateJobApplicationModal } from "../../components/job-application/update-job-application-modal.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
+import { TableBaseComponent } from "../../components/table-base-component.tsx";
 import { getApplications } from "../../data/queries/application.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
@@ -69,20 +70,8 @@ const RouteComponent = () => {
       <Table
         isHeaderSticky
         isStriped
-        bottomContent={
-          <div className="flex w-full justify-center">
-            <Pagination
-              isCompact
-              showControls
-              showShadow
-              color="secondary"
-              onChange={setPage}
-              page={page}
-              total={toInteger(applications?.pagination.totalPages)}
-            />
-          </div>
-        }
         aria-label="Job Search"
+        BaseComponent={TableBaseComponent}
       >
         <TableHeader columns={columns}>
           {(item) => {
@@ -148,6 +137,17 @@ const RouteComponent = () => {
           }}
         </TableBody>
       </Table>
+      <div className="flex w-full justify-center my-4">
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="secondary"
+          onChange={setPage}
+          page={page}
+          total={toInteger(applications?.pagination.totalPages)}
+        />
+      </div>
       <CreateJobApplicationModal />
       <UpdateJobApplicationModal />
     </MainLayout>

@@ -12,7 +12,7 @@ export const MainLayout = ({
   children,
 }: Readonly<MainLayoutProperties>) => {
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] h-lvh">
+    <div className="flex flex-col h-lvh">
       <Navigation />
       <main className="px-4 max-w-5xl mx-auto w-full">
         <SignedIn>{children}</SignedIn>

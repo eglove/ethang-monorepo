@@ -16,6 +16,7 @@ import { CreateBookmarkModal } from "../components/bookmarks/create-bookmark-mod
 import { UpdateBookmarkModal } from "../components/bookmarks/update-bookmark-modal.tsx";
 import { UpdateDeleteBookmark } from "../components/bookmarks/update-delete-bookmark.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
+import { TableBaseComponent } from "../components/table-base-component.tsx";
 import { getBookmarks } from "../data/queries/bookmark.ts";
 import { queryKeys } from "../data/queries/queries.ts";
 import { SectionHeader } from "../section-header.tsx";
@@ -38,7 +39,11 @@ const BookMarks = () => {
         modalLabel="Add Bookmark"
         refreshKeys={queryKeys.bookmarks(user?.id)}
       />
-      <Table isStriped aria-label="Bookmarks">
+      <Table
+        isStriped
+        aria-label="Bookmarks"
+        BaseComponent={TableBaseComponent}
+      >
         <TableHeader columns={columns}>
           {(column) => {
             return <TableColumn key={column.key}>{column.label}</TableColumn>;

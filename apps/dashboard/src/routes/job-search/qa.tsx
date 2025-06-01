@@ -51,7 +51,7 @@ const RouteComponent = () => {
                   return <div>{line}</div>;
                 })}
               </div>
-              <div className="flex justify-between gap-4 items-center">
+              <div className="flex flex-wrap justify-between gap-4 items-center">
                 <div className="flex gap-2 mt-4 mb-2">
                   <QaCopyButton text={qa.answer} />
                   <Button

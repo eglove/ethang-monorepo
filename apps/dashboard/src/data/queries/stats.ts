@@ -31,7 +31,6 @@ export const getStats = (userId = "") => {
       );
 
       if (isError(data)) {
-        console.log(data);
         throw new Error("Failed to fetch stats");
       }
 

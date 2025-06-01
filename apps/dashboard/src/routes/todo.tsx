@@ -17,6 +17,7 @@ import { DateTime } from "luxon";
 
 import { DateColumn } from "../components/data-column.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
+import { TableBaseComponent } from "../components/table-base-component.tsx";
 import { CreateTodoModal } from "../components/todo/create-todo-modal.tsx";
 import { useTodoTimerStore } from "../components/todo/todo-timer-store.ts";
 import { UpdateDeleteTodo } from "../components/todo/update-delete-todo.tsx";
@@ -48,11 +49,11 @@ const Todo = () => {
         modalLabel="Add Todo"
         refreshKeys={queryKeys.allUserTodos(user?.id)}
       >
-        <div className="font-bold underline underline-offset-2">
+        <div className="font-bold underline underline-offset-2 text-center">
           {todoTimerStore.currentTime}
         </div>
       </SectionHeader>
-      <Table isStriped aria-label="Todos">
+      <Table isStriped aria-label="Todos" BaseComponent={TableBaseComponent}>
         <TableHeader columns={columns}>
           {(column) => {
             return <TableColumn key={column.key}>{column.label}</TableColumn>;
