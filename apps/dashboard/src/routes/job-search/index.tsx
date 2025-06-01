@@ -14,6 +14,8 @@ import {
 } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import get from "lodash/get.js";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
 import toInteger from "lodash/toInteger";
 import { useState } from "react";
@@ -41,6 +43,7 @@ const columns = [
 
 const RouteComponent = () => {
   const { user } = useUser();
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 500);
@@ -48,6 +51,20 @@ const RouteComponent = () => {
   const { data: applications, isPending } = useQuery(
     getApplications(user?.id, page, debouncedSearch),
   );
+
+  const nextPage = page + 1;
+  const previousPage = page - 1;
+  const totalPages = get(applications, ["pagination", "totalPages"]);
+
+  useQuery({
+    ...getApplications(user?.id, nextPage),
+    enabled: !isNil(totalPages) && nextPage < totalPages,
+  });
+
+  useQuery({
+    ...getApplications(user?.id, previousPage),
+    enabled: !isNil(totalPages) && 0 < previousPage,
+  });
 
   return (
     <MainLayout breadcrumbPaths={[{ href: "/job-stats", label: "Job Search" }]}>
