@@ -1,4 +1,6 @@
+import filter from "lodash/filter";
 import head from "lodash/head";
+import isEmpty from "lodash/isEmpty";
 import isNil from "lodash/isNil.js";
 import sortBy from "lodash/sortBy";
 import { DateTime } from "luxon";
@@ -6,18 +8,22 @@ import { DateTime } from "luxon";
 import type { getUserStatsData } from "./get-user-stats-data.ts";
 
 import { statsComputeEngine } from "../get-user-stats.ts";
-import { getApplicationsWithActiveInterviews } from "./get-applications-with-active-interviews.ts";
+import { getLast30DaysOfApplications } from "./get-last-30-days-of-applications.ts";
 
 export const getAverageTimeToInterview = (
   allUserApplications: Awaited<
     ReturnType<typeof getUserStatsData>
   >["allUserApplications"],
 ) => {
-  const applicationsWithActiveInterviews =
-    getApplicationsWithActiveInterviews(allUserApplications);
+  const last30DaysOfApplications =
+    getLast30DaysOfApplications(allUserApplications);
+
+  const withInterviews = filter(last30DaysOfApplications, (application) => {
+    return !isEmpty(application.interviewRounds);
+  });
 
   let daySum = 0;
-  for (const application of applicationsWithActiveInterviews) {
+  for (const application of withInterviews) {
     const firstInterviewRound = head(
       sortBy(application.interviewRounds, ["dateTime"]),
     );
@@ -31,7 +37,7 @@ export const getAverageTimeToInterview = (
   }
 
   const result = statsComputeEngine
-    .box(["Divide", daySum, applicationsWithActiveInterviews.length])
+    .box(["Divide", daySum, withInterviews.length])
     .N();
 
   return true === result.isNaN ? "0" : result.toString();
