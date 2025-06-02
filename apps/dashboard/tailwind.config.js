@@ -1,5 +1,6 @@
 import { heroui } from "@heroui/react";
 import prose from "@tailwindcss/typography";
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -11,6 +12,12 @@ export default {
   darkMode: "class",
   plugins: [heroui(), prose()],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        mono: ["Noto Sans Mono", ...fontFamily.mono],
+        sans: ["Funnel Sans", ...fontFamily.sans],
+        serif: ["Funnel Display", ...fontFamily.serif],
+      },
+    },
   },
 };
