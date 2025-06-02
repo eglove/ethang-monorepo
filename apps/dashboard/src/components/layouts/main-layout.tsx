@@ -13,22 +13,16 @@ export const MainLayout = ({
 }: Readonly<MainLayoutProperties>) => {
   return (
     <div className="grid h-[100vb] grid-rows-[auto_1fr_auto]">
-      <div>
-        <Navigation />
-      </div>
-      <div className="overflow-auto">
-        <main className="px-4 max-w-5xl mx-auto w-full">
-          <SignedIn>{children}</SignedIn>
-          <SignedOut>
-            <h1 className="text-3xl font-bold text-center">
-              Sign In to Get Started
-            </h1>
-          </SignedOut>
-        </main>
-      </div>
-      <div>
-        <Footer breadcrumbPaths={breadcrumbPaths} />
-      </div>
+      <Navigation />
+      <main className="px-4 max-w-5xl mx-auto w-full overflow-auto">
+        <SignedIn>{children}</SignedIn>
+        <SignedOut>
+          <h1 className="text-3xl font-bold text-center">
+            Sign In to Get Started
+          </h1>
+        </SignedOut>
+      </main>
+      <Footer breadcrumbPaths={breadcrumbPaths} />
     </div>
   );
 };
