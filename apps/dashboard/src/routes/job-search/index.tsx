@@ -3,7 +3,6 @@ import {
   getKeyValue,
   Input,
   Link,
-  Pagination,
   Spinner,
   Table,
   TableBody,
@@ -31,7 +30,7 @@ import { CreateJobApplicationModal } from "../../components/job-application/crea
 import { UpdateDeleteApplication } from "../../components/job-application/update-delete-application.tsx";
 import { UpdateJobApplicationModal } from "../../components/job-application/update-job-application-modal.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
-import { TableBaseComponent } from "../../components/table-base-component.tsx";
+import { TableWrapper } from "../../components/table-wrapper.tsx";
 import { getApplications } from "../../data/queries/application.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
@@ -99,112 +98,102 @@ const RouteComponent = () => {
           />
         </div>
       </SectionHeader>
-      <Table
-        isHeaderSticky
-        isStriped
-        BaseComponent={(properties) => {
-          return (
-            <TableBaseComponent
-              {...properties}
-              bottomContent={
-                <Pagination
-                  isCompact
-                  showControls
-                  showShadow
-                  classNames={{ base: "mx-auto" }}
-                  color="secondary"
-                  onChange={setPage}
-                  page={page}
-                  total={toInteger(applications?.pagination.totalPages)}
-                />
-              }
-            />
-          );
+      <TableWrapper
+        paginationProps={{
+          classNames: { base: "mx-auto" },
+          color: "secondary",
+          isCompact: true,
+          onChange: setPage,
+          page,
+          showControls: true,
+          showShadow: true,
+          total: toInteger(applications?.pagination.totalPages),
         }}
-        aria-label="Job Search"
       >
-        <TableHeader columns={getColumns(maxRoundsCount)}>
-          {(item) => {
-            return <TableColumn key={item.key}>{item.label}</TableColumn>;
-          }}
-        </TableHeader>
-        <TableBody
-          emptyContent="Nothing to Display"
-          items={applications?.data ?? []}
-          loadingContent={<Spinner />}
-          loadingState={isPending ? "loading" : "idle"}
-        >
-          {(item) => {
-            return (
-              <TableRow key={item.id}>
-                {(columnKey) => {
-                  const value = getKeyValue(item, columnKey) as unknown;
+        <Table isHeaderSticky isStriped removeWrapper aria-label="Job Search">
+          <TableHeader columns={getColumns(maxRoundsCount)}>
+            {(item) => {
+              return <TableColumn key={item.key}>{item.label}</TableColumn>;
+            }}
+          </TableHeader>
+          <TableBody
+            emptyContent="Nothing to Display"
+            items={applications?.data ?? []}
+            loadingContent={<Spinner />}
+            loadingState={isPending ? "loading" : "idle"}
+          >
+            {(item) => {
+              return (
+                <TableRow key={item.id}>
+                  {(columnKey) => {
+                    const value = getKeyValue(item, columnKey) as unknown;
 
-                  if ("url" === columnKey && isString(value)) {
+                    if ("url" === columnKey && isString(value)) {
+                      return (
+                        <TableCell>
+                          <Link
+                            isExternal
+                            showAnchorIcon
+                            className="min-w-24 break-all"
+                            href={value}
+                            underline="always"
+                          >
+                            {URL.canParse(value)
+                              ? new URL(value).hostname
+                              : value}
+                          </Link>
+                        </TableCell>
+                      );
+                    }
+
+                    if ("applied" === columnKey || "rejected" === columnKey) {
+                      return (
+                        <TableCell>
+                          <DateColumn date={value} />
+                        </TableCell>
+                      );
+                    }
+
+                    if ("actions" === columnKey) {
+                      return (
+                        <TableCell>
+                          <UpdateDeleteApplication application={item} />
+                        </TableCell>
+                      );
+                    }
+
+                    if (isString(columnKey) && startsWith(columnKey, "round")) {
+                      const dateTime = get(
+                        item,
+                        [
+                          "interviewRounds",
+                          toInteger(replace(columnKey, "round", "")),
+                          "dateTime",
+                        ],
+                        null,
+                      );
+
+                      return (
+                        <TableCell>
+                          <DateColumn date={dateTime} />
+                        </TableCell>
+                      );
+                    }
+
                     return (
-                      <TableCell>
-                        <Link
-                          isExternal
-                          showAnchorIcon
-                          className="min-w-24 break-all"
-                          href={value}
-                          underline="always"
-                        >
-                          {URL.canParse(value)
-                            ? new URL(value).hostname
-                            : value}
-                        </Link>
+                      <TableCell
+                        className={twMerge("title" === columnKey && "max-w-96")}
+                      >
+                        {getKeyValue(item, columnKey)}
                       </TableCell>
                     );
-                  }
-
-                  if ("applied" === columnKey || "rejected" === columnKey) {
-                    return (
-                      <TableCell>
-                        <DateColumn date={value} />
-                      </TableCell>
-                    );
-                  }
-
-                  if ("actions" === columnKey) {
-                    return (
-                      <TableCell>
-                        <UpdateDeleteApplication application={item} />
-                      </TableCell>
-                    );
-                  }
-
-                  if (isString(columnKey) && startsWith(columnKey, "round")) {
-                    const dateTime = get(
-                      item,
-                      [
-                        "interviewRounds",
-                        toInteger(replace(columnKey, "round", "")),
-                        "dateTime",
-                      ],
-                      null,
-                    );
-
-                    return (
-                      <TableCell>
-                        <DateColumn date={dateTime} />
-                      </TableCell>
-                    );
-                  }
-
-                  return (
-                    <TableCell
-                      className={twMerge("title" === columnKey && "max-w-96")}
-                    >
-                      {getKeyValue(item, columnKey)}
-                    </TableCell>
-                  );
-                }}
-              </TableRow>
-            );
-          }}
-        </TableBody>
-      </Table>
+                  }}
+                </TableRow>
+              );
+            }}
+          </TableBody>
+        </Table>
+      </TableWrapper>
       <CreateJobApplicationModal />
       <UpdateJobApplicationModal />
     </MainLayout>

@@ -16,7 +16,7 @@ import { CreateBookmarkModal } from "../components/bookmarks/create-bookmark-mod
 import { UpdateBookmarkModal } from "../components/bookmarks/update-bookmark-modal.tsx";
 import { UpdateDeleteBookmark } from "../components/bookmarks/update-delete-bookmark.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
-import { TableBaseComponent } from "../components/table-base-component.tsx";
+import { TableWrapper } from "../components/table-wrapper.tsx";
 import { getBookmarks } from "../data/queries/bookmark.ts";
 import { queryKeys } from "../data/queries/queries.ts";
 import { SectionHeader } from "../section-header.tsx";
@@ -39,55 +39,53 @@ const BookMarks = () => {
         modalLabel="Add Bookmark"
         refreshKeys={queryKeys.bookmarks(user?.id)}
       />
-      <Table
-        isStriped
-        aria-label="Bookmarks"
-        BaseComponent={TableBaseComponent}
-      >
-        <TableHeader columns={columns}>
-          {(column) => {
-            return <TableColumn key={column.key}>{column.label}</TableColumn>;
-          }}
-        </TableHeader>
-        <TableBody
-          emptyContent={isPending ? "Loading..." : "No Data"}
-          items={bookmarks ?? []}
-        >
-          {(item) => {
-            return (
-              <TableRow key={item.id}>
-                {(columnKey) => {
-                  switch (columnKey) {
-                    case "actions": {
-                      return (
-                        <TableCell>
-                          <UpdateDeleteBookmark bookmark={item} />
-                        </TableCell>
-                      );
-                    }
+      <TableWrapper>
+        <Table isStriped removeWrapper aria-label="Bookmarks">
+          <TableHeader columns={columns}>
+            {(column) => {
+              return <TableColumn key={column.key}>{column.label}</TableColumn>;
+            }}
+          </TableHeader>
+          <TableBody
+            emptyContent={isPending ? "Loading..." : "No Data"}
+            items={bookmarks ?? []}
+          >
+            {(item) => {
+              return (
+                <TableRow key={item.id}>
+                  {(columnKey) => {
+                    switch (columnKey) {
+                      case "actions": {
+                        return (
+                          <TableCell>
+                            <UpdateDeleteBookmark bookmark={item} />
+                          </TableCell>
+                        );
+                      }
 
-                    case "title": {
-                      return (
-                        <TableCell>
-                          <Link isExternal href={item.url} underline="always">
-                            {item.title}
-                          </Link>
-                        </TableCell>
-                      );
-                    }
+                      case "title": {
+                        return (
+                          <TableCell>
+                            <Link isExternal href={item.url} underline="always">
+                              {item.title}
+                            </Link>
+                          </TableCell>
+                        );
+                      }
 
-                    default: {
-                      return (
-                        <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-                      );
+                      default: {
+                        return (
+                          <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+                        );
+                      }
                     }
-                  }
-                }}
-              </TableRow>
-            );
-          }}
-        </TableBody>
-      </Table>
+                  }}
+                </TableRow>
+              );
+            }}
+          </TableBody>
+        </Table>
+      </TableWrapper>
       <CreateBookmarkModal />
       <UpdateBookmarkModal />
     </MainLayout>
