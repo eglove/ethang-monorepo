@@ -82,6 +82,7 @@ const customRules: CustomRules = [
             "radash",
             "noto",
             "nosniff",
+            "SAMEORIGIN",
           ],
         },
       },

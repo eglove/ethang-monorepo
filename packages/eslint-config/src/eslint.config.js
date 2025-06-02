@@ -947,6 +947,7 @@ export default tseslint.config(
               "radash",
               "noto",
               "nosniff",
+              "SAMEORIGIN",
             ],
           },
         },

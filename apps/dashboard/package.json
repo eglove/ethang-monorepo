@@ -10,7 +10,7 @@
     "@ethang/hooks": "^2.3.1",
     "@ethang/schemas": "workspace:*",
     "@ethang/store": "^1.3.0",
-    "@ethang/toolbelt": "^4.4.6",
+    "@ethang/toolbelt": "^4.4.7",
     "@heroui/react": "2.7.9",
     "@heroui/theme": "2.4.16",
     "@internationalized/date": "^3.8.1",
@@ -39,12 +39,12 @@
     "use-debounce": "^10.0.4",
     "use-sync-external-store": "^1.5.0",
     "uuid": "^11.1.0",
-    "zod": "^3.24.4"
+    "zod": "^3.25.49"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.2.4",
     "@eslint/js": "^9.25.0",
-    "@ethang/eslint-config": "^22.7.0",
+    "@ethang/eslint-config": "^22.7.2",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/eslint-plugin-query": "^5.74.7",
     "@tanstack/router-plugin": "^1.120.12",

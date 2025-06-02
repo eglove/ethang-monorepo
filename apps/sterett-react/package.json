@@ -41,10 +41,10 @@
     "react-dom": "^19.1.0",
     "sanity-image": "^1.0.0",
     "tailwind-merge": "<3",
-    "zod": "^3.24.3"
+    "zod": "^3.25.49"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.7.0",
+    "@ethang/eslint-config": "^22.7.2",
     "@portabletext/types": "^2.0.13",
     "@react-types/shared": "^3.29.0",
     "@tailwindcss/typography": "^0.5.16",
