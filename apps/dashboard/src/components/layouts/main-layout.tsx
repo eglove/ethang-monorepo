@@ -12,11 +12,11 @@ export const MainLayout = ({
   children,
 }: Readonly<MainLayoutProperties>) => {
   return (
-    <div className="MainLayout">
-      <div className="Header">
+    <div className="grid h-[100vb] grid-rows-[auto_1fr_auto]">
+      <div>
         <Navigation />
       </div>
-      <div className="Main">
+      <div className="overflow-auto">
         <main className="px-4 max-w-5xl mx-auto w-full">
           <SignedIn>{children}</SignedIn>
           <SignedOut>
@@ -26,7 +26,7 @@ export const MainLayout = ({
           </SignedOut>
         </main>
       </div>
-      <div className="Footer">
+      <div>
         <Footer breadcrumbPaths={breadcrumbPaths} />
       </div>
     </div>

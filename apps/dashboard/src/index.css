@@ -1,29 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer custom {
-    .MainLayout {
-        display: grid;
-        block-size: 100vb;
-        grid-template-rows: auto 1fr auto;
-        grid-template-areas:
-        "header"
-        "main"
-        "footer";
-    }
-
-    .Header {
-        grid-area: header;
-    }
-
-    .Main {
-        grid-area: main;
-        overflow: auto;
-    }
-
-    .Footer {
-        grid-area: footer;
-
-    }
-}
