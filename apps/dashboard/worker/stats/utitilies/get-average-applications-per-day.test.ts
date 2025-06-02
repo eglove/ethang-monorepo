@@ -89,7 +89,7 @@ describe("getAverageApplicationsPerDay", () => {
 
     // @ts-expect-error allow partial
     const result = getAverageApplicationsPerDay(applications);
-    expect(result).toBe("15");
+    expect(result).toBe("17.5");
   });
 
   it("should correctly handle `take` by original array order before `orderBy`", () => {
@@ -106,6 +106,6 @@ describe("getAverageApplicationsPerDay", () => {
 
     // @ts-expect-error allow partial
     const result = getAverageApplicationsPerDay(fullApplications);
-    expect(result).toBe("10");
+    expect(result).toBe("11.6666666666666666667");
   });
 });

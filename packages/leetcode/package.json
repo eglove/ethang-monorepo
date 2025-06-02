@@ -1,7 +1,7 @@
 {
   "author": "",
   "dependencies": {
-    "@ethang/toolbelt": "^4.4.1",
+    "@ethang/toolbelt": "^4.4.6",
     "lodash": "^4.17.21"
   },
   "description": "",

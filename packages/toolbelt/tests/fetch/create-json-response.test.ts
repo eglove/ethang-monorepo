@@ -1,4 +1,5 @@
 /* eslint-disable sonar/no-duplicate-string */
+import includes from "lodash/includes.js";
 import { describe, expect, it } from "vitest";
 
 import { HTTP_STATUS } from "../../src/constants/http.js";
@@ -75,5 +76,33 @@ describe("createJsonResponse", () => {
     expect(publicKeyPins).toBe(null);
     expect(aspNetVersion).toBe(null);
     expect(poweredBy).toBe(null);
+  });
+
+  it("should add content security policy (CSP)", () => {
+    const data = { status: "created" };
+    const response = createJsonResponse(data, "CREATED", {
+      statusText: "Resource Created",
+    });
+
+    const cspHeaders = response.headers.get("Content-Security-Policy");
+
+    expect(includes(cspHeaders, "default-src 'self'")).toBe(true);
+    expect(includes(cspHeaders, "script-src 'self' 'nonce-")).toBe(true);
+    expect(
+      includes(cspHeaders, "'strict-dynamic' 'unsafe-inline' https: http:"),
+    ).toBe(true);
+    expect(includes(cspHeaders, "style-src 'self' 'nonce")).toBe(true);
+    expect(includes(cspHeaders, "img-src 'self' data: https:")).toBe(true);
+    expect(includes(cspHeaders, "font-src 'self' data: https:")).toBe(true);
+    expect(
+      includes(cspHeaders, "connect-src 'self' https://clerk.ethang.dev/"),
+    ).toBe(true);
+    expect(includes(cspHeaders, "object-src 'none'")).toBe(true);
+    expect(includes(cspHeaders, "base-uri 'none'")).toBe(true);
+    expect(includes(cspHeaders, "frame-ancestors 'self'")).toBe(true);
+    expect(includes(cspHeaders, "form-action 'self'")).toBe(true);
+    expect(includes(cspHeaders, "require-trusted-types-for 'script'")).toBe(
+      true,
+    );
   });
 });

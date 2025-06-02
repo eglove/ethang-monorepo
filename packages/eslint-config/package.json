@@ -28,7 +28,7 @@
     "eslint-plugin-perfectionist": "^4.13.0",
     "eslint-plugin-prettier": "^5.4.1",
     "eslint-plugin-react-hooks": "^5.2.0-rc.1",
-    "eslint-plugin-react-you-might-not-need-an-effect": "^0.0.38",
+    "eslint-plugin-react-you-might-not-need-an-effect": "^0.0.39",
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "3.0.2",
     "eslint-plugin-storybook": "^9.0.4",
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@ethang/markdown-generator": "^1.1.5",
-    "@ethang/toolbelt": "^4.4.1",
+    "@ethang/toolbelt": "^4.4.6",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.17",
@@ -62,5 +62,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "22.7.0"
+  "version": "22.7.1"
 }

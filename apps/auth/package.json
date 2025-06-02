@@ -5,7 +5,7 @@
   ],
   "dependencies": {
     "@ethang/schemas": "workspace:^",
-    "@ethang/toolbelt": "^4.4.1",
+    "@ethang/toolbelt": "^4.4.6",
     "bcryptjs": "^3.0.1",
     "jose": "^6.0.10",
     "lodash": "^4.17.21",

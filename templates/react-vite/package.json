@@ -4,7 +4,7 @@
     "maintained node versions"
   ],
   "dependencies": {
-    "@ethang/toolbelt": "^4.4.1",
+    "@ethang/toolbelt": "^4.4.6",
     "@heroui/react": "2.7.9",
     "@heroui/theme": "2.4.16",
     "@tanstack/query-async-storage-persister": "^5.77.0",
