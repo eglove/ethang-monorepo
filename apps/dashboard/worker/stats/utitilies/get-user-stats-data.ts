@@ -3,7 +3,7 @@ import { getPrismaClient } from "../../prisma-client.ts";
 export const getUserStatsData = async (environment: Env, userId: string) => {
   const prismaClient = getPrismaClient(environment);
 
-  const [topCompanies, allUserApplications, totalCompaniesAndApplications] =
+  const [topCompanies, allUserApplications, totalApplications, totalCompanies] =
     await Promise.all([
       prismaClient.applications.groupBy({
         _count: { id: true },
@@ -25,7 +25,11 @@ export const getUserStatsData = async (environment: Env, userId: string) => {
         where: { userId },
       }),
       prismaClient.applications.aggregate({
-        _count: { _all: true, company: true },
+        _count: { _all: true },
+        where: { userId },
+      }),
+      prismaClient.applications.groupBy({
+        by: ["company"],
         where: { userId },
       }),
     ]);
@@ -33,6 +37,7 @@ export const getUserStatsData = async (environment: Env, userId: string) => {
   return {
     allUserApplications,
     topCompanies,
-    totalCompaniesAndApplications,
+    totalApplications,
+    totalCompanies,
   };
 };

@@ -12,8 +12,12 @@ import { getUserStatsData } from "./utitilies/get-user-stats-data.ts";
 export const statsComputeEngine = new ComputeEngine();
 
 export const getUserStats = async (environment: Env, userId: string) => {
-  const { allUserApplications, topCompanies, totalCompaniesAndApplications } =
-    await getUserStatsData(environment, userId);
+  const {
+    allUserApplications,
+    topCompanies,
+    totalApplications,
+    totalCompanies,
+  } = await getUserStatsData(environment, userId);
 
   const averageApplicationsPerDay =
     getAverageApplicationsPerDay(allUserApplications);
@@ -29,8 +33,8 @@ export const getUserStats = async (environment: Env, userId: string) => {
       averageTimeToInterview: toNumber(averageTimeToInterview),
       averageTimeToRejected: toNumber(averageTimeToRejected),
       topCompanies,
-      totalApplications: totalCompaniesAndApplications._count._all,
-      totalCompanies: totalCompaniesAndApplications._count.company,
+      totalApplications: totalApplications._count._all,
+      totalCompanies: totalCompanies.length,
       userDailyApplications,
     },
     "OK",
