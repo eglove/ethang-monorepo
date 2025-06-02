@@ -1,4 +1,4 @@
-import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
+import type { UpdateJobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
 import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 import type { QuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
@@ -23,7 +23,7 @@ const isOpenKeys = [
 export type IsOpenKeys = (typeof isOpenKeys)[number];
 
 type ModalState = {
-  applicationToUpdate: JobApplication | null;
+  applicationToUpdate: null | UpdateJobApplication;
   bookmarkToUpdate: Bookmark | null;
   contactToUpdate: Contact | null;
   createBookmark: boolean;
@@ -72,7 +72,7 @@ class ModalStore {
     this.setIsModalOpen(key, true);
   }
 
-  public setApplicationToUpdate(application: JobApplication | null) {
+  public setApplicationToUpdate(application: null | UpdateJobApplication) {
     this.update((draft) => {
       draft.applicationToUpdate = application;
     });

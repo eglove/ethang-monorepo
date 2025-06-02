@@ -32,6 +32,7 @@ export const getAllApplications = async (
   const total = await prisma.applications.count({ where });
 
   const applications = await prisma.applications.findMany({
+    include: { interviewRounds: true },
     orderBy: {
       applied: "desc",
     },

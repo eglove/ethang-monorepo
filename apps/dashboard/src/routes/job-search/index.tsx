@@ -17,6 +17,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
+import replace from "lodash/replace.js";
+import startsWith from "lodash/startsWith";
+import sumBy from "lodash/sumBy.js";
+import times from "lodash/times.js";
 import toInteger from "lodash/toInteger";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
@@ -32,14 +36,21 @@ import { getApplications } from "../../data/queries/application.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
 
-const columns = [
-  { key: "title", label: "Title" },
-  { key: "company", label: "Company" },
-  { key: "url", label: "URL" },
-  { key: "applied", label: "Applied" },
-  { key: "rejected", label: "Rejected" },
-  { key: "actions", label: "Actions" },
-];
+const getColumns = (maxRoundCount: number) => {
+  const roundsColumns = times(maxRoundCount, (index) => {
+    return { key: `round${index}`, label: `Round ${index + 1}` };
+  });
+
+  return [
+    { key: "title", label: "Title" },
+    { key: "company", label: "Company" },
+    { key: "url", label: "URL" },
+    { key: "applied", label: "Applied" },
+    ...roundsColumns,
+    { key: "rejected", label: "Rejected" },
+    { key: "actions", label: "Actions" },
+  ];
+};
 
 const RouteComponent = () => {
   const { user } = useUser();
@@ -55,6 +66,7 @@ const RouteComponent = () => {
   const nextPage = page + 1;
   const previousPage = page - 1;
   const totalPages = get(applications, ["pagination", "totalPages"]);
+  const maxRoundsCount = sumBy(applications?.data, "interviewRounds.length");
 
   useQuery({
     ...getApplications(user?.id, nextPage),
@@ -108,7 +120,7 @@ const RouteComponent = () => {
         }}
         aria-label="Job Search"
       >
-        <TableHeader columns={columns}>
+        <TableHeader columns={getColumns(maxRoundsCount)}>
           {(item) => {
             return <TableColumn key={item.key}>{item.label}</TableColumn>;
           }}
@@ -155,6 +167,24 @@ const RouteComponent = () => {
                     return (
                       <TableCell>
                         <UpdateDeleteApplication application={item} />
+                      </TableCell>
+                    );
+                  }
+
+                  if (isString(columnKey) && startsWith(columnKey, "round")) {
+                    const dateTime = get(
+                      item,
+                      [
+                        "interviewRounds",
+                        toInteger(replace(columnKey, "round", "")),
+                        "dateTime",
+                      ],
+                      null,
+                    );
+
+                    return (
+                      <TableCell>
+                        <DateColumn date={dateTime} />
                       </TableCell>
                     );
                   }

@@ -1,9 +1,14 @@
-import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
+import type {
+  JobApplication,
+  UpdateJobApplication,
+} from "@ethang/schemas/src/dashboard/application-schema.ts";
+import type { ZonedDateTime } from "@internationalized/date";
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
 import {
   Button,
+  DateInput,
   Form,
   Input,
   Modal,
@@ -13,8 +18,17 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { produce } from "immer";
+import filter from "lodash/filter.js";
 import isNil from "lodash/isNil.js";
+import map from "lodash/map.js";
+import { Trash2Icon } from "lucide-react";
+import { DateTime } from "luxon";
 
+import {
+  convertDateTimeInputToIso,
+  convertIsoToDateTimeInput,
+} from "../../../worker/utilities/heroui.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
 import { formDateToIso, getFormDate } from "../../utilities/form.ts";
@@ -23,6 +37,7 @@ import { getToken } from "../../utilities/token.ts";
 export const UpdateJobApplicationModal = () => {
   const queryClient = useQueryClient();
   const { user } = useUser();
+
   const jobApplication = useModalStore((state) => {
     return state.applicationToUpdate;
   });
@@ -32,7 +47,7 @@ export const UpdateJobApplicationModal = () => {
   });
 
   const handleChange = (key: keyof JobApplication) => (value: string) => {
-    if (isNil(jobApplication)) {
+    if (isNil(jobApplication) || "interviewRounds" === key) {
       return;
     }
 
@@ -42,8 +57,54 @@ export const UpdateJobApplicationModal = () => {
     });
   };
 
+  const handleRemoveInterviewRound = (index: number) => {
+    if (isNil(jobApplication)) {
+      return;
+    }
+
+    modalStore.setApplicationToUpdate({
+      ...jobApplication,
+      interviewRounds: filter(jobApplication.interviewRounds, (_, _index) => {
+        return index !== _index;
+      }),
+    });
+  };
+
+  const handleAddInterviewRound = () => {
+    if (isNil(jobApplication)) {
+      return;
+    }
+
+    modalStore.setApplicationToUpdate({
+      ...jobApplication,
+      interviewRounds: [
+        ...jobApplication.interviewRounds,
+        { dateTime: DateTime.now().toISO() },
+      ],
+    });
+  };
+
+  const handleInterviewRoundChange =
+    (index: number) => (value: null | ZonedDateTime) => {
+      if (isNil(jobApplication)) {
+        return;
+      }
+
+      const isoValue = convertDateTimeInputToIso(value);
+
+      if (isNil(isoValue)) {
+        handleRemoveInterviewRound(index);
+      } else {
+        const updated = produce(jobApplication, (state) => {
+          state.interviewRounds[index] = { dateTime: isoValue };
+        });
+
+        modalStore.setApplicationToUpdate(updated);
+      }
+    };
+
   const { isPending, mutate } = useMutation({
-    mutationFn: async (data: JobApplication) => {
+    mutationFn: async (data: UpdateJobApplication) => {
       const response = await fetch("/api/application", {
         body: JSON.stringify({
           ...data,
@@ -126,6 +187,34 @@ export const UpdateJobApplicationModal = () => {
               type="date"
               value={getFormDate(jobApplication?.rejected)}
             />
+            {map(jobApplication?.interviewRounds, (round, index) => {
+              return (
+                <div className="flex gap-2 items-center" key={index}>
+                  <DateInput
+                    isRequired
+                    label={`Round ${index + 1}`}
+                    onChange={handleInterviewRoundChange(index)}
+                    value={convertIsoToDateTimeInput(round.dateTime)}
+                  />
+                  <Button
+                    isIconOnly
+                    onPress={() => {
+                      handleRemoveInterviewRound(index);
+                    }}
+                    color="danger"
+                  >
+                    <Trash2Icon />
+                  </Button>
+                </div>
+              );
+            })}
+            <Button
+              color="primary"
+              onPress={handleAddInterviewRound}
+              variant="flat"
+            >
+              Add Interview Round
+            </Button>
           </ModalBody>
           <ModalFooter>
             <Button
