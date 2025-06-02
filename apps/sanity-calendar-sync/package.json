@@ -12,7 +12,7 @@
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",
     "typescript": "^5.8.3",
-    "vitest": "~3.1.2",
+    "vitest": "~3.2.0",
     "wrangler": "^4.16.1"
   },
   "name": "sanity-calendar-sync",
