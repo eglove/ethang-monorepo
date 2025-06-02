@@ -13,15 +13,16 @@ export const getUserStatsData = async (environment: Env, userId: string) => {
         where: { userId },
       }),
       prismaClient.applications.findMany({
-        orderBy: { applied: "asc" },
+        orderBy: { applied: "desc" },
         select: {
           applied: true,
           interviewRounds: {
-            orderBy: { dateTime: "asc" },
+            orderBy: { dateTime: "desc" },
             select: { dateTime: true },
           },
           rejected: true,
         },
+        take: 30,
         where: { userId },
       }),
       prismaClient.applications.aggregate({

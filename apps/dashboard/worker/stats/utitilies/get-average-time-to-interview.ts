@@ -8,17 +8,13 @@ import { DateTime } from "luxon";
 import type { getUserStatsData } from "./get-user-stats-data.ts";
 
 import { statsComputeEngine } from "../get-user-stats.ts";
-import { getLast30DaysOfApplications } from "./get-last-30-days-of-applications.ts";
 
 export const getAverageTimeToInterview = (
   allUserApplications: Awaited<
     ReturnType<typeof getUserStatsData>
   >["allUserApplications"],
 ) => {
-  const last30DaysOfApplications =
-    getLast30DaysOfApplications(allUserApplications);
-
-  const withInterviews = filter(last30DaysOfApplications, (application) => {
+  const withInterviews = filter(allUserApplications, (application) => {
     return !isEmpty(application.interviewRounds);
   });
 

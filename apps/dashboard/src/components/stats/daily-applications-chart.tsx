@@ -22,10 +22,16 @@ export const DailyApplicationsChart = () => {
   const applicationsPerDay = get(data, ["userDailyApplications"], []);
   const totalApplications = get(data, ["totalApplications"], 0);
   const averageApplicationsPerDay = get(data, ["averageApplicationsPerDay"], 0);
-  const earliestDate = get(data, ["userDailyApplications", 0, "date"], "");
-  const totalDays = DateTime.now()
-    .diff(DateTime.fromISO(earliestDate), ["days"])
-    .days.toFixed(0);
+  const earliestDate = get(
+    applicationsPerDay,
+    [applicationsPerDay.length - 1, "date"],
+    "",
+  );
+  const totalDays = (
+    DateTime.now().diff(DateTime.fromFormat(earliestDate, "yyyy-MM-dd"), [
+      "days",
+    ]).days + 1
+  ).toFixed(0);
 
   return (
     <Card className="border border-transparent p-4 dark:border-default-100">

@@ -5,16 +5,13 @@ import { DateTime } from "luxon";
 import type { getUserStatsData } from "./get-user-stats-data.ts";
 
 import { statsComputeEngine } from "../get-user-stats.ts";
-import { getLast30DaysOfApplications } from "./get-last-30-days-of-applications.ts";
 
 export const getAverageTimeToRejected = (
   allUserApplications: Awaited<
     ReturnType<typeof getUserStatsData>
   >["allUserApplications"],
 ) => {
-  const applications = getLast30DaysOfApplications(allUserApplications);
-
-  const withRejects = filter(applications, (application) => {
+  const withRejects = filter(allUserApplications, (application) => {
     return !isNil(application.rejected);
   });
 

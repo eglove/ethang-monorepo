@@ -6,18 +6,15 @@ import { DateTime } from "luxon";
 import type { getUserStatsData } from "./get-user-stats-data.ts";
 
 import { statsComputeEngine } from "../get-user-stats";
-import { getLast30DaysOfApplications } from "./get-last-30-days-of-applications.ts";
 
 export const getAverageApplicationsPerDay = (
   allUserApplications: Awaited<
     ReturnType<typeof getUserStatsData>
   >["allUserApplications"],
 ) => {
-  const applications = getLast30DaysOfApplications(allUserApplications);
-
   const dates: Record<string, number> = {};
   let total = 0;
-  for (const application of applications) {
+  for (const application of allUserApplications) {
     const day = DateTime.fromJSDate(application.applied).toFormat("yyyy-MM-dd");
     const current = get(dates, day, 0);
 
