@@ -47,12 +47,12 @@ const getDefaultHeaders = (headers = defaultHeaders) => {
     "Cross-Origin-Opener-Policy": 'same-site; report-to="default";',
     "Cross-Origin-Resource-Policy": "same-site",
     "Public-Key-Pins": undefined,
-    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Referrer-Policy": "strict-origin",
     "X-AspNet-Version": undefined,
     "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
+    "X-Frame-Options": "SAMEORIGIN",
     "X-Powered-By": undefined,
-    "X-XSS-Protection": "0",
+    "X-XSS-Protection": "1; mode=block",
   };
 };
 
