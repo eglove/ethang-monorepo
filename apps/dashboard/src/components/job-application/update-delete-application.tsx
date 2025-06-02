@@ -10,7 +10,6 @@ import { useState } from "react";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore } from "../../global-stores/modal-store.ts";
 import { toastError } from "../../utilities/toast-error.ts";
-import { getToken } from "../../utilities/token.ts";
 
 export const UpdateDeleteApplication = ({
   application,
@@ -29,9 +28,6 @@ export const UpdateDeleteApplication = ({
         body: JSON.stringify({
           id: application.id,
         }),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "DELETE",
       });
 

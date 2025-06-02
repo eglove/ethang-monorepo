@@ -6,7 +6,6 @@ import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
 import { z } from "zod";
 
-import { getToken } from "../../utilities/token.ts";
 import { queryKeys } from "./queries.ts";
 
 export const getQuestionAnswers = (userId = "") => {
@@ -28,12 +27,7 @@ export const getQuestionAnswers = (userId = "") => {
         throw new Error("Failed to create url");
       }
 
-      const data = await fetchJson(
-        new Request(url, {
-          headers: { Authorization: getToken() },
-        }),
-        z.array(questionAnswerSchema),
-      );
+      const data = await fetchJson(url, z.array(questionAnswerSchema));
 
       if (isError(data)) {
         throw new Error("Failed to fetch question answers");

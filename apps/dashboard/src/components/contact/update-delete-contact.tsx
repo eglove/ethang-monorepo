@@ -9,7 +9,6 @@ import { useState } from "react";
 
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore } from "../../global-stores/modal-store.ts";
-import { getToken } from "../../utilities/token.ts";
 
 type UpdateDeleteContactProperties = {
   contact: Contact;
@@ -30,9 +29,6 @@ export const UpdateDeleteContact = ({
 
       const response = await globalThis.fetch("/api/contact", {
         body: JSON.stringify({ id: contact.id, userId: user.id }),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "DELETE",
       });
 

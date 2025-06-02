@@ -9,16 +9,16 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { useRouter } from "@tanstack/react-router";
 import { del, get, set } from "idb-keyval";
 
+const isDevelopment = "development" === import.meta.env.MODE;
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: 1000 * 60 * 60 * 24,
+      gcTime: isDevelopment ? 0 : 1000 * 60 * 60 * 24,
       networkMode: "offlineFirst",
-      staleTime: 1000 * 60,
+      staleTime: isDevelopment ? 0 : 1000 * 60,
     },
   },
 });
-const isDevelopment = "development" === import.meta.env.MODE;
 
 const persister = createAsyncStoragePersister({
   storage: {

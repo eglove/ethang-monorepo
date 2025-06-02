@@ -81,6 +81,7 @@ const customRules: CustomRules = [
             "remeda",
             "radash",
             "noto",
+            "nosniff",
           ],
         },
       },

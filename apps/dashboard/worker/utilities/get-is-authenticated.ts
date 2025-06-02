@@ -8,12 +8,6 @@ export const getIsAuthenticated = async (
   request: Request,
   environment: Env,
 ) => {
-  const authHeader = request.headers.get("Authorization");
-
-  if (isNil(authHeader)) {
-    return false;
-  }
-
   const isDevelopment = "development" === import.meta.env.MODE;
   const keys = isDevelopment
     ? ([environment.CLERK_PUBLIC_KEY, environment.CLERK_SECRET_KEY] as [

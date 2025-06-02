@@ -32,7 +32,6 @@ import {
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
 import { formDateToIso, getFormDate } from "../../utilities/form.ts";
-import { getToken } from "../../utilities/token.ts";
 
 export const UpdateJobApplicationModal = () => {
   const queryClient = useQueryClient();
@@ -111,9 +110,6 @@ export const UpdateJobApplicationModal = () => {
           applied: formDateToIso(data.applied),
           rejected: isNil(data.rejected) ? null : formDateToIso(data.rejected),
         }),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "PUT",
       });
 

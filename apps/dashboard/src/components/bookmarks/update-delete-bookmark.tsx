@@ -7,7 +7,6 @@ import { useState } from "react";
 
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore } from "../../global-stores/modal-store.ts";
-import { getToken } from "../../utilities/token.ts";
 
 type UpdateDeleteBookmarkProperties = {
   bookmark: Bookmark;
@@ -23,9 +22,6 @@ export const UpdateDeleteBookmark = ({
     mutationFn: async () => {
       const response = await globalThis.fetch("/api/bookmark", {
         body: JSON.stringify({ id: bookmark.id, userId: bookmark.userId }),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "DELETE",
       });
 

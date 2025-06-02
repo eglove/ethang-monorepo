@@ -4,7 +4,6 @@ import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
 
-import { getToken } from "../../utilities/token.ts";
 import { queryKeys } from "./queries.ts";
 
 export const getContacts = (userId = "") => {
@@ -15,11 +14,7 @@ export const getContacts = (userId = "") => {
         throw new Error("No user found");
       }
 
-      const request = new Request("/api/contact", {
-        headers: {
-          Authorization: getToken(),
-        },
-      });
+      const request = new Request("/api/contact");
       const data = await fetchJson(request, contactsSchema);
 
       if (isError(data)) {

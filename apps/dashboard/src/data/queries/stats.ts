@@ -5,7 +5,6 @@ import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
 
-import { getToken } from "../../utilities/token.ts";
 import { queryKeys } from "./queries.ts";
 
 export const getStats = (userId = "") => {
@@ -23,12 +22,7 @@ export const getStats = (userId = "") => {
         throw new Error("Failed to create url");
       }
 
-      const data = await fetchJson(
-        new Request(url, {
-          headers: { Authorization: getToken() },
-        }),
-        userStatsSchema,
-      );
+      const data = await fetchJson(url, userStatsSchema);
 
       if (isError(data)) {
         throw new Error("Failed to fetch stats");

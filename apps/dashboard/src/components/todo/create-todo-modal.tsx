@@ -34,7 +34,6 @@ import {
 } from "../../../worker/utilities/heroui.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
-import { getToken } from "../../utilities/token.ts";
 import { timeIntervals } from "./time-intervals.ts";
 
 const createTodoFormSchema = createTodoSchema
@@ -61,9 +60,6 @@ export const CreateTodoModal = () => {
     mutationFn: async (data: CreateTodo) => {
       const response = await globalThis.fetch("/api/todo", {
         body: JSON.stringify(data),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "POST",
       });
 

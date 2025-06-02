@@ -26,7 +26,6 @@ import { DateTime } from "luxon";
 import { getDateTimeInputNow } from "../../../worker/utilities/heroui.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
-import { getToken } from "../../utilities/token.ts";
 
 export const CreateContactModal = () => {
   const { user } = useUser();
@@ -39,9 +38,6 @@ export const CreateContactModal = () => {
     mutationFn: async (data: CreateContact) => {
       const response = await fetch("/api/contact", {
         body: JSON.stringify(data),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "POST",
       });
 

@@ -14,6 +14,16 @@ export default {
   async fetch(request, environment) {
     const url = new URL(request.url);
     const userId = await getIsAuthenticated(request, environment);
+    const tlsVersion = request.cf?.tlsVersion;
+
+    if ("TLSv1.2" !== tlsVersion && "TLSv1.3" !== tlsVersion) {
+      return createJsonResponse(
+        {
+          error: "TLS version 1.2 or higher required.",
+        },
+        "BAD_REQUEST",
+      );
+    }
 
     if (false === userId) {
       return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");

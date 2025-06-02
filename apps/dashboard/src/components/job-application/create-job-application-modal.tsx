@@ -20,7 +20,6 @@ import { z } from "zod";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.js";
 import { toastError } from "../../utilities/toast-error.ts";
-import { getToken } from "../../utilities/token.ts";
 
 export const CreateJobApplicationModal = () => {
   const { user } = useUser();
@@ -33,9 +32,6 @@ export const CreateJobApplicationModal = () => {
     mutationFn: async (data: CreateJobApplication) => {
       const response = await globalThis.fetch("/api/application", {
         body: JSON.stringify(data),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "POST",
       });
 

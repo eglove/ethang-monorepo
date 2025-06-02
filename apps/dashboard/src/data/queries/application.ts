@@ -7,7 +7,6 @@ import isError from "lodash/isError";
 import convertToString from "lodash/toString";
 import { z } from "zod";
 
-import { getToken } from "../../utilities/token.ts";
 import { queryKeys } from "./queries.ts";
 
 export const getApplications = (userId = "", page = 1, search = "") => {
@@ -32,12 +31,7 @@ export const getApplications = (userId = "", page = 1, search = "") => {
         throw new Error("Failed to create url");
       }
 
-      const data = await fetchJson(
-        new Request(url, {
-          headers: { Authorization: getToken() },
-        }),
-        getAllApplicationsSchema,
-      );
+      const data = await fetchJson(url, getAllApplicationsSchema);
 
       if (isError(data)) {
         throw new Error("Failed to fetch applications");

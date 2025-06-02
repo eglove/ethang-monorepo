@@ -17,7 +17,6 @@ import { z } from "zod";
 
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
-import { getToken } from "../../utilities/token.ts";
 
 export const CreateBookmarkModal = () => {
   const { user } = useUser();
@@ -34,9 +33,6 @@ export const CreateBookmarkModal = () => {
           url: data.url,
           userId: user?.id,
         }),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "POST",
       });
       await queryClient.invalidateQueries({

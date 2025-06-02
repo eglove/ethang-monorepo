@@ -19,7 +19,6 @@ import { z } from "zod";
 
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
-import { getToken } from "../../utilities/token.ts";
 
 export const CreateQaModal = () => {
   const { user } = useUser();
@@ -32,9 +31,6 @@ export const CreateQaModal = () => {
     mutationFn: async (data: CreateQuestionAnswer) => {
       const response = await fetch("/api/question-answer", {
         body: JSON.stringify(data),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "POST",
       });
 

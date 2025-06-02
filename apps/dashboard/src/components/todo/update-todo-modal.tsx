@@ -22,7 +22,6 @@ import ms from "ms";
 import { convertIsoToDateTimeInput } from "../../../worker/utilities/heroui.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
-import { getToken } from "../../utilities/token.ts";
 
 export const UpdateTodoModal = () => {
   const queryClient = useQueryClient();
@@ -57,9 +56,6 @@ export const UpdateTodoModal = () => {
           ...todo,
           userId: user?.id,
         }),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "PUT",
       });
 

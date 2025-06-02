@@ -5,7 +5,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Trash2Icon, XIcon } from "lucide-react";
 
 import { queryKeys } from "../../data/queries/queries.ts";
-import { getToken } from "../../utilities/token.ts";
 
 type QaDeleteButtonProperties = {
   id: string;
@@ -23,9 +22,6 @@ export const QaDeleteButton = ({ id }: Readonly<QaDeleteButtonProperties>) => {
           id,
           userId: user?.id,
         }),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "DELETE",
       });
 

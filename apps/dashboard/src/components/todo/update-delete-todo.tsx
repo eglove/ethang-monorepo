@@ -11,7 +11,6 @@ import { twMerge } from "tailwind-merge";
 
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore } from "../../global-stores/modal-store.ts";
-import { getToken } from "../../utilities/token.ts";
 
 type UpdateDeleteTodoProperties = {
   todo: Todo;
@@ -32,9 +31,6 @@ export const UpdateDeleteTodo = ({
 
       const response = await globalThis.fetch("/api/todo", {
         body: JSON.stringify({ id: todo.id }),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "DELETE",
       });
 
@@ -60,9 +56,6 @@ export const UpdateDeleteTodo = ({
           body: JSON.stringify({
             id: todo.id,
           }),
-          headers: {
-            Authorization: getToken(),
-          },
           method: "DELETE",
         });
 
@@ -77,7 +70,6 @@ export const UpdateDeleteTodo = ({
             ...todo,
             dueDate: nextDue,
           }),
-          headers: { Authorization: getToken() },
           method: "PUT",
         });
 

@@ -18,7 +18,6 @@ import { z } from "zod";
 
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
-import { getToken } from "../../utilities/token.ts";
 
 export const UpdateBookmarkModal = () => {
   const queryClient = useQueryClient();
@@ -46,9 +45,6 @@ export const UpdateBookmarkModal = () => {
     mutationFn: async (data: Bookmark) => {
       const response = await fetch("/api/bookmark", {
         body: JSON.stringify(data),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "PUT",
       });
 

@@ -23,7 +23,6 @@ import {
 } from "../../../worker/utilities/heroui.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
-import { getToken } from "../../utilities/token.ts";
 
 export const UpdateContactModal = () => {
   const queryClient = useQueryClient();
@@ -69,9 +68,6 @@ export const UpdateContactModal = () => {
           ...contact,
           userId: user?.id,
         }),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "PUT",
       });
 

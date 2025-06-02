@@ -18,7 +18,6 @@ import isNil from "lodash/isNil.js";
 
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
-import { getToken } from "../../utilities/token.ts";
 
 export const UpdateQaModal = () => {
   const queryClient = useQueryClient();
@@ -45,9 +44,6 @@ export const UpdateQaModal = () => {
     mutationFn: async () => {
       const response = await fetch("/api/question-answer", {
         body: JSON.stringify({ ...qa, userId: user?.id }),
-        headers: {
-          Authorization: getToken(),
-        },
         method: "PUT",
       });
 
