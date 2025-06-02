@@ -10,6 +10,7 @@ import { type IsOpenKeys, modalStore } from "./global-stores/modal-store.ts";
 type SectionHeaderProperties = {
   children?: ReactNode;
   header: string;
+  isFetching?: boolean;
   modalKey: IsOpenKeys;
   modalLabel: string;
   refreshKeys: (object | string)[];
@@ -18,6 +19,7 @@ type SectionHeaderProperties = {
 export const SectionHeader = ({
   children,
   header,
+  isFetching,
   modalKey,
   modalLabel,
   refreshKeys,
@@ -39,10 +41,8 @@ export const SectionHeader = ({
         <div className="flex gap-2">
           <Button
             isIconOnly
-            isLoading={
-              "fetching" === queryClient.getQueryState(refreshKeys)?.fetchStatus
-            }
             color="primary"
+            isLoading={true === isFetching}
             onPress={invalidate}
             size="sm"
           >

@@ -59,9 +59,11 @@ const RouteComponent = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 500);
 
-  const { data: applications, isPending } = useQuery(
-    getApplications(user?.id, page, debouncedSearch),
-  );
+  const {
+    data: applications,
+    isFetching,
+    isPending,
+  } = useQuery(getApplications(user?.id, page, debouncedSearch));
 
   const nextPage = page + 1;
   const previousPage = page - 1;
@@ -82,6 +84,7 @@ const RouteComponent = () => {
     <MainLayout breadcrumbPaths={[{ href: "/job-stats", label: "Job Search" }]}>
       <SectionHeader
         header="Applications"
+        isFetching={isFetching}
         modalKey="createJobApplication"
         modalLabel="Add Application"
         refreshKeys={queryKeys.allUserApplications(user?.id)}
