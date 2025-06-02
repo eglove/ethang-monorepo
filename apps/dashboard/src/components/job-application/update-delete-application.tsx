@@ -9,6 +9,7 @@ import { useState } from "react";
 
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore } from "../../global-stores/modal-store.ts";
+import { toastError } from "../../utilities/toast-error.ts";
 import { getToken } from "../../utilities/token.ts";
 
 export const UpdateDeleteApplication = ({
@@ -39,6 +40,8 @@ export const UpdateDeleteApplication = ({
           queryKey: queryKeys.allUserApplications(user.id),
         });
         setIsDeleting(false);
+      } else {
+        toastError(response);
       }
     },
   });

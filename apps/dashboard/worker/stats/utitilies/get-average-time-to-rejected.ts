@@ -29,7 +29,7 @@ export const getAverageTimeToRejected = (
   }
 
   const result = statsComputeEngine
-    .box(["Divide", daySum, applications.length])
+    .box(["Divide", daySum, withRejects.length])
     .N();
 
   return true === result.isNaN ? "0" : result.toString();

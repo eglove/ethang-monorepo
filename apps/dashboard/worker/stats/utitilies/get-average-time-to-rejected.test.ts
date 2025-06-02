@@ -39,7 +39,7 @@ describe("getAverageTimeToRejected", () => {
 
     // @ts-expect-error allow partial
     const result = getAverageTimeToRejected(allUserApplications);
-    expect(result).toBe("3");
+    expect(result).toBe("4.5");
   });
 
   it("should return '0' when the average is NaN", () => {

@@ -2,9 +2,7 @@ import type { CreateJobApplication } from "@ethang/schemas/src/dashboard/applica
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
-import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
 import {
-  addToast,
   Button,
   Form,
   Input,
@@ -15,13 +13,13 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import isError from "lodash/isError";
 import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
 import { queryKeys } from "../../data/queries/queries.ts";
 import { modalStore, useModalStore } from "../../global-stores/modal-store.js";
+import { toastError } from "../../utilities/toast-error.ts";
 import { getToken } from "../../utilities/token.ts";
 
 export const CreateJobApplicationModal = () => {
@@ -47,16 +45,7 @@ export const CreateJobApplicationModal = () => {
         });
         modalStore.closeModal("createJobApplication");
       } else {
-        const body = await parseFetchJson(
-          response,
-          z.object({ error: z.string() }),
-        );
-
-        addToast({
-          color: "danger",
-          description: isError(body) ? "Unknown error" : body.error,
-          title: "Failed to create application.",
-        });
+        toastError(response);
       }
     },
   });
