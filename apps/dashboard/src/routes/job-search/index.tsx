@@ -79,6 +79,10 @@ const RouteComponent = () => {
     enabled: !isNil(totalPages) && 0 < previousPage,
   });
 
+  if (!isNil(totalPages) && totalPages < page) {
+    setPage(1);
+  }
+
   return (
     <MainLayout breadcrumbPaths={[{ href: "/job-stats", label: "Job Search" }]}>
       <div className="grid grid-rows-[auto_1fr] h-full">
