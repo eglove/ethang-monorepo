@@ -28,7 +28,7 @@ const getDefaultHeaders = (headers = defaultHeaders) => {
       `style-src 'self' 'nonce-${nonce}'`,
       `img-src 'self' data: https:`,
       `font-src 'self' data: https:`,
-      `connect-src 'self' https://clerk.ethang.dev/`,
+      `connect-src 'self'`,
       `object-src 'none'`,
       `base-uri 'none'`,
       `frame-ancestors 'self'`,

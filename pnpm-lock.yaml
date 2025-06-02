@@ -86,8 +86,8 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0
       '@ethang/toolbelt':
-        specifier: ^4.4.7
-        version: 4.4.7
+        specifier: ^4.4.8
+        version: 4.4.8
       '@heroui/react':
         specifier: 2.7.9
         version: 2.7.9(@types/react@19.1.6)(framer-motion@12.15.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(tailwindcss@3.4.17)
@@ -2735,6 +2735,10 @@ packages:
 
   '@ethang/toolbelt@4.4.7':
     resolution: {integrity: sha512-g5gWbE5nliw3c3IW2cxQOfmm/sE9l870j69vhpWADYzdGTuSSe9QJDYubBxdfAlObaJxBJ9Ev+xy51DQgJ1Xiw==}
+    engines: {node: '>=22'}
+
+  '@ethang/toolbelt@4.4.8':
+    resolution: {integrity: sha512-DgD4MRoIAOc/0ZxgjJ3UVkJw9m4Pe80vhiIo8/0KmknybUzjivzFGqnp6eOnqzB4e8ves3oT9ln9n/+cm1PbqQ==}
     engines: {node: '>=22'}
 
   '@fastify/busboy@2.1.1':
@@ -12816,6 +12820,13 @@ snapshots:
       lodash: 4.17.21
 
   '@ethang/toolbelt@4.4.7':
+    dependencies:
+      '@total-typescript/ts-reset': 0.6.1
+      lodash: 4.17.21
+      uuid: 11.1.0
+      zod: 3.25.49
+
+  '@ethang/toolbelt@4.4.8':
     dependencies:
       '@total-typescript/ts-reset': 0.6.1
       lodash: 4.17.21

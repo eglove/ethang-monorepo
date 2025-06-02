@@ -10,7 +10,7 @@
     "@ethang/hooks": "^2.3.1",
     "@ethang/schemas": "workspace:*",
     "@ethang/store": "^1.3.0",
-    "@ethang/toolbelt": "^4.4.7",
+    "@ethang/toolbelt": "^4.4.8",
     "@heroui/react": "2.7.9",
     "@heroui/theme": "2.4.16",
     "@internationalized/date": "^3.8.1",

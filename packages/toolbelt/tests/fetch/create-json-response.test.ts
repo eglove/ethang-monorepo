@@ -94,9 +94,6 @@ describe("createJsonResponse", () => {
     expect(includes(cspHeaders, "style-src 'self' 'nonce")).toBe(true);
     expect(includes(cspHeaders, "img-src 'self' data: https:")).toBe(true);
     expect(includes(cspHeaders, "font-src 'self' data: https:")).toBe(true);
-    expect(
-      includes(cspHeaders, "connect-src 'self' https://clerk.ethang.dev/"),
-    ).toBe(true);
     expect(includes(cspHeaders, "object-src 'none'")).toBe(true);
     expect(includes(cspHeaders, "base-uri 'none'")).toBe(true);
     expect(includes(cspHeaders, "frame-ancestors 'self'")).toBe(true);
