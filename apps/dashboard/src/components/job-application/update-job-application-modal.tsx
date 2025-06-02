@@ -177,6 +177,7 @@ export const UpdateJobApplicationModal = () => {
               isRequired
               label="Applied"
               name="applied"
+              onValueChange={handleChange("applied")}
               type="date"
               value={getFormDate(jobApplication?.applied)}
             />

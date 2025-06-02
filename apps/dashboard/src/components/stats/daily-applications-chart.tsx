@@ -2,6 +2,7 @@ import { useUser } from "@clerk/clerk-react";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import get from "lodash/get.js";
+import orderBy from "lodash/orderBy.js";
 import { DateTime } from "luxon";
 import {
   CartesianGrid,
@@ -19,14 +20,13 @@ export const DailyApplicationsChart = () => {
   const { user } = useUser();
   const { data } = useQuery(getStats(user?.id));
 
-  const applicationsPerDay = get(data, ["userDailyApplications"], []);
+  const applicationsPerDay = orderBy(get(data, ["userDailyApplications"], []), [
+    "date",
+  ]);
   const totalApplications = get(data, ["totalApplications"], 0);
   const averageApplicationsPerDay = get(data, ["averageApplicationsPerDay"], 0);
-  const earliestDate = get(
-    applicationsPerDay,
-    [applicationsPerDay.length - 1, "date"],
-    "",
-  );
+  const earliestDate = get(applicationsPerDay, [0, "date"], "");
+
   const totalDays = (
     DateTime.now().diff(DateTime.fromFormat(earliestDate, "yyyy-MM-dd"), [
       "days",
