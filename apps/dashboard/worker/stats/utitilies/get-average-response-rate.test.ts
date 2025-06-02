@@ -25,7 +25,7 @@ describe("getAverageResponseRate", () => {
 
     // @ts-expect-error allow partial
     const result = getAverageResponseRate(mockApplications);
-    expect(result).toBe("0.5");
+    expect(result).toBe("1");
   });
 
   it("should handle cases with a mix of rejected and interviewed applications", () => {
@@ -38,6 +38,6 @@ describe("getAverageResponseRate", () => {
 
     // @ts-expect-error allow partial
     const result = getAverageResponseRate(mockApplications);
-    expect(result).toBe("0.5"); // 2 interviews / 4 applications
+    expect(result).toBe("0.75"); // (2 interviews + 1 rejection) / 4 applications
   });
 });
