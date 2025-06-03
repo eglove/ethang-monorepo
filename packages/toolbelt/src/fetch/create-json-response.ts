@@ -7,19 +7,7 @@ import { v7 } from "uuid";
 
 import { HTTP_STATUS } from "../constants/http.ts";
 
-type GetCorsHeadersProperties = {
-  headers?: string;
-  methods?: string;
-  origin?: null | string | undefined;
-};
-
-const defaultHeaders: GetCorsHeadersProperties = {
-  headers: "*",
-  methods: "*",
-  origin: "*",
-};
-
-const getDefaultHeaders = (headers = defaultHeaders) => {
+const getDefaultHeaders = () => {
   const nonce = replace(v7(), "-", "");
   const csp = join(
     [
@@ -39,10 +27,11 @@ const getDefaultHeaders = (headers = defaultHeaders) => {
   );
 
   return {
-    "Access-Control-Allow-Headers": headers.headers,
-    "Access-Control-Allow-Methods": headers.methods,
-    "Access-Control-Allow-Origin": headers.origin,
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Methods": "*",
+    "Access-Control-Allow-Origin": "*",
     "Content-Security-Policy": csp,
+    "Content-Type": "application/json",
     "Cross-Origin-Embedder-Policy": 'require-corp; report-to="default";',
     "Cross-Origin-Opener-Policy": 'same-site; report-to="default";',
     "Cross-Origin-Resource-Policy": "same-site",
@@ -61,11 +50,7 @@ export const createJsonResponse = <T>(
   status: keyof typeof HTTP_STATUS,
   responseInit?: ResponseInit,
 ) => {
-  const headers = merge(
-    { "Content-Type": "application/json" },
-    getDefaultHeaders(),
-    responseInit?.headers,
-  );
+  const headers = merge(getDefaultHeaders(), responseInit?.headers);
 
   forEach(headers, (value, key) => {
     if (isNil(value)) {
