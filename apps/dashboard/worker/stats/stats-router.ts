@@ -10,7 +10,7 @@ export const statsRouter = async (
   // eslint-disable-next-line sonar/no-small-switch
   switch (request.method) {
     case "GET": {
-      return getUserStats(environment, userId);
+      return getUserStats(request, environment, userId);
     }
 
     default: {
