@@ -449,6 +449,33 @@ import techImage from "../images/tech.png";
             <a href="#jetBrainsJunie"
               >JetBrains Junie: AI That Understands Your Code</a
             >
+            <ul>
+              <li>
+                <a href="#intelligentModelSelection"
+                  >Intelligent Model Selection</a
+                >
+              </li>
+              <li>
+                <a href="#offlineAndSelfHostedOptions"
+                  >Offline and Self-Hosted Options</a
+                >
+              </li>
+              <li>
+                <a href="#mcpConfigurations"
+                  >MCP Configurations</a
+                >
+              </li>
+              <li>
+                <a href="#comprehensiveIdeIntegration"
+                  >Comprehensive IDE Integration</a
+                >
+              </li>
+              <li>
+                <a href="#customizablePromptLibrary"
+                  >Customizable Prompt Library</a
+                >
+              </li>
+            </ul>
           </li>
           <li>
             <a href="#pluginsVsIntegration"
@@ -3527,35 +3554,122 @@ curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install
       JetBrains has entered the AI assistant space with Junie, a sophisticated
       AI tool that demonstrates the advantage of deep integration. Unlike
       generic AI coding assistants, Junie leverages JetBrains' deep
-      understanding of code structure and project context.
+      understanding of code structure and project context to provide intelligent,
+      context-aware assistance that truly enhances your development workflow.
     </p>
+
+    <h4 id="intelligentModelSelection">Intelligent Model Selection</h4>
     <p>
-      What sets Junie apart is its multimodal approach—it adapts its assistance
-      based on context:
+      One of Junie's standout features is its intelligent model selection system. Rather than
+      forcing you to choose which AI model to use for each task:
     </p>
     <ul>
       <li>
-        When you're writing code, it offers intelligent completions that respect
-        your project's architecture and coding conventions
+        <strong>Automatic model selection:</strong> Junie automatically chooses between Gemini, GPT, and Claude
+        based on the specific task at hand, optimizing for both performance and accuracy
       </li>
       <li>
-        When you're debugging, it can analyze the execution flow and suggest
-        potential fixes for issues
+        <strong>Manual override:</strong> In the assistant chat window, you can explicitly select which
+        model you prefer for specific scenarios where you know one model excels
       </li>
       <li>
-        When you're refactoring, it understands the implications across your
-        entire codebase
-      </li>
-      <li>
-        When you're learning a new API or framework, it can provide contextual
-        documentation and examples
+        <strong>Contextual awareness:</strong> The system learns from your usage patterns to better
+        select the appropriate model for your common workflows
       </li>
     </ul>
+
+    <h4 id="offlineAndSelfHostedOptions">Offline and Self-Hosted Options</h4>
     <p>
-      This context-aware assistance is only possible because Junie operates
+      JetBrains understands the importance of privacy and flexibility in AI tooling:
+    </p>
+    <ul>
+      <li>
+        <strong>LM Studio & Ollama integration:</strong> Connect Junie to local LLM solutions like LM Studio
+        or Ollama for processing code without sending it to external services
+      </li>
+      <li>
+        <strong>Offline mode:</strong> Enable complete offline operation for environments with strict
+        security requirements or limited connectivity
+      </li>
+      <li>
+        <strong>Hybrid approaches:</strong> Configure which types of queries use local models versus
+        cloud services based on your specific needs
+      </li>
+    </ul>
+
+    <h4 id="mcpConfigurations">MCP Configurations</h4>
+    <p>
+      Junie comes packed with Multiple Context Processing (MCP) configurations that enhance its ability
+      to understand complex codebases:
+    </p>
+    <ul>
+      <li>
+        <strong>Project-wide awareness:</strong> Junie can analyze relationships between different
+        files and components across your entire project
+      </li>
+      <li>
+        <strong>Framework-specific understanding:</strong> Pre-configured MCP settings for popular
+        frameworks help Junie understand architectural patterns specific to React, Spring, Django, etc.
+      </li>
+      <li>
+        <strong>Custom configurations:</strong> Define your own MCP settings to match your team's
+        unique architecture and coding patterns
+      </li>
+    </ul>
+
+    <h4 id="comprehensiveIdeIntegration">Comprehensive IDE Integration</h4>
+    <p>
+      What truly sets Junie apart is how deeply it's integrated into the JetBrains IDE ecosystem:
+    </p>
+    <ul>
+      <li>
+        <strong>Context-aware assistance:</strong> When you're writing code, it offers intelligent completions
+        that respect your project's architecture and coding conventions
+      </li>
+      <li>
+        <strong>Intelligent debugging:</strong> During debugging sessions, it can analyze the execution flow
+        and suggest potential fixes for issues
+      </li>
+      <li>
+        <strong>Refactoring companion:</strong> When refactoring, it understands the implications across your
+        entire codebase and helps prevent regressions
+      </li>
+      <li>
+        <strong>Documentation assistant:</strong> When learning new APIs or frameworks, it provides contextual
+        documentation and examples tailored to your specific use case
+      </li>
+    </ul>
+
+    <h4 id="customizablePromptLibrary">Customizable Prompt Library</h4>
+    <p>
+      Junie includes a robust prompt library that enhances various IDE integrations:
+    </p>
+    <ul>
+      <li>
+        <strong>Unit test generation:</strong> Automatically create comprehensive test suites with
+        customizable templates for different testing frameworks
+      </li>
+      <li>
+        <strong>Code review assistance:</strong> Identify potential issues, security vulnerabilities,
+        and performance bottlenecks in selected code
+      </li>
+      <li>
+        <strong>Documentation generation:</strong> Create detailed documentation for functions, classes,
+        and APIs based on implementation details
+      </li>
+      <li>
+        <strong>Custom prompt creation:</strong> Define your own prompts for recurring tasks specific
+        to your development workflow
+      </li>
+    </ul>
+
+    <p>
+      This comprehensive integration is only possible because Junie operates
       within an environment that already has deep knowledge of your code, not
       just as text but as structured, meaningful entities with relationships and
-      semantics.
+      semantics. JetBrains' commitment to staying at the forefront of AI-assisted
+      development ensures that Junie will continue to evolve with new capabilities
+      while maintaining the deep integration that makes it so powerful.
     </p>
 
     <h3 id="pluginsVsIntegration">Why Plugins Can't Match True Integration</h3>
