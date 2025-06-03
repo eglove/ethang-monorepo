@@ -150,7 +150,8 @@ import techImage from "../images/tech.png";
           </li>
           <li>
             <a href="#pragmaticChoicesVsTrendChasing"
-              >Pragmatic Choices vs. Trend Chasing: The Technology Selection Dilemma</a
+              >Pragmatic Choices vs. Trend Chasing: The Technology Selection
+              Dilemma</a
             >
           </li>
         </ul>
@@ -461,9 +462,7 @@ import techImage from "../images/tech.png";
                 >
               </li>
               <li>
-                <a href="#mcpConfigurations"
-                  >MCP Configurations</a
-                >
+                <a href="#mcpConfigurations">MCP Configurations</a>
               </li>
               <li>
                 <a href="#comprehensiveIdeIntegration"
@@ -514,7 +513,41 @@ import techImage from "../images/tech.png";
         </ul>
       </li>
       <li>
-        <a href="#conclusion">Conclusion: The Philosophy Behind Modern Web Development</a>
+        <a href="#whyMonoreposArentForEveryone"
+          >Why Monorepos Aren't For Everyone</a
+        >
+        <ul>
+          <li>
+            <a href="#monorepoReality"
+              >The Reality of Monorepos: Not a Magic Solution</a
+            >
+          </li>
+          <li>
+            <a href="#whenMonoreposMakeSense"
+              >When Monorepos Actually Make Sense</a
+            >
+          </li>
+          <li>
+            <a href="#toolingChallenges"
+              >Tooling Challenges: The Turborepo and NX Reality</a
+            >
+          </li>
+          <li>
+            <a href="#testingAndCIChallenges"
+              >Testing and CI Challenges: The Mathematics of Scale</a
+            >
+          </li>
+          <li>
+            <a href="#monorepoTradeoffs"
+              >The Monorepo Tradeoffs: What You Gain and Lose</a
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#conclusion"
+          >Conclusion: The Philosophy Behind Modern Web Development</a
+        >
       </li>
     </ul>
 
@@ -1209,40 +1242,68 @@ console.log(processUserName(123 as any)); // Warns, "Guest"`}
       dedicated to covering every conceivable edge case for their utility
       functions.
     </p>
-    <h3 id="tsResetEnhancingTypeSafety">ts-reset: Enhancing TypeScript's Type Safety</h3>
+    <h3 id="tsResetEnhancingTypeSafety">
+      ts-reset: Enhancing TypeScript's Type Safety
+    </h3>
     <p>
-      While TypeScript provides excellent type safety, there are still areas where its default behavior can lead to potential runtime issues. This is where <a href="https://www.totaltypescript.com/ts-reset" target="_blank" rel="noopener noreferrer">ts-reset</a> comes in—a library designed to enhance TypeScript's type safety by fixing common type issues.
+      While TypeScript provides excellent type safety, there are still areas
+      where its default behavior can lead to potential runtime issues. This is
+      where <a
+        href="https://www.totaltypescript.com/ts-reset"
+        target="_blank"
+        rel="noopener noreferrer">ts-reset</a
+      > comes in—a library designed to enhance TypeScript's type safety by fixing
+      common type issues.
     </p>
     <p>
-      One of the most significant advantages of ts-reset is its ability to convert <code>any</code> types to <code>unknown</code> by default. This seemingly small change has profound implications for code safety:
-    </p>
-    <ul>
-      <li>
-        <strong>Forcing Explicit Type Checking:</strong> With <code>unknown</code> instead of <code>any</code>, developers must explicitly check and narrow types before using values, preventing accidental unsafe operations.
-      </li>
-      <li>
-        <strong>Preventing Type System Bypassing:</strong> The <code>any</code> type essentially turns off TypeScript's type checking, allowing values to flow through your system unchecked. Converting these to <code>unknown</code> restores the type system's protective barriers.
-      </li>
-      <li>
-        <strong>Catching Errors Earlier:</strong> By requiring explicit type assertions or checks, potential issues are caught during development rather than manifesting as runtime errors.
-      </li>
-    </ul>
-    <p>
-      Beyond the <code>any</code> to <code>unknown</code> conversion, ts-reset offers other valuable type safety improvements:
+      One of the most significant advantages of ts-reset is its ability to
+      convert <code>any</code> types to <code>unknown</code> by default. This seemingly
+      small change has profound implications for code safety:
     </p>
     <ul>
       <li>
-        <strong>Safer JSON Parsing:</strong> It improves the types for <code>JSON.parse</code> to return <code>unknown</code> instead of <code>any</code>, forcing proper validation of parsed data.
+        <strong>Forcing Explicit Type Checking:</strong> With <code
+          >unknown</code
+        > instead of <code>any</code>, developers must explicitly check and
+        narrow types before using values, preventing accidental unsafe
+        operations.
       </li>
       <li>
-        <strong>Enhanced Array Methods:</strong> It fixes issues with array methods like <code>find</code>, which can return <code>undefined</code> when no element is found.
+        <strong>Preventing Type System Bypassing:</strong> The <code>any</code> type
+        essentially turns off TypeScript's type checking, allowing values to flow
+        through your system unchecked. Converting these to <code>unknown</code> restores
+        the type system's protective barriers.
       </li>
       <li>
-        <strong>Improved DOM Types:</strong> It provides more accurate types for DOM APIs, reducing the risk of runtime errors when interacting with the browser.
+        <strong>Catching Errors Earlier:</strong> By requiring explicit type assertions
+        or checks, potential issues are caught during development rather than manifesting
+        as runtime errors.
       </li>
     </ul>
     <p>
-      Implementing ts-reset is straightforward—simply install the package and add an import to your project:
+      Beyond the <code>any</code> to <code>unknown</code> conversion, ts-reset offers
+      other valuable type safety improvements:
+    </p>
+    <ul>
+      <li>
+        <strong>Safer JSON Parsing:</strong> It improves the types for <code
+          >JSON.parse</code
+        > to return <code>unknown</code> instead of <code>any</code>, forcing
+        proper validation of parsed data.
+      </li>
+      <li>
+        <strong>Enhanced Array Methods:</strong> It fixes issues with array methods
+        like <code>find</code>, which can return <code>undefined</code> when no element
+        is found.
+      </li>
+      <li>
+        <strong>Improved DOM Types:</strong> It provides more accurate types for
+        DOM APIs, reducing the risk of runtime errors when interacting with the browser.
+      </li>
+    </ul>
+    <p>
+      Implementing ts-reset is straightforward—simply install the package and
+      add an import to your project:
     </p>
     <CodeBlock
       code={`
@@ -1253,7 +1314,11 @@ pnpm install @total-typescript/ts-reset
 import "@total-typescript/ts-reset";`}
     />
     <p>
-      This simple addition creates a more robust foundation for your TypeScript projects, complementing the runtime validation strategies discussed earlier. By combining ts-reset's enhanced type safety with strategic runtime validation and comprehensive testing, you create multiple layers of protection against unexpected data and edge cases.
+      This simple addition creates a more robust foundation for your TypeScript
+      projects, complementing the runtime validation strategies discussed
+      earlier. By combining ts-reset's enhanced type safety with strategic
+      runtime validation and comprehensive testing, you create multiple layers
+      of protection against unexpected data and edge cases.
     </p>
     <h3 id="typescriptsRoleConclusion">TypeScript's Role: A Conclusion</h3>
     <p>
@@ -1449,53 +1514,55 @@ function customGet(obj, path, defaultValue) {
       Pragmatic Choices vs. Trend Chasing: The Technology Selection Dilemma
     </h3>
     <p>
-      The lodash example illustrates a broader principle in software development: 
-      the importance of making pragmatic technology choices rather than simply 
-      chasing what's new and trendy. Our industry has a tendency to quickly 
-      dismiss established tools as "legacy" or "outdated" the moment a new 
-      alternative appears, often without thoroughly evaluating the trade-offs involved.
+      The lodash example illustrates a broader principle in software
+      development: the importance of making pragmatic technology choices rather
+      than simply chasing what's new and trendy. Our industry has a tendency to
+      quickly dismiss established tools as "legacy" or "outdated" the moment a
+      new alternative appears, often without thoroughly evaluating the
+      trade-offs involved.
     </p>
     <p>
-      This pattern repeats across the ecosystem. For instance, there was a period 
-      when switching from Prisma to Drizzle made sense for projects requiring 
-      serverless compatibility. However, once Prisma addressed this limitation by 
-      moving away from its Rust client to a more lightweight JavaScript implementation, 
-      it regained its relevance. Yet some developers continue to dismiss Prisma as 
-      "outdated" despite its renewed capabilities and comprehensive feature set.
+      This pattern repeats across the ecosystem. For instance, there was a
+      period when switching from Prisma to Drizzle made sense for projects
+      requiring serverless compatibility. However, once Prisma addressed this
+      limitation by moving away from its Rust client to a more lightweight
+      JavaScript implementation, it regained its relevance. Yet some developers
+      continue to dismiss Prisma as "outdated" despite its renewed capabilities
+      and comprehensive feature set.
     </p>
     <p>
-      Similarly, we see this in tooling recommendations that suggest avoiding 
-      libraries like lodash or eslint-plugin-unicorn, despite both being actively 
-      maintained, following modern standards, and having no true equivalents. The 
-      alternatives often lack the extensive edge case handling and real-world testing 
-      that make these established libraries so valuable.
+      Similarly, we see this in tooling recommendations that suggest avoiding
+      libraries like lodash or eslint-plugin-unicorn, despite both being
+      actively maintained, following modern standards, and having no true
+      equivalents. The alternatives often lack the extensive edge case handling
+      and real-world testing that make these established libraries so valuable.
     </p>
-    <p>
-      Making pragmatic technology choices means:
-    </p>
+    <p>Making pragmatic technology choices means:</p>
     <ul>
       <li>
-        <strong>Evaluating actual needs vs. theoretical benefits:</strong> Does the 
+        <strong>Evaluating actual needs vs. theoretical benefits:</strong> Does the
         new tool solve real problems you're facing, or just promise abstract improvements?
       </li>
       <li>
-        <strong>Considering the full cost of switching:</strong> Beyond learning curves, 
-        consider testing coverage, edge case handling, and community support.
+        <strong>Considering the full cost of switching:</strong> Beyond learning
+        curves, consider testing coverage, edge case handling, and community support.
       </li>
       <li>
-        <strong>Respecting battle-tested solutions:</strong> Libraries with years of 
-        production use have encountered and solved problems you haven't even thought of yet.
+        <strong>Respecting battle-tested solutions:</strong> Libraries with years
+        of production use have encountered and solved problems you haven't even thought
+        of yet.
       </li>
       <li>
-        <strong>Being skeptical of "X is dead" claims:</strong> Established technologies 
+        <strong>Being skeptical of "X is dead" claims:</strong> Established technologies
         often evolve to address their limitations, as we've seen with Prisma.
       </li>
     </ul>
     <p>
-      This isn't an argument against innovation or adopting new tools. Rather, it's 
-      a call for thoughtful evaluation based on concrete needs and comprehensive 
-      assessment, not just following the latest trend on social media or adopting 
-      whatever new library has the most GitHub stars this month.
+      This isn't an argument against innovation or adopting new tools. Rather,
+      it's a call for thoughtful evaluation based on concrete needs and
+      comprehensive assessment, not just following the latest trend on social
+      media or adopting whatever new library has the most GitHub stars this
+      month.
     </p>
     <h2 id="unitTestingAndTdd">
       Unit Testing and TDD: Engineering for Reusability and Resilience
@@ -2099,56 +2166,62 @@ function customGet(obj, path, defaultValue) {
 
     <h3 id="beingSelectiveWithPlugins">Being Selective with ESLint Plugins</h3>
     <p>
-      While ESLint's plugin ecosystem is one of its greatest strengths, it's important 
-      to be discerning about which plugins you incorporate into your workflow. Not all 
-      plugins are created equal, and some may enforce opinions that aren't universally 
-      beneficial or that contradict established best practices.
+      While ESLint's plugin ecosystem is one of its greatest strengths, it's
+      important to be discerning about which plugins you incorporate into your
+      workflow. Not all plugins are created equal, and some may enforce opinions
+      that aren't universally beneficial or that contradict established best
+      practices.
     </p>
     <p>
-      For example, I've removed plugins like eslint-plugin-depend and eslint-plugin-barrel-files 
-      from my configuration after careful evaluation. The former flags libraries like lodash 
-      and eslint-plugin-unicorn as "outdated" despite both being actively maintained, 
-      following modern standards, and having no true equivalents. The alternatives it 
-      suggests often lack the comprehensive testing and edge case handling of the 
+      For example, I've removed plugins like eslint-plugin-depend and
+      eslint-plugin-barrel-files from my configuration after careful evaluation.
+      The former flags libraries like lodash and eslint-plugin-unicorn as
+      "outdated" despite both being actively maintained, following modern
+      standards, and having no true equivalents. The alternatives it suggests
+      often lack the comprehensive testing and edge case handling of the
       established libraries they're meant to replace.
     </p>
     <p>
-      Similarly, eslint-plugin-barrel-files focuses more on discouraging the use of 
-      libraries that employ barrel files (a common and useful pattern in many projects) 
-      rather than providing guidance on when and how to use them effectively in your own code.
+      Similarly, eslint-plugin-barrel-files focuses more on discouraging the use
+      of libraries that employ barrel files (a common and useful pattern in many
+      projects) rather than providing guidance on when and how to use them
+      effectively in your own code.
     </p>
     <p>
-      Both of these plugins are associated with e18e, a project that has proven to be 
-      particularly dangerous in the JavaScript ecosystem. While e18e claims to promote 
-      modern JavaScript practices, it consistently makes non-pragmatic choices that 
-      prioritize novelty over stability and unproven alternatives over battle-tested 
-      solutions. The project's approach of flagging established, well-maintained libraries 
-      as "outdated" while promoting less-tested alternatives demonstrates a fundamental 
-      misunderstanding of what makes code reliable and maintainable in production environments.
+      Both of these plugins are associated with e18e, a project that has proven
+      to be particularly dangerous in the JavaScript ecosystem. While e18e
+      claims to promote modern JavaScript practices, it consistently makes
+      non-pragmatic choices that prioritize novelty over stability and unproven
+      alternatives over battle-tested solutions. The project's approach of
+      flagging established, well-maintained libraries as "outdated" while
+      promoting less-tested alternatives demonstrates a fundamental
+      misunderstanding of what makes code reliable and maintainable in
+      production environments.
     </p>
     <p>
-      This connects back to our earlier discussion about pragmatic technology choices. 
-      When evaluating ESLint plugins, consider:
+      This connects back to our earlier discussion about pragmatic technology
+      choices. When evaluating ESLint plugins, consider:
     </p>
     <ul>
       <li>
-        <strong>The problem the plugin claims to solve:</strong> Is it addressing a 
-        genuine issue in your codebase, or is it enforcing an arbitrary preference?
+        <strong>The problem the plugin claims to solve:</strong> Is it addressing
+        a genuine issue in your codebase, or is it enforcing an arbitrary preference?
       </li>
       <li>
-        <strong>The alternatives it promotes:</strong> Are they truly superior, or 
-        just different? Do they have the same level of testing, maintenance, and 
+        <strong>The alternatives it promotes:</strong> Are they truly superior, or
+        just different? Do they have the same level of testing, maintenance, and
         community support?
       </li>
       <li>
-        <strong>The impact on your workflow:</strong> Will the plugin improve code 
+        <strong>The impact on your workflow:</strong> Will the plugin improve code
         quality and developer productivity, or will it create unnecessary friction?
       </li>
     </ul>
     <p>
-      The best ESLint configuration is one that enhances your development process 
-      without imposing arbitrary restrictions or pushing you toward unproven alternatives 
-      simply because they're newer or follow a different pattern.
+      The best ESLint configuration is one that enhances your development
+      process without imposing arbitrary restrictions or pushing you toward
+      unproven alternatives simply because they're newer or follow a different
+      pattern.
     </p>
 
     <h2 id="documentationIsForUsers">
@@ -2894,38 +2967,41 @@ function UserProfile() {
       VitePWA: Transforming Web Apps into Progressive Web Apps
     </h3>
     <p>
-      When building local-first applications, Progressive Web App (PWA) capabilities 
-      become a natural extension of your strategy. VitePWA is a powerful Vite plugin 
-      that simplifies the process of turning your web applications into fully-featured PWAs, 
-      with particular emphasis on its workbox features for caching and offline capabilities.
+      When building local-first applications, Progressive Web App (PWA)
+      capabilities become a natural extension of your strategy. VitePWA is a
+      powerful Vite plugin that simplifies the process of turning your web
+      applications into fully-featured PWAs, with particular emphasis on its
+      workbox features for caching and offline capabilities.
     </p>
     <p>
-      Unlike client-side solutions like React Query that primarily focus on data fetching 
-      and caching at the application level, VitePWA operates at a more fundamental level 
-      by leveraging service workers to:
+      Unlike client-side solutions like React Query that primarily focus on data
+      fetching and caching at the application level, VitePWA operates at a more
+      fundamental level by leveraging service workers to:
     </p>
     <ul>
       <li>
-        <strong>Cache Static Assets:</strong> Automatically cache your JavaScript, CSS, 
-        images, and other static resources using intelligent strategies that ensure optimal 
-        performance.
+        <strong>Cache Static Assets:</strong> Automatically cache your JavaScript,
+        CSS, images, and other static resources using intelligent strategies that
+        ensure optimal performance.
       </li>
       <li>
-        <strong>Enable Instant Navigation:</strong> Create truly instant experiences where 
-        navigating between pages happens without network delays, even for previously unvisited pages.
+        <strong>Enable Instant Navigation:</strong> Create truly instant experiences
+        where navigating between pages happens without network delays, even for previously
+        unvisited pages.
       </li>
       <li>
-        <strong>Provide Offline Functionality:</strong> Allow your application to function 
-        seamlessly even when users lose their internet connection.
+        <strong>Provide Offline Functionality:</strong> Allow your application to
+        function seamlessly even when users lose their internet connection.
       </li>
       <li>
-        <strong>Implement Smart Caching Strategies:</strong> Apply different caching strategies 
-        for different types of resources (StaleWhileRevalidate for scripts, CacheFirst for images, etc.).
+        <strong>Implement Smart Caching Strategies:</strong> Apply different caching
+        strategies for different types of resources (StaleWhileRevalidate for scripts,
+        CacheFirst for images, etc.).
       </li>
     </ul>
     <p>
-      Implementing VitePWA is remarkably straightforward. In your Vite configuration file, 
-      you simply add the plugin with appropriate settings:
+      Implementing VitePWA is remarkably straightforward. In your Vite
+      configuration file, you simply add the plugin with appropriate settings:
     </p>
     <CodeBlock
       code={`import { VitePWA } from "vite-plugin-pwa";
@@ -2967,35 +3043,38 @@ export default defineConfig({
 });`}
     />
     <p>
-      The power of VitePWA lies in its workbox integration, which provides a robust 
-      foundation for service worker functionality. The configuration above demonstrates 
-      several key features:
+      The power of VitePWA lies in its workbox integration, which provides a
+      robust foundation for service worker functionality. The configuration
+      above demonstrates several key features:
     </p>
     <ul>
       <li>
-        <strong>Automatic Registration:</strong> The service worker is automatically 
+        <strong>Automatic Registration:</strong> The service worker is automatically
         registered and updated without requiring manual intervention.
       </li>
       <li>
-        <strong>Navigation Preload:</strong> Speeds up navigation requests by allowing 
-        the browser to start fetching resources while the service worker is starting up.
+        <strong>Navigation Preload:</strong> Speeds up navigation requests by allowing
+        the browser to start fetching resources while the service worker is starting
+        up.
       </li>
       <li>
-        <strong>Differentiated Caching Strategies:</strong> Different resource types 
-        get different caching behaviors—JavaScript and CSS files use StaleWhileRevalidate 
-        to balance freshness and performance, while images use CacheFirst for maximum speed.
+        <strong>Differentiated Caching Strategies:</strong> Different resource types
+        get different caching behaviors—JavaScript and CSS files use StaleWhileRevalidate
+        to balance freshness and performance, while images use CacheFirst for maximum
+        speed.
       </li>
       <li>
-        <strong>Cache Management:</strong> Outdated caches are automatically cleaned up, 
-        and new service workers take control immediately with skipWaiting.
+        <strong>Cache Management:</strong> Outdated caches are automatically cleaned
+        up, and new service workers take control immediately with skipWaiting.
       </li>
     </ul>
     <p>
-      By incorporating VitePWA into your local-first application, you create a powerful 
-      synergy: your application's data is available locally through your synchronization 
-      strategy, while your application's assets are cached through the service worker. 
-      The result is an experience that feels instantaneous and works reliably regardless 
-      of network conditions—truly the best of both worlds.
+      By incorporating VitePWA into your local-first application, you create a
+      powerful synergy: your application's data is available locally through
+      your synchronization strategy, while your application's assets are cached
+      through the service worker. The result is an experience that feels
+      instantaneous and works reliably regardless of network conditions—truly
+      the best of both worlds.
     </p>
 
     <h2 id="whyCloudflareIsBest">Why Cloudflare Is Best for Development</h2>
@@ -3554,112 +3633,123 @@ curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install
       JetBrains has entered the AI assistant space with Junie, a sophisticated
       AI tool that demonstrates the advantage of deep integration. Unlike
       generic AI coding assistants, Junie leverages JetBrains' deep
-      understanding of code structure and project context to provide intelligent,
-      context-aware assistance that truly enhances your development workflow.
+      understanding of code structure and project context to provide
+      intelligent, context-aware assistance that truly enhances your development
+      workflow.
     </p>
 
     <h4 id="intelligentModelSelection">Intelligent Model Selection</h4>
     <p>
-      One of Junie's standout features is its intelligent model selection system. Rather than
-      forcing you to choose which AI model to use for each task:
+      One of Junie's standout features is its intelligent model selection
+      system. Rather than forcing you to choose which AI model to use for each
+      task:
     </p>
     <ul>
       <li>
-        <strong>Automatic model selection:</strong> Junie automatically chooses between Gemini, GPT, and Claude
-        based on the specific task at hand, optimizing for both performance and accuracy
+        <strong>Automatic model selection:</strong> Junie automatically chooses between
+        Gemini, GPT, and Claude based on the specific task at hand, optimizing for
+        both performance and accuracy
       </li>
       <li>
-        <strong>Manual override:</strong> In the assistant chat window, you can explicitly select which
-        model you prefer for specific scenarios where you know one model excels
+        <strong>Manual override:</strong> In the assistant chat window, you can explicitly
+        select which model you prefer for specific scenarios where you know one model
+        excels
       </li>
       <li>
-        <strong>Contextual awareness:</strong> The system learns from your usage patterns to better
-        select the appropriate model for your common workflows
+        <strong>Contextual awareness:</strong> The system learns from your usage
+        patterns to better select the appropriate model for your common workflows
       </li>
     </ul>
 
     <h4 id="offlineAndSelfHostedOptions">Offline and Self-Hosted Options</h4>
     <p>
-      JetBrains understands the importance of privacy and flexibility in AI tooling:
+      JetBrains understands the importance of privacy and flexibility in AI
+      tooling:
     </p>
     <ul>
       <li>
-        <strong>LM Studio & Ollama integration:</strong> Connect Junie to local LLM solutions like LM Studio
-        or Ollama for processing code without sending it to external services
+        <strong>LM Studio & Ollama integration:</strong> Connect Junie to local LLM
+        solutions like LM Studio or Ollama for processing code without sending it
+        to external services
       </li>
       <li>
-        <strong>Offline mode:</strong> Enable complete offline operation for environments with strict
-        security requirements or limited connectivity
+        <strong>Offline mode:</strong> Enable complete offline operation for environments
+        with strict security requirements or limited connectivity
       </li>
       <li>
-        <strong>Hybrid approaches:</strong> Configure which types of queries use local models versus
-        cloud services based on your specific needs
+        <strong>Hybrid approaches:</strong> Configure which types of queries use
+        local models versus cloud services based on your specific needs
       </li>
     </ul>
 
     <h4 id="mcpConfigurations">MCP Configurations</h4>
     <p>
-      Junie comes packed with Multiple Context Processing (MCP) configurations that enhance its ability
-      to understand complex codebases:
+      Junie comes packed with Multiple Context Processing (MCP) configurations
+      that enhance its ability to understand complex codebases:
     </p>
     <ul>
       <li>
-        <strong>Project-wide awareness:</strong> Junie can analyze relationships between different
-        files and components across your entire project
+        <strong>Project-wide awareness:</strong> Junie can analyze relationships
+        between different files and components across your entire project
       </li>
       <li>
-        <strong>Framework-specific understanding:</strong> Pre-configured MCP settings for popular
-        frameworks help Junie understand architectural patterns specific to React, Spring, Django, etc.
+        <strong>Framework-specific understanding:</strong> Pre-configured MCP settings
+        for popular frameworks help Junie understand architectural patterns specific
+        to React, Spring, Django, etc.
       </li>
       <li>
-        <strong>Custom configurations:</strong> Define your own MCP settings to match your team's
-        unique architecture and coding patterns
+        <strong>Custom configurations:</strong> Define your own MCP settings to match
+        your team's unique architecture and coding patterns
       </li>
     </ul>
 
     <h4 id="comprehensiveIdeIntegration">Comprehensive IDE Integration</h4>
     <p>
-      What truly sets Junie apart is how deeply it's integrated into the JetBrains IDE ecosystem:
+      What truly sets Junie apart is how deeply it's integrated into the
+      JetBrains IDE ecosystem:
     </p>
     <ul>
       <li>
-        <strong>Context-aware assistance:</strong> When you're writing code, it offers intelligent completions
-        that respect your project's architecture and coding conventions
+        <strong>Context-aware assistance:</strong> When you're writing code, it offers
+        intelligent completions that respect your project's architecture and coding
+        conventions
       </li>
       <li>
-        <strong>Intelligent debugging:</strong> During debugging sessions, it can analyze the execution flow
-        and suggest potential fixes for issues
+        <strong>Intelligent debugging:</strong> During debugging sessions, it can
+        analyze the execution flow and suggest potential fixes for issues
       </li>
       <li>
-        <strong>Refactoring companion:</strong> When refactoring, it understands the implications across your
-        entire codebase and helps prevent regressions
+        <strong>Refactoring companion:</strong> When refactoring, it understands
+        the implications across your entire codebase and helps prevent regressions
       </li>
       <li>
-        <strong>Documentation assistant:</strong> When learning new APIs or frameworks, it provides contextual
-        documentation and examples tailored to your specific use case
+        <strong>Documentation assistant:</strong> When learning new APIs or frameworks,
+        it provides contextual documentation and examples tailored to your specific
+        use case
       </li>
     </ul>
 
     <h4 id="customizablePromptLibrary">Customizable Prompt Library</h4>
     <p>
-      Junie includes a robust prompt library that enhances various IDE integrations:
+      Junie includes a robust prompt library that enhances various IDE
+      integrations:
     </p>
     <ul>
       <li>
-        <strong>Unit test generation:</strong> Automatically create comprehensive test suites with
-        customizable templates for different testing frameworks
+        <strong>Unit test generation:</strong> Automatically create comprehensive
+        test suites with customizable templates for different testing frameworks
       </li>
       <li>
-        <strong>Code review assistance:</strong> Identify potential issues, security vulnerabilities,
-        and performance bottlenecks in selected code
+        <strong>Code review assistance:</strong> Identify potential issues, security
+        vulnerabilities, and performance bottlenecks in selected code
       </li>
       <li>
-        <strong>Documentation generation:</strong> Create detailed documentation for functions, classes,
-        and APIs based on implementation details
+        <strong>Documentation generation:</strong> Create detailed documentation
+        for functions, classes, and APIs based on implementation details
       </li>
       <li>
-        <strong>Custom prompt creation:</strong> Define your own prompts for recurring tasks specific
-        to your development workflow
+        <strong>Custom prompt creation:</strong> Define your own prompts for recurring
+        tasks specific to your development workflow
       </li>
     </ul>
 
@@ -3667,9 +3757,10 @@ curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install
       This comprehensive integration is only possible because Junie operates
       within an environment that already has deep knowledge of your code, not
       just as text but as structured, meaningful entities with relationships and
-      semantics. JetBrains' commitment to staying at the forefront of AI-assisted
-      development ensures that Junie will continue to evolve with new capabilities
-      while maintaining the deep integration that makes it so powerful.
+      semantics. JetBrains' commitment to staying at the forefront of
+      AI-assisted development ensures that Junie will continue to evolve with
+      new capabilities while maintaining the deep integration that makes it so
+      powerful.
     </p>
 
     <h3 id="pluginsVsIntegration">Why Plugins Can't Match True Integration</h3>
@@ -3934,32 +4025,36 @@ model Profile {
       Pragmatic ORM Choices: The Prisma vs. Drizzle Case Study
     </h3>
     <p>
-      The evolution of Prisma's edge compatibility illustrates an important point about 
-      making pragmatic technology choices. There was a period when switching from Prisma 
-      to alternatives like Drizzle made perfect sense for projects requiring serverless 
-      compatibility. Prisma's Rust-based client simply couldn't run in edge environments, 
-      creating a legitimate technical limitation that justified exploring alternatives.
+      The evolution of Prisma's edge compatibility illustrates an important
+      point about making pragmatic technology choices. There was a period when
+      switching from Prisma to alternatives like Drizzle made perfect sense for
+      projects requiring serverless compatibility. Prisma's Rust-based client
+      simply couldn't run in edge environments, creating a legitimate technical
+      limitation that justified exploring alternatives.
     </p>
     <p>
-      However, once Prisma addressed this limitation by moving to a JavaScript implementation, 
-      the primary reason for switching disappeared. Despite this evolution, you'll still 
-      find developers dismissing Prisma as "outdated" or "legacy" technology, often without 
-      acknowledging how the landscape has changed. This pattern of prematurely abandoning 
-      established tools is unfortunately common in our industry.
+      However, once Prisma addressed this limitation by moving to a JavaScript
+      implementation, the primary reason for switching disappeared. Despite this
+      evolution, you'll still find developers dismissing Prisma as "outdated" or
+      "legacy" technology, often without acknowledging how the landscape has
+      changed. This pattern of prematurely abandoning established tools is
+      unfortunately common in our industry.
     </p>
     <p>
-      What makes this particularly problematic is that alternatives like Drizzle, while 
-      excellent in their own right, often lack the comprehensive feature set, extensive 
-      testing, and mature ecosystem that Prisma has developed over years. The decision 
-      to switch should be based on current technical requirements and limitations, not 
-      on which tool has the most recent GitHub stars or Twitter mentions.
+      What makes this particularly problematic is that alternatives like
+      Drizzle, while excellent in their own right, often lack the comprehensive
+      feature set, extensive testing, and mature ecosystem that Prisma has
+      developed over years. The decision to switch should be based on current
+      technical requirements and limitations, not on which tool has the most
+      recent GitHub stars or Twitter mentions.
     </p>
     <p>
-      This isn't to say that Drizzle doesn't have legitimate advantages in certain use 
-      cases. Rather, it's about recognizing that technology choices should be driven by 
-      actual needs and comprehensive evaluation, not by following trends or assuming that 
-      newer automatically means better. Sometimes the best choice is to stick with a 
-      battle-tested solution that has evolved to meet changing requirements.
+      This isn't to say that Drizzle doesn't have legitimate advantages in
+      certain use cases. Rather, it's about recognizing that technology choices
+      should be driven by actual needs and comprehensive evaluation, not by
+      following trends or assuming that newer automatically means better.
+      Sometimes the best choice is to stick with a battle-tested solution that
+      has evolved to meet changing requirements.
     </p>
     <p>
       In conclusion, while there are many ORM options available in the
@@ -3972,50 +4067,321 @@ model Profile {
       consistency between your code and database.
     </p>
 
-    <h2 id="conclusion">Conclusion: The Philosophy Behind Modern Web Development</h2>
+    <h2 id="whyMonoreposArentForEveryone">Why Monorepos Aren't For Everyone</h2>
     <p>
-      Throughout this guide, we've explored various aspects of modern web development that shape my approach to coding. Let's summarize the key philosophies that have emerged:
+      Monorepos—single repositories containing multiple projects—have become
+      something of a trend in modern web development. Companies like Google,
+      Meta, and Microsoft use them, so they must be the right approach for
+      everyone, right? Not so fast. While monorepos offer genuine benefits in
+      specific contexts, they're far from the universal solution they're often
+      portrayed as.
+    </p>
+
+    <h3 id="monorepoReality">The Reality of Monorepos: Not a Magic Solution</h3>
+    <p>
+      Let's be clear about something upfront: monorepos are not for most teams.
+      The glamorous engineering blogs from tech giants discussing their monorepo
+      setups are describing end states that required hundreds of engineers and
+      years of dedicated tooling work. You will not have the same outcomes if
+      you attempt to replicate what they've done without similar resources.
+    </p>
+    <p>
+      When teams adopt monorepos, they often expect immediate benefits but
+      instead encounter a new set of problems that their previous multi-repo
+      setup didn't have. You will take steps backward before you take steps
+      forward. This reality check is essential before embarking on the monorepo
+      journey.
+    </p>
+
+    <h3 id="whenMonoreposMakeSense">When Monorepos Actually Make Sense</h3>
+    <p>
+      Despite the challenges, monorepos can make sense in specific contexts. The
+      legitimate reasons to consider a monorepo include:
     </p>
     <ul>
       <li>
-        <strong>Understanding JavaScript's Nature:</strong> Recognizing JavaScript as a powerful scripting language that serves as an API to underlying systems helps us leverage its strengths while being mindful of its limitations.
+        <strong>Consistency:</strong> Enforcing the same coding standards, tooling,
+        and practices across all projects
       </li>
       <li>
-        <strong>Layered Protection:</strong> TypeScript provides valuable build-time safeguards, but robust runtime validation remains essential for truly resilient applications.
+        <strong>Organizational coherence:</strong> Making it easier for teams to
+        understand how different parts of the system work together
       </li>
       <li>
-        <strong>Pragmatic Utility Choices:</strong> Libraries like lodash continue to offer battle-tested solutions that handle edge cases and allow developers to focus on business logic rather than reinventing utilities.
-      </li>
-      <li>
-        <strong>Comprehensive Testing Strategy:</strong> A balanced approach combining unit tests, E2E tests, and tools like Storybook creates a robust safety net that catches issues at multiple levels.
-      </li>
-      <li>
-        <strong>Code Quality Automation:</strong> ESLint serves as more than a style enforcer—it's a powerful tool for maintaining engineering discipline and preventing bugs.
-      </li>
-      <li>
-        <strong>Practical Documentation:</strong> Focus on documentation that serves users while letting code and tests serve as the primary reference for developers.
-      </li>
-      <li>
-        <strong>Framework Selection:</strong> React's ecosystem and approachability make it a solid foundation for most web projects, despite performance limitations in specific scenarios.
-      </li>
-      <li>
-        <strong>Local-First Architecture:</strong> Building applications that work offline first and sync in the background creates more resilient and responsive user experiences.
-      </li>
-      <li>
-        <strong>Infrastructure Choices:</strong> Platforms like Cloudflare offer developer-friendly approaches to deployment and scaling that simplify the development process.
-      </li>
-      <li>
-        <strong>Development Environment:</strong> Tools like Windows and JetBrains IDEs provide practical advantages that can boost productivity when properly configured.
-      </li>
-      <li>
-        <strong>Data Access Patterns:</strong> ORMs like Prisma strike a balance between type safety, developer experience, and performance that suits most modern applications.
+        <strong>Shared tooling efforts:</strong> Allowing your developer productivity
+        team to focus on improving the experience of working in a single place
       </li>
     </ul>
     <p>
-      The common thread throughout these topics is a focus on pragmatic choices over dogmatic adherence to trends. The best development approach combines established patterns that have proven their worth with careful adoption of innovations that solve real problems.
+      If these benefits align with your organization's specific needs and you're
+      willing to invest in the necessary infrastructure, a monorepo might be
+      worth considering. But be prepared for the significant engineering lift
+      required to make it work effectively.
+    </p>
+
+    <h3 id="toolingChallenges">
+      Tooling Challenges: The Turborepo and NX Reality
+    </h3>
+    <p>
+      Tools like Turborepo and NX promise to solve the monorepo management
+      problem with elegant, out-of-the-box solutions. In theory, they handle
+      dependency management, build caching, and task orchestration across your
+      projects. In practice, they always require significant manual management
+      and customization.
     </p>
     <p>
-      As the web development landscape continues to evolve, the most valuable skill remains the ability to evaluate technologies based on their actual merits rather than their popularity. By focusing on fundamentals like type safety, testing, and user experience while making thoughtful choices about tools and frameworks, we can build applications that are not only powerful and feature-rich but also maintainable and resilient.
+      The fundamental challenge is what monorepo veterans call "The Golden
+      Rule": any operation over your repository that needs to be fast must be
+      O(change) and not O(repo). As your monorepo grows, tools that don't follow
+      this principle will become painfully slow. This applies to everything from
+      source control operations to builds, tests, and deployments.
+    </p>
+    <p>
+      For example, git itself is an O(repo) system by design—operations like <code
+        >git status</code
+      > will slow down dramatically as your repository grows. Large companies have
+      had to take drastic measures when they hit these limits:
+    </p>
+    <ul>
+      <li>Microsoft forked git to handle their massive codebase</li>
+      <li>Meta forked Mercurial and developed sparse checkout extensions</li>
+      <li>Google created their own version control system entirely</li>
+    </ul>
+    <p>
+      These companies all implemented some form of virtual filesystem or sparse
+      checkout mechanism that only downloads files on demand, rather than
+      cloning the entire repository.
+    </p>
+    <p>
+      Build systems face similar challenges. While Bazel is often touted as the
+      solution for monorepo builds, the teams that successfully implement it
+      typically have dedicated build engineers working full-time on maintaining
+      it. A more practical approach for most teams is to:
+    </p>
+    <ul>
+      <li>Keep your monorepo single-language if possible</li>
+      <li>
+        Use your language ecosystem's native build tools for as long as possible
+      </li>
+      <li>
+        Implement a "target determinator" that can identify which parts of the
+        codebase are affected by a change
+      </li>
+    </ul>
+    <p>Even with tools like Turborepo or NX, you'll likely need to:</p>
+    <ul>
+      <li>
+        Write custom scripts to handle edge cases in your specific project
+        structure
+      </li>
+      <li>Manually maintain dependency declarations between packages</li>
+      <li>
+        Create workarounds for tools in your stack that weren't designed for
+        monorepos
+      </li>
+      <li>Invest in CI/CD customizations to keep build times reasonable</li>
+    </ul>
+    <p>
+      These tools are helpful starting points, but they're not magic solutions
+      that eliminate the inherent complexity of monorepo management.
+    </p>
+
+    <h3 id="testingAndCIChallenges">
+      Testing and CI Challenges: The Mathematics of Scale
+    </h3>
+    <p>
+      As your monorepo grows, testing becomes a significant challenge. Running
+      all tests for every change becomes impractical—you simply have too many
+      tests. This creates two major problems:
+    </p>
+    <p>
+      First, there's the mathematical reality of test flakiness at scale. Even
+      with highly reliable tests, the probability of a false failure increases
+      dramatically with the number of tests run. Consider this sobering example
+      from <a
+        target="_blank"
+        href="https://blog.swgillespie.me/posts/monorepo-ingredients/"
+        >"The Ingredients of a Productive Monorepo"</a
+      >:
+    </p>
+    <blockquote>
+      <p>
+        If each test in your repository has 4 9s of reliability (they flake only
+        one time in 10,000), running 1,000 tests gives a no-op change a 90%
+        chance of passing CI. If you run 10,000 tests, this probability drops to
+        60%.
+      </p>
+    </blockquote>
+    <p>
+      To address this, your testing system needs to become more sophisticated:
+    </p>
+    <ul>
+      <li>
+        Automatically retry test failures to mitigate low-probability flakes
+      </li>
+      <li>
+        Only run tests affected by your changes (using the same target
+        determination approach mentioned for builds)
+      </li>
+      <li>Implement a quarantine system for known flaky tests</li>
+    </ul>
+    <p>
+      Second, your CI system faces similar scaling challenges. When a developer
+      submits a pull request, you need to determine which subset of your build
+      and test suite to run. Most large monorepo organizations implement a
+      "target determinator" as the first job in their CI pipeline—a program that
+      analyzes the changes and decides which subsequent jobs to trigger.
+    </p>
+    <p>
+      The merge queue becomes a critical bottleneck in monorepo workflows. If
+      your CI takes too long, developers will find their changes stuck in queue
+      or, worse, ejected when conflicts arise. Different organizations handle
+      this differently:
+    </p>
+    <ul>
+      <li>
+        The Rust project and Chromium batch changes together to reduce overall
+        CI time
+      </li>
+      <li>
+        Some organizations run probabilistic test selection, trading guaranteed
+        correctness for speed
+      </li>
+      <li>
+        Others maintain separate "trunk-time testing" that runs comprehensive
+        tests on a schedule rather than for every change
+      </li>
+    </ul>
+    <p>
+      There's also the dangerous misconception of "atomic commits" in monorepos.
+      While you can make code changes across multiple projects in a single
+      commit, deployment is never atomic. This creates a new class of problems
+      when, for example, a developer changes a service interface and all its
+      clients in one commit, but the service deploys before its clients, causing
+      runtime failures.
+    </p>
+
+    <h3 id="monorepoTradeoffs">
+      The Monorepo Tradeoffs: What You Gain and Lose
+    </h3>
+    <p>
+      Like any architectural decision, adopting a monorepo involves tradeoffs:
+    </p>
+    <p>
+      <strong>What you gain:</strong>
+    </p>
+    <ul>
+      <li>Atomic commits across multiple projects</li>
+      <li>Simplified dependency management between your own packages</li>
+      <li>Easier code sharing and reuse</li>
+      <li>Centralized tooling and configuration</li>
+    </ul>
+    <p>
+      <strong>What you lose:</strong>
+    </p>
+    <ul>
+      <li>Independent scaling of repository operations</li>
+      <li>Team autonomy over tooling choices</li>
+      <li>Smaller, more focused codebases that are easier to understand</li>
+      <li>The ability to grant access permissions at a granular level</li>
+    </ul>
+    <p>
+      A monorepo can be a powerful tool for institutional consistency and can
+      help build a culture of code sharing across organizational boundaries. But
+      it doesn't come for free. You should be aware of the engineering
+      investment required to achieve a productive monorepo and understand that
+      this is a continuous process as you scale and your tools begin to break.
+    </p>
+    <p>
+      In my experience, for most teams, the multi-repo approach with good
+      practices around shared libraries (published to private registries)
+      provides a better balance of benefits versus maintenance costs. But if you
+      do choose the monorepo path, go in with your eyes open and be prepared to
+      commit significant resources to make it work.
+    </p>
+
+    <h2 id="conclusion">
+      Conclusion: The Philosophy Behind Modern Web Development
+    </h2>
+    <p>
+      Throughout this guide, we've explored various aspects of modern web
+      development that shape my approach to coding. Let's summarize the key
+      philosophies that have emerged:
+    </p>
+    <ul>
+      <li>
+        <strong>Understanding JavaScript's Nature:</strong> Recognizing JavaScript
+        as a powerful scripting language that serves as an API to underlying systems
+        helps us leverage its strengths while being mindful of its limitations.
+      </li>
+      <li>
+        <strong>Layered Protection:</strong> TypeScript provides valuable build-time
+        safeguards, but robust runtime validation remains essential for truly resilient
+        applications.
+      </li>
+      <li>
+        <strong>Pragmatic Utility Choices:</strong> Libraries like lodash continue
+        to offer battle-tested solutions that handle edge cases and allow developers
+        to focus on business logic rather than reinventing utilities.
+      </li>
+      <li>
+        <strong>Comprehensive Testing Strategy:</strong> A balanced approach combining
+        unit tests, E2E tests, and tools like Storybook creates a robust safety net
+        that catches issues at multiple levels.
+      </li>
+      <li>
+        <strong>Code Quality Automation:</strong> ESLint serves as more than a style
+        enforcer—it's a powerful tool for maintaining engineering discipline and
+        preventing bugs.
+      </li>
+      <li>
+        <strong>Practical Documentation:</strong> Focus on documentation that serves
+        users while letting code and tests serve as the primary reference for developers.
+      </li>
+      <li>
+        <strong>Framework Selection:</strong> React's ecosystem and approachability
+        make it a solid foundation for most web projects, despite performance limitations
+        in specific scenarios.
+      </li>
+      <li>
+        <strong>Local-First Architecture:</strong> Building applications that work
+        offline first and sync in the background creates more resilient and responsive
+        user experiences.
+      </li>
+      <li>
+        <strong>Infrastructure Choices:</strong> Platforms like Cloudflare offer
+        developer-friendly approaches to deployment and scaling that simplify the
+        development process.
+      </li>
+      <li>
+        <strong>Development Environment:</strong> Tools like Windows and JetBrains
+        IDEs provide practical advantages that can boost productivity when properly
+        configured.
+      </li>
+      <li>
+        <strong>Data Access Patterns:</strong> ORMs like Prisma strike a balance
+        between type safety, developer experience, and performance that suits most
+        modern applications.
+      </li>
+      <li>
+        <strong>Repository Architecture:</strong> While monorepos offer benefits
+        for large organizations with dedicated resources, most teams are better served
+        by a multi-repo approach with good practices for sharing code.
+      </li>
+    </ul>
+    <p>
+      The common thread throughout these topics is a focus on pragmatic choices
+      over dogmatic adherence to trends. The best development approach combines
+      established patterns that have proven their worth with careful adoption of
+      innovations that solve real problems.
+    </p>
+    <p>
+      As the web development landscape continues to evolve, the most valuable
+      skill remains the ability to evaluate technologies based on their actual
+      merits rather than their popularity. By focusing on fundamentals like type
+      safety, testing, and user experience while making thoughtful choices about
+      tools and frameworks, we can build applications that are not only powerful
+      and feature-rich but also maintainable and resilient.
     </p>
   </main>
 </Fragment>
