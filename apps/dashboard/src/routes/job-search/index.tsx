@@ -54,9 +54,9 @@ const getColumns = (maxRoundCount: number) => {
 const RouteComponent = () => {
   const { user } = useUser();
 
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 500);
+  const [page, setPage] = useState(1);
 
   const {
     data: applications,
@@ -78,10 +78,6 @@ const RouteComponent = () => {
     ...getApplications(user?.id, previousPage),
     enabled: !isNil(totalPages) && 0 < previousPage,
   });
-
-  if (!isNil(totalPages) && totalPages < page) {
-    setPage(1);
-  }
 
   return (
     <MainLayout breadcrumbPaths={[{ href: "/job-stats", label: "Job Search" }]}>
