@@ -47,7 +47,7 @@ const getDefaultHeaders = (headers = defaultHeaders) => {
     "Cross-Origin-Opener-Policy": 'same-site; report-to="default";',
     "Cross-Origin-Resource-Policy": "same-site",
     "Public-Key-Pins": undefined,
-    "Referrer-Policy": "strict-origin",
+    "Referrer-Policy": "same-origin",
     "X-AspNet-Version": undefined,
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "SAMEORIGIN",
