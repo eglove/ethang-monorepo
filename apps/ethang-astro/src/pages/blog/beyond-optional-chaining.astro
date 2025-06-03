@@ -1,0 +1,515 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import "highlight.js/styles/night-owl.css";
+---
+
+<Layout
+  title="Optional Chaining vs. lodash.get: Comparative Analysis"
+  description="A concise comparison of optional chaining and lodash.get for safely accessing nested properties in JavaScript"
+>
+  <main class="prose">
+    <h1>Optional Chaining vs. lodash.get: Comparative Analysis</h1>
+
+    <div>
+      <h2>Table of Contents</h2>
+      <ul>
+        <li>
+          <a href="#benefits-of-optional-chaining"
+            >Benefits of Optional Chaining</a>
+        </li>
+        <li>
+          <a href="#limitations-of-optional-chaining"
+            >Limitations of Optional Chaining</a
+          >
+          <ul>
+            <li>
+              <a href="#dynamic-path-resolution">Dynamic Path Resolution</a>
+            </li>
+            <li>
+              <a href="#default-value-handling">Default Value Handling</a>
+            </li>
+            <li><a href="#edge-case-handling">Edge Case Handling</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#typescript-and-runtime-considerations"
+            >TypeScript and Runtime Considerations</a>
+        </li>
+        <li><a href="#development-efficiency">Development Efficiency</a></li>
+        <li>
+          <a href="#pragmatic-technology-selection"
+            >Pragmatic Technology Selection</a>
+        </li>
+        <li>
+          <a href="#performance-benchmarks">Performance Benchmarks</a>
+          <ul>
+            <li>
+              <a href="#basic-performance-comparison"
+                >Basic Performance Comparison</a>
+            </li>
+            <li>
+              <a href="#on-complexity-analysis">O(n) Complexity Analysis</a>
+            </li>
+            <li>
+              <a href="#algorithmic-complexity-analysis"
+                >Algorithmic Complexity Analysis</a>
+            </li>
+            <li>
+              <a href="#performance-implications">Performance Implications</a>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#conclusion">Conclusion</a></li>
+      </ul>
+    </div>
+
+    <p>
+      JavaScript developers frequently encounter the problem of safely accessing
+      nested properties. The common error when accessing non-existent properties
+      is:
+    </p>
+
+    <p><code>TypeError: Cannot read property 'x' of undefined</code></p>
+
+    <p>
+      In ES2020, JavaScript introduced optional chaining (<code>?.</code>) to
+      address this issue. While optional chaining is effective for many
+      scenarios, <code>lodash.get()</code> offers additional capabilities worth considering.
+      This article examines both approaches in response to <a
+        href="https://allthingssmitty.com/2025/06/02/write-more-reliable-javascript-with-optional-chaining/"
+        target="_blank">Write more reliable JavaScript with optional chaining</a
+      >.
+    </p>
+
+    <h2 id="benefits-of-optional-chaining">Benefits of Optional Chaining</h2>
+
+    <p>
+      Optional chaining handles cases when a property in the access chain is <code
+        >null</code
+      > or <code>undefined</code>, simplifying property access:
+    </p>
+
+    <CodeBlock
+      code={`
+// Instead of the defensive:
+if (user && user.profile && user.profile.settings) {
+  console.log(user.profile.settings.theme);
+}
+
+// With optional chaining:
+console.log(user?.profile?.settings?.theme);
+`}
+    />
+
+    <p>It also works with method calls:</p>
+
+    <CodeBlock
+      code={`
+// Method call with optional chaining
+user?.save?.();
+
+// Works with array methods
+const value = data?.items?.find(item => item.id === 'a1')?.value;
+`}
+    />
+
+    <p>
+      This makes code cleaner, more readable, and prevents "cannot read
+      property" errors in many common scenarios.
+    </p>
+
+    <h2 id="limitations-of-optional-chaining">
+      Limitations of Optional Chaining
+    </h2>
+
+    <p>
+      Despite its benefits, optional chaining has limitations in certain
+      scenarios where <code>lodash.get()</code> provides additional functionality:
+    </p>
+
+    <h3 id="dynamic-path-resolution">1. Dynamic Path Resolution</h3>
+
+    <p>Optional chaining requires static property paths:</p>
+
+    <CodeBlock
+      code={`
+const value = user?.profile?.settings?.notifications?.email;
+`}
+    />
+
+    <p>
+      When paths need to be determined programmatically from variables or
+      configuration, <code>lodash.get()</code> offers a solution:
+    </p>
+
+    <CodeBlock
+      code={`
+// import get from 'lodash/get.js'
+const path = ['profile', 'settings', 'notifications', 'email'];
+// Or as a string: 'profile.settings.notifications.email'
+const value = get(user, path);
+`}
+    />
+
+    <h3 id="default-value-handling">2. Default Value Handling</h3>
+
+    <p>
+      Optional chaining returns <code>undefined</code> when a path doesn't exist
+      and requires combining with the nullish coalescing operator for default values:
+    </p>
+
+    <CodeBlock
+      code={`
+const avatar = user?.profile?.avatar ?? 'default.png';
+`}
+    />
+
+    <p>
+      <code>lodash.get()</code> includes default value handling as a parameter:
+    </p>
+
+    <CodeBlock
+      code={`
+// import get from 'lodash/get.js'
+const avatar = get(user, 'profile.avatar', 'default.png');
+`}
+    />
+
+    <h3 id="edge-case-handling">3. Edge Case Handling</h3>
+
+    <p>
+      Production applications deal with unpredictable data from APIs, user
+      inputs, and third-party integrations. <code>lodash.get()</code> handles numerous
+      edge cases through extensive testing and refinement.
+    </p>
+
+    <p>
+      A simplified implementation of <code>get()</code> demonstrates the complexity
+      involved:
+    </p>
+
+    <CodeBlock
+      code={`
+function customGet(obj, path, defaultValue) {
+  const keys = Array.isArray(path) ? path : path.split('.');
+  let result = obj;
+  for (const key of keys) {
+    if (result && typeof result === 'object' && key in result) {
+      result = result[key];
+    } else {
+      return defaultValue;
+    }
+  }
+  return result;
+}
+`}
+    />
+
+    <p>
+      This implementation fails to handle several important edge cases that <code
+        >lodash.get()</code
+      > addresses:
+    </p>
+
+    <ul>
+      <li>
+        Handling empty, <code>null</code>, or <code>undefined</code> paths
+      </li>
+      <li>Supporting array paths with non-string keys</li>
+      <li>
+        Preventing security vulnerabilities with <code>__proto__</code> or <code
+          >constructor</code
+        > in paths
+      </li>
+    </ul>
+
+    <p>
+      Implementing a robust property access utility requires addressing these
+      and many other edge cases.
+    </p>
+
+    <h2 id="typescript-and-runtime-considerations">
+      TypeScript and Runtime Considerations
+    </h2>
+
+    <p>
+      TypeScript provides compile-time type checking but cannot eliminate
+      runtime uncertainties. <code>lodash.get()</code> complements TypeScript by
+      addressing runtime issues:
+    </p>
+
+    <ol>
+      <li>
+        External API responses with structures that differ from type definitions
+      </li>
+      <li>Data transformations that alter object structures</li>
+      <li>JavaScript type coercion edge cases</li>
+    </ol>
+
+    <p><code>lodash.get()</code> provides consistent runtime behavior:</p>
+
+    <CodeBlock
+      code={`
+// import get from 'lodash/get.js'
+get(user, ['profile', 'street', 'address.1'])
+`}
+    />
+
+    <p>
+      This approach guarantees consistent results without exceptions, returning <code
+        >undefined</code
+      > (or the specified default value) when properties don't exist.
+    </p>
+
+    <h2 id="development-efficiency">Development Efficiency</h2>
+
+    <p>
+      Using <code>lodash.get()</code> leverages a thoroughly tested utility that
+      has been refined over years of production use. This allows developers to focus
+      on implementing business logic rather than utility functions.
+    </p>
+
+    <p>
+      The lodash library represents significant investment in testing and
+      optimization across numerous edge cases, providing reliability that would
+      require substantial effort to replicate.
+    </p>
+
+    <h2 id="pragmatic-technology-selection">Pragmatic Technology Selection</h2>
+
+    <p>
+      Effective engineering requires selecting appropriate tools based on
+      specific requirements rather than following trends. Both optional chaining
+      and lodash.get have valid use cases.
+    </p>
+
+    <p>
+      Key considerations when choosing between optional chaining and <code
+        >lodash.get()</code
+      >:
+    </p>
+
+    <ul>
+      <li>Need for dynamic path resolution</li>
+      <li>Complexity of data structures</li>
+      <li>Requirements for comprehensive edge case handling</li>
+      <li>Performance requirements</li>
+    </ul>
+
+    <h2 id="performance-benchmarks">Performance Benchmarks</h2>
+
+    <p>
+      To provide empirical data on the performance differences between optional
+      chaining and <code>lodash.get()</code>, I conducted benchmark tests using
+      Vitest across various scenarios. The tests focused particularly on
+      algorithmic complexity (O(n)) and how performance scales with input size.
+    </p>
+
+    <h3 id="basic-performance-comparison">Basic Performance Comparison</h3>
+
+    <p>
+      For basic property access scenarios, optional chaining consistently
+      outperforms other approaches:
+    </p>
+
+    <div class="overflow-x-auto">
+      <table class="table table-zebra">
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Optional Chaining</th>
+            <th>lodash.get</th>
+            <th>Custom get</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Simple property access</td>
+            <td>~22.5M ops/sec</td>
+            <td>~4.4M ops/sec</td>
+            <td>~8.0M ops/sec</td>
+          </tr>
+          <tr>
+            <td>Deep nested property</td>
+            <td>~22.5M ops/sec</td>
+            <td>~4.1M ops/sec</td>
+            <td>~7.4M ops/sec</td>
+          </tr>
+          <tr>
+            <td>Array access</td>
+            <td>~22.4M ops/sec</td>
+            <td>~4.0M ops/sec</td>
+            <td>N/A</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 id="on-complexity-analysis">O(n) Complexity Analysis</h3>
+
+    <p>
+      To understand how each approach scales with input size, I tested
+      performance across increasing path depths:
+    </p>
+
+    <div class="overflow-x-auto">
+      <table class="table table-zebra">
+        <thead>
+          <tr>
+            <th>Path Depth</th>
+            <th>Optional Chaining</th>
+            <th>lodash.get (array)</th>
+            <th>lodash.get (string)</th>
+            <th>Custom get</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>5</td>
+            <td>~22.5M ops/sec</td>
+            <td>~4.8M ops/sec</td>
+            <td>~3.6M ops/sec</td>
+            <td>~1.7M ops/sec</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>N/A</td>
+            <td>~4.4M ops/sec</td>
+            <td>~3.3M ops/sec</td>
+            <td>~1.0M ops/sec</td>
+          </tr>
+          <tr>
+            <td>20</td>
+            <td>N/A</td>
+            <td>~3.5M ops/sec</td>
+            <td>~2.8M ops/sec</td>
+            <td>~0.6M ops/sec</td>
+          </tr>
+          <tr>
+            <td>50</td>
+            <td>N/A</td>
+            <td>~2.1M ops/sec</td>
+            <td>~1.8M ops/sec</td>
+            <td>~0.3M ops/sec</td>
+          </tr>
+          <tr>
+            <td>100</td>
+            <td>N/A</td>
+            <td>~1.3M ops/sec</td>
+            <td>~1.2M ops/sec</td>
+            <td>~0.1M ops/sec</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Note: Optional chaining is marked as N/A for deeper paths because it
+      becomes impractical to write out long chains manually, which is one of its
+      limitations compared to dynamic path approaches.
+    </p>
+
+    <h3 id="algorithmic-complexity-analysis">
+      Algorithmic Complexity Analysis
+    </h3>
+
+    <p>
+      The benchmark results reveal important insights about the algorithmic
+      complexity of each approach:
+    </p>
+
+    <ol>
+      <li>
+        <strong>Linear Complexity (O(n)):</strong> All three approaches exhibit O(n)
+        time complexity where n is the path depth, but with different scaling factors.
+      </li>
+      <li>
+        <strong>Performance Degradation Rate:</strong> As path depth increases from
+        5 to 100:
+        <ul>
+          <li>
+            lodash.get with array path: Performance decreases by ~3.8x (from
+            4.8M to 1.3M ops/sec)
+          </li>
+          <li>
+            lodash.get with string path: Performance decreases by ~3.1x (from
+            3.6M to 1.2M ops/sec)
+          </li>
+          <li>
+            Custom get implementation: Performance decreases by ~14.4x (from
+            1.7M to 0.1M ops/sec)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>Constant Factors:</strong> While optional chaining has the best performance
+        for shallow paths, lodash.get shows more consistent scaling with increasing
+        path depth.
+      </li>
+      <li>
+        <strong>Path Format Impact:</strong> For lodash.get, array paths consistently
+        outperform string paths, though the gap narrows as path depth increases (from
+        1.34x faster at depth 10 to 1.09x faster at depth 100).
+      </li>
+    </ol>
+
+    <h3 id="performance-implications">Performance Implications</h3>
+
+    <p>These findings have several practical implications:</p>
+
+    <ol>
+      <li>
+        <strong>For Shallow Paths:</strong> Optional chaining provides superior performance
+        (5-6x faster than lodash.get) and should be preferred when paths are known
+        at compile time and relatively shallow.
+      </li>
+      <li>
+        <strong>For Deep or Dynamic Paths:</strong> lodash.get scales more efficiently
+        than naive implementations and provides consistent performance degradation
+        with increasing path depth.
+      </li>
+      <li>
+        <strong>Implementation Quality Matters:</strong> The custom implementation's
+        performance degrades much more rapidly with path depth, highlighting the
+        optimization work in lodash.
+      </li>
+      <li>
+        <strong>Array vs. String Paths:</strong> When using lodash.get with very
+        deep paths, array paths offer slightly better performance than string paths,
+        likely due to avoiding string parsing overhead.
+      </li>
+    </ol>
+
+    <p>
+      These performance characteristics are primarily due to optional chaining
+      being a native JavaScript feature optimized at the engine level, while
+      lodash.get is a JavaScript function with additional overhead for handling
+      various edge cases. However, lodash.get's more gradual performance
+      degradation with increasing path depth demonstrates its efficient
+      implementation for complex scenarios.
+    </p>
+
+    <h2 id="conclusion">Conclusion</h2>
+
+    <p>
+      Optional chaining provides a clean syntax for accessing nested properties
+      in common scenarios, improving code readability and preventing errors in
+      many cases.
+    </p>
+
+    <p>
+      <code>lodash.get()</code> offers additional capabilities for dynamic paths,
+      default values, and comprehensive edge case handling. It provides particular
+      value in complex applications dealing with external data or requiring high
+      reliability.
+    </p>
+
+    <p>
+      Both approaches have their place in modern JavaScript development.
+      Optional chaining works well for straightforward property access, while <code
+        >lodash.get()</code
+      > remains valuable for more complex scenarios requiring its additional capabilities.
+    </p>
+  </main>
+</Layout>

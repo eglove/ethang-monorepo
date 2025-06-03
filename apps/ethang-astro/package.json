@@ -25,6 +25,7 @@
     "sharp": "^0.34.1",
     "tailwindcss": "<4",
     "typescript-eslint": "^8.31.0",
+    "vitest": "^3.2.1",
     "wrangler": "^4.19.0"
   },
   "engines": {
@@ -33,6 +34,7 @@
   "name": "ethang-astro",
   "scripts": {
     "astro": "astro",
+    "bench": "vitest bench --run",
     "build": "astro build",
     "cf-typegen": "wrangler types",
     "deploy": "astro build && wrangler deploy",
