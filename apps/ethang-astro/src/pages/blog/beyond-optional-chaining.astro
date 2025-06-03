@@ -11,7 +11,7 @@ import "highlight.js/styles/night-owl.css";
   <main class="prose">
     <h1>Optional Chaining vs. lodash.get: Comparative Analysis</h1>
 
-    <div>
+    <div class="select-none">
       <h2>Table of Contents</h2>
       <ul>
         <li>
@@ -306,6 +306,19 @@ get(user, ['profile', 'street', 'address.1'])
       algorithmic complexity (O(n)) and how performance scales with input size.
     </p>
 
+    <p>
+      <strong>Benchmarking Methodology:</strong> The benchmarks were conducted using Vitest's
+      benchmarking utilities, which measure operations per second (ops/sec) for each approach.
+      Each test involved accessing properties at various depths in consistent object structures,
+      with multiple runs to ensure statistical significance. An "operation" in this context
+      refers to a single property access attempt (either successful or returning undefined).
+      The tests were designed to isolate the performance characteristics of the access methods
+      themselves, minimizing the impact of other factors like object creation or result processing.
+      While the raw benchmark results provide absolute performance numbers, the data is presented
+      here as relative performance ratios to provide more meaningful comparisons that remain
+      consistent across different hardware configurations and environments.
+    </p>
+
     <h3 id="basic-performance-comparison">Basic Performance Comparison</h3>
 
     <p>
@@ -326,20 +339,20 @@ get(user, ['profile', 'street', 'address.1'])
         <tbody>
           <tr>
             <td>Simple property access</td>
-            <td>~22.5M ops/sec</td>
-            <td>~4.4M ops/sec</td>
-            <td>~8.0M ops/sec</td>
+            <td>1x (baseline)</td>
+            <td>5.3x slower</td>
+            <td>2.9x slower</td>
           </tr>
           <tr>
             <td>Deep nested property</td>
-            <td>~22.5M ops/sec</td>
-            <td>~4.1M ops/sec</td>
-            <td>~7.4M ops/sec</td>
+            <td>1x (baseline)</td>
+            <td>5.5x slower</td>
+            <td>3.0x slower</td>
           </tr>
           <tr>
             <td>Array access</td>
-            <td>~22.4M ops/sec</td>
-            <td>~4.0M ops/sec</td>
+            <td>1x (baseline)</td>
+            <td>5.6x slower</td>
             <td>N/A</td>
           </tr>
         </tbody>
@@ -350,7 +363,10 @@ get(user, ['profile', 'street', 'address.1'])
 
     <p>
       To understand how each approach scales with input size, I tested
-      performance across increasing path depths:
+      performance across increasing path depths. The results are presented as relative
+      performance ratios, with the fastest approach for each depth serving as the baseline (1x).
+      This provides a more meaningful comparison that remains consistent across different
+      hardware configurations and environments:
     </p>
 
     <div class="overflow-x-auto">
@@ -367,38 +383,38 @@ get(user, ['profile', 'street', 'address.1'])
         <tbody>
           <tr>
             <td>5</td>
-            <td>~22.5M ops/sec</td>
-            <td>~4.8M ops/sec</td>
-            <td>~3.6M ops/sec</td>
-            <td>~1.7M ops/sec</td>
+            <td>1x (baseline)</td>
+            <td>4.7x slower</td>
+            <td>6.3x slower</td>
+            <td>13.2x slower</td>
           </tr>
           <tr>
             <td>10</td>
             <td>N/A</td>
-            <td>~4.4M ops/sec</td>
-            <td>~3.3M ops/sec</td>
-            <td>~1.0M ops/sec</td>
+            <td>1x (baseline)</td>
+            <td>1.3x slower</td>
+            <td>4.4x slower</td>
           </tr>
           <tr>
             <td>20</td>
             <td>N/A</td>
-            <td>~3.5M ops/sec</td>
-            <td>~2.8M ops/sec</td>
-            <td>~0.6M ops/sec</td>
+            <td>1x (baseline)</td>
+            <td>1.3x slower</td>
+            <td>5.8x slower</td>
           </tr>
           <tr>
             <td>50</td>
             <td>N/A</td>
-            <td>~2.1M ops/sec</td>
-            <td>~1.8M ops/sec</td>
-            <td>~0.3M ops/sec</td>
+            <td>1x (baseline)</td>
+            <td>1.2x slower</td>
+            <td>7.0x slower</td>
           </tr>
           <tr>
             <td>100</td>
             <td>N/A</td>
-            <td>~1.3M ops/sec</td>
-            <td>~1.2M ops/sec</td>
-            <td>~0.1M ops/sec</td>
+            <td>1x (baseline)</td>
+            <td>1.1x slower</td>
+            <td>13.0x slower</td>
           </tr>
         </tbody>
       </table>
@@ -406,8 +422,10 @@ get(user, ['profile', 'street', 'address.1'])
 
     <p>
       Note: Optional chaining is marked as N/A for deeper paths because it
-      becomes impractical to write out long chains manually, which is one of its
-      limitations compared to dynamic path approaches.
+      becomes impractical to write out long chains manually (e.g., obj?.a?.b?.c?.d?.e?... for 100 levels), 
+      which is one of its practical limitations compared to dynamic path approaches. 
+      This is not a technical limitation of the feature itself, but rather a limitation 
+      in terms of development ergonomics when dealing with very deep or dynamic paths.
     </p>
 
     <h3 id="algorithmic-complexity-analysis">
@@ -422,23 +440,24 @@ get(user, ['profile', 'street', 'address.1'])
     <ol>
       <li>
         <strong>Linear Complexity (O(n)):</strong> All three approaches exhibit O(n)
-        time complexity where n is the path depth, but with different scaling factors.
+        time complexity where n is the path depth, but with significantly different constant factors.
+        While big-O notation describes the growth rate as input size increases, these constant factors
+        are crucial in practice - they represent the actual overhead per operation. Optional chaining
+        has the lowest constant factor due to native engine optimization, while lodash.get and custom
+        implementations have progressively higher constant factors.
       </li>
       <li>
         <strong>Performance Degradation Rate:</strong> As path depth increases from
         5 to 100:
         <ul>
           <li>
-            lodash.get with array path: Performance decreases by ~3.8x (from
-            4.8M to 1.3M ops/sec)
+            lodash.get with array path: Performance decreases by ~3.8x
           </li>
           <li>
-            lodash.get with string path: Performance decreases by ~3.1x (from
-            3.6M to 1.2M ops/sec)
+            lodash.get with string path: Performance decreases by ~3.1x
           </li>
           <li>
-            Custom get implementation: Performance decreases by ~14.4x (from
-            1.7M to 0.1M ops/sec)
+            Custom get implementation: Performance decreases by ~14.4x
           </li>
         </ul>
       </li>
