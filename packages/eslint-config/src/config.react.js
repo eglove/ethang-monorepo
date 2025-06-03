@@ -57,6 +57,7 @@ export default tseslint.config({
     "react/hooks-extra/prefer-use-state-lazy-initialization": "error",
     "react/jsx-key-before-spread": "error",
     "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-iife": "error",
     "react/jsx-no-undef": "error",
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
