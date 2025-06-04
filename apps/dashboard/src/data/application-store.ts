@@ -13,7 +13,7 @@ import get from "lodash/get";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil.js";
-import sumBy from "lodash/sumBy";
+import map from "lodash/map.js";
 import toInteger from "lodash/toInteger";
 import convertToString from "lodash/toString";
 import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
@@ -129,9 +129,10 @@ export class ApplicationStore {
             get(applications, ["pagination", "totalPages"]),
           );
 
-          state.maxRoundsCount = sumBy(
-            applications.data,
-            "interviewRounds.length",
+          state.maxRoundsCount = Math.max(
+            ...map(applications.data, (datum) => {
+              return datum.interviewRounds.length;
+            }),
           );
         });
 

@@ -102,9 +102,10 @@ public getAll(userId = "") {
           get(applications, ["pagination", "totalPages"]),
         );
 
-        state.maxRoundsCount = sumBy(
-          applications.data,
-          "interviewRounds.length",
+        state.maxRoundsCount = Math.max(
+          ...map(applications.data, (datum) => {
+            return datum.interviewRounds.length;
+          }),
         );
       });
 
