@@ -102,9 +102,9 @@ pnpm i -D browserslist-config-baseline
 
 ```json
 "browserslist": [
-    "extends browserslist-config-baseline",
-    "current node"
-  "],"
+  "extends browserslist-config-baseline",
+  "current node"
+],
 ```
 
 Or a simpler config without an additional dependency.

@@ -202,9 +202,9 @@ export default tseslint.config(
 
   md.codeBlock(
     `"browserslist": [
-    "extends browserslist-config-baseline",
-    "current node"
-  "],"`,
+  "extends browserslist-config-baseline",
+  "current node"
+],`,
     "json",
     2,
   );
