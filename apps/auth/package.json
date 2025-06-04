@@ -5,19 +5,19 @@
   ],
   "dependencies": {
     "@ethang/schemas": "workspace:^",
-    "@ethang/toolbelt": "^4.4.9",
+    "@ethang/toolbelt": "^4.4.10",
     "bcryptjs": "^3.0.1",
     "jose": "^6.0.10",
     "lodash": "^4.17.21",
-    "zod": "^3.25.49"
+    "zod": "^3.25.51"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.35",
-    "@ethang/eslint-config": "^22.8.0",
+    "@cloudflare/vitest-pool-workers": "^0.8.36",
+    "@ethang/eslint-config": "^22.8.1",
     "@types/lodash": "^4.17.16",
     "eslint": "^9.25.1",
     "typescript": "^5.8.3",
-    "wrangler": "^4.19.0"
+    "wrangler": "^4.19.1"
   },
   "engines": {
     "node": ">=22"

@@ -1,12 +1,27 @@
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $eslintConfigDirectory = Join-Path $scriptDir "packages\eslint-config"
 
+function Invoke-CommandWithFallback {
+    param (
+        [string]$command,
+        [string]$errorMessage = "Command failed: ",
+        [int]$exitCode = 1
+    )
+
+    try {
+        Invoke-Expression $command
+    } catch {
+        Write-Host $errorMessage + "$($_.Exception.Message)"
+        exit $exitCode
+    }
+}
+
 corepack up
 Start-Process webstorm .
 Set-Location $eslintConfigDirectory
 Write-Host "Updating dependencies in eslint-config..."
 pnpm up -i --latest
-pnpm build
+Invoke-CommandWithFallback "pnpm build"
 
 $updateTypeOptions = @(
     [PSCustomObject]@{ Name = "patch"; Value = "patch" },
@@ -120,14 +135,16 @@ Update-WranglerTypes -prefix "templates" -directories $templates
 
 # Return to root directory and run final commands
 Set-Location $scriptDir
+Write-Host "Generating Prisma clicents..."
+pnpm -r prisma-gen
 Write-Host "Updating CloudFlare types..."
 pnpm -r cf-typegen
 Write-Host "Building monorepo..."
-pnpm build
+Invoke-CommandWithFallback "pnpm build"
 Write-Host "Running tests..."
-pnpm test
+Invoke-CommandWithFallback "pnpm test"
 Write-Host "Running linter..."
-pnpm lint
+Invoke-CommandWithFallback "pnpm lint"
 Write-Host "Pruning dependencies..."
 pnpm dedupe
 pnpm store prune

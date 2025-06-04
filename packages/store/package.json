@@ -10,11 +10,11 @@
   },
   "description": "Fine grained state management",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.8.0",
+    "@ethang/eslint-config": "^22.8.1",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.16",
     "eslint": "^9.25.1",
-    "vitest": "^3.2.0"
+    "vitest": "^3.2.1"
   },
   "engines": {
     "node": ">=22"

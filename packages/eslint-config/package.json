@@ -25,10 +25,10 @@
     "eslint-plugin-compat": "^6.0.2",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-lodash": "^8.0.0",
-    "eslint-plugin-perfectionist": "^4.13.0",
+    "eslint-plugin-perfectionist": "^4.14.0",
     "eslint-plugin-prettier": "^5.4.1",
     "eslint-plugin-react-hooks": "^5.2.0-rc.1",
-    "eslint-plugin-react-you-might-not-need-an-effect": "^0.0.39",
+    "eslint-plugin-react-you-might-not-need-an-effect": "^0.0.43",
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "3.0.2",
     "eslint-plugin-storybook": "^9.0.4",
@@ -39,14 +39,14 @@
   },
   "devDependencies": {
     "@ethang/markdown-generator": "^1.1.5",
-    "@ethang/toolbelt": "^4.4.9",
+    "@ethang/toolbelt": "^4.4.10",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.17",
     "@types/node": "^22.15.29",
     "lodash": "^4.17.21",
     "typescript": "^5.8.3",
-    "zod": "^3.25.49"
+    "zod": "^3.25.51"
   },
   "engines": {
     "node": ">=22"
@@ -62,5 +62,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "22.8.0"
+  "version": "22.8.1"
 }

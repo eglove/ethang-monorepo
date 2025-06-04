@@ -1,17 +1,17 @@
 {
   "author": "",
   "dependencies": {
-    "@ethang/toolbelt": "^4.4.9",
+    "@ethang/toolbelt": "^4.4.10",
     "lodash": "^4.17.21"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.8.0",
+    "@ethang/eslint-config": "^22.8.1",
     "@types/lodash": "^4.17.16",
     "@types/node": "^22.15.3",
     "eslint": "^9.25.1",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.0"
+    "vitest": "^3.2.1"
   },
   "engines": {
     "node": ">=22"
