@@ -207,9 +207,14 @@ export class ApplicationStore {
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allUserApplications(userId),
-          });
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: queryKeys.allUserApplications(userId),
+            }),
+            queryClient.invalidateQueries({
+              queryKey: queryKeys.stats(userId),
+            }),
+          ]);
 
           this.update((state) => {
             state.isUpdateModalOpen = false;
