@@ -1,5 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
 import {
+  Button,
   getKeyValue,
   Input,
   Link,
@@ -19,6 +20,7 @@ import replace from "lodash/replace.js";
 import startsWith from "lodash/startsWith";
 import times from "lodash/times.js";
 import toInteger from "lodash/toInteger";
+import { XIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 import { DateColumn } from "../../components/data-column.tsx";
@@ -84,6 +86,19 @@ const RouteComponent = () => {
         >
           <div>
             <Input
+              endContent={
+                <Button
+                  isIconOnly
+                  onPress={() => {
+                    applicationStore.setSearch("");
+                  }}
+                  className="size-6"
+                  size="sm"
+                  variant="ghost"
+                >
+                  <XIcon />
+                </Button>
+              }
               onValueChange={(value) => {
                 applicationStore.setSearch(value);
               }}
