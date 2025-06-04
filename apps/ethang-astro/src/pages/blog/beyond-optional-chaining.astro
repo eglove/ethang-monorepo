@@ -3,6 +3,8 @@ import Layout from "../../layouts/Layout.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
 import "highlight.js/styles/night-owl.css";
 import WordCount from "../../components/WordCount.astro";
+import optionalChainingImage from "../../images/optional-chaining.png";
+import LocalImage from "../../components/LocalImage.astro";
 ---
 
 <Layout
@@ -12,6 +14,10 @@ import WordCount from "../../components/WordCount.astro";
   <main class="prose">
     <h1>Optional Chaining vs. lodash.get: Comparative Analysis</h1>
     <WordCount />
+    <LocalImage
+      src={optionalChainingImage}
+      alt="An abstract, dark-toned image depicting the concept of safely accessing nested data."
+    />
 
     <div class="select-none">
       <h2>Table of Contents</h2>

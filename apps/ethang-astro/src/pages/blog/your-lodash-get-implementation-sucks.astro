@@ -161,56 +161,79 @@ it(\`should return the default value when path is empty\`, () => {
 });`;
 ---
 
-<Layout title="Your lodash.get implementation sucks"
-        description="Why you can't recreate lodash.get and why you should just use lodash.">
+<Layout
+  title="Your lodash.get implementation sucks"
+  description="Why you can't recreate lodash.get and why you should just use lodash."
+>
   <main class="prose max-w-screen-lg">
     <h1>Your lodash.get Implementation Sucks</h1>
-    <p>After watching a web app experience 3 white screen crashes within the
-      same week I suggested introducing lodash and its <a
+    <p>
+      After watching a web app experience 3 white screen crashes within the same
+      week I suggested introducing lodash and its <a
         href="https://github.com/eslint-plugins/eslint-plugin-lodash"
-        target="_blank">matching eslint plugin</a>
+        target="_blank">matching eslint plugin</a
+      >
       to enforce it's usage. I was linked to this page as a retort: <a
-        href="https://youmightnotneed.com/lodash/" target="_blank">You Might Not
-        Need Lodash</a> ({lodashAcronym}).</p>
+        href="https://youmightnotneed.com/lodash/"
+        target="_blank">You Might Not Need Lodash</a
+      > ({lodashAcronym}).
+    </p>
     <p>I responded by quoting the page:</p>
-    <blockquote cite="https://youmightnotneed.com/lodash/"><p>But you should use
-      Lodash.</p></blockquote>
-    <p>-<cite>You Might Not
-      Need Lodash</cite></p>
-    <p>When a library like lodash has been around as long as it has, it becomes
-      "battle tested" to the unforeseen edge cases that a "simple utility"
-      could not have possibly taken into account on initial creation.</p>
-    <p>One who has never considered what lodash.get actually does or how it
-      works might think this is equivalent:</p>
+    <blockquote cite="https://youmightnotneed.com/lodash/">
+      <p>But you should use Lodash.</p>
+    </blockquote>
+    <p>-<cite>You Might Not Need Lodash</cite></p>
+    <p>
+      When a library like lodash has been around as long as it has, it becomes
+      "battle tested" to the unforeseen edge cases that a "simple utility" could
+      not have possibly taken into account on initial creation.
+    </p>
+    <p>
+      One who has never considered what lodash.get actually does or how it works
+      might think this is equivalent:
+    </p>
     <CodeBlock code={naiveGet} />
-    <p>Let's now add the test cases from the {lodashAcronym} implementation. And
-      indeed all tests pass:</p>
+    <p>
+      Let's now add the test cases from the {lodashAcronym} implementation. And indeed
+      all tests pass:
+    </p>
     <div class="w-full relative">
       <Image class="object-contain" src={lodashTest1} alt="tests pass" />
     </div>
-    <p>In fact, looking at the total time it takes to run all test cases, this
-      version is slightly faster:</p>
+    <p>
+      In fact, looking at the total time it takes to run all test cases, this
+      version is slightly faster:
+    </p>
     <div class="w-full relative">
-      <Image class="object-contain" src={lodashTest2}
-             alt="bench is 1.63x faster" />
+      <Image
+        class="object-contain"
+        src={lodashTest2}
+        alt="bench is 1.63x faster"
+      />
     </div>
-    <p>But let's start adding some test cases from the lodash source. I should
+    <p>
+      But let's start adding some test cases from the lodash source. I should
       mention that the lodash source code has been going through some major
       changes (such as going to TS first instead of depending on @types/lodash)
-      and I pulled these tests from the v5 WIP. As the current version
-      is being stripped down for rewrites, making the codebase confusing to
-      traverse. But these v5 tests will
-      make the point nicely.</p>
-    <p><a
-      href="https://github.com/lodash/lodash/blob/v5-wip/test/get-and-result.spec.js"
-      target="_blank">See the lodash tests here.</a></p>
+      and I pulled these tests from the v5 WIP. As the current version is being
+      stripped down for rewrites, making the codebase confusing to traverse. But
+      these v5 tests will make the point nicely.
+    </p>
+    <p>
+      <a
+        href="https://github.com/lodash/lodash/blob/v5-wip/test/get-and-result.spec.js"
+        target="_blank">See the lodash tests here.</a>
+    </p>
     <p>The first failure is here:</p>
     <CodeBlock code={failTest1} />
-    <p>The first issue is that the {lodashAcronym} version doesn't support
-      number keys.
-      <strong>It hasn't even taken into account what is and isn't a valid key in
-        JavaScript and naively only supports strings!</strong> So what is a
-      valid JS object key? What does our get function need to support?</p>
+    <p>
+      The first issue is that the {lodashAcronym} version doesn't support number
+      keys.
+      <strong
+        >It hasn't even taken into account what is and isn't a valid key in
+        JavaScript and naively only supports strings!</strong
+      > So what is a valid JS object key? What does our get function need to support?
+    </p>
     <ul>
       <li>Numbers</li>
       <li>Booleans</li>
@@ -220,45 +243,61 @@ it(\`should return the default value when path is empty\`, () => {
       <li>Strings (including "address.street" or "items[0]")</li>
       <li>Plain key objects Object(0), Object(-0)</li>
     </ul>
-    <p>So to pass this test, the implementation needs to support numbers...
-      which means it needs to determine whether a key path is a number at all.
-      And don't get me started on the edge cases there. Determining what is and
-      isn't
-      something in a language like JS is no easy task.</p>
-    <p>This first test doesn't just fail on numbers, but on Object(0), and
+    <p>
+      So to pass this test, the implementation needs to support numbers... which
+      means it needs to determine whether a key path is a number at all. And
+      don't get me started on the edge cases there. Determining what is and
+      isn't something in a language like JS is no easy task.
+    </p>
+    <p>
+      This first test doesn't just fail on numbers, but on Object(0), and
       Object(-0) as well. You can fairly argue that this latter Object case is
       unrealistic. But simply removing it from test cases won't get you very
       far. Because remember this function also needs to support both "0", [0],
-      and the subtle difference of ["0"].</p>
-    <p>The odd Object(0) is not the issue here. It is that fact that
-      <strong>this implementation, who's only job is to resolve object keys,
-        doesn't
-        consider the language standards for what may be a key.</strong></p>
+      and the subtle difference of ["0"].
+    </p>
+    <p>
+      The odd Object(0) is not the issue here. It is that fact that
+      <strong
+        >this implementation, who's only job is to resolve object keys, doesn't
+        consider the language standards for what may be a key.</strong>
+    </p>
     <p>Next test.</p>
     <CodeBlock code={failTest2} />
-    <p>Oh boy, now we have a legitimate edge case. Symbols, a highly underused
-      primitive, are also not supported. The failures are starting to add
-      up.</p>
+    <p>
+      Oh boy, now we have a legitimate edge case. Symbols, a highly underused
+      primitive, are also not supported. The failures are starting to add up.
+    </p>
     <div class="w-full relative">
-      <Image class="object-contain" src={lodashTest3}
-             alt="naive version is now failing two tests where the original is succeeding" />
+      <Image
+        class="object-contain"
+        src={lodashTest3}
+        alt="naive version is now failing two tests where the original is succeeding"
+      />
     </div>
-    <p>The next failure, shows another critical edge case. Considering possible
+    <p>
+      The next failure, shows another critical edge case. Considering possible
       conflict in user intention. Here the result of "a.b" should be 1, but the
-      naive implementation returns 2.</p>
+      naive implementation returns 2.
+    </p>
     <CodeBlock code={failTest3} />
-    <p>You could say this is personal preference, but the naive implementation
+    <p>
+      You could say this is personal preference, but the naive implementation
       doesn't even consider the possibility at all. If you say that periods
       shouldn't exist in the keys of objects, I would argue that this IS a
       necessary test case. Especially when it comes to backend data that is not
-      necessarily formatted for the rules of JavaScript.</p>
-    <p>Another failure. This is the only way to get the value at
-      object.a[""].</p>
+      necessarily formatted for the rules of JavaScript.
+    </p>
+    <p>
+      Another failure. This is the only way to get the value at object.a[""].
+    </p>
     <CodeBlock code={failTest4} />
-    <p>Again, especially when dealing with unpredictable backend
-      data and potential bugs, this case needs to be accounted for. <strong>These
-        edge cases are the only purpose of a get function.</strong> By accessing
-      empty string keys, we avoid unexpected page crashes and values.</p>
+    <p>
+      Again, especially when dealing with unpredictable backend data and
+      potential bugs, this case needs to be accounted for. <strong
+        >These edge cases are the only purpose of a get function.</strong
+      > By accessing empty string keys, we avoid unexpected page crashes and values.
+    </p>
     <p>Fail:</p>
     <CodeBlock code={failTest5} />
     <p>It doesn't handle complex paths correctly:</p>
@@ -271,26 +310,42 @@ it(\`should return the default value when path is empty\`, () => {
     <CodeBlock code={failTest9} />
     <p>Fail</p>
     <CodeBlock code={failTest10} />
-    <p>And maybe the most egregious of all, it can't even handle basic falsy
-      values.</p>
+    <p>
+      And maybe the most egregious of all, it can't even handle basic falsy
+      values.
+    </p>
     <CodeBlock code={failTest11} />
-    <h2><a href="https://www.destroyallsoftware.com/talks/wat" target="_blank">JavaScript Without lodash is Wat</a></h2>
-    <p>If you believe you can actually reproduce lodash get from scratch into a
+    <h2>
+      <a href="https://www.destroyallsoftware.com/talks/wat" target="_blank"
+        >JavaScript Without lodash is Wat</a>
+    </h2>
+    <p>
+      If you believe you can actually reproduce lodash get from scratch into a
       single function (lodash itself does not do this), make sure you get all of
-      the above cases... and add type safety as @types/lodash does.</p>
+      the above cases... and add type safety as @types/lodash does.
+    </p>
     <h2>The Final Results</h2>
-    <p>Naive Version: Passes 5 out of 17 tests.
-      ({(5 / 17).toLocaleString(undefined, {
-        style: "percent"
-      })})</p>
+    <p>
+      Naive Version: Passes 5 out of 17 tests. ({
+        (5 / 17).toLocaleString(undefined, {
+          style: "percent",
+        })
+      })
+    </p>
     <p>Original Version: Passes 17 out of 17 tests. (100%)</p>
     <div class="w-full relative">
-      <Image class="object-contain" src={lodashTest4}
-             alt="naive version only passes 5 out of 17 tests" />
+      <Image
+        class="object-contain"
+        src={lodashTest4}
+        alt="naive version only passes 5 out of 17 tests"
+      />
     </div>
     <div class="w-full relative">
-      <Image class="object-contain" src={lodashTest5}
-             alt="original version passes all 17 out of 17 tests" />
+      <Image
+        class="object-contain"
+        src={lodashTest5}
+        alt="original version passes all 17 out of 17 tests"
+      />
     </div>
   </main>
 </Layout>
