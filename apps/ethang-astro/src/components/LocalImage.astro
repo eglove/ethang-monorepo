@@ -8,15 +8,17 @@ type Props = {
     alt: string;
     src: ImageMetadata;
     imgClass?: string;
+    loading?: "eager" | "lazy";
 }
 
-const {alt, src, imgClass} = Astro.props;
+const {alt, src, imgClass, loading} = Astro.props;
 const id = `modal${v7().replaceAll('-', '')}`;
 ---
 
 <button class="relative w-full h-auto overflow-hidden" onclick={`${id}.showModal()`}>
     <Image
-            class={twMerge("size-full object-contain", imgClass)}
+            loading={loading}
+            class={twMerge("size-full object-contain my-0", imgClass)}
             src={src}
             alt={alt}
     />
