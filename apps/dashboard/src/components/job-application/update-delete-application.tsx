@@ -2,45 +2,23 @@ import type { JobApplication } from "@ethang/schemas/src/dashboard/application-s
 
 import { useUser } from "@clerk/clerk-react";
 import { Button } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import isNil from "lodash/isNil";
+import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore } from "../../global-stores/modal-store.ts";
-import { toastError } from "../../utilities/toast-error.ts";
+import { applicationStore } from "../../data/application-store.ts";
 
 export const UpdateDeleteApplication = ({
   application,
 }: Readonly<{ application: JobApplication }>) => {
-  const queryClient = useQueryClient();
   const { user } = useUser();
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async () => {
-      if (isNil(user?.id)) {
-        return;
-      }
-
-      const response = await globalThis.fetch("/api/application", {
-        body: JSON.stringify({
-          id: application.id,
-        }),
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allUserApplications(user.id),
-        });
-        setIsDeleting(false);
-      } else {
-        toastError(response);
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(
+    applicationStore.deleteApplication(user?.id, () => {
+      setIsDeleting(false);
+    }),
+  );
 
   return (
     <div className="flex gap-2 items-center">
@@ -49,8 +27,8 @@ export const UpdateDeleteApplication = ({
           <Button
             isIconOnly
             onPress={() => {
-              modalStore.setApplicationToUpdate(application);
-              modalStore.openModal("updateApplication");
+              applicationStore.setApplicationToUpdate(application);
+              applicationStore.setIsUpdateModalOpen(true);
             }}
             aria-label="Update Application"
             color="primary"
@@ -77,7 +55,7 @@ export const UpdateDeleteApplication = ({
           <Button
             isIconOnly
             onPress={() => {
-              mutate();
+              mutate(application);
             }}
             aria-label="Confirm delete"
             color="danger"

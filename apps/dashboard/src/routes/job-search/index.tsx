@@ -14,16 +14,12 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import get from "lodash/get.js";
-import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
 import replace from "lodash/replace.js";
 import startsWith from "lodash/startsWith";
-import sumBy from "lodash/sumBy.js";
 import times from "lodash/times.js";
 import toInteger from "lodash/toInteger";
-import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { useDebounce } from "use-debounce";
 
 import { DateColumn } from "../../components/data-column.tsx";
 import { CreateJobApplicationModal } from "../../components/job-application/create-job-application-modal.tsx";
@@ -31,7 +27,10 @@ import { UpdateDeleteApplication } from "../../components/job-application/update
 import { UpdateJobApplicationModal } from "../../components/job-application/update-job-application-modal.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../../components/table-wrapper.tsx";
-import { getApplications } from "../../data/queries/application.ts";
+import {
+  applicationStore,
+  useApplicationStore,
+} from "../../data/application-store.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
 
@@ -54,45 +53,41 @@ const getColumns = (maxRoundCount: number) => {
 const RouteComponent = () => {
   const { user } = useUser();
 
-  const [search, setSearch] = useState("");
-  const [debouncedSearch] = useDebounce(search, 500);
-  const [page, setPage] = useState(1);
+  const { maxRoundsCount, page, search, totalPages } = useApplicationStore(
+    (state) => {
+      return {
+        maxRoundsCount: state.maxRoundsCount,
+        page: state.page,
+        search: state.search,
+        totalPages: state.totalPages,
+      };
+    },
+  );
 
   const {
     data: applications,
     isFetching,
     isPending,
-  } = useQuery(getApplications(user?.id, page, debouncedSearch));
-
-  const nextPage = page + 1;
-  const previousPage = page - 1;
-  const totalPages = get(applications, ["pagination", "totalPages"]);
-  const maxRoundsCount = sumBy(applications?.data, "interviewRounds.length");
-
-  useQuery({
-    ...getApplications(user?.id, nextPage),
-    enabled: !isNil(totalPages) && nextPage < totalPages,
-  });
-
-  useQuery({
-    ...getApplications(user?.id, previousPage),
-    enabled: !isNil(totalPages) && 0 < previousPage,
-  });
+  } = useQuery(applicationStore.getAll(user?.id));
 
   return (
     <MainLayout breadcrumbPaths={[{ href: "/job-stats", label: "Job Search" }]}>
       <div className="grid grid-rows-[auto_1fr] h-full">
         <SectionHeader
+          modalKey={() => {
+            applicationStore.setIsCreateModalOpen(true);
+          }}
           header="Applications"
           isFetching={isFetching}
-          modalKey="createJobApplication"
           modalLabel="Add Application"
           refreshKeys={queryKeys.allUserApplications(user?.id)}
         >
           <div>
             <Input
+              onValueChange={(value) => {
+                applicationStore.setSearch(value);
+              }}
               aria-label="Search"
-              onValueChange={setSearch}
               placeholder="Search"
               size="sm"
               value={search}
@@ -104,11 +99,13 @@ const RouteComponent = () => {
             classNames: { base: "mx-auto" },
             color: "secondary",
             isCompact: true,
-            onChange: setPage,
+            onChange: (value) => {
+              applicationStore.setPage(value);
+            },
             page,
             showControls: true,
             showShadow: true,
-            total: toInteger(applications?.pagination.totalPages),
+            total: totalPages,
           }}
         >
           <Table isHeaderSticky isStriped removeWrapper aria-label="Job Search">

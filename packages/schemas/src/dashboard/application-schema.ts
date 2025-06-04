@@ -49,5 +49,6 @@ export const updateApplicationSchema = applicationSchema
   });
 
 export type CreateJobApplication = z.infer<typeof createApplicationSchema>;
+export type DeleteJobApplication = z.infer<typeof deleteApplicationSchema>;
 export type JobApplication = z.infer<typeof applicationSchema>;
 export type UpdateJobApplication = z.infer<typeof updateApplicationSchema>;

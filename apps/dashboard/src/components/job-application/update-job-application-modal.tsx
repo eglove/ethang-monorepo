@@ -1,7 +1,4 @@
-import type {
-  JobApplication,
-  UpdateJobApplication,
-} from "@ethang/schemas/src/dashboard/application-schema.ts";
+import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
 import type { ZonedDateTime } from "@internationalized/date";
 import type { FormEvent } from "react";
 
@@ -17,7 +14,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { produce } from "immer";
 import filter from "lodash/filter.js";
 import isNil from "lodash/isNil.js";
@@ -29,55 +26,60 @@ import {
   convertDateTimeInputToIso,
   convertIsoToDateTimeInput,
 } from "../../../worker/utilities/heroui.ts";
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
-import { formDateToIso, getFormDate } from "../../utilities/form.ts";
+import {
+  applicationStore,
+  useApplicationStore,
+} from "../../data/application-store.ts";
+import { getFormDate } from "../../utilities/form.ts";
 
 export const UpdateJobApplicationModal = () => {
-  const queryClient = useQueryClient();
   const { user } = useUser();
 
-  const jobApplication = useModalStore((state) => {
-    return state.applicationToUpdate;
-  });
-
-  const isOpen = useModalStore((state) => {
-    return state.updateApplication;
-  });
+  const { applicationToUpdate, isUpdateModalOpen } = useApplicationStore(
+    (state) => {
+      return {
+        applicationToUpdate: state.applicationToUpdate,
+        isUpdateModalOpen: state.isUpdateModalOpen,
+      };
+    },
+  );
 
   const handleChange = (key: keyof JobApplication) => (value: string) => {
-    if (isNil(jobApplication) || "interviewRounds" === key) {
+    if (isNil(applicationToUpdate) || "interviewRounds" === key) {
       return;
     }
 
-    modalStore.setApplicationToUpdate({
-      ...jobApplication,
+    applicationStore.setApplicationToUpdate({
+      ...applicationToUpdate,
       [key]: value,
     });
   };
 
   const handleRemoveInterviewRound = (index: number) => {
-    if (isNil(jobApplication)) {
+    if (isNil(applicationToUpdate)) {
       return;
     }
 
-    modalStore.setApplicationToUpdate({
-      ...jobApplication,
-      interviewRounds: filter(jobApplication.interviewRounds, (_, _index) => {
-        return index !== _index;
-      }),
+    applicationStore.setApplicationToUpdate({
+      ...applicationToUpdate,
+      interviewRounds: filter(
+        applicationToUpdate.interviewRounds,
+        (_, _index) => {
+          return index !== _index;
+        },
+      ),
     });
   };
 
   const handleAddInterviewRound = () => {
-    if (isNil(jobApplication)) {
+    if (isNil(applicationToUpdate)) {
       return;
     }
 
-    modalStore.setApplicationToUpdate({
-      ...jobApplication,
+    applicationStore.setApplicationToUpdate({
+      ...applicationToUpdate,
       interviewRounds: [
-        ...jobApplication.interviewRounds,
+        ...applicationToUpdate.interviewRounds,
         { dateTime: DateTime.now().toISO() },
       ],
     });
@@ -85,7 +87,7 @@ export const UpdateJobApplicationModal = () => {
 
   const handleInterviewRoundChange =
     (index: number) => (value: null | ZonedDateTime) => {
-      if (isNil(jobApplication)) {
+      if (isNil(applicationToUpdate)) {
         return;
       }
 
@@ -94,53 +96,37 @@ export const UpdateJobApplicationModal = () => {
       if (isNil(isoValue)) {
         handleRemoveInterviewRound(index);
       } else {
-        const updated = produce(jobApplication, (state) => {
+        const updated = produce(applicationToUpdate, (state) => {
           state.interviewRounds[index] = { dateTime: isoValue };
         });
 
-        modalStore.setApplicationToUpdate(updated);
+        applicationStore.setApplicationToUpdate(updated);
       }
     };
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async (data: UpdateJobApplication) => {
-      const response = await fetch("/api/application", {
-        body: JSON.stringify({
-          ...data,
-          applied: formDateToIso(data.applied),
-          rejected: isNil(data.rejected) ? null : formDateToIso(data.rejected),
-        }),
-        method: "PUT",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allUserApplications(user?.id),
-        });
-        modalStore.closeModal("updateApplication");
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(
+    applicationStore.updateApplication(user?.id),
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (isNil(jobApplication)) {
+    if (isNil(applicationToUpdate)) {
       return;
     }
 
-    mutate(jobApplication);
+    mutate(applicationToUpdate);
   };
 
   return (
     <Modal
       onOpenChange={(value) => {
         if (!value) {
-          modalStore.setApplicationToUpdate(null);
+          applicationStore.setApplicationToUpdate(null);
         }
-        modalStore.setIsModalOpen("updateApplication", value);
+        applicationStore.setIsUpdateModalOpen(value);
       }}
-      isOpen={isOpen}
+      isOpen={isUpdateModalOpen}
       scrollBehavior="outside"
     >
       <ModalContent>
@@ -152,14 +138,14 @@ export const UpdateJobApplicationModal = () => {
               label="Title"
               name="title"
               onValueChange={handleChange("title")}
-              value={jobApplication?.title ?? ""}
+              value={applicationToUpdate?.title ?? ""}
             />
             <Input
               isRequired
               label="Company"
               name="company"
               onValueChange={handleChange("company")}
-              value={jobApplication?.company ?? ""}
+              value={applicationToUpdate?.company ?? ""}
             />
             <Input
               isRequired
@@ -167,7 +153,7 @@ export const UpdateJobApplicationModal = () => {
               name="url"
               onValueChange={handleChange("url")}
               type="url"
-              value={jobApplication?.url ?? ""}
+              value={applicationToUpdate?.url ?? ""}
             />
             <Input
               isRequired
@@ -175,16 +161,16 @@ export const UpdateJobApplicationModal = () => {
               name="applied"
               onValueChange={handleChange("applied")}
               type="date"
-              value={getFormDate(jobApplication?.applied)}
+              value={getFormDate(applicationToUpdate?.applied)}
             />
             <Input
               label="Rejected"
               name="rejected"
               onValueChange={handleChange("rejected")}
               type="date"
-              value={getFormDate(jobApplication?.rejected)}
+              value={getFormDate(applicationToUpdate?.rejected)}
             />
-            {map(jobApplication?.interviewRounds, (round, index) => {
+            {map(applicationToUpdate?.interviewRounds, (round, index) => {
               return (
                 <div className="flex gap-2 items-center" key={index}>
                   <DateInput
@@ -216,7 +202,7 @@ export const UpdateJobApplicationModal = () => {
           <ModalFooter>
             <Button
               onPress={() => {
-                modalStore.closeModal("updateApplication");
+                applicationStore.setIsUpdateModalOpen(false);
               }}
               color="danger"
               variant="light"

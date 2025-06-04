@@ -1,4 +1,3 @@
-import type { CreateJobApplication } from "@ethang/schemas/src/dashboard/application-schema";
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
@@ -12,39 +11,26 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../global-stores/modal-store.js";
-import { toastError } from "../../utilities/toast-error.ts";
+import {
+  applicationStore,
+  useApplicationStore,
+} from "../../data/application-store.ts";
 
 export const CreateJobApplicationModal = () => {
   const { user } = useUser();
-  const queryClient = useQueryClient();
-  const isOpen = useModalStore((snapshot) => {
-    return snapshot.createJobApplication;
+
+  const isCreateModalOpen = useApplicationStore((state) => {
+    return state.isCreateModalOpen;
   });
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async (data: CreateJobApplication) => {
-      const response = await globalThis.fetch("/api/application", {
-        body: JSON.stringify(data),
-        method: "POST",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allUserApplications(user?.id),
-        });
-        modalStore.closeModal("createJobApplication");
-      } else {
-        toastError(response);
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(
+    applicationStore.createApplication(user?.id),
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -74,9 +60,9 @@ export const CreateJobApplicationModal = () => {
   return (
     <Modal
       onOpenChange={(value) => {
-        modalStore.setIsModalOpen("createJobApplication", value);
+        applicationStore.setIsCreateModalOpen(value);
       }}
-      isOpen={isOpen}
+      isOpen={isCreateModalOpen}
       scrollBehavior="outside"
     >
       <ModalContent>
@@ -90,7 +76,7 @@ export const CreateJobApplicationModal = () => {
           <ModalFooter>
             <Button
               onPress={() => {
-                modalStore.closeModal("createJobApplication");
+                applicationStore.setIsCreateModalOpen(false);
               }}
               color="danger"
               variant="light"

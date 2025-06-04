@@ -1,4 +1,3 @@
-import type { UpdateJobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
 import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 import type { QuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
@@ -11,8 +10,6 @@ import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-s
 const isOpenKeys = [
   "createBookmark",
   "updateBookmark",
-  "updateApplication",
-  "createJobApplication",
   "createQa",
   "updateQa",
   "createTodo",
@@ -23,17 +20,14 @@ const isOpenKeys = [
 export type IsOpenKeys = (typeof isOpenKeys)[number];
 
 type ModalState = {
-  applicationToUpdate: null | UpdateJobApplication;
   bookmarkToUpdate: Bookmark | null;
   contactToUpdate: Contact | null;
   createBookmark: boolean;
   createContact: boolean;
-  createJobApplication: boolean;
   createQa: boolean;
   createTodo: boolean;
   qaToUpdate: null | QuestionAnswer;
   todoToUpdate: null | Todo;
-  updateApplication: boolean;
   updateBookmark: boolean;
   updateContact: boolean;
   updateQa: boolean;
@@ -42,17 +36,14 @@ type ModalState = {
 
 class ModalStore {
   private state: ModalState = {
-    applicationToUpdate: null,
     bookmarkToUpdate: null,
     contactToUpdate: null,
     createBookmark: false,
     createContact: false,
-    createJobApplication: false,
     createQa: false,
     createTodo: false,
     qaToUpdate: null,
     todoToUpdate: null,
-    updateApplication: false,
     updateBookmark: false,
     updateContact: false,
     updateQa: false,
@@ -70,12 +61,6 @@ class ModalStore {
 
   public openModal(key: IsOpenKeys) {
     this.setIsModalOpen(key, true);
-  }
-
-  public setApplicationToUpdate(application: null | UpdateJobApplication) {
-    this.update((draft) => {
-      draft.applicationToUpdate = application;
-    });
   }
 
   public setBookmarkToUpdate(bookmark: Bookmark | null) {
