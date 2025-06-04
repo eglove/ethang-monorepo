@@ -2,41 +2,16 @@
 import "highlight.js/styles/night-owl.css";
 import CodeBlock from "../components/CodeBlock.astro";
 import LocalImage from "../components/LocalImage.astro";
+import WordCount from "../components/WordCount.astro";
 import snippingTool from "../images/windows/snipping-tool.png";
 import greenshot from "../images/windows/greenshot.png";
 import techImage from "../images/tech.png";
 ---
 
 <Fragment>
-  <script>
-    const formatter = Intl.NumberFormat(undefined);
-
-    const calculate = () => {
-      const mainElement = document.querySelector("main.prose");
-
-      if (mainElement) {
-        const textContent = mainElement.innerHTML.replace(/<[^>]*>/g, " ");
-        const words = textContent
-          .split(/\s+/)
-          .filter((word) => word.length > 0);
-        const wordCount = words.length;
-
-        const readTimeMinutes = Math.ceil(wordCount / 225);
-
-        const wordCountElement = document.querySelector(".word-count-display");
-        if (wordCountElement) {
-          wordCountElement.textContent = `${formatter.format(wordCount)} words · ${readTimeMinutes} min read`;
-        }
-      }
-    };
-
-    document.addEventListener("DOMContentLoaded", calculate);
-    document.addEventListener("animationend", calculate);
-  </script>
-
   <main class="prose">
     <h1>How I Code</h1>
-    <p class="text-sm text-gray-500 mb-4 word-count-display">Calculating...</p>
+    <WordCount />
     <LocalImage src={techImage} imgClass="max-w-md" alt="tech abstract" />
     <p>
       What follows are my personal opinions formed through years of hands-on
@@ -1426,10 +1401,10 @@ function customGet(obj, path, defaultValue) {
         >Your lodash.get implementation Sucks</a
       >," and "<a href="/blog/beyond-optional-chaining"
         >Optional Chaining vs. lodash.get: Comparative Analysis</a
-      >" creating a truly robust equivalent to <code>get</code> that covers all
-      these edge cases is a non-trivial task. Developers often underestimate this
-      complexity, leading to buggy, unreliable utility functions that introduce subtle
-      issues into their applications. The time and effort spent reinventing and debugging
+      >" creating a truly robust equivalent to <code>get</code> that covers all these
+      edge cases is a non-trivial task. Developers often underestimate this complexity,
+      leading to buggy, unreliable utility functions that introduce subtle issues
+      into their applications. The time and effort spent reinventing and debugging
       these wheels is rarely a good investment.
     </p>
     <h3 id="theEdgeCaseGauntlet">The Edge Case Gauntlet: Why lodash Wins</h3>

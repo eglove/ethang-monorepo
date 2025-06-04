@@ -1,0 +1,584 @@
+---
+import "highlight.js/styles/night-owl.css";
+import Layout from "../../layouts/Layout.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import LocalImage from "../../components/LocalImage.astro";
+import WordCount from "../../components/WordCount.astro";
+import chromaticSwirl from "../../images/chromatic-swirl.png";
+
+const headers = {
+  introduction: { id: "introduction", label: "Introduction" },
+  whyStoreClass: {
+    id: "whyStoreClass",
+    label: "Why a Store Class Instead of Hooks",
+  },
+  storeStructure: {
+    id: "storeStructure",
+    label: "The Structure of a State Management Store",
+  },
+  reactQueryIntegration: {
+    id: "reactQueryIntegration",
+    label: "Integrating with React Query",
+  },
+  modalHandling: {
+    id: "modalHandling",
+    label: "Handling Modals with the Store",
+  },
+  debounceSearch: {
+    id: "debounceSearch",
+    label: "Debouncing Search with Lodash",
+  },
+  immerUsage: {
+    id: "immerUsage",
+    label: "Immutable Updates with Immer",
+  },
+  syncExternalStore: {
+    id: "syncExternalStore",
+    label: "Using useSyncExternalStoreWithSelector",
+  },
+  controllingRenders: {
+    id: "controllingRenders",
+    label: "Manual Control Over React Rendering",
+  },
+  testability: {
+    id: "testability",
+    label: "Making Logic Easy to Test",
+  },
+  conclusion: {
+    id: "conclusion",
+    label: "Conclusion",
+  },
+};
+
+const storeClassExample = `
+export class ApplicationStore {
+  public get state() {
+    return this._state;
+  }
+  private _state: ApplicationStoreState = defaultState;
+
+  private readonly _subscribers = new Set<
+    (state: ApplicationStoreState) => void
+  >();
+
+  // Methods for CRUD operations, state updates, etc.
+}`;
+
+const stateExample = `
+const defaultState = {
+  applicationToUpdate: null as null | UpdateJobApplication,
+  debouncedSearch: "",
+  isCreateModalOpen: false,
+  isUpdateModalOpen: false,
+  maxRoundsCount: 0,
+  nextPage: 2,
+  page: 1,
+  previousPage: 0,
+  search: "",
+  totalPages: 1,
+};
+
+type ApplicationStoreState = typeof defaultState;`;
+
+const reactQueryExample = `
+public getAll(userId = "") {
+  this.prefetchPreviousPage(userId);
+  this.prefetchNextPage(userId);
+
+  const currentPageKeys = [
+    userId,
+    this.state.page,
+    this.state.debouncedSearch,
+  ] as const;
+
+  return queryOptions({
+    enabled: !isEmpty(userId),
+    placeholderData: keepPreviousData,
+    queryFn: async () => {
+      const applications = await this.runQuery(...currentPageKeys);
+
+      this.update((state) => {
+        state.totalPages = toInteger(
+          get(applications, ["pagination", "totalPages"]),
+        );
+
+        state.maxRoundsCount = sumBy(
+          applications.data,
+          "interviewRounds.length",
+        );
+      });
+
+      return applications;
+    },
+    queryKey: queryKeys.applications(...currentPageKeys),
+  });
+}`;
+
+const modalExample = `
+public setIsCreateModalOpen(isOpen: boolean) {
+  this.update((state) => {
+    state.isCreateModalOpen = isOpen;
+  });
+}
+
+public setIsUpdateModalOpen(isOpen: boolean) {
+  this.update((state) => {
+    state.isUpdateModalOpen = isOpen;
+  });
+}`;
+
+const debounceExample = `
+public setSearch(value: string) {
+  this.update((state) => {
+    state.search = value;
+  });
+
+  debounce(() => {
+    this.update((state) => {
+      state.debouncedSearch = this.state.search;
+    });
+  }, 500)();
+}`;
+
+const immerExample = `
+private update(
+  updater: (draft: ApplicationStoreState) => void,
+  shouldNotify = true,
+) {
+  this._state = produce(this._state, updater);
+
+  if (shouldNotify) {
+    this.notifySubscribers();
+  }
+}`;
+
+const syncExternalStoreExample = `
+export const useApplicationStore = <Selection>(
+  selector: (snapshot: ApplicationStoreState) => Selection,
+  isEqual?: (a: Selection, b: Selection) => boolean,
+) => {
+  return useSyncExternalStoreWithSelector(
+    (listener) => {
+      return applicationStore.subscribe(listener);
+    },
+    () => applicationStore.state,
+    () => applicationStore.state,
+    selector,
+    isEqual,
+  );
+};`;
+
+const subscribeExample = `
+public subscribe(callback: (state: ApplicationStoreState) => void) {
+  this._subscribers.add(callback);
+
+  return () => {
+    this._subscribers.delete(callback);
+  };
+}
+
+private notifySubscribers() {
+  for (const callback of this._subscribers) {
+    callback(this._state);
+  }
+}`;
+
+const testExample = `
+// In your test file
+describe('ApplicationStore', () => {
+  let store: ApplicationStore;
+
+  beforeEach(() => {
+    store = new ApplicationStore();
+    // Mock fetch or other external dependencies
+    global.fetch = vi.fn();
+  });
+
+  test('setSearch updates search state immediately', () => {
+    store.setSearch('test query');
+    expect(store.state.search).toBe('test query');
+  });
+
+  test('setSearch updates debouncedSearch after debounce period', async () => {
+    store.setSearch('test query');
+    expect(store.state.debouncedSearch).toBe('');
+
+    // Fast-forward time
+    vi.advanceTimersByTime(500);
+
+    expect(store.state.debouncedSearch).toBe('test query');
+  });
+});`;
+
+const componentUsageExample = `
+function JobApplicationsList() {
+  const userId = useUserId();
+  const queryOptions = applicationStore.getAll(userId);
+  const { data, isLoading } = useQuery(queryOptions);
+
+  const { 
+    isCreateModalOpen, 
+    search, 
+    page, 
+    totalPages 
+  } = useApplicationStore(
+    (state) => ({
+      isCreateModalOpen: state.isCreateModalOpen,
+      search: state.search,
+      page: state.page,
+      totalPages: state.totalPages,
+    })
+  );
+
+  const handleSearchChange = (e) => {
+    applicationStore.setSearch(e.target.value);
+  };
+
+  const handlePageChange = (newPage) => {
+    applicationStore.setPage(newPage);
+  };
+
+  return (
+    <div>
+      <input 
+        type="text" 
+        value={search} 
+        onChange={handleSearchChange} 
+      />
+
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <ApplicationList applications={data.data} />
+      )}
+
+      <Pagination 
+        currentPage={page} 
+        totalPages={totalPages}
+        onPageChange={handlePageChange} 
+      />
+
+      {isCreateModalOpen && <CreateApplicationModal />}
+    </div>
+  );
+}`;
+---
+
+<Layout title="Building a State Management System with Classes in React">
+  <main class="prose">
+    <h1>Building a State Management System with Classes in React</h1>
+    <WordCount />
+    <LocalImage
+      imgClass="max-w-sm"
+      src={chromaticSwirl}
+      alt="chromatic swirl"
+    />
+    <p>
+      In the ever-evolving landscape of React state management, we've seen
+      countless libraries and patterns come and go. From Redux to MobX, Zustand
+      to Jotai, each offering their own take on how to manage application state.
+      But what if I told you that you might not need any of these libraries at
+      all?
+    </p>
+
+    <p>
+      In this post, I'll walk through a pattern I've been using successfully in
+      production applications: a class-based state management approach. This
+      approach combines the best aspects of object-oriented programming with
+      React's reactive paradigm, resulting in a solution that's both powerful
+      and easy to reason about.
+    </p>
+
+    <ul class="select-none">
+      {
+        Object.values(headers).map((header) => (
+          <li>
+            <a href={`#${header.id}`}>{header.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2 id={headers.introduction.id}>{headers.introduction.label}</h2>
+    <p>
+      State management in React applications can quickly become complex,
+      especially when dealing with asynchronous operations, form state,
+      pagination, and modals. The typical approach involves creating numerous
+      custom hooks, context providers, and reducers, which can lead to a
+      fragmented and hard-to-follow codebase.
+    </p>
+
+    <p>
+      This class-based pattern takes a different approach. Instead of spreading
+      state management logic across multiple hooks and components, it
+      centralizes related state and operations in a single class. This class
+      becomes the single source of truth for a specific domain in your
+      application.
+    </p>
+
+    <h2 id={headers.whyStoreClass.id}>{headers.whyStoreClass.label}</h2>
+    <p>
+      Why use a class instead of hooks? There are several compelling reasons:
+    </p>
+
+    <ol>
+      <li>
+        <strong>Encapsulation</strong>: A class naturally encapsulates related
+        state and behavior, making it easier to reason about and maintain.
+      </li>
+      <li>
+        <strong>Testing</strong>: Class methods are straightforward to test
+        without the complexity of testing hooks.
+      </li>
+      <li>
+        <strong>Separation of concerns</strong>: UI components can focus on
+        rendering while the store handles state management and business logic.
+      </li>
+      <li>
+        <strong>Precise control over rendering</strong>: You decide exactly when
+        to notify subscribers, giving you fine-grained control over when React
+        re-renders.
+      </li>
+      <li>
+        <strong>No dependency on React</strong>: The core logic is independent
+        of React, making it portable and framework-agnostic.
+      </li>
+    </ol>
+
+    <h2 id={headers.storeStructure.id}>{headers.storeStructure.label}</h2>
+    <p>Let's look at the basic structure of a state management store class:</p>
+
+    <CodeBlock code={storeClassExample} />
+
+    <p>
+      The store maintains its state privately and exposes it through a getter.
+      It also maintains a set of subscribers that will be notified when the
+      state changes. This is the foundation of our reactive system.
+    </p>
+
+    <p>The state itself is defined with sensible defaults:</p>
+
+    <CodeBlock code={stateExample} />
+
+    <p>
+      This state includes everything needed for our job application management
+      feature: modal states, pagination information, search queries, and more.
+      By keeping all this related state in one place, we avoid the "state
+      fragmentation" that often occurs with hook-based approaches.
+    </p>
+
+    <h2 id={headers.reactQueryIntegration.id}>
+      {headers.reactQueryIntegration.label}
+    </h2>
+    <p>
+      One of the strengths of this pattern is how seamlessly it integrates with
+      libraries like React Query. Instead of creating custom hooks for each
+      query, we can define methods in our store that return query options:
+    </p>
+
+    <CodeBlock code={reactQueryExample} />
+
+    <p>This method does several things:</p>
+
+    <ol>
+      <li>Prefetches adjacent pages for smoother pagination</li>
+      <li>
+        Creates a query key based on the current user, page, and search term
+      </li>
+      <li>Defines the query function that will fetch the data</li>
+      <li>Updates the store's state with information from the response</li>
+    </ol>
+
+    <p>
+      The beauty of this approach is that it keeps all the query logic in one
+      place, while still leveraging React Query's powerful caching and state
+      management capabilities. Components can simply call <code
+        >useQuery(applicationStore.getAll(userId))</code
+      > without needing to know the implementation details.
+    </p>
+
+    <h2 id={headers.modalHandling.id}>{headers.modalHandling.label}</h2>
+    <p>
+      Modal state is another area where the store class shines. Instead of
+      creating separate state for each modal or using a complex modal manager,
+      we can simply add boolean flags to our store state:
+    </p>
+
+    <CodeBlock code={modalExample} />
+
+    <p>
+      These methods make it trivial to open and close modals from anywhere in
+      the application. Components can subscribe to just the modal state they
+      care about, ensuring they only re-render when necessary.
+    </p>
+
+    <h2 id={headers.debounceSearch.id}>{headers.debounceSearch.label}</h2>
+    <p>
+      Search functionality often requires debouncing to avoid excessive API
+      calls. With our store class, we can implement this elegantly using
+      lodash's debounce function:
+    </p>
+
+    <CodeBlock code={debounceExample} />
+
+    <p>
+      This method immediately updates the <code>search</code> state (for UI responsiveness)
+      but debounces the update to <code>debouncedSearch</code>, which is used
+      for actual API calls. No need for a specialized debounce hook or complex
+      useEffect setup!
+    </p>
+
+    <h2 id={headers.immerUsage.id}>{headers.immerUsage.label}</h2>
+    <p>
+      Immutable state updates are crucial for predictable behavior, but they can
+      be verbose and error-prone. Immer solves this problem by allowing us to
+      write mutable code that results in immutable updates:
+    </p>
+
+    <CodeBlock code={immerExample} />
+
+    <p>
+      Our <code>update</code> method uses Immer's <code>produce</code> function to
+      create a new state object based on the changes made by the updater function.
+      This gives us the best of both worlds: the simplicity of mutable code with
+      the benefits of immutability.
+    </p>
+
+    <p>
+      The <code>shouldNotify</code> parameter gives us additional control, allowing
+      us to batch updates or conditionally notify subscribers.
+    </p>
+
+    <h2 id={headers.syncExternalStore.id}>{headers.syncExternalStore.label}</h2>
+    <p>
+      To connect our store to React's rendering system, we use the <code
+        ><a
+          href="https://www.npmjs.com/package/use-sync-external-store"
+          target="_blank"
+          rel="noopener noreferrer">useSyncExternalStoreWithSelector</a
+        ></code
+      > hook:
+    </p>
+
+    <CodeBlock code={syncExternalStoreExample} />
+
+    <p>
+      This hook, introduced as part of React 18, provides a standard way to
+      subscribe to external data sources. The selector function allows
+      components to subscribe to only the parts of the state they need,
+      preventing unnecessary re-renders.
+    </p>
+
+    <p>The subscription mechanism itself is straightforward:</p>
+
+    <CodeBlock code={subscribeExample} />
+
+    <p>
+      When the store's state changes, <code>notifySubscribers</code> is called, which
+      triggers re-renders in all subscribed components.
+    </p>
+
+    <h2 id={headers.controllingRenders.id}>
+      {headers.controllingRenders.label}
+    </h2>
+    <p>
+      One of the most powerful aspects of this pattern is the precise control it
+      gives you over when React renders. Unlike hooks, which can trigger
+      re-renders in unpredictable ways, our store only notifies subscribers when
+      we explicitly call <code>notifySubscribers</code>.
+    </p>
+
+    <p>
+      <strong>Note:</strong> It's important to understand that this approach is fundamentally
+      different from React class components. While React class components have lifecycle
+      methods like <code>componentDidUpdate()</code> that give some control over
+      the render process, our approach uses a completely separate class that exists
+      outside of React's component system. We're not extending React's <code
+        >Component</code
+      > class - instead, we're creating our own independent store that hooks into
+      React only through the subscription mechanism.
+    </p>
+
+    <p>
+      This control allows for optimizations that would be difficult or
+      impossible with hook-based approaches:
+    </p>
+
+    <ol>
+      <li>Batching multiple state updates before notifying subscribers</li>
+      <li>Conditionally updating state based on complex logic</li>
+      <li>Preventing re-renders for non-visual state changes</li>
+      <li>Synchronizing updates across multiple components</li>
+    </ol>
+
+    <p>
+      For example, when creating a new job application, we can update the state
+      and close the modal in a single operation, triggering just one re-render:
+    </p>
+
+    <p>
+      This level of control is particularly valuable in performance-critical
+      applications or when dealing with complex state transitions.
+    </p>
+
+    <h2 id={headers.testability.id}>{headers.testability.label}</h2>
+    <p>
+      Testing is another area where the store class approach shines. Since the
+      store is just a class with methods, it can be instantiated and tested in
+      isolation, without the complexity of testing hooks or components:
+    </p>
+
+    <CodeBlock code={testExample} />
+
+    <p>
+      Network requests can be easily mocked at the fetch or XMLHttpRequest
+      level, without needing specialized tools like MSW (though those are still
+      valuable for integration tests).
+    </p>
+
+    <p>
+      This testability extends to the entire application. Since components are
+      primarily concerned with rendering and delegating actions to the store,
+      they become simpler and more focused, making them easier to test as well.
+    </p>
+
+    <h2 id={headers.conclusion.id}>{headers.conclusion.label}</h2>
+    <p>
+      This class-based state management pattern offers a powerful alternative to
+      hook-based state management in React applications. By centralizing related
+      state and behavior in a single class, it provides:
+    </p>
+
+    <ul>
+      <li>Better encapsulation and organization of code</li>
+      <li>Precise control over when React renders</li>
+      <li>Seamless integration with libraries like React Query</li>
+      <li>Improved testability and maintainability</li>
+      <li>Reduced dependency on React-specific patterns</li>
+    </ul>
+
+    <p>Here's how a component might use our application store:</p>
+
+    <CodeBlock code={componentUsageExample} />
+
+    <p>
+      This component is focused on what it does best—rendering UI based on state
+      and delegating actions to the store. It doesn't need to know how the
+      search is debounced, how the data is fetched, or how the pagination works.
+      All of that complexity is hidden away in the store.
+    </p>
+
+    <p>
+      While this pattern might not be suitable for every application or team,
+      it's a valuable tool to have in your arsenal. It's particularly
+      well-suited for complex features with multiple related pieces of state and
+      operations.
+    </p>
+
+    <p>
+      So next time you reach for a state management library, consider whether a
+      simple class might be all you need. Sometimes, the best solutions are the
+      simplest ones.
+    </p>
+  </main>
+</Layout>
