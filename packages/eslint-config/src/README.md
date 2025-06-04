@@ -45,7 +45,9 @@
 
 # Install
 
-`pnpm i -D eslint typescript-eslint @ethang/eslint-config`
+```powershell
+pnpm i -D eslint typescript-eslint @ethang/eslint-config
+```
 
 **Requires TypesScript and tsconfig.json at root directory.**
 
@@ -90,12 +92,27 @@ export default tseslint.config(
 
 **Browserslist**
 
-This config will also lint for browserslist features. Make sure to set this in package.json. [More info.](https://github.com/browserslist/browserslist)
+This config will also lint for browserslist features. [More info.](https://github.com/browserslist/browserslist)
+
+It's recommended to use [browserslist-config-baseline](https://github.com/web-platform-dx/browserslist-config-baseline)
+
+```powershell
+pnpm i -D browserslist-config-baseline
+```
+
+```json
+"browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  "],"
+```
+
+Or a simpler config without an additional dependency.
 
 ```json
 "browserslist": [
   "defaults and fully supports es6-module",
-  "maintained node versions"
+  "current node"
 ],
 ```
 

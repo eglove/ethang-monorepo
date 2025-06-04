@@ -7,7 +7,6 @@ type UseOnlineProperties = {
 
 export const useOnline = (properties?: UseOnlineProperties) => {
   const [isOnline, setIsOnline] = useState(() => {
-    // eslint-disable-next-line compat/compat
     return globalThis.navigator.onLine;
   });
 

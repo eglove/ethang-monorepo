@@ -10,6 +10,7 @@ type UseFullscreenReturn = {
 };
 
 const closeFullScreen = (): void => {
+  // eslint-disable-next-line compat/compat
   globalThis.document.exitFullscreen().catch((exitFullscreenError: unknown) => {
     globalThis.console.error(exitFullscreenError);
   });
@@ -21,7 +22,8 @@ export const useFullscreen = (
   const initialState =
     "undefined" === typeof globalThis
       ? false
-      : Boolean(globalThis.document.fullscreenElement);
+      : // eslint-disable-next-line compat/compat
+        Boolean(globalThis.document.fullscreenElement);
   const [fullScreen, setFullScreen] = useState(initialState);
 
   const openFullScreen = (): void => {
@@ -33,6 +35,7 @@ export const useFullscreen = (
   };
 
   useEventListener("fullscreenchange", () => {
+    // eslint-disable-next-line compat/compat
     setFullScreen(globalThis.document.fullscreenElement === reference.current);
   });
 

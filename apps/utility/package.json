@@ -1,7 +1,6 @@
 {
   "browserslist": [
-    "defaults and fully supports es6-module",
-    "maintained node versions"
+    "extends browserslist-config-baseline"
   ],
   "dependencies": {
     "es-toolkit": "^1.38.0",
@@ -10,6 +9,7 @@
   },
   "devDependencies": {
     "@ethang/eslint-config": "^22.8.1",
+    "browserslist-config-baseline": "^0.4.0",
     "@types/lodash": "^4.17.16",
     "@vitest/ui": "^3.2.1",
     "eslint": "^9.26.0",

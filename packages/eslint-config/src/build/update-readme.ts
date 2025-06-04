@@ -143,7 +143,11 @@ export const updateReadme = () => {
   ]);
   md.newLine();
   md.header(1, "Install", 2);
-  md.inlineCode("pnpm i -D eslint typescript-eslint @ethang/eslint-config", 2);
+  md.codeBlock(
+    "pnpm i -D eslint typescript-eslint @ethang/eslint-config",
+    "powershell",
+    2,
+  );
   md.bold("Requires TypesScript and tsconfig.json at root directory.", 2);
   md.header(1, "Config", 2);
   md.text("In **eslint.config.ts**", 2);
@@ -185,13 +189,32 @@ export default tseslint.config(
   );
   md.bold("Browserslist", 2);
   md.text(
-    "This config will also lint for browserslist features. Make sure to set this in package.json. [More info.](https://github.com/browserslist/browserslist)",
+    "This config will also lint for browserslist features. [More info.](https://github.com/browserslist/browserslist)",
     2,
   );
+  md.text("It's recommended to use ");
+  md.link(
+    "browserslist-config-baseline",
+    "https://github.com/web-platform-dx/browserslist-config-baseline",
+    2,
+  );
+  md.codeBlock("pnpm i -D browserslist-config-baseline", "powershell", 2);
+
+  md.codeBlock(
+    `"browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  "],"`,
+    "json",
+    2,
+  );
+
+  md.text("Or a simpler config without an additional dependency.", 2);
+
   md.codeBlock(
     `"browserslist": [
   "defaults and fully supports es6-module",
-  "maintained node versions"
+  "current node"
 ],`,
     "json",
     2,

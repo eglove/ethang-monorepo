@@ -1,8 +1,8 @@
 {
   "author": "Ethan Glover",
   "browserslist": [
-    "defaults and fully supports es6-module",
-    "maintained node versions"
+    "extends browserslist-config-baseline",
+    "current node"
   ],
   "dependencies": {
     "lodash": "^4.17.21"
@@ -12,6 +12,7 @@
     "@ethang/eslint-config": "^22.8.1",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.16",
+    "browserslist-config-baseline": "^0.4.0",
     "eslint": "^9.25.1",
     "vitest": "^3.2.1"
   },
