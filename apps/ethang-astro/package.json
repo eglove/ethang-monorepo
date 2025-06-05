@@ -4,8 +4,8 @@
     "current node"
   ],
   "dependencies": {
-    "@astrojs/cloudflare": "^12.5.3",
-    "astro": "^5.8.2",
+    "@astrojs/cloudflare": "^12.5.4",
+    "astro": "^5.9.0",
     "highlight.js": "^11.11.1",
     "lodash": "^4.17.21",
     "luxon": "^3.6.1",
@@ -14,11 +14,11 @@
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
-    "@ethang/eslint-config": "^22.8.1",
-    "browserslist-config-baseline": "^0.4.0",
+    "@ethang/eslint-config": "^22.8.2",
     "@tailwindcss/typography": "^0.5.16",
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",
+    "browserslist-config-baseline": "^0.4.0",
     "daisyui": "^5.0.37",
     "eslint": "^9.25.1",
     "prettier": "^3.5.3",

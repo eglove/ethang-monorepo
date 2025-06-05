@@ -10,11 +10,11 @@
     "zod": "^3.25.51"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.8.1",
-    "browserslist-config-baseline": "^0.4.0",
+    "@ethang/eslint-config": "^22.8.2",
     "@ethang/project-builder": "^3.0.2",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.16",
+    "browserslist-config-baseline": "^0.4.0",
     "eslint": "^9.25.1",
     "typescript-eslint": "^8.31.0"
   },
