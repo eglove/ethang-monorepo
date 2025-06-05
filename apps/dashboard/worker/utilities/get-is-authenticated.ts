@@ -1,6 +1,5 @@
 import { createClerkClient } from "@clerk/backend";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
-import { jwtDecode } from "jwt-decode";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil";
 
@@ -32,18 +31,18 @@ export const getIsAuthenticated = async (
     secretKey: sk,
   });
 
-  const { isSignedIn, token } = await clerkClient.authenticateRequest(request);
+  const { isAuthenticated, toAuth, token } =
+    await clerkClient.authenticateRequest(request);
 
-  if (!isSignedIn || isNil(token)) {
+  if (!isAuthenticated || isNil(token)) {
     return false;
   }
 
-  const decoded = jwtDecode(token);
-  const userId = decoded.sub;
+  const auth = toAuth();
 
-  if (isNil(userId)) {
+  if (isNil(auth.userId)) {
     return false;
   }
 
-  return userId;
+  return auth.userId;
 };
