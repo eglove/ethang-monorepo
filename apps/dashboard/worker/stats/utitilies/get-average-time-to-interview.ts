@@ -25,10 +25,9 @@ export const getAverageTimeToInterview = (
     );
 
     if (!isNil(firstInterviewRound)) {
-      daySum += DateTime.fromJSDate(firstInterviewRound.dateTime).diff(
-        DateTime.fromJSDate(application.applied),
-        "days",
-      ).days;
+      daySum += DateTime.fromJSDate(
+        new Date(firstInterviewRound.dateTime),
+      ).diff(DateTime.fromJSDate(new Date(application.applied)), "days").days;
     }
   }
 

@@ -15,9 +15,9 @@ export const getDailyApplicationsMap = (
   }[] = [];
 
   for (const application of allUserApplications) {
-    const appliedDate = DateTime.fromJSDate(application.applied).toFormat(
-      "yyyy-MM-dd",
-    );
+    const appliedDate = DateTime.fromJSDate(
+      new Date(application.applied),
+    ).toFormat("yyyy-MM-dd");
 
     const current = find(dailyApplicationsMap, (item) => {
       return item.date === appliedDate;

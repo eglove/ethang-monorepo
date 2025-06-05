@@ -1,3 +1,5 @@
+import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
+
 import isString from "lodash/isString";
 import { DateTime } from "luxon";
 
@@ -11,6 +13,24 @@ export const getUserStatsData = async (
   const prismaClient = getPrismaClient(environment);
   const timezone = isString(request.cf?.timezone) ? request.cf.timezone : "UTC";
 
+  const thirtyDaysAgo = DateTime.now()
+    .set({ hour: 0, millisecond: 0, minute: 0, second: 0 })
+    .setZone(timezone)
+    .minus({ day: 30 })
+    .toMillis();
+
+  const allUserApplicationsQuery = `select
+  T1.applied,
+  T1.rejected,
+  T2.dateTime AS interviewRounds_dateTime
+from applications as T1
+left join interviewRounds as T2 on T1.id = T2.applicationsId
+WHERE T1.userId = ? AND T1.applied >= ?
+order by
+  T1.applied DESC,
+  T2.dateTime DESC;
+`;
+
   const [topCompanies, allUserApplications, totalApplications, totalCompanies] =
     await Promise.all([
       prismaClient.applications.groupBy({
@@ -20,27 +40,12 @@ export const getUserStatsData = async (
         take: 5,
         where: { userId },
       }),
-      prismaClient.applications.findMany({
-        orderBy: { applied: "desc" },
-        select: {
-          applied: true,
-          interviewRounds: {
-            orderBy: { dateTime: "desc" },
-            select: { dateTime: true },
-          },
-          rejected: true,
-        },
-        where: {
-          applied: {
-            gte: DateTime.now()
-              .set({ hour: 0, millisecond: 0, minute: 0, second: 0 })
-              .setZone(timezone)
-              .minus({ day: 30 })
-              .toJSDate(),
-          },
-          userId,
-        },
-      }),
+      environment.DB.prepare(allUserApplicationsQuery)
+        .bind(userId, thirtyDaysAgo)
+        .all<JobApplication>()
+        .then((data) => {
+          return data.results;
+        }),
       prismaClient.applications.aggregate({
         _count: { _all: true },
         where: { userId },

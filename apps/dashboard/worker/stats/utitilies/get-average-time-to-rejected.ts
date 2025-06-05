@@ -18,8 +18,8 @@ export const getAverageTimeToRejected = (
   let daySum = 0;
   for (const application of withRejects) {
     if (!isNil(application.rejected)) {
-      daySum += DateTime.fromJSDate(application.rejected).diff(
-        DateTime.fromJSDate(application.applied),
+      daySum += DateTime.fromJSDate(new Date(application.rejected)).diff(
+        DateTime.fromJSDate(new Date(application.applied)),
         "days",
       ).days;
     }

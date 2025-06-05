@@ -15,7 +15,9 @@ export const getAverageApplicationsPerDay = (
   const dates: Record<string, number> = {};
   let total = 0;
   for (const application of allUserApplications) {
-    const day = DateTime.fromJSDate(application.applied).toFormat("yyyy-MM-dd");
+    const day = DateTime.fromJSDate(new Date(application.applied)).toFormat(
+      "yyyy-MM-dd",
+    );
     const current = get(dates, day, 0);
 
     set(dates, day, current + 1);
