@@ -85,6 +85,7 @@ const customRules: CustomRules = [
             "SAMEORIGIN",
             "starcoder",
             "logprobs",
+            "sealioning",
           ],
         },
       },
