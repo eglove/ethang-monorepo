@@ -83,6 +83,8 @@ const customRules: CustomRules = [
             "noto",
             "nosniff",
             "SAMEORIGIN",
+            "starcoder",
+            "logprobs",
           ],
         },
       },

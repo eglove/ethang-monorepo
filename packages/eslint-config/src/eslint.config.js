@@ -948,6 +948,8 @@ export default tseslint.config(
               "noto",
               "nosniff",
               "SAMEORIGIN",
+              "starcoder",
+              "logprobs",
             ],
           },
         },
