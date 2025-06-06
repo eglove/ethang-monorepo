@@ -962,11 +962,18 @@ export default tseslint.config(
     rules: {
       "markdown/fenced-code-language": "error",
       "markdown/heading-increment": "error",
+      "markdown/no-duplicate-definitions": "error",
       "markdown/no-duplicate-headings": "error",
+      "markdown/no-empty-definitions": "error",
+      "markdown/no-empty-images": "error",
       "markdown/no-empty-links": "error",
       "markdown/no-html": "error",
       "markdown/no-invalid-label-refs": "error",
+      "markdown/no-missing-atx-heading-space": "error",
       "markdown/no-missing-label-refs": "error",
+      "markdown/no-multiple-h1": "error",
+      "markdown/require-alt-text": "error",
+      "markdown/table-column-count": "error",
     },
   },
   {
