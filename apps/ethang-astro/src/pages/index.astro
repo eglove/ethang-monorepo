@@ -1,31 +1,53 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import HomeCard from "../components/HomeCard.astro";
+import map from 'lodash/map.js';
+
+import techImage from "../images/tech.png";
+import chromaticSwirl from "../images/chromatic-swirl.png";
+import optionalChainingImage from "../images/optional-chaining.png";
+import personAtCrossroads from "../images/person-at-crossroads.png"
+import sealioningImage from "../images/sealioning/sealioning.png";
+
+const cards = [
+    {
+        src: techImage,
+        alt: "tech abstract",
+        title: "How I Code",
+        href: "/blog/how-i-code",
+    },
+    {
+        src: chromaticSwirl,
+        alt: "chromatic swirl",
+        title: "Building a State Management System with Classes in React",
+        href: "/blog/state-management-classes",
+    },
+    {
+        src: optionalChainingImage,
+        alt: "An abstract, dark-toned image depicting the concept of safely accessing nested data.",
+        title: "Optional Chaining vs. lodash.get: Comparative Analysis",
+        href: "/blog/beyond-optional-chaining",
+    },
+    {
+        src: personAtCrossroads,
+        alt: "A silhouette of a person standing at a crossroads, with one path leading to a dark, chaotic storm and another path opening up to a calm, softly lit landscape. Use a soft, encouraging color palette for the calm side, contrasting with muted, heavy tones for the storm side. Focus on a sense of transition and hope.",
+        title: "Navigating the Depths of Exhaustion: Understanding and Recovering from Burnout",
+        href: "/blog/understanding-recovering-from-burnout",
+    },
+    {
+        src: sealioningImage,
+        alt: "sealioning comic",
+        title: "Navigating Sealioning in Remote Work Environments",
+        href: "/blog/sealioning-in-remote-work",
+    }
+]
 ---
 
 <Layout>
-  <main class="prose">
-    <h2>
-      <a rel="prefetch" href="/blog/how-i-code">How I Code</a>
-    </h2>
-    <h3>
-      <a rel="prefetch" href="/blog/state-management-classes"
-        >Building a State Management System with Classes in React</a
-      >
-    </h3>
-    <h3>
-      <a rel="prefetch" href="/blog/beyond-optional-chaining"
-        >Optional Chaining vs. lodash.get: Comparative Analysis</a
-      >
-    </h3>
-    <h3>
-      <a rel="prefetch" href="/blog/understanding-recovering-from-burnout"
-        >Navigating the Depths of Exhaustion: Understanding and Recovering from
-        Burnout</a>
-    </h3>
-    <h3>
-      <a rel="prefetch" href="/blog/sealioning-in-remote-work"
-        >Navigating Sealioning in Remote Work Environments</a
-      >
-    </h3>
-  </main>
+    <div class="flex flex-wrap justify-center md:justify-start gap-4">
+        {map(cards, card => {
+            return (
+                    <HomeCard src={card.src} href={card.href} alt={card.alt} title={card.title}/>);
+        })}
+    </div>
 </Layout>
