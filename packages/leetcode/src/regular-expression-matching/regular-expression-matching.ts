@@ -1,20 +1,18 @@
 import isNil from "lodash/isNil.js";
 
-export const isMatch = (
-  s: string,
-  p: string,
-): boolean => {
+export const isMatch = (s: string, p: string): boolean => {
   const match = (index1: number, index2: number): boolean => {
     if (index2 === p.length) {
       return index1 === s.length;
     }
 
-    const characterMatchesOrPeriod = index1 < s.length && (s[index1] === p[index2] || "." === p[index2]);
+    const characterMatchesOrPeriod =
+      index1 < s.length && (s[index1] === p[index2] || "." === p[index2]);
 
     if (index2 + 1 < p.length && "*" === p[index2 + 1]) {
       const zeroOccurrences = match(index1, index2 + 2);
       const oneOrMoreOccurrences =
-          characterMatchesOrPeriod && match(index1 + 1, index2);
+        characterMatchesOrPeriod && match(index1 + 1, index2);
 
       return zeroOccurrences || oneOrMoreOccurrences;
     }
@@ -66,12 +64,16 @@ export const isMatchNoRecursion = (s: string, p: string): boolean => {
       continue;
     }
 
-    const nextCharIsStar = patternIndex + 1 < p.length && "*" === p[patternIndex + 1];
+    const nextCharIsStar =
+      patternIndex + 1 < p.length && "*" === p[patternIndex + 1];
     const characterMatches = isCharacterMatch(s[stringIndex], p[patternIndex]);
 
     if (nextCharIsStar) {
       handleRepeatingPattern(
-        stack, stringIndex, patternIndex, characterMatches,
+        stack,
+        stringIndex,
+        patternIndex,
+        characterMatches,
       );
       // eslint-disable-next-line sonar/elseif-without-else
     } else if (characterMatches) {
