@@ -1,711 +1,688 @@
 ---
-import Layout from "../../layouts/Layout.astro";
 import LocalImage from "../../components/LocalImage.astro";
 import WordCount from "../../components/WordCount.astro";
 import sealioningImage from "../../images/sealioning/sealioning.png";
 import sealioning2Image from "../../images/sealioning/sealioning-2.png";
 import sealioning3Image from "../../images/sealioning/sealioning-3.png";
+import BlogLayout from "../../layouts/BlogLayout.astro";
 ---
 
-<Layout title="Navigating Sealioning in Remote Work Environments">
-  <main class="prose">
-    <main class="prose">
-      <h1>Navigating Sealioning in Remote Work Environments</h1>
-      <WordCount />
-      <LocalImage
-        loading="eager"
-        src={sealioningImage}
-        alt="sealioning comic"
-      />
-      <p>
-        If you've spent any time in remote work environments—especially on
-        platforms like Slack, Teams, or Discord—you've likely encountered a
-        peculiar form of communication that leaves you feeling drained,
-        frustrated, and questioning your own expertise. You might not have known
-        it had a name, but this phenomenon is called "sealioning," and it's
-        become increasingly prevalent in our digital workspaces.
-      </p>
-      <p>
-        As a software engineer who has navigated remote work for years, I've
-        witnessed sealioning derail productive conversations, waste valuable
-        time, and create unnecessary tension among team members. In this post,
-        I'll break down what sealioning is, how it manifests in remote work
-        environments, and most importantly, how to handle it effectively while
-        maintaining your productivity and sanity.
-      </p>
-      <ul class="select-none">
+<BlogLayout title="Navigating Sealioning in Remote Work Environments">
+  <h1>Navigating Sealioning in Remote Work Environments</h1>
+  <WordCount />
+  <LocalImage loading="eager" src={sealioningImage} alt="sealioning comic" />
+  <p>
+    If you've spent any time in remote work environments—especially on platforms
+    like Slack, Teams, or Discord—you've likely encountered a peculiar form of
+    communication that leaves you feeling drained, frustrated, and questioning
+    your own expertise. You might not have known it had a name, but this
+    phenomenon is called "sealioning," and it's become increasingly prevalent in
+    our digital workspaces.
+  </p>
+  <p>
+    As a software engineer who has navigated remote work for years, I've
+    witnessed sealioning derail productive conversations, waste valuable time,
+    and create unnecessary tension among team members. In this post, I'll break
+    down what sealioning is, how it manifests in remote work environments, and
+    most importantly, how to handle it effectively while maintaining your
+    productivity and sanity.
+  </p>
+  <ul class="select-none">
+    <li>
+      <a href="#whatIsSealioning">What Is Sealioning?</a>
+      <ul>
         <li>
-          <a href="#whatIsSealioning">What Is Sealioning?</a>
+          <a href="#originOfTheTerm">Origin of the Term</a>
+        </li>
+        <li>
+          <a href="#keyCharacteristics">Key Characteristics</a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="#sealioningInRemoteWork"
+        >Sealioning in Remote Work Environments</a
+      >
+      <ul>
+        <li>
+          <a href="#slackAndTeamsExamples">Slack and Teams Examples</a>
+        </li>
+        <li>
+          <a href="#codeReviewSealioning">Code Review Sealioning</a>
+        </li>
+        <li>
+          <a href="#meetingSealioning">Meeting Sealioning</a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="#betterCommunicationAlternatives"
+        >Better Communication Alternatives</a
+      >
+      <ul>
+        <li>
+          <a href="#askingGenuineQuestions">Asking Genuine Questions</a>
+        </li>
+        <li>
+          <a href="#respectingExpertise">Respecting Expertise</a>
+        </li>
+        <li>
+          <a href="#productiveDisagreement">Productive Disagreement</a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="#handlingSealions"
+        >Handling Sealions While Remaining Productive</a
+      >
+      <ul>
+        <li>
+          <a href="#recognizingPatterns">Recognizing the Patterns</a>
+        </li>
+        <li>
+          <a href="#settingBoundaries">Setting Clear Boundaries</a>
           <ul>
             <li>
-              <a href="#originOfTheTerm">Origin of the Term</a>
+              <a href="#explainingToSealioner"
+                >Explaining to a Sealioner Why Their Behavior is Problematic</a
+              >
             </li>
             <li>
-              <a href="#keyCharacteristics">Key Characteristics</a>
+              <a href="#beyondBoundaries"
+                >Beyond Setting Boundaries: Strategies for Work Environments</a
+              >
             </li>
           </ul>
         </li>
         <li>
-          <a href="#sealioningInRemoteWork"
-            >Sealioning in Remote Work Environments</a
-          >
-          <ul>
-            <li>
-              <a href="#slackAndTeamsExamples">Slack and Teams Examples</a>
-            </li>
-            <li>
-              <a href="#codeReviewSealioning">Code Review Sealioning</a>
-            </li>
-            <li>
-              <a href="#meetingSealioning">Meeting Sealioning</a>
-            </li>
-          </ul>
+          <a href="#documentationAsShield">Documentation as a Shield</a>
         </li>
         <li>
-          <a href="#betterCommunicationAlternatives"
-            >Better Communication Alternatives</a
-          >
-          <ul>
-            <li>
-              <a href="#askingGenuineQuestions">Asking Genuine Questions</a>
-            </li>
-            <li>
-              <a href="#respectingExpertise">Respecting Expertise</a>
-            </li>
-            <li>
-              <a href="#productiveDisagreement">Productive Disagreement</a>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <a href="#handlingSealions"
-            >Handling Sealions While Remaining Productive</a
-          >
-          <ul>
-            <li>
-              <a href="#recognizingPatterns">Recognizing the Patterns</a>
-            </li>
-            <li>
-              <a href="#settingBoundaries">Setting Clear Boundaries</a>
-              <ul>
-                <li>
-                  <a href="#explainingToSealioner"
-                    >Explaining to a Sealioner Why Their Behavior is Problematic</a
-                  >
-                </li>
-                <li>
-                  <a href="#beyondBoundaries"
-                    >Beyond Setting Boundaries: Strategies for Work Environments</a
-                  >
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a href="#documentationAsShield">Documentation as a Shield</a>
-            </li>
-            <li>
-              <a href="#teamCulture">Cultivating a Healthy Team Culture</a>
-            </li>
-          </ul>
+          <a href="#teamCulture">Cultivating a Healthy Team Culture</a>
         </li>
       </ul>
+    </li>
+  </ul>
 
-      <h2 id="whatIsSealioning">What Is Sealioning?</h2>
+  <h2 id="whatIsSealioning">What Is Sealioning?</h2>
 
-      <LocalImage
-        loading="lazy"
-        src={sealioning2Image}
-        alt="sealion asking trainer about political opinions"
-      />
+  <LocalImage
+    loading="lazy"
+    src={sealioning2Image}
+    alt="sealion asking trainer about political opinions"
+  />
 
-      <p>
-        Sealioning is a type of trolling or harassment that consists of pursuing
-        people with relentless requests for evidence, often tangential or
-        previously addressed, while maintaining a pretense of civility and
-        sincerity. The sealioner feigns ignorance and politeness while making
-        persistent demands for answers and explanations, typically ignoring or
-        sidestepping any evidence already presented.
-      </p>
-      <p>
-        What makes sealioning particularly insidious is that it disguises itself
-        as a sincere attempt to learn and communicate. The questions may seem
-        innocent on the surface, but they're intended to exhaust the target's
-        patience, attention, and communicative effort, and to portray the target
-        as unreasonable when they eventually get frustrated.
-      </p>
+  <p>
+    Sealioning is a type of trolling or harassment that consists of pursuing
+    people with relentless requests for evidence, often tangential or previously
+    addressed, while maintaining a pretense of civility and sincerity. The
+    sealioner feigns ignorance and politeness while making persistent demands
+    for answers and explanations, typically ignoring or sidestepping any
+    evidence already presented.
+  </p>
+  <p>
+    What makes sealioning particularly insidious is that it disguises itself as
+    a sincere attempt to learn and communicate. The questions may seem innocent
+    on the surface, but they're intended to exhaust the target's patience,
+    attention, and communicative effort, and to portray the target as
+    unreasonable when they eventually get frustrated.
+  </p>
 
-      <h3 id="originOfTheTerm">Origin of the Term</h3>
-      <p>
-        The term "sealioning" originated from a 2014 comic strip called "The
-        Terrible Sea Lion" by David Malki in his webcomic Wondermark. In the
-        comic, a character expresses a dislike of sea lions, only for a sea lion
-        to appear and persistently ask her to justify her statement, following
-        her around and even into her bedroom, all while maintaining an
-        exaggerated civility.
-      </p>
-      <p>
-        The comic resonated with many people who had experienced similar
-        interactions online, particularly on platforms like Twitter. The term
-        quickly became popular as a way to describe this specific type of
-        trolling behavior that hides behind a veneer of politeness and "just
-        asking questions."
-      </p>
+  <h3 id="originOfTheTerm">Origin of the Term</h3>
+  <p>
+    The term "sealioning" originated from a 2014 comic strip called "The
+    Terrible Sea Lion" by David Malki in his webcomic Wondermark. In the comic,
+    a character expresses a dislike of sea lions, only for a sea lion to appear
+    and persistently ask her to justify her statement, following her around and
+    even into her bedroom, all while maintaining an exaggerated civility.
+  </p>
+  <p>
+    The comic resonated with many people who had experienced similar
+    interactions online, particularly on platforms like Twitter. The term
+    quickly became popular as a way to describe this specific type of trolling
+    behavior that hides behind a veneer of politeness and "just asking
+    questions."
+  </p>
 
-      <h3 id="keyCharacteristics">Key Characteristics</h3>
-      <p>Sealioning typically involves several key characteristics:</p>
-      <ul>
-        <li>
-          <strong>Persistent questioning</strong> - Often about basic information
-          or points that have already been addressed
-        </li>
-        <li>
-          <strong>Feigned ignorance</strong> - Pretending not to understand explanations
-          that have already been provided
-        </li>
-        <li>
-          <strong>Insistence on civility</strong> - Maintaining a polite tone while
-          being intrusive and demanding
-        </li>
-        <li>
-          <strong>Moving goalposts</strong> - When one question is answered, immediately
-          asking another without acknowledging the answer
-        </li>
-        <li>
-          <strong>Bad faith engagement</strong> - Not genuinely interested in learning,
-          but in exhausting and frustrating the target
-        </li>
-        <li>
-          <strong>Weaponized time and attention</strong> - Demanding disproportionate
-          amounts of someone's time and energy
-        </li>
-      </ul>
-      <p>
-        In essence, sealioning is a form of "denial of service" attack targeted
-        at humans rather than servers—it aims to overwhelm a person's capacity
-        to respond by flooding them with seemingly innocent questions.
-      </p>
+  <h3 id="keyCharacteristics">Key Characteristics</h3>
+  <p>Sealioning typically involves several key characteristics:</p>
+  <ul>
+    <li>
+      <strong>Persistent questioning</strong> - Often about basic information or
+      points that have already been addressed
+    </li>
+    <li>
+      <strong>Feigned ignorance</strong> - Pretending not to understand explanations
+      that have already been provided
+    </li>
+    <li>
+      <strong>Insistence on civility</strong> - Maintaining a polite tone while being
+      intrusive and demanding
+    </li>
+    <li>
+      <strong>Moving goalposts</strong> - When one question is answered, immediately
+      asking another without acknowledging the answer
+    </li>
+    <li>
+      <strong>Bad faith engagement</strong> - Not genuinely interested in learning,
+      but in exhausting and frustrating the target
+    </li>
+    <li>
+      <strong>Weaponized time and attention</strong> - Demanding disproportionate
+      amounts of someone's time and energy
+    </li>
+  </ul>
+  <p>
+    In essence, sealioning is a form of "denial of service" attack targeted at
+    humans rather than servers—it aims to overwhelm a person's capacity to
+    respond by flooding them with seemingly innocent questions.
+  </p>
 
-      <h2 id="sealioningInRemoteWork">
-        Sealioning in Remote Work Environments
-      </h2>
-      <p>
-        Remote work environments, with their heavy reliance on text-based
-        communication, create perfect conditions for sealioning to flourish.
-        Without the benefit of facial expressions, tone of voice, and other
-        non-verbal cues, it can be harder to distinguish between genuine
-        questions and sealioning tactics.
-      </p>
-      <p>
-        In software development and other technical fields, where explaining
-        complex concepts is already challenging, sealioning can be particularly
-        disruptive. Let's look at some common examples of how this manifests in
-        remote work settings.
-      </p>
+  <h2 id="sealioningInRemoteWork">Sealioning in Remote Work Environments</h2>
+  <p>
+    Remote work environments, with their heavy reliance on text-based
+    communication, create perfect conditions for sealioning to flourish. Without
+    the benefit of facial expressions, tone of voice, and other non-verbal cues,
+    it can be harder to distinguish between genuine questions and sealioning
+    tactics.
+  </p>
+  <p>
+    In software development and other technical fields, where explaining complex
+    concepts is already challenging, sealioning can be particularly disruptive.
+    Let's look at some common examples of how this manifests in remote work
+    settings.
+  </p>
 
-      <h3 id="slackAndTeamsExamples">Slack and Teams Examples</h3>
-      <p>
-        In chat platforms like Slack and Microsoft Teams, sealioning often looks
-        like this:
-      </p>
-      <ul>
-        <li>
-          <strong>The Architecture Interrogation</strong>: A developer shares a
-          proposed architecture for a new feature. Instead of offering
-          constructive feedback, a sealioner bombards them with dozens of
-          questions about edge cases that are either irrelevant at this stage or
-          already addressed in the documentation. Each answer is met with "But
-          what about..." without acknowledging the previous response.
-        </li>
-        <li>
-          <strong>The Documentation Demand</strong>: After a team member shares
-          information in a channel, a sealioner repeatedly asks for "sources" or
-          "documentation" for basic industry practices or company-specific
-          processes that are common knowledge among the team. When pointed to
-          existing resources, they claim those aren't sufficient without
-          specifying why.
-        </li>
-        <li>
-          <strong>The Thread Hijacker</strong>: A technical discussion is
-          underway when someone jumps in with tangential questions that derail
-          the conversation. When asked to start a separate thread, they insist
-          their questions are directly relevant and must be answered before the
-          original discussion can continue.
-        </li>
-      </ul>
+  <h3 id="slackAndTeamsExamples">Slack and Teams Examples</h3>
+  <p>
+    In chat platforms like Slack and Microsoft Teams, sealioning often looks
+    like this:
+  </p>
+  <ul>
+    <li>
+      <strong>The Architecture Interrogation</strong>: A developer shares a
+      proposed architecture for a new feature. Instead of offering constructive
+      feedback, a sealioner bombards them with dozens of questions about edge
+      cases that are either irrelevant at this stage or already addressed in the
+      documentation. Each answer is met with "But what about..." without
+      acknowledging the previous response.
+    </li>
+    <li>
+      <strong>The Documentation Demand</strong>: After a team member shares
+      information in a channel, a sealioner repeatedly asks for "sources" or
+      "documentation" for basic industry practices or company-specific processes
+      that are common knowledge among the team. When pointed to existing
+      resources, they claim those aren't sufficient without specifying why.
+    </li>
+    <li>
+      <strong>The Thread Hijacker</strong>: A technical discussion is underway
+      when someone jumps in with tangential questions that derail the
+      conversation. When asked to start a separate thread, they insist their
+      questions are directly relevant and must be answered before the original
+      discussion can continue.
+    </li>
+  </ul>
 
-      <h3 id="codeReviewSealioning">Code Review Sealioning</h3>
-      <p>Code reviews are particularly vulnerable to sealioning tactics:</p>
-      <ul>
-        <li>
-          <strong>The Endless Nitpicker</strong>: Instead of focusing on
-          substantive issues, a reviewer leaves dozens of comments about minor
-          stylistic preferences that aren't part of the team's agreed-upon
-          standards. When the author addresses these, the reviewer finds new,
-          equally minor issues to raise.
-        </li>
-        <li>
-          <strong>The "Just Curious" Blocker</strong>: A reviewer blocks a pull
-          request with questions like "I'm just curious why you chose this
-          approach?" When the author explains their reasoning, the response is
-          "But wouldn't it be better if..." without acknowledging the
-          constraints or trade-offs the author has already explained.
-        </li>
-        <li>
-          <strong>The Historical Interrogator</strong>: "Why was this done this
-          way originally?" "Who decided on this pattern?" "Can you explain the
-          entire history of this module before I approve your two-line change?"
-          These questions shift the burden to the current developer to justify
-          decisions they may not have been involved in.
-        </li>
-      </ul>
+  <h3 id="codeReviewSealioning">Code Review Sealioning</h3>
+  <p>Code reviews are particularly vulnerable to sealioning tactics:</p>
+  <ul>
+    <li>
+      <strong>The Endless Nitpicker</strong>: Instead of focusing on substantive
+      issues, a reviewer leaves dozens of comments about minor stylistic
+      preferences that aren't part of the team's agreed-upon standards. When the
+      author addresses these, the reviewer finds new, equally minor issues to
+      raise.
+    </li>
+    <li>
+      <strong>The "Just Curious" Blocker</strong>: A reviewer blocks a pull
+      request with questions like "I'm just curious why you chose this
+      approach?" When the author explains their reasoning, the response is "But
+      wouldn't it be better if..." without acknowledging the constraints or
+      trade-offs the author has already explained.
+    </li>
+    <li>
+      <strong>The Historical Interrogator</strong>: "Why was this done this way
+      originally?" "Who decided on this pattern?" "Can you explain the entire
+      history of this module before I approve your two-line change?" These
+      questions shift the burden to the current developer to justify decisions
+      they may not have been involved in.
+    </li>
+  </ul>
 
-      <h3 id="meetingSealioning">Meeting Sealioning</h3>
-      <p>Even in video meetings, sealioning can occur:</p>
-      <ul>
-        <li>
-          <strong>The Time Thief</strong>: Someone asks a series of "quick
-          questions" that eat up the entire meeting time, preventing the agenda
-          from being addressed. When time runs out, they suggest scheduling
-          another meeting to continue the discussion.
-        </li>
-        <li>
-          <strong>The Circular Questioner</strong>: After a decision has been
-          made and the team is ready to move on, someone circles back to a point
-          that was already thoroughly discussed, claiming they "just want to
-          make sure we've considered everything."
-        </li>
-        <li>
-          <strong>The Selective Listener</strong>: A team member repeatedly asks
-          questions that were already answered earlier in the meeting, forcing
-          others to repeat themselves and creating the impression that the
-          original explanation was inadequate.
-        </li>
-      </ul>
+  <h3 id="meetingSealioning">Meeting Sealioning</h3>
+  <p>Even in video meetings, sealioning can occur:</p>
+  <ul>
+    <li>
+      <strong>The Time Thief</strong>: Someone asks a series of "quick
+      questions" that eat up the entire meeting time, preventing the agenda from
+      being addressed. When time runs out, they suggest scheduling another
+      meeting to continue the discussion.
+    </li>
+    <li>
+      <strong>The Circular Questioner</strong>: After a decision has been made
+      and the team is ready to move on, someone circles back to a point that was
+      already thoroughly discussed, claiming they "just want to make sure we've
+      considered everything."
+    </li>
+    <li>
+      <strong>The Selective Listener</strong>: A team member repeatedly asks
+      questions that were already answered earlier in the meeting, forcing
+      others to repeat themselves and creating the impression that the original
+      explanation was inadequate.
+    </li>
+  </ul>
 
-      <h2 id="betterCommunicationAlternatives">
-        Better Communication Alternatives
-      </h2>
-      <p>
-        Understanding sealioning helps us recognize it, but it's equally
-        important to understand what healthy, productive communication looks
-        like in remote work environments. Here are some alternatives to
-        sealioning behaviors:
-      </p>
+  <h2 id="betterCommunicationAlternatives">
+    Better Communication Alternatives
+  </h2>
+  <p>
+    Understanding sealioning helps us recognize it, but it's equally important
+    to understand what healthy, productive communication looks like in remote
+    work environments. Here are some alternatives to sealioning behaviors:
+  </p>
 
-      <h3 id="askingGenuineQuestions">Asking Genuine Questions</h3>
-      <p>Genuine questions differ from sealioning in several important ways:</p>
-      <ul>
-        <li>
-          <strong>They're specific and focused</strong>, not vague or open-ended
-        </li>
-        <li>
-          <strong>They acknowledge previous answers</strong> and build upon them
-        </li>
-        <li>
-          <strong>They're asked with appropriate timing</strong>, not
-          interrupting or derailing discussions
-        </li>
-        <li>
-          <strong>They respect the other person's time and expertise</strong>
-        </li>
-        <li>
-          <strong>They're asked with a genuine desire to understand</strong>,
-          not to challenge or exhaust
-        </li>
-      </ul>
-      <p>
-        For example, instead of asking "Why would you use React for this? Can
-        you justify that choice?" (which puts the other person on the
-        defensive), you might ask "I'm curious about the decision to use React
-        here. Were there specific features that made it a good fit for this
-        project?"
-      </p>
+  <h3 id="askingGenuineQuestions">Asking Genuine Questions</h3>
+  <p>Genuine questions differ from sealioning in several important ways:</p>
+  <ul>
+    <li>
+      <strong>They're specific and focused</strong>, not vague or open-ended
+    </li>
+    <li>
+      <strong>They acknowledge previous answers</strong> and build upon them
+    </li>
+    <li>
+      <strong>They're asked with appropriate timing</strong>, not interrupting
+      or derailing discussions
+    </li>
+    <li>
+      <strong>They respect the other person's time and expertise</strong>
+    </li>
+    <li>
+      <strong>They're asked with a genuine desire to understand</strong>, not to
+      challenge or exhaust
+    </li>
+  </ul>
+  <p>
+    For example, instead of asking "Why would you use React for this? Can you
+    justify that choice?" (which puts the other person on the defensive), you
+    might ask "I'm curious about the decision to use React here. Were there
+    specific features that made it a good fit for this project?"
+  </p>
 
-      <h3 id="respectingExpertise">Respecting Expertise</h3>
-      <p>
-        In technical fields, respecting others' expertise is crucial for
-        productive collaboration:
-      </p>
-      <ul>
-        <li>
-          <strong>Acknowledge domain knowledge</strong>: Recognize when someone
-          has deeper expertise in a particular area
-        </li>
-        <li>
-          <strong>Do your homework</strong>: Before asking basic questions,
-          check documentation and search for existing answers
-        </li>
-        <li>
-          <strong>Be transparent about your knowledge level</strong>: It's fine
-          to say "I'm new to this area" rather than pretending to know more than
-          you do
-        </li>
-        <li>
-          <strong>Accept that you don't need to understand everything</strong>:
-          Sometimes it's appropriate to trust others' expertise without
-          demanding they explain every detail
-        </li>
-      </ul>
+  <h3 id="respectingExpertise">Respecting Expertise</h3>
+  <p>
+    In technical fields, respecting others' expertise is crucial for productive
+    collaboration:
+  </p>
+  <ul>
+    <li>
+      <strong>Acknowledge domain knowledge</strong>: Recognize when someone has
+      deeper expertise in a particular area
+    </li>
+    <li>
+      <strong>Do your homework</strong>: Before asking basic questions, check
+      documentation and search for existing answers
+    </li>
+    <li>
+      <strong>Be transparent about your knowledge level</strong>: It's fine to
+      say "I'm new to this area" rather than pretending to know more than you do
+    </li>
+    <li>
+      <strong>Accept that you don't need to understand everything</strong>:
+      Sometimes it's appropriate to trust others' expertise without demanding
+      they explain every detail
+    </li>
+  </ul>
 
-      <h3 id="productiveDisagreement">Productive Disagreement</h3>
-      <p>
-        Disagreement is healthy and necessary in technical work, but there's a
-        world of difference between productive disagreement and sealioning:
-      </p>
-      <ul>
-        <li>
-          <strong>Be specific about your concerns</strong>: "I'm concerned about
-          the performance implications of this approach" is more helpful than
-          "Are you sure this is the best way?"
-        </li>
-        <li>
-          <strong>Offer alternatives</strong>: Don't just question—suggest other
-          approaches
-        </li>
-        <li>
-          <strong>Focus on the work, not the person</strong>: "This
-          implementation might have scaling issues" rather than "Why would you
-          implement it this way?"
-        </li>
-        <li>
-          <strong>Know when to let go</strong>: Once you've made your case and a
-          decision has been made, move forward constructively
-        </li>
-        <li>
-          <strong>Use appropriate channels</strong>: Some disagreements are
-          better handled in private messages or dedicated meetings, not public
-          channels
-        </li>
-      </ul>
+  <h3 id="productiveDisagreement">Productive Disagreement</h3>
+  <p>
+    Disagreement is healthy and necessary in technical work, but there's a world
+    of difference between productive disagreement and sealioning:
+  </p>
+  <ul>
+    <li>
+      <strong>Be specific about your concerns</strong>: "I'm concerned about the
+      performance implications of this approach" is more helpful than "Are you
+      sure this is the best way?"
+    </li>
+    <li>
+      <strong>Offer alternatives</strong>: Don't just question—suggest other
+      approaches
+    </li>
+    <li>
+      <strong>Focus on the work, not the person</strong>: "This implementation
+      might have scaling issues" rather than "Why would you implement it this
+      way?"
+    </li>
+    <li>
+      <strong>Know when to let go</strong>: Once you've made your case and a
+      decision has been made, move forward constructively
+    </li>
+    <li>
+      <strong>Use appropriate channels</strong>: Some disagreements are better
+      handled in private messages or dedicated meetings, not public channels
+    </li>
+  </ul>
 
-      <h2 id="handlingSealions">
-        Handling Sealions While Remaining Productive
-      </h2>
-      <LocalImage
-        loading="lazy"
-        src={sealioning3Image}
-        alt="sealion running after someone"
-      />
-      <p>
-        Despite our best efforts to create healthy communication environments,
-        you'll likely encounter sealioning in your remote work. Here are
-        strategies for handling it effectively while maintaining your
-        productivity and professionalism:
-      </p>
+  <h2 id="handlingSealions">Handling Sealions While Remaining Productive</h2>
+  <LocalImage
+    loading="lazy"
+    src={sealioning3Image}
+    alt="sealion running after someone"
+  />
+  <p>
+    Despite our best efforts to create healthy communication environments,
+    you'll likely encounter sealioning in your remote work. Here are strategies
+    for handling it effectively while maintaining your productivity and
+    professionalism:
+  </p>
 
-      <h3 id="recognizingPatterns">Recognizing the Patterns</h3>
-      <p>
-        The first step in handling sealioning is recognizing it. Watch for these
-        patterns:
-      </p>
-      <ul>
-        <li>Questions that seem disproportionate to the topic at hand</li>
-        <li>The same questions being asked repeatedly in different ways</li>
-        <li>
-          Questions that ignore or dismiss the answers you've already provided
-        </li>
-        <li>A sense that you're being "tested" rather than engaged with</li>
-        <li>Conversations that leave you feeling drained and frustrated</li>
-      </ul>
-      <p>
-        Trust your instincts. If an interaction feels like it's in bad faith, it
-        probably is.
-      </p>
+  <h3 id="recognizingPatterns">Recognizing the Patterns</h3>
+  <p>
+    The first step in handling sealioning is recognizing it. Watch for these
+    patterns:
+  </p>
+  <ul>
+    <li>Questions that seem disproportionate to the topic at hand</li>
+    <li>The same questions being asked repeatedly in different ways</li>
+    <li>
+      Questions that ignore or dismiss the answers you've already provided
+    </li>
+    <li>A sense that you're being "tested" rather than engaged with</li>
+    <li>Conversations that leave you feeling drained and frustrated</li>
+  </ul>
+  <p>
+    Trust your instincts. If an interaction feels like it's in bad faith, it
+    probably is.
+  </p>
 
-      <h3 id="settingBoundaries">Setting Clear Boundaries</h3>
-      <p>Once you recognize sealioning, setting boundaries is essential:</p>
-      <ul>
-        <li>
-          <strong>Limit your engagement</strong>: It's okay to say "I've
-          answered this question already" or "This isn't a productive use of our
-          time right now"
-        </li>
-        <li>
-          <strong>Redirect to appropriate resources</strong>: "Take a look at
-          our test suite for this component - it demonstrates exactly how the
-          feature works in different scenarios. The tests serve as living
-          documentation of the intended behavior."
-        </li>
-        <li>
-          <strong>Set time limits</strong>: "I can spend 15 minutes discussing
-          this now, but then I need to get back to my other tasks."
-        </li>
-        <li>
-          <strong>Involve others when necessary</strong>: If sealioning is
-          persistent, it may be appropriate to involve a manager or team lead
-        </li>
-      </ul>
+  <h3 id="settingBoundaries">Setting Clear Boundaries</h3>
+  <p>Once you recognize sealioning, setting boundaries is essential:</p>
+  <ul>
+    <li>
+      <strong>Limit your engagement</strong>: It's okay to say "I've answered
+      this question already" or "This isn't a productive use of our time right
+      now"
+    </li>
+    <li>
+      <strong>Redirect to appropriate resources</strong>: "Take a look at our
+      test suite for this component - it demonstrates exactly how the feature
+      works in different scenarios. The tests serve as living documentation of
+      the intended behavior."
+    </li>
+    <li>
+      <strong>Set time limits</strong>: "I can spend 15 minutes discussing this
+      now, but then I need to get back to my other tasks."
+    </li>
+    <li>
+      <strong>Involve others when necessary</strong>: If sealioning is
+      persistent, it may be appropriate to involve a manager or team lead
+    </li>
+  </ul>
 
-      <h4 id="explainingToSealioner">
-        Explaining to a Sealioner Why Their Behavior is Problematic
-      </h4>
-      <p>
-        One of the challenges with sealioning is that the person doing it may
-        not realize the impact of their behavior. Here's how you might explain
-        to someone that their questioning pattern is a form of harassment,
-        whether intentional or not:
-      </p>
+  <h4 id="explainingToSealioner">
+    Explaining to a Sealioner Why Their Behavior is Problematic
+  </h4>
+  <p>
+    One of the challenges with sealioning is that the person doing it may not
+    realize the impact of their behavior. Here's how you might explain to
+    someone that their questioning pattern is a form of harassment, whether
+    intentional or not:
+  </p>
 
-      <div class="chat chat-start">
-        <div class="chat-header">You</div>
-        <div class="chat-bubble chat-bubble-primary">
-          I've noticed a pattern in our interactions where you ask multiple
-          follow-up questions without acknowledging my answers. This creates a
-          burden where I'm constantly explaining and re-explaining, which is
-          exhausting and prevents me from doing my actual work.
-        </div>
-      </div>
-      <div class="chat chat-start">
-        <div class="chat-bubble chat-bubble-primary">
-          When you ask questions without sharing your own thoughts or context,
-          it puts the entire burden of the conversation on me. This is a pattern
-          known as "sealioning" and it can be a form of unintentional
-          harassment.
-        </div>
-      </div>
-      <div class="chat chat-end">
-        <div class="chat-header">Colleague</div>
-        <div class="chat-bubble">
-          I'm just asking questions to understand. How is that harassment?
-        </div>
-      </div>
-      <div class="chat chat-start">
-        <div class="chat-bubble chat-bubble-primary">
-          I appreciate your desire to understand. The issue isn't asking
-          questions - it's the pattern and approach. When you ask multiple
-          questions without sharing your own thinking, it creates an imbalanced
-          conversation where one person does all the work.
-        </div>
-      </div>
-      <div class="chat chat-start">
-        <div class="chat-bubble chat-bubble-primary">
-          A more productive approach would be to share your current
-          understanding and specific concerns, rather than asking open-ended
-          questions. For example, instead of asking "Why did you choose this
-          approach?" you could say "I'm wondering if this approach might have
-          performance issues because..."
-        </div>
-      </div>
-      <div class="chat chat-end">
-        <div class="chat-bubble">
-          I didn't realize how it was coming across. I'll try to be more
-          specific and share my thinking.
-        </div>
-      </div>
+  <div class="chat chat-start">
+    <div class="chat-header">You</div>
+    <div class="chat-bubble chat-bubble-primary">
+      I've noticed a pattern in our interactions where you ask multiple
+      follow-up questions without acknowledging my answers. This creates a
+      burden where I'm constantly explaining and re-explaining, which is
+      exhausting and prevents me from doing my actual work.
+    </div>
+  </div>
+  <div class="chat chat-start">
+    <div class="chat-bubble chat-bubble-primary">
+      When you ask questions without sharing your own thoughts or context, it
+      puts the entire burden of the conversation on me. This is a pattern known
+      as "sealioning" and it can be a form of unintentional harassment.
+    </div>
+  </div>
+  <div class="chat chat-end">
+    <div class="chat-header">Colleague</div>
+    <div class="chat-bubble">
+      I'm just asking questions to understand. How is that harassment?
+    </div>
+  </div>
+  <div class="chat chat-start">
+    <div class="chat-bubble chat-bubble-primary">
+      I appreciate your desire to understand. The issue isn't asking questions -
+      it's the pattern and approach. When you ask multiple questions without
+      sharing your own thinking, it creates an imbalanced conversation where one
+      person does all the work.
+    </div>
+  </div>
+  <div class="chat chat-start">
+    <div class="chat-bubble chat-bubble-primary">
+      A more productive approach would be to share your current understanding
+      and specific concerns, rather than asking open-ended questions. For
+      example, instead of asking "Why did you choose this approach?" you could
+      say "I'm wondering if this approach might have performance issues
+      because..."
+    </div>
+  </div>
+  <div class="chat chat-end">
+    <div class="chat-bubble">
+      I didn't realize how it was coming across. I'll try to be more specific
+      and share my thinking.
+    </div>
+  </div>
 
-      <h4 id="beyondBoundaries">
-        Beyond Setting Boundaries: Strategies for Work Environments
-      </h4>
-      <p>
-        Setting boundaries is important, but in professional settings, you may
-        need additional strategies to handle sealioning effectively:
-      </p>
+  <h4 id="beyondBoundaries">
+    Beyond Setting Boundaries: Strategies for Work Environments
+  </h4>
+  <p>
+    Setting boundaries is important, but in professional settings, you may need
+    additional strategies to handle sealioning effectively:
+  </p>
 
-      <div class="chat chat-start">
-        <div class="chat-header">You</div>
-        <div class="chat-bubble chat-bubble-secondary">2+2=4</div>
-      </div>
-      <div class="chat chat-end">
-        <div class="chat-header">Sealioner</div>
-        <div class="chat-bubble">What do you mean?</div>
-      </div>
+  <div class="chat chat-start">
+    <div class="chat-header">You</div>
+    <div class="chat-bubble chat-bubble-secondary">2+2=4</div>
+  </div>
+  <div class="chat chat-end">
+    <div class="chat-header">Sealioner</div>
+    <div class="chat-bubble">What do you mean?</div>
+  </div>
 
-      <p>
-        <strong
-          >Strategy 1: Redirect with a question about their understanding</strong>
-      </p>
+  <p>
+    <strong
+      >Strategy 1: Redirect with a question about their understanding</strong
+    >
+  </p>
 
-      <div class="chat chat-start">
-        <div class="chat-header">You</div>
-        <div class="chat-bubble chat-bubble-secondary">
-          I'm referring to basic addition. What part are you unclear about
-          specifically? Do you have a different understanding you'd like to
-          share?
-        </div>
-      </div>
+  <div class="chat chat-start">
+    <div class="chat-header">You</div>
+    <div class="chat-bubble chat-bubble-secondary">
+      I'm referring to basic addition. What part are you unclear about
+      specifically? Do you have a different understanding you'd like to share?
+    </div>
+  </div>
 
-      <p>
-        <strong
-          >Strategy 2: Provide a brief explanation once, then move to
-          documentation</strong>
-      </p>
+  <p>
+    <strong
+      >Strategy 2: Provide a brief explanation once, then move to documentation</strong
+    >
+  </p>
 
-      <div class="chat chat-start">
-        <div class="chat-header">You</div>
-        <div class="chat-bubble chat-bubble-secondary">
-          It's a standard arithmetic equation. If you need more background,
-          here's a link to our documentation on mathematical operations. Let's
-          move on to the task at hand.
-        </div>
-      </div>
+  <div class="chat chat-start">
+    <div class="chat-header">You</div>
+    <div class="chat-bubble chat-bubble-secondary">
+      It's a standard arithmetic equation. If you need more background, here's a
+      link to our documentation on mathematical operations. Let's move on to the
+      task at hand.
+    </div>
+  </div>
 
-      <p><strong>Strategy 3: Engage the broader team</strong></p>
+  <p><strong>Strategy 3: Engage the broader team</strong></p>
 
-      <div class="chat chat-start">
-        <div class="chat-header">You</div>
-        <div class="chat-bubble chat-bubble-secondary">
-          @channel Does anyone else have questions about this arithmetic
-          operation? I want to make sure we're all on the same page before
-          moving forward.
-        </div>
-      </div>
+  <div class="chat chat-start">
+    <div class="chat-header">You</div>
+    <div class="chat-bubble chat-bubble-secondary">
+      @channel Does anyone else have questions about this arithmetic operation?
+      I want to make sure we're all on the same page before moving forward.
+    </div>
+  </div>
 
-      <p>
-        <strong
-          >Strategy 4: Use the "yes, and" technique to move the conversation
-          forward</strong>
-      </p>
+  <p>
+    <strong
+      >Strategy 4: Use the "yes, and" technique to move the conversation forward</strong
+    >
+  </p>
 
-      <div class="chat chat-start">
-        <div class="chat-header">You</div>
-        <div class="chat-bubble chat-bubble-secondary">
-          Yes, 2+2=4, and based on that, we can calculate our project timeline
-          as follows... [continues with the actual work]
-        </div>
-      </div>
+  <div class="chat chat-start">
+    <div class="chat-header">You</div>
+    <div class="chat-bubble chat-bubble-secondary">
+      Yes, 2+2=4, and based on that, we can calculate our project timeline as
+      follows... [continues with the actual work]
+    </div>
+  </div>
 
-      <p>
-        These strategies help you maintain professionalism while preventing the
-        conversation from being derailed. The key is to shift from a defensive
-        position to one that maintains momentum on the actual work.
-      </p>
+  <p>
+    These strategies help you maintain professionalism while preventing the
+    conversation from being derailed. The key is to shift from a defensive
+    position to one that maintains momentum on the actual work.
+  </p>
 
-      <h3 id="documentationAsShield">Documentation as a Shield</h3>
-      <p>
-        Good documentation, especially <a
-          href="/blog/how-i-code#documentationIsForUsers"
-          >test-driven documentation</a
-        >, can be your best defense against sealioning:
-      </p>
-      <ul>
-        <li>
-          <strong>Let tests drive your documentation</strong>: Test cases are
-          the most reliable and up-to-date form of documentation because they
-          demonstrate actual behavior, are verified with each build, and show
-          how your system actually works, not how someone thinks it works
-        </li>
-        <li>
-          <strong>Use architecture decision records (ADRs)</strong>: For
-          technical decisions, ADRs document not just what was decided, but why,
-          providing context that can head off unnecessary questioning
-        </li>
-      </ul>
+  <h3 id="documentationAsShield">Documentation as a Shield</h3>
+  <p>
+    Good documentation, especially <a
+      href="/blog/how-i-code#documentationIsForUsers"
+      >test-driven documentation</a
+    >, can be your best defense against sealioning:
+  </p>
+  <ul>
+    <li>
+      <strong>Let tests drive your documentation</strong>: Test cases are the
+      most reliable and up-to-date form of documentation because they
+      demonstrate actual behavior, are verified with each build, and show how
+      your system actually works, not how someone thinks it works
+    </li>
+    <li>
+      <strong>Use architecture decision records (ADRs)</strong>: For technical
+      decisions, ADRs document not just what was decided, but why, providing
+      context that can head off unnecessary questioning
+    </li>
+  </ul>
 
-      <h3 id="teamCulture">Cultivating a Healthy Team Culture</h3>
-      <p>
-        Individual responses to sealioning are important, but addressing it at
-        the team level is even more effective:
-      </p>
-      <ul>
-        <li>
-          <strong>Establish communication norms</strong>: Work with your team to
-          create explicit guidelines about how questions should be asked and
-          answered
-        </li>
-        <li>
-          <strong>Model good behavior</strong>: Demonstrate respectful
-          questioning and engagement in your own communications
-        </li>
-        <li>
-          <strong>Address patterns, not incidents</strong>: If someone
-          consistently engages in sealioning, focus on the pattern rather than
-          individual instances
-        </li>
-        <li>
-          <strong>Create safe spaces for learning</strong>: Designate specific
-          channels or times for in-depth questions and learning discussions
-        </li>
-        <li>
-          <strong>Recognize and reward constructive communication</strong>:
-          Acknowledge team members who communicate effectively and supportively
-        </li>
-      </ul>
-      <p>
-        Remember that some sealioning may be unintentional—people who are
-        anxious, new to a team, or from different cultural backgrounds might ask
-        questions in ways that seem like sealioning but aren't intended that
-        way. Approach these situations with empathy while still maintaining your
-        boundaries.
-      </p>
+  <h3 id="teamCulture">Cultivating a Healthy Team Culture</h3>
+  <p>
+    Individual responses to sealioning are important, but addressing it at the
+    team level is even more effective:
+  </p>
+  <ul>
+    <li>
+      <strong>Establish communication norms</strong>: Work with your team to
+      create explicit guidelines about how questions should be asked and
+      answered
+    </li>
+    <li>
+      <strong>Model good behavior</strong>: Demonstrate respectful questioning
+      and engagement in your own communications
+    </li>
+    <li>
+      <strong>Address patterns, not incidents</strong>: If someone consistently
+      engages in sealioning, focus on the pattern rather than individual
+      instances
+    </li>
+    <li>
+      <strong>Create safe spaces for learning</strong>: Designate specific
+      channels or times for in-depth questions and learning discussions
+    </li>
+    <li>
+      <strong>Recognize and reward constructive communication</strong>:
+      Acknowledge team members who communicate effectively and supportively
+    </li>
+  </ul>
+  <p>
+    Remember that some sealioning may be unintentional—people who are anxious,
+    new to a team, or from different cultural backgrounds might ask questions in
+    ways that seem like sealioning but aren't intended that way. Approach these
+    situations with empathy while still maintaining your boundaries.
+  </p>
 
-      <h2>Conclusion</h2>
-      <p>
-        Sealioning can be frustrating and disruptive in remote work
-        environments, but recognizing it is the first step toward addressing it
-        effectively. By understanding what sealioning is, how it manifests in
-        remote work, and how to respond to it, you can protect your time and
-        energy while maintaining productive professional relationships.
-      </p>
-      <p>
-        Remember that your expertise and time are valuable. You don't owe
-        endless explanations to someone who isn't engaging in good faith. By
-        setting clear boundaries, leveraging documentation, and working with
-        your team to create healthy communication norms, you can minimize the
-        impact of sealioning and focus on what matters: doing great work
-        together, even when you're miles apart.
-      </p>
+  <h2>Conclusion</h2>
+  <p>
+    Sealioning can be frustrating and disruptive in remote work environments,
+    but recognizing it is the first step toward addressing it effectively. By
+    understanding what sealioning is, how it manifests in remote work, and how
+    to respond to it, you can protect your time and energy while maintaining
+    productive professional relationships.
+  </p>
+  <p>
+    Remember that your expertise and time are valuable. You don't owe endless
+    explanations to someone who isn't engaging in good faith. By setting clear
+    boundaries, leveraging documentation, and working with your team to create
+    healthy communication norms, you can minimize the impact of sealioning and
+    focus on what matters: doing great work together, even when you're miles
+    apart.
+  </p>
 
-      <h2>References</h2>
-      <ol>
-        <li>
-          <a
-            href="https://www.merriam-webster.com/words-at-play/sealioning-internet-trolling"
-            target="_blank"
-            >What is 'Sealioning?' Sea lions can be real trolls sometimes</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://www.macleans.ca/culture/sealioning-is-the-word-that-sums-up-why-twitter-discussion-is-so-unbearable/"
-            target="_blank"
-            >'Sealioning' is the word that sums up why Twitter discussion is so
-            unbearable</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://slate.com/technology/2014/10/twitter-is-broken-gamergate-proves-it.html"
-            target="_blank">Twitter Is Broken</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://www.indy100.com/science-tech/this-comic-is-the-most-apt-description-of-twitter-you-ll-ever-see-7247666"
-            target="_blank"
-            >This comic is the most apt description of Twitter you'll ever see</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://metro.co.uk/2018/07/05/sealioning-new-thing-worry-relationships-online-7680577/"
-            target="_blank"
-            >Sealioning is the new thing to worry about in relationships and
-            online</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://www.theguardian.com/technology/2018/aug/18/how-to-handle-a-troll-and-neuter-a-sea-lion-dealing-with-online-attacks-astroturfine-trolljacking"
-            target="_blank">How to handle a troll ... and neuter a sea lion</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://www.forbes.com/sites/marshallshepherd/2019/03/07/sealioning-is-a-common-trolling-tactic-on-social-media-what-is-it/"
-            target="_blank"
-            >'Sealioning' Is A Common Trolling Tactic On Social Media—What Is
-            It?</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://theconversation.com/dont-read-the-comments-misinformed-and-malicious-comments-stifle-indigenous-voices-180576"
-            target="_blank"
-            >"Don't read the comments": misinformed and malicious comments
-            stifle Indigenous voices</a
-          >
-        </li>
-      </ol>
-    </main>
-  </main>
-</Layout>
+  <h2>References</h2>
+  <ol>
+    <li>
+      <a
+        href="https://www.merriam-webster.com/words-at-play/sealioning-internet-trolling"
+        target="_blank"
+        >What is 'Sealioning?' Sea lions can be real trolls sometimes</a
+      >
+    </li>
+    <li>
+      <a
+        href="https://www.macleans.ca/culture/sealioning-is-the-word-that-sums-up-why-twitter-discussion-is-so-unbearable/"
+        target="_blank"
+        >'Sealioning' is the word that sums up why Twitter discussion is so
+        unbearable</a
+      >
+    </li>
+    <li>
+      <a
+        href="https://slate.com/technology/2014/10/twitter-is-broken-gamergate-proves-it.html"
+        target="_blank">Twitter Is Broken</a
+      >
+    </li>
+    <li>
+      <a
+        href="https://www.indy100.com/science-tech/this-comic-is-the-most-apt-description-of-twitter-you-ll-ever-see-7247666"
+        target="_blank"
+        >This comic is the most apt description of Twitter you'll ever see</a
+      >
+    </li>
+    <li>
+      <a
+        href="https://metro.co.uk/2018/07/05/sealioning-new-thing-worry-relationships-online-7680577/"
+        target="_blank"
+        >Sealioning is the new thing to worry about in relationships and online</a
+      >
+    </li>
+    <li>
+      <a
+        href="https://www.theguardian.com/technology/2018/aug/18/how-to-handle-a-troll-and-neuter-a-sea-lion-dealing-with-online-attacks-astroturfine-trolljacking"
+        target="_blank">How to handle a troll ... and neuter a sea lion</a
+      >
+    </li>
+    <li>
+      <a
+        href="https://www.forbes.com/sites/marshallshepherd/2019/03/07/sealioning-is-a-common-trolling-tactic-on-social-media-what-is-it/"
+        target="_blank"
+        >'Sealioning' Is A Common Trolling Tactic On Social Media—What Is It?</a
+      >
+    </li>
+    <li>
+      <a
+        href="https://theconversation.com/dont-read-the-comments-misinformed-and-malicious-comments-stifle-indigenous-voices-180576"
+        target="_blank"
+        >"Don't read the comments": misinformed and malicious comments stifle
+        Indigenous voices</a
+      >
+    </li>
+  </ol>
+</BlogLayout>
