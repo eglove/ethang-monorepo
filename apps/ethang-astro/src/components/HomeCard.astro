@@ -1,24 +1,24 @@
 ---
-import {type ImageMetadata} from "astro";
-import {Image} from "astro:assets";
+import { type ImageMetadata } from "astro";
+import { Image } from "astro:assets";
 
 type Props = {
-    href: string;
-    src: ImageMetadata;
-    alt: string;
-    title: string;
-}
+  href: string;
+  src: ImageMetadata;
+  alt: string;
+  title: string;
+};
 
-const {alt, src, href, title} = Astro.props;
+const { alt, src, href, title } = Astro.props;
 ---
 
 <a rel="prefetch" href={href}>
-    <div class="card image-full h-full bg-base-100 w-64 shadow-sm">
-        <figure>
-            <Image class="m-0" src={src} alt={alt} />
-        </figure>
-        <div class="card-body">
-            <h3 class="card-title">{title}</h3>
-        </div>
+  <div class="card image-full h-full bg-base-100 w-64 shadow-sm">
+    <figure>
+      <Image class="m-0" src={src} alt={alt} />
+    </figure>
+    <div class="card-body">
+      <h3 class="card-title">{title}</h3>
     </div>
+  </div>
 </a>

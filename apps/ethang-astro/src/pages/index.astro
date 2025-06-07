@@ -1,60 +1,70 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import HomeCard from "../components/HomeCard.astro";
-import map from 'lodash/map.js';
+import map from "lodash/map.js";
 
 import techImage from "../images/tech.png";
 import chromaticSwirl from "../images/chromatic-swirl.png";
 import optionalChainingImage from "../images/optional-chaining.png";
-import personAtCrossroads from "../images/person-at-crossroads.png"
+import personAtCrossroads from "../images/person-at-crossroads.png";
 import sealioningImage from "../images/sealioning/sealioning.png";
 import aiParadoxImage from "../images/ai-paradox.png";
 
 const cards = [
-    {
-        src: techImage,
-        alt: "tech abstract",
-        title: "How I Code",
-        href: "/blog/how-i-code",
-    },
-    {
-        src: aiParadoxImage,
-        alt: `An abstract image illustrating the "AI Paradox." On the left, a developer appears overwhelmed, with hands on their head amidst complex, swirling code and abstract AI elements. On the right, another developer looks confident and a bit triumphant, surrounded by organized code and circuit-like patterns, representing the revolutionary potential of AI. The background is a mix of digital patterns and glowing lines, symbolizing the digital world and the evolving tech landscape.`,
-        title: "The AI Paradox: Why Some Developers Are Underwhelmed and Others See a Revolution",
-        href: "/blog/ai-paradox"
-    },
-    {
-        src: chromaticSwirl,
-        alt: "chromatic swirl",
-        title: "Building a State Management System with Classes in React",
-        href: "/blog/state-management-classes",
-    },
-    {
-        src: optionalChainingImage,
-        alt: "An abstract, dark-toned image depicting the concept of safely accessing nested data.",
-        title: "Optional Chaining vs. lodash.get: Comparative Analysis",
-        href: "/blog/beyond-optional-chaining",
-    },
-    {
-        src: personAtCrossroads,
-        alt: "A silhouette of a person standing at a crossroads, with one path leading to a dark, chaotic storm and another path opening up to a calm, softly lit landscape. Use a soft, encouraging color palette for the calm side, contrasting with muted, heavy tones for the storm side. Focus on a sense of transition and hope.",
-        title: "Navigating the Depths of Exhaustion: Understanding and Recovering from Burnout",
-        href: "/blog/understanding-recovering-from-burnout",
-    },
-    {
-        src: sealioningImage,
-        alt: "sealioning comic",
-        title: "Navigating Sealioning in Remote Work Environments",
-        href: "/blog/sealioning-in-remote-work",
-    },
-]
+  {
+    src: techImage,
+    alt: "tech abstract",
+    title: "How I Code",
+    href: "/blog/how-i-code",
+  },
+  {
+    src: aiParadoxImage,
+    alt: `An abstract image illustrating the "AI Paradox." On the left, a developer appears overwhelmed, with hands on their head amidst complex, swirling code and abstract AI elements. On the right, another developer looks confident and a bit triumphant, surrounded by organized code and circuit-like patterns, representing the revolutionary potential of AI. The background is a mix of digital patterns and glowing lines, symbolizing the digital world and the evolving tech landscape.`,
+    title:
+      "The AI Paradox: Why Some Developers Are Underwhelmed and Others See a Revolution",
+    href: "/blog/ai-paradox",
+  },
+  {
+    src: chromaticSwirl,
+    alt: "chromatic swirl",
+    title: "Building a State Management System with Classes in React",
+    href: "/blog/state-management-classes",
+  },
+  {
+    src: optionalChainingImage,
+    alt: "An abstract, dark-toned image depicting the concept of safely accessing nested data.",
+    title: "Optional Chaining vs. lodash.get: Comparative Analysis",
+    href: "/blog/beyond-optional-chaining",
+  },
+  {
+    src: personAtCrossroads,
+    alt: "A silhouette of a person standing at a crossroads, with one path leading to a dark, chaotic storm and another path opening up to a calm, softly lit landscape. Use a soft, encouraging color palette for the calm side, contrasting with muted, heavy tones for the storm side. Focus on a sense of transition and hope.",
+    title:
+      "Navigating the Depths of Exhaustion: Understanding and Recovering from Burnout",
+    href: "/blog/understanding-recovering-from-burnout",
+  },
+  {
+    src: sealioningImage,
+    alt: "sealioning comic",
+    title: "Navigating Sealioning in Remote Work Environments",
+    href: "/blog/sealioning-in-remote-work",
+  },
+];
 ---
 
 <Layout>
-    <div class="flex flex-wrap justify-center md:justify-start gap-4">
-        {map(cards, card => {
-            return (
-                    <HomeCard src={card.src} href={card.href} alt={card.alt} title={card.title}/>);
-        })}
-    </div>
+  <div class="flex flex-wrap justify-center md:justify-start gap-4">
+    {
+      map(cards, (card) => {
+        return (
+          <HomeCard
+            src={card.src}
+            href={card.href}
+            alt={card.alt}
+            title={card.title}
+          />
+        );
+      })
+    }
+  </div>
 </Layout>
