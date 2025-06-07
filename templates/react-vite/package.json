@@ -10,8 +10,8 @@
     "@tanstack/react-query": "^5.80.6",
     "@tanstack/react-query-devtools": "^5.80.6",
     "@tanstack/react-query-persist-client": "^5.80.6",
-    "@tanstack/react-router": "^1.120.16",
-    "@tanstack/react-router-devtools": "^1.120.16",
+    "@tanstack/react-router": "^1.120.18",
+    "@tanstack/react-router-devtools": "^1.120.18",
     "d1-orm": "^0.9.2",
     "dotenv": "^16.5.0",
     "framer-motion": "^12.16.0",
@@ -23,12 +23,12 @@
     "react-dom": "^19.0.0",
     "uuid": "^11.1.0",
     "vite-plugin-pwa": "^1.0.0",
-    "zod": "^3.25.55"
+    "zod": "^3.25.56"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.5.0",
-    "@ethang/eslint-config": "^22.9.0",
-    "@tanstack/router-plugin": "^1.120.16",
+    "@ethang/eslint-config": "^22.9.2",
+    "@tanstack/router-plugin": "^1.120.18",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",

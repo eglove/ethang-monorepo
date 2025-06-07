@@ -3,7 +3,7 @@
   "assets": {
     "directory": "./public"
   },
-  "compatibility_date": "2025-06-06",
+  "compatibility_date": "2025-06-07",
   "name": "utility",
   "observability": {
     "enabled": true

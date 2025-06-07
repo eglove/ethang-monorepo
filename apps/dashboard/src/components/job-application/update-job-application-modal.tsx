@@ -1,5 +1,4 @@
 import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
-import type { ZonedDateTime } from "@internationalized/date";
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
@@ -25,6 +24,7 @@ import { DateTime } from "luxon";
 import {
   convertDateTimeInputToIso,
   convertIsoToDateTimeInput,
+  type DateInputValue,
 } from "../../../worker/utilities/heroui.ts";
 import {
   applicationStore,
@@ -86,7 +86,7 @@ export const UpdateJobApplicationModal = () => {
   };
 
   const handleInterviewRoundChange =
-    (index: number) => (value: null | ZonedDateTime) => {
+    (index: number) => (value: DateInputValue) => {
       if (isNil(applicationToUpdate)) {
         return;
       }

@@ -9,10 +9,13 @@ export type DateInputValue = Exclude<
   undefined
 >;
 
-export const convertIsoToDateTimeInput = (value: null | string | undefined) => {
+export const convertIsoToDateTimeInput = (
+  value: null | string | undefined,
+): DateInputValue => {
   return isNil(value)
     ? null
-    : parseAbsoluteToLocal(DateTime.fromISO(value).toUTC().toString());
+    : // @ts-expect-error heroui types are bad
+      parseAbsoluteToLocal(DateTime.fromISO(value).toUTC().toString());
 };
 
 export const convertDateTimeInputToIso = (value: DateInputValue) => {
@@ -30,6 +33,7 @@ export const convertDateTimeInputToIso = (value: DateInputValue) => {
   return null;
 };
 
-export const getDateTimeInputNow = () => {
+export const getDateTimeInputNow = (): DateInputValue => {
+  // @ts-expect-error heroui types are bad
   return now(DateTime.now().zoneName);
 };

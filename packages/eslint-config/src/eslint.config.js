@@ -950,6 +950,7 @@ export default tseslint.config(
               "SAMEORIGIN",
               "starcoder",
               "logprobs",
+              "sealioning",
             ],
           },
         },
