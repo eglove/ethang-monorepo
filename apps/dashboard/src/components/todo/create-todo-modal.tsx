@@ -1,8 +1,5 @@
 import { useUser } from "@clerk/clerk-react";
-import {
-  type CreateTodo,
-  createTodoSchema,
-} from "@ethang/schemas/src/dashboard/todo-schema.ts";
+import { createTodoSchema } from "@ethang/schemas/src/dashboard/todo-schema.ts";
 import { isNumber } from "@ethang/toolbelt/is/number";
 import {
   Button,
@@ -19,7 +16,7 @@ import {
   SelectItem,
   Textarea,
 } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
@@ -32,8 +29,7 @@ import {
   type DateInputValue,
   getDateTimeInputNow,
 } from "../../../worker/utilities/heroui.ts";
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
+import { todoStore, useTodoStore } from "../../data/todo-store.ts";
 import { timeIntervals } from "./time-intervals.ts";
 
 const createTodoFormSchema = createTodoSchema
@@ -48,29 +44,17 @@ const createTodoFormSchema = createTodoSchema
 
 export const CreateTodoModal = () => {
   const { user } = useUser();
-  const queryClient = useQueryClient();
-  const isOpen = useModalStore((state) => {
-    return state.createTodo;
+  const { isOpen } = useTodoStore((state) => {
+    return {
+      isOpen: state.isCreateModalOpen,
+    };
   });
+
   const [dueDate, setDueDate] = useState<DateInputValue>(() =>
     getDateTimeInputNow(),
   );
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async (data: CreateTodo) => {
-      const response = await globalThis.fetch("/api/todo", {
-        body: JSON.stringify(data),
-        method: "POST",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allUserTodos(user?.id),
-        });
-        modalStore.closeModal("createTodo");
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(todoStore.createModal(user?.id));
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -100,7 +84,7 @@ export const CreateTodoModal = () => {
   return (
     <Modal
       onOpenChange={(value) => {
-        modalStore.setIsModalOpen("createTodo", value);
+        todoStore.setIsCreateModalOpen(value);
       }}
       isOpen={isOpen}
       scrollBehavior="outside"
@@ -131,7 +115,7 @@ export const CreateTodoModal = () => {
           <ModalFooter>
             <Button
               onPress={() => {
-                modalStore.closeModal("createTodo");
+                todoStore.setIsCreateModalOpen(false);
               }}
               color="danger"
               variant="light"

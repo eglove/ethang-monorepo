@@ -14,24 +14,22 @@ import {
   ModalHeader,
   Textarea,
 } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 import ms from "ms";
 
 import { convertIsoToDateTimeInput } from "../../../worker/utilities/heroui.ts";
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
+import { todoStore, useTodoStore } from "../../data/todo-store.ts";
 
 export const UpdateTodoModal = () => {
-  const queryClient = useQueryClient();
   const { user } = useUser();
-  const todo = useModalStore((state) => {
-    return state.todoToUpdate;
-  });
 
-  const isOpen = useModalStore((state) => {
-    return state.updateTodo;
+  const { isOpen, todo } = useTodoStore((state) => {
+    return {
+      isOpen: state.isUpdateModalOpen,
+      todo: state.todoToUpdate,
+    };
   });
 
   const handleChange = (key: keyof Todo) => (value: string) => {
@@ -39,48 +37,27 @@ export const UpdateTodoModal = () => {
       return;
     }
 
-    modalStore.setTodoToUpdate({
+    todoStore.setTodoToUpdate({
       ...todo,
       [key]: value,
     });
   };
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async () => {
-      if (isNil(todo)) {
-        return;
-      }
-
-      const response = await fetch("/api/todo", {
-        body: JSON.stringify({
-          ...todo,
-          userId: user?.id,
-        }),
-        method: "PUT",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allUserTodos(user?.id),
-        });
-        modalStore.closeModal("updateTodo");
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(todoStore.updateTodo(user?.id));
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    mutate();
+    mutate(todo);
   };
 
   return (
     <Modal
       onOpenChange={(value) => {
         if (!value) {
-          modalStore.setTodoToUpdate(null);
+          todoStore.setTodoToUpdate(null);
         }
 
-        modalStore.setIsModalOpen("updateTodo", value);
+        todoStore.setIsUpdateModalOpen(value);
       }}
       isOpen={isOpen}
       scrollBehavior="outside"
@@ -115,7 +92,7 @@ export const UpdateTodoModal = () => {
           <ModalFooter>
             <Button
               onPress={() => {
-                modalStore.closeModal("updateTodo");
+                todoStore.setIsUpdateModalOpen(false);
               }}
               color="danger"
               variant="light"

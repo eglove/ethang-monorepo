@@ -23,7 +23,7 @@ import { useTodoTimerStore } from "../components/todo/todo-timer-store.ts";
 import { UpdateDeleteTodo } from "../components/todo/update-delete-todo.tsx";
 import { UpdateTodoModal } from "../components/todo/update-todo-modal.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
-import { getTodos } from "../data/queries/todo.ts";
+import { todoStore } from "../data/todo-store.ts";
 import { SectionHeader } from "../section-header.tsx";
 
 const columns = [
@@ -39,13 +39,15 @@ const Todo = () => {
 
   const todoTimerStore = useTodoTimerStore();
 
-  const { data, isPending } = useQuery(getTodos(user?.id));
+  const { data, isPending } = useQuery(todoStore.getAll(user?.id));
 
   return (
     <MainLayout breadcrumbPaths={[{ href: "/todo", label: "Todo" }]}>
       <SectionHeader
+        modalKey={() => {
+          todoStore.setIsCreateModalOpen(true);
+        }}
         header="Todos"
-        modalKey="createTodo"
         modalLabel="Add Todo"
         refreshKeys={queryKeys.allUserTodos(user?.id)}
       >

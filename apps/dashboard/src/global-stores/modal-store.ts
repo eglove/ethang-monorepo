@@ -1,6 +1,5 @@
 import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 import type { QuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
-import type { Todo } from "@ethang/schemas/src/dashboard/todo-schema.ts";
 
 import { produce } from "immer";
 import forEach from "lodash/forEach";
@@ -9,8 +8,6 @@ import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-s
 const isOpenKeys = [
   "createQa",
   "updateQa",
-  "createTodo",
-  "updateTodo",
   "createContact",
   "updateContact",
 ] as const;
@@ -20,12 +17,9 @@ type ModalState = {
   contactToUpdate: Contact | null;
   createContact: boolean;
   createQa: boolean;
-  createTodo: boolean;
   qaToUpdate: null | QuestionAnswer;
-  todoToUpdate: null | Todo;
   updateContact: boolean;
   updateQa: boolean;
-  updateTodo: boolean;
 };
 
 class ModalStore {
@@ -33,12 +27,9 @@ class ModalStore {
     contactToUpdate: null,
     createContact: false,
     createQa: false,
-    createTodo: false,
     qaToUpdate: null,
-    todoToUpdate: null,
     updateContact: false,
     updateQa: false,
-    updateTodo: false,
   };
   private readonly subscribers = new Set<(state: ModalState) => void>();
 
@@ -74,12 +65,6 @@ class ModalStore {
   public setQaToUpdate(qa: null | QuestionAnswer) {
     this.update((draft) => {
       draft.qaToUpdate = qa;
-    });
-  }
-
-  public setTodoToUpdate(todo: null | Todo) {
-    this.update((draft) => {
-      draft.todoToUpdate = todo;
     });
   }
 
