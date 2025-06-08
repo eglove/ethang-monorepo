@@ -9,7 +9,7 @@
   },
   "description": "Fine grained state management",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.9.2",
+    "@ethang/eslint-config": "^22.9.3",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.16",
     "browserslist-config-baseline": "^0.4.0",

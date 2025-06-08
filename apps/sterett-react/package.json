@@ -43,7 +43,7 @@
     "zod": "^3.25.56"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.9.2",
+    "@ethang/eslint-config": "^22.9.3",
     "@portabletext/types": "^2.0.13",
     "@react-types/shared": "^3.30.0",
     "@tailwindcss/typography": "^0.5.16",
