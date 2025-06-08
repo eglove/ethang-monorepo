@@ -41,7 +41,7 @@ const store = new Store();
 store.state; // { count: 0 }
 ```
 
-### Prevent renders
+## Prevent renders
 
 ```ts
 import { BaseStore } from "@ethang/store";
@@ -87,9 +87,9 @@ const count = useStore(store, (state) => state.count);
 <div>{count}</div>;
 ```
 
-### Features that won't be implemented
+## Features that won't be implemented
 
-#### Async
+### Async
 
 If you need React Query features, I would suggest using React Query. Within your own classes you can return queryOptions and mutationOptions.
 
@@ -122,7 +122,7 @@ const store = new Store();
 const { data, isPending } = useQuery(store.getAllCounts());
 ```
 
-#### Derived Values
+### Derived Values
 
 With control over your own class, this is not the responsibility of the library. You can also memoize this value on your own.
 
@@ -149,7 +149,7 @@ class MyStore extends BaseStore<Person> {
 const store = new Store();
 ```
 
-#### Effects
+### Effects
 
 This logic is also your responsibility, not the library.
 
