@@ -172,7 +172,7 @@ class MyStore extends BaseStore<Person & { isLoggedIn: boolean }> {
         if (response.ok) {
           this.update((draft) => {
             this.isLoggedIn = true;
-          }, false); // Let React Query notify subscribers
+          }, false); // Let TanStack Query notify subscribers
         }
       },
     };
