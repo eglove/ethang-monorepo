@@ -82,7 +82,7 @@ useStore takes the following parameters:
 ```tsx
 import { useStore } from "@ethang/store/use-base-store";
 
-// Do not waste renders and abstractions on trying to instantiate classes inside of compoonents or hooks
+// Do not waste renders and abstractions on trying to instantiate classes inside components or hooks
 // If you want a particular store instance to be reusuable across components, export it from the module.
 const store = new MyStore();
 
