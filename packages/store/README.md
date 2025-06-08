@@ -8,31 +8,8 @@ In fact, it is so simple I would argue we should be comfortable with regularly
 rolling our own.
 
 "State Management" is objects in an observer pattern. Things like derived values
-and effects are secondary features. The current implementation of derived values
-and effects here are incomplete. All changes are made through immer for
-immutability.
-
-### With vanilla HTML/JS
-
-This library can be used to add subscriptions to HTML
-elements. Subscriptions will be automatically cleaned up when the event fires
-and no element is found. Note that you still need a modern bundler with
-dependency management such as vite to work with vanilla.
-
-### With React Refs
-
-This library can act the same as it does in vanilla. By
-using refs to point to an exact element you can prevent React from rerunning
-render functions for simple state changes such as form inputs with dynamic error
-handling.
-
-### With React State
-
-This library implements a useSyncExternalStore interface to
-trigger rerenders on state changes. You can even use React's official
-useSyncExternalStoreWithSelector
-shim ([using this package](https://www.npmjs.com/package/use-sync-external-store))
-to prevent some rerenders.
+and effects are secondary features, these can be implemented in your own classes.
+All changes are made through immer for immutability.
 
 ```shell
 pnpm i @ethang/store
@@ -41,207 +18,166 @@ pnpm i @ethang/store
 ## Create a store:
 
 ```ts
-import {Store} from "@ethang/store";
+import { BaseStore } from "@ethang/store";
 
-const store = new Store({count: 0});
-```
+class MyStore extends BaseStore<{ count: number }> {
+  public constructor() {
+    super({ count: 0 });
+  }
 
-## Update store
+  public increment() {
+    this.update((draft) => {
+      draft.count += 1;
+    });
+  }
+}
 
-```ts
-store.set((state) => {
-    state.count += 1; // Immutable changes via Immer
-})
+const store = new Store();
 ```
 
 ## Get from store
 
 ```ts
-store.get(); // { count: 1 }
+store.state; // { count: 0 }
+```
 
-store.get(state => state.count); // 1
+### Prevent renders
+
+```ts
+import { BaseStore } from "@ethang/store";
+
+class MyStore extends BaseStore<{ count: number }> {
+  public constructor() {
+    super({ count: 0 });
+  }
+
+  public increment() {
+    this.update((draft) => {
+      draft.count += 1;
+    }, false); // Passing false will update state, but not notify subscribers
+  }
+}
+
+const store = new Store();
 ```
 
 ## Subscribe to changes
 
 ```ts
 const unsubscribe = store.subscribe((state) => {
-    console.log(`Count is now ${state.count}`);
-})
+  console.log(`Count is now ${state.count}`);
+});
 
 unsubscribe(); // Don't forget to clean up.
 ```
 
-## Subscribe HTML element
+## React subscriptions
 
-```ts
-const counterButton = document.querySelector('#counter');
+useBaseStore takes the following parameters:
 
-counterButton.onclick = () => store.set(state => {
-    state.count += 1;
-})
-
-const bindFn = store.bind((state, element) => {
-    element.textContent = state.count;
-})
-
-bindFn(counterButton);
-
-// Automatically cleans up after element is removed from DOM
-```
-
-## Bind React Ref*
-
-* Fine-grained reactivity, does not trigger rerenders.
+- store - An instance of your store
+- selector - to select the values you want to return
+- isEqual (optional) - A comparison function
 
 ```tsx
-<button
-    onClick={() => {
-        store.set(state => {
-            state.count += 1;
-        })
-    }}
-    ref={store.bind((state, element) => {
-        element.textContent = state.count;
-    })}
-/>
+import { useBaseStore } from "@ethang/store/use-base-store";
+
+const count = useBaseStore(store, (draft) => draft.count);
+
+<div>{count}</div>;
 ```
-
-## React useSyncExternalStore*
-
-* Sync w/ React reconciliation, triggers component function calls on state
-  changes (rerenders).
-
-```tsx
-import {useSyncExternalStore} from "react";
-
-const state = useSyncExternalStore(
-    listener => store.subcribe(listener),
-    () => store.get(), // get client snapshot
-    () => store.get(), // get server snaphot
-);
-
-<div>{state.count}</div>
-```
-
-## React useSyncExternalStoreWithSelector*
-
-* A few less rerenders.
-
-```tsx
-import {
-    useSyncExternalStoreWithSelector
-} from "use-sync-external-store/with-selector.js";
-
-const count = useSyncExternalStoreWithSelector(
-    listener => store.subscribe(listener),
-    () => store.get(), // get client snapshot
-    () => store.get(), // get server snaphot
-    state => state.count,
-);
-
-<div>{count}</div>
-```
-
-## Batch Updates
-
-```ts
-// Subscribers aren't notified until after work in set is done
-store.set(state => {
-    state.count += 1;
-    state.count += 1;
-    state.count += 1;
-})
-```
-
-## Altogether Now
-
-```tsx
-import {Store} from "@ethang/store";
-import {
-    useSyncExternalStoreWithSelector
-} from "use-sync-external-store/with-selector.js";
-
-const initialCountStoreState = {count: 0};
-const initialTextStoreState = {hello: "Hello", world: "World!"};
-
-const countStore = new Store(initialCountStoreState);
-const textStore = new Store(initialTextStoreState)
-
-const useCountStore = <T, >(selector: (state: typeof initialTextStoreState) => T) => {
-    return useSyncExternalStoreWithSelector(
-        listener => textStore.subscribe(listener),
-        () => textStore.get(),
-        () => textStore.get(),
-        selector,
-    );
-}
-
-const incrementCount = () => {
-    store.set(state => {
-        state.count += 1;
-    })
-}
-
-const MyComponent = () => {
-    const {hello} = useCountStore(state => {
-        return {
-            hello: state.hello,
-        }
-    });
-
-    return (
-        <div>
-            <div>Count</div>
-            <button
-                onClick={incrementCount}
-                ref={countStore.bind((state, element) => {
-                    element.textContent = state.count;
-                })}
-            />
-            <ThirdPartyComponent text={hello}/>
-        </div>
-    );
-}
-```
-
-## Async
-
-Use [TanStack Query](https://tanstack.com/query/latest)
 
 ### Features that won't be implemented
 
-Part of what this library highlights is that the deeper you get into "state
-management" the deeper you get into "reactive programming." And that the
-problems we're often solving with "state management" are more often than not
-problems with React. This library is meant to ignore the issues of what is
-really React render management, and explore the concepts behind state management
-and reactive programming.
+### Async
+
+If you need React Query features, I would suggest using React Query. Within your own classes you can return queryOptions and mutationOptions.
+
+```ts
+import { queryOptions, useQuery } from "@tanstack/react-query";
+
+class MyStore extends BaseStore<{ count: number }> {
+  public constructor() {
+    super({ count: 0 });
+  }
+
+  public increment() {
+    this.update((draft) => {
+      draft.count += 1;
+    });
+  }
+
+  public getAllCounts() {
+    return queryOptions({
+      queryKey: ["allCounts"],
+      queryFn: async () => {
+        // logic
+      },
+    });
+  }
+}
+
+const store = new Store();
+
+const { data, isPending } = useQuery(store.getAllCounts());
+```
 
 #### Derived Values
 
-```ts
-const store = new Store({
-    firstName: 'John',
-    lastName: 'Doe',
-    fullName() { // Do not use arrow functions here, otherwise `this` well have a lexical binding.
-        return `${this.firstName} ${this.lastName}`;
-    }
-});
+With control over your own class, this is not the responsibility of the library. You can also memoize this value on your own.
 
-const fullName = store.get(state => {
-    return state.fullName();
-})
+```ts
+type Person = {
+  firstName: string;
+  lastName: string;
+  fullName: string;
+};
+
+class MyStore extends BaseStore<Person> {
+  public constructor() {
+    super({ firstName: "John", lastName: "Doe" });
+    this.state.fullName = `${this.firstName} ${this.lastName}`;
+  }
+
+  public increment() {
+    this.update((draft) => {
+      draft.count += 1;
+    });
+  }
+}
+
+const store = new Store();
 ```
 
-#### Effects (they're just subscriptions)
+#### Effects
+
+This logic is also your responsibility, not the library.
 
 ```ts
-const unsubscribe = store.subscribe(state => {
-    if (state.isLoggedIn) {
-        console.log('User logged in');
-    } else {
-        console.log('User logged out');
-    }
-})
+import { queryOptions } from "@tanstack/react-query";
+
+class MyStore extends BaseStore<Person & { isLoggedIn: boolean }> {
+  public constructor() {
+    super({ firstName: "John", lastName: "Doe", isLoggedIn: false });
+    this.state.fullName = `${this.firstName} ${this.lastName}`;
+  }
+
+  public login() {
+    return {
+      mutationFn: async () => {
+        const response = await fetch("/api/login", {
+          ...requestInit,
+        });
+
+        if (response.ok) {
+          this.update((draft) => {
+            this.isLoggedIn = true;
+          });
+        }
+      },
+    };
+  }
+}
+
+const store = new Store();
 ```
