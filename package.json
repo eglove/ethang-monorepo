@@ -1,14 +1,14 @@
 {
   "author": "Ethan Glover",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.9.3",
+    "@ethang/eslint-config": "^22.9.4",
     "@types/node": "^22.15.30",
     "eslint": "^9.25.1",
     "typescript-eslint": "^8.31.0"
   },
   "license": "ISC",
   "name": "ethang-monorepo",
-  "packageManager": "pnpm@10.12.0+sha512.3ab6da6066b7b14d6e9609a31d780191484b8e85f8d0e4581ef333bf4d869799937f5e57cbb8d3da2023019f6d4869a9acc381457fcb1d86e15fc44bfd4eb6a4",
+  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@clerk/shared",

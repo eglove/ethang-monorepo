@@ -6,6 +6,12 @@ export abstract class BaseStore<State> {
   }
 
   protected _state: State;
+
+  protected get cleanupSignal() {
+    return this._controller.signal;
+  }
+
+  private _controller: AbortController = new AbortController();
   private readonly _subscribers = new Set<(draft: State) => void>();
 
   protected constructor(state: State) {
@@ -13,10 +19,18 @@ export abstract class BaseStore<State> {
   }
 
   public subscribe(callback: (state: State) => void) {
+    if (0 === this._subscribers.size) {
+      this._controller = new AbortController();
+    }
+
     this._subscribers.add(callback);
 
     return () => {
       this._subscribers.delete(callback);
+
+      if (0 === this._subscribers.size) {
+        this._controller.abort();
+      }
     };
   }
 

@@ -27,8 +27,8 @@
     "@tanstack/react-query": "^5.80.6",
     "@tanstack/react-query-devtools": "^5.80.6",
     "@tanstack/react-query-persist-client": "^5.80.6",
-    "@tanstack/react-router": "^1.120.18",
-    "@tanstack/router-devtools": "^1.120.18",
+    "@tanstack/react-router": "^1.120.20",
+    "@tanstack/router-devtools": "^1.120.20",
     "calendar-link": "^2.8.0",
     "framer-motion": "^12.16.0",
     "idb-keyval": "^6.2.1",
@@ -43,7 +43,7 @@
     "zod": "^3.25.56"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.9.3",
+    "@ethang/eslint-config": "^22.9.4",
     "@portabletext/types": "^2.0.13",
     "@react-types/shared": "^3.30.0",
     "@tailwindcss/typography": "^0.5.16",

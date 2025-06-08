@@ -93,6 +93,54 @@ const MyComponent = () => {
 }
 ```
 
+### Global Cleanup
+
+When the # of subscribers reaches 0 after an unsubscription, an AbortController will run abort(), this can be used to cleanup event listeners, or cancel async operations such as fetch.
+
+When the first subscription is added the controller will be reset.
+
+```ts
+const defaultState = {
+    // eslint-disable-next-line compat/compat
+    isOnline: globalThis.navigator.onLine,
+    onOffline: undefined as (() => void) | undefined,
+    onOnline: undefined as (() => void) | undefined,
+};
+
+type ExampleStoreState = typeof defaultState;
+
+class OnlineStore extends BaseStore<ExampleStoreState> {
+    public constructor(initialState?: Omit<ExampleStoreState, "isOnline">) {
+        super({
+            ...defaultState,
+            ...initialState,
+        });
+
+        globalThis.addEventListener(
+            "online",
+            () => {
+                this.update((state) => {
+                    state.isOnline = true;
+                });
+                this.state.onOnline?.();
+            },
+            { signal: this.cleanupSignal },
+        );
+
+        globalThis.addEventListener(
+            "offline",
+            () => {
+                this.update((state) => {
+                    state.isOnline = false;
+                });
+                this.state.onOffline?.();
+            },
+            { signal: this.cleanupSignal },
+        );
+    }
+}
+```
+
 ## Features that won't be implemented
 
 ### Async

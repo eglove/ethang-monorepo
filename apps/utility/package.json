@@ -5,10 +5,10 @@
   "dependencies": {
     "es-toolkit": "^1.39.3",
     "lodash": "^4.17.21",
-    "remeda": "^2.22.6"
+    "remeda": "^2.23.0"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.9.3",
+    "@ethang/eslint-config": "^22.9.4",
     "@types/lodash": "^4.17.16",
     "@vitest/ui": "^3.2.2",
     "browserslist-config-baseline": "^0.4.0",
