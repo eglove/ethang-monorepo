@@ -28,7 +28,7 @@ const RouteComponent = () => {
       ]}
     >
       <SectionHeader
-        modalKey={() => {
+        openModal={() => {
           qaStore.setIsCreateModalOpen(true);
         }}
         header="Application Q/A"

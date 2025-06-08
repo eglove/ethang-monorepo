@@ -2,18 +2,15 @@ import type { ReactNode } from "react";
 
 import { Button } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
-import isString from "lodash/isString";
 import { PlusIcon, RotateCwIcon } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
-
-import { type IsOpenKeys, modalStore } from "./stores/modal-store.ts";
 
 type SectionHeaderProperties = {
   children?: ReactNode;
   header: string;
   isFetching?: boolean;
-  modalKey: (() => void) | IsOpenKeys;
   modalLabel: string;
+  openModal: () => void;
   refreshKeys: (object | string)[];
 };
 
@@ -21,8 +18,8 @@ export const SectionHeader = ({
   children,
   header,
   isFetching,
-  modalKey,
   modalLabel,
+  openModal,
   refreshKeys,
 }: Readonly<SectionHeaderProperties>) => {
   const queryClient = useQueryClient();
@@ -52,11 +49,7 @@ export const SectionHeader = ({
           <Button
             isIconOnly
             onPress={() => {
-              if (isString(modalKey)) {
-                modalStore.openModal(modalKey);
-              } else {
-                modalKey();
-              }
+              openModal();
             }}
             aria-label={modalLabel}
             color="primary"

@@ -13,7 +13,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 
@@ -21,17 +21,16 @@ import {
   convertIsoToDateTimeInput,
   type DateInputValue,
 } from "../../../worker/utilities/heroui.ts";
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../stores/modal-store.ts";
+import { contactStore, useContactStore } from "../../stores/contact-store.ts";
 
 export const UpdateContactModal = () => {
-  const queryClient = useQueryClient();
   const { user } = useUser();
-  const isOpen = useModalStore((state) => {
-    return state.updateContact;
-  });
-  const contact = useModalStore((state) => {
-    return state.contactToUpdate;
+
+  const { contact, isOpen } = useContactStore((state) => {
+    return {
+      contact: state.contactToUpdate,
+      isOpen: state.isUpdateModalOpen,
+    };
   });
 
   const handleChange = (key: keyof Contact) => (value: string) => {
@@ -39,7 +38,7 @@ export const UpdateContactModal = () => {
       return;
     }
 
-    modalStore.setContactToUpdate({
+    contactStore.setContactToUpdate({
       ...contact,
       [key]: value,
     });
@@ -61,28 +60,15 @@ export const UpdateContactModal = () => {
       }
     };
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async () => {
-      const response = await globalThis.fetch("/api/contact", {
-        body: JSON.stringify({
-          ...contact,
-          userId: user?.id,
-        }),
-        method: "PUT",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allContacts(user?.id),
-        });
-        modalStore.closeModal("updateContact");
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(
+    contactStore.createContact(user?.id),
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    mutate();
+    if (!isNil(contact)) {
+      mutate(contact);
+    }
   };
 
   const lastContactDateTime = convertIsoToDateTimeInput(contact?.lastContact);
@@ -94,9 +80,10 @@ export const UpdateContactModal = () => {
     <Modal
       onOpenChange={(value) => {
         if (!value) {
-          modalStore.setContactToUpdate(null);
+          contactStore.setContactToUpdate(null);
         }
-        modalStore.setIsModalOpen("updateContact", value);
+
+        contactStore.setIsUpdateModalOpen(value);
       }}
       isOpen={isOpen}
       scrollBehavior="outside"
@@ -152,7 +139,7 @@ export const UpdateContactModal = () => {
           <ModalFooter>
             <Button
               onPress={() => {
-                modalStore.closeModal("updateContact");
+                contactStore.setIsUpdateModalOpen(false);
               }}
               color="danger"
               variant="light"

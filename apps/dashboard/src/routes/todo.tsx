@@ -44,7 +44,7 @@ const Todo = () => {
   return (
     <MainLayout breadcrumbPaths={[{ href: "/todo", label: "Todo" }]}>
       <SectionHeader
-        modalKey={() => {
+        openModal={() => {
           todoStore.setIsCreateModalOpen(true);
         }}
         header="Todos"

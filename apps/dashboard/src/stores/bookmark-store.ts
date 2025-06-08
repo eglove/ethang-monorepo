@@ -10,7 +10,7 @@ import isNil from "lodash/isNil.js";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
-import { BaseStore, useStore } from "./base-store.ts";
+import { BaseStore, useBaseStore } from "./base-store.ts";
 
 const defaultState = {
   bookmarkToUpdate: null as Bookmark | null,
@@ -127,8 +127,8 @@ export class BookmarkStore extends BaseStore<BookmarkStoreState> {
 export const bookmarkStore = new BookmarkStore();
 
 export const useBookmarkStore = <Selection>(
-  selector: (snapshot: BookmarkStore["state"]) => Selection,
+  selector: (snapshot: BookmarkStoreState) => Selection,
   isEqual?: (a: Selection, b: Selection) => boolean,
 ) => {
-  return useStore(bookmarkStore, selector, isEqual);
+  return useBaseStore(bookmarkStore, selector, isEqual);
 };

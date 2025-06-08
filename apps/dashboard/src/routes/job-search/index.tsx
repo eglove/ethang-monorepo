@@ -76,7 +76,7 @@ const RouteComponent = () => {
     <MainLayout breadcrumbPaths={[{ href: "/job-stats", label: "Job Search" }]}>
       <div className="grid grid-rows-[auto_1fr] h-full">
         <SectionHeader
-          modalKey={() => {
+          openModal={() => {
             applicationStore.setIsCreateModalOpen(true);
           }}
           header="Applications"

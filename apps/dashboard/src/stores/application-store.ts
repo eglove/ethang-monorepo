@@ -15,14 +15,13 @@ import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import toInteger from "lodash/toInteger";
 import convertToString from "lodash/toString";
-import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
 import { z } from "zod";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
 import { formDateToIso } from "../utilities/form.ts";
 import { toastError } from "../utilities/toast-error.ts";
-import { BaseStore, useStore } from "./base-store.ts";
+import { BaseStore, useBaseStore } from "./base-store.ts";
 
 const defaultState = {
   applicationToUpdate: null as null | UpdateJobApplication,
@@ -283,5 +282,5 @@ export const useApplicationStore = <Selection>(
   selector: (snapshot: ApplicationStoreState) => Selection,
   isEqual?: (a: Selection, b: Selection) => boolean,
 ) => {
-  return useStore(applicationStore, selector, isEqual);
+  return useBaseStore(applicationStore, selector, isEqual);
 };

@@ -12,7 +12,7 @@ import { DateTime } from "luxon";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
-import { BaseStore, useStore } from "./base-store.ts";
+import { BaseStore, useBaseStore } from "./base-store.ts";
 
 const defaultState = {
   isCreateModalOpen: false,
@@ -184,5 +184,5 @@ export const useTodoStore = <Selection>(
   selector: (snapshot: TodoState) => Selection,
   isEqual?: (a: Selection, b: Selection) => boolean,
 ) => {
-  return useStore(todoStore, selector, isEqual);
+  return useBaseStore(todoStore, selector, isEqual);
 };

@@ -21,7 +21,7 @@ export abstract class BaseStore<State> {
     };
   }
 
-  private update(updater: (draft: State) => void, shouldNotify = true) {
+  protected update(updater: (draft: State) => void, shouldNotify = true) {
     this._state = produce(this._state, updater);
 
     if (shouldNotify) {
@@ -32,9 +32,9 @@ export abstract class BaseStore<State> {
   }
 }
 
-export const useStore = <State, Selection>(
+export const useBaseStore = <State, Selection>(
   store: BaseStore<State>,
-  selector: (snapshot: ApplicationStoreState) => Selection,
+  selector: (snapshot: BaseStore<State>["state"]) => Selection,
   isEqual?: (a: Selection, b: Selection) => boolean,
 ) => {
   return useSyncExternalStoreWithSelector(

@@ -1,10 +1,7 @@
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
-import {
-  type CreateContact,
-  createContactSchema,
-} from "@ethang/schemas/src/dashboard/contact-schema.ts";
+import { createContactSchema } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 import {
   Button,
   DateInput,
@@ -16,7 +13,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import forEach from "lodash/forEach";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
@@ -24,31 +21,17 @@ import set from "lodash/set";
 import { DateTime } from "luxon";
 
 import { getDateTimeInputNow } from "../../../worker/utilities/heroui.ts";
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../stores/modal-store.ts";
+import { contactStore, useContactStore } from "../../stores/contact-store.ts";
 
 export const CreateContactModal = () => {
   const { user } = useUser();
-  const queryClient = useQueryClient();
-  const isOpen = useModalStore((state) => {
-    return state.createContact;
+  const isOpen = useContactStore((state) => {
+    return state.isCreateModalOpen;
   });
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async (data: CreateContact) => {
-      const response = await fetch("/api/contact", {
-        body: JSON.stringify(data),
-        method: "POST",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allContacts(user?.id),
-        });
-        modalStore.closeModal("createContact");
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(
+    contactStore.createContact(user?.id),
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -77,7 +60,7 @@ export const CreateContactModal = () => {
   return (
     <Modal
       onOpenChange={(value) => {
-        modalStore.setIsModalOpen("createContact", value);
+        contactStore.setIsCreateModalOpen(value);
       }}
       isOpen={isOpen}
       scrollBehavior="outside"
@@ -106,7 +89,7 @@ export const CreateContactModal = () => {
           <ModalFooter>
             <Button
               onPress={() => {
-                modalStore.closeModal("createContact");
+                contactStore.setIsCreateModalOpen(false);
               }}
               color="danger"
               variant="light"

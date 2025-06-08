@@ -36,7 +36,7 @@ const BookMarks = () => {
   return (
     <MainLayout breadcrumbPaths={[{ href: "/bookmarks", label: "Bookmarks" }]}>
       <SectionHeader
-        modalKey={() => {
+        openModal={() => {
           bookmarkStore.setIsCreateModalOpen(true);
         }}
         header="Bookmarks"

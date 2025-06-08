@@ -2,13 +2,11 @@ import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 
 import { useUser } from "@clerk/clerk-react";
 import { Button } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import isNil from "lodash/isNil.js";
+import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore } from "../../stores/modal-store.ts";
+import { contactStore } from "../../stores/contact-store.ts";
 
 type UpdateDeleteContactProperties = {
   contact: Contact;
@@ -17,29 +15,14 @@ type UpdateDeleteContactProperties = {
 export const UpdateDeleteContact = ({
   contact,
 }: Readonly<UpdateDeleteContactProperties>) => {
-  const queryClient = useQueryClient();
   const { user } = useUser();
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async () => {
-      if (isNil(user?.id)) {
-        return;
-      }
-
-      const response = await globalThis.fetch("/api/contact", {
-        body: JSON.stringify({ id: contact.id, userId: user.id }),
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allContacts(user.id),
-        });
-        setIsDeleting(false);
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(
+    contactStore.deleteContact(user?.id, () => {
+      setIsDeleting(false);
+    }),
+  );
 
   return (
     <div className="flex gap-2 items-center">
@@ -48,8 +31,8 @@ export const UpdateDeleteContact = ({
           <Button
             isIconOnly
             onPress={() => {
-              modalStore.setContactToUpdate(contact);
-              modalStore.openModal("updateContact");
+              contactStore.setContactToUpdate(contact);
+              contactStore.setIsUpdateModalOpen(true);
             }}
             aria-label="Update Contact"
             color="primary"
@@ -76,7 +59,7 @@ export const UpdateDeleteContact = ({
           <Button
             isIconOnly
             onPress={() => {
-              mutate();
+              mutate(contact);
             }}
             aria-label="Confirm delete"
             color="danger"

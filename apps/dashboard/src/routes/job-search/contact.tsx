@@ -20,9 +20,9 @@ import { UpdateDeleteContact } from "../../components/contact/update-delete-cont
 import { DateColumn } from "../../components/data-column.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../../components/table-wrapper.tsx";
-import { getContacts } from "../../data/queries/contact.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
+import { contactStore } from "../../stores/contact-store.ts";
 
 const columns = [
   { key: "name", label: "Name" },
@@ -36,7 +36,7 @@ const columns = [
 
 const RouteComponent = () => {
   const { user } = useUser();
-  const { data, isPending } = useQuery(getContacts(user?.id));
+  const { data, isPending } = useQuery(contactStore.getAll(user?.id));
 
   return (
     <MainLayout
@@ -46,8 +46,10 @@ const RouteComponent = () => {
       ]}
     >
       <SectionHeader
+        openModal={() => {
+          contactStore.setIsCreateModalOpen(true);
+        }}
         header="Contacts"
-        modalKey="createContact"
         modalLabel="Create Contact"
         refreshKeys={queryKeys.allContacts(user?.id)}
       />

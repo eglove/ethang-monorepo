@@ -11,7 +11,7 @@ import { z } from "zod";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
-import { BaseStore, useStore } from "./base-store.ts";
+import { BaseStore, useBaseStore } from "./base-store.ts";
 
 const defaultState = {
   isCreateModalOpen: false,
@@ -132,8 +132,8 @@ export class QaStore extends BaseStore<QaStoreState> {
 export const qaStore = new QaStore();
 
 export const useQaStore = <Selection>(
-  selector: (snapshot: QaStore["state"]) => Selection,
+  selector: (snapshot: QaStoreState) => Selection,
   isEqual?: (a: Selection, b: Selection) => boolean,
 ) => {
-  return useStore(qaStore, selector, isEqual);
+  return useBaseStore(qaStore, selector, isEqual);
 };
