@@ -32,7 +32,7 @@ class MyStore extends BaseStore<{ count: number }> {
   }
 }
 
-const store = new Store();
+const store = new MyStore();
 ```
 
 ## Get from store
@@ -58,7 +58,7 @@ class MyStore extends BaseStore<{ count: number }> {
   }
 }
 
-export const store = new Store();
+export const store = new MyStore();
 ```
 
 ## Subscribe to changes
@@ -84,7 +84,7 @@ import { useStore } from "@ethang/store/use-base-store";
 
 // Do not waste renders and abstractions on trying to instantiate classes inside of compoonents or hooks
 // If you want a particular store instance to be reusuable across components, export it from the module.
-const store = new Store();
+const store = new MyStore();
 
 const MyComponent = () => {
     const count = useStore(store, (state) => state.count);
@@ -123,7 +123,7 @@ class MyStore extends BaseStore<{ count: number }> {
   }
 }
 
-const store = new Store();
+const store = new MyStore();
 
 const MyComponent = () => {
     const { data, isPending } = useQuery(store.getAllCounts());
@@ -156,7 +156,7 @@ class MyStore extends BaseStore<Person> {
   }
 }
 
-const store = new Store();
+const store = new MyStore();
 ```
 
 ### Effects
@@ -189,5 +189,5 @@ class MyStore extends BaseStore<Person & { isLoggedIn: boolean }> {
   }
 }
 
-const store = new Store();
+const store = new MyStore();
 ```
