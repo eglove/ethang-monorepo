@@ -93,7 +93,7 @@ const MyComponent = () => {
 }
 ```
 
-### Global Cleanup
+## Global Cleanup
 
 When the # of subscribers reaches 0 after an unsubscription, an AbortController will run abort(), this can be used to cleanup event listeners, or cancel async operations such as fetch.
 
