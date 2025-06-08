@@ -1,35 +1,23 @@
 import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
-import type { QuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
 
 import { produce } from "immer";
 import forEach from "lodash/forEach";
 import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
 
-const isOpenKeys = [
-  "createQa",
-  "updateQa",
-  "createContact",
-  "updateContact",
-] as const;
+const isOpenKeys = ["createContact", "updateContact"] as const;
 export type IsOpenKeys = (typeof isOpenKeys)[number];
 
 type ModalState = {
   contactToUpdate: Contact | null;
   createContact: boolean;
-  createQa: boolean;
-  qaToUpdate: null | QuestionAnswer;
   updateContact: boolean;
-  updateQa: boolean;
 };
 
 class ModalStore {
   private state: ModalState = {
     contactToUpdate: null,
     createContact: false,
-    createQa: false,
-    qaToUpdate: null,
     updateContact: false,
-    updateQa: false,
   };
   private readonly subscribers = new Set<(state: ModalState) => void>();
 
@@ -59,12 +47,6 @@ class ModalStore {
     this.closeAllModals();
     this.update((draft) => {
       draft[key] = value;
-    });
-  }
-
-  public setQaToUpdate(qa: null | QuestionAnswer) {
-    this.update((draft) => {
-      draft.qaToUpdate = qa;
     });
   }
 

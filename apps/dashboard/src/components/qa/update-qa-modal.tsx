@@ -13,20 +13,18 @@ import {
   ModalHeader,
   Textarea,
 } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
+import { qaStore, useQaStore } from "../../data/qa-store.ts";
 
 export const UpdateQaModal = () => {
-  const queryClient = useQueryClient();
   const { user } = useUser();
-  const isOpen = useModalStore((state) => {
-    return state.updateQa;
-  });
-  const qa = useModalStore((state) => {
-    return state.qaToUpdate;
+  const { isOpen, qa } = useQaStore((draft) => {
+    return {
+      isOpen: draft.isUpdateModalOpen,
+      qa: draft.qaToUpdate,
+    };
   });
 
   const handleChange = (key: keyof QuestionAnswer) => (value: string) => {
@@ -34,41 +32,29 @@ export const UpdateQaModal = () => {
       return;
     }
 
-    modalStore.setQaToUpdate({
+    qaStore.setQaToUpdate({
       ...qa,
       [key]: value,
     });
   };
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async () => {
-      const response = await fetch("/api/question-answer", {
-        body: JSON.stringify({ ...qa, userId: user?.id }),
-        method: "PUT",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allUserQuestionAnswers(user?.id),
-        });
-        modalStore.closeModal("updateQa");
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(qaStore.updateQa(user?.id));
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    mutate();
+    if (!isNil(qa)) {
+      mutate(qa);
+    }
   };
 
   return (
     <Modal
       onOpenChange={(value) => {
         if (!value) {
-          modalStore.setQaToUpdate(null);
+          qaStore.setQaToUpdate(null);
         }
 
-        modalStore.setIsModalOpen("updateQa", value);
+        qaStore.setIsUpdateModalOpen(value);
       }}
       isOpen={isOpen}
       scrollBehavior="outside"
@@ -95,7 +81,7 @@ export const UpdateQaModal = () => {
           <ModalFooter>
             <Button
               onPress={() => {
-                modalStore.closeModal("updateQa");
+                qaStore.setIsUpdateModalOpen(false);
               }}
               color="danger"
               variant="light"

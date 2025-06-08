@@ -12,14 +12,13 @@ import { CreateQaModal } from "../../components/qa/create-qa-modal.tsx";
 import { QaCopyButton } from "../../components/qa/qa-copy-button.tsx";
 import { QaDeleteButton } from "../../components/qa/qa-delete-button.tsx";
 import { UpdateQaModal } from "../../components/qa/update-qa-modal.tsx";
+import { qaStore } from "../../data/qa-store.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
-import { getQuestionAnswers } from "../../data/queries/question-answer.ts";
-import { modalStore } from "../../global-stores/modal-store.ts";
 import { SectionHeader } from "../../section-header.tsx";
 
 const RouteComponent = () => {
   const { user } = useUser();
-  const { data } = useQuery(getQuestionAnswers(user?.id));
+  const { data } = useQuery(qaStore.getAll(user?.id));
 
   return (
     <MainLayout
@@ -29,8 +28,10 @@ const RouteComponent = () => {
       ]}
     >
       <SectionHeader
+        modalKey={() => {
+          qaStore.setIsCreateModalOpen(true);
+        }}
         header="Application Q/A"
-        modalKey="createQa"
         modalLabel="Add Q/A"
         refreshKeys={queryKeys.allUserQuestionAnswers(user?.id)}
       />
@@ -56,8 +57,8 @@ const RouteComponent = () => {
                   <QaCopyButton text={qa.answer} />
                   <Button
                     onPress={() => {
-                      modalStore.setQaToUpdate(qa);
-                      modalStore.openModal("updateQa");
+                      qaStore.setQaToUpdate(qa);
+                      qaStore.setIsUpdateModalOpen(true);
                     }}
                     className="gap gap-2 items-center flex"
                   >

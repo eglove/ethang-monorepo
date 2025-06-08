@@ -1,38 +1,24 @@
 import { useUser } from "@clerk/clerk-react";
 import { useToggle } from "@ethang/hooks/use-toggle";
 import { Button } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, Trash2Icon, XIcon } from "lucide-react";
 
-import { queryKeys } from "../../data/queries/queries.ts";
+import { qaStore } from "../../data/qa-store.ts";
 
 type QaDeleteButtonProperties = {
   id: string;
 };
 
 export const QaDeleteButton = ({ id }: Readonly<QaDeleteButtonProperties>) => {
-  const queryClient = useQueryClient();
   const { user } = useUser();
   const [isDeleting, toggleIsDeleting] = useToggle(false);
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async () => {
-      const response = await globalThis.fetch("/api/question-answer", {
-        body: JSON.stringify({
-          id,
-          userId: user?.id,
-        }),
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allUserQuestionAnswers(user?.id),
-        });
-        toggleIsDeleting();
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(
+    qaStore.deleteQa(user?.id, () => {
+      toggleIsDeleting();
+    }),
+  );
 
   return (
     <>
@@ -53,7 +39,7 @@ export const QaDeleteButton = ({ id }: Readonly<QaDeleteButtonProperties>) => {
           <Button
             isIconOnly
             onPress={() => {
-              mutate();
+              mutate(id);
             }}
             aria-label="Confirm Delete"
             color="primary"

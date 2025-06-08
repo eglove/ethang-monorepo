@@ -1,4 +1,3 @@
-import type { CreateQuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
@@ -13,35 +12,20 @@ import {
   ModalHeader,
   Textarea,
 } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { z } from "zod";
 
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
+import { qaStore, useQaStore } from "../../data/qa-store.ts";
 
 export const CreateQaModal = () => {
   const { user } = useUser();
-  const queryClient = useQueryClient();
-  const isOpen = useModalStore((state) => {
-    return state.createQa;
+
+  const isOpen = useQaStore((draft) => {
+    return draft.isCreateModalOpen;
   });
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async (data: CreateQuestionAnswer) => {
-      const response = await fetch("/api/question-answer", {
-        body: JSON.stringify(data),
-        method: "POST",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allUserQuestionAnswers(user?.id),
-        });
-        modalStore.closeModal("createQa");
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(qaStore.createQa(user?.id));
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,7 +43,7 @@ export const CreateQaModal = () => {
   return (
     <Modal
       onOpenChange={(value) => {
-        modalStore.setIsModalOpen("createQa", value);
+        qaStore.setIsCreateModalOpen(value);
       }}
       isOpen={isOpen}
       scrollBehavior="outside"
@@ -74,7 +58,7 @@ export const CreateQaModal = () => {
           <ModalFooter>
             <Button
               onPress={() => {
-                modalStore.closeModal("createQa");
+                qaStore.setIsCreateModalOpen(false);
               }}
               color="danger"
               variant="light"
