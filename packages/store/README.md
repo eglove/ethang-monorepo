@@ -58,7 +58,7 @@ class MyStore extends BaseStore<{ count: number }> {
   }
 }
 
-const store = new Store();
+export const store = new Store();
 ```
 
 ## Subscribe to changes
@@ -82,9 +82,15 @@ useStore takes the following parameters:
 ```tsx
 import { useStore } from "@ethang/store/use-base-store";
 
-const count = useStore(store, (state) => state.count);
+// Do not waste renders and abstractions on trying to instantiate classes inside of compoonents or hooks
+// If you want a particular store instance to be reusuable across components, export it from the module.
+const store = new Store();
 
-<div>{count}</div>;
+const MyComponent = () => {
+    const count = useStore(store, (state) => state.count);
+
+    <div>{count}</div>;
+}
 ```
 
 ## Features that won't be implemented
@@ -119,7 +125,11 @@ class MyStore extends BaseStore<{ count: number }> {
 
 const store = new Store();
 
-const { data, isPending } = useQuery(store.getAllCounts());
+const MyComponent = () => {
+    const { data, isPending } = useQuery(store.getAllCounts());
+    
+    // UI
+}
 ```
 
 ### Derived Values
