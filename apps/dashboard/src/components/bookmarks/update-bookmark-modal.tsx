@@ -12,22 +12,20 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 import { z } from "zod";
 
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
+import { bookmarkStore, useBookmarkStore } from "../../data/bookmark-store.ts";
 
 export const UpdateBookmarkModal = () => {
-  const queryClient = useQueryClient();
   const { user } = useUser();
-  const bookmark = useModalStore((state) => {
-    return state.bookmarkToUpdate;
-  });
 
-  const isOpen = useModalStore((state) => {
-    return state.updateBookmark;
+  const { bookmark, isOpen } = useBookmarkStore((state) => {
+    return {
+      bookmark: state.bookmarkToUpdate,
+      isOpen: state.isUpdateModalOpen,
+    };
   });
 
   const handleChange = (key: keyof Bookmark) => (value: string) => {
@@ -35,27 +33,15 @@ export const UpdateBookmarkModal = () => {
       return;
     }
 
-    modalStore.setBookmarkToUpdate({
+    bookmarkStore.setBookmarkToUpdate({
       ...bookmark,
       [key]: value,
     });
   };
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async (data: Bookmark) => {
-      const response = await fetch("/api/bookmark", {
-        body: JSON.stringify(data),
-        method: "PUT",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.bookmarks(user?.id),
-        });
-        modalStore.closeModal("updateBookmark");
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(
+    bookmarkStore.updateBookmark(user?.id),
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -79,9 +65,9 @@ export const UpdateBookmarkModal = () => {
     <Modal
       onOpenChange={(value) => {
         if (!value) {
-          modalStore.setBookmarkToUpdate(null);
+          bookmarkStore.setBookmarkToUpdate(null);
         }
-        modalStore.setIsModalOpen("updateBookmark", value);
+        bookmarkStore.setIsUpdateModalOpen(value);
       }}
       isOpen={isOpen}
       scrollBehavior="outside"
@@ -117,7 +103,7 @@ export const UpdateBookmarkModal = () => {
           <ModalFooter>
             <Button
               onPress={() => {
-                modalStore.closeModal("updateBookmark");
+                bookmarkStore.setIsUpdateModalOpen(false);
               }}
               color="danger"
               variant="light"

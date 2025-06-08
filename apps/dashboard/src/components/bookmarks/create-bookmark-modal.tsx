@@ -11,36 +11,21 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 import { z } from "zod";
 
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
+import { bookmarkStore, useBookmarkStore } from "../../data/bookmark-store.ts";
 
 export const CreateBookmarkModal = () => {
   const { user } = useUser();
-  const queryClient = useQueryClient();
-  const isCreateBookmarkOpen = useModalStore(
-    (snapshot) => snapshot.createBookmark,
+  const isCreateBookmarkOpen = useBookmarkStore(
+    (snapshot) => snapshot.isCreateModalOpen,
   );
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async (data: { title: string; url: string }) => {
-      await globalThis.fetch("/api/bookmark", {
-        body: JSON.stringify({
-          title: data.title,
-          url: data.url,
-          userId: user?.id,
-        }),
-        method: "POST",
-      });
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.bookmarks(user?.id),
-      });
-      modalStore.closeModal("createBookmark");
-    },
-  });
+  const { isPending, mutate } = useMutation(
+    bookmarkStore.createBookmark(user?.id),
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -61,7 +46,7 @@ export const CreateBookmarkModal = () => {
   return (
     <Modal
       onOpenChange={(value) => {
-        modalStore.setIsModalOpen("createBookmark", value);
+        bookmarkStore.setIsCreateModalOpen(value);
       }}
       isOpen={isCreateBookmarkOpen}
       scrollBehavior="outside"
@@ -76,7 +61,7 @@ export const CreateBookmarkModal = () => {
           <ModalFooter>
             <Button
               onPress={() => {
-                modalStore.closeModal("createBookmark");
+                bookmarkStore.setIsCreateModalOpen(false);
               }}
               color="danger"
               variant="light"

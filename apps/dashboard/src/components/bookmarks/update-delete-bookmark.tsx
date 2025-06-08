@@ -1,12 +1,12 @@
 import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 
+import { useUser } from "@clerk/clerk-react";
 import { Button } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
-import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore } from "../../global-stores/modal-store.ts";
+import { bookmarkStore } from "../../data/bookmark-store.ts";
 
 type UpdateDeleteBookmarkProperties = {
   bookmark: Bookmark;
@@ -15,24 +15,14 @@ type UpdateDeleteBookmarkProperties = {
 export const UpdateDeleteBookmark = ({
   bookmark,
 }: Readonly<UpdateDeleteBookmarkProperties>) => {
-  const queryClient = useQueryClient();
   const [isDeleting, setIsDeleting] = useState(false);
+  const { user } = useUser();
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: async () => {
-      const response = await globalThis.fetch("/api/bookmark", {
-        body: JSON.stringify({ id: bookmark.id, userId: bookmark.userId }),
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.bookmarks(bookmark.userId),
-        });
-        setIsDeleting(false);
-      }
-    },
-  });
+  const { isPending, mutate } = useMutation(
+    bookmarkStore.deleteBookmark(user?.id, () => {
+      setIsDeleting(false);
+    }),
+  );
 
   return (
     <div className="flex gap-2 items-center">
@@ -41,8 +31,8 @@ export const UpdateDeleteBookmark = ({
           <Button
             isIconOnly
             onPress={() => {
-              modalStore.setBookmarkToUpdate(bookmark);
-              modalStore.openModal("updateBookmark");
+              bookmarkStore.setBookmarkToUpdate(bookmark);
+              bookmarkStore.setIsUpdateModalOpen(true);
             }}
             aria-label="Update bookmark"
             color="primary"
@@ -69,7 +59,7 @@ export const UpdateDeleteBookmark = ({
           <Button
             isIconOnly
             onPress={() => {
-              mutate();
+              mutate(bookmark);
             }}
             aria-label="Confirm delete"
             color="danger"

@@ -17,7 +17,7 @@ import { UpdateBookmarkModal } from "../components/bookmarks/update-bookmark-mod
 import { UpdateDeleteBookmark } from "../components/bookmarks/update-delete-bookmark.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../components/table-wrapper.tsx";
-import { getBookmarks } from "../data/queries/bookmark.ts";
+import { bookmarkStore } from "../data/bookmark-store.ts";
 import { queryKeys } from "../data/queries/queries.ts";
 import { SectionHeader } from "../section-header.tsx";
 
@@ -29,13 +29,17 @@ const columns = [
 const BookMarks = () => {
   const { user } = useUser();
 
-  const { data: bookmarks, isPending } = useQuery(getBookmarks(user?.id));
+  const { data: bookmarks, isPending } = useQuery(
+    bookmarkStore.getAll(user?.id),
+  );
 
   return (
     <MainLayout breadcrumbPaths={[{ href: "/bookmarks", label: "Bookmarks" }]}>
       <SectionHeader
+        modalKey={() => {
+          bookmarkStore.setIsCreateModalOpen(true);
+        }}
         header="Bookmarks"
-        modalKey="createBookmark"
         modalLabel="Add Bookmark"
         refreshKeys={queryKeys.bookmarks(user?.id)}
       />

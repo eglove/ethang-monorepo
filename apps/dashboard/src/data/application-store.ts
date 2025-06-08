@@ -74,7 +74,7 @@ export class ApplicationStore {
 
           this.update((state) => {
             state.isCreateModalOpen = false;
-          });
+          }, false);
         } else {
           toastError(response);
         }
@@ -134,7 +134,7 @@ export class ApplicationStore {
               return datum.interviewRounds.length;
             }),
           );
-        });
+        }, false);
 
         return applications;
       },
@@ -218,16 +218,10 @@ export class ApplicationStore {
 
           this.update((state) => {
             state.isUpdateModalOpen = false;
-          });
+          }, false);
         }
       },
     };
-  }
-
-  private notifySubscribers() {
-    for (const callback of this._subscribers) {
-      callback(this._state);
-    }
   }
 
   private prefetchNextPage(userId: string) {
@@ -302,7 +296,9 @@ export class ApplicationStore {
     this._state = produce(this._state, updater);
 
     if (shouldNotify) {
-      this.notifySubscribers();
+      for (const callback of this._subscribers) {
+        callback(this._state);
+      }
     }
   }
 }
