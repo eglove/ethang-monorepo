@@ -89,7 +89,7 @@ const count = useBaseStore(store, (draft) => draft.count);
 
 ### Features that won't be implemented
 
-### Async
+#### Async
 
 If you need React Query features, I would suggest using React Query. Within your own classes you can return queryOptions and mutationOptions.
 
