@@ -38,7 +38,7 @@ const pageDescription = description ?? "Messin' around on the web sometimes.";
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
   </head>
-  <body class="grid h-[100vb] overflow-hidden">
+  <body class="grid grid-rows-[auto_1fr] h-[100vb] overflow-hidden">
     <NavDrawer />
     <div id="main-content" class="p-4 sm:mx-0 overflow-auto">
       <slot />
