@@ -91,7 +91,7 @@ const count = useStore(store, (state) => state.count);
 
 ### Async
 
-If you need React Query features, I would suggest using React Query. Within your own classes you can return queryOptions and mutationOptions.
+If you need TanStack Query features, I would recommend using [TanStack Query](https://tanstack.com/query/latest). Within your own classes you can return queryOptions and mutationOptions.
 
 ```ts
 import { queryOptions, useQuery } from "@tanstack/react-query";
@@ -151,7 +151,7 @@ const store = new Store();
 
 ### Effects
 
-This logic is also your responsibility, not the library.
+This logic is also not the library's responsibility.
 
 ```ts
 import { queryOptions } from "@tanstack/react-query";
