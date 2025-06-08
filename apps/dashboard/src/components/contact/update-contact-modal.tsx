@@ -22,7 +22,7 @@ import {
   type DateInputValue,
 } from "../../../worker/utilities/heroui.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore, useModalStore } from "../../global-stores/modal-store.ts";
+import { modalStore, useModalStore } from "../../stores/modal-store.ts";
 
 export const UpdateContactModal = () => {
   const queryClient = useQueryClient();

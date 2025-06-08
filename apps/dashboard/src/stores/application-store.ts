@@ -7,7 +7,6 @@ import {
 import { createUrl } from "@ethang/toolbelt/fetch/create-url";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
-import { produce } from "immer";
 import debounce from "lodash/debounce.js";
 import get from "lodash/get";
 import isEmpty from "lodash/isEmpty.js";
@@ -20,9 +19,10 @@ import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-s
 import { z } from "zod";
 
 import { queryClient } from "../components/providers.tsx";
+import { queryKeys } from "../data/queries/queries.ts";
 import { formDateToIso } from "../utilities/form.ts";
 import { toastError } from "../utilities/toast-error.ts";
-import { queryKeys } from "./queries/queries.ts";
+import { BaseStore, useStore } from "./base-store.ts";
 
 const defaultState = {
   applicationToUpdate: null as null | UpdateJobApplication,
@@ -45,15 +45,10 @@ const searchParametersSchema = z.object({
   search: z.string().optional(),
 });
 
-export class ApplicationStore {
-  public get state() {
-    return this._state;
+export class ApplicationStore extends BaseStore<ApplicationStoreState> {
+  public constructor() {
+    super(defaultState);
   }
-  private _state: ApplicationStoreState = defaultState;
-
-  private readonly _subscribers = new Set<
-    (state: ApplicationStoreState) => void
-  >();
 
   public createApplication(userId?: string) {
     return {
@@ -180,14 +175,6 @@ export class ApplicationStore {
     }, 500)();
   }
 
-  public subscribe(callback: (state: ApplicationStoreState) => void) {
-    this._subscribers.add(callback);
-
-    return () => {
-      this._subscribers.delete(callback);
-    };
-  }
-
   public updateApplication(userId?: string) {
     return {
       mutationFn: async (data: UpdateJobApplication) => {
@@ -288,19 +275,6 @@ export class ApplicationStore {
 
     return data;
   }
-
-  private update(
-    updater: (draft: ApplicationStoreState) => void,
-    shouldNotify = true,
-  ) {
-    this._state = produce(this._state, updater);
-
-    if (shouldNotify) {
-      for (const callback of this._subscribers) {
-        callback(this._state);
-      }
-    }
-  }
 }
 
 export const applicationStore = new ApplicationStore();
@@ -309,13 +283,5 @@ export const useApplicationStore = <Selection>(
   selector: (snapshot: ApplicationStoreState) => Selection,
   isEqual?: (a: Selection, b: Selection) => boolean,
 ) => {
-  return useSyncExternalStoreWithSelector(
-    (listener) => {
-      return applicationStore.subscribe(listener);
-    },
-    () => applicationStore.state,
-    () => applicationStore.state,
-    selector,
-    isEqual,
-  );
+  return useStore(applicationStore, selector, isEqual);
 };

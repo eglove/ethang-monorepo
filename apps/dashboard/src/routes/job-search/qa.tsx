@@ -12,9 +12,9 @@ import { CreateQaModal } from "../../components/qa/create-qa-modal.tsx";
 import { QaCopyButton } from "../../components/qa/qa-copy-button.tsx";
 import { QaDeleteButton } from "../../components/qa/qa-delete-button.tsx";
 import { UpdateQaModal } from "../../components/qa/update-qa-modal.tsx";
-import { qaStore } from "../../data/qa-store.ts";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
+import { qaStore } from "../../stores/qa-store.ts";
 
 const RouteComponent = () => {
   const { user } = useUser();

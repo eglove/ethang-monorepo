@@ -8,7 +8,7 @@ import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
 import { queryKeys } from "../../data/queries/queries.ts";
-import { modalStore } from "../../global-stores/modal-store.ts";
+import { modalStore } from "../../stores/modal-store.ts";
 
 type UpdateDeleteContactProperties = {
   contact: Contact;

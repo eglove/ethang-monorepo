@@ -6,7 +6,7 @@ import isString from "lodash/isString";
 import { PlusIcon, RotateCwIcon } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
 
-import { type IsOpenKeys, modalStore } from "./global-stores/modal-store.ts";
+import { type IsOpenKeys, modalStore } from "./stores/modal-store.ts";
 
 type SectionHeaderProperties = {
   children?: ReactNode;

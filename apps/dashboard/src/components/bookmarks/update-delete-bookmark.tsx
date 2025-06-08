@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
-import { bookmarkStore } from "../../data/bookmark-store.ts";
+import { bookmarkStore } from "../../stores/bookmark-store.ts";
 
 type UpdateDeleteBookmarkProperties = {
   bookmark: Bookmark;

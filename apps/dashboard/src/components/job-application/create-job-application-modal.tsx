@@ -19,7 +19,7 @@ import { z } from "zod";
 import {
   applicationStore,
   useApplicationStore,
-} from "../../data/application-store.ts";
+} from "../../stores/application-store.ts";
 
 export const CreateJobApplicationModal = () => {
   const { user } = useUser();

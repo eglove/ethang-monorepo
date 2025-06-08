@@ -19,6 +19,7 @@ class ModalStore {
     createContact: false,
     updateContact: false,
   };
+
   private readonly subscribers = new Set<(state: ModalState) => void>();
 
   public closeModal(key: IsOpenKeys) {

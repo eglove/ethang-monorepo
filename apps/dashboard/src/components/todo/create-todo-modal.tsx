@@ -29,7 +29,7 @@ import {
   type DateInputValue,
   getDateTimeInputNow,
 } from "../../../worker/utilities/heroui.ts";
-import { todoStore, useTodoStore } from "../../data/todo-store.ts";
+import { todoStore, useTodoStore } from "../../stores/todo-store.ts";
 import { timeIntervals } from "./time-intervals.ts";
 
 const createTodoFormSchema = createTodoSchema

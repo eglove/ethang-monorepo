@@ -4,7 +4,7 @@ import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, Trash2Icon, XIcon } from "lucide-react";
 
-import { qaStore } from "../../data/qa-store.ts";
+import { qaStore } from "../../stores/qa-store.ts";
 
 type QaDeleteButtonProperties = {
   id: string;

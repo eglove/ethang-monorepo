@@ -17,9 +17,9 @@ import { UpdateBookmarkModal } from "../components/bookmarks/update-bookmark-mod
 import { UpdateDeleteBookmark } from "../components/bookmarks/update-delete-bookmark.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../components/table-wrapper.tsx";
-import { bookmarkStore } from "../data/bookmark-store.ts";
 import { queryKeys } from "../data/queries/queries.ts";
 import { SectionHeader } from "../section-header.tsx";
+import { bookmarkStore } from "../stores/bookmark-store.ts";
 
 const columns = [
   { key: "title", label: "Title" },

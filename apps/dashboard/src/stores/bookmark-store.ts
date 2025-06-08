@@ -4,14 +4,13 @@ import {
 } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";
-import { produce } from "immer";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil.js";
-import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
 
 import { queryClient } from "../components/providers.tsx";
-import { queryKeys } from "./queries/queries.ts";
+import { queryKeys } from "../data/queries/queries.ts";
+import { BaseStore, useStore } from "./base-store.ts";
 
 const defaultState = {
   bookmarkToUpdate: null as Bookmark | null,
@@ -20,16 +19,12 @@ const defaultState = {
 };
 
 type BookmarkStoreState = typeof defaultState;
-type Subscriber = (draft: BookmarkStoreState) => void;
 const bookmarkPath = "/api/bookmark";
 
-export class BookmarkStore {
-  public get state() {
-    return this._state;
+export class BookmarkStore extends BaseStore<BookmarkStoreState> {
+  public constructor() {
+    super(defaultState);
   }
-
-  private _state: BookmarkStoreState = defaultState;
-  private readonly _subscribers = new Set<Subscriber>();
 
   public createBookmark(userId = "") {
     return {
@@ -107,14 +102,6 @@ export class BookmarkStore {
     });
   }
 
-  public subscribe(subscriber: Subscriber) {
-    this._subscribers.add(subscriber);
-
-    return () => {
-      this._subscribers.delete(subscriber);
-    };
-  }
-
   public updateBookmark(userId = "") {
     return {
       mutationFn: async (data: Bookmark) => {
@@ -135,16 +122,6 @@ export class BookmarkStore {
       },
     };
   }
-
-  private update(updater: Subscriber, shouldNotify = true) {
-    this._state = produce(this._state, updater);
-
-    if (shouldNotify) {
-      for (const callback of this._subscribers) {
-        callback(this._state);
-      }
-    }
-  }
 }
 
 export const bookmarkStore = new BookmarkStore();
@@ -153,13 +130,5 @@ export const useBookmarkStore = <Selection>(
   selector: (snapshot: BookmarkStore["state"]) => Selection,
   isEqual?: (a: Selection, b: Selection) => boolean,
 ) => {
-  return useSyncExternalStoreWithSelector(
-    (listener) => {
-      return bookmarkStore.subscribe(listener);
-    },
-    () => bookmarkStore.state,
-    () => bookmarkStore.state,
-    selector,
-    isEqual,
-  );
+  return useStore(bookmarkStore, selector, isEqual);
 };

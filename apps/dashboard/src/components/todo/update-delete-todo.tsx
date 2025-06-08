@@ -8,7 +8,7 @@ import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { todoStore } from "../../data/todo-store.ts";
+import { todoStore } from "../../stores/todo-store.ts";
 
 type UpdateDeleteTodoProperties = {
   todo: Todo;

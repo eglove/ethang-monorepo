@@ -16,7 +16,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 
-import { qaStore, useQaStore } from "../../data/qa-store.ts";
+import { qaStore, useQaStore } from "../../stores/qa-store.ts";
 
 export const UpdateQaModal = () => {
   const { user } = useUser();

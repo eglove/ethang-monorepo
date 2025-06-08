@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
-import { applicationStore } from "../../data/application-store.ts";
+import { applicationStore } from "../../stores/application-store.ts";
 
 export const UpdateDeleteApplication = ({
   application,

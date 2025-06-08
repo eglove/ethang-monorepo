@@ -5,15 +5,14 @@ import {
 } from "@ethang/schemas/src/dashboard/todo-schema.ts";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";
-import { produce } from "immer";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil";
 import { DateTime } from "luxon";
-import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
 
 import { queryClient } from "../components/providers.tsx";
-import { queryKeys } from "./queries/queries.ts";
+import { queryKeys } from "../data/queries/queries.ts";
+import { BaseStore, useStore } from "./base-store.ts";
 
 const defaultState = {
   isCreateModalOpen: false,
@@ -21,17 +20,13 @@ const defaultState = {
   todoToUpdate: null as null | Todo,
 };
 
-type Subscriber = (state: TodoState) => void;
 type TodoState = typeof defaultState;
 const todoPath = "/api/todo";
 
-export class TodoStore {
-  public get state() {
-    return this._state;
+export class TodoStore extends BaseStore<TodoState> {
+  public constructor() {
+    super(defaultState);
   }
-
-  private _state = defaultState;
-  private readonly _subscribers = new Set<Subscriber>();
 
   public completeTodo(userId = "") {
     return {
@@ -154,14 +149,6 @@ export class TodoStore {
     });
   }
 
-  public subscribe(subscriber: Subscriber) {
-    this._subscribers.add(subscriber);
-
-    return () => {
-      this._subscribers.delete(subscriber);
-    };
-  }
-
   public updateTodo(userId = "") {
     return {
       mutationFn: async (todo: null | Todo) => {
@@ -189,16 +176,6 @@ export class TodoStore {
       },
     };
   }
-
-  private update(updater: Subscriber, shouldNotify = true) {
-    this._state = produce(this._state, updater);
-
-    if (shouldNotify) {
-      for (const callback of this._subscribers) {
-        callback(this._state);
-      }
-    }
-  }
 }
 
 export const todoStore = new TodoStore();
@@ -207,13 +184,5 @@ export const useTodoStore = <Selection>(
   selector: (snapshot: TodoState) => Selection,
   isEqual?: (a: Selection, b: Selection) => boolean,
 ) => {
-  return useSyncExternalStoreWithSelector(
-    (listener) => {
-      return todoStore.subscribe(listener);
-    },
-    () => todoStore.state,
-    () => todoStore.state,
-    selector,
-    isEqual,
-  );
+  return useStore(todoStore, selector, isEqual);
 };

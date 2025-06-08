@@ -29,12 +29,12 @@ import { UpdateDeleteApplication } from "../../components/job-application/update
 import { UpdateJobApplicationModal } from "../../components/job-application/update-job-application-modal.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../../components/table-wrapper.tsx";
+import { queryKeys } from "../../data/queries/queries.ts";
+import { SectionHeader } from "../../section-header.tsx";
 import {
   applicationStore,
   useApplicationStore,
-} from "../../data/application-store.ts";
-import { queryKeys } from "../../data/queries/queries.ts";
-import { SectionHeader } from "../../section-header.tsx";
+} from "../../stores/application-store.ts";
 
 const getColumns = (maxRoundCount: number) => {
   const roundsColumns = times(maxRoundCount, (index) => {

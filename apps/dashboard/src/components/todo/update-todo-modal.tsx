@@ -20,7 +20,7 @@ import { DateTime } from "luxon";
 import ms from "ms";
 
 import { convertIsoToDateTimeInput } from "../../../worker/utilities/heroui.ts";
-import { todoStore, useTodoStore } from "../../data/todo-store.ts";
+import { todoStore, useTodoStore } from "../../stores/todo-store.ts";
 
 export const UpdateTodoModal = () => {
   const { user } = useUser();

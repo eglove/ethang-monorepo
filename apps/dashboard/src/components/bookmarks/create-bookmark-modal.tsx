@@ -15,7 +15,10 @@ import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 import { z } from "zod";
 
-import { bookmarkStore, useBookmarkStore } from "../../data/bookmark-store.ts";
+import {
+  bookmarkStore,
+  useBookmarkStore,
+} from "../../stores/bookmark-store.ts";
 
 export const CreateBookmarkModal = () => {
   const { user } = useUser();

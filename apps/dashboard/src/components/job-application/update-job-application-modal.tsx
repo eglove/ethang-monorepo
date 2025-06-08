@@ -29,7 +29,7 @@ import {
 import {
   applicationStore,
   useApplicationStore,
-} from "../../data/application-store.ts";
+} from "../../stores/application-store.ts";
 import { getFormDate } from "../../utilities/form.ts";
 
 export const UpdateJobApplicationModal = () => {

@@ -23,8 +23,8 @@ import { useTodoTimerStore } from "../components/todo/todo-timer-store.ts";
 import { UpdateDeleteTodo } from "../components/todo/update-delete-todo.tsx";
 import { UpdateTodoModal } from "../components/todo/update-todo-modal.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
-import { todoStore } from "../data/todo-store.ts";
 import { SectionHeader } from "../section-header.tsx";
+import { todoStore } from "../stores/todo-store.ts";
 
 const columns = [
   { key: "title", label: "Title" },

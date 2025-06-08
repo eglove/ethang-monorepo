@@ -5,14 +5,13 @@ import {
 } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";
-import { produce } from "immer";
 import isEmpty from "lodash/isEmpty";
 import isError from "lodash/isError";
-import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
 import { z } from "zod";
 
 import { queryClient } from "../components/providers.tsx";
-import { queryKeys } from "./queries/queries.ts";
+import { queryKeys } from "../data/queries/queries.ts";
+import { BaseStore, useStore } from "./base-store.ts";
 
 const defaultState = {
   isCreateModalOpen: false,
@@ -21,16 +20,12 @@ const defaultState = {
 };
 
 type QaStoreState = typeof defaultState;
-type Subscriber = (state: QaStoreState) => void;
 const questionAnswerPath = "/api/question-answer";
 
-export class QaStore {
-  public get state() {
-    return this._state;
+export class QaStore extends BaseStore<QaStoreState> {
+  public constructor() {
+    super(defaultState);
   }
-
-  private _state = defaultState;
-  private readonly _subscribers = new Set<(draft: QaStoreState) => void>();
 
   public createQa(userId = "") {
     return {
@@ -114,14 +109,6 @@ export class QaStore {
     });
   };
 
-  public subscribe(subscriber: Subscriber) {
-    this._subscribers.add(subscriber);
-
-    return () => {
-      this._subscribers.delete(subscriber);
-    };
-  }
-
   public updateQa(userId = "") {
     return {
       mutationFn: async (qa: QuestionAnswer) => {
@@ -140,16 +127,6 @@ export class QaStore {
       },
     };
   }
-
-  private update(updater: Subscriber, shouldNotify = true) {
-    this._state = produce(this._state, updater);
-
-    if (shouldNotify) {
-      for (const callback of this._subscribers) {
-        callback(this._state);
-      }
-    }
-  }
 }
 
 export const qaStore = new QaStore();
@@ -158,13 +135,5 @@ export const useQaStore = <Selection>(
   selector: (snapshot: QaStore["state"]) => Selection,
   isEqual?: (a: Selection, b: Selection) => boolean,
 ) => {
-  return useSyncExternalStoreWithSelector(
-    (listener) => {
-      return qaStore.subscribe(listener);
-    },
-    () => qaStore.state,
-    () => qaStore.state,
-    selector,
-    isEqual,
-  );
+  return useStore(qaStore, selector, isEqual);
 };
