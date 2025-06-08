@@ -2,6 +2,7 @@ import type { QuestionAnswer } from "@ethang/schemas/src/dashboard/question-answ
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import {
   Button,
   Form,
@@ -16,11 +17,11 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 
-import { qaStore, useQaStore } from "../../stores/qa-store.ts";
+import { qaStore } from "../../stores/qa-store.ts";
 
 export const UpdateQaModal = () => {
   const { user } = useUser();
-  const { isOpen, qa } = useQaStore((draft) => {
+  const { isOpen, qa } = useStore(qaStore, (draft) => {
     return {
       isOpen: draft.isUpdateModalOpen,
       qa: draft.qaToUpdate,

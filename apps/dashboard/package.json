@@ -9,6 +9,7 @@
     "@cortex-js/compute-engine": "^0.29.1",
     "@ethang/hooks": "^2.3.1",
     "@ethang/schemas": "workspace:*",
+    "@ethang/store": "^2.0.2",
     "@ethang/toolbelt": "^4.4.10",
     "@heroui/react": "2.7.9",
     "@heroui/theme": "2.4.16",

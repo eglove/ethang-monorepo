@@ -4,6 +4,7 @@ import {
   getAllApplicationsSchema,
   type UpdateJobApplication,
 } from "@ethang/schemas/src/dashboard/application-schema.ts";
+import { BaseStore } from "@ethang/store";
 import { createUrl } from "@ethang/toolbelt/fetch/create-url";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
@@ -21,7 +22,6 @@ import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
 import { formDateToIso } from "../utilities/form.ts";
 import { toastError } from "../utilities/toast-error.ts";
-import { BaseStore, useBaseStore } from "./base-store.ts";
 
 const defaultState = {
   applicationToUpdate: null as null | UpdateJobApplication,
@@ -277,10 +277,3 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
 }
 
 export const applicationStore = new ApplicationStore();
-
-export const useApplicationStore = <Selection>(
-  selector: (snapshot: ApplicationStoreState) => Selection,
-  isEqual?: (a: Selection, b: Selection) => boolean,
-) => {
-  return useBaseStore(applicationStore, selector, isEqual);
-};

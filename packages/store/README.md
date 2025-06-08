@@ -73,16 +73,16 @@ unsubscribe(); // Don't forget to clean up.
 
 ## React subscriptions
 
-useBaseStore takes the following parameters:
+useStore takes the following parameters:
 
 - store - An instance of your store
 - selector - to select the values you want to return
 - isEqual (optional) - A comparison function
 
 ```tsx
-import { useBaseStore } from "@ethang/store/use-base-store";
+import { useStore } from "@ethang/store/use-base-store";
 
-const count = useBaseStore(store, (draft) => draft.count);
+const count = useStore(store, (draft) => draft.count);
 
 <div>{count}</div>;
 ```

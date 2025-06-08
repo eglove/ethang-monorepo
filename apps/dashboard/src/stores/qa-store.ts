@@ -3,6 +3,7 @@ import {
   type QuestionAnswer,
   questionAnswerSchema,
 } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
+import { BaseStore } from "@ethang/store";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty";
@@ -11,7 +12,6 @@ import { z } from "zod";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
-import { BaseStore, useBaseStore } from "./base-store.ts";
 
 const defaultState = {
   isCreateModalOpen: false,
@@ -134,10 +134,3 @@ export class QaStore extends BaseStore<QaStoreState> {
 }
 
 export const qaStore = new QaStore();
-
-export const useQaStore = <Selection>(
-  selector: (snapshot: QaStoreState) => Selection,
-  isEqual?: (a: Selection, b: Selection) => boolean,
-) => {
-  return useBaseStore(qaStore, selector, isEqual);
-};

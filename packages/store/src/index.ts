@@ -5,7 +5,7 @@ export abstract class BaseStore<State> {
     return this._state;
   }
 
-  private _state: State;
+  protected _state: State;
   private readonly _subscribers = new Set<(draft: State) => void>();
 
   protected constructor(state: State) {

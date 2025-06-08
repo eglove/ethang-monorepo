@@ -3,6 +3,7 @@ import {
   type Todo,
   todosSchema,
 } from "@ethang/schemas/src/dashboard/todo-schema.ts";
+import { BaseStore } from "@ethang/store";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
@@ -12,7 +13,6 @@ import { DateTime } from "luxon";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
-import { BaseStore, useBaseStore } from "./base-store.ts";
 
 const defaultState = {
   isCreateModalOpen: false,
@@ -179,10 +179,3 @@ export class TodoStore extends BaseStore<TodoState> {
 }
 
 export const todoStore = new TodoStore();
-
-export const useTodoStore = <Selection>(
-  selector: (snapshot: TodoState) => Selection,
-  isEqual?: (a: Selection, b: Selection) => boolean,
-) => {
-  return useBaseStore(todoStore, selector, isEqual);
-};

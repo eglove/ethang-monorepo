@@ -1,5 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
 import { createTodoSchema } from "@ethang/schemas/src/dashboard/todo-schema.ts";
+import { useStore } from "@ethang/store/use-store";
 import { isNumber } from "@ethang/toolbelt/is/number";
 import {
   Button,
@@ -29,7 +30,7 @@ import {
   type DateInputValue,
   getDateTimeInputNow,
 } from "../../../worker/utilities/heroui.ts";
-import { todoStore, useTodoStore } from "../../stores/todo-store.ts";
+import { todoStore } from "../../stores/todo-store.ts";
 import { timeIntervals } from "./time-intervals.ts";
 
 const createTodoFormSchema = createTodoSchema
@@ -44,7 +45,7 @@ const createTodoFormSchema = createTodoSchema
 
 export const CreateTodoModal = () => {
   const { user } = useUser();
-  const { isOpen } = useTodoStore((state) => {
+  const { isOpen } = useStore(todoStore, (state) => {
     return {
       isOpen: state.isCreateModalOpen,
     };

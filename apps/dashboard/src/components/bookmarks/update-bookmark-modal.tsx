@@ -2,6 +2,7 @@ import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts"
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import {
   Button,
   Form,
@@ -16,15 +17,12 @@ import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 import { z } from "zod";
 
-import {
-  bookmarkStore,
-  useBookmarkStore,
-} from "../../stores/bookmark-store.ts";
+import { bookmarkStore } from "../../stores/bookmark-store.ts";
 
 export const UpdateBookmarkModal = () => {
   const { user } = useUser();
 
-  const { bookmark, isOpen } = useBookmarkStore((state) => {
+  const { bookmark, isOpen } = useStore(bookmarkStore, (state) => {
     return {
       bookmark: state.bookmarkToUpdate,
       isOpen: state.isUpdateModalOpen,

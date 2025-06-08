@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import {
   Button,
   Form,
@@ -16,15 +17,12 @@ import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
-import {
-  applicationStore,
-  useApplicationStore,
-} from "../../stores/application-store.ts";
+import { applicationStore } from "../../stores/application-store.ts";
 
 export const CreateJobApplicationModal = () => {
   const { user } = useUser();
 
-  const isCreateModalOpen = useApplicationStore((state) => {
+  const isCreateModalOpen = useStore(applicationStore, (state) => {
     return state.isCreateModalOpen;
   });
 

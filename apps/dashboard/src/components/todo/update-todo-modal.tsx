@@ -2,6 +2,7 @@ import type { Todo } from "@ethang/schemas/src/dashboard/todo-schema.ts";
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import {
   Button,
   DateInput,
@@ -20,12 +21,12 @@ import { DateTime } from "luxon";
 import ms from "ms";
 
 import { convertIsoToDateTimeInput } from "../../../worker/utilities/heroui.ts";
-import { todoStore, useTodoStore } from "../../stores/todo-store.ts";
+import { todoStore } from "../../stores/todo-store.ts";
 
 export const UpdateTodoModal = () => {
   const { user } = useUser();
 
-  const { isOpen, todo } = useTodoStore((state) => {
+  const { isOpen, todo } = useStore(todoStore, (state) => {
     return {
       isOpen: state.isUpdateModalOpen,
       todo: state.todoToUpdate,

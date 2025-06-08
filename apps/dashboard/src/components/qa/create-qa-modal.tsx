@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import {
   Button,
   Form,
@@ -16,12 +17,12 @@ import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { z } from "zod";
 
-import { qaStore, useQaStore } from "../../stores/qa-store.ts";
+import { qaStore } from "../../stores/qa-store.ts";
 
 export const CreateQaModal = () => {
   const { user } = useUser();
 
-  const isOpen = useQaStore((draft) => {
+  const isOpen = useStore(qaStore, (draft) => {
     return draft.isCreateModalOpen;
   });
 

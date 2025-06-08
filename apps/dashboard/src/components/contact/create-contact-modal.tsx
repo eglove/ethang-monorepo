@@ -2,6 +2,7 @@ import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
 import { createContactSchema } from "@ethang/schemas/src/dashboard/contact-schema.ts";
+import { useStore } from "@ethang/store/use-store";
 import {
   Button,
   DateInput,
@@ -21,11 +22,11 @@ import set from "lodash/set";
 import { DateTime } from "luxon";
 
 import { getDateTimeInputNow } from "../../../worker/utilities/heroui.ts";
-import { contactStore, useContactStore } from "../../stores/contact-store.ts";
+import { contactStore } from "../../stores/contact-store.ts";
 
 export const CreateContactModal = () => {
   const { user } = useUser();
-  const isOpen = useContactStore((state) => {
+  const isOpen = useStore(contactStore, (state) => {
     return state.isCreateModalOpen;
   });
 

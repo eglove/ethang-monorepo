@@ -2,6 +2,7 @@ import {
   type Bookmark,
   bookmarksSchema,
 } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
+import { BaseStore } from "@ethang/store";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
@@ -10,7 +11,6 @@ import isNil from "lodash/isNil.js";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
-import { BaseStore, useBaseStore } from "./base-store.ts";
 
 const defaultState = {
   bookmarkToUpdate: null as Bookmark | null,
@@ -125,10 +125,3 @@ export class BookmarkStore extends BaseStore<BookmarkStoreState> {
 }
 
 export const bookmarkStore = new BookmarkStore();
-
-export const useBookmarkStore = <Selection>(
-  selector: (snapshot: BookmarkStoreState) => Selection,
-  isEqual?: (a: Selection, b: Selection) => boolean,
-) => {
-  return useBaseStore(bookmarkStore, selector, isEqual);
-};

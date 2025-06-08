@@ -3,6 +3,7 @@ import {
   contactsSchema,
   type CreateContact,
 } from "@ethang/schemas/src/dashboard/contact-schema.ts";
+import { BaseStore } from "@ethang/store";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty";
@@ -11,7 +12,6 @@ import isNil from "lodash/isNil";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
-import { BaseStore, useBaseStore } from "./base-store.ts";
 
 const defaultState = {
   contactToUpdate: null as Contact | null,
@@ -135,10 +135,3 @@ class ContactStore extends BaseStore<ContactStoreState> {
 }
 
 export const contactStore = new ContactStore();
-
-export const useContactStore = <Selection>(
-  selector: (snapshot: ContactStoreState) => Selection,
-  isEqual?: (a: Selection, b: Selection) => boolean,
-) => {
-  return useBaseStore(contactStore, selector, isEqual);
-};

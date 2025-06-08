@@ -85,6 +85,9 @@ importers:
       '@ethang/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@ethang/store':
+        specifier: ^2.0.2
+        version: 2.0.2(react@19.1.0)
       '@ethang/toolbelt':
         specifier: ^4.4.10
         version: 4.4.10
@@ -2755,6 +2758,10 @@ packages:
 
   '@ethang/project-builder@3.0.2':
     resolution: {integrity: sha512-5hf/Ns25JyBFqfN/+NshVvPAYHzzpEJXjGPPGHx7WED/aFIaKT4hgYSFSxIrZVXwa2BukTI5HbUHBvNN1NXjyA==}
+
+  '@ethang/store@2.0.2':
+    resolution: {integrity: sha512-LGzlQFomKg1pG0oanf5ykpjn79iL4EotqfBaviCTLhQfr/SCstQKe/2xYTBm1z9eggORPCFNoe1O8x3nkn2A0Q==}
+    engines: {node: '>=22'}
 
   '@ethang/toolbelt@4.4.10':
     resolution: {integrity: sha512-JSIMmoRyyYBCCajM2r5ZiCE0AqK/vCSBNnwFpF0voA1AGjdFmNLpLj9g4lnLXKtytqvnKGxsAitBCADnabQrdQ==}
@@ -12850,6 +12857,13 @@ snapshots:
       - tsx
       - typescript
       - yaml
+
+  '@ethang/store@2.0.2(react@19.1.0)':
+    dependencies:
+      immer: 10.1.1
+      use-sync-external-store: 1.5.0(react@19.1.0)
+    transitivePeerDependencies:
+      - react
 
   '@ethang/toolbelt@4.4.10':
     dependencies:

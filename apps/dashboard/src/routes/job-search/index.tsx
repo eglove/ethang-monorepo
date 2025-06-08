@@ -1,4 +1,5 @@
 import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import {
   Button,
   getKeyValue,
@@ -31,10 +32,7 @@ import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../../components/table-wrapper.tsx";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
-import {
-  applicationStore,
-  useApplicationStore,
-} from "../../stores/application-store.ts";
+import { applicationStore } from "../../stores/application-store.ts";
 
 const getColumns = (maxRoundCount: number) => {
   const roundsColumns = times(maxRoundCount, (index) => {
@@ -55,7 +53,8 @@ const getColumns = (maxRoundCount: number) => {
 const RouteComponent = () => {
   const { user } = useUser();
 
-  const { maxRoundsCount, page, search, totalPages } = useApplicationStore(
+  const { maxRoundsCount, page, search, totalPages } = useStore(
+    applicationStore,
     (state) => {
       return {
         maxRoundsCount: state.maxRoundsCount,

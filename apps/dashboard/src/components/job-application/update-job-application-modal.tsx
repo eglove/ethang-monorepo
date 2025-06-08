@@ -2,6 +2,7 @@ import type { JobApplication } from "@ethang/schemas/src/dashboard/application-s
 import type { FormEvent } from "react";
 
 import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import {
   Button,
   DateInput,
@@ -26,16 +27,14 @@ import {
   convertIsoToDateTimeInput,
   type DateInputValue,
 } from "../../../worker/utilities/heroui.ts";
-import {
-  applicationStore,
-  useApplicationStore,
-} from "../../stores/application-store.ts";
+import { applicationStore } from "../../stores/application-store.ts";
 import { getFormDate } from "../../utilities/form.ts";
 
 export const UpdateJobApplicationModal = () => {
   const { user } = useUser();
 
-  const { applicationToUpdate, isUpdateModalOpen } = useApplicationStore(
+  const { applicationToUpdate, isUpdateModalOpen } = useStore(
+    applicationStore,
     (state) => {
       return {
         applicationToUpdate: state.applicationToUpdate,
