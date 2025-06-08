@@ -101,7 +101,6 @@ When the first subscription is added the controller will be reset.
 
 ```ts
 const defaultState = {
-    // eslint-disable-next-line compat/compat
     isOnline: globalThis.navigator.onLine,
     onOffline: undefined as (() => void) | undefined,
     onOnline: undefined as (() => void) | undefined,
