@@ -82,7 +82,7 @@ useStore takes the following parameters:
 ```tsx
 import { useStore } from "@ethang/store/use-base-store";
 
-const count = useStore(store, (draft) => draft.count);
+const count = useStore(store, (state) => state.count);
 
 <div>{count}</div>;
 ```
