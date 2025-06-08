@@ -40,7 +40,9 @@ export class QaStore extends BaseStore<QaStoreState> {
             queryKey: queryKeys.allUserQuestionAnswers(userId),
           });
 
-          qaStore.setIsCreateModalOpen(false);
+          this.update((draft) => {
+            draft.isCreateModalOpen = false;
+          }, false);
         }
       },
     };
@@ -122,7 +124,9 @@ export class QaStore extends BaseStore<QaStoreState> {
             queryKey: queryKeys.allUserQuestionAnswers(userId),
           });
 
-          qaStore.setIsUpdateModalOpen(false);
+          this.update((draft) => {
+            draft.isUpdateModalOpen = false;
+          }, false);
         }
       },
     };
