@@ -1,240 +1,189 @@
-# "state management"
+# @ethang/store
 
-This library was primarily created with the realization of how simple state
-management actually is. While I see great value in current libraries (I love
-Redux Toolkit), and populus alternatives like Zustand, we can do even better.
-
-In fact, it is so simple I would argue we should be comfortable with regularly
-rolling our own.
-
-"State Management" is objects in an observer pattern. Things like derived values
-and effects are secondary features, these can be implemented in your own classes.
-All changes are made through immer for immutability.
+A lightweight state management solution for React applications, leveraging `Immer` for immutable state updates and
+`useSyncExternalStore` for efficient React integration.
 
 ```shell
 pnpm i @ethang/store
 ```
 
-## Create a store:
+## Features
+
+- **Immutable State Updates:** Powered by `Immer`, state changes are always immutable, simplifying state management and
+  preventing common bugs.
+- **Reactive Subscriptions:** Stores can be subscribed to for real-time updates when their state changes.
+- **Transaction Support:** Batch multiple state updates into a single atomic change, reducing unnecessary re-renders and
+  ensuring data consistency.
+- **Efficient React Integration:** The `useStore` hook leverages React’s `useSyncExternalStore` and selectors for
+  optimized
+  component re-renders.
+
+## `BaseStore` Class
+
+`BaseStore` is an `abstract` class that provides the foundational structure for creating your own reactive state stores.
+It
+handles state immutability via `Immer` and provides mechanisms for subscribing to state changes and batching updates
+using
+transactions.
+
+### Key Concepts
+
+- `state` **(getter):** Provides public access to the current immutable state of the store.
+- `_state` **(protected property):** The internal mutable state, managed by `Immer` through the `update` method.
+- `update(updater: (draft: State) => void, shouldNotify = true)` **(protected method):**
+    - The primary method for modifying the store's state.
+    - It accepts an `updater` function that receives a `draft` of the current state, allowing you to directly mutate
+      `draft`
+      as if it were the actual state. `Immer` then produces a new immutable state based on your changes.
+    - If `shouldNotify` is `true` (default), all subscribers are notified after the state update.
+    - If a transaction is active, the updater is queued for later application during `commitTransaction`.
+- **Transactions (`startTransaction()`, `commitTransaction()`, `rollbackTransaction()`):**
+    - `startTransaction()`**:** Begins a transaction. Subsequent `update` calls will queue their changes without
+      immediately applying them or notifying subscribers.
+    - `commitTransaction()`**:** Applies all queued updates as a single atomic change, produces a new immutable state,
+      and then notifies subscribers.
+    - `rollbackTransaction()`**:** Discards all queued updates within the current transaction without applying them.
+
+### Usage Example
 
 ```ts
-import { BaseStore } from "@ethang/store";
+// stores/counterStore.ts
+import {BaseStore} from './BaseStore'; // Assuming BaseStore is in BaseStore.ts
 
-class MyStore extends BaseStore<{ count: number }> {
-  public constructor() {
-    super({ count: 0 });
-  }
-
-  public increment() {
-    this.update((draft) => {
-      draft.count += 1;
-    });
-  }
+interface CounterState {
+    count: number;
 }
 
-const store = new MyStore();
-```
+class CounterStore extends BaseStore<CounterState> {
+    constructor() {
+        super({count: 0});
+    }
 
-## Get from store
-
-```ts
-store.state; // { count: 0 }
-```
-
-## Prevent renders
-
-```ts
-import { BaseStore } from "@ethang/store";
-
-class MyStore extends BaseStore<{ count: number }> {
-  public constructor() {
-    super({ count: 0 });
-  }
-
-  public increment() {
-    this.update((draft) => {
-      draft.count += 1;
-    }, false); // Passing false will update state, but not notify subscribers
-  }
-}
-
-export const store = new MyStore();
-```
-
-## Subscribe to changes
-
-```ts
-const unsubscribe = store.subscribe((state) => {
-  console.log(`Count is now ${state.count}`);
-});
-
-unsubscribe(); // Don't forget to clean up.
-```
-
-## React subscriptions
-
-useStore takes the following parameters:
-
-- store - An instance of your store
-- selector - to select the values you want to return
-- isEqual (optional) - A comparison function
-
-```tsx
-import { useStore } from "@ethang/store/use-base-store";
-
-// Do not waste renders and abstractions on trying to instantiate classes inside components or hooks
-// If you want a particular store instance to be reusuable across components, export it from the module.
-const store = new MyStore();
-
-const MyComponent = () => {
-    const count = useStore(store, (state) => state.count);
-
-    return <div>{count}</div>;
-}
-```
-
-## Global Cleanup
-
-When the # of subscribers reaches 0 after an unsubscription, an AbortController will run abort(), this can be used to cleanup event listeners, or cancel async operations such as fetch.
-
-When the first subscription is added the controller will be reset.
-
-```ts
-const defaultState = {
-    isOnline: globalThis.navigator.onLine,
-    onOffline: undefined as (() => void) | undefined,
-    onOnline: undefined as (() => void) | undefined,
-};
-
-type ExampleStoreState = typeof defaultState;
-
-class OnlineStore extends BaseStore<ExampleStoreState> {
-    public constructor(initialState?: Omit<ExampleStoreState, "isOnline">) {
-        super({
-            ...defaultState,
-            ...initialState,
+    increment() {
+        this.update((draft) => {
+            draft.count += 1;
         });
+    }
 
-        globalThis.addEventListener(
-            "online",
-            () => {
-                this.update((state) => {
-                    state.isOnline = true;
-                });
-                this.state.onOnline?.();
-            },
-            { signal: this.cleanupSignal },
-        );
+    decrement() {
+        this.update((draft) => {
+            draft.count -= 1;
+        });
+    }
 
-        globalThis.addEventListener(
-            "offline",
-            () => {
-                this.update((state) => {
-                    state.isOnline = false;
-                });
-                this.state.onOffline?.();
-            },
-            { signal: this.cleanupSignal },
-        );
+    // Method 1: Using Transactions for batch updates and single notification
+    // All 'update' calls between startTransaction and commitTransaction
+    // are batched, and subscribers are only notified once at commit.
+    batchIncrementWithTransaction(amount: number) {
+      this.startTransaction();
+      for (let i = 0; i < amount; i++) {
+        this.update((draft) => {
+          draft.count += 1;
+        });
+      }
+      this.commitTransaction(); // Notifies once after all batched updates are applied
+    }
+
+    // Method 2: Preventing intermediate notifications using shouldNotify
+    // This approach is useful for a series of updates that don't need
+    // transaction semantics, but you still want to defer notifications.
+    multiIncrementWithoutImmediateNotify(amount: number) {
+      for (let i = 0; i < amount; i++) {
+        // This will update the state and only notify subscribers on the last iteration.
+        this.update((draft) => {
+          draft.count += 1;
+        }, i === amount - 1); // Notify only on the final update
+      }
     }
 }
+
+export const counterStore = new CounterStore();
+
+// Example of manual subscription (less common with React hook)
+// const unsubscribe = counterStore.subscribe((state) => {
+//   console.log('Counter state changed:', state.count);
+// });
+
+// counterStore.increment(); // console will log 'Counter state changed: 1'
+// counterStore.batchIncrement(5); // console will log 'Counter state changed: 6' (only once)
+
+// unsubscribe();
 ```
 
-## Features that won't be implemented
+## `useStore` Hook
 
-### Async
+### Description
 
-If you need TanStack Query features, I would recommend using [TanStack Query](https://tanstack.com/query/latest). Within your own classes you can return queryOptions and mutationOptions.
+The `useStore` hook is a React hook designed to seamlessly integrate `BaseStore` instances into your React components.
+It
+leverages `useSyncExternalStoreWithSelector` for optimal performance, ensuring that your components only re-render when
+the selected part of the store’s state actually changes.
 
-```ts
-import { queryOptions, useQuery } from "@tanstack/react-query";
+### Key Concepts
 
-class MyStore extends BaseStore<{ count: number }> {
-  public constructor() {
-    super({ count: 0 });
-  }
+- `store: BaseStore<State>`**:** The instance of your `BaseStore` (e.g., `counterStore`).
+- `selector: (snapshot: BaseStore<State>["state"]) => Selection`**:** A function that receives the full store state and
+  returns the specific data you want to use in your component. This is crucial for performance, as your component will
+  only re-render if the result of this selector changes.
+- `isEqual?: (a: Selection, b: Selection) => boolean` **(optional):** An optional comparison function for the selected
+  data. If provided, `useStore` will use this function to determine if the selector’s output has changed, allowing for
+  custom equality checks (e.g., deep equality for objects if needed, though `Immer` often makes this unnecessary for
+  simple state).
 
-  public increment() {
-    this.update((draft) => {
-      draft.count += 1;
-    });
-  }
+### Usage Example
 
-  public getAllCounts() {
-    return queryOptions({
-      queryKey: ["allCounts"],
-      queryFn: async () => {
-        // logic
-      },
-    });
-  }
-}
+```tsx
+import React from 'react';
+import {counterStore} from '../stores/counterStore';
+import {useStore} from '../hooks/useStore';
 
-const store = new MyStore();
+export const CounterDisplay = () => {
+    // Select only the 'count' property from the store's state
+    const count = useStore(counterStore, (state) => state.count);
 
-const MyComponent = () => {
-    const { data, isPending } = useQuery(store.getAllCounts());
-    
-    // UI
+    return (
+        <div>
+            <h2>Counter</h2>
+            <p>{count}</p>
+            <div>
+                <button onClick={() => counterStore.decrement()}>
+                    Decrement
+                </button>
+                <button onClick={() => counterStore.increment()}>
+                    Increment
+                </button>
+            </div>
+            <div>
+              <button onClick={() => counterStore.batchIncrementWithTransaction(10)}>
+                Batch Increment (Transaction)
+              </button>
+              <button onClick={() => counterStore.multiIncrementWithoutImmediateNotify(5)}>
+                Multi Increment (No Immediate Notify)
+              </button>
+            </div>
+        </div>
+    );
 }
 ```
 
-### Derived Values
+## Use Cases
 
-With control over your own class, this is not the responsibility of the library. You can also memoize this value on your own.
+This library is well-suited for:
 
-```ts
-type Person = {
-  firstName: string;
-  lastName: string;
-  fullName: string;
-};
+- **Global Application State:** Managing shared state across different parts of your React application.
+- **Complex UI State:** Handling the state of forms, modals, or interactive components where state needs to be managed
+  outside an individual component scope.
+- **Performance-Critical Scenarios:** The `selector` and `isEqual` arguments in `useStore` allow for fine-grained
+  control over
+  re-renders, making it suitable for applications where rendering performance is crucial.
+- **Batching Updates:** Scenarios where you need to perform multiple state modifications but only want a single
+  re-render or notification (e.g., during complex calculations or user interactions).
 
-class MyStore extends BaseStore<Person> {
-  public constructor() {
-    super({ firstName: "John", lastName: "Doe" });
-    this.state.fullName = `${this.firstName} ${this.lastName}`;
-  }
+## Benefits
 
-  public increment() {
-    this.update((draft) => {
-      draft.count += 1;
-    });
-  }
-}
-
-const store = new MyStore();
-```
-
-### Effects
-
-This logic is also not the library's responsibility.
-
-```ts
-import { queryOptions } from "@tanstack/react-query";
-
-class MyStore extends BaseStore<Person & { isLoggedIn: boolean }> {
-  public constructor() {
-    super({ firstName: "John", lastName: "Doe", isLoggedIn: false });
-    this.state.fullName = `${this.firstName} ${this.lastName}`;
-  }
-
-  public login() {
-    return {
-      mutationFn: async () => {
-        const response = await fetch("/api/login", {
-          ...requestInit,
-        });
-
-        if (response.ok) {
-          this.update((draft) => {
-            this.isLoggedIn = true;
-          }, false); // Let TanStack Query notify subscribers
-        }
-      },
-    };
-  }
-}
-
-const store = new MyStore();
-```
+- **Simplicity:** Provides a clear and minimalist API for state management.
+- **Immutability by Default:** `Immer` eliminates the need for manual immutability, making state updates safer and
+  easier.
+- **Performance:** `useSyncExternalStore` combined with selectors ensures that components only re-render when necessary.
+- **Flexibility:** The `BaseStore` design allows you to extend and customize your stores with specific business logic.
+- **Testability:** Decoupling state logic into separate store classes makes your application easier to test.

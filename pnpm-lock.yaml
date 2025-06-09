@@ -181,7 +181,7 @@ importers:
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: ^1.5.0
-        version: 1.5.0(rollup@4.41.1)(vite@6.3.5(@types/node@22.15.30)(jiti@2.4.2)(terser@5.41.0)(tsx@4.19.4)(yaml@2.8.0))(workerd@1.20250525.0)(wrangler@4.19.1(@cloudflare/workers-types@4.20250605.0))
+        version: 1.5.0(rollup@2.79.2)(vite@6.3.5(@types/node@22.15.30)(jiti@2.4.2)(terser@5.41.0)(tsx@4.19.4)(yaml@2.8.0))(workerd@1.20250525.0)(wrangler@4.19.1(@cloudflare/workers-types@4.20250605.0))
       '@eslint/js':
         specifier: ^9.25.0
         version: 9.28.0
@@ -12035,6 +12035,25 @@ snapshots:
     optionalDependencies:
       workerd: 1.20250525.0
 
+  '@cloudflare/vite-plugin@1.5.0(rollup@2.79.2)(vite@6.3.5(@types/node@22.15.30)(jiti@2.4.2)(terser@5.41.0)(tsx@4.19.4)(yaml@2.8.0))(workerd@1.20250525.0)(wrangler@4.19.1(@cloudflare/workers-types@4.20250605.0))':
+    dependencies:
+      '@cloudflare/unenv-preset': 2.3.2(unenv@2.0.0-rc.17)(workerd@1.20250525.0)
+      '@mjackson/node-fetch-server': 0.6.1
+      '@rollup/plugin-replace': 6.0.2(rollup@2.79.2)
+      get-port: 7.1.0
+      miniflare: 4.20250525.1
+      picocolors: 1.1.1
+      tinyglobby: 0.2.14
+      unenv: 2.0.0-rc.17
+      vite: 6.3.5(@types/node@22.15.30)(jiti@2.4.2)(terser@5.41.0)(tsx@4.19.4)(yaml@2.8.0)
+      wrangler: 4.19.1(@cloudflare/workers-types@4.20250605.0)
+      ws: 8.18.0
+    transitivePeerDependencies:
+      - bufferutil
+      - rollup
+      - utf-8-validate
+      - workerd
+
   '@cloudflare/vite-plugin@1.5.0(rollup@4.41.1)(vite@6.3.5(@types/node@22.15.30)(jiti@2.4.2)(terser@5.41.0)(tsx@4.19.4)(yaml@2.8.0))(workerd@1.20250525.0)(wrangler@4.19.1(@cloudflare/workers-types@4.20250605.0))':
     dependencies:
       '@cloudflare/unenv-preset': 2.3.2(unenv@2.0.0-rc.17)(workerd@1.20250525.0)
@@ -15539,6 +15558,13 @@ snapshots:
     dependencies:
       '@rollup/pluginutils': 3.1.0(rollup@2.79.2)
       magic-string: 0.25.9
+      rollup: 2.79.2
+
+  '@rollup/plugin-replace@6.0.2(rollup@2.79.2)':
+    dependencies:
+      '@rollup/pluginutils': 5.1.4(rollup@2.79.2)
+      magic-string: 0.30.17
+    optionalDependencies:
       rollup: 2.79.2
 
   '@rollup/plugin-replace@6.0.2(rollup@4.41.1)':
