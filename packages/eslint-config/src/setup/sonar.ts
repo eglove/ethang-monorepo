@@ -25,6 +25,7 @@ const customRules = [
   { name: "no-undefined-assignment", rule: "off" },
   { name: "shorthand-property-grouping", rule: "off" }, // Conflicts with perfectionist sorting
   { name: "todo-tag", rule: "off" },
+  { name: "no-reference-error", rule: "off" },
 ];
 
 const rules = genRules(ruleNames, customRules, "sonar");

@@ -26,14 +26,7 @@ export type CustomRules = {
   rule: CustomRule;
 }[];
 
-type CustomRule =
-  | (
-      | {
-          rule: string;
-        }
-      | string
-    )[]
-  | string;
+type CustomRule = (Record<string, unknown> | string)[] | string;
 
 const getRuleStrings = (
   ruleNames: string[],
