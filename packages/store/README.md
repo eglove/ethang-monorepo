@@ -12,11 +12,8 @@ pnpm i @ethang/store
 - **Immutable State Updates:** Powered by `Immer`, state changes are always immutable, simplifying state management and
   preventing common bugs.
 - **Reactive Subscriptions:** Stores can be subscribed to for real-time updates when their state changes.
-- **Transaction Support:** Batch multiple state updates into a single atomic change, reducing unnecessary re-renders and
-  ensuring data consistency.
 - **Efficient React Integration:** The `useStore` hook leverages React’s `useSyncExternalStore` and selectors for
-  optimized
-  component re-renders.
+  optimized component re-renders.
 
 ## `BaseStore` Class
 
@@ -31,32 +28,34 @@ transactions.
 - `state` **(getter):** Provides public access to the current immutable state of the store.
 - `_state` **(protected property):** The internal mutable state, managed by `Immer` through the `update` method.
 - `update(updater: (draft: State) => void, shouldNotify = true)` **(protected method):**
-    - The primary method for modifying the store's state.
+    - The primary method for modifying the store’s state.
     - It accepts an `updater` function that receives a `draft` of the current state, allowing you to directly mutate
       `draft`
       as if it were the actual state. `Immer` then produces a new immutable state based on your changes.
     - If `shouldNotify` is `true` (default), all subscribers are notified after the state update.
     - If a transaction is active, the updater is queued for later application during `commitTransaction`.
-- **Transactions (`startTransaction()`, `commitTransaction()`, `rollbackTransaction()`):**
-    - `startTransaction()`**:** Begins a transaction. Subsequent `update` calls will queue their changes without
-      immediately applying them or notifying subscribers.
-    - `commitTransaction()`**:** Applies all queued updates as a single atomic change, produces a new immutable state,
-      and then notifies subscribers.
-    - `rollbackTransaction()`**:** Discards all queued updates within the current transaction without applying them.
+- **`subscribe(callback: (state: State) => void)` (public method):**
+    - Allows external components or functions to listen for state changes.
+    - Returns an `unsubscribe` function that you should call to clean up the subscription when it’s no longer needed (
+      e.g., in a React `useEffect` cleanup).
+- **cleanupSignal (protected getter):** Returns an `AbortSignal` that can be used to automatically clean up event
+  listeners or other resources when the last subscriber unsubscribes from the store. This is managed internally by the
+  `subscribe` and `unsubscribe` methods.
 
 ### Usage Example
 
 ```ts
-// stores/counterStore.ts
 import {BaseStore} from './BaseStore'; // Assuming BaseStore is in BaseStore.ts
 
 type CounterState = {
     count: number;
+    isOnline: boolean; // Track browser's online status
 }
 
 class CounterStore extends BaseStore<CounterState> {
     constructor() {
-        super({count: 0});
+        super({count: 0, isOnline: navigator.onLine}); // Initialize with current online status
+        this.setupOnlineStatusListener(); // Setup the listener on instantiation
     }
 
     increment() {
@@ -71,29 +70,43 @@ class CounterStore extends BaseStore<CounterState> {
         });
     }
 
-    // Method 1: Using Transactions for batch updates and single notification
-    // All 'update' calls between startTransaction and commitTransaction
-    // are batched, and subscribers are only notified once at commit.
-    batchIncrementWithTransaction(amount: number) {
-      this.startTransaction();
-      for (let i = 0; i < amount; i++) {
-        this.update((draft) => {
-          draft.count += 1;
-        });
-      }
-      this.commitTransaction(); // Notifies once after all batched updates are applied
+    // Example: Performing multiple updates and notifying only once at the end.
+    // This approach is useful for a series of updates where you want to defer
+    // notifications until all changes are applied.
+    batchIncrement(amount: number) {
+        for (let i = 0; i < amount; i++) {
+            // Update the state for each increment, but only notify subscribers
+            // on the very last iteration.
+            this.update((draft) => {
+                draft.count += 1;
+            }, i === amount - 1); // Notify only on the final update
+        }
     }
 
-    // Method 2: Preventing intermediate notifications using shouldNotify
-    // This approach is useful for a series of updates that don't need
-    // transaction semantics, but you still want to defer notifications.
-    multiIncrementWithoutImmediateNotify(amount: number) {
-      for (let i = 0; i < amount; i++) {
-        // This will update the state and only notify subscribers on the last iteration.
-        this.update((draft) => {
-          draft.count += 1;
-        }, i === amount - 1); // Notify only on the final update
-      }
+    // Example: Using cleanupSignal for automatic cleanup of window event listeners
+    private setupOnlineStatusListener() {
+        const handleOnline = () => {
+            this.update((draft) => {
+                draft.isOnline = true;
+            });
+            console.log("Browser is online!");
+        };
+
+        const handleOffline = () => {
+            this.update((draft) => {
+                draft.isOnline = false;
+            });
+            console.log("Browser is offline!");
+        };
+
+        // Attach event listeners to the window object using cleanupSignal.
+        // These listeners will be automatically removed when the last
+        // component/resource unsubscribes from this store.
+        // When a new subscriber is added, the events will resubscribe
+        window.addEventListener('online', handleOnline, {signal: this.cleanupSignal});
+        window.addEventListener('offline', handleOffline, {signal: this.cleanupSignal});
+
+        console.log("Online status listener set up.");
     }
 }
 
@@ -105,7 +118,15 @@ export const counterStore = new CounterStore();
 // });
 
 // counterStore.increment(); // console will log 'Counter state changed: 1'
-// counterStore.batchIncrement(5); // console will log 'Counter state changed: 6' (only once)
+// counterStore.batchIncrement(5); // console will log 'Counter state changed: 6' (only once after all increments)
+
+// To observe cleanupSignal in action:
+// 1. Subscribe to the store at least once to activate the signal (e.g., via a React component using useStore, or a manual subscription).
+// 2. Disconnect your network or toggle airplane mode to trigger 'offline'/'online' events.
+// 3. Ensure all subscribers unsubscribe. The console messages for 'online'/'offline' events should stop appearing,
+//    indicating that the listeners have been cleaned up.
+// const tempUnsubscribe = counterStore.subscribe(() => {}); // Add a temporary subscriber
+// tempUnsubscribe(); // Unsubscribing will trigger cleanup if this was the last subscriber
 
 // unsubscribe();
 ```
@@ -138,13 +159,17 @@ import {counterStore} from '../stores/counterStore';
 import {useStore} from '../hooks/useStore';
 
 export const CounterDisplay = () => {
-    // Select only the 'count' property from the store's state
-    const count = useStore(counterStore, (state) => state.count);
+    // Select both 'count' and 'isOnline' from the store's state
+    const {count, isOnline} = useStore(counterStore, (state) => ({
+        count: state.count,
+        isOnline: state.isOnline,
+    }));
 
     return (
         <div>
             <h2>Counter</h2>
-            <p>{count}</p>
+            <p>Count: {count}</p>
+            <p>Status: {isOnline ? 'Online' : 'Offline'}</p>
             <div>
                 <button onClick={() => counterStore.decrement()}>
                     Decrement
@@ -154,12 +179,9 @@ export const CounterDisplay = () => {
                 </button>
             </div>
             <div>
-              <button onClick={() => counterStore.batchIncrementWithTransaction(10)}>
-                Batch Increment (Transaction)
-              </button>
-              <button onClick={() => counterStore.multiIncrementWithoutImmediateNotify(5)}>
-                Multi Increment (No Immediate Notify)
-              </button>
+                <button onClick={() => counterStore.batchIncrement(10)}>
+                    Batch Increment
+                </button>
             </div>
         </div>
     );
@@ -178,6 +200,9 @@ This library is well-suited for:
   re-renders, making it suitable for applications where rendering performance is crucial.
 - **Batching Updates:** Scenarios where you need to perform multiple state modifications but only want a single
   re-render or notification (e.g., during complex calculations or user interactions).
+- **Resource Management:** Leveraging `cleanupSignal` for automatic cleanup of event listeners (like network status changes,
+  WebSockets, or IndexedDB listeners) or other resources tied to the store's active subscription status, ensuring
+  efficient resource management.
 
 ## Benefits
 
