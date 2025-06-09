@@ -50,7 +50,7 @@ transactions.
 // stores/counterStore.ts
 import {BaseStore} from './BaseStore'; // Assuming BaseStore is in BaseStore.ts
 
-interface CounterState {
+type CounterState = {
     count: number;
 }
 
