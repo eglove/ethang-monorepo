@@ -20,9 +20,9 @@ export const TraditionalTable = ({
         The entire table and its rows often re-render on price updates, even if
         only one cell's data changes.{" "}
         <strong>
-          Note that optimizing table rows and cells WOULD NOT stop any
-          rerenders. As the array of data that acts as the source is a new
-          reference on every render.
+          Note that memoizing table rows and cells WOULD NOT stop any rerenders.
+          As the array of data that acts as the source is a new reference on
+          every render.
         </strong>{" "}
         I have not memoized these cells so that renders can still be highlighted
         on non-anonymous components in a production build.
