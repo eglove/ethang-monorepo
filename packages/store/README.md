@@ -89,7 +89,7 @@ const store = new MyStore();
 const MyComponent = () => {
     const count = useStore(store, (state) => state.count);
 
-    <div>{count}</div>;
+    return <div>{count}</div>;
 }
 ```
 

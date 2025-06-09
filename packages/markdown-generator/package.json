@@ -14,7 +14,7 @@
     "@types/lodash": "^4.17.16",
     "browserslist-config-baseline": "^0.4.0",
     "eslint": "^9.25.1",
-    "vitest": "^3.2.2"
+    "vitest": "^3.2.3"
   },
   "license": "ISC",
   "name": "@ethang/markdown-generator",

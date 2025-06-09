@@ -69,7 +69,7 @@
     "typescript-eslint": "^8.33.1",
     "vite": "^6.3.5",
     "vite-plugin-pwa": "^1.0.0",
-    "vitest": "^3.2.2",
+    "vitest": "^3.2.3",
     "wrangler": "^4.19.1"
   },
   "engines": {
