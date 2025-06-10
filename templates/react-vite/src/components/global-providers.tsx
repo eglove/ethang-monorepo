@@ -36,7 +36,7 @@ export const GlobalProviders = () => {
     >
       <HeroUIProvider
         navigate={(url) => {
-          // eslint-disable-next-line no-console,sonar/no-reference-error
+          // eslint-disable-next-line no-console
           navigate({ to: url }).catch(console.error);
         }}
       >

@@ -16,7 +16,7 @@ const Index = () => {
   const { mutate: deleteTodoMutation } = useMutation({
     mutationFn: deleteTodo,
     onSuccess: () => {
-      // eslint-disable-next-line no-console,sonar/no-reference-error
+      // eslint-disable-next-line no-console
       queryClient.invalidateQueries(getTodos()).catch(console.error);
     },
   });

@@ -8,13 +8,13 @@ const App = () => {
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet"
       />
-      <style>
-        {`
-          body {
-            font-family: 'Inter', sans-serif;
-          }
-        `}
-      </style>
+      {/*<style>*/}
+      {/*  {`*/}
+      {/*    body {*/}
+      {/*      font-family: 'Inter', sans-serif;*/}
+      {/*    }*/}
+      {/*  `}*/}
+      {/*</style>*/}
       <h1 className="text-4xl font-bold mb-8 text-center text-blue-400">
         React Performance Comparison: Prop Drilling vs. ID Lookup
       </h1>

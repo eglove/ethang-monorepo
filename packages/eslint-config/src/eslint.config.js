@@ -721,7 +721,7 @@ export default tseslint.config(
       "sonar/no-redundant-boolean": "error",
       "sonar/no-redundant-jump": "error",
       "sonar/no-redundant-optional": "error",
-      "sonar/no-reference-error": "error",
+      "sonar/no-reference-error": "off",
       "sonar/no-referrer-policy": "error",
       "sonar/no-regex-spaces": "error",
       "sonar/no-require-or-define": "error",

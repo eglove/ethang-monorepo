@@ -4,7 +4,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: [],
+    ignores: [".wrangler", "dist", "node_modules", "**/*.d.ts"],
   },
   ...config,
   ...reactConfig,
@@ -14,9 +14,6 @@ export default tseslint.config(
         project: true,
         tsconfigRootDir: import.meta.dirname,
       },
-    },
-    rules: {
-      "sonar/no-reference-error": "off",
     },
   },
 );

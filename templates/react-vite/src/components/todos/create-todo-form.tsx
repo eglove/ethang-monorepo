@@ -22,7 +22,7 @@ export const CreateTodoForm = () => {
     },
     onSuccess: () => {
       setErrors({});
-      // eslint-disable-next-line no-console,sonar/no-reference-error
+      // eslint-disable-next-line no-console
       queryClient.invalidateQueries(getTodos()).catch(console.error);
     },
   });

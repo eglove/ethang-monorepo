@@ -9,7 +9,7 @@
     "@angular-eslint/eslint-plugin-template": "^20.0.0",
     "@angular-eslint/template-parser": "^20.0.0",
     "@cspell/eslint-plugin": "^9.0.2",
-    "@eslint-react/eslint-plugin": "^1.51.2",
+    "@eslint-react/eslint-plugin": "^1.51.3",
     "@eslint/css": "0.8.1",
     "@eslint/js": "^9.28.0",
     "@eslint/json": "^0.12.0",
@@ -17,7 +17,7 @@
     "@html-eslint/eslint-plugin": "^0.41.0",
     "@tanstack/eslint-plugin-query": "^5.78.0",
     "@tanstack/eslint-plugin-router": "^1.120.17",
-    "@typescript-eslint/parser": "^8.33.0",
+    "@typescript-eslint/parser": "^8.34.0",
     "angular-eslint": "20.0.0",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
@@ -31,11 +31,11 @@
     "eslint-plugin-react-you-might-not-need-an-effect": "^0.1.4",
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "3.0.2",
-    "eslint-plugin-storybook": "^9.0.6",
+    "eslint-plugin-storybook": "^9.0.8",
     "eslint-plugin-tailwindcss": "^3.18.0",
     "eslint-plugin-unicorn": "^59.0.1",
     "prettier": "^3.5.3",
-    "typescript-eslint": "^8.33.0"
+    "typescript-eslint": "^8.34.0"
   },
   "devDependencies": {
     "@ethang/markdown-generator": "^1.1.5",
@@ -43,11 +43,11 @@
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.17",
-    "@types/node": "^22.15.30",
+    "@types/node": "^24.0.0",
     "browserslist-config-baseline": "^0.4.0",
     "lodash": "^4.17.21",
     "typescript": "^5.8.3",
-    "zod": "^3.25.56"
+    "zod": "^3.25.57"
   },
   "engines": {
     "node": ">=22"
@@ -63,5 +63,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "22.9.4"
+  "version": "22.9.5"
 }
