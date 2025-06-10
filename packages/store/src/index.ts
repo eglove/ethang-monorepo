@@ -21,6 +21,7 @@ export abstract class BaseStore<State> {
   public subscribe(callback: (state: State) => void) {
     if (0 === this._subscribers.size) {
       this._controller = new AbortController();
+      this.onFirstSubscriber?.();
     }
 
     this._subscribers.add(callback);
@@ -33,6 +34,8 @@ export abstract class BaseStore<State> {
       }
     };
   }
+
+  protected abstract onFirstSubscriber?(): void;
 
   protected update(updater: (draft: State) => void, shouldNotify = true) {
     this._state = produce(this._state, updater);

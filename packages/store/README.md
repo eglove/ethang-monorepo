@@ -18,8 +18,7 @@ pnpm i @ethang/store
 ## `BaseStore` Class
 
 `BaseStore` is an `abstract` class that provides the foundational structure for creating your own reactive state stores.
-It
-handles state immutability via `Immer` and provides mechanisms for subscribing to state changes and batching updates.
+It handles state immutability via `Immer` and provides mechanisms for subscribing to state changes and batching updates.
 
 ### Key Concepts
 
@@ -35,9 +34,17 @@ handles state immutability via `Immer` and provides mechanisms for subscribing t
     - Allows external components or functions to listen for state changes.
     - Returns an `unsubscribe` function that you should call to clean up the subscription when it’s no longer needed (
       e.g., in a React `useEffect` cleanup).
-- **cleanupSignal (protected getter):** Returns an `AbortSignal` that can be used to automatically clean up event
+- **`cleanupSignal` (protected getter):** Returns an `AbortSignal` that can be used to automatically clean up event
   listeners or other resources when the last subscriber unsubscribes from the store. This is managed internally by the
   `subscribe` and `unsubscribe` methods.
+- **`protected abstract onFirstSubscriber?(): void` (protected method):**
+    - An optional abstract method designed to be implemented by subclasses.
+    - It is called automatically by `BaseStore` when the first subscriber to the store registers, and a new
+      `AbortController` is created.
+    - This is the ideal place to set up any global event listeners (e.g., `window.addEventListener`), WebSockets,
+      IndexedDB listeners, or other resources that should only be active when the store has active subscribers.
+    - Event listeners attached within this method must use the `this.cleanupSignal` option to be automatically cleaned
+      up when the last subscriber unsubscribes.
 
 ### Usage Example
 
@@ -52,7 +59,6 @@ type CounterState = {
 class CounterStore extends BaseStore<CounterState> {
     constructor() {
         super({count: 0, isOnline: navigator.onLine}); // Initialize with current online status
-        this.setupOnlineStatusListener(); // Setup the listener on instantiation
     }
 
     increment() {
@@ -80,8 +86,9 @@ class CounterStore extends BaseStore<CounterState> {
         }
     }
 
+
     // Example: Using cleanupSignal for automatic cleanup of window event listeners
-    private setupOnlineStatusListener() {
+    private onFirstSubscriber() {
         const handleOnline = () => {
             this.update((draft) => {
                 draft.isOnline = true;
@@ -98,12 +105,10 @@ class CounterStore extends BaseStore<CounterState> {
 
         // Attach event listeners to the window object using cleanupSignal.
         // These listeners will be automatically removed when the last
-        // component/resource unsubscribes from this store.
-        // When a new subscriber is added, the events will resubscribe
+        // component/resource unsubscribes from this store, because cleanupSignal
+        // belongs to an AbortController that gets aborted.
         window.addEventListener('online', handleOnline, {signal: this.cleanupSignal});
         window.addEventListener('offline', handleOffline, {signal: this.cleanupSignal});
-
-        console.log("Online status listener set up.");
     }
 }
 
@@ -197,9 +202,9 @@ This library is well-suited for:
   re-renders, making it suitable for applications where rendering performance is crucial.
 - **Batching Updates:** Scenarios where you need to perform multiple state modifications but only want a single
   re-render or notification (e.g., during complex calculations or user interactions).
-- **Resource Management:** Leveraging `cleanupSignal` for automatic cleanup of event listeners (like network status changes,
-  WebSockets, or IndexedDB listeners) or other resources tied to the store's active subscription status, ensuring
-  efficient resource management.
+- **Resource Management:** Leveraging `cleanupSignal` for automatic cleanup of event listeners (like network status
+  changes, WebSockets, or IndexedDB listeners) or other resources tied to the store’s active subscription status,
+  ensuring efficient resource management.
 
 ## Benefits
 
