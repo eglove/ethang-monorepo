@@ -19,9 +19,7 @@ pnpm i @ethang/store
 
 `BaseStore` is an `abstract` class that provides the foundational structure for creating your own reactive state stores.
 It
-handles state immutability via `Immer` and provides mechanisms for subscribing to state changes and batching updates
-using
-transactions.
+handles state immutability via `Immer` and provides mechanisms for subscribing to state changes and batching updates.
 
 ### Key Concepts
 
@@ -33,7 +31,6 @@ transactions.
       `draft`
       as if it were the actual state. `Immer` then produces a new immutable state based on your changes.
     - If `shouldNotify` is `true` (default), all subscribers are notified after the state update.
-    - If a transaction is active, the updater is queued for later application during `commitTransaction`.
 - **`subscribe(callback: (state: State) => void)` (public method):**
     - Allows external components or functions to listen for state changes.
     - Returns an `unsubscribe` function that you should call to clean up the subscription when it’s no longer needed (
