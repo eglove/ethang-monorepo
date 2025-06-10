@@ -8,6 +8,10 @@ type TestState = {
 };
 
 class ConcreteStore extends BaseStore<TestState> {
+  public get publicCleanupSignal() {
+    return this.cleanupSignal;
+  }
+
   public constructor(initialState: TestState) {
     super(initialState);
   }
@@ -140,6 +144,72 @@ describe("BaseStore", () => {
       expect(store.state.count).toBe(initialState.count);
       expect(subscriber).toHaveBeenCalledTimes(1);
       expect(subscriber).toHaveBeenCalledWith(initialState);
+    });
+  });
+
+  describe("cleanupSignal", () => {
+    it("should initialize with an active signal", () => {
+      const _store = new ConcreteStore({ count: 0, name: "john" });
+      expect(_store.publicCleanupSignal.aborted).toBe(false);
+    });
+
+    it("should abort the signal when the last subscriber unsubscribes", () => {
+      const _store = new ConcreteStore({ count: 0, name: "john" });
+
+      // eslint-disable-next-line lodash/prefer-noop,@typescript-eslint/no-empty-function
+      const unsubscribe1 = _store.subscribe(() => {});
+      // eslint-disable-next-line lodash/prefer-noop,@typescript-eslint/no-empty-function
+      const unsubscribe2 = _store.subscribe(() => {});
+
+      // AbortController is recreated when the first subscriber is added,
+      // so we need to get a reference to the signal *after* the first subscribe.
+      const initialSignal = _store.publicCleanupSignal;
+      const abortSpyOnSignal = vi.spyOn(initialSignal, "aborted", "get"); // Spy on the 'aborted' getter
+
+      unsubscribe1();
+      expect(initialSignal.aborted).toBe(false); // Still active because one subscriber remains
+
+      unsubscribe2();
+      expect(initialSignal.aborted).toBe(true); // Should be aborted now
+      expect(abortSpyOnSignal).toHaveBeenCalledTimes(2); // Ensure 'aborted' getter was accessed after unsubscribe
+    });
+
+    it("should create a new AbortController when a subscriber is added after a cleanup", () => {
+      const _store = new ConcreteStore({ count: 0, name: "john" });
+
+      // eslint-disable-next-line lodash/prefer-noop,@typescript-eslint/no-empty-function
+      const unsubscribe1 = _store.subscribe(() => {});
+      const initialSignal = _store.publicCleanupSignal;
+      unsubscribe1();
+
+      expect(initialSignal.aborted).toBe(true);
+
+      // eslint-disable-next-line lodash/prefer-noop,@typescript-eslint/no-empty-function
+      const unsubscribe2 = _store.subscribe(() => {});
+      const newSignal = _store.publicCleanupSignal;
+
+      expect(newSignal).not.toBe(initialSignal);
+      expect(newSignal.aborted).toBe(false);
+
+      unsubscribe2();
+      expect(newSignal.aborted).toBe(true);
+    });
+
+    it("should not abort the signal if there are still active subscribers", () => {
+      const _store = new ConcreteStore({ count: 0, name: "john" });
+
+      // eslint-disable-next-line lodash/prefer-noop,@typescript-eslint/no-empty-function
+      const unsubscribe1 = _store.subscribe(() => {});
+      // eslint-disable-next-line lodash/prefer-noop,@typescript-eslint/no-empty-function
+      const unsubscribe2 = _store.subscribe(() => {});
+
+      const initialSignal = _store.publicCleanupSignal;
+
+      unsubscribe1();
+      expect(initialSignal.aborted).toBe(false);
+
+      unsubscribe2();
+      expect(initialSignal.aborted).toBe(true);
     });
   });
 });
