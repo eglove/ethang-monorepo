@@ -320,59 +320,6 @@ protected onPropertyChange?(patch: StorePatch<State> | StorePatchLoose): void;`}
     </p>
 
     <h2>
-      Derived Values: Smart Computations with <code>get</code> and Memoization
-    </h2>
-    <p>
-      A common need in state management is to compute new values based on
-      existing state. These are &ldquo;derived values.&rdquo; While not
-      explicitly part of <code>BaseStore</code>, you can elegantly handle them
-      in your concrete store implementations using TypeScript <code>get</code> methods.
-    </p>
-
-    <CodeBlock
-      code={`
-class CounterStore extends BaseStore<CounterState> {
-  public get isEven(): boolean {
-    return this.state.count % 2 === 0;
-  }
-}`}
-    />
-
-    <p>
-      For more complex or computationally expensive derived values, you can
-      enhance these <code>get</code> methods with <strong>memoization</strong>.
-      Memoization is an optimization technique where the result of a function
-      call is cached, and if the same inputs occur again, the cached result is
-      returned instead of re-executing the function. Libraries like <code
-        >lodash</code
-      > provide a <code>memoize</code> utility.
-    </p>
-
-    <CodeBlock
-      code={`
-import memoize from 'lodash/memoize.js';
-
-class ComplexStore extends BaseStore<ComplexState> {
-  public get computedExpensiveValue(): string {
-    return memoize(
-      () => {
-        console.log("Re-computing expensive value...");
-        return \`Value from \${this.state.data.length} items: \${this.state.data.map(item => item.id).join('-')}\`;
-      },
-      () => JSON.stringify({ dataLength: this.state.data.length, lastItemId: this.state.data[this.state.data.length - 1]?.id })
-    )();
-  }
-}`}
-    />
-
-    <p>
-      In this example, <code>computedExpensiveValue</code> will only re-run its computation
-      if the <code>data</code> array&rsquo;s length or the <code>id</code> of its
-      last item changes, thanks to <code>lodash.memoize</code>. This prevents
-      unnecessary recalculations, boosting performance.
-    </p>
-
-    <h2>
       Connecting to React: The <code>useStore</code> Hook
     </h2>
     <p>
@@ -495,10 +442,6 @@ class CounterStore extends BaseStore<CounterState> {
     });
   }
 
-  public get isEven(): boolean {
-    return memoize(() => this.state.count % 2 === 0, () => this.state.count)();
-  }
-
   protected onPropertyChange(patch: StorePatch<CounterState>) {
     console.log("Property changed:", patch);
     if (patch.path[0] === "count" && patch.op === "replace" && patch.value === 10) {
@@ -532,13 +475,12 @@ import { useStore } from "./useStore";
 import { counterStore } from "./myCounterStore";
 
 const CounterDisplay = () => {
-  const { count, step, isEven, lastUpdated } = useStore(
+  const { count, step, lastUpdated } = useStore(
     counterStore,
     (state) => {
       return {
         count: state.count,
         step: state.step,
-        isEven: state.isEven,
         lastUpdated: state.lastUpdated,
       };
     },
@@ -554,10 +496,6 @@ const CounterDisplay = () => {
       <p>
         <span>Step Value:</span>
         <span>{step}</span>
-      </p>
-      <p>
-        <span>Is Count Even?:</span>
-        <span>{isEven ? "Yes" : "No"}</span>
       </p>
       {lastUpdated && (
         <p>
@@ -647,9 +585,9 @@ export default App;
       <code>useSyncExternalStoreWithSelector</code> for efficient React integration,
       this custom state management library provides a powerful, performant, and delightful
       way to handle application state. It offers a clear structure for managing effects,
-      derived values, and global resources, making your applications more maintainable
-      and easier to scale. Experiment with it, and you&rsquo;ll find it can significantly
-      streamline your state management efforts.
+      and global resources, making your applications more maintainable and easier
+      to scale. Experiment with it, and you&rsquo;ll find it can significantly streamline
+      your state management efforts.
     </p>
   </BlogLayout>
 </Fragment>
