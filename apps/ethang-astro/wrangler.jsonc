@@ -4,7 +4,7 @@
     "binding": "ASSETS",
     "directory": "./dist"
   },
-  "compatibility_date": "2025-06-10",
+  "compatibility_date": "2025-06-11",
   "compatibility_flags": ["nodejs_compat"],
   "main": "./dist/_worker.js/index.js",
   "name": "ethang-astro",
