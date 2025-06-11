@@ -1,0 +1,67 @@
+---
+import type {ImageMetadata} from "astro";
+import LocalImage from "./LocalImage.astro";
+type Props = {
+    image?: {
+        alt: string;
+        src: ImageMetadata;
+        imgClass?: string;
+        loading?: "eager" | "lazy";
+    }
+}
+
+const {image} = Astro.props;
+---
+
+<Fragment>
+    <script>
+        const formatter = Intl.NumberFormat(undefined);
+
+        const calculate = () => {
+            const mainElement = document.querySelector("main.prose");
+
+            if (mainElement) {
+                const textContent = mainElement.innerHTML.replace(/<[^>]*>/g, " ");
+                const words = textContent
+                    .split(/\s+/)
+                    .filter((word) => word.length > 0);
+                const wordCount = words.length;
+
+                const readTimeMinutes = Math.ceil(wordCount / 225);
+
+                const wordCountElement = document.querySelector(".word-count-display");
+                if (wordCountElement) {
+                    wordCountElement.textContent = `${formatter.format(wordCount)} words · ${readTimeMinutes} min read`;
+                }
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", calculate);
+        document.addEventListener("animationend", calculate);
+    </script>
+
+    <script type="module">
+        const tableOfContents = document.querySelector("#toc");
+        const rootUl = document.createElement("ul");
+        const headings2 = document.querySelectorAll("h2");
+
+        headings2.forEach(heading => {
+            const id = heading.textContent.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
+            heading.setAttribute("id", id);
+            const li = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = `#${id}`;
+            link.textContent = heading.textContent;
+            li.appendChild(link);
+            rootUl.appendChild(li);
+        })
+
+        tableOfContents.appendChild(rootUl);
+        tableOfContents.classList.remove('hidden');
+    </script>
+
+    <p class="text-sm text-gray-500 mb-4 word-count-display">Calculating...</p>
+    {image &&
+            <LocalImage {...image} loading="eager"/>}
+    <div id="toc" class="hidden"></div>
+</Fragment>

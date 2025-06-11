@@ -1,5 +1,5 @@
 ---
-import WordCount from "../../components/WordCount.astro";
+import WordCount from "../../components/BlogWidgets.astro";
 import personAtCrossroads from "../../images/person-at-crossroads.png";
 import LocalImage from "../../components/LocalImage.astro";
 import BlogLayout from "../../layouts/BlogLayout.astro";
@@ -29,11 +29,7 @@ import BlogLayout from "../../layouts/BlogLayout.astro";
     Navigating the Depths of Exhaustion: Understanding and Recovering from
     Burnout
   </h1>
-  <WordCount />
-  <LocalImage
-    alt="A silhouette of a person standing at a crossroads, with one path leading to a dark, chaotic storm and another path opening up to a calm, softly lit landscape. Use a soft, encouraging color palette for the calm side, contrasting with muted, heavy tones for the storm side. Focus on a sense of transition and hope."
-    src={personAtCrossroads}
-  />
+  <WordCount image={{src: personAtCrossroads, alt: "A silhouette of a person standing at a crossroads, with one path leading to a dark, chaotic storm and another path opening up to a calm, softly lit landscape. Use a soft, encouraging color palette for the calm side, contrasting with muted, heavy tones for the storm side. Focus on a sense of transition and hope."}} />
   <p>
     If you've been pushing yourself relentlessly, feeling a pervasive sense of
     dread about work, and experiencing a constant mental and physical drain,
@@ -57,90 +53,6 @@ import BlogLayout from "../../layouts/BlogLayout.astro";
     effects, and most importantly, how to navigate your way back to a state of
     well-being.
   </p>
-  <ul class="select-none">
-    <li><a href="#personalStory">A Personal Journey into Burnout</a></li>
-    <li><a href="#whatIsBurnout">What Is Burnout?</a></li>
-    <li>
-      <a href="#fiveStages">The Five Stages of Burnout</a>
-      <ul>
-        <li>
-          <a href="#stageOne">Stage 1 (Honeymoon Phase): Unbridled Optimism</a>
-        </li>
-        <li>
-          <a href="#stageTwo">Stage 2 (Onset of Stress): The Subtle Shifts</a>
-        </li>
-        <li>
-          <a href="#stageThree">Stage 3 (Chronic Stress): The Deepening Rut</a>
-        </li>
-        <li><a href="#stageFour">Stage 4 (Burnout): The Collapse</a></li>
-        <li>
-          <a href="#stageFive"
-            >Stage 5 (Habitual Burnout): Chronic Exhaustion and Depression</a
-          >
-        </li>
-      </ul>
-    </li>
-    <li>
-      <a href="#fightOrFlight"
-        >The Physiological Impact: When "Fight or Flight" Becomes "Freeze"</a
-      >
-    </li>
-    <li>
-      <a href="#vagalStates"
-        >Understanding Your Vagal States: Green, Amber, Red</a
-      >
-      <ul>
-        <li>
-          <a href="#greenMode"
-            >Green Mode (Ventral Vagal State - Safety and Social Engagement)</a
-          >
-        </li>
-        <li>
-          <a href="#amberMode"
-            >Amber Mode (Sympathetic State - Mobilization/Fight or Flight)</a
-          >
-        </li>
-        <li>
-          <a href="#redMode"
-            >Red Mode (Dorsal Vagal State - Immobilization/Shutdown)</a
-          >
-        </li>
-      </ul>
-    </li>
-    <li>
-      <a href="#subtypesBurnout"
-        >Subtypes of Burnout: It's Not One-Size-Fits-All</a
-      >
-    </li>
-    <li>
-      <a href="#soothingNerves"
-        >Soothing Your Nervous System: From Amber to Green</a
-      >
-    </li>
-    <li>
-      <a href="#combatBurnout"
-        >How Companies Can Foster Well-being and Combat Burnout</a
-      >
-      <ul>
-        <li>
-          <a href="#preventingBurnout"
-            >Preventing Burnout: Proactive Strategies</a
-          >
-        </li>
-        <li>
-          <a href="#respondingBurnout"
-            >Responding to Active Burnout: Empathetic Solutions</a
-          >
-        </li>
-        <li>
-          <a href="#coworkers"
-            >The Role of Coworkers: Building a Supportive Network</a
-          >
-        </li>
-      </ul>
-    </li>
-    <li><a href="#conclusion">Conclusion</a></li>
-  </ul>
   <h2 id="personalStory">A Personal Journey into Burnout</h2>
   <p>
     My own understanding of burnout deepened through a stark personal

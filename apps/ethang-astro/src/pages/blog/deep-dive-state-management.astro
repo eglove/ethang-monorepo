@@ -1,0 +1,639 @@
+---
+import "highlight.js/styles/night-owl.css";
+import BlogLayout from "../../layouts/BlogLayout.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import BlogWidgets from "../../components/BlogWidgets.astro";
+import nodesImage from "../../images/nodes-computer.png"
+---
+<Fragment>
+    <BlogLayout
+            title="A Deep Dive into a Custom State Management Library"
+            description="Explore a powerful custom state management solution for React applications. Learn how to leverage Immer for immutable state, optimize performance with useSyncExternalStoreWithSelector, and implement robust lifecycle hooks. Discover benefits for building scalable and maintainable front-end projects."
+    >
+        <h1>Mastering State: A Deep Dive into a Custom State Management Library</h1>
+
+        <BlogWidgets image={{src: nodesImage, alt: "A network of interconnected nodes and pathways in cool blues and greens, with a subtle glow from the center. The minimalistic design has a slight depth of field, conveying the organized and interconnected nature of state management in software."}} />
+
+        <p>
+            In the world of front-end development, managing application state
+            efficiently and predictably is paramount. As applications grow in
+            complexity, so does the challenge of keeping data consistent, reactive, and
+            easy to reason about. While popular solutions like Redux, Zustand, and
+            React&rsquo;s Context API offer powerful tools, there are times when a
+            tailored approach, designed for specific needs and leveraging modern React
+            features, can offer exceptional clarity and performance.
+        </p>
+        <p>
+            Today we&rsquo;re going to explore a custom state management library that
+            provides a solid foundation for building scalable applications. This library
+            combines the immutability benefits of <code>Immer</code> with React&rsquo;s efficient
+            <code>useSyncExternalStoreWithSelector</code> hook, offering a delightful developer
+            experience.
+        </p>
+
+        <h2>
+            The Foundation: <code>BaseStore&lt;State&gt;</code>
+        </h2>
+
+        <p>
+            At the heart of this system is the <code>BaseStore&lt;State&gt;</code> abstract
+            class. This class serves as the blueprint for any specific piece of state you
+            wish to manage in your application.
+        </p>
+
+        <CodeBlock
+                code={`
+export abstract class BaseStore<State extends object> {
+  // ... (code provided by user)
+}`}
+        />
+
+        <p>Let&rsquo;s break down its key components:</p>
+
+        <h3>
+            <code>_state</code>: The Immutable Source of Truth
+        </h3>
+
+        <CodeBlock
+                code={`
+private _state: State;
+
+public get state() {
+  return this._state;
+}`}
+        />
+
+        <p>
+            The <code>_state</code> property holds the actual data for your store. Crucially,
+            this state is always treated as <strong>immutable</strong>. By making it <code
+        >private</code
+        >, we ensure that it&rsquo;s entirely encapsulated within the <code
+        >BaseStore</code
+        > itself. This means that instead of directly modifying <code>_state</code>,
+            you&rsquo;ll always create a new version of it when changes occur. This
+            immutability is fundamental for predictable state management, making it
+            easier to track changes, debug, and optimize rendering performance. The
+            <code>public get state()</code> accessor ensures that external consumers can
+            read the current state, but not directly mutate it.
+        </p>
+
+        <h3>
+            <code>subscribe</code>: Listening for Changes
+        </h3>
+
+        <CodeBlock
+                code={`
+private readonly _subscribers = new Set<(draft: State) => void>();
+
+public subscribe(callback: (state: State) => void) {
+  if (0 === this._subscribers.size) {
+    this._controller = new AbortController();
+    this.onFirstSubscriber?.();
+  }
+
+  this._subscribers.add(callback);
+
+  return () => {
+    this._subscribers.delete(callback);
+
+    if (0 === this._subscribers.size) {
+      this._controller.abort("unmount");
+      this.onLastSubscriberRemoved?.();
+    }
+  };
+}`}
+        />
+
+        <p>
+            The <code>subscribe</code> method implements a classic <strong
+        >observer pattern</strong
+        >. When a component or any other part of your application needs to react to
+            state changes, it calls <code>subscribe</code> with a callback function. This
+            callback will be invoked whenever the store&rsquo;s state is updated.
+        </p>
+        <p>
+            The <code>subscribe</code> method returns an &ldquo;unsubscribe&rdquo; function.
+            It&rsquo;s crucial to call this function when the subscriber (e.g., a React component)
+            unmounts or no longer needs to listen, preventing memory leaks.
+        </p>
+
+        <h3>
+            Lifecycle Hooks: <code>onFirstSubscriber</code> and <code
+        >onLastSubscriberRemoved</code
+        >
+        </h3>
+        <p>
+            These two protected methods provide powerful lifecycle hooks for your store:
+        </p>
+        <ul>
+            <li>
+                <strong><code>onFirstSubscriber?(): void;</code></strong>: This method is
+                called <strong
+            >only when the first component or entity subscribes to your store</strong
+            >. This is incredibly useful for setting up global resources or event
+                listeners that should only be active when your store is actively being
+                used.
+            </li>
+        </ul>
+        <h4>Example: Global Online/Offline Status</h4>
+        <p>
+            Imagine you want to monitor the user&rsquo;s online/offline status, but only
+            if there&rsquo;s an active component that cares about it. <code
+        >onFirstSubscriber</code
+        > is the perfect place:
+        </p>
+
+        <CodeBlock
+                code={`
+protected onFirstSubscriber() {
+  console.log("First subscriber joined. Setting up global online/offline listeners.");
+  const handleOnline = () => console.log("User is online!");
+  const handleOffline = () => console.log("User is offline!");
+
+  window.addEventListener("online", handleOnline, { signal: this.cleanupSignal });
+  window.addEventListener("offline", handleOffline, { signal: this.cleanupSignal });
+}`}
+        />
+
+        <p>
+            Notice the <code>cleanupSignal</code>. This is provided by an <code
+        >AbortController</code
+        >. When the last subscriber unsubscribes, <code
+        >_controller.abort(&ldquo;unmount&rdquo;)</code
+        > is called, which signals all event listeners attached with <code
+        >signal: this.cleanupSignal</code
+        > to automatically clean themselves up. This is an elegant and robust way to
+            manage global resources tied to the store&rsquo;s active lifecycle.
+        </p>
+        <ul>
+            <li>
+                <strong><code>onLastSubscriberRemoved?(): void;</code></strong>:
+                Conversely, this method is called <strong
+            >only when the last component or entity unsubscribes from your store</strong
+            >, meaning the store is no longer actively being observed by any
+                consumers. This is the ideal place to perform cleanup operations for
+                resources that were set up in <code>onFirstSubscriber</code> or any other resources
+                that are only needed when the store is active.
+            </li>
+        </ul>
+        <h4>Example: Resource Deallocation</h4>
+        <p>
+            Following our <code>onFirstSubscriber</code> example:
+        </p>
+
+        <CodeBlock
+                code={`
+protected onLastSubscriberRemoved() {
+  console.log("Last subscriber left. All global listeners/resources are now cleaned up.");
+}`}
+        />
+
+        <p>
+            This ensures that your application doesn&rsquo;t keep unnecessary listeners
+            or open connections alive when they are no longer needed, optimizing
+            resource usage.
+        </p>
+
+        <h3>
+            <code>update</code>: The Immutable State Transformer with Immer
+        </h3>
+
+        <CodeBlock
+                code={`
+protected update(updater: (draft: State) => void, shouldNotify = true) {
+  let patches: StorePatch<State>[] = [];
+
+  this._state = produce(this._state, updater, (_patches) => {
+    patches = _patches;
+  });
+
+  if (shouldNotify && 0 < patches.length) {
+    for (const patch of patches) {
+      this.onPropertyChange?.(patch);
+    }
+
+    for (const callback of this._subscribers) {
+      callback(this._state);
+    }
+  }
+}`}
+        />
+
+        <p>
+            The <code>update</code> method is where all state modifications happen. It leverages
+            <code>Immer</code>, a fantastic library that allows you to work with state
+            as if it were mutable, while still producing a new, immutable state object.
+        </p>
+
+        <ul>
+            <li>
+                <strong
+                ><code
+                >{
+                    `produce(this._state, updater, (_patches) => { ...
+            }})`
+                }</code
+                ></strong
+                >: You provide an <code>updater</code> function that takes a <code
+            >draft</code
+            > of your state. Inside this <code>updater</code>, you can modify the <code
+            >draft</code
+            > directly, and
+                <code>Immer</code> will intelligently figure out the differences and return
+                a brand new, immutable state object (<code>this._state</code>). This
+                eliminates the need for manual object spreading (<code
+            >{`{...state, ...}`}</code
+            >) and array methods like <code>map</code> or <code>filter</code> to produce
+                new instances, significantly simplifying state update logic.
+            </li>
+            <li>
+                <strong>Patch Generation</strong>: This library automatically enables
+                patch generation for <code>Immer</code> internally. These &ldquo;patches&rdquo;
+                are small objects that describe exactly what changed between the old state
+                and the new state (e.g., &ldquo;add this property,&rdquo; &ldquo;replace this
+                value,&rdquo; &ldquo;remove this item&rdquo;).
+            </li>
+            <li>
+                <strong
+                ><code>StorePatch&lt;State&gt;</code> and <code>StorePatchLoose</code
+                ></strong
+                >: These types define the structure of these patches, providing strong
+                typing for property changes, including nested paths.
+            </li>
+        </ul>
+
+        <h3>
+            <code>onPropertyChange</code>: Store-Level &ldquo;Effects&rdquo;
+        </h3>
+
+        <CodeBlock
+                code={`
+protected onPropertyChange?(patch: StorePatch<State> | StorePatchLoose): void;`}
+        />
+
+        <p>
+            After the state has been updated and <code>Immer</code> has generated patches,
+            the <code>update</code> method iterates through these <code>patches</code> and
+            calls <code>onPropertyChange</code> for each one. This method serves as a powerful
+            mechanism for defining <strong>side effects</strong> or &ldquo;effects&rdquo;
+            directly within your store, reacting to specific property changes.
+        </p>
+        <h4>Drawing Lines to Traditional State Management:</h4>
+        <p>
+            Think of <code>onPropertyChange</code> as a more granular <code
+        >useEffect</code
+        > or <code>watch</code> mechanism, but applied at the state management layer
+            rather than the UI component layer.
+        </p>
+        <ul>
+            <li>
+                In <strong>React&rsquo;s <code>useEffect</code></strong>, you typically
+                monitor changes in props or state variables to trigger side effects (e.g.,
+                data fetching, DOM manipulation). <code>onPropertyChange</code> allows similar
+                logic, but tied to the specific state property changes within your store.
+            </li>
+            <li>
+                In libraries like <strong
+            >Vue.js with <code>watch</code> properties</strong
+            >, you can observe reactive data and run a callback when that data
+                changes. <code>onPropertyChange</code> offers a similar &ldquo;watch&rdquo;
+                capability for specific properties within your store.
+            </li>
+        </ul>
+        <p>
+            This separation of concerns allows you to encapsulate side effects related
+            to state changes directly within the store, keeping your React components
+            focused purely on rendering. For example, if a <code>user.isLoggedIn</code> property
+            changes, <code>onPropertyChange</code> could trigger an analytics event or a
+            routing action.
+        </p>
+
+        <h2>
+            Derived Values: Smart Computations with <code>get</code> and Memoization
+        </h2>
+        <p>
+            A common need in state management is to compute new values based on existing
+            state. These are &ldquo;derived values.&rdquo; While not explicitly part of <code
+        >BaseStore</code
+        >, you can elegantly handle them in your concrete store implementations
+            using TypeScript <code>get</code> methods.
+        </p>
+
+        <CodeBlock
+                code={`
+class CounterStore extends BaseStore<CounterState> {
+  public get isEven(): boolean {
+    return this.state.count % 2 === 0;
+  }
+}`}
+        />
+
+        <p>
+            For more complex or computationally expensive derived values, you can
+            enhance these <code>get</code> methods with <strong>memoization</strong>.
+            Memoization is an optimization technique where the result of a function call
+            is cached, and if the same inputs occur again, the cached result is returned
+            instead of re-executing the function. Libraries like <code>lodash</code> provide
+            a <code>memoize</code> utility.
+        </p>
+
+        <CodeBlock
+                code={`
+import memoize from 'lodash/memoize.js';
+
+class ComplexStore extends BaseStore<ComplexState> {
+  public get computedExpensiveValue(): string {
+    return memoize(
+      () => {
+        console.log("Re-computing expensive value...");
+        return \`Value from \${this.state.data.length} items: \${this.state.data.map(item => item.id).join('-')}\`;
+      },
+      () => JSON.stringify({ dataLength: this.state.data.length, lastItemId: this.state.data[this.state.data.length - 1]?.id })
+    )();
+  }
+}`}
+        />
+
+        <p>
+            In this example, <code>computedExpensiveValue</code> will only re-run its computation
+            if the <code>data</code> array&rsquo;s length or the <code>id</code> of its last
+            item changes, thanks to <code>lodash.memoize</code>. This prevents
+            unnecessary recalculations, boosting performance.
+        </p>
+
+        <h2>
+            Connecting to React: The <code>useStore</code> Hook
+        </h2>
+        <p>
+            While <code>BaseStore</code> manages the state logic, React components need a
+            way to interact with it efficiently. This is where the <code>useStore</code>
+            hook comes in, leveraging React&rsquo;s <a
+                href="https://www.npmjs.com/package/use-sync-external-store"
+                target="_blank">useSyncExternalStoreWithSelector</a
+        >.
+        </p>
+
+        <CodeBlock
+                code={`
+import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
+
+import type { BaseStore } from "./index.js";
+
+export const useStore = <State, Selection>(
+  store: BaseStore<State>,
+  selector: (snapshot: BaseStore<State>["state"]) => Selection,
+  isEqual?: (a: Selection, b: Selection) => boolean,
+) => {
+  return useSyncExternalStoreWithSelector(
+    (listener) => {
+      return store.subscribe(listener);
+    },
+    () => store.state,
+    () => store.state,
+    selector,
+    isEqual,
+  );
+};`}
+        />
+
+        <ul>
+            <li>
+                <strong><code>useSyncExternalStoreWithSelector</code></strong>: This is
+                React&rsquo;s recommended hook for connecting to external, mutable stores
+                (even though our <code>BaseStore</code> is effectively immutable from the outside,
+                <code>useSyncExternalStore</code> treats it as an external source). It&rsquo;s
+                highly optimized because it allows React to subscribe directly to changes and,
+                crucially, supports a <code>selector</code> and <code>isEqual</code> function.
+            </li>
+            <li>
+                <strong><code>selector</code></strong>: This function takes the entire
+                store state (<code>snapshot</code>) and allows you to <code>select</code> only
+                the specific slice of state your component needs. This is a critical performance
+                optimization. If your component only cares about <code>state.count</code>,
+                it will only re-render if <code>state.count</code> changes, not if another
+                part of the state (like <code>state.lastUpdated</code>) changes.
+            </li>
+            <li>
+                <strong><code>isEqual</code></strong>: An optional comparison function. If
+                provided, React will use it to compare the *selected* value from the
+                previous render with the *selected* value from the current render. If <code
+            >isEqual</code
+            > returns <code>true</code> (meaning the selected value hasn&rsquo;t changed),
+                the component will not re-render, even if the store&rsquo;s overall state object
+                has changed. This is another powerful optimization, especially for complex
+                selected objects.
+            </li>
+        </ul>
+        <h4>Comparison to Context API:</h4>
+        <p>
+            Unlike a plain React Context where any change to the context value might
+            trigger a re-render of all consuming components (unless manually optimized
+            with <code>React.memo</code> and <code>useMemo</code>), <code
+        >useSyncExternalStoreWithSelector</code
+        > combined with a <code>selector</code> and <code>isEqual</code> provides out-of-the-box,
+            highly optimized re-rendering behavior. Components only update when the *specific
+            data they consume* actually changes.
+        </p>
+
+        <h2>Putting It All Together: A Counter Example</h2>
+        <p>
+            Let&rsquo;s see how we can implement a simple <code>CounterStore</code> and use
+            it in a React application.
+        </p>
+        <p>Next, define your concrete store:</p>
+
+        <CodeBlock
+                code={`
+import { BaseStore, StorePatch } from "./BaseStore";
+import memoize from 'lodash/memoize.js';
+
+interface CounterState {
+  count: number;
+  step: number;
+  lastUpdated: number | null;
+}
+
+class CounterStore extends BaseStore<CounterState> {
+  constructor() {
+    super({ count: 0, step: 1, lastUpdated: null });
+  }
+
+  public increment() {
+    this.update((draft) => {
+      draft.count += draft.step;
+      draft.lastUpdated = Date.now();
+    });
+  }
+
+  public decrement() {
+    this.update((draft) => {
+      draft.count -= draft.step;
+      draft.lastUpdated = Date.now();
+    });
+  }
+
+  public setStep(newStep: number) {
+    this.update((draft) => {
+      draft.step = newStep;
+      draft.lastUpdated = Date.now();
+    });
+  }
+
+  public get isEven(): boolean {
+    return memoize(() => this.state.count % 2 === 0, () => this.state.count)();
+  }
+
+  protected onPropertyChange(patch: StorePatch<CounterState>) {
+    console.log("Property changed:", patch);
+    if (patch.path[0] === "count" && patch.op === "replace" && patch.value === 10) {
+      console.log("Count reached 10! A specific action could be taken here.");
+    }
+  }
+
+  protected onFirstSubscriber() {
+    console.log("CounterStore: First subscriber joined. Setting up global online/offline listeners.");
+    const handleOnline = () => console.log("Network: User is online!");
+    const handleOffline = () => console.log("Network: User is offline!");
+
+    window.addEventListener("online", handleOnline, { signal: this.cleanupSignal });
+    window.addEventListener("offline", handleOffline, { signal: this.cleanupSignal });
+  }
+
+  protected onLastSubscriberRemoved() {
+    console.log("CounterStore: Last subscriber left. All global listeners/resources are now cleaned up.");
+  }
+}
+
+export const counterStore = new CounterStore();`}
+        />
+
+        <p>Now, let&rsquo;s use this store in a React component:</p>
+
+        <CodeBlock
+                code={`
+import React from "react";
+import { useStore } from "./useStore";
+import { counterStore } from "./myCounterStore";
+
+const CounterDisplay = () => {
+  const { count, step, isEven, lastUpdated } = useStore(
+    counterStore,
+    (state) => {
+      return {
+        count: state.count,
+        step: state.step,
+        isEven: state.isEven,
+        lastUpdated: state.lastUpdated,
+      };
+    },
+  );
+
+  return (
+    <div>
+      <h2>Counter Display</h2>
+      <p>
+        <span>Current Count:</span>
+        <span>{count}</span>
+      </p>
+      <p>
+        <span>Step Value:</span>
+        <span>{step}</span>
+      </p>
+      <p>
+        <span>Is Count Even?:</span>
+        <span>{isEven ? "Yes" : "No"}</span>
+      </p>
+      {lastUpdated && (
+        <p>
+          Last Updated:{" "}
+          <span>{new Date(lastUpdated).toLocaleTimeString()}</span>
+        </p>
+      )}
+      <div>
+        <button onClick={() => counterStore.increment()}>Increment</button>
+        <button onClick={() => counterStore.decrement()}>Decrement</button>
+        <button onClick={() => counterStore.setStep(step === 1 ? 2 : 1)}>
+          Toggle Step
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const App = () => {
+  const [showCounter, setShowCounter] = useState(true);
+
+  return (
+    <div>
+      <h1>Exploring Custom State Management</h1>
+      <button onClick={() => setShowCounter(!showCounter)}>
+        {showCounter ? "Hide Counter Display" : "Show Counter Display"}
+      </button>
+      {showCounter && <CounterDisplay />}
+
+      <p>
+        This example demonstrates a flexible state management pattern using
+        \`BaseStore\`, \`Immer\`, and React&rsquo;s
+        \`useSyncExternalStoreWithSelector\`. Observe the console for lifecycle
+        messages when the Counter Display is shown or hidden.
+      </p>
+    </div>
+  );
+};
+
+export default App;
+`}/>
+
+        <h2>Summary and Benefits</h2>
+        <p>
+            This custom state management library offers several compelling advantages:
+        </p>
+        <ul>
+            <li>
+                <strong>Immutability by Default</strong>: Thanks to <code>Immer</code>,
+                state updates are safe, predictable, and simple to write, eliminating
+                common bugs associated with mutable state.
+            </li>
+            <li>
+                <strong>Performance Optimization</strong>: <code
+            >useSyncExternalStoreWithSelector</code
+            > with <code>selector</code> and <code>isEqual</code> ensures that React components
+                only re-render when the specific data they depend on actually changes, leading
+                to highly optimized UIs.
+            </li>
+            <li>
+                <strong>Clear Separation of Concerns</strong>: State logic, mutations, and
+                side effects (<code>onPropertyChange</code>) are encapsulated within the
+                store, keeping React components lean and focused on rendering.
+            </li>
+            <li>
+                <strong>Lifecycle Management</strong>: <code>onFirstSubscriber</code> and <code
+            >onLastSubscriberRemoved</code
+            > provide precise control over global resource allocation and deallocation,
+                making it easy to manage things like WebSocket connections or global event
+                listeners.
+            </li>
+            <li>
+                <strong>Type Safety</strong>: Strong TypeScript definitions for state,
+                patches, and paths ensure compile-time checks and a more robust codebase.
+            </li>
+            <li>
+                <strong>Flexibility</strong>: This pattern is highly adaptable. You can
+                create multiple stores for different domains of your application, each
+                managing its own encapsulated state.
+            </li>
+        </ul>
+
+        <h2>Conclusion</h2>
+        <p>
+            By combining the strengths of <code>Immer</code> for immutable updates and <code
+        >useSyncExternalStoreWithSelector</code
+        > for efficient React integration, this custom state management library provides
+            a powerful, performant, and delightful way to handle application state. It offers
+            a clear structure for managing effects, derived values, and global resources,
+            making your applications more maintainable and easier to scale. Experiment with
+            it, and you&rsquo;ll find it can significantly streamline your state management
+            efforts.
+        </p>
+    </BlogLayout>
+</Fragment>

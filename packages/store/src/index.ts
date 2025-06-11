@@ -50,13 +50,12 @@ export abstract class BaseStore<State extends object> {
     return this._state;
   }
 
-  protected _state: State;
-
   protected get cleanupSignal() {
     return this._controller.signal;
   }
 
   private _controller: AbortController = new AbortController();
+  private _state: State;
   private readonly _subscribers = new Set<(draft: State) => void>();
 
   protected constructor(state: State) {
@@ -76,11 +75,13 @@ export abstract class BaseStore<State extends object> {
 
       if (0 === this._subscribers.size) {
         this._controller.abort("unmount");
+        this.onLastSubscriberRemoved?.();
       }
     };
   }
 
   protected onFirstSubscriber?(): void;
+  protected onLastSubscriberRemoved?(): void;
   protected onPropertyChange?(patch: StorePatch<State> | StorePatchLoose): void;
 
   protected update(updater: (draft: State) => void, shouldNotify = true) {

@@ -2,7 +2,7 @@
 import BlogLayout from "../../layouts/BlogLayout.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
 import "highlight.js/styles/night-owl.css";
-import WordCount from "../../components/WordCount.astro";
+import WordCount from "../../components/BlogWidgets.astro";
 import LocalImage from "../../components/LocalImage.astro";
 import featuredImage from "../../images/chaotic-state-to-simplicity.png";
 ---
@@ -12,26 +12,7 @@ import featuredImage from "../../images/chaotic-state-to-simplicity.png";
   description="Unlock simpler, more performant React state management. Learn how to leverage JavaScript's hybrid nature and external class-based stores with useSyncExternalStore to reduce boilerplate, improve testability, and gain precise control over UI updates, moving beyond complex, paradigm-driven solutions."
 >
   <h1>Escaping Hook Hell: Pragmatic State Management for Hybrid JavaScript</h1>
-  <WordCount />
-
-  <LocalImage
-    src={featuredImage}
-    alt="An abstract illustration depicting a messy, tangled web of dark lines and nodes transforming into a clear, smooth, bright path leading to a simple, streamlined structure, symbolizing the simplification of complex code."
-  />
-
-  <ul>
-    <li>
-      <a href="#lure-of-universe"
-        >The Lure of the "Universe" and the Cost of Complexity</a
-      >
-    </li>
-    <li>
-      <a href="#pragmatic-power"
-        >The Pragmatic Power of External Stores with `useSyncExternalStore`</a
-      >
-    </li>
-    <li><a href="#conclusion">Conclusion</a></li>
-  </ul>
+  <WordCount image={{src: featuredImage, alt: "An abstract illustration depicting a messy, tangled web of dark lines and nodes transforming into a clear, smooth, bright path leading to a simple, streamlined structure, symbolizing the simplification of complex code."}} />
 
   <p>
     State management in React applications is a journey often fraught with

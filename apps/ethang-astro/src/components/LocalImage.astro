@@ -20,7 +20,7 @@ const id = `modal${v7().replaceAll("-", "")}`;
   onclick={`${id}.showModal()`}
 >
   <Image
-    loading={loading}
+    loading={loading ?? "lazy"}
     class={twMerge("size-full object-contain my-0", imgClass)}
     src={src}
     alt={alt}

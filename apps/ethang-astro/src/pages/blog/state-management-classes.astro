@@ -1,8 +1,7 @@
 ---
 import "highlight.js/styles/night-owl.css";
 import CodeBlock from "../../components/CodeBlock.astro";
-import LocalImage from "../../components/LocalImage.astro";
-import WordCount from "../../components/WordCount.astro";
+import WordCount from "../../components/BlogWidgets.astro";
 import chromaticSwirl from "../../images/chromatic-swirl.png";
 import BlogLayout from "../../layouts/BlogLayout.astro";
 
@@ -267,8 +266,7 @@ function JobApplicationsList() {
 
 <BlogLayout title="Building a State Management System with Classes in React">
   <h1>Building a State Management System with Classes in React</h1>
-  <WordCount />
-  <LocalImage imgClass="max-w-sm" src={chromaticSwirl} alt="chromatic swirl" />
+  <WordCount image={{imgClass: "wax-w-sm", src: chromaticSwirl, alt: "chromatic swirl"}} />
   <p>
     In the ever-evolving landscape of React state management, we've seen
     countless libraries and patterns come and go. From Redux to MobX, Zustand to
@@ -284,17 +282,7 @@ function JobApplicationsList() {
     easy to reason about.
   </p>
 
-  <ul class="select-none">
-    {
-      Object.values(headers).map((header) => (
-        <li>
-          <a href={`#${header.id}`}>{header.label}</a>
-        </li>
-      ))
-    }
-  </ul>
-
-  <h2 id={headers.introduction.id}>{headers.introduction.label}</h2>
+  <h2>{headers.introduction.label}</h2>
   <p>
     State management in React applications can quickly become complex,
     especially when dealing with asynchronous operations, form state,
@@ -310,7 +298,7 @@ function JobApplicationsList() {
     single source of truth for a specific domain in your application.
   </p>
 
-  <h2 id={headers.whyStoreClass.id}>{headers.whyStoreClass.label}</h2>
+  <h2>{headers.whyStoreClass.label}</h2>
   <p>Why use a class instead of hooks? There are several compelling reasons:</p>
 
   <ol>
@@ -337,7 +325,7 @@ function JobApplicationsList() {
     </li>
   </ol>
 
-  <h2 id={headers.storeStructure.id}>{headers.storeStructure.label}</h2>
+  <h2>{headers.storeStructure.label}</h2>
   <p>Let's look at the basic structure of a state management store class:</p>
 
   <CodeBlock code={storeClassExample} />
@@ -359,7 +347,7 @@ function JobApplicationsList() {
     fragmentation" that often occurs with hook-based approaches.
   </p>
 
-  <h2 id={headers.reactQueryIntegration.id}>
+  <h2>
     {headers.reactQueryIntegration.label}
   </h2>
   <p>
@@ -389,7 +377,7 @@ function JobApplicationsList() {
     > without needing to know the implementation details.
   </p>
 
-  <h2 id={headers.modalHandling.id}>{headers.modalHandling.label}</h2>
+  <h2>{headers.modalHandling.label}</h2>
   <p>
     Modal state is another area where the store class shines. Instead of
     creating separate state for each modal or using a complex modal manager, we
@@ -404,7 +392,7 @@ function JobApplicationsList() {
     about, ensuring they only re-render when necessary.
   </p>
 
-  <h2 id={headers.debounceSearch.id}>{headers.debounceSearch.label}</h2>
+  <h2>{headers.debounceSearch.label}</h2>
   <p>
     Search functionality often requires debouncing to avoid excessive API calls.
     With our store class, we can implement this elegantly using lodash's
@@ -420,7 +408,7 @@ function JobApplicationsList() {
     useEffect setup!
   </p>
 
-  <h2 id={headers.immerUsage.id}>{headers.immerUsage.label}</h2>
+  <h2>{headers.immerUsage.label}</h2>
   <p>
     Immutable state updates are crucial for predictable behavior, but they can
     be verbose and error-prone. Immer solves this problem by allowing us to
@@ -441,7 +429,7 @@ function JobApplicationsList() {
     us to batch updates or conditionally notify subscribers.
   </p>
 
-  <h2 id={headers.syncExternalStore.id}>{headers.syncExternalStore.label}</h2>
+  <h2>{headers.syncExternalStore.label}</h2>
   <p>
     To connect our store to React's rendering system, we use the <code
       ><a
@@ -470,7 +458,7 @@ function JobApplicationsList() {
     triggers re-renders in all subscribed components.
   </p>
 
-  <h2 id={headers.controllingRenders.id}>
+  <h2>
     {headers.controllingRenders.label}
   </h2>
   <p>
@@ -513,7 +501,7 @@ function JobApplicationsList() {
     applications or when dealing with complex state transitions.
   </p>
 
-  <h2 id={headers.testability.id}>{headers.testability.label}</h2>
+  <h2>{headers.testability.label}</h2>
   <p>
     Testing is another area where the store class approach shines. Since the
     store is just a class with methods, it can be instantiated and tested in
@@ -534,7 +522,7 @@ function JobApplicationsList() {
     become simpler and more focused, making them easier to test as well.
   </p>
 
-  <h2 id={headers.conclusion.id}>{headers.conclusion.label}</h2>
+  <h2>{headers.conclusion.label}</h2>
   <p>
     This class-based state management pattern offers a powerful alternative to
     hook-based state management in React applications. By centralizing related

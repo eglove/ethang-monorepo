@@ -1,6 +1,6 @@
 ---
 import LocalImage from "../../components/LocalImage.astro";
-import WordCount from "../../components/WordCount.astro";
+import WordCount from "../../components/BlogWidgets.astro";
 import sealioningImage from "../../images/sealioning/sealioning.png";
 import sealioning2Image from "../../images/sealioning/sealioning-2.png";
 import sealioning3Image from "../../images/sealioning/sealioning-3.png";
@@ -9,8 +9,7 @@ import BlogLayout from "../../layouts/BlogLayout.astro";
 
 <BlogLayout title="Navigating Sealioning in Remote Work Environments">
   <h1>Navigating Sealioning in Remote Work Environments</h1>
-  <WordCount />
-  <LocalImage loading="eager" src={sealioningImage} alt="sealioning comic" />
+  <WordCount image={{src: sealioningImage, alt: "sealioning comic"}} />
   <p>
     If you've spent any time in remote work environments—especially on platforms
     like Slack, Teams, or Discord—you've likely encountered a peculiar form of
@@ -27,82 +26,6 @@ import BlogLayout from "../../layouts/BlogLayout.astro";
     most importantly, how to handle it effectively while maintaining your
     productivity and sanity.
   </p>
-  <ul class="select-none">
-    <li>
-      <a href="#whatIsSealioning">What Is Sealioning?</a>
-      <ul>
-        <li>
-          <a href="#originOfTheTerm">Origin of the Term</a>
-        </li>
-        <li>
-          <a href="#keyCharacteristics">Key Characteristics</a>
-        </li>
-      </ul>
-    </li>
-    <li>
-      <a href="#sealioningInRemoteWork"
-        >Sealioning in Remote Work Environments</a
-      >
-      <ul>
-        <li>
-          <a href="#slackAndTeamsExamples">Slack and Teams Examples</a>
-        </li>
-        <li>
-          <a href="#codeReviewSealioning">Code Review Sealioning</a>
-        </li>
-        <li>
-          <a href="#meetingSealioning">Meeting Sealioning</a>
-        </li>
-      </ul>
-    </li>
-    <li>
-      <a href="#betterCommunicationAlternatives"
-        >Better Communication Alternatives</a
-      >
-      <ul>
-        <li>
-          <a href="#askingGenuineQuestions">Asking Genuine Questions</a>
-        </li>
-        <li>
-          <a href="#respectingExpertise">Respecting Expertise</a>
-        </li>
-        <li>
-          <a href="#productiveDisagreement">Productive Disagreement</a>
-        </li>
-      </ul>
-    </li>
-    <li>
-      <a href="#handlingSealions"
-        >Handling Sealions While Remaining Productive</a
-      >
-      <ul>
-        <li>
-          <a href="#recognizingPatterns">Recognizing the Patterns</a>
-        </li>
-        <li>
-          <a href="#settingBoundaries">Setting Clear Boundaries</a>
-          <ul>
-            <li>
-              <a href="#explainingToSealioner"
-                >Explaining to a Sealioner Why Their Behavior is Problematic</a
-              >
-            </li>
-            <li>
-              <a href="#beyondBoundaries"
-                >Beyond Setting Boundaries: Strategies for Work Environments</a
-              >
-            </li>
-          </ul>
-        </li>
-        <li>
-          <a href="#documentationAsShield">Documentation as a Shield</a>
-        </li>
-        <li>
-          <a href="#teamCulture">Cultivating a Healthy Team Culture</a>
-        </li>
-      </ul>
-    </li>
-  </ul>
 
   <h2 id="whatIsSealioning">What Is Sealioning?</h2>
 

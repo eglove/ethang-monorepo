@@ -2,8 +2,8 @@
 import "highlight.js/styles/night-owl.css";
 import BlogLayout from "../../layouts/BlogLayout.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
-import LocalImage from "../../components/LocalImage.astro";
 import reactSimpleComplex from "../../images/react-simple-complex.png";
+import BlogWidgets from "../../components/BlogWidgets.astro";
 ---
 
 <BlogLayout
@@ -28,39 +28,7 @@ import reactSimpleComplex from "../../images/react-simple-complex.png";
     </li>
   </ul>
 
-  <LocalImage
-    src={reactSimpleComplex}
-    alt="React performance optimization: a visual contrast between inefficient prop drilling and efficient global state management."
-  />
-
-  <ul>
-    <li>
-      <a href="#re-render-why"
-        >The Re-render Conundrum: Understanding the &ldquo;Why&rdquo;</a
-      >
-    </li>
-    <li>
-      <a href="#real-culprit-data-flow"
-        >The Real Culprit: Uncontrolled Data Flow</a
-      >
-    </li>
-    <li>
-      <a href="#superior-approach-external-stores"
-        >The Superior Approach: Syncing UI with External Stores</a
-      >
-    </li>
-    <li>
-      <a href="#deep-equality-argument"
-        >Addressing the &ldquo;Deep Equality&rdquo; Argument</a
-      >
-    </li>
-    <li>
-      <a href="#client-side-sorting"
-        >Client-Side Sorting and Filtering: When to Consider It</a
-      >
-    </li>
-    <li><a href="#conclusion">Conclusion</a></li>
-  </ul>
+  <BlogWidgets image={{src: reactSimpleComplex, alt: "React performance optimization: a visual contrast between inefficient prop drilling and efficient global state management."}} />
 
   <p>
     As React applications grow in complexity, managing performance becomes a

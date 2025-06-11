@@ -1,7 +1,7 @@
 ---
 import CodeBlock from "../../components/CodeBlock.astro";
 import "highlight.js/styles/night-owl.css";
-import WordCount from "../../components/WordCount.astro";
+import WordCount from "../../components/BlogWidgets.astro";
 import optionalChainingImage from "../../images/optional-chaining.png";
 import LocalImage from "../../components/LocalImage.astro";
 import BlogLayout from "../../layouts/BlogLayout.astro";
@@ -12,69 +12,7 @@ import BlogLayout from "../../layouts/BlogLayout.astro";
   description="A concise comparison of optional chaining and lodash.get for safely accessing nested properties in JavaScript"
 >
   <h1>Optional Chaining vs. lodash.get: Comparative Analysis</h1>
-  <WordCount />
-  <LocalImage
-    src={optionalChainingImage}
-    alt="An abstract, dark-toned image depicting the concept of safely accessing nested data."
-  />
-
-  <div class="select-none">
-    <h2>Table of Contents</h2>
-    <ul>
-      <li>
-        <a href="#benefits-of-optional-chaining"
-          >Benefits of Optional Chaining</a
-        >
-      </li>
-      <li>
-        <a href="#limitations-of-optional-chaining"
-          >Limitations of Optional Chaining</a
-        >
-        <ul>
-          <li>
-            <a href="#dynamic-path-resolution">Dynamic Path Resolution</a>
-          </li>
-          <li>
-            <a href="#default-value-handling">Default Value Handling</a>
-          </li>
-          <li><a href="#edge-case-handling">Edge Case Handling</a></li>
-        </ul>
-      </li>
-      <li>
-        <a href="#typescript-and-runtime-considerations"
-          >TypeScript and Runtime Considerations</a
-        >
-      </li>
-      <li><a href="#development-efficiency">Development Efficiency</a></li>
-      <li>
-        <a href="#pragmatic-technology-selection"
-          >Pragmatic Technology Selection</a
-        >
-      </li>
-      <li>
-        <a href="#performance-benchmarks">Performance Benchmarks</a>
-        <ul>
-          <li>
-            <a href="#basic-performance-comparison"
-              >Basic Performance Comparison</a
-            >
-          </li>
-          <li>
-            <a href="#on-complexity-analysis">O(n) Complexity Analysis</a>
-          </li>
-          <li>
-            <a href="#algorithmic-complexity-analysis"
-              >Algorithmic Complexity Analysis</a
-            >
-          </li>
-          <li>
-            <a href="#performance-implications">Performance Implications</a>
-          </li>
-        </ul>
-      </li>
-      <li><a href="#conclusion">Conclusion</a></li>
-    </ul>
-  </div>
+  <WordCount image={{src: optionalChainingImage, alt: "An abstract, dark-toned image depicting the concept of safely accessing nested data."}} />
 
   <p>
     JavaScript developers frequently encounter the problem of safely accessing

@@ -1,7 +1,6 @@
 ---
 import aiParadoxImage from "../../images/ai-paradox.png";
-import LocalImage from "../../components/LocalImage.astro";
-import WordCount from "../../components/WordCount.astro";
+import WordCount from "../../components/BlogWidgets.astro";
 import BlogLayout from "../../layouts/BlogLayout.astro";
 ---
 
@@ -10,31 +9,7 @@ import BlogLayout from "../../layouts/BlogLayout.astro";
     The AI Paradox: Why Some Developers Are Underwhelmed and Others See a
     Revolution
   </h1>
-  <WordCount />
-  <LocalImage
-    src={aiParadoxImage}
-    alt={`An abstract image illustrating the "AI Paradox." On the left, a developer appears overwhelmed, with hands on their head amidst complex, swirling code and abstract AI elements. On the right, another developer looks confident and a bit triumphant, surrounded by organized code and circuit-like patterns, representing the revolutionary potential of AI. The background is a mix of digital patterns and glowing lines, symbolizing the digital world and the evolving tech landscape.`}
-  />
-
-  <ul class="select-none">
-    <li>
-      <a href="#magicEye">The "Magic Eye" of Development: Differing Realities</a
-      >
-    </li>
-    <li>
-      <a href="#architectsGaze">The Architect's Gaze: A Different Landscape</a>
-    </li>
-    <li>
-      <a href="#realWorld"
-        >Real-World Architectural Challenges vs. AI's Current Strengths</a
-      >
-    </li>
-    <li>
-      <a href="#realImpact"
-        >The Real Impact and the Evolving Role: Becoming AI-Augmented</a
-      >
-    </li>
-  </ul>
+  <WordCount image={{src: aiParadoxImage, alt: "An abstract image illustrating the \"AI Paradox.\" On the left, a developer appears overwhelmed, with hands on their head amidst complex, swirling code and abstract AI elements. On the right, another developer looks confident and a bit triumphant, surrounded by organized code and circuit-like patterns, representing the revolutionary potential of AI. The background is a mix of digital patterns and glowing lines, symbolizing the digital world and the evolving tech landscape."}} />
 
   <p>
     For months, the talk about <strong
