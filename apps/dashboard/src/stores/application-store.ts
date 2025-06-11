@@ -61,15 +61,15 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
           method: "POST",
         });
 
-        if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allUserApplications(userId),
-          });
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.allUserApplications(userId),
+        });
 
-          this.update((state) => {
-            state.isCreateModalOpen = false;
-          }, false);
-        } else {
+        this.update((state) => {
+          state.isCreateModalOpen = false;
+        }, false);
+
+        if (!response.ok) {
           toastError(response);
         }
       },
@@ -90,12 +90,12 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
           method: "DELETE",
         });
 
-        if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allUserApplications(userId),
-          });
-          onOk?.();
-        } else {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.allUserApplications(userId),
+        });
+        onOk?.();
+
+        if (!response.ok) {
           toastError(response);
         }
       },
@@ -181,7 +181,7 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
           return;
         }
 
-        const response = await fetch(applicationPath, {
+        await fetch(applicationPath, {
           body: JSON.stringify({
             ...data,
             applied: formDateToIso(data.applied),
@@ -192,20 +192,18 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
           method: "PUT",
         });
 
-        if (response.ok) {
-          await Promise.all([
-            queryClient.invalidateQueries({
-              queryKey: queryKeys.allUserApplications(userId),
-            }),
-            queryClient.invalidateQueries({
-              queryKey: queryKeys.stats(userId),
-            }),
-          ]);
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.allUserApplications(userId),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.stats(userId),
+          }),
+        ]);
 
-          this.update((state) => {
-            state.isUpdateModalOpen = false;
-          }, false);
-        }
+        this.update((state) => {
+          state.isUpdateModalOpen = false;
+        }, false);
       },
     };
   }
