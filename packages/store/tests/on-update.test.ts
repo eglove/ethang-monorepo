@@ -1,8 +1,6 @@
-import type { Patch } from "immer";
-
 import { describe, expect, it, vi } from "vitest";
 
-import { BaseStore } from "../src/index.js";
+import { BaseStore, type StorePatch } from "../src/index.js";
 
 const initialState = {
   count: 0,
@@ -27,7 +25,7 @@ class ConcreteStore extends BaseStore<typeof initialState> {
     });
   }
 
-  protected override onUpdate(patch: Patch) {
+  protected override onPropertyChange(patch: StorePatch<typeof initialState>) {
     this.update((draft) => {
       if ("count" === patch.path[0]) {
         draft.count += 1;

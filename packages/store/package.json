@@ -14,6 +14,7 @@
     "@types/use-sync-external-store": "^1.5.0",
     "browserslist-config-baseline": "^0.4.0",
     "eslint": "^9.25.1",
+    "type-fest": "^4.41.0",
     "vitest": "^3.2.3"
   },
   "engines": {
@@ -28,5 +29,5 @@
     "test": "vitest run"
   },
   "type": "module",
-  "version": "2.2.4"
+  "version": "2.2.5"
 }
