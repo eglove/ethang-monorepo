@@ -57,17 +57,17 @@ type CounterState = {
 }
 
 class CounterStore extends BaseStore<CounterState> {
-    constructor() {
+    public constructor() {
         super({count: 0, isOnline: navigator.onLine}); // Initialize with current online status
     }
 
-    increment() {
+    public increment() {
         this.update((draft) => {
             draft.count += 1;
         });
     }
 
-    decrement() {
+    public decrement() {
         this.update((draft) => {
             draft.count -= 1;
         });
@@ -76,7 +76,7 @@ class CounterStore extends BaseStore<CounterState> {
     // Example: Performing multiple updates and notifying only once at the end.
     // This approach is useful for a series of updates where you want to defer
     // notifications until all changes are applied.
-    batchIncrement(amount: number) {
+    public batchIncrement(amount: number) {
         for (let i = 0; i < amount; i++) {
             // Update the state for each increment, but only notify subscribers
             // on the very last iteration.
@@ -88,7 +88,7 @@ class CounterStore extends BaseStore<CounterState> {
 
 
     // Example: Using cleanupSignal for automatic cleanup of window event listeners
-    private onFirstSubscriber() {
+    protected onFirstSubscriber() {
         const handleOnline = () => {
             this.update((draft) => {
                 draft.isOnline = true;

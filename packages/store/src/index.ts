@@ -1,6 +1,8 @@
-import { produce } from "immer";
+import { enablePatches, produce } from "immer";
 
-export abstract class BaseStore<State> {
+enablePatches();
+
+export abstract class BaseStore<State extends object> {
   public get state() {
     return this._state;
   }
@@ -35,12 +37,16 @@ export abstract class BaseStore<State> {
     };
   }
 
-  protected abstract onFirstSubscriber?(): void;
+  protected onFirstSubscriber?(): void;
 
   protected update(updater: (draft: State) => void, shouldNotify = true) {
-    this._state = produce(this._state, updater);
+    let patchCount = 0;
 
-    if (shouldNotify) {
+    this._state = produce(this._state, updater, (_patches) => {
+      patchCount = _patches.length;
+    });
+
+    if (shouldNotify && 0 < patchCount) {
       for (const callback of this._subscribers) {
         callback(this._state);
       }
