@@ -123,11 +123,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/todo': {
+      id: '/todo'
+      path: '/todo'
+      fullPath: '/todo'
+      preLoaderRoute: typeof TodoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bookmarks': {
@@ -137,25 +137,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookmarksRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/todo': {
-      id: '/todo'
-      path: '/todo'
-      fullPath: '/todo'
-      preLoaderRoute: typeof TodoRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/job-search/contact': {
-      id: '/job-search/contact'
-      path: '/job-search/contact'
-      fullPath: '/job-search/contact'
-      preLoaderRoute: typeof JobSearchContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/job-search/qa': {
-      id: '/job-search/qa'
-      path: '/job-search/qa'
-      fullPath: '/job-search/qa'
-      preLoaderRoute: typeof JobSearchQaRouteImport
+    '/job-search/': {
+      id: '/job-search/'
+      path: '/job-search'
+      fullPath: '/job-search'
+      preLoaderRoute: typeof JobSearchIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/job-search/stats': {
@@ -165,11 +158,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JobSearchStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/job-search/': {
-      id: '/job-search/'
-      path: '/job-search'
-      fullPath: '/job-search'
-      preLoaderRoute: typeof JobSearchIndexRouteImport
+    '/job-search/qa': {
+      id: '/job-search/qa'
+      path: '/job-search/qa'
+      fullPath: '/job-search/qa'
+      preLoaderRoute: typeof JobSearchQaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/job-search/contact': {
+      id: '/job-search/contact'
+      path: '/job-search/contact'
+      fullPath: '/job-search/contact'
+      preLoaderRoute: typeof JobSearchContactRouteImport
       parentRoute: typeof rootRouteImport
     }
   }

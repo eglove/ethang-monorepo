@@ -7,10 +7,10 @@
     "@ethang/toolbelt": "^4.4.10",
     "idb": "^8.0.2",
     "lodash": "^4.17.21",
-    "zod": "^3.25.61"
+    "zod": "^3.25.63"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.9.6",
+    "@ethang/eslint-config": "^22.9.7",
     "@ethang/project-builder": "^3.0.2",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.16",
