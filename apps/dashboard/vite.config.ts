@@ -1,4 +1,3 @@
-/* eslint-disable lodash/prefer-lodash-method */
 import { cloudflare } from "@cloudflare/vite-plugin";
 import TanStackRouterVite from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
@@ -50,19 +49,6 @@ export default defineConfig({
               cacheName: "html-cache",
             },
             urlPattern: /\.html$/u,
-          },
-          {
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "clerk-cache",
-              expiration: {
-                maxAgeSeconds: 60 * 60, // 1 hour
-                maxEntries: 50,
-              },
-            },
-            urlPattern: ({ url }) => {
-              return url.href.startsWith("https://clerk.ethang.dev/");
-            },
           },
         ],
         skipWaiting: true,

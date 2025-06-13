@@ -56,7 +56,7 @@ const { image } = Astro.props;
             const nextLevel = Number(tagName.substring(1));
             if (nextLevel === parentLevel + 1) {
               childHeadings.push(nextElement);
-            } else {
+            } else if (nextLevel <= parentLevel) {
               break;
             }
           }
