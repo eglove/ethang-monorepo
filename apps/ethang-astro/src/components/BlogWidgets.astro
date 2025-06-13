@@ -40,13 +40,13 @@ const { image } = Astro.props;
     document.addEventListener("animationend", calculate);
   </script>
 
-  <script type="module">
+  <script>
     try {
       const tableOfContents = document.querySelector("#toc");
       const rootUl = document.createElement("ul");
 
-      const getSiblingHeadings = (parent) => {
-        const childHeadings = [];
+      const getSiblingHeadings = (parent: Element) => {
+        const childHeadings: Element[] = [];
         const parentLevel = Number(parent.tagName.substring(1));
         let nextElement = parent.nextElementSibling;
 
@@ -66,7 +66,7 @@ const { image } = Astro.props;
         return childHeadings;
       };
 
-      const buildToc = (headings, parentList) => {
+      const buildToc = (headings: Element[], parentList: Element) => {
         headings.forEach((heading) => {
           const li = document.createElement("li");
           const link = document.createElement("a");
@@ -99,15 +99,15 @@ const { image } = Astro.props;
         });
       };
 
-      tableOfContents.appendChild(rootUl);
+      tableOfContents?.appendChild(rootUl);
 
       const topHeadings = document.querySelectorAll("h2");
 
       if (topHeadings.length > 0) {
-        buildToc(topHeadings, rootUl);
+        buildToc(topHeadings as unknown as Element[], rootUl);
       }
 
-      tableOfContents.classList.remove("hidden");
+      tableOfContents?.classList.remove("hidden");
     } catch (error) {
       console.log(error);
     }
