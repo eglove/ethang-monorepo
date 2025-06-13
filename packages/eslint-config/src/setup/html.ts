@@ -6,4 +6,11 @@ import { genRules } from "./gen-rules.ts";
 
 const ruleNames = keys(get(html, ["rules"], []));
 
-export const htmlRules = genRules(ruleNames, [], "html");
+const customRules = [
+  { name: "indent", rule: "off" },
+  { name: "no-extra-spacing-attrs", rule: "off" },
+  { name: "attrs-newline", rule: "off" },
+  { name: "require-closing-tags", rule: "off" },
+];
+
+export const htmlRules = genRules(ruleNames, customRules, "html");
