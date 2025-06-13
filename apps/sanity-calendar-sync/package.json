@@ -2,7 +2,7 @@
   "dependencies": {
     "@portabletext/react": "^3.2.1",
     "@portabletext/types": "^2.0.13",
-    "@sanity/client": "^7.5.0",
+    "@sanity/client": "^7.6.0",
     "lodash": "^4.17.21",
     "luxon": "^3.6.1",
     "ts-ics": "^2.1.7"

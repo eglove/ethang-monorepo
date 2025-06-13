@@ -9,11 +9,11 @@
     "bcryptjs": "^3.0.1",
     "jose": "^6.0.10",
     "lodash": "^4.17.21",
-    "zod": "^3.25.63"
+    "zod": "^3.25.64"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.38",
-    "@ethang/eslint-config": "^22.9.7",
+    "@ethang/eslint-config": "^22.9.8",
     "@types/lodash": "^4.17.16",
     "browserslist-config-baseline": "^0.4.0",
     "eslint": "^9.25.1",

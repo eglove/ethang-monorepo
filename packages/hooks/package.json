@@ -7,11 +7,11 @@
     "eslint": "^9.25.1",
     "lodash": "^4.17.21",
     "react": "^19.1.0",
-    "zod": "^3.25.63"
+    "zod": "^3.25.64"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.9.7",
+    "@ethang/eslint-config": "^22.9.8",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.16",
     "@types/node": "^24.0.1",

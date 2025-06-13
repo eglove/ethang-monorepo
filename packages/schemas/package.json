@@ -2,10 +2,10 @@
   "author": "Ethan Glover",
   "dependencies": {
     "jose": "^6.0.10",
-    "zod": "^3.25.63"
+    "zod": "^3.25.64"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.9.7",
+    "@ethang/eslint-config": "^22.9.8",
     "@ethang/project-builder": "^3.0.2",
     "eslint": "^9.25.1"
   },
