@@ -4,6 +4,13 @@
     "not_found_handling": "single-page-application"
   },
   "compatibility_date": "2025-06-13",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ethang",
+      "database_id": "c1423f5b-3a72-44f5-9cb4-d14b6f48f111"
+    }
+  ],
   "main": "worker/index.ts",
   "name": "ethang",
   "observability": {

@@ -1,0 +1,51 @@
+generator client {
+  provider               = "prisma-client"
+  output                 = "../generated/prisma"
+  previewFeatures        = ["driverAdapters", "queryCompiler"]
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
+  moduleFormat           = "esm"
+  runtime                = "cloudflare"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String  @id @default(uuid(7))
+  code        String  @unique
+  description String
+  title       String  @unique
+  publicUrl   String? @unique
+
+  techs Tech[]
+}
+
+model Tech {
+  id   String @id @default(uuid(7))
+  name String @unique
+
+  projects Project[]
+}
+
+model News {
+  id        String   @id @default(uuid(7))
+  href      String
+  published DateTime
+  quote     String?
+  title     String
+
+  youtubeVideo YouTubeVideo?
+}
+
+model YouTubeVideo {
+  id      String @id @default(uuid(7))
+  videoId String @unique
+  title   String
+  url     String @unique
+
+  newsId String @unique
+  news   News   @relation(fields: [newsId], references: [id])
+}

@@ -46,7 +46,7 @@ export const MainLayout = ({
         <NavbarContent className="hidden sm:flex gap-4" justify="center">
           {map(links, (link) => {
             return (
-              <NavbarMenuItem>
+              <NavbarMenuItem key={link.label}>
                 <Link
                   className="text-foreground"
                   href={link.href}
