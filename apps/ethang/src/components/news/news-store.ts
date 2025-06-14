@@ -2,7 +2,7 @@ import { newsSchema } from "@ethang/schemas/src/ethang/news-schema.ts";
 import { BaseStore } from "@ethang/store";
 import { createUrl } from "@ethang/toolbelt/fetch/create-url";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
-import { keepPreviousData, queryOptions } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 import isError from "lodash/isError";
 import convertToString from "lodash/toString";
 import { z } from "zod";
@@ -18,7 +18,6 @@ class NewsStore extends BaseStore<typeof initialState> {
 
   public getNews(limit = 5) {
     return queryOptions({
-      placeholderData: keepPreviousData,
       queryFn: async () => {
         const url = createUrl(apiPath, {
           searchParams: {

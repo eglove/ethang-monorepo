@@ -13,9 +13,7 @@ import { TypographyH1 } from "../components/typography/typography-h1.tsx";
 const RouteComponent = () => {
   const [limit, setLimit] = useState(5);
   const { data, isPending } = useQuery(newsStore.getNews(limit));
-  const hasMore = isNil(data?.pagination)
-    ? false
-    : limit <= data.pagination.total;
+  const hasMore = isNil(data?.news) ? false : limit <= data.news.length;
 
   return (
     <MainLayout className="max-w-[65ch]">

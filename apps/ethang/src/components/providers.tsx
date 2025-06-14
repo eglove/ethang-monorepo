@@ -3,12 +3,18 @@ import type { PropsWithChildren } from "react";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
 import { HeroUIProvider } from "@heroui/react";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { QueryClient } from "@tanstack/react-query";
+import { keepPreviousData, QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { useRouter } from "@tanstack/react-router";
 import { del, get, set } from "idb-keyval";
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      placeholderData: keepPreviousData,
+    },
+  },
+});
 
 const persister = createAsyncStoragePersister({
   key: "REACT_QUERY_ETHANG_CACHE",
