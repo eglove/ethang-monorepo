@@ -8,7 +8,7 @@ import { NewsCard } from "./news-card.tsx";
 import { newsStore } from "./news-store.ts";
 
 export const NewsSummary = () => {
-  const { data, isPending } = useQuery(newsStore.getNews(1, 3));
+  const { data, isPending } = useQuery(newsStore.getNews(3));
 
   return (
     <div className="grid gap-4">
@@ -18,7 +18,7 @@ export const NewsSummary = () => {
       {isPending && <Spinner />}
       {!isPending &&
         map(data?.news, (newsItem) => {
-          return <NewsCard id={newsItem.id} key={newsItem.id} />;
+          return <NewsCard id={newsItem.id} key={newsItem.id} limit={3} />;
         })}
       <Button
         as={Link}

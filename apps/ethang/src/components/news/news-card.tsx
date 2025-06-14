@@ -10,11 +10,12 @@ import { newsStore } from "./news-store.ts";
 
 type NewCardProperties = {
   id: string;
+  limit?: number;
 };
 
-export const NewsCard = ({ id }: Readonly<NewCardProperties>) => {
+export const NewsCard = ({ id, limit }: Readonly<NewCardProperties>) => {
   const { data, isPending } = useQuery({
-    ...newsStore.getNews(),
+    ...newsStore.getNews(limit),
     select: (_data) => {
       return find(_data.news, { id });
     },
@@ -46,7 +47,7 @@ export const NewsCard = ({ id }: Readonly<NewCardProperties>) => {
       </CardHeader>
       <CardBody>
         {!isNil(data.quote) && (
-          <TypographyBlockquote>
+          <TypographyBlockquote className="mt-0">
             &ldquo;{data.quote}&rdquo;
           </TypographyBlockquote>
         )}

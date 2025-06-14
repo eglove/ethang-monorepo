@@ -2,26 +2,27 @@ import { newsSchema } from "@ethang/schemas/src/ethang/news-schema.ts";
 import { BaseStore } from "@ethang/store";
 import { createUrl } from "@ethang/toolbelt/fetch/create-url";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import isError from "lodash/isError";
-import isNil from "lodash/isNil";
 import convertToString from "lodash/toString";
 import { z } from "zod";
 
 export const apiPath = "/api/news";
 
-class NewsStore extends BaseStore<object> {
+const initialState = {};
+
+class NewsStore extends BaseStore<typeof initialState> {
   public constructor() {
-    super({});
+    super(initialState);
   }
 
-  public getNews(page?: number, limit?: number) {
+  public getNews(limit = 5) {
     return queryOptions({
+      placeholderData: keepPreviousData,
       queryFn: async () => {
         const url = createUrl(apiPath, {
           searchParams: {
-            limit: isNil(limit) ? undefined : convertToString(limit),
-            page: isNil(page) ? undefined : convertToString(page),
+            limit: convertToString(limit),
           },
           searchParamsSchema: z.object({
             limit: z.string().optional(),
@@ -53,7 +54,7 @@ class NewsStore extends BaseStore<object> {
 
         return data;
       },
-      queryKey: ["news", page, limit],
+      queryKey: ["news", limit],
     });
   }
 }

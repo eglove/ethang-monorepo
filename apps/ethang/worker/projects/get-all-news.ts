@@ -23,7 +23,6 @@ export const getAllNews = async (request: Request, environment: Env) => {
 
   const page = toInteger(url.searchParams.get("page") ?? "1");
   const limit = toInteger(url.searchParams.get("limit") ?? "10");
-  const skip = (page - 1) * limit;
 
   const total = await prisma.project.count();
 
@@ -44,12 +43,11 @@ export const getAllNews = async (request: Request, environment: Env) => {
       YouTubeVideo AS YV ON N.id = YV.newsId
     ORDER BY
       N.published DESC
-    LIMIT ?
-    OFFSET ?;
+    LIMIT ?;
   `;
 
   const { results } = await environment.DB.prepare(query)
-    .bind(limit, skip)
+    .bind(limit)
     .all<RawNewsResult>();
 
   const formattedNews = map(results, (row) => ({

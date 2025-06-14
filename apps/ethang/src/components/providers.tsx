@@ -2,16 +2,37 @@ import type { PropsWithChildren } from "react";
 
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
 import { HeroUIProvider } from "@heroui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { useRouter } from "@tanstack/react-router";
+import { del, get, set } from "idb-keyval";
 
 export const queryClient = new QueryClient();
+
+const persister = createAsyncStoragePersister({
+  key: "REACT_QUERY_ETHANG_CACHE",
+  storage: {
+    async getItem(key) {
+      return get(key);
+    },
+    async removeItem(key) {
+      return del(key);
+    },
+    async setItem(key, value) {
+      return set(key, value);
+    },
+  },
+});
 
 export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   const router = useRouter();
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister }}
+    >
       <HeroUIProvider
         navigate={(url) => {
           attemptAsync(async () => {
@@ -24,6 +45,6 @@ export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
       >
         {children}
       </HeroUIProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 };

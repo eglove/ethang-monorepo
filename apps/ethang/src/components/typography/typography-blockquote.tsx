@@ -1,9 +1,18 @@
 import type { PropsWithChildren } from "react";
 
+import { twMerge } from "tailwind-merge";
+
+type TypographyBlockquoteProperties = {
+  className?: string;
+};
+
 export const TypographyBlockquote = ({
   children,
-}: Readonly<PropsWithChildren>) => {
+  className,
+}: Readonly<PropsWithChildren<TypographyBlockquoteProperties>>) => {
   return (
-    <blockquote className="mt-6 border-l-2 pl-6 italic">{children}</blockquote>
+    <blockquote className={twMerge("mt-6 border-l-2 pl-6 italic", className)}>
+      {children}
+    </blockquote>
   );
 };

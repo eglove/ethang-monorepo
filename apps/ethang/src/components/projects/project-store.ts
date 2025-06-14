@@ -30,8 +30,6 @@ class ProjectStore extends BaseStore<object> {
           urlBase: globalThis.location.origin,
         });
 
-        console.log(url);
-
         if (isError(url)) {
           throw new Error("Invalid URL");
         }
