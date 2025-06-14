@@ -11,7 +11,9 @@ import { del, get, set } from "idb-keyval";
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      gcTime: 1000 * 60 * 60,
       placeholderData: keepPreviousData,
+      staleTime: 1000 * 60 * 60,
     },
   },
 });
