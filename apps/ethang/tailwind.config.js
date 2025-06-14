@@ -1,4 +1,5 @@
 import { heroui } from "@heroui/react";
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -10,6 +11,13 @@ export default {
   darkMode: "class",
   plugins: [heroui()],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        mono: ["Noto Sans Mono", ...fontFamily.mono],
+        sans: ["Funnel Sans", ...fontFamily.sans],
+        // eslint-disable-next-line cspell/spellchecker
+        serif: ["Hepta Slab", ...fontFamily.serif],
+      },
+    },
   },
 };
