@@ -6,7 +6,7 @@ This monorepo contains a collection of web applications, libraries, and tools us
 
 ### Web Applications
 
-- **ethang-astro**: Personal website/blog focused on technical web development content, built with Astro and Tailwind CSS, deployed to Cloudflare Pages.
+- **ethang**: Personal website.
 - **dashboard**: Personal productivity dashboard with features for managing bookmarks, to-do lists, and job search tracking (with statistics and Q&A features), built with React and deployed to Cloudflare.
 - **sterett-react**: Community organization/HOA website with content management through Sanity CMS, featuring news, events, galleries, and document management.
 - **sterett-admin**: Administrative interface for the Sterett Creek Village Trustees, providing content management capabilities for the sterett-react website.
