@@ -783,7 +783,8 @@ export const YouTubeVideoScalarFieldEnum = {
   id: 'id',
   videoId: 'videoId',
   title: 'title',
-  url: 'url'
+  url: 'url',
+  newsId: 'newsId'
 } as const
 
 export type YouTubeVideoScalarFieldEnum = (typeof YouTubeVideoScalarFieldEnum)[keyof typeof YouTubeVideoScalarFieldEnum]

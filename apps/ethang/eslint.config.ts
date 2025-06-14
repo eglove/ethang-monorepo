@@ -12,6 +12,7 @@ export default tseslint.config(
       "tsconfig.json",
       ".tanstack",
       "src/routeTree.gen.ts",
+      "generated",
     ],
   },
   ...config,

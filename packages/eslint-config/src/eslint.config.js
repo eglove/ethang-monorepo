@@ -1050,6 +1050,7 @@ export default tseslint.config(
       "css/no-invalid-at-rules": "off",
       "css/no-invalid-properties": "error",
       "css/prefer-logical-properties": "error",
+      "css/relative-font-units": "error",
       "css/use-baseline": ["error", { available: "newly" }],
       "css/use-layers": "error",
     },

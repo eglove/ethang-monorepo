@@ -5,9 +5,9 @@
     "zod": "^3.25.64"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.9.8",
+    "@ethang/eslint-config": "^22.10.0",
     "@ethang/project-builder": "^3.0.2",
-    "eslint": "^9.25.1"
+    "eslint": "^9.29.0"
   },
   "license": "ISC",
   "name": "@ethang/schemas",

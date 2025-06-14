@@ -7,8 +7,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "ethang",
-      "database_id": "c1423f5b-3a72-44f5-9cb4-d14b6f48f111"
+      "database_id": "c1423f5b-3a72-44f5-9cb4-d14b6f48f111",
+      "database_name": "ethang"
     }
   ],
   "main": "worker/index.ts",

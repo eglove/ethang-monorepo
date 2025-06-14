@@ -28,6 +28,7 @@ export type YouTubeVideoMinAggregateOutputType = {
   videoId: string | null
   title: string | null
   url: string | null
+  newsId: string | null
 }
 
 export type YouTubeVideoMaxAggregateOutputType = {
@@ -35,6 +36,7 @@ export type YouTubeVideoMaxAggregateOutputType = {
   videoId: string | null
   title: string | null
   url: string | null
+  newsId: string | null
 }
 
 export type YouTubeVideoCountAggregateOutputType = {
@@ -42,6 +44,7 @@ export type YouTubeVideoCountAggregateOutputType = {
   videoId: number
   title: number
   url: number
+  newsId: number
   _all: number
 }
 
@@ -51,6 +54,7 @@ export type YouTubeVideoMinAggregateInputType = {
   videoId?: true
   title?: true
   url?: true
+  newsId?: true
 }
 
 export type YouTubeVideoMaxAggregateInputType = {
@@ -58,6 +62,7 @@ export type YouTubeVideoMaxAggregateInputType = {
   videoId?: true
   title?: true
   url?: true
+  newsId?: true
 }
 
 export type YouTubeVideoCountAggregateInputType = {
@@ -65,6 +70,7 @@ export type YouTubeVideoCountAggregateInputType = {
   videoId?: true
   title?: true
   url?: true
+  newsId?: true
   _all?: true
 }
 
@@ -145,6 +151,7 @@ export type YouTubeVideoGroupByOutputType = {
   videoId: string
   title: string
   url: string
+  newsId: string
   _count: YouTubeVideoCountAggregateOutputType | null
   _min: YouTubeVideoMinAggregateOutputType | null
   _max: YouTubeVideoMaxAggregateOutputType | null
@@ -173,6 +180,7 @@ export type YouTubeVideoWhereInput = {
   videoId?: Prisma.StringFilter<"YouTubeVideo"> | string
   title?: Prisma.StringFilter<"YouTubeVideo"> | string
   url?: Prisma.StringFilter<"YouTubeVideo"> | string
+  newsId?: Prisma.StringFilter<"YouTubeVideo"> | string
   news?: Prisma.XOR<Prisma.NewsScalarRelationFilter, Prisma.NewsWhereInput>
 }
 
@@ -181,6 +189,7 @@ export type YouTubeVideoOrderByWithRelationInput = {
   videoId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  newsId?: Prisma.SortOrder
   news?: Prisma.NewsOrderByWithRelationInput
 }
 
@@ -188,18 +197,20 @@ export type YouTubeVideoWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   videoId?: string
   url?: string
+  newsId?: string
   AND?: Prisma.YouTubeVideoWhereInput | Prisma.YouTubeVideoWhereInput[]
   OR?: Prisma.YouTubeVideoWhereInput[]
   NOT?: Prisma.YouTubeVideoWhereInput | Prisma.YouTubeVideoWhereInput[]
   title?: Prisma.StringFilter<"YouTubeVideo"> | string
   news?: Prisma.XOR<Prisma.NewsScalarRelationFilter, Prisma.NewsWhereInput>
-}, "id" | "videoId" | "url">
+}, "id" | "videoId" | "url" | "newsId">
 
 export type YouTubeVideoOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   videoId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  newsId?: Prisma.SortOrder
   _count?: Prisma.YouTubeVideoCountOrderByAggregateInput
   _max?: Prisma.YouTubeVideoMaxOrderByAggregateInput
   _min?: Prisma.YouTubeVideoMinOrderByAggregateInput
@@ -213,13 +224,15 @@ export type YouTubeVideoScalarWhereWithAggregatesInput = {
   videoId?: Prisma.StringWithAggregatesFilter<"YouTubeVideo"> | string
   title?: Prisma.StringWithAggregatesFilter<"YouTubeVideo"> | string
   url?: Prisma.StringWithAggregatesFilter<"YouTubeVideo"> | string
+  newsId?: Prisma.StringWithAggregatesFilter<"YouTubeVideo"> | string
 }
 
 export type YouTubeVideoCreateInput = {
+  id?: string
   videoId: string
   title: string
   url: string
-  news?: Prisma.NewsCreateNestedOneWithoutYoutubeVideoInput
+  news: Prisma.NewsCreateNestedOneWithoutYoutubeVideoInput
 }
 
 export type YouTubeVideoUncheckedCreateInput = {
@@ -227,9 +240,11 @@ export type YouTubeVideoUncheckedCreateInput = {
   videoId: string
   title: string
   url: string
+  newsId: string
 }
 
 export type YouTubeVideoUpdateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   videoId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
@@ -241,6 +256,7 @@ export type YouTubeVideoUncheckedUpdateInput = {
   videoId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  newsId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type YouTubeVideoCreateManyInput = {
@@ -248,9 +264,11 @@ export type YouTubeVideoCreateManyInput = {
   videoId: string
   title: string
   url: string
+  newsId: string
 }
 
 export type YouTubeVideoUpdateManyMutationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   videoId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
@@ -261,6 +279,7 @@ export type YouTubeVideoUncheckedUpdateManyInput = {
   videoId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  newsId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type YouTubeVideoNullableScalarRelationFilter = {
@@ -273,6 +292,7 @@ export type YouTubeVideoCountOrderByAggregateInput = {
   videoId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  newsId?: Prisma.SortOrder
 }
 
 export type YouTubeVideoMaxOrderByAggregateInput = {
@@ -280,6 +300,7 @@ export type YouTubeVideoMaxOrderByAggregateInput = {
   videoId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  newsId?: Prisma.SortOrder
 }
 
 export type YouTubeVideoMinOrderByAggregateInput = {
@@ -287,6 +308,7 @@ export type YouTubeVideoMinOrderByAggregateInput = {
   videoId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  newsId?: Prisma.SortOrder
 }
 
 export type YouTubeVideoCreateNestedOneWithoutNewsInput = {
@@ -322,12 +344,14 @@ export type YouTubeVideoUncheckedUpdateOneWithoutNewsNestedInput = {
 }
 
 export type YouTubeVideoCreateWithoutNewsInput = {
+  id?: string
   videoId: string
   title: string
   url: string
 }
 
 export type YouTubeVideoUncheckedCreateWithoutNewsInput = {
+  id?: string
   videoId: string
   title: string
   url: string
@@ -350,12 +374,14 @@ export type YouTubeVideoUpdateToOneWithWhereWithoutNewsInput = {
 }
 
 export type YouTubeVideoUpdateWithoutNewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   videoId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type YouTubeVideoUncheckedUpdateWithoutNewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   videoId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
@@ -368,6 +394,7 @@ export type YouTubeVideoSelect<ExtArgs extends runtime.Types.Extensions.Internal
   videoId?: boolean
   title?: boolean
   url?: boolean
+  newsId?: boolean
   news?: boolean | Prisma.NewsDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["youTubeVideo"]>
 
@@ -376,6 +403,7 @@ export type YouTubeVideoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   videoId?: boolean
   title?: boolean
   url?: boolean
+  newsId?: boolean
   news?: boolean | Prisma.NewsDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["youTubeVideo"]>
 
@@ -384,6 +412,7 @@ export type YouTubeVideoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   videoId?: boolean
   title?: boolean
   url?: boolean
+  newsId?: boolean
   news?: boolean | Prisma.NewsDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["youTubeVideo"]>
 
@@ -392,9 +421,10 @@ export type YouTubeVideoSelectScalar = {
   videoId?: boolean
   title?: boolean
   url?: boolean
+  newsId?: boolean
 }
 
-export type YouTubeVideoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "videoId" | "title" | "url", ExtArgs["result"]["youTubeVideo"]>
+export type YouTubeVideoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "videoId" | "title" | "url" | "newsId", ExtArgs["result"]["youTubeVideo"]>
 export type YouTubeVideoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   news?: boolean | Prisma.NewsDefaultArgs<ExtArgs>
 }
@@ -415,6 +445,7 @@ export type $YouTubeVideoPayload<ExtArgs extends runtime.Types.Extensions.Intern
     videoId: string
     title: string
     url: string
+    newsId: string
   }, ExtArgs["result"]["youTubeVideo"]>
   composites: {}
 }
@@ -843,6 +874,7 @@ export interface YouTubeVideoFieldRefs {
   readonly videoId: Prisma.FieldRef<"YouTubeVideo", 'String'>
   readonly title: Prisma.FieldRef<"YouTubeVideo", 'String'>
   readonly url: Prisma.FieldRef<"YouTubeVideo", 'String'>
+  readonly newsId: Prisma.FieldRef<"YouTubeVideo", 'String'>
 }
     
 
