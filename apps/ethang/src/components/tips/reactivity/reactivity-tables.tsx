@@ -11,13 +11,13 @@ export const ReactivityTables = () => {
       <TypographyH2>Unoptimized (Prop Drilling + Memoization)</TypographyH2>
       <TypographyP>
         This "unoptimized" example simulates the traditional approach of
-        fetching/polling data from the endpoints, transforming the data, and
-        create an array of "table rows".
+        fetching/polling data from multiple endpoints, transforming the data,
+        and creating an array of "table rows".
       </TypographyP>
       <TypographyP>
         Even with memoization of the data or components, this will still cause
-        rerenders because on each data update, the table is getting a brand new
-        array of table rows.
+        rerenders because on each data update, the table is getting a new array
+        of table rows.
       </TypographyP>
       <TypographyP>
         This example uses HeroUI which caches results to{" "}

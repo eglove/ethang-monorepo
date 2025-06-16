@@ -7,7 +7,12 @@ import { routeTree } from "./routeTree.gen";
 import "./index.css";
 
 // Create a new router instance
-const router = createRouter({ routeTree });
+const router = createRouter({
+  defaultPreload: "viewport",
+  defaultPreloadStaleTime: 0,
+  routeTree,
+  scrollRestoration: true,
+});
 
 declare module "@tanstack/react-router" {
   // @ts-expect-error globals
