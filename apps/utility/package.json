@@ -8,7 +8,7 @@
     "remeda": "^2.23.0"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.10.0",
+    "@ethang/eslint-config": "^22.10.2",
     "@types/lodash": "^4.17.16",
     "@vitest/ui": "^3.2.3",
     "browserslist-config-baseline": "^0.4.0",

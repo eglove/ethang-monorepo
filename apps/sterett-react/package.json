@@ -27,8 +27,8 @@
     "@tanstack/react-query": "^5.80.7",
     "@tanstack/react-query-devtools": "^5.80.7",
     "@tanstack/react-query-persist-client": "^5.80.7",
-    "@tanstack/react-router": "^1.121.12",
-    "@tanstack/router-devtools": "^1.121.12",
+    "@tanstack/react-router": "^1.121.16",
+    "@tanstack/router-devtools": "^1.121.16",
     "calendar-link": "^2.8.0",
     "framer-motion": "^12.18.1",
     "idb-keyval": "^6.2.1",
@@ -43,7 +43,7 @@
     "zod": "^3.25.64"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.10.0",
+    "@ethang/eslint-config": "^22.10.2",
     "@portabletext/types": "^2.0.13",
     "@react-types/shared": "^3.30.0",
     "@tailwindcss/typography": "^0.5.16",
@@ -51,7 +51,7 @@
     "@tsconfig/vite-react": "^6.3.5",
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",
-    "@types/node": "^24.0.1",
+    "@types/node": "^24.0.3",
     "@types/react": "^19.1.8",
     "@types/react-big-calendar": "^1.16.2",
     "@types/react-dom": "^19.1.6",
