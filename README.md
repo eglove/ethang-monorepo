@@ -27,8 +27,8 @@ This monorepo contains a collection of web applications, libraries, and tools us
 
 ## Technologies
 
-- **Frontend**: React, Astro, TanStack (Query, Router, Table, Form), Tailwind CSS
-- **Backend**: Node.js, Cloudflare Workers
+- **Frontend**: React, TanStack (Query, Router, Table, Form), Tailwind CSS
+- **Backend**: Cloudflare Workers
 - **Data**: Sanity CMS, IndexedDB
-- **DevOps**: Automated testing, CI/CD pipelines, Cloudflare Pages deployment
+- **DevOps**: Automated testing, CI/CD pipelines, Wrangler deployment
 - **Tools**: TypeScript, ESLint, Vite, pnpm workspaces
