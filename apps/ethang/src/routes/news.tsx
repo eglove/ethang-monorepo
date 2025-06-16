@@ -18,6 +18,7 @@ const RouteComponent = () => {
         return newsStore.getNewsQuery(pageParam);
       },
       queryKey: ["news"],
+      staleTime: 0,
       // pagination
       getNextPageParam: (lastPage, __, lastPageParameter) => {
         if (lastPageParameter < lastPage.pagination.totalPages) {

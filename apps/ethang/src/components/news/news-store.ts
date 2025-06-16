@@ -24,6 +24,7 @@ class NewsStore extends BaseStore<typeof initialState> {
         return this.getNewsQuery(page);
       },
       queryKey: ["news", page],
+      staleTime: 0,
     });
   }
 
