@@ -29,6 +29,7 @@ export type NewsMinAggregateOutputType = {
   published: Date | null
   quote: string | null
   title: string | null
+  youtubeVideoId: string | null
 }
 
 export type NewsMaxAggregateOutputType = {
@@ -37,6 +38,7 @@ export type NewsMaxAggregateOutputType = {
   published: Date | null
   quote: string | null
   title: string | null
+  youtubeVideoId: string | null
 }
 
 export type NewsCountAggregateOutputType = {
@@ -45,6 +47,7 @@ export type NewsCountAggregateOutputType = {
   published: number
   quote: number
   title: number
+  youtubeVideoId: number
   _all: number
 }
 
@@ -55,6 +58,7 @@ export type NewsMinAggregateInputType = {
   published?: true
   quote?: true
   title?: true
+  youtubeVideoId?: true
 }
 
 export type NewsMaxAggregateInputType = {
@@ -63,6 +67,7 @@ export type NewsMaxAggregateInputType = {
   published?: true
   quote?: true
   title?: true
+  youtubeVideoId?: true
 }
 
 export type NewsCountAggregateInputType = {
@@ -71,6 +76,7 @@ export type NewsCountAggregateInputType = {
   published?: true
   quote?: true
   title?: true
+  youtubeVideoId?: true
   _all?: true
 }
 
@@ -152,6 +158,7 @@ export type NewsGroupByOutputType = {
   published: Date
   quote: string | null
   title: string
+  youtubeVideoId: string | null
   _count: NewsCountAggregateOutputType | null
   _min: NewsMinAggregateOutputType | null
   _max: NewsMaxAggregateOutputType | null
@@ -181,7 +188,7 @@ export type NewsWhereInput = {
   published?: Prisma.DateTimeFilter<"News"> | Date | string
   quote?: Prisma.StringNullableFilter<"News"> | string | null
   title?: Prisma.StringFilter<"News"> | string
-  youtubeVideo?: Prisma.XOR<Prisma.YouTubeVideoNullableScalarRelationFilter, Prisma.YouTubeVideoWhereInput> | null
+  youtubeVideoId?: Prisma.StringNullableFilter<"News"> | string | null
 }
 
 export type NewsOrderByWithRelationInput = {
@@ -190,7 +197,7 @@ export type NewsOrderByWithRelationInput = {
   published?: Prisma.SortOrder
   quote?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
-  youtubeVideo?: Prisma.YouTubeVideoOrderByWithRelationInput
+  youtubeVideoId?: Prisma.SortOrderInput | Prisma.SortOrder
 }
 
 export type NewsWhereUniqueInput = Prisma.AtLeast<{
@@ -202,7 +209,7 @@ export type NewsWhereUniqueInput = Prisma.AtLeast<{
   published?: Prisma.DateTimeFilter<"News"> | Date | string
   quote?: Prisma.StringNullableFilter<"News"> | string | null
   title?: Prisma.StringFilter<"News"> | string
-  youtubeVideo?: Prisma.XOR<Prisma.YouTubeVideoNullableScalarRelationFilter, Prisma.YouTubeVideoWhereInput> | null
+  youtubeVideoId?: Prisma.StringNullableFilter<"News"> | string | null
 }, "id">
 
 export type NewsOrderByWithAggregationInput = {
@@ -211,6 +218,7 @@ export type NewsOrderByWithAggregationInput = {
   published?: Prisma.SortOrder
   quote?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
+  youtubeVideoId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.NewsCountOrderByAggregateInput
   _max?: Prisma.NewsMaxOrderByAggregateInput
   _min?: Prisma.NewsMinOrderByAggregateInput
@@ -225,6 +233,7 @@ export type NewsScalarWhereWithAggregatesInput = {
   published?: Prisma.DateTimeWithAggregatesFilter<"News"> | Date | string
   quote?: Prisma.StringNullableWithAggregatesFilter<"News"> | string | null
   title?: Prisma.StringWithAggregatesFilter<"News"> | string
+  youtubeVideoId?: Prisma.StringNullableWithAggregatesFilter<"News"> | string | null
 }
 
 export type NewsCreateInput = {
@@ -233,7 +242,7 @@ export type NewsCreateInput = {
   published: Date | string
   quote?: string | null
   title: string
-  youtubeVideo?: Prisma.YouTubeVideoCreateNestedOneWithoutNewsInput
+  youtubeVideoId?: string | null
 }
 
 export type NewsUncheckedCreateInput = {
@@ -242,7 +251,7 @@ export type NewsUncheckedCreateInput = {
   published: Date | string
   quote?: string | null
   title: string
-  youtubeVideo?: Prisma.YouTubeVideoUncheckedCreateNestedOneWithoutNewsInput
+  youtubeVideoId?: string | null
 }
 
 export type NewsUpdateInput = {
@@ -251,7 +260,7 @@ export type NewsUpdateInput = {
   published?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  youtubeVideo?: Prisma.YouTubeVideoUpdateOneWithoutNewsNestedInput
+  youtubeVideoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NewsUncheckedUpdateInput = {
@@ -260,7 +269,7 @@ export type NewsUncheckedUpdateInput = {
   published?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  youtubeVideo?: Prisma.YouTubeVideoUncheckedUpdateOneWithoutNewsNestedInput
+  youtubeVideoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NewsCreateManyInput = {
@@ -269,6 +278,7 @@ export type NewsCreateManyInput = {
   published: Date | string
   quote?: string | null
   title: string
+  youtubeVideoId?: string | null
 }
 
 export type NewsUpdateManyMutationInput = {
@@ -277,6 +287,7 @@ export type NewsUpdateManyMutationInput = {
   published?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  youtubeVideoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NewsUncheckedUpdateManyInput = {
@@ -285,6 +296,7 @@ export type NewsUncheckedUpdateManyInput = {
   published?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  youtubeVideoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NewsCountOrderByAggregateInput = {
@@ -293,6 +305,7 @@ export type NewsCountOrderByAggregateInput = {
   published?: Prisma.SortOrder
   quote?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  youtubeVideoId?: Prisma.SortOrder
 }
 
 export type NewsMaxOrderByAggregateInput = {
@@ -301,6 +314,7 @@ export type NewsMaxOrderByAggregateInput = {
   published?: Prisma.SortOrder
   quote?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  youtubeVideoId?: Prisma.SortOrder
 }
 
 export type NewsMinOrderByAggregateInput = {
@@ -309,77 +323,11 @@ export type NewsMinOrderByAggregateInput = {
   published?: Prisma.SortOrder
   quote?: Prisma.SortOrder
   title?: Prisma.SortOrder
-}
-
-export type NewsScalarRelationFilter = {
-  is?: Prisma.NewsWhereInput
-  isNot?: Prisma.NewsWhereInput
+  youtubeVideoId?: Prisma.SortOrder
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
-}
-
-export type NewsCreateNestedOneWithoutYoutubeVideoInput = {
-  create?: Prisma.XOR<Prisma.NewsCreateWithoutYoutubeVideoInput, Prisma.NewsUncheckedCreateWithoutYoutubeVideoInput>
-  connectOrCreate?: Prisma.NewsCreateOrConnectWithoutYoutubeVideoInput
-  connect?: Prisma.NewsWhereUniqueInput
-}
-
-export type NewsUpdateOneRequiredWithoutYoutubeVideoNestedInput = {
-  create?: Prisma.XOR<Prisma.NewsCreateWithoutYoutubeVideoInput, Prisma.NewsUncheckedCreateWithoutYoutubeVideoInput>
-  connectOrCreate?: Prisma.NewsCreateOrConnectWithoutYoutubeVideoInput
-  upsert?: Prisma.NewsUpsertWithoutYoutubeVideoInput
-  connect?: Prisma.NewsWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.NewsUpdateToOneWithWhereWithoutYoutubeVideoInput, Prisma.NewsUpdateWithoutYoutubeVideoInput>, Prisma.NewsUncheckedUpdateWithoutYoutubeVideoInput>
-}
-
-export type NewsCreateWithoutYoutubeVideoInput = {
-  id?: string
-  href: string
-  published: Date | string
-  quote?: string | null
-  title: string
-}
-
-export type NewsUncheckedCreateWithoutYoutubeVideoInput = {
-  id?: string
-  href: string
-  published: Date | string
-  quote?: string | null
-  title: string
-}
-
-export type NewsCreateOrConnectWithoutYoutubeVideoInput = {
-  where: Prisma.NewsWhereUniqueInput
-  create: Prisma.XOR<Prisma.NewsCreateWithoutYoutubeVideoInput, Prisma.NewsUncheckedCreateWithoutYoutubeVideoInput>
-}
-
-export type NewsUpsertWithoutYoutubeVideoInput = {
-  update: Prisma.XOR<Prisma.NewsUpdateWithoutYoutubeVideoInput, Prisma.NewsUncheckedUpdateWithoutYoutubeVideoInput>
-  create: Prisma.XOR<Prisma.NewsCreateWithoutYoutubeVideoInput, Prisma.NewsUncheckedCreateWithoutYoutubeVideoInput>
-  where?: Prisma.NewsWhereInput
-}
-
-export type NewsUpdateToOneWithWhereWithoutYoutubeVideoInput = {
-  where?: Prisma.NewsWhereInput
-  data: Prisma.XOR<Prisma.NewsUpdateWithoutYoutubeVideoInput, Prisma.NewsUncheckedUpdateWithoutYoutubeVideoInput>
-}
-
-export type NewsUpdateWithoutYoutubeVideoInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  href?: Prisma.StringFieldUpdateOperationsInput | string
-  published?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  quote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-}
-
-export type NewsUncheckedUpdateWithoutYoutubeVideoInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  href?: Prisma.StringFieldUpdateOperationsInput | string
-  published?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  quote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -390,7 +338,7 @@ export type NewsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   published?: boolean
   quote?: boolean
   title?: boolean
-  youtubeVideo?: boolean | Prisma.News$youtubeVideoArgs<ExtArgs>
+  youtubeVideoId?: boolean
 }, ExtArgs["result"]["news"]>
 
 export type NewsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -399,6 +347,7 @@ export type NewsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   published?: boolean
   quote?: boolean
   title?: boolean
+  youtubeVideoId?: boolean
 }, ExtArgs["result"]["news"]>
 
 export type NewsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -407,6 +356,7 @@ export type NewsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   published?: boolean
   quote?: boolean
   title?: boolean
+  youtubeVideoId?: boolean
 }, ExtArgs["result"]["news"]>
 
 export type NewsSelectScalar = {
@@ -415,26 +365,21 @@ export type NewsSelectScalar = {
   published?: boolean
   quote?: boolean
   title?: boolean
+  youtubeVideoId?: boolean
 }
 
-export type NewsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "href" | "published" | "quote" | "title", ExtArgs["result"]["news"]>
-export type NewsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  youtubeVideo?: boolean | Prisma.News$youtubeVideoArgs<ExtArgs>
-}
-export type NewsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type NewsIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type NewsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "href" | "published" | "quote" | "title" | "youtubeVideoId", ExtArgs["result"]["news"]>
 
 export type $NewsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "News"
-  objects: {
-    youtubeVideo: Prisma.$YouTubeVideoPayload<ExtArgs> | null
-  }
+  objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     href: string
     published: Date
     quote: string | null
     title: string
+    youtubeVideoId: string | null
   }, ExtArgs["result"]["news"]>
   composites: {}
 }
@@ -829,7 +774,6 @@ readonly fields: NewsFieldRefs;
  */
 export interface Prisma__NewsClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  youtubeVideo<T extends Prisma.News$youtubeVideoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.News$youtubeVideoArgs<ExtArgs>>): Prisma.Prisma__YouTubeVideoClient<runtime.Types.Result.GetResult<Prisma.$YouTubeVideoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -864,6 +808,7 @@ export interface NewsFieldRefs {
   readonly published: Prisma.FieldRef<"News", 'DateTime'>
   readonly quote: Prisma.FieldRef<"News", 'String'>
   readonly title: Prisma.FieldRef<"News", 'String'>
+  readonly youtubeVideoId: Prisma.FieldRef<"News", 'String'>
 }
     
 
@@ -880,10 +825,6 @@ export type NewsFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the News
    */
   omit?: Prisma.NewsOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NewsInclude<ExtArgs> | null
   /**
    * Filter, which News to fetch.
    */
@@ -903,10 +844,6 @@ export type NewsFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.NewsOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NewsInclude<ExtArgs> | null
-  /**
    * Filter, which News to fetch.
    */
   where: Prisma.NewsWhereUniqueInput
@@ -924,10 +861,6 @@ export type NewsFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the News
    */
   omit?: Prisma.NewsOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NewsInclude<ExtArgs> | null
   /**
    * Filter, which News to fetch.
    */
@@ -977,10 +910,6 @@ export type NewsFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.NewsOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NewsInclude<ExtArgs> | null
-  /**
    * Filter, which News to fetch.
    */
   where?: Prisma.NewsWhereInput
@@ -1029,10 +958,6 @@ export type NewsFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   omit?: Prisma.NewsOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NewsInclude<ExtArgs> | null
-  /**
    * Filter, which News to fetch.
    */
   where?: Prisma.NewsWhereInput
@@ -1075,10 +1000,6 @@ export type NewsCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the News
    */
   omit?: Prisma.NewsOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NewsInclude<ExtArgs> | null
   /**
    * The data needed to create a News.
    */
@@ -1125,10 +1046,6 @@ export type NewsUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the News
    */
   omit?: Prisma.NewsOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NewsInclude<ExtArgs> | null
   /**
    * The data needed to update a News.
    */
@@ -1196,10 +1113,6 @@ export type NewsUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.NewsOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NewsInclude<ExtArgs> | null
-  /**
    * The filter to search for the News to update in case it exists.
    */
   where: Prisma.NewsWhereUniqueInput
@@ -1226,10 +1139,6 @@ export type NewsDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.NewsOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NewsInclude<ExtArgs> | null
-  /**
    * Filter which News to delete.
    */
   where: Prisma.NewsWhereUniqueInput
@@ -1250,25 +1159,6 @@ export type NewsDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * News.youtubeVideo
- */
-export type News$youtubeVideoArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the YouTubeVideo
-   */
-  select?: Prisma.YouTubeVideoSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the YouTubeVideo
-   */
-  omit?: Prisma.YouTubeVideoOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.YouTubeVideoInclude<ExtArgs> | null
-  where?: Prisma.YouTubeVideoWhereInput
-}
-
-/**
  * News without action
  */
 export type NewsDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1280,8 +1170,4 @@ export type NewsDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the News
    */
   omit?: Prisma.NewsOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NewsInclude<ExtArgs> | null
 }

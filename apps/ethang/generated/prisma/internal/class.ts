@@ -26,10 +26,10 @@ const config: runtime.GetPrismaClientConfig = {
       "fromEnvVar": null
     },
     "config": {
-      "moduleFormat": "esm",
       "runtime": "cloudflare",
-      "generatedFileExtension": "ts",
       "importFileExtension": "ts",
+      "moduleFormat": "esm",
+      "generatedFileExtension": "ts",
       "engineType": "client"
     },
     "binaryTargets": [
@@ -62,8 +62,8 @@ const config: runtime.GetPrismaClientConfig = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider               = \"prisma-client\"\n  output                 = \"../generated/prisma\"\n  previewFeatures        = [\"driverAdapters\", \"queryCompiler\"]\n  generatedFileExtension = \"ts\"\n  importFileExtension    = \"ts\"\n  moduleFormat           = \"esm\"\n  runtime                = \"cloudflare\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Project {\n  id          String  @id @default(uuid(7))\n  code        String  @unique\n  description String\n  title       String  @unique\n  publicUrl   String? @unique\n\n  techs Tech[]\n}\n\nmodel Tech {\n  id   String @id @default(uuid(7))\n  name String @unique\n\n  projects Project[]\n}\n\nmodel News {\n  id        String   @id @default(uuid(7))\n  href      String\n  published DateTime\n  quote     String?\n  title     String\n\n  youtubeVideo YouTubeVideo?\n}\n\nmodel YouTubeVideo {\n  id      String @id @default(uuid(7))\n  videoId String @unique\n  title   String\n  url     String @unique\n\n  newsId String @unique\n  news   News   @relation(fields: [newsId], references: [id])\n}\n",
-  "inlineSchemaHash": "5fbc8fcc60095ce905d2092946c3d4d270c0060c5169efe8f3bb63a2a0c57d1c",
+  "inlineSchema": "generator client {\n  provider               = \"prisma-client\"\n  output                 = \"../generated/prisma\"\n  previewFeatures        = [\"driverAdapters\", \"queryCompiler\"]\n  generatedFileExtension = \"ts\"\n  importFileExtension    = \"ts\"\n  moduleFormat           = \"esm\"\n  runtime                = \"cloudflare\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Project {\n  id          String  @id @default(uuid(7))\n  code        String  @unique\n  description String\n  title       String  @unique\n  publicUrl   String? @unique\n\n  techs Tech[]\n}\n\nmodel Tech {\n  id   String @id @default(uuid(7))\n  name String @unique\n\n  projects Project[]\n}\n\nmodel News {\n  id             String   @id @default(uuid(7))\n  href           String\n  published      DateTime\n  quote          String?\n  title          String\n  youtubeVideoId String?\n}\n",
+  "inlineSchemaHash": "d54bb646a36c748131ed914acdc32902bc8f99dfc6dcf009a3916f9c673e08ef",
   "copyEngine": true,
   "runtimeDataModel": {
     "models": {},
@@ -73,7 +73,7 @@ const config: runtime.GetPrismaClientConfig = {
   "dirname": ""
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Project\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"code\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"publicUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"techs\",\"kind\":\"object\",\"type\":\"Tech\",\"relationName\":\"ProjectToTech\"}],\"dbName\":null},\"Tech\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"projects\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToTech\"}],\"dbName\":null},\"News\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"href\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"published\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"quote\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"youtubeVideo\",\"kind\":\"object\",\"type\":\"YouTubeVideo\",\"relationName\":\"NewsToYouTubeVideo\"}],\"dbName\":null},\"YouTubeVideo\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"videoId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"url\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"newsId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"news\",\"kind\":\"object\",\"type\":\"News\",\"relationName\":\"NewsToYouTubeVideo\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Project\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"code\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"publicUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"techs\",\"kind\":\"object\",\"type\":\"Tech\",\"relationName\":\"ProjectToTech\"}],\"dbName\":null},\"Tech\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"projects\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToTech\"}],\"dbName\":null},\"News\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"href\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"published\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"quote\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"youtubeVideoId\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 config.engineWasm = undefined
 config.compilerWasm = {
   getRuntime: async () => await import("@prisma/client/runtime/query_compiler_bg.sqlite.mjs"),
@@ -258,16 +258,6 @@ export interface PrismaClient<
     * ```
     */
   get news(): Prisma.NewsDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.youTubeVideo`: Exposes CRUD operations for the **YouTubeVideo** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more YouTubeVideos
-    * const youTubeVideos = await prisma.youTubeVideo.findMany()
-    * ```
-    */
-  get youTubeVideo(): Prisma.YouTubeVideoDelegate<ExtArgs, ClientOptions>;
 }
 
 export function getPrismaClientClass(dirname: string): PrismaClientConstructor {

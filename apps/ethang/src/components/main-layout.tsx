@@ -16,6 +16,7 @@ import { globalStore } from "../stores/global-store.ts";
 
 const links = [
   { href: "/", label: "Home" },
+  { href: "/tips", label: "Tips" },
   { href: "/projects", label: "Projects" },
   { href: "/courses", label: "Courses" },
   { href: "/news", label: "News" },

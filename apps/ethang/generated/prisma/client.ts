@@ -50,10 +50,5 @@ export type Tech = Prisma.TechModel
  * 
  */
 export type News = Prisma.NewsModel
-/**
- * Model YouTubeVideo
- * 
- */
-export type YouTubeVideo = Prisma.YouTubeVideoModel
 
 

@@ -15,6 +15,9 @@ import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TipsIndexRouteImport } from './routes/tips/index'
+import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar-gutter'
+import { Route as TipsFineGrainedReactRendersRouteImport } from './routes/tips/fine-grained-react-renders'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
@@ -36,18 +39,40 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TipsIndexRoute = TipsIndexRouteImport.update({
+  id: '/tips/',
+  path: '/tips/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TipsScrollbarGutterRoute = TipsScrollbarGutterRouteImport.update({
+  id: '/tips/scrollbar-gutter',
+  path: '/tips/scrollbar-gutter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TipsFineGrainedReactRendersRoute =
+  TipsFineGrainedReactRendersRouteImport.update({
+    id: '/tips/fine-grained-react-renders',
+    path: '/tips/fine-grained-react-renders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/courses': typeof CoursesRoute
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
+  '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
+  '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
+  '/tips': typeof TipsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/courses': typeof CoursesRoute
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
+  '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
+  '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
+  '/tips': typeof TipsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -55,13 +80,38 @@ export interface FileRoutesById {
   '/courses': typeof CoursesRoute
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
+  '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
+  '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
+  '/tips/': typeof TipsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/courses' | '/news' | '/projects'
+  fullPaths:
+    | '/'
+    | '/courses'
+    | '/news'
+    | '/projects'
+    | '/tips/fine-grained-react-renders'
+    | '/tips/scrollbar-gutter'
+    | '/tips'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/courses' | '/news' | '/projects'
-  id: '__root__' | '/' | '/courses' | '/news' | '/projects'
+  to:
+    | '/'
+    | '/courses'
+    | '/news'
+    | '/projects'
+    | '/tips/fine-grained-react-renders'
+    | '/tips/scrollbar-gutter'
+    | '/tips'
+  id:
+    | '__root__'
+    | '/'
+    | '/courses'
+    | '/news'
+    | '/projects'
+    | '/tips/fine-grained-react-renders'
+    | '/tips/scrollbar-gutter'
+    | '/tips/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -69,6 +119,9 @@ export interface RootRouteChildren {
   CoursesRoute: typeof CoursesRoute
   NewsRoute: typeof NewsRoute
   ProjectsRoute: typeof ProjectsRoute
+  TipsFineGrainedReactRendersRoute: typeof TipsFineGrainedReactRendersRoute
+  TipsScrollbarGutterRoute: typeof TipsScrollbarGutterRoute
+  TipsIndexRoute: typeof TipsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +152,27 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tips/fine-grained-react-renders': {
+      id: '/tips/fine-grained-react-renders'
+      path: '/tips/fine-grained-react-renders'
+      fullPath: '/tips/fine-grained-react-renders'
+      preLoaderRoute: typeof TipsFineGrainedReactRendersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tips/scrollbar-gutter': {
+      id: '/tips/scrollbar-gutter'
+      path: '/tips/scrollbar-gutter'
+      fullPath: '/tips/scrollbar-gutter'
+      preLoaderRoute: typeof TipsScrollbarGutterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tips/': {
+      id: '/tips/'
+      path: '/tips'
+      fullPath: '/tips'
+      preLoaderRoute: typeof TipsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -140,12 +214,42 @@ declare module './routes/projects' {
     FileRoutesByPath['/projects']['fullPath']
   >
 }
+declare module './routes/tips/fine-grained-react-renders' {
+  const createFileRoute: CreateFileRoute<
+    '/tips/fine-grained-react-renders',
+    FileRoutesByPath['/tips/fine-grained-react-renders']['parentRoute'],
+    FileRoutesByPath['/tips/fine-grained-react-renders']['id'],
+    FileRoutesByPath['/tips/fine-grained-react-renders']['path'],
+    FileRoutesByPath['/tips/fine-grained-react-renders']['fullPath']
+  >
+}
+declare module './routes/tips/scrollbar-gutter' {
+  const createFileRoute: CreateFileRoute<
+    '/tips/scrollbar-gutter',
+    FileRoutesByPath['/tips/scrollbar-gutter']['parentRoute'],
+    FileRoutesByPath['/tips/scrollbar-gutter']['id'],
+    FileRoutesByPath['/tips/scrollbar-gutter']['path'],
+    FileRoutesByPath['/tips/scrollbar-gutter']['fullPath']
+  >
+}
+declare module './routes/tips/index' {
+  const createFileRoute: CreateFileRoute<
+    '/tips/',
+    FileRoutesByPath['/tips/']['parentRoute'],
+    FileRoutesByPath['/tips/']['id'],
+    FileRoutesByPath['/tips/']['path'],
+    FileRoutesByPath['/tips/']['fullPath']
+  >
+}
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CoursesRoute: CoursesRoute,
   NewsRoute: NewsRoute,
   ProjectsRoute: ProjectsRoute,
+  TipsFineGrainedReactRendersRoute: TipsFineGrainedReactRendersRoute,
+  TipsScrollbarGutterRoute: TipsScrollbarGutterRoute,
+  TipsIndexRoute: TipsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

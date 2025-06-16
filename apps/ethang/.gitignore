@@ -28,3 +28,4 @@ dist-ssr
 .dev.vars*
 
 /src/generated/prisma
+.tanstack

@@ -31,21 +31,10 @@ model Tech {
 }
 
 model News {
-  id        String   @id @default(uuid(7))
-  href      String
-  published DateTime
-  quote     String?
-  title     String
-
-  youtubeVideo YouTubeVideo?
-}
-
-model YouTubeVideo {
-  id      String @id @default(uuid(7))
-  videoId String @unique
-  title   String
-  url     String @unique
-
-  newsId String @unique
-  news   News   @relation(fields: [newsId], references: [id])
+  id             String   @id @default(uuid(7))
+  href           String
+  published      DateTime
+  quote          String?
+  title          String
+  youtubeVideoId String?
 }

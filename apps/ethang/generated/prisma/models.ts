@@ -10,5 +10,4 @@
 export type * from './models/Project.ts'
 export type * from './models/Tech.ts'
 export type * from './models/News.ts'
-export type * from './models/YouTubeVideo.ts'
 export type * from './commonInputTypes.ts'

@@ -1,7 +1,7 @@
 import startsWith from "lodash/startsWith.js";
 
-import { getAllNews } from "./projects/get-all-news.ts";
-import { getAllProjects } from "./projects/get-all-projects.ts";
+import { getAllNews } from "./queries/get-all-news.ts";
+import { getAllProjects } from "./queries/get-all-projects.ts";
 
 export default {
   async fetch(request, environment) {

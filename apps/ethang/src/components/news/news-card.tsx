@@ -51,11 +51,8 @@ export const NewsCard = ({ id, page }: Readonly<NewCardProperties>) => {
             &ldquo;{data.quote}&rdquo;
           </TypographyBlockquote>
         )}
-        {!isNil(data.youtubeVideo) && (
-          <LiteYouTubeEmbed
-            id={data.youtubeVideo.videoId}
-            title={data.youtubeVideo.title}
-          />
+        {!isNil(data.youtubeVideoId) && (
+          <LiteYouTubeEmbed id={data.youtubeVideoId} title={data.title} />
         )}
       </CardBody>
     </Card>
