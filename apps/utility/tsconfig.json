@@ -1,6 +1,0 @@
-{
-	"compilerOptions": {
-		"strict": false
-	},
-	"extends": ["../../packages/tsconfig/tsconfig.base.json"],
-}
