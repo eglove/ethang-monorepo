@@ -11,7 +11,7 @@ export const NewsSummary = () => {
   const { data, isPending } = useQuery(newsStore.getNews(3));
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-4 max-w-[65ch] mx-auto">
       <TypographyH1 className="flex items-center gap-2">
         <NewspaperIcon /> News
       </TypographyH1>
