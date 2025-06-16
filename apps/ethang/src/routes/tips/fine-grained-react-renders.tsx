@@ -16,9 +16,9 @@ const RouteComponent = () => {
             <TypographyP>
               Reactivity is a complex subject. React's architecture takes a hard
               opinion against fine-grained reactivity favoring the server side
-              approaches taken at Meta with Relay. This example is only meant to
-              get as close as possible. You can read more about reactivity
-              below:
+              approaches taken at Meta with Relay and more recently with NextJS
+              and RSC. This example is only meant to get as close as possible.
+              You can read more about reactivity below:
             </TypographyP>
             <TypographyList>
               <li>

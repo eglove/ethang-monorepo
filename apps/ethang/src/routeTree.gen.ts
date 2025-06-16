@@ -17,6 +17,7 @@ import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TipsIndexRouteImport } from './routes/tips/index'
 import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar-gutter'
+import { Route as TipsScrollContainersRouteImport } from './routes/tips/scroll-containers'
 import { Route as TipsFineGrainedReactRendersRouteImport } from './routes/tips/fine-grained-react-renders'
 
 const ProjectsRoute = ProjectsRouteImport.update({
@@ -49,6 +50,11 @@ const TipsScrollbarGutterRoute = TipsScrollbarGutterRouteImport.update({
   path: '/tips/scrollbar-gutter',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TipsScrollContainersRoute = TipsScrollContainersRouteImport.update({
+  id: '/tips/scroll-containers',
+  path: '/tips/scroll-containers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TipsFineGrainedReactRendersRoute =
   TipsFineGrainedReactRendersRouteImport.update({
     id: '/tips/fine-grained-react-renders',
@@ -62,6 +68,7 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
+  '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
   '/tips': typeof TipsIndexRoute
 }
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
+  '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
   '/tips': typeof TipsIndexRoute
 }
@@ -81,6 +89,7 @@ export interface FileRoutesById {
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
+  '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
   '/tips/': typeof TipsIndexRoute
 }
@@ -92,6 +101,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/projects'
     | '/tips/fine-grained-react-renders'
+    | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
     | '/tips'
   fileRoutesByTo: FileRoutesByTo
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/projects'
     | '/tips/fine-grained-react-renders'
+    | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
     | '/tips'
   id:
@@ -110,6 +121,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/projects'
     | '/tips/fine-grained-react-renders'
+    | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
     | '/tips/'
   fileRoutesById: FileRoutesById
@@ -120,6 +132,7 @@ export interface RootRouteChildren {
   NewsRoute: typeof NewsRoute
   ProjectsRoute: typeof ProjectsRoute
   TipsFineGrainedReactRendersRoute: typeof TipsFineGrainedReactRendersRoute
+  TipsScrollContainersRoute: typeof TipsScrollContainersRoute
   TipsScrollbarGutterRoute: typeof TipsScrollbarGutterRoute
   TipsIndexRoute: typeof TipsIndexRoute
 }
@@ -159,6 +172,13 @@ declare module '@tanstack/react-router' {
       path: '/tips/fine-grained-react-renders'
       fullPath: '/tips/fine-grained-react-renders'
       preLoaderRoute: typeof TipsFineGrainedReactRendersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tips/scroll-containers': {
+      id: '/tips/scroll-containers'
+      path: '/tips/scroll-containers'
+      fullPath: '/tips/scroll-containers'
+      preLoaderRoute: typeof TipsScrollContainersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tips/scrollbar-gutter': {
@@ -223,6 +243,15 @@ declare module './routes/tips/fine-grained-react-renders' {
     FileRoutesByPath['/tips/fine-grained-react-renders']['fullPath']
   >
 }
+declare module './routes/tips/scroll-containers' {
+  const createFileRoute: CreateFileRoute<
+    '/tips/scroll-containers',
+    FileRoutesByPath['/tips/scroll-containers']['parentRoute'],
+    FileRoutesByPath['/tips/scroll-containers']['id'],
+    FileRoutesByPath['/tips/scroll-containers']['path'],
+    FileRoutesByPath['/tips/scroll-containers']['fullPath']
+  >
+}
 declare module './routes/tips/scrollbar-gutter' {
   const createFileRoute: CreateFileRoute<
     '/tips/scrollbar-gutter',
@@ -248,6 +277,7 @@ const rootRouteChildren: RootRouteChildren = {
   NewsRoute: NewsRoute,
   ProjectsRoute: ProjectsRoute,
   TipsFineGrainedReactRendersRoute: TipsFineGrainedReactRendersRoute,
+  TipsScrollContainersRoute: TipsScrollContainersRoute,
   TipsScrollbarGutterRoute: TipsScrollbarGutterRoute,
   TipsIndexRoute: TipsIndexRoute,
 }

@@ -10,6 +10,10 @@ export const allTips = [
     href: "/tips/fine-grained-react-renders",
     title: "Fine Grained React Renders",
   },
+  {
+    href: "/tips/scroll-containers",
+    title: "Easy Sticky Header/Footer",
+  },
   { href: "/tips/scrollbar-gutter", title: "scrollbar-gutter" },
 ];
 
@@ -20,7 +24,7 @@ const RouteComponent = () => {
       <TypographyList>
         {map(allTips, (tip) => {
           return (
-            <li>
+            <li key={tip.title}>
               <Link
                 className="text-foreground"
                 href={tip.href}
