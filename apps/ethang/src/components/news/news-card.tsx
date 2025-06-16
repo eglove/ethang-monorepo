@@ -10,12 +10,12 @@ import { newsStore } from "./news-store.ts";
 
 type NewCardProperties = {
   id: string;
-  limit?: number;
+  page?: number;
 };
 
-export const NewsCard = ({ id, limit }: Readonly<NewCardProperties>) => {
+export const NewsCard = ({ id, page }: Readonly<NewCardProperties>) => {
   const { data, isPending } = useQuery({
-    ...newsStore.getNews(limit),
+    ...newsStore.getNews(page),
     select: (_data) => {
       return find(_data.news, { id });
     },
