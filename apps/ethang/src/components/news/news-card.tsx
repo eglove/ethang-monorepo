@@ -48,7 +48,7 @@ export const NewsCard = ({ id, page }: Readonly<NewCardProperties>) => {
       <CardBody>
         {!isNil(data.quote) && (
           <TypographyBlockquote className="mt-0">
-            &ldquo;{data.quote}&rdquo;
+            {data.quote}
           </TypographyBlockquote>
         )}
         {!isNil(data.youtubeVideoId) && (

@@ -14,7 +14,7 @@ export const getAllNews = async (request: Request, environment: Env) => {
   const total = await prisma.news.count();
 
   const prismaData = await prisma.news.findMany({
-    orderBy: { published: "desc" },
+    orderBy: [{ published: "desc" }, { id: "desc" }],
     skip: offset,
     take: limit,
   });
