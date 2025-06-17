@@ -12,7 +12,7 @@ import { jsonRules } from "../setup/json.ts";
 import { lodashRules } from "../setup/lodash.ts";
 import { markdownRules } from "../setup/markdown.ts";
 import { perfectionistRules } from "../setup/perfectionist.ts";
-import { effectRules, reactHookRules, reactRules } from "../setup/react.ts";
+import { reactHookRules, reactRules } from "../setup/react.ts";
 import { solidRules } from "../setup/solid.ts";
 import { sonarRules } from "../setup/sonar.ts";
 import { storybookRules } from "../setup/storybook.js";
@@ -241,16 +241,6 @@ export const ruleList: RuleConfig[] = [
     pluginValue: "reactHooks",
     type: "react",
     url: "https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks",
-  },
-  {
-    importString:
-      'import reactEffect from "eslint-plugin-react-you-might-not-need-an-effect";',
-    list: effectRules,
-    name: "react-you-might-not-need-an-effect",
-    pluginName: "react-you-might-not-need-an-effect",
-    pluginValue: "reactEffect",
-    type: "react",
-    url: "https://github.com/NickvanDyke/eslint-plugin-react-you-might-not-need-an-effect",
   },
   {
     importString: 'import solid from "eslint-plugin-solid";',

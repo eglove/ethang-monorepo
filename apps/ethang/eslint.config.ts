@@ -13,6 +13,7 @@ export default tseslint.config(
       ".tanstack",
       "src/routeTree.gen.ts",
       "generated",
+      "wrangler.jsonc",
     ],
   },
   ...config,

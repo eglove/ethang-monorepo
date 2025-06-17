@@ -5,8 +5,8 @@
 > [!CAUTION]
 > Prettier is already included for styling!
 
-- 781 errored rules.
-- 239 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
+- 779 errored rules.
+- 237 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
 - 143 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
 - 123 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
 - 107 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
@@ -24,18 +24,17 @@
 
 # Add Even More!
 
-- 74 rules for **Angular**
+- 76 rules for **Angular**
   - `import angularConfig from "@ethang/eslint-config/config.angular.js";`
-    - 43 rules from [@angular-eslint/eslint-plugin](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md)
+    - 45 rules from [@angular-eslint/eslint-plugin](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md)
     - 31 rules from [@angular-eslint/eslint-plugin-template](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md)
 - 52 rules for **Astro**
   - `import astroConfig from "@ethang/eslint-config/config.astro.js";`
     - 52 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)
-- 101 rules for **React**
+- 100 rules for **React**
   - `import reactConfig from "@ethang/eslint-config/config.react.js";`
     - 98 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
     - 2 rules from [eslint-plugin-react-hooks](https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks)
-    - 1 rules from [react-you-might-not-need-an-effect](https://github.com/NickvanDyke/eslint-plugin-react-you-might-not-need-an-effect)
 - 18 rules for **Solid**
   - `import solidConfig from "@ethang/eslint-config/config.solid.js";`
     - 18 rules from [eslint-plugin-solid](https://github.com/solidjs-community/eslint-plugin-solid)

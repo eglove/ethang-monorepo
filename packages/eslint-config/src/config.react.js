@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { ignores, languageOptions } from "./constants.js";
 import react from "@eslint-react/eslint-plugin";
-import reactEffect from "eslint-plugin-react-you-might-not-need-an-effect";
 import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
@@ -15,7 +14,6 @@ export default tseslint.config({
   plugins: {
     react: react,
     "react-hooks": reactHooks,
-    "react-you-might-not-need-an-effect": reactEffect,
   },
   rules: {
     "react/avoid-shorthand-boolean": "off",
@@ -126,6 +124,5 @@ export default tseslint.config({
     "react/web-api/no-leaked-timeout": "error",
     "react-hooks/exhaustive-deps": "error",
     "react-hooks/rules-of-hooks": "error",
-    "react-you-might-not-need-an-effect/you-might-not-need-an-effect": "error",
   },
 });
