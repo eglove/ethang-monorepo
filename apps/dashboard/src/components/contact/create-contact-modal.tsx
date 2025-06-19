@@ -14,14 +14,18 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
+import { parseZonedDateTime } from "@internationalized/date";
 import { useMutation } from "@tanstack/react-query";
 import forEach from "lodash/forEach";
+import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import set from "lodash/set";
-import { DateTime } from "luxon";
 
-import { getDateTimeInputNow } from "../../../worker/utilities/heroui.ts";
+import {
+  convertDateTimeInputToIso,
+  getDateTimeInputNow,
+} from "../../../worker/utilities/heroui.ts";
 import { contactStore } from "../../stores/contact-store.ts";
 
 export const CreateContactModal = () => {
@@ -51,7 +55,14 @@ export const CreateContactModal = () => {
       }
 
       if ("lastContact" === key || "expectedNextContact" === key) {
-        set(parsed.data, [key], DateTime.fromJSDate(new Date(value)).toISO());
+        const _dateValue = get(parsed, ["data", key]);
+
+        if (!isNil(_dateValue)) {
+          const isoValue = convertDateTimeInputToIso(
+            parseZonedDateTime(_dateValue),
+          );
+          set(parsed.data, [key], isoValue);
+        }
       }
     });
 
