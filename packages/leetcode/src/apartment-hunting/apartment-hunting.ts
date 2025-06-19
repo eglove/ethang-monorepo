@@ -2,9 +2,7 @@ import get from "lodash/get.js";
 
 type Block = Record<string, boolean>;
 
-const distanceBetween = (
-  a: number, b: number,
-) => {
+const distanceBetween = (a: number, b: number) => {
   return Math.abs(a - b);
 };
 
@@ -24,15 +22,10 @@ const getIndexAtMinValue = (array: number[]) => {
   return minIndex;
 };
 
-export const apartmentHunting = (
-  blocks: Block[],
-  requirements: string[],
-) => {
-  const maxDistancesAtBlocks = Array.from(
-    { length: blocks.length }, () => {
-      return Number.NEGATIVE_INFINITY;
-    },
-  );
+export const apartmentHunting = (blocks: Block[], requirements: string[]) => {
+  const maxDistancesAtBlocks = Array.from({ length: blocks.length }, () => {
+    return Number.NEGATIVE_INFINITY;
+  });
 
   for (const [index] of blocks.entries()) {
     for (const requirement of requirements) {
@@ -40,21 +33,17 @@ export const apartmentHunting = (
 
       for (const [_index, _block] of blocks.entries()) {
         // eslint-disable-next-line sonar/nested-control-flow
-        if (get(
-          _block, [requirement],
-        )) {
+        if (get(_block, [requirement])) {
           closestRequirementDistance = Math.min(
-            closestRequirementDistance, distanceBetween(
-              index, _index,
-            ),
+            closestRequirementDistance,
+            distanceBetween(index, _index),
           );
         }
       }
 
       maxDistancesAtBlocks[index] = Math.max(
-        get(
-          maxDistancesAtBlocks, [index], Number.NEGATIVE_INFINITY,
-        ), closestRequirementDistance,
+        get(maxDistancesAtBlocks, [index], Number.NEGATIVE_INFINITY),
+        closestRequirementDistance,
       );
     }
   }

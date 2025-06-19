@@ -62,7 +62,7 @@ export const UpdateContactModal = () => {
     };
 
   const { isPending, mutate } = useMutation(
-    contactStore.createContact(user?.id),
+    contactStore.updateContact(user?.id),
   );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
