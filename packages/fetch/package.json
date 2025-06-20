@@ -13,7 +13,7 @@
     "@ethang/eslint-config": "^22.11.0",
     "@ethang/project-builder": "^3.0.2",
     "@total-typescript/ts-reset": "^0.6.1",
-    "@types/lodash": "^4.17.16",
+    "@types/lodash": "^4.17.18",
     "browserslist-config-baseline": "^0.4.0",
     "eslint": "^9.29.0",
     "typescript-eslint": "^8.34.1"

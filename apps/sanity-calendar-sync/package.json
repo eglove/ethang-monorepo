@@ -8,12 +8,12 @@
     "ts-ics": "^2.1.7"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.38",
-    "@types/lodash": "^4.17.16",
+    "@cloudflare/vitest-pool-workers": "^0.8.41",
+    "@types/lodash": "^4.17.18",
     "@types/luxon": "^3.6.2",
     "typescript": "^5.8.3",
-    "vitest": "~3.2.3",
-    "wrangler": "^4.20.0"
+    "vitest": "~3.2.4",
+    "wrangler": "^4.20.3"
   },
   "name": "sanity-calendar-sync",
   "private": true,
