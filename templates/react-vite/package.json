@@ -4,12 +4,12 @@
   ],
   "dependencies": {
     "@ethang/toolbelt": "^4.4.10",
-    "@heroui/react": "2.7.10",
+    "@heroui/react": "2.7.11",
     "@heroui/theme": "2.4.17",
-    "@tanstack/query-async-storage-persister": "^5.80.10",
-    "@tanstack/react-query": "^5.80.10",
-    "@tanstack/react-query-devtools": "^5.80.10",
-    "@tanstack/react-query-persist-client": "^5.80.10",
+    "@tanstack/query-async-storage-persister": "^5.81.2",
+    "@tanstack/react-query": "^5.81.2",
+    "@tanstack/react-query-devtools": "^5.81.2",
+    "@tanstack/react-query-persist-client": "^5.81.2",
     "@tanstack/react-router": "^1.121.27",
     "@tanstack/react-router-devtools": "^1.121.27",
     "d1-orm": "^0.9.2",
@@ -17,7 +17,7 @@
     "framer-motion": "^12.18.1",
     "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.518.0",
+    "lucide-react": "^0.522.0",
     "luxon": "^3.6.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -26,8 +26,8 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.7.2",
-    "@ethang/eslint-config": "^22.11.0",
+    "@cloudflare/vite-plugin": "^1.7.4",
+    "@ethang/eslint-config": "^22.12.0",
     "@tanstack/router-plugin": "^1.121.29",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.18",
@@ -45,7 +45,7 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.34.1",
     "vite": "^6.3.1",
-    "wrangler": "^4.20.3"
+    "wrangler": "^4.20.5"
   },
   "name": "react-vite",
   "private": true,
