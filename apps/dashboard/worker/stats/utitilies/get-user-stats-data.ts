@@ -14,10 +14,10 @@ export const getUserStatsData = async (
   const timezone = isString(request.cf?.timezone) ? request.cf.timezone : "UTC";
 
   const thirtyDaysAgo = DateTime.now()
-    .set({ hour: 0, millisecond: 0, minute: 0, second: 0 })
     .setZone(timezone)
+    .startOf("day")
     .minus({ day: 30 })
-    .toMillis();
+    .toISO();
 
   const allUserApplicationsQuery = `select
   T1.applied,
@@ -25,7 +25,7 @@ export const getUserStatsData = async (
   T2.dateTime AS interviewRounds_dateTime
 from applications as T1
 left join interviewRounds as T2 on T1.id = T2.applicationsId
-WHERE T1.userId = ? AND T1.applied >= ?
+WHERE T1.userId = ? AND date(T1.applied) >= date(?)
 order by
   T1.applied DESC,
   T2.dateTime DESC;
