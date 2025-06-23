@@ -2,7 +2,7 @@ import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
-import type { TooltipProps } from "recharts/types/component/Tooltip";
+import type { TooltipContentProps } from "recharts/types/component/Tooltip";
 
 import get from "lodash/get";
 import isNil from "lodash/isNil";
@@ -10,7 +10,7 @@ import { DateTime } from "luxon";
 
 export const DailyApplicationsChartTooltip = ({
   payload,
-}: Readonly<{ payload: unknown[] } & TooltipProps<ValueType, NameType>>) => {
+}: Readonly<TooltipContentProps<ValueType, NameType>>) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   const data = get(payload, [0, "payload"]) as unknown as
     | {
