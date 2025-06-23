@@ -10,7 +10,7 @@ import { DateTime } from "luxon";
 
 export const DailyApplicationsChartTooltip = ({
   payload,
-}: Readonly<TooltipProps<ValueType, NameType>>) => {
+}: Readonly<{ payload: unknown[] } & TooltipProps<ValueType, NameType>>) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   const data = get(payload, [0, "payload"]) as unknown as
     | {

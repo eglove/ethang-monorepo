@@ -26,10 +26,10 @@ const config: runtime.GetPrismaClientConfig = {
       "fromEnvVar": null
     },
     "config": {
-      "importFileExtension": "ts",
-      "generatedFileExtension": "ts",
       "runtime": "cloudflare",
+      "generatedFileExtension": "ts",
       "moduleFormat": "esm",
+      "importFileExtension": "ts",
       "engineType": "client"
     },
     "binaryTargets": [
