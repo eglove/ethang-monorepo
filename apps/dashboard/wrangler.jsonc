@@ -19,16 +19,4 @@
   "placement": {
     "mode": "smart"
   },
-  "secrets_store_secrets": [
-    {
-      "binding": "clerkPublishableKey",
-      "store_id": "737fce8854f042e4905cb36a696dd3c2",
-      "secret_name": "clerkPublishableKey"
-    },
-    {
-      "binding": "clerkSecretKey",
-      "store_id": "737fce8854f042e4905cb36a696dd3c2",
-      "secret_name": "clerkSecretKey"
-    }
-  ]
 }
