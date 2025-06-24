@@ -1,7 +1,6 @@
 import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 import type { FormEvent } from "react";
 
-import { useUser } from "@clerk/clerk-react";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -17,10 +16,11 @@ import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 import { z } from "zod";
 
+import { authStore } from "../../stores/auth-store.ts";
 import { bookmarkStore } from "../../stores/bookmark-store.ts";
 
 export const UpdateBookmarkModal = () => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
 
   const { bookmark, isOpen } = useStore(bookmarkStore, (state) => {
     return {
@@ -41,7 +41,7 @@ export const UpdateBookmarkModal = () => {
   };
 
   const { isPending, mutate } = useMutation(
-    bookmarkStore.updateBookmark(user?.id),
+    bookmarkStore.updateBookmark(userId ?? undefined),
   );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -50,7 +50,7 @@ export const UpdateBookmarkModal = () => {
       .object({ title: z.string(), url: z.string() })
       .safeParse(Object.fromEntries(new FormData(event.currentTarget)));
 
-    if (isNil(bookmark?.id) || isNil(user?.id) || !parsed.success) {
+    if (isNil(bookmark?.id) || isNil(userId) || !parsed.success) {
       return;
     }
 
@@ -58,7 +58,7 @@ export const UpdateBookmarkModal = () => {
       id: bookmark.id,
       title: parsed.data.title,
       url: parsed.data.url,
-      userId: user.id,
+      userId,
     });
   };
 

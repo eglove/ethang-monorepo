@@ -1,6 +1,5 @@
 import type { FormEvent } from "react";
 
-import { useUser } from "@clerk/clerk-react";
 import { createContactSchema } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 import { useStore } from "@ethang/store/use-store";
 import {
@@ -26,16 +25,17 @@ import {
   convertDateTimeInputToIso,
   getDateTimeInputNow,
 } from "../../../worker/utilities/heroui.ts";
+import { authStore } from "../../stores/auth-store.ts";
 import { contactStore } from "../../stores/contact-store.ts";
 
 export const CreateContactModal = () => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
   const isOpen = useStore(contactStore, (state) => {
     return state.isCreateModalOpen;
   });
 
   const { isPending, mutate } = useMutation(
-    contactStore.createContact(user?.id),
+    contactStore.createContact(userId ?? undefined),
   );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {

@@ -5,12 +5,14 @@
   ],
   "dependencies": {
     "immer": "^10.1.1",
+    "lodash": "^4.17.21",
     "use-sync-external-store": "^1.5.0"
   },
   "description": "Fine grained state management",
   "devDependencies": {
     "@ethang/eslint-config": "^22.13.2",
     "@ethang/project-builder": "^3.0.2",
+    "@types/lodash": "^4.17.18",
     "@types/use-sync-external-store": "^1.5.0",
     "browserslist-config-baseline": "^0.4.0",
     "eslint": "^9.29.0",
@@ -29,5 +31,5 @@
     "test": "vitest run"
   },
   "type": "module",
-  "version": "2.2.6"
+  "version": "2.3.1"
 }

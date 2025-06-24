@@ -1,11 +1,5 @@
+import { useStore } from "@ethang/store/use-store";
 import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/clerk-react";
-import {
-  Button,
   Link,
   Navbar,
   NavbarBrand,
@@ -16,8 +10,16 @@ import {
 } from "@heroui/react";
 import { useState } from "react";
 
+import { authStore } from "../stores/auth-store.ts";
+import { SignInModal } from "./auth/sign-in-modal.tsx";
+
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isSignedIn } = useStore(authStore, (state) => {
+    return {
+      isSignedIn: state.isSignedIn,
+    };
+  });
 
   return (
     <Navbar onMenuOpenChange={setIsMenuOpen}>
@@ -80,16 +82,7 @@ export const Navigation = () => {
         </NavbarItem>
       </NavbarMenu>
       <NavbarContent justify="end">
-        <NavbarItem>
-          <SignedOut>
-            <SignInButton>
-              <Button color="primary">Sign In</Button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </NavbarItem>
+        <NavbarItem>{!isSignedIn && <SignInModal />}</NavbarItem>
       </NavbarContent>
     </Navbar>
   );

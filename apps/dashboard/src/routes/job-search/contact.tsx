@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import {
   getKeyValue,
   Link,
@@ -22,6 +22,7 @@ import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../../components/table-wrapper.tsx";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
+import { authStore } from "../../stores/auth-store.ts";
 import { contactStore } from "../../stores/contact-store.ts";
 
 const columns = [
@@ -35,8 +36,10 @@ const columns = [
 ];
 
 const RouteComponent = () => {
-  const { user } = useUser();
-  const { data, isPending } = useQuery(contactStore.getAll(user?.id));
+  const userId = useStore(authStore, (state) => state.userId);
+  const { data, isPending } = useQuery(
+    contactStore.getAll(userId ?? undefined),
+  );
 
   return (
     <MainLayout
@@ -51,7 +54,7 @@ const RouteComponent = () => {
         }}
         header="Contacts"
         modalLabel="Create Contact"
-        refreshKeys={queryKeys.allContacts(user?.id)}
+        refreshKeys={queryKeys.allContacts(userId ?? undefined)}
       />
       <TableWrapper>
         <Table isHeaderSticky isStriped removeWrapper aria-label="Contacts">

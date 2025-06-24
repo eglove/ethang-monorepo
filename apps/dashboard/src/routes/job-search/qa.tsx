@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import { Accordion, AccordionItem, Button } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -14,11 +14,12 @@ import { QaDeleteButton } from "../../components/qa/qa-delete-button.tsx";
 import { UpdateQaModal } from "../../components/qa/update-qa-modal.tsx";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
+import { authStore } from "../../stores/auth-store.ts";
 import { qaStore } from "../../stores/qa-store.ts";
 
 const RouteComponent = () => {
-  const { user } = useUser();
-  const { data } = useQuery(qaStore.getAll(user?.id));
+  const userId = useStore(authStore, (state) => state.userId);
+  const { data } = useQuery(qaStore.getAll(userId ?? undefined));
 
   return (
     <MainLayout
@@ -33,7 +34,7 @@ const RouteComponent = () => {
         }}
         header="Application Q/A"
         modalLabel="Add Q/A"
-        refreshKeys={queryKeys.allUserQuestionAnswers(user?.id)}
+        refreshKeys={queryKeys.allUserQuestionAnswers(userId ?? undefined)}
       />
       <Accordion isCompact variant="bordered">
         {map(data, (qa) => {

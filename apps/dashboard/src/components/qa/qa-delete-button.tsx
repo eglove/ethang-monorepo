@@ -1,9 +1,10 @@
-import { useUser } from "@clerk/clerk-react";
 import { useToggle } from "@ethang/hooks/use-toggle";
+import { useStore } from "@ethang/store/use-store";
 import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, Trash2Icon, XIcon } from "lucide-react";
 
+import { authStore } from "../../stores/auth-store.ts";
 import { qaStore } from "../../stores/qa-store.ts";
 
 type QaDeleteButtonProperties = {
@@ -11,11 +12,11 @@ type QaDeleteButtonProperties = {
 };
 
 export const QaDeleteButton = ({ id }: Readonly<QaDeleteButtonProperties>) => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
   const [isDeleting, toggleIsDeleting] = useToggle(false);
 
   const { isPending, mutate } = useMutation(
-    qaStore.deleteQa(user?.id, () => {
+    qaStore.deleteQa(userId ?? undefined, () => {
       toggleIsDeleting();
     }),
   );

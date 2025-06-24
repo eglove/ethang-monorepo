@@ -1,8 +1,9 @@
-import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import { useQuery } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 
 import { getStats } from "../../data/queries/stats.ts";
+import { authStore } from "../../stores/auth-store.ts";
 import { TrendCard } from "./trend-card.tsx";
 
 const getStringValue = (
@@ -19,8 +20,8 @@ const getStringValue = (
 };
 
 export const StatsCards = () => {
-  const { user } = useUser();
-  const { data } = useQuery(getStats(user?.id));
+  const userId = useStore(authStore, (state) => state.userId);
+  const { data } = useQuery(getStats(userId ?? undefined));
 
   return (
     <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

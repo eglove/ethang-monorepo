@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import get from "lodash/get.js";
@@ -14,11 +14,12 @@ import {
 } from "recharts";
 
 import { getStats } from "../../data/queries/stats.ts";
+import { authStore } from "../../stores/auth-store.ts";
 import { DailyApplicationsChartTooltip } from "./daily-applications-chart-tooltip.tsx";
 
 export const DailyApplicationsChart = () => {
-  const { user } = useUser();
-  const { data } = useQuery(getStats(user?.id));
+  const userId = useStore(authStore, (state) => state.userId);
+  const { data } = useQuery(getStats(userId ?? undefined));
 
   const applicationsPerDay = orderBy(get(data, ["userDailyApplications"], []), [
     "date",

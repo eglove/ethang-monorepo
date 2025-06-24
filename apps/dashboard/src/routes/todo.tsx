@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import { isNumber } from "@ethang/toolbelt/is/number";
 import {
   getKeyValue,
@@ -24,6 +24,7 @@ import { UpdateDeleteTodo } from "../components/todo/update-delete-todo.tsx";
 import { UpdateTodoModal } from "../components/todo/update-todo-modal.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
 import { SectionHeader } from "../section-header.tsx";
+import { authStore } from "../stores/auth-store.ts";
 import { todoStore } from "../stores/todo-store.ts";
 
 const columns = [
@@ -35,11 +36,11 @@ const columns = [
 ];
 
 const Todo = () => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
 
   const todoTimerStore = useTodoTimerStore();
 
-  const { data, isPending } = useQuery(todoStore.getAll(user?.id));
+  const { data, isPending } = useQuery(todoStore.getAll(userId ?? undefined));
 
   return (
     <MainLayout breadcrumbPaths={[{ href: "/todo", label: "Todo" }]}>
@@ -49,7 +50,7 @@ const Todo = () => {
         }}
         header="Todos"
         modalLabel="Add Todo"
-        refreshKeys={queryKeys.allUserTodos(user?.id)}
+        refreshKeys={queryKeys.allUserTodos(userId ?? undefined)}
       >
         <div className="font-bold underline underline-offset-2 text-center">
           {todoTimerStore.currentTime}

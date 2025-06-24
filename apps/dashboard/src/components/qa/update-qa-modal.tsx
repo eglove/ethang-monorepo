@@ -1,7 +1,6 @@
 import type { QuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
 import type { FormEvent } from "react";
 
-import { useUser } from "@clerk/clerk-react";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -17,10 +16,11 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 
+import { authStore } from "../../stores/auth-store.ts";
 import { qaStore } from "../../stores/qa-store.ts";
 
 export const UpdateQaModal = () => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
   const { isOpen, qa } = useStore(qaStore, (draft) => {
     return {
       isOpen: draft.isUpdateModalOpen,
@@ -39,7 +39,9 @@ export const UpdateQaModal = () => {
     });
   };
 
-  const { isPending, mutate } = useMutation(qaStore.updateQa(user?.id));
+  const { isPending, mutate } = useMutation(
+    qaStore.updateQa(userId ?? undefined),
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

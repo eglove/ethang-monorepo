@@ -1,7 +1,6 @@
 import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 import type { FormEvent } from "react";
 
-import { useUser } from "@clerk/clerk-react";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -22,10 +21,11 @@ import {
   convertIsoToDateTimeInput,
   type DateInputValue,
 } from "../../../worker/utilities/heroui.ts";
+import { authStore } from "../../stores/auth-store.ts";
 import { contactStore } from "../../stores/contact-store.ts";
 
 export const UpdateContactModal = () => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
 
   const { contact, isOpen } = useStore(contactStore, (state) => {
     return {
@@ -62,7 +62,7 @@ export const UpdateContactModal = () => {
     };
 
   const { isPending, mutate } = useMutation(
-    contactStore.updateContact(user?.id),
+    contactStore.updateContact(userId ?? undefined),
   );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {

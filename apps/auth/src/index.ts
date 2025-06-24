@@ -5,6 +5,7 @@ import { zValidator } from "@hono/zod-validator";
 import { PrismaD1 } from "@prisma/adapter-d1";
 import bcrypt from "bcryptjs";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { jwtVerify, SignJWT } from "jose";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
@@ -13,6 +14,7 @@ import convertToString from "lodash/toString.js";
 import { PrismaClient } from "../generated/prisma/client.ts";
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
+app.use("*", cors());
 
 app.post("/sign-up", zValidator("json", signUpSchema), async (context) => {
   const adapter = new PrismaD1(context.env.DB);
@@ -49,7 +51,7 @@ app.post("/sign-up", zValidator("json", signUpSchema), async (context) => {
   }
 
   return createJsonResponse(
-    { email: user.email, username: body.username },
+    { email: user.email, id: user.id, username: user.username },
     "OK",
   );
 });
@@ -115,7 +117,7 @@ app.post("/sign-in", zValidator("json", signInSchema), async (context) => {
     return createJsonResponse({ error: token.message }, "UNAUTHORIZED");
   }
 
-  return createJsonResponse({ token }, "OK");
+  return createJsonResponse({ token, userId: user.id }, "OK");
 });
 
 app.get("/verify", async (context) => {

@@ -1,6 +1,6 @@
 import type { Todo } from "@ethang/schemas/src/dashboard/todo-schema.ts";
 
-import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
@@ -8,6 +8,7 @@ import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
+import { authStore } from "../../stores/auth-store.ts";
 import { todoStore } from "../../stores/todo-store.ts";
 
 type UpdateDeleteTodoProperties = {
@@ -17,7 +18,7 @@ type UpdateDeleteTodoProperties = {
 export const UpdateDeleteTodo = ({
   todo,
 }: Readonly<UpdateDeleteTodoProperties>) => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleStopDeleting = () => {
@@ -25,11 +26,11 @@ export const UpdateDeleteTodo = ({
   };
 
   const { isPending: isDeletePending, mutate: deleteTodo } = useMutation(
-    todoStore.deleteTodo(user?.id, handleStopDeleting),
+    todoStore.deleteTodo(userId ?? undefined, handleStopDeleting),
   );
 
   const { isPending: isCompletePending, mutate: completeTodo } = useMutation(
-    todoStore.completeTodo(user?.id),
+    todoStore.completeTodo(userId ?? undefined),
   );
 
   return (

@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import {
   getKeyValue,
   Link,
@@ -19,6 +19,7 @@ import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../components/table-wrapper.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
 import { SectionHeader } from "../section-header.tsx";
+import { authStore } from "../stores/auth-store.ts";
 import { bookmarkStore } from "../stores/bookmark-store.ts";
 
 const columns = [
@@ -27,10 +28,10 @@ const columns = [
 ];
 
 const BookMarks = () => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
 
   const { data: bookmarks, isPending } = useQuery(
-    bookmarkStore.getAll(user?.id),
+    bookmarkStore.getAll(userId ?? undefined),
   );
 
   return (
@@ -41,7 +42,7 @@ const BookMarks = () => {
         }}
         header="Bookmarks"
         modalLabel="Add Bookmark"
-        refreshKeys={queryKeys.bookmarks(user?.id)}
+        refreshKeys={queryKeys.bookmarks(userId ?? undefined)}
       />
       <TableWrapper>
         <Table isStriped removeWrapper aria-label="Bookmarks">

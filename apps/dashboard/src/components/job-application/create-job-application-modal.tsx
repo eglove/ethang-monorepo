@@ -1,6 +1,5 @@
 import type { FormEvent } from "react";
 
-import { useUser } from "@clerk/clerk-react";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -18,16 +17,17 @@ import { DateTime } from "luxon";
 import { z } from "zod";
 
 import { applicationStore } from "../../stores/application-store.ts";
+import { authStore } from "../../stores/auth-store.ts";
 
 export const CreateJobApplicationModal = () => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
 
   const isCreateModalOpen = useStore(applicationStore, (state) => {
     return state.isCreateModalOpen;
   });
 
   const { isPending, mutate } = useMutation(
-    applicationStore.createApplication(user?.id),
+    applicationStore.createApplication(userId ?? undefined),
   );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -41,7 +41,7 @@ export const CreateJobApplicationModal = () => {
       })
       .safeParse(Object.fromEntries(new FormData(event.currentTarget)));
 
-    if (isNil(user?.id) || !parsed.success) {
+    if (isNil(userId) || !parsed.success) {
       return;
     }
 
@@ -53,7 +53,7 @@ export const CreateJobApplicationModal = () => {
       rejected: null,
       title: parsed.data.title,
       url: parsed.data.url,
-      userId: user.id,
+      userId,
     });
   };
 

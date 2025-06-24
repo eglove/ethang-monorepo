@@ -1,6 +1,9 @@
 import type { Get, Simplify } from "type-fest";
 
 import { enablePatches, type Patch, produce } from "immer";
+import attempt from "lodash/attempt.js";
+import isError from "lodash/isError.js";
+import isNil from "lodash/isNil.js";
 
 enablePatches();
 
@@ -26,6 +29,10 @@ export type StorePatch<State extends object> =
 export type StorePatchLoose = Simplify<Patch>;
 
 type Primitive = boolean | null | number | string | undefined;
+
+type StoreOptions = {
+  localStorageKey?: string;
+};
 
 type ValidDataPathTuple<T> = T extends Primitive
   ? never
@@ -55,11 +62,13 @@ export abstract class BaseStore<State extends object> {
   }
 
   private _controller: AbortController = new AbortController();
+  private readonly _options: StoreOptions | undefined;
   private _state: State;
   private readonly _subscribers = new Set<(draft: State) => void>();
 
-  protected constructor(state: State) {
-    this._state = state;
+  protected constructor(state: State, options?: StoreOptions) {
+    this._options = options;
+    this._state = this.syncLocalStorage(state);
   }
 
   public subscribe(callback: (state: State) => void) {
@@ -81,9 +90,9 @@ export abstract class BaseStore<State extends object> {
   }
 
   protected onFirstSubscriber?(): void;
+
   protected onLastSubscriberRemoved?(): void;
   protected onPropertyChange?(patch: StorePatch<State> | StorePatchLoose): void;
-
   protected update(updater: (draft: State) => void, shouldNotify = true) {
     let patches: StorePatch<State>[] = [];
 
@@ -91,6 +100,7 @@ export abstract class BaseStore<State extends object> {
       // @ts-expect-error making type stricter
       patches = _patches;
     });
+    this.setLocalStorage();
 
     if (shouldNotify && 0 < patches.length) {
       for (const patch of patches) {
@@ -101,5 +111,45 @@ export abstract class BaseStore<State extends object> {
         callback(this._state);
       }
     }
+  }
+
+  private getLocalStorage() {
+    if (isNil(this._options?.localStorageKey)) {
+      return;
+    }
+
+    return globalThis.localStorage.getItem(this._options.localStorageKey);
+  }
+
+  private setLocalStorage(state?: State) {
+    if (!isNil(this._options?.localStorageKey)) {
+      globalThis.localStorage.setItem(
+        this._options.localStorageKey,
+        JSON.stringify(isNil(state) ? this._state : state),
+      );
+    }
+  }
+
+  private syncLocalStorage(state: State) {
+    if (isNil(this._options?.localStorageKey)) {
+      return state;
+    }
+    const storage = this.getLocalStorage();
+
+    if (isNil(storage)) {
+      this.setLocalStorage(state);
+      return state;
+    }
+    const parsed = attempt(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      return JSON.parse(storage) as State;
+    });
+
+    if (isError(parsed)) {
+      this.setLocalStorage(state);
+      return state;
+    }
+
+    return parsed;
   }
 }

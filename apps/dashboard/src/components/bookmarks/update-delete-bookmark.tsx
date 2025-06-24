@@ -1,11 +1,12 @@
 import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
 
-import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
+import { authStore } from "../../stores/auth-store.ts";
 import { bookmarkStore } from "../../stores/bookmark-store.ts";
 
 type UpdateDeleteBookmarkProperties = {
@@ -16,10 +17,10 @@ export const UpdateDeleteBookmark = ({
   bookmark,
 }: Readonly<UpdateDeleteBookmarkProperties>) => {
   const [isDeleting, setIsDeleting] = useState(false);
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
 
   const { isPending, mutate } = useMutation(
-    bookmarkStore.deleteBookmark(user?.id, () => {
+    bookmarkStore.deleteBookmark(userId ?? undefined, () => {
       setIsDeleting(false);
     }),
   );

@@ -1,11 +1,12 @@
 import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
 
-import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
+import { authStore } from "../../stores/auth-store.ts";
 import { contactStore } from "../../stores/contact-store.ts";
 
 type UpdateDeleteContactProperties = {
@@ -15,11 +16,11 @@ type UpdateDeleteContactProperties = {
 export const UpdateDeleteContact = ({
   contact,
 }: Readonly<UpdateDeleteContactProperties>) => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { isPending, mutate } = useMutation(
-    contactStore.deleteContact(user?.id, () => {
+    contactStore.deleteContact(userId ?? undefined, () => {
       setIsDeleting(false);
     }),
   );

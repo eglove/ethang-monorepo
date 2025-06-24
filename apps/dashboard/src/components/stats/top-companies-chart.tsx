@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useStore } from "@ethang/store/use-store";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import get from "lodash/get";
@@ -13,11 +13,12 @@ import {
 } from "recharts";
 
 import { getStats } from "../../data/queries/stats.ts";
+import { authStore } from "../../stores/auth-store.ts";
 import { TopCompaniesChartTooltip } from "./top-companies-chart-tooltip.tsx";
 
 export const TopCompaniesChart = () => {
-  const { user } = useUser();
-  const { data } = useQuery(getStats(user?.id));
+  const userId = useStore(authStore, (state) => state.userId);
+  const { data } = useQuery(getStats(userId ?? undefined));
 
   const topCompanies = get(data, ["topCompanies"], []);
 

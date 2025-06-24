@@ -1,7 +1,6 @@
 import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
 import type { FormEvent } from "react";
 
-import { useUser } from "@clerk/clerk-react";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -28,10 +27,11 @@ import {
   type DateInputValue,
 } from "../../../worker/utilities/heroui.ts";
 import { applicationStore } from "../../stores/application-store.ts";
+import { authStore } from "../../stores/auth-store.ts";
 import { getFormDate } from "../../utilities/form.ts";
 
 export const UpdateJobApplicationModal = () => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
 
   const { applicationToUpdate, isUpdateModalOpen } = useStore(
     applicationStore,
@@ -104,7 +104,7 @@ export const UpdateJobApplicationModal = () => {
     };
 
   const { isPending, mutate } = useMutation(
-    applicationStore.updateApplication(user?.id),
+    applicationStore.updateApplication(userId ?? undefined),
   );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {

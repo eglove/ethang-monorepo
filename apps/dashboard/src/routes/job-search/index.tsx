@@ -1,4 +1,3 @@
-import { useUser } from "@clerk/clerk-react";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -34,6 +33,7 @@ import { TableWrapper } from "../../components/table-wrapper.tsx";
 import { queryKeys } from "../../data/queries/queries.ts";
 import { SectionHeader } from "../../section-header.tsx";
 import { applicationStore } from "../../stores/application-store.ts";
+import { authStore } from "../../stores/auth-store.ts";
 
 const getColumns = (maxRoundCount: number) => {
   const roundsColumns = times(maxRoundCount, (index) => {
@@ -53,7 +53,7 @@ const getColumns = (maxRoundCount: number) => {
 };
 
 const RouteComponent = () => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
 
   const { maxRoundsCount, page, search, totalPages } = useStore(
     applicationStore,
@@ -71,7 +71,7 @@ const RouteComponent = () => {
     data: applications,
     isFetching,
     isPending,
-  } = useQuery(applicationStore.getAll(user?.id));
+  } = useQuery(applicationStore.getAll(userId ?? undefined));
 
   return (
     <MainLayout breadcrumbPaths={[{ href: "/job-stats", label: "Job Search" }]}>
@@ -83,7 +83,7 @@ const RouteComponent = () => {
           header="Applications"
           isFetching={isFetching}
           modalLabel="Add Application"
-          refreshKeys={queryKeys.allUserApplications(user?.id)}
+          refreshKeys={queryKeys.allUserApplications(userId ?? undefined)}
         >
           <div>
             <Input

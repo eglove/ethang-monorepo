@@ -1,6 +1,5 @@
 import type { FormEvent } from "react";
 
-import { useUser } from "@clerk/clerk-react";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -17,16 +16,19 @@ import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { z } from "zod";
 
+import { authStore } from "../../stores/auth-store.ts";
 import { qaStore } from "../../stores/qa-store.ts";
 
 export const CreateQaModal = () => {
-  const { user } = useUser();
+  const userId = useStore(authStore, (state) => state.userId);
 
   const isOpen = useStore(qaStore, (draft) => {
     return draft.isCreateModalOpen;
   });
 
-  const { isPending, mutate } = useMutation(qaStore.createQa(user?.id));
+  const { isPending, mutate } = useMutation(
+    qaStore.createQa(userId ?? undefined),
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,11 +36,11 @@ export const CreateQaModal = () => {
       .object({ answer: z.string(), question: z.string() })
       .safeParse(Object.fromEntries(new FormData(event.currentTarget)));
 
-    if (isNil(user?.id) || !parsed.success) {
+    if (isNil(userId) || !parsed.success) {
       return;
     }
 
-    mutate({ ...parsed.data, userId: user.id });
+    mutate({ ...parsed.data, userId });
   };
 
   return (
