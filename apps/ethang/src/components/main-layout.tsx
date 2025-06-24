@@ -19,7 +19,6 @@ const links = [
   { href: "/tips", label: "Tips" },
   { href: "/projects", label: "Projects" },
   { href: "/courses", label: "Courses" },
-  { href: "/news", label: "News" },
 ];
 
 type MainLayoutProperties = {
