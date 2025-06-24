@@ -26,8 +26,8 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.7.4",
-    "@ethang/eslint-config": "^22.13.1",
+    "@cloudflare/vite-plugin": "^1.7.5",
+    "@ethang/eslint-config": "^22.13.2",
     "@tanstack/router-plugin": "^1.121.34",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.18",
@@ -45,7 +45,7 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.0",
     "vite": "^7.0.0",
-    "wrangler": "^4.21.0"
+    "wrangler": "^4.21.1"
   },
   "name": "react-vite",
   "private": true,
