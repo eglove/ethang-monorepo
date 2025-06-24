@@ -1,7 +1,7 @@
 {
   "author": "Ethan Glover <hello@ethang.email>",
   "dependencies": {
-    "@sanity/cli": "^3.94.0",
+    "@sanity/cli": "^3.94.1",
     "@sanity/code-input": "^5.1.2",
     "@sanity/dashboard": "^4.1.3",
     "@sanity/icons": "^3.7.4",
