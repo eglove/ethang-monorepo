@@ -1,5 +1,6 @@
 import { useStore } from "@ethang/store/use-store";
 import {
+  Button,
   Link,
   Navbar,
   NavbarBrand,
@@ -8,6 +9,7 @@ import {
   NavbarMenu,
   NavbarMenuToggle,
 } from "@heroui/react";
+import { LogOutIcon } from "lucide-react";
 import { useState } from "react";
 
 import { authStore } from "../stores/auth-store.ts";
@@ -82,7 +84,23 @@ export const Navigation = () => {
         </NavbarItem>
       </NavbarMenu>
       <NavbarContent justify="end">
-        <NavbarItem>{!isSignedIn && <SignInModal />}</NavbarItem>
+        <NavbarItem>
+          {isSignedIn ? (
+            <Button
+              isIconOnly
+              onPress={() => {
+                authStore.signOut();
+              }}
+              aria-label="Sign Out"
+              color="danger"
+              size="sm"
+            >
+              <LogOutIcon />
+            </Button>
+          ) : (
+            <SignInModal />
+          )}
+        </NavbarItem>
       </NavbarContent>
     </Navbar>
   );

@@ -14,6 +14,7 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
+import { LogInIcon } from "lucide-react";
 
 import { authStore } from "../../stores/auth-store.ts";
 
@@ -45,12 +46,15 @@ export const SignInModal = () => {
   return (
     <>
       <Button
+        isIconOnly
         onPress={() => {
           authStore.setIsSignInOpen(true);
         }}
+        aria-label="Sign In"
         color="primary"
+        size="sm"
       >
-        Sign In
+        <LogInIcon />
       </Button>
       <Modal
         onOpenChange={(value) => {

@@ -48,12 +48,7 @@ export class AuthStore extends BaseStore<AuthStoreState> {
         });
 
         if (isError(data)) {
-          this.update((state) => {
-            state.isSignedIn = false;
-            state.token = null;
-            state.userId = null;
-            state.isSignInOpen = false;
-          });
+          this.signOut();
         } else {
           this.update((state) => {
             state.isSignedIn = true;
@@ -66,6 +61,15 @@ export class AuthStore extends BaseStore<AuthStoreState> {
     };
   }
 
+  public signOut() {
+    this.update((state) => {
+      state.isSignedIn = false;
+      state.token = null;
+      state.userId = null;
+      state.isSignInOpen = false;
+    });
+  }
+
   public signUp(body: SignUpSchema) {
     return {
       mutationFn: async () => {
@@ -76,11 +80,7 @@ export class AuthStore extends BaseStore<AuthStoreState> {
         });
 
         if (!response.ok) {
-          this.update((state) => {
-            state.isSignedIn = false;
-            state.token = null;
-            state.userId = null;
-          });
+          this.signOut();
         }
       },
     };
@@ -114,7 +114,6 @@ export class AuthStore extends BaseStore<AuthStoreState> {
       true === patch.value &&
       !isNil(this.state.token)
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       Cookies.set("authToken", this.state.token);
     }
   }
