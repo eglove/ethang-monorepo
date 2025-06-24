@@ -155,6 +155,13 @@ export const UpdateJobApplicationModal = () => {
               value={applicationToUpdate?.url ?? ""}
             />
             <Input
+              label="Job Board URL"
+              name="jobBoardUrl"
+              onValueChange={handleChange("jobBoardUrl")}
+              type="url"
+              value={applicationToUpdate?.jobBoardUrl ?? ""}
+            />
+            <Input
               isRequired
               label="Applied"
               name="applied"

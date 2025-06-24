@@ -12,6 +12,7 @@ export const applicationSchema = z.object({
       id: z.string().trim(),
     }),
   ),
+  jobBoardUrl: z.string().trim().optional().nullable(),
   rejected: z.string().trim().nullable(),
   title: z.string().trim(),
   url: z.string().trim(),

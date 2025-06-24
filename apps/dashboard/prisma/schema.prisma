@@ -20,12 +20,13 @@ model applications {
   company         String
   title           String
   url             String
+  jobBoardUrl     String?
   rejected        DateTime?
   interviewRounds interviewRounds[]
 
-  @@index([id, userId])
   @@unique([title, company])
   @@unique(url)
+  @@index([id, userId])
 }
 
 model interviewRounds {

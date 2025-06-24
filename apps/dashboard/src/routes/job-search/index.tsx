@@ -16,6 +16,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import get from "lodash/get.js";
+import isEmpty from "lodash/isEmpty.js";
 import isString from "lodash/isString";
 import replace from "lodash/replace.js";
 import startsWith from "lodash/startsWith";
@@ -43,6 +44,7 @@ const getColumns = (maxRoundCount: number) => {
     { key: "title", label: "Title" },
     { key: "company", label: "Company" },
     { key: "url", label: "URL" },
+    { key: "jobBoardUrl", label: "Job Board URL" },
     { key: "applied", label: "Applied" },
     ...roundsColumns,
     { key: "rejected", label: "Rejected" },
@@ -140,7 +142,11 @@ const RouteComponent = () => {
                     {(columnKey) => {
                       const value = getKeyValue(item, columnKey) as unknown;
 
-                      if ("url" === columnKey && isString(value)) {
+                      if (
+                        ("url" === columnKey || "jobBoardUrl" === columnKey) &&
+                        isString(value) &&
+                        !isEmpty(value)
+                      ) {
                         return (
                           <TableCell>
                             <Link

@@ -35,6 +35,7 @@ export const CreateJobApplicationModal = () => {
     const parsed = z
       .object({
         company: z.string(),
+        jobBoardUrl: z.string().optional(),
         title: z.string(),
         url: z.string(),
       })
@@ -48,6 +49,7 @@ export const CreateJobApplicationModal = () => {
       applied: DateTime.now().toISO(),
       company: parsed.data.company,
       interviewRounds: [],
+      jobBoardUrl: parsed.data.jobBoardUrl,
       rejected: null,
       title: parsed.data.title,
       url: parsed.data.url,
@@ -70,6 +72,7 @@ export const CreateJobApplicationModal = () => {
             <Input isRequired label="Title" name="title" />
             <Input isRequired label="Company" name="company" />
             <Input isRequired label="URL" name="url" type="url" />
+            <Input label="Job Board URL" name="jobBoardUrl" type="url" />
           </ModalBody>
           <ModalFooter>
             <Button
