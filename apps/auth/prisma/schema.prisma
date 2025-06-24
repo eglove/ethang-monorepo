@@ -1,0 +1,24 @@
+generator client {
+  provider               = "prisma-client"
+  output                 = "../generated/prisma"
+  previewFeatures        = ["driverAdapters", "queryCompiler"]
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
+  moduleFormat           = "esm"
+  runtime                = "cloudflare"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid(7))
+  email        String    @unique
+  username     String    @unique
+  password     String
+  lastLoggedIn DateTime?
+  role         String?
+  updatedAt    DateTime  @updatedAt
+}

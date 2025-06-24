@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./public"
+  },
+  "compatibility_date": "2025-06-20",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_id": "9d0cf181-4713-4ca6-bb2f-49a9d997449b",
+      "database_name": "auth"
+    }
+  ],
+  "main": "src/index.ts",
+  "name": "auth",
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "mode": "smart"
+  },
+  "routes": [
+    {
+      "custom_domain": true,
+      "pattern": "auth.ethang.dev"
+    }
+  ],
+}

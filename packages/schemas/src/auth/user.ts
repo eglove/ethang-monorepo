@@ -11,4 +11,15 @@ export const userSchema = z.object({
   username: z.string().trim(),
 });
 
+export const signUpSchema = z.object({
+  email: z.string().trim(),
+  password: z.string().trim(),
+  username: z.string().trim(),
+});
+
+export const signInSchema = z.object({
+  email: z.string().trim(),
+  password: z.string().trim(),
+});
+
 export type UserSchema = z.infer<typeof userSchema>;

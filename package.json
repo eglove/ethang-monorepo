@@ -17,6 +17,7 @@
       "@prisma/client",
       "@prisma/engines",
       "@swc/core",
+      "bcrypt",
       "better-sqlite3",
       "esbuild",
       "msw",

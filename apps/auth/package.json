@@ -1,0 +1,39 @@
+{
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "@ethang/schemas": "workspace:*",
+    "@ethang/toolbelt": "^4.4.10",
+    "@hono/zod-validator": "^0.7.0",
+    "@prisma/adapter-d1": "^6.10.1",
+    "@prisma/client": "6.10.1",
+    "bcryptjs": "^3.0.2",
+    "hono": "^4.8.2",
+    "jose": "^6.0.11",
+    "lodash": "^4.17.21",
+    "prisma": "^6.10.1"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "^22.13.2",
+    "@types/lodash": "^4.17.18",
+    "browserslist-config-baseline": "^0.4.0",
+    "eslint": "^9.29.0",
+    "rimraf": "^6.0.1",
+    "typescript-eslint": "^8.35.0",
+    "wrangler": "^4.21.1"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "name": "auth",
+  "scripts": {
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "deploy": "pnpm prisma-gen && pnpm run cf-typegen && wrangler deploy --minify",
+    "dev": "wrangler dev",
+    "lint": "eslint . --fix",
+    "prisma-gen": "rimraf generated/prisma && prisma generate"
+  },
+  "type": "module"
+}

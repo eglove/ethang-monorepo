@@ -25,6 +25,61 @@ importers:
         specifier: ^8.35.0
         version: 8.35.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
 
+  apps/auth:
+    dependencies:
+      '@ethang/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      '@ethang/toolbelt':
+        specifier: ^4.4.10
+        version: 4.4.10
+      '@hono/zod-validator':
+        specifier: ^0.7.0
+        version: 0.7.0(hono@4.8.2)(zod@3.25.67)
+      '@prisma/adapter-d1':
+        specifier: ^6.10.1
+        version: 6.10.1
+      '@prisma/client':
+        specifier: 6.10.1
+        version: 6.10.1(prisma@6.10.1(typescript@5.8.3))(typescript@5.8.3)
+      bcryptjs:
+        specifier: ^3.0.2
+        version: 3.0.2
+      hono:
+        specifier: ^4.8.2
+        version: 4.8.2
+      jose:
+        specifier: ^6.0.11
+        version: 6.0.11
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      prisma:
+        specifier: ^6.10.1
+        version: 6.10.1(typescript@5.8.3)
+    devDependencies:
+      '@ethang/eslint-config':
+        specifier: ^22.13.2
+        version: 22.13.2(@types/eslint@9.6.1)(@typescript-eslint/types@8.35.0)(@typescript-eslint/utils@8.35.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(jiti@2.4.2)(storybook@9.0.0(@testing-library/dom@10.4.0)(prettier@3.6.0))(tailwindcss@3.4.17)(typescript@5.8.3)
+      '@types/lodash':
+        specifier: ^4.17.18
+        version: 4.17.18
+      browserslist-config-baseline:
+        specifier: ^0.4.0
+        version: 0.4.0
+      eslint:
+        specifier: ^9.29.0
+        version: 9.29.0(jiti@2.4.2)
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript-eslint:
+        specifier: ^8.35.0
+        version: 8.35.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
+      wrangler:
+        specifier: ^4.21.1
+        version: 4.21.1
+
   apps/dashboard:
     dependencies:
       '@clerk/backend':
@@ -138,7 +193,7 @@ importers:
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: ^1.7.5
-        version: 1.7.5(rollup@2.79.2)(vite@7.0.0(@types/node@24.0.4)(jiti@2.4.2)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))(workerd@1.20250617.0)(wrangler@4.21.1)
+        version: 1.7.5(rollup@4.44.0)(vite@7.0.0(@types/node@24.0.4)(jiti@2.4.2)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))(workerd@1.20250617.0)(wrangler@4.21.1)
       '@eslint/js':
         specifier: ^9.29.0
         version: 9.29.0
@@ -3328,6 +3383,12 @@ packages:
       react: '>=18 || >=19.0.0-rc.0'
       react-dom: '>=18 || >=19.0.0-rc.0'
 
+  '@hono/zod-validator@0.7.0':
+    resolution: {integrity: sha512-qe2ZE6sHFE98dcUrbYMtS3bAV8hqcCOflykvZga2S7XhmNSZzT+dIz4OuMILsjLHkJw9JMn912/dB7dQOmuPvg==}
+    peerDependencies:
+      hono: '>=3.9.0'
+      zod: ^3.25.0
+
   '@html-eslint/eslint-plugin@0.42.0':
     resolution: {integrity: sha512-TaSt4WLAytFQR+fKW3FM51HhYISxG4xJjsk+8GtHXUu3BSFeJ21X2LAftHPvILxVC0XUbOqn0X+NlfyWdqafKg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -5590,6 +5651,10 @@ packages:
   baseline-browser-mapping@2.4.4:
     resolution: {integrity: sha512-+kFK5pRzOn5a1gHdVmM2xo5j/XVsrJdWpy3SSwe463xraxzy3ZPQOwOzB6/MfsaWf72vRnbIBubiT28E94GkAA==}
 
+  bcryptjs@3.0.2:
+    resolution: {integrity: sha512-k38b3XOZKv60C4E2hVsXTolJWfkGRMbILBIe2IBITXciy5bOsTKot5kDrf3ZfufQtQOUN5mXceUEpU1rTl9Uog==}
+    hasBin: true
+
   before-after-hook@2.2.3:
     resolution: {integrity: sha512-NzUnlZexiaH/46WDhANlyR2bXRopNg4F/zuSA3OpZnllCUgRaOF2znDioDWrmbNVsuZk6l9pMquQB38cfBZwkQ==}
 
@@ -7152,6 +7217,10 @@ packages:
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
+
+  hono@4.8.2:
+    resolution: {integrity: sha512-hM+1RIn9PK1I6SiTNS6/y7O1mvg88awYLFEuEtoiMtRyT3SD2iu9pSFgbBXT3b1Ua4IwzvSTLvwO0SEhDxCi4w==}
+    engines: {node: '>=16.9.0'}
 
   hosted-git-info@2.8.9:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}
@@ -11310,25 +11379,6 @@ snapshots:
     optionalDependencies:
       workerd: 1.20250617.0
 
-  '@cloudflare/vite-plugin@1.7.5(rollup@2.79.2)(vite@7.0.0(@types/node@24.0.4)(jiti@2.4.2)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))(workerd@1.20250617.0)(wrangler@4.21.1)':
-    dependencies:
-      '@cloudflare/unenv-preset': 2.3.3(unenv@2.0.0-rc.17)(workerd@1.20250617.0)
-      '@mjackson/node-fetch-server': 0.6.1
-      '@rollup/plugin-replace': 6.0.2(rollup@2.79.2)
-      get-port: 7.1.0
-      miniflare: 4.20250617.4
-      picocolors: 1.1.1
-      tinyglobby: 0.2.14
-      unenv: 2.0.0-rc.17
-      vite: 7.0.0(@types/node@24.0.4)(jiti@2.4.2)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0)
-      wrangler: 4.21.1
-      ws: 8.18.0
-    transitivePeerDependencies:
-      - bufferutil
-      - rollup
-      - utf-8-validate
-      - workerd
-
   '@cloudflare/vite-plugin@1.7.5(rollup@4.44.0)(vite@7.0.0(@types/node@24.0.4)(jiti@2.4.2)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))(workerd@1.20250617.0)(wrangler@4.21.1)':
     dependencies:
       '@cloudflare/unenv-preset': 2.3.3(unenv@2.0.0-rc.17)(workerd@1.20250617.0)
@@ -13314,6 +13364,11 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
+  '@hono/zod-validator@0.7.0(hono@4.8.2)(zod@3.25.67)':
+    dependencies:
+      hono: 4.8.2
+      zod: 3.25.67
+
   '@html-eslint/eslint-plugin@0.42.0(eslint@9.29.0(jiti@2.4.2))':
     dependencies:
       '@eslint/plugin-kit': 0.3.2
@@ -14703,13 +14758,6 @@ snapshots:
     dependencies:
       '@rollup/pluginutils': 3.1.0(rollup@2.79.2)
       magic-string: 0.25.9
-      rollup: 2.79.2
-
-  '@rollup/plugin-replace@6.0.2(rollup@2.79.2)':
-    dependencies:
-      '@rollup/pluginutils': 5.2.0(rollup@2.79.2)
-      magic-string: 0.30.17
-    optionalDependencies:
       rollup: 2.79.2
 
   '@rollup/plugin-replace@6.0.2(rollup@4.44.0)':
@@ -16455,6 +16503,8 @@ snapshots:
     dependencies:
       '@mdn/browser-compat-data': 6.0.20
       web-features: 2.36.1
+
+  bcryptjs@3.0.2: {}
 
   before-after-hook@2.2.3: {}
 
@@ -18284,6 +18334,8 @@ snapshots:
   hoist-non-react-statics@3.3.2:
     dependencies:
       react-is: 16.13.1
+
+  hono@4.8.2: {}
 
   hosted-git-info@2.8.9: {}
 
