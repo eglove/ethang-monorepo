@@ -8,6 +8,7 @@ This monorepo contains a collection of web applications, libraries, and tools us
 
 - **dashboard**: Personal productivity dashboard with features for managing bookmarks, to-do lists, and job search tracking (with statistics and Q&A features), built with React and deployed to Cloudflare.
 - **ethang**: Personal website.
+- **auth**: Authentication service used for my own projects.
 - **sanity-calendar-sync**: Utility application for synchronizing calendar events between Sanity CMS and external calendar services.
 - **sterett-admin**: Administrative interface for the Sterett Creek Village Trustees, providing content management capabilities for the sterett-react website.
 - **sterett-react**: Community organization/HOA website with content management through Sanity CMS, featuring news, events, galleries, and document management.
