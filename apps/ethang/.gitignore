@@ -27,5 +27,5 @@ dist-ssr
 .wrangler
 .dev.vars*
 
-/src/generated/prisma
+generated/prisma
 .tanstack
