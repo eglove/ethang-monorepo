@@ -1,4 +1,4 @@
-import type { Todo } from "@ethang/schemas/src/dashboard/todo-schema.ts";
+import type { Todo } from "@ethang/schemas/dashboard/todo-schema.ts";
 import type { FormEvent } from "react";
 
 import { useStore } from "@ethang/store/use-store";

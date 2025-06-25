@@ -1,9 +1,6 @@
-import type {
-  SignInSchema,
-  SignUpSchema,
-} from "@ethang/schemas/src/auth/user.ts";
+import type { SignInSchema, SignUpSchema } from "@ethang/schemas/auth/user.ts";
 
-import { tokenResponseSchema } from "@ethang/schemas/src/auth/token.ts";
+import { tokenResponseSchema } from "@ethang/schemas/auth/token.ts";
 import {
   BaseStore,
   type StorePatch,

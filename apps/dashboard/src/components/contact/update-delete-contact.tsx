@@ -1,4 +1,4 @@
-import type { Contact } from "@ethang/schemas/src/dashboard/contact-schema.ts";
+import type { Contact } from "@ethang/schemas/dashboard/contact-schema.ts";
 
 import { useStore } from "@ethang/store/use-store";
 import { Button } from "@heroui/react";

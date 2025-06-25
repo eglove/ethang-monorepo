@@ -1,4 +1,4 @@
-import { createBookmarkSchema } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
+import { createBookmarkSchema } from "@ethang/schemas/dashboard/bookmark-schema.ts";
 
 import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";

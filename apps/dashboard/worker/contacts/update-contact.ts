@@ -1,4 +1,4 @@
-import { contactSchema } from "@ethang/schemas/src/dashboard/contact-schema.ts";
+import { contactSchema } from "@ethang/schemas/dashboard/contact-schema.ts";
 
 import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";

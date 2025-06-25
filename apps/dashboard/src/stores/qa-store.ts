@@ -2,7 +2,7 @@ import {
   type CreateQuestionAnswer,
   type QuestionAnswer,
   questionAnswerSchema,
-} from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
+} from "@ethang/schemas/dashboard/question-answer-schema.ts";
 import { BaseStore } from "@ethang/store";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";

@@ -1,4 +1,4 @@
-import type { QuestionAnswer } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
+import type { QuestionAnswer } from "@ethang/schemas/dashboard/question-answer-schema.ts";
 import type { FormEvent } from "react";
 
 import { useStore } from "@ethang/store/use-store";

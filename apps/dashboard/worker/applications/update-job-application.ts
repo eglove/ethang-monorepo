@@ -1,4 +1,4 @@
-import { updateApplicationSchema } from "@ethang/schemas/src/dashboard/application-schema.ts";
+import { updateApplicationSchema } from "@ethang/schemas/dashboard/application-schema.ts";
 import isNil from "lodash/isNil.js";
 
 import { getPrismaClient } from "../prisma-client.ts";

@@ -3,7 +3,7 @@ import {
   type DeleteJobApplication,
   getAllApplicationsSchema,
   type UpdateJobApplication,
-} from "@ethang/schemas/src/dashboard/application-schema.ts";
+} from "@ethang/schemas/dashboard/application-schema.ts";
 import { BaseStore } from "@ethang/store";
 import { createUrl } from "@ethang/toolbelt/fetch/create-url";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";

@@ -2,7 +2,7 @@ import {
   type Contact,
   contactsSchema,
   type CreateContact,
-} from "@ethang/schemas/src/dashboard/contact-schema.ts";
+} from "@ethang/schemas/dashboard/contact-schema.ts";
 import { BaseStore } from "@ethang/store";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";

@@ -1,4 +1,4 @@
-import type { Bookmark } from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
+import type { Bookmark } from "@ethang/schemas/dashboard/bookmark-schema.ts";
 
 import { useStore } from "@ethang/store/use-store";
 import { Button } from "@heroui/react";

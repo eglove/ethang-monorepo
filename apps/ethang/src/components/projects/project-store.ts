@@ -1,4 +1,4 @@
-import { projectSchema } from "@ethang/schemas/src/ethang/project-schema.ts";
+import { projectSchema } from "@ethang/schemas/ethang/project-schema.ts";
 import { BaseStore } from "@ethang/store";
 import { createUrl } from "@ethang/toolbelt/fetch/create-url";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";

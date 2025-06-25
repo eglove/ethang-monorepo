@@ -1,4 +1,4 @@
-import { deleteApplicationSchema } from "@ethang/schemas/src/dashboard/application-schema.ts";
+import { deleteApplicationSchema } from "@ethang/schemas/dashboard/application-schema.ts";
 
 import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";

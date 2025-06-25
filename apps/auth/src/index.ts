@@ -1,4 +1,4 @@
-import { signInSchema, signUpSchema } from "@ethang/schemas/src/auth/user.ts";
+import { signInSchema, signUpSchema } from "@ethang/schemas/auth/user.ts";
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { zValidator } from "@hono/zod-validator";

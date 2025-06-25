@@ -1,4 +1,4 @@
-import { userStatsSchema } from "@ethang/schemas/src/dashboard/stats-schema.ts";
+import { userStatsSchema } from "@ethang/schemas/dashboard/stats-schema.ts";
 import { createUrl } from "@ethang/toolbelt/fetch/create-url";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";

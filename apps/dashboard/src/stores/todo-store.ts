@@ -2,7 +2,7 @@ import {
   type CreateTodo,
   type Todo,
   todosSchema,
-} from "@ethang/schemas/src/dashboard/todo-schema.ts";
+} from "@ethang/schemas/dashboard/todo-schema.ts";
 import { BaseStore } from "@ethang/store";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";

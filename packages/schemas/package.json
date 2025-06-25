@@ -4,6 +4,9 @@
     "jose": "^6.0.10",
     "zod": "^3.25.67"
   },
+  "exports": {
+    "./*": "./src/*"
+  },
   "devDependencies": {
     "@ethang/eslint-config": "^22.13.2",
     "@ethang/project-builder": "^3.0.2",

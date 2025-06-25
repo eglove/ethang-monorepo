@@ -1,4 +1,4 @@
-import { questionAnswerSchema } from "@ethang/schemas/src/dashboard/question-answer-schema.ts";
+import { questionAnswerSchema } from "@ethang/schemas/dashboard/question-answer-schema.ts";
 
 import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";

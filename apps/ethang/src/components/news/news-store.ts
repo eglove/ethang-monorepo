@@ -1,4 +1,4 @@
-import { newsSchema } from "@ethang/schemas/src/ethang/news-schema.ts";
+import { newsSchema } from "@ethang/schemas/ethang/news-schema.ts";
 import { BaseStore } from "@ethang/store";
 import { createUrl } from "@ethang/toolbelt/fetch/create-url";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";

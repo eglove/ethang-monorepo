@@ -1,7 +1,7 @@
 import {
   type Bookmark,
   bookmarksSchema,
-} from "@ethang/schemas/src/dashboard/bookmark-schema.ts";
+} from "@ethang/schemas/dashboard/bookmark-schema.ts";
 import { BaseStore } from "@ethang/store";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";

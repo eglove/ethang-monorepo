@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 
-import { createContactSchema } from "@ethang/schemas/src/dashboard/contact-schema.ts";
+import { createContactSchema } from "@ethang/schemas/dashboard/contact-schema.ts";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,

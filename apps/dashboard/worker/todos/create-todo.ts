@@ -1,4 +1,4 @@
-import { createTodoSchema } from "@ethang/schemas/src/dashboard/todo-schema.ts";
+import { createTodoSchema } from "@ethang/schemas/dashboard/todo-schema.ts";
 
 import { getPrismaClient } from "../prisma-client.ts";
 import { queryOnBody } from "../utilities/query-on-body.ts";

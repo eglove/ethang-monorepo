@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 
-import { signInSchema } from "@ethang/schemas/src/auth/user.ts";
+import { signInSchema } from "@ethang/schemas/auth/user.ts";
 import { useStore } from "@ethang/store/use-store";
 import {
   addToast,

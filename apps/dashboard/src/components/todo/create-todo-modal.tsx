@@ -1,4 +1,4 @@
-import { createTodoSchema } from "@ethang/schemas/src/dashboard/todo-schema.ts";
+import { createTodoSchema } from "@ethang/schemas/dashboard/todo-schema.ts";
 import { useStore } from "@ethang/store/use-store";
 import { isNumber } from "@ethang/toolbelt/is/number";
 import {
@@ -72,7 +72,7 @@ export const CreateTodoModal = () => {
 
     let recurs: null | number = null;
     if (isNumber(parsed.data.repeats) && !isEmpty(parsed.data.every)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@typescript-eslint/restrict-template-expressions
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       recurs = ms(`${parsed.data.repeats} ${parsed.data.every as Unit}`);
     }
 

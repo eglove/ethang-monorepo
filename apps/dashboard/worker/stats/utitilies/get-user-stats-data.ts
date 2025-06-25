@@ -1,4 +1,4 @@
-import type { JobApplication } from "@ethang/schemas/src/dashboard/application-schema.ts";
+import type { JobApplication } from "@ethang/schemas/dashboard/application-schema.ts";
 
 import isString from "lodash/isString";
 import { DateTime } from "luxon";
