@@ -109,7 +109,6 @@ app.post("/sign-in", zValidator("json", signInSchema), async (context) => {
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
-      .setExpirationTime("24h")
       .sign(secretKey);
   });
 
