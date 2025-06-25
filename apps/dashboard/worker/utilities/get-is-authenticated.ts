@@ -1,20 +1,31 @@
+import type { JwtPayload } from "jwt-decode";
+
 import { getCookieValue } from "@ethang/toolbelt/http/cookie";
-import { jwtDecode } from "jwt-decode";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil";
 
-export const getIsAuthenticated = (request: Request) => {
+export const getIsAuthenticated = async (request: Request) => {
   const authToken = getCookieValue("authToken", request.headers);
 
   if (isError(authToken)) {
     return false;
   }
 
-  const decoded = jwtDecode(authToken);
+  const response = await globalThis.fetch("https://auth.ethang.dev/verify", {
+    headers: {
+      Authorization: authToken,
+    },
+  });
 
-  if (isNil(decoded.sub)) {
+  if (!response.ok) {
     return false;
   }
 
-  return decoded.sub;
+  const payload = await response.json<JwtPayload>();
+
+  if (isNil(payload.sub)) {
+    return false;
+  }
+
+  return payload.sub;
 };

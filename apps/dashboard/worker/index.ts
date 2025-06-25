@@ -13,7 +13,7 @@ import { getIsAuthenticated } from "./utilities/get-is-authenticated.ts";
 export default {
   async fetch(request, environment) {
     const url = new URL(request.url);
-    const userId = getIsAuthenticated(request);
+    const userId = await getIsAuthenticated(request);
     const tlsVersion = request.cf?.tlsVersion;
 
     if ("TLSv1.2" !== tlsVersion && "TLSv1.3" !== tlsVersion) {
