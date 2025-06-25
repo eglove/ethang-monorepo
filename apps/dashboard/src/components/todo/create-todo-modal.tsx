@@ -1,6 +1,5 @@
 import { createTodoSchema } from "@ethang/schemas/dashboard/todo-schema.ts";
 import { useStore } from "@ethang/store/use-store";
-import { isNumber } from "@ethang/toolbelt/is/number";
 import {
   Button,
   DateInput,
@@ -19,6 +18,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
+import isString from "lodash/isString";
 import map from "lodash/map.js";
 import ms, { type Unit } from "ms";
 import { type FormEvent, useState } from "react";
@@ -71,9 +71,11 @@ export const CreateTodoModal = () => {
     }
 
     let recurs: null | number = null;
-    if (isNumber(parsed.data.repeats) && !isEmpty(parsed.data.every)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      recurs = ms(`${parsed.data.repeats} ${parsed.data.every as Unit}`);
+    if (isString(parsed.data.repeats) && !isEmpty(parsed.data.every)) {
+      recurs = ms(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        `${Number(parsed.data.repeats)} ${parsed.data.every as Unit}`,
+      );
     }
 
     mutate({

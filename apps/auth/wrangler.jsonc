@@ -4,7 +4,7 @@
     "binding": "ASSETS",
     "directory": "./public"
   },
-  "compatibility_date": "2025-06-20",
+  "compatibility_date": "2025-06-25",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {
@@ -26,5 +26,5 @@
       "custom_domain": true,
       "pattern": "auth.ethang.dev"
     }
-  ],
+  ]
 }

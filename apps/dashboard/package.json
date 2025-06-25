@@ -44,7 +44,7 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.7.5",
     "@eslint/js": "^9.29.0",
-    "@ethang/eslint-config": "^22.13.2",
+    "@ethang/eslint-config": "^22.13.3",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/eslint-plugin-query": "^5.81.2",
     "@tanstack/router-plugin": "^1.121.34",
@@ -71,7 +71,7 @@
     "vite": "^7.0.0",
     "vite-plugin-pwa": "^1.0.0",
     "vitest": "^3.2.4",
-    "wrangler": "^4.21.1"
+    "wrangler": "^4.21.2"
   },
   "engines": {
     "node": ">=22"

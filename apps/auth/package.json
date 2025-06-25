@@ -10,19 +10,19 @@
     "@prisma/adapter-d1": "^6.10.1",
     "@prisma/client": "6.10.1",
     "bcryptjs": "^3.0.2",
-    "hono": "^4.8.2",
+    "hono": "^4.8.3",
     "jose": "^6.0.11",
     "lodash": "^4.17.21",
     "prisma": "^6.10.1"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.13.2",
+    "@ethang/eslint-config": "^22.13.3",
     "@types/lodash": "^4.17.18",
     "browserslist-config-baseline": "^0.4.0",
     "eslint": "^9.29.0",
     "rimraf": "^6.0.1",
     "typescript-eslint": "^8.35.0",
-    "wrangler": "^4.21.1"
+    "wrangler": "^4.21.2"
   },
   "engines": {
     "node": ">=22"

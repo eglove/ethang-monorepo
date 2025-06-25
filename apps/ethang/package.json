@@ -6,7 +6,7 @@
   "dependencies": {
     "@anatine/zod-mock": "^3.14.0",
     "@ethang/schemas": "workspace:*",
-    "@ethang/store": "^2.2.6",
+    "@ethang/store": "^2.3.1",
     "@ethang/toolbelt": "^4.4.10",
     "@heroui/react": "2.7.11",
     "@heroui/theme": "2.4.17",
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.7.5",
-    "@ethang/eslint-config": "^22.13.2",
+    "@ethang/eslint-config": "^22.13.3",
     "@tanstack/router-plugin": "^1.121.34",
     "@types/lodash": "^4.17.18",
     "@types/luxon": "^3.6.2",
@@ -52,7 +52,7 @@
     "typescript-eslint": "^8.35.0",
     "vite": "^7.0.0",
     "vite-plugin-pwa": "^1.0.0",
-    "wrangler": "^4.21.1"
+    "wrangler": "^4.21.2"
   },
   "engines": {
     "node": ">=22"
