@@ -66,7 +66,7 @@
     "dev": "vite",
     "lint": "eslint . --fix",
     "preview": "pnpm run build && vite preview",
-    "prisma-gen": "prisma generate"
+    "prisma-gen": "rimraf generated/prisma && prisma generate"
   },
   "type": "module",
   "version": "0.0.0"
