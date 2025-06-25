@@ -106,12 +106,14 @@ export class AuthStore extends BaseStore<AuthStoreState> {
   protected override onPropertyChange(
     patch: StorePatch<AuthStoreState> | StorePatchLoose,
   ) {
-    if (
-      isEqual(patch.path, ["isSignedIn"]) &&
-      true === patch.value &&
-      !isNil(this.state.token)
-    ) {
-      Cookies.set("authToken", this.state.token);
+    if (isEqual(patch.path, ["isSignedIn"])) {
+      if (true === patch.value && !isNil(this.state.token)) {
+        Cookies.set("authToken", this.state.token);
+      }
+
+      if (false === patch.value) {
+        Cookies.remove("authToken");
+      }
     }
   }
 }
