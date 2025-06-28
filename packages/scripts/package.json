@@ -7,10 +7,10 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.13.5",
+    "@ethang/eslint-config": "^22.13.6",
     "@types/lodash": "^4.17.19",
-    "@types/node": "^24.0.4",
-    "eslint": "^9.29.0"
+    "@types/node": "^24.0.7",
+    "eslint": "^9.30.0"
   },
   "engines": {
     "node": ">=22"
