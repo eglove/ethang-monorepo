@@ -47,7 +47,7 @@
     "@ethang/eslint-config": "^22.13.6",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/eslint-plugin-query": "^5.81.2",
-    "@tanstack/router-plugin": "^1.122.0",
+    "@tanstack/router-plugin": "^1.122.1",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/js-cookie": "^3.0.6",
     "@types/lodash": "^4.17.19",
