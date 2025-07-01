@@ -4,8 +4,10 @@ import { getCookieValue } from "@ethang/toolbelt/http/cookie";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil";
 
+const cookieName = "ethang-auth-token";
+
 export const getIsAuthenticated = async (request: Request) => {
-  const authToken = getCookieValue("ethang-auth-token", request.headers);
+  const authToken = getCookieValue(cookieName, request.headers);
 
   if (isError(authToken)) {
     return false;
@@ -13,7 +15,7 @@ export const getIsAuthenticated = async (request: Request) => {
 
   const response = await globalThis.fetch("https://auth.ethang.dev/verify", {
     headers: {
-      Cookie: `ethang-auth-token=${authToken}`,
+      Cookie: `${cookieName}=${authToken}`,
     },
   });
 
