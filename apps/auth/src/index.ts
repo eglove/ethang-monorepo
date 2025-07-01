@@ -1,123 +1,57 @@
 import { signInSchema, signUpSchema } from "@ethang/schemas/auth/user.ts";
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
-import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { zValidator } from "@hono/zod-validator";
-import { PrismaD1 } from "@prisma/adapter-d1";
-import bcrypt from "bcryptjs";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { jwtVerify, SignJWT } from "jose";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import convertToString from "lodash/toString.js";
 
-import { PrismaClient } from "../generated/prisma/client.ts";
+import { getPrismaClient } from "./get-prisma-client.ts";
+import {
+  type AuthContextObject,
+  AuthService,
+} from "./services/auth-service.js";
 
-const app = new Hono<{ Bindings: CloudflareBindings }>();
+const app = new Hono<AuthContextObject>();
 app.use("*", cors());
 
 app.post("/sign-up", zValidator("json", signUpSchema), async (context) => {
-  const adapter = new PrismaD1(context.env.DB);
-  // @ts-expect-error bad types
-  const prisma = new PrismaClient({ adapter });
-
+  const prisma = getPrismaClient(context);
+  const authService = new AuthService(
+    prisma,
+    convertToString(context.env[AuthService.TOKEN_AUTH_KEY]),
+  );
   const body = context.req.valid("json");
 
-  const hashedPassword = await attemptAsync(async () => {
-    const salt = await bcrypt.genSalt();
-    return bcrypt.hash(body.password, salt);
-  });
-
-  if (isError(hashedPassword)) {
-    return createJsonResponse(
-      { error: hashedPassword.message },
-      "INTERNAL_SERVER_ERROR",
-    );
-  }
-
-  const user = await attemptAsync(async () => {
-    return prisma.user.create({
-      data: {
-        email: body.email,
-        lastLoggedIn: new Date().toISOString(),
-        password: hashedPassword,
-        username: body.username,
-      },
-    });
-  });
+  const user = await authService.createUser(
+    body.email,
+    body.password,
+    body.username,
+  );
 
   if (isError(user)) {
     return createJsonResponse({ error: user.message }, "INTERNAL_SERVER_ERROR");
   }
 
-  return createJsonResponse(
-    { email: user.email, id: user.id, username: user.username },
-    "OK",
-  );
+  return createJsonResponse(user, "OK");
 });
 
 app.post("/sign-in", zValidator("json", signInSchema), async (context) => {
-  const adapter = new PrismaD1(context.env.DB);
-  // @ts-expect-error bad types
-  const prisma = new PrismaClient({ adapter });
+  const prisma = getPrismaClient(context);
+  const authService = new AuthService(
+    prisma,
+    convertToString(context.env[AuthService.TOKEN_AUTH_KEY]),
+  );
   const body = context.req.valid("json");
 
-  const user = await prisma.user.findUnique({
-    where: { email: body.email },
-  });
+  const user = await authService.signIn(body.email, body.password);
 
-  if (isNil(user)) {
-    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+  if (isError(user)) {
+    return createJsonResponse({ error: user.message }, "UNAUTHORIZED");
   }
 
-  const compared = await bcrypt.compare(body.password, user.password);
-
-  if (!compared) {
-    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
-  }
-
-  const rehashed = await attemptAsync(async () => {
-    const salt = await bcrypt.genSalt();
-    return bcrypt.hash(body.password, salt);
-  });
-
-  if (isError(rehashed)) {
-    return createJsonResponse({ error: "Failed to sign in" }, "UNAUTHORIZED");
-  }
-
-  const updatedUser = await attemptAsync(async () => {
-    return prisma.user.update({
-      data: { lastLoggedIn: new Date().toISOString(), password: rehashed },
-      where: { email: user.email },
-    });
-  });
-
-  if (isError(updatedUser)) {
-    return createJsonResponse({ error: "Failed to sign in" }, "UNAUTHORIZED");
-  }
-
-  const token = await attemptAsync(async () => {
-    const secretKey = new TextEncoder().encode(
-      convertToString(context.env["token-auth"]),
-    );
-
-    return new SignJWT({
-      email: updatedUser.email,
-      role: updatedUser.role,
-      sub: updatedUser.id,
-      username: updatedUser.username,
-    })
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setExpirationTime("1yr")
-      .sign(secretKey);
-  });
-
-  if (isError(token)) {
-    return createJsonResponse({ error: token.message }, "UNAUTHORIZED");
-  }
-
-  return createJsonResponse({ token, userId: user.id }, "OK");
+  return createJsonResponse(user, "OK");
 });
 
 app.get("/verify", async (context) => {
@@ -127,19 +61,19 @@ app.get("/verify", async (context) => {
     return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
   }
 
-  const secretKey = new TextEncoder().encode(
-    convertToString(context.env["token-auth"]),
+  const prisma = getPrismaClient(context);
+  const authService = new AuthService(
+    prisma,
+    convertToString(context.env[AuthService.TOKEN_AUTH_KEY]),
   );
 
-  const verification = await attemptAsync(async () => {
-    return jwtVerify(token, secretKey);
-  });
+  const jwt = await authService.verifyToken(token);
 
-  if (isError(verification)) {
+  if (isError(jwt)) {
     return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
   }
 
-  return createJsonResponse(verification.payload, "OK");
+  return createJsonResponse(jwt.payload, "OK");
 });
 
 export default app;

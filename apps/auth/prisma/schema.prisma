@@ -21,4 +21,5 @@ model User {
   lastLoggedIn DateTime?
   role         String?
   updatedAt    DateTime  @updatedAt
+  sessionToken String?
 }
