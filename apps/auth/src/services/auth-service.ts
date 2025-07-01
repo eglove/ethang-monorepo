@@ -18,7 +18,7 @@ export type AuthContextObject = { Bindings: CloudflareBindings };
 
 export class AuthService {
   public static readonly AUTH_COOKIE_NAME = "ethang-auth-token" as const;
-  public static readonly TOKEN_AUTH_KEY = "token-auth" as const;
+  public static readonly TOKEN_SECRET_KEY = "token-auth" as const;
 
   public constructor(
     private readonly prisma: ReturnType<typeof getPrismaClient>,
@@ -71,7 +71,7 @@ export class AuthService {
         HttpOnly: false,
         "Max-Age": 31_536_000, // 1 year in seconds
         Path: "/",
-        SameSite: "Strict",
+        SameSite: "None",
         Secure: true,
       },
       cookieName: AuthService.AUTH_COOKIE_NAME,

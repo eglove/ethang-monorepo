@@ -20,7 +20,7 @@ app.post("/sign-up", zValidator("json", signUpSchema), async (context) => {
   const prisma = getPrismaClient(context);
   const authService = new AuthService(
     prisma,
-    convertToString(context.env[AuthService.TOKEN_AUTH_KEY]),
+    convertToString(context.env[AuthService.TOKEN_SECRET_KEY]),
   );
   const body = context.req.valid("json");
 
@@ -46,7 +46,7 @@ app.post("/sign-in", zValidator("json", signInSchema), async (context) => {
   const prisma = getPrismaClient(context);
   const authService = new AuthService(
     prisma,
-    convertToString(context.env[AuthService.TOKEN_AUTH_KEY]),
+    convertToString(context.env[AuthService.TOKEN_SECRET_KEY]),
   );
   const body = context.req.valid("json");
 
@@ -67,7 +67,7 @@ app.get("/verify", async (context) => {
   const prisma = getPrismaClient(context);
   const authService = new AuthService(
     prisma,
-    convertToString(context.env[AuthService.TOKEN_AUTH_KEY]),
+    convertToString(context.env[AuthService.TOKEN_SECRET_KEY]),
   );
 
   const token = authService.getTokenFromCookie(context.req.raw.headers);

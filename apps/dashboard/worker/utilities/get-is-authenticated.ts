@@ -5,7 +5,7 @@ import isError from "lodash/isError";
 import isNil from "lodash/isNil";
 
 export const getIsAuthenticated = async (request: Request) => {
-  const authToken = getCookieValue("authToken", request.headers);
+  const authToken = getCookieValue("ethang-auth-token", request.headers);
 
   if (isError(authToken)) {
     return false;
@@ -13,7 +13,7 @@ export const getIsAuthenticated = async (request: Request) => {
 
   const response = await globalThis.fetch("https://auth.ethang.dev/verify", {
     headers: {
-      Authorization: authToken,
+      Cookie: `ethang-auth-token=${authToken}`,
     },
   });
 

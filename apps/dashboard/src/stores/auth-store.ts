@@ -108,11 +108,11 @@ export class AuthStore extends BaseStore<AuthStoreState> {
   ) {
     if (isEqual(patch.path, ["isSignedIn"])) {
       if (true === patch.value && !isNil(this.state.token)) {
-        Cookies.set("authToken", this.state.token);
+        Cookies.set("ethang-auth-token", this.state.token);
       }
 
       if (false === patch.value) {
-        Cookies.remove("authToken");
+        Cookies.remove("ethang-auth-token");
       }
     }
   }
