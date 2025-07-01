@@ -10,7 +10,7 @@
   },
   "description": "Fine grained state management",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.13.7",
+    "@ethang/eslint-config": "^22.13.8",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.19",
     "@types/use-sync-external-store": "^1.5.0",

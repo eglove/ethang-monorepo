@@ -8,7 +8,7 @@
     "ts-ics": "^2.1.8"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.47",
+    "@cloudflare/vitest-pool-workers": "^0.8.48",
     "@types/lodash": "^4.17.19",
     "@types/luxon": "^3.6.2",
     "typescript": "^5.8.3",

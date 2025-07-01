@@ -17,12 +17,12 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.13.7",
+    "@ethang/eslint-config": "^22.13.8",
     "@sanity/eslint-config-studio": "^5.0.2",
     "@types/lodash": "^4.17.19",
     "eslint": "^9.30.0",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.35.0"
+    "typescript-eslint": "^8.35.1"
   },
   "engines": {
     "node": ">=22"
