@@ -1,6 +1,10 @@
 import type { Context } from "hono";
 
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
+import {
+  getCookieValue,
+  setCookieValue,
+} from "@ethang/toolbelt/http/cookie.js";
 import bcrypt from "bcryptjs";
 import { jwtVerify, SignJWT } from "jose";
 import isError from "lodash/isError.js";
@@ -13,6 +17,7 @@ export type AuthContext = Context<AuthContextObject>;
 export type AuthContextObject = { Bindings: CloudflareBindings };
 
 export class AuthService {
+  public static readonly AUTH_COOKIE_NAME = "ethang-auth-token" as const;
   public static readonly TOKEN_AUTH_KEY = "token-auth" as const;
 
   public constructor(
@@ -53,6 +58,25 @@ export class AuthService {
         data: { sessionToken: token },
         where: { email: user.email },
       });
+    });
+  }
+
+  public getTokenFromCookie(headers: Headers) {
+    return getCookieValue(AuthService.AUTH_COOKIE_NAME, headers);
+  }
+
+  public setAuthCookie(response: Response, token: string) {
+    setCookieValue({
+      config: {
+        HttpOnly: false,
+        "Max-Age": 31_536_000, // 1 year in seconds
+        Path: "/",
+        SameSite: "Strict",
+        Secure: true,
+      },
+      cookieName: AuthService.AUTH_COOKIE_NAME,
+      cookieValue: token,
+      response,
     });
   }
 

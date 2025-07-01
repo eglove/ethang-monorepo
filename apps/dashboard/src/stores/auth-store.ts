@@ -1,6 +1,6 @@
 import type { SignInSchema, SignUpSchema } from "@ethang/schemas/auth/user.ts";
 
-import { tokenResponseSchema } from "@ethang/schemas/auth/token.ts";
+import { signInResponseToken } from "@ethang/schemas/auth/token.ts";
 import {
   BaseStore,
   type StorePatch,
@@ -38,7 +38,7 @@ export class AuthStore extends BaseStore<AuthStoreState> {
     return {
       mutationFn: async (body: SignInSchema) => {
         const url = new URL("/sign-in", authUrl);
-        const data = await fetchJson(url, tokenResponseSchema, {
+        const data = await fetchJson(url, signInResponseToken, {
           body: JSON.stringify(body),
           headers: { "Content-Type": "application/json" },
           method: "POST",
@@ -49,8 +49,8 @@ export class AuthStore extends BaseStore<AuthStoreState> {
         } else {
           this.update((state) => {
             state.isSignedIn = true;
-            state.token = data.token;
-            state.userId = data.userId;
+            state.token = data.sessionToken;
+            state.userId = data.id;
             state.isSignInOpen = false;
           });
         }

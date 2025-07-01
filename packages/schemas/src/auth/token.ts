@@ -10,9 +10,14 @@ export const tokenSchema = z.object({
   username: z.string().trim(),
 });
 
-export const tokenResponseSchema = z.object({
-  token: z.string().trim(),
-  userId: z.string().trim(),
+export const signInResponseToken = z.object({
+  email: z.string(),
+  id: z.string(),
+  lastLoggedIn: z.string(),
+  role: z.string(),
+  sessionToken: z.string(),
+  updatedAt: z.string(),
+  username: z.string(),
 });
 
 export type TokenSchema = z.infer<typeof tokenSchema>;

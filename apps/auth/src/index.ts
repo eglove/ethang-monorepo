@@ -34,7 +34,12 @@ app.post("/sign-up", zValidator("json", signUpSchema), async (context) => {
     return createJsonResponse({ error: user.message }, "INTERNAL_SERVER_ERROR");
   }
 
-  return createJsonResponse(user, "OK");
+  const response = createJsonResponse(user, "OK");
+
+  if (!isNil(user.sessionToken)) {
+    authService.setAuthCookie(response, user.sessionToken);
+  }
+  return response;
 });
 
 app.post("/sign-in", zValidator("json", signInSchema), async (context) => {
@@ -51,21 +56,25 @@ app.post("/sign-in", zValidator("json", signInSchema), async (context) => {
     return createJsonResponse({ error: user.message }, "UNAUTHORIZED");
   }
 
-  return createJsonResponse(user, "OK");
+  const response = createJsonResponse(user, "OK");
+  if (!isNil(user.sessionToken)) {
+    authService.setAuthCookie(response, user.sessionToken);
+  }
+  return response;
 });
 
 app.get("/verify", async (context) => {
-  const token = context.req.header("Authorization");
-
-  if (isNil(token)) {
-    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
-  }
-
   const prisma = getPrismaClient(context);
   const authService = new AuthService(
     prisma,
     convertToString(context.env[AuthService.TOKEN_AUTH_KEY]),
   );
+
+  const token = authService.getTokenFromCookie(context.req.raw.headers);
+
+  if (isError(token)) {
+    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+  }
 
   const jwt = await authService.verifyToken(token);
 
