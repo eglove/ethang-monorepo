@@ -9,11 +9,11 @@
   },
   "description": "Markdown Generator following GitHub syntax.",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.13.8",
+    "@ethang/eslint-config": "^22.13.9",
     "@ethang/project-builder": "^3.0.2",
-    "@types/lodash": "^4.17.19",
+    "@types/lodash": "^4.17.20",
     "browserslist-config-baseline": "^0.4.0",
-    "eslint": "^9.30.0",
+    "eslint": "^9.30.1",
     "vitest": "^3.2.4"
   },
   "license": "ISC",
