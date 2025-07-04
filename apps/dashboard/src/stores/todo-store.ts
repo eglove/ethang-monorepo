@@ -4,7 +4,7 @@ import {
   todosSchema,
 } from "@ethang/schemas/dashboard/todo-schema.ts";
 import { BaseStore } from "@ethang/store";
-import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
+import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
 import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
@@ -13,6 +13,7 @@ import { DateTime } from "luxon";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
+import { authStore } from "./auth-store.ts";
 
 const defaultState = {
   isCreateModalOpen: false,
@@ -119,7 +120,14 @@ export class TodoStore extends BaseStore<TodoState> {
     return queryOptions({
       enabled: !isNil(userId) && !isEmpty(userId),
       queryFn: async () => {
-        const data = await fetchJson(todoPath, todosSchema);
+        const response = await fetch(todoPath);
+
+        if (401 === response.status) {
+          authStore.signOut();
+          throw new Error("Unauthorized");
+        }
+
+        const data = await parseFetchJson(response, todosSchema);
 
         if (isError(data)) {
           throw new Error("Failed to fetch todos");

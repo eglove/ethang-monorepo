@@ -3,7 +3,7 @@ import {
   bookmarksSchema,
 } from "@ethang/schemas/dashboard/bookmark-schema.ts";
 import { BaseStore } from "@ethang/store";
-import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
+import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
 import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
@@ -11,6 +11,7 @@ import isNil from "lodash/isNil.js";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
+import { authStore } from "./auth-store.ts";
 
 const defaultState = {
   bookmarkToUpdate: null as Bookmark | null,
@@ -72,7 +73,14 @@ export class BookmarkStore extends BaseStore<BookmarkStoreState> {
     return queryOptions({
       enabled: !isNil(userId) && !isEmpty(userId),
       queryFn: async () => {
-        const data = await fetchJson(bookmarkPath, bookmarksSchema);
+        const response = await fetch(bookmarkPath);
+
+        if (401 === response.status) {
+          authStore.signOut();
+          throw new Error("Unauthorized");
+        }
+
+        const data = await parseFetchJson(response, bookmarksSchema);
 
         if (isError(data)) {
           throw data;

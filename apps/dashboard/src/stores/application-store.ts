@@ -6,7 +6,7 @@ import {
 } from "@ethang/schemas/dashboard/application-schema.ts";
 import { BaseStore } from "@ethang/store";
 import { createUrl } from "@ethang/toolbelt/fetch/create-url";
-import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
+import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import debounce from "lodash/debounce.js";
 import get from "lodash/get";
@@ -22,6 +22,7 @@ import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
 import { formDateToIso } from "../utilities/form.ts";
 import { toastError } from "../utilities/toast-error.ts";
+import { authStore } from "./auth-store.ts";
 
 const defaultState = {
   applicationToUpdate: null as null | UpdateJobApplication,
@@ -264,7 +265,14 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
       throw new Error("Invalid URL");
     }
 
-    const data = await fetchJson(url, getAllApplicationsSchema);
+    const response = await fetch(url);
+
+    if (401 === response.status) {
+      authStore.signOut();
+      throw new Error("Unauthorized");
+    }
+
+    const data = await parseFetchJson(response, getAllApplicationsSchema);
 
     if (isError(data)) {
       throw new Error("Failed to fetch applications");

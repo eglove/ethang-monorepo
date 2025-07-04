@@ -4,7 +4,7 @@ import {
   type CreateContact,
 } from "@ethang/schemas/dashboard/contact-schema.ts";
 import { BaseStore } from "@ethang/store";
-import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
+import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
 import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty";
 import isError from "lodash/isError";
@@ -12,6 +12,7 @@ import isNil from "lodash/isNil";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
+import { authStore } from "./auth-store.ts";
 
 const defaultState = {
   contactToUpdate: null as Contact | null,
@@ -78,8 +79,14 @@ class ContactStore extends BaseStore<ContactStoreState> {
           throw new Error("No user found");
         }
 
-        const request = new Request(contactPath);
-        const data = await fetchJson(request, contactsSchema);
+        const response = await fetch(contactPath);
+
+        if (401 === response.status) {
+          authStore.signOut();
+          throw new Error("Unauthorized");
+        }
+
+        const data = await parseFetchJson(response, contactsSchema);
 
         if (isError(data)) {
           throw new Error("Failed to fetch contacts");

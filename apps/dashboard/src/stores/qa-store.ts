@@ -4,7 +4,7 @@ import {
   questionAnswerSchema,
 } from "@ethang/schemas/dashboard/question-answer-schema.ts";
 import { BaseStore } from "@ethang/store";
-import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
+import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
 import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty";
 import isError from "lodash/isError";
@@ -12,6 +12,7 @@ import { z } from "zod";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
+import { authStore } from "./auth-store.ts";
 
 const defaultState = {
   isCreateModalOpen: false,
@@ -78,8 +79,15 @@ export class QaStore extends BaseStore<QaStoreState> {
           throw new Error("No user found");
         }
 
-        const data = await fetchJson(
-          questionAnswerPath,
+        const response = await fetch(questionAnswerPath);
+
+        if (401 === response.status) {
+          authStore.signOut();
+          throw new Error("Unauthorized");
+        }
+
+        const data = await parseFetchJson(
+          response,
           z.array(questionAnswerSchema),
         );
 
