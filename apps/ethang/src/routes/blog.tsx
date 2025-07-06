@@ -1,6 +1,7 @@
 import map from "lodash/map.js";
 
 import { MainLayout } from "../components/main-layout.tsx";
+import { TypographyH1 } from "../components/typography/typography-h1.tsx";
 import { TypographyH2 } from "../components/typography/typography-h2.tsx";
 
 export const blogs = [
@@ -12,8 +13,9 @@ export const blogs = [
 
 const RouteComponent = () => {
   return (
-    <MainLayout>
-      <div className="max-w-[65ch] mx-auto">
+    <MainLayout className="max-w-[65ch]">
+      <TypographyH1>Blog</TypographyH1>
+      <div className="my-6">
         {map(blogs, (blog) => {
           return (
             <a className="text-foreground" href={blog.href}>
