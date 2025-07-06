@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Software Engineers as Data Brokers: An Uncomfortable Truth</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Funnel+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <meta
+      content="This blog post explores the often-overlooked role of software engineers as essential data brokers, challenging the heroic media portrayal and highlighting the administrative reality of their work."
+      name="description"
+    />
+    <meta
+      content="Software Engineers as Data Brokers: An Uncomfortable Truth"
+      property="og:title"
+    />
+    <meta
+      content="This blog post explores the often-overlooked role of software engineers as essential data brokers, challenging the heroic media portrayal and highlighting the administrative reality of their work."
+      property="og:description"
+    />
+    <meta content="/blog/swe-data-brokers" property="og:url" />
+    <meta content="article" property="og:type" />
+    <meta content="../images/data-broker.png" property="og:image" />
+    <meta
+      content="Abstract image representing data flow and a network, symbolizing data brokerage"
+      property="og:image:alt"
+    />
+    <style>
+      body {
+        font-family: "Funnel Sans", sans-serif;
+        background-color: #1a202c;
+        color: #e2e8f0;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        min-height: 100vh;
+        box-sizing: border-box;
+      }
+      .top-link {
+        display: block;
+        width: 95%;
+        max-width: 800px;
+        text-align: left;
+        margin-top: 1.5rem;
+        margin-bottom: -1rem;
+      }
+      .top-link a {
+        color: #9f7aea;
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        transition: background-color 0.3s ease;
+      }
+      .top-link a:hover {
+        background-color: #4a5568;
+        text-decoration: none;
+      }
+      .container {
+        max-width: 800px;
+        width: 95%;
+        background-color: #2d3748;
+        border-radius: 1rem;
+        box-shadow:
+          0 10px 15px -3px rgba(0, 0, 0, 0.5),
+          0 4px 6px -2px rgba(0, 0, 0, 0.25);
+        padding: 2rem;
+        margin: 2rem 0;
+        box-sizing: border-box;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #63b3ed;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      h2 {
+        font-size: 1.8rem;
+        margin-top: 2rem;
+      }
+      h3 {
+        font-size: 1.4rem;
+        margin-top: 1.5rem;
+      }
+      p {
+        margin-bottom: 1rem;
+        color: #cbd5e0;
+      }
+      a {
+        color: #9f7aea;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .highlight {
+        color: #f6ad55;
+        font-weight: 600;
+      }
+      code {
+        background-color: #4a5568;
+        padding: 0.2em 0.4em;
+        border-radius: 0.25rem;
+        font-family: "Fira Code", monospace;
+        font-size: 0.9em;
+      }
+      blockquote {
+        border-left: 4px solid #63b3ed;
+        padding-left: 1rem;
+        margin: 1.5rem 0;
+        font-style: italic;
+        color: #a0aec0;
+      }
+      footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #4a5568;
+        font-size: 0.9rem;
+        color: #a0aec0;
+      }
+
+      .table-of-contents {
+        background-color: #3a475a;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      .table-of-contents h2 {
+        color: #63b3ed;
+        font-size: 1.5rem;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+      .table-of-contents ol {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 0;
+      }
+      .table-of-contents ol li {
+        margin-bottom: 0.5rem;
+      }
+      .table-of-contents ol li a {
+        color: #cbd5e0;
+        font-size: 1rem;
+        display: block;
+        padding: 0.3rem 0.5rem;
+        border-radius: 0.25rem;
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease;
+      }
+      .table-of-contents ol li a:hover {
+        background-color: #4a5568;
+        color: #e2e8f0;
+        text-decoration: none;
+      }
+      .table-of-contents ol li ol {
+        padding-left: 1.5rem;
+        margin-top: 0.5rem;
+      }
+      .table-of-contents ol li ol li a {
+        font-size: 0.9rem;
+        color: #a0aec0;
+      }
+      .table-of-contents ol li ol li a:hover {
+        background-color: #4a5568;
+        color: #e2e8f0;
+      }
+
+      #back_to_top_btn {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 99;
+        background-color: #63b3ed;
+        color: #1a202c;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+        line-height: 50px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        transition:
+          background-color 0.3s ease,
+          transform 0.3s ease;
+      }
+
+      #back_to_top_btn:hover {
+        background-color: #4a90e2;
+        transform: translateY(-3px);
+      }
+
+      .featured-image {
+        width: auto;
+        height: 250px;
+        border-radius: 0.75rem;
+        margin: 1.5rem auto 2.5rem auto;
+        display: block;
+        box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.3);
+      }
+
+      .published {
+        text-align: center;
+        font-size: 0.875rem;
+        color: #9ca3af;
+        margin-bottom: 1.5rem;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2rem;
+        }
+        h2 {
+          font-size: 1.5rem;
+        }
+        h3 {
+          font-size: 1.2rem;
+        }
+        .container {
+          padding: 1.5rem;
+          margin: 1rem 0;
+        }
+        .top-link {
+          margin-top: 1rem;
+          margin-bottom: -0.5rem;
+        }
+        .table-of-contents {
+          padding: 1rem;
+          margin-bottom: 1.5rem;
+        }
+        .table-of-contents h2 {
+          font-size: 1.3rem;
+        }
+        .table-of-contents ol li a {
+          font-size: 0.95rem;
+        }
+        .table-of-contents ol li ol {
+          padding-left: 1rem;
+        }
+        #back_to_top_btn {
+          width: 45px;
+          height: 45px;
+          font-size: 1.3rem;
+          line-height: 45px;
+          bottom: 15px;
+          right: 15px;
+        }
+        .featured-image {
+          margin: 1rem auto 2rem auto;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 1rem;
+        }
+        .top-link {
+          margin-top: 0.5rem;
+          margin-bottom: 0;
+        }
+        .table-of-contents {
+          padding: 0.75rem;
+          margin-bottom: 1rem;
+        }
+        .table-of-contents h2 {
+          font-size: 1.2rem;
+        }
+        .table-of-contents ol li a {
+          font-size: 0.85rem;
+        }
+        #back_to_top_btn {
+          width: 40px;
+          height: 40px;
+          font-size: 1.1rem;
+          line-height: 40px;
+          bottom: 10px;
+          right: 10px;
+        }
+        .featured-image {
+          margin: 0.75rem auto 1.5rem auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-link">
+      <a href="/blog">&larr; Back to Blog</a>
+    </div>
+    <div class="container">
+      <h1>Software Engineers as Data Brokers: An Uncomfortable Truth</h1>
+      <p class="published">Published on July 6, 2025, by Ethan Glover</p>
+
+      <img
+        class="featured-image"
+        alt="Abstract representing data flow and a network, symbolizing data brokerage"
+        height="2048"
+        src="../images/data-broker.png"
+        width="2048"
+      />
+
+      <div class="table-of-contents">
+        <h2>Table of Contents</h2>
+        <ol>
+          <li>
+            <a href="#unseen_pipelines"
+              >The Unseen Pipelines: Our Brokerage Business</a
+            >
+          </li>
+          <li>
+            <a href="#automation_mindset"
+              >The Automation Mindset: Facilitating vs. Solving</a
+            >
+          </li>
+          <li>
+            <a href="#data_undercurrent"
+              >Behind the Screens: The Data Undercurrent</a
+            >
+            <ol>
+              <li>
+                <a href="#reservoirs_conduits">The Reservoirs and Conduits</a>
+              </li>
+              <li>
+                <a href="#invisible_flow">The Invisible Flow of Business</a>
+              </li>
+            </ol>
+          </li>
+          <li>
+            <a href="#interface_meets_decision"
+              >The Interface: Where Data Meets Decision</a
+            >
+          </li>
+          <li>
+            <a href="#inflated_reality"
+              >The Inflated Reality: Perception, Pay, and the Job Market</a
+            >
+          </li>
+          <li>
+            <a href="#beyond_hype">Beyond the Hype: The Everyday Reality</a>
+          </li>
+          <li>
+            <a href="#embracing_middleman"
+              >Embracing the Middleman: A Path to Effective Contribution</a
+            >
+          </li>
+        </ol>
+      </div>
+
+      <p>
+        In today’s digital world, information drives decisions. Software
+        engineers are central to this process. While often perceived as
+        <span class="highlight">"problem solvers"</span>
+        or
+        <span class="highlight">"innovators,"</span>
+        a closer look reveals a simpler truth: many of us function much like
+        <span class="highlight">data brokers</span>. Our core task is to ensure
+        the right information reaches the right people, efficiently, enabling
+        better decisions.
+      </p>
+
+      <h2 id="unseen_pipelines">
+        The Unseen Pipelines: Our Brokerage Business
+      </h2>
+      <p>
+        What is the fundamental role of a software engineer? We build systems.
+        These systems are essentially sophisticated tools for moving,
+        transforming, and presenting data. From creating
+        <span class="highlight">APIs'</span>
+        that deliver specific data points to designing
+        <span class="highlight">ETL (Extract, Transform, Load) pipelines</span>
+        that process vast amounts of raw data into usable formats, our work is
+        centered on managing information flow.
+      </p>
+      <p>
+        We connect various data sources, clean and validate datasets, maintain
+        data integrity, and present insights through dashboards, applications,
+        or reports. We are the architects of the digital infrastructure,
+        ensuring that critical business data reaches those who need it. We
+        typically do not generate the data, nor do we make the final decisions
+        based on it. Our role is to facilitate. We are, in essence, the
+
+        <span class="highlight">middlemen</span>.
+      </p>
+
+      <h2 id="automation_mindset">
+        The Automation Mindset: Facilitating vs. Solving
+      </h2>
+      <p>
+        A common perspective within software engineering is that automating a
+        process means the problem is
+        <span class="highlight">"solved."</span>
+        We develop a new service, optimize a database, or deploy a feature,
+        often considering the task complete. This work is indeed valuable.
+      </p>
+      <p>
+        The real value often lies not in building the machine itself, but in
+        ensuring the right fuel gets to the right engine at the right time.
+      </p>
+      <p>
+        However, this view often misses the larger picture. Did we truly solve
+        the business challenge, or did we create a more efficient
+        <span class="highlight">information delivery mechanism</span>? More
+        often, it is the latter. The actual business problem—whether it’s
+        declining sales, operational inefficiencies, or customer retention
+        issues—is ultimately addressed by those who make decisions based on the
+        information we provide. We enable, we facilitate, we broker the insights
+        that lead to solutions.
+      </p>
+
+      <h2 id="data_undercurrent">Behind the Screens: The Data Undercurrent</h2>
+      <p>
+        Forget the headlines about cutting-edge algorithms; the daily grind of a
+        software engineer often involves far less glamorous, yet equally
+        critical, tasks. We are the ones plumbing the depths of databases,
+        extracting raw data, and pushing it through intricate networks to its
+        destination. This isn’t about grand innovation; it’s about the
+        relentless, often invisible, movement of information.
+      </p>
+      <h3 id="reservoirs_conduits">The Reservoirs and Conduits</h3>
+      <p>
+        Our work frequently involves building and maintaining the vast digital
+        reservoirs—the
+        <span class="highlight">data warehouses</span>
+        and
+        <span class="highlight">data lakes</span>—where information is stored.
+        But storage is only half the battle. The other half is constructing the
+        <span class="highlight">conduits</span>: the automated scripts, the
+        reporting tools, the dashboard generators that pull specific, filtered
+        data from these reservoirs and deliver it to the right desks. It’s a
+        constant process of collection, transformation, and distribution, much
+        like an intricate, underground water system.
+      </p>
+      <h3 id="invisible_flow">The Invisible Flow of Business</h3>
+      <p>
+        Every interaction in a modern business, from a customer placing an order
+        to an employee clocking in, generates data. Our role is to capture this
+        data, process it, and ensure it flows to where it can be analyzed. We
+        build the hidden pathways that move transactional records, user activity
+        logs, and system performance metrics. The end-user rarely sees this
+        complex ballet of bytes, only the polished interface or the final
+        report. We are the silent operators, ensuring the currents of
+        information never cease, always flowing to the next point of need.
+      </p>
+      <p>
+        This continuous movement of data, often behind the scenes and without
+        direct interaction with the end-decision, solidifies our position. We
+        are the essential, yet non-decision-making, intermediaries.
+      </p>
+
+      <h2 id="interface_meets_decision">
+        The Interface: Where Data Meets Decision
+      </h2>
+      <p>
+        The flow of data, from its raw form to actionable insight is a
+        continuous chain. Software engineers are responsible for every link,
+        including the crucial interface where data becomes truly usable. We
+        design and build the digital storefronts and control panels that allow
+        people to interact with, search, filter, and visualize the information
+        we’ve meticulously moved and transformed.
+      </p>
+      <p>
+        Consider the simple act of searching for a product, applying a filter to
+        a report, or visualizing sales trends on a dashboard. These seemingly
+        effortless interactions are the result of complex engineering. Our role
+        here is to ensure that users can intuitively navigate, query, and
+        manipulate information. Making these complex interactions happen at the
+        <span class="highlight">speed of thought</span>—meaning, without
+        friction or delay, allowing users to instantly access and act upon the
+        insights they need.
+      </p>
+      <p>
+        It’s about translating the vast, intricate data landscape into a
+        digestible, actionable experience. Without this interactive layer, the
+        perfectly brokered data would remain locked away, inaccessible to those
+        who need it most for their everyday operations and decisions. Software
+        engineers are critical middlemen, making the data useful and immediate,
+        from its deepest storage to its final presentation.
+      </p>
+
+      <h2 id="inflated_reality">
+        The Inflated Reality: Perception, Pay, and the Job Market
+      </h2>
+      <p>
+        A significant challenge arises from the perception that software
+        engineers are more than just sophisticated data brokers. There's a
+        prevailing narrative, often fueled by media and industry hype, that
+        casts us as the
+        <span class="highlight">"true innovators"</span>
+        and indispensable heroes of the digital age. This inflated view can lead
+        to a certain arrogance, an assumption that our role extends far beyond
+        the administrative and facilitative work of ensuring data flow. We are
+        increasingly expected to act as "product owners," possessing deep
+        business acumen, market understanding, and strategic foresight—all while
+        maintaining the complex technical infrastructure.
+      </p>
+      <p>
+        This overestimation of the software engineer’s direct economic control
+        has a tangible consequence: inflated compensation. While our technical
+        skills are specialized and demand expertise, the core function of
+        brokering data, from backend pipelines to user interfaces is
+        fundamentally an administrative task, albeit one of high complexity. Yet
+        salaries often soar far beyond what might be considered equitable when
+        compared to other demanding, skilled trades that form the backbone of
+        our physical economy—truck driving, welding, electrical work. These
+        professions require years of training, carry significant physical risks,
+        and are absolutely essential for daily life, yet they rarely command the
+        same financial rewards.
+      </p>
+      <p>
+        This disparity fuels a peculiar, yet accepted, industry practice:
+        frequent job changes. Many software engineers cycle through companies
+        every one to two years, primarily driven by the pursuit of ever-higher
+        compensation. This isn’t necessarily about building a sustainable career
+        or creating long-term value within a single organization; it’s about
+        playing an
+        <span class="highlight">unethical job-hop market game</span>. The
+        perception of being an irreplaceable "innovator" allows individuals to
+        leverage this demand for short-term financial gains, rather than having
+        genuine "skin in the game" by committing to a business’s long-term
+        success.
+      </p>
+      <p>
+        If the aspiration is to become a millionaire, the path should ideally
+        involve genuine value creation through entrepreneurship—building a
+        business, taking on significant risk, and solving market problems
+        directly. Relying on a market dynamic that overpays for a facilitative
+        role, enabling a constant stream of job changes for more cash, is a less
+        sustainable and arguably less impactful route to wealth. The job of a
+        data broker, while vital, should be compensated fairly for its
+        administrative and facilitative nature. With pay more equivalent to that
+        of skilled trades, rather than serving as a shortcut to extreme wealth
+        or a justification for a culture of transient loyalty.
+      </p>
+
+      <h2 id="beyond_hype">Beyond the Hype: The Everyday Reality</h2>
+      <p>
+        Media portrayals often cast software engineers as the powerful
+        architects of the digital age, the brilliant minds single-handedly
+        shaping economies and controlling society’s levers. This narrative,
+        while flattering, misses the mark. The reality for most software
+        engineers is far less glamorous and far more grounded. We are not the
+        heroes dictating market trends or the puppet masters pulling the strings
+        of global finance.
+      </p>
+      <p>
+        Instead, we are the diligent, often unseen, workers ensuring that the
+        digital gears turn smoothly. Our daily work involves the meticulous task
+        of making information accessible and usable. This applies not just to
+        business operations, but to the consumer products and services that
+        underpin modern life: online shopping platforms, digital documents, GPS
+        navigation, social media feeds, streaming entertainment, and online
+        investing tools. In every one of these domains, it’s about building the
+        systems that allow people to interact with information effectively, make
+        informed choices, and navigate their daily lives with greater ease.
+      </p>
+      <p>
+        Our contribution is significant, but it’s one of enablement and support,
+        not control. We are the administrative backbone, the quiet facilitators
+        who ensure the digital world functions, allowing others to be the
+        decision-makers and the drivers of their respective fields. The economy
+        isn’t controlled by our lines of code; it’s powered by the information
+        our systems broker, enabling countless individuals to do their jobs and
+        live their lives.
+      </p>
+
+      <h2 id="embracing_middleman">
+        Embracing the Middleman: A Path to Effective Contribution
+      </h2>
+      <p>
+        Perhaps it is time to acknowledge our primary role: that of
+        sophisticated data brokers. This perspective does not diminish our
+        contribution; it clarifies its importance. By focusing on:
+      </p>
+      <ul>
+        <li>
+          <p>
+            <strong>Clarity of Information:</strong>
+            Ensuring data is not just available, but also understandable and
+            actionable.
+          </p>
+        </li>
+        <li>
+          <p>
+            <strong>Speed of Delivery:</strong>
+            Optimizing systems for timely insights.
+          </p>
+        </li>
+        <li>
+          <p>
+            <strong>Reliability:</strong>
+            Building stable systems that guarantee data integrity and
+            availability.
+          </p>
+        </li>
+        <li>
+          <p>
+            <strong>Security:</strong>
+            Protecting the sensitive information we manage.
+          </p>
+        </li>
+      </ul>
+      <p>
+        We empower organizations to navigate complexity, make informed
+        decisions, and succeed. Our value is not in making the final call, but
+        in providing the clear insights necessary for those calls to be made
+        effectively. In a data-rich world, the software engineer, as a data
+        broker, remains a vital component.
+      </p>
+      <p>
+        To foster a more sustainable and equitable industry, companies should
+        shift their focus from overpaying so-called "rockstar engineers" who
+        often jump ship after a couple of years for the next big offer. Instead,
+        the emphasis should be on building more stable business models where the
+        individual worker’s compensation is less directly tied to the company’s
+        entire business success. This likely entails hiring more people for a
+        fairer, more balanced wage, and actively challenging the wild
+        expectations many software engineers have developed—the notion that
+        passing a tech interview somehow entitles them to live as successful
+        entrepreneurs. True entrepreneurial success, and the millionaire status
+        that might accompany it, should come from taking genuine risks, building
+        one’s own business, and creating direct market value, not from playing
+        an inflated job market game.
+      </p>
+
+      <footer>
+        <p>Built with an appreciation for the middlemen.</p>
+      </footer>
+    </div>
+
+    <button id="back_to_top_btn" type="submit" title="Go to top">
+      &#8593;
+    </button>
+
+    <script>
+      let myButton = document.getElementById("back_to_top_btn");
+
+      window.onscroll = function () {
+        scrollFunction();
+      };
+
+      function scrollFunction() {
+        if (
+          document.body.scrollTop > 20 ||
+          document.documentElement.scrollTop > 20
+        ) {
+          myButton.style.display = "block";
+        } else {
+          myButton.style.display = "none";
+        }
+      }
+
+      myButton.addEventListener("click", function () {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      });
+    </script>
+  </body>
+</html>

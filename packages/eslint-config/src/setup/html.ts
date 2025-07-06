@@ -11,6 +11,7 @@ const customRules = [
   { name: "no-extra-spacing-attrs", rule: "off" },
   { name: "attrs-newline", rule: "off" },
   { name: "require-closing-tags", rule: "off" },
+  { name: "element-newline", rule: "off" },
 ];
 
 export const htmlRules = genRules(ruleNames, customRules, "html");

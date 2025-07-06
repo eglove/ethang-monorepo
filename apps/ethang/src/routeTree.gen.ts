@@ -14,6 +14,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as CoursesRouteImport } from './routes/courses'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TipsIndexRouteImport } from './routes/tips/index'
 import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar-gutter'
@@ -33,6 +34,11 @@ const NewsRoute = NewsRouteImport.update({
 const CoursesRoute = CoursesRouteImport.update({
   id: '/courses',
   path: '/courses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -64,6 +70,7 @@ const TipsFineGrainedReactRendersRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
@@ -85,6 +93,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/blog'
     | '/courses'
     | '/news'
     | '/projects'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/blog'
     | '/courses'
     | '/news'
     | '/projects'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/blog'
     | '/courses'
     | '/news'
     | '/projects'
@@ -128,6 +140,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BlogRoute: typeof BlogRoute
   CoursesRoute: typeof CoursesRoute
   NewsRoute: typeof NewsRoute
   ProjectsRoute: typeof ProjectsRoute
@@ -144,6 +157,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/courses': {
@@ -205,6 +225,15 @@ declare module './routes/index' {
     FileRoutesByPath['/']['id'],
     FileRoutesByPath['/']['path'],
     FileRoutesByPath['/']['fullPath']
+  >
+}
+declare module './routes/blog' {
+  const createFileRoute: CreateFileRoute<
+    '/blog',
+    FileRoutesByPath['/blog']['parentRoute'],
+    FileRoutesByPath['/blog']['id'],
+    FileRoutesByPath['/blog']['path'],
+    FileRoutesByPath['/blog']['fullPath']
   >
 }
 declare module './routes/courses' {
@@ -273,6 +302,7 @@ declare module './routes/tips/index' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BlogRoute: BlogRoute,
   CoursesRoute: CoursesRoute,
   NewsRoute: NewsRoute,
   ProjectsRoute: ProjectsRoute,

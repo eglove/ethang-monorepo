@@ -988,7 +988,7 @@ export default tseslint.config(
     },
     rules: {
       "html/attrs-newline": "off",
-      "html/element-newline": "error",
+      "html/element-newline": "off",
       "html/id-naming-convention": "error",
       "html/indent": "off",
       "html/lowercase": "error",
