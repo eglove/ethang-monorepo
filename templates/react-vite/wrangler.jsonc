@@ -3,7 +3,7 @@
   "assets": {
     "not_found_handling": "single-page-application"
   },
-  "compatibility_date": "2025-07-05",
+  "compatibility_date": "2025-07-06",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {
