@@ -40,7 +40,7 @@
     "react-dom": "^19.1.0",
     "sanity-image": "^1.0.0",
     "tailwind-merge": "<3",
-    "zod": "^3.25.74"
+    "zod": "^3.25.75"
   },
   "devDependencies": {
     "@ethang/eslint-config": "^22.13.11",
