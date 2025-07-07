@@ -6,6 +6,10 @@ import { TypographyH2 } from "../components/typography/typography-h2.tsx";
 
 export const blogs = [
   {
+    href: "/blog/no-comments",
+    label: "Why I Don't Allow Comments: Reclaiming Focus in a Noisy World",
+  },
+  {
     href: "/blog/software-engineers-data-brokers",
     label: "Software Engineers as Data Brokers: An Uncomfortable Truth",
   },
