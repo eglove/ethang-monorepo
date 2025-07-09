@@ -54,7 +54,7 @@ describe("error cases", () => {
 
     if (results instanceof ZodError && !isNil(results.issues[0])) {
       expect(results.issues[0].message).toStrictEqual(
-        "Expected string, received number",
+        "Invalid input: expected string, received number",
       );
     }
   });
@@ -74,7 +74,7 @@ describe("error cases", () => {
 
     if (results instanceof ZodError && !isNil(results.issues[0])) {
       expect(results.issues[0].message).toStrictEqual(
-        "Expected array, received object",
+        "Invalid input: expected array, received object",
       );
     }
   });

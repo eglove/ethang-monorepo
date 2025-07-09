@@ -1,4 +1,4 @@
-import type { ZodError, ZodSchema } from "zod";
+import type { ZodError, ZodObject } from "zod";
 
 import attempt from "lodash/attempt.js";
 import get from "lodash/get.js";
@@ -17,9 +17,9 @@ export type SearchParametersRecord = Record<
 
 export type UrlConfig<Url extends string> = {
   pathVariables?: ParseUrlParameters<Url>;
-  pathVariablesSchema?: ZodSchema;
+  pathVariablesSchema?: ZodObject;
   searchParams?: SearchParametersRecord;
-  searchParamsSchema?: ZodSchema;
+  searchParamsSchema?: ZodObject;
   urlBase?: string | URL;
 };
 

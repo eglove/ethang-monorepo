@@ -33,7 +33,7 @@
     "framer-motion": "^12.23.1",
     "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",
-    "luxon": "^3.7.0",
+    "luxon": "^3.7.1",
     "moment": "^2.30.1",
     "react": "^19.1.0",
     "react-big-calendar": "^1.19.4",
@@ -43,7 +43,7 @@
     "zod": "^4.0.0"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.13.12",
+    "@ethang/eslint-config": "^22.14.0",
     "@portabletext/types": "^2.0.13",
     "@react-types/shared": "^3.30.0",
     "@tailwindcss/typography": "^0.5.16",

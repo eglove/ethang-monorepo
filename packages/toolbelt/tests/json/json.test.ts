@@ -23,7 +23,7 @@ describe("parse json", () => {
 
     if (results instanceof ZodError && !isNil(results.issues[0])) {
       expect(results.issues[0].message).toStrictEqual(
-        "Expected string, received number",
+        "Invalid input: expected string, received number",
       );
     }
   });

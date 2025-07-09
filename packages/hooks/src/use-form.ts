@@ -13,7 +13,7 @@ import {
   useCallback,
   useState,
 } from "react";
-import { type z, ZodError } from "zod";
+import { z, ZodError } from "zod";
 
 export type FieldErrors<StateType> =
   | Record<keyof StateType, null | string[] | undefined>
@@ -28,15 +28,12 @@ export type UseFormProperties<StateType> = {
 };
 
 export type UseFormReturn<StateType> = {
-  clearFieldErrors: () => void;
   clearForm: () => void;
-  fieldErrors: FieldErrors<StateType>;
   formError: string | undefined;
   formState: StateType;
   handleChange: (event: ChangeEvent) => void;
   handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
   resetForm: () => void;
-  setFieldErrors: Dispatch<SetStateAction<FieldErrors<StateType>>>;
   setFormError: Dispatch<SetStateAction<string | undefined>>;
   setFormState: Dispatch<SetStateAction<StateType>>;
   setValue: (key: keyof StateType) => (value: StateType[typeof key]) => void;
@@ -70,13 +67,6 @@ export const useForm = <StateType extends Record<string, unknown>>(
     return defaultState as StateType;
   });
   const [formError, setFormError] = useState<string>();
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors<StateType>>();
-
-  const clearFieldErrors = useCallback((): void => {
-    if (fieldErrors !== undefined) {
-      setFieldErrors(setAll(fieldErrors, null));
-    }
-  }, [fieldErrors]);
 
   const clearForm = useCallback((): void => {
     setFormState(setAll(formState, ""));
@@ -130,11 +120,7 @@ export const useForm = <StateType extends Record<string, unknown>>(
       const result = properties.zodValidator.safeParse(formState);
 
       if (!result.success && result.error instanceof ZodError) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        const errors = result.error.formErrors
-          .fieldErrors as typeof fieldErrors;
-        setFieldErrors(errors);
-        properties.onFieldError?.(errors);
+        setFormError(z.prettifyError(result.error));
         return false;
       }
     }
@@ -168,11 +154,10 @@ export const useForm = <StateType extends Record<string, unknown>>(
       }
 
       if (!hasException) {
-        clearFieldErrors();
         setFormError("");
       }
     },
-    [clearFieldErrors, properties, validate],
+    [properties, validate],
   );
 
   const setValue = useCallback((key: keyof StateType) => {
@@ -187,15 +172,12 @@ export const useForm = <StateType extends Record<string, unknown>>(
   }, []);
 
   return {
-    clearFieldErrors,
     clearForm,
-    fieldErrors,
     formError,
     formState,
     handleChange,
     handleSubmit,
     resetForm,
-    setFieldErrors,
     setFormError,
     setFormState,
     setValue,

@@ -6,6 +6,11 @@ import { TypographyH2 } from "../components/typography/typography-h2.tsx";
 
 export const blogs = [
   {
+    href: "/blog/modern-labor-urban-development",
+    label:
+      "Navigating the Interconnected Challenges of Modern Labor and Urban Development",
+  },
+  {
     href: "/blog/no-comments",
     label: "Why I Don't Allow Comments: Reclaiming Focus in a Noisy World",
   },

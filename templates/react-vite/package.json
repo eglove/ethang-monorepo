@@ -3,7 +3,7 @@
     "extends browserslist-config-baseline"
   ],
   "dependencies": {
-    "@ethang/toolbelt": "^4.4.10",
+    "@ethang/toolbelt": "^4.4.11",
     "@heroui/react": "2.7.11",
     "@heroui/theme": "2.4.17",
     "@tanstack/query-async-storage-persister": "^5.82.0",
@@ -18,7 +18,7 @@
     "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.525.0",
-    "luxon": "^3.7.0",
+    "luxon": "^3.7.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "uuid": "^11.1.0",
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.9.1",
-    "@ethang/eslint-config": "^22.13.12",
+    "@ethang/eslint-config": "^22.14.0",
     "@tanstack/router-plugin": "^1.125.6",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.20",

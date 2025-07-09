@@ -1,13 +1,13 @@
 {
   "author": "",
   "dependencies": {
-    "@ethang/toolbelt": "^4.4.10",
+    "@ethang/toolbelt": "^4.4.11",
     "lodash": "^4.17.21",
     "zod": "^4.0.0"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.13.12",
+    "@ethang/eslint-config": "^22.14.0",
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.0.12",
     "eslint": "^9.30.1"

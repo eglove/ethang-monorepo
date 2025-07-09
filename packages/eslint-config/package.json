@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@ethang/markdown-generator": "^1.1.5",
-    "@ethang/toolbelt": "^4.4.10",
+    "@ethang/toolbelt": "^4.4.11",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.20",
@@ -62,5 +62,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "22.13.12"
+  "version": "22.14.0"
 }

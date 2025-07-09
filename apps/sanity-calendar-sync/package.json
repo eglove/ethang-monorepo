@@ -4,7 +4,7 @@
     "@portabletext/types": "^2.0.13",
     "@sanity/client": "^7.6.0",
     "lodash": "^4.17.21",
-    "luxon": "^3.7.0",
+    "luxon": "^3.7.1",
     "ts-ics": "^2.1.8"
   },
   "devDependencies": {

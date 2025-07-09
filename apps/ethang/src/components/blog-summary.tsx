@@ -19,7 +19,7 @@ export const BlogSummary = () => {
         {map(topThreeBlogs, (blog) => {
           return (
             <a href={blog.href} key={blog.label}>
-              <Card className="border-2">
+              <Card className="border-2 h-full">
                 <CardHeader>
                   <TypographyH2 className="p-0 border-b-0">
                     {blog.label}

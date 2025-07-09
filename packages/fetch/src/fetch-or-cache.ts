@@ -16,7 +16,7 @@ type FetchOrCacheProperties<T> = {
   init?: RequestInit;
   input: Request | string | URL;
   mode?: FetchAndCacheMode | undefined;
-  schema: z.ZodSchema<T>;
+  schema: z.ZodType<T>;
   setCachedValue?: (value: T) => Promise<unknown>;
 };
 
