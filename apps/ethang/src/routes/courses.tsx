@@ -152,7 +152,7 @@ const RouteComponent = () => {
               much money. $300 is way too much. Part of the reason I recommended
               Academind is they've kept reasonable pricing in an environment
               where instructors expect to pump out low quality courses at the
-              end of the year targeting "use it or lost it" company stipends.
+              end of the year targeting "use it or lose it" company stipends.
             </TypographyP>
             <TypographyP>
               The following courses are entirely optional but recommended due to
