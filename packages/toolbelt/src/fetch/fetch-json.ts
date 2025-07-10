@@ -1,10 +1,8 @@
-import { ZodError } from "zod";
-
-import type { ZodValidator } from "../types/zod-validator.js";
+import { ZodError, type ZodObject } from "zod";
 
 import { parseFetchJson } from "./json.ts";
 
-export const fetchJson = async <Z extends ZodValidator<Z>>(
+export const fetchJson = async <Z extends ZodObject>(
   input: Request | string | URL,
   schema: Z,
   init?: RequestInit,

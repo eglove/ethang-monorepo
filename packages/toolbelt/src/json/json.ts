@@ -1,11 +1,9 @@
-import type { z } from "zod";
+import type { z, ZodObject } from "zod";
 
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
 
-import type { ZodValidator } from "../types/zod-validator.ts";
-
-export const parseJson = <Z extends ZodValidator<Z>>(
+export const parseJson = <Z extends ZodObject>(
   text: string,
   validator: Z,
   reviver?: (this: unknown, key: string, value: unknown) => unknown,

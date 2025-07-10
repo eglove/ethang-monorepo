@@ -1,12 +1,10 @@
-import type { z, ZodError } from "zod";
+import type { z, ZodError, ZodObject } from "zod";
 
 import isError from "lodash/isError.js";
 
-import type { ZodValidator } from "../types/zod-validator.ts";
-
 import { attemptAsync } from "../functional/attempt-async.js";
 
-export const parseFetchJson = async <Z extends ZodValidator<Z>>(
+export const parseFetchJson = async <Z extends ZodObject>(
   value: Request | Response,
   schema: Z,
 ): Promise<Error | z.output<Z> | ZodError<Z>> => {

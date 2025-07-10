@@ -1,4 +1,4 @@
-import type { ZodError, ZodSchema } from "zod";
+import type { ZodError, ZodObject } from "zod";
 
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
@@ -16,7 +16,7 @@ export type ParseUrlParameters<Url> =
 export const createUrlPath = <T extends string>(
   path: T,
   parameters: ParseUrlParameters<T>,
-  parametersSchema?: ZodSchema,
+  parametersSchema?: ZodObject,
 ): Error | string | ZodError<typeof parametersSchema> => {
   let url = path;
 

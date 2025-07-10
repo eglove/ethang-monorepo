@@ -1,18 +1,17 @@
-import type { ZodValidator } from "@ethang/toolbelt/types/zod-validator";
-import type { z } from "zod";
+import type { z, ZodObject } from "zod";
 
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response";
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
 import isError from "lodash/isError";
 
-type QueryProperties<Z extends ZodValidator<Z>, R> = {
+type QueryProperties<Z extends ZodObject, R> = {
   dbFunction: (body: z.output<Z>) => Promise<R>;
   request: Request;
   requestSchema: Z;
 };
 
-export const queryOnBody = async <Z extends ZodValidator<Z>, R>({
+export const queryOnBody = async <Z extends ZodObject, R>({
   dbFunction,
   request,
   requestSchema,

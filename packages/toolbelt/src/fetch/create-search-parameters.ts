@@ -1,4 +1,4 @@
-import type { ZodError, ZodSchema } from "zod";
+import type { ZodObject } from "zod";
 
 import isArray from "lodash/isArray.js";
 import isNil from "lodash/isNil.js";
@@ -9,10 +9,10 @@ type SearchParametersRecord = Record<
   number | number[] | string | string[] | undefined
 >;
 
-export const createSearchParameters = <Z extends ZodSchema>(
+export const createSearchParameters = <Z extends ZodObject>(
   searchParameters: SearchParametersRecord,
-  searchParametersSchema: ZodSchema,
-): URLSearchParams | ZodError<Z> => {
+  searchParametersSchema: ZodObject,
+): ReturnType<Z["safeParse"]>["error"] | URLSearchParams => {
   const result = searchParametersSchema.safeParse(searchParameters);
 
   if (!result.success) {
