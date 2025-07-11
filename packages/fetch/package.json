@@ -7,7 +7,7 @@
     "@ethang/toolbelt": "^4.4.11",
     "idb": "^8.0.2",
     "lodash": "^4.17.21",
-    "zod": "^4.0.3"
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "@ethang/eslint-config": "^22.14.0",

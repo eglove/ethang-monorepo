@@ -38,7 +38,7 @@ export const CreateTodoForm = () => {
     if (parsed.success) {
       createTodoMutate(parsed.data);
     } else {
-      setErrors(parsed.error.flatten().fieldErrors);
+      setErrors(parsed.error.issues.flat());
     }
   };
 
