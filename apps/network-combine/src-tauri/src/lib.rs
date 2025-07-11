@@ -1,28 +1,32 @@
 mod network_utils;
+mod win_scan;
 
 use serde::Serialize;
 use std::result::Result;
-use crate::network_utils::{attempt_connection, scan_networks};
+use crate::network_utils::{attempt_connection, scan_networks, get_connected_ssid};
 
 #[derive(Serialize, Clone)]
-struct WiFiNetworkInfo {
-    ssid: String,
-    signal_strength: i32,
-    channel: i32,
-    authentication: String,
-    encryption: String,
-    mac_address: String,
-    is_connected: bool,
+pub struct WiFiNetworkInfo {
+    pub ssid: String,
+    pub signal_strength: i32,
+    pub channel: i32,
+    pub authentication: String,
+    pub encryption: String,
+    pub mac_address: String,
+    pub is_connected: bool,
 }
 
 #[tauri::command]
 fn list_networks() -> Result<Vec<WiFiNetworkInfo>, String> {
+    if cfg!(target_os = "windows") {
+        win_scan::force_wifi_scan()?;
+    }
     scan_networks()
 }
 
 #[tauri::command]
 fn connect_to_network(ssid: String, password: Option<String>) -> Result<String, String> {
-    if let Some(connected_ssid) = network_utils::get_connected_ssid() {
+    if let Some(connected_ssid) = get_connected_ssid() {
         if connected_ssid == ssid {
             return Ok("Already connected to this network".to_string());
         }

@@ -1,4 +1,4 @@
-use crate::{network_utils, WiFiNetworkInfo};
+use crate::{WiFiNetworkInfo};
 use std::collections::HashMap;
 use std::process::Command;
 use std::thread;
@@ -54,7 +54,7 @@ pub fn parse_security(security: &String) -> (String, String) {
 }
 
 pub fn scan_networks() -> Result<Vec<WiFiNetworkInfo>, String> {
-    let connected_ssid = network_utils::get_connected_ssid();
+    let connected_ssid = get_connected_ssid();
 
     let networks = match wifiscanner::scan() {
         Ok(networks) => networks,
@@ -65,7 +65,7 @@ pub fn scan_networks() -> Result<Vec<WiFiNetworkInfo>, String> {
         .into_iter()
         .map(|network| {
             let ssid = network.ssid;
-            let (authentication, encryption) = network_utils::parse_security(&network.security);
+            let (authentication, encryption) = parse_security(&network.security);
             let mac_address = network.mac.clone();
             let signal_strength = network.signal_level.parse::<i32>().unwrap_or(0);
             let channel = network.channel.parse::<i32>().unwrap_or(0);
@@ -136,7 +136,7 @@ pub fn attempt_connection(ssid: &str) -> Result<String, String> {
             for _ in 0..10 {
                 thread::sleep(Duration::from_secs(1));
 
-                if let Some(current_ssid) = network_utils::get_connected_ssid() {
+                if let Some(current_ssid) = get_connected_ssid() {
                     if current_ssid == ssid {
                         return Ok("Connected successfully".to_string());
                     }

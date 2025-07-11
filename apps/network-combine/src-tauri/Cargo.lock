@@ -2085,12 +2085,14 @@ name = "network-combine"
 version = "0.1.0"
 dependencies = [
  "network-interface",
+ "scopeguard",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
  "tauri-plugin-opener",
  "wifiscanner",
+ "windows",
 ]
 
 [[package]]
