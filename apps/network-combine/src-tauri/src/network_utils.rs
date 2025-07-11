@@ -111,7 +111,13 @@ fn process_network_list(wifi_networks: Vec<WiFiNetworkInfo>) -> Vec<WiFiNetworkI
     }
 
     let mut result: Vec<WiFiNetworkInfo> = ssid_map.into_values().collect();
-    result.sort_by(|a, b| b.signal_strength.cmp(&a.signal_strength));
+    result.sort_by(|a, b| {
+        match (a.is_connected, b.is_connected) {
+            (true, false) => std::cmp::Ordering::Less,
+            (false, true) => std::cmp::Ordering::Greater,
+            _ => b.signal_strength.cmp(&a.signal_strength),
+        }
+    });
     result
 }
 
