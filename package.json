@@ -26,7 +26,8 @@
     ],
     "overrides": {
       "tailwind-merge": "<3",
-      "tailwindcss": "<4"
+      "tailwindcss": "<4",
+      "rollup": "4.29.1"
     }
   },
   "scripts": {

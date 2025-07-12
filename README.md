@@ -11,7 +11,7 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **auth**: Authentication service used for my own projects.
 - **sanity-calendar-sync**: Utility application for synchronizing calendar events between Sanity CMS and external calendar services.
 - **sterett-admin**: Administrative interface for the Sterett Creek Village Trustees, providing content management capabilities for the sterett-react website.
-- **sterett-react**: Community organization/HOA website with content management through Sanity CMS, featuring news, events, galleries, and document management.
+- **sterett-client**: Community organization/HOA website with content management through Sanity CMS, featuring news, events, galleries, and document management.
 
 ### Packages
 
