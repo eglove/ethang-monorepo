@@ -4,6 +4,7 @@
     "current node"
   ],
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@heroui/react": "2.7.11",
     "@heroui/theme": "2.4.17",
     "@tanstack/react-query": "^5.82.0",

@@ -1,4 +1,5 @@
 use crate::{WiFiNetworkInfo};
+use crate::favorites;
 use std::collections::HashMap;
 use std::process::Command;
 use std::thread;
@@ -56,6 +57,11 @@ pub fn parse_security(security: &String) -> (String, String) {
 pub fn scan_networks() -> Result<Vec<WiFiNetworkInfo>, String> {
     let connected_ssid = get_connected_ssid();
 
+    let favorites = match favorites::read_favorites() {
+        Ok(favs) => favs,
+        Err(e) => return Err(format!("Failed to read favorites: {:?}", e)),
+    };
+
     let networks = match wifiscanner::scan() {
         Ok(networks) => networks,
         Err(e) => return Err(format!("Failed to scan WiFi networks: {:?}", e)),
@@ -75,6 +81,8 @@ pub fn scan_networks() -> Result<Vec<WiFiNetworkInfo>, String> {
                 None => false,
             };
 
+            let is_favorite = favorites.contains(&ssid);
+
             WiFiNetworkInfo {
                 ssid,
                 signal_strength,
@@ -83,6 +91,7 @@ pub fn scan_networks() -> Result<Vec<WiFiNetworkInfo>, String> {
                 encryption,
                 mac_address,
                 is_connected,
+                is_favorite,
             }
         })
         .collect();
@@ -152,5 +161,16 @@ pub fn attempt_connection(ssid: &str) -> Result<String, String> {
             return Err("Connection timeout".to_string());
         }
         Err(e) => Err(format!("Failed to execute command: {}", e)),
+    }
+}
+
+pub fn check_internet_connectivity() -> bool {
+    let output = Command::new("ping")
+        .args(["-n", "1", "-w", "3000", "8.8.8.8"])
+        .output();
+
+    match output {
+        Ok(output) => output.status.success(),
+        Err(_) => false,
     }
 }

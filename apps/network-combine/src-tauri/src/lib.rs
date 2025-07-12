@@ -1,5 +1,6 @@
 mod network_utils;
 mod win_scan;
+mod favorites;
 
 use serde::Serialize;
 use std::result::Result;
@@ -14,6 +15,7 @@ pub struct WiFiNetworkInfo {
     pub encryption: String,
     pub mac_address: String,
     pub is_connected: bool,
+    pub is_favorite: bool,
 }
 
 #[tauri::command]
@@ -39,11 +41,32 @@ fn connect_to_network(ssid: String, password: Option<String>) -> Result<String, 
     Err("Unknown error occurred".to_string())
 }
 
+#[tauri::command]
+fn add_favorite_network(ssid: String) -> Result<bool, String> {
+    match favorites::add_favorite(&ssid) {
+        Ok(added) => Ok(added),
+        Err(e) => Err(format!("Failed to add favorite: {}", e)),
+    }
+}
+
+#[tauri::command]
+fn remove_favorite_network(ssid: String) -> Result<bool, String> {
+    match favorites::remove_favorite(&ssid) {
+        Ok(removed) => Ok(removed),
+        Err(e) => Err(format!("Failed to remove favorite: {}", e)),
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![list_networks, connect_to_network])
+        .invoke_handler(tauri::generate_handler![
+            list_networks, 
+            connect_to_network, 
+            add_favorite_network, 
+            remove_favorite_network
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,3 +1,5 @@
+import { StarIcon as StarOutlineIcon } from "@heroicons/react/24/outline";
+import { StarIcon as StarSolidIcon } from "@heroicons/react/24/solid";
 import {
   Button,
   Card,
@@ -13,6 +15,7 @@ import { twMerge } from "tailwind-merge";
 import type { WiFiNetworkInfo } from "../queries/list-networks.ts";
 
 import { connectToNetwork } from "../queries/connect-to-network.ts";
+import { toggleFavorite } from "../queries/toggle-favorite.ts";
 
 type WifiNetworkCardProperties = {
   network: WiFiNetworkInfo;
@@ -25,6 +28,8 @@ export const WifiNetworkCard = ({ network }: WifiNetworkCardProperties) => {
   );
 
   const { isPending, mutate } = useMutation(connectToNetwork);
+  const { isPending: isFavoritePending, mutate: mutateFavorite } =
+    useMutation(toggleFavorite);
 
   return (
     <Card
@@ -66,17 +71,40 @@ export const WifiNetworkCard = ({ network }: WifiNetworkCardProperties) => {
         </div>
       </CardBody>
       <CardFooter>
-        {!network.is_connected && (
+        <div className="flex justify-between w-full">
+          {!network.is_connected && (
+            <Button
+              onPress={() => {
+                mutate(network);
+              }}
+              color="primary"
+              isLoading={isPending}
+            >
+              Connect
+            </Button>
+          )}
+
+          {network.is_connected && <div></div>}
+
           <Button
+            isIconOnly
+            aria-label={
+              network.is_favorite ? "Remove from favorites" : "Add to favorites"
+            }
             onPress={() => {
-              mutate(network);
+              mutateFavorite(network);
             }}
-            color="primary"
-            isLoading={isPending}
+            color="default"
+            isLoading={isFavoritePending}
+            variant="light"
           >
-            Connect
+            {network.is_favorite ? (
+              <StarSolidIcon className="h-5 w-5 text-warning" />
+            ) : (
+              <StarOutlineIcon className="h-5 w-5" />
+            )}
           </Button>
-        )}
+        </div>
       </CardFooter>
     </Card>
   );

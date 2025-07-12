@@ -6,6 +6,7 @@ export type WiFiNetworkInfo = {
   channel: number;
   encryption: string;
   is_connected: boolean;
+  is_favorite: boolean;
   mac_address: string;
   signal_strength: number;
   ssid: string;
