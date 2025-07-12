@@ -16,6 +16,7 @@ export const queryOnBody = async <Z extends ZodObject, R>({
   request,
   requestSchema,
 }: QueryProperties<Z, R>) => {
+  // @ts-expect-error not using old types
   const body = await parseFetchJson(request, requestSchema);
 
   if (isError(body)) {
