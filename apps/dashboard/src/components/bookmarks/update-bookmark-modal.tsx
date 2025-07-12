@@ -87,7 +87,7 @@ export const UpdateBookmarkModal = () => {
             <Input
               isRequired
               validate={(value) => {
-                const parsed = z.string().url().safeParse(value);
+                const parsed = z.url().safeParse(value);
 
                 if (!parsed.success) {
                   return "Invalid url";

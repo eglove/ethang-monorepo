@@ -881,6 +881,7 @@ export default tseslint.config(
         {
           cspell: {
             words: [
+              "tauri",
               "Applynetic",
               "julianday",
               "typicode",
@@ -976,6 +977,7 @@ export default tseslint.config(
       "markdown/no-missing-link-fragments": "error",
       "markdown/no-multiple-h1": "error",
       "markdown/no-reversed-media-syntax": "error",
+      "markdown/no-unused-definitions": "error",
       "markdown/require-alt-text": "error",
       "markdown/table-column-count": "error",
     },
@@ -1052,7 +1054,9 @@ export default tseslint.config(
       "css/no-duplicate-imports": "error",
       "css/no-empty-blocks": "error",
       "css/no-important": "error",
+      "css/no-invalid-at-rule-placement": "error",
       "css/no-invalid-at-rules": "off",
+      "css/no-invalid-named-grid-areas": "error",
       "css/no-invalid-properties": "error",
       "css/prefer-logical-properties": "error",
       "css/relative-font-units": "error",

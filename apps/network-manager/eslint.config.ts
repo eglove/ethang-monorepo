@@ -4,7 +4,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: [],
+    ignores: ["dist", "node_modules", "src-tauri", "**/*.d.ts"],
   },
   ...config,
   ...reactConfig,

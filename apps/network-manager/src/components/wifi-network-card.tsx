@@ -20,7 +20,9 @@ type WifiNetworkCardProperties = {
   network: WiFiNetworkInfo;
 };
 
-export const WifiNetworkCard = ({ network }: WifiNetworkCardProperties) => {
+export const WifiNetworkCard = ({
+  network,
+}: Readonly<WifiNetworkCardProperties>) => {
   const networkStrength = Math.max(
     0,
     Math.min(100, (network.signal_strength + 100) * 2),
@@ -48,9 +50,9 @@ export const WifiNetworkCard = ({ network }: WifiNetworkCardProperties) => {
       <CardBody className="p-2">
         <div className="grid gap-2">
           <Progress
+            showValueLabel
             color="primary"
             label="Signal Strength"
-            showValueLabel={true}
             value={networkStrength}
           />
         </div>

@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient();
 
-export const Providers = ({ children }: PropsWithChildren) => {
+export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   return (
     <QueryClientProvider client={queryClient}>
       <HeroUIProvider>{children}</HeroUIProvider>
