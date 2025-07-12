@@ -2081,7 +2081,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "network-combine"
+name = "network-interface"
+version = "1.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a4a43439bf756eed340bdf8feba761e2d50c7d47175d87545cd5cbe4a137c4d1"
+dependencies = [
+ "cc",
+ "libc",
+ "thiserror 1.0.69",
+ "winapi",
+]
+
+[[package]]
+name = "network-manager"
 version = "0.1.0"
 dependencies = [
  "network-interface",
@@ -2093,18 +2105,6 @@ dependencies = [
  "tauri-plugin-opener",
  "wifiscanner",
  "windows",
-]
-
-[[package]]
-name = "network-interface"
-version = "1.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4a43439bf756eed340bdf8feba761e2d50c7d47175d87545cd5cbe4a137c4d1"
-dependencies = [
- "cc",
- "libc",
- "thiserror 1.0.69",
- "winapi",
 ]
 
 [[package]]

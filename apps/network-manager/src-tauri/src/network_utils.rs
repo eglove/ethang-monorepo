@@ -54,8 +54,70 @@ pub fn parse_security(security: &String) -> (String, String) {
     ("Unknown".to_string(), "Unknown".to_string())
 }
 
+fn try_connect_to_favorite_networks(current_ssid: &str) -> Result<Option<String>, String> {
+    if check_internet_connectivity() {
+        return Ok(None);
+    }
+
+    println!("No internet connectivity on current network: {}", current_ssid);
+
+    let favorites = match favorites::read_favorites() {
+        Ok(favs) => favs,
+        Err(e) => return Err(format!("Failed to read favorites: {:?}", e)),
+    };
+
+    let available_networks = match wifiscanner::scan() {
+        Ok(networks) => networks,
+        Err(e) => return Err(format!("Failed to scan WiFi networks: {:?}", e)),
+    };
+
+    let mut favorite_networks: Vec<_> = available_networks
+        .iter()
+        .filter(|network| favorites.contains(&network.ssid) && network.ssid != current_ssid)
+        .collect();
+
+    favorite_networks.sort_by(|a, b| {
+        let a_strength = a.signal_level.parse::<i32>().unwrap_or(0);
+        let b_strength = b.signal_level.parse::<i32>().unwrap_or(0);
+        b_strength.cmp(&a_strength)
+    });
+
+    for network in favorite_networks {
+        println!("Attempting to connect to favorite network: {}", network.ssid);
+        match attempt_connection(&network.ssid) {
+            Ok(_) => {
+                println!("Successfully connected to: {}", network.ssid);
+                if let Some(new_ssid) = get_connected_ssid() {
+                    if new_ssid == network.ssid {
+                        return Ok(Some(new_ssid));
+                    }
+                }
+            }
+            Err(e) => {
+                println!("Failed to connect to {}: {}", network.ssid, e);
+            }
+        }
+    }
+
+    println!("Could not connect to any favorite network, staying with current connection");
+    Ok(None)
+}
+
 pub fn scan_networks() -> Result<Vec<WiFiNetworkInfo>, String> {
     let connected_ssid = get_connected_ssid();
+
+    if let Some(current_ssid) = &connected_ssid {
+        match try_connect_to_favorite_networks(current_ssid) {
+            Ok(Some(_)) => {
+                return scan_networks();
+            }
+            Ok(None) => {
+            }
+            Err(e) => {
+                return Err(e);
+            }
+        }
+    }
 
     let favorites = match favorites::read_favorites() {
         Ok(favs) => favs,
@@ -121,11 +183,15 @@ fn process_network_list(wifi_networks: Vec<WiFiNetworkInfo>) -> Vec<WiFiNetworkI
 
     let mut result: Vec<WiFiNetworkInfo> = ssid_map.into_values().collect();
     result.sort_by(|a, b| {
-        match (a.is_connected, b.is_connected) {
-            (true, false) => std::cmp::Ordering::Less,
-            (false, true) => std::cmp::Ordering::Greater,
-            _ => b.signal_strength.cmp(&a.signal_strength),
-        }
+        (
+            !a.is_connected,
+            !a.is_favorite,
+            -a.signal_strength
+        ).cmp(&(
+            !b.is_connected,
+            !b.is_favorite,
+            -b.signal_strength
+        ))
     });
     result
 }

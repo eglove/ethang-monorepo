@@ -1,5 +1,3 @@
-import { StarIcon as StarOutlineIcon } from "@heroicons/react/24/outline";
-import { StarIcon as StarSolidIcon } from "@heroicons/react/24/solid";
 import {
   Button,
   Card,
@@ -10,6 +8,7 @@ import {
   Progress,
 } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
+import { StarIcon, WifiIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 import type { WiFiNetworkInfo } from "../queries/list-networks.ts";
@@ -35,7 +34,7 @@ export const WifiNetworkCard = ({ network }: WifiNetworkCardProperties) => {
     <Card
       className={twMerge(network.is_connected && "border-2 border-success")}
     >
-      <CardHeader>
+      <CardHeader className="p-2">
         <div className="flex justify-between gap-4 w-full">
           <h2 className="font-semibold text-wrap">{network.ssid}</h2>
           <Chip
@@ -46,46 +45,18 @@ export const WifiNetworkCard = ({ network }: WifiNetworkCardProperties) => {
           </Chip>
         </div>
       </CardHeader>
-      <CardBody>
-        <div className="grid gap-4">
+      <CardBody className="p-2">
+        <div className="grid gap-2">
           <Progress
             color="primary"
             label="Signal Strength"
             showValueLabel={true}
             value={networkStrength}
           />
-          <div>
-            <h3 className="text-gray-500 mb-1">Security</h3>
-            <p className="text-gray-700">
-              {network.authentication} / {network.encryption}
-            </p>
-          </div>
-          <div>
-            <h3 className="text-gray-500 mb-1">Channel</h3>
-            <p className="text-gray-700">{network.channel}</p>
-          </div>
-          <div>
-            <h3 className="text-gray-500 mb-1">MAC Address</h3>
-            <p className="text-gray-700">{network.mac_address}</p>
-          </div>
         </div>
       </CardBody>
-      <CardFooter>
-        <div className="flex justify-between w-full">
-          {!network.is_connected && (
-            <Button
-              onPress={() => {
-                mutate(network);
-              }}
-              color="primary"
-              isLoading={isPending}
-            >
-              Connect
-            </Button>
-          )}
-
-          {network.is_connected && <div></div>}
-
+      <CardFooter className="p-2">
+        <div className="flex justify-end w-full gap-4">
           <Button
             isIconOnly
             aria-label={
@@ -99,10 +70,23 @@ export const WifiNetworkCard = ({ network }: WifiNetworkCardProperties) => {
             variant="light"
           >
             {network.is_favorite ? (
-              <StarSolidIcon className="h-5 w-5 text-warning" />
+              <StarIcon className="size-5 text-warning fill-warning" />
             ) : (
-              <StarOutlineIcon className="h-5 w-5" />
+              <StarIcon className="size-5" />
             )}
+          </Button>
+
+          <Button
+            isIconOnly
+            onPress={() => {
+              mutate(network);
+            }}
+            aria-label={network.is_connected ? "Disconnect" : "Connect"}
+            color={network.is_connected ? "primary" : "default"}
+            isLoading={isPending}
+            variant={network.is_connected ? "solid" : "light"}
+          >
+            <WifiIcon className="size-5" />
           </Button>
         </div>
       </CardFooter>
