@@ -16,7 +16,7 @@
     "prisma": "^6.11.1"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.15.0",
+    "@ethang/eslint-config": "^22.15.1",
     "@types/lodash": "^4.17.20",
     "browserslist-config-baseline": "^0.4.0",
     "eslint": "^9.31.0",
