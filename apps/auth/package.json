@@ -6,7 +6,7 @@
   "dependencies": {
     "@ethang/schemas": "workspace:*",
     "@ethang/toolbelt": "^4.4.11",
-    "@hono/zod-validator": "^0.7.0",
+    "@hono/zod-validator": "^0.7.1",
     "@prisma/adapter-d1": "^6.11.1",
     "@prisma/client": "6.11.1",
     "bcryptjs": "^3.0.2",
