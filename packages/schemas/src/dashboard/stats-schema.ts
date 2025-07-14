@@ -3,7 +3,6 @@ import { z } from "zod";
 export const userStatsSchema = z.object({
   averageApplicationsPerDay: z.number(),
   averageResponseRate: z.number(),
-  averageTimeToInterview: z.number(),
   averageTimeToRejected: z.number(),
   topCompanies: z.array(
     z.object({

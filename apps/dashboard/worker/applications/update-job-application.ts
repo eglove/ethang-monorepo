@@ -13,24 +13,10 @@ export const updateJobApplication = async (
     dbFunction: async (body) => {
       const prisma = getPrismaClient(environment);
 
-      await prisma.applications.update({
-        data: {
-          interviewRounds: {
-            deleteMany: {},
-          },
-        },
-        where: { id: body.id, userId },
-      });
-
       return prisma.applications.update({
         data: {
           applied: body.applied,
           company: body.company,
-          interviewRounds: {
-            createMany: {
-              data: body.interviewRounds,
-            },
-          },
           jobBoardUrl: isNil(body.jobBoardUrl) ? null : body.jobBoardUrl,
           rejected: body.rejected,
           title: body.title,

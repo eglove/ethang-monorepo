@@ -1,5 +1,4 @@
 import filter from "lodash/filter";
-import isEmpty from "lodash/isEmpty";
 import isNil from "lodash/isNil";
 
 import type { getUserStatsData } from "./get-user-stats-data.ts";
@@ -12,9 +11,7 @@ export const getAverageResponseRate = (
   >["allUserApplications"],
 ) => {
   const withResponses = filter(allUserApplications, (application) => {
-    return (
-      !isEmpty(application.interviewRounds) || !isNil(application.rejected)
-    );
+    return !isNil(application.rejected);
   });
 
   const result = statsComputeEngine

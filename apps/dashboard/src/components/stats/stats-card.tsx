@@ -26,10 +26,6 @@ export const StatsCards = () => {
   return (
     <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       <TrendCard
-        title="Avg. Days to Interview"
-        value={getStringValue(data?.averageTimeToInterview)}
-      />
-      <TrendCard
         title="Avg. Days to Rejection"
         value={getStringValue(data?.averageTimeToRejected)}
       />

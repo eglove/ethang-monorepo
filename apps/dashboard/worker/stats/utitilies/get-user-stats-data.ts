@@ -22,13 +22,10 @@ export const getUserStatsData = async (
   const allUserApplicationsQuery = `select
   T1.applied,
   T1.rejected,
-  T2.dateTime AS interviewRounds_dateTime
 from applications as T1
-left join interviewRounds as T2 on T1.id = T2.applicationsId
 WHERE T1.userId = ? AND date(T1.applied) >= date(?)
 order by
-  T1.applied DESC,
-  T2.dateTime DESC;
+  T1.applied DESC;
 `;
 
   const [topCompanies, allUserApplications, totalApplications, totalCompanies] =

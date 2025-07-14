@@ -5,13 +5,6 @@ export const applicationSchema = z.object({
   applied: z.string().trim(),
   company: z.string().trim(),
   id: z.string().trim(),
-  interviewRounds: z.array(
-    z.object({
-      applicationsId: z.string().trim().nullable(),
-      dateTime: z.string().trim(),
-      id: z.string().trim(),
-    }),
-  ),
   jobBoardUrl: z.string().trim().optional().nullable(),
   rejected: z.string().trim().nullable(),
   title: z.string().trim(),
@@ -37,17 +30,7 @@ export const deleteApplicationSchema = z.object({
   id: z.string(),
 });
 
-export const updateApplicationSchema = applicationSchema
-  .omit({
-    interviewRounds: true,
-  })
-  .extend({
-    interviewRounds: z.array(
-      z.object({
-        dateTime: z.string().trim(),
-      }),
-    ),
-  });
+export const updateApplicationSchema = applicationSchema;
 
 export type CreateJobApplication = z.infer<typeof createApplicationSchema>;
 export type DeleteJobApplication = z.infer<typeof deleteApplicationSchema>;

@@ -14,13 +14,8 @@ import {
 } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
 import isString from "lodash/isString";
-import replace from "lodash/replace.js";
-import startsWith from "lodash/startsWith";
-import times from "lodash/times.js";
-import toInteger from "lodash/toInteger";
 import { XIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -35,37 +30,26 @@ import { SectionHeader } from "../../section-header.tsx";
 import { applicationStore } from "../../stores/application-store.ts";
 import { authStore } from "../../stores/auth-store.ts";
 
-const getColumns = (maxRoundCount: number) => {
-  const roundsColumns = times(maxRoundCount, (index) => {
-    return { key: `round${index}`, label: `Round ${index + 1}` };
-  });
-
-  return [
-    { key: "title", label: "Title" },
-    { key: "company", label: "Company" },
-    { key: "url", label: "URL" },
-    { key: "jobBoardUrl", label: "Job Board URL" },
-    { key: "applied", label: "Applied" },
-    ...roundsColumns,
-    { key: "rejected", label: "Rejected" },
-    { key: "actions", label: "Actions" },
-  ];
-};
+const columns = [
+  { key: "title", label: "Title" },
+  { key: "company", label: "Company" },
+  { key: "url", label: "URL" },
+  { key: "jobBoardUrl", label: "Job Board URL" },
+  { key: "applied", label: "Applied" },
+  { key: "rejected", label: "Rejected" },
+  { key: "actions", label: "Actions" },
+];
 
 const RouteComponent = () => {
   const userId = useStore(authStore, (state) => state.userId);
 
-  const { maxRoundsCount, page, search, totalPages } = useStore(
-    applicationStore,
-    (state) => {
-      return {
-        maxRoundsCount: state.maxRoundsCount,
-        page: state.page,
-        search: state.search,
-        totalPages: state.totalPages,
-      };
-    },
-  );
+  const { page, search, totalPages } = useStore(applicationStore, (state) => {
+    return {
+      page: state.page,
+      search: state.search,
+      totalPages: state.totalPages,
+    };
+  });
 
   const {
     data: applications,
@@ -125,7 +109,7 @@ const RouteComponent = () => {
           }}
         >
           <Table isHeaderSticky isStriped removeWrapper aria-label="Job Search">
-            <TableHeader columns={getColumns(maxRoundsCount)}>
+            <TableHeader columns={columns}>
               {(item) => {
                 return <TableColumn key={item.key}>{item.label}</TableColumn>;
               }}
@@ -176,27 +160,6 @@ const RouteComponent = () => {
                         return (
                           <TableCell>
                             <UpdateDeleteApplication application={item} />
-                          </TableCell>
-                        );
-                      }
-
-                      if (
-                        isString(columnKey) &&
-                        startsWith(columnKey, "round")
-                      ) {
-                        const dateTime = get(
-                          item,
-                          [
-                            "interviewRounds",
-                            toInteger(replace(columnKey, "round", "")),
-                            "dateTime",
-                          ],
-                          null,
-                        );
-
-                        return (
-                          <TableCell>
-                            <DateColumn date={dateTime} />
                           </TableCell>
                         );
                       }

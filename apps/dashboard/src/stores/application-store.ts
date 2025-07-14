@@ -13,7 +13,6 @@ import get from "lodash/get";
 import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError";
 import isNil from "lodash/isNil.js";
-import map from "lodash/map.js";
 import toInteger from "lodash/toInteger";
 import convertToString from "lodash/toString";
 import { z } from "zod";
@@ -29,7 +28,6 @@ const defaultState = {
   debouncedSearch: "",
   isCreateModalOpen: false,
   isUpdateModalOpen: false,
-  maxRoundsCount: 0,
   nextPage: 2,
   page: 1,
   previousPage: 0,
@@ -122,12 +120,6 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
         this.update((state) => {
           state.totalPages = toInteger(
             get(applications, ["pagination", "totalPages"]),
-          );
-
-          state.maxRoundsCount = Math.max(
-            ...map(applications.data, (datum) => {
-              return datum.interviewRounds.length;
-            }),
           );
         }, false);
 
