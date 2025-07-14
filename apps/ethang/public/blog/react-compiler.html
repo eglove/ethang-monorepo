@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>The React Compiler: A Critical Look at Performance Claims</title>
+    <meta
+      content="A critical look at the React Compiler's performance claims, arguing that while it offers benefits, true high performance in React often requires external state management and direct DOM manipulation due to the framework's inherent trade-offs."
+      name="description"
+    />
+
+    <meta
+      content="The React Compiler: A Critical Look at Performance Claims"
+      property="og:title"
+    />
+    <meta
+      content="A critical look at the React Compiler's performance claims, arguing that while it offers benefits, true high performance in React often requires external state management and direct DOM manipulation due to the framework's inherent trade-offs."
+      property="og:description"
+    />
+    <meta content="/images/react-compiler.png" property="og:image" />
+    <meta content="/blog/react-compiler" property="og:url" />
+    <meta content="article" property="og:type" />
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Funnel Sans", sans-serif;
+        margin: 0;
+        background-color: #1a1a2e;
+        color: #e0e0e0;
+        line-height: 1.6;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .inline-code {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .blog-container {
+        max-width: 800px;
+        background-color: #2a2a4a;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        margin: 20px 0;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: #8be9fd;
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+        font-weight: 600;
+      }
+
+      h1 {
+        font-size: 2.5em;
+        text-align: center;
+        margin-bottom: 1em;
+        color: #f8f8f2;
+      }
+
+      h2 {
+        font-size: 1.8em;
+        border-bottom: 1px solid #444;
+        padding-bottom: 0.3em;
+      }
+
+      h3 {
+        font-size: 1.4em;
+      }
+
+      p {
+        margin-bottom: 1em;
+      }
+
+      a {
+        color: #bd93f9;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      a:hover {
+        color: #ff79c6;
+      }
+
+      blockquote {
+        border-left: 4px solid #bd93f9;
+        padding-left: 15px;
+        margin: 1.5em 0;
+        font-style: italic;
+        color: #ccc;
+      }
+
+      pre {
+        background-color: #383858;
+        padding: 15px;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 1.5em 0;
+        font-family: "Fira Code", "Cascadia Code", "Consolas", monospace;
+        font-size: 0.9em;
+        line-height: 1.4;
+        box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+      }
+
+      code {
+        font-family: "Fira Code", "Cascadia Code", "Consolas", monospace;
+        background-color: #383858;
+        padding: 2px 5px;
+        border-radius: 4px;
+        color: #ff79c6;
+      }
+
+      .keyword {
+        color: #bd93f9;
+        font-weight: bold;
+      }
+      .function-name {
+        color: #50fa7b;
+      }
+      .variable {
+        color: #f1fa8c;
+      }
+      .string {
+        color: #f1fa8c;
+      }
+      .comment {
+        color: #6272a4;
+        font-style: italic;
+      }
+      .operator {
+        color: #ff79c6;
+      }
+      .number {
+        color: #bd93f9;
+      }
+      .punctuation {
+        color: #f8f8f2;
+      }
+      .tag {
+        color: #ff79c6;
+      }
+      .attribute {
+        color: #50fa7b;
+      }
+      .value {
+        color: #f1fa8c;
+      }
+
+      .back-to-blog {
+        display: block;
+        margin-bottom: 20px;
+        font-size: 1.1em;
+        text-align: left;
+        color: #bd93f9;
+      }
+
+      .table-of-contents {
+        background-color: #3a3a5a;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .table-of-contents h2 {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-top: 0;
+        color: #f8f8f2;
+        text-align: center;
+      }
+
+      .table-of-contents ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .table-of-contents ul li {
+        margin-bottom: 8px;
+      }
+
+      .table-of-contents ul li a {
+        color: #e0e0e0;
+        font-weight: 400;
+        display: block;
+        padding: 5px 0;
+        transition:
+          color 0.3s ease,
+          transform 0.2s ease;
+      }
+
+      .table-of-contents ul li a:hover {
+        color: #ff79c6;
+        transform: translateX(5px);
+      }
+
+      .table-of-contents ul li ul {
+        padding-left: 20px;
+        margin-top: 5px;
+      }
+
+      .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: #bd93f9;
+        color: #1a1a2e;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 1.5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        transition:
+          background-color 0.3s ease,
+          transform 0.2s ease;
+        z-index: 1000;
+      }
+
+      .back-to-top:hover {
+        background-color: #ff79c6;
+        transform: translateY(-3px);
+      }
+
+      @media (max-width: 768px) {
+        .back-to-top {
+          width: 40px;
+          height: 40px;
+          font-size: 1.2em;
+          bottom: 20px;
+          right: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="blog-container">
+      <a class="back-to-blog" href="/blog">← Back to Blog</a>
+
+      <h1>The React Compiler: A Critical Look at Performance Claims</h1>
+
+      <div class="table-of-contents">
+        <h2>Table of Contents</h2>
+        <ul id="table_of_contents_list"></ul>
+      </div>
+
+      <p>
+        Recently, a video titled
+        <a
+          href="https://www.youtube.com/watch?v=Pw8w2O5Y0no"
+          rel="noopener noreferrer"
+          target="_blank"
+          >“The React Compiler”</a
+        >
+        caught my attention. It showcases the exciting prospect of React
+        automatically optimizing our components, promising to solve the
+        notorious re-rendering problem without the manual burden of
+        <code class="inline-code">useMemo</code> and
+        <code class="inline-code">useCallback</code>. While the idea is
+        undoubtedly appealing, and a testament to the ongoing innovation within
+        the React ecosystem, it also prompts a deeper, more critical look at
+        what truly drives performance in complex UI frameworks.
+      </p>
+
+      <h2 id="promise_of_effortless_optimization">
+        The Promise of Effortless Optimization
+      </h2>
+      <p>
+        The core premise of the React Compiler is to make memoization automatic.
+        For years, React developers have wrestled with identifying and wrapping
+        components, props, and callbacks with
+        <code class="inline-code">React.memo</code>,
+        <code class="inline-code">useMemo</code>, and
+        <code class="inline-code">useCallback</code> to prevent unnecessary
+        re-renders. This manual process is often tedious, error-prone, and can
+        even introduce its own performance overhead if applied indiscriminately.
+        The compiler aims to eliminate this cognitive load, theoretically
+        allowing developers to write idiomatic React code while the compiler
+        intelligently optimizes the rendering tree. It’s a vision of “write
+        once, optimize automatically,” which sounds like a dream come true for
+        many.
+      </p>
+
+      <h2 id="when_memoization_falls_short">
+        When Memoization Falls Short: The Reality of High-Velocity Data
+      </h2>
+      <p>
+        However, for anyone who has truly grappled with high-performance React
+        applications – think real-time dashboards, collaborative editors, or
+        complex data visualizations – the compiler’s promise, while helpful for
+        common scenarios, doesn’t quite address the fundamental bottlenecks. The
+        Achilles’ heel of memoization, whether manual or automatic, lies in its
+        reliance on reference equality.
+      </p>
+      <p>
+        Consider a scenario where you’re receiving high-velocity, real-time data
+        over a WebSocket connection. This data often comes in as an array or an
+        object. Even if only a single value within that array or object changes,
+        the entire array or object reference will likely be new on each update.
+      </p>
+      <p>Let’s say you have a component displaying a list of stock prices:</p>
+      <pre><code><span class="keyword">function</span> <span class="function-name">StockList</span><span class="punctuation">(</span><span class="punctuation">{</span> <span class="variable">data</span> <span class="punctuation">}</span><span class="punctuation">)</span> <span class="punctuation">{</span>
+  <span class="comment">// data is an array of stock objects: [{ symbol: 'AAPL', price: 150.00 }, ...]</span>
+  <span class="comment">// Even if only one price changes, the 'data' array reference will be new.</span>
+  <span class="comment">// A compiler-applied memoization on StockList won't prevent re-renders here.</span>
+  <span class="keyword">return</span> <span class="punctuation">(</span>
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;h2&gt;</span><span class="string">Live Stock Prices</span><span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;ul&gt;</span>
+        <span class="punctuation">{</span><span class="variable">data</span><span class="punctuation">.</span><span class="function-name">map</span><span class="punctuation">(</span><span class="variable">stock</span> <span class="operator">=&gt;</span> <span class="punctuation">(</span>
+          <span class="tag">&lt;li</span> <span class="attribute">key</span><span class="operator">=</span><span class="string">{stock.symbol}</span><span class="tag">&gt;</span>
+            <span class="punctuation">{</span><span class="variable">stock</span><span class="punctuation">.</span><span class="variable">symbol</span><span class="punctuation">}</span><span class="punctuation">:</span> <span class="punctuation">{</span><span class="variable">stock</span><span class="punctuation">.</span><span class="variable">price</span><span class="punctuation">}</span>
+          <span class="tag">&lt;/li&gt;</span>
+        <span class="punctuation">)</span><span class="punctuation">)</span><span class="punctuation">}</span>
+      <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="punctuation">)</span><span class="punctuation">;</span>
+<span class="punctuation">}</span>
+</code></pre>
+      <p>
+        Similarly, if you’re working with immutable data structures (a common
+        pattern for predictable state management), any modification, no matter
+        how small, results in a new object or array reference. In these
+        scenarios, the very mechanism that memoization relies upon—stable
+        references—is inherently broken. The compiler, while clever, cannot
+        magically make a new reference equal to an old one.
+      </p>
+      <p>
+        This illustrates a common pitfall:
+        <code class="inline-code">React.memo</code> performs a shallow
+        comparison of props. If a prop is an object or array, and its reference
+        changes (even if its <em>contents</em> are the same),
+        <code class="inline-code">React.memo</code> will consider it a change
+        and trigger a re-render. This is basically putting all data into a React
+        component and then going in behind it trying to memoize; it doesn’t
+        work. It suggests a reactive, top-down data flow that makes effective
+        memoization challenging. If a parent component holds all the data and
+        passes it down, re-renders at the top will naturally ripple downwards,
+        bypassing many memoization efforts.
+      </p>
+
+      <h3 id="addressing_deep_equality_argument">
+        Addressing the “Deep Equality” Argument
+      </h3>
+      <p>
+        A common counterpoint to the limitations of
+        <code class="inline-code">React.memo</code>’s shallow comparison is the
+        ability to provide a custom comparison function, often a deep equality
+        check, as its second argument. While this technique <em>can</em> prevent
+        re-renders when prop references change but their underlying contents
+        remain the same, it introduces its own set of significant
+        considerations:
+      </p>
+      <ol>
+        <li>
+          <strong>Performance Cost of Deep Equality</strong>: Performing a deep
+          comparison can be computationally expensive, especially for large,
+          complex objects or arrays, or in scenarios with very frequent updates.
+          The overhead of traversing and comparing potentially deep data
+          structures might, in certain cases, be more costly than the re-render
+          it aims to prevent.
+        </li>
+        <li>
+          <strong>Hiding Underlying Issues</strong>: Relying extensively on deep
+          equality comparisons can inadvertently mask suboptimal data flow
+          patterns. If components frequently receive new references to large
+          data structures that necessitate deep comparison, it often indicates
+          that they are receiving more data than they truly need, or that state
+          updates are too broad and affect many components unnecessarily.
+        </li>
+        <li>
+          <strong>Still Reactive, Not Proactive</strong>: Even with a deep
+          equality check, the component is still <em>reacting</em> to changes in
+          its entire prop structure. It doesn’t inherently know
+          <em>which specific part</em> of a deeply nested prop changed, only
+          that <em>something</em> is different. This contrasts sharply with an
+          external store approach, where a component explicitly subscribes to
+          <em>only</em> the precise, granular data it needs, triggering updates
+          solely when that specific piece of data changes.
+        </li>
+      </ol>
+
+      <h2 id="fundamental_challenge_react_reconciliation">
+        The Fundamental Challenge: React’s Reconciliation Model
+      </h2>
+      <p>
+        Beyond the specifics of memoization, the core challenge for
+        high-performance applications in React stems from its fundamental
+        reconciliation model. React’s approach, often described as “blow away
+        the entire UI and re-render all of it” (though optimized by the Virtual
+        DOM), prioritizes developer ergonomics and a consistent, declarative UI.
+        However, this comes with inherent performance trade-offs when compared
+        to frameworks designed for fine-grained reactivity.
+      </p>
+      <p>
+        It’s impossible to deny that frameworks like SolidJS have won the
+        competition of performant reactive frameworks. Spending a little time
+        working with them, you realize the entire concept of the Virtual DOM and
+        managing renders in React may have been overkill in hindsight. As
+        Angular, Vue, Preact, Qwik, and Svelte have implemented signals for
+        fine-grained reactivity, it feels like React is falling behind in raw
+        performance metrics for highly dynamic UIs.
+      </p>
+      <p>
+        The React team themselves have historically shown less preference for
+        complex, client-side heavy SPAs, often advocating for server-side
+        rendering (e.g., via Next.js). This perspective makes sense, as React’s
+        design often shines brightest when much of the state and rendering logic
+        is handled on the server, offloading the most demanding tasks from the
+        client. This leads to a situation where, for highly interactive,
+        client-side-intensive applications, developers often find themselves
+        “fighting the framework” to achieve desired performance levels.
+      </p>
+
+      <h2 id="rule_for_true_react_performance">
+        The #1 Rule for True React Performance: Keep Your Data Away From React
+      </h2>
+      <p>
+        This brings us to the core philosophy for achieving genuine high
+        performance in React, a strategy well-understood by those who push the
+        framework to its limits:
+        <strong>KEEP YOUR DATA AWAY FROM REACT.</strong>
+      </p>
+      <p>What does this mean in practice?</p>
+      <ol>
+        <li>
+          <h3 id="external_custom_stores">
+            External Custom Stores are Your Friends:
+          </h3>
+          <p>
+            Instead of relying on React's internal state (<code
+              class="inline-code"
+              >useState</code
+            >, <code class="inline-code">useReducer</code>) for rapidly changing
+            or globally accessed data, consider building your own external state
+            management solutions. These custom solutions often employ a
+            publisher-subscriber model, allowing components to subscribe only to
+            the <em>specific</em> pieces of data they need. This bypasses
+            React's reconciliation process for the vast majority of updates,
+            leading to significantly fewer re-renders.
+          </p>
+          <p>
+            A powerful approach involves using a class-based system for your
+            stores. This pattern centralizes related state and operations in a
+            single class, acting as the single source of truth for a specific
+            domain in your application. This offers several compelling reasons:
+          </p>
+          <ul>
+            <li>
+              <strong>Encapsulation</strong>: A class naturally encapsulates
+              related state and behavior, making it easier to reason about and
+              maintain.
+            </li>
+            <li>
+              <strong>Testing</strong>: Class methods are straightforward to
+              test without the complexity of testing hooks.
+            </li>
+            <li>
+              <strong>Separation of Concerns</strong>: UI components can focus
+              on rendering while the store handles state management and business
+              logic.
+            </li>
+            <li>
+              <strong>Precise Control Over Rendering</strong>: You decide
+              exactly when to notify subscribers, giving you fine-grained
+              control over when React re-renders.
+            </li>
+            <li>
+              <strong>No Dependency on React</strong>: The core logic is
+              independent of React, making it portable and framework-agnostic.
+            </li>
+          </ul>
+          <p>
+            This approach often leverages libraries like Immer for immutable
+            updates, allowing you to write mutable-looking code that produces
+            new, immutable state objects. The connection to React is then made
+            seamlessly using the
+            <code class="inline-code">useSyncExternalStoreWithSelector</code>
+            hook.
+          </p>
+          <pre><code><span class="comment">// A simplified custom store example demonstrating the core concepts.</span>
+<span class="comment">// In a real application, you’d define this in a separate module.</span>
+<span class="keyword">import</span> <span class="punctuation">{</span> <span class="function-name">useSyncExternalStoreWithSelector</span> <span class="punctuation">}</span> <span class="keyword">from</span> <span class="string">"https://cdn.skypack.dev/use-sync-external-store/with-selector"</span><span class="punctuation">;</span>
+<span class="keyword">import</span> <span class="punctuation">{</span> <span class="function-name">produce</span> <span class="punctuation">}</span> <span class="keyword">from</span> <span class="string">'https://cdn.skypack.dev/immer'</span><span class="punctuation">;</span>
+
+<span class="keyword">class</span> <span class="function-name">CustomStore</span><span class="punctuation">&lt;</span><span class="variable">State</span> <span class="keyword">extends</span> <span class="variable">object</span><span class="punctuation">&gt;</span> <span class="punctuation">{</span>
+  <span class="keyword">private</span> <span class="variable">_state</span><span class="punctuation">:</span> <span class="variable">State</span><span class="punctuation">;</span>
+  <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="variable">_subscribers</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="function-name">Set</span><span class="punctuation">&lt;</span><span class="punctuation">(</span><span class="variable">state</span><span class="punctuation">:</span> <span class="variable">State</span><span class="punctuation">)</span> <span class="operator">=&gt;</span> <span class="keyword">void</span><span class="punctuation">&gt;</span><span class="punctuation">(</span><span class="punctuation">)</span><span class="punctuation">;</span>
+
+  <span class="keyword">constructor</span><span class="punctuation">(</span><span class="variable">initialState</span><span class="punctuation">:</span> <span class="variable">State</span><span class="punctuation">)</span> <span class="punctuation">{</span>
+    <span class="keyword">this</span><span class="punctuation">.</span><span class="variable">_state</span> <span class="operator">=</span> <span class="variable">initialState</span><span class="punctuation">;</span>
+  <span class="punctuation">}</span>
+
+  <span class="keyword">public</span> <span class="keyword">get</span> <span class="function-name">state</span><span class="punctuation">(</span><span class="punctuation">)</span> <span class="punctuation">{</span>
+    <span class="keyword">return</span> <span class="keyword">this</span><span class="punctuation">.</span><span class="variable">_state</span><span class="punctuation">;</span>
+  <span class="punctuation">}</span>
+
+  <span class="keyword">public</span> <span class="function-name">subscribe</span><span class="punctuation">(</span><span class="variable">callback</span><span class="punctuation">:</span> <span class="punctuation">(</span><span class="variable">state</span><span class="punctuation">:</span> <span class="variable">State</span><span class="punctuation">)</span> <span class="operator">=&gt;</span> <span class="keyword">void</span><span class="punctuation">)</span> <span class="punctuation">{</span>
+    <span class="keyword">this</span><span class="punctuation">.</span><span class="variable">_subscribers</span><span class="punctuation">.</span><span class="function-name">add</span><span class="punctuation">(</span><span class="variable">callback</span><span class="punctuation">)</span><span class="punctuation">;</span>
+    <span class="keyword">return</span> <span class="punctuation">(</span><span class="punctuation">)</span> <span class="operator">=&gt;</span> <span class="keyword">this</span><span class="punctuation">.</span><span class="function-name">_subscribers</span><span class="punctuation">.</span><span class="function-name">delete</span><span class="punctuation">(</span><span class="variable">callback</span><span class="punctuation">)</span><span class="punctuation">;</span>
+  <span class="punctuation">}</span>
+
+  <span class="keyword">protected</span> <span class="function-name">update</span><span class="punctuation">(</span><span class="variable">updater</span><span class="punctuation">:</span> <span class="punctuation">(</span><span class="variable">draft</span><span class="punctuation">:</span> <span class="variable">State</span><span class="punctuation">)</span> <span class="operator">=&gt;</span> <span class="keyword">void</span><span class="punctuation">,</span> <span class="variable">shouldNotify</span> <span class="operator">=</span> <span class="keyword">true</span><span class="punctuation">)</span> <span class="punctuation">{</span>
+    <span class="keyword">this</span><span class="punctuation">.</span><span class="variable">_state</span> <span class="operator">=</span> <span class="function-name">produce</span><span class="punctuation">(</span><span class="keyword">this</span><span class="punctuation">.</span><span class="variable">_state</span><span class="punctuation">,</span> <span class="variable">updater</span><span class="punctuation">)</span><span class="punctuation">;</span>
+    <span class="keyword">if</span> <span class="punctuation">(</span><span class="variable">shouldNotify</span><span class="punctuation">)</span> <span class="punctuation">{</span>
+      <span class="keyword">this</span><span class="punctuation">.</span><span class="function-name">_subscribers</span><span class="punctuation">.</span><span class="function-name">forEach</span><span class="punctuation">(</span><span class="variable">callback</span> <span class="operator">=&gt;</span> <span class="function-name">callback</span><span class="punctuation">(</span><span class="keyword">this</span><span class="punctuation">.</span><span class="variable">_state</span><span class="punctuation">)</span><span class="punctuation">)</span><span class="punctuation">;</span>
+    <span class="punctuation">}</span>
+  <span class="punctuation">}</span>
+<span class="punctuation">}</span>
+
+<span class="keyword">interface</span> <span class="function-name">CounterState</span> <span class="punctuation">{</span>
+  <span class="variable">count</span><span class="punctuation">:</span> <span class="number">number</span><span class="punctuation">;</span>
+<span class="punctuation">}</span>
+
+<span class="keyword">class</span> <span class="function-name">CounterStore</span> <span class="keyword">extends</span> <span class="function-name">CustomStore</span><span class="punctuation">&lt;</span><span class="function-name">CounterState</span><span class="punctuation">&gt;</span> <span class="punctuation">{</span>
+  <span class="keyword">constructor</span><span class="punctuation">(</span><span class="punctuation">)</span> <span class="punctuation">{</span>
+    <span class="keyword">super</span><span class="punctuation">(</span><span class="punctuation">{</span> <span class="variable">count</span><span class="punctuation">:</span> <span class="number">0</span> <span class="punctuation">}</span><span class="punctuation">)</span><span class="punctuation">;</span>
+  <span class="punctuation">}</span>
+
+  <span class="keyword">public</span> <span class="function-name">increment</span><span class="punctuation">(</span><span class="punctuation">)</span> <span class="punctuation">{</span>
+    <span class="keyword">this</span><span class="punctuation">.</span><span class="function-name">update</span><span class="punctuation">(</span><span class="punctuation">(</span><span class="variable">draft</span><span class="punctuation">)</span> <span class="operator">=&gt;</span> <span class="punctuation">{</span>
+      <span class="variable">draft</span><span class="punctuation">.</span><span class="variable">count</span><span class="operator">++</span><span class="punctuation">;</span>
+    <span class="punctuation">}</span><span class="punctuation">)</span><span class="punctuation">;</span>
+  <span class="punctuation">}</span>
+<span class="punctuation">}</span>
+
+<span class="keyword">const</span> <span class="variable">counterStore</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="function-name">CounterStore</span><span class="punctuation">(</span><span class="punctuation">)</span><span class="punctuation">;</span>
+
+<span class="keyword">function</span> <span class="function-name">CounterDisplay</span><span class="punctuation">(</span><span class="punctuation">)</span> <span class="punctuation">{</span>
+  <span class="keyword">const</span> <span class="variable">count</span> <span class="operator">=</span> <span class="function-name">useSyncExternalStoreWithSelector</span><span class="punctuation">(</span>
+    <span class="punctuation">(</span><span class="variable">listener</span><span class="punctuation">)</span> <span class="operator">=&gt;</span> <span class="variable">counterStore</span><span class="punctuation">.</span><span class="function-name">subscribe</span><span class="punctuation">(</span><span class="variable">listener</span><span class="punctuation">)</span><span class="punctuation">,</span>
+    <span class="punctuation">(</span><span class="punctuation">)</span> <span class="operator">=&gt;</span> <span class="variable">counterStore</span><span class="punctuation">.</span><span class="variable">state</span><span class="punctuation">.</span><span class="variable">count</span><span class="punctuation">,</span>
+    <span class="punctuation">(</span><span class="punctuation">)</span> <span class="operator">=&gt;</span> <span class="variable">counterStore</span><span class="punctuation">.</span><span class="variable">state</span><span class="punctuation">.</span><span class="variable">count</span><span class="punctuation">,</span>
+    <span class="variable">s</span> <span class="operator">=&gt;</span> <span class="variable">s</span><span class="punctuation">,</span> <span class="comment">// Selector to get the count directly</span>
+  <span class="punctuation">)</span><span class="punctuation">;</span>
+
+  <span class="keyword">return</span> <span class="punctuation">(</span>
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span><span class="string">Count: </span><span class="punctuation">{</span><span class="variable">count</span><span class="punctuation">}</span><span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attribute">onClick</span><span class="operator">=</span><span class="string">{() => counterStore.increment()}</span><span class="tag">&gt;</span><span class="string">Increment</span><span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="punctuation">)</span><span class="punctuation">;</span>
+<span class="punctuation">}</span>
+
+<span class="comment">// This would be your main App component</span>
+<span class="keyword">function</span> <span class="function-name">App</span><span class="punctuation">(</span><span class="punctuation">)</span> <span class="punctuation">{</span>
+  <span class="keyword">return</span> <span class="punctuation">(</span>
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;h1&gt;</span><span class="string">My Application</span><span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;CounterDisplay</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="punctuation">)</span><span class="punctuation">;</span>
+<span class="punctuation">}</span>
+</code></pre>
+          <p>
+            This paradigm shifts away from passing data down and hoping
+            memoization catches unnecessary re-renders, towards a model where
+            components declaratively state what data they need, and efficient
+            custom state management delivers exactly that.
+          </p>
+        </li>
+        <li>
+          <h3>Careful Subscriber Notification:</h3>
+          <p>
+            When building your own data layers, be meticulous about when and how
+            you notify subscribers. Only trigger updates for components that
+            genuinely need to react to a change. This is a core principle in
+            achieving fine-grained reactivity.
+          </p>
+        </li>
+        <li>
+          <h3>Keep Performance-Critical Logic Out of Render Components:</h3>
+          <p>
+            Avoid storing rapidly changing, performance-critical data directly
+            in React state variables that trigger re-renders of large component
+            trees. If data or logic changes frequently but doesn’t need to
+            visually update the entire component, it probably belongs outside of
+            React’s direct rendering cycle. This is why many existing state
+            management solutions “fight the framework” by pulling state outside
+            of React’s lifecycles and controlling its awareness of state
+            changes.
+          </p>
+        </li>
+        <li>
+          <h3>
+            Direct DOM Manipulation with <code class="inline-code">refs</code>:
+          </h3>
+          <p>
+            For truly granular, high-frequency updates (e.g., animating a single
+            element, updating a canvas, or managing cursor position in a text
+            editor), sometimes the most performant approach is to bypass React’s
+            virtual DOM entirely and directly manipulate the DOM using
+            <code class="inline-code">refs</code>. This is what many popular
+            form libraries do for input focus, selection, or specific validation
+            feedback, and it’s a common pattern in high-performance graphics or
+            game development within React.
+          </p>
+        </li>
+        <li>
+          <h3>
+            Client-Side Sorting and Filtering: A Practical Application of
+            External Stores
+          </h3>
+          <p>
+            When dealing with data display, sorting and filtering are common
+            requirements. While server-side sorting and filtering are generally
+            preferred for performance and scalability, there are scenarios where
+            client-side operations are pragmatic, especially with smaller
+            datasets or when instant UI feedback is crucial. In such cases,
+            leveraging a custom client-side cache or store allows components to
+            directly access and sort/filter data without triggering widespread
+            re-renders. This is a direct application of pulling exact values via
+            selectors out of an external store. However, be mindful of the
+            trade-offs, including increased client-side processing and memory
+            consumption for large datasets.
+          </p>
+          <p>
+            For instance, if you need to sort a list of positions by a derived
+            value (like P&L dependent on current price), your sorting function
+            can look up the live price from your custom store:
+          </p>
+          <pre><code><span class="comment">// Assuming a ‘priceStore’ exists and is accessible</span>
+<span class="comment">// And ‘positions’ is an array of objects like { symbol: 'BTC', entryPrice: 30000, quantity: 0.5 }</span>
+
+<span class="keyword">const</span> <span class="function-name">sortByPnL</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="variable">positions</span><span class="punctuation">,</span> <span class="variable">priceStore</span><span class="punctuation">)</span> <span class="operator">=&gt;</span> <span class="punctuation">{</span>
+  <span class="keyword">return</span> <span class="punctuation">[...</span><span class="variable">positions</span><span class="punctuation">]</span><span class="punctuation">.</span><span class="function-name">sort</span><span class="punctuation">(</span><span class="punctuation">(</span><span class="variable">a</span><span class="punctuation">,</span> <span class="variable">b</span><span class="punctuation">)</span> <span class="operator">=&gt;</span> <span class="punctuation">{</span>
+    <span class="comment">// Get current price for position ‘a’ from the custom priceStore</span>
+    <span class="keyword">const</span> <span class="variable">priceA</span> <span class="operator">=</span> <span class="variable">priceStore</span><span class="punctuation">.</span><span class="variable">state</span><span class="punctuation">[</span><span class="variable">a</span><span class="punctuation">.</span><span class="variable">symbol</span><span class="punctuation">]</span><span class="punctuation">;</span>
+    <span class="comment">// Get current price for position ‘b’ from the custom priceStore</span>
+    <span class="keyword">const</span> <span class="variable">priceB</span> <span class="operator">=</span> <span class="variable">priceStore</span><span class="punctuation">.</span><span class="variable">state</span><span class="punctuation">[</span><span class="variable">b</span><span class="punctuation">.</span><span class="variable">symbol</span><span class="punctuation">]</span><span class="punctuation">;</span>
+
+    <span class="comment">// Handle cases where price might not be available yet (e.g., loading)</span>
+    <span class="keyword">if</span> <span class="punctuation">(</span><span class="variable">priceA</span> <span class="operator">===</span> <span class="keyword">undefined</span> <span class="operator">||</span> <span class="variable">priceB</span> <span class="operator">===</span> <span class="keyword">undefined</span><span class="punctuation">)</span> <span class="keyword">return</span> <span class="number">0</span><span class="punctuation">;</span>
+
+    <span class="keyword">const</span> <span class="variable">pnlA</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="variable">priceA</span> <span class="operator">-</span> <span class="variable">a</span><span class="punctuation">.</span><span class="variable">entryPrice</span><span class="punctuation">)</span> <span class="operator">*</span> <span class="variable">a</span><span class="punctuation">.</span><span class="variable">quantity</span><span class="punctuation">;</span>
+    <span class="keyword">const</span> <span class="variable">pnlB</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="variable">priceB</span> <span class="operator">-</span> <span class="variable">b</span><span class="punctuation">.</span><span class="variable">entryPrice</span><span class="punctuation">)</span> <span class="operator">*</span> <span class="variable">b</span><span class="punctuation">.</span><span class="variable">quantity</span><span class="punctuation">;</span>
+
+    <span class="keyword">return</span> <span class="variable">pnlA</span> <span class="operator">-</span> <span class="variable">pnlB</span><span class="punctuation">;</span> <span class="comment">// Sort ascending by P&L</span>
+  <span class="punctuation">}</span><span class="punctuation">)</span><span class="punctuation">;</span>
+<span class="punctuation">}</span>
+</code></pre>
+        </li>
+      </ol>
+
+      <h2>The Compiler’s Place in the Ecosystem</h2>
+      <p>
+        The React Compiler is a fantastic engineering feat. It will undoubtedly
+        improve the performance of many average React applications by automating
+        best practices that developers often forget or misapply. It will make
+        the framework more forgiving and potentially faster for the majority of
+        use cases.
+      </p>
+      <p>
+        However, when performance truly matters – when you’re dealing with
+        hundreds or thousands of updates per second, or when every millisecond
+        counts – the compiler won’t magically solve the fundamental
+        architectural challenges. In such scenarios, the strategies outlined
+        above, which involve carefully managing data flow outside of React’s
+        primary rendering mechanism, remain paramount. Essentially, if you’re
+        dealing with high-performance logic, the advice translates to: “keep
+        your logic away from where this compiler can see it.”
+      </p>
+
+      <h2>The Limits of Optimization: Inherent Trade-offs</h2>
+      <p>
+        React, by its very nature as a virtual DOM-based reconciliation engine,
+        introduces a certain level of overhead. It is designed to prioritize
+        developer ergonomics and a declarative approach to UI development, which
+        inherently comes with performance trade-offs when compared to
+        lower-level, imperative DOM manipulation. While the React Compiler is an
+        impressive advancement that optimizes rendering and makes the framework
+        more efficient for many common use cases, it does not eliminate these
+        fundamental architectural characteristics. For applications with extreme
+        performance demands, understanding and working within these inherent
+        limitations, often by employing strategies that externalize data
+        management and leverage direct DOM access, remains crucial.
+      </p>
+      <p>
+        This isn’t to say React isn’t powerful or useful – it’s incredibly so
+        for the vast majority of web applications. But it’s crucial to
+        understand its strengths and weaknesses, and to employ the right tools
+        and architectural patterns for the job, rather than expecting a compiler
+        to solve all performance woes. The constant need for a myriad of state
+        management solutions, each attempting to “fix” React’s rendering
+        process, highlights a core tension: why is React so against fine-grained
+        reactivity, a feature that seems like a fundamental purpose of a UI
+        library – to provide a mechanism to subscribe HTML to our own state?
+      </p>
+    </div>
+
+    <button
+      type="submit"
+      class="back-to-top"
+      onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
+    >
+      ↑
+    </button>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const tocList = document.getElementById("table_of_contents_list");
+        const headings = document.querySelectorAll(
+          ".blog-container h2, .blog-container h3",
+        );
+
+        headings.forEach((heading) => {
+          const listItem = document.createElement("li");
+          const link = document.createElement("a");
+          link.textContent = heading.textContent;
+
+          let id = heading.id;
+          if (!id) {
+            id = heading.textContent
+              .toLowerCase()
+              .replace(/[^\w\s]/g, "")
+              .replace(/\s+/g, "_");
+            heading.id = id;
+          }
+          link.href = "#" + id;
+
+          if (heading.tagName === "H3") {
+            const subList = document.createElement("ul");
+            listItem.appendChild(subList);
+            subList.appendChild(link);
+          } else {
+            listItem.appendChild(link);
+          }
+          tocList.appendChild(listItem);
+        });
+      });
+    </script>
+  </body>
+</html>
