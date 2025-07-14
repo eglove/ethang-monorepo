@@ -3,7 +3,7 @@
   "assets": {
     "not_found_handling": "single-page-application"
   },
-  "compatibility_date": "2025-07-13",
+  "compatibility_date": "2025-07-14",
   "main": "worker/index.ts",
   "name": "sterett-client",
   "observability": {
