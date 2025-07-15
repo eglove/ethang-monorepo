@@ -9,7 +9,12 @@ export default {
     "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: "class",
-  plugins: [heroui()],
+  plugins: [
+    heroui({
+      defaultExtendTheme: "dark",
+      defaultTheme: "dark",
+    }),
+  ],
   theme: {
     extend: {
       fontFamily: {
