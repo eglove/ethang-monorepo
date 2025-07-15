@@ -1,5 +1,3 @@
-import type { JobApplication } from "@ethang/schemas/dashboard/application-schema.ts";
-
 import isString from "lodash/isString";
 import { DateTime } from "luxon";
 
@@ -16,17 +14,7 @@ export const getUserStatsData = async (
   const thirtyDaysAgo = DateTime.now()
     .setZone(timezone)
     .startOf("day")
-    .minus({ day: 30 })
-    .toISO();
-
-  const allUserApplicationsQuery = `select
-  T1.applied,
-  T1.rejected,
-from applications as T1
-WHERE T1.userId = ? AND date(T1.applied) >= date(?)
-order by
-  T1.applied DESC;
-`;
+    .minus({ day: 30 });
 
   const [topCompanies, allUserApplications, totalApplications, totalCompanies] =
     await Promise.all([
@@ -37,12 +25,11 @@ order by
         take: 5,
         where: { userId },
       }),
-      environment.DB.prepare(allUserApplicationsQuery)
-        .bind(userId, thirtyDaysAgo)
-        .all<JobApplication>()
-        .then((data) => {
-          return data.results;
-        }),
+      prismaClient.applications.findMany({
+        orderBy: { applied: "desc" },
+        select: { applied: true, rejected: true },
+        where: { applied: { gte: thirtyDaysAgo.toJSDate() }, userId },
+      }),
       prismaClient.applications.aggregate({
         _count: { _all: true },
         where: { userId },

@@ -14,7 +14,6 @@ describe("getAverageTimeToRejected", () => {
       { applied: new Date(), rejected: null },
     ];
 
-    // @ts-expect-error allow partial
     const result = getAverageTimeToRejected(allUserApplications);
     expect(result).toBe("0");
   });
@@ -25,7 +24,6 @@ describe("getAverageTimeToRejected", () => {
       { applied: new Date("2024-01-10"), rejected: new Date("2024-01-12") },
     ];
 
-    // @ts-expect-error allow partial
     const result = getAverageTimeToRejected(allUserApplications);
     expect(result).toBe("3");
   });
@@ -37,7 +35,6 @@ describe("getAverageTimeToRejected", () => {
       { applied: new Date("2024-02-10"), rejected: null },
     ];
 
-    // @ts-expect-error allow partial
     const result = getAverageTimeToRejected(allUserApplications);
     expect(result).toBe("4.5");
   });
@@ -48,7 +45,6 @@ describe("getAverageTimeToRejected", () => {
       { applied: new Date(), rejected: null },
     ];
 
-    // @ts-expect-error allow partial
     const result = getAverageTimeToRejected(allUserApplications);
     expect(result).toBe("0");
   });
