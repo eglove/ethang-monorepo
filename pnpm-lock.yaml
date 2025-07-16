@@ -446,9 +446,15 @@ importers:
       '@hyper-fetch/core':
         specifier: ^7.2.5
         version: 7.2.5
+      '@hyper-fetch/plugin-devtools':
+        specifier: ^7.2.5
+        version: 7.2.5(@hyper-fetch/core@7.2.5)(@hyper-fetch/sockets@7.2.5(@hyper-fetch/core@7.2.5))
       '@hyper-fetch/react':
         specifier: ^7.2.5
-        version: 7.2.5(@hyper-fetch/core@7.2.5)(react@19.1.0)
+        version: 7.2.5(@hyper-fetch/core@7.2.5)(@hyper-fetch/sockets@7.2.5(@hyper-fetch/core@7.2.5))(react@19.1.0)
+      '@hyper-fetch/sockets':
+        specifier: ^7.2.5
+        version: 7.2.5(@hyper-fetch/core@7.2.5)
       '@prisma/adapter-d1':
         specifier: ^6.12.0
         version: 6.12.0
@@ -3446,6 +3452,17 @@ packages:
   '@hyper-fetch/core@7.2.5':
     resolution: {integrity: sha512-wmSUyAXQouKbquxLEVIOXxmgJcIE26WWGxuNkztKUD/cQDzazXs396Ei+AechkwtmfkyKqL+w5F12KJfY2xB9w==}
 
+  '@hyper-fetch/plugin-devtools@7.2.5':
+    resolution: {integrity: sha512-ZmXRLHGX9GoMNGO3m9N6ovZGClrC6DpsTLd7BG2B9gUf8LiKeqtFUlSYr+UD1KHNvwxMC8BS//7hDcEp0lCVog==}
+    peerDependencies:
+      '@hyper-fetch/core': '*'
+      '@hyper-fetch/sockets': '*'
+    peerDependenciesMeta:
+      '@hyper-fetch/core':
+        optional: true
+      '@hyper-fetch/sockets':
+        optional: true
+
   '@hyper-fetch/react@7.2.5':
     resolution: {integrity: sha512-5gFAFx9+u+ZcB7m1O8tbfmwx/gutFCy/Qmhk4+ZgCEOwJxKl5WMe2HuA4WBoNfQcdkFdh2Luvov0mvUEd7CqJQ==}
     peerDependencies:
@@ -3455,6 +3472,11 @@ packages:
     peerDependenciesMeta:
       '@hyper-fetch/sockets':
         optional: true
+
+  '@hyper-fetch/sockets@7.2.5':
+    resolution: {integrity: sha512-cd+SnGK+rTW6hmdnb5++dQUefoABOgBqwhi8+VG9wFy4JvqUYm9hPb3ObzwR0mCbT3U964WBUMypLKLRosSukw==}
+    peerDependencies:
+      '@hyper-fetch/core': '*'
 
   '@img/sharp-darwin-arm64@0.33.5':
     resolution: {integrity: sha512-UT4p+iz/2H4twwAoLCqfA9UH5pI6DggwKEGuaPy7nCVQ8ZsiY5PIcrRvD1DzuY3qYL07NtIQcWnBSY/heikIFQ==}
@@ -13674,12 +13696,24 @@ snapshots:
     dependencies:
       events: 3.3.0
 
-  '@hyper-fetch/react@7.2.5(@hyper-fetch/core@7.2.5)(react@19.1.0)':
+  '@hyper-fetch/plugin-devtools@7.2.5(@hyper-fetch/core@7.2.5)(@hyper-fetch/sockets@7.2.5(@hyper-fetch/core@7.2.5))':
+    optionalDependencies:
+      '@hyper-fetch/core': 7.2.5
+      '@hyper-fetch/sockets': 7.2.5(@hyper-fetch/core@7.2.5)
+
+  '@hyper-fetch/react@7.2.5(@hyper-fetch/core@7.2.5)(@hyper-fetch/sockets@7.2.5(@hyper-fetch/core@7.2.5))(react@19.1.0)':
     dependencies:
       '@better-hooks/lifecycle': 2.0.0(react@19.1.0)
       '@better-hooks/performance': 2.1.0(react@19.1.0)
       '@hyper-fetch/core': 7.2.5
       react: 19.1.0
+    optionalDependencies:
+      '@hyper-fetch/sockets': 7.2.5(@hyper-fetch/core@7.2.5)
+
+  '@hyper-fetch/sockets@7.2.5(@hyper-fetch/core@7.2.5)':
+    dependencies:
+      '@hyper-fetch/core': 7.2.5
+      events: 3.3.0
 
   '@img/sharp-darwin-arm64@0.33.5':
     optionalDependencies:

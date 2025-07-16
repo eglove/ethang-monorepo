@@ -1,6 +1,7 @@
 import type z from "zod";
 
 import { Client } from "@hyper-fetch/core";
+import { DevtoolsPlugin } from "@hyper-fetch/plugin-devtools";
 
 import type {
   appearanceSchema,
@@ -14,7 +15,7 @@ import type {
 
 export const hyperFetchClient = new Client({
   url: "/api",
-});
+}).addPlugin(DevtoolsPlugin({ appName: "Kill Tony" }));
 
 export const getAllAppearances = hyperFetchClient.createRequest<{
   response: z.output<typeof appearancesSchema>;

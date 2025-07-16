@@ -6,6 +6,7 @@ import isNil from "lodash/isNil.js";
 import {
   createAppearance,
   getAllAppearances,
+  hyperFetchClient,
 } from "../../clients/hyper-fetch.ts";
 import { createAppearanceStore } from "./create-appearance-store.ts";
 import { createEpisodeStore } from "./create-episode-store.ts";
@@ -22,8 +23,8 @@ export const CreateAppearanceForm = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     submit({ payload: formState })
-      .then(async () => {
-        await getAllAppearances.send();
+      .then(() => {
+        hyperFetchClient.cache.invalidate(getAllAppearances.cacheKey);
         createEpisodeStore.toggleAppearanceModal(false);
       })
       .catch(globalThis.console.error);
