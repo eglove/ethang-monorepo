@@ -32,7 +32,10 @@ export const Trustee = ({ index, trustee }: TrusteeProperties) => {
     .url();
 
   return (
-    <div className="mb-4 w-full gap-4 border-b-2 pb-4" key={trustee._id}>
+    <div
+      className="mb-4 w-full gap-4 border-b-1 border-gray-300 pb-4"
+      key={trustee._id}
+    >
       <User
         avatarProps={{
           className: "w-32 h-32",

@@ -84,7 +84,6 @@ pnpm approve-builds
 # Get apps and packages directories
 $apps = Get-ChildItem -Path (Join-Path $scriptDir "apps") -Directory | Select-Object -ExpandProperty Name
 $packages = Get-ChildItem -Path (Join-Path $scriptDir "packages") -Directory | Select-Object -ExpandProperty Name
-$templates = Get-ChildItem -Path (Join-Path $scriptDir "templates") -Directory | Select-Object -ExpandProperty Name
 
 # Function to update wrangler types
 function Update-WranglerTypes
@@ -116,7 +115,6 @@ function Update-WranglerTypes
 Write-Host "Updating wrangler types..."
 Update-WranglerTypes -prefix "apps" -directories $apps
 Update-WranglerTypes -prefix "packages" -directories $packages
-Update-WranglerTypes -prefix "templates" -directories $templates
 
 # Return to root directory and run final commands
 Set-Location $scriptDir
