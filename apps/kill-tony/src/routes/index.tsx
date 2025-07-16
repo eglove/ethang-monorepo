@@ -1,11 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { Episodes } from "../components/episode/episodes.tsx";
+
 const Index = () => {
-  return (
-    <div className="p-2">
-      <h3>Welcome Home!</h3>
-    </div>
-  );
+  return <Episodes />;
 };
 
 export const Route = createFileRoute("/")({

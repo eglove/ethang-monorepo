@@ -28,4 +28,8 @@ export class EpisodeService {
       include: { appearances: true },
     });
   }
+
+  public async getAll() {
+    return this._prismaClient.episode.findMany({ orderBy: { number: "desc" } });
+  }
 }

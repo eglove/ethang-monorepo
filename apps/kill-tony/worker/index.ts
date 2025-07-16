@@ -34,6 +34,14 @@ app.post(
   },
 );
 
+app.get("/api/episode", async (context) => {
+  const prismaClient = getPrismaClient(context.env);
+  const episodeService = new EpisodeService(prismaClient);
+  const episodes = await episodeService.getAll();
+
+  return createJsonResponse(episodes, "OK");
+});
+
 app.post(
   "/api/episode",
   zValidator("json", createEpisodeSchema),

@@ -11,6 +11,7 @@ import type {
 import type {
   createEpisodeSchema,
   episodeSchema,
+  episodesSchema,
 } from "../../schemas/episode-schema.ts";
 
 export const hyperFetchClient = new Client({
@@ -30,6 +31,13 @@ export const createAppearance = hyperFetchClient.createRequest<{
 }>()({
   endpoint: "/appearance",
   method: "POST",
+});
+
+export const getAllEpisodes = hyperFetchClient.createRequest<{
+  response: z.output<typeof episodesSchema>;
+}>()({
+  endpoint: "/episode",
+  method: "GET",
 });
 
 export const createEpisode = hyperFetchClient.createRequest<{

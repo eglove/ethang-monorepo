@@ -10,6 +10,8 @@ export const episodeSchema = z.object({
   url: z.url(),
 });
 
+export const episodesSchema = z.array(episodeSchema);
+
 export const createEpisodeSchema = episodeSchema.extend({
   appearances: z.array(appearanceSchema.omit({ id: true })),
 });
