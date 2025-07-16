@@ -1,15 +1,22 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "assets": {
-    "not_found_handling": "single-page-application",
+    "not_found_handling": "single-page-application"
   },
   "compatibility_date": "2025-07-15",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_id": "17c5f8bd-5b77-4e85-ac57-8a7a83809334",
+      "database_name": "kill-tony"
+    }
+  ],
   "main": "worker/index.ts",
   "name": "kill-tony",
   "observability": {
-    "enabled": true,
+    "enabled": true
   },
   "placement": {
-    "mode": "smart",
-  },
+    "mode": "smart"
+  }
 }

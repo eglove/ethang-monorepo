@@ -6,6 +6,5 @@ import { PrismaClient } from "../generated/prisma/client.js";
 
 export const getPrismaClient = (context: AuthContext) => {
   const adapter = new PrismaD1(context.env.DB);
-  // @ts-expect-error bad types
   return new PrismaClient({ adapter, omit: { user: { password: true } } });
 };

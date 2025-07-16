@@ -1,0 +1,34 @@
+generator client {
+  provider               = "prisma-client"
+  output                 = "../generated/prisma"
+  previewFeatures        = ["driverAdapters", "queryCompiler"]
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
+  moduleFormat           = "esm"
+  runtime                = "cloudflare"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Episode {
+  number      Int      @id @unique
+  title       String
+  url         String
+  publishDate DateTime
+
+  appearances Appearance[]
+}
+
+model Appearance {
+  id       String @id @default(uuid(7))
+  name     String @unique
+  imageUrl String
+  type     String
+  isHallOfFame Boolean @default(false)
+  isGoldenTicketWinner Boolean @default(false)
+
+  episodes Episode[]
+}

@@ -1,14 +1,32 @@
-import startsWith from "lodash/startsWith.js";
+import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response";
+import { zValidator } from "@hono/zod-validator";
+import { Hono } from "hono";
+import { cors } from "hono/cors";
 
-export default {
-  fetch(request) {
-    const url = new URL(request.url);
+import { createEpisodeSchema, EpisodeService } from "./episode.ts";
+import { getPrismaClient } from "./prisma-client.ts";
 
-    if (startsWith(url.pathname, "/api/")) {
-      return Response.json({
-        name: "Cloudflare",
-      });
-    }
-    return new Response(null, { status: 404 });
+const app = new Hono<{ Bindings: Env }>();
+app.use("*", cors());
+
+app.get("/api/", (context) => {
+  return Response.json({
+    name: "Cloudflare",
+  });
+});
+
+app.post(
+  "/api/episode",
+  zValidator("json", createEpisodeSchema),
+  async (context) => {
+    const prismaClient = getPrismaClient(context.env);
+    const episodeService = new EpisodeService(prismaClient);
+    const body = context.req.valid("json");
+
+    const episode = await episodeService.createEpisode(body);
+
+    return createJsonResponse(episode, "OK");
   },
-} satisfies ExportedHandler<Env>;
+);
+
+export default app;
