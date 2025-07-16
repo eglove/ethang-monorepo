@@ -31,7 +31,7 @@
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "3.0.4",
     "eslint-plugin-storybook": "^9.0.17",
-    "eslint-plugin-tailwindcss": "^3.18.0",
+    "eslint-plugin-tailwindcss": "^3.18.2",
     "eslint-plugin-unicorn": "^59.0.1",
     "prettier": "^3.6.2",
     "typescript-eslint": "^8.37.0"
@@ -62,5 +62,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "22.15.2"
+  "version": "22.15.3"
 }

@@ -42,9 +42,9 @@
     "zod": "^4.0.5"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.9.4",
+    "@cloudflare/vite-plugin": "^1.9.5",
     "@eslint/js": "^9.31.0",
-    "@ethang/eslint-config": "^22.15.2",
+    "@ethang/eslint-config": "^22.15.3",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.11",
@@ -71,7 +71,7 @@
     "vite": "^7.0.4",
     "vite-plugin-pwa": "^1.0.1",
     "vitest": "^3.2.4",
-    "wrangler": "^4.24.3"
+    "wrangler": "^4.24.4"
   },
   "engines": {
     "node": ">=22"
