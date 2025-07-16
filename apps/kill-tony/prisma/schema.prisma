@@ -26,7 +26,9 @@ model Appearance {
   id       String @id @default(uuid(7))
   name     String @unique
   imageUrl String
-  type     String
+  isGuest Boolean @default(false)
+  isBucketPull Boolean @default(false)
+  isRegular Boolean @default(false)
   isHallOfFame Boolean @default(false)
   isGoldenTicketWinner Boolean @default(false)
 

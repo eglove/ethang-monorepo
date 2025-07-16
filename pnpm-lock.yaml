@@ -428,6 +428,9 @@ importers:
 
   apps/kill-tony:
     dependencies:
+      '@ethang/store':
+        specifier: ^2.3.1
+        version: 2.3.1(react@19.1.0)
       '@ethang/toolbelt':
         specifier: ^4.4.11
         version: 4.4.11
@@ -440,9 +443,18 @@ importers:
       '@hono/zod-validator':
         specifier: ^0.7.1
         version: 0.7.1(hono@4.8.5)(zod@4.0.5)
+      '@hyper-fetch/core':
+        specifier: ^7.2.5
+        version: 7.2.5
+      '@hyper-fetch/react':
+        specifier: ^7.2.5
+        version: 7.2.5(@hyper-fetch/core@7.2.5)(react@19.1.0)
       '@prisma/adapter-d1':
         specifier: ^6.12.0
         version: 6.12.0
+      '@prisma/client':
+        specifier: ^6.12.0
+        version: 6.12.0(prisma@6.12.0(typescript@5.8.3))(typescript@5.8.3)
       '@tanstack/react-router':
         specifier: ^1.127.9
         version: 1.127.9(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -458,6 +470,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      luxon:
+        specifier: ^3.7.1
+        version: 3.7.1
       prisma:
         specifier: ^6.12.0
         version: 6.12.0(typescript@5.8.3)
@@ -495,6 +510,9 @@ importers:
       '@types/lodash':
         specifier: ^4.17.20
         version: 4.17.20
+      '@types/luxon':
+        specifier: ^3.6.2
+        version: 3.6.2
       '@types/react':
         specifier: ^19.1.8
         version: 19.1.8
@@ -1912,6 +1930,18 @@ packages:
   '@bcoe/v8-coverage@1.0.2':
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
+
+  '@better-hooks/lifecycle@2.0.0':
+    resolution: {integrity: sha512-VACrnIj/rrHwIiwIMqt7zijtpluhqIOeU3ivZgn2QC9OXGIKvi4vOhPo159NxmJVw+RonwOfNc25EXHAvAJvoA==}
+    engines: {node: '>=8', npm: '>=5'}
+    peerDependencies:
+      react: '>= 16.8.0'
+
+  '@better-hooks/performance@2.1.0':
+    resolution: {integrity: sha512-e/uzRNUq3Sm8Amph+/Zz9yRoLcoYtDfp4JpwzxtGOZAXEj7i9hqGjLHR94/Nv587FNgzGVtysFgkNCHImDJjkQ==}
+    engines: {node: '>=8', npm: '>=5'}
+    peerDependencies:
+      react: '>= 16.8.0'
 
   '@cloudflare/kv-asset-handler@0.4.0':
     resolution: {integrity: sha512-+tv3z+SPp+gqTIcImN9o0hqE9xyfQjI1XD9pL6NuKjua9B1y7mNYv0S9cP+QEbA4ppVgGZEmKOvHX5G5Ei1CVA==}
@@ -3412,6 +3442,19 @@ packages:
   '@humanwhocodes/retry@0.4.3':
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
+
+  '@hyper-fetch/core@7.2.5':
+    resolution: {integrity: sha512-wmSUyAXQouKbquxLEVIOXxmgJcIE26WWGxuNkztKUD/cQDzazXs396Ei+AechkwtmfkyKqL+w5F12KJfY2xB9w==}
+
+  '@hyper-fetch/react@7.2.5':
+    resolution: {integrity: sha512-5gFAFx9+u+ZcB7m1O8tbfmwx/gutFCy/Qmhk4+ZgCEOwJxKl5WMe2HuA4WBoNfQcdkFdh2Luvov0mvUEd7CqJQ==}
+    peerDependencies:
+      '@hyper-fetch/core': '*'
+      '@hyper-fetch/sockets': '*'
+      react: '>= 16.8.0'
+    peerDependenciesMeta:
+      '@hyper-fetch/sockets':
+        optional: true
 
   '@img/sharp-darwin-arm64@0.33.5':
     resolution: {integrity: sha512-UT4p+iz/2H4twwAoLCqfA9UH5pI6DggwKEGuaPy7nCVQ8ZsiY5PIcrRvD1DzuY3qYL07NtIQcWnBSY/heikIFQ==}
@@ -11585,6 +11628,15 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
+  '@better-hooks/lifecycle@2.0.0(react@19.1.0)':
+    dependencies:
+      react: 19.1.0
+
+  '@better-hooks/performance@2.1.0(react@19.1.0)':
+    dependencies:
+      '@better-hooks/lifecycle': 2.0.0(react@19.1.0)
+      react: 19.1.0
+
   '@cloudflare/kv-asset-handler@0.4.0':
     dependencies:
       mime: 3.0.0
@@ -13617,6 +13669,17 @@ snapshots:
   '@humanwhocodes/retry@0.3.1': {}
 
   '@humanwhocodes/retry@0.4.3': {}
+
+  '@hyper-fetch/core@7.2.5':
+    dependencies:
+      events: 3.3.0
+
+  '@hyper-fetch/react@7.2.5(@hyper-fetch/core@7.2.5)(react@19.1.0)':
+    dependencies:
+      '@better-hooks/lifecycle': 2.0.0(react@19.1.0)
+      '@better-hooks/performance': 2.1.0(react@19.1.0)
+      '@hyper-fetch/core': 7.2.5
+      react: 19.1.0
 
   '@img/sharp-darwin-arm64@0.33.5':
     optionalDependencies:

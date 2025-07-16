@@ -613,7 +613,9 @@ export const AppearanceScalarFieldEnum = {
   id: 'id',
   name: 'name',
   imageUrl: 'imageUrl',
-  type: 'type',
+  isGuest: 'isGuest',
+  isBucketPull: 'isBucketPull',
+  isRegular: 'isRegular',
   isHallOfFame: 'isHallOfFame',
   isGoldenTicketWinner: 'isGoldenTicketWinner'
 } as const
