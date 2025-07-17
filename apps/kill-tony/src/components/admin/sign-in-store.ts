@@ -1,14 +1,8 @@
-import type { signInResponseToken } from "@ethang/schemas/auth/token.ts";
-import type { SignInSchema } from "@ethang/schemas/auth/user.ts";
-import type z from "zod";
-
 import {
   BaseStore,
   type StorePatch,
   type StorePatchLoose,
 } from "@ethang/store";
-import { Client } from "@hyper-fetch/core";
-import { DevtoolsPlugin } from "@hyper-fetch/plugin-devtools";
 import Cookies from "js-cookie";
 import isEqual from "lodash/isEqual.js";
 import isString from "lodash/isString.js";
@@ -18,18 +12,6 @@ const initialState = {
   token: null as null | string,
   userId: null as null | string,
 };
-
-const client = new Client({
-  url: "https://auth.ethang.dev",
-}).addPlugin(DevtoolsPlugin({ appName: "Auth" }));
-
-export const signIn = client.createRequest<{
-  payload: SignInSchema;
-  response: z.output<typeof signInResponseToken>;
-}>()({
-  endpoint: "/sign-in",
-  method: "POST",
-});
 
 export class SignInStore extends BaseStore<typeof initialState> {
   public constructor() {
@@ -41,6 +23,30 @@ export class SignInStore extends BaseStore<typeof initialState> {
       draft.isSignedIn = true;
       draft.token = data.token;
       draft.userId = data.userId;
+    });
+  }
+
+  public async signIn(email: string, password: string) {
+    const response = await fetch("https://auth.ethang.dev/sign-in", {
+      body: JSON.stringify({ email, password }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+    });
+
+    if (response.ok) {
+      this.setSignedIn(await response.json());
+    } else {
+      this.signOut();
+    }
+  }
+
+  public signOut() {
+    this.update((state) => {
+      state.isSignedIn = false;
+      state.token = null;
+      state.userId = null;
     });
   }
 

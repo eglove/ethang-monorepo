@@ -58,7 +58,7 @@ export const EpisodeCard = ({
   const videoId = url.searchParams.get("v");
 
   return (
-    <Card>
+    <Card className="mx-auto px-16">
       <CardHeader className="flex justify-center">
         <Link
           isExternal

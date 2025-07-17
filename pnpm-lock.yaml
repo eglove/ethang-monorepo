@@ -455,18 +455,6 @@ importers:
       '@hono/zod-validator':
         specifier: ^0.7.1
         version: 0.7.1(hono@4.8.5)(zod@4.0.5)
-      '@hyper-fetch/core':
-        specifier: ^7.2.5
-        version: 7.2.5
-      '@hyper-fetch/plugin-devtools':
-        specifier: ^7.2.5
-        version: 7.2.5(@hyper-fetch/core@7.2.5)(@hyper-fetch/sockets@7.2.5(@hyper-fetch/core@7.2.5))
-      '@hyper-fetch/react':
-        specifier: ^7.2.5
-        version: 7.2.5(@hyper-fetch/core@7.2.5)(@hyper-fetch/sockets@7.2.5(@hyper-fetch/core@7.2.5))(react@19.1.0)
-      '@hyper-fetch/sockets':
-        specifier: ^7.2.5
-        version: 7.2.5(@hyper-fetch/core@7.2.5)
       '@prisma/adapter-d1':
         specifier: ^6.12.0
         version: 6.12.0
@@ -479,6 +467,9 @@ importers:
       '@tanstack/react-router-devtools':
         specifier: ^1.127.9
         version: 1.127.9(@tanstack/react-router@1.127.9(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@tanstack/router-core@1.127.8)(csstype@3.1.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(solid-js@1.9.7)(tiny-invariant@1.3.3)
+      apollo3-cache-persist:
+        specifier: ^0.15.0
+        version: 0.15.0(@apollo/client@3.13.8(@types/react@19.1.8)(graphql@16.11.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       framer-motion:
         specifier: ^12.23.6
         version: 12.23.6(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -488,6 +479,9 @@ importers:
       hono:
         specifier: ^4.8.5
         version: 4.8.5
+      idb-keyval:
+        specifier: ^6.2.2
+        version: 6.2.2
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -2075,18 +2069,6 @@ packages:
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
 
-  '@better-hooks/lifecycle@2.0.0':
-    resolution: {integrity: sha512-VACrnIj/rrHwIiwIMqt7zijtpluhqIOeU3ivZgn2QC9OXGIKvi4vOhPo159NxmJVw+RonwOfNc25EXHAvAJvoA==}
-    engines: {node: '>=8', npm: '>=5'}
-    peerDependencies:
-      react: '>= 16.8.0'
-
-  '@better-hooks/performance@2.1.0':
-    resolution: {integrity: sha512-e/uzRNUq3Sm8Amph+/Zz9yRoLcoYtDfp4JpwzxtGOZAXEj7i9hqGjLHR94/Nv587FNgzGVtysFgkNCHImDJjkQ==}
-    engines: {node: '>=8', npm: '>=5'}
-    peerDependencies:
-      react: '>= 16.8.0'
-
   '@cloudflare/kv-asset-handler@0.4.0':
     resolution: {integrity: sha512-+tv3z+SPp+gqTIcImN9o0hqE9xyfQjI1XD9pL6NuKjua9B1y7mNYv0S9cP+QEbA4ppVgGZEmKOvHX5G5Ei1CVA==}
     engines: {node: '>=18.0.0'}
@@ -3606,35 +3588,6 @@ packages:
   '@humanwhocodes/retry@0.4.3':
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
-
-  '@hyper-fetch/core@7.2.5':
-    resolution: {integrity: sha512-wmSUyAXQouKbquxLEVIOXxmgJcIE26WWGxuNkztKUD/cQDzazXs396Ei+AechkwtmfkyKqL+w5F12KJfY2xB9w==}
-
-  '@hyper-fetch/plugin-devtools@7.2.5':
-    resolution: {integrity: sha512-ZmXRLHGX9GoMNGO3m9N6ovZGClrC6DpsTLd7BG2B9gUf8LiKeqtFUlSYr+UD1KHNvwxMC8BS//7hDcEp0lCVog==}
-    peerDependencies:
-      '@hyper-fetch/core': '*'
-      '@hyper-fetch/sockets': '*'
-    peerDependenciesMeta:
-      '@hyper-fetch/core':
-        optional: true
-      '@hyper-fetch/sockets':
-        optional: true
-
-  '@hyper-fetch/react@7.2.5':
-    resolution: {integrity: sha512-5gFAFx9+u+ZcB7m1O8tbfmwx/gutFCy/Qmhk4+ZgCEOwJxKl5WMe2HuA4WBoNfQcdkFdh2Luvov0mvUEd7CqJQ==}
-    peerDependencies:
-      '@hyper-fetch/core': '*'
-      '@hyper-fetch/sockets': '*'
-      react: '>= 16.8.0'
-    peerDependenciesMeta:
-      '@hyper-fetch/sockets':
-        optional: true
-
-  '@hyper-fetch/sockets@7.2.5':
-    resolution: {integrity: sha512-cd+SnGK+rTW6hmdnb5++dQUefoABOgBqwhi8+VG9wFy4JvqUYm9hPb3ObzwR0mCbT3U964WBUMypLKLRosSukw==}
-    peerDependencies:
-      '@hyper-fetch/core': '*'
 
   '@img/sharp-darwin-arm64@0.33.5':
     resolution: {integrity: sha512-UT4p+iz/2H4twwAoLCqfA9UH5pI6DggwKEGuaPy7nCVQ8ZsiY5PIcrRvD1DzuY3qYL07NtIQcWnBSY/heikIFQ==}
@@ -5941,6 +5894,11 @@ packages:
   anymatch@3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
     engines: {node: '>= 8'}
+
+  apollo3-cache-persist@0.15.0:
+    resolution: {integrity: sha512-asxhPOHGddgXYvY4/Wa+XLODYpjci/kPB4zdy82D0tVGzVmvO4lqp3k06NtzHvd//gd9kCnTaG8iziwAcXZYjw==}
+    peerDependencies:
+      '@apollo/client': ^3.7.17
 
   archiver-utils@5.0.2:
     resolution: {integrity: sha512-wuLJMmIBQYCsGZgYLTy5FIB2pF6Lfb6cXMSF8Qywwk3t20zWnAi7zLcQFdKQmIB8wyZpY5ER38x08GbwtR2cLA==}
@@ -12288,15 +12246,6 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@better-hooks/lifecycle@2.0.0(react@19.1.0)':
-    dependencies:
-      react: 19.1.0
-
-  '@better-hooks/performance@2.1.0(react@19.1.0)':
-    dependencies:
-      '@better-hooks/lifecycle': 2.0.0(react@19.1.0)
-      react: 19.1.0
-
   '@cloudflare/kv-asset-handler@0.4.0':
     dependencies:
       mime: 3.0.0
@@ -14353,29 +14302,6 @@ snapshots:
   '@humanwhocodes/retry@0.3.1': {}
 
   '@humanwhocodes/retry@0.4.3': {}
-
-  '@hyper-fetch/core@7.2.5':
-    dependencies:
-      events: 3.3.0
-
-  '@hyper-fetch/plugin-devtools@7.2.5(@hyper-fetch/core@7.2.5)(@hyper-fetch/sockets@7.2.5(@hyper-fetch/core@7.2.5))':
-    optionalDependencies:
-      '@hyper-fetch/core': 7.2.5
-      '@hyper-fetch/sockets': 7.2.5(@hyper-fetch/core@7.2.5)
-
-  '@hyper-fetch/react@7.2.5(@hyper-fetch/core@7.2.5)(@hyper-fetch/sockets@7.2.5(@hyper-fetch/core@7.2.5))(react@19.1.0)':
-    dependencies:
-      '@better-hooks/lifecycle': 2.0.0(react@19.1.0)
-      '@better-hooks/performance': 2.1.0(react@19.1.0)
-      '@hyper-fetch/core': 7.2.5
-      react: 19.1.0
-    optionalDependencies:
-      '@hyper-fetch/sockets': 7.2.5(@hyper-fetch/core@7.2.5)
-
-  '@hyper-fetch/sockets@7.2.5(@hyper-fetch/core@7.2.5)':
-    dependencies:
-      '@hyper-fetch/core': 7.2.5
-      events: 3.3.0
 
   '@img/sharp-darwin-arm64@0.33.5':
     optionalDependencies:
@@ -17447,6 +17373,10 @@ snapshots:
     dependencies:
       normalize-path: 3.0.0
       picomatch: 2.3.1
+
+  apollo3-cache-persist@0.15.0(@apollo/client@3.13.8(@types/react@19.1.8)(graphql@16.11.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)):
+    dependencies:
+      '@apollo/client': 3.13.8(@types/react@19.1.8)(graphql@16.11.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
   archiver-utils@5.0.2:
     dependencies:

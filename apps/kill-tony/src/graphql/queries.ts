@@ -2,6 +2,16 @@ import { gql } from "@apollo/client";
 
 import type { Appearance, Episode } from "../../generated/prisma/client.ts";
 
+export type GetEpisodes = { episodes: Pick<Episode, "number">[] };
+
+export const getEpisodes = gql`
+  query GetEpisodes {
+    episodes {
+      number
+    }
+  }
+`;
+
 export type GetEpisode = {
   episode: {
     appearances: Pick<
@@ -16,6 +26,7 @@ export const getEpisode = gql`
     episode(number: $number) {
       title
       url
+      number
       appearances {
         name
         isGuest

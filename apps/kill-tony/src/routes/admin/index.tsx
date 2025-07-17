@@ -1,17 +1,14 @@
 import { useStore } from "@ethang/store/use-store";
 import { Button, Input } from "@heroui/react";
-import { useSubmit } from "@hyper-fetch/react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import isNil from "lodash/isNil.js";
 import { useState } from "react";
 
-import { signIn, signInStore } from "../../components/admin/sign-in-store.ts";
+import { signInStore } from "../../components/admin/sign-in-store.ts";
 
 const RouteComponent = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const { submit, submitting } = useSubmit(signIn);
   const { isSignedIn } = useStore(signInStore, (state) => {
     return {
       isSignedIn: state.isSignedIn,
@@ -20,15 +17,10 @@ const RouteComponent = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    submit({ payload: { email, password } })
-      .then(async ({ data }) => {
-        if (!isNil(data)) {
-          signInStore.setSignedIn({
-            token: data.sessionToken,
-            userId: data.id,
-          });
-          await router.navigate({ to: "/" });
-        }
+    signInStore
+      .signIn(email, password)
+      .then(async () => {
+        await router.navigate({ to: "/" });
       })
       .catch(globalThis.console.error);
   };
@@ -49,7 +41,7 @@ const RouteComponent = () => {
           type="password"
           value={password}
         />
-        <Button color="primary" isLoading={submitting} type="submit">
+        <Button color="primary" type="submit">
           Sign In
         </Button>
       </form>
