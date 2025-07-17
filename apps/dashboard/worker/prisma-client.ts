@@ -4,6 +4,5 @@ import { PrismaClient } from "../generated/prisma/client";
 
 export const getPrismaClient = (environment: Env) => {
   const adapter = new PrismaD1(environment.DB);
-  // @ts-expect-error ignore
   return new PrismaClient({ adapter });
 };
