@@ -58,12 +58,12 @@ export const EpisodeCard = ({
   const videoId = url.searchParams.get("v");
 
   return (
-    <Card className="mx-auto px-16">
+    <Card className="mx-auto w-full md:w-5/6 lg:w-1/2">
       <CardHeader className="flex justify-center">
         <Link
           isExternal
           showAnchorIcon
-          className="font-bold text-2xl"
+          className="font-bold md:text-2xl"
           href={data.episode.url}
           underline="always"
         >
@@ -71,7 +71,7 @@ export const EpisodeCard = ({
         </Link>
       </CardHeader>
       <CardBody className="grid place-items-center">
-        <div className="max-w-3xl min-w-full">
+        <div className="w-full">
           {!isNil(videoId) && (
             <LiteYouTubeEmbed id={videoId} title={data.episode.title} />
           )}

@@ -1,4 +1,9 @@
 export const typeDefs = `#graphql
+    enum OrderDirection {
+        asc
+        desc
+    }
+
     type Episode {
         number: Int!
         title: String!
@@ -39,13 +44,25 @@ export const typeDefs = `#graphql
         number: Int!
         appearance: AppearanceInput! 
     }
+
+    input EpisodeWhereInput {
+        number: Int!
+    }
+
+    input AppearanceWhereInput {
+        name: String!
+    }
+
+    input EpisodeOrderByInput {
+        number: OrderDirection
+    }
     
     scalar DateTime
 
     type Query {
-        episode(number: Int!): Episode
-        episodes: [Episode]!
-        appearance(name: String!): Appearance
+        episode(where: EpisodeWhereInput!): Episode
+        episodes(orderBy: EpisodeOrderByInput): [Episode]!
+        appearance(where: AppearanceWhereInput!): Appearance
         appearances: [Appearance]!
     }
     

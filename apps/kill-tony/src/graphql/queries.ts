@@ -6,7 +6,7 @@ export type GetEpisodes = { episodes: Pick<Episode, "number">[] };
 
 export const getEpisodes = gql`
   query GetEpisodes {
-    episodes {
+    episodes(orderBy: { number: desc }) {
       number
     }
   }
@@ -23,7 +23,7 @@ export type GetEpisode = {
 
 export const getEpisode = gql`
   query GetEpisode($number: Int!) {
-    episode(number: $number) {
+    episode(where: { number: $number }) {
       title
       url
       number
@@ -46,7 +46,7 @@ export type GetAppearance = {
 
 export const getAppearance = gql`
   query GetAppearance($name: String!) {
-    appearance(name: $name) {
+    appearance(where: { name: $name }) {
       name
       episodes {
         number
