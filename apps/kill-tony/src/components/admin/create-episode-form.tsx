@@ -10,6 +10,7 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
+import { useRouter } from "@tanstack/react-router";
 import filter from "lodash/filter.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
@@ -23,6 +24,7 @@ import { CreateAppearanceForm } from "./create-appearance-form.tsx";
 import { createEpisodeStore } from "./create-episode-store.ts";
 
 export const CreateEpisodeForm = () => {
+  const router = useRouter();
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [mutate, { error, loading: isMutating }] = useMutation(createEpisode);
 
@@ -70,13 +72,19 @@ export const CreateEpisodeForm = () => {
 
     mutate({
       variables: {
-        appearances: formState.appearances,
-        number: formState.number,
-        publishDate: formattedDate,
-        title: formState.title,
-        url: formState.url,
+        input: {
+          appearances: formState.appearances,
+          number: formState.number,
+          publishDate: formattedDate,
+          title: formState.title,
+          url: formState.url,
+        },
       },
-    }).catch(globalThis.console.error);
+    })
+      .then(async () => {
+        await router.navigate({ to: "/" });
+      })
+      .catch(globalThis.console.error);
   };
 
   return (
