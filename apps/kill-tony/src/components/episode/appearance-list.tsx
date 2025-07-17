@@ -1,15 +1,16 @@
-import type z from "zod";
-
 import { Link } from "@heroui/react";
 import filter from "lodash/filter";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
 
-import type { baseAppearancesSchema } from "../../../schemas/schemas.ts";
+import type { Appearance } from "../../../generated/prisma/client.ts";
 
 type AppearanceListProperties = {
-  appearances: z.output<typeof baseAppearancesSchema>;
+  appearances: Pick<
+    Appearance,
+    "isBucketPull" | "isGuest" | "isRegular" | "name"
+  >[];
   label: string;
   type: "isBucketPull" | "isGuest" | "isRegular";
 };
@@ -21,15 +22,16 @@ const formatter = new Intl.ListFormat("en", {
 
 const getAppearanceByType = (
   type: "isBucketPull" | "isGuest" | "isRegular",
-  appearances: z.output<typeof baseAppearancesSchema>,
+  appearances: Pick<
+    Appearance,
+    "isBucketPull" | "isGuest" | "isRegular" | "name"
+  >[],
 ) => {
   return map(
     filter(appearances, (appearance) => {
       return appearance[type];
     }),
-    (appearance) => {
-      return appearance.name;
-    },
+    "name",
   ).sort((a, b) => {
     return a.localeCompare(b);
   });

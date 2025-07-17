@@ -1,15 +1,12 @@
+import { useMutation } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import { addToast, Button, Checkbox, Input } from "@heroui/react";
-import { useSubmit } from "@hyper-fetch/react";
 import isNil from "lodash/isNil.js";
 
 import {
   addAppearanceToEpisode,
   createAppearance,
-  getAllAppearances,
-  getAllEpisodes,
-  hyperFetchClient,
-} from "../../clients/hyper-fetch.ts";
+} from "../../graphql/mutations.ts";
 import { createAppearanceStore } from "./create-appearance-store.ts";
 import { createEpisodeStore } from "./create-episode-store.ts";
 
@@ -20,7 +17,7 @@ type CreateAppearanceFormProperties = {
 export const CreateAppearanceForm = ({
   episodeNumber,
 }: Readonly<CreateAppearanceFormProperties>) => {
-  const { error, submit, submitting } = useSubmit(
+  const [mutate, { error, loading }] = useMutation(
     isNil(episodeNumber) ? createAppearance : addAppearanceToEpisode,
   );
 
@@ -33,15 +30,13 @@ export const CreateAppearanceForm = ({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const promise = isNil(episodeNumber)
-      ? submit({ payload: formState })
-      : submit({
-          payload: { appearance: formState, number: episodeNumber },
+      ? mutate({ variables: formState })
+      : mutate({
+          variables: { appearance: formState, number: episodeNumber },
         });
 
     promise
       .then(() => {
-        hyperFetchClient.cache.invalidate(getAllAppearances.cacheKey);
-        hyperFetchClient.cache.invalidate(getAllEpisodes.cacheKey);
         createEpisodeStore.toggleAppearanceModal(false);
       })
       .catch(globalThis.console.error);
@@ -107,7 +102,7 @@ export const CreateAppearanceForm = ({
           Hall of Fame
         </Checkbox>
       </div>
-      <Button color="primary" isLoading={submitting} type="submit">
+      <Button color="primary" isLoading={loading} type="submit">
         Add
       </Button>
     </form>

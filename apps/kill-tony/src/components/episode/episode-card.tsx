@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -10,11 +11,10 @@ import {
   ModalContent,
   Spinner,
 } from "@heroui/react";
-import { useFetch } from "@hyper-fetch/react";
 import isNil from "lodash/isNil";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 
-import { getEpisodeByNumber } from "../../clients/hyper-fetch.ts";
+import { type GetEpisode, getEpisode } from "../../graphql/queries.ts";
 import { CreateAppearanceForm } from "../admin/create-appearance-form.tsx";
 import { createEpisodeStore } from "../admin/create-episode-store.ts";
 import { signInStore } from "../admin/sign-in-store.ts";
@@ -27,9 +27,10 @@ type EpisodeCardProperties = {
 export const EpisodeCard = ({
   episodeNumber,
 }: Readonly<EpisodeCardProperties>) => {
-  const { data, loading } = useFetch(
-    getEpisodeByNumber.setParams({ number: episodeNumber }),
-  );
+  const { data, loading } = useQuery<GetEpisode>(getEpisode, {
+    variables: { number: episodeNumber },
+  });
+
   const { isAppearanceModalOpen } = useStore(createEpisodeStore, (state) => {
     return {
       isAppearanceModalOpen: state.isAppearanceModalOpen,
@@ -49,11 +50,11 @@ export const EpisodeCard = ({
     );
   }
 
-  if (isNil(data) || !URL.canParse(data.url)) {
+  if (isNil(data) || !URL.canParse(data.episode.url)) {
     return null;
   }
 
-  const url = new URL(data.url);
+  const url = new URL(data.episode.url);
   const videoId = url.searchParams.get("v");
 
   return (
@@ -63,32 +64,32 @@ export const EpisodeCard = ({
           isExternal
           showAnchorIcon
           className="font-bold text-2xl"
-          href={data.url}
+          href={data.episode.url}
           underline="always"
         >
-          {data.title}
+          {data.episode.title}
         </Link>
       </CardHeader>
       <CardBody className="grid place-items-center">
         <div className="w-3xl">
           {!isNil(videoId) && (
-            <LiteYouTubeEmbed id={videoId} title={data.title} />
+            <LiteYouTubeEmbed id={videoId} title={data.episode.title} />
           )}
         </div>
       </CardBody>
       <CardFooter className="grid gap-4">
         <AppearanceList
-          appearances={data.appearances}
+          appearances={data.episode.appearances}
           label="Guests"
           type="isGuest"
         />
         <AppearanceList
-          appearances={data.appearances}
+          appearances={data.episode.appearances}
           label="Regulars"
           type="isRegular"
         />
         <AppearanceList
-          appearances={data.appearances}
+          appearances={data.episode.appearances}
           label="Bucket Pulls"
           type="isBucketPull"
         />
@@ -109,7 +110,7 @@ export const EpisodeCard = ({
               isOpen={isAppearanceModalOpen}
             >
               <ModalContent>
-                <CreateAppearanceForm episodeNumber={data.number} />
+                <CreateAppearanceForm episodeNumber={episodeNumber} />
               </ModalContent>
             </Modal>
           </>

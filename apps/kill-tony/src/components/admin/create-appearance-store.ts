@@ -2,7 +2,6 @@ import { BaseStore } from "@ethang/store";
 
 const initialState = {
   formState: {
-    imageUrl: "",
     isBucketPull: false,
     isGoldenTicketWinner: false,
     isGuest: false,

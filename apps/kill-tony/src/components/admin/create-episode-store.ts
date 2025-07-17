@@ -1,14 +1,12 @@
-import type z from "zod";
-
 import { BaseStore } from "@ethang/store";
 
-import type { baseAppearancesSchema } from "../../../schemas/schemas.ts";
+import type { Appearance } from "../../../generated/prisma/client.ts";
 
 import { createAppearanceStore } from "./create-appearance-store.ts";
 
 const initialState = {
   formState: {
-    appearances: [] as z.output<typeof baseAppearancesSchema>,
+    appearances: [] as Pick<Appearance, "id" | "name">[],
     number: 0,
     publishDate: "",
     title: "",

@@ -1,13 +1,22 @@
-import { Card, CardBody, Spinner } from "@heroui/react";
+import { gql, useQuery } from "@apollo/client";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
-import { useFetch } from "@hyper-fetch/react";
+import { Card, CardBody, Spinner } from "@heroui/react";
 import map from "lodash/map.js";
 
-import { getAllEpisodes } from "../../clients/hyper-fetch.ts";
+import type { Episode } from "../../../generated/prisma/client.ts";
+
 import { EpisodeCard } from "./episode-card.tsx";
 
 export const Episodes = () => {
-  const { data, loading } = useFetch(getAllEpisodes);
+  const { data, loading } = useQuery<{ episodes: Pick<Episode, "number">[] }>(
+    gql`
+      query GetEpisodes {
+        episodes {
+          number
+        }
+      }
+    `,
+  );
 
   return (
     <>
@@ -19,7 +28,7 @@ export const Episodes = () => {
         </Card>
       )}
       {!loading &&
-        map(data, (episode) => {
+        map(data?.episodes, (episode) => {
           return (
             <EpisodeCard episodeNumber={episode.number} key={episode.number} />
           );

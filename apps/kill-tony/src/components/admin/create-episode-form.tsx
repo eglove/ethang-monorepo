@@ -1,3 +1,4 @@
+import { useMutation, useQuery } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import {
   addToast,
@@ -9,7 +10,6 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
-import { useFetch, useSubmit } from "@hyper-fetch/react";
 import filter from "lodash/filter.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
@@ -17,13 +17,14 @@ import map from "lodash/map.js";
 import { DateTime } from "luxon";
 import { useState } from "react";
 
-import { createEpisode, getAllAppearances } from "../../clients/hyper-fetch.ts";
+import { createEpisode } from "../../graphql/mutations.ts";
+import { type GetAppearances, getAppearances } from "../../graphql/queries.ts";
 import { CreateAppearanceForm } from "./create-appearance-form.tsx";
 import { createEpisodeStore } from "./create-episode-store.ts";
 
 export const CreateEpisodeForm = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
-  const { error, submit, submitting } = useSubmit(createEpisode);
+  const [mutate, { error, loading: isMutating }] = useMutation(createEpisode);
 
   if (!isNil(error)) {
     addToast({
@@ -51,12 +52,12 @@ export const CreateEpisodeForm = () => {
     );
   });
 
-  const { data, loading } = useFetch(getAllAppearances);
+  const { data, loading } = useQuery<GetAppearances>(getAppearances);
 
   const options =
     isNil(data) || isEmpty(data)
       ? [{ id: "_0", name: "Add" }]
-      : [{ id: "_0", name: "Add" }, ...data];
+      : [{ id: "_0", name: "Add" }, ...data.appearances];
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -67,10 +68,13 @@ export const CreateEpisodeForm = () => {
       .toJSDate()
       .toISOString();
 
-    submit({
-      payload: {
-        ...formState,
+    mutate({
+      variables: {
+        appearances: formState.appearances,
+        number: formState.number,
         publishDate: formattedDate,
+        title: formState.title,
+        url: formState.url,
       },
     }).catch(globalThis.console.error);
   };
@@ -119,7 +123,7 @@ export const CreateEpisodeForm = () => {
             // @ts-expect-error assume string Set
             setSelectedAppearances(values);
 
-            const found = filter(data, (appearance) => {
+            const found = filter(data?.appearances, (appearance) => {
               return values.has(appearance.id);
             });
 
@@ -162,7 +166,7 @@ export const CreateEpisodeForm = () => {
             );
           })}
         </Select>
-        <Button color="primary" isLoading={submitting} type="submit">
+        <Button color="primary" isLoading={isMutating} type="submit">
           Add Episode
         </Button>
       </form>
