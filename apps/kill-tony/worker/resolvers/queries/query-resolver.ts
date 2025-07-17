@@ -6,13 +6,13 @@ import { getPrismaClient } from "../../prisma-client.ts";
 import { getPrismaSelect } from "../../utilties.ts";
 
 type AllKeys = keyof PrismaClient;
-type Methods<T extends Tables> = keyof PrismaClient[T];
+type Method<T extends Tables> = keyof PrismaClient[T];
 type PrismaClient = ReturnType<typeof getPrismaClient>;
 type Tables = Exclude<AllKeys, `$${string}`>;
 
 export const queryResolver = <T extends Tables>(
   table: T,
-  method: Methods<T>,
+  method: Method<T>,
 ) => {
   return async (
     _: unknown,
