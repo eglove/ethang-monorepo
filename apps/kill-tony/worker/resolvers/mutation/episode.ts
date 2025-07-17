@@ -1,9 +1,8 @@
 import type { GraphQLResolveInfo } from "graphql/type";
 
-import map from "lodash/map.js";
+import set from "lodash/set";
 
 import type { Appearance, Episode } from "../../../generated/prisma/client.ts";
-import type { CreateAppearance } from "./appearance.ts";
 
 import { getPrismaClient } from "../../prisma-client.ts";
 import { getPrismaSelect } from "../../utilties.ts";
@@ -19,23 +18,17 @@ export const createEpisodeMutation = async (
   const prismaClient = getPrismaClient(contextValue.env);
 
   return prismaClient.episode.create({
-    data: {
-      ..._arguments.input,
-      appearances: {
-        connectOrCreate: map(_arguments.input.appearances, (appearance) => {
-          return {
-            create: appearance,
-            where: { name: appearance.name },
-          };
-        }),
-      },
-    },
+    data: _arguments.input,
     select: getPrismaSelect(info),
   });
 };
 
 type AddAppearanceToEpisodeInput = {
-  appearance: CreateAppearance;
+  isBucketPull: boolean;
+  isGoldenTicketCashIn: boolean;
+  isGuest: boolean;
+  isRegular: boolean;
+  name: string;
   number: number;
 };
 
@@ -47,15 +40,32 @@ export const addAppearanceToEpisodeMutation = async (
 ) => {
   const prismaClient = getPrismaClient(contextValue.env);
 
-  return prismaClient.episode.update({
-    data: {
-      appearances: {
-        connectOrCreate: {
-          create: _arguments.input.appearance,
-          where: { name: _arguments.input.appearance.name },
-        },
-      },
+  const connectOrCreate = {
+    connectOrCreate: {
+      create: { name: _arguments.input.name },
+      where: { name: _arguments.input.name },
     },
+  };
+
+  const dataParameter = {};
+  if (_arguments.input.isBucketPull) {
+    set(dataParameter, ["bucketPulls"], connectOrCreate);
+  }
+
+  if (_arguments.input.isGoldenTicketCashIn) {
+    set(dataParameter, ["goldenTicketCashIns"], connectOrCreate);
+  }
+
+  if (_arguments.input.isGuest) {
+    set(dataParameter, ["guests"], connectOrCreate);
+  }
+
+  if (_arguments.input.isRegular) {
+    set(dataParameter, ["regulars"], connectOrCreate);
+  }
+
+  return prismaClient.episode.update({
+    data: dataParameter,
     select: getPrismaSelect(info),
     where: { number: _arguments.input.number },
   });

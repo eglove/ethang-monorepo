@@ -1,34 +1,20 @@
 import { Link } from "@heroui/react";
-import filter from "lodash/filter";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
 
-import type { Appearance } from "../../../generated/prisma/client.ts";
-
 type AppearanceListProperties = {
-  appearances: Pick<Appearance, "name" | Types>[];
+  appearances: { name: string }[];
   label: string;
-  type: Types;
 };
-
-type Types = "isBucketPull" | "isGoldenTicketWinner" | "isGuest" | "isRegular";
 
 const formatter = new Intl.ListFormat("en", {
   style: "long",
   type: "conjunction",
 });
 
-const getAppearanceByType = (
-  type: Types,
-  appearances: Pick<Appearance, "name" | Types>[],
-) => {
-  return map(
-    filter(appearances, (appearance) => {
-      return appearance[type];
-    }),
-    "name",
-  ).sort((a, b) => {
+const getAppearanceNames = (appearances: { name: string }[]) => {
+  return map(appearances, "name").sort((a, b) => {
     return a.localeCompare(b);
   });
 };
@@ -36,9 +22,8 @@ const getAppearanceByType = (
 export const AppearanceList = ({
   appearances,
   label,
-  type,
 }: Readonly<AppearanceListProperties>) => {
-  const appearanceNames = getAppearanceByType(type, appearances);
+  const appearanceNames = getAppearanceNames(appearances);
 
   if (isEmpty(appearanceNames)) {
     return null;

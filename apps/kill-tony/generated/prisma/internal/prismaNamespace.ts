@@ -612,11 +612,7 @@ export type EpisodeScalarFieldEnum = (typeof EpisodeScalarFieldEnum)[keyof typeo
 export const AppearanceScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  isGuest: 'isGuest',
-  isBucketPull: 'isBucketPull',
-  isRegular: 'isRegular',
-  isHallOfFame: 'isHallOfFame',
-  isGoldenTicketWinner: 'isGoldenTicketWinner'
+  isHallOfFame: 'isHallOfFame'
 } as const
 
 export type AppearanceScalarFieldEnum = (typeof AppearanceScalarFieldEnum)[keyof typeof AppearanceScalarFieldEnum]

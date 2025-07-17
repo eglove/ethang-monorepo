@@ -8,14 +8,6 @@ export const createEpisode = gql`
   }
 `;
 
-export const createAppearance = gql`
-  mutation CreateAppearance($input: AppearanceInput!) {
-    createAppearance(input: $input) {
-      id
-    }
-  }
-`;
-
 export const addAppearanceToEpisode = gql`
   mutation AddAppearanceToEpisode($input: AddAppearanceToEpisodeInput!) {
     addAppearanceToEpisode(input: $input) {

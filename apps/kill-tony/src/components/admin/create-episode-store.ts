@@ -1,18 +1,12 @@
 import { BaseStore } from "@ethang/store";
 
-import type { Appearance } from "../../../generated/prisma/client.ts";
-
-import { createAppearanceStore } from "./create-appearance-store.ts";
-
 const initialState = {
   formState: {
-    appearances: [] as Pick<Appearance, "id" | "name">[],
     number: 0,
     publishDate: "",
     title: "",
     url: "",
   },
-  isAppearanceModalOpen: false,
 };
 
 export class CreateEpisodeStore extends BaseStore<typeof initialState> {
@@ -26,17 +20,6 @@ export class CreateEpisodeStore extends BaseStore<typeof initialState> {
   ) {
     this.update((draft) => {
       draft.formState[key] = value;
-    });
-  }
-
-  public toggleAppearanceModal(value: boolean) {
-    this.update((draft) => {
-      if (!value) {
-        draft.formState = initialState.formState;
-        createAppearanceStore.clearForm();
-      }
-
-      draft.isAppearanceModalOpen = value;
     });
   }
 }

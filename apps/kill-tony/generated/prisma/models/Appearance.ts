@@ -26,31 +26,19 @@ export type AggregateAppearance = {
 export type AppearanceMinAggregateOutputType = {
   id: string | null
   name: string | null
-  isGuest: boolean | null
-  isBucketPull: boolean | null
-  isRegular: boolean | null
   isHallOfFame: boolean | null
-  isGoldenTicketWinner: boolean | null
 }
 
 export type AppearanceMaxAggregateOutputType = {
   id: string | null
   name: string | null
-  isGuest: boolean | null
-  isBucketPull: boolean | null
-  isRegular: boolean | null
   isHallOfFame: boolean | null
-  isGoldenTicketWinner: boolean | null
 }
 
 export type AppearanceCountAggregateOutputType = {
   id: number
   name: number
-  isGuest: number
-  isBucketPull: number
-  isRegular: number
   isHallOfFame: number
-  isGoldenTicketWinner: number
   _all: number
 }
 
@@ -58,31 +46,19 @@ export type AppearanceCountAggregateOutputType = {
 export type AppearanceMinAggregateInputType = {
   id?: true
   name?: true
-  isGuest?: true
-  isBucketPull?: true
-  isRegular?: true
   isHallOfFame?: true
-  isGoldenTicketWinner?: true
 }
 
 export type AppearanceMaxAggregateInputType = {
   id?: true
   name?: true
-  isGuest?: true
-  isBucketPull?: true
-  isRegular?: true
   isHallOfFame?: true
-  isGoldenTicketWinner?: true
 }
 
 export type AppearanceCountAggregateInputType = {
   id?: true
   name?: true
-  isGuest?: true
-  isBucketPull?: true
-  isRegular?: true
   isHallOfFame?: true
-  isGoldenTicketWinner?: true
   _all?: true
 }
 
@@ -161,11 +137,7 @@ export type AppearanceGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 export type AppearanceGroupByOutputType = {
   id: string
   name: string
-  isGuest: boolean
-  isBucketPull: boolean
-  isRegular: boolean
   isHallOfFame: boolean
-  isGoldenTicketWinner: boolean
   _count: AppearanceCountAggregateOutputType | null
   _min: AppearanceMinAggregateOutputType | null
   _max: AppearanceMaxAggregateOutputType | null
@@ -192,23 +164,21 @@ export type AppearanceWhereInput = {
   NOT?: Prisma.AppearanceWhereInput | Prisma.AppearanceWhereInput[]
   id?: Prisma.StringFilter<"Appearance"> | string
   name?: Prisma.StringFilter<"Appearance"> | string
-  isGuest?: Prisma.BoolFilter<"Appearance"> | boolean
-  isBucketPull?: Prisma.BoolFilter<"Appearance"> | boolean
-  isRegular?: Prisma.BoolFilter<"Appearance"> | boolean
   isHallOfFame?: Prisma.BoolFilter<"Appearance"> | boolean
-  isGoldenTicketWinner?: Prisma.BoolFilter<"Appearance"> | boolean
-  episodes?: Prisma.EpisodeListRelationFilter
+  guestsIn?: Prisma.EpisodeListRelationFilter
+  regularsIn?: Prisma.EpisodeListRelationFilter
+  cashedGoldenTicketIn?: Prisma.EpisodeListRelationFilter
+  bucketPullsIn?: Prisma.EpisodeListRelationFilter
 }
 
 export type AppearanceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  isGuest?: Prisma.SortOrder
-  isBucketPull?: Prisma.SortOrder
-  isRegular?: Prisma.SortOrder
   isHallOfFame?: Prisma.SortOrder
-  isGoldenTicketWinner?: Prisma.SortOrder
-  episodes?: Prisma.EpisodeOrderByRelationAggregateInput
+  guestsIn?: Prisma.EpisodeOrderByRelationAggregateInput
+  regularsIn?: Prisma.EpisodeOrderByRelationAggregateInput
+  cashedGoldenTicketIn?: Prisma.EpisodeOrderByRelationAggregateInput
+  bucketPullsIn?: Prisma.EpisodeOrderByRelationAggregateInput
 }
 
 export type AppearanceWhereUniqueInput = Prisma.AtLeast<{
@@ -217,22 +187,17 @@ export type AppearanceWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.AppearanceWhereInput | Prisma.AppearanceWhereInput[]
   OR?: Prisma.AppearanceWhereInput[]
   NOT?: Prisma.AppearanceWhereInput | Prisma.AppearanceWhereInput[]
-  isGuest?: Prisma.BoolFilter<"Appearance"> | boolean
-  isBucketPull?: Prisma.BoolFilter<"Appearance"> | boolean
-  isRegular?: Prisma.BoolFilter<"Appearance"> | boolean
   isHallOfFame?: Prisma.BoolFilter<"Appearance"> | boolean
-  isGoldenTicketWinner?: Prisma.BoolFilter<"Appearance"> | boolean
-  episodes?: Prisma.EpisodeListRelationFilter
+  guestsIn?: Prisma.EpisodeListRelationFilter
+  regularsIn?: Prisma.EpisodeListRelationFilter
+  cashedGoldenTicketIn?: Prisma.EpisodeListRelationFilter
+  bucketPullsIn?: Prisma.EpisodeListRelationFilter
 }, "id" | "name">
 
 export type AppearanceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  isGuest?: Prisma.SortOrder
-  isBucketPull?: Prisma.SortOrder
-  isRegular?: Prisma.SortOrder
   isHallOfFame?: Prisma.SortOrder
-  isGoldenTicketWinner?: Prisma.SortOrder
   _count?: Prisma.AppearanceCountOrderByAggregateInput
   _max?: Prisma.AppearanceMaxOrderByAggregateInput
   _min?: Prisma.AppearanceMinOrderByAggregateInput
@@ -244,85 +209,65 @@ export type AppearanceScalarWhereWithAggregatesInput = {
   NOT?: Prisma.AppearanceScalarWhereWithAggregatesInput | Prisma.AppearanceScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Appearance"> | string
   name?: Prisma.StringWithAggregatesFilter<"Appearance"> | string
-  isGuest?: Prisma.BoolWithAggregatesFilter<"Appearance"> | boolean
-  isBucketPull?: Prisma.BoolWithAggregatesFilter<"Appearance"> | boolean
-  isRegular?: Prisma.BoolWithAggregatesFilter<"Appearance"> | boolean
   isHallOfFame?: Prisma.BoolWithAggregatesFilter<"Appearance"> | boolean
-  isGoldenTicketWinner?: Prisma.BoolWithAggregatesFilter<"Appearance"> | boolean
 }
 
 export type AppearanceCreateInput = {
   id?: string
   name: string
-  isGuest?: boolean
-  isBucketPull?: boolean
-  isRegular?: boolean
   isHallOfFame?: boolean
-  isGoldenTicketWinner?: boolean
-  episodes?: Prisma.EpisodeCreateNestedManyWithoutAppearancesInput
+  guestsIn?: Prisma.EpisodeCreateNestedManyWithoutGuestsInput
+  regularsIn?: Prisma.EpisodeCreateNestedManyWithoutRegularsInput
+  cashedGoldenTicketIn?: Prisma.EpisodeCreateNestedManyWithoutGoldenTicketCashInsInput
+  bucketPullsIn?: Prisma.EpisodeCreateNestedManyWithoutBucketPullsInput
 }
 
 export type AppearanceUncheckedCreateInput = {
   id?: string
   name: string
-  isGuest?: boolean
-  isBucketPull?: boolean
-  isRegular?: boolean
   isHallOfFame?: boolean
-  isGoldenTicketWinner?: boolean
-  episodes?: Prisma.EpisodeUncheckedCreateNestedManyWithoutAppearancesInput
+  guestsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutGuestsInput
+  regularsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutRegularsInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutGoldenTicketCashInsInput
+  bucketPullsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutBucketPullsInput
 }
 
 export type AppearanceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isGoldenTicketWinner?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  episodes?: Prisma.EpisodeUpdateManyWithoutAppearancesNestedInput
+  guestsIn?: Prisma.EpisodeUpdateManyWithoutGuestsNestedInput
+  regularsIn?: Prisma.EpisodeUpdateManyWithoutRegularsNestedInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUpdateManyWithoutGoldenTicketCashInsNestedInput
+  bucketPullsIn?: Prisma.EpisodeUpdateManyWithoutBucketPullsNestedInput
 }
 
 export type AppearanceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isGoldenTicketWinner?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  episodes?: Prisma.EpisodeUncheckedUpdateManyWithoutAppearancesNestedInput
+  guestsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutGuestsNestedInput
+  regularsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutRegularsNestedInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUncheckedUpdateManyWithoutGoldenTicketCashInsNestedInput
+  bucketPullsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutBucketPullsNestedInput
 }
 
 export type AppearanceCreateManyInput = {
   id?: string
   name: string
-  isGuest?: boolean
-  isBucketPull?: boolean
-  isRegular?: boolean
   isHallOfFame?: boolean
-  isGoldenTicketWinner?: boolean
 }
 
 export type AppearanceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isGoldenTicketWinner?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type AppearanceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isGoldenTicketWinner?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type AppearanceListRelationFilter = {
@@ -338,68 +283,170 @@ export type AppearanceOrderByRelationAggregateInput = {
 export type AppearanceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  isGuest?: Prisma.SortOrder
-  isBucketPull?: Prisma.SortOrder
-  isRegular?: Prisma.SortOrder
   isHallOfFame?: Prisma.SortOrder
-  isGoldenTicketWinner?: Prisma.SortOrder
 }
 
 export type AppearanceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  isGuest?: Prisma.SortOrder
-  isBucketPull?: Prisma.SortOrder
-  isRegular?: Prisma.SortOrder
   isHallOfFame?: Prisma.SortOrder
-  isGoldenTicketWinner?: Prisma.SortOrder
 }
 
 export type AppearanceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  isGuest?: Prisma.SortOrder
-  isBucketPull?: Prisma.SortOrder
-  isRegular?: Prisma.SortOrder
   isHallOfFame?: Prisma.SortOrder
-  isGoldenTicketWinner?: Prisma.SortOrder
 }
 
-export type AppearanceCreateNestedManyWithoutEpisodesInput = {
-  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutEpisodesInput, Prisma.AppearanceUncheckedCreateWithoutEpisodesInput> | Prisma.AppearanceCreateWithoutEpisodesInput[] | Prisma.AppearanceUncheckedCreateWithoutEpisodesInput[]
-  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutEpisodesInput | Prisma.AppearanceCreateOrConnectWithoutEpisodesInput[]
+export type AppearanceCreateNestedManyWithoutGuestsInInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutGuestsInInput, Prisma.AppearanceUncheckedCreateWithoutGuestsInInput> | Prisma.AppearanceCreateWithoutGuestsInInput[] | Prisma.AppearanceUncheckedCreateWithoutGuestsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutGuestsInInput | Prisma.AppearanceCreateOrConnectWithoutGuestsInInput[]
   connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
 }
 
-export type AppearanceUncheckedCreateNestedManyWithoutEpisodesInput = {
-  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutEpisodesInput, Prisma.AppearanceUncheckedCreateWithoutEpisodesInput> | Prisma.AppearanceCreateWithoutEpisodesInput[] | Prisma.AppearanceUncheckedCreateWithoutEpisodesInput[]
-  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutEpisodesInput | Prisma.AppearanceCreateOrConnectWithoutEpisodesInput[]
+export type AppearanceCreateNestedManyWithoutRegularsInInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutRegularsInInput, Prisma.AppearanceUncheckedCreateWithoutRegularsInInput> | Prisma.AppearanceCreateWithoutRegularsInInput[] | Prisma.AppearanceUncheckedCreateWithoutRegularsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutRegularsInInput | Prisma.AppearanceCreateOrConnectWithoutRegularsInInput[]
   connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
 }
 
-export type AppearanceUpdateManyWithoutEpisodesNestedInput = {
-  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutEpisodesInput, Prisma.AppearanceUncheckedCreateWithoutEpisodesInput> | Prisma.AppearanceCreateWithoutEpisodesInput[] | Prisma.AppearanceUncheckedCreateWithoutEpisodesInput[]
-  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutEpisodesInput | Prisma.AppearanceCreateOrConnectWithoutEpisodesInput[]
-  upsert?: Prisma.AppearanceUpsertWithWhereUniqueWithoutEpisodesInput | Prisma.AppearanceUpsertWithWhereUniqueWithoutEpisodesInput[]
+export type AppearanceCreateNestedManyWithoutCashedGoldenTicketInInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutCashedGoldenTicketInInput, Prisma.AppearanceUncheckedCreateWithoutCashedGoldenTicketInInput> | Prisma.AppearanceCreateWithoutCashedGoldenTicketInInput[] | Prisma.AppearanceUncheckedCreateWithoutCashedGoldenTicketInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutCashedGoldenTicketInInput | Prisma.AppearanceCreateOrConnectWithoutCashedGoldenTicketInInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+}
+
+export type AppearanceCreateNestedManyWithoutBucketPullsInInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutBucketPullsInInput, Prisma.AppearanceUncheckedCreateWithoutBucketPullsInInput> | Prisma.AppearanceCreateWithoutBucketPullsInInput[] | Prisma.AppearanceUncheckedCreateWithoutBucketPullsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutBucketPullsInInput | Prisma.AppearanceCreateOrConnectWithoutBucketPullsInInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+}
+
+export type AppearanceUncheckedCreateNestedManyWithoutGuestsInInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutGuestsInInput, Prisma.AppearanceUncheckedCreateWithoutGuestsInInput> | Prisma.AppearanceCreateWithoutGuestsInInput[] | Prisma.AppearanceUncheckedCreateWithoutGuestsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutGuestsInInput | Prisma.AppearanceCreateOrConnectWithoutGuestsInInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+}
+
+export type AppearanceUncheckedCreateNestedManyWithoutRegularsInInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutRegularsInInput, Prisma.AppearanceUncheckedCreateWithoutRegularsInInput> | Prisma.AppearanceCreateWithoutRegularsInInput[] | Prisma.AppearanceUncheckedCreateWithoutRegularsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutRegularsInInput | Prisma.AppearanceCreateOrConnectWithoutRegularsInInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+}
+
+export type AppearanceUncheckedCreateNestedManyWithoutCashedGoldenTicketInInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutCashedGoldenTicketInInput, Prisma.AppearanceUncheckedCreateWithoutCashedGoldenTicketInInput> | Prisma.AppearanceCreateWithoutCashedGoldenTicketInInput[] | Prisma.AppearanceUncheckedCreateWithoutCashedGoldenTicketInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutCashedGoldenTicketInInput | Prisma.AppearanceCreateOrConnectWithoutCashedGoldenTicketInInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+}
+
+export type AppearanceUncheckedCreateNestedManyWithoutBucketPullsInInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutBucketPullsInInput, Prisma.AppearanceUncheckedCreateWithoutBucketPullsInInput> | Prisma.AppearanceCreateWithoutBucketPullsInInput[] | Prisma.AppearanceUncheckedCreateWithoutBucketPullsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutBucketPullsInInput | Prisma.AppearanceCreateOrConnectWithoutBucketPullsInInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+}
+
+export type AppearanceUpdateManyWithoutGuestsInNestedInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutGuestsInInput, Prisma.AppearanceUncheckedCreateWithoutGuestsInInput> | Prisma.AppearanceCreateWithoutGuestsInInput[] | Prisma.AppearanceUncheckedCreateWithoutGuestsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutGuestsInInput | Prisma.AppearanceCreateOrConnectWithoutGuestsInInput[]
+  upsert?: Prisma.AppearanceUpsertWithWhereUniqueWithoutGuestsInInput | Prisma.AppearanceUpsertWithWhereUniqueWithoutGuestsInInput[]
   set?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
   disconnect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
   delete?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
   connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
-  update?: Prisma.AppearanceUpdateWithWhereUniqueWithoutEpisodesInput | Prisma.AppearanceUpdateWithWhereUniqueWithoutEpisodesInput[]
-  updateMany?: Prisma.AppearanceUpdateManyWithWhereWithoutEpisodesInput | Prisma.AppearanceUpdateManyWithWhereWithoutEpisodesInput[]
+  update?: Prisma.AppearanceUpdateWithWhereUniqueWithoutGuestsInInput | Prisma.AppearanceUpdateWithWhereUniqueWithoutGuestsInInput[]
+  updateMany?: Prisma.AppearanceUpdateManyWithWhereWithoutGuestsInInput | Prisma.AppearanceUpdateManyWithWhereWithoutGuestsInInput[]
   deleteMany?: Prisma.AppearanceScalarWhereInput | Prisma.AppearanceScalarWhereInput[]
 }
 
-export type AppearanceUncheckedUpdateManyWithoutEpisodesNestedInput = {
-  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutEpisodesInput, Prisma.AppearanceUncheckedCreateWithoutEpisodesInput> | Prisma.AppearanceCreateWithoutEpisodesInput[] | Prisma.AppearanceUncheckedCreateWithoutEpisodesInput[]
-  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutEpisodesInput | Prisma.AppearanceCreateOrConnectWithoutEpisodesInput[]
-  upsert?: Prisma.AppearanceUpsertWithWhereUniqueWithoutEpisodesInput | Prisma.AppearanceUpsertWithWhereUniqueWithoutEpisodesInput[]
+export type AppearanceUpdateManyWithoutRegularsInNestedInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutRegularsInInput, Prisma.AppearanceUncheckedCreateWithoutRegularsInInput> | Prisma.AppearanceCreateWithoutRegularsInInput[] | Prisma.AppearanceUncheckedCreateWithoutRegularsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutRegularsInInput | Prisma.AppearanceCreateOrConnectWithoutRegularsInInput[]
+  upsert?: Prisma.AppearanceUpsertWithWhereUniqueWithoutRegularsInInput | Prisma.AppearanceUpsertWithWhereUniqueWithoutRegularsInInput[]
   set?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
   disconnect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
   delete?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
   connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
-  update?: Prisma.AppearanceUpdateWithWhereUniqueWithoutEpisodesInput | Prisma.AppearanceUpdateWithWhereUniqueWithoutEpisodesInput[]
-  updateMany?: Prisma.AppearanceUpdateManyWithWhereWithoutEpisodesInput | Prisma.AppearanceUpdateManyWithWhereWithoutEpisodesInput[]
+  update?: Prisma.AppearanceUpdateWithWhereUniqueWithoutRegularsInInput | Prisma.AppearanceUpdateWithWhereUniqueWithoutRegularsInInput[]
+  updateMany?: Prisma.AppearanceUpdateManyWithWhereWithoutRegularsInInput | Prisma.AppearanceUpdateManyWithWhereWithoutRegularsInInput[]
+  deleteMany?: Prisma.AppearanceScalarWhereInput | Prisma.AppearanceScalarWhereInput[]
+}
+
+export type AppearanceUpdateManyWithoutCashedGoldenTicketInNestedInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutCashedGoldenTicketInInput, Prisma.AppearanceUncheckedCreateWithoutCashedGoldenTicketInInput> | Prisma.AppearanceCreateWithoutCashedGoldenTicketInInput[] | Prisma.AppearanceUncheckedCreateWithoutCashedGoldenTicketInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutCashedGoldenTicketInInput | Prisma.AppearanceCreateOrConnectWithoutCashedGoldenTicketInInput[]
+  upsert?: Prisma.AppearanceUpsertWithWhereUniqueWithoutCashedGoldenTicketInInput | Prisma.AppearanceUpsertWithWhereUniqueWithoutCashedGoldenTicketInInput[]
+  set?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  disconnect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  delete?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  update?: Prisma.AppearanceUpdateWithWhereUniqueWithoutCashedGoldenTicketInInput | Prisma.AppearanceUpdateWithWhereUniqueWithoutCashedGoldenTicketInInput[]
+  updateMany?: Prisma.AppearanceUpdateManyWithWhereWithoutCashedGoldenTicketInInput | Prisma.AppearanceUpdateManyWithWhereWithoutCashedGoldenTicketInInput[]
+  deleteMany?: Prisma.AppearanceScalarWhereInput | Prisma.AppearanceScalarWhereInput[]
+}
+
+export type AppearanceUpdateManyWithoutBucketPullsInNestedInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutBucketPullsInInput, Prisma.AppearanceUncheckedCreateWithoutBucketPullsInInput> | Prisma.AppearanceCreateWithoutBucketPullsInInput[] | Prisma.AppearanceUncheckedCreateWithoutBucketPullsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutBucketPullsInInput | Prisma.AppearanceCreateOrConnectWithoutBucketPullsInInput[]
+  upsert?: Prisma.AppearanceUpsertWithWhereUniqueWithoutBucketPullsInInput | Prisma.AppearanceUpsertWithWhereUniqueWithoutBucketPullsInInput[]
+  set?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  disconnect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  delete?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  update?: Prisma.AppearanceUpdateWithWhereUniqueWithoutBucketPullsInInput | Prisma.AppearanceUpdateWithWhereUniqueWithoutBucketPullsInInput[]
+  updateMany?: Prisma.AppearanceUpdateManyWithWhereWithoutBucketPullsInInput | Prisma.AppearanceUpdateManyWithWhereWithoutBucketPullsInInput[]
+  deleteMany?: Prisma.AppearanceScalarWhereInput | Prisma.AppearanceScalarWhereInput[]
+}
+
+export type AppearanceUncheckedUpdateManyWithoutGuestsInNestedInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutGuestsInInput, Prisma.AppearanceUncheckedCreateWithoutGuestsInInput> | Prisma.AppearanceCreateWithoutGuestsInInput[] | Prisma.AppearanceUncheckedCreateWithoutGuestsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutGuestsInInput | Prisma.AppearanceCreateOrConnectWithoutGuestsInInput[]
+  upsert?: Prisma.AppearanceUpsertWithWhereUniqueWithoutGuestsInInput | Prisma.AppearanceUpsertWithWhereUniqueWithoutGuestsInInput[]
+  set?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  disconnect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  delete?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  update?: Prisma.AppearanceUpdateWithWhereUniqueWithoutGuestsInInput | Prisma.AppearanceUpdateWithWhereUniqueWithoutGuestsInInput[]
+  updateMany?: Prisma.AppearanceUpdateManyWithWhereWithoutGuestsInInput | Prisma.AppearanceUpdateManyWithWhereWithoutGuestsInInput[]
+  deleteMany?: Prisma.AppearanceScalarWhereInput | Prisma.AppearanceScalarWhereInput[]
+}
+
+export type AppearanceUncheckedUpdateManyWithoutRegularsInNestedInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutRegularsInInput, Prisma.AppearanceUncheckedCreateWithoutRegularsInInput> | Prisma.AppearanceCreateWithoutRegularsInInput[] | Prisma.AppearanceUncheckedCreateWithoutRegularsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutRegularsInInput | Prisma.AppearanceCreateOrConnectWithoutRegularsInInput[]
+  upsert?: Prisma.AppearanceUpsertWithWhereUniqueWithoutRegularsInInput | Prisma.AppearanceUpsertWithWhereUniqueWithoutRegularsInInput[]
+  set?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  disconnect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  delete?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  update?: Prisma.AppearanceUpdateWithWhereUniqueWithoutRegularsInInput | Prisma.AppearanceUpdateWithWhereUniqueWithoutRegularsInInput[]
+  updateMany?: Prisma.AppearanceUpdateManyWithWhereWithoutRegularsInInput | Prisma.AppearanceUpdateManyWithWhereWithoutRegularsInInput[]
+  deleteMany?: Prisma.AppearanceScalarWhereInput | Prisma.AppearanceScalarWhereInput[]
+}
+
+export type AppearanceUncheckedUpdateManyWithoutCashedGoldenTicketInNestedInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutCashedGoldenTicketInInput, Prisma.AppearanceUncheckedCreateWithoutCashedGoldenTicketInInput> | Prisma.AppearanceCreateWithoutCashedGoldenTicketInInput[] | Prisma.AppearanceUncheckedCreateWithoutCashedGoldenTicketInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutCashedGoldenTicketInInput | Prisma.AppearanceCreateOrConnectWithoutCashedGoldenTicketInInput[]
+  upsert?: Prisma.AppearanceUpsertWithWhereUniqueWithoutCashedGoldenTicketInInput | Prisma.AppearanceUpsertWithWhereUniqueWithoutCashedGoldenTicketInInput[]
+  set?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  disconnect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  delete?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  update?: Prisma.AppearanceUpdateWithWhereUniqueWithoutCashedGoldenTicketInInput | Prisma.AppearanceUpdateWithWhereUniqueWithoutCashedGoldenTicketInInput[]
+  updateMany?: Prisma.AppearanceUpdateManyWithWhereWithoutCashedGoldenTicketInInput | Prisma.AppearanceUpdateManyWithWhereWithoutCashedGoldenTicketInInput[]
+  deleteMany?: Prisma.AppearanceScalarWhereInput | Prisma.AppearanceScalarWhereInput[]
+}
+
+export type AppearanceUncheckedUpdateManyWithoutBucketPullsInNestedInput = {
+  create?: Prisma.XOR<Prisma.AppearanceCreateWithoutBucketPullsInInput, Prisma.AppearanceUncheckedCreateWithoutBucketPullsInInput> | Prisma.AppearanceCreateWithoutBucketPullsInInput[] | Prisma.AppearanceUncheckedCreateWithoutBucketPullsInInput[]
+  connectOrCreate?: Prisma.AppearanceCreateOrConnectWithoutBucketPullsInInput | Prisma.AppearanceCreateOrConnectWithoutBucketPullsInInput[]
+  upsert?: Prisma.AppearanceUpsertWithWhereUniqueWithoutBucketPullsInInput | Prisma.AppearanceUpsertWithWhereUniqueWithoutBucketPullsInInput[]
+  set?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  disconnect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  delete?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  connect?: Prisma.AppearanceWhereUniqueInput | Prisma.AppearanceWhereUniqueInput[]
+  update?: Prisma.AppearanceUpdateWithWhereUniqueWithoutBucketPullsInInput | Prisma.AppearanceUpdateWithWhereUniqueWithoutBucketPullsInInput[]
+  updateMany?: Prisma.AppearanceUpdateManyWithWhereWithoutBucketPullsInInput | Prisma.AppearanceUpdateManyWithWhereWithoutBucketPullsInInput[]
   deleteMany?: Prisma.AppearanceScalarWhereInput | Prisma.AppearanceScalarWhereInput[]
 }
 
@@ -407,45 +454,112 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type AppearanceCreateWithoutEpisodesInput = {
+export type AppearanceCreateWithoutGuestsInInput = {
   id?: string
   name: string
-  isGuest?: boolean
-  isBucketPull?: boolean
-  isRegular?: boolean
   isHallOfFame?: boolean
-  isGoldenTicketWinner?: boolean
+  regularsIn?: Prisma.EpisodeCreateNestedManyWithoutRegularsInput
+  cashedGoldenTicketIn?: Prisma.EpisodeCreateNestedManyWithoutGoldenTicketCashInsInput
+  bucketPullsIn?: Prisma.EpisodeCreateNestedManyWithoutBucketPullsInput
 }
 
-export type AppearanceUncheckedCreateWithoutEpisodesInput = {
+export type AppearanceUncheckedCreateWithoutGuestsInInput = {
   id?: string
   name: string
-  isGuest?: boolean
-  isBucketPull?: boolean
-  isRegular?: boolean
   isHallOfFame?: boolean
-  isGoldenTicketWinner?: boolean
+  regularsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutRegularsInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutGoldenTicketCashInsInput
+  bucketPullsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutBucketPullsInput
 }
 
-export type AppearanceCreateOrConnectWithoutEpisodesInput = {
+export type AppearanceCreateOrConnectWithoutGuestsInInput = {
   where: Prisma.AppearanceWhereUniqueInput
-  create: Prisma.XOR<Prisma.AppearanceCreateWithoutEpisodesInput, Prisma.AppearanceUncheckedCreateWithoutEpisodesInput>
+  create: Prisma.XOR<Prisma.AppearanceCreateWithoutGuestsInInput, Prisma.AppearanceUncheckedCreateWithoutGuestsInInput>
 }
 
-export type AppearanceUpsertWithWhereUniqueWithoutEpisodesInput = {
+export type AppearanceCreateWithoutRegularsInInput = {
+  id?: string
+  name: string
+  isHallOfFame?: boolean
+  guestsIn?: Prisma.EpisodeCreateNestedManyWithoutGuestsInput
+  cashedGoldenTicketIn?: Prisma.EpisodeCreateNestedManyWithoutGoldenTicketCashInsInput
+  bucketPullsIn?: Prisma.EpisodeCreateNestedManyWithoutBucketPullsInput
+}
+
+export type AppearanceUncheckedCreateWithoutRegularsInInput = {
+  id?: string
+  name: string
+  isHallOfFame?: boolean
+  guestsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutGuestsInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutGoldenTicketCashInsInput
+  bucketPullsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutBucketPullsInput
+}
+
+export type AppearanceCreateOrConnectWithoutRegularsInInput = {
   where: Prisma.AppearanceWhereUniqueInput
-  update: Prisma.XOR<Prisma.AppearanceUpdateWithoutEpisodesInput, Prisma.AppearanceUncheckedUpdateWithoutEpisodesInput>
-  create: Prisma.XOR<Prisma.AppearanceCreateWithoutEpisodesInput, Prisma.AppearanceUncheckedCreateWithoutEpisodesInput>
+  create: Prisma.XOR<Prisma.AppearanceCreateWithoutRegularsInInput, Prisma.AppearanceUncheckedCreateWithoutRegularsInInput>
 }
 
-export type AppearanceUpdateWithWhereUniqueWithoutEpisodesInput = {
+export type AppearanceCreateWithoutCashedGoldenTicketInInput = {
+  id?: string
+  name: string
+  isHallOfFame?: boolean
+  guestsIn?: Prisma.EpisodeCreateNestedManyWithoutGuestsInput
+  regularsIn?: Prisma.EpisodeCreateNestedManyWithoutRegularsInput
+  bucketPullsIn?: Prisma.EpisodeCreateNestedManyWithoutBucketPullsInput
+}
+
+export type AppearanceUncheckedCreateWithoutCashedGoldenTicketInInput = {
+  id?: string
+  name: string
+  isHallOfFame?: boolean
+  guestsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutGuestsInput
+  regularsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutRegularsInput
+  bucketPullsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutBucketPullsInput
+}
+
+export type AppearanceCreateOrConnectWithoutCashedGoldenTicketInInput = {
   where: Prisma.AppearanceWhereUniqueInput
-  data: Prisma.XOR<Prisma.AppearanceUpdateWithoutEpisodesInput, Prisma.AppearanceUncheckedUpdateWithoutEpisodesInput>
+  create: Prisma.XOR<Prisma.AppearanceCreateWithoutCashedGoldenTicketInInput, Prisma.AppearanceUncheckedCreateWithoutCashedGoldenTicketInInput>
 }
 
-export type AppearanceUpdateManyWithWhereWithoutEpisodesInput = {
+export type AppearanceCreateWithoutBucketPullsInInput = {
+  id?: string
+  name: string
+  isHallOfFame?: boolean
+  guestsIn?: Prisma.EpisodeCreateNestedManyWithoutGuestsInput
+  regularsIn?: Prisma.EpisodeCreateNestedManyWithoutRegularsInput
+  cashedGoldenTicketIn?: Prisma.EpisodeCreateNestedManyWithoutGoldenTicketCashInsInput
+}
+
+export type AppearanceUncheckedCreateWithoutBucketPullsInInput = {
+  id?: string
+  name: string
+  isHallOfFame?: boolean
+  guestsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutGuestsInput
+  regularsIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutRegularsInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUncheckedCreateNestedManyWithoutGoldenTicketCashInsInput
+}
+
+export type AppearanceCreateOrConnectWithoutBucketPullsInInput = {
+  where: Prisma.AppearanceWhereUniqueInput
+  create: Prisma.XOR<Prisma.AppearanceCreateWithoutBucketPullsInInput, Prisma.AppearanceUncheckedCreateWithoutBucketPullsInInput>
+}
+
+export type AppearanceUpsertWithWhereUniqueWithoutGuestsInInput = {
+  where: Prisma.AppearanceWhereUniqueInput
+  update: Prisma.XOR<Prisma.AppearanceUpdateWithoutGuestsInInput, Prisma.AppearanceUncheckedUpdateWithoutGuestsInInput>
+  create: Prisma.XOR<Prisma.AppearanceCreateWithoutGuestsInInput, Prisma.AppearanceUncheckedCreateWithoutGuestsInInput>
+}
+
+export type AppearanceUpdateWithWhereUniqueWithoutGuestsInInput = {
+  where: Prisma.AppearanceWhereUniqueInput
+  data: Prisma.XOR<Prisma.AppearanceUpdateWithoutGuestsInInput, Prisma.AppearanceUncheckedUpdateWithoutGuestsInInput>
+}
+
+export type AppearanceUpdateManyWithWhereWithoutGuestsInInput = {
   where: Prisma.AppearanceScalarWhereInput
-  data: Prisma.XOR<Prisma.AppearanceUpdateManyMutationInput, Prisma.AppearanceUncheckedUpdateManyWithoutEpisodesInput>
+  data: Prisma.XOR<Prisma.AppearanceUpdateManyMutationInput, Prisma.AppearanceUncheckedUpdateManyWithoutGuestsInInput>
 }
 
 export type AppearanceScalarWhereInput = {
@@ -454,41 +568,151 @@ export type AppearanceScalarWhereInput = {
   NOT?: Prisma.AppearanceScalarWhereInput | Prisma.AppearanceScalarWhereInput[]
   id?: Prisma.StringFilter<"Appearance"> | string
   name?: Prisma.StringFilter<"Appearance"> | string
-  isGuest?: Prisma.BoolFilter<"Appearance"> | boolean
-  isBucketPull?: Prisma.BoolFilter<"Appearance"> | boolean
-  isRegular?: Prisma.BoolFilter<"Appearance"> | boolean
   isHallOfFame?: Prisma.BoolFilter<"Appearance"> | boolean
-  isGoldenTicketWinner?: Prisma.BoolFilter<"Appearance"> | boolean
 }
 
-export type AppearanceUpdateWithoutEpisodesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isGoldenTicketWinner?: Prisma.BoolFieldUpdateOperationsInput | boolean
+export type AppearanceUpsertWithWhereUniqueWithoutRegularsInInput = {
+  where: Prisma.AppearanceWhereUniqueInput
+  update: Prisma.XOR<Prisma.AppearanceUpdateWithoutRegularsInInput, Prisma.AppearanceUncheckedUpdateWithoutRegularsInInput>
+  create: Prisma.XOR<Prisma.AppearanceCreateWithoutRegularsInInput, Prisma.AppearanceUncheckedCreateWithoutRegularsInInput>
 }
 
-export type AppearanceUncheckedUpdateWithoutEpisodesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isGoldenTicketWinner?: Prisma.BoolFieldUpdateOperationsInput | boolean
+export type AppearanceUpdateWithWhereUniqueWithoutRegularsInInput = {
+  where: Prisma.AppearanceWhereUniqueInput
+  data: Prisma.XOR<Prisma.AppearanceUpdateWithoutRegularsInInput, Prisma.AppearanceUncheckedUpdateWithoutRegularsInInput>
 }
 
-export type AppearanceUncheckedUpdateManyWithoutEpisodesInput = {
+export type AppearanceUpdateManyWithWhereWithoutRegularsInInput = {
+  where: Prisma.AppearanceScalarWhereInput
+  data: Prisma.XOR<Prisma.AppearanceUpdateManyMutationInput, Prisma.AppearanceUncheckedUpdateManyWithoutRegularsInInput>
+}
+
+export type AppearanceUpsertWithWhereUniqueWithoutCashedGoldenTicketInInput = {
+  where: Prisma.AppearanceWhereUniqueInput
+  update: Prisma.XOR<Prisma.AppearanceUpdateWithoutCashedGoldenTicketInInput, Prisma.AppearanceUncheckedUpdateWithoutCashedGoldenTicketInInput>
+  create: Prisma.XOR<Prisma.AppearanceCreateWithoutCashedGoldenTicketInInput, Prisma.AppearanceUncheckedCreateWithoutCashedGoldenTicketInInput>
+}
+
+export type AppearanceUpdateWithWhereUniqueWithoutCashedGoldenTicketInInput = {
+  where: Prisma.AppearanceWhereUniqueInput
+  data: Prisma.XOR<Prisma.AppearanceUpdateWithoutCashedGoldenTicketInInput, Prisma.AppearanceUncheckedUpdateWithoutCashedGoldenTicketInInput>
+}
+
+export type AppearanceUpdateManyWithWhereWithoutCashedGoldenTicketInInput = {
+  where: Prisma.AppearanceScalarWhereInput
+  data: Prisma.XOR<Prisma.AppearanceUpdateManyMutationInput, Prisma.AppearanceUncheckedUpdateManyWithoutCashedGoldenTicketInInput>
+}
+
+export type AppearanceUpsertWithWhereUniqueWithoutBucketPullsInInput = {
+  where: Prisma.AppearanceWhereUniqueInput
+  update: Prisma.XOR<Prisma.AppearanceUpdateWithoutBucketPullsInInput, Prisma.AppearanceUncheckedUpdateWithoutBucketPullsInInput>
+  create: Prisma.XOR<Prisma.AppearanceCreateWithoutBucketPullsInInput, Prisma.AppearanceUncheckedCreateWithoutBucketPullsInInput>
+}
+
+export type AppearanceUpdateWithWhereUniqueWithoutBucketPullsInInput = {
+  where: Prisma.AppearanceWhereUniqueInput
+  data: Prisma.XOR<Prisma.AppearanceUpdateWithoutBucketPullsInInput, Prisma.AppearanceUncheckedUpdateWithoutBucketPullsInInput>
+}
+
+export type AppearanceUpdateManyWithWhereWithoutBucketPullsInInput = {
+  where: Prisma.AppearanceScalarWhereInput
+  data: Prisma.XOR<Prisma.AppearanceUpdateManyMutationInput, Prisma.AppearanceUncheckedUpdateManyWithoutBucketPullsInInput>
+}
+
+export type AppearanceUpdateWithoutGuestsInInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isGoldenTicketWinner?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  regularsIn?: Prisma.EpisodeUpdateManyWithoutRegularsNestedInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUpdateManyWithoutGoldenTicketCashInsNestedInput
+  bucketPullsIn?: Prisma.EpisodeUpdateManyWithoutBucketPullsNestedInput
+}
+
+export type AppearanceUncheckedUpdateWithoutGuestsInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  regularsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutRegularsNestedInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUncheckedUpdateManyWithoutGoldenTicketCashInsNestedInput
+  bucketPullsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutBucketPullsNestedInput
+}
+
+export type AppearanceUncheckedUpdateManyWithoutGuestsInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type AppearanceUpdateWithoutRegularsInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  guestsIn?: Prisma.EpisodeUpdateManyWithoutGuestsNestedInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUpdateManyWithoutGoldenTicketCashInsNestedInput
+  bucketPullsIn?: Prisma.EpisodeUpdateManyWithoutBucketPullsNestedInput
+}
+
+export type AppearanceUncheckedUpdateWithoutRegularsInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  guestsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutGuestsNestedInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUncheckedUpdateManyWithoutGoldenTicketCashInsNestedInput
+  bucketPullsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutBucketPullsNestedInput
+}
+
+export type AppearanceUncheckedUpdateManyWithoutRegularsInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type AppearanceUpdateWithoutCashedGoldenTicketInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  guestsIn?: Prisma.EpisodeUpdateManyWithoutGuestsNestedInput
+  regularsIn?: Prisma.EpisodeUpdateManyWithoutRegularsNestedInput
+  bucketPullsIn?: Prisma.EpisodeUpdateManyWithoutBucketPullsNestedInput
+}
+
+export type AppearanceUncheckedUpdateWithoutCashedGoldenTicketInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  guestsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutGuestsNestedInput
+  regularsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutRegularsNestedInput
+  bucketPullsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutBucketPullsNestedInput
+}
+
+export type AppearanceUncheckedUpdateManyWithoutCashedGoldenTicketInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type AppearanceUpdateWithoutBucketPullsInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  guestsIn?: Prisma.EpisodeUpdateManyWithoutGuestsNestedInput
+  regularsIn?: Prisma.EpisodeUpdateManyWithoutRegularsNestedInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUpdateManyWithoutGoldenTicketCashInsNestedInput
+}
+
+export type AppearanceUncheckedUpdateWithoutBucketPullsInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  guestsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutGuestsNestedInput
+  regularsIn?: Prisma.EpisodeUncheckedUpdateManyWithoutRegularsNestedInput
+  cashedGoldenTicketIn?: Prisma.EpisodeUncheckedUpdateManyWithoutGoldenTicketCashInsNestedInput
+}
+
+export type AppearanceUncheckedUpdateManyWithoutBucketPullsInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHallOfFame?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -497,11 +721,17 @@ export type AppearanceUncheckedUpdateManyWithoutEpisodesInput = {
  */
 
 export type AppearanceCountOutputType = {
-  episodes: number
+  guestsIn: number
+  regularsIn: number
+  cashedGoldenTicketIn: number
+  bucketPullsIn: number
 }
 
 export type AppearanceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  episodes?: boolean | AppearanceCountOutputTypeCountEpisodesArgs
+  guestsIn?: boolean | AppearanceCountOutputTypeCountGuestsInArgs
+  regularsIn?: boolean | AppearanceCountOutputTypeCountRegularsInArgs
+  cashedGoldenTicketIn?: boolean | AppearanceCountOutputTypeCountCashedGoldenTicketInArgs
+  bucketPullsIn?: boolean | AppearanceCountOutputTypeCountBucketPullsInArgs
 }
 
 /**
@@ -517,7 +747,28 @@ export type AppearanceCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.E
 /**
  * AppearanceCountOutputType without action
  */
-export type AppearanceCountOutputTypeCountEpisodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type AppearanceCountOutputTypeCountGuestsInArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EpisodeWhereInput
+}
+
+/**
+ * AppearanceCountOutputType without action
+ */
+export type AppearanceCountOutputTypeCountRegularsInArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EpisodeWhereInput
+}
+
+/**
+ * AppearanceCountOutputType without action
+ */
+export type AppearanceCountOutputTypeCountCashedGoldenTicketInArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EpisodeWhereInput
+}
+
+/**
+ * AppearanceCountOutputType without action
+ */
+export type AppearanceCountOutputTypeCountBucketPullsInArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.EpisodeWhereInput
 }
 
@@ -525,48 +776,38 @@ export type AppearanceCountOutputTypeCountEpisodesArgs<ExtArgs extends runtime.T
 export type AppearanceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  isGuest?: boolean
-  isBucketPull?: boolean
-  isRegular?: boolean
   isHallOfFame?: boolean
-  isGoldenTicketWinner?: boolean
-  episodes?: boolean | Prisma.Appearance$episodesArgs<ExtArgs>
+  guestsIn?: boolean | Prisma.Appearance$guestsInArgs<ExtArgs>
+  regularsIn?: boolean | Prisma.Appearance$regularsInArgs<ExtArgs>
+  cashedGoldenTicketIn?: boolean | Prisma.Appearance$cashedGoldenTicketInArgs<ExtArgs>
+  bucketPullsIn?: boolean | Prisma.Appearance$bucketPullsInArgs<ExtArgs>
   _count?: boolean | Prisma.AppearanceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["appearance"]>
 
 export type AppearanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  isGuest?: boolean
-  isBucketPull?: boolean
-  isRegular?: boolean
   isHallOfFame?: boolean
-  isGoldenTicketWinner?: boolean
 }, ExtArgs["result"]["appearance"]>
 
 export type AppearanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  isGuest?: boolean
-  isBucketPull?: boolean
-  isRegular?: boolean
   isHallOfFame?: boolean
-  isGoldenTicketWinner?: boolean
 }, ExtArgs["result"]["appearance"]>
 
 export type AppearanceSelectScalar = {
   id?: boolean
   name?: boolean
-  isGuest?: boolean
-  isBucketPull?: boolean
-  isRegular?: boolean
   isHallOfFame?: boolean
-  isGoldenTicketWinner?: boolean
 }
 
-export type AppearanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "isGuest" | "isBucketPull" | "isRegular" | "isHallOfFame" | "isGoldenTicketWinner", ExtArgs["result"]["appearance"]>
+export type AppearanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "isHallOfFame", ExtArgs["result"]["appearance"]>
 export type AppearanceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  episodes?: boolean | Prisma.Appearance$episodesArgs<ExtArgs>
+  guestsIn?: boolean | Prisma.Appearance$guestsInArgs<ExtArgs>
+  regularsIn?: boolean | Prisma.Appearance$regularsInArgs<ExtArgs>
+  cashedGoldenTicketIn?: boolean | Prisma.Appearance$cashedGoldenTicketInArgs<ExtArgs>
+  bucketPullsIn?: boolean | Prisma.Appearance$bucketPullsInArgs<ExtArgs>
   _count?: boolean | Prisma.AppearanceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AppearanceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -575,16 +816,15 @@ export type AppearanceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.E
 export type $AppearancePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Appearance"
   objects: {
-    episodes: Prisma.$EpisodePayload<ExtArgs>[]
+    guestsIn: Prisma.$EpisodePayload<ExtArgs>[]
+    regularsIn: Prisma.$EpisodePayload<ExtArgs>[]
+    cashedGoldenTicketIn: Prisma.$EpisodePayload<ExtArgs>[]
+    bucketPullsIn: Prisma.$EpisodePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    isGuest: boolean
-    isBucketPull: boolean
-    isRegular: boolean
     isHallOfFame: boolean
-    isGoldenTicketWinner: boolean
   }, ExtArgs["result"]["appearance"]>
   composites: {}
 }
@@ -979,7 +1219,10 @@ readonly fields: AppearanceFieldRefs;
  */
 export interface Prisma__AppearanceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  episodes<T extends Prisma.Appearance$episodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Appearance$episodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpisodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  guestsIn<T extends Prisma.Appearance$guestsInArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Appearance$guestsInArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpisodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  regularsIn<T extends Prisma.Appearance$regularsInArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Appearance$regularsInArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpisodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cashedGoldenTicketIn<T extends Prisma.Appearance$cashedGoldenTicketInArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Appearance$cashedGoldenTicketInArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpisodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bucketPullsIn<T extends Prisma.Appearance$bucketPullsInArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Appearance$bucketPullsInArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpisodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1011,11 +1254,7 @@ export interface Prisma__AppearanceClient<T, Null = never, ExtArgs extends runti
 export interface AppearanceFieldRefs {
   readonly id: Prisma.FieldRef<"Appearance", 'String'>
   readonly name: Prisma.FieldRef<"Appearance", 'String'>
-  readonly isGuest: Prisma.FieldRef<"Appearance", 'Boolean'>
-  readonly isBucketPull: Prisma.FieldRef<"Appearance", 'Boolean'>
-  readonly isRegular: Prisma.FieldRef<"Appearance", 'Boolean'>
   readonly isHallOfFame: Prisma.FieldRef<"Appearance", 'Boolean'>
-  readonly isGoldenTicketWinner: Prisma.FieldRef<"Appearance", 'Boolean'>
 }
     
 
@@ -1402,9 +1641,81 @@ export type AppearanceDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
- * Appearance.episodes
+ * Appearance.guestsIn
  */
-export type Appearance$episodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Appearance$guestsInArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Episode
+   */
+  select?: Prisma.EpisodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Episode
+   */
+  omit?: Prisma.EpisodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EpisodeInclude<ExtArgs> | null
+  where?: Prisma.EpisodeWhereInput
+  orderBy?: Prisma.EpisodeOrderByWithRelationInput | Prisma.EpisodeOrderByWithRelationInput[]
+  cursor?: Prisma.EpisodeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EpisodeScalarFieldEnum | Prisma.EpisodeScalarFieldEnum[]
+}
+
+/**
+ * Appearance.regularsIn
+ */
+export type Appearance$regularsInArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Episode
+   */
+  select?: Prisma.EpisodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Episode
+   */
+  omit?: Prisma.EpisodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EpisodeInclude<ExtArgs> | null
+  where?: Prisma.EpisodeWhereInput
+  orderBy?: Prisma.EpisodeOrderByWithRelationInput | Prisma.EpisodeOrderByWithRelationInput[]
+  cursor?: Prisma.EpisodeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EpisodeScalarFieldEnum | Prisma.EpisodeScalarFieldEnum[]
+}
+
+/**
+ * Appearance.cashedGoldenTicketIn
+ */
+export type Appearance$cashedGoldenTicketInArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Episode
+   */
+  select?: Prisma.EpisodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Episode
+   */
+  omit?: Prisma.EpisodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EpisodeInclude<ExtArgs> | null
+  where?: Prisma.EpisodeWhereInput
+  orderBy?: Prisma.EpisodeOrderByWithRelationInput | Prisma.EpisodeOrderByWithRelationInput[]
+  cursor?: Prisma.EpisodeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EpisodeScalarFieldEnum | Prisma.EpisodeScalarFieldEnum[]
+}
+
+/**
+ * Appearance.bucketPullsIn
+ */
+export type Appearance$bucketPullsInArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Episode
    */

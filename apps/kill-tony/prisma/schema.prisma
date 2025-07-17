@@ -19,17 +19,19 @@ model Episode {
   url         String
   publishDate DateTime
 
-  appearances Appearance[]
+  guests              Appearance[] @relation("EpisodeGuests")
+  regulars            Appearance[] @relation("EpisodeRegulars")
+  goldenTicketCashIns Appearance[] @relation("EpisodeGoldenTicketCashIns")
+  bucketPulls         Appearance[] @relation("EpisodeBucketPulls")
 }
 
 model Appearance {
-  id       String @id @default(uuid(7))
-  name     String @unique
-  isGuest Boolean @default(false)
-  isBucketPull Boolean @default(false)
-  isRegular Boolean @default(false)
+  id           String  @id @default(uuid(7))
+  name         String  @unique
   isHallOfFame Boolean @default(false)
-  isGoldenTicketWinner Boolean @default(false)
 
-  episodes Episode[]
+  guestsIn             Episode[] @relation("EpisodeGuests")
+  regularsIn           Episode[] @relation("EpisodeRegulars")
+  cashedGoldenTicketIn Episode[] @relation("EpisodeGoldenTicketCashIns")
+  bucketPullsIn        Episode[] @relation("EpisodeBucketPulls")
 }

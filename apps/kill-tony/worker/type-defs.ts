@@ -9,27 +9,25 @@ export const typeDefs = `#graphql
         title: String!
         url: String!
         publishDate: DateTime!
-        appearances: [Appearance]!
+        guests: [Appearance]!
+        regulars: [Appearance]!
+        goldenTicketCashIns: [Appearance]!
+        bucketPulls: [Appearance]!
     }
     
     type Appearance {
         id: ID!
         name: String!
-        isGuest: Boolean!
-        isBucketPull: Boolean!
-        isRegular: Boolean!
         isHallOfFame: Boolean!
-        isGoldenTicketWinner: Boolean!
-        episodes: [Episode]!
+        guestsIn: [Episode]!
+        regularsIn: [Episode]!
+        cashedGoldenTicketIn: [Episode]!
+        bucketPulledIn: [Episode]!
     }
     
     input AppearanceInput {
         name: String!
-        isGuest: Boolean!
-        isBucketPull: Boolean!
-        isRegular: Boolean!
         isHallOfFame: Boolean!
-        isGoldenTicketWinner: Boolean!
     }
     
     input CreateEpisodeInput {
@@ -37,12 +35,15 @@ export const typeDefs = `#graphql
         title: String!
         url: String!
         publishDate: DateTime!
-        appearances: [AppearanceInput!]!
     }
     
     input AddAppearanceToEpisodeInput {
         number: Int!
-        appearance: AppearanceInput! 
+        name: String!
+        isGuest: Boolean
+        isRegular: Boolean
+        isGoldenTicketCashIn: Boolean
+        isBucketPull: Boolean
     }
 
     input EpisodeWhereInput {

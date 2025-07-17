@@ -10,13 +10,13 @@ import {
   Modal,
   ModalContent,
   Spinner,
+  useDisclosure,
 } from "@heroui/react";
 import isNil from "lodash/isNil";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 
 import { type GetEpisode, getEpisode } from "../../graphql/queries.ts";
-import { CreateAppearanceForm } from "../admin/create-appearance-form.tsx";
-import { createEpisodeStore } from "../admin/create-episode-store.ts";
+import { AddAppearanceForm } from "../admin/add-appearance-form.tsx";
 import { signInStore } from "../admin/sign-in-store.ts";
 import { AppearanceList } from "./appearance-list.tsx";
 
@@ -27,15 +27,11 @@ type EpisodeCardProperties = {
 export const EpisodeCard = ({
   episodeNumber,
 }: Readonly<EpisodeCardProperties>) => {
+  const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
   const { data, loading } = useQuery<GetEpisode>(getEpisode, {
     variables: { number: episodeNumber },
   });
 
-  const { isAppearanceModalOpen } = useStore(createEpisodeStore, (state) => {
-    return {
-      isAppearanceModalOpen: state.isAppearanceModalOpen,
-    };
-  });
   const { isSignedIn } = useStore(signInStore, (state) => {
     return {
       isSignedIn: state.isSignedIn,
@@ -78,44 +74,28 @@ export const EpisodeCard = ({
         </div>
       </CardBody>
       <CardFooter className="grid gap-4">
+        <AppearanceList appearances={data.episode.guests} label="Guests" />
+        <AppearanceList appearances={data.episode.regulars} label="Regulars" />
         <AppearanceList
-          appearances={data.episode.appearances}
-          label="Guests"
-          type="isGuest"
+          appearances={data.episode.goldenTicketCashIns}
+          label="Golden Ticket Cash Ins"
         />
         <AppearanceList
-          appearances={data.episode.appearances}
-          label="Regulars"
-          type="isRegular"
-        />
-        <AppearanceList
-          appearances={data.episode.appearances}
-          label="Golden Ticket Winners"
-          type="isGoldenTicketWinner"
-        />
-        <AppearanceList
-          appearances={data.episode.appearances}
+          appearances={data.episode.bucketPulls}
           label="Bucket Pulls"
-          type="isBucketPull"
         />
         {isSignedIn && (
           <>
-            <Button
-              onPress={() => {
-                createEpisodeStore.toggleAppearanceModal(true);
-              }}
-              className="max-w-sm"
-            >
+            <Button className="max-w-sm" onPress={onOpen}>
               Add Appearance
             </Button>
-            <Modal
-              onOpenChange={(value) => {
-                createEpisodeStore.toggleAppearanceModal(value);
-              }}
-              isOpen={isAppearanceModalOpen}
-            >
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
               <ModalContent>
-                <CreateAppearanceForm episodeNumber={episodeNumber} />
+                <AddAppearanceForm
+                  episodeNumber={data.episode.number}
+                  key={data.episode.number}
+                  onClose={onClose}
+                />
               </ModalContent>
             </Modal>
           </>

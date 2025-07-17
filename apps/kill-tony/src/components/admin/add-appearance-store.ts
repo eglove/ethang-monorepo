@@ -3,7 +3,7 @@ import { BaseStore } from "@ethang/store";
 const initialState = {
   formState: {
     isBucketPull: false,
-    isGoldenTicketWinner: false,
+    isGoldenTicketCashIn: false,
     isGuest: false,
     isHallOfFame: false,
     isRegular: false,
@@ -11,7 +11,7 @@ const initialState = {
   },
 };
 
-export class CreateAppearanceStore extends BaseStore<typeof initialState> {
+export class AddAppearanceStore extends BaseStore<typeof initialState> {
   public constructor() {
     super(initialState);
   }
@@ -32,4 +32,4 @@ export class CreateAppearanceStore extends BaseStore<typeof initialState> {
   }
 }
 
-export const createAppearanceStore = new CreateAppearanceStore();
+export const addAppearanceStore = new AddAppearanceStore();

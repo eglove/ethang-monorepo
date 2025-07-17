@@ -13,12 +13,15 @@ export const getEpisodes = gql`
 `;
 
 export type GetEpisode = {
-  episode: {
-    appearances: Pick<
-      Appearance,
-      "isBucketPull" | "isGoldenTicketWinner" | "isGuest" | "isRegular" | "name"
-    >[];
-  } & Pick<Episode, "title" | "url">;
+  episode: { bucketPulls: Pick<Appearance, "name">[] } & {
+    goldenTicketCashIns: Pick<Appearance, "name">[];
+  } & {
+    guests: Pick<Appearance, "name">[];
+  } & { regulars: Pick<Appearance, "name">[] } & Pick<
+      Episode,
+      "number" | "title" | "url"
+    > &
+    Pick<Episode, "title" | "url">;
 };
 
 export const getEpisode = gql`
@@ -27,12 +30,17 @@ export const getEpisode = gql`
       title
       url
       number
-      appearances {
+      guests {
         name
-        isGuest
-        isRegular
-        isBucketPull
-        isGoldenTicketWinner
+      }
+      regulars {
+        name
+      }
+      bucketPulls {
+        name
+      }
+      goldenTicketCashIns {
+        name
       }
     }
   }
@@ -40,7 +48,13 @@ export const getEpisode = gql`
 
 export type GetAppearance = {
   appearance: {
-    episodes: Pick<Episode, "number">[];
+    bucketPullsIn: Pick<Episode, "number">[];
+  } & {
+    cashedGoldenTicketIn: Pick<Episode, "number">[];
+  } & {
+    guestsIn: Pick<Episode, "number">[];
+  } & {
+    regularsIn: Pick<Episode, "number">[];
   } & Pick<Appearance, "name">;
 };
 
@@ -48,7 +62,16 @@ export const getAppearance = gql`
   query GetAppearance($name: String!) {
     appearance(where: { name: $name }) {
       name
-      episodes {
+      guestsIn {
+        number
+      }
+      bucketPulledIn {
+        number
+      }
+      cashedGoldenTicketIn {
+        number
+      }
+      regularsIn {
         number
       }
     }
