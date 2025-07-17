@@ -10,17 +10,13 @@ import { getUserStatsData } from "./utitilies/get-user-stats-data.ts";
 
 export const statsComputeEngine = new ComputeEngine();
 
-export const getUserStats = async (
-  request: Request,
-  environment: Env,
-  userId: string,
-) => {
+export const getUserStats = async (environment: Env, userId: string) => {
   const {
     allUserApplications,
     topCompanies,
     totalApplications,
     totalCompanies,
-  } = await getUserStatsData(request, environment, userId);
+  } = await getUserStatsData(environment, userId);
 
   const averageApplicationsPerDay =
     getAverageApplicationsPerDay(allUserApplications);

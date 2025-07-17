@@ -1,20 +1,7 @@
-import isString from "lodash/isString";
-import { DateTime } from "luxon";
-
 import { getPrismaClient } from "../../prisma-client.ts";
 
-export const getUserStatsData = async (
-  request: Request,
-  environment: Env,
-  userId: string,
-) => {
+export const getUserStatsData = async (environment: Env, userId: string) => {
   const prismaClient = getPrismaClient(environment);
-  const timezone = isString(request.cf?.timezone) ? request.cf.timezone : "UTC";
-
-  const thirtyDaysAgo = DateTime.now()
-    .setZone(timezone)
-    .startOf("day")
-    .minus({ day: 30 });
 
   const [topCompanies, allUserApplications, totalApplications, totalCompanies] =
     await Promise.all([
@@ -28,7 +15,7 @@ export const getUserStatsData = async (
       prismaClient.applications.findMany({
         orderBy: { applied: "desc" },
         select: { applied: true, rejected: true },
-        where: { applied: { gte: thirtyDaysAgo.toJSDate() }, userId },
+        where: { userId },
       }),
       prismaClient.applications.aggregate({
         _count: { _all: true },
