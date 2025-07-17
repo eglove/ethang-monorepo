@@ -40,7 +40,7 @@ const RouteComponent = () => {
       ),
       (episodeNumber) => !isNil(episodeNumber),
     ),
-  );
+  ).sort((a, b) => b - a);
   const bucketPulls = get(data, ["appearance", "bucketPullsIn", "length"]);
   const goldenTicketCashIns = get(data, [
     "appearance",
