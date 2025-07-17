@@ -612,7 +612,6 @@ export type EpisodeScalarFieldEnum = (typeof EpisodeScalarFieldEnum)[keyof typeo
 export const AppearanceScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  imageUrl: 'imageUrl',
   isGuest: 'isGuest',
   isBucketPull: 'isBucketPull',
   isRegular: 'isRegular',

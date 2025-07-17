@@ -17,6 +17,12 @@ export class CreateAppearanceStore extends BaseStore<typeof initialState> {
     super(initialState);
   }
 
+  public clearForm() {
+    this.update((draft) => {
+      draft.formState = initialState.formState;
+    });
+  }
+
   public onChange<K extends keyof typeof initialState.formState>(
     key: K,
     value: (typeof initialState.formState)[K],

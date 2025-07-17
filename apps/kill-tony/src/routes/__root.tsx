@@ -1,14 +1,14 @@
 // eslint-disable-next-line react/naming-convention/filename
-import { HeroUIProvider, ToastProvider } from "@heroui/react";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
+import { Providers } from "../components/providers.tsx";
+
 export const Route = createRootRoute({
   component: () => (
-    <HeroUIProvider>
-      <ToastProvider />
+    <Providers>
       <Outlet />
       <TanStackRouterDevtools />
-    </HeroUIProvider>
+    </Providers>
   ),
 });

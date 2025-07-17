@@ -26,7 +26,6 @@ export type AggregateAppearance = {
 export type AppearanceMinAggregateOutputType = {
   id: string | null
   name: string | null
-  imageUrl: string | null
   isGuest: boolean | null
   isBucketPull: boolean | null
   isRegular: boolean | null
@@ -37,7 +36,6 @@ export type AppearanceMinAggregateOutputType = {
 export type AppearanceMaxAggregateOutputType = {
   id: string | null
   name: string | null
-  imageUrl: string | null
   isGuest: boolean | null
   isBucketPull: boolean | null
   isRegular: boolean | null
@@ -48,7 +46,6 @@ export type AppearanceMaxAggregateOutputType = {
 export type AppearanceCountAggregateOutputType = {
   id: number
   name: number
-  imageUrl: number
   isGuest: number
   isBucketPull: number
   isRegular: number
@@ -61,7 +58,6 @@ export type AppearanceCountAggregateOutputType = {
 export type AppearanceMinAggregateInputType = {
   id?: true
   name?: true
-  imageUrl?: true
   isGuest?: true
   isBucketPull?: true
   isRegular?: true
@@ -72,7 +68,6 @@ export type AppearanceMinAggregateInputType = {
 export type AppearanceMaxAggregateInputType = {
   id?: true
   name?: true
-  imageUrl?: true
   isGuest?: true
   isBucketPull?: true
   isRegular?: true
@@ -83,7 +78,6 @@ export type AppearanceMaxAggregateInputType = {
 export type AppearanceCountAggregateInputType = {
   id?: true
   name?: true
-  imageUrl?: true
   isGuest?: true
   isBucketPull?: true
   isRegular?: true
@@ -167,7 +161,6 @@ export type AppearanceGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 export type AppearanceGroupByOutputType = {
   id: string
   name: string
-  imageUrl: string
   isGuest: boolean
   isBucketPull: boolean
   isRegular: boolean
@@ -199,7 +192,6 @@ export type AppearanceWhereInput = {
   NOT?: Prisma.AppearanceWhereInput | Prisma.AppearanceWhereInput[]
   id?: Prisma.StringFilter<"Appearance"> | string
   name?: Prisma.StringFilter<"Appearance"> | string
-  imageUrl?: Prisma.StringFilter<"Appearance"> | string
   isGuest?: Prisma.BoolFilter<"Appearance"> | boolean
   isBucketPull?: Prisma.BoolFilter<"Appearance"> | boolean
   isRegular?: Prisma.BoolFilter<"Appearance"> | boolean
@@ -211,7 +203,6 @@ export type AppearanceWhereInput = {
 export type AppearanceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
   isGuest?: Prisma.SortOrder
   isBucketPull?: Prisma.SortOrder
   isRegular?: Prisma.SortOrder
@@ -226,7 +217,6 @@ export type AppearanceWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.AppearanceWhereInput | Prisma.AppearanceWhereInput[]
   OR?: Prisma.AppearanceWhereInput[]
   NOT?: Prisma.AppearanceWhereInput | Prisma.AppearanceWhereInput[]
-  imageUrl?: Prisma.StringFilter<"Appearance"> | string
   isGuest?: Prisma.BoolFilter<"Appearance"> | boolean
   isBucketPull?: Prisma.BoolFilter<"Appearance"> | boolean
   isRegular?: Prisma.BoolFilter<"Appearance"> | boolean
@@ -238,7 +228,6 @@ export type AppearanceWhereUniqueInput = Prisma.AtLeast<{
 export type AppearanceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
   isGuest?: Prisma.SortOrder
   isBucketPull?: Prisma.SortOrder
   isRegular?: Prisma.SortOrder
@@ -255,7 +244,6 @@ export type AppearanceScalarWhereWithAggregatesInput = {
   NOT?: Prisma.AppearanceScalarWhereWithAggregatesInput | Prisma.AppearanceScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Appearance"> | string
   name?: Prisma.StringWithAggregatesFilter<"Appearance"> | string
-  imageUrl?: Prisma.StringWithAggregatesFilter<"Appearance"> | string
   isGuest?: Prisma.BoolWithAggregatesFilter<"Appearance"> | boolean
   isBucketPull?: Prisma.BoolWithAggregatesFilter<"Appearance"> | boolean
   isRegular?: Prisma.BoolWithAggregatesFilter<"Appearance"> | boolean
@@ -266,7 +254,6 @@ export type AppearanceScalarWhereWithAggregatesInput = {
 export type AppearanceCreateInput = {
   id?: string
   name: string
-  imageUrl: string
   isGuest?: boolean
   isBucketPull?: boolean
   isRegular?: boolean
@@ -278,7 +265,6 @@ export type AppearanceCreateInput = {
 export type AppearanceUncheckedCreateInput = {
   id?: string
   name: string
-  imageUrl: string
   isGuest?: boolean
   isBucketPull?: boolean
   isRegular?: boolean
@@ -290,7 +276,6 @@ export type AppearanceUncheckedCreateInput = {
 export type AppearanceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -302,7 +287,6 @@ export type AppearanceUpdateInput = {
 export type AppearanceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -314,7 +298,6 @@ export type AppearanceUncheckedUpdateInput = {
 export type AppearanceCreateManyInput = {
   id?: string
   name: string
-  imageUrl: string
   isGuest?: boolean
   isBucketPull?: boolean
   isRegular?: boolean
@@ -325,7 +308,6 @@ export type AppearanceCreateManyInput = {
 export type AppearanceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -336,7 +318,6 @@ export type AppearanceUpdateManyMutationInput = {
 export type AppearanceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -357,7 +338,6 @@ export type AppearanceOrderByRelationAggregateInput = {
 export type AppearanceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
   isGuest?: Prisma.SortOrder
   isBucketPull?: Prisma.SortOrder
   isRegular?: Prisma.SortOrder
@@ -368,7 +348,6 @@ export type AppearanceCountOrderByAggregateInput = {
 export type AppearanceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
   isGuest?: Prisma.SortOrder
   isBucketPull?: Prisma.SortOrder
   isRegular?: Prisma.SortOrder
@@ -379,7 +358,6 @@ export type AppearanceMaxOrderByAggregateInput = {
 export type AppearanceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
   isGuest?: Prisma.SortOrder
   isBucketPull?: Prisma.SortOrder
   isRegular?: Prisma.SortOrder
@@ -432,7 +410,6 @@ export type BoolFieldUpdateOperationsInput = {
 export type AppearanceCreateWithoutEpisodesInput = {
   id?: string
   name: string
-  imageUrl: string
   isGuest?: boolean
   isBucketPull?: boolean
   isRegular?: boolean
@@ -443,7 +420,6 @@ export type AppearanceCreateWithoutEpisodesInput = {
 export type AppearanceUncheckedCreateWithoutEpisodesInput = {
   id?: string
   name: string
-  imageUrl: string
   isGuest?: boolean
   isBucketPull?: boolean
   isRegular?: boolean
@@ -478,7 +454,6 @@ export type AppearanceScalarWhereInput = {
   NOT?: Prisma.AppearanceScalarWhereInput | Prisma.AppearanceScalarWhereInput[]
   id?: Prisma.StringFilter<"Appearance"> | string
   name?: Prisma.StringFilter<"Appearance"> | string
-  imageUrl?: Prisma.StringFilter<"Appearance"> | string
   isGuest?: Prisma.BoolFilter<"Appearance"> | boolean
   isBucketPull?: Prisma.BoolFilter<"Appearance"> | boolean
   isRegular?: Prisma.BoolFilter<"Appearance"> | boolean
@@ -489,7 +464,6 @@ export type AppearanceScalarWhereInput = {
 export type AppearanceUpdateWithoutEpisodesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -500,7 +474,6 @@ export type AppearanceUpdateWithoutEpisodesInput = {
 export type AppearanceUncheckedUpdateWithoutEpisodesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -511,7 +484,6 @@ export type AppearanceUncheckedUpdateWithoutEpisodesInput = {
 export type AppearanceUncheckedUpdateManyWithoutEpisodesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBucketPull?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isRegular?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -553,7 +525,6 @@ export type AppearanceCountOutputTypeCountEpisodesArgs<ExtArgs extends runtime.T
 export type AppearanceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  imageUrl?: boolean
   isGuest?: boolean
   isBucketPull?: boolean
   isRegular?: boolean
@@ -566,7 +537,6 @@ export type AppearanceSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type AppearanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  imageUrl?: boolean
   isGuest?: boolean
   isBucketPull?: boolean
   isRegular?: boolean
@@ -577,7 +547,6 @@ export type AppearanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type AppearanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  imageUrl?: boolean
   isGuest?: boolean
   isBucketPull?: boolean
   isRegular?: boolean
@@ -588,7 +557,6 @@ export type AppearanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type AppearanceSelectScalar = {
   id?: boolean
   name?: boolean
-  imageUrl?: boolean
   isGuest?: boolean
   isBucketPull?: boolean
   isRegular?: boolean
@@ -596,7 +564,7 @@ export type AppearanceSelectScalar = {
   isGoldenTicketWinner?: boolean
 }
 
-export type AppearanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "imageUrl" | "isGuest" | "isBucketPull" | "isRegular" | "isHallOfFame" | "isGoldenTicketWinner", ExtArgs["result"]["appearance"]>
+export type AppearanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "isGuest" | "isBucketPull" | "isRegular" | "isHallOfFame" | "isGoldenTicketWinner", ExtArgs["result"]["appearance"]>
 export type AppearanceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   episodes?: boolean | Prisma.Appearance$episodesArgs<ExtArgs>
   _count?: boolean | Prisma.AppearanceCountOutputTypeDefaultArgs<ExtArgs>
@@ -612,7 +580,6 @@ export type $AppearancePayload<ExtArgs extends runtime.Types.Extensions.Internal
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    imageUrl: string
     isGuest: boolean
     isBucketPull: boolean
     isRegular: boolean
@@ -1044,7 +1011,6 @@ export interface Prisma__AppearanceClient<T, Null = never, ExtArgs extends runti
 export interface AppearanceFieldRefs {
   readonly id: Prisma.FieldRef<"Appearance", 'String'>
   readonly name: Prisma.FieldRef<"Appearance", 'String'>
-  readonly imageUrl: Prisma.FieldRef<"Appearance", 'String'>
   readonly isGuest: Prisma.FieldRef<"Appearance", 'Boolean'>
   readonly isBucketPull: Prisma.FieldRef<"Appearance", 'Boolean'>
   readonly isRegular: Prisma.FieldRef<"Appearance", 'Boolean'>

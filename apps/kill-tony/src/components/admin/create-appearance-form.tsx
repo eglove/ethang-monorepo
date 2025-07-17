@@ -4,15 +4,25 @@ import { useSubmit } from "@hyper-fetch/react";
 import isNil from "lodash/isNil.js";
 
 import {
+  addAppearanceToEpisode,
   createAppearance,
   getAllAppearances,
+  getAllEpisodes,
   hyperFetchClient,
 } from "../../clients/hyper-fetch.ts";
 import { createAppearanceStore } from "./create-appearance-store.ts";
 import { createEpisodeStore } from "./create-episode-store.ts";
 
-export const CreateAppearanceForm = () => {
-  const { error, submit, submitting } = useSubmit(createAppearance);
+type CreateAppearanceFormProperties = {
+  episodeNumber?: number;
+};
+
+export const CreateAppearanceForm = ({
+  episodeNumber,
+}: Readonly<CreateAppearanceFormProperties>) => {
+  const { error, submit, submitting } = useSubmit(
+    isNil(episodeNumber) ? createAppearance : addAppearanceToEpisode,
+  );
 
   const { formState } = useStore(createAppearanceStore, (state) => {
     return {
@@ -22,9 +32,16 @@ export const CreateAppearanceForm = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    submit({ payload: formState })
+    const promise = isNil(episodeNumber)
+      ? submit({ payload: formState })
+      : submit({
+          payload: { appearance: formState, number: episodeNumber },
+        });
+
+    promise
       .then(() => {
         hyperFetchClient.cache.invalidate(getAllAppearances.cacheKey);
+        hyperFetchClient.cache.invalidate(getAllEpisodes.cacheKey);
         createEpisodeStore.toggleAppearanceModal(false);
       })
       .catch(globalThis.console.error);
@@ -47,14 +64,6 @@ export const CreateAppearanceForm = () => {
         }}
         label="Name"
         value={formState.name}
-      />
-      <Input
-        isRequired
-        onValueChange={(value) => {
-          createAppearanceStore.onChange("imageUrl", value);
-        }}
-        label="Image URL"
-        value={formState.imageUrl}
       />
       <div className="flex gap-4 flex-wrap">
         <Checkbox

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AppearanceNameRouteImport } from './routes/appearance/$name'
 import { Route as AdminEpisodeRouteImport } from './routes/admin/episode'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppearanceNameRoute = AppearanceNameRouteImport.update({
+  id: '/appearance/$name',
+  path: '/appearance/$name',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminEpisodeRoute = AdminEpisodeRouteImport.update({
   id: '/admin/episode',
   path: '/admin/episode',
@@ -32,30 +38,34 @@ const AdminEpisodeRoute = AdminEpisodeRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin/episode': typeof AdminEpisodeRoute
+  '/appearance/$name': typeof AppearanceNameRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin/episode': typeof AdminEpisodeRoute
+  '/appearance/$name': typeof AppearanceNameRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin/episode': typeof AdminEpisodeRoute
+  '/appearance/$name': typeof AppearanceNameRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin/episode' | '/admin'
+  fullPaths: '/' | '/admin/episode' | '/appearance/$name' | '/admin'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin/episode' | '/admin'
-  id: '__root__' | '/' | '/admin/episode' | '/admin/'
+  to: '/' | '/admin/episode' | '/appearance/$name' | '/admin'
+  id: '__root__' | '/' | '/admin/episode' | '/appearance/$name' | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminEpisodeRoute: typeof AdminEpisodeRoute
+  AppearanceNameRoute: typeof AppearanceNameRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/appearance/$name': {
+      id: '/appearance/$name'
+      path: '/appearance/$name'
+      fullPath: '/appearance/$name'
+      preLoaderRoute: typeof AppearanceNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/episode': {
       id: '/admin/episode'
       path: '/admin/episode'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminEpisodeRoute: AdminEpisodeRoute,
+  AppearanceNameRoute: AppearanceNameRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport

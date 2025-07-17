@@ -25,7 +25,6 @@ model Episode {
 model Appearance {
   id       String @id @default(uuid(7))
   name     String @unique
-  imageUrl String
   isGuest Boolean @default(false)
   isBucketPull Boolean @default(false)
   isRegular Boolean @default(false)

@@ -2,7 +2,10 @@ import type z from "zod";
 
 import map from "lodash/map.js";
 
-import type { createEpisodeSchema } from "../schemas/episode-schema.ts";
+import type {
+  addAppearanceSchema,
+  createEpisodeSchema,
+} from "../schemas/schemas.ts";
 import type { getPrismaClient } from "./prisma-client.ts";
 
 export class EpisodeService {
@@ -10,6 +13,20 @@ export class EpisodeService {
 
   public constructor(primaClient: ReturnType<typeof getPrismaClient>) {
     this._prismaClient = primaClient;
+  }
+
+  public async addAppearance(data: z.output<typeof addAppearanceSchema>) {
+    return this._prismaClient.episode.update({
+      data: {
+        appearances: {
+          connectOrCreate: {
+            create: data.appearance,
+            where: { name: data.appearance.name },
+          },
+        },
+      },
+      where: { number: data.number },
+    });
   }
 
   public async createEpisode(episode: z.output<typeof createEpisodeSchema>) {
@@ -30,6 +47,16 @@ export class EpisodeService {
   }
 
   public async getAll() {
-    return this._prismaClient.episode.findMany({ orderBy: { number: "desc" } });
+    return this._prismaClient.episode.findMany({
+      include: { appearances: true },
+      orderBy: { number: "desc" },
+    });
+  }
+
+  public async getEpisodeByNumber(number: number) {
+    return this._prismaClient.episode.findUnique({
+      include: { appearances: true },
+      where: { number },
+    });
   }
 }

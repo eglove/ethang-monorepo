@@ -2,11 +2,13 @@ import type z from "zod";
 
 import { BaseStore } from "@ethang/store";
 
-import type { appearancesSchema } from "../../../schemas/appearance-schema.ts";
+import type { baseAppearancesSchema } from "../../../schemas/schemas.ts";
+
+import { createAppearanceStore } from "./create-appearance-store.ts";
 
 const initialState = {
   formState: {
-    appearances: [] as z.output<typeof appearancesSchema>,
+    appearances: [] as z.output<typeof baseAppearancesSchema>,
     number: 0,
     publishDate: "",
     title: "",
@@ -31,6 +33,11 @@ export class CreateEpisodeStore extends BaseStore<typeof initialState> {
 
   public toggleAppearanceModal(value: boolean) {
     this.update((draft) => {
+      if (!value) {
+        draft.formState = initialState.formState;
+        createAppearanceStore.clearForm();
+      }
+
       draft.isAppearanceModalOpen = value;
     });
   }

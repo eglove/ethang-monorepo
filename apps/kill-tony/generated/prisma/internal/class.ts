@@ -26,10 +26,10 @@ const config: runtime.GetPrismaClientConfig = {
       "fromEnvVar": null
     },
     "config": {
-      "runtime": "cloudflare",
-      "importFileExtension": "ts",
-      "generatedFileExtension": "ts",
       "moduleFormat": "esm",
+      "generatedFileExtension": "ts",
+      "importFileExtension": "ts",
+      "runtime": "cloudflare",
       "engineType": "client"
     },
     "binaryTargets": [
@@ -62,8 +62,8 @@ const config: runtime.GetPrismaClientConfig = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider               = \"prisma-client\"\n  output                 = \"../generated/prisma\"\n  previewFeatures        = [\"driverAdapters\", \"queryCompiler\"]\n  generatedFileExtension = \"ts\"\n  importFileExtension    = \"ts\"\n  moduleFormat           = \"esm\"\n  runtime                = \"cloudflare\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Episode {\n  number      Int      @id @unique\n  title       String\n  url         String\n  publishDate DateTime\n\n  appearances Appearance[]\n}\n\nmodel Appearance {\n  id                   String  @id @default(uuid(7))\n  name                 String  @unique\n  imageUrl             String\n  isGuest              Boolean @default(false)\n  isBucketPull         Boolean @default(false)\n  isRegular            Boolean @default(false)\n  isHallOfFame         Boolean @default(false)\n  isGoldenTicketWinner Boolean @default(false)\n\n  episodes Episode[]\n}\n",
-  "inlineSchemaHash": "44b06149b751544577db9b37ba9cc88df3179b1d742556a699b6f4a2a3917a3a",
+  "inlineSchema": "generator client {\n  provider               = \"prisma-client\"\n  output                 = \"../generated/prisma\"\n  previewFeatures        = [\"driverAdapters\", \"queryCompiler\"]\n  generatedFileExtension = \"ts\"\n  importFileExtension    = \"ts\"\n  moduleFormat           = \"esm\"\n  runtime                = \"cloudflare\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Episode {\n  number      Int      @id @unique\n  title       String\n  url         String\n  publishDate DateTime\n\n  appearances Appearance[]\n}\n\nmodel Appearance {\n  id                   String  @id @default(uuid(7))\n  name                 String  @unique\n  isGuest              Boolean @default(false)\n  isBucketPull         Boolean @default(false)\n  isRegular            Boolean @default(false)\n  isHallOfFame         Boolean @default(false)\n  isGoldenTicketWinner Boolean @default(false)\n\n  episodes Episode[]\n}\n",
+  "inlineSchemaHash": "78fbf012cd6b1edcc08b07083d7b844e29f26fc3063802cf38b70349a87a7726",
   "copyEngine": true,
   "runtimeDataModel": {
     "models": {},
@@ -73,7 +73,7 @@ const config: runtime.GetPrismaClientConfig = {
   "dirname": ""
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Episode\":{\"fields\":[{\"name\":\"number\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"url\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"publishDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"appearances\",\"kind\":\"object\",\"type\":\"Appearance\",\"relationName\":\"AppearanceToEpisode\"}],\"dbName\":null},\"Appearance\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"imageUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isGuest\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"isBucketPull\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"isRegular\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"isHallOfFame\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"isGoldenTicketWinner\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"episodes\",\"kind\":\"object\",\"type\":\"Episode\",\"relationName\":\"AppearanceToEpisode\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Episode\":{\"fields\":[{\"name\":\"number\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"url\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"publishDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"appearances\",\"kind\":\"object\",\"type\":\"Appearance\",\"relationName\":\"AppearanceToEpisode\"}],\"dbName\":null},\"Appearance\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isGuest\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"isBucketPull\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"isRegular\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"isHallOfFame\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"isGoldenTicketWinner\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"episodes\",\"kind\":\"object\",\"type\":\"Episode\",\"relationName\":\"AppearanceToEpisode\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 config.engineWasm = undefined
 config.compilerWasm = {
   getRuntime: async () => await import("./query_compiler_bg.js"),

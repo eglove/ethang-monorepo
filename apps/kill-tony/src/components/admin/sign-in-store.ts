@@ -11,7 +11,7 @@ import { Client } from "@hyper-fetch/core";
 import { DevtoolsPlugin } from "@hyper-fetch/plugin-devtools";
 import Cookies from "js-cookie";
 import isEqual from "lodash/isEqual.js";
-import isNil from "lodash/isNil";
+import isString from "lodash/isString.js";
 
 const initialState = {
   isSignedIn: false,
@@ -47,12 +47,12 @@ export class SignInStore extends BaseStore<typeof initialState> {
   protected override onPropertyChange(
     patch: StorePatch<typeof initialState> | StorePatchLoose,
   ) {
-    if (isEqual(patch.path, ["isSignedIn"])) {
-      if (true === patch.value && !isNil(this.state.token)) {
-        Cookies.set("ethang-auth-token", this.state.token);
+    if (isEqual(patch.path, ["token"])) {
+      if (isString(patch.value)) {
+        Cookies.set("ethang-auth-token", patch.value);
       }
 
-      if (false === patch.value) {
+      if (!isString(patch.value)) {
         Cookies.remove("ethang-auth-token");
       }
     }
