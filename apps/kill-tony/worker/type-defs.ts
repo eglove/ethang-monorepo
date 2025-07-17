@@ -22,7 +22,7 @@ export const typeDefs = `#graphql
         guestsIn: [Episode]!
         regularsIn: [Episode]!
         cashedGoldenTicketIn: [Episode]!
-        bucketPulledIn: [Episode]!
+        bucketPullsIn: [Episode]!
     }
     
     input AppearanceInput {

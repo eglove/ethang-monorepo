@@ -65,7 +65,7 @@ export const getAppearance = gql`
       guestsIn {
         number
       }
-      bucketPulledIn {
+      bucketPullsIn {
         number
       }
       cashedGoldenTicketIn {
