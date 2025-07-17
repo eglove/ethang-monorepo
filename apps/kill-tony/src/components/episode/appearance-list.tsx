@@ -1,7 +1,7 @@
-import { Link } from "@heroui/react";
 import isEmpty from "lodash/isEmpty.js";
-import isNil from "lodash/isNil";
 import map from "lodash/map";
+
+import { AppearanceLink } from "./appearance-link.tsx";
 
 type AppearanceListProperties = {
   appearances: { name: string }[];
@@ -34,20 +34,7 @@ export const AppearanceList = ({
       <span>{label}:</span>{" "}
       {map(formatter.formatToParts(appearanceNames), (part) => {
         if ("element" === part.type) {
-          const appearanceUrl = URL.parse(
-            `/appearance/${part.value}`,
-            globalThis.location.origin,
-          );
-
-          return (
-            <Link
-              href={isNil(appearanceUrl) ? "" : appearanceUrl.pathname}
-              key={part.value}
-              underline="always"
-            >
-              {part.value}
-            </Link>
-          );
+          return <AppearanceLink name={part.value} />;
         }
 
         return part.value;

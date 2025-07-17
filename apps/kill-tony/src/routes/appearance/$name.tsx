@@ -9,6 +9,7 @@ import get from "lodash/get";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import uniq from "lodash/uniq.js";
+import { useEffect } from "react";
 
 import { AppearanceCountTable } from "../../components/appearance/appearance-count-table.tsx";
 import { EpisodeCard } from "../../components/episode/episode-card.tsx";
@@ -20,6 +21,10 @@ const RouteComponent = () => {
   const { data, loading } = useQuery<GetAppearance>(getAppearance, {
     variables: { name: parameters.name },
   });
+
+  useEffect(() => {
+    scrollTo(0, 0);
+  }, [parameters.name]);
 
   const appearances = uniq(
     filter(
