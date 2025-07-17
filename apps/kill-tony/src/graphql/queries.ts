@@ -16,7 +16,7 @@ export type GetEpisode = {
   episode: {
     appearances: Pick<
       Appearance,
-      "isBucketPull" | "isGuest" | "isRegular" | "name"
+      "isBucketPull" | "isGoldenTicketWinner" | "isGuest" | "isRegular" | "name"
     >[];
   } & Pick<Episode, "title" | "url">;
 };
@@ -32,6 +32,7 @@ export const getEpisode = gql`
         isGuest
         isRegular
         isBucketPull
+        isGoldenTicketWinner
       }
     }
   }

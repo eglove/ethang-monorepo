@@ -3,10 +3,12 @@ import { useStore } from "@ethang/store/use-store";
 import { addToast, Button, Checkbox, Input } from "@heroui/react";
 import isNil from "lodash/isNil.js";
 
+import { apolloClient } from "../../clients/apollo.ts";
 import {
   addAppearanceToEpisode,
   createAppearance,
 } from "../../graphql/mutations.ts";
+import { getAppearances, getEpisode } from "../../graphql/queries.ts";
 import { createAppearanceStore } from "./create-appearance-store.ts";
 import { createEpisodeStore } from "./create-episode-store.ts";
 
@@ -30,14 +32,22 @@ export const CreateAppearanceForm = ({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const promise = isNil(episodeNumber)
-      ? mutate({ variables: formState })
+      ? mutate({ variables: { input: formState } })
       : mutate({
-          variables: { appearance: formState, number: episodeNumber },
+          variables: {
+            input: {
+              appearance: formState,
+              number: episodeNumber,
+            },
+          },
         });
 
     promise
-      .then(() => {
+      .then(async () => {
         createEpisodeStore.toggleAppearanceModal(false);
+        await apolloClient.refetchQueries({
+          include: [getEpisode, getAppearances],
+        });
       })
       .catch(globalThis.console.error);
   };

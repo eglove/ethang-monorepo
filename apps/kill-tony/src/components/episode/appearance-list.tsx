@@ -7,13 +7,12 @@ import map from "lodash/map";
 import type { Appearance } from "../../../generated/prisma/client.ts";
 
 type AppearanceListProperties = {
-  appearances: Pick<
-    Appearance,
-    "isBucketPull" | "isGuest" | "isRegular" | "name"
-  >[];
+  appearances: Pick<Appearance, "name" | Types>[];
   label: string;
-  type: "isBucketPull" | "isGuest" | "isRegular";
+  type: Types;
 };
+
+type Types = "isBucketPull" | "isGoldenTicketWinner" | "isGuest" | "isRegular";
 
 const formatter = new Intl.ListFormat("en", {
   style: "long",
@@ -21,11 +20,8 @@ const formatter = new Intl.ListFormat("en", {
 });
 
 const getAppearanceByType = (
-  type: "isBucketPull" | "isGuest" | "isRegular",
-  appearances: Pick<
-    Appearance,
-    "isBucketPull" | "isGuest" | "isRegular" | "name"
-  >[],
+  type: Types,
+  appearances: Pick<Appearance, "name" | Types>[],
 ) => {
   return map(
     filter(appearances, (appearance) => {

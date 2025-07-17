@@ -71,7 +71,7 @@ export const EpisodeCard = ({
         </Link>
       </CardHeader>
       <CardBody className="grid place-items-center">
-        <div className="w-3xl">
+        <div className="max-w-3xl min-w-full">
           {!isNil(videoId) && (
             <LiteYouTubeEmbed id={videoId} title={data.episode.title} />
           )}
@@ -87,6 +87,11 @@ export const EpisodeCard = ({
           appearances={data.episode.appearances}
           label="Regulars"
           type="isRegular"
+        />
+        <AppearanceList
+          appearances={data.episode.appearances}
+          label="Golden Ticket Winners"
+          type="isGoldenTicketWinner"
         />
         <AppearanceList
           appearances={data.episode.appearances}
