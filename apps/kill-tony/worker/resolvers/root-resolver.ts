@@ -3,14 +3,7 @@ import {
   addAppearanceToEpisodeMutation,
   createEpisodeMutation,
 } from "./mutation/episode.ts";
-import {
-  appearanceResolver,
-  appearancesResolver,
-} from "./queries/appearance-resolver.ts";
-import {
-  episodeResolver,
-  episodesResolver,
-} from "./queries/episode-resolver.ts";
+import { queryResolver } from "./queries/query-resolver.ts";
 
 export const rootResolver = {
   Mutation: {
@@ -19,9 +12,9 @@ export const rootResolver = {
     createEpisode: createEpisodeMutation,
   },
   Query: {
-    appearance: appearanceResolver,
-    appearances: appearancesResolver,
-    episode: episodeResolver,
-    episodes: episodesResolver,
+    appearance: queryResolver("appearance", "findUnique"),
+    appearances: queryResolver("appearance", "findMany"),
+    episode: queryResolver("episode", "findUnique"),
+    episodes: queryResolver("episode", "findMany"),
   },
 };
