@@ -11,6 +11,7 @@ export default tseslint.config(
       "**/*.d.ts",
       "./src/routeTree.gen.ts",
       "./generated",
+      "src/index.css",
     ],
   },
   ...config,

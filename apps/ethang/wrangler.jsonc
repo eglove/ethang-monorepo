@@ -5,7 +5,7 @@
     "directory": "./public",
     "not_found_handling": "single-page-application"
   },
-  "compatibility_date": "2025-07-17",
+  "compatibility_date": "2025-07-18",
   "d1_databases": [
     {
       "binding": "DB",
