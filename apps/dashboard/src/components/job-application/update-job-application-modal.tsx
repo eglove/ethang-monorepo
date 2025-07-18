@@ -116,6 +116,19 @@ export const UpdateJobApplicationModal = () => {
               type="date"
               value={getFormDate(applicationToUpdate?.rejected)}
             />
+            <Input
+              label="Email"
+              name="dmUrl"
+              onValueChange={handleChange("dmUrl")}
+              value={applicationToUpdate?.dmUrl ?? ""}
+            />
+            <Input
+              label="Email Sent"
+              name="dmSent"
+              onValueChange={handleChange("dmSent")}
+              type="date"
+              value={getFormDate(applicationToUpdate?.dmSent)}
+            />
           </ModalBody>
           <ModalFooter>
             <Button

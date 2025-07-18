@@ -37,6 +37,8 @@ const columns = [
   { key: "jobBoardUrl", label: "Job Board URL" },
   { key: "applied", label: "Applied" },
   { key: "rejected", label: "Rejected" },
+  { key: "dmUrl", label: "Email" },
+  { key: "dmSent", label: "Email Sent" },
   { key: "actions", label: "Actions" },
 ];
 
@@ -58,7 +60,10 @@ const RouteComponent = () => {
   } = useQuery(applicationStore.getAll(userId ?? undefined));
 
   return (
-    <MainLayout breadcrumbPaths={[{ href: "/job-stats", label: "Job Search" }]}>
+    <MainLayout
+      breadcrumbPaths={[{ href: "/job-stats", label: "Job Search" }]}
+      classNames={{ main: "max-w-none" }}
+    >
       <div className="grid grid-rows-[auto_1fr] h-full">
         <SectionHeader
           openModal={() => {
@@ -148,7 +153,11 @@ const RouteComponent = () => {
                         );
                       }
 
-                      if ("applied" === columnKey || "rejected" === columnKey) {
+                      if (
+                        "applied" === columnKey ||
+                        "rejected" === columnKey ||
+                        "dmSent" === columnKey
+                      ) {
                         return (
                           <TableCell>
                             <DateColumn date={value} />

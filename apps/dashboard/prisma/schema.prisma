@@ -14,14 +14,16 @@ datasource db {
 }
 
 model applications {
-  id              String            @id @default(uuid(7))
-  userId          String
-  applied         DateTime
-  company         String
-  title           String
-  url             String
-  jobBoardUrl     String?
-  rejected        DateTime?
+  id          String    @id @default(uuid(7))
+  userId      String
+  applied     DateTime
+  company     String
+  title       String
+  url         String
+  jobBoardUrl String?
+  rejected    DateTime?
+  dmUrl       String?
+  dmSent      DateTime?
 
   @@unique([title, company])
   @@unique(url)

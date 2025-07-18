@@ -17,6 +17,8 @@ export const updateJobApplication = async (
         data: {
           applied: body.applied,
           company: body.company,
+          dmSent: isNil(body.dmSent) ? null : body.dmSent,
+          dmUrl: isNil(body.dmUrl) ? null : body.dmUrl,
           jobBoardUrl: isNil(body.jobBoardUrl) ? null : body.jobBoardUrl,
           rejected: body.rejected,
           title: body.title,

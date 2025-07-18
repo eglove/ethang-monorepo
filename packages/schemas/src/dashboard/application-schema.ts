@@ -4,6 +4,8 @@ import { z } from "zod";
 export const applicationSchema = z.object({
   applied: z.string().trim(),
   company: z.string().trim(),
+  dmSent: z.string().trim().optional().nullable(),
+  dmUrl: z.string().trim().optional().nullable(),
   id: z.string().trim(),
   jobBoardUrl: z.string().trim().optional().nullable(),
   rejected: z.string().trim().nullable(),

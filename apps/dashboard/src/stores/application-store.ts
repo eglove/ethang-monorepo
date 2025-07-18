@@ -178,9 +178,14 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
           body: JSON.stringify({
             ...data,
             applied: formDateToIso(data.applied),
-            rejected: isNil(data.rejected)
-              ? null
-              : formDateToIso(data.rejected),
+            dmSent:
+              isNil(data.dmSent) || isEmpty(data.dmSent)
+                ? null
+                : formDateToIso(data.dmSent),
+            rejected:
+              isNil(data.rejected) || isEmpty(data.rejected)
+                ? null
+                : formDateToIso(data.rejected),
           }),
           method: "PUT",
         });
