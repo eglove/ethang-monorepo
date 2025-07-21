@@ -6,9 +6,9 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.15.4",
+    "@ethang/eslint-config": "^22.16.0",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.0.14",
+    "@types/node": "^24.0.15",
     "eslint": "^9.31.0",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"

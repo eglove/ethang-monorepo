@@ -6,7 +6,7 @@
   "dependencies": {
     "@ethang/schemas": "workspace:*",
     "@ethang/toolbelt": "^4.4.11",
-    "@hono/zod-validator": "^0.7.1",
+    "@hono/zod-validator": "^0.7.2",
     "@prisma/adapter-d1": "^6.12.0",
     "@prisma/client": "6.12.0",
     "bcryptjs": "^3.0.2",
@@ -16,7 +16,7 @@
     "prisma": "^6.12.0"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.15.4",
+    "@ethang/eslint-config": "^22.16.0",
     "@types/lodash": "^4.17.20",
     "browserslist-config-baseline": "^0.4.0",
     "eslint": "^9.31.0",
