@@ -6,6 +6,10 @@ import { TypographyH2 } from "../components/typography/typography-h2.tsx";
 
 export const blogs = [
   {
+    href: "/blog/unicorn-60",
+    label: "Unicorn 60",
+  },
+  {
     href: "/blog/react-compiler",
     label: "The React Compiler: A Critical Look at Performance Claims",
   },
@@ -31,8 +35,8 @@ const RouteComponent = () => {
       <div className="my-6 grid gap-4">
         {map(blogs, (blog) => {
           return (
-            <a className="text-foreground" href={blog.href}>
-              <TypographyH2 key={blog.label}>{blog.label}</TypographyH2>
+            <a className="text-foreground" href={blog.href} key={blog.label}>
+              <TypographyH2>{blog.label}</TypographyH2>
             </a>
           );
         })}
