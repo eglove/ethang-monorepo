@@ -7,6 +7,10 @@ export default {
   async fetch(request, environment) {
     const url = new URL(request.url);
 
+    if (startsWith(url.pathname, "/blog")) {
+      return environment.ASSETS.fetch(request);
+    }
+
     if (startsWith(url.pathname, "/api/project")) {
       return getAllProjects(request, environment);
     }
