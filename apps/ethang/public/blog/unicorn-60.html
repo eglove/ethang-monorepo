@@ -3,24 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="An update on the eslint-config, featuring new rules from unicorn version 60, including no-useless-constructor, no-array-reverse, require-module-specifiers, and no-useless-error-capture-stack-trace.">
+    <meta name="description"
+          content="An update on the eslint-config, featuring new rules from unicorn version 60, including no-useless-constructor, no-array-reverse, require-module-specifiers, and no-useless-error-capture-stack-trace.">
 
     <meta property="og:title" content="Unicorn 60: New ESLint Rules">
-    <meta property="og:description" content="An update on the eslint-config, featuring new rules from unicorn version 60, including no-useless-constructor, no-array-reverse, require-module-specifiers, and no-useless-error-capture-stack-trace.">
+    <meta property="og:description"
+          content="An update on the eslint-config, featuring new rules from unicorn version 60, including no-useless-constructor, no-array-reverse, require-module-specifiers, and no-useless-error-capture-stack-trace.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="/blog/unicorn-60.html">
     <meta property="og:image" content="/images/unicorn-60.png">
 
     <title>Unicorn 60</title>
 
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
     <link
             href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap"
             rel="stylesheet"
     />
 
-    <link href="https://unpkg.com/prism-theme-night-owl@1.4.0/build/style.css" rel="stylesheet" />
+    <link href="https://unpkg.com/prism-theme-night-owl@1.4.0/build/style.css" rel="stylesheet"/>
 
     <style>
         body {
@@ -112,13 +114,16 @@
             body {
                 padding: 15px;
             }
+
             .container {
                 padding: 25px;
                 border-radius: 8px;
             }
+
             h1 {
                 font-size: 2em;
             }
+
             h2 {
                 font-size: 1.5em;
             }
@@ -128,12 +133,15 @@
             body {
                 padding: 10px;
             }
+
             .container {
                 padding: 20px;
             }
+
             h1 {
                 font-size: 1.8em;
             }
+
             h2 {
                 font-size: 1.3em;
             }
@@ -168,7 +176,8 @@ class Foo {
 </code></pre>
 
     <h2>no-array-reverse</h2>
-    <p>JavaScript recently added immutable array manipulation with <code>toSpliced</code>, <code>toSorted</code>, and important
+    <p>JavaScript recently added immutable array manipulation with <code>toSpliced</code>, <code>toSorted</code>, and
+        important
         for this rule <code>toReversed</code>.</p>
     <pre><code class="language-javascript">// ❌
 const reversed = [...array].reverse();
@@ -177,8 +186,10 @@ const reversed = [...array].reverse();
 const reversed = [...array].toReversed();</code></pre>
 
     <h2>require-module-specifiers</h2>
-    <p><a href="https://sgom.es/posts/2020-06-15-everything-you-never-wanted-to-know-about-side-effects/" target="_blank"
-          rel="noopener noreferrer">import side effects</a> can be a sneaky issue if left unchecked. typescript-eslint will
+    <p><a href="https://sgom.es/posts/2020-06-15-everything-you-never-wanted-to-know-about-side-effects/"
+          target="_blank"
+          rel="noopener noreferrer">import side effects</a> can be a sneaky issue if left unchecked. typescript-eslint
+        will
         help <a href="https://typescript-eslint.io/rules/no-import-type-side-effects/" target="_blank"
                 rel="noopener noreferrer">avoid import side effects</a> when importing types only. This will rule will
         mandate that empty imports are explicitly imported as side effect only.</p>
@@ -195,7 +206,8 @@ import foo, {} from 'foo';
 import foo from 'foo';</code></pre>
 
     <h2>no-useless-error-capture-stack-trace</h2>
-    <p>A little more niche, this rule prevents you from calling Error.captureStackTrace when this is already handled by the
+    <p>A little more niche, this rule prevents you from calling Error.captureStackTrace when this is already handled by
+        the
         Error parent class.</p>
     <pre><code class="language-javascript">class MyError extends Error {
   constructor() {
@@ -216,7 +228,8 @@ import foo from 'foo';</code></pre>
 </code></pre>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
+        integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
+        crossorigin="anonymous"></script>
 </body>
 </html>
