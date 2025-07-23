@@ -16,7 +16,7 @@ export default tseslint.config({
     "tailwind/enforces-negative-arbitrary-values": "error",
     "tailwind/enforces-shorthand": "error",
     "tailwind/migration-from-tailwind-2": "error",
-    "tailwind/no-arbitrary-value": "error",
+    "tailwind/no-arbitrary-value": "off",
     "tailwind/no-contradicting-classname": "error",
     "tailwind/no-custom-classname": "off",
     "tailwind/no-unnecessary-arbitrary-value": "error",

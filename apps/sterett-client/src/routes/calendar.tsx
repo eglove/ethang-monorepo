@@ -64,7 +64,7 @@ export const CalendarRoute = () => {
   return (
     <MainLayout>
       <div className="mx-auto my-4 max-w-7xl rounded-lg bg-gray-50 py-4 shadow-sm shadow-sky-50 md:p-4">
-        <div className="text-center md:text-end font-bold text-lg m-2">
+        <div className="m-2 text-center text-lg font-bold md:text-end">
           <Button
             as={Link}
             color="primary"

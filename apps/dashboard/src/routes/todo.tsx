@@ -52,7 +52,7 @@ const Todo = () => {
         modalLabel="Add Todo"
         refreshKeys={queryKeys.allUserTodos(userId ?? undefined)}
       >
-        <div className="font-bold underline underline-offset-2 text-center">
+        <div className="text-center font-bold underline underline-offset-2">
           {todoTimerStore.currentTime}
         </div>
       </SectionHeader>

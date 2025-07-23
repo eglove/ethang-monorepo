@@ -44,7 +44,7 @@ export const MainLayout = ({
           className="sm:hidden"
         />
         <NavbarContent justify="start" />
-        <NavbarContent className="hidden sm:flex gap-4" justify="center">
+        <NavbarContent className="hidden gap-4 sm:flex" justify="center">
           {map(links, (link) => {
             return (
               <NavbarMenuItem key={link.label}>

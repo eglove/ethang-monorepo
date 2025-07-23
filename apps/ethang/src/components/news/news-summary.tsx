@@ -16,7 +16,7 @@ export const NewsSummary = () => {
         <NewspaperIcon /> News
       </TypographyH1>
       {isPending && <Spinner />}
-      <div className="grid sm:grid-cols-3 gap-4">
+      <div className="grid gap-4 sm:grid-cols-3">
         {!isPending &&
           map(data?.news, (newsItem) => {
             return <NewsCard id={newsItem.id} key={newsItem.id} page={1} />;
@@ -24,7 +24,7 @@ export const NewsSummary = () => {
       </div>
       <Button
         as={Link}
-        className="bg-black text-white border-1 border-white"
+        className="border-1 border-white bg-black text-white"
         href="/news"
       >
         View All News

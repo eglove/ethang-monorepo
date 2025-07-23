@@ -61,7 +61,7 @@ const RouteComponent = () => {
       )}
       {!loading && data && (
         <>
-          <h1 className="text-3xl font-bold text-center">
+          <h1 className="text-center text-3xl font-bold">
             {data.appearance.name}
           </h1>
           <AppearanceCountTable

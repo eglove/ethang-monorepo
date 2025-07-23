@@ -17,7 +17,7 @@ export const ProjectSummary = () => {
       </TypographyH1>
       {isPending && <Spinner />}
       {!isPending && (
-        <div className="grid sm:grid-cols-3 gap-4">
+        <div className="grid gap-4 sm:grid-cols-3">
           {map(data?.projects, (project) => {
             return <ProjectCard id={project.id} key={project.id} />;
           })}
@@ -25,7 +25,7 @@ export const ProjectSummary = () => {
       )}
       <Button
         as={Link}
-        className="bg-black text-white border-1 border-white"
+        className="border-1 border-white bg-black text-white"
         href="/projects"
       >
         View All Projects

@@ -1,4 +1,5 @@
 import reactConfig from "@ethang/eslint-config/config.react.js";
+import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";
 import config from "@ethang/eslint-config/eslint.config.js";
 import tseslint from "typescript-eslint";
 
@@ -18,6 +19,7 @@ export default tseslint.config(
   },
   ...config,
   ...reactConfig,
+  ...tailwindConfig,
   {
     languageOptions: {
       parserOptions: {

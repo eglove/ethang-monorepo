@@ -62,7 +62,7 @@ export const AddAppearanceForm = ({
   return (
     <>
       <p className="px-4 py-2">Episode: {episodeNumber}</p>
-      <form className="max-w-sm m-4 grid gap-4" onSubmit={handleSubmit}>
+      <form className="m-4 grid max-w-sm gap-4" onSubmit={handleSubmit}>
         <Input
           isRequired
           onValueChange={(value) => {
@@ -71,7 +71,7 @@ export const AddAppearanceForm = ({
           label="Name"
           value={formState.name}
         />
-        <div className="flex gap-4 flex-wrap">
+        <div className="flex flex-wrap gap-4">
           <Checkbox
             onValueChange={(value) => {
               addAppearanceStore.onChange("isGuest", value);

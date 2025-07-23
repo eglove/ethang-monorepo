@@ -29,7 +29,7 @@ export const MainLayout = ({
       >
         {isSignedIn && children}
         {!isSignedIn && (
-          <h1 className="text-3xl font-bold text-center">
+          <h1 className="text-center text-3xl font-bold">
             Sign In to Get Started
           </h1>
         )}

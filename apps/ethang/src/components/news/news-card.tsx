@@ -28,11 +28,11 @@ export const NewsCard = ({ id, page }: Readonly<NewCardProperties>) => {
   return (
     <Card className="border-2">
       <CardHeader>
-        <div className="grid gap-2 w-full">
+        <div className="grid w-full gap-2">
           <Link
             isExternal
             showAnchorIcon
-            className="text-foreground font-bold text-lg"
+            className="text-foreground text-lg font-bold"
             href={data.href}
             underline="always"
           >

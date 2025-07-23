@@ -28,7 +28,7 @@ const RouteComponent = () => {
   return (
     <div>
       {isSignedIn && <p className="text-center">Signed In</p>}
-      <form className="max-w-sm m-4 mx-auto grid gap-4" onSubmit={handleSubmit}>
+      <form className="m-4 mx-auto grid max-w-sm gap-4" onSubmit={handleSubmit}>
         <Input
           label="Email"
           onValueChange={setEmail}

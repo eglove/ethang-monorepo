@@ -31,7 +31,7 @@ export const SectionHeader = ({
 
   return (
     <>
-      <div className="flex justify-between items-center my-4 gap-4">
+      <div className="my-4 flex items-center justify-between gap-4">
         <div className="prose">
           <h2 className="text-foreground">{header}</h2>
         </div>
@@ -59,7 +59,7 @@ export const SectionHeader = ({
           </Button>
         </div>
       </div>
-      <div className="sm:hidden my-4">{children}</div>
+      <div className="my-4 sm:hidden">{children}</div>
     </>
   );
 };

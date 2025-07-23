@@ -52,7 +52,7 @@ export const CreateEpisodeForm = () => {
   };
 
   return (
-    <form className="max-w-sm m-4 grid gap-4" onSubmit={handleSubmit}>
+    <form className="m-4 grid max-w-sm gap-4" onSubmit={handleSubmit}>
       <NumberInput
         isRequired
         onValueChange={(value) => {

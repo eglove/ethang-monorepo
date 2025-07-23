@@ -53,15 +53,15 @@ const RouteComponent = () => {
                   return <div>{line}</div>;
                 })}
               </div>
-              <div className="flex flex-wrap justify-between gap-4 items-center">
-                <div className="flex gap-2 mt-4 mb-2">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="mt-4 mb-2 flex gap-2">
                   <QaCopyButton text={qa.answer} />
                   <Button
                     onPress={() => {
                       qaStore.setQaToUpdate(qa);
                       qaStore.setIsUpdateModalOpen(true);
                     }}
-                    className="gap gap-2 items-center flex"
+                    className="gap flex items-center gap-2"
                   >
                     Edit <PencilIcon className="size-4" />
                   </Button>

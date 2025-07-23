@@ -41,9 +41,9 @@
 - 16 rules from **Storybook**
   - `import storybookConfig from "@ethang/eslint-config/config.storybook.js";`
     - 16 rules from [eslint-plugin-storybook](https://github.com/storybookjs/eslint-plugin-storybook)
-- 7 rules for **Tailwind**
+- 6 rules for **Tailwind**
   - import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";
-    - 7 rules from [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss)
+    - 6 rules from [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss)
 
 # Install
 

@@ -36,16 +36,16 @@ const RouteComponent = () => {
     <MainLayout className="max-w-[65ch]">
       <div className="grid gap-2">
         <TypographyH1 className="text-center">News</TypographyH1>
-        <p className="text-center text-foreground-500">
+        <p className="text-foreground-500 text-center">
           Recent news, events, videos, and releases I found interesting.
         </p>
       </div>
       {isPending && isNil(data) && (
-        <div className="w-full text-center my-4">
+        <div className="my-4 w-full text-center">
           <Spinner />
         </div>
       )}
-      <div className="grid gap-4 my-8">
+      <div className="my-8 grid gap-4">
         {map(data?.pages, (page, index) => {
           return (
             <Fragment key={page.pagination.page}>
@@ -63,7 +63,7 @@ const RouteComponent = () => {
         })}
       </div>
       {hasNextPage && (
-        <div className="grid justify-center my-4">
+        <div className="my-4 grid justify-center">
           <Button
             onPress={() => {
               fetchNextPage().catch(globalThis.console.error);
@@ -74,7 +74,7 @@ const RouteComponent = () => {
           </Button>
         </div>
       )}
-      <div className="items-center flex gap-2 justify-center text-foreground-500">
+      <div className="text-foreground-500 flex items-center justify-center gap-2">
         <NewspaperIcon />
         Have a suggestion?
         <Link

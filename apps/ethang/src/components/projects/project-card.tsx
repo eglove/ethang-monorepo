@@ -34,7 +34,7 @@ export const ProjectCard = ({ id }: Readonly<ProjectCardProperties>) => {
         <TypographyH2>{project?.title}</TypographyH2>
       </CardHeader>
       <CardBody>
-        <div className="grid gap-5 h-full">
+        <div className="grid h-full gap-5">
           <p className="text-foreground-500">{project?.description}</p>
           <div className="flex flex-wrap gap-2 self-end">
             {map(
@@ -51,7 +51,7 @@ export const ProjectCard = ({ id }: Readonly<ProjectCardProperties>) => {
           <Button
             isExternal
             as={Link}
-            className="bg-black text-white border-1 border-white"
+            className="border-1 border-white bg-black text-white"
             href={project.code}
           >
             <GithubIcon className="size-4" /> Code
@@ -62,7 +62,7 @@ export const ProjectCard = ({ id }: Readonly<ProjectCardProperties>) => {
             isExternal
             showAnchorIcon
             as={Link}
-            className="bg-white text-black border-1 border-black"
+            className="border-1 border-black bg-white text-black"
             href={project.publicUrl}
           >
             Site

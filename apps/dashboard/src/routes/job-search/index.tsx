@@ -64,7 +64,7 @@ const RouteComponent = () => {
       breadcrumbPaths={[{ href: "/job-stats", label: "Job Search" }]}
       classNames={{ main: "max-w-none" }}
     >
-      <div className="grid grid-rows-[auto_1fr] h-full">
+      <div className="grid h-full grid-rows-[auto_1fr]">
         <SectionHeader
           openModal={() => {
             applicationStore.setIsCreateModalOpen(true);

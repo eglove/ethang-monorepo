@@ -16,11 +16,11 @@ export const ScrollbarGutterDemo = () => {
         {showMoreContent ? "Hide Extra Content" : "Show Extra Content"}
       </Button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="border rounded-md p-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="rounded-md border p-4">
           <div className="mb-2 font-semibold">With scrollbar-gutter</div>
           <div
-            className="h-[400px] overflow-auto p-4 border rounded-md"
+            className="h-[400px] overflow-auto rounded-md border p-4"
             style={{ scrollbarGutter: "stable" }}
           >
             <TypographyP>
@@ -57,10 +57,10 @@ export const ScrollbarGutterDemo = () => {
           </div>
         </div>
 
-        <div className="border rounded-md p-4">
+        <div className="rounded-md border p-4">
           <div className="mb-2 font-semibold">Without scrollbar-gutter</div>
           <div
-            className="h-[400px] overflow-auto p-4 border rounded-md"
+            className="h-[400px] overflow-auto rounded-md border p-4"
             style={{ scrollbarGutter: "auto" }}
           >
             <TypographyP>

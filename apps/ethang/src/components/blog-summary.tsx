@@ -15,13 +15,13 @@ export const BlogSummary = () => {
       <TypographyH1 className="flex items-center gap-2">
         <NewspaperIcon /> Blogs
       </TypographyH1>
-      <div className="grid sm:grid-cols-3 gap-4">
+      <div className="grid gap-4 sm:grid-cols-3">
         {map(topThreeBlogs, (blog) => {
           return (
             <a href={blog.href} key={blog.label}>
-              <Card className="border-2 h-full">
+              <Card className="h-full border-2">
                 <CardHeader>
-                  <TypographyH2 className="p-0 border-b-0">
+                  <TypographyH2 className="border-b-0 p-0">
                     {blog.label}
                   </TypographyH2>
                 </CardHeader>
@@ -32,7 +32,7 @@ export const BlogSummary = () => {
       </div>
       <Button
         as={Link}
-        className="bg-black text-white border-1 border-white"
+        className="border-1 border-white bg-black text-white"
         href="/blog"
       >
         View All Blogs

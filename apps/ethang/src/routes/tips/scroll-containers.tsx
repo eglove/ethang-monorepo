@@ -56,7 +56,7 @@ const RouteComponent = () => {
         </SyntaxHighlighter>
       </div>
       <TypographyH2>Demo</TypographyH2>
-      <div className="my-4 border-2 px-2 py-4 grid grid-rows-[auto_1fr_auto] gap-4">
+      <div className="my-4 grid grid-rows-[auto_1fr_auto] gap-4 border-2 px-2 py-4">
         <div>
           <TypographyH2>Header</TypographyH2>
         </div>

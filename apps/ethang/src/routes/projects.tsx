@@ -15,29 +15,29 @@ const RouteComponent = () => {
     <MainLayout>
       <div className="grid gap-2">
         <TypographyH1 className="text-center">My Projects</TypographyH1>
-        <p className="text-center text-foreground-500">
+        <p className="text-foreground-500 text-center">
           A collection of my open-source projects, experiments, and
           applications.
         </p>
       </div>
       {isPending && (
-        <div className="w-full text-center my-8">
+        <div className="my-8 w-full text-center">
           <Spinner />
         </div>
       )}
       {!isPending && (
-        <div className="grid sm:grid-cols-3 gap-4 my-8">
+        <div className="my-8 grid gap-4 sm:grid-cols-3">
           {map(data?.projects, (project) => {
             return <ProjectCard id={project.id} key={project.id} />;
           })}
         </div>
       )}
-      <div className="items-center flex gap-2 justify-center text-foreground-500">
+      <div className="text-foreground-500 flex items-center justify-center gap-2">
         <GithubIcon />
         Find more of my work on{" "}
         <Link
           isExternal
-          className="text-center text-foreground-500"
+          className="text-foreground-500 text-center"
           href="https://github.com/eglove/ethang-monorepo"
           underline="always"
         >

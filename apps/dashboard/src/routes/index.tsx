@@ -6,7 +6,7 @@ import { NavigationCard } from "../components/navigation-card.tsx";
 const Index = () => {
   return (
     <MainLayout>
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid gap-4 md:grid-cols-3">
         <NavigationCard
           description="Keep track of your todos and routines."
           href="/todo"

@@ -14,7 +14,7 @@ export const TopCard = () => {
           <Avatar alt="profile image" className="size-24" src={profileImage} />
           <div className="grid">
             <TypographyH2>Ethan Glover</TypographyH2>
-            <div className="flex flex-wrap gap-4 my-4 items-center">
+            <div className="my-4 flex flex-wrap items-center gap-4">
               <Link
                 isExternal
                 className="text-foreground"
