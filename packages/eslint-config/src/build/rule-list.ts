@@ -16,6 +16,7 @@ import { reactHookRules, reactRules } from "../setup/react.ts";
 import { solidRules } from "../setup/solid.ts";
 import { sonarRules } from "../setup/sonar.ts";
 import { storybookRules } from "../setup/storybook.js";
+import { tailwindRules } from "../setup/tailwind.ts";
 import { tanstackQueryRules } from "../setup/tanstack-query.ts";
 import { tanstackRouterRules } from "../setup/tanstack-router.js";
 import { typescriptRules } from "../setup/typescript-eslint.ts";
@@ -96,21 +97,11 @@ export const ruleList: RuleConfig[] = [
     type: "core",
     url: "https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md",
   },
-  // {
-  //   importString: 'import tailwind from "eslint-plugin-tailwindcss";',
-  //   list: tailwindRules,
-  //   name: "eslint-plugin-tailwindcss",
-  //   order: 6,
-  //   pluginName: "tailwind",
-  //   pluginValue: "tailwind",
-  //   type: "core",
-  //   url: "https://github.com/francoismassart/eslint-plugin-tailwindcss",
-  // },
   {
     importString: 'import perfectionist from "eslint-plugin-perfectionist";',
     list: perfectionistRules,
     name: "eslint-plugin-perfectionist",
-    order: 7,
+    order: 6,
     pluginName: "perfectionist",
     pluginValue: "perfectionist",
     type: "core",
@@ -120,7 +111,7 @@ export const ruleList: RuleConfig[] = [
     importString: 'import tanstackQuery from "@tanstack/eslint-plugin-query";',
     list: tanstackQueryRules,
     name: "@tanstack/eslint-plugin-query",
-    order: 8,
+    order: 7,
     pluginName: "@tanstack/query",
     pluginValue: "tanstackQuery",
     type: "core",
@@ -131,7 +122,7 @@ export const ruleList: RuleConfig[] = [
       'import tanstackRouter from "@tanstack/eslint-plugin-router";',
     list: tanstackRouterRules,
     name: "@tanstack/eslint-plugin-router",
-    order: 9,
+    order: 8,
     pluginName: "@tanstack/router",
     pluginValue: "tanstackRouter",
     type: "core",
@@ -141,7 +132,7 @@ export const ruleList: RuleConfig[] = [
     importString: 'import a11y from "eslint-plugin-jsx-a11y";',
     list: a11yRules,
     name: "jsx-a11y",
-    order: 10,
+    order: 9,
     pluginName: "a11y",
     pluginValue: "a11y",
     type: "core",
@@ -151,7 +142,7 @@ export const ruleList: RuleConfig[] = [
     importString: 'import cspell from "@cspell/eslint-plugin";',
     list: cspellRules,
     name: "@cspell/eslint-plugin",
-    order: 11,
+    order: 10,
     pluginName: "cspell",
     pluginValue: "cspell",
     type: "core",
@@ -176,6 +167,16 @@ export const ruleList: RuleConfig[] = [
     pluginValue: "css",
     type: "css",
     url: "https://github.com/eslint/css",
+  },
+  {
+    importString: 'import tailwind from "eslint-plugin-tailwindcss";',
+    list: tailwindRules,
+    name: "eslint-plugin-tailwindcss",
+    order: 0,
+    pluginName: "tailwind",
+    pluginValue: "tailwind",
+    type: "tailwind",
+    url: "https://github.com/francoismassart/eslint-plugin-tailwindcss",
   },
   {
     importString: 'import markdown from "@eslint/markdown";',

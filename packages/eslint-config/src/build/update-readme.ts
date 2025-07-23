@@ -78,12 +78,18 @@ export const updateReadme = () => {
     }
   }
 
+  const tailwindRules = getList("tailwind");
   const astroRules = getList("astro");
   const reactRules = getList("react");
   const solidRules = getList("solid");
   const angularRules = getList("angular");
   const angularTemplateRules = getList("angular:template");
   const storybookRules = getList("storybook");
+
+  let tailwindCount = 0;
+  for (const tailwindRule of tailwindRules) {
+    tailwindCount += getRuleCount(tailwindRule.list);
+  }
 
   let astroCount = 0;
   for (const astroRule of astroRules) {
@@ -139,6 +145,11 @@ export const updateReadme = () => {
     [
       '`import storybookConfig from "@ethang/eslint-config/config.storybook.js";`',
       getImports(storybookRules),
+    ],
+    `${tailwindCount} rules for **Tailwind**`,
+    [
+      `import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";`,
+      getImports(tailwindRules),
     ],
   ]);
   md.newLine();

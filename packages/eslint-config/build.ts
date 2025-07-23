@@ -12,6 +12,7 @@ const configFiles = [
   "src/config.solid.js",
   "src/config.angular.js",
   "src/config.storybook.js",
+  "src/config.tailwind.js",
 ];
 
 await updateRules();

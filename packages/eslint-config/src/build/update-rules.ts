@@ -127,6 +127,20 @@ const storybookFile = [
   },
 ];
 
+const tailwindFile = [
+  {
+    importString:
+      'import tailwindConfig from "@ethang/eslint-config/config.tailwind.ts',
+    label: "Tailwind",
+    name: "tailwind",
+    options: {
+      extraImports: [importTsEslint],
+      includeIgnores: true,
+      includeLanguageOptions: true,
+    },
+  },
+];
+
 export const updateRules = async () => {
   await Promise.all([
     createConfigFile(coreFile, "eslint.config.js"),
@@ -135,6 +149,7 @@ export const updateRules = async () => {
     createConfigFile(solidFile, "config.solid.js"),
     createConfigFile(angularFile, "config.angular.js"),
     createConfigFile(storybookFile, "config.storybook.js"),
+    createConfigFile(tailwindFile, "config.tailwind.js"),
   ]);
 };
 

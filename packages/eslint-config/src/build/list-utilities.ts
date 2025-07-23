@@ -77,7 +77,8 @@ export const getTypeFiles = (type: string) => {
       return "**/*.{astro}";
     }
 
-    case "core": {
+    case "core":
+    case "tailwind": {
       return "**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}";
     }
 
