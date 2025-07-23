@@ -165,16 +165,16 @@ export const updateReadme = () => {
   md.codeBlock(
     `import config from "@ethang/eslint-config/eslint.config.js";
 import tseslint from "typescript-eslint";
-import astroConfig from "@ethang/eslint-config/config.astro.js"; // OPTIONAL
 import reactConfig from "@ethang/eslint-config/config.react.js"; // OPTIONAL
+import tailwindConfig from "@ethang/eslint-config/config.tailwind.js"; // OPTIONAL
 
 export default tseslint.config(
   {
     ignores: [], // Ignored files apply to all following configs
   },
   ...config,
-  ...astroConfig,
   ...reactConfig,
+  ...tailwindConfig,
   {
     languageOptions: {
       parserOptions: {
