@@ -141,7 +141,7 @@ export const updateReadme = () => {
       '`import solidConfig from "@ethang/eslint-config/config.solid.js";`',
       getImports(solidRules),
     ],
-    `${storybookCount} rules from **Storybook**`,
+    `${storybookCount} rules for **Storybook**`,
     [
       '`import storybookConfig from "@ethang/eslint-config/config.storybook.js";`',
       getImports(storybookRules),
