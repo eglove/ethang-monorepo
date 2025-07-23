@@ -36,7 +36,7 @@ const RouteComponent = () => {
     <MainLayout className="max-w-[65ch]">
       <div className="grid gap-2">
         <TypographyH1 className="text-center">News</TypographyH1>
-        <p className="text-foreground-500 text-center">
+        <p className="text-center text-foreground-500">
           Recent news, events, videos, and releases I found interesting.
         </p>
       </div>
@@ -74,7 +74,7 @@ const RouteComponent = () => {
           </Button>
         </div>
       )}
-      <div className="text-foreground-500 flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2 text-foreground-500">
         <NewspaperIcon />
         Have a suggestion?
         <Link

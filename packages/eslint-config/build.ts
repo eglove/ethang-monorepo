@@ -29,8 +29,19 @@ declare const _default: ReturnType<typeof config>;
 export default _default;
 `;
 
+const tailwindTypeFile = `import type { config } from "typescript-eslint";
+
+declare const _default: (pathToIndex: string) => ReturnType<typeof config>;
+export default _default;
+`;
+
 for (const configFile of configFiles) {
   let distributionFile = replace(configFile, "src", "dist");
   distributionFile = replace(distributionFile, ".js", ".d.ts");
-  writeFileSync(distributionFile, typeFile);
+
+  if ("src/config.tailwind.js" === configFile) {
+    writeFileSync(distributionFile, tailwindTypeFile);
+  } else {
+    writeFileSync(distributionFile, typeFile);
+  }
 }

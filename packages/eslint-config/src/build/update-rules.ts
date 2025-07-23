@@ -135,6 +135,7 @@ const tailwindFile = [
     name: "tailwind",
     options: {
       extraImports: [importTsEslint],
+      extraOptions: "settings: { tailwindcss: { config: pathToConfig } },",
       includeIgnores: true,
       includeLanguageOptions: true,
     },
@@ -149,7 +150,11 @@ export const updateRules = async () => {
     createConfigFile(solidFile, "config.solid.js"),
     createConfigFile(angularFile, "config.angular.js"),
     createConfigFile(storybookFile, "config.storybook.js"),
-    createConfigFile(tailwindFile, "config.tailwind.js"),
+    createConfigFile(
+      tailwindFile,
+      "config.tailwind.js",
+      "/** @type {string} */ pathToConfig",
+    ),
   ]);
 };
 

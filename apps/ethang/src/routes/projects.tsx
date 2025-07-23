@@ -15,7 +15,7 @@ const RouteComponent = () => {
     <MainLayout>
       <div className="grid gap-2">
         <TypographyH1 className="text-center">My Projects</TypographyH1>
-        <p className="text-foreground-500 text-center">
+        <p className="text-center text-foreground-500">
           A collection of my open-source projects, experiments, and
           applications.
         </p>
@@ -32,12 +32,12 @@ const RouteComponent = () => {
           })}
         </div>
       )}
-      <div className="text-foreground-500 flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2 text-foreground-500">
         <GithubIcon />
         Find more of my work on{" "}
         <Link
           isExternal
-          className="text-foreground-500 text-center"
+          className="text-center text-foreground-500"
           href="https://github.com/eglove/ethang-monorepo"
           underline="always"
         >

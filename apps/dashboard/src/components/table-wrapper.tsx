@@ -12,7 +12,7 @@ export const TableWrapper = ({
   paginationProps,
 }: Readonly<TableWrapperProperties>) => {
   return (
-    <div className="bg-content1 rounded-large shadow-small relative z-0 flex w-full flex-col justify-between gap-4 overflow-auto p-4">
+    <div className="relative z-0 flex w-full flex-col justify-between gap-4 overflow-auto rounded-large bg-content1 p-4 shadow-small">
       <ScrollShadow orientation="horizontal" size={20}>
         {children}
       </ScrollShadow>

@@ -15,7 +15,7 @@ export const TopCompaniesChartTooltip = ({
     | undefined;
 
   return (
-    <div className="bg-background rounded px-4 py-2">
+    <div className="rounded bg-background px-4 py-2">
       <div>{get(data, ["_count", "id"], 0)} Applications</div>
     </div>
   );

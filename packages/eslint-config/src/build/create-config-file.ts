@@ -1,3 +1,4 @@
+import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import { writeFileSync } from "node:fs";
 import path from "node:path";
@@ -12,6 +13,7 @@ const mainFile = "eslint.config.js";
 export const createConfigFile = async (
   listConfigs: ConfigFile[],
   fileName: string,
+  functionParameters?: string,
 ) => {
   let configFile = "// @ts-nocheck\n";
 
@@ -43,11 +45,22 @@ export const createConfigFile = async (
     }),
   );
 
-  configFile += `\nexport default tseslint.config(
-    ${configs.join("\n")}
-    ${mainFile === fileName ? "eslintConfigPrettier," : ""}
-    ${mainFile === fileName ? "eslintPluginPrettierRecommended," : ""}
-  );\n`;
+  // eslint-disable-next-line unicorn/prefer-ternary
+  if (isNil(functionParameters)) {
+    configFile += `\nexport default tseslint.config(
+      ${configs.join("\n")}
+      ${mainFile === fileName ? "eslintConfigPrettier," : ""}
+      ${mainFile === fileName ? "eslintPluginPrettierRecommended," : ""}
+    );\n`;
+  } else {
+    configFile += `\nconst config = (${functionParameters}) => {
+      return tseslint.config(
+        ${configs.join("\n")}
+        ${mainFile === fileName ? "eslintConfigPrettier," : ""}
+        ${mainFile === fileName ? "eslintPluginPrettierRecommended," : ""}
+      );
+    }\n\nexport default config;\n`;
+  }
 
   writeFileSync(
     path.join(import.meta.dirname, `../${fileName}`),

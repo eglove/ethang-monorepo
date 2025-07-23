@@ -165,6 +165,7 @@ export const updateReadme = () => {
   md.codeBlock(
     `import config from "@ethang/eslint-config/eslint.config.js";
 import tseslint from "typescript-eslint";
+import path from "node:path";
 import reactConfig from "@ethang/eslint-config/config.react.js"; // OPTIONAL
 import tailwindConfig from "@ethang/eslint-config/config.tailwind.js"; // OPTIONAL
 
@@ -174,7 +175,7 @@ export default tseslint.config(
   },
   ...config,
   ...reactConfig,
-  ...tailwindConfig,
+  ...tailwindConfig(path.join(import.meta.dirname, "src", "index.css")),
   {
     languageOptions: {
       parserOptions: {

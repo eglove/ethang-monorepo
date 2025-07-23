@@ -13,6 +13,7 @@ import {
 
 export type ConfigOptions = {
   extraImports?: string[];
+  extraOptions?: string;
   globalIgnores?: string[];
   includeAngularLanguageOptions?: boolean;
   includeIgnores?: boolean;
@@ -90,6 +91,7 @@ export const createConfig = async (
     rules: {
       ${ruleJson}
     },
+    ${isNil(options.extraOptions) ? "" : options.extraOptions}
   },`;
 
   return config;

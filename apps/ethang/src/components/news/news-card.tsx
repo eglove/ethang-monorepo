@@ -32,7 +32,7 @@ export const NewsCard = ({ id, page }: Readonly<NewCardProperties>) => {
           <Link
             isExternal
             showAnchorIcon
-            className="text-foreground text-lg font-bold"
+            className="text-lg font-bold text-foreground"
             href={data.href}
             underline="always"
           >

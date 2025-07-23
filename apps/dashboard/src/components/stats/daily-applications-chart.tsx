@@ -35,7 +35,7 @@ export const DailyApplicationsChart = () => {
   ).toFixed(0);
 
   return (
-    <Card className="dark:border-default-100 border border-transparent p-4">
+    <Card className="border border-transparent p-4 dark:border-default-100">
       <CardHeader className="p-0">
         <div className="flex flex-col gap-y-1 p-4">
           <dt className="prose">

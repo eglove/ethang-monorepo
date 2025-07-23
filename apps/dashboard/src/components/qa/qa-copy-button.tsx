@@ -13,7 +13,7 @@ export const QaCopyButton = ({ text }: Readonly<QaCopyButtonProperties>) => {
     <Button
       endContent={
         <span>
-          {isCopied && <CheckIcon className="text-success size-5" />}
+          {isCopied && <CheckIcon className="size-5 text-success" />}
           {!isCopied && <ClipboardCopyIcon className="size-5" />}
         </span>
       }

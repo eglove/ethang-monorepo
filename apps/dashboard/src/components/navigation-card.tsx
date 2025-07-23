@@ -15,7 +15,7 @@ export const NavigationCard = ({
     <Link href={href}>
       <Card className="size-full">
         <CardHeader className="prose">
-          <h2 className="text-foreground text-2xl font-bold">{title}</h2>
+          <h2 className="text-2xl font-bold text-foreground">{title}</h2>
         </CardHeader>
         <CardBody>{description}</CardBody>
       </Card>
