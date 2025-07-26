@@ -1,2 +1,3 @@
 update
+cleanup
 Restart-Computer

@@ -38,7 +38,7 @@
 - 18 rules for **Solid**
   - `import solidConfig from "@ethang/eslint-config/config.solid.js";`
     - 18 rules from [eslint-plugin-solid](https://github.com/solidjs-community/eslint-plugin-solid)
-- 16 rules from **Storybook**
+- 16 rules for **Storybook**
   - `import storybookConfig from "@ethang/eslint-config/config.storybook.js";`
     - 16 rules from [eslint-plugin-storybook](https://github.com/storybookjs/eslint-plugin-storybook)
 - 6 rules for **Tailwind**
