@@ -4,7 +4,7 @@
     "binding": "ASSETS",
     "directory": "./public"
   },
-  "compatibility_date": "2025-07-26",
+  "compatibility_date": "2025-07-27",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {

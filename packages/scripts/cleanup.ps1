@@ -45,15 +45,6 @@ catch {
     Write-Warning "Could not empty Recycle Bin: $($_.Exception.Message)"
 }
 
-Write-Host "Clearing Windows Event Logs."
-try {
-    wevtutil el | Foreach-Object {wevtutil cl "$_"}
-    Write-Host "Event logs cleared."
-}
-catch {
-    Write-Warning "Could not clear event logs: $($_.Exception.Message)"
-}
-
 Write-Host "Running disk cleanup"
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches"
 Get-ChildItem $RegPath | ForEach-Object {
