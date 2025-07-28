@@ -18,17 +18,8 @@ export const blogs = [
     label: "The React Compiler: A Critical Look at Performance Claims",
   },
   {
-    href: "/blog/modern-labor-urban-development",
-    label:
-      "Navigating the Interconnected Challenges of Modern Labor and Urban Development",
-  },
-  {
     href: "/blog/no-comments",
     label: "Why I Don't Allow Comments: Reclaiming Focus in a Noisy World",
-  },
-  {
-    href: "/blog/software-engineers-data-brokers",
-    label: "Software Engineers as Data Brokers: An Uncomfortable Truth",
   },
 ];
 
