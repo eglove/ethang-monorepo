@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Some Thoughts On The Way Things Are</title>
+    <meta
+      name="description"
+      content="A personal reflection on AI, software culture, and societal addiction to dopamine hits, comparing it to the contemplative nature of Studio Ghibli films."
+    />
+
+    <meta property="og:title" content="Some Thoughts On The Way Things Are" />
+    <meta
+      property="og:description"
+      content="A personal reflection on AI, software culture, and societal addiction to dopamine hits, comparing it to the contemplative nature of Studio Ghibli films."
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="/blog/some-thoughts-on-ai" />
+    <meta
+      property="og:image"
+      content="/images/ghibli-vs-tech.png"
+    />
+    <meta
+      property="og:image:alt"
+      content="Abstract image representing AI and culture"
+    />
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Funnel Sans", sans-serif;
+        background-color: #1a202c;
+        color: #e2e8f0;
+        line-height: 1.6;
+        padding: 1rem;
+      }
+
+      @media (min-width: 640px) {
+        body {
+          padding: 2rem;
+        }
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: #2d3748;
+        border-radius: 0.75rem;
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      .back-to-blog {
+        display: block;
+        text-align: left;
+        margin-bottom: 1.5rem;
+        color: #93c5fd;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s ease-in-out;
+      }
+
+      .back-to-blog:hover {
+        color: #60a5fa;
+      }
+
+      h1 {
+        color: #6ee7b7;
+        font-weight: 700;
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .bold-breakpoint {
+        color: #6ee7b7;
+        font-weight: 700;
+        font-size: 1.125rem;
+        margin-top: 2.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #4a5568;
+      }
+
+      h3 {
+        color: #6ee7b7;
+        font-size: 1.25rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        margin-bottom: 1.5rem;
+      }
+
+      a {
+        color: #93c5fd;
+        text-decoration: none;
+        transition: color 0.2s ease-in-out;
+      }
+
+      a:hover {
+        color: #60a5fa;
+      }
+
+      .quote-box {
+        background-color: #4a5568;
+        border-left: 4px solid #6ee7b7;
+        padding: 1rem 1.5rem;
+        margin: 1.5rem 0;
+        border-radius: 0.5rem;
+        font-style: italic;
+        color: #cbd5e0;
+      }
+
+      .list-disc {
+        list-style-type: disc;
+      }
+
+      .pl-5 {
+        padding-left: 1.25rem;
+      }
+
+      .mb-4 {
+        margin-bottom: 1rem;
+      }
+
+      .list-item {
+        margin-bottom: 1rem;
+      }
+
+      .video-container {
+        position: relative;
+        width: 100%;
+        padding-top: 56.25%; /* 16:9 Aspect Ratio (9 / 16 = 0.5625 or 56.25%) */
+      }
+
+      .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="/blog" class="back-to-blog">← Back to Blog</a>
+      <h1>Some Thoughts On The Way Things Are</h1>
+
+      <p>
+        The following are a lot of thoughts that have been swirling in my head
+        for a while. I have never been more afraid to speak my mind on a topic.
+        Something about how sure people seem of themselves regarding AI. But
+        it’s odd to me that no one can clearly state the benefits other than
+        money. Everything is so cryptic, the benefits are so clearly horrid
+        attempts at describing what a revolution this is. People have gotten so
+        aggressive about this that those with a healthy level of skepticism, I
+        feel, are increasingly afraid to speak their minds. For my own
+        protection, I asked Google Gemini to "analyze this in one paragraph."
+        This is what is said:
+      </p>
+
+      <div class="quote-box">
+        <p>
+          The provided text argues that modern society, driven by a constant
+          need for "cheap dopamine hits," has lost its ability to engage with
+          subtle and contemplative experiences, as exemplified by the
+          intentional stillness in Studio Ghibli films like "Ma" (as discussed
+          in the linked video). This addiction to rapid consumption extends to
+          the software industry, where a focus on quick gains and "vibe coding"
+          over true craftsmanship and engineering has led to a decline in
+          quality and a pervasive culture of prioritizing easy money and job
+          hopping over genuine skill and accountability. The author contends
+          that this societal shift, fueled by a desire for continuous
+          entertainment and a disregard for purpose and quality, has made
+          individuals and industries alike susceptible to superficial solutions
+          like LLMs, which are merely tools being overhyped by those who profit
+          from them, ultimately leading to a less fulfilling and less effective
+          world.
+        </p>
+      </div>
+
+      <p class="bold-breakpoint">And now, to something very human.</p>
+
+      <p>
+        Remember Studio Ghibli films? If you haven’t seen them, you should.
+        Watch this quick 5-minute breakdown on "Ma," where moments of stillness
+        and silence are intentionally included to allow the audience to reflect
+        and connect more deeply with the narrative and characters. It is rare
+        that we have moments of pace and contemplation.
+      </p>
+      <div class="video-container">
+        <iframe
+          src="https://www.youtube.com/embed/Nq7LPOopXho?si=Dk7nidWN2yxRSWoG"
+          title="YouTube video player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <p>
+        Ghibli films always hold a gentle, calm vibe. One that can grab and keep
+        your attention. They don’t need constant action to keep your mind busy
+        and your eyeballs on the screen. Compare that to the action-packed
+        Avengers or modern Star Wars movies. We can’t even watch these without
+        scrolling social media on our phones at the same time. We are undeniably
+        and objectively addicted to cheap dopamine hits as a society. Legal
+        crack has spread across the world and won. There's not really a way out.
+        This is who we are now. Screen-addicted shells clamoring for faster
+        pacing and more content.
+      </p>
+
+      <p>
+        I’m not just talking about phone and screen addiction either. But there
+        is something deeply wrong. The fact that most people can’t sit, watch,
+        and be engrossed in the subtle and masterful details of a Studio Ghibli
+        film without checking Twitter is only a symptom of the disease.
+      </p>
+
+      <p class="bold-breakpoint">
+        In software, the world is enamored with AI generations.
+      </p>
+
+      <p>
+        An obvious split between CEO’s who demand we accept it as the new thing,
+        the workers who do and don’t care about the results, and the craftsmen
+        who see it as no better than a hammer. A simple tool whose use is as
+        limited as any other. As with all tools, the answer to, "Should we use
+        it?" is never, "Yes, always." Only, "It depends."
+      </p>
+
+      <p>
+        But software culture has for many ears been moving away from the concept
+        of engineering. The job doesn’t require a degree, certification, or any
+        sort of academic rigor. Today you allegedly don’t even need to know how
+        to code. Vibe coding a CLI in Rust now qualifies as learning Rust.
+      </p>
+
+      <p>
+        This by itself isn’t the end of the world. Programming has always been
+        on the path to becoming more "high-level." It only gets more accessible
+        over time. Rust is more accessible than C. Go is more accessible than
+        Java. There have even been many attempts at building "low-code" and
+        "no-code" tools. Those in Salesforce and ServiceNow are familiar with
+        the extremely monotonous work of trying to write scripts with UI clicks.
+      </p>
+
+      <p>
+        But AI isn’t the next step in "high-level" coding. It’s not even in the
+        same family. To see LLM’s as anything more than a heavy-duty, far more
+        expensive tool in the ML toolset is, I believe, naive and misinformed.
+        If you want a chat support agent, basic Natural Language Processing with
+        pre-approved automation scripts similar to the original Apple Siri and
+        Google Assistants are far better options. Not only are they cheaper, but
+        they work better. Someone sends a message to what they understand to be
+        a bot, they get clickable options back, and they’re asked to answer a
+        few form questions. Simple, straightforward. Anything that doesn’t work
+        can be handled by a human, and new cases can be added in a clear,
+        determinate, and testable way.
+      </p>
+
+      <p>
+        But the world has currently forgotten about these solutions. It is too
+        obsessed with LLM’s. Mostly because they are being shoved down people’s
+        throats. And this is one of the reasons this whole thing feels less like
+        a revolution and more like a trend.
+      </p>
+
+      <p>
+        The primary "experts" speaking to the media are CEOs of the companies
+        selling it. Sam Altman recognizes the power and influence of
+        <a
+          href="https://www.youtube.com/watch?v=7dCPytNTnjk"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Joe Rogan</a
+        >
+        and
+        <a
+          href="https://www.youtube.com/watch?v=aYn8VKW6vXA"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Theo Von</a
+        >. These shows famously give anyone they find interesting the space to
+        talk at length about anything they want to talk about. It’s not a gotcha
+        game, there's no drama, and the hosts will only push back on very
+        obvious bullshit. Not speculative things they are not experts in. It's
+        why people (including me) love these podcasts. It’s not about the
+        personality of the host. It’s a simple long form discussion about
+        interesting things. But similar to how you shouldn’t take medical advice
+        from Joe Rogan, you also need to be capable of recognizing bullshit
+        without a podcast or news host telling you it’s bullshit.
+      </p>
+
+      <p>
+        The debate among developers is a very old one stemming from the fact
+        that this is not a disciplined science. The reality is most developers
+        are treated as technical data entry. Write your little if conditions and
+        for loops to do exactly as you’re told. Developers have grown to accept
+        this and even support it. Because it allows them to do easy work for
+        6-figures. They have frankly figured out how to hack the system. Quit
+        every 2 years for a 10–20% raise, put all of their time into studying
+        for tech interviews, don’t bother learning to scale and maintain. This
+        sounds harsh, but long before LLMs showed up, very few developers gave a
+        damn about knowing how to code. In fact, with every new tech trend they
+        find new excuses to proudly justify this. "Coding is easy, after a while
+        real developers get AWS certified and get into DevOps." Why would you
+        promote a developer into DevOps rather than an ISP field-technician? The
+        work is more closely aligned.
+      </p>
+
+      <p>
+        The resistance to understanding the craft of software engineering (not
+        development) is, in my frank opinion, one that is avoided out of fear of
+        one’s own incompetence being exposed. It is the same real reason people
+        are quitting every two years for absurd raises. Because if they stuck
+        around long enough to have ownership over... anything at all, they would
+        have to face facts that this job is actually difficult.
+      </p>
+
+      <p class="bold-breakpoint">Let’s take a break for a second.</p>
+
+      <p>
+        Having deficiencies in your knowledge is OK at any level. Admitting it
+        shows honesty and a willingness to learn. I don’t consider myself to be
+        very "good," but I care. What I’m really ranting about here are those
+        who pretend to be above everyone else and produce hot dogshit that falls
+        apart after a year. The kind of stuff contractors are hired to fix at an
+        hourly rate. This arrogance is the real problem. This work is easily
+        replaceable by AI. But this work shouldn’t exist in the first place.
+        There is an entire group of people producing broken code, thinking it’s
+        normal, never having to fix their own work, thinking that AI is just as
+        good at development as any human because that’s all they’ve ever known.
+      </p>
+
+      <p>
+        I have worked with extraordinarily talented people. But I won’t lie and
+        act as if everyone I’ve worked with should have been there. This is a
+        well-understood part of the job by anyone that cares about the job. You
+        will always be surrounded by people who want to get their check and go
+        home. There are plenty of people who will proudly admit to this
+        publicly. In fact, in the "age of vibe coding" people are getting more
+        confident about this. I’m not here to judge your arguments about using a
+        bot to do your work for you, so you can go do whatever you would rather
+        be doing. If you’ve been angry with me since I compared DevOps to field
+        technicians, I’ll do my best to get to the point soon.
+      </p>
+
+      <p>
+        There is a shift happening. More people will proudly and publicly
+        proclaim they don’t know how to build software. Fewer people are brave
+        enough to proudly proclaim that they do know how. There is a growing
+        stigma against caring about the work. People who know how to do the job
+        fear losing job prospects. Instead, the most brave, talented developers
+        make an attempt at being nuanced. "AI is good for prototyping..."
+        "Listen, I use it daily, but personally, these are the issues I see..."
+        In the meantime, the vibe coders only get more aggressive. When they are
+        hacked, apps fail, or contractors are asked to fix their slop, they will
+        say, "It’s always been like this." And they’re right.
+      </p>
+
+      <p>
+        Do you know why contractors are so cranky, beaten down, cynical, and
+        full of themselves? Because it’s always been like this.
+      </p>
+
+      <p>
+        Full-time developers who confidently go with the flow and just assume
+        whatever they do will have bugs and regular failures do very well in
+        this industry. They continue to quit their jobs every 2 years for a
+        10–20% raise and enjoy a kitchen remodel while they study for the next
+        tech interview. Blissfully unaware and uncaring of the work they left
+        behind. Claim that if they don’t get those raises, they wouldn’t be able
+        to pay their bills. Probably true considering the cost of a mortgage on
+        a $300,000 house, payments on a $200,000 car, and don’t forget that
+        remodel. But you know... it’s for the kids. This isn’t just a mean,
+        jealousy rant. If that’s your life, that’s your life. There is a bigger
+        problem I’m getting at here.
+      </p>
+
+      <p>
+        Our need to constantly entertain ourselves is impacting the way we view
+        work. It’s not about having a purpose anymore. Don’t learn to code,
+        watch an AI churn away like mindlessly watching the loading bars as you
+        play idle mobile games like
+        <a
+          href="https://hyperhippo.com/games/adventure-capitalist/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Adventure Capitalist</a
+        >. The "real work," you tell yourself, is knowing which upgrade button
+        to click next. Results? Maintenance? That’s not even in your vocabulary.
+        And why should it be? You’ve been richly rewarded for caring about one
+        thing only. Appeasing other people’s need to be continuously entertained
+        so long as you are continuously entertained. They want to tell you
+        exactly what they want, and you as the developer aren’t an expert.
+        You’re not an engineer. You can’t say that fancy bridge design will
+        collapse in 3 years. You just write the little if conditions and for
+        loops to make it work.
+      </p>
+
+      <p>
+        And with LLMs, they don’t need you for this at all. They can just vibe
+        code their idea. If they have only ever seen you, the developer, as a
+        low-level laborer means to an end... well, to them, you are no different
+        from an AI. And if you, the developer, have accepted this position and
+        told yourself that this job is nothing but knowing how to pass a tech
+        interview, then you are no different from an AI.
+      </p>
+
+      <p>
+        The very fact that we have accepted this state of the world as
+        inevitable gives credence to the theory that we’re living in a
+        simulation and our only purpose is to develop and test new technologies.
+        Even at the cost of ourselves. One could argue that this is a very
+        Western theory, but let’s suppose the happier tribal communities are
+        just controls. It doesn’t matter, I really don’t want to go down this
+        line of thinking. My only point in bringing up the "simulation" is to
+        say that we are truly ridiculous.
+      </p>
+
+      <p>
+        I think God doesn’t particularly care about most of what we do as
+        humans. Inventing "AI" or social media are trite, uninteresting side
+        effects of free will. Render unto Caesar and all that. What He cares
+        about above all else is that we love Him and one another. There is a
+        thread in the revolutionary beliefs of Jesus that it is more difficult
+        for the rich to get into heaven. It would be easier for a camel to fit
+        through the head of a needle. Jesus loved parables for a few reasons. I
+        think he had a bit of a comedic bone sometimes. The camel through a
+        needle point is not literal, but the message is very real.
+      </p>
+
+      <p>
+        We have stopped caring about one another, about our crafts, and about
+        our purpose. Obsessed with moving faster, harder, hacking the system to
+        squeeze as much money out of it as possible. Creating, building, helping
+        one another with our skills is a lost art. Burnout isn’t in the DSM,
+        it’s not a disease, it’s a mood. Developers are obsessed with their own
+        efficiency. Using VIM and never touching a mouse to only use keyboard
+        shortcuts has turned into the incorrect belief that using LLMs make them
+        faster. It doesn’t matter if they’re actually moving faster or not, what
+        matters most is that it feels like they do. As long as they’re getting
+        that oh so addicting hit of dopamine.
+      </p>
+
+      <p>
+        What’s worse is we’ve pushed this mentality onto employers and clients
+        alike. It wasn’t evil capitalists that turned us into drones for the
+        machine. It was us. Driven by hyper competition, imposter syndrome, and
+        focusing on easy money rather than learning to do the job. This
+        anxiety-filled list of drives is only one layer of an anxiety pyramid.
+        Just beneath it at the foundation is a need to be entertained. To always
+        be "on," moving, doing something. Boredom is a luxury that younger
+        generations aren’t experiencing. Put any generation in front of a Studio
+        Ghibli film or even a classic Disney movie, and they’ll be shifting
+        around looking for a phone to distract themselves.
+      </p>
+
+      <p>
+        Do we honestly believe this dopamine addiction isn’t effecting the rest
+        of our lives? That it hasn’t scaled so far that it’s affected our
+        society? How many people can sit on a porch and take an hour to drink a
+        glass of lemonade without their mind, at the very least wandering to
+        technology?
+      </p>
+
+      <p>
+        I think we need to remember that when we die, no matter what you
+        believe, you don’t get to take anything with you. Having a lot of money
+        to leave behind is not an inherent good. It’s no better than not.
+        Obtaining money by "hacking the system" rather than it being a true side
+        effect of the outpouring of your love and passion is not a good thing.
+      </p>
+
+      <p>
+        There are too many people in this world, the majority, it seems, that
+        would respond to my words with, "That’s nice but... [I need to pay my
+        bills] [this is reality] [we can’t all have passion]." This is exactly
+        the reason for my defensiveness. Surrounded by those who feel empowered,
+        who feel like they’re in the majority, and can proudly proclaim that
+        they don’t know what they’re doing other than making money.
+      </p>
+
+      <p>
+        There are plenty of industries "ruined by soullessness." So to speak.
+        Artists in film, music, theater, and comedy know this game well. I feel
+        like it’s only a matter of time that instead of hearing stories about
+        burnout, I start to hear about suicides and cocaine addictions as you do
+        with Hollywood. Why so extreme? I’m probably wrong. But what’s
+        undeniable is the unhealthy behaviors inherent in the industry.
+      </p>
+
+      <p>
+        The reason Studio Ghibli stands out to me. It’s slow pace, deep
+        messaging that isn’t just handed to you. It’s a clear work of love and
+        of passion. I don’t see this much in software. It’s not even from a
+        nerdy programming perspective. A dashboard for doctor’s offices, an
+        ecommerce store. Building the features and trying to fit in the
+        forgotten necessities clients don’t care about and don’t want to hear
+        about. Performance, security, maintainability.
+      </p>
+
+      <p>
+        Very few people think about or appreciate the little details. They just
+        want to see something on screen, to get that instant satisfaction. Like
+        making a fast food order or getting constant positive feedback from a
+        mobile game. And there are plenty of people in the world that will take
+        advantage of that. Grifters, scammers, thieves. Who will take an absurd
+        amount of money and leave the work to hourly contractors after they’re
+        gone. (Yes, I’m referring to those who quit every two years.)
+      </p>
+
+      <p class="bold-breakpoint">
+        The point I want to get across here comes down to this.
+      </p>
+
+      <p>
+        For those with a problem to solve, who know an industry well but can’t
+        program. AI is an understandable solution. You have been scammed long
+        enough. But the thing is, this AI is built and marketed by the same
+        sorts of people that have been scamming you with 6-figure salaries only
+        to leave before things get serious. They’ve simply automated the work.
+        It’s not the answer. You should be paying less for the labor but giving
+        more time for the results. Find engineers interested in testing and
+        doing more for you than a bot can. Find people who want to stick around.
+        Find people who will work for less just for the love of the game. Use
+        low salaries to filter out the grifters.
+      </p>
+
+      <p>
+        For developers. Instead of spending all of your time trying to leetcode
+        hack interviews for more pay, I want you to consider the following
+        options.
+      </p>
+
+      <ul class="list-disc pl-5 mb-4">
+        <li class="list-item">
+          <strong>Sales:</strong> Working for uncapped commissions busting your
+          balls perfecting a script is probably what you would rather be doing
+          right now. You might be better at it than you think. You might be
+          happier using sales to speed run your way through all the cycles of
+          burnout. Don’t do this in software. You are killing this industry.
+        </li>
+        <li class="list-item">
+          <strong>Work for less:</strong> Developers in the US who aren’t
+          directly contributing to the sciences should be perfectly happy with a
+          median wage of $60,000/year at the senior level. Nobody should be
+          doing this for money. $60/k US median is enough to pay your bills and
+          make your children happy. If it isn’t, you’ve made poor life choices.
+        </li>
+        <li class="list-item">
+          <strong>Start a business:</strong> Put your own damn money on the
+          line. If you really insist on being rich, take the risk with your own
+          money and reputation, not someone else’s. Stop trying to stack equity
+          deals like it’s ethical. I believe real business evolves on its own
+          when opportunity reaches out to shake hands with the capable. If two
+          people meet in an "entrepreneur" discord chat room and brainstorm on,
+          "How can we make f*** you money? What are the current trends?" Well, I
+          can’t stop them. If that’s you, go do that. Software salaries are not
+          the correct strategy.
+        </li>
+      </ul>
+
+      <p>
+        I wrote all of this with pen and paper sitting on an apartment balcony
+        on a 90-degree day. I’m sweating, but the birds are chirping. I don’t
+        know why this is such a better experience than, "There are probably 100
+        bugs, but we shipped." Maybe one is just nature, and the other is a
+        willful act of negligence. One is the clear creation of passion and
+        love. The other is a desperate, anxiety-induced pursuit of money.
+      </p>
+    </div>
+  </body>
+</html>
