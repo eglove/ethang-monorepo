@@ -5,46 +5,6 @@ Write-Host "Forcing garbage collection."
 Write-Host "Flushing DNS Cache."
 Clear-DnsClientCache
 
-Write-Host "Clearing temp files."
-$tempPath = [System.IO.Path]::GetTempPath()
-try {
-    Get-ChildItem -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-    Write-Host "User temporary files cleared."
-}
-catch {
-    Write-Warning "Could not clear all user temporary files: $($_.Exception.Message)"
-}
-
-Write-Host "Clearing Windows Temp folder."
-try {
-    Get-ChildItem -Path "C:\Windows\Temp" -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-    Write-Host "Windows temp files cleared."
-}
-catch {
-    Write-Warning "Could not clear all Windows temp files: $($_.Exception.Message)"
-}
-
-Write-Host "Clearing SoftwareDistribution folder."
-try {
-    Stop-Service -Name wuauserv -Force
-    Get-ChildItem -Path "C:\Windows\SoftwareDistribution\*" -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-    Start-Service -Name wuauserv
-    Write-Host "SoftwareDistribution folder cleared."
-}
-catch {
-    Write-Warning "Could not clear SoftwareDistribution folder: $($_.Exception.Message)"
-}
-
-
-Write-Host "Emptying Recycle Bin."
-try {
-    Clear-RecycleBin -Force -ErrorAction SilentlyContinue
-    Write-Host "Recycle Bin emptied."
-}
-catch {
-    Write-Warning "Could not empty Recycle Bin: $($_.Exception.Message)"
-}
-
 Write-Host "Running disk cleanup"
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches"
 Get-ChildItem $RegPath | ForEach-Object {
