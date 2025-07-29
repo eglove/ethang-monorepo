@@ -49,13 +49,6 @@ export default defineConfig({
             },
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|ico|avif)$/u,
           },
-          {
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "html-cache",
-            },
-            urlPattern: /\.html$/u,
-          },
         ],
         skipWaiting: true,
         sourcemap: false,
