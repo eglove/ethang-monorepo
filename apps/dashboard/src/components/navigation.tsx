@@ -28,6 +28,7 @@ export const Navigation = () => {
       <NavbarContent>
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close Menu" : "Open Menu"}
+          className="cursor-pointer"
         />
         <NavbarBrand className="font-bold">
           <Link className="text-foreground" href="/">

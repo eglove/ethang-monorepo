@@ -23,7 +23,7 @@ export default tseslint.config(
     ignores,
     languageOptions,
     settings: {
-      react: { version: "19.1.0" },
+      react: { version: "19.1.1" },
     },
     plugins: {
       compat: compat,

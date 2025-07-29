@@ -3,7 +3,7 @@
   "dependencies": {
     "@ethang/toolbelt": "^4.4.11",
     "lodash": "^4.17.21",
-    "zod": "^4.0.10"
+    "zod": "^4.0.13"
   },
   "description": "",
   "devDependencies": {
