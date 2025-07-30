@@ -47,7 +47,7 @@
     "lodash": "^4.17.21",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3",
-    "zod": "^4.0.13"
+    "zod": "^4.0.14"
   },
   "engines": {
     "node": ">=22"
