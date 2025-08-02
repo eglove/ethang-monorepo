@@ -14,7 +14,7 @@ Start-Process -Wait "$env:SystemRoot\System32\cleanmgr.exe" -ArgumentList "/sage
 
 Write-Host "Optimizing System Drive."
 try {
-    Optimize-Volume -DriveLetter C -Defrag -Verbose
+    Optimize-Volume -DriveLetter C -ReTrim -Verbose
     Write-Host "Drive optimization completed."
 }
 catch {
