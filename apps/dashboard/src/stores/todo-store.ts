@@ -5,7 +5,7 @@ import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
 import { DateTime } from "luxon";
 
-import type { FetchedTodo } from "../queries/get-all-todos.ts";
+import type { FetchedTodo } from "../graphql/queries/get-all-todos.ts";
 
 const defaultState = {
   isCreateModalOpen: false,

@@ -23,7 +23,7 @@ import { TableWrapper } from "../../components/table-wrapper.tsx";
 import {
   type GetAllContacts,
   getAllContacts,
-} from "../../queries/get-all-contacts.ts";
+} from "../../graphql/queries/get-all-contacts.ts";
 import { SectionHeader } from "../../section-header.tsx";
 import { contactStore } from "../../stores/contact-store.ts";
 

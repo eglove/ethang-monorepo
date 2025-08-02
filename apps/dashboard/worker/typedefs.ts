@@ -84,6 +84,33 @@ type Todo {
     dueDate: Date
 }
 
+input CreateApplicationInput {
+    applied: Date!
+    company: String!
+    title: String!
+    url: String!
+    jobBoardUrl: String
+    rejected: Date
+    dmUrl: String
+    dmSent: Date
+}
+
+input DeleteApplicationInput {
+    id: String!
+}
+
+input UpdateApplicationInput {
+    id: String!
+    applied: Date!
+    company: String!
+    title: String!
+    url: String!
+    jobBoardUrl: String
+    rejected: Date
+    dmUrl: String
+    dmSent: Date
+}
+
 type Query {
     applications(page: Int = 1, limit: Int = 10, search: String): ApplicationResponse!
     bookmarks: [Bookmark]!
@@ -92,4 +119,9 @@ type Query {
     todos: [Todo]!
     applicationStats: ApplicationStats!
 }
-`;
+
+type Mutation {
+    createApplication(input: CreateApplicationInput!): Application!
+    deleteApplication(input: DeleteApplicationInput!): Application!
+    updateApplication(input: UpdateApplicationInput!): Application!
+}`;

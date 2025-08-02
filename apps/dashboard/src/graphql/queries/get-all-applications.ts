@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-import type { applicationsModel } from "../../generated/prisma/models/applications.ts";
+import type { applicationsModel } from "../../../generated/prisma/models/applications.ts";
 
 export type FetchedApplication = Pick<
   applicationsModel,

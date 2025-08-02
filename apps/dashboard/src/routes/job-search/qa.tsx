@@ -14,7 +14,7 @@ import { UpdateQaModal } from "../../components/qa/update-qa-modal.tsx";
 import {
   type GetAllQuestionAnswers,
   getAllQuestionAnswers,
-} from "../../queries/get-all-question-answers.ts";
+} from "../../graphql/queries/get-all-question-answers.ts";
 import { SectionHeader } from "../../section-header.tsx";
 import { qaStore } from "../../stores/qa-store.ts";
 

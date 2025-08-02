@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
-import type { FetchedContact } from "../../queries/get-all-contacts.ts";
+import type { FetchedContact } from "../../graphql/queries/get-all-contacts.ts";
 
 import { authStore } from "../../stores/auth-store.ts";
 import { contactStore } from "../../stores/contact-store.ts";

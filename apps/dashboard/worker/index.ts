@@ -5,7 +5,6 @@ import startsWith from "lodash/startsWith";
 
 import type { Context } from "./types.ts";
 
-import { applicationRouter } from "./applications/application-router.ts";
 import { bookmarkRouter } from "./bookmarks/bookmark-router.ts";
 import { contactRouter } from "./contacts/contact-router.ts";
 import { paths } from "./paths.ts";
@@ -32,7 +31,7 @@ const handler = startServerAndCreateCloudflareWorkersHandler<Env>(server, {
 
     const prisma = getPrismaClient(env);
 
-    return { env, prisma, userId };
+    return { env, prisma, request, userId };
   },
 });
 
@@ -61,10 +60,6 @@ export default {
 
     if (startsWith(url.pathname, paths.bookmark)) {
       return bookmarkRouter(request, environment, userId);
-    }
-
-    if (startsWith(url.pathname, paths.application)) {
-      return applicationRouter(request, environment, userId);
     }
 
     if (startsWith(url.pathname, paths.questionAnswer)) {

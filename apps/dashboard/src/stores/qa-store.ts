@@ -2,7 +2,7 @@ import type { CreateQuestionAnswer } from "@ethang/schemas/dashboard/question-an
 
 import { BaseStore } from "@ethang/store";
 
-import type { FetchedQuestionAnswer } from "../queries/get-all-question-answers.ts";
+import type { FetchedQuestionAnswer } from "../graphql/queries/get-all-question-answers.ts";
 
 const defaultState = {
   isCreateModalOpen: false,

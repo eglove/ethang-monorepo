@@ -6,7 +6,7 @@ import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-import type { FetchedTodo } from "../../queries/get-all-todos.ts";
+import type { FetchedTodo } from "../../graphql/queries/get-all-todos.ts";
 
 import { authStore } from "../../stores/auth-store.ts";
 import { todoStore } from "../../stores/todo-store.ts";

@@ -19,7 +19,7 @@ import { TableWrapper } from "../components/table-wrapper.tsx";
 import {
   type GetAllBookmarks,
   getAllBookmarks,
-} from "../queries/get-all-bookmarks.ts";
+} from "../graphql/queries/get-all-bookmarks.ts";
 import { SectionHeader } from "../section-header.tsx";
 import { bookmarkStore } from "../stores/bookmark-store.ts";
 

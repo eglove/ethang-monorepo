@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-import type { bookmarksModel } from "../../generated/prisma/models";
+import type { bookmarksModel } from "../../../generated/prisma/models.ts";
 
 export type GetAllBookmarks = {
   bookmarks: Pick<bookmarksModel, "id" | "title" | "url" | "userId">[];

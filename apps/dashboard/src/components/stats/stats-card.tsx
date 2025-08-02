@@ -4,7 +4,7 @@ import isNil from "lodash/isNil";
 import {
   type GetApplicationStats,
   getApplicationStats,
-} from "../../queries/get-application-stats.ts";
+} from "../../graphql/queries/get-application-stats.ts";
 import { TrendCard } from "./trend-card.tsx";
 
 const getStringValue = (

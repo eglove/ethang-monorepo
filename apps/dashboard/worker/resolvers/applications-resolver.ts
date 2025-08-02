@@ -3,6 +3,7 @@ import type { GraphQLResolveInfo } from "graphql/type";
 import isNil from "lodash/isNil.js";
 import toNumber from "lodash/toNumber";
 
+import type { applicationsModel } from "../../generated/prisma/models/applications.ts";
 import type { Context } from "../types.ts";
 
 import { getAverageApplicationsPerDay } from "../stats/get-average-applications-per-day.ts";
@@ -10,7 +11,10 @@ import { getAverageResponseRate } from "../stats/get-average-response-rate.ts";
 import { getAverageTimeToRejected } from "../stats/get-average-time-to-rejected.ts";
 import { getDailyApplicationsMap } from "../stats/get-daily-applications-map.ts";
 import { getUserStatsData } from "../stats/get-user-stats-data.ts";
-import { prismaSelectWithPagination } from "../utilities/prisma-select.ts";
+import {
+  prismaSelect,
+  prismaSelectWithPagination,
+} from "../utilities/prisma-select.ts";
 
 export const getAllApplicationsResolver = async (
   _: never,
@@ -77,4 +81,67 @@ export const getApplicationsStatsResolver = async (
     totalCompanies: totalCompanies.length,
     userDailyApplications,
   };
+};
+
+type CreateJobApplication = Omit<applicationsModel, "id" | "userId">;
+
+export const createApplicationResolver = async (
+  _: never,
+  _arguments: { input: CreateJobApplication },
+  context: Context,
+  info: GraphQLResolveInfo,
+) => {
+  return context.prisma.applications.create({
+    data: {
+      ..._arguments.input,
+      dmSent: _arguments.input.dmSent ?? null,
+      dmUrl: _arguments.input.dmUrl ?? null,
+      jobBoardUrl: _arguments.input.jobBoardUrl ?? null,
+      rejected: _arguments.input.rejected ?? null,
+      userId: context.userId,
+    },
+    select: prismaSelect(info),
+  });
+};
+
+type DeleteJobApplication = {
+  id: string;
+};
+
+export const deleteApplicationResolver = async (
+  _: never,
+  _arguments: { input: DeleteJobApplication },
+  context: Context,
+  info: GraphQLResolveInfo,
+) => {
+  return context.prisma.applications.delete({
+    select: prismaSelect(info),
+    where: {
+      id: _arguments.input.id,
+    },
+  });
+};
+
+type UpdateJobApplication = Omit<applicationsModel, "userId">;
+
+export const updateApplicationResolver = async (
+  _: never,
+  _arguments: { input: UpdateJobApplication },
+  context: Context,
+  info: GraphQLResolveInfo,
+) => {
+  return context.prisma.applications.update({
+    data: {
+      ..._arguments.input,
+      dmSent: _arguments.input.dmSent ?? null,
+      dmUrl: _arguments.input.dmUrl ?? null,
+      jobBoardUrl: _arguments.input.jobBoardUrl ?? null,
+      rejected: _arguments.input.rejected ?? null,
+      userId: context.userId,
+    },
+    select: prismaSelect(info),
+    where: {
+      id: _arguments.input.id,
+    },
+  });
 };

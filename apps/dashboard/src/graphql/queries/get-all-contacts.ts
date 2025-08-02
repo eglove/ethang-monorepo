@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-import type { contactsModel } from "../../generated/prisma/models/contacts.ts";
+import type { contactsModel } from "../../../generated/prisma/models/contacts.ts";
 
 export type FetchedContact = Pick<
   contactsModel,

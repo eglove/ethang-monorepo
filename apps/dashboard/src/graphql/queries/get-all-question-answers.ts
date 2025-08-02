@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-import type { questionAnswersModel } from "../../generated/prisma/models/questionAnswers.ts";
+import type { questionAnswersModel } from "../../../generated/prisma/models/questionAnswers.ts";
 
 export type FetchedQuestionAnswer = Pick<
   questionAnswersModel,

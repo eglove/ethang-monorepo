@@ -22,14 +22,14 @@ import { twMerge } from "tailwind-merge";
 
 import { DateColumn } from "../../components/data-column.tsx";
 import { CreateJobApplicationModal } from "../../components/job-application/create-job-application-modal.tsx";
-import { UpdateDeleteApplication } from "../../components/job-application/update-delete-application.tsx";
+import { DeleteApplication } from "../../components/job-application/delete-application.tsx";
 import { UpdateJobApplicationModal } from "../../components/job-application/update-job-application-modal.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../../components/table-wrapper.tsx";
 import {
   type GetAllApplications,
   getAllApplications,
-} from "../../queries/get-all-applications.ts";
+} from "../../graphql/queries/get-all-applications.ts";
 import { SectionHeader } from "../../section-header.tsx";
 import { applicationStore } from "../../stores/application-store.ts";
 
@@ -171,7 +171,7 @@ const RouteComponent = () => {
                       if ("actions" === columnKey) {
                         return (
                           <TableCell>
-                            <UpdateDeleteApplication application={item} />
+                            <DeleteApplication application={item} />
                           </TableCell>
                         );
                       }

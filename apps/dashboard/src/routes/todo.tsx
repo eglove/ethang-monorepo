@@ -21,7 +21,10 @@ import { CreateTodoModal } from "../components/todo/create-todo-modal.tsx";
 import { useTodoTimerStore } from "../components/todo/todo-timer-store.ts";
 import { UpdateDeleteTodo } from "../components/todo/update-delete-todo.tsx";
 import { UpdateTodoModal } from "../components/todo/update-todo-modal.tsx";
-import { type GetAllTodos, getAllTodos } from "../queries/get-all-todos.ts";
+import {
+  type GetAllTodos,
+  getAllTodos,
+} from "../graphql/queries/get-all-todos.ts";
 import { SectionHeader } from "../section-header.tsx";
 import { todoStore } from "../stores/todo-store.ts";
 

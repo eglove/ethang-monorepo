@@ -14,7 +14,7 @@ import {
 import {
   getApplicationStats,
   type GetApplicationStats,
-} from "../../queries/get-application-stats.ts";
+} from "../../graphql/queries/get-application-stats.ts";
 import { TopCompaniesChartTooltip } from "./top-companies-chart-tooltip.tsx";
 
 export const TopCompaniesChart = () => {

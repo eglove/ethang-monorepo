@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 
+import { useMutation } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -11,11 +12,12 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
+import { createJobApplication } from "../../graphql/mutations/create-job-application.ts";
+import { getAllApplications } from "../../graphql/queries/get-all-applications.ts";
 import { applicationStore } from "../../stores/application-store.ts";
 import { authStore } from "../../stores/auth-store.ts";
 
@@ -26,9 +28,7 @@ export const CreateJobApplicationModal = () => {
     return state.isCreateModalOpen;
   });
 
-  const { isPending, mutate } = useMutation(
-    applicationStore.createApplication(userId ?? undefined),
-  );
+  const [create, { loading }] = useMutation(createJobApplication);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -45,15 +45,22 @@ export const CreateJobApplicationModal = () => {
       return;
     }
 
-    mutate({
-      applied: DateTime.now().toISO(),
-      company: parsed.data.company,
-      jobBoardUrl: parsed.data.jobBoardUrl,
-      rejected: null,
-      title: parsed.data.title,
-      url: parsed.data.url,
-      userId,
-    });
+    create({
+      onCompleted: () => {
+        applicationStore.setIsCreateModalOpen(false);
+      },
+      refetchQueries: [getAllApplications],
+      variables: {
+        input: {
+          applied: DateTime.now().toISO(),
+          company: parsed.data.company,
+          jobBoardUrl: parsed.data.jobBoardUrl,
+          rejected: null,
+          title: parsed.data.title,
+          url: parsed.data.url,
+        },
+      },
+    }).catch(globalThis.console.error);
   };
 
   return (
@@ -83,7 +90,7 @@ export const CreateJobApplicationModal = () => {
             >
               Close
             </Button>
-            <Button color="primary" isLoading={isPending} type="submit">
+            <Button color="primary" isLoading={loading} type="submit">
               Create
             </Button>
           </ModalFooter>

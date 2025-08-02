@@ -1,25 +1,21 @@
-import { useStore } from "@ethang/store/use-store";
+import { useMutation } from "@apollo/client";
 import { Button } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
-import type { FetchedApplication } from "../../queries/get-all-applications.ts";
-
+import { deleteJobApplication } from "../../graphql/mutations/delete-job-application.ts";
+import {
+  type FetchedApplication,
+  getAllApplications,
+} from "../../graphql/queries/get-all-applications.ts";
 import { applicationStore } from "../../stores/application-store.ts";
-import { authStore } from "../../stores/auth-store.ts";
 
-export const UpdateDeleteApplication = ({
+export const DeleteApplication = ({
   application,
 }: Readonly<{ application: FetchedApplication }>) => {
-  const userId = useStore(authStore, (state) => state.userId);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { isPending, mutate } = useMutation(
-    applicationStore.deleteApplication(userId ?? undefined, () => {
-      setIsDeleting(false);
-    }),
-  );
+  const [deleteApplication, { loading }] = useMutation(deleteJobApplication);
 
   return (
     <div className="flex items-center gap-2">
@@ -44,7 +40,7 @@ export const UpdateDeleteApplication = ({
             }}
             aria-label="Delete"
             color="danger"
-            isLoading={isPending}
+            isLoading={loading}
             size="sm"
           >
             <Trash2Icon />
@@ -56,11 +52,17 @@ export const UpdateDeleteApplication = ({
           <Button
             isIconOnly
             onPress={() => {
-              mutate(application);
+              deleteApplication({
+                onCompleted: () => {
+                  setIsDeleting(false);
+                },
+                refetchQueries: [getAllApplications],
+                variables: { input: { id: application.id } },
+              }).catch(globalThis.console.error);
             }}
             aria-label="Confirm delete"
             color="danger"
-            isLoading={isPending}
+            isLoading={loading}
             size="sm"
           >
             <CheckIcon />
@@ -71,7 +73,7 @@ export const UpdateDeleteApplication = ({
               setIsDeleting(false);
             }}
             aria-label="Cancel delete"
-            isLoading={isPending}
+            isLoading={loading}
             size="sm"
           >
             <XIcon />

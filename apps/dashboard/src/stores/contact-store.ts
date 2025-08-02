@@ -3,7 +3,7 @@ import type { CreateContact } from "@ethang/schemas/dashboard/contact-schema.ts"
 import { BaseStore } from "@ethang/store";
 import isNil from "lodash/isNil";
 
-import type { FetchedContact } from "../queries/get-all-contacts.ts";
+import type { FetchedContact } from "../graphql/queries/get-all-contacts.ts";
 
 const defaultState = {
   contactToUpdate: null as FetchedContact | null,

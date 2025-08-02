@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-import type { todosModel } from "../../generated/prisma/models/todos.ts";
+import type { todosModel } from "../../../generated/prisma/models/todos.ts";
 
 export type FetchedTodo = Pick<
   todosModel,

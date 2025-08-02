@@ -1,6 +1,7 @@
 import type { JobApplication } from "@ethang/schemas/dashboard/application-schema.ts";
 import type { FormEvent } from "react";
 
+import { useMutation } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -12,16 +13,14 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 
+import { updateJobApplication } from "../../graphql/mutations/update-job-application.ts";
+import { getAllApplications } from "../../graphql/queries/get-all-applications.ts";
 import { applicationStore } from "../../stores/application-store.ts";
-import { authStore } from "../../stores/auth-store.ts";
-import { getFormDate } from "../../utilities/form.ts";
+import { formDateToIso, getFormDate } from "../../utilities/form.ts";
 
 export const UpdateJobApplicationModal = () => {
-  const userId = useStore(authStore, (state) => state.userId);
-
   const { applicationToUpdate, isUpdateModalOpen } = useStore(
     applicationStore,
     (state) => {
@@ -43,9 +42,7 @@ export const UpdateJobApplicationModal = () => {
     });
   };
 
-  const { isPending, mutate } = useMutation(
-    applicationStore.updateApplication(userId ?? undefined),
-  );
+  const [updateApplication, { loading }] = useMutation(updateJobApplication);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -54,7 +51,21 @@ export const UpdateJobApplicationModal = () => {
       return;
     }
 
-    mutate(applicationToUpdate);
+    updateApplication({
+      onCompleted: () => {
+        applicationStore.setIsUpdateModalOpen(false);
+      },
+      refetchQueries: [getAllApplications],
+      variables: {
+        input: {
+          ...applicationToUpdate,
+          __typename: undefined,
+          applied: formDateToIso(applicationToUpdate.applied) ?? new Date(),
+          dmSent: formDateToIso(applicationToUpdate.dmSent),
+          rejected: formDateToIso(applicationToUpdate.rejected),
+        },
+      },
+    }).catch(globalThis.console.error);
   };
 
   return (
@@ -140,7 +151,7 @@ export const UpdateJobApplicationModal = () => {
             >
               Close
             </Button>
-            <Button color="primary" isLoading={isPending} type="submit">
+            <Button color="primary" isLoading={loading} type="submit">
               Update
             </Button>
           </ModalFooter>
