@@ -10,22 +10,22 @@
     "@prisma/adapter-d1": "^6.13.0",
     "@prisma/client": "6.13.0",
     "bcryptjs": "^3.0.2",
-    "hono": "^4.8.10",
+    "hono": "^4.8.12",
     "jose": "^6.0.12",
     "lodash": "^4.17.21",
     "prisma": "^6.13.0"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.17.6",
+    "@ethang/eslint-config": "^22.17.7",
     "@types/lodash": "^4.17.20",
     "browserslist-config-baseline": "^0.4.0",
     "eslint": "^9.32.0",
     "rimraf": "^6.0.1",
     "typescript-eslint": "^8.38.0",
-    "wrangler": "^4.26.1"
+    "wrangler": "^4.27.0"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "name": "auth",
   "scripts": {

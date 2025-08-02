@@ -14,9 +14,9 @@
     "@eslint/js": "^9.32.0",
     "@eslint/json": "^0.13.1",
     "@eslint/markdown": "^7.1.0",
-    "@html-eslint/eslint-plugin": "^0.43.1",
-    "@tanstack/eslint-plugin-query": "^5.81.2",
-    "@tanstack/eslint-plugin-router": "^1.129.7",
+    "@html-eslint/eslint-plugin": "^0.44.0",
+    "@tanstack/eslint-plugin-query": "^5.83.1",
+    "@tanstack/eslint-plugin-router": "^1.130.12",
     "@typescript-eslint/parser": "^8.38.0",
     "angular-eslint": "20.1.1",
     "eslint": "^9.32.0",
@@ -30,7 +30,7 @@
     "eslint-plugin-react-hooks": "^5.2.0-rc.1",
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "3.0.4",
-    "eslint-plugin-storybook": "^9.0.18",
+    "eslint-plugin-storybook": "^9.1.0",
     "eslint-plugin-tailwindcss": "^4.0.0-beta.0",
     "eslint-plugin-unicorn": "^60.0.0",
     "prettier": "^3.6.2",
@@ -46,11 +46,11 @@
     "browserslist-config-baseline": "^0.4.0",
     "lodash": "^4.17.21",
     "tailwindcss": "^4.1.11",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     "zod": "^4.0.14"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "license": "ISC",
   "main": "eslint.config.js",
@@ -63,5 +63,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "22.17.6"
+  "version": "22.17.7"
 }

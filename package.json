@@ -1,17 +1,10 @@
 {
   "author": "Ethan Glover",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.17.6",
+    "@ethang/eslint-config": "^22.17.7",
     "@types/node": "^24.1.0",
     "eslint": "^9.32.0",
     "typescript-eslint": "^8.38.0"
-  },
-  "devEngines": {
-    "runtime": {
-      "name": "node",
-      "version": "lts",
-      "onFail": "download"
-    }
   },
   "license": "ISC",
   "name": "ethang-monorepo",
