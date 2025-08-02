@@ -126,6 +126,21 @@ input DeleteBookmarkInput {
     id: String!
 }
 
+input CreateQuestionAnswerInput {
+    answer: String!
+    question: String!
+}
+
+input UpdateQuestionAnswerInput {
+    id: String!
+    answer: String!
+    question: String!
+}
+
+input DeleteQuestionAnswerInput {
+    id: String!
+}
+
 type Query {
     applications(page: Int = 1, limit: Int = 10, search: String): ApplicationResponse!
     bookmarks: [Bookmark]!
@@ -142,4 +157,7 @@ type Mutation {
     createBookmark(input: CreateBookmarkInput!): Bookmark!
     updateBookmark(input: UpdateBookmarkInput!): Bookmark!
     deleteBookmark(input: DeleteBookmarkInput!): Bookmark!
+    createQuestionAnswer(input: CreateQuestionAnswerInput!): QuestionAnswer!
+    updateQuestionAnswer(input: UpdateQuestionAnswerInput!): QuestionAnswer!
+    deleteQuestionAnswer(input: DeleteQuestionAnswerInput!): QuestionAnswer!
 }`;

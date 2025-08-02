@@ -1,25 +1,19 @@
+import { useMutation } from "@apollo/client";
 import { useToggle } from "@ethang/hooks/use-toggle";
-import { useStore } from "@ethang/store/use-store";
 import { Button } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, Trash2Icon, XIcon } from "lucide-react";
 
-import { authStore } from "../../stores/auth-store.ts";
-import { qaStore } from "../../stores/qa-store.ts";
+import { deleteQuestionAnswer } from "../../graphql/mutations/delete-question-answer.ts";
+import { getAllQuestionAnswers } from "../../graphql/queries/get-all-question-answers.ts";
 
 type QaDeleteButtonProperties = {
   id: string;
 };
 
 export const QaDeleteButton = ({ id }: Readonly<QaDeleteButtonProperties>) => {
-  const userId = useStore(authStore, (state) => state.userId);
   const [isDeleting, toggleIsDeleting] = useToggle(false);
 
-  const { isPending, mutate } = useMutation(
-    qaStore.deleteQa(userId ?? undefined, () => {
-      toggleIsDeleting();
-    }),
-  );
+  const [handleDelete, { loading }] = useMutation(deleteQuestionAnswer);
 
   return (
     <>
@@ -40,11 +34,19 @@ export const QaDeleteButton = ({ id }: Readonly<QaDeleteButtonProperties>) => {
           <Button
             isIconOnly
             onPress={() => {
-              mutate(id);
+              handleDelete({
+                onCompleted: () => {
+                  toggleIsDeleting();
+                },
+                refetchQueries: [getAllQuestionAnswers],
+                variables: {
+                  input: { id },
+                },
+              }).catch(globalThis.console.error);
             }}
             aria-label="Confirm Delete"
             color="primary"
-            isLoading={isPending}
+            isLoading={loading}
           >
             <CheckIcon />
           </Button>
@@ -54,7 +56,7 @@ export const QaDeleteButton = ({ id }: Readonly<QaDeleteButtonProperties>) => {
               toggleIsDeleting();
             }}
             aria-label="Cancel Delete"
-            isLoading={isPending}
+            isLoading={loading}
           >
             <XIcon />
           </Button>

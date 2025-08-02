@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 
+import { useMutation } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -12,10 +13,11 @@ import {
   ModalHeader,
   Textarea,
 } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { z } from "zod";
 
+import { createQuestionAnswer } from "../../graphql/mutations/create-question-answer.ts";
+import { getAllQuestionAnswers } from "../../graphql/queries/get-all-question-answers.ts";
 import { authStore } from "../../stores/auth-store.ts";
 import { qaStore } from "../../stores/qa-store.ts";
 
@@ -26,7 +28,7 @@ export const CreateQaModal = () => {
     return draft.isCreateModalOpen;
   });
 
-  const { isPending, mutate } = useMutation(qaStore.createQa());
+  const [handleCreate, { loading }] = useMutation(createQuestionAnswer);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -38,7 +40,15 @@ export const CreateQaModal = () => {
       return;
     }
 
-    mutate({ ...parsed.data, userId });
+    handleCreate({
+      onCompleted: () => {
+        qaStore.setIsCreateModalOpen(false);
+      },
+      refetchQueries: [getAllQuestionAnswers],
+      variables: {
+        input: parsed.data,
+      },
+    }).catch(globalThis.console.error);
   };
 
   return (
@@ -66,7 +76,7 @@ export const CreateQaModal = () => {
             >
               Close
             </Button>
-            <Button color="primary" isLoading={isPending} type="submit">
+            <Button color="primary" isLoading={loading} type="submit">
               Create
             </Button>
           </ModalFooter>

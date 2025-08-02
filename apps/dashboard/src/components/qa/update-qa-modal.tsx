@@ -1,6 +1,7 @@
 import type { QuestionAnswer } from "@ethang/schemas/dashboard/question-answer-schema.ts";
 import type { FormEvent } from "react";
 
+import { useMutation } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -13,14 +14,13 @@ import {
   ModalHeader,
   Textarea,
 } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 
-import { authStore } from "../../stores/auth-store.ts";
+import { updateQuestionAnswer } from "../../graphql/mutations/update-question-answer.ts";
+import { getAllQuestionAnswers } from "../../graphql/queries/get-all-question-answers.ts";
 import { qaStore } from "../../stores/qa-store.ts";
 
 export const UpdateQaModal = () => {
-  const userId = useStore(authStore, (state) => state.userId);
   const { isOpen, qa } = useStore(qaStore, (draft) => {
     return {
       isOpen: draft.isUpdateModalOpen,
@@ -39,14 +39,19 @@ export const UpdateQaModal = () => {
     });
   };
 
-  const { isPending, mutate } = useMutation(
-    qaStore.updateQa(userId ?? undefined),
-  );
+  const [handleUpdate, { loading }] = useMutation(updateQuestionAnswer);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!isNil(qa)) {
-      mutate(qa);
+      handleUpdate({
+        onCompleted: () => {
+          qaStore.setIsUpdateModalOpen(false);
+          qaStore.setQaToUpdate(null);
+        },
+        refetchQueries: [getAllQuestionAnswers],
+        variables: { input: { ...qa, __typename: undefined } },
+      }).catch(globalThis.console.error);
     }
   };
 
@@ -91,7 +96,7 @@ export const UpdateQaModal = () => {
             >
               Close
             </Button>
-            <Button color="primary" isLoading={isPending} type="submit">
+            <Button color="primary" isLoading={loading} type="submit">
               Update
             </Button>
           </ModalFooter>

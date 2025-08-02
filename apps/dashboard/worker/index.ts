@@ -8,7 +8,6 @@ import type { Context } from "./types.ts";
 import { contactRouter } from "./contacts/contact-router.ts";
 import { paths } from "./paths.ts";
 import { getPrismaClient } from "./prisma-client.ts";
-import { questionAnswerRouter } from "./question-answers/question-answer-router.ts";
 import { rootResolver } from "./resolvers/root-resolver.ts";
 import { todoRouter } from "./todos/todo-router.ts";
 import { typeDefs } from "./typedefs.ts";
@@ -55,10 +54,6 @@ export default {
 
     if (false === userId) {
       return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
-    }
-
-    if (startsWith(url.pathname, paths.questionAnswer)) {
-      return questionAnswerRouter(request, environment, userId);
     }
 
     if (startsWith(url.pathname, paths.contact)) {
