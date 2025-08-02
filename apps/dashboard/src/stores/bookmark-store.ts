@@ -68,7 +68,7 @@ export class BookmarkStore extends BaseStore<BookmarkStoreState> {
     });
   }
 
-  public updateBookmark(userId = "") {
+  public updateBookmark() {
     return {
       mutationFn: async (data: Bookmark) => {
         const response = await fetch(bookmarkPath, {

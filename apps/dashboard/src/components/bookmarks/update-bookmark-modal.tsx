@@ -40,9 +40,7 @@ export const UpdateBookmarkModal = () => {
     });
   };
 
-  const { isPending, mutate } = useMutation(
-    bookmarkStore.updateBookmark(userId ?? undefined),
-  );
+  const { isPending, mutate } = useMutation(bookmarkStore.updateBookmark());
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
