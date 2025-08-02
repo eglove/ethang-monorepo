@@ -2,7 +2,6 @@ import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response"
 
 import { createQuestionAnswer } from "./create-question-answer.ts";
 import { deleteQuestionAnswer } from "./delete-question-answer.ts";
-import { getAllQuestionAnswers } from "./get-all-question-answers.ts";
 import { updateQuestionAnswer } from "./update-question-answer.ts";
 
 export const questionAnswerRouter = async (
@@ -13,10 +12,6 @@ export const questionAnswerRouter = async (
   switch (request.method) {
     case "DELETE": {
       return deleteQuestionAnswer(request, environment, userId);
-    }
-
-    case "GET": {
-      return getAllQuestionAnswers(environment, userId);
     }
 
     case "POST": {
