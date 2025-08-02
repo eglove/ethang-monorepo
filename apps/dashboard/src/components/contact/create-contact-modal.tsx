@@ -25,18 +25,14 @@ import {
   convertDateTimeInputToIso,
   getDateTimeInputNow,
 } from "../../../worker/utilities/heroui.ts";
-import { authStore } from "../../stores/auth-store.ts";
 import { contactStore } from "../../stores/contact-store.ts";
 
 export const CreateContactModal = () => {
-  const userId = useStore(authStore, (state) => state.userId);
   const isOpen = useStore(contactStore, (state) => {
     return state.isCreateModalOpen;
   });
 
-  const { isPending, mutate } = useMutation(
-    contactStore.createContact(userId ?? undefined),
-  );
+  const { isPending, mutate } = useMutation(contactStore.createContact());
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

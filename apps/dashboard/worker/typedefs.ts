@@ -40,9 +40,21 @@ type Bookmark {
     userId: String!
 }
 
+type Contact {
+    id: String!
+    userId: String!
+    name: String!
+    phone: String
+    email: String
+    linkedIn: String
+    lastContact: Date!
+    expectedNextContact: Date
+}
+
 type Query {
     applications(page: Int = 1, limit: Int = 10, search: String): ApplicationResponse!
     bookmarks: [Bookmark]!
+    contacts: [Contact]!
     questionAnswers: [QuestionAnswer]!
 }
 `;

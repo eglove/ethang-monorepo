@@ -1,16 +1,16 @@
-import type { Contact } from "@ethang/schemas/dashboard/contact-schema.ts";
-
 import { useStore } from "@ethang/store/use-store";
 import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
+import type { FetchedContact } from "../../queries/get-all-contacts.ts";
+
 import { authStore } from "../../stores/auth-store.ts";
 import { contactStore } from "../../stores/contact-store.ts";
 
 type UpdateDeleteContactProperties = {
-  contact: Contact;
+  contact: FetchedContact;
 };
 
 export const UpdateDeleteContact = ({

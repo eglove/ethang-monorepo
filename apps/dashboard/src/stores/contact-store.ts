@@ -1,21 +1,12 @@
-import {
-  type Contact,
-  contactsSchema,
-  type CreateContact,
-} from "@ethang/schemas/dashboard/contact-schema.ts";
+import type { CreateContact } from "@ethang/schemas/dashboard/contact-schema.ts";
+
 import { BaseStore } from "@ethang/store";
-import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
-import { queryOptions } from "@tanstack/react-query";
-import isEmpty from "lodash/isEmpty";
-import isError from "lodash/isError";
 import isNil from "lodash/isNil";
 
-import { queryClient } from "../components/providers.tsx";
-import { queryKeys } from "../data/queries/queries.ts";
-import { authStore } from "./auth-store.ts";
+import type { FetchedContact } from "../queries/get-all-contacts.ts";
 
 const defaultState = {
-  contactToUpdate: null as Contact | null,
+  contactToUpdate: null as FetchedContact | null,
   isCreateModalOpen: false,
   isUpdateModalOpen: false,
 };
@@ -28,7 +19,7 @@ class ContactStore extends BaseStore<ContactStoreState> {
     super(defaultState);
   }
 
-  public createContact(userId = "") {
+  public createContact() {
     return {
       mutationFn: async (data: CreateContact) => {
         const response = await fetch(contactPath, {
@@ -37,10 +28,6 @@ class ContactStore extends BaseStore<ContactStoreState> {
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allContacts(userId),
-          });
-
           this.update((draft) => {
             draft.isCreateModalOpen = false;
           }, false);
@@ -51,7 +38,7 @@ class ContactStore extends BaseStore<ContactStoreState> {
 
   public deleteContact = (userId = "", onOk?: () => void) => {
     return {
-      mutationFn: async (contact: Contact) => {
+      mutationFn: async (contact: FetchedContact) => {
         if (isNil(userId)) {
           return;
         }
@@ -62,43 +49,13 @@ class ContactStore extends BaseStore<ContactStoreState> {
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allContacts(userId),
-          });
           onOk?.();
         }
       },
     };
   };
 
-  public getAll(userId = "") {
-    return queryOptions({
-      enabled: !isEmpty(userId),
-      queryFn: async () => {
-        if (isEmpty(userId)) {
-          throw new Error("No user found");
-        }
-
-        const response = await fetch(contactPath);
-
-        if (401 === response.status) {
-          authStore.signOut();
-          throw new Error("Unauthorized");
-        }
-
-        const data = await parseFetchJson(response, contactsSchema);
-
-        if (isError(data)) {
-          throw new Error("Failed to fetch contacts");
-        }
-
-        return data;
-      },
-      queryKey: queryKeys.contacts(userId),
-    });
-  }
-
-  public setContactToUpdate = (contact: Contact | null) => {
+  public setContactToUpdate = (contact: FetchedContact | null) => {
     this.update((draft) => {
       draft.contactToUpdate = contact;
     });
@@ -118,7 +75,7 @@ class ContactStore extends BaseStore<ContactStoreState> {
 
   public updateContact(userId = "") {
     return {
-      mutationFn: async (contact: Contact) => {
+      mutationFn: async (contact: FetchedContact) => {
         const response = await globalThis.fetch(contactPath, {
           body: JSON.stringify({
             ...contact,
@@ -128,10 +85,6 @@ class ContactStore extends BaseStore<ContactStoreState> {
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allContacts(userId),
-          });
-
           this.update((draft) => {
             draft.isUpdateModalOpen = false;
           }, false);

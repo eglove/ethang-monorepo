@@ -10,20 +10,8 @@ const filterOutNil = (array: unknown[]) => {
 };
 
 export const queryKeys = {
-  allContacts: (userId?: string) => {
-    return filterOutNil(["contacts", userId]);
-  },
-  allUserQuestionAnswers: (userId?: string) => {
-    return filterOutNil(["questionAnswers", userId]);
-  },
   allUserTodos: (userId?: string) => {
     return filterOutNil(["todos", userId]);
-  },
-  contacts: (userId?: string) => {
-    return filterOutNil(["contacts", userId]);
-  },
-  questionAnswers: (userId?: string) => {
-    return filterOutNil(["questionAnswers", userId]);
   },
   stats: (userId?: string) => {
     return filterOutNil(["stats", userId]);

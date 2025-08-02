@@ -1,4 +1,4 @@
-import { useStore } from "@ethang/store/use-store";
+import { useQuery } from "@apollo/client";
 import {
   getKeyValue,
   Link,
@@ -10,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
 
 import { CreateContactModal } from "../../components/contact/create-contact-modal.tsx";
@@ -20,9 +20,11 @@ import { UpdateDeleteContact } from "../../components/contact/update-delete-cont
 import { DateColumn } from "../../components/data-column.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../../components/table-wrapper.tsx";
-import { queryKeys } from "../../data/queries/queries.ts";
+import {
+  type GetAllContacts,
+  getAllContacts,
+} from "../../queries/get-all-contacts.ts";
 import { SectionHeader } from "../../section-header.tsx";
-import { authStore } from "../../stores/auth-store.ts";
 import { contactStore } from "../../stores/contact-store.ts";
 
 const columns = [
@@ -36,10 +38,8 @@ const columns = [
 ];
 
 const RouteComponent = () => {
-  const userId = useStore(authStore, (state) => state.userId);
-  const { data, isPending } = useQuery(
-    contactStore.getAll(userId ?? undefined),
-  );
+  const { data, loading } = useQuery<GetAllContacts>(getAllContacts);
+  const isPending = isNil(data) && loading;
 
   return (
     <MainLayout
@@ -54,7 +54,6 @@ const RouteComponent = () => {
         }}
         header="Contacts"
         modalLabel="Create Contact"
-        refreshKeys={queryKeys.allContacts(userId ?? undefined)}
       />
       <TableWrapper>
         <Table isHeaderSticky isStriped removeWrapper aria-label="Contacts">
@@ -65,7 +64,7 @@ const RouteComponent = () => {
           </TableHeader>
           <TableBody
             emptyContent="Nothing to Display"
-            items={data ?? []}
+            items={data?.contacts ?? []}
             loadingContent={<Spinner />}
             loadingState={isPending ? "loading" : "idle"}
           >

@@ -2,7 +2,6 @@ import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response"
 
 import { createContact } from "./create-contact.ts";
 import { deleteContact } from "./delete-contact.ts";
-import { getAllContacts } from "./get-all-contacts.ts";
 import { updateContact } from "./update-contact.ts";
 
 export const contactRouter = async (
@@ -13,10 +12,6 @@ export const contactRouter = async (
   switch (request.method) {
     case "DELETE": {
       return deleteContact(request, environment, userId);
-    }
-
-    case "GET": {
-      return getAllContacts(environment, userId);
     }
 
     case "POST": {
