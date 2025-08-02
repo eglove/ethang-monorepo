@@ -5,7 +5,6 @@ import startsWith from "lodash/startsWith";
 
 import type { Context } from "./types.ts";
 
-import { contactRouter } from "./contacts/contact-router.ts";
 import { paths } from "./paths.ts";
 import { getPrismaClient } from "./prisma-client.ts";
 import { rootResolver } from "./resolvers/root-resolver.ts";
@@ -54,10 +53,6 @@ export default {
 
     if (false === userId) {
       return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
-    }
-
-    if (startsWith(url.pathname, paths.contact)) {
-      return contactRouter(request, environment, userId);
     }
 
     if (startsWith(url.pathname, paths.todo)) {

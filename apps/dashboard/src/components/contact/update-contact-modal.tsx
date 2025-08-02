@@ -1,6 +1,7 @@
 import type { Contact } from "@ethang/schemas/dashboard/contact-schema.ts";
 import type { FormEvent } from "react";
 
+import { useMutation } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -13,7 +14,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 
@@ -21,12 +21,11 @@ import {
   convertIsoToDateTimeInput,
   type DateInputValue,
 } from "../../../worker/utilities/heroui.ts";
-import { authStore } from "../../stores/auth-store.ts";
+import { updateContact } from "../../graphql/mutations/update-contact.ts";
+import { getAllContacts } from "../../graphql/queries/get-all-contacts.ts";
 import { contactStore } from "../../stores/contact-store.ts";
 
 export const UpdateContactModal = () => {
-  const userId = useStore(authStore, (state) => state.userId);
-
   const { contact, isOpen } = useStore(contactStore, (state) => {
     return {
       contact: state.contactToUpdate,
@@ -61,14 +60,21 @@ export const UpdateContactModal = () => {
       }
     };
 
-  const { isPending, mutate } = useMutation(
-    contactStore.updateContact(userId ?? undefined),
-  );
+  const [handleUpdate, { loading }] = useMutation(updateContact);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!isNil(contact)) {
-      mutate(contact);
+      handleUpdate({
+        onCompleted: () => {
+          contactStore.setIsUpdateModalOpen(false);
+          contactStore.setContactToUpdate(null);
+        },
+        refetchQueries: [getAllContacts],
+        variables: {
+          input: { ...contact, __typename: undefined, userId: undefined },
+        },
+      }).catch(globalThis.console.error);
     }
   };
 
@@ -147,7 +153,7 @@ export const UpdateContactModal = () => {
             >
               Close
             </Button>
-            <Button color="primary" isLoading={isPending} type="submit">
+            <Button color="primary" isLoading={loading} type="submit">
               Update
             </Button>
           </ModalFooter>

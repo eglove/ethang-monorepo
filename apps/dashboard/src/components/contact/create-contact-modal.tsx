@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 
+import { useMutation } from "@apollo/client";
 import { createContactSchema } from "@ethang/schemas/dashboard/contact-schema.ts";
 import { useStore } from "@ethang/store/use-store";
 import {
@@ -14,7 +15,6 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import { parseZonedDateTime } from "@internationalized/date";
-import { useMutation } from "@tanstack/react-query";
 import forEach from "lodash/forEach";
 import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
@@ -25,6 +25,8 @@ import {
   convertDateTimeInputToIso,
   getDateTimeInputNow,
 } from "../../../worker/utilities/heroui.ts";
+import { createContact } from "../../graphql/mutations/create-contact.ts";
+import { getAllContacts } from "../../graphql/queries/get-all-contacts.ts";
 import { contactStore } from "../../stores/contact-store.ts";
 
 export const CreateContactModal = () => {
@@ -32,7 +34,7 @@ export const CreateContactModal = () => {
     return state.isCreateModalOpen;
   });
 
-  const { isPending, mutate } = useMutation(contactStore.createContact());
+  const [handleCreate, { loading }] = useMutation(createContact);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,7 +64,13 @@ export const CreateContactModal = () => {
       }
     });
 
-    mutate(parsed.data);
+    handleCreate({
+      onCompleted: () => {
+        contactStore.setIsCreateModalOpen(false);
+      },
+      refetchQueries: [getAllContacts],
+      variables: { input: { ...parsed.data, __typename: undefined } },
+    }).catch(globalThis.console.error);
   };
 
   return (
@@ -104,7 +112,7 @@ export const CreateContactModal = () => {
             >
               Close
             </Button>
-            <Button color="primary" isLoading={isPending} type="submit">
+            <Button color="primary" isLoading={loading} type="submit">
               Create
             </Button>
           </ModalFooter>

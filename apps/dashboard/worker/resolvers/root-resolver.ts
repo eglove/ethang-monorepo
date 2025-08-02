@@ -11,7 +11,12 @@ import {
   getAllBookmarksResolver,
   updateBookmarkResolver,
 } from "./bookmarks-resolver.ts";
-import { getAllContactsResolver } from "./contact-resolver.ts";
+import {
+  createContactResolver,
+  deleteContactResolver,
+  getAllContactsResolver,
+  updateContactResolver,
+} from "./contact-resolver.ts";
 import {
   createQuestionAnswerResolver,
   deleteQuestionAnswerResolver,
@@ -24,12 +29,15 @@ export const rootResolver = {
   Mutation: {
     createApplication: createApplicationResolver,
     createBookmark: createBookmarkResolver,
+    createContact: createContactResolver,
     createQuestionAnswer: createQuestionAnswerResolver,
     deleteApplication: deleteApplicationResolver,
     deleteBookmark: deleteBookmarkResolver,
+    deleteContact: deleteContactResolver,
     deleteQuestionAnswer: deleteQuestionAnswerResolver,
     updateApplication: updateApplicationResolver,
     updateBookmark: updateBookmarkResolver,
+    updateContact: updateContactResolver,
     updateQuestionAnswer: updateQuestionAnswerResolver,
   },
   Query: {

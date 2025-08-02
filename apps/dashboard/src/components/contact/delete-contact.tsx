@@ -1,29 +1,25 @@
-import { useStore } from "@ethang/store/use-store";
+import { useMutation } from "@apollo/client";
 import { Button } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
-import type { FetchedContact } from "../../graphql/queries/get-all-contacts.ts";
-
-import { authStore } from "../../stores/auth-store.ts";
+import { deleteContact } from "../../graphql/mutations/delete-contact.ts";
+import {
+  type FetchedContact,
+  getAllContacts,
+} from "../../graphql/queries/get-all-contacts.ts";
 import { contactStore } from "../../stores/contact-store.ts";
 
-type UpdateDeleteContactProperties = {
+type DeleteContactProperties = {
   contact: FetchedContact;
 };
 
-export const UpdateDeleteContact = ({
+export const DeleteContact = ({
   contact,
-}: Readonly<UpdateDeleteContactProperties>) => {
-  const userId = useStore(authStore, (state) => state.userId);
+}: Readonly<DeleteContactProperties>) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { isPending, mutate } = useMutation(
-    contactStore.deleteContact(userId ?? undefined, () => {
-      setIsDeleting(false);
-    }),
-  );
+  const [handleDelete, { loading }] = useMutation(deleteContact);
 
   return (
     <div className="flex items-center gap-2">
@@ -48,7 +44,7 @@ export const UpdateDeleteContact = ({
             }}
             aria-label="Delete"
             color="danger"
-            isLoading={isPending}
+            isLoading={loading}
             size="sm"
           >
             <Trash2Icon />
@@ -60,11 +56,17 @@ export const UpdateDeleteContact = ({
           <Button
             isIconOnly
             onPress={() => {
-              mutate(contact);
+              handleDelete({
+                onCompleted: () => {
+                  setIsDeleting(false);
+                },
+                refetchQueries: [getAllContacts],
+                variables: { input: { id: contact.id } },
+              }).catch(globalThis.console.error);
             }}
             aria-label="Confirm delete"
             color="danger"
-            isLoading={isPending}
+            isLoading={loading}
             size="sm"
           >
             <CheckIcon />
@@ -75,7 +77,7 @@ export const UpdateDeleteContact = ({
               setIsDeleting(false);
             }}
             aria-label="Cancel delete"
-            isLoading={isPending}
+            isLoading={loading}
             size="sm"
           >
             <XIcon />

@@ -2,6 +2,7 @@ import type { DateInput } from "@heroui/react";
 
 import { now, parseAbsoluteToLocal } from "@internationalized/date";
 import isNil from "lodash/isNil";
+import isString from "lodash/isString";
 import { DateTime } from "luxon";
 
 export type DateInputValue = Exclude<
@@ -10,11 +11,17 @@ export type DateInputValue = Exclude<
 >;
 
 export const convertIsoToDateTimeInput = (
-  value: null | string | undefined,
+  value: Date | null | string | undefined,
 ): DateInputValue => {
-  return isNil(value)
-    ? null
-    : parseAbsoluteToLocal(DateTime.fromISO(value).toUTC().toString());
+  if (isNil(value)) {
+    return null;
+  }
+
+  if (isString(value)) {
+    return parseAbsoluteToLocal(DateTime.fromISO(value).toUTC().toString());
+  }
+
+  return parseAbsoluteToLocal(DateTime.fromJSDate(value).toUTC().toString());
 };
 
 export const convertDateTimeInputToIso = (value: DateInputValue) => {

@@ -15,8 +15,8 @@ import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
 
 import { CreateContactModal } from "../../components/contact/create-contact-modal.tsx";
+import { DeleteContact } from "../../components/contact/delete-contact.tsx";
 import { UpdateContactModal } from "../../components/contact/update-contact-modal.tsx";
-import { UpdateDeleteContact } from "../../components/contact/update-delete-contact.tsx";
 import { DateColumn } from "../../components/data-column.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../../components/table-wrapper.tsx";
@@ -120,7 +120,7 @@ const RouteComponent = () => {
                     if ("actions" === columnKey) {
                       return (
                         <TableCell>
-                          <UpdateDeleteContact contact={item} />
+                          <DeleteContact contact={item} />
                         </TableCell>
                       );
                     }

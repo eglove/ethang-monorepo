@@ -141,6 +141,29 @@ input DeleteQuestionAnswerInput {
     id: String!
 }
 
+input CreateContactInput {
+    name: String!
+    phone: String
+    email: String
+    linkedIn: String
+    lastContact: Date!
+    expectedNextContact: Date
+}
+
+input UpdateContactInput {
+    id: String!
+    name: String!
+    phone: String
+    email: String
+    linkedIn: String
+    lastContact: Date!
+    expectedNextContact: Date
+}
+
+input DeleteContactInput {
+    id: String!
+}
+
 type Query {
     applications(page: Int = 1, limit: Int = 10, search: String): ApplicationResponse!
     bookmarks: [Bookmark]!
@@ -160,4 +183,7 @@ type Mutation {
     createQuestionAnswer(input: CreateQuestionAnswerInput!): QuestionAnswer!
     updateQuestionAnswer(input: UpdateQuestionAnswerInput!): QuestionAnswer!
     deleteQuestionAnswer(input: DeleteQuestionAnswerInput!): QuestionAnswer!
+    createContact(input: CreateContactInput!): Contact!
+    updateContact(input: UpdateContactInput!): Contact!
+    deleteContact(input: DeleteContactInput!): Contact!
 }`;
