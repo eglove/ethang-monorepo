@@ -1,4 +1,4 @@
-import { getPrismaClient } from "../../prisma-client.ts";
+import { getPrismaClient } from "../prisma-client.ts";
 
 export const getUserStatsData = async (environment: Env, userId: string) => {
   const prismaClient = getPrismaClient(environment);

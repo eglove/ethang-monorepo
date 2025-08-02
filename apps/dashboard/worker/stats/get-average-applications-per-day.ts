@@ -5,7 +5,7 @@ import { DateTime } from "luxon";
 
 import type { getUserStatsData } from "./get-user-stats-data.ts";
 
-import { statsComputeEngine } from "../get-user-stats";
+import { statsComputeEngine } from "./user-stats-utilities.ts";
 
 export const getAverageApplicationsPerDay = (
   allUserApplications: Awaited<

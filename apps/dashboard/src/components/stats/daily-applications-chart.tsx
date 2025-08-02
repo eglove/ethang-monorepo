@@ -1,6 +1,5 @@
-import { useStore } from "@ethang/store/use-store";
+import { useQuery } from "@apollo/client";
 import { Card, CardBody, CardHeader } from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
 import get from "lodash/get.js";
 import orderBy from "lodash/orderBy.js";
 import { DateTime } from "luxon";
@@ -13,19 +12,29 @@ import {
   XAxis,
 } from "recharts";
 
-import { getStats } from "../../data/queries/stats.ts";
-import { authStore } from "../../stores/auth-store.ts";
+import {
+  getApplicationStats,
+  type GetApplicationStats,
+} from "../../queries/get-application-stats.ts";
 import { DailyApplicationsChartTooltip } from "./daily-applications-chart-tooltip.tsx";
 
 export const DailyApplicationsChart = () => {
-  const userId = useStore(authStore, (state) => state.userId);
-  const { data } = useQuery(getStats(userId ?? undefined));
+  const { data } = useQuery<GetApplicationStats>(getApplicationStats);
 
-  const applicationsPerDay = orderBy(get(data, ["userDailyApplications"], []), [
-    "date",
-  ]);
-  const totalApplications = get(data, ["totalApplications"], 0);
-  const averageApplicationsPerDay = get(data, ["averageApplicationsPerDay"], 0);
+  const applicationsPerDay = orderBy(
+    get(data, ["applicationStats", "userDailyApplications"], []),
+    ["date"],
+  );
+  const totalApplications = get(
+    data,
+    ["applicationStats", "totalApplications"],
+    0,
+  );
+  const averageApplicationsPerDay = get(
+    data,
+    ["applicationStats", "averageApplicationsPerDay"],
+    0,
+  );
   const earliestDate = get(applicationsPerDay, [0, "date"], "");
 
   const totalDays = (

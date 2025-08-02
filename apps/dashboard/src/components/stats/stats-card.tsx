@@ -1,9 +1,10 @@
-import { useStore } from "@ethang/store/use-store";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@apollo/client";
 import isNil from "lodash/isNil";
 
-import { getStats } from "../../data/queries/stats.ts";
-import { authStore } from "../../stores/auth-store.ts";
+import {
+  type GetApplicationStats,
+  getApplicationStats,
+} from "../../queries/get-application-stats.ts";
 import { TrendCard } from "./trend-card.tsx";
 
 const getStringValue = (
@@ -20,26 +21,27 @@ const getStringValue = (
 };
 
 export const StatsCards = () => {
-  const userId = useStore(authStore, (state) => state.userId);
-  const { data } = useQuery(getStats(userId ?? undefined));
+  const { data } = useQuery<GetApplicationStats>(getApplicationStats);
 
   return (
     <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       <TrendCard
         title="Avg. Days to Rejection"
-        value={getStringValue(data?.averageTimeToRejected)}
+        value={getStringValue(data?.applicationStats.averageTimeToRejected)}
       />
       <TrendCard
+        value={getStringValue(data?.applicationStats.averageResponseRate, {
+          style: "percent",
+        })}
         title="Current Response Rate"
-        value={getStringValue(data?.averageResponseRate, { style: "percent" })}
       />
       <TrendCard
         title="Total Applications"
-        value={getStringValue(data?.totalApplications)}
+        value={getStringValue(data?.applicationStats.totalApplications)}
       />
       <TrendCard
         title="Total Companies"
-        value={getStringValue(data?.totalCompanies)}
+        value={getStringValue(data?.applicationStats.totalCompanies)}
       />
     </div>
   );

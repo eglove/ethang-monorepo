@@ -12,8 +12,6 @@ import toInteger from "lodash/toInteger";
 
 import type { FetchedApplication } from "../queries/get-all-applications.ts";
 
-import { queryClient } from "../components/providers.tsx";
-import { queryKeys } from "../data/queries/queries.ts";
 import { formDateToIso } from "../utilities/form.ts";
 import { toastError } from "../utilities/toast-error.ts";
 
@@ -142,10 +140,6 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
                 : formDateToIso(data.rejected),
           }),
           method: "PUT",
-        });
-
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.stats(userId),
         });
 
         this.update((state) => {

@@ -1,9 +1,15 @@
 import type { GraphQLResolveInfo } from "graphql/type";
 
 import isNil from "lodash/isNil.js";
+import toNumber from "lodash/toNumber";
 
 import type { Context } from "../types.ts";
 
+import { getAverageApplicationsPerDay } from "../stats/get-average-applications-per-day.ts";
+import { getAverageResponseRate } from "../stats/get-average-response-rate.ts";
+import { getAverageTimeToRejected } from "../stats/get-average-time-to-rejected.ts";
+import { getDailyApplicationsMap } from "../stats/get-daily-applications-map.ts";
+import { getUserStatsData } from "../stats/get-user-stats-data.ts";
 import { prismaSelectWithPagination } from "../utilities/prisma-select.ts";
 
 export const getAllApplicationsResolver = async (
@@ -41,5 +47,34 @@ export const getAllApplicationsResolver = async (
       total,
       totalPages: Math.ceil(total / _arguments.limit),
     },
+  };
+};
+
+export const getApplicationsStatsResolver = async (
+  _: never,
+  _arguments: { limit: number; page: number; search: string | undefined },
+  context: Context,
+) => {
+  const {
+    allUserApplications,
+    topCompanies,
+    totalApplications,
+    totalCompanies,
+  } = await getUserStatsData(context.env, context.userId);
+
+  const averageApplicationsPerDay =
+    getAverageApplicationsPerDay(allUserApplications);
+  const averageResponseRate = getAverageResponseRate(allUserApplications);
+  const averageTimeToRejected = getAverageTimeToRejected(allUserApplications);
+  const userDailyApplications = getDailyApplicationsMap(allUserApplications);
+
+  return {
+    averageApplicationsPerDay: toNumber(averageApplicationsPerDay),
+    averageResponseRate: toNumber(averageResponseRate),
+    averageTimeToRejected: toNumber(averageTimeToRejected),
+    topCompanies,
+    totalApplications: totalApplications._count._all,
+    totalCompanies: totalCompanies.length,
+    userDailyApplications,
   };
 };

@@ -1,6 +1,5 @@
-import { useStore } from "@ethang/store/use-store";
+import { useQuery } from "@apollo/client";
 import { Card, CardBody, CardHeader } from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
 import get from "lodash/get";
 import {
   Bar,
@@ -12,15 +11,16 @@ import {
   YAxis,
 } from "recharts";
 
-import { getStats } from "../../data/queries/stats.ts";
-import { authStore } from "../../stores/auth-store.ts";
+import {
+  getApplicationStats,
+  type GetApplicationStats,
+} from "../../queries/get-application-stats.ts";
 import { TopCompaniesChartTooltip } from "./top-companies-chart-tooltip.tsx";
 
 export const TopCompaniesChart = () => {
-  const userId = useStore(authStore, (state) => state.userId);
-  const { data } = useQuery(getStats(userId ?? undefined));
+  const { data } = useQuery<GetApplicationStats>(getApplicationStats);
 
-  const topCompanies = get(data, ["topCompanies"], []);
+  const topCompanies = get(data, ["applicationStats", "topCompanies"], []);
 
   return (
     <Card>

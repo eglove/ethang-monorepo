@@ -21,16 +21,40 @@ type Application {
     dmSent: Date
 }
 
+type ApplicationResponse {
+    applications: [Application]!
+    pagination: Pagination!
+}
+
+type IdObject {
+    id: Int!
+}
+
+type ApplicationStatsCompany {
+    company: String!
+    _count: IdObject
+}
+
+type UserDailyApplications {
+    date: Date!
+    totalApplications: Int!
+}
+
+type ApplicationStats {
+    averageApplicationsPerDay: Float!
+    averageResponseRate: Float!
+    averageTimeToRejected: Float!
+    topCompanies: [ApplicationStatsCompany]!
+    totalApplications: Int!
+    totalCompanies: Int!
+    userDailyApplications: [UserDailyApplications]!
+}
+
 type QuestionAnswer {
     id: String!
     userId: String!
     answer: String!
     question: String!
-}
-
-type ApplicationResponse {
-    applications: [Application]!
-    pagination: Pagination!
 }
 
 type Bookmark {
@@ -66,5 +90,6 @@ type Query {
     contacts: [Contact]!
     questionAnswers: [QuestionAnswer]!
     todos: [Todo]!
+    applicationStats: ApplicationStats!
 }
 `;

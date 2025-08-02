@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getAverageApplicationsPerDay } from "./get-average-applications-per-day";
+import { getAverageApplicationsPerDay } from "./get-average-applications-per-day.ts";
 
 describe("getAverageApplicationsPerDay", () => {
   it("should return '0' when there are no applications", () => {
