@@ -2,7 +2,6 @@ import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response"
 
 import { createJobApplication } from "./create-job-application.ts";
 import { deleteApplication } from "./delete-application.ts";
-import { getAllApplications } from "./get-all-applications.ts";
 import { updateJobApplication } from "./update-job-application.ts";
 
 export const applicationRouter = async (
@@ -13,10 +12,6 @@ export const applicationRouter = async (
   switch (request.method) {
     case "DELETE": {
       return deleteApplication(request, environment, userId);
-    }
-
-    case "GET": {
-      return getAllApplications(request, environment, userId);
     }
 
     case "POST": {
