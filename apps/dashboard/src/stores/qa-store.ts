@@ -1,23 +1,13 @@
-import {
-  type CreateQuestionAnswer,
-  type QuestionAnswer,
-  questionAnswerSchema,
-} from "@ethang/schemas/dashboard/question-answer-schema.ts";
-import { BaseStore } from "@ethang/store";
-import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
-import { queryOptions } from "@tanstack/react-query";
-import isEmpty from "lodash/isEmpty";
-import isError from "lodash/isError";
-import { z } from "zod";
+import type { CreateQuestionAnswer } from "@ethang/schemas/dashboard/question-answer-schema.ts";
 
-import { queryClient } from "../components/providers.tsx";
-import { queryKeys } from "../data/queries/queries.ts";
-import { authStore } from "./auth-store.ts";
+import { BaseStore } from "@ethang/store";
+
+import type { FetchedQuestionAnswer } from "../queries/get-all-question-answers.ts";
 
 const defaultState = {
   isCreateModalOpen: false,
   isUpdateModalOpen: false,
-  qaToUpdate: null as null | QuestionAnswer,
+  qaToUpdate: null as FetchedQuestionAnswer | null,
 };
 
 type QaStoreState = typeof defaultState;
@@ -28,7 +18,7 @@ export class QaStore extends BaseStore<QaStoreState> {
     super(defaultState);
   }
 
-  public createQa(userId = "") {
+  public createQa() {
     return {
       mutationFn: async (data: CreateQuestionAnswer) => {
         const response = await fetch(questionAnswerPath, {
@@ -37,10 +27,6 @@ export class QaStore extends BaseStore<QaStoreState> {
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allUserQuestionAnswers(userId),
-          });
-
           this.update((draft) => {
             draft.isCreateModalOpen = false;
           }, false);
@@ -61,44 +47,10 @@ export class QaStore extends BaseStore<QaStoreState> {
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allUserQuestionAnswers(userId),
-          });
-
           onOk?.();
         }
       },
     };
-  }
-
-  public getAll(userId = "") {
-    return queryOptions({
-      enabled: !isEmpty(userId),
-      queryFn: async () => {
-        if (isEmpty(userId)) {
-          throw new Error("No user found");
-        }
-
-        const response = await fetch(questionAnswerPath);
-
-        if (401 === response.status) {
-          authStore.signOut();
-          throw new Error("Unauthorized");
-        }
-
-        const data = await parseFetchJson(
-          response,
-          z.array(questionAnswerSchema),
-        );
-
-        if (isError(data)) {
-          throw new Error("Failed to fetch question answers");
-        }
-
-        return data;
-      },
-      queryKey: queryKeys.questionAnswers(userId),
-    });
   }
 
   public setIsCreateModalOpen = (isOpen: boolean) => {
@@ -113,7 +65,7 @@ export class QaStore extends BaseStore<QaStoreState> {
     });
   };
 
-  public setQaToUpdate = (qa: null | QuestionAnswer) => {
+  public setQaToUpdate = (qa: FetchedQuestionAnswer | null) => {
     this.update((draft) => {
       draft.qaToUpdate = qa;
     });
@@ -121,17 +73,13 @@ export class QaStore extends BaseStore<QaStoreState> {
 
   public updateQa(userId = "") {
     return {
-      mutationFn: async (qa: QuestionAnswer) => {
+      mutationFn: async (qa: FetchedQuestionAnswer) => {
         const response = await fetch(questionAnswerPath, {
           body: JSON.stringify({ ...qa, userId }),
           method: "PUT",
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allUserQuestionAnswers(userId),
-          });
-
           this.update((draft) => {
             draft.isUpdateModalOpen = false;
           }, false);

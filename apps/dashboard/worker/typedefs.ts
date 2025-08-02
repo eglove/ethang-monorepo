@@ -21,6 +21,13 @@ type Application {
     dmSent: Date
 }
 
+type QuestionAnswer {
+    id: String!
+    userId: String!
+    answer: String!
+    question: String!
+}
+
 type ApplicationResponse {
     applications: [Application]!
     pagination: Pagination!
@@ -36,5 +43,6 @@ type Bookmark {
 type Query {
     applications(page: Int = 1, limit: Int = 10, search: String): ApplicationResponse!
     bookmarks: [Bookmark]!
+    questionAnswers: [QuestionAnswer]!
 }
 `;

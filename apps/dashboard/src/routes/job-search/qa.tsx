@@ -1,6 +1,5 @@
-import { useStore } from "@ethang/store/use-store";
+import { useQuery } from "@apollo/client";
 import { Accordion, AccordionItem, Button } from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map.js";
@@ -12,14 +11,15 @@ import { CreateQaModal } from "../../components/qa/create-qa-modal.tsx";
 import { QaCopyButton } from "../../components/qa/qa-copy-button.tsx";
 import { QaDeleteButton } from "../../components/qa/qa-delete-button.tsx";
 import { UpdateQaModal } from "../../components/qa/update-qa-modal.tsx";
-import { queryKeys } from "../../data/queries/queries.ts";
+import {
+  type GetAllQuestionAnswers,
+  getAllQuestionAnswers,
+} from "../../queries/get-all-question-answers.ts";
 import { SectionHeader } from "../../section-header.tsx";
-import { authStore } from "../../stores/auth-store.ts";
 import { qaStore } from "../../stores/qa-store.ts";
 
 const RouteComponent = () => {
-  const userId = useStore(authStore, (state) => state.userId);
-  const { data } = useQuery(qaStore.getAll(userId ?? undefined));
+  const { data } = useQuery<GetAllQuestionAnswers>(getAllQuestionAnswers);
 
   return (
     <MainLayout
@@ -34,10 +34,9 @@ const RouteComponent = () => {
         }}
         header="Application Q/A"
         modalLabel="Add Q/A"
-        refreshKeys={queryKeys.allUserQuestionAnswers(userId ?? undefined)}
       />
       <Accordion isCompact variant="bordered">
-        {map(data, (qa) => {
+        {map(data?.questionAnswers, (qa) => {
           return (
             <AccordionItem
               aria-label={qa.question}

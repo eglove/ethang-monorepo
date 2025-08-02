@@ -26,9 +26,7 @@ export const CreateQaModal = () => {
     return draft.isCreateModalOpen;
   });
 
-  const { isPending, mutate } = useMutation(
-    qaStore.createQa(userId ?? undefined),
-  );
+  const { isPending, mutate } = useMutation(qaStore.createQa());
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

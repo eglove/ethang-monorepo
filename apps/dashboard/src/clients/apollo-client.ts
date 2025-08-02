@@ -9,6 +9,9 @@ export const apolloClient = new ApolloClient({
       Bookmark: {
         keyFields: ["id"],
       },
+      QuestionAnswer: {
+        keyFields: ["id"],
+      },
     },
   }),
   uri: "/graphql",
