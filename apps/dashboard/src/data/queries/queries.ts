@@ -10,13 +10,7 @@ const filterOutNil = (array: unknown[]) => {
 };
 
 export const queryKeys = {
-  allUserTodos: (userId?: string) => {
-    return filterOutNil(["todos", userId]);
-  },
   stats: (userId?: string) => {
     return filterOutNil(["stats", userId]);
-  },
-  todos: (userId?: string) => {
-    return filterOutNil(["todos", userId]);
   },
 };

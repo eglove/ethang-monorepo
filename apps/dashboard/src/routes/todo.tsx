@@ -1,4 +1,4 @@
-import { useStore } from "@ethang/store/use-store";
+import { useQuery } from "@apollo/client";
 import { isNumber } from "@ethang/toolbelt/is/number";
 import {
   getKeyValue,
@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
@@ -22,9 +21,8 @@ import { CreateTodoModal } from "../components/todo/create-todo-modal.tsx";
 import { useTodoTimerStore } from "../components/todo/todo-timer-store.ts";
 import { UpdateDeleteTodo } from "../components/todo/update-delete-todo.tsx";
 import { UpdateTodoModal } from "../components/todo/update-todo-modal.tsx";
-import { queryKeys } from "../data/queries/queries.ts";
+import { type GetAllTodos, getAllTodos } from "../queries/get-all-todos.ts";
 import { SectionHeader } from "../section-header.tsx";
-import { authStore } from "../stores/auth-store.ts";
 import { todoStore } from "../stores/todo-store.ts";
 
 const columns = [
@@ -36,11 +34,10 @@ const columns = [
 ];
 
 const Todo = () => {
-  const userId = useStore(authStore, (state) => state.userId);
-
   const todoTimerStore = useTodoTimerStore();
 
-  const { data, isPending } = useQuery(todoStore.getAll(userId ?? undefined));
+  const { data, loading } = useQuery<GetAllTodos>(getAllTodos);
+  const isPending = isNil(data) && loading;
 
   return (
     <MainLayout breadcrumbPaths={[{ href: "/todo", label: "Todo" }]}>
@@ -50,7 +47,6 @@ const Todo = () => {
         }}
         header="Todos"
         modalLabel="Add Todo"
-        refreshKeys={queryKeys.allUserTodos(userId ?? undefined)}
       >
         <div className="text-center font-bold underline underline-offset-2">
           {todoTimerStore.currentTime}
@@ -65,7 +61,7 @@ const Todo = () => {
           </TableHeader>
           <TableBody
             emptyContent={isPending ? "Loading..." : "No Data"}
-            items={data ?? []}
+            items={data?.todos ?? []}
           >
             {(item) => {
               return (

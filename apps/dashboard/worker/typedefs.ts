@@ -51,10 +51,20 @@ type Contact {
     expectedNextContact: Date
 }
 
+type Todo {
+    id: String!
+    userId: String!
+    title: String!
+    description: String
+    recurs: Int
+    dueDate: Date
+}
+
 type Query {
     applications(page: Int = 1, limit: Int = 10, search: String): ApplicationResponse!
     bookmarks: [Bookmark]!
     contacts: [Contact]!
     questionAnswers: [QuestionAnswer]!
+    todos: [Todo]!
 }
 `;

@@ -15,6 +15,9 @@ export const apolloClient = new ApolloClient({
       QuestionAnswer: {
         keyFields: ["id"],
       },
+      Todo: {
+        keyFields: ["id"],
+      },
     },
   }),
   uri: "/graphql",

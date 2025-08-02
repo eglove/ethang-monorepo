@@ -29,7 +29,6 @@ import {
   type DateInputValue,
   getDateTimeInputNow,
 } from "../../../worker/utilities/heroui.ts";
-import { authStore } from "../../stores/auth-store.ts";
 import { todoStore } from "../../stores/todo-store.ts";
 import { timeIntervals } from "./time-intervals.ts";
 
@@ -44,7 +43,6 @@ const createTodoFormSchema = createTodoSchema
   });
 
 export const CreateTodoModal = () => {
-  const userId = useStore(authStore, (state) => state.userId);
   const { isOpen } = useStore(todoStore, (state) => {
     return {
       isOpen: state.isCreateModalOpen,
@@ -55,9 +53,7 @@ export const CreateTodoModal = () => {
     getDateTimeInputNow(),
   );
 
-  const { isPending, mutate } = useMutation(
-    todoStore.createModal(userId ?? undefined),
-  );
+  const { isPending, mutate } = useMutation(todoStore.createModal());
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

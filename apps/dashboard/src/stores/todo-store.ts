@@ -1,24 +1,16 @@
-import {
-  type CreateTodo,
-  type Todo,
-  todosSchema,
-} from "@ethang/schemas/dashboard/todo-schema.ts";
+import type { CreateTodo } from "@ethang/schemas/dashboard/todo-schema.ts";
+
 import { BaseStore } from "@ethang/store";
-import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
-import { queryOptions } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
-import isError from "lodash/isError";
 import isNil from "lodash/isNil";
 import { DateTime } from "luxon";
 
-import { queryClient } from "../components/providers.tsx";
-import { queryKeys } from "../data/queries/queries.ts";
-import { authStore } from "./auth-store.ts";
+import type { FetchedTodo } from "../queries/get-all-todos.ts";
 
 const defaultState = {
   isCreateModalOpen: false,
   isUpdateModalOpen: false,
-  todoToUpdate: null as null | Todo,
+  todoToUpdate: null as FetchedTodo | null,
 };
 
 type TodoState = typeof defaultState;
@@ -29,50 +21,38 @@ export class TodoStore extends BaseStore<TodoState> {
     super(defaultState);
   }
 
-  public completeTodo(userId = "") {
+  public completeTodo() {
     return {
-      mutationFn: async (todo: null | Todo) => {
+      mutationFn: async (todo: FetchedTodo | null) => {
         if (isNil(todo)) {
           return;
         }
 
-        let isOk = false;
-
         if (isNil(todo.recurs)) {
-          const response = await globalThis.fetch(todoPath, {
+          await globalThis.fetch(todoPath, {
             body: JSON.stringify({
               id: todo.id,
             }),
             method: "DELETE",
           });
-
-          isOk = response.ok;
         } else {
           const nextDue = DateTime.now()
             .plus({ millisecond: todo.recurs })
             .toISO();
 
-          const response = await globalThis.fetch(todoPath, {
+          await globalThis.fetch(todoPath, {
             body: JSON.stringify({
               ...todo,
               dueDate: nextDue,
             }),
             method: "PUT",
           });
-
-          isOk = response.ok;
-        }
-
-        if (isOk) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allUserTodos(userId),
-          });
         }
       },
     };
   }
 
-  public createModal(userId = "") {
+  public createModal() {
     return {
       mutationFn: async (data: CreateTodo) => {
         const response = await globalThis.fetch(todoPath, {
@@ -81,10 +61,6 @@ export class TodoStore extends BaseStore<TodoState> {
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allUserTodos(userId),
-          });
-
           this.update((state) => {
             state.isCreateModalOpen = false;
           }, false);
@@ -95,7 +71,7 @@ export class TodoStore extends BaseStore<TodoState> {
 
   public deleteTodo(userId = "", onOk?: () => void) {
     return {
-      mutationFn: async (todo: Todo) => {
+      mutationFn: async (todo: FetchedTodo) => {
         if (isNil(userId) || isEmpty(userId)) {
           return;
         }
@@ -106,37 +82,10 @@ export class TodoStore extends BaseStore<TodoState> {
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allUserTodos(userId),
-          });
-
           onOk?.();
         }
       },
     };
-  }
-
-  public getAll(userId = "") {
-    return queryOptions({
-      enabled: !isNil(userId) && !isEmpty(userId),
-      queryFn: async () => {
-        const response = await fetch(todoPath);
-
-        if (401 === response.status) {
-          authStore.signOut();
-          throw new Error("Unauthorized");
-        }
-
-        const data = await parseFetchJson(response, todosSchema);
-
-        if (isError(data)) {
-          throw new Error("Failed to fetch todos");
-        }
-
-        return data;
-      },
-      queryKey: queryKeys.todos(userId),
-    });
   }
 
   public setIsCreateModalOpen(isOpen: boolean) {
@@ -151,7 +100,7 @@ export class TodoStore extends BaseStore<TodoState> {
     });
   }
 
-  public setTodoToUpdate(todo: null | Todo) {
+  public setTodoToUpdate(todo: FetchedTodo | null) {
     this.update((state) => {
       state.todoToUpdate = todo;
     });
@@ -159,7 +108,7 @@ export class TodoStore extends BaseStore<TodoState> {
 
   public updateTodo(userId = "") {
     return {
-      mutationFn: async (todo: null | Todo) => {
+      mutationFn: async (todo: FetchedTodo | null) => {
         if (isNil(todo)) {
           return;
         }
@@ -173,10 +122,6 @@ export class TodoStore extends BaseStore<TodoState> {
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.allUserTodos(userId),
-          });
-
           this.update((state) => {
             state.isUpdateModalOpen = false;
           }, false);

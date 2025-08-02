@@ -1,5 +1,3 @@
-import type { Todo } from "@ethang/schemas/dashboard/todo-schema.ts";
-
 import { useStore } from "@ethang/store/use-store";
 import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
@@ -8,11 +6,13 @@ import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
+import type { FetchedTodo } from "../../queries/get-all-todos.ts";
+
 import { authStore } from "../../stores/auth-store.ts";
 import { todoStore } from "../../stores/todo-store.ts";
 
 type UpdateDeleteTodoProperties = {
-  todo: Todo;
+  todo: FetchedTodo;
 };
 
 export const UpdateDeleteTodo = ({
@@ -30,7 +30,7 @@ export const UpdateDeleteTodo = ({
   );
 
   const { isPending: isCompletePending, mutate: completeTodo } = useMutation(
-    todoStore.completeTodo(userId ?? undefined),
+    todoStore.completeTodo(),
   );
 
   return (
