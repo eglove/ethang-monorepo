@@ -1,30 +1,24 @@
-import {
-  type CreateJobApplication,
-  type DeleteJobApplication,
-  getAllApplicationsSchema,
-  type UpdateJobApplication,
+import type {
+  CreateJobApplication,
+  DeleteJobApplication,
+  UpdateJobApplication,
 } from "@ethang/schemas/dashboard/application-schema.ts";
+
 import { BaseStore } from "@ethang/store";
-import { createUrl } from "@ethang/toolbelt/fetch/create-url";
-import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
-import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import debounce from "lodash/debounce.js";
-import get from "lodash/get";
 import isEmpty from "lodash/isEmpty.js";
-import isError from "lodash/isError";
 import isNil from "lodash/isNil.js";
 import toInteger from "lodash/toInteger";
-import convertToString from "lodash/toString";
-import { z } from "zod";
+
+import type { FetchedApplication } from "../queries/get-all-applications.ts";
 
 import { queryClient } from "../components/providers.tsx";
 import { queryKeys } from "../data/queries/queries.ts";
 import { formDateToIso } from "../utilities/form.ts";
 import { toastError } from "../utilities/toast-error.ts";
-import { authStore } from "./auth-store.ts";
 
 const defaultState = {
-  applicationToUpdate: null as null | UpdateJobApplication,
+  applicationToUpdate: null as FetchedApplication | null,
   debouncedSearch: "",
   isCreateModalOpen: false,
   isUpdateModalOpen: false,
@@ -37,11 +31,6 @@ const defaultState = {
 
 type ApplicationStoreState = typeof defaultState;
 const applicationPath = "/api/application";
-
-const searchParametersSchema = z.object({
-  page: z.string().optional(),
-  search: z.string().optional(),
-});
 
 export class ApplicationStore extends BaseStore<ApplicationStoreState> {
   public constructor() {
@@ -58,10 +47,6 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
         const response = await globalThis.fetch(applicationPath, {
           body: JSON.stringify(data),
           method: "POST",
-        });
-
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allUserApplications(userId),
         });
 
         this.update((state) => {
@@ -89,9 +74,6 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
           method: "DELETE",
         });
 
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.allUserApplications(userId),
-        });
         onOk?.();
 
         if (!response.ok) {
@@ -101,35 +83,7 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
     };
   }
 
-  public getAll(userId = "") {
-    this.prefetchPreviousPage(userId);
-    this.prefetchNextPage(userId);
-
-    const currentPageKeys = [
-      userId,
-      this.state.page,
-      this.state.debouncedSearch,
-    ] as const;
-
-    return queryOptions({
-      enabled: !isEmpty(userId),
-      placeholderData: keepPreviousData,
-      queryFn: async () => {
-        const applications = await this.runQuery(...currentPageKeys);
-
-        this.update((state) => {
-          state.totalPages = toInteger(
-            get(applications, ["pagination", "totalPages"]),
-          );
-        }, false);
-
-        return applications;
-      },
-      queryKey: queryKeys.applications(...currentPageKeys),
-    });
-  }
-
-  public setApplicationToUpdate(application: null | UpdateJobApplication) {
+  public setApplicationToUpdate(application: FetchedApplication | null) {
     this.update((state) => {
       state.applicationToUpdate = application;
     });
@@ -190,92 +144,15 @@ export class ApplicationStore extends BaseStore<ApplicationStoreState> {
           method: "PUT",
         });
 
-        await Promise.all([
-          queryClient.invalidateQueries({
-            queryKey: queryKeys.allUserApplications(userId),
-          }),
-          queryClient.invalidateQueries({
-            queryKey: queryKeys.stats(userId),
-          }),
-        ]);
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.stats(userId),
+        });
 
         this.update((state) => {
           state.isUpdateModalOpen = false;
         }, false);
       },
     };
-  }
-
-  private prefetchNextPage(userId: string) {
-    const nextPageKeys = [
-      userId,
-      this.state.nextPage,
-      this.state.debouncedSearch,
-    ] as const;
-
-    if (this.state.nextPage <= this.state.totalPages && !isEmpty(userId)) {
-      queryClient
-        .prefetchQuery({
-          queryFn: async () => {
-            return this.runQuery(...nextPageKeys);
-          },
-          queryKey: queryKeys.applications(...nextPageKeys),
-        })
-        .catch(toastError);
-    }
-  }
-
-  private prefetchPreviousPage(userId: string) {
-    const previousPageKeys = [
-      userId,
-      this.state.previousPage,
-      this.state.debouncedSearch,
-    ] as const;
-
-    if (0 < this.state.previousPage && !isEmpty(userId)) {
-      queryClient
-        .prefetchQuery({
-          queryFn: async () => {
-            return this.runQuery(...previousPageKeys);
-          },
-          queryKey: queryKeys.applications(...previousPageKeys),
-        })
-        .catch(toastError);
-    }
-  }
-
-  private async runQuery(userId: string, page: number, search: string) {
-    if (isEmpty(userId)) {
-      throw new Error("No user found");
-    }
-
-    const url = createUrl(applicationPath, {
-      searchParams: {
-        page: convertToString(page),
-        search,
-      },
-      searchParamsSchema: searchParametersSchema,
-      urlBase: globalThis.location.origin,
-    });
-
-    if (isError(url)) {
-      throw new Error("Invalid URL");
-    }
-
-    const response = await fetch(url);
-
-    if (401 === response.status) {
-      authStore.signOut();
-      throw new Error("Unauthorized");
-    }
-
-    const data = await parseFetchJson(response, getAllApplicationsSchema);
-
-    if (isError(data)) {
-      throw new Error("Failed to fetch applications");
-    }
-
-    return data;
   }
 }
 

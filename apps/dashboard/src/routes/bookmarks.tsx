@@ -1,4 +1,4 @@
-import { useStore } from "@ethang/store/use-store";
+import { useQuery } from "@apollo/client";
 import {
   getKeyValue,
   Link,
@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { CreateBookmarkModal } from "../components/bookmarks/create-bookmark-modal.tsx";
@@ -17,9 +16,11 @@ import { UpdateBookmarkModal } from "../components/bookmarks/update-bookmark-mod
 import { UpdateDeleteBookmark } from "../components/bookmarks/update-delete-bookmark.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../components/table-wrapper.tsx";
-import { queryKeys } from "../data/queries/queries.ts";
+import {
+  type GetAllBookmarks,
+  getAllBookmarks,
+} from "../queries/get-all-bookmarks.ts";
 import { SectionHeader } from "../section-header.tsx";
-import { authStore } from "../stores/auth-store.ts";
 import { bookmarkStore } from "../stores/bookmark-store.ts";
 
 const columns = [
@@ -28,11 +29,7 @@ const columns = [
 ];
 
 const BookMarks = () => {
-  const userId = useStore(authStore, (state) => state.userId);
-
-  const { data: bookmarks, isPending } = useQuery(
-    bookmarkStore.getAll(userId ?? undefined),
-  );
+  const { data, loading } = useQuery<GetAllBookmarks>(getAllBookmarks);
 
   return (
     <MainLayout breadcrumbPaths={[{ href: "/bookmarks", label: "Bookmarks" }]}>
@@ -42,7 +39,6 @@ const BookMarks = () => {
         }}
         header="Bookmarks"
         modalLabel="Add Bookmark"
-        refreshKeys={queryKeys.bookmarks(userId ?? undefined)}
       />
       <TableWrapper>
         <Table isStriped removeWrapper aria-label="Bookmarks">
@@ -52,8 +48,8 @@ const BookMarks = () => {
             }}
           </TableHeader>
           <TableBody
-            emptyContent={isPending ? "Loading..." : "No Data"}
-            items={bookmarks ?? []}
+            emptyContent={loading ? "Loading..." : "No Data"}
+            items={data?.bookmarks ?? []}
           >
             {(item) => {
               return (

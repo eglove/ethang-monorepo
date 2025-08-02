@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -12,9 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import isEmpty from "lodash/isEmpty.js";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
 import { XIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
@@ -25,10 +26,12 @@ import { UpdateDeleteApplication } from "../../components/job-application/update
 import { UpdateJobApplicationModal } from "../../components/job-application/update-job-application-modal.tsx";
 import { MainLayout } from "../../components/layouts/main-layout.tsx";
 import { TableWrapper } from "../../components/table-wrapper.tsx";
-import { queryKeys } from "../../data/queries/queries.ts";
+import {
+  type GetAllApplications,
+  getAllApplications,
+} from "../../queries/get-all-applications.ts";
 import { SectionHeader } from "../../section-header.tsx";
 import { applicationStore } from "../../stores/application-store.ts";
-import { authStore } from "../../stores/auth-store.ts";
 
 const columns = [
   { key: "title", label: "Title" },
@@ -43,8 +46,6 @@ const columns = [
 ];
 
 const RouteComponent = () => {
-  const userId = useStore(authStore, (state) => state.userId);
-
   const { page, search, totalPages } = useStore(applicationStore, (state) => {
     return {
       page: state.page,
@@ -53,11 +54,14 @@ const RouteComponent = () => {
     };
   });
 
-  const {
-    data: applications,
-    isFetching,
-    isPending,
-  } = useQuery(applicationStore.getAll(userId ?? undefined));
+  const { data, loading } = useQuery<GetAllApplications>(getAllApplications, {
+    variables: {
+      page,
+      search,
+      totalPages,
+    },
+  });
+  const isPending = isNil(data) && loading;
 
   return (
     <MainLayout
@@ -70,9 +74,8 @@ const RouteComponent = () => {
             applicationStore.setIsCreateModalOpen(true);
           }}
           header="Applications"
-          isFetching={isFetching}
+          isFetching={loading}
           modalLabel="Add Application"
-          refreshKeys={queryKeys.allUserApplications(userId ?? undefined)}
         >
           <div>
             <Input
@@ -121,7 +124,7 @@ const RouteComponent = () => {
             </TableHeader>
             <TableBody
               emptyContent="Nothing to Display"
-              items={applications?.data ?? []}
+              items={data?.applications.applications ?? []}
               loadingContent={<Spinner />}
               loadingState={isPending ? "loading" : "idle"}
             >

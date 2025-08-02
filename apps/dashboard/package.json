@@ -4,6 +4,9 @@
     "current node"
   ],
   "dependencies": {
+    "@apollo/client": "^3.13.9",
+    "@apollo/server": "^5.0.0",
+    "@as-integrations/cloudflare-workers": "^1.1.1",
     "@cortex-js/compute-engine": "^0.30.2",
     "@ethang/hooks": "^2.3.1",
     "@ethang/schemas": "workspace:*",
@@ -23,6 +26,7 @@
     "@tanstack/react-router-devtools": "^1.130.13",
     "@uidotdev/usehooks": "^2.4.1",
     "framer-motion": "^12.23.12",
+    "graphql": "^16.11.0",
     "idb-keyval": "^6.2.2",
     "immer": "^10.1.1",
     "jose": "^6.0.12",
@@ -55,6 +59,7 @@
     "@types/lodash": "^4.17.20",
     "@types/luxon": "^3.7.1",
     "@types/ms": "^2.1.0",
+    "@types/node": "^24.1.0",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "@types/use-sync-external-store": "^1.5.0",

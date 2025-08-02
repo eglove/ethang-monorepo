@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 import { Button } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
+import isNil from "lodash/isNil.js";
 import { PlusIcon, RotateCwIcon } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -11,7 +12,7 @@ type SectionHeaderProperties = {
   isFetching?: boolean;
   modalLabel: string;
   openModal: () => void;
-  refreshKeys: (object | string)[];
+  refreshKeys?: (object | string)[];
 };
 
 export const SectionHeader = ({
@@ -24,9 +25,11 @@ export const SectionHeader = ({
 }: Readonly<SectionHeaderProperties>) => {
   const queryClient = useQueryClient();
   const invalidate = useDebouncedCallback(() => {
-    queryClient
-      .invalidateQueries({ queryKey: refreshKeys })
-      .catch(globalThis.console.error);
+    if (!isNil(refreshKeys)) {
+      queryClient
+        .invalidateQueries({ queryKey: refreshKeys })
+        .catch(globalThis.console.error);
+    }
   }, 1000);
 
   return (

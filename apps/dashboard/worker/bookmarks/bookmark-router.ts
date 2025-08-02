@@ -2,7 +2,6 @@ import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response"
 
 import { createBookmark } from "./create-bookmark.ts";
 import { deleteBookmark } from "./delete-bookmark.ts";
-import { getAllBookmarks } from "./get-all-bookmarks.ts";
 import { updateBookmark } from "./update-bookmark.ts";
 
 export const bookmarkRouter = async (
@@ -13,10 +12,6 @@ export const bookmarkRouter = async (
   switch (request.method) {
     case "DELETE": {
       return deleteBookmark(request, environment, userId);
-    }
-
-    case "GET": {
-      return getAllBookmarks(environment, userId);
     }
 
     case "POST": {

@@ -13,20 +13,11 @@ export const queryKeys = {
   allContacts: (userId?: string) => {
     return filterOutNil(["contacts", userId]);
   },
-  allUserApplications: (userId?: string) => {
-    return filterOutNil(["applications", userId]);
-  },
   allUserQuestionAnswers: (userId?: string) => {
     return filterOutNil(["questionAnswers", userId]);
   },
   allUserTodos: (userId?: string) => {
     return filterOutNil(["todos", userId]);
-  },
-  applications: (userId?: string, page?: number, search?: string) => {
-    return filterOutNil(["applications", userId, page, search]);
-  },
-  bookmarks: (userId?: string) => {
-    return filterOutNil(["bookmarks", userId]);
   },
   contacts: (userId?: string) => {
     return filterOutNil(["contacts", userId]);

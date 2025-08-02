@@ -1,17 +1,17 @@
-import type { JobApplication } from "@ethang/schemas/dashboard/application-schema.ts";
-
 import { useStore } from "@ethang/store/use-store";
 import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
+import type { FetchedApplication } from "../../queries/get-all-applications.ts";
+
 import { applicationStore } from "../../stores/application-store.ts";
 import { authStore } from "../../stores/auth-store.ts";
 
 export const UpdateDeleteApplication = ({
   application,
-}: Readonly<{ application: JobApplication }>) => {
+}: Readonly<{ application: FetchedApplication }>) => {
   const userId = useStore(authStore, (state) => state.userId);
   const [isDeleting, setIsDeleting] = useState(false);
 

@@ -1,17 +1,6 @@
-import {
-  type Bookmark,
-  bookmarksSchema,
-} from "@ethang/schemas/dashboard/bookmark-schema.ts";
-import { BaseStore } from "@ethang/store";
-import { parseFetchJson } from "@ethang/toolbelt/fetch/json";
-import { queryOptions } from "@tanstack/react-query";
-import isEmpty from "lodash/isEmpty.js";
-import isError from "lodash/isError";
-import isNil from "lodash/isNil.js";
+import type { Bookmark } from "@ethang/schemas/dashboard/bookmark-schema.ts";
 
-import { queryClient } from "../components/providers.tsx";
-import { queryKeys } from "../data/queries/queries.ts";
-import { authStore } from "./auth-store.ts";
+import { BaseStore } from "@ethang/store";
 
 const defaultState = {
   bookmarkToUpdate: null as Bookmark | null,
@@ -39,10 +28,6 @@ export class BookmarkStore extends BaseStore<BookmarkStoreState> {
           method: "POST",
         });
 
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.bookmarks(userId),
-        });
-
         this.update((state) => {
           state.isCreateModalOpen = false;
         }, false);
@@ -59,37 +44,10 @@ export class BookmarkStore extends BaseStore<BookmarkStoreState> {
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.bookmarks(userId),
-          });
-
           onOk?.();
         }
       },
     };
-  }
-
-  public getAll(userId = "") {
-    return queryOptions({
-      enabled: !isNil(userId) && !isEmpty(userId),
-      queryFn: async () => {
-        const response = await fetch(bookmarkPath);
-
-        if (401 === response.status) {
-          authStore.signOut();
-          throw new Error("Unauthorized");
-        }
-
-        const data = await parseFetchJson(response, bookmarksSchema);
-
-        if (isError(data)) {
-          throw data;
-        }
-
-        return data;
-      },
-      queryKey: queryKeys.bookmarks(userId),
-    });
   }
 
   public setBookmarkToUpdate(bookmark: Bookmark | null) {
@@ -119,10 +77,6 @@ export class BookmarkStore extends BaseStore<BookmarkStoreState> {
         });
 
         if (response.ok) {
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.bookmarks(userId),
-          });
-
           this.update((state) => {
             state.isUpdateModalOpen = false;
           }, false);
