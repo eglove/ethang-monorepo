@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 
+import { useMutation } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -11,10 +12,11 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 import { z } from "zod";
 
+import { createBookmark } from "../../graphql/mutations/create-bookmark.ts";
+import { getAllBookmarks } from "../../graphql/queries/get-all-bookmarks.ts";
 import { authStore } from "../../stores/auth-store.ts";
 import { bookmarkStore } from "../../stores/bookmark-store.ts";
 
@@ -25,9 +27,7 @@ export const CreateBookmarkModal = () => {
     (snapshot) => snapshot.isCreateModalOpen,
   );
 
-  const { isPending, mutate } = useMutation(
-    bookmarkStore.createBookmark(userId ?? undefined),
-  );
+  const [addBookmark, { loading }] = useMutation(createBookmark);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -39,10 +39,18 @@ export const CreateBookmarkModal = () => {
       return;
     }
 
-    mutate({
-      title: parsed.data.title,
-      url: parsed.data.url,
-    });
+    addBookmark({
+      onCompleted: () => {
+        bookmarkStore.setIsCreateModalOpen(false);
+      },
+      refetchQueries: [getAllBookmarks],
+      variables: {
+        input: {
+          title: parsed.data.title,
+          url: parsed.data.url,
+        },
+      },
+    }).catch(globalThis.console.error);
   };
 
   return (
@@ -70,7 +78,7 @@ export const CreateBookmarkModal = () => {
             >
               Close
             </Button>
-            <Button color="primary" isLoading={isPending} type="submit">
+            <Button color="primary" isLoading={loading} type="submit">
               Create
             </Button>
           </ModalFooter>

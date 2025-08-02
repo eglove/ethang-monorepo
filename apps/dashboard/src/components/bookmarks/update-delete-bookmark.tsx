@@ -1,12 +1,12 @@
 import type { Bookmark } from "@ethang/schemas/dashboard/bookmark-schema.ts";
 
-import { useStore } from "@ethang/store/use-store";
+import { useMutation } from "@apollo/client";
 import { Button } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
-import { authStore } from "../../stores/auth-store.ts";
+import { deleteBookmark } from "../../graphql/mutations/delete-bookmark.ts";
+import { getAllBookmarks } from "../../graphql/queries/get-all-bookmarks.ts";
 import { bookmarkStore } from "../../stores/bookmark-store.ts";
 
 type UpdateDeleteBookmarkProperties = {
@@ -17,13 +17,8 @@ export const UpdateDeleteBookmark = ({
   bookmark,
 }: Readonly<UpdateDeleteBookmarkProperties>) => {
   const [isDeleting, setIsDeleting] = useState(false);
-  const userId = useStore(authStore, (state) => state.userId);
 
-  const { isPending, mutate } = useMutation(
-    bookmarkStore.deleteBookmark(userId ?? undefined, () => {
-      setIsDeleting(false);
-    }),
-  );
+  const [handleDelete, { loading }] = useMutation(deleteBookmark);
 
   return (
     <div className="flex items-center gap-2">
@@ -48,7 +43,7 @@ export const UpdateDeleteBookmark = ({
             }}
             aria-label="Delete"
             color="danger"
-            isLoading={isPending}
+            isLoading={loading}
             size="sm"
           >
             <Trash2Icon />
@@ -60,11 +55,21 @@ export const UpdateDeleteBookmark = ({
           <Button
             isIconOnly
             onPress={() => {
-              mutate(bookmark);
+              handleDelete({
+                onCompleted: () => {
+                  setIsDeleting(false);
+                },
+                refetchQueries: [getAllBookmarks],
+                variables: {
+                  input: {
+                    id: bookmark.id,
+                  },
+                },
+              }).catch(globalThis.console.error);
             }}
             aria-label="Confirm delete"
             color="danger"
-            isLoading={isPending}
+            isLoading={loading}
             size="sm"
           >
             <CheckIcon />
@@ -75,7 +80,7 @@ export const UpdateDeleteBookmark = ({
               setIsDeleting(false);
             }}
             aria-label="Cancel delete"
-            isLoading={isPending}
+            isLoading={loading}
             size="sm"
           >
             <XIcon />

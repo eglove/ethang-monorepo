@@ -1,6 +1,7 @@
 import type { Bookmark } from "@ethang/schemas/dashboard/bookmark-schema.ts";
 import type { FormEvent } from "react";
 
+import { useMutation } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -12,10 +13,11 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 import { z } from "zod";
 
+import { updateBookmark } from "../../graphql/mutations/update-bookmark.ts";
+import { getAllBookmarks } from "../../graphql/queries/get-all-bookmarks.ts";
 import { authStore } from "../../stores/auth-store.ts";
 import { bookmarkStore } from "../../stores/bookmark-store.ts";
 
@@ -40,7 +42,7 @@ export const UpdateBookmarkModal = () => {
     });
   };
 
-  const { isPending, mutate } = useMutation(bookmarkStore.updateBookmark());
+  const [handleUpdate, { loading }] = useMutation(updateBookmark);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -52,12 +54,20 @@ export const UpdateBookmarkModal = () => {
       return;
     }
 
-    mutate({
-      id: bookmark.id,
-      title: parsed.data.title,
-      url: parsed.data.url,
-      userId,
-    });
+    handleUpdate({
+      onCompleted: () => {
+        bookmarkStore.setIsUpdateModalOpen(false);
+        bookmarkStore.setBookmarkToUpdate(null);
+      },
+      refetchQueries: [getAllBookmarks],
+      variables: {
+        input: {
+          id: bookmark.id,
+          title: parsed.data.title,
+          url: parsed.data.url,
+        },
+      },
+    }).catch(globalThis.console.error);
   };
 
   return (
@@ -109,7 +119,7 @@ export const UpdateBookmarkModal = () => {
             >
               Close
             </Button>
-            <Button color="primary" isLoading={isPending} type="submit">
+            <Button color="primary" isLoading={loading} type="submit">
               Update
             </Button>
           </ModalFooter>

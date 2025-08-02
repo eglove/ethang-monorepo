@@ -111,6 +111,21 @@ input UpdateApplicationInput {
     dmSent: Date
 }
 
+input CreateBookmarkInput {
+    title: String!
+    url: String!
+}
+
+input UpdateBookmarkInput {
+    id: String!
+    title: String!
+    url: String!
+}
+
+input DeleteBookmarkInput {
+    id: String!
+}
+
 type Query {
     applications(page: Int = 1, limit: Int = 10, search: String): ApplicationResponse!
     bookmarks: [Bookmark]!
@@ -124,4 +139,7 @@ type Mutation {
     createApplication(input: CreateApplicationInput!): Application!
     deleteApplication(input: DeleteApplicationInput!): Application!
     updateApplication(input: UpdateApplicationInput!): Application!
+    createBookmark(input: CreateBookmarkInput!): Bookmark!
+    updateBookmark(input: UpdateBookmarkInput!): Bookmark!
+    deleteBookmark(input: DeleteBookmarkInput!): Bookmark!
 }`;

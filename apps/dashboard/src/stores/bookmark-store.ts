@@ -9,45 +9,10 @@ const defaultState = {
 };
 
 type BookmarkStoreState = typeof defaultState;
-const bookmarkPath = "/api/bookmark";
 
 export class BookmarkStore extends BaseStore<BookmarkStoreState> {
   public constructor() {
     super(defaultState);
-  }
-
-  public createBookmark(userId = "") {
-    return {
-      mutationFn: async (data: { title: string; url: string }) => {
-        await globalThis.fetch(bookmarkPath, {
-          body: JSON.stringify({
-            title: data.title,
-            url: data.url,
-            userId,
-          }),
-          method: "POST",
-        });
-
-        this.update((state) => {
-          state.isCreateModalOpen = false;
-        }, false);
-      },
-    };
-  }
-
-  public deleteBookmark(userId = "", onOk?: () => void) {
-    return {
-      mutationFn: async (bookmark: Bookmark) => {
-        const response = await globalThis.fetch(bookmarkPath, {
-          body: JSON.stringify({ id: bookmark.id, userId }),
-          method: "DELETE",
-        });
-
-        if (response.ok) {
-          onOk?.();
-        }
-      },
-    };
   }
 
   public setBookmarkToUpdate(bookmark: Bookmark | null) {
@@ -66,23 +31,6 @@ export class BookmarkStore extends BaseStore<BookmarkStoreState> {
     this.update((draft) => {
       draft.isUpdateModalOpen = isOpen;
     });
-  }
-
-  public updateBookmark() {
-    return {
-      mutationFn: async (data: Bookmark) => {
-        const response = await fetch(bookmarkPath, {
-          body: JSON.stringify(data),
-          method: "PUT",
-        });
-
-        if (response.ok) {
-          this.update((state) => {
-            state.isUpdateModalOpen = false;
-          }, false);
-        }
-      },
-    };
   }
 }
 
