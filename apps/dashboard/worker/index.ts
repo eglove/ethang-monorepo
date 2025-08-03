@@ -1,6 +1,5 @@
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateCloudflareWorkersHandler } from "@as-integrations/cloudflare-workers";
-import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response";
 
 import type { Context } from "./types.ts";
 
@@ -20,7 +19,7 @@ const handler = startServerAndCreateCloudflareWorkersHandler<Env>(server, {
     const userId = await getIsAuthenticated(request);
 
     if (false === userId) {
-      return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+      throw new Error("Unauthorized");
     }
 
     const prisma = getPrismaClient(env);

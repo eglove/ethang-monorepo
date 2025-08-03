@@ -55,4 +55,5 @@ const customRules = [
   },
 ];
 
+// @ts-expect-error loose types
 export const lodashRules = genRules(ruleNames, customRules, "lodash");

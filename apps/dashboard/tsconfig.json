@@ -1,10 +1,12 @@
 {
 	"compilerOptions": {
+		"exactOptionalPropertyTypes": false,
 		"types": [
 			"./worker-configuration.d.ts"
-		]
+		],
 	},
 	"extends": [
 		"../../packages/tsconfig/tsconfig.react.json"
 	],
+	"exclude": ["./generated/**/*"]
 }

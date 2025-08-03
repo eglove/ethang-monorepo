@@ -26,7 +26,6 @@ const customTemplateRules = [
 
 export const angularTsRules = genRules(
   tsRuleNames,
-  // @ts-expect-error loose types
   customTsRules,
   "@angular-eslint",
 );
