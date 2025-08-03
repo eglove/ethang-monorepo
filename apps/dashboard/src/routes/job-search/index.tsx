@@ -46,11 +46,10 @@ const columns = [
 ];
 
 const RouteComponent = () => {
-  const { page, search, totalPages } = useStore(applicationStore, (state) => {
+  const { page, search } = useStore(applicationStore, (state) => {
     return {
       page: state.page,
       search: state.search,
-      totalPages: state.totalPages,
     };
   });
 
@@ -58,8 +57,15 @@ const RouteComponent = () => {
     variables: {
       page,
       search,
-      totalPages,
     },
+  });
+  useQuery(getAllApplications, {
+    skip: page >= (data?.applications.pagination.totalPages ?? 0),
+    variables: { page: page + 1, search },
+  });
+  useQuery(getAllApplications, {
+    skip: 1 >= page,
+    variables: { page: page - 1, search },
   });
   const isPending = isNil(data) && loading;
 
@@ -110,10 +116,10 @@ const RouteComponent = () => {
             onChange: (value) => {
               applicationStore.setPage(value);
             },
-            page,
+            page: data?.applications.pagination.page ?? 1,
             showControls: true,
             showShadow: true,
-            total: totalPages,
+            total: data?.applications.pagination.totalPages ?? 0,
           }}
         >
           <Table isHeaderSticky isStriped removeWrapper aria-label="Job Search">

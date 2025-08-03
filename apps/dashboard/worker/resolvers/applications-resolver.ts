@@ -38,6 +38,8 @@ export const getAllApplicationsResolver = async (
 
   const applications = await context.prisma.applications.findMany({
     select: prismaSelectWithPagination(info, "applications"),
+    skip: (_arguments.page - 1) * _arguments.limit,
+    take: _arguments.limit,
     where: {
       userId: context.userId,
     },
