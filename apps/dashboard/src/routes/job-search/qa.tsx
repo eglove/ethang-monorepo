@@ -19,7 +19,9 @@ import { SectionHeader } from "../../section-header.tsx";
 import { qaStore } from "../../stores/qa-store.ts";
 
 const RouteComponent = () => {
-  const { data } = useQuery<GetAllQuestionAnswers>(getAllQuestionAnswers);
+  const { data, loading } = useQuery<GetAllQuestionAnswers>(
+    getAllQuestionAnswers,
+  );
 
   return (
     <MainLayout
@@ -33,6 +35,8 @@ const RouteComponent = () => {
           qaStore.setIsCreateModalOpen(true);
         }}
         header="Application Q/A"
+        invalidateQuery={getAllQuestionAnswers}
+        isFetching={loading}
         modalLabel="Add Q/A"
       />
       <Accordion isCompact variant="bordered">

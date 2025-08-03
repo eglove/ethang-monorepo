@@ -1,11 +1,16 @@
+import type { DocumentNode } from "graphql/language";
 import type { ReactNode } from "react";
 
 import { Button } from "@heroui/react";
+import isNil from "lodash/isNil.js";
 import { PlusIcon, RotateCwIcon } from "lucide-react";
+
+import { apolloClient } from "./clients/apollo-client.ts";
 
 type SectionHeaderProperties = {
   children?: ReactNode;
   header: string;
+  invalidateQuery?: DocumentNode;
   isFetching?: boolean;
   modalLabel: string;
   openModal: () => void;
@@ -15,6 +20,7 @@ type SectionHeaderProperties = {
 export const SectionHeader = ({
   children,
   header,
+  invalidateQuery,
   isFetching,
   modalLabel,
   openModal,
@@ -29,6 +35,13 @@ export const SectionHeader = ({
         <div className="flex gap-2">
           <Button
             isIconOnly
+            onPress={() => {
+              if (!isNil(invalidateQuery)) {
+                apolloClient
+                  .refetchQueries({ include: [invalidateQuery] })
+                  .catch(globalThis.console.error);
+              }
+            }}
             color="primary"
             isLoading={true === isFetching}
             size="sm"

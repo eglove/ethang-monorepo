@@ -45,9 +45,7 @@ export const getAllApplicationsResolver = async (
     select: prismaSelectWithPagination(info, "applications"),
     skip: (_arguments.page - 1) * _arguments.limit,
     take: _arguments.limit,
-    where: {
-      userId: context.userId,
-    },
+    where,
   });
 
   return {

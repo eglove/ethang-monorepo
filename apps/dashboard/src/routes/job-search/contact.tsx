@@ -53,6 +53,8 @@ const RouteComponent = () => {
           contactStore.setIsCreateModalOpen(true);
         }}
         header="Contacts"
+        invalidateQuery={getAllContacts}
+        isFetching={loading}
         modalLabel="Create Contact"
       />
       <TableWrapper>

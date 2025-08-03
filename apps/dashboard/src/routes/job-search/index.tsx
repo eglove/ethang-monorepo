@@ -80,6 +80,7 @@ const RouteComponent = () => {
             applicationStore.setIsCreateModalOpen(true);
           }}
           header="Applications"
+          invalidateQuery={getAllApplications}
           isFetching={loading}
           modalLabel="Add Application"
         >
@@ -116,7 +117,7 @@ const RouteComponent = () => {
             onChange: (value) => {
               applicationStore.setPage(value);
             },
-            page: (data?.applications.pagination.page ?? 0) - 1,
+            page: data?.applications.pagination.page ?? 0,
             showControls: true,
             showShadow: true,
             total: data?.applications.pagination.totalPages ?? 0,
