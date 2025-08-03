@@ -18,9 +18,10 @@ import forEach from "lodash/forEach";
 import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
+import isString from "lodash/isString";
 import set from "lodash/set";
-import { z } from "zod";
 
+import contactsCreateInputSchema from "../../../generated/zod/inputTypeSchemas/contactsCreateInputSchema.ts";
 import {
   convertDateTimeInputToIso,
   getDateTimeInputNow,
@@ -38,45 +39,43 @@ export const CreateContactModal = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const parsed = z
-      .object({
-        email: z.string().nullable(),
-        expectedNextContact: z.string().nullable(),
-        lastContact: z.string(),
-        linkedIn: z.string().nullable(),
-        name: z.string(),
-        phone: z.string().nullable(),
-      })
-      .safeParse(Object.fromEntries(new FormData(event.currentTarget)));
+    const entries = Object.fromEntries(new FormData(event.currentTarget));
 
-    if (!parsed.success) {
-      return;
-    }
-
-    forEach(parsed.data, (value, key) => {
+    forEach(entries, (value, key) => {
       if (isNil(value) || isEmpty(value)) {
-        set(parsed.data, [key], null);
+        set(entries, [key], null);
         return;
       }
 
       if ("lastContact" === key || "expectedNextContact" === key) {
-        const _dateValue = get(parsed, ["data", key]);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        const _dateValue = get(entries, [key]) as unknown as
+          | Date
+          | null
+          | string
+          | undefined;
 
         if (!isNil(_dateValue)) {
-          const isoValue = convertDateTimeInputToIso(
-            parseZonedDateTime(_dateValue),
-          );
-          set(parsed.data, [key], isoValue);
+          const isoValue = isString(_dateValue)
+            ? convertDateTimeInputToIso(parseZonedDateTime(_dateValue))
+            : _dateValue.toISOString();
+          set(entries, [key], isoValue);
         }
       }
     });
+
+    const parsed = contactsCreateInputSchema.safeParse(entries);
+
+    if (!parsed.success) {
+      return;
+    }
 
     handleCreate({
       onCompleted: () => {
         contactStore.setIsCreateModalOpen(false);
       },
       refetchQueries: [getAllContacts],
-      variables: { input: { ...parsed.data, __typename: undefined } },
+      variables: { input: { ...parsed.data } },
     }).catch(globalThis.console.error);
   };
 

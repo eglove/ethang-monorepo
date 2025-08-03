@@ -38,16 +38,6 @@ export const Navigation = () => {
       </NavbarContent>
       <NavbarMenu>
         <NavbarItem>
-          <Link className="text-foreground" href="/todo" underline="hover">
-            Todos
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link className="text-foreground" href="/bookmarks" underline="hover">
-            Bookmarks
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
           <Link
             className="text-foreground"
             href="/job-search"

@@ -14,8 +14,8 @@ import {
 } from "@heroui/react";
 import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
-import { z } from "zod";
 
+import applicationsCreateInputSchema from "../../../generated/zod/inputTypeSchemas/applicationsCreateInputSchema.ts";
 import { createJobApplication } from "../../graphql/mutations/create-job-application.ts";
 import { getAllApplications } from "../../graphql/queries/get-all-applications.ts";
 import { applicationStore } from "../../stores/application-store.ts";
@@ -32,19 +32,13 @@ export const CreateJobApplicationModal = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const parsed = z
-      .object({
-        company: z.string(),
-        jobBoardUrl: z.string().optional(),
-        title: z.string(),
-        url: z.string(),
-      })
-      .safeParse(Object.fromEntries(new FormData(event.currentTarget)));
+    const parsed = applicationsCreateInputSchema.safeParse(
+      Object.fromEntries(new FormData(event.currentTarget)),
+    );
 
     if (isNil(userId) || !parsed.success) {
       return;
     }
-
     create({
       onCompleted: () => {
         applicationStore.setIsCreateModalOpen(false);
@@ -52,12 +46,8 @@ export const CreateJobApplicationModal = () => {
       refetchQueries: [getAllApplications],
       variables: {
         input: {
+          ...parsed.data,
           applied: DateTime.now().toISO(),
-          company: parsed.data.company,
-          jobBoardUrl: parsed.data.jobBoardUrl,
-          rejected: null,
-          title: parsed.data.title,
-          url: parsed.data.url,
         },
       },
     }).catch(globalThis.console.error);

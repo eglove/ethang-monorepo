@@ -27,4 +27,4 @@ dist-ssr
 .wrangler
 .dev.vars*
 
-/generated/prisma
+/generated/

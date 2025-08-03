@@ -8,6 +8,14 @@ generator client {
   runtime                = "cloudflare"
 }
 
+generator zod {
+  provider         = "npx zod-prisma-types"
+  output           = "../generated/zod"
+  useMultipleFiles = true
+  writeBarrelFiles = false
+  prismaClientPath = "../../prisma/client"
+}
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
@@ -15,13 +23,13 @@ datasource db {
 
 model applications {
   id          String    @id @default(uuid(7))
-  userId      String
-  applied     DateTime
+  userId      String /// @zod.custom.omit([input])
+  applied     DateTime /// @zod.custom.omit([input])
   company     String
   title       String
   url         String
   jobBoardUrl String?
-  rejected    DateTime?
+  rejected    DateTime? /// @zod.custom.omit([input])
   dmUrl       String?
   dmSent      DateTime?
 
@@ -32,7 +40,7 @@ model applications {
 
 model contacts {
   id                  String    @id @default(uuid(7))
-  userId              String
+  userId              String /// @zod.custom.omit([input])
   name                String
   phone               String?
   email               String?
@@ -44,8 +52,8 @@ model contacts {
 }
 
 model questionAnswers {
-  id       String @id @default(uuid(7))
-  userId   String
+  id       String @id @default(uuid(7)) /// @zod.custom.omit([input])
+  userId   String /// @zod.custom.omit([input])
   answer   String
   question String
 

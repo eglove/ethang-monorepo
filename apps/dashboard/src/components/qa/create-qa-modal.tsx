@@ -14,8 +14,8 @@ import {
   Textarea,
 } from "@heroui/react";
 import isNil from "lodash/isNil.js";
-import { z } from "zod";
 
+import questionAnswersCreateInputSchema from "../../../generated/zod/inputTypeSchemas/questionAnswersCreateInputSchema.ts";
 import { createQuestionAnswer } from "../../graphql/mutations/create-question-answer.ts";
 import { getAllQuestionAnswers } from "../../graphql/queries/get-all-question-answers.ts";
 import { authStore } from "../../stores/auth-store.ts";
@@ -32,9 +32,9 @@ export const CreateQaModal = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const parsed = z
-      .object({ answer: z.string(), question: z.string() })
-      .safeParse(Object.fromEntries(new FormData(event.currentTarget)));
+    const parsed = questionAnswersCreateInputSchema.safeParse(
+      Object.fromEntries(new FormData(event.currentTarget)),
+    );
 
     if (isNil(userId) || !parsed.success) {
       return;
