@@ -37,6 +37,7 @@ export const getAllApplicationsResolver = async (
   const total = await context.prisma.applications.count({ where });
 
   const applications = await context.prisma.applications.findMany({
+    orderBy: { applied: "desc" },
     select: prismaSelectWithPagination(info, "applications"),
     skip: (_arguments.page - 1) * _arguments.limit,
     take: _arguments.limit,

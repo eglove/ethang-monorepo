@@ -116,7 +116,7 @@ const RouteComponent = () => {
             onChange: (value) => {
               applicationStore.setPage(value);
             },
-            page: data?.applications.pagination.page ?? 1,
+            page: (data?.applications.pagination.page ?? 0) - 1,
             showControls: true,
             showShadow: true,
             total: data?.applications.pagination.totalPages ?? 0,

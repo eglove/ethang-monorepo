@@ -1,4 +1,3 @@
-import isDate from "lodash/isDate.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil";
 import isString from "lodash/isString";
@@ -19,13 +18,13 @@ export const getFormDate = (date: Date | null | string | undefined) => {
 };
 
 export const formDateToIso = (date: Date | null | string) => {
-  if (!isDate(date) || !isString(date) || isEmpty(date) || isNil(date)) {
+  if (!isString(date) || isEmpty(date) || isNil(date)) {
     return null;
   }
 
-  const fromIso = isDate(date)
-    ? DateTime.fromJSDate(date)
-    : DateTime.fromISO(date);
+  const fromIso = isString(date)
+    ? DateTime.fromISO(date)
+    : DateTime.fromJSDate(date);
 
   if (fromIso.isValid) {
     return fromIso.toISO();
