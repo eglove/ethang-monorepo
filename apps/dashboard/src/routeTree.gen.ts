@@ -9,24 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TodoRouteImport } from './routes/todo'
-import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as JobSearchIndexRouteImport } from './routes/job-search/index'
 import { Route as JobSearchStatsRouteImport } from './routes/job-search/stats'
 import { Route as JobSearchQaRouteImport } from './routes/job-search/qa'
 import { Route as JobSearchContactRouteImport } from './routes/job-search/contact'
 
-const TodoRoute = TodoRouteImport.update({
-  id: '/todo',
-  path: '/todo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BookmarksRoute = BookmarksRouteImport.update({
-  id: '/bookmarks',
-  path: '/bookmarks',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,8 +43,6 @@ const JobSearchContactRoute = JobSearchContactRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/bookmarks': typeof BookmarksRoute
-  '/todo': typeof TodoRoute
   '/job-search/contact': typeof JobSearchContactRoute
   '/job-search/qa': typeof JobSearchQaRoute
   '/job-search/stats': typeof JobSearchStatsRoute
@@ -64,8 +50,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/bookmarks': typeof BookmarksRoute
-  '/todo': typeof TodoRoute
   '/job-search/contact': typeof JobSearchContactRoute
   '/job-search/qa': typeof JobSearchQaRoute
   '/job-search/stats': typeof JobSearchStatsRoute
@@ -74,8 +58,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/bookmarks': typeof BookmarksRoute
-  '/todo': typeof TodoRoute
   '/job-search/contact': typeof JobSearchContactRoute
   '/job-search/qa': typeof JobSearchQaRoute
   '/job-search/stats': typeof JobSearchStatsRoute
@@ -85,8 +67,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/bookmarks'
-    | '/todo'
     | '/job-search/contact'
     | '/job-search/qa'
     | '/job-search/stats'
@@ -94,8 +74,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/bookmarks'
-    | '/todo'
     | '/job-search/contact'
     | '/job-search/qa'
     | '/job-search/stats'
@@ -103,8 +81,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/bookmarks'
-    | '/todo'
     | '/job-search/contact'
     | '/job-search/qa'
     | '/job-search/stats'
@@ -113,8 +89,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BookmarksRoute: typeof BookmarksRoute
-  TodoRoute: typeof TodoRoute
   JobSearchContactRoute: typeof JobSearchContactRoute
   JobSearchQaRoute: typeof JobSearchQaRoute
   JobSearchStatsRoute: typeof JobSearchStatsRoute
@@ -123,20 +97,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/todo': {
-      id: '/todo'
-      path: '/todo'
-      fullPath: '/todo'
-      preLoaderRoute: typeof TodoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bookmarks': {
-      id: '/bookmarks'
-      path: '/bookmarks'
-      fullPath: '/bookmarks'
-      preLoaderRoute: typeof BookmarksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -177,8 +137,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BookmarksRoute: BookmarksRoute,
-  TodoRoute: TodoRoute,
   JobSearchContactRoute: JobSearchContactRoute,
   JobSearchQaRoute: JobSearchQaRoute,
   JobSearchStatsRoute: JobSearchStatsRoute,

@@ -57,13 +57,6 @@ type QuestionAnswer {
     question: String!
 }
 
-type Bookmark {
-    id: String!
-    title: String!
-    url: String!
-    userId: String!
-}
-
 type Contact {
     id: String!
     userId: String!
@@ -73,15 +66,6 @@ type Contact {
     linkedIn: String
     lastContact: Date!
     expectedNextContact: Date
-}
-
-type Todo {
-    id: String!
-    userId: String!
-    title: String!
-    description: String
-    recurs: Int
-    dueDate: Date!
 }
 
 input CreateApplicationInput {
@@ -109,21 +93,6 @@ input UpdateApplicationInput {
     rejected: Date
     dmUrl: String
     dmSent: Date
-}
-
-input CreateBookmarkInput {
-    title: String!
-    url: String!
-}
-
-input UpdateBookmarkInput {
-    id: String!
-    title: String!
-    url: String!
-}
-
-input DeleteBookmarkInput {
-    id: String!
 }
 
 input CreateQuestionAnswerInput {
@@ -164,31 +133,10 @@ input DeleteContactInput {
     id: String!
 }
 
-input CreateTodoInput {
-    title: String!
-    description: String
-    recurs: Int
-    dueDate: Date!
-}
-
-input UpdateTodoInput {
-    id: String!
-    title: String!
-    description: String
-    recurs: Int
-    dueDate: Date!
-}
-
-input DeleteTodoInput {
-    id: String!
-}
-
 type Query {
     applications(page: Int = 1, limit: Int = 10, search: String): ApplicationResponse!
-    bookmarks: [Bookmark]!
     contacts: [Contact]!
     questionAnswers: [QuestionAnswer]!
-    todos: [Todo]!
     applicationStats: ApplicationStats!
 }
 
@@ -196,16 +144,10 @@ type Mutation {
     createApplication(input: CreateApplicationInput!): Application!
     deleteApplication(input: DeleteApplicationInput!): Application!
     updateApplication(input: UpdateApplicationInput!): Application!
-    createBookmark(input: CreateBookmarkInput!): Bookmark!
-    updateBookmark(input: UpdateBookmarkInput!): Bookmark!
-    deleteBookmark(input: DeleteBookmarkInput!): Bookmark!
     createQuestionAnswer(input: CreateQuestionAnswerInput!): QuestionAnswer!
     updateQuestionAnswer(input: UpdateQuestionAnswerInput!): QuestionAnswer!
     deleteQuestionAnswer(input: DeleteQuestionAnswerInput!): QuestionAnswer!
     createContact(input: CreateContactInput!): Contact!
     updateContact(input: UpdateContactInput!): Contact!
     deleteContact(input: DeleteContactInput!): Contact!
-    createTodo(input: CreateTodoInput!): Todo!
-    updateTodo(input: UpdateTodoInput!): Todo!
-    deleteTodo(input: DeleteTodoInput!): Todo!
 }`;

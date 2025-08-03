@@ -30,13 +30,6 @@ model applications {
   @@index([id, userId])
 }
 
-model bookmarks {
-  id     String @id @default(uuid(7))
-  title  String
-  url    String
-  userId String
-}
-
 model contacts {
   id                  String    @id @default(uuid(7))
   userId              String
@@ -55,17 +48,6 @@ model questionAnswers {
   userId   String
   answer   String
   question String
-
-  @@index([id, userId])
-}
-
-model todos {
-  id          String   @id @default(uuid(7))
-  userId      String
-  title       String
-  description String?
-  recurs      Int?
-  dueDate     DateTime
 
   @@index([id, userId])
 }

@@ -1,11 +1,7 @@
 import type { SignInSchema, SignUpSchema } from "@ethang/schemas/auth/user.ts";
 
 import { signInResponseToken } from "@ethang/schemas/auth/token.ts";
-import {
-  BaseStore,
-  type StorePatch,
-  type StorePatchLoose,
-} from "@ethang/store";
+import { BaseStore, type StorePatch } from "@ethang/store";
 import { fetchJson } from "@ethang/toolbelt/fetch/fetch-json";
 import { queryOptions } from "@tanstack/react-query";
 import Cookies from "js-cookie";
@@ -103,9 +99,7 @@ export class AuthStore extends BaseStore<AuthStoreState> {
     });
   }
 
-  protected override onPropertyChange(
-    patch: StorePatch<AuthStoreState> | StorePatchLoose,
-  ) {
+  protected override onPropertyChange(patch: StorePatch<AuthStoreState>) {
     if (isEqual(patch.path, ["isSignedIn"])) {
       if (true === patch.value && !isNil(this.state.token)) {
         Cookies.set("ethang-auth-token", this.state.token);
