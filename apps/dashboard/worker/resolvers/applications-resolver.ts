@@ -3,7 +3,11 @@ import type { GraphQLResolveInfo } from "graphql/type";
 import isNil from "lodash/isNil.js";
 import toNumber from "lodash/toNumber";
 
-import type { applicationsModel } from "../../generated/prisma/models/applications.ts";
+import type {
+  applicationsCreateInput,
+  applicationsModel,
+  applicationsUpdateInput,
+} from "../../generated/prisma/models/applications.ts";
 import type { Context } from "../types.ts";
 
 import { getAverageApplicationsPerDay } from "../stats/get-average-applications-per-day.ts";
@@ -86,11 +90,9 @@ export const getApplicationsStatsResolver = async (
   };
 };
 
-type CreateJobApplication = Omit<applicationsModel, "id" | "userId">;
-
 export const createApplicationResolver = async (
   _: never,
-  _arguments: { input: CreateJobApplication },
+  _arguments: { input: applicationsCreateInput },
   context: Context,
   info: GraphQLResolveInfo,
 ) => {
@@ -107,13 +109,9 @@ export const createApplicationResolver = async (
   });
 };
 
-type DeleteJobApplication = {
-  id: string;
-};
-
 export const deleteApplicationResolver = async (
   _: never,
-  _arguments: { input: DeleteJobApplication },
+  _arguments: { input: Pick<applicationsModel, "id"> },
   context: Context,
   info: GraphQLResolveInfo,
 ) => {
@@ -125,11 +123,9 @@ export const deleteApplicationResolver = async (
   });
 };
 
-type UpdateJobApplication = Omit<applicationsModel, "userId">;
-
 export const updateApplicationResolver = async (
   _: never,
-  _arguments: { input: UpdateJobApplication },
+  _arguments: { input: { id: string } & applicationsUpdateInput },
   context: Context,
   info: GraphQLResolveInfo,
 ) => {

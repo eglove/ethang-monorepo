@@ -1,5 +1,9 @@
 import type { GraphQLResolveInfo } from "graphql/type";
 
+import type {
+  contactsCreateInput,
+  contactsModel,
+} from "../../generated/prisma/models/contacts.ts";
 import type { Context } from "../types.ts";
 
 import { prismaSelect } from "../utilities/prisma-select.ts";
@@ -19,18 +23,9 @@ export const getAllContactsResolver = async (
   });
 };
 
-type CreateContactInput = {
-  email?: string;
-  expectedNextContact?: string;
-  lastContact: string;
-  linkedIn?: string;
-  name: string;
-  phone?: string;
-};
-
 export const createContactResolver = async (
   _: never,
-  _arguments: { input: CreateContactInput },
+  _arguments: { input: contactsCreateInput },
   context: Context,
   info: GraphQLResolveInfo,
 ) => {
@@ -48,19 +43,9 @@ export const createContactResolver = async (
   });
 };
 
-type UpdateContactInput = {
-  email?: string;
-  expectedNextContact?: string;
-  id: string;
-  lastContact: string;
-  linkedIn?: string;
-  name: string;
-  phone?: string;
-};
-
 export const updateContactResolver = async (
   _: never,
-  _arguments: { input: UpdateContactInput },
+  _arguments: { input: { id: string } & contactsCreateInput },
   context: Context,
   info: GraphQLResolveInfo,
 ) => {
@@ -81,13 +66,9 @@ export const updateContactResolver = async (
   });
 };
 
-type DeleteContactInput = {
-  id: string;
-};
-
 export const deleteContactResolver = async (
   _: never,
-  _arguments: { input: DeleteContactInput },
+  _arguments: { input: Pick<contactsModel, "id"> },
   context: Context,
   info: GraphQLResolveInfo,
 ) => {

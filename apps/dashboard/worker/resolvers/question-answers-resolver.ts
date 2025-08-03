@@ -1,5 +1,9 @@
 import type { GraphQLResolveInfo } from "graphql/type";
 
+import type {
+  questionAnswersCreateInput,
+  questionAnswersModel,
+} from "../../generated/prisma/models/questionAnswers.ts";
 import type { Context } from "../types.ts";
 
 import { prismaSelect } from "../utilities/prisma-select.ts";
@@ -18,14 +22,9 @@ export const getAllQuestionAnswersResolver = async (
   });
 };
 
-type CreateQuestionAnswerInput = {
-  answer: string;
-  question: string;
-};
-
 export const createQuestionAnswerResolver = async (
   _: never,
-  _arguments: { input: CreateQuestionAnswerInput },
+  _arguments: { input: questionAnswersCreateInput },
   context: Context,
   info: GraphQLResolveInfo,
 ) => {
@@ -39,15 +38,9 @@ export const createQuestionAnswerResolver = async (
   });
 };
 
-type UpdateQuestionAnswerInput = {
-  answer: string;
-  id: string;
-  question: string;
-};
-
 export const updateQuestionAnswerResolver = async (
   _: never,
-  _arguments: { input: UpdateQuestionAnswerInput },
+  _arguments: { input: { id: string } & questionAnswersCreateInput },
   context: Context,
   info: GraphQLResolveInfo,
 ) => {
@@ -64,13 +57,9 @@ export const updateQuestionAnswerResolver = async (
   });
 };
 
-type DeleteQuestionAnswerInput = {
-  id: string;
-};
-
 export const deleteQuestionAnswerResolver = async (
   _: never,
-  _arguments: { input: DeleteQuestionAnswerInput },
+  _arguments: { input: Pick<questionAnswersModel, "id"> },
   context: Context,
   info: GraphQLResolveInfo,
 ) => {
