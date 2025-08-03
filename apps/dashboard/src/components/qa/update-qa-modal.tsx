@@ -1,4 +1,3 @@
-import type { QuestionAnswer } from "@ethang/schemas/dashboard/question-answer-schema.ts";
 import type { FormEvent } from "react";
 
 import { useMutation } from "@apollo/client";
@@ -16,6 +15,8 @@ import {
 } from "@heroui/react";
 import isNil from "lodash/isNil.js";
 
+import type { questionAnswersModel } from "../../../generated/prisma/models/questionAnswers.ts";
+
 import { updateQuestionAnswer } from "../../graphql/mutations/update-question-answer.ts";
 import { getAllQuestionAnswers } from "../../graphql/queries/get-all-question-answers.ts";
 import { qaStore } from "../../stores/qa-store.ts";
@@ -28,7 +29,7 @@ export const UpdateQaModal = () => {
     };
   });
 
-  const handleChange = (key: keyof QuestionAnswer) => (value: string) => {
+  const handleChange = (key: keyof questionAnswersModel) => (value: string) => {
     if (isNil(qa)) {
       return;
     }

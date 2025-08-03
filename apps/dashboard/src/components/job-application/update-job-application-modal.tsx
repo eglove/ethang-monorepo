@@ -1,4 +1,3 @@
-import type { JobApplication } from "@ethang/schemas/dashboard/application-schema.ts";
 import type { FormEvent } from "react";
 
 import { useMutation } from "@apollo/client";
@@ -14,6 +13,8 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import isNil from "lodash/isNil.js";
+
+import type { applicationsModel } from "../../../generated/prisma/models/applications.ts";
 
 import { updateJobApplication } from "../../graphql/mutations/update-job-application.ts";
 import { getAllApplications } from "../../graphql/queries/get-all-applications.ts";
@@ -31,7 +32,7 @@ export const UpdateJobApplicationModal = () => {
     },
   );
 
-  const handleChange = (key: keyof JobApplication) => (value: string) => {
+  const handleChange = (key: keyof applicationsModel) => (value: string) => {
     if (isNil(applicationToUpdate)) {
       return;
     }

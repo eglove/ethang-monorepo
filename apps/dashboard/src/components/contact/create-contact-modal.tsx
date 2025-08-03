@@ -1,7 +1,6 @@
 import type { FormEvent } from "react";
 
 import { useMutation } from "@apollo/client";
-import { createContactSchema } from "@ethang/schemas/dashboard/contact-schema.ts";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -20,6 +19,7 @@ import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import set from "lodash/set";
+import { z } from "zod";
 
 import {
   convertDateTimeInputToIso,
@@ -38,9 +38,16 @@ export const CreateContactModal = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const parsed = createContactSchema.safeParse(
-      Object.fromEntries(new FormData(event.currentTarget)),
-    );
+    const parsed = z
+      .object({
+        email: z.string().nullable(),
+        expectedNextContact: z.string().nullable(),
+        lastContact: z.string(),
+        linkedIn: z.string().nullable(),
+        name: z.string(),
+        phone: z.string().nullable(),
+      })
+      .safeParse(Object.fromEntries(new FormData(event.currentTarget)));
 
     if (!parsed.success) {
       return;

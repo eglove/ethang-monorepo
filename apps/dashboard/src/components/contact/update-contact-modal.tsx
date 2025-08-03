@@ -1,4 +1,3 @@
-import type { Contact } from "@ethang/schemas/dashboard/contact-schema.ts";
 import type { FormEvent } from "react";
 
 import { useMutation } from "@apollo/client";
@@ -17,6 +16,8 @@ import {
 import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 
+import type { contactsModel } from "../../../generated/prisma/models/contacts.ts";
+
 import {
   convertIsoToDateTimeInput,
   type DateInputValue,
@@ -33,7 +34,7 @@ export const UpdateContactModal = () => {
     };
   });
 
-  const handleChange = (key: keyof Contact) => (value: string) => {
+  const handleChange = (key: keyof contactsModel) => (value: string) => {
     if (isNil(contact)) {
       return;
     }
@@ -45,7 +46,7 @@ export const UpdateContactModal = () => {
   };
 
   const handleDateInputChange =
-    (key: keyof Contact) => (value: DateInputValue) => {
+    (key: keyof contactsModel) => (value: DateInputValue) => {
       if (isNil(contact)) {
         return;
       }
