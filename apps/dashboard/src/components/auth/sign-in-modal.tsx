@@ -13,19 +13,17 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import { LogInIcon } from "lucide-react";
 
 import { authStore } from "../../stores/auth-store.ts";
 
 export const SignInModal = () => {
-  const { isSignInOpen } = useStore(authStore, (state) => {
+  const { isPending, isSignInOpen } = useStore(authStore, (state) => {
     return {
+      isPending: state.isPending,
       isSignInOpen: state.isSignInOpen,
     };
   });
-
-  const { isPending, mutate } = useMutation(authStore.signIn());
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -33,7 +31,7 @@ export const SignInModal = () => {
     const parsed = signInSchema.safeParse(data);
 
     if (parsed.success) {
-      mutate(parsed.data);
+      authStore.callSignIn(parsed.data).catch(globalThis.console.error);
     } else {
       addToast({
         color: "danger",
