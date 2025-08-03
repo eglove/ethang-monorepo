@@ -1,14 +1,16 @@
-import { useStore } from "@ethang/store/use-store";
+import { useMutation } from "@apollo/client";
 import { Button } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { CheckIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-import type { FetchedTodo } from "../../graphql/queries/get-all-todos.ts";
-
-import { authStore } from "../../stores/auth-store.ts";
+import { deleteTodo } from "../../graphql/mutations/delete-todo.ts";
+import { updateTodo } from "../../graphql/mutations/update-todo.ts";
+import {
+  type FetchedTodo,
+  getAllTodos,
+} from "../../graphql/queries/get-all-todos.ts";
 import { todoStore } from "../../stores/todo-store.ts";
 
 type UpdateDeleteTodoProperties = {
@@ -18,27 +20,38 @@ type UpdateDeleteTodoProperties = {
 export const UpdateDeleteTodo = ({
   todo,
 }: Readonly<UpdateDeleteTodoProperties>) => {
-  const userId = useStore(authStore, (state) => state.userId);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleStopDeleting = () => {
-    setIsDeleting(false);
-  };
+  const [handleDelete, { loading: deleteLoading }] = useMutation(deleteTodo, {
+    onCompleted: () => {
+      setIsDeleting(false);
+    },
+    refetchQueries: [getAllTodos],
+  });
 
-  const { isPending: isDeletePending, mutate: deleteTodo } = useMutation(
-    todoStore.deleteTodo(userId ?? undefined, handleStopDeleting),
-  );
-
-  const { isPending: isCompletePending, mutate: completeTodo } = useMutation(
-    todoStore.completeTodo(),
-  );
+  const [handleUpdate, { loading: updateLoading }] = useMutation(updateTodo, {
+    onCompleted: () => {
+      todoStore.setIsUpdateModalOpen(false);
+    },
+    refetchQueries: [getAllTodos],
+  });
 
   return (
     <div className="flex items-center gap-2">
       <Button
         isIconOnly
         onPress={() => {
-          completeTodo(todo);
+          if (isNil(todo.recurs)) {
+            handleDelete({
+              variables: { input: { id: todo.id } },
+            }).catch(globalThis.console.error);
+          } else {
+            handleUpdate({
+              variables: {
+                input: { ...todo, __typename: undefined, userId: undefined },
+              },
+            }).catch(globalThis.console.error);
+          }
         }}
         arria-label="Confirm complete"
         className={twMerge((isDeleting || isNil(todo.dueDate)) && "opacity-0")}
@@ -58,7 +71,7 @@ export const UpdateDeleteTodo = ({
             }}
             aria-label="Update ToDo"
             color="primary"
-            isDisabled={isDeletePending || isCompletePending}
+            isDisabled={deleteLoading || updateLoading}
             size="sm"
           >
             <PencilIcon />
@@ -70,8 +83,8 @@ export const UpdateDeleteTodo = ({
             }}
             aria-label="Delete"
             color="danger"
-            isDisabled={isCompletePending}
-            isLoading={isDeletePending}
+            isDisabled={updateLoading}
+            isLoading={deleteLoading}
             size="sm"
           >
             <Trash2Icon />
@@ -83,12 +96,14 @@ export const UpdateDeleteTodo = ({
           <Button
             isIconOnly
             onPress={() => {
-              deleteTodo(todo);
+              handleDelete({ variables: { input: { id: todo.id } } }).catch(
+                globalThis.console.error,
+              );
             }}
             aria-label="Confirm delete"
             color="danger"
-            isDisabled={isCompletePending}
-            isLoading={isDeletePending}
+            isDisabled={updateLoading}
+            isLoading={deleteLoading}
             size="sm"
           >
             <CheckIcon />
@@ -99,8 +114,8 @@ export const UpdateDeleteTodo = ({
               setIsDeleting(false);
             }}
             aria-label="Cancel delete"
-            isDisabled={isCompletePending}
-            isLoading={isDeletePending}
+            isDisabled={updateLoading}
+            isLoading={deleteLoading}
             size="sm"
           >
             <XIcon />

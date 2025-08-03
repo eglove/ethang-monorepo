@@ -1,6 +1,7 @@
 import type { Todo } from "@ethang/schemas/dashboard/todo-schema.ts";
 import type { FormEvent } from "react";
 
+import { useMutation } from "@apollo/client";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,
@@ -14,18 +15,16 @@ import {
   ModalHeader,
   Textarea,
 } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 import ms from "ms";
 
 import { convertIsoToDateTimeInput } from "../../../worker/utilities/heroui.ts";
-import { authStore } from "../../stores/auth-store.ts";
+import { updateTodo } from "../../graphql/mutations/update-todo.ts";
+import { getAllTodos } from "../../graphql/queries/get-all-todos.ts";
 import { todoStore } from "../../stores/todo-store.ts";
 
 export const UpdateTodoModal = () => {
-  const userId = useStore(authStore, (state) => state.userId);
-
   const { isOpen, todo } = useStore(todoStore, (state) => {
     return {
       isOpen: state.isUpdateModalOpen,
@@ -44,13 +43,20 @@ export const UpdateTodoModal = () => {
     });
   };
 
-  const { isPending, mutate } = useMutation(
-    todoStore.updateTodo(userId ?? undefined),
-  );
+  const [handleUpdate, { loading }] = useMutation(updateTodo, {
+    onCompleted: () => {
+      todoStore.setIsUpdateModalOpen(false);
+    },
+    refetchQueries: [getAllTodos],
+  });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    mutate(todo);
+    handleUpdate({
+      variables: {
+        input: { ...todo, __typename: undefined, userId: undefined },
+      },
+    }).catch(globalThis.console.error);
   };
 
   return (
@@ -102,7 +108,7 @@ export const UpdateTodoModal = () => {
             >
               Close
             </Button>
-            <Button color="primary" isLoading={isPending} type="submit">
+            <Button color="primary" isLoading={loading} type="submit">
               Update
             </Button>
           </ModalFooter>

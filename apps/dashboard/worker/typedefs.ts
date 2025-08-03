@@ -81,7 +81,7 @@ type Todo {
     title: String!
     description: String
     recurs: Int
-    dueDate: Date
+    dueDate: Date!
 }
 
 input CreateApplicationInput {
@@ -164,6 +164,25 @@ input DeleteContactInput {
     id: String!
 }
 
+input CreateTodoInput {
+    title: String!
+    description: String
+    recurs: Int
+    dueDate: Date!
+}
+
+input UpdateTodoInput {
+    id: String!
+    title: String!
+    description: String
+    recurs: Int
+    dueDate: Date!
+}
+
+input DeleteTodoInput {
+    id: String!
+}
+
 type Query {
     applications(page: Int = 1, limit: Int = 10, search: String): ApplicationResponse!
     bookmarks: [Bookmark]!
@@ -186,4 +205,7 @@ type Mutation {
     createContact(input: CreateContactInput!): Contact!
     updateContact(input: UpdateContactInput!): Contact!
     deleteContact(input: DeleteContactInput!): Contact!
+    createTodo(input: CreateTodoInput!): Todo!
+    updateTodo(input: UpdateTodoInput!): Todo!
+    deleteTodo(input: DeleteTodoInput!): Todo!
 }`;

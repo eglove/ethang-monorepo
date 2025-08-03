@@ -1,3 +1,4 @@
+import { useMutation } from "@apollo/client";
 import { createTodoSchema } from "@ethang/schemas/dashboard/todo-schema.ts";
 import { useStore } from "@ethang/store/use-store";
 import {
@@ -15,7 +16,6 @@ import {
   SelectItem,
   Textarea,
 } from "@heroui/react";
-import { useMutation } from "@tanstack/react-query";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString";
@@ -29,6 +29,8 @@ import {
   type DateInputValue,
   getDateTimeInputNow,
 } from "../../../worker/utilities/heroui.ts";
+import { createTodo } from "../../graphql/mutations/create-todo.ts";
+import { getAllTodos } from "../../graphql/queries/get-all-todos.ts";
 import { todoStore } from "../../stores/todo-store.ts";
 import { timeIntervals } from "./time-intervals.ts";
 
@@ -53,7 +55,12 @@ export const CreateTodoModal = () => {
     getDateTimeInputNow(),
   );
 
-  const { isPending, mutate } = useMutation(todoStore.createModal());
+  const [handleCreate, { loading }] = useMutation(createTodo, {
+    onCompleted: () => {
+      todoStore.setIsCreateModalOpen(false);
+    },
+    refetchQueries: [getAllTodos],
+  });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -74,12 +81,16 @@ export const CreateTodoModal = () => {
       );
     }
 
-    mutate({
-      description: parsed.data.description,
-      dueDate: correctDueDate,
-      recurs,
-      title: parsed.data.title,
-    });
+    handleCreate({
+      variables: {
+        input: {
+          description: parsed.data.description,
+          dueDate: correctDueDate,
+          recurs,
+          title: parsed.data.title,
+        },
+      },
+    }).catch(globalThis.console.error);
   };
 
   return (
@@ -123,7 +134,7 @@ export const CreateTodoModal = () => {
             >
               Close
             </Button>
-            <Button color="primary" isLoading={isPending} type="submit">
+            <Button color="primary" isLoading={loading} type="submit">
               Create
             </Button>
           </ModalFooter>
