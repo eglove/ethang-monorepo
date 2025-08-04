@@ -1,0 +1,28 @@
+{
+  "author": "Ethan Glover",
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "^22.17.8",
+    "@types/lodash": "^4.17.20",
+    "browserslist-config-baseline": "^0.4.0",
+    "eslint": "^9.32.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.38.0"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "license": "ISC",
+  "name": "project-gen",
+  "packageManager": "pnpm@10.14.0",
+  "scripts": {
+    "lint": "eslint . --fix"
+  },
+  "version": "1.0.0"
+}
