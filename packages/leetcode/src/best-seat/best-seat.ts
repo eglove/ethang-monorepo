@@ -1,5 +1,5 @@
 export const bestSeat = (seats: number[]) => {
-  let bestSeat = -1;
+  let _bestSeat = -1;
   let maxSpace = 0;
 
   let leftPointer = 0;
@@ -13,12 +13,12 @@ export const bestSeat = (seats: number[]) => {
 
     const availableSpace = rightPointer - leftPointer - 1;
     if (availableSpace > maxSpace) {
-      bestSeat = Math.floor((leftPointer + rightPointer) / 2);
+      _bestSeat = Math.floor((leftPointer + rightPointer) / 2);
       maxSpace = availableSpace;
     }
 
     leftPointer = rightPointer;
   }
 
-  return bestSeat;
+  return _bestSeat;
 };

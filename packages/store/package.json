@@ -10,11 +10,11 @@
   },
   "description": "Fine grained state management",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.17.8",
+    "@ethang/eslint-config": "^22.17.9",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.20",
     "@types/use-sync-external-store": "^1.5.0",
-    "browserslist-config-baseline": "^0.4.0",
+    "browserslist-config-baseline": "^0.5.0",
     "eslint": "^9.32.0",
     "type-fest": "^4.41.0",
     "vitest": "^3.2.4"
