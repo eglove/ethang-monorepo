@@ -2,12 +2,10 @@ import { BreadcrumbItem, Breadcrumbs } from "@heroui/react";
 import map from "lodash/map";
 
 export type FooterProperties = {
-  breadcrumbPaths:
-    | {
-        href: string;
-        label: string;
-      }[]
-    | undefined;
+  breadcrumbPaths?: {
+    href: string;
+    label: string;
+  }[];
 };
 
 export const Footer = ({ breadcrumbPaths }: Readonly<FooterProperties>) => {

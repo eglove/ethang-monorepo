@@ -7,10 +7,10 @@
     "@total-typescript/ts-reset": "^0.6.1",
     "lodash": "^4.17.21",
     "uuid": "^11.1.0",
-    "zod": "^4.0.14"
+    "zod": "^4.0.15"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.17.9",
+    "@ethang/eslint-config": "^22.17.10",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.2.0",

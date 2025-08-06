@@ -28,11 +28,11 @@
     "react-dom": "^19.1.1",
     "sanity-image": "^1.0.0",
     "tailwind-merge": "^3.3.1",
-    "zod": "^4.0.14"
+    "zod": "^4.0.15"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.11.1",
-    "@ethang/eslint-config": "^22.17.9",
+    "@ethang/eslint-config": "^22.17.10",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/router-plugin": "^1.130.15",

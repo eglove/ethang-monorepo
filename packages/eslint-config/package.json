@@ -26,7 +26,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-lodash": "^8.0.0",
     "eslint-plugin-perfectionist": "^4.15.0",
-    "eslint-plugin-prettier": "^5.5.3",
+    "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react-hooks": "^5.2.0-rc.1",
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "3.0.4",
@@ -47,7 +47,7 @@
     "lodash": "^4.17.21",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.9.2",
-    "zod": "^4.0.14"
+    "zod": "^4.0.15"
   },
   "engines": {
     "node": ">=24"
@@ -63,5 +63,5 @@
     "lint": "eslint . --fix && prettier src --write"
   },
   "type": "module",
-  "version": "22.17.9"
+  "version": "22.17.10"
 }
