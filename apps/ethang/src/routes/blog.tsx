@@ -6,6 +6,10 @@ import { TypographyH2 } from "../components/typography/typography-h2.tsx";
 
 export const blogs = [
   {
+    href: "/blog/whered-the-team-go",
+    label: "Where'd The Team Go?",
+  },
+  {
     href: "/blog/some-thoughts-on-ai",
     label: "Some Thoughts On The Way Things Are",
   },

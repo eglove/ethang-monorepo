@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A personal reflection on the state of the software engineering industry, discussing the culture around quality control, communication, and the role of AI."
+    />
+    <meta property="og:title" content="Where’d the Team Go?" />
+    <meta
+      property="og:description"
+      content="A personal reflection on the state of the software engineering industry, discussing the culture around quality control, communication, and the role of AI."
+    />
+    <meta property="og:image" content="/images/office-404.png" />
+    <meta property="og:type" content="article" />
+    <title>Where’d the Team Go?</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --background-color: #121212;
+        --text-color: #e0e0e0;
+        --link-color: #89b4fa;
+        --accent-color: #c9c9c9;
+        --border-color: #424242;
+        --font-family: "Funnel Sans";
+      }
+
+      body {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        font-family: var(--font-family), sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      a {
+          color: var(--link-color);
+      }
+
+      .blog-container {
+        max-width: 800px;
+        width: 100%;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .blog-header {
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+
+      .back-link {
+        display: block;
+        margin-bottom: 20px;
+        color: var(--link-color);
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+      }
+
+      h1 {
+        color: var(--accent-color);
+        font-size: 2.5em;
+        margin-top: 0;
+        margin-bottom: 0.5em;
+      }
+
+      p {
+        margin-bottom: 1em;
+        text-align: justify;
+      }
+
+      strong {
+        color: var(--accent-color);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="blog-container">
+      <a href="/blog" class="back-link">← Back to blog</a>
+      <header class="blog-header">
+        <h1>Where’d the Team Go?</h1>
+      </header>
+      <main>
+        <p>
+          This will be my second installment of long rants that guarantees I
+          will never find a job again. But it really comes down to is personal
+          reflections on what I am seeing in an industry compared to the good
+          and bad times I’ve had working in it.
+        </p>
+
+        <p>Here is an AI analysis of this blog:</p>
+
+        <p>
+          The blog post, "Where’d the Team Go?," is a candid critique of the
+          modern software development industry’s cultural shortcomings. The
+          author argues that a widespread fear of clear communication and
+          accountability is leading to dysfunctional teams and low-quality
+          software. They contrast this with established methodologies like
+          Acceptance Test-Driven Development (ATDD), which they believe foster
+          clarity and prevent bugs from the outset. A key point of contention is
+          the use of vague language and a "what do you mean?" defensive reflex,
+          which the author sees has a symptom of a broader issue with anxiety and
+          burnout. The post also expresses skepticism about the current
+          obsession with AI, arguing that it simply magnifies existing problems
+          when not built upon a foundation of human-driven, clear requirements.
+          Ultimately, the author suggests that the industry’s focus on
+          "fast-paced" environments over genuine teamwork and quality processes
+          is detrimental, contrasting this with their perception of more
+          effective, disciplined approaches found in military or highly
+          successful tech companies.
+        </p>
+
+        <p>And now for my part:</p>
+
+        <p>
+          The obsession with AI/LLM persists even though objectively speaking, I
+          have seen no great revolution. Google is making more money as they
+          always do. Start-ups are burning with hot fire and crashing as they
+          always do. Companies and consumers with no relation to tech are sick
+          and f***ing tired of hearing about our stupid trends. As they always
+          have.
+        </p>
+
+        <p>
+          But what I want to write about today on my porch is testing. Or
+          quality control. Or something like that. Let’s just jump into it.
+        </p>
+
+        <p>
+          I’ve been reading the
+          <strong
+            ><a
+              href="https://www.computer.org/education/bodies-of-knowledge/software-engineering"
+              target="_blank"
+              rel="noopener noreferrer"
+              >SWEBOK (Software Engineering Body of Knowledge) Guide</a
+            ></strong
+          >, and just in the first chapter it discusses <strong>BDD</strong> vs.
+          <strong>ATDD</strong> for methods of writing and handling
+          requirements. BDD is preferred by non-technical stakeholders because
+          it means requirements are written in plain English. ATDD, on the other
+          hand, is more precise. It means agreeing on technical test cases,
+          writing automated tests, and only when a test fails a software
+          engineer may modify production code. This is beneficial. It means
+          clear agreement on requirements, translating those to automated tests,
+          and passing said tests.
+        </p>
+
+        <p>
+          I can’t tell you how much wasted time in meetings this saves. People
+          complain about too many meetings, but that’s not the problem. The
+          problem is there aren’t enough useful meetings with actual
+          communication. The typical flow seems to be a project manager and CTO
+          meet with a client, they write up a very loose BDD document in
+          Microsoft Word, then create a backlog of tickets. These tickets are
+          rarely written with any detail. Often half-sentence notes with an
+          imaginary reference to a Word doc.
+        </p>
+
+        <p>
+          Software engineers are left guessing, asking questions, and honestly
+          treated like morons by the only people with real information. So they
+          pull teeth and guess. Who cares, they’ll just quit in 2 years anyway.
+          Or find a way to get “promoted” so they too can spend all their time
+          in Confluence.
+        </p>
+
+        <p>
+          Meetings, from this point, become pointless standups where you either
+          say, “no update, no blockers” and get a smile. Or say, “I don’t
+          understand what this 3-word ticket is trying to say,” and get a sigh.
+          Welcome to the doghouse. Start applying now.
+        </p>
+
+        <p>
+          But what if we followed the standards of the SWEBOK Guide? It means
+          agreeing on test cases. And the feature is complete when these test
+          cases pass. Software engineers make no changes until they have test
+          cases.
+        </p>
+
+        <p>
+          Excuse me, what? It can be this simple? Why have I never worked in an
+          environment like this? The closest equivalent was a requirement to
+          keep test coverage >80%. The result of that was 0 bugs. Conflicts were
+          known immediately before pushing any code.
+        </p>
+
+        <p>
+          “What was that? Zero bugs? That’s not possible.” I hear you say. But
+          it is. Deterministic computer programs are infallible. It is only
+          humans who make mistakes.
+        </p>
+
+        <p>
+          I fear. And this is where I really get into trouble. If you are a
+          recruiter or hiring, please stop reading now. I fear there is a
+          culture in software that doesn’t allow for correcting mistakes. You
+          can make mistakes, sure, but god forbid you ever admit to it, or
+          anyone suggests it be fixed.
+        </p>
+
+        <p>
+          This is not the same as recognizing mistakes. Shipping software with
+          100 bugs is considered acceptable. “We’ll just iterate.” “Put that in
+          a bug ticket.” But if anyone suggests agreeing on requirements, API
+          contracts, test cases, talking about ways to avoid mistakes to begin
+          with… welcome to the doghouse. Start applying now.
+        </p>
+
+        <p>
+          This is without a doubt cultural sensitivity. If your ESLint
+          configuration gives you an error, “<a
+            href="https://eslint.org/docs/latest/rules/no-useless-assignment"
+            target="_blank"
+            rel="noopener noreferrer"
+            >no useless assignment</a
+          >,” and you tell your peer that their code as a useless assignment,
+          even just quoting the error, expect a call from your manager. 100% of
+          the time, on every team. I have never seen an exception to this. I
+          have never gone to a manager and said, “He called me useless. That
+          language is inappropriate!” But I imagine that’s what must be
+          happening. “We don’t use language like that here.” You’re in software,
+          yes, you do. Imagine being offended by a very accurate and useful
+          ESLint rule and blaming it on your peer. I can’t. But I’ve seen it, a
+          lot.
+        </p>
+
+        <p>
+          Slowly, people have just stopped communicating altogether. You put on
+          a mask, learn to say the right words, keep your head down, and get
+          really good at redirecting disagreement or problems in a way that puts
+          everyone else on the defensive and makes you look ignorant.
+        </p>
+
+        <p>
+          Let’s say person B says, “Our bug backlog is very long and growing. I
+          think we can tighten up static analysis and improve test coverage,
+          I’ve written up a detailed plan on how this can be done with no real
+          additional time cost.” Person A responds with, “What do you mean?”
+        </p>
+
+        <p>
+          I find the question, “What do you mean?” in contexts like this to be
+          infuriating. I have only ever seen defensive and sensitive people act
+          like this. When I say, “defensive and sensitive,” I don’t mean in the
+          realm of healthy. I mean in the realm of their teammates should be
+          finding ways to make them aware and get them help. And I do believe
+          there is an industry-wide psychology diagnosis to be made that affects
+          everyone.
+        </p>
+
+        <p>
+          Burnout is caused by getting stuck in fight or flight and frying your
+          nervous system. There is a deep anxiety and fear hidden under the
+          question. Which is naturally designed to redirect the other person to
+          be on the defensive. It is not a question asked in earnest. It’s a
+          defensive reflex.
+        </p>
+
+        <p>
+          “What do I mean?” Person B could say, “I’ve made it very clear, I have
+          written out a plan that you haven’t looked at. There are 1,000 user
+          reported bugs on the backlog. What do I mean??”
+        </p>
+
+        <p>
+          There’s no good response to this. Google Gemini suggests turning it
+          back on them. Something along the lines of, “I think I was very clear,
+          what about what I just said is confusing to you?”
+        </p>
+
+        <p>
+          Oof. Imagine being in this standup. You probably have. This isn’t
+          going well. Person B, welcome to the doghouse. Start applying now.
+        </p>
+
+        <p>
+          What’s so fascinating to me is whether I’m in this situation or
+          witnessing it, I have always seen Person A as the toxic aggressor.
+          Even if I’m the one asking, “What do you mean?” and someone calls me
+          out on it, I will apologize and recognize the need to listen, think
+          critically, read, and get back to them with a real question or
+          opinion.
+        </p>
+
+        <p>
+          But if I’m the person to say, “What part is unclear?” and I’m accused
+          of being rude, we are not friends. And I’m livid anytime I see this
+          done to someone else.
+        </p>
+
+        <p>
+          In a culture of sensitivity and damaged nervous systems, Person A is
+          seen as “just asking a question.” In a healthy social culture someone
+          would probably break the tension by making fun of Person A. “What do
+          YOU mean? What do you mean by ‘what’? That depends on what the
+          definition of ‘is’ is!” A healthy team would move on and consider the
+          solution at hand. Giving Person A the space to breathe and recover
+          from a stupid question.
+        </p>
+
+        <p>
+          Not in tech. Instead, everyone sits in silence, watching two people
+          play stupid games, until one quits or gets fired.
+        </p>
+
+        <p>
+          And so we seem to have a fear of communication and clarity. Developers
+          guessing at requirements, broken product is OK, and now people are
+          using AI to generate documentation and tests. Proclaiming how
+          efficient they are because of how many tokens they paid for. Counting
+          them like poker chips, forgetting that only the house wins.
+        </p>
+
+        <p>
+          There is a clear proven standard outlined by ATDD in the SWEBOK Guide.
+          A clear path between requirements, tests, and code. This is
+          communication. Talking about what’s wanted, documenting conversation,
+          agreeing on test cases, and building the product.
+        </p>
+
+        <p>
+          Where is the room for AI generation here? If you AI generate your
+          documentation with clients, there is a 100% chance of
+          misinterpretation. Not 50%, 100%. If developers just start slapping
+          keyboards based on a verbal idea or Figma designs, there is a 100%
+          chance of misinterpretation. If they don’t write tests and just AI
+          generate them after, creating random inputs into random functions,
+          there is no possible way code is being written to requirements.
+          Because no technical requirements have been written and there is no
+          definition of done.
+        </p>
+
+        <p>
+          “We’ll just iterate.” On what? You have nothing. No standard. No
+          agreement. No goals. Just loose words and random ideas that everyone
+          has a different interpretation of. Including your AI.
+        </p>
+
+        <p>
+          “We’re not Google.” That’s clear. But last I checked communication was
+          free and saves time. So I don’t know what the argument is here.
+        </p>
+
+        <p>
+          All of this sounds to me like, “I’m afraid. If I communicate, I will
+          offend.” Yes, that’s the risk. That is damn near the definition of
+          communication.
+        </p>
+
+        <p>
+          I don’t put a lot of weight on my military experience. It wasn’t much.
+          And I have been yelled at and screamed at by recruiters for putting it
+          on my résumé. For most of my tech career it felt safer to hide.
+          Because while it helps for most jobs, in tech you’re assumed to not be
+          a culture fit. Because military culture isn’t sensitivity culture. You
+          get chewed out or made fun of for, “What do you mean?” Everyone knows
+          it’s a jackass thing to do. Whether it’s on purpose or an
+          anxiety-induced reflex. It’s a habit that should be worked on.
+        </p>
+
+        <p>
+          But when I think about what a “team” is, or what “leadership” is, or
+          what “clarity” means, I often think about the military. Where if you
+          play games, people lose their lives. You don’t get the luxury of a
+          shit turnover rate and never having to learn to get along with people.
+        </p>
+
+        <p>
+          If you’re Person A, the “what do you mean?” type, you can keep your
+          head down and be one of the three people who stay at the company.
+          While every other asshole is a rotating door every 1–2 years. If
+          you’re one of the assholes, you only have to act polite for 1–2 years
+          before you burnout and quit for another new exciting job. If you’re in
+          the Army, you get to sleep next to each other until you learn to stop
+          acting like children.
+        </p>
+
+        <p>
+          My point though, in bringing up the military, is I can’t find teams.
+          I’ve done a lot of interviews, a lot of contracts. If I bring up the
+          concept of “team” as something I’m looking for, I’m sure as hell not
+          getting a call back. No, I need to say, “I’m looking for a FAST-PACED,
+          DYNAMIC, CROSS-FUNCTIONAL ENVIRONMENT WITH FREE MOUNTAIN DEW!!! AND
+          AI!!! I LOVE AI!!!!!!”
+        </p>
+
+        <p>
+          I’m not kidding when I say this is the kind of script that gets you
+          hired. Minus the part about Mountain Dew. I believe it’s because
+          people have been permanently operating in a fight or flight mode for a
+          very long time and expect it as normal behavior. If you’re not
+          absolutely wired for pushing slop as quickly as possible, you’re not
+          welcome.
+        </p>
+
+        <p>
+          That doesn’t mean if you’re not the “fastest,” you’re not welcome,
+          only if you don’t act like it. The “fastest” people are using TDD and
+          communication. Those Google’s of the world that didn’t just beat you
+          to market, but put your broken slop to shame. If you get lucky, maybe
+          they’ll buy you out.
+        </p>
+
+        <p>
+          And it’s not just because they make more money and have more
+          engineers. Their product teams are often 7ish people with similar
+          budgets. What makes them more effective is standard processes and
+          communication. The stuff average teams are afraid of; unit tests,
+          integration tests, and E2E tests. Google has this idea of the “three
+          amigos,” product managers, developers, and testers. Sounds familiar,
+          right?
+        </p>
+
+        <p>
+          “Unit tests are useless!!” Get out of here. I’m not entertaining this
+          voice of incompetence and fear anymore. It’s time to wrap this up.
+        </p>
+
+        <p>
+          The lack of teamwork and communication in this industry has driven me
+          mad. And AI is only multiplying its effects. I don’t think we’ll ever
+          live in a world where everyone we know doesn’t have a laundry list of
+          complaints about the software and computers they depend on. And many
+          people will lean on this, “If it will always be broken, let’s just
+          ship broken.” It will become their mantra, they’ll say it’s why they
+          move so “fast,” but never quantify that with real long-term numbers.
+          This makes it very difficult to be truly happy about ones work.
+        </p>
+
+        <p>
+          If anyone claims to be “happy” or “competent” about shipping 100 bugs
+          in two weeks, I fear they don’t know what either of those things feels
+          like. I have felt these things, but they are rare in tech. And I hope
+          everyone gets a moment to reflect and find both.
+        </p>
+      </main>
+    </div>
+  </body>
+</html>
