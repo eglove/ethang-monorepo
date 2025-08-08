@@ -118,18 +118,6 @@ Update-WranglerTypes -prefix "packages" -directories $packages
 
 # Return to root directory and run final commands
 Set-Location $scriptDir
-Write-Host "Generating Prisma clicents..."
-pnpm -r prisma-gen
-Write-Host "Updating CloudFlare types..."
-pnpm -r cf-typegen
-Write-Host "Building monorepo..."
-pnpm -r --bail build
-Write-Host "Running tests..."
-pnpm -r --bail test
-Write-Host "Running linter..."
-pnpm -r --bail lint
-Write-Host "Pruning dependencies..."
-pnpm dedupe
-pnpm store prune
+pnpm -r prisma-gen && pnpm -r cf-typegen && pnpm -r build && pnpm -r test && pnpm -r lint && pnpm dedupe && pnpm store prune
 
 Write-Host "Bump process completed successfully!"
