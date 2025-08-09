@@ -1,0 +1,24 @@
+@startuml
+title Redirect Link Sequence
+
+participant "Client" as client
+participant "Cloudflare Worker" as worker
+participant "Cloudflare R2" as r2
+
+client -> worker: GET /{shortId}
+activate worker
+
+worker -> r2: GET forward_map:[shortId]
+activate r2
+r2 --> worker: (return longUrl or null)
+deactivate r2
+
+alt shortId found
+    worker --> client: 301 Moved Permanently (Location: [longUrl])
+else shortId not found
+    worker --> client: 404 Not Found
+end
+
+deactivate worker
+
+@enduml

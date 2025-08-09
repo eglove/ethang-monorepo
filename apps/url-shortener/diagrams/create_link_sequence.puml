@@ -1,0 +1,36 @@
+@startuml
+title Create Short Link Sequence
+
+participant "API Consumer" as consumer
+participant "Cloudflare Worker" as worker
+participant "Cloudflare R2" as r2
+
+consumer -> worker: POST /links (body: { "url": "..." })
+activate worker
+
+worker -> worker: Validate input URL
+worker -> worker: Generate hash of long URL
+
+worker -> r2: GET reverse_map:[hash]
+activate r2
+r2 --> worker: (return existing shortId or null)
+deactivate r2
+
+alt URL already exists
+    worker --> consumer: 200 OK (HAL-FORMS response with existing link)
+else URL is new
+    worker -> worker: Generate new unique shortId
+    worker -> r2: PUT forward_map:[shortId] -> longUrl
+    activate r2
+    r2 --> worker: (confirm)
+    deactivate r2
+    worker -> r2: PUT reverse_map:[hash] -> shortId
+    activate r2
+    r2 --> worker: (confirm)
+    deactivate r2
+    worker --> consumer: 201 Created (HAL-FORMS response with new link)
+end
+
+deactivate worker
+
+@enduml

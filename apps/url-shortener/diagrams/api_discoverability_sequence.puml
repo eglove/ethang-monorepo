@@ -1,0 +1,20 @@
+@startuml
+title API Entrypoint Discoverability
+
+participant "API Consumer" as consumer
+participant "Cloudflare Worker" as worker
+
+consumer -> worker: GET /
+activate worker
+
+worker -> worker: Construct HAL-FORMS response
+note right of worker
+  Response includes `_links` to key resources
+  (e.g., self, links) and `_templates`
+  for available actions (e.g., default/create).
+end note
+
+worker --> consumer: 200 OK (HAL-FORMS body with _links, _templates)
+
+deactivate worker
+@enduml

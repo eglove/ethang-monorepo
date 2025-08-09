@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./public"
+  },
+  "compatibility_date": "2025-08-09",
+  "main": "src/index.ts",
+  "name": "url-shortener",
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "mode": "smart"
+  },
+  "r2_buckets": [
+    {
+      "bucket_name": "url-shortener",
+      "binding": "url_shortener"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+@startuml
+title R2 Data Structure for URL Shortener
+
+!theme vibrant
+hide empty members
+
+package "Cloudflare R2 Storage" {
+  entity "forward_map" as ForwardMap {
+    + **Key (string)**: shortId
+    --
+    + **Value (string)**: longUrl
+    .. Example ..
+    "abc1234" : "https://example.com/a/very/long/url/..."
+  }
+
+  entity "reverse_map" as ReverseMap {
+    + **Key (string)**: hash(longUrl)
+    --
+    + **Value (string)**: shortId
+    .. Example ..
+    "hash('https://example.com/...')" : "abc1234"
+  }
+}
+
+note bottom of ForwardMap
+  Used for the primary redirection lookup.
+  (GET /{shortId})
+end note
+
+note bottom of ReverseMap
+  Used to enforce uniqueness of long URLs
+  during link creation.
+  (POST /links)
+end note
+
+@enduml

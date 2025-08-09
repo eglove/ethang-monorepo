@@ -1,0 +1,33 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title URL Shortener Public API
+
+System(api_consumer, "API Consumer", "An external system or developer using the API.")
+
+Boundary(cloudflare, "Cloudflare Platform") {
+    Container(worker, "Cloudflare Worker", "TypeScript", "Handles API requests, redirects, and business logic.")
+    Container(r2, "Cloudflare R2", "Object Store", "Stores the mapping between short IDs and long URLs.")
+
+    Rel(worker, r2, "Stores/Retrieves URL mappings")
+}
+
+Rel(api_consumer, worker, "Interacts with the API", "HTTPS/JSON")
+
+note right of worker
+  **API Details:**
+  * Uses HAL-FORMS for hypermedia responses.
+  * Generates unique, collision-resistant short IDs.
+  * Enforces uniqueness of submitted long URLs;
+    returns existing short link if a URL is re-submitted.
+end note
+
+note right of r2
+  **Architectural Concerns:**
+  * **Durability:** High
+  * **Cost:** Very low (generous free tier)
+  * **Data Model:** Requires a forward (short->long) and
+    reverse (hash(long)->short) mapping to ensure
+    uniqueness of both keys.
+end note
+@enduml

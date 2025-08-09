@@ -1,0 +1,36 @@
+{
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "@ethang/toolbelt": "^4.4.11",
+    "@hono/zod-validator": "^0.7.2",
+    "hono": "^4.9.0",
+    "lodash": "^4.17.21",
+    "nanoid": "^5.1.5",
+    "zod": "^4.0.16"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "^22.17.11",
+    "@types/lodash": "^4.17.20",
+    "@vitest/coverage-v8": "^3.2.4",
+    "browserslist-config-baseline": "^0.5.0",
+    "eslint": "^9.33.0",
+    "typescript-eslint": "^8.39.0",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.28.1"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "name": "url-shortener",
+  "scripts": {
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "deploy": "wrangler deploy --minify",
+    "dev": "wrangler dev",
+    "lint": "eslint . --fix",
+    "test": "vitest run --coverage"
+  },
+  "type": "module"
+}
