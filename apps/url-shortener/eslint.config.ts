@@ -4,6 +4,7 @@ import tseslint from "typescript-eslint";
 export default tseslint.config(
   {
     ignores: [
+      ".wrangler",
       "node_modules",
       "**/*.d.ts",
       "wrangler.jsonc",
