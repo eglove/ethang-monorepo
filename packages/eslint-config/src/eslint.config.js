@@ -1011,6 +1011,7 @@ export default tseslint.config(
       "html/no-extra-spacing-attrs": "off",
       "html/no-extra-spacing-text": "error",
       "html/no-heading-inside-button": "error",
+      "html/no-ineffective-attrs": "error",
       "html/no-inline-styles": "error",
       "html/no-invalid-entity": "error",
       "html/no-invalid-role": "error",
