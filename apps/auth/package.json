@@ -16,13 +16,13 @@
     "prisma": "^6.14.0"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.18.0",
+    "@ethang/eslint-config": "^22.18.1",
     "@types/lodash": "^4.17.20",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^9.33.0",
     "rimraf": "^6.0.1",
     "typescript-eslint": "^8.39.1",
-    "wrangler": "^4.29.0"
+    "wrangler": "^4.29.1"
   },
   "engines": {
     "node": ">=24"
