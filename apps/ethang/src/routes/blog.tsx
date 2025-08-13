@@ -6,6 +6,10 @@ import { TypographyH2 } from "../components/typography/typography-h2.tsx";
 
 export const blogs = [
   {
+    href: "/blog/discipline-for-dopamine",
+    label: "How an Industry Traded Discipline for Dopamine",
+  },
+  {
     // eslint-disable-next-line cspell/spellchecker
     href: "/blog/whered-the-team-go",
     label: "Where'd The Team Go?",
