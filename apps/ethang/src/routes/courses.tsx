@@ -163,9 +163,11 @@ const RouteComponent = () => {
         <AccordionItem aria-label="Reading" key="6" title="Reading">
           <CourseListItem courseList={readingCourseData}>
             <TypographyP>
-              I always recommend keeping up to date with recently published
-              books in the field. Here are my recommended publishers and
-              authors:
+              Of the below list, the only item I would say is an absolute
+              requirement is SWEBOK. Learning and certifying in SWEBOK is the
+              difference between a software developer and software engineer. The
+              rest are recommended publishers and authors to keep track of,
+              browse at your leisure.
             </TypographyP>
           </CourseListItem>
         </AccordionItem>

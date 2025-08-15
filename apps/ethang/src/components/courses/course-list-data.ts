@@ -131,6 +131,10 @@ export const bonusCourseData = [
 
 export const readingCourseData = [
   {
+    name: "Software Engineering Body of Knowledge (SWEBOK)",
+    url: "https://www.computer.org/education/bodies-of-knowledge/software-engineering",
+  },
+  {
     name: "O'Reilly",
     url: "https://www.amazon.com/stores/page/5212CE9B-CF76-4343-9CA0-98210EBE3D70",
   },
