@@ -10,10 +10,10 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.18.1",
+    "@ethang/eslint-config": "^22.18.2",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.2.1",
+    "@types/node": "^24.3.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "browserslist-config-baseline": "^0.5.0",
