@@ -954,6 +954,7 @@ export default tseslint.config(
               "starcoder",
               "logprobs",
               "sealioning",
+              "swebok",
             ],
           },
         },

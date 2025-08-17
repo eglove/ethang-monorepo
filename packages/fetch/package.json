@@ -10,7 +10,7 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.18.2",
+    "@ethang/eslint-config": "^22.18.3",
     "@ethang/project-builder": "^3.0.2",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.20",
