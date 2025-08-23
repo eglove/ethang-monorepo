@@ -37,7 +37,7 @@
   "scripts": {
     "build": "sanity build",
     "dev": "sanity dev",
-    "lint": "eslint . --fix",
+    "lint": "eslint . --fix --concurrency=auto",
     "start": "sanity start"
   },
   "type": "module",

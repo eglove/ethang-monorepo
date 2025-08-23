@@ -29,7 +29,7 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "deploy": "wrangler deploy --minify",
     "dev": "wrangler dev",
-    "lint": "eslint . --fix",
+    "lint": "eslint . --fix --concurrency=auto",
     "test": "vitest run --coverage"
   },
   "type": "module"

@@ -32,7 +32,7 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "deploy": "pnpm prisma-gen && pnpm run cf-typegen && wrangler deploy --minify",
     "dev": "wrangler dev",
-    "lint": "eslint . --fix",
+    "lint": "eslint . --fix --concurrency=auto",
     "prisma-gen": "rimraf generated/prisma && prisma generate"
   },
   "type": "module"

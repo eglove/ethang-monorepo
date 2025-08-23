@@ -60,7 +60,7 @@
   },
   "scripts": {
     "build": "bun build.ts && pnpm lint",
-    "lint": "eslint . --fix && prettier src --write"
+    "lint": "eslint . --fix --concurrency=auto && prettier src --write"
   },
   "type": "module",
   "version": "22.19.0"

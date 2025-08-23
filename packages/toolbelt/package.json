@@ -29,7 +29,7 @@
   "name": "@ethang/toolbelt",
   "scripts": {
     "build": "bun build.ts",
-    "lint": "eslint src --fix",
+    "lint": "eslint src --fix --concurrency=auto",
     "test": "vitest run --coverage.enabled=true",
     "test:ui": "vitest --ui --coverage.enabled=true --open=false",
     "test:watch": "vitest"

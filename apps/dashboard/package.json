@@ -86,7 +86,7 @@
     "cf-typegen": "wrangler types",
     "deploy": "pnpm run build && wrangler deploy",
     "dev": "vite",
-    "lint": "eslint src --fix && eslint worker --fix",
+    "lint": "eslint src --fix --concurrency=auto && eslint worker --fix --concurrency=auto",
     "preview": "pnpm run build && vite preview",
     "prisma-gen": "rimraf generated/prisma && prisma generate",
     "test": "vitest run"

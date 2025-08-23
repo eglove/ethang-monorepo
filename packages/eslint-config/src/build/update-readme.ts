@@ -194,7 +194,7 @@ export default tseslint.config(
   md.bold("Scripts", 2);
   md.codeBlock(
     `"scripts": {
-  "lint": "eslint . --fix"
+  "lint": "eslint . --fix --concurrency=auto"
 }`,
     "json",
     2,

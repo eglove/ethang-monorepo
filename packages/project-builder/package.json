@@ -16,7 +16,7 @@
   "name": "@ethang/project-builder",
   "scripts": {
     "build": "bun build.ts",
-    "lint": "eslint . --fix"
+    "lint": "eslint . --fix --concurrency=auto"
   },
   "type": "module",
   "version": "3.0.2"
