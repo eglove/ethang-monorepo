@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from "react";
 
-import { ApolloProvider } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
 import { useRouter } from "@tanstack/react-router";

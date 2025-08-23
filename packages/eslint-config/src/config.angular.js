@@ -97,6 +97,7 @@ export default tseslint.config(
       "@angular-eslint/template/no-call-expression": "off",
       "@angular-eslint/template/no-distracting-elements": "error",
       "@angular-eslint/template/no-duplicate-attributes": "error",
+      "@angular-eslint/template/no-empty-control-flow": "error",
       "@angular-eslint/template/no-inline-styles": "error",
       "@angular-eslint/template/no-interpolation-in-attributes": "error",
       "@angular-eslint/template/no-negated-async": "error",

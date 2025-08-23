@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,

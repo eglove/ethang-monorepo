@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { useStore } from "@ethang/store/use-store";
 import {
   Button,

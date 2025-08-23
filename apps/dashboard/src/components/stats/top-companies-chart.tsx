@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import get from "lodash/get";
 import {

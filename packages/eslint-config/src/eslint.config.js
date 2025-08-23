@@ -982,6 +982,7 @@ export default tseslint.config(
       "markdown/no-missing-link-fragments": "error",
       "markdown/no-multiple-h1": "error",
       "markdown/no-reversed-media-syntax": "error",
+      "markdown/no-space-in-emphasis": "error",
       "markdown/no-unused-definitions": "error",
       "markdown/require-alt-text": "error",
       "markdown/table-column-count": "error",

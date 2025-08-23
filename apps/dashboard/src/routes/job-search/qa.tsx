@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Accordion, AccordionItem, Button } from "@heroui/react";
 import { createFileRoute } from "@tanstack/react-router";
 import isEmpty from "lodash/isEmpty.js";

@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { useToggle } from "@ethang/hooks/use-toggle";
 import { Button } from "@heroui/react";
 import { CheckIcon, Trash2Icon, XIcon } from "lucide-react";
