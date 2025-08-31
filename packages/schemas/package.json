@@ -1,14 +1,14 @@
 {
   "author": "Ethan Glover",
   "dependencies": {
-    "jose": "^6.0.13",
-    "zod": "^4.1.0"
+    "jose": "^6.1.0",
+    "zod": "^4.1.5"
   },
   "exports": {
     "./*": "./src/*"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.19.0",
+    "@ethang/eslint-config": "^22.20.0",
     "@ethang/project-builder": "^3.0.2",
     "eslint": "^9.34.0"
   },
