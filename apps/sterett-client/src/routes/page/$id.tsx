@@ -1,4 +1,3 @@
-// eslint-disable-next-line react/naming-convention/filename
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import isNil from "lodash/isNil";

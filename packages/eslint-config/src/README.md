@@ -5,10 +5,10 @@
 > [!CAUTION]
 > Prettier is already included for styling!
 
-- 796 errored rules.
+- 801 errored rules.
 - 237 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
-- 143 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
-- 127 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
+- 144 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
+- 131 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
 - 107 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
 - 49 rules from [@html-eslint/eslint-plugin](https://github.com/html-eslint/html-eslint)
 - 34 rules from [jsx-a11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)
@@ -48,7 +48,7 @@
 # Install
 
 ```powershell
-pnpm i -D eslint typescript-eslint @ethang/eslint-config
+pnpm i -D eslint @ethang/eslint-config
 ```
 
 **Requires TypesScript and tsconfig.json at root directory.**
@@ -59,12 +59,12 @@ In **eslint.config.ts**
 
 ```js
 import config from "@ethang/eslint-config/eslint.config.js";
-import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
 import path from "node:path";
 import reactConfig from "@ethang/eslint-config/config.react.js"; // OPTIONAL
 import tailwindConfig from "@ethang/eslint-config/config.tailwind.js"; // OPTIONAL
 
-export default tseslint.config(
+export default defineConfig(
   {
     ignores: [], // Ignored files apply to all following configs
   },

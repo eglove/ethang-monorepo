@@ -1,7 +1,7 @@
 import config from "@ethang/eslint-config/eslint.config.js";
-import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
 
-export default tseslint.config(
+export default defineConfig(
   {
     ignores: [],
   },

@@ -1,10 +1,10 @@
 // @ts-nocheck
+import { defineConfig } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
 import react from "@eslint-react/eslint-plugin";
 import reactHooks from "eslint-plugin-react-hooks";
-import tseslint from "typescript-eslint";
 
-export default tseslint.config({
+export default defineConfig({
   files: ["**/*.{jsx,tsx}"],
   ignores,
   languageOptions,

@@ -1,15 +1,14 @@
-import storybook from "eslint-plugin-storybook";
-import tseslint from "typescript-eslint";
-
 // @ts-nocheck
+import { defineConfig } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
+import storybook from "eslint-plugin-storybook";
 
-export default tseslint.config({
+export default defineConfig({
   files: ["**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)"],
   ignores,
   languageOptions,
   plugins: {
-    storybook,
+    storybook: storybook,
   },
   rules: {
     "storybook/await-interactions": "error",

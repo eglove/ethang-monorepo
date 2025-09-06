@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { defineConfig } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
 import a11y from "eslint-plugin-jsx-a11y";
 import compat from "eslint-plugin-compat";
@@ -17,7 +18,7 @@ import tanstackRouter from "@tanstack/eslint-plugin-router";
 import tseslint from "typescript-eslint";
 import unicorn from "eslint-plugin-unicorn";
 
-export default tseslint.config(
+export default defineConfig(
   {
     files: ["**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}"],
     ignores,
@@ -225,6 +226,7 @@ export default tseslint.config(
       "prefer-rest-params": "error",
       "prefer-spread": "error",
       "prefer-template": "error",
+      "preserve-caught-error": "error",
       radix: "error",
       "require-atomic-updates": "error",
       "require-await": "off",
@@ -404,6 +406,7 @@ export default tseslint.config(
       "unicorn/no-array-method-this-argument": "error",
       "unicorn/no-array-reduce": "error",
       "unicorn/no-array-reverse": "error",
+      "unicorn/no-array-sort": "error",
       "unicorn/no-await-expression-member": "error",
       "unicorn/no-await-in-promise-methods": "error",
       "unicorn/no-console-spaces": "error",
@@ -456,8 +459,10 @@ export default tseslint.config(
       "unicorn/prefer-array-index-of": "error",
       "unicorn/prefer-array-some": "error",
       "unicorn/prefer-at": "error",
+      "unicorn/prefer-bigint-literals": "error",
       "unicorn/prefer-blob-reading-methods": "error",
       "unicorn/prefer-class-fields": "error",
+      "unicorn/prefer-classlist-toggle": "error",
       "unicorn/prefer-code-point": "error",
       "unicorn/prefer-date-now": "error",
       "unicorn/prefer-default-parameters": "error",
@@ -505,6 +510,7 @@ export default tseslint.config(
       "unicorn/prevent-abbreviations": "error",
       "unicorn/relative-url-style": "error",
       "unicorn/require-array-join-separator": "error",
+      "unicorn/require-module-attributes": "error",
       "unicorn/require-module-specifiers": "error",
       "unicorn/require-number-to-fixed-digits-argument": "error",
       "unicorn/require-post-message-target-origin": "error",

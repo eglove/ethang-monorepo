@@ -1,10 +1,10 @@
 import reactConfig from "@ethang/eslint-config/config.react.js";
 import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";
 import config from "@ethang/eslint-config/eslint.config.js";
+import { defineConfig } from "eslint/config";
 import path from "node:path";
-import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
   {
     ignores: [
       "dist",

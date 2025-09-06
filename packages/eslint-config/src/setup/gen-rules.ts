@@ -78,7 +78,7 @@ export const genRules = (
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   return Object.fromEntries(
-    Object.entries(rules).sort(([a], [b]) => {
+    Object.entries(rules).toSorted(([a], [b]) => {
       return a.localeCompare(b);
     }),
   ) as Linter.RulesRecord;

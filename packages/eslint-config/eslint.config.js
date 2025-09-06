@@ -1,7 +1,7 @@
 import config from "./src/eslint.config.js";
-import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
 
-export default tseslint.config(
+export default defineConfig(
   {
     ignores: [
       "dist",
@@ -11,6 +11,8 @@ export default tseslint.config(
       "src/config.react.js",
       "src/config.astro.js",
       "src/config.angular.js",
+      "src/config.storybook.js",
+      "src/config.tailwind.js",
       "**/*.d.ts",
     ],
   },

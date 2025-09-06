@@ -1,16 +1,15 @@
-import tailwind from "eslint-plugin-tailwindcss";
-import tseslint from "typescript-eslint";
-
 // @ts-nocheck
+import { defineConfig } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
+import tailwind from "eslint-plugin-tailwindcss";
 
 const config = (/** @type {string} */ pathToConfig) => {
-  return tseslint.config({
+  return defineConfig({
     files: ["**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}"],
     ignores,
     languageOptions,
     plugins: {
-      tailwind,
+      tailwind: tailwind,
     },
     rules: {
       "tailwind/classnames-order": "error",

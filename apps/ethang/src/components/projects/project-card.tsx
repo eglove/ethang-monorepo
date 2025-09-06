@@ -38,6 +38,7 @@ export const ProjectCard = ({ id }: Readonly<ProjectCardProperties>) => {
           <p className="text-foreground-500">{project?.description}</p>
           <div className="flex flex-wrap gap-2 self-end">
             {map(
+              // eslint-disable-next-line unicorn/no-array-sort
               project?.techs.sort((a, b) => b.name.localeCompare(a.name)),
               (tech) => {
                 return <Chip key={tech.id}>{tech.name}</Chip>;

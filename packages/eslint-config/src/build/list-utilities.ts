@@ -12,7 +12,7 @@ const filterRuleListByType = (type: string) => {
 };
 
 export const getList = flow(filterRuleListByType, (list) => {
-  return list.sort((a, b) => {
+  return list.toSorted((a, b) => {
     return (a.order ?? 0) - (b.order ?? 0);
   });
 });

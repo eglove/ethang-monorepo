@@ -1,9 +1,9 @@
 // @ts-nocheck
+import { defineConfig } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
 import astro from "eslint-plugin-astro";
-import tseslint from "typescript-eslint";
 
-export default tseslint.config({
+export default defineConfig({
   files: ["**/*.{astro}"],
   ignores,
   languageOptions,

@@ -154,22 +154,18 @@ export const updateReadme = () => {
   ]);
   md.newLine();
   md.header(1, "Install", 2);
-  md.codeBlock(
-    "pnpm i -D eslint typescript-eslint @ethang/eslint-config",
-    "powershell",
-    2,
-  );
+  md.codeBlock("pnpm i -D eslint @ethang/eslint-config", "powershell", 2);
   md.bold("Requires TypesScript and tsconfig.json at root directory.", 2);
   md.header(1, "Config", 2);
   md.text("In **eslint.config.ts**", 2);
   md.codeBlock(
     `import config from "@ethang/eslint-config/eslint.config.js";
-import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
 import path from "node:path";
 import reactConfig from "@ethang/eslint-config/config.react.js"; // OPTIONAL
 import tailwindConfig from "@ethang/eslint-config/config.tailwind.js"; // OPTIONAL
 
-export default tseslint.config(
+export default defineConfig(
   {
     ignores: [], // Ignored files apply to all following configs
   },

@@ -23,15 +23,15 @@ await projectBuilder(import.meta.dirname, {
 });
 copyFileSync("src/README.md", "dist/README.md");
 
-const typeFile = `import type { config } from "typescript-eslint";
+const typeFile = `import { defineConfig } from "eslint/config";
 
-declare const _default: ReturnType<typeof config>;
+declare const _default: Parameters<typeof defineConfig>;
 export default _default;
 `;
 
-const tailwindTypeFile = `import type { config } from "typescript-eslint";
+const tailwindTypeFile = `import { defineConfig } from "eslint/config";
 
-declare const _default: (pathToIndex: string) => ReturnType<typeof config>;
+declare const _default: (pathToIndex: string) => Parameters<typeof defineConfig>;
 export default _default;
 `;
 

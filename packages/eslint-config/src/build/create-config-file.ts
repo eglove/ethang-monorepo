@@ -47,14 +47,14 @@ export const createConfigFile = async (
 
   // eslint-disable-next-line unicorn/prefer-ternary
   if (isNil(functionParameters)) {
-    configFile += `\nexport default tseslint.config(
+    configFile += `\nexport default defineConfig(
       ${configs.join("\n")}
       ${mainFile === fileName ? "eslintConfigPrettier," : ""}
       ${mainFile === fileName ? "eslintPluginPrettierRecommended," : ""}
     );\n`;
   } else {
     configFile += `\nconst config = (${functionParameters}) => {
-      return tseslint.config(
+      return defineConfig(
         ${configs.join("\n")}
         ${mainFile === fileName ? "eslintConfigPrettier," : ""}
         ${mainFile === fileName ? "eslintPluginPrettierRecommended," : ""}

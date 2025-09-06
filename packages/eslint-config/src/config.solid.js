@@ -1,9 +1,9 @@
 // @ts-nocheck
+import { defineConfig } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
 import solid from "eslint-plugin-solid";
-import tseslint from "typescript-eslint";
 
-export default tseslint.config({
+export default defineConfig({
   files: ["**/*.{jsx,tsx}"],
   ignores,
   languageOptions,

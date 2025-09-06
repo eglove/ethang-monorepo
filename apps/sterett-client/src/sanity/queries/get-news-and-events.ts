@@ -89,6 +89,7 @@ const sortNewsAndEvents = (eventsNews: EventsNewsReturn) => {
     merged.push(eventsNews.updates as unknown as NewsAndEvents[0]);
   }
 
+  // eslint-disable-next-line unicorn/no-array-sort
   return merged.flat().sort((a, b) => {
     const aDate = "startsAt" in a ? new Date(a.startsAt) : new Date(a.date);
     const bDate = "startsAt" in b ? new Date(b.startsAt) : new Date(b.date);

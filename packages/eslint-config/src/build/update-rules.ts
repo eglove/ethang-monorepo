@@ -9,7 +9,7 @@ export type ConfigFile = {
   options?: ConfigOptions;
 };
 
-const importTsEslint = 'import tseslint from "typescript-eslint";';
+const defineConfig = 'import { defineConfig } from "eslint/config";';
 
 export const coreFile = [
   {
@@ -18,6 +18,7 @@ export const coreFile = [
     name: "core",
     options: {
       extraImports: [
+        defineConfig,
         'import eslintConfigPrettier from "eslint-config-prettier";',
         'import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";',
       ],
@@ -53,7 +54,7 @@ const astroFile = [
     label: "Astro",
     name: "astro",
     options: {
-      extraImports: [importTsEslint],
+      extraImports: [defineConfig],
       includeIgnores: true,
       includeLanguageOptions: true,
     },
@@ -67,7 +68,7 @@ const reactFile = [
     label: "React",
     name: "react",
     options: {
-      extraImports: [importTsEslint],
+      extraImports: [defineConfig],
       includeIgnores: true,
       includeLanguageOptions: true,
       includeReactVersion: true,
@@ -82,7 +83,7 @@ const solidFile = [
     label: "Solid",
     name: "solid",
     options: {
-      extraImports: [importTsEslint],
+      extraImports: [defineConfig],
       includeIgnores: true,
       includeLanguageOptions: true,
     },
@@ -96,7 +97,7 @@ const angularFile = [
     label: "Angular",
     name: "angular",
     options: {
-      extraImports: [importTsEslint, 'import angular from "angular-eslint";'],
+      extraImports: [defineConfig, 'import angular from "angular-eslint";'],
       globalIgnores: ["**/*.spec.ts", "src/main.server.ts"],
       includeIgnores: true,
       includeLanguageOptions: true,
@@ -120,7 +121,7 @@ const storybookFile = [
     label: "Storybook",
     name: "storybook",
     options: {
-      extraImports: [importTsEslint],
+      extraImports: [defineConfig],
       includeIgnores: true,
       includeLanguageOptions: true,
     },
@@ -134,7 +135,7 @@ const tailwindFile = [
     label: "Tailwind",
     name: "tailwind",
     options: {
-      extraImports: [importTsEslint],
+      extraImports: [defineConfig],
       extraOptions: "settings: { tailwindcss: { config: pathToConfig } },",
       includeIgnores: true,
       includeLanguageOptions: true,
