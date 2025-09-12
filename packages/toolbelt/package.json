@@ -6,14 +6,14 @@
   "dependencies": {
     "@total-typescript/ts-reset": "^0.6.1",
     "lodash": "^4.17.21",
-    "uuid": "^12.0.0",
-    "zod": "^4.1.5"
+    "uuid": "^13.0.0",
+    "zod": "^4.1.8"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.21.3",
+    "@ethang/eslint-config": "^22.21.4",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.3.1",
+    "@types/node": "^24.3.2",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "browserslist-config-baseline": "^0.5.0",

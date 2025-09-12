@@ -24,7 +24,7 @@ export type UseFormProperties<StateType> = {
   onError?: (error: unknown) => unknown;
   onFieldError?: (error: FieldErrors<StateType>) => unknown;
   onSubmit?: (...arguments_: unknown[]) => unknown;
-  zodValidator?: z.ZodTypeAny;
+  zodValidator?: z.ZodType;
 };
 
 export type UseFormReturn<StateType> = {

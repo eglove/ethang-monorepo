@@ -17,7 +17,7 @@ export type GetIndexedDatabaseOptions<Schema extends DBSchema> = {
       options?: IDBIndexParameters;
     }[];
     optionalParameters?: IDBObjectStoreParameters;
-    schema: z.ZodSchema<StoreValue<Schema, StoreNames<Schema>>>;
+    schema: z.ZodType<StoreValue<Schema, StoreNames<Schema>>>;
     storeName: StoreNames<Schema>;
   }[];
 };
