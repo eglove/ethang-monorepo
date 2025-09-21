@@ -6,23 +6,23 @@
   "dependencies": {
     "@ethang/schemas": "workspace:*",
     "@ethang/toolbelt": "^4.4.11",
-    "@hono/zod-validator": "^0.7.2",
-    "@prisma/adapter-d1": "^6.16.1",
-    "@prisma/client": "6.16.1",
+    "@hono/zod-validator": "^0.7.3",
+    "@prisma/adapter-d1": "^6.16.2",
+    "@prisma/client": "6.16.2",
     "bcryptjs": "^3.0.2",
-    "hono": "^4.9.7",
+    "hono": "^4.9.8",
     "jose": "^6.1.0",
     "lodash": "^4.17.21",
-    "prisma": "^6.16.1"
+    "prisma": "^6.16.2"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.21.4",
+    "@ethang/eslint-config": "^22.21.5",
     "@types/lodash": "^4.17.20",
     "browserslist-config-baseline": "^0.5.0",
-    "eslint": "^9.35.0",
+    "eslint": "^9.36.0",
     "rimraf": "^6.0.1",
-    "typescript-eslint": "^8.43.0",
-    "wrangler": "^4.36.0"
+    "typescript-eslint": "^8.44.0",
+    "wrangler": "^4.38.0"
   },
   "engines": {
     "node": ">=24"

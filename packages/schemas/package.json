@@ -2,15 +2,15 @@
   "author": "Ethan Glover",
   "dependencies": {
     "jose": "^6.1.0",
-    "zod": "^4.1.8"
+    "zod": "^4.1.11"
   },
   "exports": {
     "./*": "./src/*"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^22.21.4",
+    "@ethang/eslint-config": "^22.21.5",
     "@ethang/project-builder": "^3.0.2",
-    "eslint": "^9.35.0"
+    "eslint": "^9.36.0"
   },
   "license": "ISC",
   "name": "@ethang/schemas",
