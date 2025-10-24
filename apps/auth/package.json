@@ -10,7 +10,7 @@
     "@prisma/adapter-d1": "^6.16.2",
     "@prisma/client": "6.16.2",
     "bcryptjs": "^3.0.2",
-    "hono": "^4.9.8",
+    "hono": "^4.10.3",
     "jose": "^6.1.0",
     "lodash": "^4.17.21",
     "prisma": "^6.16.2"
