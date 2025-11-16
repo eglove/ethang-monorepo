@@ -4,20 +4,20 @@
     "extends browserslist-config-baseline"
   ],
   "dependencies": {
-    "eslint": "^9.36.0",
+    "eslint": "^9.39.1",
     "lodash": "^4.17.21",
-    "react": "^19.1.1",
-    "zod": "^4.1.11"
+    "react": "^19.2.0",
+    "zod": "^4.1.12"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.21.5",
+    "@ethang/eslint-config": "^23.1.0",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.5.2",
-    "@types/react": "^19.1.13",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
     "browserslist-config-baseline": "^0.5.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">22.0"

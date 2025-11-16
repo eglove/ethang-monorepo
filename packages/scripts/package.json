@@ -3,14 +3,14 @@
   "dependencies": {
     "@ethang/toolbelt": "^4.4.11",
     "lodash": "^4.17.21",
-    "zod": "^4.1.11"
+    "zod": "^4.1.12"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^22.21.5",
+    "@ethang/eslint-config": "^23.1.0",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.5.2",
-    "eslint": "^9.36.0"
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.1"
   },
   "engines": {
     "node": ">=24"

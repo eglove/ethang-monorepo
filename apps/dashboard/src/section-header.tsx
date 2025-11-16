@@ -14,7 +14,6 @@ type SectionHeaderProperties = {
   isFetching?: boolean;
   modalLabel: string;
   openModal: () => void;
-  refreshKeys?: (object | string)[];
 };
 
 export const SectionHeader = ({
