@@ -331,6 +331,7 @@ export default defineConfig(
       "@typescript-eslint/no-unsafe-type-assertion": "error",
       "@typescript-eslint/no-unsafe-unary-minus": "error",
       "@typescript-eslint/no-unused-expressions": "error",
+      "@typescript-eslint/no-unused-private-class-members": "error",
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
