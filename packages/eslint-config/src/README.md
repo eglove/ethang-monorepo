@@ -123,6 +123,6 @@ Or a simpler config without an additional dependency.
 
 ```json
 "engines": {
-  "node": ">=22"
+  "node": ">=24"
 },
 ```
