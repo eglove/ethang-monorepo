@@ -1182,7 +1182,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
     </ul>
     <p>
         The key is balance. Validate thoroughly at the boundaries of untrusted
-         data but also implement targeted, defensive checks within core logic and
+        data but also implement targeted, defensive checks within core logic and
         reusable components to ensure their robustness and predictable behavior.
     </p>
     <h3 id="testingForRuntimeEdgeCases">Testing for Runtime Edge Cases</h3>
@@ -2534,11 +2534,11 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
     }
 }</code></pre>
 
-        <p>
-            This simple class implements the subscription interface needed to work
-            with <code>useSyncExternalStore</code>. In your React components, you can
-            then use it like this:
-        </p>
+    <p>
+        This simple class implements the subscription interface needed to work
+        with <code>useSyncExternalStore</code>. In your React components, you can
+        then use it like this:
+    </p>
 
     <pre><code class="language-javascript">import { useSyncExternalStore } from "react";
 
@@ -2553,968 +2553,967 @@ function UserProfile() {
     return &lt;div&gt;{state.name}&lt;/div&gt;;
 }</code></pre>
 
-        <p>
-            The beauty of this approach is its simplicity and flexibility. You have
-            complete control over when to notify subscribers, how to handle updates,
-            and what optimizations to apply. For example, you might implement deep
-            equality checks to prevent unnecessary updates or add specific methods
-            for common operations on your state.
-        </p>
+    <p>
+        The beauty of this approach is its simplicity and flexibility. You have
+        complete control over when to notify subscribers, how to handle updates,
+        and what optimizations to apply. For example, you might implement deep
+        equality checks to prevent unnecessary updates or add specific methods
+        for common operations on your state.
+    </p>
 
-        <p>
-            For async operations, TanStack Query is still recommended, as it excels at
-            handling data fetching, caching, and synchronization with server state. It
-            complements this approach perfectly, focusing on what it does best while
-            leaving local state management to your custom implementation.
-        </p>
+    <p>
+        For async operations, TanStack Query is still recommended, as it excels at
+        handling data fetching, caching, and synchronization with server state. It
+        complements this approach perfectly, focusing on what it does best while
+        leaving local state management to your custom implementation.
+    </p>
 
-        <p>
-            This pattern gives you the best of both worlds: the simplicity and control
-            of a custom solution, with the power to optimize performance by
-            controlling exactly when React components rerender. While we can’t
-            overcome React’s fundamental limitations around fine-grained reactivity,
-            this approach at least puts you in control of the rerendering process,
-            rather than fighting against the framework or adding unnecessary
-            abstractions.
-        </p>
+    <p>
+        This pattern gives you the best of both worlds: the simplicity and control
+        of a custom solution, with the power to optimize performance by
+        controlling exactly when React components rerender. While we can’t
+        overcome React’s fundamental limitations around fine-grained reactivity,
+        this approach at least puts you in control of the rerendering process,
+        rather than fighting against the framework or adding unnecessary
+        abstractions.
+    </p>
 
-        <h3 id="reactFutureProof">React as a Future-Proof Investment</h3>
-        <p>
-            Investing time in learning and building with React has proven to be a
-            sound long-term decision for many developers and organizations. Several
-            factors contribute to React’s staying power:
-        </p>
-        <ul>
-            <li>
-                <strong>Backed by Meta:</strong> While being open-source, React benefits
-                from significant investment and use by Meta (formerly Facebook), which ensures
-                continued development and stability.
-            </li>
-            <li>
-                <strong>Thoughtful Evolution:</strong> The React team has demonstrated a
-                commitment to backward compatibility while still innovating. Major changes,
-                like the introduction of Hooks in React 16.8, are implemented with gradual
-                migration paths rather than forcing breaking changes.
-            </li>
-            <li>
-                <strong>Cross-Platform Potential:</strong> React’s component model has extended
-                beyond the web with React Native, allowing developers to leverage their React
-                knowledge for mobile app development. This cross-platform capability increases
-                the value of React expertise.
-            </li>
-            <li>
-                <strong>Industry Adoption:</strong> React’s widespread use across industries
-                and company sizes means that React skills remain in high demand, making it
-                a valuable addition to any developer’s toolkit.
-            </li>
-        </ul>
-        <p>
-            The React team’s focus on developer experience, evidenced by ongoing work
-            on features like Server Components, Suspense, and concurrent rendering,
-            suggests that React will continue to evolve to meet the changing needs of
-            web development.
-        </p>
-        <p>
-            Furthermore, React’s influence extends beyond its own ecosystem. Many of
-            its core ideas—component-based architecture—have influenced other
-            frameworks and libraries, becoming standard patterns in modern frontend
-            development. This means that even if another technology eventually
-            supersedes React, the fundamental concepts will likely remain relevant.
-        </p>
-        <p>
-            In conclusion, React’s combination of a low barrier to entry, a rich
-            ecosystem, and long-term stability make it an excellent choice for a wide
-            range of web development projects. While no technology is perfect for
-            every use case, React's balance of simplicity and power, coupled with its
-            thriving community, positions it as a reliable foundation for building
-            modern web applications.
-        </p>
+    <h3 id="reactFutureProof">React as a Future-Proof Investment</h3>
+    <p>
+        Investing time in learning and building with React has proven to be a
+        sound long-term decision for many developers and organizations. Several
+        factors contribute to React’s staying power:
+    </p>
+    <ul>
+        <li>
+            <strong>Backed by Meta:</strong> While being open-source, React benefits
+            from significant investment and use by Meta (formerly Facebook), which ensures
+            continued development and stability.
+        </li>
+        <li>
+            <strong>Thoughtful Evolution:</strong> The React team has demonstrated a
+            commitment to backward compatibility while still innovating. Major changes,
+            like the introduction of Hooks in React 16.8, are implemented with gradual
+            migration paths rather than forcing breaking changes.
+        </li>
+        <li>
+            <strong>Cross-Platform Potential:</strong> React’s component model has extended
+            beyond the web with React Native, allowing developers to leverage their React
+            knowledge for mobile app development. This cross-platform capability increases
+            the value of React expertise.
+        </li>
+        <li>
+            <strong>Industry Adoption:</strong> React’s widespread use across industries
+            and company sizes means that React skills remain in high demand, making it
+            a valuable addition to any developer’s toolkit.
+        </li>
+    </ul>
+    <p>
+        The React team’s focus on developer experience, evidenced by ongoing work
+        on features like Server Components, Suspense, and concurrent rendering,
+        suggests that React will continue to evolve to meet the changing needs of
+        web development.
+    </p>
+    <p>
+        Furthermore, React’s influence extends beyond its own ecosystem. Many of
+        its core ideas—component-based architecture—have influenced other
+        frameworks and libraries, becoming standard patterns in modern frontend
+        development. This means that even if another technology eventually
+        supersedes React, the fundamental concepts will likely remain relevant.
+    </p>
+    <p>
+        In conclusion, React’s combination of a low barrier to entry, a rich
+        ecosystem, and long-term stability make it an excellent choice for a wide
+        range of web development projects. While no technology is perfect for
+        every use case, React's balance of simplicity and power, coupled with its
+        thriving community, positions it as a reliable foundation for building
+        modern web applications.
+    </p>
 
-        <h2 id="theLocalFirstStack">
-            Local First: Building for Performance and Resilience
-        </h2>
-        <p>
-            While React provides an excellent foundation for building user interfaces,
-            the architecture we build around it can dramatically impact both
-            performance and user experience. Recent projects have shown the benefits
-            of a workflow centered around a "local-first" approach that delivers
-            exceptional performance and reliability. Rather than relying on services
-            like Firebase, Supabase, or even full-stack frameworks like Next.js, this
-            approach prioritizes local data storage with background synchronization.
-        </p>
+    <h2 id="theLocalFirstStack">
+        Local First: Building for Performance and Resilience
+    </h2>
+    <p>
+        While React provides an excellent foundation for building user interfaces,
+        the architecture we build around it can dramatically impact both
+        performance and user experience. Recent projects have shown the benefits
+        of a workflow centered around a "local-first" approach that delivers
+        exceptional performance and reliability. Rather than relying on services
+        like Firebase, Supabase, or even full-stack frameworks like Next.js, this
+        approach prioritizes local data storage with background synchronization.
+    </p>
 
-        <h3 id="localFirstPerformanceBenefits">
-            Performance Benefits: Instantly Accessible Structured Data
-        </h3>
-        <p>
-            The core advantage of a local-first approach is the dramatic performance
-            improvement it offers. By storing data directly on the user's device,
-            applications can:
-        </p>
-        <ul>
-            <li>
-                <strong>Eliminate Network Latency:</strong> Data access happens at memory/disk
-                speed rather than being bottlenecked by network requests, resulting in near-instantaneous
-                data retrieval.
-            </li>
-            <li>
-                <strong>Provide Immediate Feedback:</strong> User actions can be reflected
-                in the UI immediately, with synchronization happening asynchronously in the
-                background.
-            </li>
-            <li>
-                <strong>Function Offline:</strong> Applications remain fully functional without
-                an internet connection, with changes synchronized when connectivity is restored.
-            </li>
-            <li>
-                <strong>Reduce Server Load:</strong> With data processing happening on the
-                client, server resources are conserved and can be scaled more efficiently.
-            </li>
-        </ul>
-        <p>
-            This approach creates a fundamentally different user experience—one where
-            the application feels instantaneously responsive rather than being at the
-            mercy of network conditions. For data-heavy applications, the difference
-            can be transformative, turning what might be a sluggish, frustrating
-            experience into one that feels native and fluid.
-        </p>
+    <h3 id="localFirstPerformanceBenefits">
+        Performance Benefits: Instantly Accessible Structured Data
+    </h3>
+    <p>
+        The core advantage of a local-first approach is the dramatic performance
+        improvement it offers. By storing data directly on the user's device,
+        applications can:
+    </p>
+    <ul>
+        <li>
+            <strong>Eliminate Network Latency:</strong> Data access happens at memory/disk
+            speed rather than being bottlenecked by network requests, resulting in near-instantaneous
+            data retrieval.
+        </li>
+        <li>
+            <strong>Provide Immediate Feedback:</strong> User actions can be reflected
+            in the UI immediately, with synchronization happening asynchronously in the
+            background.
+        </li>
+        <li>
+            <strong>Function Offline:</strong> Applications remain fully functional without
+            an internet connection, with changes synchronized when connectivity is restored.
+        </li>
+        <li>
+            <strong>Reduce Server Load:</strong> With data processing happening on the
+            client, server resources are conserved and can be scaled more efficiently.
+        </li>
+    </ul>
+    <p>
+        This approach creates a fundamentally different user experience—one where
+        the application feels instantaneously responsive rather than being at the
+        mercy of network conditions. For data-heavy applications, the difference
+        can be transformative, turning what might be a sluggish, frustrating
+        experience into one that feels native and fluid.
+    </p>
 
-        <p>
-            When you adopt a local-first approach, you're essentially putting your
-            users' experience first. You're saying, "I want your app to feel
-            lightning-fast and reliable, regardless of your internet connection." This
-            philosophy can transform how your applications perform and how users
-            perceive them.
-        </p>
-        <p>
-            The beauty of local-first is that it doesn't require exotic technologies
-            or complex architectures. Modern browsers already provide powerful storage
-            capabilities that you can leverage with relatively simple code. What
-            matters most is the architectural decision to prioritize local operations
-            and treat network communication as a secondary, background process.
-        </p>
+    <p>
+        When you adopt a local-first approach, you're essentially putting your
+        users' experience first. You're saying, "I want your app to feel
+        lightning-fast and reliable, regardless of your internet connection." This
+        philosophy can transform how your applications perform and how users
+        perceive them.
+    </p>
+    <p>
+        The beauty of local-first is that it doesn't require exotic technologies
+        or complex architectures. Modern browsers already provide powerful storage
+        capabilities that you can leverage with relatively simple code. What
+        matters most is the architectural decision to prioritize local operations
+        and treat network communication as a secondary, background process.
+    </p>
 
-        <h3 id="synchronizationStrategies">
-            Synchronization Strategies: Background Syncing Done Right
-        </h3>
-        <p>
-            When building local-first applications, data synchronization is often the
-            most challenging piece of the puzzle. How do you ensure your users' data
-            stays in sync across devices while maintaining those lightning-fast local
-            interactions you've worked so hard to create?
-        </p>
-        <p>
-            Let's talk about some synchronization strategies that can help you achieve
-            the perfect balance between performance and data consistency:
-        </p>
-        <ol>
-            <li>
-                <strong>Optimistic Updates:</strong> Don't make your users wait! Apply changes
-                to the local data immediately and sync with the server in the background.
-                This creates a responsive experience where actions feel instantaneous, even
-                if the actual server communication takes time.
-            </li>
-            <li>
-                <strong>Intelligent Queuing:</strong> When a user makes changes while offline,
-                queue those operations and execute them in the correct order when connectivity
-                returns. This approach ensures that even complex sequences of operations
-                are properly synchronized.
-            </li>
-            <li>
-                <strong>Conflict Resolution:</strong> Conflicts are inevitable in distributed
-                systems. Consider strategies like "last write wins," three-way merging, or
-                operational transforms depending on your application's needs. The key is
-                making conflict resolution transparent to users whenever possible.
-            </li>
-            <li>
-                <strong>Selective Synchronization:</strong> Not all data needs to be synced
-                immediately or completely. Allow users to control what syncs when, or implement
-                priority-based syncing where critical data transfers first.
-            </li>
-            <li>
-                <strong>Delta Synchronization:</strong> Instead of sending entire data objects,
-                transmit only what has changed. This reduces bandwidth usage and makes synchronization
-                faster, especially on slower connections.
-            </li>
-        </ol>
-        <p>
-            The synchronization approach you choose should align with your users'
-            expectations and your application's specific requirements. For
-            collaborative tools, real-time synchronization might be essential. For
-            personal productivity apps, background syncing with clear indicators of
-            sync status might be more appropriate.
-        </p>
-        <p>
-            Remember that transparency is crucial—your users should always understand
-            the sync status of their data. Simple indicators showing "synced,"
-            "syncing," or "offline" can go a long way toward building trust in your
-            application.
-        </p>
-        <p>
-            By thoughtfully implementing these synchronization strategies, you can
-            create applications that feel responsive and reliable under any network
-            conditions. Your users will appreciate the seamless experience, even if
-            they don't fully understand the complex synchronization mechanisms working
-            behind the scenes.
-        </p>
+    <h3 id="synchronizationStrategies">
+        Synchronization Strategies: Background Syncing Done Right
+    </h3>
+    <p>
+        When building local-first applications, data synchronization is often the
+        most challenging piece of the puzzle. How do you ensure your users' data
+        stays in sync across devices while maintaining those lightning-fast local
+        interactions you've worked so hard to create?
+    </p>
+    <p>
+        Let's talk about some synchronization strategies that can help you achieve
+        the perfect balance between performance and data consistency:
+    </p>
+    <ol>
+        <li>
+            <strong>Optimistic Updates:</strong> Don't make your users wait! Apply changes
+            to the local data immediately and sync with the server in the background.
+            This creates a responsive experience where actions feel instantaneous, even
+            if the actual server communication takes time.
+        </li>
+        <li>
+            <strong>Intelligent Queuing:</strong> When a user makes changes while offline,
+            queue those operations and execute them in the correct order when connectivity
+            returns. This approach ensures that even complex sequences of operations
+            are properly synchronized.
+        </li>
+        <li>
+            <strong>Conflict Resolution:</strong> Conflicts are inevitable in distributed
+            systems. Consider strategies like "last write wins," three-way merging, or
+            operational transforms depending on your application's needs. The key is
+            making conflict resolution transparent to users whenever possible.
+        </li>
+        <li>
+            <strong>Selective Synchronization:</strong> Not all data needs to be synced
+            immediately or completely. Allow users to control what syncs when, or implement
+            priority-based syncing where critical data transfers first.
+        </li>
+        <li>
+            <strong>Delta Synchronization:</strong> Instead of sending entire data objects,
+            transmit only what has changed. This reduces bandwidth usage and makes synchronization
+            faster, especially on slower connections.
+        </li>
+    </ol>
+    <p>
+        The synchronization approach you choose should align with your users'
+        expectations and your application's specific requirements. For
+        collaborative tools, real-time synchronization might be essential. For
+        personal productivity apps, background syncing with clear indicators of
+        sync status might be more appropriate.
+    </p>
+    <p>
+        Remember that transparency is crucial—your users should always understand
+        the sync status of their data. Simple indicators showing "synced,"
+        "syncing," or "offline" can go a long way toward building trust in your
+        application.
+    </p>
+    <p>
+        By thoughtfully implementing these synchronization strategies, you can
+        create applications that feel responsive and reliable under any network
+        conditions. Your users will appreciate the seamless experience, even if
+        they don't fully understand the complex synchronization mechanisms working
+        behind the scenes.
+    </p>
 
-        <h2 id="whyCloudflareIsBest">Why Cloudflare Is Best for Development</h2>
-        <p>
-            When it comes to cloud platforms, developers often default to AWS or Azure
-            due to their market dominance. However, Cloudflare offers a developer
-            experience that's fundamentally different and, in many ways, superior for
-            modern web development. Let's explore why Cloudflare has become an
-            increasingly compelling choice for developers looking to build and deploy
-            applications efficiently.
-        </p>
+    <h2 id="whyCloudflareIsBest">Why Cloudflare Is Best for Development</h2>
+    <p>
+        When it comes to cloud platforms, developers often default to AWS or Azure
+        due to their market dominance. However, Cloudflare offers a developer
+        experience that's fundamentally different and, in many ways, superior for
+        modern web development. Let's explore why Cloudflare has become an
+        increasingly compelling choice for developers looking to build and deploy
+        applications efficiently.
+    </p>
 
-        <h3 id="jsonConfigsAndWranglerCLI">
-            JSON Configs and Wrangler CLI: Simplicity Over Abstraction
-        </h3>
-        <p>
-            One of Cloudflare's most significant advantages is its straightforward
-            configuration approach. Unlike the complex console interfaces of AWS and
-            Azure, Cloudflare embraces simple JSON configuration files and a powerful
-            CLI tool called Wrangler.
-        </p>
-        <p>This approach offers several benefits:</p>
-        <ul>
-            <li>
-                <strong>Version Control Friendly:</strong> JSON configs can be easily committed
-                to your repository, making infrastructure changes trackable and reviewable
-                alongside code changes.
-            </li>
-            <li>
-                <strong>Reduced Abstraction Layers:</strong> While tools like Terraform are
-                essential for managing complex AWS or Azure deployments, Cloudflare's simpler
-                model often makes such abstraction tools unnecessary. You can directly interact
-                with the platform using its native configuration format.
-            </li>
-            <li>
-                <strong>Declarative Approach:</strong> The JSON configuration files clearly
-                declare what you want, not how to achieve it, making your infrastructure
-                intentions explicit and readable.
-            </li>
-        </ul>
-        <p>
-            This simplicity doesn't mean sacrificing power. Rather, it reflects
-            Cloudflare's developer-centric philosophy: provide powerful capabilities
-            with minimal complexity.
-        </p>
+    <h3 id="jsonConfigsAndWranglerCLI">
+        JSON Configs and Wrangler CLI: Simplicity Over Abstraction
+    </h3>
+    <p>
+        One of Cloudflare's most significant advantages is its straightforward
+        configuration approach. Unlike the complex console interfaces of AWS and
+        Azure, Cloudflare embraces simple JSON configuration files and a powerful
+        CLI tool called Wrangler.
+    </p>
+    <p>This approach offers several benefits:</p>
+    <ul>
+        <li>
+            <strong>Version Control Friendly:</strong> JSON configs can be easily committed
+            to your repository, making infrastructure changes trackable and reviewable
+            alongside code changes.
+        </li>
+        <li>
+            <strong>Reduced Abstraction Layers:</strong> While tools like Terraform are
+            essential for managing complex AWS or Azure deployments, Cloudflare's simpler
+            model often makes such abstraction tools unnecessary. You can directly interact
+            with the platform using its native configuration format.
+        </li>
+        <li>
+            <strong>Declarative Approach:</strong> The JSON configuration files clearly
+            declare what you want, not how to achieve it, making your infrastructure
+            intentions explicit and readable.
+        </li>
+    </ul>
+    <p>
+        This simplicity doesn't mean sacrificing power. Rather, it reflects
+        Cloudflare's developer-centric philosophy: provide powerful capabilities
+        with minimal complexity.
+    </p>
 
-        <h3 id="workersSimplicity">Workers: Serverless Computing Simplified</h3>
-        <p>
-            Cloudflare Workers represent a significant evolution in serverless
-            computing. Unlike AWS Lambda or Azure Functions, which can feel bolted
-            onto their respective platforms, Workers are a core part of Cloudflare's
-            architecture, running on their global network of data centers.
-        </p>
-        <p>What makes Workers particularly compelling:</p>
-        <ul>
-            <li>
-                <strong>Instant Cold Starts:</strong> Workers execute in microseconds, not
-                seconds, eliminating the cold start problem that plagues other serverless
-                platforms.
-            </li>
-            <li>
-                <strong>Edge Execution:</strong> Your code runs close to your users, dramatically
-                reducing latency compared to region-specific deployments on other platforms.
-            </li>
-            <li>
-                <strong>Standard Web APIs:</strong> Workers use standard web interfaces like
-                Request and Response, making them intuitive for web developers without requiring
-                platform-specific knowledge.
-            </li>
-            <li>
-                <strong>Seamless Integration:</strong> Workers naturally integrate with other
-                Cloudflare services like KV storage, Durable Objects, and R2 storage.
-            </li>
-        </ul>
+    <h3 id="workersSimplicity">Workers: Serverless Computing Simplified</h3>
+    <p>
+        Cloudflare Workers represent a significant evolution in serverless
+        computing. Unlike AWS Lambda or Azure Functions, which can feel bolted
+        onto their respective platforms, Workers are a core part of Cloudflare's
+        architecture, running on their global network of data centers.
+    </p>
+    <p>What makes Workers particularly compelling:</p>
+    <ul>
+        <li>
+            <strong>Instant Cold Starts:</strong> Workers execute in microseconds, not
+            seconds, eliminating the cold start problem that plagues other serverless
+            platforms.
+        </li>
+        <li>
+            <strong>Edge Execution:</strong> Your code runs close to your users, dramatically
+            reducing latency compared to region-specific deployments on other platforms.
+        </li>
+        <li>
+            <strong>Standard Web APIs:</strong> Workers use standard web interfaces like
+            Request and Response, making them intuitive for web developers without requiring
+            platform-specific knowledge.
+        </li>
+        <li>
+            <strong>Seamless Integration:</strong> Workers naturally integrate with other
+            Cloudflare services like KV storage, Durable Objects, and R2 storage.
+        </li>
+    </ul>
 
-        <h3 id="fullStackSolutions">
-            Full-Stack Development with Framework Integration
-        </h3>
-        <p>
-            Cloudflare has embraced modern JavaScript frameworks, making it remarkably
-            simple to deploy full-stack applications. When you run <code
-        >pnpm create cloudflare</code
-        > and select a JavaScript framework like React, you're not just getting a static
-            site deployment—you're getting a complete full-stack solution.
-        </p>
-        <p>This integration provides:</p>
-        <ul>
-            <li>
-                <strong>Automatic API Routes:</strong> Your Worker can serve both your frontend
-                assets and act as your API backend, eliminating the need for separate services.
-            </li>
-            <li>
-                <strong>Unified Development:</strong> Both frontend and backend code live
-                in the same project, simplifying development workflows.
-            </li>
-            <li>
-                <strong>Framework-Specific Optimizations:</strong> Cloudflare's templates
-                are optimized for each framework's specific requirements and best practices.
-            </li>
-            <li>
-                <strong>Streamlined Deployment:</strong> A single command deploys your entire
-                application, from frontend to backend.
-            </li>
-        </ul>
-        <p>
-            This approach dramatically reduces the complexity of building and
-            deploying full-stack applications compared to the multiservice
-            architectures typically required on AWS or Azure.
-        </p>
+    <h3 id="fullStackSolutions">
+        Full-Stack Development with Framework Integration
+    </h3>
+    <p>
+        Cloudflare has embraced modern JavaScript frameworks, making it remarkably
+        simple to deploy full-stack applications. When you run <code
+    >pnpm create cloudflare</code
+    > and select a JavaScript framework like React, you're not just getting a static
+        site deployment—you're getting a complete full-stack solution.
+    </p>
+    <p>This integration provides:</p>
+    <ul>
+        <li>
+            <strong>Automatic API Routes:</strong> Your Worker can serve both your frontend
+            assets and act as your API backend, eliminating the need for separate services.
+        </li>
+        <li>
+            <strong>Unified Development:</strong> Both frontend and backend code live
+            in the same project, simplifying development workflows.
+        </li>
+        <li>
+            <strong>Framework-Specific Optimizations:</strong> Cloudflare's templates
+            are optimized for each framework's specific requirements and best practices.
+        </li>
+        <li>
+            <strong>Streamlined Deployment:</strong> A single command deploys your entire
+            application, from frontend to backend.
+        </li>
+    </ul>
+    <p>
+        This approach dramatically reduces the complexity of building and
+        deploying full-stack applications compared to the multiservice
+        architectures typically required on AWS or Azure.
+    </p>
 
-        <h3 id="bindingsAndTypeGeneration">
-            Bindings and Type Generation: Developer Experience First
-        </h3>
-        <p>
-            Cloudflare's focus on developer experience is particularly evident in its
-            approach to bindings and type generation. These features keep you
-            productive within your code editor, rather than constantly
-            context-switching to a complex web console.
-        </p>
-        <p>Key advantages include:</p>
-        <ul>
-            <li>
-                <strong>Type-Safe Resource Access:</strong> Cloudflare automatically generates
-                TypeScript types for your bindings, providing autocomplete and type checking
-                when accessing resources like KV stores or Durable Objects.
-            </li>
-            <li>
-                <strong>Local Development Parity:</strong> The same bindings work consistently
-                between local development and production environments.
-            </li>
-            <li>
-                <strong>Reduced Context Switching:</strong> Unlike AWS and Azure, which often
-                require extensive console configuration, Cloudflare lets you define most
-                resources directly in your code or configuration files.
-            </li>
-            <li>
-                <strong>IDE Integration:</strong> The strong typing and consistent interfaces
-                make IDE features like code completion and refactoring more effective.
-            </li>
-        </ul>
-        <p>
-            This approach stands in stark contrast to the confusing, messy UIs of AWS
-            and Azure, where finding the right service or configuration option often
-            feels like navigating a labyrinth.
-        </p>
+    <h3 id="bindingsAndTypeGeneration">
+        Bindings and Type Generation: Developer Experience First
+    </h3>
+    <p>
+        Cloudflare's focus on developer experience is particularly evident in its
+        approach to bindings and type generation. These features keep you
+        productive within your code editor, rather than constantly
+        context-switching to a complex web console.
+    </p>
+    <p>Key advantages include:</p>
+    <ul>
+        <li>
+            <strong>Type-Safe Resource Access:</strong> Cloudflare automatically generates
+            TypeScript types for your bindings, providing autocomplete and type checking
+            when accessing resources like KV stores or Durable Objects.
+        </li>
+        <li>
+            <strong>Local Development Parity:</strong> The same bindings work consistently
+            between local development and production environments.
+        </li>
+        <li>
+            <strong>Reduced Context Switching:</strong> Unlike AWS and Azure, which often
+            require extensive console configuration, Cloudflare lets you define most
+            resources directly in your code or configuration files.
+        </li>
+        <li>
+            <strong>IDE Integration:</strong> The strong typing and consistent interfaces
+            make IDE features like code completion and refactoring more effective.
+        </li>
+    </ul>
+    <p>
+        This approach stands in stark contrast to the confusing, messy UIs of AWS
+        and Azure, where finding the right service or configuration option often
+        feels like navigating a labyrinth.
+    </p>
 
-        <h3 id="futureInnovations">Future Innovations: Beyond JavaScript</h3>
-        <p>
-            Cloudflare continues to push the boundaries of what's possible at the
-            edge. One particularly exciting development is their work on supporting
-            Docker containers within Workers, which will allow developers to run
-            services written in any language on Cloudflare's edge network.
-        </p>
-        <p>This innovation will:</p>
-        <ul>
-            <li>
-                <strong>Expand Language Support:</strong> Run code in Python, Ruby, Go, or
-                any other language that can be containerized.
-            </li>
-            <li>
-                <strong>Enable Legacy Application Migration:</strong> Move existing applications
-                to the edge without rewriting them.
-            </li>
-            <li>
-                <strong>Provide Consistent Deployment Model:</strong> Use the same deployment
-                and scaling model regardless of your technology stack.
-            </li>
-        </ul>
-        <p>
-            This development represents Cloudflare's commitment to meeting developers
-            where they are, rather than forcing them to adapt to platform limitations.
-        </p>
+    <h3 id="futureInnovations">Future Innovations: Beyond JavaScript</h3>
+    <p>
+        Cloudflare continues to push the boundaries of what's possible at the
+        edge. One particularly exciting development is their work on supporting
+        Docker containers within Workers, which will allow developers to run
+        services written in any language on Cloudflare's edge network.
+    </p>
+    <p>This innovation will:</p>
+    <ul>
+        <li>
+            <strong>Expand Language Support:</strong> Run code in Python, Ruby, Go, or
+            any other language that can be containerized.
+        </li>
+        <li>
+            <strong>Enable Legacy Application Migration:</strong> Move existing applications
+            to the edge without rewriting them.
+        </li>
+        <li>
+            <strong>Provide Consistent Deployment Model:</strong> Use the same deployment
+            and scaling model regardless of your technology stack.
+        </li>
+    </ul>
+    <p>
+        This development represents Cloudflare's commitment to meeting developers
+        where they are, rather than forcing them to adapt to platform limitations.
+    </p>
 
-        <h3 id="industryRecognition">
-            Industry Recognition: Security and Innovation
-        </h3>
-        <p>
-            Cloudflare's approach is gaining significant industry recognition. Their
-            recent inclusion in the 2025 Gartner Magic Quadrant for Security Service
-            Edge highlights their growing importance in the cloud ecosystem.
-        </p>
-        <p>This recognition reflects:</p>
-        <ul>
-            <li>
-                <strong>Security-First Architecture:</strong> Security is built into Cloudflare's
-                platform at every level, not added as an afterthought.
-            </li>
-            <li>
-                <strong>Innovative Approach:</strong> Cloudflare consistently introduces
-                new capabilities that challenge traditional cloud models.
-            </li>
-            <li>
-                <strong>Developer Adoption:</strong> The growing preference for Cloudflare
-                among developers who value simplicity and performance.
-            </li>
-        </ul>
-        <p>
-            As cloud platforms continue to evolve, Cloudflare's developer-centric
-            approach positions it as an increasingly compelling alternative to the
-            complexity of traditional cloud providers.
-        </p>
+    <h3 id="industryRecognition">
+        Industry Recognition: Security and Innovation
+    </h3>
+    <p>
+        Cloudflare's approach is gaining significant industry recognition. Their
+        recent inclusion in the 2025 Gartner Magic Quadrant for Security Service
+        Edge highlights their growing importance in the cloud ecosystem.
+    </p>
+    <p>This recognition reflects:</p>
+    <ul>
+        <li>
+            <strong>Security-First Architecture:</strong> Security is built into Cloudflare's
+            platform at every level, not added as an afterthought.
+        </li>
+        <li>
+            <strong>Innovative Approach:</strong> Cloudflare consistently introduces
+            new capabilities that challenge traditional cloud models.
+        </li>
+        <li>
+            <strong>Developer Adoption:</strong> The growing preference for Cloudflare
+            among developers who value simplicity and performance.
+        </li>
+    </ul>
+    <p>
+        As cloud platforms continue to evolve, Cloudflare's developer-centric
+        approach positions it as an increasingly compelling alternative to the
+        complexity of traditional cloud providers.
+    </p>
 
-        <h2 id="whyYouShouldUseWindows">Why You Should Use Windows</h2>
-        <p>
-            Windows offers a more productive development environment than many
-            developers realize, especially when compared to the limitations of Ubuntu
-            and the frustrating experience of Mac. Let's explore what makes Windows a
-            superior choice for your development workflow.
-        </p>
+    <h2 id="whyYouShouldUseWindows">Why You Should Use Windows</h2>
+    <p>
+        Windows offers a more productive development environment than many
+        developers realize, especially when compared to the limitations of Ubuntu
+        and the frustrating experience of Mac. Let's explore what makes Windows a
+        superior choice for your development workflow.
+    </p>
 
-        <h3 id="packageManagementAdvantages">
-            Package Management Advantages: WinGet vs. apt
-        </h3>
-        <p>
-            One significant limitation of Ubuntu is its apt repository, which is very
-            limited and not easy to search. You'll find it's more efficient to just
-            Google "install Chrome on Ubuntu" than to stay in the terminal and search
-            for it.
-        </p>
-        <p>
-            But with WinGet? You'll discover that a simple search reveals not just
-            Chrome but a wealth of available applications. You'll notice the contrast
-            is striking—WinGet offers you a comprehensive, easily searchable package
-            ecosystem that makes Ubuntu's apt feel archaic by comparison.
-        </p>
+    <h3 id="packageManagementAdvantages">
+        Package Management Advantages: WinGet vs. apt
+    </h3>
+    <p>
+        One significant limitation of Ubuntu is its apt repository, which is very
+        limited and not easy to search. You'll find it's more efficient to just
+        Google "install Chrome on Ubuntu" than to stay in the terminal and search
+        for it.
+    </p>
+    <p>
+        But with WinGet? You'll discover that a simple search reveals not just
+        Chrome but a wealth of available applications. You'll notice the contrast
+        is striking—WinGet offers you a comprehensive, easily searchable package
+        ecosystem that makes Ubuntu's apt feel archaic by comparison.
+    </p>
 
-        <p>
-            Consider JetBrains Toolbox as an example. In Ubuntu, it's not available in
-            the standard repository. When visiting the JetBrains website, you'll only
-            find a .tar.gz download that doesn't contain a standard .deb file. This
-            requires finding a user-made script to help with installation, and even
-            then, you'll need to manually install multiple dependencies. The process
-            altogether looks like this:
-        </p>
+    <p>
+        Consider JetBrains Toolbox as an example. In Ubuntu, it's not available in
+        the standard repository. When visiting the JetBrains website, you'll only
+        find a .tar.gz download that doesn't contain a standard .deb file. This
+        requires finding a user-made script to help with installation, and even
+        then, you'll need to manually install multiple dependencies. The process
+        altogether looks like this:
+    </p>
 
     <pre><code class="language-pwsh">sudo apt install libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin
 
 curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install/master/jetbrains-toolbox.sh | bash</code></pre>
 
-        <p>
-            With WinGet? You simply type <code>winget install JetBrains.Toolbox</code>
-            - that's it. The package id is easily discoverable with a quick search via
-            CLI, and the entire installation process is handled automatically without the
-            need for multiple commands or external scripts.
-        </p>
+    <p>
+        With WinGet? You simply type <code>winget install JetBrains.Toolbox</code>
+        - that's it. The package id is easily discoverable with a quick search via
+        CLI, and the entire installation process is handled automatically without the
+        need for multiple commands or external scripts.
+    </p>
 
-        <p>
-            And Mac? It has no built-in package manager, and Homebrew is mediocre at
-            best. You'll notice it's similar to Chocolatey—Homebrew only tracks
-            what's installed through it, not your entire system.
-        </p>
+    <p>
+        And Mac? It has no built-in package manager, and Homebrew is mediocre at
+        best. You'll notice it's similar to Chocolatey—Homebrew only tracks
+        what's installed through it, not your entire system.
+    </p>
 
-        <h3 id="productivityTools">Productivity Tools That Make a Difference</h3>
-        <p>
-            When you need to quickly find out where an installation is, or where
-            anything is on your file system, you should try Everything Search. It's a
-            lightning-fast file indexing and search utility that dramatically
-            outperforms the native search capabilities of any other operating system
-            you might have used.
-        </p>
+    <h3 id="productivityTools">Productivity Tools That Make a Difference</h3>
+    <p>
+        When you need to quickly find out where an installation is, or where
+        anything is on your file system, you should try Everything Search. It's a
+        lightning-fast file indexing and search utility that dramatically
+        outperforms the native search capabilities of any other operating system
+        you might have used.
+    </p>
 
-<!--        <video controls src="/videos/everything-search.mp4"></video>-->
+    <!--        <video controls src="/videos/everything-search.mp4"></video>-->
 
-        <p>With Everything Search, you get:</p>
-        <ul>
-            <li>
-                Instantaneous file and directory location across your entire system
-            </li>
-            <li>Advanced filtering options for precise searches you need</li>
-            <li>
-                An ecosystem of plugins that extend its functionality in ways you'll
-                find useful
-            </li>
-            <li>
-                Integration with other Windows tools like PowerToys that you'll use
-                daily
-            </li>
-        </ul>
+    <p>With Everything Search, you get:</p>
+    <ul>
+        <li>
+            Instantaneous file and directory location across your entire system
+        </li>
+        <li>Advanced filtering options for precise searches you need</li>
+        <li>
+            An ecosystem of plugins that extend its functionality in ways you'll
+            find useful
+        </li>
+        <li>
+            Integration with other Windows tools like PowerToys that you'll use
+            daily
+        </li>
+    </ul>
 
-        <p>
-            Linux alternatives like FSearch and Catfish exist, but they don't match
-            the speed and integration capabilities of Everything Search. Mac users
-            face an even bigger challenge, as the platform lacks any comparable
-            alternative.
-        </p>
+    <p>
+        Linux alternatives like FSearch and Catfish exist, but they don't match
+        the speed and integration capabilities of Everything Search. Mac users
+        face an even bigger challenge, as the platform lacks any comparable
+        alternative.
+    </p>
 
-        <p>
-            PowerToys stands out as one of the most impressive projects for Windows.
-            It's a set of utilities for power users that becomes indispensable once
-            you start using them. The project is constantly updated with new features
-            nearly every week, including:
-        </p>
-        <ul>
-            <li>
-                <strong>FancyZones:</strong> A window manager that allows you to create complex,
-                customized layouts far beyond what macOS or Linux offer natively
-            </li>
-            <li>
-                <strong>PowerToys Run/Command Palette:</strong> Quick launchers that integrate
-                with Everything Search for unparalleled system navigation
-            </li>
-            <li>
-                <strong>Text Extractor:</strong> OCR capabilities built right into your OS
-            </li>
-            <li>
-                <strong>Keyboard Manager:</strong> Complete keyboard remapping without limitations—you'll laugh at macOS keyboard settings which only allow you to swap two
-                keys
-            </li>
-            <li>
-                <strong>Environment Variables and Hosts File Editors:</strong> GUI interfaces
-                for common development configuration tasks you'll find incredibly useful
-            </li>
-            <li>
-                <strong>File Explorer Add-ons:</strong> Preview handlers for development-related
-                file formats you work with
-            </li>
-            <li>
-                <strong>Advanced Paste, Awake, Color Picker, Screen Ruler</strong> and many
-                more utilities that will make your workflow smoother
-            </li>
-        </ul>
+    <p>
+        PowerToys stands out as one of the most impressive projects for Windows.
+        It's a set of utilities for power users that becomes indispensable once
+        you start using them. The project is constantly updated with new features
+        nearly every week, including:
+    </p>
+    <ul>
+        <li>
+            <strong>FancyZones:</strong> A window manager that allows you to create complex,
+            customized layouts far beyond what macOS or Linux offer natively
+        </li>
+        <li>
+            <strong>PowerToys Run/Command Palette:</strong> Quick launchers that integrate
+            with Everything Search for unparalleled system navigation
+        </li>
+        <li>
+            <strong>Text Extractor:</strong> OCR capabilities built right into your OS
+        </li>
+        <li>
+            <strong>Keyboard Manager:</strong> Complete keyboard remapping without limitations—you'll laugh at macOS
+            keyboard settings which only allow you to swap two
+            keys
+        </li>
+        <li>
+            <strong>Environment Variables and Hosts File Editors:</strong> GUI interfaces
+            for common development configuration tasks you'll find incredibly useful
+        </li>
+        <li>
+            <strong>File Explorer Add-ons:</strong> Preview handlers for development-related
+            file formats you work with
+        </li>
+        <li>
+            <strong>Advanced Paste, Awake, Color Picker, Screen Ruler</strong> and many
+            more utilities that will make your workflow smoother
+        </li>
+    </ul>
 
-        <p>
-            For Ubuntu, you're not likely to find alternatives for most of these
-            tools, and when available, the quality is typically inferior. As for Mac?
-            You'll need to pay for dozens of equivalents, and the money you spend will
-            likely go towards lower quality applications.
-        </p>
+    <p>
+        For Ubuntu, you're not likely to find alternatives for most of these
+        tools, and when available, the quality is typically inferior. As for Mac?
+        You'll need to pay for dozens of equivalents, and the money you spend will
+        likely go towards lower quality applications.
+    </p>
 
-        <h3 id="screenshotAndVideoTools">
-            Screenshot and Video Tools That Just Work
-        </h3>
-        <p>
-            When it comes to video recording and screenshots, you'll find that Windows
-            excels with built-in tools that are both powerful and easy to use. You'll
-            love how the Windows Snipping Tool lets you hit a shortcut, select a
-            window, and instantly get a video or screenshot—no complex setup
-            required like you might experience on other platforms.
-        </p>
+    <h3 id="screenshotAndVideoTools">
+        Screenshot and Video Tools That Just Work
+    </h3>
+    <p>
+        When it comes to video recording and screenshots, you'll find that Windows
+        excels with built-in tools that are both powerful and easy to use. You'll
+        love how the Windows Snipping Tool lets you hit a shortcut, select a
+        window, and instantly get a video or screenshot—no complex setup
+        required like you might experience on other platforms.
+    </p>
 
-<!--        <LocalImage alt="windows snipping tool" src={snippingTool}/>-->
 
-            <p>
-                For more advanced screenshot needs, try Greenshot, which offers powerful
-                editing and sharing capabilities that make capturing and annotating your
-                screen effortless.
-            </p>
+    <p>
+        For more advanced screenshot needs, try Greenshot, which offers powerful
+        editing and sharing capabilities that make capturing and annotating your
+        screen effortless.
+    </p>
 
-<!--            <LocalImage alt="greenshot" src={greenshot}/>-->
 
-                <p>
-                    Ubuntu equivalents like Flameshot exist but aren't as polished or
-                    feature-complete. Mac users face similar challenges, often having to pay
-                    for screenshot utilities or settle for inferior built-in options.
-                </p>
+    <p>
+        Ubuntu equivalents like Flameshot exist but aren't as polished or
+        feature-complete. Mac users face similar challenges, often having to pay
+        for screenshot utilities or settle for inferior built-in options.
+    </p>
 
-                <h3 id="powerShellAdvantages">
-                    PowerShell: A Superior Command-Line Experience
-                </h3>
-                <p>
-                    You'll find PowerShell offers a more readable and expressive alternative
-                    to Bash's cryptic syntax. The key advantages you'll appreciate:
-                </p>
-                <ul>
-                    <li>
-                        <strong>Object-Based Pipeline:</strong> It works with objects instead of
-                        text, enabling you to do precise data manipulation
-                    </li>
-                    <li>
-                        <strong>Consistent Syntax:</strong> The intuitive verb-noun commands (Get-Process,
-                        Set-Location) improve your discoverability
-                    </li>
-                    <li>
-                        <strong>Modern Features:</strong> You can rely on its exception handling,
-                        advanced data structures, and optional strong typing
-                    </li>
-                    <li>
-                        <strong>Built-in JSON/XML Handling:</strong> You don't need additional parsing
-                        tools like you do with other shells
-                    </li>
-                </ul>
+    <h3 id="powerShellAdvantages">
+        PowerShell: A Superior Command-Line Experience
+    </h3>
+    <p>
+        You'll find PowerShell offers a more readable and expressive alternative
+        to Bash's cryptic syntax. The key advantages you'll appreciate:
+    </p>
+    <ul>
+        <li>
+            <strong>Object-Based Pipeline:</strong> It works with objects instead of
+            text, enabling you to do precise data manipulation
+        </li>
+        <li>
+            <strong>Consistent Syntax:</strong> The intuitive verb-noun commands (Get-Process,
+            Set-Location) improve your discoverability
+        </li>
+        <li>
+            <strong>Modern Features:</strong> You can rely on its exception handling,
+            advanced data structures, and optional strong typing
+        </li>
+        <li>
+            <strong>Built-in JSON/XML Handling:</strong> You don't need additional parsing
+            tools like you do with other shells
+        </li>
+    </ul>
 
-                <p>
-                    You might appreciate that PowerShell is open-source and cross-platform,
-                    though you'll notice it runs slightly slower on Linux and Mac.
-                </p>
+    <p>
+        You might appreciate that PowerShell is open-source and cross-platform,
+        though you'll notice it runs slightly slower on Linux and Mac.
+    </p>
 
-                <h3 id="guiCustomization">
-                    GUI Customization: Practical vs. Time-Consuming
-                </h3>
-                <p>
-                    While Linux is known for customization, you'll find many tutorials and
-                    themes are now outdated or unsupported. You might prefer how Windows
-                    offers a comfortable, modern default experience without the cluttered
-                    taskbar of Mac or the dated aesthetics of Ubuntu.
-                </p>
+    <h3 id="guiCustomization">
+        GUI Customization: Practical vs. Time-Consuming
+    </h3>
+    <p>
+        While Linux is known for customization, you'll find many tutorials and
+        themes are now outdated or unsupported. You might prefer how Windows
+        offers a comfortable, modern default experience without the cluttered
+        taskbar of Mac or the dated aesthetics of Ubuntu.
+    </p>
 
-                <p>
-                    Windows strikes the right balance for you—it's customizable when you
-                    need it to be but doesn't require weeks of tweaking to achieve a
-                    productive environment like you might experience with Linux.
-                </p>
+    <p>
+        Windows strikes the right balance for you—it's customizable when you
+        need it to be but doesn't require weeks of tweaking to achieve a
+        productive environment like you might experience with Linux.
+    </p>
 
-                <h3 id="customizationAndControl">
-                    Removing the Branding and Taking Control
-                </h3>
-                <p>
-                    You've probably noticed that both Windows and Mac push their ecosystems
-                    and productivity apps, while Ubuntu relies primarily on open source with
-                    optional Pro security updates.
-                </p>
+    <h3 id="customizationAndControl">
+        Removing the Branding and Taking Control
+    </h3>
+    <p>
+        You've probably noticed that both Windows and Mac push their ecosystems
+        and productivity apps, while Ubuntu relies primarily on open source with
+        optional Pro security updates.
+    </p>
 
-                <p>
-                    You'll appreciate how Windows offers more control through WinGet, which
-                    provides you access to uninstall system components that other package
-                    managers can't touch. While it's not a one-click solution, you'll find
-                    Windows settings allow you to disable intrusive features for a cleaner
-                    experience that you'll prefer.
-                </p>
+    <p>
+        You'll appreciate how Windows offers more control through WinGet, which
+        provides you access to uninstall system components that other package
+        managers can't touch. While it's not a one-click solution, you'll find
+        Windows settings allow you to disable intrusive features for a cleaner
+        experience that you'll prefer.
+    </p>
 
-                <p>
-                    Have you noticed how Mac users often accept the ecosystem lock-in and paid
-                    apps despite free alternatives being available elsewhere? This behavior
-                    seems puzzling when considering the value proposition.
-                </p>
+    <p>
+        Have you noticed how Mac users often accept the ecosystem lock-in and paid
+        apps despite free alternatives being available elsewhere? This behavior
+        seems puzzling when considering the value proposition.
+    </p>
 
-                <p>
-                    In conclusion, Windows deserves more credit than it typically receives.
-                    While Ubuntu makes for a good work environment but lacks productivity
-                    features you need, and Mac's aesthetics and usability can be frustrating,
-                    Windows offers a balanced approach. You'll learn that sometimes
-                    "simplicity" doesn't mean "clean"—it can mean fewer features to make
-                    your life easier.
-                </p>
+    <p>
+        In conclusion, Windows deserves more credit than it typically receives.
+        While Ubuntu makes for a good work environment but lacks productivity
+        features you need, and Mac's aesthetics and usability can be frustrating,
+        Windows offers a balanced approach. You'll learn that sometimes
+        "simplicity" doesn't mean "clean"—it can mean fewer features to make
+        your life easier.
+    </p>
 
-                <p>
-                    Windows has evolved into a powerful development platform that combines
-                    mainstream stability with the tools and customization you need as a
-                    developer. Its package management, productivity tools, modern
-                    command-line, and balanced customization make it excellent if you value
-                    both productivity and polish.
-                </p>
+    <p>
+        Windows has evolved into a powerful development platform that combines
+        mainstream stability with the tools and customization you need as a
+        developer. Its package management, productivity tools, modern
+        command-line, and balanced customization make it excellent if you value
+        both productivity and polish.
+    </p>
 
-                <h2 id="whyYouShouldUseJetBrainsIDEs">Why You Should Use JetBrains IDEs</h2>
-                <p>
-                    In the world of code editors and development environments, there's a clear
-                    distinction between those who constantly switch tools and those who find
-                    their perfect match and never look back. JetBrains IDEs fall firmly in the
-                    latter category, creating a loyal user base that rarely feels the need to
-                    explore alternatives. Let's explore why JetBrains IDEs stand apart from
-                    the trend-chasing cycle of text editors and why they represent a superior
-                    development experience.
-                </p>
+    <h2 id="whyYouShouldUseJetBrainsIDEs">Why You Should Use JetBrains IDEs</h2>
+    <p>
+        In the world of code editors and development environments, there's a clear
+        distinction between those who constantly switch tools and those who find
+        their perfect match and never look back. JetBrains IDEs fall firmly in the
+        latter category, creating a loyal user base that rarely feels the need to
+        explore alternatives. Let's explore why JetBrains IDEs stand apart from
+        the trend-chasing cycle of text editors and why they represent a superior
+        development experience.
+    </p>
 
-                <h3 id="ideVsTextEditor">
-                    IDE vs. Text Editor: Understanding the Real Difference
-                </h3>
-                <p>
-                    The terms "IDE" (Integrated Development Environment) and "text editor" are
-                    often used interchangeably, but they represent fundamentally different
-                    approaches to software development. A text editor, even with plugins,
-                    primarily focuses on editing text files with syntax highlighting and basic
-                    code assistance. An IDE, however, provides a comprehensive environment
-                    that understands your entire project at a deep level.
-                </p>
-                <p>
-                    This distinction becomes clear when you consider what JetBrains offers:
-                </p>
-                <ul>
-                    <li>
-                        <strong>Project-wide awareness:</strong> JetBrains IDEs understand the relationships
-                        between all files in your project, not just the one you're currently editing
-                    </li>
-                    <li>
-                        <strong>Language-specific intelligence:</strong> Deep understanding of language
-                        semantics, not just syntax highlighting
-                    </li>
-                    <li>
-                        <strong>Integrated tooling:</strong> Debugging, profiling, testing, and deployment
-                        tools built directly into the environment
-                    </li>
-                    <li>
-                        <strong>Refactoring capabilities:</strong> Intelligent code transformations
-                        that understand your codebase's structure
-                    </li>
-                </ul>
+    <h3 id="ideVsTextEditor">
+        IDE vs. Text Editor: Understanding the Real Difference
+    </h3>
+    <p>
+        The terms "IDE" (Integrated Development Environment) and "text editor" are
+        often used interchangeably, but they represent fundamentally different
+        approaches to software development. A text editor, even with plugins,
+        primarily focuses on editing text files with syntax highlighting and basic
+        code assistance. An IDE, however, provides a comprehensive environment
+        that understands your entire project at a deep level.
+    </p>
+    <p>
+        This distinction becomes clear when you consider what JetBrains offers:
+    </p>
+    <ul>
+        <li>
+            <strong>Project-wide awareness:</strong> JetBrains IDEs understand the relationships
+            between all files in your project, not just the one you're currently editing
+        </li>
+        <li>
+            <strong>Language-specific intelligence:</strong> Deep understanding of language
+            semantics, not just syntax highlighting
+        </li>
+        <li>
+            <strong>Integrated tooling:</strong> Debugging, profiling, testing, and deployment
+            tools built directly into the environment
+        </li>
+        <li>
+            <strong>Refactoring capabilities:</strong> Intelligent code transformations
+            that understand your codebase's structure
+        </li>
+    </ul>
 
-                <h3 id="jetBrainsLoyalty">The JetBrains Loyalty Phenomenon</h3>
-                <p>
-                    While many developers have hopped from one text editor to another
-                    following industry trends—Sublime Text for its customization and themes,
-                    VS Code for its plugin ecosystem, and now Cursor for its AI
-                    integration—JetBrains users display a remarkable loyalty. This isn't
-                    accidental or merely habitual; it's because JetBrains consistently
-                    delivers value that transcends these trends.
-                </p>
-                <p>
-                    JetBrains has demonstrated an ability to adapt and incorporate new
-                    features as they emerge in the development landscape. When customization
-                    became popular, JetBrains already offered extensive theming and
-                    personalization. When plugins became essential, JetBrains had a robust
-                    marketplace. And now, as AI assistance becomes the new frontier, JetBrains
-                    has integrated these capabilities without requiring users to switch
-                    platforms.
-                </p>
-                <p>
-                    This adaptability means JetBrains users don't experience FOMO (fear of
-                    missing out) that drives the constant tool-switching behavior seen
-                    elsewhere in the industry. They know their IDE will evolve to incorporate
-                    valuable new capabilities while maintaining the deep integration and
-                    intelligence they rely on.
-                </p>
+    <h3 id="jetBrainsLoyalty">The JetBrains Loyalty Phenomenon</h3>
+    <p>
+        While many developers have hopped from one text editor to another
+        following industry trends—Sublime Text for its customization and themes,
+        VS Code for its plugin ecosystem, and now Cursor for its AI
+        integration—JetBrains users display a remarkable loyalty. This isn't
+        accidental or merely habitual; it's because JetBrains consistently
+        delivers value that transcends these trends.
+    </p>
+    <p>
+        JetBrains has demonstrated an ability to adapt and incorporate new
+        features as they emerge in the development landscape. When customization
+        became popular, JetBrains already offered extensive theming and
+        personalization. When plugins became essential, JetBrains had a robust
+        marketplace. And now, as AI assistance becomes the new frontier, JetBrains
+        has integrated these capabilities without requiring users to switch
+        platforms.
+    </p>
+    <p>
+        This adaptability means JetBrains users don't experience FOMO (fear of
+        missing out) that drives the constant tool-switching behavior seen
+        elsewhere in the industry. They know their IDE will evolve to incorporate
+        valuable new capabilities while maintaining the deep integration and
+        intelligence they rely on.
+    </p>
 
-                <h3 id="fullIntegrationAdvantages">The Power of Full Integration</h3>
-                <p>
-                    The true power of JetBrains IDEs becomes apparent when you experience the
-                    seamless integration of advanced development features:
-                </p>
-                <ul>
-                    <li>
-                        <strong>Interactive debugging:</strong> Set breakpoints in a React application
-                        and step through code execution while inspecting component state and props
-                        in real-time
-                    </li>
-                    <li>
-                        <strong>Database tools:</strong> Connect to, query, and modify databases
-                        directly within your IDE, with schema visualization and query optimization
-                    </li>
-                    <li>
-                        <strong>Version control:</strong> Git operations with visual diff tools,
-                        conflict resolution, and branch management integrated into your workflow
-                    </li>
-                    <li>
-                        <strong>Deployment tools:</strong> Deploy applications to various environments
-                        with configuration management and monitoring
-                    </li>
-                    <li>
-                        <strong>Profiling and performance analysis:</strong> Identify bottlenecks
-                        and optimize code without leaving your development environment
-                    </li>
-                </ul>
-                <p>
-                    These aren't just conveniences; they fundamentally change how you approach
-                    development problems. When your debugging tools understand your
-                    application structure, you can diagnose issues more effectively. When your
-                    database tools are aware of your data models, you can work with your data
-                    more intelligently.
-                </p>
+    <h3 id="fullIntegrationAdvantages">The Power of Full Integration</h3>
+    <p>
+        The true power of JetBrains IDEs becomes apparent when you experience the
+        seamless integration of advanced development features:
+    </p>
+    <ul>
+        <li>
+            <strong>Interactive debugging:</strong> Set breakpoints in a React application
+            and step through code execution while inspecting component state and props
+            in real-time
+        </li>
+        <li>
+            <strong>Database tools:</strong> Connect to, query, and modify databases
+            directly within your IDE, with schema visualization and query optimization
+        </li>
+        <li>
+            <strong>Version control:</strong> Git operations with visual diff tools,
+            conflict resolution, and branch management integrated into your workflow
+        </li>
+        <li>
+            <strong>Deployment tools:</strong> Deploy applications to various environments
+            with configuration management and monitoring
+        </li>
+        <li>
+            <strong>Profiling and performance analysis:</strong> Identify bottlenecks
+            and optimize code without leaving your development environment
+        </li>
+    </ul>
+    <p>
+        These aren't just conveniences; they fundamentally change how you approach
+        development problems. When your debugging tools understand your
+        application structure, you can diagnose issues more effectively. When your
+        database tools are aware of your data models, you can work with your data
+        more intelligently.
+    </p>
 
-                <h3 id="jetBrainsJunie">JetBrains Junie: AI That Understands Your Code</h3>
-                <p>
-                    JetBrains has entered the AI assistant space with Junie, a sophisticated
-                    AI tool that demonstrates the advantage of deep integration. Unlike
-                    generic AI coding assistants, Junie leverages JetBrains' deep
-                    understanding of code structure and project context.
-                </p>
-                <p>
-                    What sets Junie apart is its multimodal approach—it adapts its assistance
-                    based on context:
-                </p>
-                <ul>
-                    <li>
-                        When you're writing code, it offers intelligent completions that respect
-                        your project's architecture and coding conventions
-                    </li>
-                    <li>
-                        When you're debugging, it can analyze the execution flow and suggest
-                        potential fixes for issues
-                    </li>
-                    <li>
-                        When you're refactoring, it understands the implications across your
-                        entire codebase
-                    </li>
-                    <li>
-                        When you're learning a new API or framework, it can provide contextual
-                        documentation and examples
-                    </li>
-                </ul>
-                <p>
-                    This context-aware assistance is only possible because Junie operates
-                    within an environment that already has deep knowledge of your code, not
-                    just as text but as structured, meaningful entities with relationships and
-                    semantics.
-                </p>
+    <h3 id="jetBrainsJunie">JetBrains Junie: AI That Understands Your Code</h3>
+    <p>
+        JetBrains has entered the AI assistant space with Junie, a sophisticated
+        AI tool that demonstrates the advantage of deep integration. Unlike
+        generic AI coding assistants, Junie leverages JetBrains' deep
+        understanding of code structure and project context.
+    </p>
+    <p>
+        What sets Junie apart is its multimodal approach—it adapts its assistance
+        based on context:
+    </p>
+    <ul>
+        <li>
+            When you're writing code, it offers intelligent completions that respect
+            your project's architecture and coding conventions
+        </li>
+        <li>
+            When you're debugging, it can analyze the execution flow and suggest
+            potential fixes for issues
+        </li>
+        <li>
+            When you're refactoring, it understands the implications across your
+            entire codebase
+        </li>
+        <li>
+            When you're learning a new API or framework, it can provide contextual
+            documentation and examples
+        </li>
+    </ul>
+    <p>
+        This context-aware assistance is only possible because Junie operates
+        within an environment that already has deep knowledge of your code, not
+        just as text but as structured, meaningful entities with relationships and
+        semantics.
+    </p>
 
-                <h3 id="pluginsVsIntegration">Why Plugins Can't Match True Integration</h3>
-                <p>
-                    A common misconception is that you can replicate the JetBrains experience
-                    by installing dozens of plugins in a text editor like VS Code. While
-                    plugins can add features, they can't achieve the same level of integration
-                    for several reasons:
-                </p>
-                <ul>
-                    <li>
-                        <strong>Fragmented development:</strong> Plugins are developed independently,
-                        often with different design philosophies and update cycles
-                    </li>
-                    <li>
-                        <strong>Limited interoperability:</strong> Plugins may not communicate effectively
-                        with each other, creating silos of functionality
-                    </li>
-                    <li>
-                        <strong>Performance overhead:</strong> Each plugin adds its own processing
-                        and memory requirements, often leading to a sluggish experience
-                    </li>
-                    <li>
-                        <strong>Inconsistent user experience:</strong> Different plugins introduce
-                        varying UI patterns and keyboard shortcuts, creating cognitive load
-                    </li>
-                    <li>
-                        <strong>Shallow integration:</strong> Plugins typically operate at a surface
-                        level, lacking the deep project understanding that comes from a unified architecture
-                    </li>
-                </ul>
-                <p>
-                    JetBrains IDEs are built from the ground up with integration in mind.
-                    Every feature is aware of and can interact with other features, creating a
-                    cohesive environment rather than a collection of disparate tools.
-                </p>
-                <p>
-                    In conclusion, while text editors have their place and may be sufficient
-                    for simpler tasks, JetBrains IDEs offer a fundamentally different
-                    development experience. Their deep integration, language intelligence, and
-                    comprehensive tooling create a productive environment that adapts to new
-                    trends without sacrificing the core benefits that make developers loyal to
-                    the platform. If you value productivity, code quality, and a seamless
-                    development experience, JetBrains IDEs represent an investment that
-                    consistently pays dividends throughout your development career.
-                </p>
+    <h3 id="pluginsVsIntegration">Why Plugins Can't Match True Integration</h3>
+    <p>
+        A common misconception is that you can replicate the JetBrains experience
+        by installing dozens of plugins in a text editor like VS Code. While
+        plugins can add features, they can't achieve the same level of integration
+        for several reasons:
+    </p>
+    <ul>
+        <li>
+            <strong>Fragmented development:</strong> Plugins are developed independently,
+            often with different design philosophies and update cycles
+        </li>
+        <li>
+            <strong>Limited interoperability:</strong> Plugins may not communicate effectively
+            with each other, creating silos of functionality
+        </li>
+        <li>
+            <strong>Performance overhead:</strong> Each plugin adds its own processing
+            and memory requirements, often leading to a sluggish experience
+        </li>
+        <li>
+            <strong>Inconsistent user experience:</strong> Different plugins introduce
+            varying UI patterns and keyboard shortcuts, creating cognitive load
+        </li>
+        <li>
+            <strong>Shallow integration:</strong> Plugins typically operate at a surface
+            level, lacking the deep project understanding that comes from a unified architecture
+        </li>
+    </ul>
+    <p>
+        JetBrains IDEs are built from the ground up with integration in mind.
+        Every feature is aware of and can interact with other features, creating a
+        cohesive environment rather than a collection of disparate tools.
+    </p>
+    <p>
+        In conclusion, while text editors have their place and may be sufficient
+        for simpler tasks, JetBrains IDEs offer a fundamentally different
+        development experience. Their deep integration, language intelligence, and
+        comprehensive tooling create a productive environment that adapts to new
+        trends without sacrificing the core benefits that make developers loyal to
+        the platform. If you value productivity, code quality, and a seamless
+        development experience, JetBrains IDEs represent an investment that
+        consistently pays dividends throughout your development career.
+    </p>
 
-                <h2 id="whyPrismaIsBestORM">Why Prisma Is the Best ORM</h2>
-                <p>
-                    When building modern web applications, how you interact with your database
-                    can significantly impact development speed, code quality, and application
-                    performance. Object-Relational Mapping (ORM) tools have become essential
-                    in this ecosystem, and among them, Prisma stands out as the superior
-                    choice. Let's explore why Prisma has become the go-to ORM for developers
-                    who value both productivity and performance.
-                </p>
+    <h2 id="whyPrismaIsBestORM">Why Prisma Is the Best ORM</h2>
+    <p>
+        When building modern web applications, how you interact with your database
+        can significantly impact development speed, code quality, and application
+        performance. Object-Relational Mapping (ORM) tools have become essential
+        in this ecosystem, and among them, Prisma stands out as the superior
+        choice. Let's explore why Prisma has become the go-to ORM for developers
+        who value both productivity and performance.
+    </p>
 
-                <h3 id="whyUseORM">Why You Should Use an ORM in the First Place</h3>
-                <p>
-                    Before diving into Prisma specifically, it's worth understanding why ORMs
-                    are valuable in modern development:
-                </p>
-                <ul>
-                    <li>
-                        <strong>Abstraction of database complexity:</strong> ORMs shield developers
-                        from having to write raw SQL queries, allowing them to work with familiar
-                        programming paradigms
-                    </li>
-                    <li>
-                        <strong>Type safety:</strong> Modern ORMs provide type definitions that catch
-                        errors at compile time rather than runtime
-                    </li>
-                    <li>
-                        <strong>Query building:</strong> ORMs offer intuitive APIs for constructing
-                        complex queries without string concatenation or manual parameter binding
-                    </li>
-                    <li>
-                        <strong>Migration management:</strong> Database schema changes can be tracked,
-                        versioned, and applied consistently across environments
-                    </li>
-                    <li>
-                        <strong>Security:</strong> ORMs typically handle parameter sanitization,
-                        reducing the risk of SQL injection attacks
-                    </li>
-                    <li>
-                        <strong>Cross-database compatibility:</strong> The same code can often work
-                        with different database engines with minimal changes
-                    </li>
-                </ul>
-                <p>
-                    While some developers argue for using raw SQL for performance reasons, the
-                    productivity and safety benefits of a well-designed ORM typically outweigh
-                    any performance considerations for most applications. The question isn't
-                    whether to use an ORM, but which one provides the best balance of
-                    developer experience, type safety, and performance.
-                </p>
+    <h3 id="whyUseORM">Why You Should Use an ORM in the First Place</h3>
+    <p>
+        Before diving into Prisma specifically, it's worth understanding why ORMs
+        are valuable in modern development:
+    </p>
+    <ul>
+        <li>
+            <strong>Abstraction of database complexity:</strong> ORMs shield developers
+            from having to write raw SQL queries, allowing them to work with familiar
+            programming paradigms
+        </li>
+        <li>
+            <strong>Type safety:</strong> Modern ORMs provide type definitions that catch
+            errors at compile time rather than runtime
+        </li>
+        <li>
+            <strong>Query building:</strong> ORMs offer intuitive APIs for constructing
+            complex queries without string concatenation or manual parameter binding
+        </li>
+        <li>
+            <strong>Migration management:</strong> Database schema changes can be tracked,
+            versioned, and applied consistently across environments
+        </li>
+        <li>
+            <strong>Security:</strong> ORMs typically handle parameter sanitization,
+            reducing the risk of SQL injection attacks
+        </li>
+        <li>
+            <strong>Cross-database compatibility:</strong> The same code can often work
+            with different database engines with minimal changes
+        </li>
+    </ul>
+    <p>
+        While some developers argue for using raw SQL for performance reasons, the
+        productivity and safety benefits of a well-designed ORM typically outweigh
+        any performance considerations for most applications. The question isn't
+        whether to use an ORM, but which one provides the best balance of
+        developer experience, type safety, and performance.
+    </p>
 
-                <h3 id="comparingPrismaToAlternatives">Comparing Prisma to Alternatives</h3>
-                <p>
-                    The JavaScript/TypeScript ecosystem has several ORM options, each with
-                    different approaches and trade-offs:
-                </p>
-                <ul>
-                    <li>
-                        <strong>TypeORM:</strong> Once popular, TypeORM placed a bet on active record
-                        patterns and has fallen very far behind the rest of the ecosystem. Its patterns
-                        are really only relevant to NestJS applications. NestJS itself has put significant
-                        effort into maintaining compatibility with adapters and polyfills that require
-                        outdated dependencies like "reflect-metadata"–technologies that are no
-                        longer relevant in a modern JavaScript ecosystem.
-                    </li>
-                    <li>
-                        <strong>Sequelize:</strong> One of the oldest JavaScript ORMs, Sequelize
-                        suffers from outdated patterns, limited TypeScript support, and complex configuration
-                        requirements.
-                    </li>
-                    <li>
-                        <strong>Drizzle:</strong> A newer entrant that has captured developer attention
-                        with its performance claims. However, Drizzle still requires manual model
-                         definition, and while it does handle migrations, it does so at a superficial
-                        level that doesn't map directly to the types and client API generation in
-                        the way that Prisma does.
-                    </li>
-                    <li>
-                        <strong>Kysely:</strong> Similar to Drizzle, Kysely offers a type-safe query
-                        builder but lacks the comprehensive feature set of a full ORM. It requires
-                        significant manual setup, and while it does include migration capabilities,
-                        they're implemented at a superficial level that doesn't integrate with types
-                        and client API generation like Prisma's approach.
-                    </li>
-                </ul>
-                <p>
-                    These "modern" alternatives like Drizzle and Kysely have gained attention,
-                    but they still require considerable manual wiring and setup. You have to
-                    manually define models, and while they do offer migration capabilities,
-                    they handle them at a superficial level that doesn't map directly to the
-                    types and client API generation in the way that Prisma does–missing a
-                    key integration that's critical for efficient database management in a
-                    team environment.
-                </p>
+    <h3 id="comparingPrismaToAlternatives">Comparing Prisma to Alternatives</h3>
+    <p>
+        The JavaScript/TypeScript ecosystem has several ORM options, each with
+        different approaches and trade-offs:
+    </p>
+    <ul>
+        <li>
+            <strong>TypeORM:</strong> Once popular, TypeORM placed a bet on active record
+            patterns and has fallen very far behind the rest of the ecosystem. Its patterns
+            are really only relevant to NestJS applications. NestJS itself has put significant
+            effort into maintaining compatibility with adapters and polyfills that require
+            outdated dependencies like "reflect-metadata"–technologies that are no
+            longer relevant in a modern JavaScript ecosystem.
+        </li>
+        <li>
+            <strong>Sequelize:</strong> One of the oldest JavaScript ORMs, Sequelize
+            suffers from outdated patterns, limited TypeScript support, and complex configuration
+            requirements.
+        </li>
+        <li>
+            <strong>Drizzle:</strong> A newer entrant that has captured developer attention
+            with its performance claims. However, Drizzle still requires manual model
+            definition, and while it does handle migrations, it does so at a superficial
+            level that doesn't map directly to the types and client API generation in
+            the way that Prisma does.
+        </li>
+        <li>
+            <strong>Kysely:</strong> Similar to Drizzle, Kysely offers a type-safe query
+            builder but lacks the comprehensive feature set of a full ORM. It requires
+            significant manual setup, and while it does include migration capabilities,
+            they're implemented at a superficial level that doesn't integrate with types
+            and client API generation like Prisma's approach.
+        </li>
+    </ul>
+    <p>
+        These "modern" alternatives like Drizzle and Kysely have gained attention,
+        but they still require considerable manual wiring and setup. You have to
+        manually define models, and while they do offer migration capabilities,
+        they handle them at a superficial level that doesn't map directly to the
+        types and client API generation in the way that Prisma does–missing a
+        key integration that's critical for efficient database management in a
+        team environment.
+    </p>
 
-                <h3 id="prismaAdvantages">
-                    Prisma's Advantages: Migrations, Types, and Simplicity
-                </h3>
-                <p>
-                    Prisma takes a fundamentally different approach that addresses the
-                    limitations of other ORMs:
-                </p>
-                <ul>
-                    <li>
-                        <strong>Schema-driven development:</strong> Prisma's schema file is a declarative,
-                        human-readable definition of your data model that serves as the single source
-                        of truth for both database schema and TypeScript types.
-                    </li>
-                    <li>
-                        <strong>Automatic migrations:</strong> From your schema, Prisma can automatically
-                        generate and apply database migrations, keeping your database in sync with
-                        your code without manual SQL writing.
-                    </li>
-                    <li>
-                        <strong>Type generation:</strong> Prisma generates TypeScript types that
-                        perfectly match your database schema, providing end-to-end type safety from
-                        database to API.
-                    </li>
-                    <li>
-                        <strong>Intuitive query API:</strong> Prisma's client API is designed to
-                        be intuitive and discoverable, with excellent IDE autocompletion support.
-                    </li>
-                    <li>
-                        <strong>Relations handling:</strong> Prisma makes working with related data
-                        straightforward, with support for eager loading, nested writes, and cascading
-                        operations.
-                    </li>
-                </ul>
-                <p>Consider this simple Prisma schema example:</p>
-                <pre><code class="language-javascript">model User {
+    <h3 id="prismaAdvantages">
+        Prisma's Advantages: Migrations, Types, and Simplicity
+    </h3>
+    <p>
+        Prisma takes a fundamentally different approach that addresses the
+        limitations of other ORMs:
+    </p>
+    <ul>
+        <li>
+            <strong>Schema-driven development:</strong> Prisma's schema file is a declarative,
+            human-readable definition of your data model that serves as the single source
+            of truth for both database schema and TypeScript types.
+        </li>
+        <li>
+            <strong>Automatic migrations:</strong> From your schema, Prisma can automatically
+            generate and apply database migrations, keeping your database in sync with
+            your code without manual SQL writing.
+        </li>
+        <li>
+            <strong>Type generation:</strong> Prisma generates TypeScript types that
+            perfectly match your database schema, providing end-to-end type safety from
+            database to API.
+        </li>
+        <li>
+            <strong>Intuitive query API:</strong> Prisma's client API is designed to
+            be intuitive and discoverable, with excellent IDE autocompletion support.
+        </li>
+        <li>
+            <strong>Relations handling:</strong> Prisma makes working with related data
+            straightforward, with support for eager loading, nested writes, and cascading
+            operations.
+        </li>
+    </ul>
+    <p>Consider this simple Prisma schema example:</p>
+    <pre><code class="language-javascript">model User {
     id Int @id @default(autoincrement())
     email String @unique
     name String?
@@ -3537,74 +3536,74 @@ model Profile {
     user User @relation(fields: [userId], references: [id])
     userId Int @unique
 }</code></pre>
-                <p>From this single schema file, Prisma generates:</p>
-                <ol>
-                    <li>
-                        Database migrations to create these tables with proper constraints
-                    </li>
-                    <li>TypeScript types for all models and their relations</li>
-                    <li>A fully type-safe client for querying and manipulating data</li>
-                </ol>
-                <p>
-                    This approach dramatically reduces boilerplate code and ensures
-                    consistency between your database schema and application code. The schema
-                    file serves as both documentation and executable code, eliminating the
-                    drift that often occurs between models and database structure in other
-                    ORMs.
-                </p>
-                <p>
-                    Prisma has also recently made significant improvements to address its
-                    historical limitations:
-                </p>
-                <ul>
-                    <li>
-                        <strong>ESM support:</strong> Prisma now fully supports ECMAScript modules,
-                        aligning with the modern JavaScript ecosystem.
-                    </li>
-                    <li>
-                        <strong>Improved performance:</strong> Prisma has dropped what has been the
-                        biggest reason most people decided not to use it–the Rust client. This
-                        change has significantly improved its performance and startup time.
-                    </li>
-                </ul>
+    <p>From this single schema file, Prisma generates:</p>
+    <ol>
+        <li>
+            Database migrations to create these tables with proper constraints
+        </li>
+        <li>TypeScript types for all models and their relations</li>
+        <li>A fully type-safe client for querying and manipulating data</li>
+    </ol>
+    <p>
+        This approach dramatically reduces boilerplate code and ensures
+        consistency between your database schema and application code. The schema
+        file serves as both documentation and executable code, eliminating the
+        drift that often occurs between models and database structure in other
+        ORMs.
+    </p>
+    <p>
+        Prisma has also recently made significant improvements to address its
+        historical limitations:
+    </p>
+    <ul>
+        <li>
+            <strong>ESM support:</strong> Prisma now fully supports ECMAScript modules,
+            aligning with the modern JavaScript ecosystem.
+        </li>
+        <li>
+            <strong>Improved performance:</strong> Prisma has dropped what has been the
+            biggest reason most people decided not to use it–the Rust client. This
+            change has significantly improved its performance and startup time.
+        </li>
+    </ul>
 
-                <h3 id="prismaEdgeCompatibility">
-                    Prisma's Compatibility with Edge Platforms
-                </h3>
-                <p>
-                    With the shift away from the Rust client and toward a more lightweight
-                    JavaScript implementation, Prisma is now fully compatible with edge
-                    platforms like Cloudflare Workers, Vercel Edge Functions, and Deno Deploy.
-                    This compatibility opens up new possibilities for building
-                    high-performance applications that leverage the global distribution of
-                    edge computing while maintaining the developer experience benefits of a
-                    sophisticated ORM.
-                </p>
-                <p>Edge compatibility means you can:</p>
-                <ul>
-                    <li>
-                        Deploy database-connected applications to CDN edge nodes worldwide
-                    </li>
-                    <li>Reduce latency by processing data closer to your users</li>
-                    <li>
-                        Maintain a consistent development experience across all deployment
-                        targets
-                    </li>
-                </ul>
-                <p>
-                    This advantage is particularly important as more applications move toward
-                    edge-first architectures to improve performance and reduce costs.
-                </p>
-                <p>
-                    In conclusion, while there are many ORM options available in the
-                    JavaScript ecosystem, Prisma stands out for its comprehensive approach
-                    that handles both migrations and types through one very simple schema
-                    file. Its recent performance improvements and edge compatibility make it
-                    suitable for virtually any modern web application. By choosing Prisma,
-                    you're not just selecting a database tool–you're adopting a development
-                    workflow that emphasizes type safety, reduces boilerplate, and ensures
-                    consistency between your code and database.
-                </p>
+    <h3 id="prismaEdgeCompatibility">
+        Prisma's Compatibility with Edge Platforms
+    </h3>
+    <p>
+        With the shift away from the Rust client and toward a more lightweight
+        JavaScript implementation, Prisma is now fully compatible with edge
+        platforms like Cloudflare Workers, Vercel Edge Functions, and Deno Deploy.
+        This compatibility opens up new possibilities for building
+        high-performance applications that leverage the global distribution of
+        edge computing while maintaining the developer experience benefits of a
+        sophisticated ORM.
+    </p>
+    <p>Edge compatibility means you can:</p>
+    <ul>
+        <li>
+            Deploy database-connected applications to CDN edge nodes worldwide
+        </li>
+        <li>Reduce latency by processing data closer to your users</li>
+        <li>
+            Maintain a consistent development experience across all deployment
+            targets
+        </li>
+    </ul>
+    <p>
+        This advantage is particularly important as more applications move toward
+        edge-first architectures to improve performance and reduce costs.
+    </p>
+    <p>
+        In conclusion, while there are many ORM options available in the
+        JavaScript ecosystem, Prisma stands out for its comprehensive approach
+        that handles both migrations and types through one very simple schema
+        file. Its recent performance improvements and edge compatibility make it
+        suitable for virtually any modern web application. By choosing Prisma,
+        you're not just selecting a database tool–you're adopting a development
+        workflow that emphasizes type safety, reduces boilerplate, and ensures
+        consistency between your code and database.
+    </p>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
         integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
