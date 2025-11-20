@@ -22,7 +22,7 @@
     "wrangler": "^4.49.0"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "name": "url-shortener",
   "scripts": {

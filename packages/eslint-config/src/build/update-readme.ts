@@ -231,7 +231,7 @@ export default defineConfig(
   md.bold("Engines", 2);
   md.codeBlock(
     `"engines": {
-  "node": ">=22"
+  "node": ">=24"
 },`,
     "json",
   );
