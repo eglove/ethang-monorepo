@@ -700,6 +700,32 @@
             </ul>
         </li>
         <li>
+            <a href="#aiAndLlms">AI and LLMs: A Bubble, Not a Revolution (Yet)</a>
+            <ul>
+                <li>
+                    <a href="#whatLlmsAreAndArent">What LLMs Are (and Aren&apos;t)</a>
+                </li>
+                <li>
+                    <a href="#codeIsFormalNotVague">Code Is a Formal Interface, Not a Vague Suggestion</a>
+                </li>
+                <li>
+                    <a href="#proAiClaimsExamined">Pro‑AI Claims, Examined</a>
+                </li>
+                <li>
+                    <a href="#whereAiHelpsToday">Where AI Helps Today</a>
+                </li>
+                <li>
+                    <a href="#engineeringDisciplinesNotReplaceable">Engineering Disciplines AI Can&apos;t Replace</a>
+                </li>
+                <li>
+                    <a href="#evaluateLikeAnEngineer">Evaluate AI Like an Engineer</a>
+                </li>
+                <li>
+                    <a href="#ifYoureBettingOnAi">If You&apos;re Betting Your Roadmap on AI</a>
+                </li>
+            </ul>
+        </li>
+        <li>
             <a href="#whyPrismaIsBestORM">Why Prisma Is the Best ORM</a>
             <ul>
                 <li>
@@ -2635,7 +2661,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
             and behaviors while giving developers complete control over styling.
         </li>
         <li>
-            <strong>Comprehensive Component Libraries:</strong>{" "}<a
+            <strong>Comprehensive Component Libraries:</strong> <a
                 href="https://www.heroui.com/"
                 target="_blank">HeroUI</a
         >,
@@ -3900,6 +3926,170 @@ curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install
         the platform. If you value productivity, code quality, and a seamless
         development experience, JetBrains IDEs represent an investment that
         consistently pays dividends throughout your development career.
+    </p>
+
+    <h2 id="aiAndLlms">AI and LLMs: A Bubble, Not a Revolution (Yet)</h2>
+    <p>
+        I use AI tools, and I build with them where they help. But let&apos;s be clear:
+        the current AI wave looks more like a <em>financial and attention bubble</em>
+        than a genuine engineering revolution. LLMs are powerful pattern machines,
+        not reasoning engines. They generate plausible text&mdash;including code&mdash;but
+        production software is not about plausibility. It&apos;s about <strong>precision</strong>,
+        <strong>determinism</strong>, <strong>testing</strong>, and <strong>maintenance</strong>.
+    </p>
+
+    <h3 id="whatLlmsAreAndArent">What LLMs Are (and Aren&apos;t)</h3>
+    <ul>
+        <li>
+            <strong>What they are:</strong> Probabilistic sequence models trained on text/code.
+            Great at pattern completion, summarization, rewriting, and suggesting options.
+        </li>
+        <li>
+            <strong>What they aren&apos;t:</strong> Deterministic compilers, formal verifiers, or
+            domain authorities. They lack grounded models of your specific system unless you
+            supply context, and even then, responses can be inconsistent.
+        </li>
+        <li>
+            <strong>Operational reality:</strong> Latency, cost per token, context limits,
+            hallucinations, IP and privacy exposure, and vendor churn all impose real
+            constraints on product engineering.
+        </li>
+    </ul>
+
+    <h3 id="codeIsFormalNotVague">Code Is a Formal Interface, Not a Vague Suggestion</h3>
+    <p>
+        Translating human intent into software requires <strong>formalization</strong>: precise
+        types, contracts, invariants, and executable tests. Natural language is ambiguous by
+        design; programming languages are the opposite. The hard part of engineering is not
+        typing code&mdash;it&apos;s making the <em>right</em> code <em>provably correct</em> under
+        evolving constraints. That&apos;s why this guide emphasizes
+        <a href="#unitTestingAndAtdd">unit testing and ATDD</a>,
+        <a href="#standardizedApiContracts">explicit API contracts</a>,
+        <a href="#eslint">static analysis</a>,
+        <a href="#endToEndTesting">E2E testing</a>, and
+        <a href="#metricsThatActuallyMatter">measuring delivery</a>. LLMs don&apos;t remove any of
+        these disciplines; at best, they sit on top of them.
+    </p>
+
+    <h3 id="proAiClaimsExamined">Pro‑AI Claims, Examined</h3>
+    <ul>
+        <li>
+            <strong>“AI will replace developers.”</strong> Building and <em>maintaining</em>
+            systems requires domain modeling, architecture, risk management, and
+            cross‑team coordination. LLMs can draft code, but they don&apos;t own outcomes or
+            accountability. The moment requirements conflict or ambiguity appears, you need
+            engineers.
+        </li>
+        <li>
+            <strong>“Agents can build full apps.”</strong> Demos avoid the hard parts: secrets
+            management, idempotency, migrations, observability, rollback strategies, SLAs,
+            regulatory constraints, and long‑term upgrade paths. Production liveness demands
+            determinism and governance that current agents don&apos;t provide.
+        </li>
+        <li>
+            <strong>“AI writes tests.”</strong> It can suggest cases, but reliable tests need
+            an <em>oracle</em>&mdash;a source of truth independent of the implementation.
+            LLMs frequently mirror the code under test, producing brittle or circular tests
+            with high coverage and low value.
+        </li>
+        <li>
+            <strong>“Natural language will replace programming.”</strong> NL is a great
+            <em>interface</em> for querying and scaffolding, but software still compiles down
+            to strict contracts. The more safety you require, the more your prompts become a
+            DSL with schemas and constraints&mdash;i.e., programming.
+        </li>
+        <li>
+            <strong>“AI reduces costs.”</strong> For many workflows, inference is a new
+            variable cost added to your existing stack. When you need context across large
+            repos or data sets, costs and latency climb. You also add vendor lock‑in and
+            compliance surface area.
+        </li>
+    </ul>
+
+    <h3 id="whereAiHelpsToday">Where AI Helps Today</h3>
+    <ul>
+        <li>
+            <strong>Scaffolding and boilerplate:</strong> Project/file templates, CRUD layers,
+            and rote transformations&mdash;when you provide the exact constraints.
+        </li>
+        <li>
+            <strong>Refactoring assistance:</strong> Explaining code, proposing rename
+            groupings, surfacing dead code candidates, and drafting migration steps.
+        </li>
+        <li>
+            <strong>Test ideation:</strong> Generating edge‑case checklists or property ideas
+            that humans convert into real, deterministic tests.
+        </li>
+        <li>
+            <strong>Docs and communication:</strong> Summaries, changelogs, commit messages,
+            user‑facing copy drafts&mdash;all reviewed by humans.
+        </li>
+        <li>
+            <strong>Contextual help inside strong tools:</strong> Deeply integrated assistants
+            (see <a href="#jetBrainsJunie">JetBrains Junie</a>) that understand project
+            structure outperform generic chatbots.
+        </li>
+    </ul>
+
+    <h3 id="engineeringDisciplinesNotReplaceable">Engineering Disciplines AI Can&apos;t Replace</h3>
+    <ul>
+        <li>
+            <strong>Contracts first:</strong> Typed schemas, versioned APIs, and explicit
+            invariants (<a href="#standardizedApiContracts">HAL/GraphQL</a>).
+        </li>
+        <li>
+            <strong>Quality gates:</strong> Linters (<a href="#eslint">ESLint</a>), unit tests
+            (<a href="#unitTestingAndAtdd">ATDD/TDD</a>), component and visual tests
+            (<a href="#storybookTestingFramework">Storybook</a>), and
+            <a href="#endToEndTesting">E2E</a>.
+        </li>
+        <li>
+            <strong>Empirical ops:</strong> Ship using
+            <a href="#metricsThatActuallyMatter">DORA metrics</a> and watch change failure rate
+            and MTTR, not vanity dashboards.
+        </li>
+        <li>
+            <strong>Security and privacy:</strong> Guardrails for PII, secrets, licenses, and
+            provenance. Don&apos;t paste what you wouldn&apos;t email.
+        </li>
+    </ul>
+
+    <h3 id="evaluateLikeAnEngineer">Evaluate AI Like an Engineer</h3>
+    <ul>
+        <li>
+            <strong>Define success upfront:</strong> Hypotheses tied to lead time, CFR, MTTR,
+            defect rate, or cost per change. No vibes‑based adoption.
+        </li>
+        <li>
+            <strong>Constrain the problem:</strong> Use structured prompts, schemas, and
+            templates. Keep AI on rails; don&apos;t ask it to “own” outcomes.
+        </li>
+        <li>
+            <strong>Keep deterministic boundaries:</strong> Generated code does not merge
+            without tests and human review. Prefer codegen from <em>contracts</em> over free‑form
+            chat.
+        </li>
+        <li>
+            <strong>Plan for exit:</strong> Vendor portability, on‑prem/local fallbacks, and
+            graceful degradation when models change, throttle, or go offline.
+        </li>
+    </ul>
+
+    <h3 id="ifYoureBettingOnAi">If You&apos;re Betting Your Roadmap on AI</h3>
+    <ul>
+        <li>
+            Start with non‑critical surfaces; time‑box experiments; publish results.
+        </li>
+        <li>
+            Set SLOs for latency, availability, and cost. Add circuit breakers and fallbacks.
+        </li>
+        <li>
+            Track ROI over months, not weeks. Expect diminishing returns after the easy wins.
+        </li>
+    </ul>
+    <p>
+        For a broader perspective, see
+        <a href="/blog/some-thoughts-on-ai.html">Some Thoughts on AI</a>.
     </p>
 
     <h2 id="whyPrismaIsBestORM">Why Prisma Is the Best ORM</h2>
