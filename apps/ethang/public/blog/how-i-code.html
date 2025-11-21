@@ -259,8 +259,8 @@
             </ul>
         </li>
         <li>
-            <a href="#unitTestingAndTdd"
-            >Unit Testing and TDD: Engineering for Reusability and Resilience</a
+            <a href="#unitTestingAndAtdd"
+            >Unit Testing and ATDD: Engineering for Reusability and Resilience</a
             >
             <ul>
                 <li>
@@ -271,6 +271,11 @@
                 <li>
                     <a href="#unitTestsForgingReusable"
                     >Unit Tests: Forging Reusable, Reliable Components</a
+                    >
+                </li>
+                <li>
+                    <a href="#acceptanceTestDrivenDevelopment"
+                    >Acceptance Test-Driven Development (ATDD): Aligning with SWEBOK</a
                     >
                 </li>
                 <li>
@@ -1425,16 +1430,18 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
         implemented custom utility is often far greater than the perceived
         overhead of using a well-established library.
     </p>
-    <h2 id="unitTestingAndTdd">
-        Unit Testing and TDD: Engineering for Reusability and Resilience
+    <h2 id="unitTestingAndAtdd">
+        Unit Testing and ATDD: Engineering for Reusability and Resilience
     </h2>
     <p>
         The principles discussed so far—the need for robust runtime checks even
         with TypeScript, and the value of battle-tested utilities like
         lodash—converge on a broader philosophy of software engineering: building
         for resilience and reusability. This naturally leads us to the
-        indispensable practice of unit testing, and more specifically, Test-Driven
-        Development (TDD).
+        indispensable practice of unit testing, and more specifically, Acceptance
+        Test-Driven Development (ATDD) as framed by SWEBOK (Software Engineering
+        Body of Knowledge)—complemented by unit-level Test-Driven Development
+        (TDD).
     </p>
     <h3 id="theE2EFallacy">The E2E Fallacy: "If it Works, It’s Good"</h3>
     <p>
@@ -1505,9 +1512,57 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
             E2E test.
         </li>
     </ul>
+    <h3 id="acceptanceTestDrivenDevelopment">
+        Acceptance Test-Driven Development (ATDD): Aligning with SWEBOK
+    </h3>
+    <p>
+        Acceptance Test-Driven Development elevates testing from verifying code to
+        validating stakeholder needs. In line with SWEBOK’s treatment of
+        acceptance testing within Verification and Validation and Test Levels,
+        ATDD starts by defining acceptance criteria collaboratively before any
+        implementation begins. These criteria become executable specifications
+        that guide development and serve as living documentation.
+    </p>
+    <ul>
+        <li>
+            <strong>Collaborative discovery ("Three Amigos"):</strong> Product
+            owners/business stakeholders, developers, and testers work together to
+            agree on the expected behavior up front. This reduces ambiguity and
+            rework by aligning on “what good looks like.”
+        </li>
+        <li>
+            <strong>Executable acceptance criteria:</strong> Express requirements as
+            concrete examples, often in a Given–When–Then style. Automate them at
+            the appropriate level (API, service, or UI) so they can be run
+            continuously.
+        </li>
+        <li>
+            <strong>Validation over mere verification:</strong> ATDD focuses on
+            building the right thing by ensuring features satisfy stakeholder
+            intent, complementing unit-level TDD which ensures we build the thing
+            right.
+        </li>
+        <li>
+            <strong>Living specification:</strong> Acceptance tests become a durable
+            source of truth that documents business rules and edge cases, enabling
+            safer change and clearer communication across the team.
+        </li>
+    </ul>
+    <p>
+        Practically, I write acceptance tests early to frame scope and success
+        criteria, then iterate with unit tests and TDD to shape robust, modular
+        implementations. ATDD and TDD are complementary, not competitive: ATDD
+        validates we’re building the right thing at the acceptance level, while TDD
+        helps us build the thing right at the unit level, keeping the codebase
+        maintainable and resilient.
+    </p>
     <h3 id="testDrivenDevelopment">
         Test-Driven Development (TDD): Building Quality In
     </h3>
+    <p>
+        Complementing ATDD at the acceptance level, TDD operates at the unit level to
+        drive clean design and verification.
+    </p>
     <p>
         Test-Driven Development takes this a step further by advocating writing
         tests before writing the implementation code. Think of the TDD cycle as
@@ -1591,7 +1646,7 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
         throughout the application. This is where the "shortcut" of relying only
         on E2E tests becomes particularly dangerous. An E2E test might only cover
         one specific path through that function, leaving other usages vulnerable.
-        Thorough unit testing, especially when guided by TDD, ensures that each
+        Thorough unit testing, especially when guided by ATDD and TDD, ensures that each
         unit is a solid building block, contributing to a more stable and
         maintainable system.
     </p>
@@ -2063,10 +2118,10 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
     <h3 id="livingDocumentation">Code as Living Documentation</h3>
     <p>
         If you’ve followed the practices outlined in previous
-        sections—comprehensive testing, strict linting, and component
+        sections—comprehensive testing (acceptance and unit), strict linting, and component
         visualization—you’ve already created the most valuable form of
         documentation: living documentation embedded in your code. This doesn’t
-        mean writing narrative comments, but rather letting your tests, types, and
+        mean writing narrative comments, but rather letting your <a href="#acceptanceTestDrivenDevelopment">acceptance tests</a>, <a href="#testDrivenDevelopment">unit tests</a>, types, and
         linting rules serve as the documentation.
     </p>
     <p>This type of documentation is superior for several reasons:</p>
@@ -2115,8 +2170,8 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
             and function signatures.
         </li>
         <li>
-            <strong>Test cases:</strong> Examples of how code is expected to behave in
-            various scenarios.
+            <strong>Acceptance and unit test cases:</strong> Executable examples that
+            specify user-visible behavior and verify unit-level logic.
         </li>
         <li>
             <strong>Usage examples:</strong> Short, focused examples showing how to use
