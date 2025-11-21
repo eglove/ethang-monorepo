@@ -381,6 +381,31 @@
             </ul>
         </li>
         <li>
+            <a href="#metricsThatActuallyMatter"
+            >Metrics That Actually Matter: DORA over Vanity Metrics</a
+            >
+            <ul>
+                <li>
+                    <a href="#whatAreDoraMetrics">What DORA Metrics Are</a>
+                </li>
+                <li>
+                    <a href="#whyEmpiricallyValidated">Why They’re Empirically Validated</a>
+                </li>
+                <li>
+                    <a href="#theProblemWithJiraMetrics">The Problem with Jira‑style Metrics</a>
+                </li>
+                <li>
+                    <a href="#implementingDoraInPractice">Implementing DORA in Practice</a>
+                </li>
+                <li>
+                    <a href="#metricsAntiPatterns">Anti‑Patterns to Avoid</a>
+                </li>
+                <li>
+                    <a href="#metricsPragmaticNextSteps">Pragmatic Next Steps</a>
+                </li>
+            </ul>
+        </li>
+        <li>
             <a href="#documentationIsForUsers"
             >Documentation Is For Users, Not Developers</a
             >
@@ -852,10 +877,10 @@
             or unpredictable behavior if unchecked.
             <pre><code class="language-javascript">// Example: NaN propagation that TypeScript won't catch
 function calculateAverage(values: number[]): number {
-// TypeScript is happy with this function's type safety
-const sum = values.reduce((acc, val) => acc + val, 0);
-const avg = sum / values.length; // This can be NaN if values.length is 0
-return avg;
+    // TypeScript is happy with this function's type safety
+    const sum = values.reduce((acc, val) => acc + val, 0);
+    const avg = sum / values.length; // This can be NaN if values.length is 0
+    return avg;
 }
 
 // This passes TypeScript checks but produces NaN at runtime
@@ -2079,6 +2104,143 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
         fosters a culture of quality and discipline, contributing significantly to
         the overall health and longevity of a codebase.
     </p>
+    
+    <h2 id="metricsThatActuallyMatter">
+        Metrics That Actually Matter: DORA over Vanity Metrics
+    </h2>
+    <p>
+        If you care about outcomes rather than theater, measure what actually
+        predicts better outcomes. In software delivery, the <a href="https://dora.dev/" target="_blank">DORA
+        metrics</a> are the only set with strong, peer‑reviewed empirical backing
+        showing consistent, positive correlations with both engineering and
+        business performance (see <a
+            href="https://itrevolution.com/accelerate/" target="_blank">Accelerate</a>
+        and the long‑running <a href="https://cloud.google.com/devops/state-of-devops" target="_blank">State of DevOps
+        Reports</a>).
+    </p>
+    <h3 id="whatAreDoraMetrics">What DORA Metrics Are</h3>
+    <p>DORA tracks four simple, behavior‑changing signals:</p>
+    <ul>
+        <li>
+            <strong>Deployment Frequency:</strong> How often you deploy. Smaller, more
+            frequent releases reduce risk and increase feedback.
+        </li>
+        <li>
+            <strong>Lead Time for Changes:</strong> How long it takes a commit to reach
+            production. Short lead times indicate a smooth path from idea to user value.
+        </li>
+        <li>
+            <strong>Change Failure Rate:</strong> The percentage of prod changes that cause
+            incidents or require remediation. Lower is better, but zero is usually a sign of
+            fear and batching.
+        </li>
+        <li>
+            <strong>Mean Time to Restore (MTTR):</strong> How quickly you recover from
+            failures. Incidents happen; resilience is the differentiator.
+        </li>
+    </ul>
+    <h3 id="whyEmpiricallyValidated">Why They’re Empirically Validated</h3>
+    <p>
+        These aren’t vanity numbers. Across thousands of organizations, high
+        performance on these four correlates with <em>improved availability,
+        faster feature delivery, higher customer satisfaction, and better
+        organizational outcomes</em>. The evidence base is unusually strong for our
+        industry.
+    </p>
+    <h3 id="theProblemWithJiraMetrics">The Problem with Jira‑style Metrics</h3>
+    <p>
+        Many popular “productivity” dashboards—velocity, story points burned,
+        tickets closed, time‑in‑status—are classic victims of <a
+            href="https://en.wikipedia.org/wiki/Goodhart%27s_law" target="_blank">Goodhart’s
+            Law</a>: when a measure becomes a target, it ceases to be a good
+        measure. They’re trivially gamed and often create perverse incentives:
+    </p>
+    <ul>
+        <li>
+            <strong>Story points/velocity:</strong> Teams inflate estimates to “improve”
+            velocity. Nothing gets faster; numbers just go up.
+        </li>
+        <li>
+            <strong>Tickets closed:</strong> Work is fragmented into low‑value slices to
+            juice counts, while meaningful, end‑to‑end outcomes stall.
+        </li>
+        <li>
+            <strong>Time‑in‑status/burndown:</strong> Optimized for the board, not the
+            user. You get prettier charts, not better software.
+        </li>
+    </ul>
+    <p>
+        By contrast, DORA focuses the team on <em>flow</em>, <em>risk</em>, and
+        <em>resilience</em>—the levers that actually move delivery performance.
+    </p>
+    <h3 id="implementingDoraInPractice">Implementing DORA in Practice</h3>
+    <p>How to move the four numbers in the right direction:</p>
+    <ul>
+        <li>
+            <strong>Shorten batch size:</strong> Ship smaller changes behind feature flags.
+        </li>
+        <li>
+            <strong>Adopt trunk‑based development:</strong> Keep branches short‑lived; merge
+            to main daily with automated checks.
+        </li>
+        <li>
+            <strong>Automate the path to prod:</strong> Continuous Integration and
+            Continuous Delivery with fast, reliable pipelines.
+        </li>
+        <li>
+            <strong>Invest in tests:</strong> Fast unit tests, meaningful acceptance tests,
+            and critical E2E flows—so you can deploy with confidence.
+        </li>
+        <li>
+            <strong>Observability and rollback:</strong> Metrics, logs, tracing, health
+            checks, and one‑click rollbacks cut MTTR dramatically.
+        </li>
+        <li>
+            <strong>Limit WIP:</strong> Fewer concurrent initiatives means less waiting and
+            rework; lead time drops.
+        </li>
+    </ul>
+    <h3 id="metricsAntiPatterns">Anti‑Patterns to Avoid</h3>
+    <ul>
+        <li>
+            Measuring per‑developer output (commits, LOC, tickets). You’ll optimize for
+            individual optics over system outcomes.
+        </li>
+        <li>
+            Punishing incidents. You’ll get fewer reports, not fewer failures. Reward
+            fast detection and learning instead.
+        </li>
+        <li>
+            Vanity dashboards with no action. If a metric doesn’t drive a decision,
+            drop it.
+        </li>
+        <li>
+            Chasing zero change failures. Healthy teams release often and recover fast;
+            some failures are the cost of learning.
+        </li>
+    </ul>
+    <h3 id="metricsPragmaticNextSteps">Pragmatic Next Steps</h3>
+    <ul>
+        <li>
+            <strong>Instrument once, use everywhere:</strong> Capture the four DORA metrics
+            from your CI/CD and incident tooling—no extra forms for engineers.
+        </li>
+        <li>
+            <strong>Define them clearly:</strong> Agree on operational definitions (what
+            counts as a deploy, what is “a failure”, how is restoration measured).
+        </li>
+        <li>
+            <strong>Baseline, then set ranges:</strong> Target healthy ranges, not arbitrary
+            point goals, and review quarterly.
+        </li>
+        <li>
+            <strong>Guard against gaming:</strong> Use the four in combination; never turn
+            any single one into a personal KPI.
+        </li>
+        <li>
+            <strong>Socialize the why:</strong> Share the research, not just a dashboard.
+        </li>
+    </ul>
 
     <h2 id="documentationIsForUsers">
         Documentation Is For Users, Not Developers
