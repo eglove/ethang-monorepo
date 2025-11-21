@@ -10,6 +10,11 @@
           content="A magnum opus on how I code.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="/blog/how-i-code.html">
+    <meta property="og:image" content="/images/abstract-tech-color.png" />
+    <meta
+            property="og:image:alt"
+            content="Colorful abstraction represents many technologies."
+    />
 
     <title>How I Code</title>
 
@@ -600,6 +605,32 @@
                     <a href="#industryRecognition"
                     >Industry Recognition: Security and Innovation</a
                     >
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#standardizedApiContracts">Standardized API Contracts: HAL and GraphQL</a>
+            <ul>
+                <li>
+                    <a href="#whyStandardsMatter">Why Standards Matter: Contracts, Not Conversations</a>
+                </li>
+                <li>
+                    <a href="#halAtAGlance">HAL at a Glance: Hypermedia and Stable Shapes</a>
+                </li>
+                <li>
+                    <a href="#graphqlAtAGlance">GraphQL at a Glance: Strongly‑Typed Queries</a>
+                </li>
+                <li>
+                    <a href="#tradeOffsAndPitfalls">Trade‑offs and Pitfalls</a>
+                </li>
+                <li>
+                    <a href="#choosingHalVsGraphql">Choosing Between HAL and GraphQL</a>
+                </li>
+                <li>
+                    <a href="#implementationNotes">Implementation Notes: Governance and DX</a>
+                </li>
+                <li>
+                    <a href="#apiContractsConclusion">Conclusion</a>
                 </li>
             </ul>
         </li>
@@ -3261,6 +3292,187 @@ function UserProfile() {
         As cloud platforms continue to evolve, Cloudflare's developer-centric
         approach positions it as an increasingly compelling alternative to the
         complexity of traditional cloud providers.
+    </p>
+
+    <h2 id="standardizedApiContracts">Standardized API Contracts: HAL and GraphQL</h2>
+    <p>
+        The fastest teams don’t “coordinate harder”&mdash;they reduce the need to
+        coordinate at all. Standardized API contracts do exactly that. They make
+        client&ndash;server interaction predictable, evolvable, and toolable. Two
+        proven approaches dominate modern web systems: <strong>HAL</strong> (a
+        hypermedia format for REST) and <strong>GraphQL</strong> (a strongly‑typed
+        query language and runtime). Both give you explicit contracts; each shines
+        under different constraints.
+    </p>
+
+    <h3 id="whyStandardsMatter">Why Standards Matter: Contracts, Not Conversations</h3>
+    <ul>
+        <li>
+            <strong>Fewer meetings, fewer surprises:</strong> A contract lets teams ship independently.
+            When the schema/links are stable, UI development can parallel backend work.
+        </li>
+        <li>
+            <strong>Stronger tooling:</strong> Standards unlock codegen, schema linting, breaking‑change checks,
+            and IDE autocompletion&mdash;all the boring correctness for free.
+        </li>
+        <li>
+            <strong>Safe evolution:</strong> With explicit versioning/deprecations, you can add capability
+            without breaking consumers.
+        </li>
+        <li>
+            <strong>Observability and caching:</strong> Predictable shapes mean easier tracing, error typing,
+            and cache keys. Ops becomes simpler.
+        </li>
+    </ul>
+
+    <h3 id="halAtAGlance">HAL at a Glance: Hypermedia and Stable Shapes</h3>
+    <p>
+        <strong>HAL</strong> (Hypertext Application Language) is a lightweight hypermedia format for REST APIs.
+        It standardizes how you embed <code>_links</code> and <code>_embedded</code> resources so clients can
+        discover related actions and navigate without hard‑coding URL knowledge.
+    </p>
+    <pre><code class="language-json">{
+  "_links": {
+    "self": { "href": "/orders/123" },
+    "customer": { "href": "/customers/456" },
+    "items": [
+      { "href": "/orders/123/items/1" },
+      { "href": "/orders/123/items/2" }
+    ]
+  },
+  "id": 123,
+  "status": "processing",
+  "total": 49.90
+}</code></pre>
+    <ul>
+        <li>
+            <strong>Discoverability (HATEOAS):</strong> Clients follow links the server provides. Fewer brittle
+            client assumptions; safer refactors on the server.
+        </li>
+        <li>
+            <strong>Stable response shapes:</strong> Predictable envelopes (<code>_links</code>, <code>_embedded</code>)
+            play nicely with HTTP caches, proxies, and CDNs.
+        </li>
+        <li>
+            <strong>Incremental evolution:</strong> Add links/embeds without breaking existing consumers.
+        </li>
+        <li>
+            <strong>Works with the grain of HTTP:</strong> Content negotiation, ETags, caching semantics, and
+            status codes remain first‑class.
+        </li>
+    </ul>
+
+    <h3 id="graphqlAtAGlance">GraphQL at a Glance: Strongly‑Typed Queries</h3>
+    <p>
+        <strong>GraphQL</strong> defines a typed schema that clients query declaratively. Clients ask for exactly
+        the fields they need across entity boundaries in a single request; the server resolves them.
+    </p>
+    <pre><code class="language-graphql">query GetOrder($id: ID!) {
+  order(id: $id) {
+    id
+    status
+    total
+    customer { id name }
+    items { id sku qty }
+  }
+}</code></pre>
+    <pre><code class="language-json">{
+  "data": {
+    "order": {
+      "id": "123",
+      "status": "PROCESSING",
+      "total": 49.90,
+      "customer": { "id": "456", "name": "Ada" },
+      "items": [ { "id": "1", "sku": "ABC", "qty": 2 } ]
+    }
+  }
+}</code></pre>
+    <ul>
+        <li>
+            <strong>Type‑safe by default:</strong> The schema is the contract. Introspection enables rich tooling
+            and automatic TypeScript type generation.
+        </li>
+        <li>
+            <strong>Over/under‑fetch elimination:</strong> Clients choose fields; one round‑trip fetches related data.
+        </li>
+        <li>
+            <strong>Composable evolution:</strong> Deprecate fields, add new ones, and safely evolve without versioning URLs.
+        </li>
+        <li>
+            <strong>Unified access layer:</strong> Stitch databases and services behind a single schema; great for
+            complex domains and multiple clients (web, mobile, internal tools).
+        </li>
+    </ul>
+
+    <h3 id="tradeOffsAndPitfalls">Trade‑offs and Pitfalls</h3>
+    <ul>
+        <li>
+            <strong>HAL:</strong> Hypermedia only helps if you consistently include meaningful link relations and
+            document them. Many teams ship “REST‑ish JSON” without links, losing HAL’s benefits.
+        </li>
+        <li>
+            <strong>GraphQL N+1:</strong> Naïve resolvers trigger database storms. Solve with batching/caching
+            (e.g., DataLoader), and plan query complexity limits.
+        </li>
+        <li>
+            <strong>Caching:</strong> HAL works great with HTTP caching. GraphQL needs strategies like persisted
+            queries, CDN caching at the operation level, and response normalization on the client.
+        </li>
+        <li>
+            <strong>Security and governance:</strong> GraphQL must control query depth/cost and authorization per field.
+            REST must standardize errors (e.g., <code>application/problem+json</code>) and pagination/linking.
+        </li>
+        <li>
+            <strong>Operational maturity:</strong> Both approaches need schema/link change policies and automated
+            breaking‑change checks in CI.
+        </li>
+    </ul>
+
+    <h3 id="choosingHalVsGraphql">Choosing Between HAL and GraphQL</h3>
+    <ul>
+        <li>
+            <strong>Choose HAL when</strong> you want simple, cache‑friendly HTTP semantics; public APIs; CDN leverage;
+            or you value hypermedia navigation and stable resource shapes.
+        </li>
+        <li>
+            <strong>Choose GraphQL when</strong> product surfaces vary by client; you need cross‑entity aggregation;
+            or your domain spans multiple backends that you want to unify behind one schema.
+        </li>
+        <li>
+            <strong>Hybrid is common:</strong> REST/HAL for public and infra‑facing services; GraphQL as a
+            backend‑for‑frontend or composition layer for product teams.
+        </li>
+    </ul>
+
+    <h3 id="implementationNotes">Implementation Notes: Governance and DX</h3>
+    <ul>
+        <li>
+            <strong>Contracts in code:</strong> Treat schemas as code. For REST/HAL, generate OpenAPI + JSON Schema
+            and validate responses in CI. For GraphQL, commit SDL, lint it, and gate merges on breaking‑change checks.
+        </li>
+        <li>
+            <strong>Consistent errors:</strong> For REST, adopt RFC&nbsp;7807 (<code>problem+json</code>). For GraphQL,
+            define a standard error extension shape and log correlation IDs.
+        </li>
+        <li>
+            <strong>Type generation:</strong> Generate TypeScript types for both (OpenAPI/JSON Schema or GraphQL codegen)
+            to keep clients in lock‑step with the contract.
+        </li>
+        <li>
+            <strong>Performance:</strong> REST/HAL: leverage ETags and cache‑control. GraphQL: DataLoader, persisted
+            queries, and query cost analysis.
+        </li>
+        <li>
+            <strong>Documentation:</strong> Publish HAL examples with link relations; expose GraphQL IDEs (GraphiQL/Explorer)
+            in non‑prod, backed by clear, versioned docs.
+        </li>
+    </ul>
+
+    <h3 id="apiContractsConclusion">Conclusion</h3>
+    <p>
+        Standards turn “integration” into implementation detail. Whether you ship HAL, GraphQL, or a pragmatic
+        mix, the payoff is the same: fewer regressions, faster iteration, and happier teams. Pick the contract
+        that fits your constraints, enforce it automatically, and let the tools do the heavy lifting.
     </p>
 
     <h2 id="whyYouShouldUseWindows">Why You Should Use Windows</h2>
