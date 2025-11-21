@@ -23,13 +23,43 @@
     <link href="https://unpkg.com/prism-theme-night-owl@1.4.0/build/style.css" rel="stylesheet"/>
 
     <style>
+        /*
+         New inline styles for "How I Code"
+         - Keeps fonts: Funnel Sans (UI), Fira Code (code)
+         - Uses Prism Night Owl for all code colors (do not override token colors/background)
+         - Unique developer-centric look aligned to Night Owl palette
+        */
+
+        :root {
+            /* Night Owl inspired palette */
+            --bg: #070f1c;
+            --bg-2: #0b1220;
+            --surface: #0e1a2b;
+            --surface-2: #0b1f38;
+            --text: #d6deeb;
+            --muted: #a2b3c7;
+            --accent: #82aaff;  /* blue */
+            --accent-2: #c792ea; /* purple */
+            --accent-3: #7fdbca; /* teal */
+            --border: rgba(130, 170, 255, 0.22);
+            --shadow: 0 12px 40px rgba(2, 12, 27, 0.55);
+            --radius: 14px;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
         body {
-            font-family: 'Funnel Sans', sans-serif;
-            line-height: 1.6;
-            color: #e0e0e0;
-            background-color: #1a1a1a;
+            font-family: 'Funnel Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background:
+              radial-gradient(1000px 280px at 10% -10%, rgba(130,170,255,0.08), transparent 60%),
+              radial-gradient(800px 260px at 90% -15%, rgba(199,146,234,0.08), transparent 65%),
+              linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 60%, #050b16 100%);
             margin: 0;
-            padding: 20px;
+            padding: 32px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -37,112 +67,170 @@
         }
 
         main {
-            max-width: 800px;
+            max-width: 860px;
             width: 100%;
-            background-color: #2d2d2d;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            background:
+              linear-gradient(180deg, rgba(13,24,41,0.85), rgba(13,24,41,0.85)) padding-box,
+              linear-gradient(135deg, rgba(130,170,255,0.35), rgba(127,219,202,0.2) 40%, rgba(199,146,234,0.35)) border-box;
+            border: 1px solid transparent;
+            padding: 44px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             box-sizing: border-box;
+            backdrop-filter: blur(6px);
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            color: var(--text);
+            margin: 0 0 0.6em 0;
+            line-height: 1.15;
+            letter-spacing: 0.2px;
         }
 
         h1 {
-            font-size: 2.5em;
-            color: #ffffff;
-            margin-bottom: 20px;
-            font-weight: 700;
+            font-size: clamp(2.2rem, 3.2vw, 2.75rem);
+            font-weight: 800;
+            padding-bottom: 0.35rem;
+            border-image: linear-gradient(90deg, var(--accent), var(--accent-3) 50%, transparent 80%) 1;
+            border-bottom: 2px solid transparent;
         }
 
         h2 {
-            font-size: 1.8em;
-            color: #f0f0f0;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-weight: 600;
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
+            font-size: clamp(1.6rem, 2.3vw, 1.95rem);
+            font-weight: 700;
+            padding-left: 0.75rem;
+            border-left: 4px solid transparent;
+            border-image: linear-gradient(180deg, var(--accent), var(--accent-2)) 1;
+            margin-top: 2.2rem;
         }
 
-        p {
-            margin-bottom: 15px;
-            color: #c0c0c0;
+        h3 {
+            font-size: clamp(1.25rem, 2vw, 1.35rem);
+            font-weight: 650;
+            color: #e6edf7;
+            margin-top: 1.6rem;
         }
 
+        p { margin: 0 0 1rem 0; color: var(--text); }
+
+        /* Elegant, code-themed links */
         a {
-            color: #8be9fd;
+            color: var(--accent);
             text-decoration: none;
-            transition: color 0.3s ease;
+            background-image: linear-gradient(currentColor, currentColor);
+            background-position: 0 100%;
+            background-repeat: no-repeat;
+            background-size: 0% 2px;
+            transition: color 0.2s ease, background-size 0.25s ease;
+        }
+        a:hover { color: #a8c3ff; background-size: 100% 2px; }
+
+        /* Lists */
+        ul, ol { padding-left: 1.2rem; }
+        li { margin: 0.35rem 0; }
+        li > ul { margin-top: 0.25rem; }
+
+        /* Blockquotes with subtle gradient bar */
+        blockquote {
+            margin: 1.2rem 0;
+            padding: 0.6rem 1rem;
+            background: rgba(11, 31, 56, 0.55);
+            border-left: 4px solid transparent;
+            border-image: linear-gradient(180deg, var(--accent-3), var(--accent-2)) 1;
+            border-radius: 0 10px 10px 0;
+            color: #cdd9ea;
         }
 
-        a:hover {
-            color: #62d9ef;
-            text-decoration: underline;
+        /* Horizontal rule */
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(130,170,255,0.35), transparent);
+            margin: 2rem 0;
+        }
+
+        /* Tables (if present) */
+        table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 10px; }
+        thead th {
+            text-align: left;
+            font-weight: 700;
+            background: rgba(14,26,43,0.8);
+            color: #e6edf7;
+        }
+        th, td { padding: 0.75rem 0.9rem; border-bottom: 1px solid rgba(130,170,255,0.15); }
+
+        /* Inline code – distinct from Prism blocks */
+        code:not([class*="language-"]) {
+            font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+            background: rgba(2, 12, 27, 0.55);
+            border: 1px solid var(--border);
+            padding: 0.12em 0.35em;
+            border-radius: 6px;
+            color: #e6edf3;
+        }
+
+        /* Prism blocks – spacing and container chrome only.
+           Do NOT set background or color here so Night Owl controls them. */
+        pre[class*="language-"], code[class*="language-"] {
+            font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+            font-variant-ligatures: contextual;
+            font-size: 0.95em;
         }
 
         pre[class*="language-"] {
-            background-color: #1e1e1e; /* Ensure background matches previous dark theme */
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin-bottom: 20px;
-            font-size: 0.95em;
-            line-height: 1.5;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            margin: 1.25rem 0;
+            overflow: auto;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.35);
         }
 
-        code {
-            font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+        /* Subtle scrollbars inside code blocks */
+        pre[class*="language-"]::-webkit-scrollbar { height: 10px; width: 10px; }
+        pre[class*="language-"]::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(130,170,255,0.35), rgba(127,219,202,0.35));
+            border-radius: 10px;
         }
+        pre[class*="language-"]::-webkit-scrollbar-track { background: rgba(14,26,43,0.35); }
 
-        pre code {
-            display: block;
-        }
-
+        /* "Back to blog" chip */
         .back-to-blog {
-            display: inline-block;
-            margin-bottom: 30px;
-            font-size: 0.9em;
-            color: #909090;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 28px;
+            font-size: 0.92em;
+            color: var(--muted);
+            padding: 6px 10px;
+            background: rgba(11, 31, 56, 0.4);
+            border: 1px solid rgba(130,170,255,0.18);
+            border-radius: 999px;
         }
+        .back-to-blog:hover { color: #cfe1ff; border-color: rgba(130,170,255,0.35); }
 
-        .back-to-blog:hover {
-            color: #b0b0b0;
-        }
+        /* Images/figures */
+        img, figure { max-width: 100%; border-radius: 10px; }
+        figure { margin: 1.5rem 0; }
+        figcaption { color: var(--muted); font-size: 0.9em; text-align: center; margin-top: 0.4rem; }
 
+        /* Small text and footnotes */
+        small, sup, sub { color: var(--muted); }
+        sup { position: relative; top: -0.25em; }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-
-            main {
-                padding: 25px;
-                border-radius: 8px;
-            }
-
-            h1 {
-                font-size: 2em;
-            }
-
-            h2 {
-                font-size: 1.5em;
-            }
+            body { padding: 22px; }
+            main { padding: 28px; border-radius: 10px; }
+            h1 { font-size: 1.9rem; }
+            h2 { font-size: 1.35rem; }
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            main {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            h2 {
-                font-size: 1.3em;
-            }
+            body { padding: 14px; }
+            main { padding: 20px; }
+            h1 { font-size: 1.7rem; }
+            h2 { font-size: 1.2rem; }
         }
     </style>
 </head>
