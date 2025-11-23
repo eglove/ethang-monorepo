@@ -223,6 +223,40 @@
         small, sup, sub { color: var(--muted); }
         sup { position: relative; top: -0.25em; }
 
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            /* display property controlled by .show class */
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(130, 170, 255, 0.25);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            /* text-align and line-height no longer needed with flexbox */
+            font-size: 20px;
+            z-index: 100;
+            transition: opacity 0.3s, visibility 0.3s;
+            opacity: 0;
+            visibility: hidden;
+            backdrop-filter: blur(4px);
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            display: flex; /* Use flex to center content */
+            align-items: center; /* Vertically center */
+            justify-content: center; /* Horizontally center */
+        }
+
+        .back-to-top:hover {
+            background: rgba(130, 170, 255, 0.4);
+            color: #cfe1ff;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             body { padding: 22px; }
@@ -756,6 +790,20 @@
                     <a href="#prismaEdgeCompatibility"
                     >Prisma&apos;s Compatibility with Edge Platforms</a
                     >
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#summary">The Payoff: How Discipline Creates Velocity</a>
+            <ul>
+                <li>
+                    <a href="#one-time-project-foundations-build-once-benefit-always">One-time Project Foundations: Build Once, Benefit Always</a>
+                </li>
+                <li>
+                    <a href="#per-feature-accelerators-small-effort-massive-return">Per-Feature Accelerators: Small Effort, Massive Return</a>
+                </li>
+                <li>
+                    <a href="#the-compounding-value-of-an-engineered-foundation">The Compounding Value of an Engineered Foundation</a>
                 </li>
             </ul>
         </li>
@@ -4042,7 +4090,7 @@ curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install
         evolving constraints. That&apos;s why this guide emphasizes
         <a href="#unitTestingAndAtdd">unit testing and ATDD</a>,
         <a href="#standardizedApiContracts">explicit API contracts</a>,
-        <a href="#eslint">static analysis</a>,
+        <a href="#linting">static analysis</a>,
         <a href="#endToEndTesting">E2E testing</a>, and
         <a href="#metricsThatActuallyMatter">measuring delivery</a>. LLMs don&apos;t remove any of
         these disciplines; at best, they sit on top of them.
@@ -4115,7 +4163,7 @@ curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install
             invariants (<a href="#standardizedApiContracts">HAL/GraphQL</a>).
         </li>
         <li>
-            <strong>Quality gates:</strong> Linters (<a href="#eslint">ESLint</a>), unit tests
+            <strong>Quality gates:</strong> Linters (<a href="#linting">ESLint</a>), unit tests
             (<a href="#unitTestingAndAtdd">ATDD/TDD</a>), component and visual tests
             (<a href="#storybookTestingFramework">Storybook</a>), and
             <a href="#endToEndTesting">E2E</a>.
@@ -4388,9 +4436,111 @@ model Profile {
         workflow that emphasizes type safety, reduces boilerplate, and ensures
         consistency between your code and database.
     </p>
+
+<h2 id="summary">The Payoff: How Discipline Creates Velocity</h2>
+    <p>
+        The principles in this guide aren't a checklist of chores designed to slow you down. They form a cohesive system for building a development engine—one that combines human-centric planning with automated guardrails—that accelerates over time. The common fear is that planning, architecture, and testing are bureaucratic taxes on productivity. The reality is the opposite: they are a small, upfront investment that pays compounding dividends in speed, stability, and team morale.
+    </p>
+    <p>
+        Instead of a long list of separate phases, consider how these disciplines converge. Some are one-time project setups that pay off every single day, while others are quick, per-feature rituals that prevent weeks of rework. This isn't a month-long ordeal; it’s a series of rapid, high-leverage activities.
+    </p>
+    <h3>One-time Project Foundations: Build Once, Benefit Always</h3>
+    <ol>
+        <li><strong>Scaffold the App (Time: 5 minutes):</strong> You run a single command like <code>pnpm create cloudflare</code>. This gives you a great starting point with a TypeScript-ready application structure and a deployment pipeline.</li>
+        <li><strong>Automate Quality Gates (Time: 10 minutes):</strong> You install a pre-built ESLint config. Now, your entire team gets immediate, automated feedback on quality and security as they type. This isn't a chore; it's a passive guardian that eliminates entire classes of bugs and style debates from code reviews.</li>
+        <li><strong>Install the Testing Arsenal (Time: 15 minutes):</strong> You run a few commands to add Vitest, Playwright, and Storybook. By dropping in standard configurations, you establish a powerful, three-layered testing strategy (unit, E2E, and component) for the entire project. This one-time setup is the foundation for confidently making changes for years to come.</li>
+    </ol>
+    <h3>Per-Feature Accelerators: Small Effort, Massive Return</h3>
+    <ol>
+        <li><strong>Clarify the 'What' (Time: 15 minutes):</strong> Before writing a line of code, you huddle with a product owner and a tester. This isn't a formal requirements meeting; it's a "Three Amigos" conversation to sketch out the core acceptance criteria on a whiteboard. This short, focused discussion is the highest-leverage work you can do—it prevents you from spending a week building the wrong thing.</li>
+        <li><strong>Sketch the 'How' (Time: 10 minutes):</strong> Does this feature need a new API endpoint or a database change? Instead of discovering this mid-sprint, you spend ten minutes drawing a simple C4 diagram or a sequence diagram. This isn't a formal architectural review; it's a quick sketch to make system boundaries and data flows obvious. This act of foresight prevents costly structural rework.</li>
+        <li><strong>Component-Driven Workflow (Time: ongoing, but integrated):</strong> With your testing arsenal in place, you build your first component in Storybook. You aren't just "building the UI"; you are simultaneously creating the component, its documentation, and its visual and interaction tests. The work converges, making quality an intrinsic part of the creation process, not a separate, dreaded phase.</li>
+    </ol>
+    <p>
+        This integrated approach—a little upfront thinking and one-time project setup, combined with per-feature automated guardrails—creates a virtuous cycle. The argument that this is "too slow" fundamentally misunderstands the economics of software development. The goal isn't to have the fastest possible "Day 1," but to build a system that doesn't grind to a halt on "Day 100."
+    </p>
+    <h3 id="the-compounding-value-of-an-engineered-foundation">The Compounding Value of an Engineered Foundation</h3>
+    <p>
+        The trivial cost of upfront planning and setup is quickly dwarfed by the exponential cost of technical debt. A project with no shared understanding or automated guardrails feels fast at first, but each new feature adds complexity and unknown dependencies, slowing future development until the entire system becomes fragile and terrifying to change. A disciplined approach has the opposite effect.
+    </p>
+    <figure>
+        <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="chartTitle chartDesc">
+            <title id="chartTitle">Feature Velocity Over Time</title>
+            <desc id="chartDesc">A line graph comparing two development approaches. The "Ad-Hoc" approach starts fast but quickly slows and becomes volatile. The "Disciplined" approach starts slightly slower but accelerates and remains consistently high.</desc>
+            <style>
+                .axis-line { stroke: var(--muted); stroke-width: 1; }
+                .grid-line { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 2, 3; }
+                .axis-text { font-family: 'Funnel Sans', sans-serif; font-size: 10px; fill: var(--muted); }
+                .label-text { font-family: 'Funnel Sans', sans-serif; font-size: 11px; font-weight: 600; }
+                .adhoc-line { stroke: #ff7b72; stroke-width: 2.5; fill: none; }
+                .adhoc-dot { fill: #ff7b72; }
+                .disciplined-line { stroke: var(--accent-3); stroke-width: 2.5; fill: none; }
+                .disciplined-dot { fill: var(--accent-3); }
+            </style>
+
+            <!-- Axes and Grid -->
+            <line x1="40" y1="210" x2="380" y2="210" class="axis-line" />
+            <line x1="40" y1="30" x2="40" y2="210" class="axis-line" />
+
+            <text x="30" y="35" class="axis-text" text-anchor="end">High</text>
+            <text x="18" y="125" class="axis-text" text-anchor="middle" transform="rotate(-90 18,125)">Velocity</text>
+            <text x="30" y="215" class="axis-text" text-anchor="end">Low</text>
+
+            <text x="40" y="225" text-anchor="middle" class="axis-text">Start</text>
+            <text x="210" y="225" text-anchor="middle" class="axis-text">Mid-Project</text>
+            <text x="380" y="225" text-anchor="middle" class="axis-text">Long-Term</text>
+
+            <!-- Ad-Hoc Approach Path -->
+            <path class="adhoc-line" d="M 40 80 C 80 60, 120 100, 160 140 C 200 180, 240 170, 280 190 C 320 210, 360 200, 380 205" />
+            <circle class="adhoc-dot" cx="40" cy="80" r="3"/>
+            <text class="label-text" fill="#ff7b72" x="85" y="55">Ad-Hoc Approach</text>
+            <text class="axis-text" fill="#ff7b72" x="145" y="70" text-anchor="middle">"Illusion of Speed"</text>
+            <text class="axis-text" fill="#ff7b72" x="280" y="180" text-anchor="middle">"Fear of Change"</text>
+
+            <!-- Disciplined Approach Path -->
+            <path class="disciplined-line" d="M 40 120 C 80 110, 150 80, 220 60 C 290 40, 360 45, 380 42" />
+            <circle class="disciplined-dot" cx="40" cy="120" r="3"/>
+            <text class="label-text" fill="var(--accent-3)" x="85" y="135">Disciplined Approach</text>
+            <text class="axis-text" fill="var(--accent-3)" x="130" y="105" text-anchor="middle">"Initial Investment"</text>
+            <text class="axis-text" fill="var(--accent-3)" x="290" y="35" text-anchor="middle">"Sustainable Velocity"</text>
+        </svg>
+        <figcaption>The initial, slightly slower start of a disciplined approach is quickly overtaken by accelerating, sustainable velocity, while an ad-hoc process degrades under its own weight.</figcaption>
+    </figure>
+    <p>
+        This isn't theoretical. The DORA reports, based on years of data from thousands of teams, consistently show that elite performers who invest in these disciplines have dramatically lower Change Failure Rates (0-15%) and shorter Lead Times for Changes (less than one day). They don't achieve this by cutting corners; they achieve it by building a system that makes doing the right thing the easiest thing to do.
+    </p>
+    <p>
+        Choosing this path is the ultimate "no-brainer." It's an investment in a future where you spend your time building valuable features, not hunting down regressions. It empowers you to refactor with courage, onboard teammates with ease, and create products that are a pleasure to build and maintain. This is not about restriction; it's about liberation.
+    </p>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
         integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
         crossorigin="anonymous"></script>
+<a href="#" class="back-to-top" title="Back to top">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+</a>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const backToTopButton = document.querySelector('.back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+
+        backToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
 </body>
 </html>
