@@ -444,8 +444,8 @@
             </ul>
         </li>
         <li>
-            <a href="#eslint"
-            >ESLint: More Than Just Code Style&dash;It's About Engineering Discipline</a
+            <a href="#linting"
+            >Linting and Static Analysis: More Than Just Code Style&dash;It's About Engineering Discipline</a
             >
             <ul>
                 <li>
@@ -470,6 +470,9 @@
                     <a href="#conclusionESLint"
                     >Conclusion: ESLint as a Pillar of Quality</a
                     >
+                </li>
+                <li>
+                    <a href="#sonarForStaticAnalysis">Sonar: Deeper Code Quality Analysis</a>
                 </li>
             </ul>
         </li>
@@ -496,6 +499,13 @@
                 <li>
                     <a href="#metricsPragmaticNextSteps">Pragmatic Next Steps</a>
                 </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#architectural-design-swebok">Architectural Design: A SWEBOK-Guided Approach</a>
+            <ul>
+                <li><a href="#architectural-viewpoints">The Importance of Architectural Viewpoints</a></li>
+                <li><a href="#diagrams-as-blueprints">Communicating Architecture: Diagrams as Blueprints</a></li>
             </ul>
         </li>
         <li>
@@ -2105,8 +2115,9 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
         accessible to all users. That’s a powerful combination that can
         significantly improve the quality of your frontend code.
     </p>
-    <h2 id="eslint">
-        ESLint: More Than Just Code Style–It's About Engineering Discipline
+    <h2 id="linting">
+        Linting and Static Analysis: More Than Just Code Style&dash;It's About
+        Engineering Discipline
     </h2>
     <p>
         A common misconception surrounding ESLint is that its primary, or even
@@ -2240,16 +2251,38 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
     </ul>
     <h3 id="conclusionESLint">Conclusion: ESLint as a Pillar of Quality</h3>
     <p>
-        ESLint, when wielded effectively, transcends its reputation as a mere
-        style checker. In development practice, it becomes a critical component of
-        a robust software engineering approach. By automatically enforcing rules
-        that target bug prevention, code clarity, security, and best practices,
-        ESLint helps teams build software that is not just functional but also
-        more reliable, maintainable, and secure. It’s a proactive tool that
-        fosters a culture of quality and discipline, contributing significantly to
-        the overall health and longevity of a codebase.
+        Ultimately, viewing ESLint as just a style guide is a missed opportunity.
+        It is a powerful static analysis tool that, when configured with intent,
+        becomes a critical part of the software engineering lifecycle. It enforces
+        best practices, catches bugs before they happen, and promotes a culture of
+        quality and consistency. Adopting a robust ESLint configuration is a sign
+        of a mature development process—one that values proactive quality gates
+        and long-term maintainability. It’s a foundational element of disciplined
+        engineering, not just a matter of style.
     </p>
-    
+
+    <h3 id="sonarForStaticAnalysis">Sonar: Beyond Linting to Deeper Code Quality Analysis</h3>
+    <p>
+        While ESLint is exceptional at enforcing code style and catching common JavaScript pitfalls, Sonar (SonarQube for self-hosting or SonarCloud for a cloud-based solution) takes static analysis to a much deeper level. It's not just a linter; it's a comprehensive code quality and security platform that provides a holistic view of your codebase's health.
+    </p>
+    <p>
+        Sonar goes beyond what a typical linter does by performing a more in-depth analysis to identify:
+    </p>
+    <ul>
+        <li>
+            <strong>Code Smells:</strong> These are patterns in the code that indicate deeper design problems, such as high cyclomatic complexity, duplicated code, or "long method" smells. Addressing these can significantly improve the maintainability and long-term health of your application.
+        </li>
+        <li>
+            <strong>Security Vulnerabilities:</strong> Sonar can detect a wide range of security issues, such as SQL injection vulnerabilities, cross-site scripting (XSS) flaws, and insecure use of cryptographic APIs. This is a critical layer of defense that basic linting doesn't provide.
+        </li>
+        <li>
+            <strong>Bugs:</strong> Sonar identifies potential bugs that might not be caught by linters, such as null pointer exceptions, resource leaks, and logic errors that could lead to unexpected runtime behavior.
+        </li>
+    </ul>
+    <p>
+        Think of ESLint as your first line of defense, ensuring your code is clean, consistent, and adheres to best practices at the file level. Sonar, on the other hand, provides a second, more powerful layer of analysis that looks at the bigger picture, assessing the structural quality, security, and reliability of your entire codebase. Integrating both into your CI/CD pipeline gives you a powerful combination for maintaining high-quality, secure, and maintainable software.
+    </p>
+
     <h2 id="metricsThatActuallyMatter">
         Metrics That Actually Matter: DORA over Vanity Metrics
     </h2>
@@ -2386,6 +2419,50 @@ console.log(processUserName(123 as any)); // Warns, "Guest"</code></pre>
             <strong>Socialize the why:</strong> Share the research, not just a dashboard.
         </li>
     </ul>
+
+    <h2 id="architectural-design-swebok">
+        Architectural Design: A SWEBOK-Guided Approach
+    </h2>
+    <p>
+        In software engineering, "separation of concerns" is a foundational principle that guides us to build modular, maintainable systems. While often applied to code (e.g., separating business logic from UI), it is equally critical at the architectural level. An architectural concern is a specific, high-level aspect of the system's design, such as data flow, deployment strategy, or component interaction. As emphasized by the Software Engineering Body of Knowledge (SWEBOK), formally documenting these architectural decisions is not just "busy work"—it's a critical practice for ensuring a system's integrity, scalability, and maintainability.
+    </p>
+
+    <h3 id="architectural-viewpoints">The Importance of Architectural Viewpoints</h3>
+    <p>
+        SWEBOK incorporates established models for architectural description, most notably Philippe Kruchten's "4+1" view model. This model proposes that a system's architecture should be described using multiple, concurrent views, each addressing a specific set of concerns for a particular group of stakeholders. This is an excellent point of clarification—these viewpoints provide a structured way to think about and communicate the architecture.
+    </p>
+    <p>The "4+1" views are:</p>
+    <ul>
+        <li>
+            <strong>Logical View:</strong> This describes the system's functionality and object model, focusing on what the system provides to its end-users. It's primarily for developers and designers.
+        </li>
+        <li>
+            <strong>Process View:</strong> This view deals with the dynamic aspects of the system, such as concurrency, distribution, and performance. It's crucial for system integrators and performance engineers.
+        </li>
+        <li>
+            <strong>Development View:</strong> Also known as the implementation view, this describes the software's static organization from a programmer's perspective, focusing on modules, packages, and their dependencies.
+        </li>
+        <li>
+            <strong>Physical View:</strong> This maps the software components onto the hardware infrastructure, showing how the system is deployed. This view is essential for system and network engineers.
+        </li>
+        <li>
+            <strong>Scenarios (the "+1"):</strong> This view consists of use cases or scenarios that illustrate and validate the other four views, ensuring the architecture meets the requirements of all stakeholders.
+        </li>
+    </ul>
+    <p>
+        By using a structured model like the "4+1" views, we can ensure that all major architectural concerns are addressed before we start coding, leading to a more robust and well-planned system.
+    </p>
+
+    <h3 id="diagrams-as-blueprints">Communicating Architecture: Diagrams as Blueprints</h3>
+    <p>
+        To communicate these architectural viewpoints effectively, we use various diagramming notations. The Unified Modeling Language (UML) is a widely recognized standard that provides a rich set of diagrams for this purpose, but it is by no means the only option. The C4 model, for example, is another popular choice that focuses on creating a set of hierarchical diagrams to explain the system's architecture at different levels of detail (System Context, Containers, Components, and Code).
+    </p>
+    <p>
+        The specific tool or notation is less important than the act of diagramming itself. The goal is to create clear, unambiguous visual representations of the architecture that can be understood by all stakeholders. These diagrams serve as a critical communication tool, a reference for the development team, and a historical record of the system's design.
+    </p>
+    <p>
+        In a world of agile development and rapid iteration, it can be tempting to skip this step and jump straight into coding. However, as SWEBOK suggests, this is a false economy. A small amount of time invested in architectural diagramming upfront can save a massive amount of time and effort in rework and maintenance down the line. It's a key discipline that separates a "coder" from a true "software engineer."
+    </p>
 
     <h2 id="documentationIsForUsers">
         Documentation Is For Users, Not Developers
