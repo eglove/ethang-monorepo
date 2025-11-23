@@ -4,7 +4,7 @@
     "extends browserslist-config-baseline"
   ],
   "dependencies": {
-    "immer": "^10.2.0",
+    "immer": "^11.0.0",
     "lodash": "^4.17.21",
     "use-sync-external-store": "^1.6.0"
   },
@@ -12,12 +12,12 @@
   "devDependencies": {
     "@ethang/eslint-config": "^23.2.1",
     "@ethang/project-builder": "^3.0.2",
-    "@types/lodash": "^4.17.20",
+    "@types/lodash": "^4.17.21",
     "@types/use-sync-external-store": "^1.5.0",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^9.39.1",
     "type-fest": "^5.2.0",
-    "vitest": "^4.0.12"
+    "vitest": "^4.0.13"
   },
   "engines": {
     "node": ">=24"
