@@ -9,15 +9,17 @@ export const NavTabs = () => {
   });
 
   return (
-    <Tabs
-      onSelectionChange={(value) => {
-        userStore.setCurrentTab(value.toString());
-      }}
-      aria-label="Navigation"
-      color="primary"
-      selectedKey={currentTab}
-    >
-      <Tab key="videos" title="Videos"></Tab>
-    </Tabs>
+    <div className="m-4 grid w-full place-items-center">
+      <Tabs
+        onSelectionChange={(value) => {
+          userStore.setCurrentTab(value.toString());
+        }}
+        aria-label="Navigation"
+        color="primary"
+        selectedKey={currentTab}
+      >
+        <Tab key="videos" title="Videos"></Tab>
+      </Tabs>
+    </div>
   );
 };
