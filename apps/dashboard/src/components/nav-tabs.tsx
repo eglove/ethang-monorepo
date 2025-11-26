@@ -18,7 +18,7 @@ export const NavTabs = () => {
         color="primary"
         selectedKey={currentTab}
       >
-        <Tab key="videos" title="Videos"></Tab>
+        <Tab key="videos" title="YouTube"></Tab>
       </Tabs>
     </div>
   );
