@@ -1,23 +1,23 @@
-import map from "lodash/map.js";
 import startsWith from "lodash/startsWith.js";
 
-import { youtubeChannels } from "../static-data/youtube-channels.ts";
-import { getYouTubeFeed } from "./rss/get-you-tube-feed.ts";
+import { getVideosUrl, updateFeedsUrl } from "../shared/api-urls.ts";
+import { getVideos } from "./rss/get-videos.ts";
+import { updateVideos } from "./rss/update-videos.ts";
 
 export default {
-  async fetch(request) {
+  async fetch(request, environment) {
     const url = new URL(request.url);
 
-    if (startsWith(url.pathname, "/api/update-feeds")) {
-      await Promise.all(
-        map(youtubeChannels, async (channel) => {
-          return getYouTubeFeed(channel.channelId);
-        }),
-      );
+    if (startsWith(url.pathname, updateFeedsUrl)) {
+      await updateVideos(environment);
 
-      return Response.json({
-        name: "Cloudflare",
-      });
+      return Response.json({ status: "OK" });
+    }
+
+    if (startsWith(url.pathname, getVideosUrl)) {
+      const data = await getVideos(environment);
+
+      return Response.json(data);
     }
 
     return new Response(null, { status: 404 });

@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client"
-  output = "../generated/prisma"
+  provider               = "prisma-client"
+  output                 = "../generated/prisma"
   generatedFileExtension = "ts"
-  importFileExtension = "ts"
-  moduleFormat = "esm"
-  runtime = "cloudflare"
+  importFileExtension    = "ts"
+  moduleFormat           = "esm"
+  runtime                = "cloudflare"
 }
 
 datasource db {
@@ -12,10 +12,11 @@ datasource db {
 }
 
 model Video {
-  id String @id
-  hasWatched Boolean @default(false)
-  published DateTime
-  title String
-  url String
+  id         String   @id
+  hasWatched Boolean  @default(false)
+  published  DateTime
+  updated    DateTime
+  title      String
+  url        String
   authorName String
 }

@@ -40,14 +40,13 @@ type YouTubeChannelFeed = {
 
 const feedRoot = new URL("https://www.youtube.com/feeds/videos.xml");
 
-export const getYouTubeFeed = async (channelId: string) => {
+export const getYoutubeFeed = async (channelId: string) => {
   feedRoot.searchParams.set("channel_id", channelId);
   const response = await fetch(feedRoot);
+
   const text = await response.text();
 
   const parser = new XMLParser();
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  const document = parser.parse(text) as unknown as YouTubeChannelFeed;
-
-  console.log(document.feed);
+  return parser.parse(text) as unknown as YouTubeChannelFeed;
 };

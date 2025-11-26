@@ -1,4 +1,5 @@
 import { HeroUIProvider } from "@heroui/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   createRouter,
   type NavigateOptions,
@@ -31,22 +32,25 @@ declare module "@react-types/shared" {
 }
 
 const rootElement = document.querySelector("#root");
+export const queryClient = new QueryClient();
 
 if (!isNil(rootElement)) {
   const root = createRoot(rootElement);
 
   root.render(
     <StrictMode>
-      <HeroUIProvider
-        navigate={async (to) => {
-          return router.navigate({ to }).catch(globalThis.console.error);
-        }}
-        useHref={(to) => {
-          return router.buildLocation({ to }).href;
-        }}
-      >
-        <RouterProvider router={router} />
-      </HeroUIProvider>
+      <QueryClientProvider client={queryClient}>
+        <HeroUIProvider
+          navigate={(to) => {
+            router.navigate({ to }).catch(globalThis.console.error);
+          }}
+          useHref={(to) => {
+            return router.buildLocation({ to }).href;
+          }}
+        >
+          <RouterProvider router={router} />
+        </HeroUIProvider>
+      </QueryClientProvider>
     </StrictMode>,
   );
 }
