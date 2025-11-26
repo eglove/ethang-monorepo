@@ -10,6 +10,10 @@ export const blogs = [
     label: "How I Code",
   },
   {
+    href: "/blog/myth-of-total-freedom",
+    label: "The Myth of Total Freedom",
+  },
+  {
     href: "/blog/discipline-for-dopamine",
     label: "How an Industry Traded Discipline for Dopamine",
   },

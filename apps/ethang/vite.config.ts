@@ -22,7 +22,7 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         globDirectory: "./dist/client",
-        globPatterns: ["**/*.{js,css,html}"],
+        globPatterns: ["**/*.{js,css}"],
         navigationPreload: true,
         runtimeCaching: [
           {

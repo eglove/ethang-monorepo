@@ -1,168 +1,193 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-          content="An update on the eslint-config, featuring new rules from unicorn version 60, including no-useless-constructor, no-array-reverse, require-module-specifiers, and no-useless-error-capture-stack-trace.">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta
+      content="An update on the eslint-config, featuring new rules from unicorn version 60, including no-useless-constructor, no-array-reverse, require-module-specifiers, and no-useless-error-capture-stack-trace."
+      name="description"
+    />
 
-    <meta property="og:title" content="Unicorn 60: New ESLint Rules">
-    <meta property="og:description"
-          content="An update on the eslint-config, featuring new rules from unicorn version 60, including no-useless-constructor, no-array-reverse, require-module-specifiers, and no-useless-error-capture-stack-trace.">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="/blog/unicorn-60.html">
-    <meta property="og:image" content="/images/unicorn-60.png">
+    <meta content="Unicorn 60: New ESLint Rules" property="og:title" />
+    <meta
+      content="An update on the eslint-config, featuring new rules from unicorn version 60, including no-useless-constructor, no-array-reverse, require-module-specifiers, and no-useless-error-capture-stack-trace."
+      property="og:description"
+    />
+    <meta content="article" property="og:type" />
+    <meta content="/blog/unicorn-60.html" property="og:url" />
+    <meta content="/images/unicorn-60.png" property="og:image" />
 
     <title>Unicorn 60</title>
 
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
     <link
-            href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap"
-            rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
     />
 
-    <link href="https://unpkg.com/prism-theme-night-owl@1.4.0/build/style.css" rel="stylesheet"/>
+    <link
+      href="https://unpkg.com/prism-theme-night-owl@1.4.0/build/style.css"
+      rel="stylesheet"
+    />
 
     <style>
+      body {
+        font-family: "Funnel Sans", sans-serif;
+        line-height: 1.6;
+        color: #e0e0e0;
+        background-color: #1a1a1a;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 800px;
+        width: 100%;
+        background-color: #2d2d2d;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        box-sizing: border-box;
+      }
+
+      h1 {
+        font-size: 2.5em;
+        color: #ffffff;
+        margin-bottom: 20px;
+        font-weight: 700;
+      }
+
+      h2 {
+        font-size: 1.8em;
+        color: #f0f0f0;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-weight: 600;
+        border-bottom: 1px solid #444;
+        padding-bottom: 5px;
+      }
+
+      p {
+        margin-bottom: 15px;
+        color: #c0c0c0;
+      }
+
+      a {
+        color: #8be9fd;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      a:hover {
+        color: #62d9ef;
+        text-decoration: underline;
+      }
+
+      pre[class*="language-"] {
+        background-color: #1e1e1e; /* Ensure background matches previous dark theme */
+        padding: 15px;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin-bottom: 20px;
+        font-size: 0.95em;
+        line-height: 1.5;
+      }
+
+      code {
+        font-family: "Fira Code", "Cascadia Code", "Consolas", monospace;
+      }
+
+      pre code {
+        display: block;
+      }
+
+      .back-to-blog {
+        display: inline-block;
+        margin-bottom: 30px;
+        font-size: 0.9em;
+        color: #909090;
+      }
+
+      .back-to-blog:hover {
+        color: #b0b0b0;
+      }
+
+      @media (max-width: 768px) {
         body {
-            font-family: 'Funnel Sans', sans-serif;
-            line-height: 1.6;
-            color: #e0e0e0;
-            background-color: #1a1a1a;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
+          padding: 15px;
         }
 
         .container {
-            max-width: 800px;
-            width: 100%;
-            background-color: #2d2d2d;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            box-sizing: border-box;
+          padding: 25px;
+          border-radius: 8px;
         }
 
         h1 {
-            font-size: 2.5em;
-            color: #ffffff;
-            margin-bottom: 20px;
-            font-weight: 700;
+          font-size: 2em;
         }
 
         h2 {
-            font-size: 1.8em;
-            color: #f0f0f0;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-weight: 600;
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
+          font-size: 1.5em;
+        }
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 10px;
         }
 
-        p {
-            margin-bottom: 15px;
-            color: #c0c0c0;
+        .container {
+          padding: 20px;
         }
 
-        a {
-            color: #8be9fd;
-            text-decoration: none;
-            transition: color 0.3s ease;
+        h1 {
+          font-size: 1.8em;
         }
 
-        a:hover {
-            color: #62d9ef;
-            text-decoration: underline;
+        h2 {
+          font-size: 1.3em;
         }
-
-        pre[class*="language-"] {
-            background-color: #1e1e1e; /* Ensure background matches previous dark theme */
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin-bottom: 20px;
-            font-size: 0.95em;
-            line-height: 1.5;
-        }
-
-        code {
-            font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
-        }
-
-        pre code {
-            display: block;
-        }
-
-        .back-to-blog {
-            display: inline-block;
-            margin-bottom: 30px;
-            font-size: 0.9em;
-            color: #909090;
-        }
-
-        .back-to-blog:hover {
-            color: #b0b0b0;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-
-            .container {
-                padding: 25px;
-                border-radius: 8px;
-            }
-
-            h1 {
-                font-size: 2em;
-            }
-
-            h2 {
-                font-size: 1.5em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            h2 {
-                font-size: 1.3em;
-            }
-        }
+      }
     </style>
-</head>
-<body>
-<div class="container">
-    <a href="/blog" class="back-to-blog">&larr; Back to Blog</a>
+  </head>
+  <body>
+    <div class="container">
+      <a class="back-to-blog" href="/blog">&larr; Back to Blog</a>
 
-    <h1>Unicorn 60</h1>
-    <p>My <a href="https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-config/src" target="_blank"
-             rel="noopener noreferrer">eslint-config</a> is updated almost daily. It now sports 792 rules for its base
-        configuration and many separate configs specific to the framework.</p>
-    <p>The recent update includes <a href="https://github.com/sindresorhus/eslint-plugin-unicorn" target="_blank"
-                                     rel="noopener noreferrer">unicorn</a> version 60 which adds 4 new rules.</p>
+      <h1>Unicorn 60</h1>
+      <p>
+        My
+        <a
+          href="https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-config/src"
+          rel="noopener noreferrer"
+          target="_blank"
+          >eslint-config</a
+        >
+        is updated almost daily. It now sports 792 rules for its base
+        configuration and many separate configs specific to the framework.
+      </p>
+      <p>
+        The recent update includes
+        <a
+          href="https://github.com/sindresorhus/eslint-plugin-unicorn"
+          rel="noopener noreferrer"
+          target="_blank"
+          >unicorn</a
+        >
+        version 60 which adds 4 new rules.
+      </p>
 
-    <h2>no-useless-constructor</h2>
-    <p>This rule prevents declaring static property defaults in a constructor where they should be declared on the
-        class.</p>
-    <pre><code class="language-javascript">// ❌
+      <h2>no-useless-constructor</h2>
+      <p>
+        This rule prevents declaring static property defaults in a constructor
+        where they should be declared on the class.
+      </p>
+      <pre><code class="language-javascript">// ❌
 class Foo {
   constructor() {
     this.foo = 'foo';
@@ -175,25 +200,37 @@ class Foo {
 }
 </code></pre>
 
-    <h2>no-array-reverse</h2>
-    <p>JavaScript recently added immutable array manipulation with <code>toSpliced</code>, <code>toSorted</code>, and
-        important
-        for this rule <code>toReversed</code>.</p>
-    <pre><code class="language-javascript">// ❌
+      <h2>no-array-reverse</h2>
+      <p>
+        JavaScript recently added immutable array manipulation with
+        <code>toSpliced</code>, <code>toSorted</code>, and important for this
+        rule <code>toReversed</code>.
+      </p>
+      <pre><code class="language-javascript">// ❌
 const reversed = [...array].reverse();
 
 // ✅
 const reversed = [...array].toReversed();</code></pre>
 
-    <h2>require-module-specifiers</h2>
-    <p><a href="https://sgom.es/posts/2020-06-15-everything-you-never-wanted-to-know-about-side-effects/"
+      <h2>require-module-specifiers</h2>
+      <p>
+        <a
+          href="https://sgom.es/posts/2020-06-15-everything-you-never-wanted-to-know-about-side-effects/"
+          rel="noopener noreferrer"
           target="_blank"
-          rel="noopener noreferrer">import side effects</a> can be a sneaky issue if left unchecked. typescript-eslint
-        will
-        help <a href="https://typescript-eslint.io/rules/no-import-type-side-effects/" target="_blank"
-                rel="noopener noreferrer">avoid import side effects</a> when importing types only. This will rule will
-        mandate that empty imports are explicitly imported as side effect only.</p>
-    <pre><code class="language-javascript">// ❌
+          >import side effects</a
+        >
+        can be a sneaky issue if left unchecked. typescript-eslint will help
+        <a
+          href="https://typescript-eslint.io/rules/no-import-type-side-effects/"
+          rel="noopener noreferrer"
+          target="_blank"
+          >avoid import side effects</a
+        >
+        when importing types only. This will rule will mandate that empty
+        imports are explicitly imported as side effect only.
+      </p>
+      <pre><code class="language-javascript">// ❌
 import {} from 'foo';
 
 // ✅
@@ -205,11 +242,13 @@ import foo, {} from 'foo';
 // ✅
 import foo from 'foo';</code></pre>
 
-    <h2>no-useless-error-capture-stack-trace</h2>
-    <p>A little more niche, this rule prevents you from calling Error.captureStackTrace when this is already handled by
-        the
-        Error parent class.</p>
-    <pre><code class="language-javascript">class MyError extends Error {
+      <h2>no-useless-error-capture-stack-trace</h2>
+      <p>
+        A little more niche, this rule prevents you from calling
+        Error.captureStackTrace when this is already handled by the Error parent
+        class.
+      </p>
+      <pre><code class="language-javascript">class MyError extends Error {
   constructor() {
     // ❌
     Error.captureStackTrace(this, MyError);
@@ -226,10 +265,12 @@ import foo from 'foo';</code></pre>
   }
 }
 </code></pre>
-</div>
+    </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
-        integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
-        crossorigin="anonymous"></script>
-</body>
+    <script
+      crossorigin="anonymous"
+      integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
+    ></script>
+  </body>
 </html>

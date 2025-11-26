@@ -16,7 +16,6 @@ export default defineConfig(
       "src/routeTree.gen.ts",
       "generated",
       "wrangler.jsonc",
-      "public",
       "src/index.css",
     ],
   },
