@@ -1,0 +1,56 @@
+{
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.51.1",
+    "@ethang/store": "^2.3.2",
+    "@heroui/react": "2.8.5",
+    "@heroui/theme": "2.4.23",
+    "@prisma/adapter-d1": "^7.0.1",
+    "@prisma/client": "^7.0.1",
+    "@tailwindcss/vite": "^4.1.17",
+    "@tanstack/react-router": "^1.139.7",
+    "@tanstack/react-router-devtools": "^1.139.7",
+    "fast-xml-parser": "^5.3.2",
+    "framer-motion": "^12.23.24",
+    "lodash": "^4.17.21",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "tailwindcss": "^4.1.17"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.15.3",
+    "@ethang/eslint-config": "^23.3.1",
+    "@react-types/shared": "^3.32.1",
+    "@tanstack/router-plugin": "^1.139.7",
+    "@types/lodash": "^4.17.21",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "browserslist-config-baseline": "^0.5.0",
+    "eslint": "^9.39.1",
+    "globals": "^16.3.0",
+    "prisma": "^7.0.1",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.2",
+    "wrangler": "^4.51.0"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "name": "dashboard",
+  "private": true,
+  "scripts": {
+    "build": "tsc -b && vite build",
+    "cf-typegen": "wrangler types",
+    "deploy": "pnpm run build && wrangler deploy",
+    "dev": "vite",
+    "lint": "eslint . --fix --concurrency=auto",
+    "preview": "pnpm run build && vite preview"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}
