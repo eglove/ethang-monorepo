@@ -11,7 +11,11 @@ export const blogs = [
   },
   {
     href: "/blog/myth-of-total-freedom",
-    label: "The Myth of Total Freedom",
+    label: "The Myth of Total Freedom: Why “Paved Roads” Beat Open Fields",
+  },
+  {
+    href: "/blog/developer-focus-vs-collaboration",
+    label: "The Developer's Dilemma: Focus vs. Collaboration",
   },
   {
     href: "/blog/discipline-for-dopamine",
