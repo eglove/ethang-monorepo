@@ -10,7 +10,7 @@
     "@prisma/adapter-d1": "^7.0.1",
     "@prisma/client": "7.0.1",
     "bcryptjs": "^3.0.3",
-    "hono": "^4.10.6",
+    "hono": "^4.10.7",
     "jose": "^6.1.2",
     "lodash": "^4.17.21",
     "prisma": "^7.0.1"
@@ -23,7 +23,7 @@
     "eslint": "^9.39.1",
     "rimraf": "^6.1.2",
     "typescript-eslint": "^8.48.0",
-    "wrangler": "^4.50.0"
+    "wrangler": "^4.51.0"
   },
   "engines": {
     "node": ">=24"
