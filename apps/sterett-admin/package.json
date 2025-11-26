@@ -7,7 +7,7 @@
     "@sanity/icons": "^3.7.4",
     "@sanity/orderable-document-list": "^1.4.0",
     "@sanity/vision": "^4.18.0",
-    "@types/react": "19.2.6",
+    "@types/react": "19.2.7",
     "lodash": "^4.17.21",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -17,12 +17,12 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^23.2.1",
+    "@ethang/eslint-config": "^23.3.1",
     "@sanity/eslint-config-studio": "^5.0.2",
     "@types/lodash": "^4.17.21",
     "eslint": "^9.39.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.47.0"
+    "typescript-eslint": "^8.48.0"
   },
   "engines": {
     "node": ">=24"

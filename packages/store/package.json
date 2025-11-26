@@ -10,14 +10,14 @@
   },
   "description": "Fine grained state management",
   "devDependencies": {
-    "@ethang/eslint-config": "^23.2.1",
+    "@ethang/eslint-config": "^23.3.1",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.21",
     "@types/use-sync-external-store": "^1.5.0",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^9.39.1",
     "type-fest": "^5.2.0",
-    "vitest": "^4.0.13"
+    "vitest": "^4.0.14"
   },
   "engines": {
     "node": ">=24"
@@ -31,5 +31,5 @@
     "test": "vitest run"
   },
   "type": "module",
-  "version": "2.3.1"
+  "version": "2.3.2"
 }

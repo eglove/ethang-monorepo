@@ -7,8 +7,9 @@ import isNil from "lodash/isNil.js";
 
 enablePatches();
 
-export type StorePatch<State extends object> =
-  ValidDataPathTuple<State> extends infer P
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+export type StorePatch<State extends object> = Simplify<Patch> &
+  (ValidDataPathTuple<State> extends infer P
     ? P extends readonly string[]
       ? Get<State, P> extends infer ValueType
         ?
@@ -24,9 +25,7 @@ export type StorePatch<State extends object> =
               }
         : never
       : never
-    : never;
-
-export type StorePatchLoose = Simplify<Patch>;
+    : never);
 
 type Primitive = boolean | null | number | string | undefined;
 
@@ -92,7 +91,8 @@ export abstract class BaseStore<State extends object> {
   protected onFirstSubscriber?(): void;
 
   protected onLastSubscriberRemoved?(): void;
-  protected onPropertyChange?(patch: StorePatch<State> | StorePatchLoose): void;
+
+  protected onPropertyChange?(patch: StorePatch<State>): void;
   protected update(updater: (draft: State) => void, shouldNotify = true) {
     let patches: StorePatch<State>[] = [];
 
