@@ -10,9 +10,9 @@ import { getYoutubeFeed } from "./get-youtube-feed.ts";
 export const updateVideos = async (environment: Env) => {
   const prisma = getPrismaClient(environment);
 
-  await Promise.all(
+  Promise.all(
     map(youtubeChannels, async (channel) => {
-      await getYoutubeFeed(channel.channelId)
+      getYoutubeFeed(channel.channelId)
         .then(async (channelFeed) => {
           if (isNil(channelFeed)) {
             return;
@@ -24,7 +24,7 @@ export const updateVideos = async (environment: Env) => {
             return;
           }
 
-          await Promise.all(
+          Promise.all(
             map(entries, async (entry) => {
               if (isNil(entry)) {
                 return;
@@ -47,9 +47,9 @@ export const updateVideos = async (environment: Env) => {
                 })
                 .catch(globalThis.console.error);
             }),
-          );
+          ).catch(globalThis.console.error);
         })
         .catch(globalThis.console.error);
     }),
-  );
+  ).catch(globalThis.console.error);
 };
