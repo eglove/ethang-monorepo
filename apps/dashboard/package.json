@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.15.3",
-    "@ethang/eslint-config": "^23.3.1",
+    "@ethang/eslint-config": "^23.3.3",
     "@react-types/shared": "^3.32.1",
     "@tanstack/eslint-plugin-query": "^5.91.2",
     "@tanstack/router-plugin": "^1.139.7",
@@ -38,7 +38,8 @@
     "eslint": "^9.39.1",
     "globals": "^16.3.0",
     "prisma": "^7.0.1",
-    "typescript": "~5.8.3",
+    "rimraf": "^6.1.2",
+    "typescript": "~5.9.3",
     "vite": "^7.1.2",
     "wrangler": "^4.51.0"
   },
@@ -53,7 +54,8 @@
     "deploy": "pnpm run build && wrangler deploy",
     "dev": "vite",
     "lint": "eslint . --fix --concurrency=auto",
-    "preview": "pnpm run build && vite preview"
+    "preview": "pnpm run build && vite preview",
+    "prisma-gen": "rimraf generated/prisma && prisma generate"
   },
   "type": "module",
   "version": "0.0.0"
