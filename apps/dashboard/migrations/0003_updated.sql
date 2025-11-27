@@ -1,2 +1,0 @@
--- Migration number: 0003 	 2025-11-26T21:35:50.342Z
-ALTER TABLE "Video" ADD COLUMN "updated" DATETIME;
