@@ -44,4 +44,9 @@ export const getVideosQuery = queryOptions({
     return data;
   },
   queryKey: [getVideosUrl],
+  refetchIntervalInBackground: false,
+  refetchOnMount: false,
+  refetchOnReconnect: false,
+  refetchOnWindowFocus: false,
+  staleTime: Infinity,
 });
