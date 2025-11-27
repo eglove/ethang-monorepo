@@ -24,27 +24,30 @@ export const updateVideos = async (environment: Env) => {
             return;
           }
 
-          for (const entry of entries) {
-            if (isNil(entry)) {
-              return;
-            }
+          await Promise.all(
+            map(entries, async (entry) => {
+              if (isNil(entry)) {
+                return;
+              }
 
-            const data = {
-              authorName: entry.author.name,
-              id: entry.id,
-              published: entry.published,
-              title: entry.title,
-              updated: entry.updated,
-              url: entry.link,
-            };
+              const data = {
+                authorName: entry.author.name,
+                id: entry.id,
+                published: entry.published,
+                title: entry.title,
+                updated: entry.updated,
+                url: entry.link,
+              };
 
-            // eslint-disable-next-line no-await-in-loop
-            await prisma.video.upsert({
-              create: data,
-              update: data,
-              where: { id: entry.id },
-            });
-          }
+              prisma.video
+                .upsert({
+                  create: data,
+                  update: data,
+                  where: { id: entry.id },
+                })
+                .catch(globalThis.console.error);
+            }),
+          );
         })
         .catch(globalThis.console.error);
     }),
