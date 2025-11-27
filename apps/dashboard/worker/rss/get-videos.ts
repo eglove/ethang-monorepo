@@ -5,6 +5,7 @@ export const getVideos = async (environment: Env) => {
 
   return prisma.video.findMany({
     orderBy: { published: "desc" },
+    take: 10,
     where: { hasWatched: false },
   });
 };

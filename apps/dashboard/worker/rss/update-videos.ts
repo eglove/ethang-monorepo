@@ -1,3 +1,5 @@
+import get from "lodash/get.js";
+import isArray from "lodash/isArray.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
@@ -11,8 +13,16 @@ export const updateVideos = async (environment: Env) => {
   await Promise.all(
     map(youtubeChannels, async (channel) => {
       await getYoutubeFeed(channel.channelId)
-        .then((channelFeed) => {
-          const entries = channelFeed.feed.entry;
+        .then(async (channelFeed) => {
+          if (isNil(channelFeed)) {
+            return;
+          }
+
+          const entries = get(channelFeed, ["feed", "entry"], []);
+
+          if (!isArray(entries)) {
+            return;
+          }
 
           for (const entry of entries) {
             if (isNil(entry)) {
@@ -28,13 +38,12 @@ export const updateVideos = async (environment: Env) => {
               url: entry.link,
             };
 
-            prisma.video
-              .upsert({
-                create: data,
-                update: data,
-                where: { id: entry.id },
-              })
-              .catch(globalThis.console.error);
+            // eslint-disable-next-line no-await-in-loop
+            await prisma.video.upsert({
+              create: data,
+              update: data,
+              where: { id: entry.id },
+            });
           }
         })
         .catch(globalThis.console.error);

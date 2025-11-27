@@ -44,6 +44,10 @@ export const getYoutubeFeed = async (channelId: string) => {
   feedRoot.searchParams.set("channel_id", channelId);
   const response = await fetch(feedRoot);
 
+  if (!response.ok) {
+    return;
+  }
+
   const text = await response.text();
 
   const parser = new XMLParser();
