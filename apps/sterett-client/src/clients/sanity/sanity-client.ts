@@ -1,5 +1,5 @@
 import { createClient } from "@sanity/client";
-import imageUrlBuilder from "@sanity/image-url";
+import { createImageUrlBuilder } from "@sanity/image-url";
 
 export const NO_DRAFTS = "!(_id in path('drafts.**'))";
 
@@ -11,4 +11,4 @@ export const sterettSanityClient = createClient({
   useCdn: true,
 });
 
-export const sanityImage = imageUrlBuilder(sterettSanityClient);
+export const sanityImage = createImageUrlBuilder(sterettSanityClient);
