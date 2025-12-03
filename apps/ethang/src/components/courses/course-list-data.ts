@@ -131,10 +131,6 @@ export const bonusCourseData = [
 
 export const readingCourseData = [
   {
-    name: "Software Engineering Body of Knowledge (SWEBOK)",
-    url: "https://www.computer.org/education/bodies-of-knowledge/software-engineering",
-  },
-  {
     name: "O'Reilly",
     url: "https://www.amazon.com/stores/page/5212CE9B-CF76-4343-9CA0-98210EBE3D70",
   },
@@ -145,5 +141,20 @@ export const readingCourseData = [
   {
     name: "Dave Farley",
     url: "https://www.amazon.com/stores/author/B003VSTZ72",
+  },
+];
+
+export const swebokCourseData = [
+  {
+    name: "Associate Software Developer",
+    url: "https://www.computer.org/product/education/associate-software-developer-certification",
+  },
+  {
+    name: "Professional Software Developer",
+    url: "https://www.computer.org/product/education/professional-software-developer-certification",
+  },
+  {
+    name: "Professional Software Engineering Master",
+    url: "https://www.computer.org/product/education/professional-software-engineering-master-certification",
   },
 ];

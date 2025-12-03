@@ -6,6 +6,7 @@ import {
   coltSteeleCourseData,
   frontendMastersCourseData,
   readingCourseData,
+  swebokCourseData,
   zeroToMasteryCourseData,
 } from "../components/courses/course-list-data.ts";
 import { CourseListItem } from "../components/courses/course-list-item.tsx";
@@ -145,7 +146,41 @@ const RouteComponent = () => {
             </TypographyP>
           </CourseListItem>
         </AccordionItem>
-        <AccordionItem aria-label="Bonus" key="5" title="Bonus">
+        <AccordionItem
+          aria-label="Become an Engineer: IEEE"
+          key="5"
+          title="Become an Engineer: IEEE"
+        >
+          <CourseListItem courseList={swebokCourseData}>
+            <TypographyP>
+              Learn how to go beyond just programming and code and become an
+              engineer. IEEE SWEBOK certifications cover official industry
+              standards for things like software requirement engineering,
+              design, construction, testing, operations, maintenance,
+              configuration management, engineering management, engineering
+              process, quality, security, professional practice, economics, and
+              more.
+            </TypographyP>
+            <TypographyP>
+              If you're serious enough about engineering to start getting
+              through the dry content and taking ownership in large scale
+              systems, this is the place to start.
+            </TypographyP>
+            <TypographyP>
+              These courses and certifications are based on the{" "}
+              <Link
+                isExternal
+                color="foreground"
+                href="https://www.computer.org/education/bodies-of-knowledge/software-engineering"
+                underline="always"
+              >
+                Software Engineer Body of Knowledge (SWEBOK)
+              </Link>
+              .
+            </TypographyP>
+          </CourseListItem>
+        </AccordionItem>
+        <AccordionItem aria-label="Bonus" key="6" title="Bonus">
           <CourseListItem courseList={bonusCourseData}>
             <TypographyP>
               For the most part, I recommend avoiding courses that charge too
@@ -160,7 +195,7 @@ const RouteComponent = () => {
             </TypographyP>
           </CourseListItem>
         </AccordionItem>
-        <AccordionItem aria-label="Reading" key="6" title="Reading">
+        <AccordionItem aria-label="Reading" key="7" title="Reading">
           <CourseListItem courseList={readingCourseData}>
             <TypographyP>
               Of the below list, the only item I would say is an absolute
