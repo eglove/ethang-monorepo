@@ -35,6 +35,7 @@ const RouteComponent = () => {
       <Accordion>
         <AccordionItem
           aria-label="Beginner: Colt Steele"
+          classNames={{ trigger: "cursor-pointer" }}
           key="1"
           title="Beginner: Colt Steele"
         >
@@ -64,6 +65,7 @@ const RouteComponent = () => {
         </AccordionItem>
         <AccordionItem
           aria-label="Learn to Build: Academind"
+          classNames={{ trigger: "cursor-pointer" }}
           key="2"
           title="Learn to Build: Academind"
         >
@@ -92,6 +94,7 @@ const RouteComponent = () => {
         </AccordionItem>
         <AccordionItem
           aria-label="Learn the Web: Frontend Masters"
+          classNames={{ trigger: "cursor-pointer" }}
           key="3"
           title="Learn the Web: Frontend Masters"
         >
@@ -124,6 +127,7 @@ const RouteComponent = () => {
         </AccordionItem>
         <AccordionItem
           aria-label="Broaden Your SkillSet: Zero to Mastery"
+          classNames={{ trigger: "cursor-pointer" }}
           key="4"
           title="Broaden Your SkillSet: Zero to Mastery"
         >
@@ -148,6 +152,7 @@ const RouteComponent = () => {
         </AccordionItem>
         <AccordionItem
           aria-label="Become an Engineer: IEEE"
+          classNames={{ trigger: "cursor-pointer" }}
           key="5"
           title="Become an Engineer: IEEE"
         >
@@ -180,7 +185,12 @@ const RouteComponent = () => {
             </TypographyP>
           </CourseListItem>
         </AccordionItem>
-        <AccordionItem aria-label="Bonus" key="6" title="Bonus">
+        <AccordionItem
+          aria-label="Bonus"
+          classNames={{ trigger: "cursor-pointer" }}
+          key="6"
+          title="Bonus"
+        >
           <CourseListItem courseList={bonusCourseData}>
             <TypographyP>
               For the most part, I recommend avoiding courses that charge too
@@ -195,7 +205,12 @@ const RouteComponent = () => {
             </TypographyP>
           </CourseListItem>
         </AccordionItem>
-        <AccordionItem aria-label="Reading" key="7" title="Reading">
+        <AccordionItem
+          aria-label="Reading"
+          classNames={{ trigger: "cursor-pointer" }}
+          key="7"
+          title="Reading"
+        >
           <CourseListItem courseList={readingCourseData}>
             <TypographyP>
               Of the below list, the only item I would say is an absolute
