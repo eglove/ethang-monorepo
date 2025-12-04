@@ -24,7 +24,7 @@ export default defineConfig(
     ignores,
     languageOptions,
     settings: {
-      react: { version: "19.2.0" },
+      react: { version: "19.2.1" },
     },
     plugins: {
       compat: compat,

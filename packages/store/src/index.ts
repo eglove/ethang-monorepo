@@ -7,7 +7,6 @@ import isNil from "lodash/isNil.js";
 
 enablePatches();
 
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export type StorePatch<State extends object> = Simplify<Patch> &
   (ValidDataPathTuple<State> extends infer P
     ? P extends readonly string[]

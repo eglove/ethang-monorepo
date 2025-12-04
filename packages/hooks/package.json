@@ -6,12 +6,12 @@
   "dependencies": {
     "eslint": "^9.39.1",
     "lodash": "^4.17.21",
-    "react": "^19.2.0",
+    "react": "^19.2.1",
     "zod": "^4.1.13"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^23.3.4",
+    "@ethang/eslint-config": "^23.3.5",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.21",
     "@types/node": "^24.10.1",

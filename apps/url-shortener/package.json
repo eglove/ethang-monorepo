@@ -12,14 +12,14 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^23.3.4",
+    "@ethang/eslint-config": "^23.3.5",
     "@types/lodash": "^4.17.21",
-    "@vitest/coverage-v8": "^4.0.14",
+    "@vitest/coverage-v8": "^4.0.15",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^9.39.1",
-    "typescript-eslint": "^8.48.0",
-    "vitest": "^4.0.14",
-    "wrangler": "^4.51.0"
+    "typescript-eslint": "^8.48.1",
+    "vitest": "^4.0.15",
+    "wrangler": "^4.52.1"
   },
   "engines": {
     "node": ">=24"

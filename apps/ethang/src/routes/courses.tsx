@@ -14,6 +14,8 @@ import { MainLayout } from "../components/main-layout.tsx";
 import { TypographyH1 } from "../components/typography/typography-h1.tsx";
 import { TypographyP } from "../components/typography/typography-p.tsx";
 
+const accordionClassnames = { trigger: "cursor-pointer" };
+
 const RouteComponent = () => {
   return (
     <MainLayout className="max-w-[65ch]">
@@ -35,7 +37,7 @@ const RouteComponent = () => {
       <Accordion>
         <AccordionItem
           aria-label="Beginner: Colt Steele"
-          classNames={{ trigger: "cursor-pointer" }}
+          classNames={accordionClassnames}
           key="1"
           title="Beginner: Colt Steele"
         >
@@ -65,7 +67,7 @@ const RouteComponent = () => {
         </AccordionItem>
         <AccordionItem
           aria-label="Learn to Build: Academind"
-          classNames={{ trigger: "cursor-pointer" }}
+          classNames={accordionClassnames}
           key="2"
           title="Learn to Build: Academind"
         >
@@ -94,7 +96,7 @@ const RouteComponent = () => {
         </AccordionItem>
         <AccordionItem
           aria-label="Learn the Web: Frontend Masters"
-          classNames={{ trigger: "cursor-pointer" }}
+          classNames={accordionClassnames}
           key="3"
           title="Learn the Web: Frontend Masters"
         >
@@ -127,7 +129,7 @@ const RouteComponent = () => {
         </AccordionItem>
         <AccordionItem
           aria-label="Broaden Your SkillSet: Zero to Mastery"
-          classNames={{ trigger: "cursor-pointer" }}
+          classNames={accordionClassnames}
           key="4"
           title="Broaden Your SkillSet: Zero to Mastery"
         >
@@ -152,7 +154,7 @@ const RouteComponent = () => {
         </AccordionItem>
         <AccordionItem
           aria-label="Become an Engineer: IEEE"
-          classNames={{ trigger: "cursor-pointer" }}
+          classNames={accordionClassnames}
           key="5"
           title="Become an Engineer: IEEE"
         >
@@ -187,7 +189,7 @@ const RouteComponent = () => {
         </AccordionItem>
         <AccordionItem
           aria-label="Bonus"
-          classNames={{ trigger: "cursor-pointer" }}
+          classNames={accordionClassnames}
           key="6"
           title="Bonus"
         >
@@ -207,7 +209,7 @@ const RouteComponent = () => {
         </AccordionItem>
         <AccordionItem
           aria-label="Reading"
-          classNames={{ trigger: "cursor-pointer" }}
+          classNames={accordionClassnames}
           key="7"
           title="Reading"
         >
