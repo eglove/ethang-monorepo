@@ -18,19 +18,6 @@ export const blogs = [
     label: "The Developer's Dilemma: Focus vs. Collaboration",
   },
   {
-    href: "/blog/discipline-for-dopamine",
-    label: "How an Industry Traded Discipline for Dopamine",
-  },
-  {
-    // eslint-disable-next-line cspell/spellchecker
-    href: "/blog/whered-the-team-go",
-    label: "Where'd The Team Go?",
-  },
-  {
-    href: "/blog/some-thoughts-on-ai",
-    label: "Some Thoughts On The Way Things Are",
-  },
-  {
     href: "/blog/unicorn-60",
     label: "Unicorn 60",
   },
