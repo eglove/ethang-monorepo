@@ -24,9 +24,9 @@
 
 # Add Even More!
 
-- 79 rules for **Angular**
+- 80 rules for **Angular**
   - `import angularConfig from "@ethang/eslint-config/config.angular.js";`
-    - 45 rules from [@angular-eslint/eslint-plugin](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md)
+    - 46 rules from [@angular-eslint/eslint-plugin](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md)
     - 34 rules from [@angular-eslint/eslint-plugin-template](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md)
 - 53 rules for **Astro**
   - `import astroConfig from "@ethang/eslint-config/config.astro.js";`
