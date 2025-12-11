@@ -7,7 +7,6 @@ import {
   frontendMastersCourseData,
   readingCourseData,
   swebokCourseData,
-  zeroToMasteryCourseData,
 } from "../components/courses/course-list-data.ts";
 import { CourseListItem } from "../components/courses/course-list-item.tsx";
 import { MainLayout } from "../components/main-layout.tsx";
@@ -128,31 +127,6 @@ const RouteComponent = () => {
           </CourseListItem>
         </AccordionItem>
         <AccordionItem
-          aria-label="Broaden Your SkillSet: Zero to Mastery"
-          classNames={accordionClassnames}
-          key="4"
-          title="Broaden Your SkillSet: Zero to Mastery"
-        >
-          <CourseListItem courseList={zeroToMasteryCourseData}>
-            <TypographyP>
-              Through sheer quantity, Zero to Mastery is a great resource to
-              keep your learning going. The quality of instructor here starts to
-              degrade compared to previous courses, the content is very well put
-              together.
-            </TypographyP>
-            <TypographyP>
-              <Link
-                isExternal
-                className="text-foreground"
-                href="https://zerotomastery.io/"
-                underline="always"
-              >
-                Zero to Mastery
-              </Link>
-            </TypographyP>
-          </CourseListItem>
-        </AccordionItem>
-        <AccordionItem
           aria-label="Become an Engineer: IEEE"
           classNames={accordionClassnames}
           key="5"
@@ -184,6 +158,30 @@ const RouteComponent = () => {
                 Software Engineer Body of Knowledge (SWEBOK)
               </Link>
               .
+            </TypographyP>
+          </CourseListItem>
+        </AccordionItem>
+        <AccordionItem
+          aria-label="Broaden Your SkillSet: Zero to Mastery"
+          classNames={accordionClassnames}
+          key="4"
+          title="Broaden Your SkillSet: Pluralsight"
+        >
+          <CourseListItem courseList={[]}>
+            <TypographyP>
+              Pluralsight brings a large quantity of courses across languages
+              and frameworks. If you're looking to broaden your skillset or find
+              the next thing to learn, you'll probably find it here.
+            </TypographyP>
+            <TypographyP>
+              <Link
+                isExternal
+                className="text-foreground"
+                href="https://www.pluralsight.com/browse"
+                underline="always"
+              >
+                Pluralsight
+              </Link>
             </TypographyP>
           </CourseListItem>
         </AccordionItem>

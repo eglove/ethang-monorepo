@@ -87,6 +87,8 @@ const customRules: CustomRules = [
             "logprobs",
             "sealioning",
             "swebok",
+            "pluralsight",
+            "skillset",
           ],
         },
       },
