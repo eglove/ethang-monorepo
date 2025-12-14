@@ -50,6 +50,7 @@ if ($updateType -ne "none")
 
     Set-Location (Join-Path $eslintConfigDirectory "dist")
     Write-Host "Publishing package..."
+    pnpm login
     pnpm publish --no-git-checks
 
     # Wait for registry to update

@@ -8,9 +8,9 @@
     "./*": "./src/*"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^23.5.2",
+    "@ethang/eslint-config": "^23.6.1",
     "@ethang/project-builder": "^3.0.2",
-    "eslint": "^9.39.1"
+    "eslint": "^9.39.2"
   },
   "license": "ISC",
   "name": "@ethang/schemas",

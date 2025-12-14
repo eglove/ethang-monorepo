@@ -213,11 +213,8 @@ const RouteComponent = () => {
         >
           <CourseListItem courseList={readingCourseData}>
             <TypographyP>
-              Of the below list, the only item I would say is an absolute
-              requirement is SWEBOK. Learning and certifying in SWEBOK is the
-              difference between a software developer and software engineer. The
-              rest are recommended publishers and authors to keep track of,
-              browse at your leisure.
+              Below is a simple recommended reading list to get to at your
+              leisure. Just a few books I've found and would recommend.
             </TypographyP>
           </CourseListItem>
         </AccordionItem>

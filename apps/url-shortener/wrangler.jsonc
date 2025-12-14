@@ -4,7 +4,7 @@
     "binding": "ASSETS",
     "directory": "./public"
   },
-  "compatibility_date": "2025-12-11",
+  "compatibility_date": "2025-12-14",
   "main": "src/index.ts",
   "name": "url-shortener",
   "observability": {

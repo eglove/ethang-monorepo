@@ -24,7 +24,7 @@ export default defineConfig(
     ignores,
     languageOptions,
     settings: {
-      react: { version: "19.2.1" },
+      react: { version: "19.2.3" },
     },
     plugins: {
       compat: compat,
@@ -965,6 +965,8 @@ export default defineConfig(
               "logprobs",
               "sealioning",
               "swebok",
+              "pluralsight",
+              "skillset",
             ],
           },
         },
@@ -1041,6 +1043,7 @@ export default defineConfig(
       "html/no-skip-heading-levels": "error",
       "html/no-target-blank": "error",
       "html/no-trailing-spaces": "error",
+      "html/no-whitespace-only-children": "error",
       "html/prefer-https": "error",
       "html/quotes": "error",
       "html/require-attrs": "error",

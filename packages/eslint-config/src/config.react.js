@@ -9,7 +9,7 @@ export default defineConfig({
   ignores,
   languageOptions,
   settings: {
-    react: { version: "19.2.1" },
+    react: { version: "19.2.3" },
   },
   plugins: {
     react: react,
