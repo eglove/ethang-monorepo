@@ -7,6 +7,7 @@ import { updateRules } from "./src/build/update-rules.js";
 
 const configFiles = [
   "src/eslint.config.js",
+  "src/config.html.js",
   "src/config.astro.js",
   "src/config.react.js",
   "src/config.solid.js",

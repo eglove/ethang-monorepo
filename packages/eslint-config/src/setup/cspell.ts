@@ -89,6 +89,7 @@ const customRules: CustomRules = [
             "swebok",
             "pluralsight",
             "skillset",
+            "junie",
           ],
         },
       },

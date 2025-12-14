@@ -31,9 +31,6 @@ export const coreFile = [
     name: "markdown",
   },
   {
-    name: "html",
-  },
-  {
     name: "css",
   },
   {
@@ -44,6 +41,19 @@ export const coreFile = [
   },
   {
     name: "json5",
+  },
+];
+
+export const htmlFile = [
+  {
+    importString: "@html-eslint/eslint-plugin",
+    label: "HTML",
+    name: "html",
+    options: {
+      extraImports: [defineConfig],
+      includeIgnores: true,
+      includeLanguageOptions: true,
+    },
   },
 ];
 
@@ -146,6 +156,7 @@ const tailwindFile = [
 export const updateRules = async () => {
   await Promise.all([
     createConfigFile(coreFile, "eslint.config.js"),
+    createConfigFile(htmlFile, "config.html.js"),
     createConfigFile(astroFile, "config.astro.js"),
     createConfigFile(reactFile, "config.react.js"),
     createConfigFile(solidFile, "config.solid.js"),

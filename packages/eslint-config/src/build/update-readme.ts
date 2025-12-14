@@ -35,6 +35,7 @@ const getImports = flow(
   },
 );
 
+// eslint-disable-next-line sonar/max-lines-per-function
 export const updateReadme = () => {
   const md = new MarkdownGenerator();
   md.header(1, "Relentless. Unapologetic.", 2);
@@ -45,7 +46,6 @@ export const updateReadme = () => {
     [
       ...getList("core"),
       ...getList("json"),
-      ...getList("html"),
       ...getList("css"),
       ...getList("markdown"),
     ],
@@ -78,6 +78,7 @@ export const updateReadme = () => {
     }
   }
 
+  const htmlRules = getList("html");
   const tailwindRules = getList("tailwind");
   const astroRules = getList("astro");
   const reactRules = getList("react");
@@ -85,6 +86,11 @@ export const updateReadme = () => {
   const angularRules = getList("angular");
   const angularTemplateRules = getList("angular:template");
   const storybookRules = getList("storybook");
+
+  let htmlCount = 0;
+  for (const htmlRule of htmlRules) {
+    htmlCount += getRuleCount(htmlRule.list);
+  }
 
   let tailwindCount = 0;
   for (const tailwindRule of tailwindRules) {
@@ -131,6 +137,11 @@ export const updateReadme = () => {
       '`import astroConfig from "@ethang/eslint-config/config.astro.js";`',
       getImports(astroRules),
     ],
+    `${htmlCount} rules for **HTML**`,
+    [
+      `import html from "@ethang/eslint-config/config.html.js";`,
+      getImports(htmlRules),
+    ],
     `${reactCount} rules for **React**`,
     [
       '`import reactConfig from "@ethang/eslint-config/config.react.js";`',
@@ -164,6 +175,7 @@ import { defineConfig } from "eslint/config";
 import path from "node:path";
 import reactConfig from "@ethang/eslint-config/config.react.js"; // OPTIONAL
 import tailwindConfig from "@ethang/eslint-config/config.tailwind.js"; // OPTIONAL
+import htmlConfig from "@ethang/eslint-config/config.html.js"; // OPTIONAL
 
 export default defineConfig(
   {
@@ -171,6 +183,7 @@ export default defineConfig(
   },
   ...config,
   ...reactConfig,
+  ...htmlConfig,
   ...tailwindConfig(path.join(import.meta.dirname, "src", "index.css")),
   {
     languageOptions: {
