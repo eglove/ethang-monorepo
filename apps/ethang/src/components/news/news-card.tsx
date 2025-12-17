@@ -32,9 +32,9 @@ export const NewsCard = ({ id, page }: Readonly<NewCardProperties>) => {
           <Link
             isExternal
             showAnchorIcon
-            className="text-lg font-bold text-foreground"
             href={data.href}
             underline="always"
+            className="text-lg font-bold text-foreground"
           >
             {data.title}
           </Link>
@@ -52,7 +52,7 @@ export const NewsCard = ({ id, page }: Readonly<NewCardProperties>) => {
           </TypographyBlockquote>
         )}
         {!isNil(data.youtubeVideoId) && (
-          <LiteYouTubeEmbed id={data.youtubeVideoId} title={data.title} />
+          <LiteYouTubeEmbed title={data.title} id={data.youtubeVideoId} />
         )}
       </CardBody>
     </Card>

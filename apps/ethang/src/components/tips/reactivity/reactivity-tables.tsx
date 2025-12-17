@@ -24,9 +24,9 @@ export const ReactivityTables = () => {
         <Link
           isExternal
           showAnchorIcon
+          underline="always"
           className="text-foreground"
           href="https://www.heroui.com/docs/components/table#why-not-array-map"
-          underline="always"
         >
           "avoid re-rendering"
         </Link>
@@ -37,9 +37,9 @@ export const ReactivityTables = () => {
         <Link
           isExternal
           showAnchorIcon
+          underline="always"
           className="text-foreground"
           href="https://github.com/eglove/ethang-monorepo/blob/master/apps/ethang/src/components/tips/reactivity/unoptimized-table.tsx"
-          underline="always"
         >
           Read the code
         </Link>
@@ -55,9 +55,9 @@ export const ReactivityTables = () => {
         <Link
           isExternal
           showAnchorIcon
+          underline="always"
           className="text-foreground"
           href="https://github.com/eglove/ethang-monorepo/blob/master/apps/ethang/src/components/tips/reactivity/optimized-table.tsx"
-          underline="always"
         >
           Read the code
         </Link>

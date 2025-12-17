@@ -25,8 +25,8 @@ export const ProjectSummary = () => {
       )}
       <Button
         as={Link}
-        className="border-1 border-white bg-black text-white"
         href="/projects"
+        className="border-1 border-white bg-black text-white"
       >
         View All Projects
       </Button>

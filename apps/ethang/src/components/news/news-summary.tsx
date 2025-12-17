@@ -19,13 +19,13 @@ export const NewsSummary = () => {
       <div className="grid gap-4 sm:grid-cols-3">
         {!isPending &&
           map(data?.news, (newsItem) => {
-            return <NewsCard id={newsItem.id} key={newsItem.id} page={1} />;
+            return <NewsCard page={1} id={newsItem.id} key={newsItem.id} />;
           })}
       </div>
       <Button
         as={Link}
-        className="border-1 border-white bg-black text-white"
         href="/news"
+        className="border-1 border-white bg-black text-white"
       >
         View All News
       </Button>

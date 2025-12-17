@@ -53,8 +53,8 @@ const RouteComponent = () => {
                 return (
                   <NewsCard
                     id={newsItem.id}
-                    key={newsItem.id}
                     page={index + 1}
+                    key={newsItem.id}
                   />
                 );
               })}
@@ -65,10 +65,10 @@ const RouteComponent = () => {
       {hasNextPage && (
         <div className="my-4 grid justify-center">
           <Button
+            isLoading={isFetchingNextPage}
             onPress={() => {
               fetchNextPage().catch(globalThis.console.error);
             }}
-            isLoading={isFetchingNextPage}
           >
             Load More
           </Button>
@@ -79,9 +79,9 @@ const RouteComponent = () => {
         Have a suggestion?
         <Link
           isExternal
+          underline="always"
           className="text-foreground-500"
           href="mailto:hello@ethang.email"
-          underline="always"
         >
           Send me a link
         </Link>

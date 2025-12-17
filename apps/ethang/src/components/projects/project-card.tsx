@@ -50,21 +50,21 @@ export const ProjectCard = ({ id }: Readonly<ProjectCardProperties>) => {
       <CardFooter className="gap-4">
         {!isNil(project) && (
           <Button
-            isExternal
             as={Link}
-            className="border-1 border-white bg-black text-white"
+            isExternal
             href={project.code}
+            className="border-1 border-white bg-black text-white"
           >
             <GithubIcon className="size-4" /> Code
           </Button>
         )}
         {!isNil(project?.publicUrl) && (
           <Button
+            as={Link}
             isExternal
             showAnchorIcon
-            as={Link}
-            className="border-1 border-black bg-white text-black"
             href={project.publicUrl}
+            className="border-1 border-black bg-white text-black"
           >
             Site
           </Button>

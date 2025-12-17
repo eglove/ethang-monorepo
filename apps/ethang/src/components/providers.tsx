@@ -42,13 +42,13 @@ export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
       persistOptions={{ persister }}
     >
       <HeroUIProvider
+        useHref={(url) => {
+          return router.buildLocation({ to: url }).href;
+        }}
         navigate={(url) => {
           attemptAsync(async () => {
             return router.navigate({ to: url });
           }).catch(globalThis.console.error);
-        }}
-        useHref={(url) => {
-          return router.buildLocation({ to: url }).href;
         }}
       >
         {children}

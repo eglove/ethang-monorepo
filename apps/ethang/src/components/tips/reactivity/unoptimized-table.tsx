@@ -44,8 +44,8 @@ export const UnoptimizedTable = () => {
   // https://www.heroui.com/docs/components/table#why-not-array-map
   return (
     <Table
-      aria-label="Unoptimized Table"
       className="my-4"
+      aria-label="Unoptimized Table"
       classNames={{ table: "table-fixed" }}
     >
       <TableHeader columns={columns}>

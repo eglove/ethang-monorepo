@@ -26,9 +26,9 @@ const RouteComponent = () => {
           return (
             <li key={tip.title}>
               <Link
-                className="text-foreground"
                 href={tip.href}
                 underline="always"
+                className="text-foreground"
               >
                 {tip.title}
               </Link>

@@ -37,9 +37,9 @@ const RouteComponent = () => {
         Find more of my work on{" "}
         <Link
           isExternal
+          underline="always"
           className="text-center text-foreground-500"
           href="https://github.com/eglove/ethang-monorepo"
-          underline="always"
         >
           GitHub
         </Link>

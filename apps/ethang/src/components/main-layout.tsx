@@ -40,18 +40,18 @@ export const MainLayout = ({
         }}
       >
         <NavbarMenuToggle
-          aria-label={isNavMenuOpen ? "Close Menu" : "Open Menu"}
           className="sm:hidden"
+          aria-label={isNavMenuOpen ? "Close Menu" : "Open Menu"}
         />
         <NavbarContent justify="start" />
-        <NavbarContent className="hidden gap-4 sm:flex" justify="center">
+        <NavbarContent justify="center" className="hidden gap-4 sm:flex">
           {map(links, (link) => {
             return (
               <NavbarMenuItem key={link.label}>
                 <Link
-                  className="text-foreground"
                   href={link.href}
                   underline="always"
+                  className="text-foreground"
                 >
                   {link.label}
                 </Link>
@@ -65,9 +65,9 @@ export const MainLayout = ({
             return (
               <NavbarMenuItem>
                 <Link
-                  className="text-foreground"
                   href={link.href}
                   underline="always"
+                  className="text-foreground"
                 >
                   {link.label}
                 </Link>

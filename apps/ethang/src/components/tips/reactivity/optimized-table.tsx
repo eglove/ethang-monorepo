@@ -21,8 +21,8 @@ export const positionsStore = getPositions();
 export const OptimizedTable = () => {
   return (
     <Table
-      aria-label="Unoptimized Table"
       className="my-4"
+      aria-label="Unoptimized Table"
       classNames={{ table: "table-fixed" }}
     >
       <TableHeader columns={columns}>

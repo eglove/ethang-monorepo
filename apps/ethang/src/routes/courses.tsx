@@ -35,10 +35,10 @@ const RouteComponent = () => {
       </TypographyP>
       <Accordion>
         <AccordionItem
-          aria-label="Beginner: Colt Steele"
-          classNames={accordionClassnames}
           key="1"
           title="Beginner: Colt Steele"
+          classNames={accordionClassnames}
+          aria-label="Beginner: Colt Steele"
         >
           <CourseListItem courseList={coltSteeleCourseData}>
             <TypographyP>
@@ -51,9 +51,9 @@ const RouteComponent = () => {
             <TypographyP>
               <Link
                 isExternal
+                underline="always"
                 className="text-foreground"
                 href="https://www.udemy.com/user/coltsteele/"
-                underline="always"
               >
                 Colt Steele courses
               </Link>
@@ -65,10 +65,10 @@ const RouteComponent = () => {
           </CourseListItem>
         </AccordionItem>
         <AccordionItem
-          aria-label="Learn to Build: Academind"
-          classNames={accordionClassnames}
           key="2"
+          classNames={accordionClassnames}
           title="Learn to Build: Academind"
+          aria-label="Learn to Build: Academind"
         >
           <CourseListItem courseList={academindCourseData}>
             <TypographyP>
@@ -84,9 +84,9 @@ const RouteComponent = () => {
             <TypographyP>
               <Link
                 isExternal
+                underline="always"
                 className="text-foreground"
                 href="https://academind.com/"
-                underline="always"
               >
                 Academind
               </Link>
@@ -94,10 +94,10 @@ const RouteComponent = () => {
           </CourseListItem>
         </AccordionItem>
         <AccordionItem
-          aria-label="Learn the Web: Frontend Masters"
-          classNames={accordionClassnames}
           key="3"
+          classNames={accordionClassnames}
           title="Learn the Web: Frontend Masters"
+          aria-label="Learn the Web: Frontend Masters"
         >
           <CourseListItem courseList={frontendMastersCourseData}>
             <TypographyP>
@@ -117,9 +117,9 @@ const RouteComponent = () => {
             <TypographyP>
               <Link
                 isExternal
+                underline="always"
                 className="text-foreground"
                 href="https://frontendmasters.com/learn/"
-                underline="always"
               >
                 Frontend Masters
               </Link>
@@ -127,10 +127,10 @@ const RouteComponent = () => {
           </CourseListItem>
         </AccordionItem>
         <AccordionItem
-          aria-label="Become an Engineer: IEEE"
-          classNames={accordionClassnames}
           key="5"
+          classNames={accordionClassnames}
           title="Become an Engineer: IEEE"
+          aria-label="Become an Engineer: IEEE"
         >
           <CourseListItem courseList={swebokCourseData}>
             <TypographyP>
@@ -152,8 +152,8 @@ const RouteComponent = () => {
               <Link
                 isExternal
                 color="foreground"
-                href="https://www.computer.org/education/bodies-of-knowledge/software-engineering"
                 underline="always"
+                href="https://www.computer.org/education/bodies-of-knowledge/software-engineering"
               >
                 Software Engineer Body of Knowledge (SWEBOK)
               </Link>
@@ -162,10 +162,10 @@ const RouteComponent = () => {
           </CourseListItem>
         </AccordionItem>
         <AccordionItem
-          aria-label="Broaden Your SkillSet: Zero to Mastery"
-          classNames={accordionClassnames}
           key="4"
+          classNames={accordionClassnames}
           title="Broaden Your SkillSet: Pluralsight"
+          aria-label="Broaden Your SkillSet: Zero to Mastery"
         >
           <CourseListItem courseList={[]}>
             <TypographyP>
@@ -176,9 +176,9 @@ const RouteComponent = () => {
             <TypographyP>
               <Link
                 isExternal
+                underline="always"
                 className="text-foreground"
                 href="https://www.pluralsight.com/browse"
-                underline="always"
               >
                 Pluralsight
               </Link>
@@ -186,10 +186,10 @@ const RouteComponent = () => {
           </CourseListItem>
         </AccordionItem>
         <AccordionItem
-          aria-label="Bonus"
-          classNames={accordionClassnames}
           key="6"
           title="Bonus"
+          aria-label="Bonus"
+          classNames={accordionClassnames}
         >
           <CourseListItem courseList={bonusCourseData}>
             <TypographyP>
@@ -206,10 +206,10 @@ const RouteComponent = () => {
           </CourseListItem>
         </AccordionItem>
         <AccordionItem
-          aria-label="Reading"
-          classNames={accordionClassnames}
           key="7"
           title="Reading"
+          aria-label="Reading"
+          classNames={accordionClassnames}
         >
           <CourseListItem courseList={readingCourseData}>
             <TypographyP>

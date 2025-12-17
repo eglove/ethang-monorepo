@@ -23,9 +23,9 @@ export const CourseListItem = ({
               <li key={course.name}>
                 <Link
                   isExternal
-                  className="text-foreground"
                   href={course.url}
                   underline="always"
+                  className="text-foreground"
                 >
                   {course.name}
                 </Link>

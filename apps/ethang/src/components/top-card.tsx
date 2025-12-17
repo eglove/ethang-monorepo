@@ -11,7 +11,7 @@ export const TopCard = () => {
     <Card>
       <CardBody>
         <div className="grid grid-cols-[auto_1fr] gap-4">
-          <Avatar alt="profile image" className="size-24" src={profileImage} />
+          <Avatar src={profileImage} alt="profile image" className="size-24" />
           <div className="grid">
             <TypographyH2>Ethan Glover</TypographyH2>
             <div className="my-4 flex flex-wrap items-center gap-4">
@@ -37,19 +37,19 @@ export const TopCard = () => {
                 <MailIcon />
               </Link>
               <Button
-                isExternal
                 as={Link}
+                size="sm"
+                isExternal
                 color="primary"
                 href="https://www.linkedin.com/build-relation/newsletter-follow?entityUrn=7316126013938143232"
-                size="sm"
               >
                 Subscribe to my Newsletter
               </Button>
               <Button
-                isExternal
                 as={Link}
-                href="https://cal.com/ethan-glover/meet"
                 size="sm"
+                isExternal
+                href="https://cal.com/ethan-glover/meet"
               >
                 Schedule a Meeting
               </Button>

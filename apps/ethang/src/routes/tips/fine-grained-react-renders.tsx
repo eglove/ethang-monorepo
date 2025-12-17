@@ -11,6 +11,9 @@ const RouteComponent = () => {
     <MainLayout className="max-w-[65ch]">
       <TypographyH1>Find Grained React Renders</TypographyH1>
       <Alert
+        color="warning"
+        className="my-4"
+        title="Fine Grained Reactivity In React Is Not Possible"
         description={
           <div>
             <TypographyP>
@@ -54,9 +57,6 @@ const RouteComponent = () => {
             </TypographyList>
           </div>
         }
-        className="my-4"
-        color="warning"
-        title="Fine Grained Reactivity In React Is Not Possible"
       />
       <ReactivityTables />
     </MainLayout>

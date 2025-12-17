@@ -12,7 +12,7 @@ export const ScrollbarGutterDemo = () => {
 
   return (
     <div className="mt-4">
-      <Button className="mb-4" color="primary" onPress={toggleContent}>
+      <Button color="primary" className="mb-4" onPress={toggleContent}>
         {showMoreContent ? "Hide Extra Content" : "Show Extra Content"}
       </Button>
 
@@ -20,8 +20,8 @@ export const ScrollbarGutterDemo = () => {
         <div className="rounded-md border p-4">
           <div className="mb-2 font-semibold">With scrollbar-gutter</div>
           <div
-            className="h-[400px] overflow-auto rounded-md border p-4"
             style={{ scrollbarGutter: "stable" }}
+            className="h-[400px] overflow-auto rounded-md border p-4"
           >
             <TypographyP>
               This container has <code>scrollbar-gutter: stable</code> applied.
@@ -60,8 +60,8 @@ export const ScrollbarGutterDemo = () => {
         <div className="rounded-md border p-4">
           <div className="mb-2 font-semibold">Without scrollbar-gutter</div>
           <div
-            className="h-[400px] overflow-auto rounded-md border p-4"
             style={{ scrollbarGutter: "auto" }}
+            className="h-[400px] overflow-auto rounded-md border p-4"
           >
             <TypographyP>
               This container does not have scrollbar-gutter applied.

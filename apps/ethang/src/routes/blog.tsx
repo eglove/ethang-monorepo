@@ -38,7 +38,7 @@ const RouteComponent = () => {
       <div className="my-6 grid gap-4">
         {map(blogs, (blog) => {
           return (
-            <a className="text-foreground" href={blog.href} key={blog.label}>
+            <a href={blog.href} key={blog.label} className="text-foreground">
               <TypographyH2>{blog.label}</TypographyH2>
             </a>
           );
