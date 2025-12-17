@@ -38,13 +38,13 @@ const RouteComponent = () => {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
               const dataValue = datum as NewsUpdateReturn;
 
-              return <NewsUpdate data={dataValue} key={datum._id} />;
+              return <NewsUpdate key={datum._id} data={dataValue} />;
             }
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             const dataValue = datum as CalendarEventReturn;
 
-            return <Event data={dataValue} key={datum._id} />;
+            return <Event key={datum._id} data={dataValue} />;
           })}
         </div>
       </Container>

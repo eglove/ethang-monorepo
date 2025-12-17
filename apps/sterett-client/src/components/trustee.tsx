@@ -1,6 +1,4 @@
-import type { AvatarProps } from "@heroui/avatar";
-
-import { User } from "@heroui/user";
+import { type AvatarProps, User } from "@heroui/react";
 import shuffle from "lodash/shuffle";
 
 import type { GetTrusteesReturn } from "../sanity/queries/get-trustees.ts";
@@ -33,10 +31,12 @@ export const Trustee = ({ index, trustee }: TrusteeProperties) => {
 
   return (
     <div
-      className="mb-4 w-full gap-4 border-b-1 border-gray-300 pb-4"
       key={trustee._id}
+      className="mb-4 w-full gap-4 border-b-1 border-gray-300 pb-4"
     >
       <User
+        className="gap-4"
+        name={trustee.name}
         avatarProps={{
           className: "w-32 h-32",
           color: colorValues[index] ?? "default",
@@ -57,8 +57,6 @@ export const Trustee = ({ index, trustee }: TrusteeProperties) => {
             <p className="text-small text-foreground-800">{trustee.duties}</p>
           </>
         }
-        className="gap-4"
-        name={trustee.name}
       />
     </div>
   );

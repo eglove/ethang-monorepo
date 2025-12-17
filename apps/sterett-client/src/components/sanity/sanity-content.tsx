@@ -24,7 +24,7 @@ const portableTextComponents = {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-type-assertion
       const altText = value.altText as string | undefined;
       if (!isNil(asset)) {
-        return <SanityPortableImage altText={altText ?? ""} image={asset} />;
+        return <SanityPortableImage image={asset} altText={altText ?? ""} />;
       }
 
       return null;
@@ -38,7 +38,7 @@ export const SanityContent = ({
 }: SanityContentProperties) => {
   return (
     <div className={twMerge("prose", styleNames)}>
-      <PortableText components={portableTextComponents} value={value} />
+      <PortableText value={value} components={portableTextComponents} />
     </div>
   );
 };

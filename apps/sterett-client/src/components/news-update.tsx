@@ -1,5 +1,4 @@
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Divider } from "@heroui/divider";
+import { Card, CardBody, CardHeader, Divider } from "@heroui/react";
 import isNil from "lodash/isNil";
 
 import type { NewsUpdateReturn } from "../sanity/queries/get-news-and-events.ts";
@@ -12,7 +11,7 @@ type NewsUpdateProperties = {
 
 export const NewsUpdate = ({ data }: NewsUpdateProperties) => {
   return (
-    <Card className="my-4 h-max w-full" id={data._id}>
+    <Card id={data._id} className="my-4 h-max w-full">
       <CardHeader className="block">
         <div className="font-semibold">{data.title}</div>
       </CardHeader>

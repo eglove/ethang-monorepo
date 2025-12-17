@@ -19,7 +19,7 @@ const DEFAULT_DELAY = 250;
 
 export const useDimensions = ({
   delay = DEFAULT_DELAY,
-  effectDeps = [],
+  effectDeps,
   initialDimensions = {},
   liveMeasure = true,
 }: UseDimensionsProperties): UseDimensionsReturn => {

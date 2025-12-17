@@ -1,14 +1,14 @@
-import { Image } from "@heroui/image";
+import { Image } from "@heroui/react";
 import toUpper from "lodash/toUpper";
 
 export const BeyonderHero = () => {
   return (
     <div className="mx-4 mt-4 grid place-items-center">
       <Image
-        alt="Beyonder Camp"
-        height={32}
-        src="/images/beyonder.png"
         width={32}
+        height={32}
+        alt="Beyonder Camp"
+        src="/images/beyonder.png"
       />
       <h2 className="text-lg font-bold sm:text-xl">Beyonder</h2>
       <h3 className="text-2xl font-bold sm:text-3xl">

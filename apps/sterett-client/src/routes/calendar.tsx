@@ -1,7 +1,6 @@
 import type { TypedObject } from "@portabletext/types";
 
-import { Button } from "@heroui/button";
-import { useDisclosure } from "@heroui/modal";
+import { Button, useDisclosure } from "@heroui/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import isNil from "lodash/isNil.js";
@@ -67,22 +66,22 @@ export const CalendarRoute = () => {
         <div className="m-2 text-center text-lg font-bold md:text-end">
           <Button
             as={Link}
+            size="sm"
             color="primary"
             href="https://calendar.sterettcreekvillagetrustee.com"
-            size="sm"
           >
             Download Calendar
           </Button>
         </div>
         <Calendar
           selectable
-          className="min-h-screen w-full"
-          defaultView="week"
-          endAccessor="end"
           events={events}
+          endAccessor="end"
+          defaultView="week"
           localizer={localizer}
-          onSelectEvent={handleSelectEvent}
           startAccessor="start"
+          className="min-h-screen w-full"
+          onSelectEvent={handleSelectEvent}
         />
         {!isNil(selectedEvent) && (
           <CalendarModal

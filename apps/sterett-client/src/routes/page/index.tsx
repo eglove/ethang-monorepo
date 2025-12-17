@@ -22,11 +22,11 @@ const RouteComponent = () => {
       <Container>
         {map(data, (page) => {
           return (
-            <div className="w-full" key={page._id}>
+            <div key={page._id} className="w-full">
               <Link
+                key={page._id}
                 className="underline"
                 href={`/page/${page.slug.current}`}
-                key={page._id}
               >
                 {page.title}
               </Link>

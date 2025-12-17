@@ -14,7 +14,14 @@ const ruleNames = keys(
 const customRules = [
   {
     name: "sort-jsx-props",
-    rule: ["error", { groups: ["shorthand", "multiline"] }],
+    rule: [
+      "error",
+      {
+        fallbackSort: { order: "asc", type: "alphabetical" },
+        order: "asc",
+        type: "line-length",
+      },
+    ],
   },
   {
     name: "sort-objects",

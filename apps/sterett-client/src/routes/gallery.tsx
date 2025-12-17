@@ -1,4 +1,4 @@
-import { Image } from "@heroui/image";
+import { Image } from "@heroui/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import get from "lodash/get.js";
@@ -32,12 +32,12 @@ const RouteComponent = () => {
 
           return (
             <Image
-              alt={image.description}
-              className="relative h-auto max-w-full rounded-lg"
-              height={dimensions.height}
               key={url}
               src={url}
+              alt={image.description}
               width={dimensions.width}
+              height={dimensions.height}
+              className="relative h-auto max-w-full rounded-lg"
             />
           );
         })}

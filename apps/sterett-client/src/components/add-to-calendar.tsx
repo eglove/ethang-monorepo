@@ -1,12 +1,12 @@
 import type { PortableTextBlock } from "@portabletext/types";
 
-import { Button } from "@heroui/button";
-import { Image } from "@heroui/image";
 import {
+  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Image,
 } from "@heroui/react";
 import { toPlainText } from "@portabletext/react";
 import {
@@ -74,7 +74,7 @@ export const AddToCalendar = ({
       <DropdownTrigger>
         <Button {...buttonProps}>Add To Calendar</Button>
       </DropdownTrigger>
-      <DropdownMenu aria-label="Calendar Options" selectionMode="single">
+      <DropdownMenu selectionMode="single" aria-label="Calendar Options">
         <DropdownItem key="ics" onPress={handlePress("ics")}>
           <div className="flex items-center gap-2">
             <Image className="w-4" src="/images/apple-logo.png" />

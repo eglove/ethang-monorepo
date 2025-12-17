@@ -1,4 +1,4 @@
-import { Navbar, NavbarContent, NavbarMenu } from "@heroui/navbar";
+import { Navbar, NavbarContent, NavbarMenu } from "@heroui/react";
 import { useCallback, useState } from "react";
 
 import { NavigationHero } from "./navigation-hero.tsx";
@@ -13,9 +13,9 @@ export const Navigation = () => {
 
   return (
     <Navbar
-      className="mx-auto max-w-7xl rounded-lg bg-white shadow-md shadow-sky-50"
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={toggleIsOpen}
+      className="mx-auto max-w-7xl rounded-lg bg-white shadow-md shadow-sky-50"
     >
       <NavigationHero isMenuOpen={isMenuOpen} />
       <NavbarContent className="hidden gap-4 md:flex md:flex-wrap">

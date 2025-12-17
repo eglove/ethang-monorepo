@@ -1,4 +1,4 @@
-import { Link as NextUiLink } from "@heroui/link";
+import { Link as NextUiLink } from "@heroui/react";
 import { Link as TanStackLink } from "@tanstack/react-router";
 
 type LinkProperties = Readonly<
@@ -11,6 +11,6 @@ export const Link = (properties: LinkProperties) => {
   const fakeHref = undefined as unknown as string;
 
   return (
-    <NextUiLink as={TanStackLink} {...properties} href={fakeHref} to={href} />
+    <NextUiLink as={TanStackLink} {...properties} to={href} href={fakeHref} />
   );
 };

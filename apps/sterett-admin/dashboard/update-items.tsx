@@ -36,9 +36,9 @@ const items = [
       <>
         Expanded size of{" "}
         <a
-          href="https://sterettcreekvillagetrustee.com/news"
-          rel="noreferrer"
           target="_blank"
+          rel="noreferrer"
+          href="https://sterettcreekvillagetrustee.com/news"
         >
           News page
         </a>{" "}
@@ -63,9 +63,9 @@ const items = [
       <>
         Style Updates: Home page and calendar text will use same styles via{" "}
         <a
-          href="https://tailwindcss.com/docs/typography-plugin"
-          rel="noreferrer"
           target="_blank"
+          rel="noreferrer"
+          href="https://tailwindcss.com/docs/typography-plugin"
         >
           Tailwind Prose.
         </a>
@@ -80,7 +80,7 @@ export const UpdateItems = () => {
     <>
       {map(items, (item) => {
         return (
-          <UpdateItem date={item.date} key={item.id}>
+          <UpdateItem key={item.id} date={item.date}>
             {item.children}
           </UpdateItem>
         );

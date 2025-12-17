@@ -21,12 +21,12 @@ export const FileTableTop = ({
         {"meetingMinutesFiles" === query ? "Meeting Minutes" : "Files"}
       </h1>
       <Input
-        className="mb-4"
-        color="primary"
-        label="Filter"
-        onValueChange={setFilter}
         size="sm"
+        label="Filter"
         value={filter}
+        color="primary"
+        className="mb-4"
+        onValueChange={setFilter}
       />
     </>
   );

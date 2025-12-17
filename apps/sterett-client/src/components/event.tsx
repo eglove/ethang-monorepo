@@ -1,6 +1,5 @@
 import { CalendarDaysIcon } from "@heroicons/react/24/solid";
-import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
-import { Divider } from "@heroui/divider";
+import { Card, CardBody, CardFooter, CardHeader, Divider } from "@heroui/react";
 import isNil from "lodash/isNil";
 import { DateTime } from "luxon";
 import { Fragment } from "react";
@@ -65,19 +64,19 @@ export const Event = ({ colors, data, iconMeta }: EventProperties) => {
         </Card>
       ) : null}
       <Card
-        className={twMerge("my-4 h-max w-full", backgroundColor)}
         id={data._id}
+        className={twMerge("my-4 h-max w-full", backgroundColor)}
       >
         <CardHeader className={twMerge("block", textColor)}>
           <strong className="flex flex-wrap gap-2">
             {isNil(iconMeta) ? (
-              <CalendarDaysIcon height={24} width={24} />
+              <CalendarDaysIcon width={24} height={24} />
             ) : (
               <img
-                alt={iconMeta.alt}
-                height={20}
-                src={iconMeta.src}
                 width={20}
+                height={20}
+                alt={iconMeta.alt}
+                src={iconMeta.src}
               />
             )}
             <span>{eventRangeFormat(data.startsAt, data.endsAt)}</span>
@@ -96,14 +95,14 @@ export const Event = ({ colors, data, iconMeta }: EventProperties) => {
         <Divider />
         <CardFooter className="flex flex-wrap gap-2">
           <AddToCalendar
+            end={data.endsAt}
+            title={data.title}
+            start={data.startsAt}
+            description={data.description}
             buttonProps={{
               className: "bg-sky-600 text-white",
               size: "sm",
             }}
-            description={data.description}
-            end={data.endsAt}
-            start={data.startsAt}
-            title={data.title}
           />
         </CardFooter>
       </Card>

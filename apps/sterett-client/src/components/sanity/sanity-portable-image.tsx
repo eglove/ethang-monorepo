@@ -25,12 +25,12 @@ export const SanityPortableImage = ({
     <div>
       <SanityImage
         alt={altText}
-        baseUrl={imageUrl}
-        className="relative max-h-96"
-        crop={image.crop}
-        hotspot={image.hotspot}
         id={image._id}
         mode="contain"
+        crop={image.crop}
+        baseUrl={imageUrl}
+        hotspot={image.hotspot}
+        className="relative max-h-96"
         preview={image.metadata.lqip}
       />
     </div>

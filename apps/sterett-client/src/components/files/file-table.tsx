@@ -1,12 +1,12 @@
-import { getKeyValue } from "@heroui/react";
 import {
+  getKeyValue,
   Table,
   TableBody,
   TableCell,
   TableColumn,
   TableHeader,
   TableRow,
-} from "@heroui/table";
+} from "@heroui/react";
 
 import type { filesRouteQueries } from "../../routes/files.tsx";
 
@@ -31,27 +31,27 @@ export const FileTable = ({ query }: FileTableProperties) => {
 
   return (
     <div className="w-full">
-      <FileTableTop filter={filter} query={query} setFilter={setFilter} />
+      <FileTableTop query={query} filter={filter} setFilter={setFilter} />
       <Table
+        isStriped
         hideHeader
         isHeaderSticky
-        isStriped
+        color="primary"
         showDragButtons
+        sortDescriptor={sortConfig}
+        onSortChange={setSortConfig}
+        title="Sterett Creek Village Trustee Files"
+        aria-label="Sterett Creek Village Trustee Files"
         classNames={{
           base: "max-h-96 overflow-auto",
         }}
-        aria-label="Sterett Creek Village Trustee Files"
-        color="primary"
-        onSortChange={setSortConfig}
-        sortDescriptor={sortConfig}
-        title="Sterett Creek Village Trustee Files"
       >
         <TableHeader columns={columns}>
           {(column) => {
             return (
               <TableColumn
-                allowsSorting={"actions" !== column.key}
                 key={column.key}
+                allowsSorting={"actions" !== column.key}
               >
                 {column.label}
               </TableColumn>

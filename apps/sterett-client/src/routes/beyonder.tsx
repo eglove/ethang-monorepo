@@ -30,16 +30,16 @@ const RouteComponent = () => {
           {map(data, (datum) => {
             return (
               <Event
-                colors={{
-                  eventBackground: "beyonderGreen",
-                  eventText: "text-white",
-                }}
+                data={datum}
+                key={datum._id}
                 iconMeta={{
                   alt: "Beyonder Camp",
                   src: "/images/beyonder.png",
                 }}
-                data={datum}
-                key={datum._id}
+                colors={{
+                  eventBackground: "beyonderGreen",
+                  eventText: "text-white",
+                }}
               />
             );
           })}

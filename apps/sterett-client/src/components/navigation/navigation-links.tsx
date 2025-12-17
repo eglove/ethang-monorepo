@@ -1,4 +1,4 @@
-import { NavbarItem } from "@heroui/navbar";
+import { NavbarItem } from "@heroui/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import map from "lodash/map";
 
@@ -42,9 +42,9 @@ export const NavigationLinks = () => {
 
         return (
           <NavbarItem
-            className="text-sky-700"
-            isActive={isActive}
             key={item.name}
+            isActive={isActive}
+            className="text-sky-700"
           >
             <Link href={item.url}>{item.name}</Link>
           </NavbarItem>
@@ -52,9 +52,9 @@ export const NavigationLinks = () => {
       })}
       {1 <= imageCount && (
         <NavbarItem
+          key="gallery"
           className="text-sky-700"
           isActive={"/gallery" === globalThis.location.pathname}
-          key="gallery"
         >
           <Link href="/gallery">Pictures</Link>
         </NavbarItem>

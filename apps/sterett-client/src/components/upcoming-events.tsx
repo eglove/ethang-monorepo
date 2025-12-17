@@ -25,6 +25,9 @@ export const UpcomingEvents = () => {
 
           return (
             <AccordionItem
+              key={event._id}
+              className="w-full"
+              aria-label={event.title}
               classNames={{
                 content: "prose",
                 trigger: `px-2 py-0 ${hasDates ? "" : "font-bold py-2"}`,
@@ -42,20 +45,17 @@ export const UpcomingEvents = () => {
                   )}
                 </p>
               }
-              aria-label={event.title}
-              className="w-full"
-              key={event._id}
             >
               {hasDates && (
                 <AddToCalendar
+                  end={event.endsAt}
+                  title={event.title}
+                  start={event.startsAt}
+                  description={event.description}
                   buttonProps={{
                     className: "bg-sky-600 text-white mb-4",
                     size: "sm",
                   }}
-                  description={event.description}
-                  end={event.endsAt}
-                  start={event.startsAt}
-                  title={event.title}
                 />
               )}
               {!isNil(event.description) && (
