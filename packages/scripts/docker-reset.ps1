@@ -1,6 +1,17 @@
-docker service rm $(docker service ls -q)
-docker kill $(docker image ls -q)
-docker container rm $(docker container ls -a -q)
-docker image rm $(docker image ls -q)
-docker volume rm $(docker volume ls -q)
-docker network rm -f $(docker network ls -q)
+$services = docker service ls -q
+if ($services) { docker service rm $services }
+
+$runningContainers = docker ps -q
+if ($runningContainers) { docker kill $runningContainers }
+
+$allContainers = docker ps -a -q
+if ($allContainers) { docker rm $allContainers }
+
+$images = docker image ls -q
+if ($images) { docker image rm -f $images }
+
+$volumes = docker volume ls -q
+if ($volumes) { docker volume rm $volumes }
+
+$networks = docker network ls --filter "type=custom" -q
+if ($networks) { docker network rm $networks }
