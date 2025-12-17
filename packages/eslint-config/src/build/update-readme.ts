@@ -1,7 +1,6 @@
 import { MarkdownGenerator } from "@ethang/markdown-generator/markdown-generator.js";
 import filter from "lodash/filter.js";
 import flow from "lodash/flow.js";
-import isArray from "lodash/isArray.js";
 import map from "lodash/map.js";
 import values from "lodash/values.js";
 import { writeFileSync } from "node:fs";
@@ -14,7 +13,7 @@ import { getList } from "./list-utilities.ts";
 const getRuleCount = (rules: ReturnType<typeof genRules>) => {
   let count = 0;
   for (const value of values(rules)) {
-    if ("error" === value || (isArray(value) && "error" === value[0])) {
+    if ("off" !== value) {
       count += 1;
     }
   }
@@ -67,7 +66,7 @@ export const updateReadme = () => {
     return b.count - a.count;
   });
 
-  const ruleDocumentation = [`${total} errored rules.`];
+  const ruleDocumentation = [`${total} rules.`];
   for (const list of coreRules) {
     if (0 < list.count) {
       ruleDocumentation.push(

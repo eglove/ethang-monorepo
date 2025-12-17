@@ -5,13 +5,13 @@
 > [!CAUTION]
 > Prettier is already included for styling!
 
-- 762 errored rules.
+- 772 rules.
 - 237 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
 - 144 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
 - 134 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
 - 109 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
+- 42 rules from [eslint-plugin-lodash](https://github.com/wix-incubator/eslint-plugin-lodash)
 - 34 rules from [jsx-a11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)
-- 32 rules from [eslint-plugin-lodash](https://github.com/wix-incubator/eslint-plugin-lodash)
 - 22 rules from [eslint-plugin-perfectionist](https://github.com/azat-io/eslint-plugin-perfectionist)
 - 20 rules from [@eslint/markdown](https://github.com/eslint/markdown)
 - 14 rules from [@eslint/css](https://github.com/eslint/css)
@@ -23,10 +23,10 @@
 
 # Add Even More!
 
-- 80 rules for **Angular**
+- 81 rules for **Angular**
   - `import angularConfig from "@ethang/eslint-config/config.angular.js";`
     - 46 rules from [@angular-eslint/eslint-plugin](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md)
-    - 34 rules from [@angular-eslint/eslint-plugin-template](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md)
+    - 35 rules from [@angular-eslint/eslint-plugin-template](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md)
 - 53 rules for **Astro**
   - `import astroConfig from "@ethang/eslint-config/config.astro.js";`
     - 53 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)
