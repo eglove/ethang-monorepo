@@ -6,7 +6,7 @@
   "dependencies": {
     "@ethang/schemas": "workspace:*",
     "@ethang/toolbelt": "^4.4.11",
-    "@hono/zod-validator": "^0.7.5",
+    "@hono/zod-validator": "^0.7.6",
     "@prisma/adapter-d1": "^7.2.0",
     "@prisma/client": "7.2.0",
     "bcryptjs": "^3.0.3",
@@ -23,7 +23,7 @@
     "eslint": "^9.39.2",
     "rimraf": "^6.1.2",
     "typescript-eslint": "^8.50.0",
-    "wrangler": "^4.55.0"
+    "wrangler": "^4.56.0"
   },
   "engines": {
     "node": ">=24"
