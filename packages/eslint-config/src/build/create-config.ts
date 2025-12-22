@@ -14,6 +14,7 @@ import {
 export type ConfigOptions = {
   extraImports?: string[];
   extraOptions?: string;
+  extraRules?: Record<string, string>;
   globalIgnores?: string[];
   includeAngularLanguageOptions?: boolean;
   includeIgnores?: boolean;
@@ -47,6 +48,7 @@ export const createConfig = async (
 
   const list = getList(type);
   const ruleJson = getListJson(list);
+  const offRulesJson = `,${JSON.stringify(options.extraRules ?? {}).slice(1, -1)}`;
 
   let optionals = "";
 
@@ -90,6 +92,7 @@ export const createConfig = async (
     },
     rules: {
       ${ruleJson}
+      ${isNil(options.extraRules) ? "" : offRulesJson}
     },
     ${isNil(options.extraOptions) ? "" : options.extraOptions}
   },`;

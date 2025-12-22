@@ -2,8 +2,8 @@
   "author": "Ethan Glover <hello@ethang.email>",
   "dependencies": {
     "@sanity/cli": "^5.0.1",
-    "@sanity/code-input": "^7.0.1",
-    "@sanity/dashboard": "^5.0.0",
+    "@sanity/code-input": "^7.0.2",
+    "@sanity/dashboard": "^5.0.1",
     "@sanity/icons": "^3.7.4",
     "@sanity/orderable-document-list": "^1.4.1",
     "@sanity/vision": "^5.0.1",
@@ -17,7 +17,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^24.1.1",
+    "@ethang/eslint-config": "^24.2.3",
     "@sanity/eslint-config-studio": "^5.0.2",
     "@types/lodash": "^4.17.21",
     "eslint": "^9.39.2",

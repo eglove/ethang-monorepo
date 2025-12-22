@@ -14,6 +14,7 @@ export default defineConfig({
   },
   rules: {
     "html/attrs-newline": "off",
+    "html/class-spacing": "error",
     "html/element-newline": "off",
     "html/id-naming-convention": "error",
     "html/indent": "off",
@@ -39,6 +40,7 @@ export default defineConfig({
     "html/no-multiple-h1": "error",
     "html/no-nested-interactive": "error",
     "html/no-non-scalable-viewport": "error",
+    "html/no-obsolete-attrs": "error",
     "html/no-obsolete-tags": "error",
     "html/no-positive-tabindex": "error",
     "html/no-restricted-attr-values": "error",
@@ -69,5 +71,6 @@ export default defineConfig({
     "html/require-title": "error",
     "html/sort-attrs": "error",
     "html/use-baseline": "error",
+    "prettier/prettier": "off",
   },
 });

@@ -50,7 +50,8 @@ if ($updateType -ne "none")
 
     Set-Location (Join-Path $eslintConfigDirectory "dist")
     Write-Host "Publishing package..."
-    npm publish
+    npm login
+    npm publish --git-no-checks
 
     # Wait for registry to update
     $registryUpdated = $false

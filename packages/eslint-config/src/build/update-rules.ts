@@ -51,6 +51,7 @@ export const htmlFile = [
     name: "html",
     options: {
       extraImports: [defineConfig],
+      extraRules: { "prettier/prettier": "off" },
       includeIgnores: true,
       includeLanguageOptions: true,
     },
