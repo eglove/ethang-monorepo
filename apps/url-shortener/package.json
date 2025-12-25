@@ -6,7 +6,7 @@
   "dependencies": {
     "@ethang/toolbelt": "^4.4.11",
     "@hono/zod-validator": "^0.7.6",
-    "hono": "^4.11.1",
+    "hono": "^4.11.2",
     "lodash": "^4.17.21",
     "nanoid": "^5.1.6",
     "zod": "^4.2.1"
