@@ -12,8 +12,7 @@ miktex packages update-package-database
 miktex packages update
 
 # NPM globals
-#npm install -g pnpm npm yarn
-#pnpm store prune
-#pnpm i -g wrangler @google/gemini-cli
-#pnpm up -g --latest
-#pnpm approve-builds -g
+corepack install -g npm yarn pnpm
+pnpm store prune
+npm i -g wrangler @google/gemini-cli @angular/cli sanity
+pnpm approve-builds -g
