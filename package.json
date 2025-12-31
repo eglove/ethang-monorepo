@@ -4,7 +4,7 @@
     "@ethang/eslint-config": "^24.2.4",
     "@types/node": "^25.0.3",
     "eslint": "^9.39.2",
-    "typescript-eslint": "^8.50.1"
+    "typescript-eslint": "^8.51.0"
   },
   "license": "ISC",
   "name": "ethang-monorepo",
@@ -20,6 +20,7 @@
       "@tailwindcss/oxide",
       "bcrypt",
       "better-sqlite3",
+      "cldr-data",
       "esbuild",
       "msw",
       "prisma",
