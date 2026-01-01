@@ -162,30 +162,6 @@ const RouteComponent = () => {
           </CourseListItem>
         </AccordionItem>
         <AccordionItem
-          key="4"
-          classNames={accordionClassnames}
-          title="Broaden Your SkillSet: Pluralsight"
-          aria-label="Broaden Your SkillSet: Zero to Mastery"
-        >
-          <CourseListItem courseList={[]}>
-            <TypographyP>
-              Pluralsight brings a large quantity of courses across languages
-              and frameworks. If you're looking to broaden your skillset or find
-              the next thing to learn, you'll probably find it here.
-            </TypographyP>
-            <TypographyP>
-              <Link
-                isExternal
-                underline="always"
-                className="text-foreground"
-                href="https://www.pluralsight.com/browse"
-              >
-                Pluralsight
-              </Link>
-            </TypographyP>
-          </CourseListItem>
-        </AccordionItem>
-        <AccordionItem
           key="6"
           title="Bonus"
           aria-label="Bonus"
