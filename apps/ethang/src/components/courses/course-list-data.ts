@@ -100,10 +100,6 @@ export const bonusCourseData = [
 
 export const readingCourseData = [
   {
-    name: "Software Requirements, 3rd Edition",
-    url: "https://www.microsoftpressstore.com/store/software-requirements-9780735679665",
-  },
-  {
     name: "Dave Farley",
     url: "https://www.amazon.com/stores/author/B003VSTZ72",
   },

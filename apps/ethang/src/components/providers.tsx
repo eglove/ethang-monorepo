@@ -7,6 +7,8 @@ import { keepPreviousData, QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { useRouter } from "@tanstack/react-router";
 import { del, get, set } from "idb-keyval";
+import attempt from "lodash/attempt.js";
+import isError from "lodash/isError.js";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,11 +45,23 @@ export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
     >
       <HeroUIProvider
         useHref={(url) => {
-          return router.buildLocation({ to: url }).href;
+          const urlObject = attempt(() => new URL(url));
+
+          if (isError(urlObject)) {
+            return router.buildLocation({ to: url }).href;
+          }
+
+          return url;
         }}
         navigate={(url) => {
           attemptAsync(async () => {
-            return router.navigate({ to: url });
+            const urlObject = attempt(() => new URL(url));
+
+            if (isError(urlObject)) {
+              return router.navigate({ to: url });
+            }
+
+            return url;
           }).catch(globalThis.console.error);
         }}
       >
