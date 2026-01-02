@@ -11,8 +11,6 @@ export const TypographyP = ({
   className,
 }: Readonly<PropsWithChildren<TypographyPProperties>>) => {
   return (
-    <p className={twMerge("leading-7 [&:not(:first-child)]:mt-6", className)}>
-      {children}
-    </p>
+    <p className={twMerge("leading-7 not-first:mt-6", className)}>{children}</p>
   );
 };

@@ -1,4 +1,20 @@
-import { Accordion, AccordionItem, Link } from "@heroui/react";
+import { useStore } from "@ethang/store/use-store";
+import {
+  Accordion,
+  AccordionItem,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Chip,
+  Link,
+} from "@heroui/react";
+import filter from "lodash/filter.js";
+import includes from "lodash/includes.js";
+import isNil from "lodash/isNil.js";
+import map from "lodash/map.js";
+import { twMerge } from "tailwind-merge";
 
 import {
   academindCourseData,
@@ -11,13 +27,98 @@ import {
 import { CourseListItem } from "../components/courses/course-list-item.tsx";
 import { MainLayout } from "../components/main-layout.tsx";
 import { TypographyH1 } from "../components/typography/typography-h1.tsx";
+import { TypographyH2 } from "../components/typography/typography-h2.tsx";
 import { TypographyP } from "../components/typography/typography-p.tsx";
+import {
+  courseStore,
+  knowledgeArea,
+  knowledgeAreasKeys,
+} from "../stores/course-store.ts";
 
 const accordionClassnames = { trigger: "cursor-pointer" };
 
 const RouteComponent = () => {
+  const selectedKnowledgeArea = useStore(courseStore, (state) => {
+    return state.selectedKnowledgeArea;
+  });
+
+  const filteredCourseData = isNil(selectedKnowledgeArea)
+    ? courseStore.courseData
+    : filter(courseStore.courseData, (course) => {
+        return includes(course.knowledgeAreas, selectedKnowledgeArea);
+      });
+
   return (
-    <MainLayout className="max-w-[65ch]">
+    <MainLayout>
+      <div className="grid gap-4 sm:grid-cols-[auto_1fr]">
+        <div className="hidden sm:block">
+          <TypographyH2 className="mb-2 text-center">
+            Knowledge Areas
+          </TypographyH2>
+          <Card>
+            <CardBody className="grid gap-2">
+              {map(knowledgeAreasKeys, (key) => {
+                return (
+                  <Button
+                    key={key}
+                    variant="ghost"
+                    className={twMerge(
+                      "grid min-h-12 grid-cols-[1fr_auto] gap-4",
+                      selectedKnowledgeArea === key && "bg-foreground-200",
+                    )}
+                    onPress={() => {
+                      if (key === selectedKnowledgeArea) {
+                        courseStore.setSelectedKnowledgeArea(null);
+                      } else {
+                        courseStore.setSelectedKnowledgeArea(key);
+                      }
+                    }}
+                  >
+                    <div className="max-w-64 text-wrap">
+                      {knowledgeArea[key]}
+                    </div>
+                    <Chip variant="faded">
+                      {courseStore.getKnowledgeAreaCount(key)}
+                    </Chip>
+                  </Button>
+                );
+              })}
+            </CardBody>
+          </Card>
+        </div>
+        <div>
+          <TypographyH2 className="mb-2 text-center">Courses</TypographyH2>
+          <div className="grid gap-4">
+            {map(filteredCourseData, (data) => {
+              return (
+                <Card key={data.name}>
+                  <CardHeader className="grid">
+                    <div className="text-2xl font-bold">{data.name}</div>
+                    <p className="leading-7 text-secondary">{data.author}</p>
+                  </CardHeader>
+                  <CardBody>
+                    <TypographyP>{data.description}</TypographyP>
+                    <TypographyP>
+                      <Link isExternal showAnchorIcon href={data.url}>
+                        Go to Course
+                      </Link>
+                    </TypographyP>
+                  </CardBody>
+                  <CardFooter className="flex flex-wrap gap-2 border-t-1">
+                    {map(data.knowledgeAreas, (area) => {
+                      return (
+                        <Chip key={area} variant="flat" color="primary">
+                          {knowledgeArea[area]}
+                        </Chip>
+                      );
+                    })}
+                  </CardFooter>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </div>
       <TypographyH1>Recommended Courses</TypographyH1>
       <TypographyP>
         This list is meant as a way to provide a straightforward curriculum of
