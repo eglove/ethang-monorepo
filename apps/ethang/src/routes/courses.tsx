@@ -1,4 +1,8 @@
-import { Card, CardBody, CardHeader, Chip, Link } from "@heroui/react";
+import { useStore } from "@ethang/store/use-store";
+import { Button, Card, CardBody, CardHeader, Chip, Link } from "@heroui/react";
+import filter from "lodash/filter.js";
+import includes from "lodash/includes.js";
+import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import { SquareArrowOutUpRight } from "lucide-react";
 
@@ -17,6 +21,18 @@ const formatter = Intl.NumberFormat(undefined, {
 });
 
 const RouteComponent = () => {
+  const selected = useStore(courseStore, (state) => {
+    return state.selectedKnowledgeArea;
+  });
+
+  const filteredData = filter(courseStore.courseData, (data) => {
+    if (isNil(selected)) {
+      return true;
+    }
+
+    return includes(data.knowledgeAreas, selected);
+  });
+
   return (
     <MainLayout>
       <TypographyH1>Recommended Courses</TypographyH1>
@@ -39,23 +55,35 @@ const RouteComponent = () => {
           <CardHeader>
             <TypographyH2>Knowledge Areas</TypographyH2>
           </CardHeader>
-          <CardBody className="grid max-h-max gap-2">
+          <CardBody className="grid max-h-max gap-1">
             {map(knowledgeAreasKeys, (key) => {
               return (
-                <div className="flex justify-between gap-2">
+                <Button
+                  key={key}
+                  size="sm"
+                  variant="ghost"
+                  className="flex justify-between gap-2 border-none"
+                  onPress={() => {
+                    if (key === selected) {
+                      courseStore.setSelectedKnowledgeArea(null);
+                    } else {
+                      courseStore.setSelectedKnowledgeArea(key);
+                    }
+                  }}
+                >
                   <p className="text-sm text-wrap text-clip">
                     {knowledgeArea[key]}
                   </p>
                   <Chip size="sm">
                     {courseStore.getKnowledgeAreaCount(key)}
                   </Chip>
-                </div>
+                </Button>
               );
             })}
           </CardBody>
         </Card>
         <div className="grid gap-4">
-          {map(courseStore.courseData, (data, index) => {
+          {map(filteredData, (data, index) => {
             const authorPlatform =
               data.author === data.platform
                 ? data.author
@@ -67,7 +95,7 @@ const RouteComponent = () => {
                 isExternal
                 href={data.url}
                 key={data.name}
-                className="cursor-pointer border-2 border-background hover:border-primary"
+                className="max-h-max cursor-pointer border-2 border-background hover:border-primary"
               >
                 <CardBody className="grid grid-cols-[auto_1fr] gap-2">
                   <p className="leading-7">{formatter.format(index + 1)}.</p>

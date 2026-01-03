@@ -277,7 +277,9 @@ export const knowledgeAreasKeys: (keyof typeof knowledgeArea)[] = map(
   Number,
 );
 
-const courseStoreInitialState = {};
+const courseStoreInitialState = {
+  selectedKnowledgeArea: null as keyof typeof knowledgeArea | null,
+};
 
 class CourseStore extends BaseStore<typeof courseStoreInitialState> {
   public courseData = courseData;
@@ -298,6 +300,12 @@ class CourseStore extends BaseStore<typeof courseStoreInitialState> {
     });
 
     return count;
+  }
+
+  public setSelectedKnowledgeArea(value: keyof typeof knowledgeArea | null) {
+    this.update((draft) => {
+      draft.selectedKnowledgeArea = value;
+    });
   }
 }
 
