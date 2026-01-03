@@ -1,4 +1,5 @@
 import { BaseStore } from "@ethang/store";
+import findIndex from "lodash/findIndex";
 import forEach from "lodash/forEach";
 import keys from "lodash/keys";
 import map from "lodash/map";
@@ -286,6 +287,10 @@ class CourseStore extends BaseStore<typeof courseStoreInitialState> {
 
   public constructor() {
     super(courseStoreInitialState);
+  }
+
+  public getCourseIndex(name: string) {
+    return findIndex(this.courseData, { name });
   }
 
   public getKnowledgeAreaCount(area: keyof typeof knowledgeArea) {

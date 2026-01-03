@@ -61,8 +61,9 @@ const RouteComponent = () => {
                 <Button
                   key={key}
                   size="sm"
-                  variant="ghost"
-                  className="flex justify-between gap-2 border-none"
+                  variant="flat"
+                  className="flex justify-between gap-2"
+                  color={key === selected ? "primary" : "default"}
                   onPress={() => {
                     if (key === selected) {
                       courseStore.setSelectedKnowledgeArea(null);
@@ -83,7 +84,7 @@ const RouteComponent = () => {
           </CardBody>
         </Card>
         <div className="grid gap-4">
-          {map(filteredData, (data, index) => {
+          {map(filteredData, (data) => {
             const authorPlatform =
               data.author === data.platform
                 ? data.author
@@ -98,7 +99,12 @@ const RouteComponent = () => {
                 className="max-h-max cursor-pointer border-2 border-background hover:border-primary"
               >
                 <CardBody className="grid grid-cols-[auto_1fr] gap-2">
-                  <p className="leading-7">{formatter.format(index + 1)}.</p>
+                  <p className="leading-7">
+                    {formatter.format(
+                      courseStore.getCourseIndex(data.name) + 1,
+                    )}
+                    .
+                  </p>
                   <div>
                     <TypographyP className="flex items-center gap-2 font-bold">
                       {data.name} <SquareArrowOutUpRight size="16" />
