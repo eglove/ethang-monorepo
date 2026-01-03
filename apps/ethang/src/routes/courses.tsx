@@ -50,8 +50,8 @@ const RouteComponent = () => {
         series of Udemy courses, sign up for Udemy Pro, cancel it when your
         done, and so on.
       </TypographyP>
-      <div className="my-4 grid gap-4 sm:grid-cols-[auto_1fr]">
-        <Card className="max-h-max">
+      <div className="my-4 grid items-start gap-4 sm:grid-cols-[auto_1fr]">
+        <Card className="sticky top-16 max-h-max">
           <CardHeader>
             <TypographyH2>Knowledge Areas</TypographyH2>
           </CardHeader>
