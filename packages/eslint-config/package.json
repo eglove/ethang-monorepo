@@ -63,5 +63,5 @@
     "lint": "eslint . --fix --concurrency=auto && prettier src --write"
   },
   "type": "module",
-  "version": "24.2.4"
+  "version": "24.2.5"
 }

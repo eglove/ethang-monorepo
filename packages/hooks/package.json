@@ -11,7 +11,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^24.2.4",
+    "@ethang/eslint-config": "^24.2.5",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.21",
     "@types/node": "^25.0.3",
