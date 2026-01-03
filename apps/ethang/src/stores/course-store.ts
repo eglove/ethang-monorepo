@@ -312,6 +312,20 @@ class CourseStore extends BaseStore<typeof courseStoreInitialState> {
       draft.selectedKnowledgeArea = value;
     });
   }
+
+  protected override onFirstSubscriber() {
+    globalThis.addEventListener(
+      "resize",
+      () => {
+        if (640 > globalThis.innerWidth) {
+          this.update((draft) => {
+            draft.selectedKnowledgeArea = null;
+          });
+        }
+      },
+      { signal: this.cleanupSignal },
+    );
+  }
 }
 
 export const courseStore = new CourseStore();
