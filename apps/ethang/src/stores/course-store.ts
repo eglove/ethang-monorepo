@@ -246,24 +246,24 @@ const courseData: CourseData[] = [
 ];
 
 export const knowledgeArea = {
-  1: "Software Requirements",
-  10: "Software Engineering Process",
-  11: "Software Engineering Models and Methods",
-  12: "Software Quality",
-  13: "Software Security",
-  14: "Software Engineering Professional Practice",
-  15: "Software Engineering Economics",
+  1: "Requirements",
+  10: "Engineering Process",
+  11: "Engineering Models and Methods",
+  12: "Quality",
+  13: "Security",
+  14: "Engineering Professional Practice",
+  15: "Engineering Economics",
   16: "Computing Foundations",
   17: "Mathematical Foundations",
   18: "Engineering Foundations",
-  2: "Software Architecture",
-  3: "Software Design",
-  4: "Software Construction",
-  5: "Software Testing",
-  6: "Software Engineering Operations",
-  7: "Software Maintenance",
-  8: "Software Configuration Management",
-  9: "Software Engineering Management",
+  2: "Architecture",
+  3: "Design",
+  4: "Construction",
+  5: "Testing",
+  6: "Engineering Operations",
+  7: "Maintenance",
+  8: "Configuration Management",
+  9: "Engineering Management",
 } as const;
 
 // @ts-expect-error restrict type
@@ -277,9 +277,7 @@ export const knowledgeAreasKeys: (keyof typeof knowledgeArea)[] = map(
   Number,
 );
 
-const courseStoreInitialState = {
-  selectedKnowledgeArea: null as keyof typeof knowledgeArea | null,
-};
+const courseStoreInitialState = {};
 
 class CourseStore extends BaseStore<typeof courseStoreInitialState> {
   public courseData = courseData;
@@ -300,12 +298,6 @@ class CourseStore extends BaseStore<typeof courseStoreInitialState> {
     });
 
     return count;
-  }
-
-  public setSelectedKnowledgeArea(value: keyof typeof knowledgeArea | null) {
-    this.update((draft) => {
-      draft.selectedKnowledgeArea = value;
-    });
   }
 }
 
