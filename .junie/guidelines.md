@@ -10,9 +10,12 @@
     - If fixing a bug, first create a failing reproduction test that demonstrates the issue.
     - Finally, write the minimal code necessary to pass the tests.
     - Ensure all tests pass before submitting.
+    - Ensure all property access is handled by `lodash/get()`.
+    - Ensure there are no TypeScript errors in any files, including test files.
 2. **Linting**:
     - Run `pnpm lint` from the project root after making changes.
     - Fix all linting errors and warnings. Look at existing project patterns if the fix is unclear.
+    - If you find errors due to linting, update guidelines.md to include this rule under the section "Linting".
 3. **Building**:
     - Run `pnpm build` from the project root to ensure your changes don’t break the build.
     - All packages in the monorepo must build successfully.

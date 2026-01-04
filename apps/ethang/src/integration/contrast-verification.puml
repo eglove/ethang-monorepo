@@ -1,0 +1,26 @@
+@startuml
+participant "Vitest" as V
+participant "Contrast Test" as T
+participant "File System" as FS
+participant "Contrast Checker" as C
+
+V -> T : Run Test
+activate T
+T -> FS : Read apps/ethang/public/blog/*.html
+activate FS
+FS --> T : HTML Contents
+deactivate FS
+
+loop for each HTML file
+    T -> T : Extract CSS from <style>
+    T -> T : Parse .back-to-top:hover background and color
+    T -> C : Calculate Contrast Ratio(background, color)
+    activate C
+    C --> T : Ratio
+    deactivate C
+    T -> T : Assert Ratio >= 4.5
+end
+
+T --> V : Test Result
+deactivate T
+@enduml

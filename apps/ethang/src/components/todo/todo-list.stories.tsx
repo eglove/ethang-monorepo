@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { expect, within } from "@storybook/test";
 import map from "lodash/map.js";
-import { useEffect } from "react";
 
 import { todoStore } from "../../stores/todo-store.ts";
 import { TodoList } from "./todo-list.tsx";
@@ -25,20 +24,18 @@ export const Default: Story = {
     const todoItems = await canvas.findAllByLabelText("Todo title");
     await expect(todoItems).toHaveLength(2);
   },
-  render: (arguments_) => {
-    useEffect(() => {
-      todoStore.setTodos(
-        map(arguments_.todos, (todo, index) => {
-          return {
-            completed: false,
-            id: todo.id,
-            title: `Todo ${index + 1}`,
-          };
-        }),
-      );
-    }, [arguments_.todos]);
+  render: (_arguments) => {
+    todoStore.setTodos(
+      map(_arguments.todos, (todo, index) => {
+        return {
+          completed: false,
+          id: todo.id,
+          title: `Todo ${index + 1}`,
+        };
+      }),
+    );
 
-    return <TodoList {...arguments_} />;
+    return <TodoList {..._arguments} />;
   },
 };
 
@@ -52,11 +49,9 @@ export const Empty: Story = {
     const todoItems = canvas.queryAllByLabelText("Todo title");
     await expect(todoItems).toHaveLength(0);
   },
-  render: (arguments_) => {
-    useEffect(() => {
-      todoStore.setTodos([]);
-    }, []);
+  render: (_arguments) => {
+    todoStore.setTodos([]);
 
-    return <TodoList {...arguments_} />;
+    return <TodoList {..._arguments} />;
   },
 };

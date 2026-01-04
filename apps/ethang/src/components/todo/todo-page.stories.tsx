@@ -23,11 +23,9 @@ export const Interactions: Story = {
       name: "Add",
     });
 
-    // Add a todo
     await userEvent.type(input, "Test Storybook Play");
     await userEvent.click(addButton);
 
-    // Get the newly added todo item
     const todoTitles = canvas.getAllByLabelText("Todo title");
     const todoTitle = todoTitles.at(-1);
 
@@ -37,7 +35,6 @@ export const Interactions: Story = {
 
     await expect(todoTitle).toHaveValue("Test Storybook Play");
 
-    // Toggle todo
     const checkboxes = canvas.getAllByLabelText("Toggle todo");
     const checkbox = checkboxes.at(-1);
 
@@ -48,7 +45,6 @@ export const Interactions: Story = {
     await userEvent.click(checkbox);
     await expect(checkbox).toBeChecked();
 
-    // Delete todo
     const deleteButtons = canvas.getAllByLabelText("Delete todo");
     const deleteButton = deleteButtons.at(-1);
 

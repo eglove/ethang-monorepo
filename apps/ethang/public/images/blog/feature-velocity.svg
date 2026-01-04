@@ -1,0 +1,124 @@
+<svg
+  viewBox="0 0 400 250"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <style>
+    .axis-line {
+      stroke: #a2b3c7;
+      stroke-width: 1;
+    }
+    .grid-line {
+      stroke: rgba(130, 170, 255, 0.22);
+      stroke-width: 0.5;
+      stroke-dasharray: 2, 3;
+    }
+    .axis-text {
+      font-family: "Funnel Sans", sans-serif;
+      font-size: 10px;
+      fill: #a2b3c7;
+    }
+    .label-text {
+      font-family: "Funnel Sans", sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .adhoc-line {
+      stroke: #ff7b72;
+      stroke-width: 2.5;
+      fill: none;
+    }
+    .adhoc-dot {
+      fill: #ff7b72;
+    }
+    .disciplined-line {
+      stroke: #7fdbca;
+      stroke-width: 2.5;
+      fill: none;
+    }
+    .disciplined-dot {
+      fill: #7fdbca;
+    }
+  </style>
+
+  <!-- Axes and Grid -->
+  <line class="axis-line" x1="40" x2="380" y1="210" y2="210" />
+  <line class="axis-line" x1="40" x2="40" y1="30" y2="210" />
+
+  <text class="axis-text" text-anchor="end" x="30" y="35">High</text>
+  <text
+    class="axis-text"
+    text-anchor="middle"
+    transform="rotate(-90 18,125)"
+    x="18"
+    y="125"
+  >
+    Velocity
+  </text>
+  <text class="axis-text" text-anchor="end" x="30" y="215">Low</text>
+
+  <text class="axis-text" text-anchor="middle" x="40" y="225">
+    Start
+  </text>
+  <text class="axis-text" text-anchor="middle" x="210" y="225">
+    Mid-Project
+  </text>
+  <text class="axis-text" text-anchor="middle" x="380" y="225">
+    Long-Term
+  </text>
+
+  <!-- Ad-Hoc Approach Path -->
+  <path
+    class="adhoc-line"
+    d="M 40 80 C 80 60, 120 100, 160 140 C 200 180, 240 170, 280 190 C 320 210, 360 200, 380 205"
+  />
+  <circle class="adhoc-dot" cx="40" cy="80" r="3" />
+  <text class="label-text" fill="#ff7b72" x="85" y="55">
+    Ad-Hoc Approach
+  </text>
+  <text
+    class="axis-text"
+    fill="#ff7b72"
+    text-anchor="middle"
+    x="145"
+    y="70"
+  >
+    "Illusion of Speed"
+  </text>
+  <text
+    class="axis-text"
+    fill="#ff7b72"
+    text-anchor="middle"
+    x="280"
+    y="180"
+  >
+    "Fear of Change"
+  </text>
+
+  <!-- Disciplined Approach Path -->
+  <path
+    class="disciplined-line"
+    d="M 40 120 C 80 110, 150 80, 220 60 C 290 40, 360 45, 380 42"
+  />
+  <circle class="disciplined-dot" cx="40" cy="120" r="3" />
+  <text class="label-text" fill="#7fdbca" x="85" y="135">
+    Disciplined Approach
+  </text>
+  <text
+    class="axis-text"
+    fill="#7fdbca"
+    text-anchor="middle"
+    x="130"
+    y="105"
+  >
+    "Initial Investment"
+  </text>
+  <text
+    class="axis-text"
+    fill="#7fdbca"
+    text-anchor="middle"
+    x="290"
+    y="35"
+  >
+    "Sustainable Velocity"
+  </text>
+</svg>
