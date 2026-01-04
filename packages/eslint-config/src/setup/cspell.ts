@@ -94,6 +94,7 @@ const customRules: CustomRules = [
             "reflogs",
             "Comeau",
             "autodocs",
+            "agentic",
           ],
         },
       },

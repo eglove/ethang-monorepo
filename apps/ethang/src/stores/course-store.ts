@@ -13,6 +13,7 @@ const coltSteele = "Colt Steele";
 const patternsDevelopment = "Patterns.dev";
 const typeLevelTypeScript = "Type-Level TypeScript";
 const frontendMasters = "Frontend Masters";
+const linkedInLearning = "LinkedIn Learning";
 
 const courseData: CourseData[] = [
   {
@@ -433,16 +434,58 @@ const courseData: CourseData[] = [
     url: "https://frontendmasters.com/courses/javascript-projects/",
   },
   {
-    knowledgeAreas: [1],
-    name: "Project Management Foundations: Requirements",
-    platform: "LinkedIn Learning",
-    url: "https://www.linkedin.com/learning/project-management-foundations-requirements-2019/",
+    knowledgeAreas: [1, 15],
+    name: "Business Benefits Realization Foundations",
+    platform: linkedInLearning,
+    url: "https://www.linkedin.com/learning/business-benefits-realization-foundations",
+  },
+  {
+    knowledgeAreas: [1, 11],
+    name: "Business Analysis Foundations: Business Process Modeling",
+    platform: linkedInLearning,
+    url: "https://www.linkedin.com/learning/business-analysis-foundations-business-process-modeling",
+  },
+  {
+    knowledgeAreas: [9, 6],
+    name: "Modern Project Management in Microsoft 365",
+    platform: linkedInLearning,
+    url: "https://www.linkedin.com/learning/modern-project-management-in-microsoft-365-24522936",
   },
   {
     knowledgeAreas: [1],
-    name: "Agile Requirements Foundations",
-    platform: "LinkedIn Learning",
-    url: "https://www.linkedin.com/learning/agile-requirements-foundations/",
+    name: "Managing Data with Microsoft 365",
+    platform: linkedInLearning,
+    url: "https://www.linkedin.com/learning/managing-data-with-microsoft-365",
+  },
+  {
+    knowledgeAreas: [1, 11],
+    name: "Business Analysis: Essential Tools and Techniques",
+    platform: linkedInLearning,
+    url: "https://www.linkedin.com/learning/business-analysis-essential-tools-and-techniques-27995561",
+  },
+  {
+    knowledgeAreas: [1],
+    name: "Introduction to Business Analysis",
+    platform: linkedInLearning,
+    url: "https://www.linkedin.com/learning/introduction-to-business-analysis",
+  },
+  {
+    knowledgeAreas: [1],
+    name: "Generative AI for Business Analysts",
+    platform: linkedInLearning,
+    url: "https://www.linkedin.com/learning/generative-ai-for-business-analysts",
+  },
+  {
+    knowledgeAreas: [1],
+    name: "Agentic AI for Business Analysis",
+    platform: linkedInLearning,
+    url: "https://www.linkedin.com/learning/agentic-ai-for-business-analysis",
+  },
+  {
+    knowledgeAreas: [1],
+    name: "The Role of Business Analysis in Data Analytics",
+    platform: linkedInLearning,
+    url: "https://www.linkedin.com/learning/the-role-of-business-analysis-in-data-analytics",
   },
   {
     knowledgeAreas: [],
