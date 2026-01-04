@@ -3,7 +3,10 @@
 1. **Development Process**:
     - Follow the order: **Architectural Planning** → **Tests** → **Code**.
     - For every change, start with architectural planning (e.g., C4/sequence diagrams in .puml files).
-    - Then, follow TDD (Test-Driven Development): write a test first.
+    - Then, follow ATDD (Acceptance Test-Driven Development): write an acceptance test first (e.g. Storybook interaction test or Playwright E2E).
+    - Use the "Double Loop" approach:
+        - Outer Loop (ATDD): Write a failing acceptance test that describes the user's goal.
+        - Inner Loop (TDD): Write failing unit tests and minimal code to satisfy the acceptance test.
     - If fixing a bug, first create a failing reproduction test that demonstrates the issue.
     - Finally, write the minimal code necessary to pass the tests.
     - Ensure all tests pass before submitting.
@@ -28,7 +31,7 @@
         - **Software Configuration Management**: Use version control effectively and manage project configurations.
         - **Software Engineering Management**: Follow project management best practices where applicable.
         - **Software Engineering Process**: Adhere to the established development process and seek continuous improvement.
-        - **Software Engineering Models and Methods**: Use appropriate modeling (e.g., UML, .puml) and methodology (e.g., TDD).
+        - **Software Engineering Models and Methods**: Use appropriate modeling (e.g., UML, .puml) and methodology (e.g., ATDD).
         - **Software Quality**: Ensure adherence to quality standards and perform code reviews/linting.
         - **Software Security**: Implement secure coding practices and protect against vulnerabilities.
         - **Software Engineering Professional Practice**: Maintain high standards of professionalism and ethics.
