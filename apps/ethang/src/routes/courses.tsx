@@ -85,11 +85,6 @@ const RouteComponent = () => {
         </Card>
         <div className="grid gap-4">
           {map(filteredData, (data) => {
-            const authorPlatform =
-              data.author === data.platform
-                ? data.author
-                : `${data.author}, ${data.platform}`;
-
             return (
               <Card
                 as={Link}
@@ -109,7 +104,7 @@ const RouteComponent = () => {
                     <TypographyP className="flex items-center gap-2 font-bold">
                       {data.name} <SquareArrowOutUpRight size="16" />
                     </TypographyP>
-                    <p className="leading-7">{authorPlatform}</p>
+                    <p className="leading-7">{data.platform}</p>
                     <div className="my-2 flex flex-wrap gap-2">
                       {map(data.knowledgeAreas, (area) => {
                         return (

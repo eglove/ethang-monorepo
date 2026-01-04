@@ -5,241 +5,448 @@ import keys from "lodash/keys";
 import map from "lodash/map";
 
 type CourseData = {
-  author: string;
-  description: string;
   knowledgeAreas: (keyof typeof knowledgeArea)[];
   name: string;
   platform: string;
   url: string;
 };
 
-const coltSteele = "Colt Steele";
 const patternsDevelopment = "Patterns.dev";
 const typeLevelTypeScript = "Type-Level TypeScript";
 const frontendMasters = "Frontend Masters";
 
 const courseData: CourseData[] = [
   {
-    author: coltSteele,
-    description:
-      "Covers Flexbox, CSS Grid, Animations, Responsive Design and More! Tons of Exercises & Projects.",
-    knowledgeAreas: [4, 16],
+    knowledgeAreas: [4],
     name: "The HTML & CSS Bootcamp",
     platform: "Udemy",
     url: "https://www.udemy.com/course/html-and-css-bootcamp/",
   },
   {
-    author: coltSteele,
-    description:
-      "Become a Developer With ONE course - HTML, CSS, JavaScript, React, Node, MongoDB and More!",
-    knowledgeAreas: [4, 16],
+    knowledgeAreas: [4],
     name: "The Web Developer Bootcamp",
     platform: "Udemy",
     url: "https://www.udemy.com/course/the-web-developer-bootcamp/",
   },
   {
-    author: coltSteele,
-    description:
-      "Master the essentials and the tricky bits: rebasing, squashing, stashing, reflogs, blobs, trees, & more!",
     knowledgeAreas: [8],
     name: "The Git & GitHub Bootcamp",
     platform: "Udemy",
     url: "https://www.udemy.com/course/git-and-github-bootcamp/",
   },
   {
-    author: coltSteele,
-    description:
-      "Level Up Your Skills And Take Control Of Your Machine, w/ Dozens of Commands, Projects, and Challenges!",
     knowledgeAreas: [16],
     name: "The Linux Command Line Bootcamp",
     platform: "Udemy",
     url: "https://www.udemy.com/course/the-linux-command-line-bootcamp/",
   },
   {
-    author: coltSteele,
-    description:
-      "Level Up Your JS. Covers latest syntax, design patterns, functional programming, browser APIS, OOP, Canvas, and more!",
-    knowledgeAreas: [4, 11, 16],
+    knowledgeAreas: [4],
     name: "JavaScript Pro: Mastering Advanced Concepts and Techniques",
     platform: "Udemy",
     url: "https://www.udemy.com/course/pro-javascript/",
   },
   {
-    author: coltSteele,
-    description:
-      "Learn the world's fastest growing programming language from scratch. Includes Webpack & React!",
-    knowledgeAreas: [4, 16],
+    knowledgeAreas: [4],
     name: "Mastering TypeScript",
     platform: "Udemy",
     url: "https://www.udemy.com/course/learn-typescript/",
   },
   {
-    author: "Academind",
-    description:
-      "A guided path on your way to become a frontend web developer. All technologies you need to understand to build amazing and interactive websites. Basic HTML knowledge is required to follow along this path.",
-    knowledgeAreas: [4, 16],
-    name: "Frontend Path",
-    platform: "Academind",
-    url: "https://academind.com/courses/paths/frontend-web-development",
+    knowledgeAreas: [4],
+    name: "JavaScript - The Complete Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/javascript-the-complete-guide-2020-beginner-advanced/",
   },
   {
-    author: "Academind",
-    description:
-      "Learn how to write the server-side code behind the scenes of a modern website. From learning all about Node.js, the most popular, JavaScript based server-side programming language, up to learning how to interact with and use different databases, all covered in this path.",
-    knowledgeAreas: [4, 16],
-    name: "Backend Path",
-    platform: "Academind",
-    url: "https://academind.com/courses/paths/backend-web-development",
+    knowledgeAreas: [4],
+    name: "CSS - The Complete Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/css-the-complete-guide-incl-flexbox-grid-sass/",
   },
   {
-    author: "Academind",
-    description:
-      "Understand THE most popular JavaScript library. Learn how to build modern single-page-applications with components in React.js and use this knowledge to dive into frameworks like Next.js. In addition, you'll also learn how to use React to build mobile apps with React Native or Ionic + React.",
-    knowledgeAreas: [4, 11],
-    name: "React Path",
-    platform: "Academind",
-    url: "https://academind.com/courses/paths/react-a-z",
+    knowledgeAreas: [4],
+    name: "Vue - The Complete Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/vuejs-2-the-complete-guide/",
   },
   {
-    author: "Academind",
-    description:
-      "Angular is Google's leading, Typescript-based framework allowing you create complex, customizable, modern, responsive and user friendly web applications. After setting the basics with JavaScript and Typescript, you will explore Angular in great detail and understand how to use Angular in fullstack applications. In addition to desktop applications, using Angular to build mobile apps will also be taught in this path.",
-    knowledgeAreas: [4, 11],
-    name: "Angular Path",
-    platform: "Academind",
-    url: "https://academind.com/courses/paths/angular-a-z",
+    knowledgeAreas: [4],
+    name: "NodeJS - The Complete Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/nodejs-the-complete-guide/",
   },
   {
-    author: "Academind",
-    description:
-      "DevOps or Development Operations make our developer lives easier by automating development related processes. Managing code efficiently via Git and GitHub and simplifying the development and deployment process with Docker & Kubernetes are two of the most important tools in this area. Both will be taught in great detail in this path.",
-    knowledgeAreas: [6, 8, 10],
-    name: "DevOps Path",
-    platform: "Academind",
-    url: "https://academind.com/courses/paths/devops-essentials",
+    knowledgeAreas: [4],
+    name: "MongoDB - The Complete Developer's Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/mongodb-the-complete-developers-guide/",
   },
   {
-    author: "Academind",
-    description:
-      "You mastered the basics and want to dive deeper into programming and web development? This path teaches how to write clean and understandable code and dives very deep into more advanced JavaScript topics like data structures or algorithms.",
-    knowledgeAreas: [4, 11, 16],
-    name: "Advanced Path",
-    platform: "Academind",
-    url: "https://academind.com/courses/paths/advanced-concepts",
+    knowledgeAreas: [4],
+    name: "SQL - The Complete Developer's Guide",
+    platform: "Udemy",
+    url: "https://pro.academind.com/p/sql-the-complete-guide-mysql-postgresql-more",
   },
   {
-    author: "Academind",
-    description:
-      "Python is the most popular programming language. This path teaches all you need to know to work with Python in your own projects. Although Python is not a web development focused programming language, in this path you will also learn how to create modern websites with Python with the help of the Django framework.",
-    knowledgeAreas: [4, 16],
-    name: "Python Path",
-    platform: "Academind",
-    url: "https://academind.com/courses/paths/python",
+    knowledgeAreas: [4],
+    name: "React - The Complete Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/react-the-complete-guide-incl-redux/",
   },
   {
-    author: "UI.dev",
-    description:
-      "React Query has been one of the fastest growing and most popular third party libraries in the React ecosystem, and this course will teach you everything you need to ship it like a pro.",
+    knowledgeAreas: [4],
+    name: "Next.js 15 & React - The Complete Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/nextjs-react-the-complete-guide/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "React Native - The Practical Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/react-native-the-practical-guide/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "React, NodeJS, Express & MongoDB - The MERN Fullstack Guide",
+    platform: "Udemy",
+    url: "https://pro.academind.com/p/react-nodejs-express-mongodb-the-mern-fullstack-guide",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "React & TypeScript - The Practical Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/react-typescript-the-practical-guide/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Understanding TypeScript",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/understanding-typescript/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Angular - The Complete Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/the-complete-guide-to-angular-2/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Angular & NodeJS - The MEAN Stack Guide",
+    platform: "Udemy",
+    url: "https://pro.academind.com/p/angular-nodejs-the-mean-stack-guide-2020-edition",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Ionic - Build iOS, Android & Web Apps with Ionic & Angular",
+    platform: "Udemy",
+    url: "https://pro.academind.com/p/ionic-build-ios-android-web-apps-with-ionic-angular",
+  },
+  {
+    knowledgeAreas: [8],
+    name: "Git & GitHub - The Practical Guide",
+    platform: "Udemy",
+    url: "https://pro.academind.com/p/git-github-the-practical-guide",
+  },
+  {
+    knowledgeAreas: [6],
+    name: "Docker & Kubernetes: The Practical Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/docker-kubernetes-the-practical-guide/",
+  },
+  {
+    knowledgeAreas: [8],
+    name: "GitHub Actions - The Complete Guide",
+    platform: "Udemy",
+    url: "https://www.udemy.com/course/github-actions-the-complete-guide/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Clean Code",
+    platform: "Academind",
+    url: "https://www.udemy.com/course/writing-clean-code/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "JavaScript - The Tricky Parts",
+    platform: "Academind",
+    url: "https://pro.academind.com/p/javascript-the-tricky-parts",
+  },
+  {
+    knowledgeAreas: [16],
+    name: "JavaScript Algorithms: The Fundamentals",
+    platform: "Academind",
+    url: "https://pro.academind.com/p/javascript-algorithms-the-fundamentals",
+  },
+  {
+    knowledgeAreas: [16],
+    name: "JavaScript Data Structures - The Fundamentals",
+    platform: "Academind",
+    url: "https://pro.academind.com/p/javascript-datastructures-the-fundamentals",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Python - The Practical Guide",
+    platform: "Academind",
+    url: "https://pro.academind.com/p/python-the-practical-guide",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Python Django - The Practical Guide",
+    platform: "Academind",
+    url: "https://pro.academind.com/p/python-django-the-practical-guide",
+  },
+  {
     knowledgeAreas: [4],
     name: "Query.gg",
     platform: "UI.dev",
     url: "https://query.gg/",
   },
   {
-    author: "Josh W Comeau",
-    description:
-      "The interactive learning experience designed to help JavaScript developers become confident with CSS.",
-    knowledgeAreas: [4, 16],
+    knowledgeAreas: [4],
     name: "CSS for JavaScript Developers",
     platform: "Josh W Comeau",
     url: "https://css-for-js.dev/",
   },
   {
-    author: patternsDevelopment,
-    description:
-      "Patterns.dev is a free online resource on design, rendering, and performance patterns for building powerful web apps with vanilla JavaScript or modern frameworks.",
-    knowledgeAreas: [2, 3, 11],
+    knowledgeAreas: [3],
     name: patternsDevelopment,
     platform: patternsDevelopment,
     url: "https://www.patterns.dev/#patterns",
   },
   {
-    author: typeLevelTypeScript,
-    description:
-      "Learn how to unleash the full potential of the Turing Complete type system of TypeScript!",
-    knowledgeAreas: [4, 17],
+    knowledgeAreas: [4],
     name: typeLevelTypeScript,
     platform: typeLevelTypeScript,
     url: "https://type-level-typescript.com/",
   },
   {
-    author: frontendMasters,
-    description:
-      "Get an introduction to web development, JavaScript, and modern CSS layout techniques to have the skills to be a professional web developer today.",
-    knowledgeAreas: [4, 16],
-    name: "Beginner Path",
+    knowledgeAreas: [4],
+    name: "Complete Intro to Web Development",
     platform: frontendMasters,
-    url: "https://frontendmasters.com/learn/beginner/",
+    url: "https://frontendmasters.com/courses/web-development-v3/",
   },
   {
-    author: frontendMasters,
-    description:
-      "Deep dive into JavaScript, the most popular framework React, Web performance, CSS, deploying websites, TypeScript, and functional JavaScript to become a professional web developer today.",
-    knowledgeAreas: [4, 11, 12, 16],
-    name: "Professional Path",
+    knowledgeAreas: [4],
+    name: "Getting Started with CSS",
     platform: frontendMasters,
-    url: "https://frontendmasters.com/learn/professional/",
+    url: "https://frontendmasters.com/courses/getting-started-css-v2/",
   },
   {
-    author: frontendMasters,
-    description:
-      "Learn mind-expanding web development techniques and emerging APIs to solve even the most complex challenges top-level engineers face.",
-    knowledgeAreas: [4, 11],
-    name: "Expert Path",
+    knowledgeAreas: [4],
+    name: "Getting Started with JavaScript",
     platform: frontendMasters,
-    url: "https://frontendmasters.com/learn/advanced/",
+    url: "https://frontendmasters.com/courses/getting-started-javascript-v3/",
   },
   {
-    author: frontendMasters,
-    description:
-      "Code your way from the fundamentals to advanced, reactive applications, and discover how far you can go with JavaScript!",
-    knowledgeAreas: [4, 16],
-    name: "JavaScript Path",
+    knowledgeAreas: [4],
+    name: "CSS Foundations",
     platform: frontendMasters,
-    url: "https://frontendmasters.com/learn/javascript/",
+    url: "https://frontendmasters.com/courses/css-foundations/",
   },
   {
-    author: frontendMasters,
-    description:
-      "Explore new JavaScript APIs and the advanced capabilities in modern web browsers like device/sensor integration, client-side data storage, user authentication, and Service Worker use cases",
-    knowledgeAreas: [4, 16],
-    name: "Browser APIs Path",
+    knowledgeAreas: [4],
+    // eslint-disable-next-line no-script-url,sonar/code-eval
+    name: "JavaScript: From First Steps to Professional",
     platform: frontendMasters,
-    url: "https://frontendmasters.com/learn/browser-apis/",
+    url: "https://frontendmasters.com/courses/javascript-first-steps/",
   },
   {
-    author: "IEEE",
-    description:
-      "This certification recognizes candidates who have acquired the basic knowledge and understanding required for developing software products. It requires a coherent, demonstrable understanding of the principles and processes in software requirements, software design, software construction, and software testing.",
-    knowledgeAreas: [1, 3, 4, 5],
+    knowledgeAreas: [4],
+    name: "Website Accessibility",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/accessibility-v3/",
+  },
+  {
+    knowledgeAreas: [4],
+    // eslint-disable-next-line no-script-url,sonar/code-eval
+    name: "JavaScript: The Hard Parts",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/javascript-hard-parts-v2/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Deep JavaScript Foundations",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/deep-javascript-v3/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Complete Intro to React",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/complete-react-v9/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Vanilla JS: You Might Not Need a Framework",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/vanilla-js-apps/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Web Performance Fundamentals",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/web-perf-v2/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Professional CSS: Build a Website from Scratch",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/pro-css/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Full Stack for Front-End Engineers",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/fullstack-v3/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "TypeScript 5+ Fundamentals",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/typescript-v4/",
+  },
+  {
+    knowledgeAreas: [5],
+    name: "Testing Fundamentals",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/testing/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Functional JavaScript First Steps",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/functional-first-steps-v2/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Advanced Web Development Quiz",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/web-dev-quiz/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "The Hard Parts of Asynchronous JavaScript",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/javascript-new-hard-parts/",
+  },
+  {
+    knowledgeAreas: [5],
+    name: "Enterprise UI Development: Testing & Code Quality",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/enterprise-ui-dev/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "JavaScript Performance",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/web-performance/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "The Hard Parts of UI Development",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/hard-parts-ui-dev/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Front-End System Design",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/frontend-system-design/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Functional-Light JavaScript",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/functional-javascript-v3/",
+  },
+  {
+    knowledgeAreas: [3],
+    name: "State Machines in JavaScript with XState",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/xstate-v2/",
+  },
+  {
+    knowledgeAreas: [8],
+    name: "Everything You'll Need to Know About Git",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/everything-git/",
+  },
+  {
+    knowledgeAreas: [13],
+    name: "Web Security",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/web-security-v2/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "My Dev Setup Is Better Than Yours",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/developer-productivity-v2/",
+  },
+  {
+    knowledgeAreas: [4],
+    // eslint-disable-next-line no-script-url,sonar/code-eval
+    name: "JavaScript: The Recent Parts",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/js-recent-parts/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "A Tour of Web Capabilities",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/device-web-apis/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Web Components",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/web-components/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Web Authentication APIs",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/web-auth-apis/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Web Storage APIs",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/web-storage-apis/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "PWAs: You Might Not Need That App Store",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/pwas-v2/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Exploring Service Workers",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/service-workers/",
+  },
+  {
+    knowledgeAreas: [4],
+    name: "Vanilla JavaScript Projects",
+    platform: frontendMasters,
+    url: "https://frontendmasters.com/courses/javascript-projects/",
+  },
+  {
+    knowledgeAreas: [],
     name: "Associate Software Developer",
     platform: "IEEE",
     url: "https://www.computer.org/product/education/associate-software-developer-certification",
   },
   {
-    author: "IEEE",
-    description:
-      "This professional competency certification requires successful completion of Certificates of Proficiency in four key knowledge areas.",
-    knowledgeAreas: [1, 3, 4, 5],
+    knowledgeAreas: [],
     name: "Professional Software Developer",
     platform: "IEEE",
     url: "https://www.computer.org/product/education/professional-software-developer-certification",
   },
   {
-    author: "IEEE",
-    description:
-      "This professional competency certification requires successful completion of Certificates of Proficiency in the eleven key knowledge areas.",
-    knowledgeAreas: [1, 3, 4, 5, 7, 8, 12, 10, 11, 9, 15],
+    knowledgeAreas: [],
     name: "Professional Software Engineering Master",
     platform: "IEEE",
     url: "https://www.computer.org/product/education/professional-software-engineering-master-certification",
