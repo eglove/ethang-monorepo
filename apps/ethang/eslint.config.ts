@@ -1,5 +1,6 @@
 import htmlConfig from "@ethang/eslint-config/config.html.js";
 import reactConfig from "@ethang/eslint-config/config.react.js";
+import storybookConfig from "@ethang/eslint-config/config.storybook.js";
 import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";
 import config from "@ethang/eslint-config/eslint.config.js";
 import { defineConfig } from "eslint/config";
@@ -18,11 +19,13 @@ export default defineConfig(
       "generated",
       "wrangler.jsonc",
       "src/index.css",
+      "storybook-static",
     ],
   },
   ...config,
   ...htmlConfig,
   ...reactConfig,
+  ...storybookConfig,
   ...tailwindConfig(path.join(import.meta.dirname, "src", "index.css")),
   {
     languageOptions: {

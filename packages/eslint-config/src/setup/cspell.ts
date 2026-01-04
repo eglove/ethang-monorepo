@@ -93,6 +93,7 @@ const customRules: CustomRules = [
             "Flexbox",
             "reflogs",
             "Comeau",
+            "autodocs",
           ],
         },
       },

@@ -12,7 +12,7 @@
     "zod": "^4.3.4"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^24.2.5",
+    "@ethang/eslint-config": "^24.2.7",
     "@types/lodash": "^4.17.21",
     "@vitest/coverage-v8": "^4.0.16",
     "browserslist-config-baseline": "^0.5.0",

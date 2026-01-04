@@ -977,6 +977,7 @@ export default defineConfig(
               "Flexbox",
               "reflogs",
               "Comeau",
+              "autodocs",
             ],
           },
         },

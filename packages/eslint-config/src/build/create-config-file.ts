@@ -27,7 +27,6 @@ export const createConfigFile = async (
     return importStrings;
   });
 
-  // eslint-disable-next-line compat/compat
   const importList = [
     'import { ignores, languageOptions } from "./constants.js";',
     ...imports,
