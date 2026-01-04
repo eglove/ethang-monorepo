@@ -13,6 +13,7 @@ export default defineConfig(
       "**/storybook-static",
       "**/convex/_generated",
       "**/README.md",
+      "sonar.ts",
     ],
   },
   ...config,

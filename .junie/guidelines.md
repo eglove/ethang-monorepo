@@ -55,6 +55,6 @@
 8. **Component Organization**:
     - Organize components by feature. Each feature should have its own directory containing all related components, layouts, pages, and stories.
     - Components themselves should still follow Atomic Design principles in their implementation and hierarchy, but they are co-located within the feature directory.
-    - Every component should have its own Storybook story.
+    - Every component should have its own Storybook story as well as Play function tests.
 9. **No Comments**:
     - Never comment code. Make sure naming and organization is readable instead.

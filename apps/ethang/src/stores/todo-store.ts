@@ -49,6 +49,12 @@ export class TodoStore extends BaseStore<TodoState> {
     });
   }
 
+  public setTodos(todos: Todo[]) {
+    this.update((draft) => {
+      draft.todos = todos;
+    });
+  }
+
   public toggleTodo(id: string) {
     this.update((draft) => {
       const todo = find(draft.todos, (t) => {
