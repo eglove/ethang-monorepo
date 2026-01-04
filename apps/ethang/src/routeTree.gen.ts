@@ -11,6 +11,7 @@
 import type { CreateFileRoute, FileRoutesByPath } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TodoRouteImport } from './routes/todo'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as CoursesRouteImport } from './routes/courses'
@@ -21,6 +22,11 @@ import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar
 import { Route as TipsScrollContainersRouteImport } from './routes/tips/scroll-containers'
 import { Route as TipsFineGrainedReactRendersRouteImport } from './routes/tips/fine-grained-react-renders'
 
+const TodoRoute = TodoRouteImport.update({
+  id: '/todo',
+  path: '/todo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/courses': typeof CoursesRoute
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
+  '/todo': typeof TodoRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/courses': typeof CoursesRoute
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
+  '/todo': typeof TodoRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/courses': typeof CoursesRoute
   '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
+  '/todo': typeof TodoRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/courses'
     | '/news'
     | '/projects'
+    | '/todo'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/courses'
     | '/news'
     | '/projects'
+    | '/todo'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/courses'
     | '/news'
     | '/projects'
+    | '/todo'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   CoursesRoute: typeof CoursesRoute
   NewsRoute: typeof NewsRoute
   ProjectsRoute: typeof ProjectsRoute
+  TodoRoute: typeof TodoRoute
   TipsFineGrainedReactRendersRoute: typeof TipsFineGrainedReactRendersRoute
   TipsScrollContainersRoute: typeof TipsScrollContainersRoute
   TipsScrollbarGutterRoute: typeof TipsScrollbarGutterRoute
@@ -152,6 +165,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/todo': {
+      id: '/todo'
+      path: '/todo'
+      fullPath: '/todo'
+      preLoaderRoute: typeof TodoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects': {
       id: '/projects'
       path: '/projects'
@@ -263,6 +283,15 @@ declare module './routes/projects' {
     FileRoutesByPath['/projects']['fullPath']
   >
 }
+declare module './routes/todo' {
+  const createFileRoute: CreateFileRoute<
+    '/todo',
+    FileRoutesByPath['/todo']['parentRoute'],
+    FileRoutesByPath['/todo']['id'],
+    FileRoutesByPath['/todo']['path'],
+    FileRoutesByPath['/todo']['fullPath']
+  >
+}
 declare module './routes/tips/fine-grained-react-renders' {
   const createFileRoute: CreateFileRoute<
     '/tips/fine-grained-react-renders',
@@ -306,6 +335,7 @@ const rootRouteChildren: RootRouteChildren = {
   CoursesRoute: CoursesRoute,
   NewsRoute: NewsRoute,
   ProjectsRoute: ProjectsRoute,
+  TodoRoute: TodoRoute,
   TipsFineGrainedReactRendersRoute: TipsFineGrainedReactRendersRoute,
   TipsScrollContainersRoute: TipsScrollContainersRoute,
   TipsScrollbarGutterRoute: TipsScrollbarGutterRoute,

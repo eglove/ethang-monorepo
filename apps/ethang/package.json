@@ -39,6 +39,7 @@
     "@storybook/addon-docs": "^10.1.11",
     "@storybook/addon-vitest": "^10.1.11",
     "@storybook/react-vite": "^10.1.11",
+    "@storybook/test": "^8.6.15",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/router-plugin": "^1.145.2",
@@ -81,7 +82,7 @@
     "preview": "pnpm run build && vite preview",
     "prisma-gen": "rimraf generated/prisma && prisma generate",
     "storybook": "storybook dev -p 6006",
-    "test": "vitest --project=storybook --watch=false"
+    "test": "vitest --watch=false"
   },
   "type": "module",
   "version": "0.0.0"

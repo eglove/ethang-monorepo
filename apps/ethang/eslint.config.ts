@@ -20,6 +20,8 @@ export default defineConfig(
       "wrangler.jsonc",
       "src/index.css",
       "storybook-static",
+      "coverage",
+      "src/components/todo/todo.puml",
     ],
   },
   ...config,
