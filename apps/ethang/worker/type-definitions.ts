@@ -14,26 +14,21 @@ export const typeDefs = `#graphql
     projects: [Project]
   }
 
-  type PageInfo {
-    hasNextPage: Boolean!
-    hasPreviousPage: Boolean!
-    startCursor: String
-    endCursor: String
-  }
-
   type ProjectConnection {
-    edges: [ProjectEdge]
-    pageInfo: PageInfo!
-    totalCount: Int!
+    projects: [Project]
+    total: Int
   }
 
-  type ProjectEdge {
-    cursor: String!
-    node: Project
+  input ProjectWhereInput {
+    title: StringFilter
+  }
+
+  input StringFilter {
+    in: [String]
   }
 
   type Query {
     project(id: String!): Project
-    projects(first: Int, after: String): ProjectConnection
+    projects(skip: Int, take: Int, where: ProjectWhereInput): ProjectConnection
   }
 `;

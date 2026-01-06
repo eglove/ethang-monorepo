@@ -1,51 +1,52 @@
 import get from "lodash/get.js";
-import isString from "lodash/isString.js";
-import map from "lodash/map.js";
-import toInteger from "lodash/toInteger.js";
+import isNil from "lodash/isNil.js";
 
 import { getPrismaClient } from "../prisma-client";
 
-export const projects = async (
-  _parent: unknown,
-  _arguments: { after?: string; first?: number },
+export const project = async (
+  _parent: object,
+  _arguments: { id: string },
   context: { env: Env },
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
 
-  const first = toInteger(get(_arguments, ["first"], 10));
-  const after = get(_arguments, ["after"]);
+  return prisma.project.findUnique({
+    include: { techs: true },
+    where: { id: get(_arguments, ["id"]) },
+  });
+};
 
-  const totalCount = await prisma.project.count();
+export const projects = async (
+  _parent: unknown,
+  _arguments: {
+    orderBy?: Record<string, "asc" | "desc">;
+    skip?: number;
+    take?: number;
+    where?: { title?: { in?: string[] } };
+  },
+  context: { env: Env },
+) => {
+  const prisma = getPrismaClient(get(context, ["env"]));
+
+  const skip = get(_arguments, ["skip"]);
+  const take = get(_arguments, ["take"]);
+  const where = get(_arguments, ["where"]);
+  const orderBy = get(_arguments, ["orderBy"]);
+
+  const total = await prisma.project.count({
+    where: where ?? {},
+  });
 
   const fetchedProjects = await prisma.project.findMany({
-    ...(isString(after) ? { cursor: { id: after } } : {}),
     include: { techs: true },
-    orderBy: { id: "asc" },
-    skip: isString(after) ? 1 : 0,
-    take: first + 1,
+    orderBy: orderBy ?? { title: "asc" },
+    ...(!isNil(skip) && { skip }),
+    ...(!isNil(take) && { take }),
+    where: where ?? {},
   });
-
-  const hasNextPage = fetchedProjects.length > first;
-  const nodes = hasNextPage ? fetchedProjects.slice(0, -1) : fetchedProjects;
-
-  const edges = map(nodes, (project) => {
-    return {
-      cursor: get(project, ["id"]),
-      node: project,
-    };
-  });
-
-  const endCursor = get(edges.at(-1), ["cursor"]);
-  const startCursor = get(edges.at(0), ["cursor"]);
 
   return {
-    edges,
-    pageInfo: {
-      endCursor,
-      hasNextPage,
-      hasPreviousPage: isString(after),
-      startCursor,
-    },
-    totalCount,
+    projects: fetchedProjects,
+    total,
   };
 };

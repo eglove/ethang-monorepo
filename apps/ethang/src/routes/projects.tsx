@@ -28,8 +28,9 @@ const RouteComponent = () => {
       )}
       {!loading && (
         <div className="my-8 grid gap-4 sm:grid-cols-3">
-          {map(get(data, ["projects", "edges"]), (project) => {
-            return <ProjectCard id={project.node.id} key={project.node.id} />;
+          {map(get(data, ["projects", "projects"]), (project) => {
+            const id = get(project, ["id"]);
+            return <ProjectCard id={id} key={id} />;
           })}
         </div>
       )}
