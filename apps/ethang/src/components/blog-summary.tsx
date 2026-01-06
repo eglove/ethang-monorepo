@@ -18,7 +18,7 @@ export const BlogSummary = () => {
       <div className="grid gap-4 md:grid-cols-3">
         {map(firstThreeBlogs, (blog) => {
           return (
-            <a href={blog.href}>
+            <a key={blog.href} href={blog.href}>
               <Card className="h-full border-2">
                 <CardHeader>
                   <TypographyH2 className="w-full border-b-0 p-0 text-center">

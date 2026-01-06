@@ -1,3 +1,4 @@
+// pnpx prisma migrate diff --from-config-datasource --to-schema ./prisma\schema.prisma --script
 generator client {
   provider               = "prisma-client"
   output                 = "../generated/prisma"
@@ -35,4 +36,35 @@ model News {
   quote          String?
   title          String
   youtubeVideoId String?
+}
+
+model Path {
+  id    String  @id @default(uuid(7))
+  name  String  @unique
+  url   String? @unique
+  order Int     @unique
+
+  courses Course[]
+}
+
+model Course {
+  id     String @id @default(uuid(7))
+  name   String
+  author String
+  url    String @unique
+  order  Int    @unique
+
+  pathId         String
+  path           Path            @relation(fields: [pathId], references: [id])
+  knolwedgeAreas KnowledgeArea[]
+
+  @@unique([author, name])
+}
+
+model KnowledgeArea {
+  id    String @id @default(uuid(7))
+  name  String @unique
+  order Int    @unique
+
+  courses Course[]
 }

@@ -1,4 +1,5 @@
 import { BaseStore } from "@ethang/store";
+import { queryOptions } from "@tanstack/react-query";
 import findIndex from "lodash/findIndex";
 import forEach from "lodash/forEach";
 
@@ -543,8 +544,28 @@ class CourseStore extends BaseStore<typeof courseStoreInitialState> {
     super(courseStoreInitialState);
   }
 
+  public getAllCourses() {
+    return queryOptions({
+      queryFn: async () => {
+        const response = await fetch("/api/courses");
+        return response.json();
+      },
+      queryKey: ["getAllCourses"],
+    });
+  }
+
   public getCourseIndex(name: string) {
     return findIndex(this.courseData, { name });
+  }
+
+  public getKnowledgeArea(id: string) {
+    return queryOptions({
+      queryFn: async () => {
+        const response = await fetch(`/api/knowledge-areas/${id}`);
+        return response.json();
+      },
+      queryKey: ["getKnowledgeArea", id],
+    });
   }
 
   public getKnowledgeAreaCount(area: keyof typeof knowledgeArea) {
@@ -559,6 +580,16 @@ class CourseStore extends BaseStore<typeof courseStoreInitialState> {
     });
 
     return count;
+  }
+
+  public getKnowledgeAreasIds() {
+    return queryOptions({
+      queryFn: async () => {
+        const response = await fetch("/api/knowledge-areas/id");
+        return response.json<{ id: string }[]>();
+      },
+      queryKey: ["getKnowledgeAreasIds"],
+    });
   }
 
   public setSelectedKnowledgeArea(value: keyof typeof knowledgeArea | null) {

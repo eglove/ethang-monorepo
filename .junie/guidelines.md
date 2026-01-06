@@ -5,12 +5,12 @@
     - For every change, start with architectural planning (e.g., C4/sequence diagrams in .puml files).
     - Then, follow ATDD (Acceptance Test-Driven Development): write an acceptance test first (e.g. Storybook interaction test or Playwright E2E).
     - Use the "Double Loop" approach:
-        - Outer Loop (ATDD): Write a failing acceptance test that describes the user's goal.
+        - Outer Loop (ATDD): Write a failing acceptance test that describes the user’s goal.
         - Inner Loop (TDD): Write failing unit tests and minimal code to satisfy the acceptance test.
     - If fixing a bug, first create a failing reproduction test that demonstrates the issue.
     - Finally, write the minimal code necessary to pass the tests.
     - Ensure all tests pass before submitting.
-    - Ensure all property access is handled by `lodash/get()`.
+    - Ensure all property access is handled by `lodash/get()` always using array syntax.
     - Ensure there are no TypeScript errors in any files, including test files.
 2. **Linting**:
     - Run `pnpm lint` from the project root after making changes.

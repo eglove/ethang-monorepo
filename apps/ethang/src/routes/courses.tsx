@@ -1,26 +1,37 @@
 import { useStore } from "@ethang/store/use-store";
-import { Button, Card, CardBody, CardHeader, Chip, Link } from "@heroui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Chip,
+  Link,
+  Spinner,
+} from "@heroui/react";
+import { useQuery } from "@tanstack/react-query";
 import filter from "lodash/filter.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import { SquareArrowOutUpRight } from "lucide-react";
 
-import { MainLayout } from "../components/main-layout.tsx";
-import { TypographyH1 } from "../components/typography/typography-h1.tsx";
-import { TypographyH2 } from "../components/typography/typography-h2.tsx";
-import { TypographyP } from "../components/typography/typography-p.tsx";
 import {
   courseStore,
   knowledgeArea,
   knowledgeAreasKeys,
-} from "../stores/course-store.ts";
+} from "../components/courses/course-store.ts";
+import { MainLayout } from "../components/main-layout.tsx";
+import { TypographyH1 } from "../components/typography/typography-h1.tsx";
+import { TypographyH2 } from "../components/typography/typography-h2.tsx";
+import { TypographyP } from "../components/typography/typography-p.tsx";
 
 const formatter = Intl.NumberFormat(undefined, {
   minimumIntegerDigits: 2,
 });
 
 const RouteComponent = () => {
+  const knowledgeAreasIdsQuery = useQuery(courseStore.getKnowledgeAreasIds());
+
   const selected = useStore(courseStore, (state) => {
     return state.selectedKnowledgeArea;
   });
@@ -56,6 +67,13 @@ const RouteComponent = () => {
             <TypographyH2>Knowledge Areas</TypographyH2>
           </CardHeader>
           <CardBody className="grid max-h-max gap-1">
+            {knowledgeAreasIdsQuery.isError && (
+              <div className="text-red-500">Error fetching knowledge areas</div>
+            )}
+            {knowledgeAreasIdsQuery.isPending && <Spinner />}
+            {map(knowledgeAreasIdsQuery.data, ({ id }) => {
+              return <div key={id}>{id}</div>;
+            })}
             {map(knowledgeAreasKeys, (key) => {
               return (
                 <Button

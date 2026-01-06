@@ -76,7 +76,11 @@ export default defineConfig(({ mode }) => {
           extends: true,
           test: {
             environment: "jsdom",
-            include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+            include: [
+              "src/**/*.test.ts",
+              "src/**/*.test.tsx",
+              "worker/**/*.test.ts",
+            ],
             name: "unit",
           },
         },

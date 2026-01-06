@@ -978,6 +978,7 @@ export default defineConfig(
               "reflogs",
               "Comeau",
               "autodocs",
+              "agentic",
             ],
           },
         },
