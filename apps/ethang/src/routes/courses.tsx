@@ -1,14 +1,5 @@
 import { useStore } from "@ethang/store/use-store";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Chip,
-  Link,
-  Spinner,
-} from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
+import { Button, Card, CardBody, CardHeader, Chip, Link } from "@heroui/react";
 import filter from "lodash/filter.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
@@ -30,8 +21,6 @@ const formatter = Intl.NumberFormat(undefined, {
 });
 
 const RouteComponent = () => {
-  const knowledgeAreasIdsQuery = useQuery(courseStore.getKnowledgeAreasIds());
-
   const selected = useStore(courseStore, (state) => {
     return state.selectedKnowledgeArea;
   });
@@ -67,13 +56,6 @@ const RouteComponent = () => {
             <TypographyH2>Knowledge Areas</TypographyH2>
           </CardHeader>
           <CardBody className="grid max-h-max gap-1">
-            {knowledgeAreasIdsQuery.isError && (
-              <div className="text-red-500">Error fetching knowledge areas</div>
-            )}
-            {knowledgeAreasIdsQuery.isPending && <Spinner />}
-            {map(knowledgeAreasIdsQuery.data, ({ id }) => {
-              return <div key={id}>{id}</div>;
-            })}
             {map(knowledgeAreasKeys, (key) => {
               return (
                 <Button

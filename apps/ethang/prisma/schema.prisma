@@ -56,7 +56,7 @@ model Course {
 
   pathId         String
   path           Path            @relation(fields: [pathId], references: [id])
-  knolwedgeAreas KnowledgeArea[]
+  knowledgeAreas KnowledgeArea[]
 
   @@unique([author, name])
 }
