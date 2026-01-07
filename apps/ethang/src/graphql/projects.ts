@@ -27,10 +27,8 @@ export type GetProject = {
 
 export type GetProjectIds = {
   projects: {
-    projects: {
-      id: string;
-    }[];
-  };
+    id: string;
+  }[];
 };
 
 export type Project = {
@@ -50,9 +48,7 @@ export type Tech = {
 export const getProjectIds = gql`
   query ProjectIds($where: ProjectWhereInput) {
     projects(where: $where) {
-      projects {
-        id
-      }
+      id
     }
   }
 `;

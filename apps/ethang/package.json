@@ -13,6 +13,7 @@
     "@ethang/toolbelt": "^4.4.11",
     "@heroui/react": "2.8.7",
     "@heroui/theme": "2.4.25",
+    "@paljs/plugins": "^8.2.1",
     "@prisma/adapter-d1": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@tanstack/react-router": "^1.145.7",

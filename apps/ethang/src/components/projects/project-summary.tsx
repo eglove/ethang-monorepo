@@ -21,7 +21,7 @@ export const ProjectSummary = () => {
     },
   });
 
-  const projects = get(data, ["projects", "projects"]);
+  const projects = get(data, ["projects"]);
 
   return (
     <div className="grid gap-4">

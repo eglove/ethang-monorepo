@@ -1,45 +1,40 @@
 export const typeDefs = `#graphql
-  type Project {
+type Project {
     id: String
     code: String
     description: String
     title: String
     publicUrl: String
     techs: [Tech]
-  }
+}
 
-  type Tech {
+type Tech {
     id: String
     name: String
     projects: [Project]
-  }
+}
 
-  type ProjectConnection {
-    projects: [Project]
-    total: Int
-  }
-
-  input ProjectWhereInput {
+input ProjectWhereInput {
     title: StringFilter
-  }
+}
 
-  input StringFilter {
+input StringFilter {
     in: [String]
-  }
+}
 
-  input CourseWhereInput {
+input CourseWhereInput {
     knowledgeAreas: KnowledgeAreaListRelationFilter
-  }
+}
 
-  input KnowledgeAreaListRelationFilter {
+input KnowledgeAreaListRelationFilter {
     some: KnowledgeAreaWhereInput
-  }
+}
 
-  input KnowledgeAreaWhereInput {
+input KnowledgeAreaWhereInput {
     id: StringFilter
-  }
+}
 
-  type Query {
+type Query {
     course(id: String!): Course
     courses(where: CourseWhereInput): [Course]
     knowledgeArea(id: String!): KnowledgeArea
@@ -47,10 +42,10 @@ export const typeDefs = `#graphql
     path(id: String!): Path
     paths: [Path]
     project(id: String!): Project
-    projects(skip: Int, take: Int, where: ProjectWhereInput): ProjectConnection
-  }
+    projects(skip: Int, take: Int, where: ProjectWhereInput): [Project]
+}
 
-  type Course {
+type Course {
     id: String
     name: String
     author: String
@@ -58,22 +53,26 @@ export const typeDefs = `#graphql
     order: Int
     path: Path
     knowledgeAreas: [KnowledgeArea]
-  }
+}
 
-  type Path {
+type Path {
     id: String
     name: String
     url: String
     order: Int
     courses: [Course]
-    courseCount: Int
-  }
+    _count: PathCount
+}
 
-  type KnowledgeArea {
+type PathCount {
+    courses: Int
+}
+
+type KnowledgeArea {
     id: String
     name: String
     order: Int
     courses: [Course]
     courseCount: Int
-  }
+}
 `;

@@ -1,22 +1,26 @@
+import type { GraphQLResolveInfo } from "graphql/type";
+
 import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
-import { getPrismaClient } from "../prisma-client.ts";
+import type { KnowledgeAreaSelect } from "../../generated/prisma/models/KnowledgeArea.ts";
+
+import { getPrismaClient, prismaSelect } from "../prisma-client.ts";
 
 export const knowledgeArea = async (
   _parent: unknown,
   _arguments: { id: string },
   context: { env: Env },
+  info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
+  const select = prismaSelect<KnowledgeAreaSelect>(info, {
+    Course: ["id", "__typename"],
+  });
 
   const data = await prisma.knowledgeArea.findUnique({
-    include: {
-      _count: {
-        select: { courses: true },
-      },
-    },
+    select,
     where: { id: get(_arguments, ["id"]) },
   });
 
@@ -34,18 +38,18 @@ export const knowledgeAreas = async (
   _parent: unknown,
   _arguments: unknown,
   context: { env: Env },
+  info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
+  const select = prismaSelect<KnowledgeAreaSelect>(info, {
+    Course: ["id", "__typename"],
+  });
 
   const data = await prisma.knowledgeArea.findMany({
-    include: {
-      _count: {
-        select: { courses: true },
-      },
-    },
     orderBy: {
       order: "asc",
     },
+    select,
   });
 
   return map(data, (item) => {

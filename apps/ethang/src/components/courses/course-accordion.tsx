@@ -48,7 +48,7 @@ export const CourseAccordion = () => {
             <AccordionItem
               key={pathId}
               title={get(path, ["name"], "Loading...")}
-              subtitle={`${get(path, ["courseCount"], 0)} courses`}
+              subtitle={`${get(path, ["_count", "courses"], 0)} courses`}
               startContent={
                 <Button
                   as={Link}
