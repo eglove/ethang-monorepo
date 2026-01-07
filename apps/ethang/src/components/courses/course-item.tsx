@@ -2,14 +2,14 @@ import { useQuery } from "@apollo/client/react";
 import { Link, Skeleton } from "@heroui/react";
 import get from "lodash/get.js";
 
-import { type CourseQuery, getCourse } from "../../graphql/course.ts";
+import { type GetCourse, getCourse } from "../../graphql/queries.ts";
 
 type CourseItemProperties = {
   courseId: string;
 };
 
 export const CourseItem = ({ courseId }: Readonly<CourseItemProperties>) => {
-  const { data, loading } = useQuery<CourseQuery>(getCourse, {
+  const { data, loading } = useQuery<GetCourse>(getCourse, {
     variables: { id: courseId },
   });
 

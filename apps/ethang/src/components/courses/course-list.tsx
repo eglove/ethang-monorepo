@@ -2,7 +2,10 @@ import { useQuery } from "@apollo/client/react";
 import { Listbox, ListboxItem } from "@heroui/react";
 import get from "lodash/get.js";
 
-import { getPath, type PathQuery } from "../../graphql/paths.ts";
+import {
+  type GetPathCourseIds,
+  getPathCourseIds,
+} from "../../graphql/queries.ts";
 import { CourseItem } from "./course-item.tsx";
 
 type CourseListProperties = {
@@ -10,7 +13,7 @@ type CourseListProperties = {
 };
 
 export const CourseList = ({ pathId }: Readonly<CourseListProperties>) => {
-  const { data } = useQuery<PathQuery>(getPath, {
+  const { data, loading } = useQuery<GetPathCourseIds>(getPathCourseIds, {
     variables: { id: pathId },
   });
 
@@ -23,7 +26,7 @@ export const CourseList = ({ pathId }: Readonly<CourseListProperties>) => {
       items={courses}
       className="gap-0 p-0"
       aria-label="Course List"
-      emptyContent="No courses found."
+      emptyContent={loading ? "Loading..." : "No courses found."}
     >
       {(course) => {
         const courseId = get(course, ["id"]);

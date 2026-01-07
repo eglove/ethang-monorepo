@@ -10,29 +10,15 @@ import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import { SquareArrowOutUpRight } from "lucide-react";
-import { useEffect } from "react";
 
-import { apolloClient } from "../../graphql/client.ts";
-import { getPath, getPaths, type PathsQuery } from "../../graphql/paths.ts";
+import { type GetPaths, getPaths } from "../../graphql/queries.ts";
 import { CourseList } from "./course-list.tsx";
 
 export const CoursesContainer = () => {
-  const { data, loading } = useQuery<PathsQuery>(getPaths);
+  const { data, loading } = useQuery<GetPaths>(getPaths);
 
   const paths = get(data, ["paths"]);
   const isLoaded = !loading && paths !== undefined;
-
-  useEffect(() => {
-    Promise.all(
-      map(data?.paths, async (path) => {
-        return apolloClient.query({
-          fetchPolicy: "cache-first",
-          query: getPath,
-          variables: { id: path.id },
-        });
-      }),
-    ).catch(globalThis.console.error);
-  }, [data?.paths]);
 
   return (
     <Skeleton className="my-4" isLoaded={isLoaded}>
@@ -53,11 +39,11 @@ export const CoursesContainer = () => {
                 <Button
                   as={Link}
                   size="sm"
-                  href={url}
                   isExternal
                   isIconOnly
                   variant="bordered"
                   isDisabled={isNil(url)}
+                  href={isNil(url) ? "" : url}
                   aria-label={`View ${get(path, ["name"])}`}
                 >
                   <SquareArrowOutUpRight />

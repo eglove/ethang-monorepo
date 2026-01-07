@@ -13,11 +13,7 @@ import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import convertToString from "lodash/toString.js";
 
-import {
-  type GetProject,
-  getProject,
-  type Tech,
-} from "../../graphql/projects.ts";
+import { type GetProject, getProject } from "../../graphql/queries.ts";
 import { GithubIcon } from "../svg/github-icon.tsx";
 import { TypographyH2 } from "../typography/typography-h2.tsx";
 
@@ -47,12 +43,12 @@ export const ProjectCard = ({ id }: Readonly<ProjectCardProperties>) => {
           </p>
           <div className="flex flex-wrap gap-2 self-end">
             {map(
-              techs.toSorted((a: Tech, b: Tech) => {
+              techs.toSorted((a, b) => {
                 return convertToString(get(b, ["name"], "")).localeCompare(
                   convertToString(get(a, ["name"], "")),
                 );
               }),
-              (tech: Tech) => {
+              (tech) => {
                 return (
                   <Chip key={get(tech, ["id"])}>{get(tech, ["name"])}</Chip>
                 );

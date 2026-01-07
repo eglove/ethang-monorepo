@@ -7,7 +7,7 @@ import { MainLayout } from "../components/main-layout.tsx";
 import { ProjectCard } from "../components/projects/project-card.tsx";
 import { GithubIcon } from "../components/svg/github-icon.tsx";
 import { TypographyH1 } from "../components/typography/typography-h1.tsx";
-import { type GetProjectIds, getProjectIds } from "../graphql/projects.ts";
+import { type GetProjectIds, getProjectIds } from "../graphql/queries.ts";
 
 const RouteComponent = () => {
   const { data, loading } = useQuery<GetProjectIds>(getProjectIds);

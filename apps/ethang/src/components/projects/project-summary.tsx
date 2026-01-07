@@ -5,7 +5,7 @@ import isArray from "lodash/isArray.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 
-import { type GetProjectIds, getProjectIds } from "../../graphql/projects.ts";
+import { type GetProjectIds, getProjectIds } from "../../graphql/queries.ts";
 import { GithubIcon } from "../svg/github-icon.tsx";
 import { TypographyH1 } from "../typography/typography-h1.tsx";
 import { ProjectCard } from "./project-card.tsx";
