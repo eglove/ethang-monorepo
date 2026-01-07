@@ -10,8 +10,15 @@ import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import { SquareArrowOutUpRight } from "lucide-react";
+import { useEffect } from "react";
 
-import { type GetPaths, getPaths } from "../../graphql/queries.ts";
+import { apolloClient } from "../../graphql/client.ts";
+import {
+  type GetCourses,
+  getCourses,
+  type GetPaths,
+  getPaths,
+} from "../../graphql/queries.ts";
 import { CourseList } from "./course-list.tsx";
 
 export const CoursesContainer = () => {
@@ -19,6 +26,12 @@ export const CoursesContainer = () => {
 
   const paths = get(data, ["paths"]);
   const isLoaded = !loading && paths !== undefined;
+
+  useEffect(() => {
+    apolloClient
+      .query<GetCourses>({ query: getCourses })
+      .catch(globalThis.console.error);
+  }, []);
 
   return (
     <Skeleton className="my-4" isLoaded={isLoaded}>
