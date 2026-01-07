@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { ApolloProvider } from "@apollo/client/react";
 
-import { apolloClient } from "../../components/providers";
+import { apolloClient } from "../../graphql/client.ts";
 import { CourseList } from "./course-list";
 
 const meta = {

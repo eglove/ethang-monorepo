@@ -36,6 +36,7 @@ describe("path resolvers", () => {
           _count: {
             select: { courses: true },
           },
+          courses: true,
         },
         where: { id: "path-1" },
       });
@@ -67,6 +68,7 @@ describe("path resolvers", () => {
           _count: {
             select: { courses: true },
           },
+          courses: true,
         },
         orderBy: {
           order: "asc",

@@ -1,5 +1,26 @@
 import { gql } from "@apollo/client";
 
+export const TECH_FRAGMENT = gql`
+  fragment TechFields on Tech {
+    id
+    name
+  }
+`;
+
+export const PROJECT_FRAGMENT = gql`
+  fragment ProjectFields on Project {
+    code
+    description
+    id
+    publicUrl
+    techs {
+      ...TechFields
+    }
+    title
+  }
+  ${TECH_FRAGMENT}
+`;
+
 export type GetProject = {
   project: Project;
 };
@@ -39,15 +60,8 @@ export const getProjectIds = gql`
 export const getProject = gql`
   query Project($id: String!) {
     project(id: $id) {
-      id
-      title
-      description
-      code
-      publicUrl
-      techs {
-        id
-        name
-      }
+      ...ProjectFields
     }
   }
+  ${PROJECT_FRAGMENT}
 `;

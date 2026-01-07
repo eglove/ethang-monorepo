@@ -1,83 +1,43 @@
 import type { PropsWithChildren } from "react";
 
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
 import { HeroUIProvider } from "@heroui/react";
-import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { keepPreviousData, QueryClient } from "@tanstack/react-query";
-import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { useRouter } from "@tanstack/react-router";
-import { del, get, set } from "idb-keyval";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
 
-export const apolloClient = new ApolloClient({
-  cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: `${globalThis.location.protocol}/graphql`,
-  }),
-});
-
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      gcTime: 1000 * 60 * 60,
-      placeholderData: keepPreviousData,
-      staleTime: 1000 * 60 * 60,
-    },
-  },
-});
-
-const persister = createAsyncStoragePersister({
-  key: "REACT_QUERY_ETHANG_CACHE",
-  storage: {
-    async getItem(key) {
-      return get(key);
-    },
-    async removeItem(key) {
-      return del(key);
-    },
-    async setItem(key, value) {
-      return set(key, value);
-    },
-  },
-});
+import { apolloClient } from "../graphql/client.ts";
 
 export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   const router = useRouter();
 
   return (
     <ApolloProvider client={apolloClient}>
-      <PersistQueryClientProvider
-        client={queryClient}
-        persistOptions={{ persister }}
-      >
-        <HeroUIProvider
-          useHref={(url) => {
+      <HeroUIProvider
+        useHref={(url) => {
+          const urlObject = attempt(() => new URL(url));
+
+          if (isError(urlObject)) {
+            return router.buildLocation({ to: url }).href;
+          }
+
+          return url;
+        }}
+        navigate={(url) => {
+          attemptAsync(async () => {
             const urlObject = attempt(() => new URL(url));
 
             if (isError(urlObject)) {
-              return router.buildLocation({ to: url }).href;
+              return router.navigate({ to: url });
             }
 
             return url;
-          }}
-          navigate={(url) => {
-            attemptAsync(async () => {
-              const urlObject = attempt(() => new URL(url));
-
-              if (isError(urlObject)) {
-                return router.navigate({ to: url });
-              }
-
-              return url;
-            }).catch(globalThis.console.error);
-          }}
-        >
-          {children}
-        </HeroUIProvider>
-      </PersistQueryClientProvider>
+          }).catch(globalThis.console.error);
+        }}
+      >
+        {children}
+      </HeroUIProvider>
     </ApolloProvider>
   );
 };
