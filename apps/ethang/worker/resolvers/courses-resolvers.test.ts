@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { courses } from "./courses-resolvers.ts";
+import { course, courses } from "./courses-resolvers.ts";
 
 const mockPrisma = {
   course: {
     findMany: vi.fn(),
+    findUnique: vi.fn(),
   },
 };
 
@@ -13,6 +14,32 @@ vi.mock("../prisma-client", () => ({
 }));
 
 describe("courses resolver", () => {
+  it("returns a single course", async () => {
+    const mockCourse = {
+      author: "Author 1",
+      id: "1",
+      name: "Course 1",
+      url: "url-1",
+    };
+    mockPrisma.course.findUnique.mockResolvedValue(mockCourse);
+
+    const result = await course(
+      {},
+      { id: "1" },
+      // @ts-expect-error env mock
+      { env: {} },
+    );
+
+    expect(result).toEqual(mockCourse);
+    expect(mockPrisma.course.findUnique).toHaveBeenCalledWith({
+      include: {
+        knowledgeAreas: true,
+        path: true,
+      },
+      where: { id: "1" },
+    });
+  });
+
   it("returns all courses", async () => {
     const mockCourses = [
       {

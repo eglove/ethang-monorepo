@@ -40,6 +40,7 @@ export const typeDefs = `#graphql
   }
 
   type Query {
+    course(id: String!): Course
     courses(where: CourseWhereInput): [Course]
     knowledgeArea(id: String!): KnowledgeArea
     knowledgeAreas: [KnowledgeArea]

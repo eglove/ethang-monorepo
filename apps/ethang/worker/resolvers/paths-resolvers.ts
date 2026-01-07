@@ -16,6 +16,7 @@ export const path = async (
       _count: {
         select: { courses: true },
       },
+      courses: true,
     },
     where: { id: get(_arguments, ["id"]) },
   });
@@ -42,6 +43,7 @@ export const paths = async (
       _count: {
         select: { courses: true },
       },
+      courses: true,
     },
     orderBy: {
       order: "asc",
