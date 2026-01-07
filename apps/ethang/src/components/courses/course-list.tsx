@@ -1,9 +1,9 @@
 import { useQuery } from "@apollo/client/react";
+import { Listbox, ListboxItem } from "@heroui/react";
 import get from "lodash/get.js";
-import map from "lodash/map.js";
 
 import { getPath, type PathQuery } from "../../graphql/paths.ts";
-import { CourseLink } from "./course-link.tsx";
+import { CourseItem } from "./course-item.tsx";
 
 type CourseListProperties = {
   pathId: string;
@@ -15,18 +15,29 @@ export const CourseList = ({ pathId }: Readonly<CourseListProperties>) => {
   });
 
   const path = get(data, ["path"]);
+  const courses = get(path, ["courses"], []);
 
   return (
-    <ul className="list-inside list-disc">
-      {map(get(path, ["courses"]), (course) => {
+    <Listbox
+      variant="flat"
+      items={courses}
+      className="gap-0 p-0"
+      aria-label="Course List"
+      emptyContent="No courses found."
+    >
+      {(course) => {
         const courseId = get(course, ["id"]);
 
         return (
-          <li key={courseId} className="my-2">
-            <CourseLink courseId={courseId} />
-          </li>
+          <ListboxItem
+            key={courseId}
+            textValue={courseId}
+            className="h-auto px-2 py-1"
+          >
+            <CourseItem courseId={courseId} />
+          </ListboxItem>
         );
-      })}
-    </ul>
+      }}
+    </Listbox>
   );
 };
