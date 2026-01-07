@@ -2,6 +2,7 @@ import type { GraphQLResolveInfo } from "graphql/type";
 
 import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
+import isObject from "lodash/isObject.js";
 import map from "lodash/map.js";
 
 import type { KnowledgeAreaSelect } from "../../generated/prisma/models/KnowledgeArea.ts";
@@ -18,6 +19,10 @@ export const knowledgeArea = async (
   const select = prismaSelect<KnowledgeAreaSelect>(info, {
     knowledgeArea: { id: true },
   });
+
+  if (isObject(select.courses)) {
+    select.courses.orderBy = { order: "asc" };
+  }
 
   const data = await prisma.knowledgeArea.findUnique({
     select,
@@ -44,6 +49,10 @@ export const knowledgeAreas = async (
   const select = prismaSelect<KnowledgeAreaSelect>(info, {
     KnowledgeArea: { id: true },
   });
+
+  if (isObject(select.courses)) {
+    select.courses.orderBy = { order: "asc" };
+  }
 
   const data = await prisma.knowledgeArea.findMany({
     orderBy: {

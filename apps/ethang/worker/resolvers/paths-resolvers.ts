@@ -1,6 +1,7 @@
 import type { GraphQLResolveInfo } from "graphql/type";
 
 import get from "lodash/get.js";
+import isObject from "lodash/isObject";
 
 import type { PathSelect } from "../../generated/prisma/models/Path.ts";
 
@@ -16,6 +17,10 @@ export const path = async (
   const select = prismaSelect<PathSelect>(info, {
     path: { id: true },
   });
+
+  if (isObject(select.courses)) {
+    select.courses.orderBy = { order: "asc" };
+  }
 
   return prisma.path.findUnique({
     select,
@@ -33,6 +38,10 @@ export const paths = async (
   const select = prismaSelect<PathSelect>(info, {
     path: { id: true },
   });
+
+  if (isObject(select.courses)) {
+    select.courses.orderBy = { order: "asc" };
+  }
 
   return prisma.path.findMany({
     orderBy: {

@@ -45,17 +45,6 @@ input KnowledgeAreaWhereInput {
     id: StringFilter
 }
 
-type Query {
-    course(id: String!): Course @cacheControl(maxAge: 3600)
-    courses(where: CourseWhereInput): [Course] @cacheControl(maxAge: 3600)
-    knowledgeArea(id: String!): KnowledgeArea @cacheControl(maxAge: 3600)
-    knowledgeAreas: [KnowledgeArea] @cacheControl(maxAge: 3600)
-    path(id: String!): Path @cacheControl(maxAge: 3600)
-    paths: [Path] @cacheControl(maxAge: 3600)
-    project(id: String!): Project @cacheControl(maxAge: 3600)
-    projects(skip: Int, take: Int, where: ProjectWhereInput): [Project] @cacheControl(maxAge: 3600)
-}
-
 type Course @cacheControl(maxAge: 3600) {
     id: String
     name: String
@@ -85,5 +74,16 @@ type KnowledgeArea @cacheControl(maxAge: 3600) {
     order: Int
     courses: [Course]
     courseCount: Int
+}
+
+type Query {
+    course(id: String!): Course @cacheControl(maxAge: 3600)
+    courses(where: CourseWhereInput): [Course] @cacheControl(maxAge: 3600)
+    knowledgeArea(id: String!): KnowledgeArea @cacheControl(maxAge: 3600)
+    knowledgeAreas: [KnowledgeArea] @cacheControl(maxAge: 3600)
+    path(id: String!): Path @cacheControl(maxAge: 3600)
+    paths: [Path] @cacheControl(maxAge: 3600)
+    project(id: String!): Project @cacheControl(maxAge: 3600)
+    projects(skip: Int, take: Int, where: ProjectWhereInput): [Project] @cacheControl(maxAge: 3600)
 }
 `;
