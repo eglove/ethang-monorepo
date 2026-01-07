@@ -1,5 +1,16 @@
 export const typeDefs = `#graphql
-type Project {
+enum CacheControlScope {
+    PUBLIC
+    PRIVATE
+}
+
+directive @cacheControl(
+    maxAge: Int
+    scope: CacheControlScope
+    inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+type Project @cacheControl(maxAge: 3600) {
     id: String
     code: String
     description: String
@@ -8,7 +19,7 @@ type Project {
     techs: [Tech]
 }
 
-type Tech {
+type Tech @cacheControl(maxAge: 3600) {
     id: String
     name: String
     projects: [Project]
@@ -35,17 +46,17 @@ input KnowledgeAreaWhereInput {
 }
 
 type Query {
-    course(id: String!): Course
-    courses(where: CourseWhereInput): [Course]
-    knowledgeArea(id: String!): KnowledgeArea
-    knowledgeAreas: [KnowledgeArea]
-    path(id: String!): Path
-    paths: [Path]
-    project(id: String!): Project
-    projects(skip: Int, take: Int, where: ProjectWhereInput): [Project]
+    course(id: String!): Course @cacheControl(maxAge: 3600)
+    courses(where: CourseWhereInput): [Course] @cacheControl(maxAge: 3600)
+    knowledgeArea(id: String!): KnowledgeArea @cacheControl(maxAge: 3600)
+    knowledgeAreas: [KnowledgeArea] @cacheControl(maxAge: 3600)
+    path(id: String!): Path @cacheControl(maxAge: 3600)
+    paths: [Path] @cacheControl(maxAge: 3600)
+    project(id: String!): Project @cacheControl(maxAge: 3600)
+    projects(skip: Int, take: Int, where: ProjectWhereInput): [Project] @cacheControl(maxAge: 3600)
 }
 
-type Course {
+type Course @cacheControl(maxAge: 3600) {
     id: String
     name: String
     author: String
@@ -55,7 +66,7 @@ type Course {
     knowledgeAreas: [KnowledgeArea]
 }
 
-type Path {
+type Path @cacheControl(maxAge: 3600) {
     id: String
     name: String
     url: String
@@ -68,7 +79,7 @@ type PathCount {
     courses: Int
 }
 
-type KnowledgeArea {
+type KnowledgeArea @cacheControl(maxAge: 3600) {
     id: String
     name: String
     order: Int

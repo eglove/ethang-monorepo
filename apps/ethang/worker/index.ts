@@ -1,4 +1,5 @@
 import { ApolloServer, type BaseContext } from "@apollo/server";
+import ApolloServerPluginResponseCache from "@apollo/server-plugin-response-cache";
 import {
   type CloudflareWorkersHandler,
   startServerAndCreateCloudflareWorkersHandler,
@@ -11,6 +12,7 @@ import { typeDefs } from "./type-definitions.ts";
 
 const server = new ApolloServer<BaseContext>({
   introspection: true,
+  plugins: [ApolloServerPluginResponseCache()],
   resolvers,
   typeDefs,
 });

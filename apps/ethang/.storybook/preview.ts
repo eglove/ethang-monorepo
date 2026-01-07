@@ -6,7 +6,6 @@ const preview: Preview = {
     a11y: {
       test: "error",
     },
-
     controls: {
       matchers: {
         color: /(?:background|color)$/iu,

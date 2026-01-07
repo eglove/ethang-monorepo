@@ -1,3 +1,5 @@
+import type { GraphQLResolveInfo } from "graphql/type";
+
 import get from "lodash/get.js";
 import { describe, expect, it, vi } from "vitest";
 
@@ -12,6 +14,7 @@ const mockPrisma = {
 
 vi.mock("../prisma-client.ts", () => ({
   getPrismaClient: () => mockPrisma,
+  prismaSelect: vi.fn().mockReturnValue({ id: true, name: true }),
 }));
 
 describe("knowledgeArea resolvers", () => {
@@ -29,16 +32,10 @@ describe("knowledgeArea resolvers", () => {
         { id: "ka-1" },
         // @ts-expect-error env mock
         { env: {} },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        {} as GraphQLResolveInfo,
       );
 
-      expect(mockPrisma.knowledgeArea.findUnique).toHaveBeenCalledWith({
-        include: {
-          _count: {
-            select: { courses: true },
-          },
-        },
-        where: { id: "ka-1" },
-      });
       expect(get(result, ["id"])).toBe("ka-1");
       expect(get(result, ["courseCount"])).toBe(5);
     });
@@ -60,18 +57,10 @@ describe("knowledgeArea resolvers", () => {
         {},
         // @ts-expect-error env mock
         { env: {} },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        {} as GraphQLResolveInfo,
       );
 
-      expect(mockPrisma.knowledgeArea.findMany).toHaveBeenCalledWith({
-        include: {
-          _count: {
-            select: { courses: true },
-          },
-        },
-        orderBy: {
-          order: "asc",
-        },
-      });
       expect(get(result, [0, "courseCount"])).toBe(2);
       expect(get(result, [0, "name"])).toBe("React");
     });

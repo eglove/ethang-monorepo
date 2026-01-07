@@ -7,6 +7,7 @@
     "@anatine/zod-mock": "^3.14.0",
     "@apollo/client": "^4.0.11",
     "@apollo/server": "^5.2.0",
+    "@apollo/server-plugin-response-cache": "^5.0.0",
     "@as-integrations/cloudflare-workers": "^1.1.1",
     "@ethang/schemas": "workspace:*",
     "@ethang/store": "^2.3.2",

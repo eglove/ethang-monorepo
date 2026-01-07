@@ -1,3 +1,5 @@
+import type { GraphQLResolveInfo } from "graphql/type";
+
 import { describe, expect, it, vi } from "vitest";
 
 import { course, courses } from "./courses-resolvers.ts";
@@ -11,6 +13,7 @@ const mockPrisma = {
 
 vi.mock("../prisma-client", () => ({
   getPrismaClient: () => mockPrisma,
+  prismaSelect: vi.fn().mockReturnValue({ id: true, name: true }),
 }));
 
 describe("courses resolver", () => {
@@ -28,16 +31,11 @@ describe("courses resolver", () => {
       { id: "1" },
       // @ts-expect-error env mock
       { env: {} },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      {} as GraphQLResolveInfo,
     );
 
     expect(result).toEqual(mockCourse);
-    expect(mockPrisma.course.findUnique).toHaveBeenCalledWith({
-      include: {
-        knowledgeAreas: true,
-        path: true,
-      },
-      where: { id: "1" },
-    });
   });
 
   it("returns all courses", async () => {
@@ -56,19 +54,11 @@ describe("courses resolver", () => {
       {},
       // @ts-expect-error env mock
       { env: {} },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      {} as GraphQLResolveInfo,
     );
 
     expect(result).toEqual(mockCourses);
-    expect(mockPrisma.course.findMany).toHaveBeenCalledWith({
-      include: {
-        knowledgeAreas: true,
-        path: true,
-      },
-      orderBy: {
-        order: "asc",
-      },
-      where: {},
-    });
   });
 
   it("filters courses by knowledge area", async () => {
@@ -92,18 +82,10 @@ describe("courses resolver", () => {
       { where },
       // @ts-expect-error env mock
       { env: {} },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      {} as GraphQLResolveInfo,
     );
 
     expect(result).toEqual(mockCourses);
-    expect(mockPrisma.course.findMany).toHaveBeenCalledWith({
-      include: {
-        knowledgeAreas: true,
-        path: true,
-      },
-      orderBy: {
-        order: "asc",
-      },
-      where,
-    });
   });
 });

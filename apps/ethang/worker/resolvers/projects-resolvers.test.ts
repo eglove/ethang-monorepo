@@ -1,3 +1,5 @@
+import type { GraphQLResolveInfo } from "graphql/type";
+
 import get from "lodash/get.js";
 import { describe, expect, it, vi } from "vitest";
 
@@ -13,6 +15,7 @@ const mockPrisma = {
 
 vi.mock("../prisma-client", () => ({
   getPrismaClient: () => mockPrisma,
+  prismaSelect: vi.fn().mockReturnValue({ id: true, title: true }),
 }));
 
 const testProject = "Test Project";
@@ -34,11 +37,12 @@ describe("projects resolver", () => {
       { take: 10 },
       // @ts-expect-error env mock
       { env: {} },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      {} as GraphQLResolveInfo,
     );
 
-    expect(get(result, ["projects"])).toHaveLength(1);
-    expect(get(result, ["projects", 0, "title"])).toBe(testProject);
-    expect(get(result, ["total"])).toBe(1);
+    expect(result.length).toBe(1);
+    expect(get(result, [0, "title"])).toBe(testProject);
   });
 
   it("filters projects by titles", async () => {
@@ -56,10 +60,12 @@ describe("projects resolver", () => {
       { where: { title: { in: [ethangStore] } } },
       // @ts-expect-error env mock
       { env: {} },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      {} as GraphQLResolveInfo,
     );
 
     expect(mockPrisma.project.findMany).toHaveBeenCalled();
-    expect(get(result, ["projects", 0, "title"])).toBe(ethangStore);
+    expect(get(result, [0, "title"])).toBe(ethangStore);
   });
 
   it("returns a single project", async () => {
@@ -74,6 +80,8 @@ describe("projects resolver", () => {
       { id: "1" },
       // @ts-expect-error env mock
       { env: {} },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      {} as GraphQLResolveInfo,
     );
 
     expect(get(result, ["id"])).toBe("1");

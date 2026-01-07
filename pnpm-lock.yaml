@@ -96,6 +96,9 @@ importers:
       '@apollo/server':
         specifier: ^5.2.0
         version: 5.2.0(graphql@16.12.0)
+      '@apollo/server-plugin-response-cache':
+        specifier: ^5.0.0
+        version: 5.0.0(@apollo/server@5.2.0(graphql@16.12.0))(graphql@16.12.0)
       '@as-integrations/cloudflare-workers':
         specifier: ^1.1.1
         version: 1.1.1(@apollo/server@5.2.0(graphql@16.12.0))(graphql@16.12.0)
@@ -1190,6 +1193,13 @@ packages:
     resolution: {integrity: sha512-3HEMD6fSantG2My3jWkb9dvfkF9vJ4BDLRjMgsnD790VINtuPaEp+h3Hg9HOHiWkML6QsOhnaRqZ+gvhp3y8Nw==}
     peerDependencies:
       graphql: 14.x || 15.x || 16.x
+
+  '@apollo/server-plugin-response-cache@5.0.0':
+    resolution: {integrity: sha512-q78R0jUP642EjBvfzkAV5HtM0fcoA0/D2tBGQdXPShj6PvcV2UDhaw6Yw/N9rkXKJmFtXZiGyDyOssfWO1cTxw==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@apollo/server': ^5.0.0
+      graphql: ^16.11.0
 
   '@apollo/server@5.2.0':
     resolution: {integrity: sha512-OEAl5bwVitkvVkmZlgWksSnQ10FUr6q2qJMdkexs83lsvOGmd/y81X5LoETmKZux8UiQsy/A/xzP00b8hTHH/w==}
@@ -12679,6 +12689,13 @@ snapshots:
       '@apollo/utils.fetcher': 3.1.0
       '@apollo/utils.keyvaluecache': 4.0.0
       '@apollo/utils.logger': 3.0.0
+      graphql: 16.12.0
+
+  '@apollo/server-plugin-response-cache@5.0.0(@apollo/server@5.2.0(graphql@16.12.0))(graphql@16.12.0)':
+    dependencies:
+      '@apollo/server': 5.2.0(graphql@16.12.0)
+      '@apollo/utils.createhash': 3.0.1
+      '@apollo/utils.keyvaluecache': 4.0.0
       graphql: 16.12.0
 
   '@apollo/server@5.2.0(graphql@16.12.0)':

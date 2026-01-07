@@ -49,5 +49,6 @@ export const apolloClient = new ApolloClient({
   }),
   link: new HttpLink({
     uri: `${globalThis.location.protocol}/graphql`,
+    useGETForQueries: true,
   }),
 });
