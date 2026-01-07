@@ -23,7 +23,7 @@
     "eslint": "^9.39.2",
     "rimraf": "^6.1.2",
     "typescript-eslint": "^8.52.0",
-    "wrangler": "^4.56.0"
+    "wrangler": "^4.57.0"
   },
   "engines": {
     "node": ">=24"

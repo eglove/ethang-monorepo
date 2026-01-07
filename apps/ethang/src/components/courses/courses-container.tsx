@@ -16,7 +16,7 @@ import { apolloClient } from "../../graphql/client.ts";
 import { getPath, getPaths, type PathsQuery } from "../../graphql/paths.ts";
 import { CourseList } from "./course-list.tsx";
 
-export const CourseAccordion = () => {
+export const CoursesContainer = () => {
   const { data, loading } = useQuery<PathsQuery>(getPaths);
 
   const paths = get(data, ["paths"]);

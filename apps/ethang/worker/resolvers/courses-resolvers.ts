@@ -14,7 +14,7 @@ export const course = async (
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
   const select = prismaSelect<CourseSelect>(info, {
-    Course: ["id", "__typename"],
+    course: { id: true },
   });
 
   return prisma.course.findUnique({
@@ -37,7 +37,7 @@ export const courses = async (
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
   const select = prismaSelect<CourseSelect>(info, {
-    Course: ["id", "__typename"],
+    course: { id: true },
   });
 
   const where = get(_arguments, ["where"]);

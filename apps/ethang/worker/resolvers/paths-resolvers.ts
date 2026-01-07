@@ -14,7 +14,7 @@ export const path = async (
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
   const select = prismaSelect<PathSelect>(info, {
-    Path: ["id", "__typename"],
+    path: { id: true },
   });
 
   return prisma.path.findUnique({
@@ -31,7 +31,7 @@ export const paths = async (
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
   const select = prismaSelect<PathSelect>(info, {
-    Path: ["id", "__typename"],
+    path: { id: true },
   });
 
   return prisma.path.findMany({

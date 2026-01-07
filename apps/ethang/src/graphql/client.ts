@@ -47,6 +47,11 @@ export const apolloClient = new ApolloClient({
       },
     },
   }),
+  defaultOptions: {
+    query: {
+      fetchPolicy: "cache-first",
+    },
+  },
   link: new HttpLink({
     uri: `${globalThis.location.protocol}/graphql`,
     useGETForQueries: true,

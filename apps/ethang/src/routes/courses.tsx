@@ -1,4 +1,4 @@
-import { CourseAccordion } from "../components/courses/course-accordion.tsx";
+import { CoursesContainer } from "../components/courses/courses-container.tsx";
 import { MainLayout } from "../components/main-layout.tsx";
 import { TypographyH1 } from "../components/typography/typography-h1.tsx";
 import { TypographyP } from "../components/typography/typography-p.tsx";
@@ -22,7 +22,7 @@ const RouteComponent = () => {
         done, and so on.
       </TypographyP>
 
-      <CourseAccordion />
+      <CoursesContainer />
     </MainLayout>
   );
 };

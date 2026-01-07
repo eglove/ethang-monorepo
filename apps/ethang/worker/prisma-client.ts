@@ -12,11 +12,10 @@ export const getPrismaClient = (environment: Env) => {
 
 export const prismaSelect = <TSelect>(
   info: GraphQLResolveInfo,
-  defaultFields: Record<string, string[]>,
+  defaultFields: Record<string, Record<string, boolean>>,
 ) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   return new PrismaSelect(info, {
-    // @ts-expect-error allow record
     defaultFields,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   }).value.select as TSelect;

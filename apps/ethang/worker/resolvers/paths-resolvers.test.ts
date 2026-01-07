@@ -37,7 +37,7 @@ describe("path resolvers", () => {
       );
 
       expect(get(result, ["id"])).toBe("path-1");
-      expect(get(result, ["courseCount"])).toBe(3);
+      expect(get(result, ["_count", "courses"])).toBe(3);
     });
   });
 
@@ -61,7 +61,7 @@ describe("path resolvers", () => {
         {} as GraphQLResolveInfo,
       );
 
-      expect(get(result, [0, "courseCount"])).toBe(10);
+      expect(get(result, [0, "_count", "courses"])).toBe(10);
       expect(get(result, [0, "name"])).toBe("Backend");
     });
   });
