@@ -30,9 +30,9 @@ export default {
     if (startsWith(url.pathname, "/graphql")) {
       if (isNil(apolloServer)) {
         apolloServer = startServerAndCreateCloudflareWorkersHandler(server, {
-          // @ts-expect-error ignore for now
-          context: ({ env }) => {
-            return { env };
+          // @ts-expect-error doesn't need to be promise
+          context: (_context) => {
+            return _context;
           },
         });
       }
