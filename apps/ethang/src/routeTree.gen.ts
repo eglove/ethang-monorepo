@@ -12,7 +12,6 @@ import type { CreateFileRoute, FileRoutesByPath } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProjectsRouteImport } from './routes/projects'
-import { Route as NewsRouteImport } from './routes/news'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
@@ -24,11 +23,6 @@ import { Route as TipsFineGrainedReactRendersRouteImport } from './routes/tips/f
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoursesRoute = CoursesRouteImport.update({
@@ -72,7 +66,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
-  '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
@@ -83,7 +76,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
-  '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
@@ -95,7 +87,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
-  '/news': typeof NewsRoute
   '/projects': typeof ProjectsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
@@ -108,7 +99,6 @@ export interface FileRouteTypes {
     | '/'
     | '/blog'
     | '/courses'
-    | '/news'
     | '/projects'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
@@ -119,7 +109,6 @@ export interface FileRouteTypes {
     | '/'
     | '/blog'
     | '/courses'
-    | '/news'
     | '/projects'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
@@ -130,7 +119,6 @@ export interface FileRouteTypes {
     | '/'
     | '/blog'
     | '/courses'
-    | '/news'
     | '/projects'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
@@ -142,7 +130,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BlogRoute: typeof BlogRoute
   CoursesRoute: typeof CoursesRoute
-  NewsRoute: typeof NewsRoute
   ProjectsRoute: typeof ProjectsRoute
   TipsFineGrainedReactRendersRoute: typeof TipsFineGrainedReactRendersRoute
   TipsScrollContainersRoute: typeof TipsScrollContainersRoute
@@ -157,13 +144,6 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/courses': {
@@ -245,15 +225,6 @@ declare module './routes/courses' {
     FileRoutesByPath['/courses']['fullPath']
   >
 }
-declare module './routes/news' {
-  const createFileRoute: CreateFileRoute<
-    '/news',
-    FileRoutesByPath['/news']['parentRoute'],
-    FileRoutesByPath['/news']['id'],
-    FileRoutesByPath['/news']['path'],
-    FileRoutesByPath['/news']['fullPath']
-  >
-}
 declare module './routes/projects' {
   const createFileRoute: CreateFileRoute<
     '/projects',
@@ -304,7 +275,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BlogRoute: BlogRoute,
   CoursesRoute: CoursesRoute,
-  NewsRoute: NewsRoute,
   ProjectsRoute: ProjectsRoute,
   TipsFineGrainedReactRendersRoute: TipsFineGrainedReactRendersRoute,
   TipsScrollContainersRoute: TipsScrollContainersRoute,
