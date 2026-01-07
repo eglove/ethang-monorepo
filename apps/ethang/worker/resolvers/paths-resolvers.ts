@@ -1,8 +1,6 @@
 import type { GraphQLResolveInfo } from "graphql/type";
 
 import get from "lodash/get.js";
-import isNil from "lodash/isNil.js";
-import map from "lodash/map.js";
 
 import type { PathSelect } from "../../generated/prisma/models/Path.ts";
 
@@ -16,22 +14,13 @@ export const path = async (
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
   const select = prismaSelect<PathSelect>(info, {
-    Course: ["id", "__typename"],
+    Path: ["id", "__typename"],
   });
 
-  const data = await prisma.path.findUnique({
+  return prisma.path.findUnique({
     select,
     where: { id: get(_arguments, ["id"]) },
   });
-
-  if (isNil(data)) {
-    return null;
-  }
-
-  return {
-    ...data,
-    courseCount: get(data, ["_count", "courses"]),
-  };
 };
 
 export const paths = async (
@@ -42,20 +31,13 @@ export const paths = async (
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
   const select = prismaSelect<PathSelect>(info, {
-    Course: ["id", "__typename"],
+    Path: ["id", "__typename"],
   });
 
-  const data = await prisma.path.findMany({
+  return prisma.path.findMany({
     orderBy: {
       order: "asc",
     },
     select,
-  });
-
-  return map(data, (item) => {
-    return {
-      ...item,
-      courseCount: get(item, ["_count", "courses"]),
-    };
   });
 };

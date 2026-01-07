@@ -16,7 +16,7 @@ export const knowledgeArea = async (
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
   const select = prismaSelect<KnowledgeAreaSelect>(info, {
-    Course: ["id", "__typename"],
+    KnowledgeArea: ["id", "__typename"],
   });
 
   const data = await prisma.knowledgeArea.findUnique({
@@ -42,7 +42,7 @@ export const knowledgeAreas = async (
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
   const select = prismaSelect<KnowledgeAreaSelect>(info, {
-    Course: ["id", "__typename"],
+    KnowledgeArea: ["id", "__typename"],
   });
 
   const data = await prisma.knowledgeArea.findMany({

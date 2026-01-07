@@ -15,7 +15,7 @@ export const project = async (
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
   const select = prismaSelect<ProjectSelect>(info, {
-    Course: ["id", "__typename"],
+    Project: ["id", "__typename"],
   });
 
   return prisma.project.findUnique({
@@ -37,7 +37,7 @@ export const projects = async (
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
   const select = prismaSelect<ProjectSelect>(info, {
-    Course: ["id", "__typename"],
+    Project: ["id", "__typename"],
   });
 
   const skip = get(_arguments, ["skip"]);
