@@ -33,18 +33,6 @@ input StringFilter {
     in: [String]
 }
 
-input CourseWhereInput {
-    knowledgeAreas: KnowledgeAreaListRelationFilter
-}
-
-input KnowledgeAreaListRelationFilter {
-    some: KnowledgeAreaWhereInput
-}
-
-input KnowledgeAreaWhereInput {
-    id: StringFilter
-}
-
 type Course @cacheControl(maxAge: 3600) {
     id: String
     name: String
@@ -52,7 +40,6 @@ type Course @cacheControl(maxAge: 3600) {
     url: String
     order: Int
     path: Path
-    knowledgeAreas: [KnowledgeArea]
 }
 
 type Path @cacheControl(maxAge: 3600) {
@@ -68,19 +55,9 @@ type PathCount {
     courses: Int
 }
 
-type KnowledgeArea @cacheControl(maxAge: 3600) {
-    id: String
-    name: String
-    order: Int
-    courses: [Course]
-    courseCount: Int
-}
-
 type Query {
     course(id: String!): Course @cacheControl(maxAge: 3600)
-    courses(where: CourseWhereInput): [Course] @cacheControl(maxAge: 3600)
-    knowledgeArea(id: String!): KnowledgeArea @cacheControl(maxAge: 3600)
-    knowledgeAreas: [KnowledgeArea] @cacheControl(maxAge: 3600)
+    courses: [Course] @cacheControl(maxAge: 3600)
     path(id: String!): Path @cacheControl(maxAge: 3600)
     paths: [Path] @cacheControl(maxAge: 3600)
     project(id: String!): Project @cacheControl(maxAge: 3600)
@@ -129,16 +106,6 @@ input UpdatePathInput {
     order: Int
 }
 
-input CreateKnowledgeAreaInput {
-    name: String!
-    order: Int!
-}
-
-input UpdateKnowledgeAreaInput {
-    name: String
-    order: Int
-}
-
 type Mutation {
     createProject(data: CreateProjectInput!): Project
     updateProject(id: String!, data: UpdateProjectInput!): Project
@@ -151,9 +118,5 @@ type Mutation {
     createPath(data: CreatePathInput!): Path
     updatePath(id: String!, data: UpdatePathInput!): Path
     deletePath(id: String!): Path
-
-    createKnowledgeArea(data: CreateKnowledgeAreaInput!): KnowledgeArea
-    updateKnowledgeArea(id: String!, data: UpdateKnowledgeAreaInput!): KnowledgeArea
-    deleteKnowledgeArea(id: String!): KnowledgeArea
 }
 `;

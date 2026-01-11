@@ -32,11 +32,7 @@ export const course = async (
 
 export const courses = async (
   _parent: unknown,
-  _arguments: {
-    where?: {
-      knowledgeAreas?: { some?: { id?: { in?: string[] } } };
-    };
-  },
+  _arguments: unknown,
   context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
@@ -45,21 +41,18 @@ export const courses = async (
     course: { id: true },
   });
 
-  const where = get(_arguments, ["where"]);
-
   return prisma.course.findMany({
     orderBy: {
       order: "asc",
     },
     select,
-    where: where ?? {},
   });
 };
 
 export const createCourse = async (
   _parent: unknown,
   _arguments: {
-    data: Exclude<CourseUncheckedCreateInput, "id" | "knowledgeAreas">;
+    data: Exclude<CourseUncheckedCreateInput, "id">;
   },
   context: ServerContext,
   info: GraphQLResolveInfo,

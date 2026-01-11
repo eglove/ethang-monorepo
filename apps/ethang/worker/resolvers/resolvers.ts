@@ -7,13 +7,6 @@ import {
   updateCourse,
 } from "./courses-resolvers.ts";
 import {
-  createKnowledgeArea,
-  deleteKnowledgeArea,
-  knowledgeArea,
-  knowledgeAreas,
-  updateKnowledgeArea,
-} from "./knowledge-area-resolvers.ts";
-import {
   createPath,
   deletePath,
   path,
@@ -31,23 +24,18 @@ import {
 export const resolvers = {
   Mutation: {
     createCourse: authenticated(createCourse),
-    createKnowledgeArea: authenticated(createKnowledgeArea),
     createPath: authenticated(createPath),
     createProject: authenticated(createProject),
     deleteCourse: authenticated(deleteCourse),
-    deleteKnowledgeArea: authenticated(deleteKnowledgeArea),
     deletePath: authenticated(deletePath),
     deleteProject: authenticated(deleteProject),
     updateCourse: authenticated(updateCourse),
-    updateKnowledgeArea: authenticated(updateKnowledgeArea),
     updatePath: authenticated(updatePath),
     updateProject: authenticated(updateProject),
   },
   Query: {
     course,
     courses,
-    knowledgeArea,
-    knowledgeAreas,
     path,
     paths,
     project,

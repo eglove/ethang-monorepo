@@ -75,20 +75,15 @@ describe("courses resolver", () => {
       {
         author: "Author 1",
         id: "1",
-        knowledgeAreas: [{ id: "ka1", name: "KA 1" }],
         name: "Course 1",
         url: "url-1",
       },
     ];
     mockPrisma.course.findMany.mockResolvedValue(mockCourses);
 
-    const where = {
-      knowledgeAreas: { some: { id: { in: ["ka1"] } } },
-    };
-
     const result = await courses(
       {},
-      { where },
+      {},
       // @ts-expect-error env mock
       { env: {} },
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion

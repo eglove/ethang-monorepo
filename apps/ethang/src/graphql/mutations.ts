@@ -45,12 +45,13 @@ export const deletePath = gql`
 `;
 
 export type CreateCourse = {
-  createCourse: { id: string; name: string; url: string };
+  createCourse: { author: string; id: string; name: string; url: string };
 };
 
 export const createCourse = gql`
   mutation CreateCourse($data: CreateCourseInput!) {
     createCourse(data: $data) {
+      author
       id
       name
       url
@@ -59,12 +60,13 @@ export const createCourse = gql`
 `;
 
 export type UpdateCourse = {
-  updateCourse: { id: string; name: string; url: string };
+  updateCourse: { author: string; id: string; name: string; url: string };
 };
 
 export const updateCourse = gql`
   mutation UpdateCourse($id: String!, $data: UpdateCourseInput!) {
     updateCourse(id: $id, data: $data) {
+      author
       id
       name
       url

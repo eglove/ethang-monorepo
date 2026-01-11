@@ -34,9 +34,6 @@ export const apolloClient = new ApolloClient({
           course: {
             read: toCacheReference("Course"),
           },
-          knowledgeArea: {
-            read: toCacheReference("KnowledgeArea"),
-          },
           path: {
             read: toCacheReference("Path"),
           },

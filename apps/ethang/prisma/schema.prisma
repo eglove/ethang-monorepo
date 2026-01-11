@@ -56,15 +56,6 @@ model Course {
 
   pathId         String
   path           Path            @relation(fields: [pathId], references: [id])
-  knowledgeAreas KnowledgeArea[]
 
   @@unique([author, name])
-}
-
-model KnowledgeArea {
-  id    String @id @default(uuid(7))
-  name  String @unique
-  order Int    @unique
-
-  courses Course[]
 }

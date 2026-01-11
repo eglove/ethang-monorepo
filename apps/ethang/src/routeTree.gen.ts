@@ -16,12 +16,9 @@ import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TipsIndexRouteImport } from './routes/tips/index'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar-gutter'
 import { Route as TipsScrollContainersRouteImport } from './routes/tips/scroll-containers'
 import { Route as TipsFineGrainedReactRendersRouteImport } from './routes/tips/fine-grained-react-renders'
-import { Route as AdminPathsRouteImport } from './routes/admin/paths'
-import { Route as AdminCoursesRouteImport } from './routes/admin/courses'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
@@ -48,11 +45,6 @@ const TipsIndexRoute = TipsIndexRouteImport.update({
   path: '/tips/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TipsScrollbarGutterRoute = TipsScrollbarGutterRouteImport.update({
   id: '/tips/scrollbar-gutter',
   path: '/tips/scrollbar-gutter',
@@ -69,28 +61,15 @@ const TipsFineGrainedReactRendersRoute =
     path: '/tips/fine-grained-react-renders',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AdminPathsRoute = AdminPathsRouteImport.update({
-  id: '/admin/paths',
-  path: '/admin/paths',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminCoursesRoute = AdminCoursesRouteImport.update({
-  id: '/admin/courses',
-  path: '/admin/courses',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/projects': typeof ProjectsRoute
-  '/admin/courses': typeof AdminCoursesRoute
-  '/admin/paths': typeof AdminPathsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
-  '/admin': typeof AdminIndexRoute
   '/tips': typeof TipsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -98,12 +77,9 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/projects': typeof ProjectsRoute
-  '/admin/courses': typeof AdminCoursesRoute
-  '/admin/paths': typeof AdminPathsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
-  '/admin': typeof AdminIndexRoute
   '/tips': typeof TipsIndexRoute
 }
 export interface FileRoutesById {
@@ -112,12 +88,9 @@ export interface FileRoutesById {
   '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/projects': typeof ProjectsRoute
-  '/admin/courses': typeof AdminCoursesRoute
-  '/admin/paths': typeof AdminPathsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
-  '/admin/': typeof AdminIndexRoute
   '/tips/': typeof TipsIndexRoute
 }
 export interface FileRouteTypes {
@@ -127,12 +100,9 @@ export interface FileRouteTypes {
     | '/blog'
     | '/courses'
     | '/projects'
-    | '/admin/courses'
-    | '/admin/paths'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
-    | '/admin'
     | '/tips'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -140,12 +110,9 @@ export interface FileRouteTypes {
     | '/blog'
     | '/courses'
     | '/projects'
-    | '/admin/courses'
-    | '/admin/paths'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
-    | '/admin'
     | '/tips'
   id:
     | '__root__'
@@ -153,12 +120,9 @@ export interface FileRouteTypes {
     | '/blog'
     | '/courses'
     | '/projects'
-    | '/admin/courses'
-    | '/admin/paths'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
-    | '/admin/'
     | '/tips/'
   fileRoutesById: FileRoutesById
 }
@@ -167,12 +131,9 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRoute
   CoursesRoute: typeof CoursesRoute
   ProjectsRoute: typeof ProjectsRoute
-  AdminCoursesRoute: typeof AdminCoursesRoute
-  AdminPathsRoute: typeof AdminPathsRoute
   TipsFineGrainedReactRendersRoute: typeof TipsFineGrainedReactRendersRoute
   TipsScrollContainersRoute: typeof TipsScrollContainersRoute
   TipsScrollbarGutterRoute: typeof TipsScrollbarGutterRoute
-  AdminIndexRoute: typeof AdminIndexRoute
   TipsIndexRoute: typeof TipsIndexRoute
 }
 
@@ -213,13 +174,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TipsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/tips/scrollbar-gutter': {
       id: '/tips/scrollbar-gutter'
       path: '/tips/scrollbar-gutter'
@@ -239,20 +193,6 @@ declare module '@tanstack/react-router' {
       path: '/tips/fine-grained-react-renders'
       fullPath: '/tips/fine-grained-react-renders'
       preLoaderRoute: typeof TipsFineGrainedReactRendersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/paths': {
-      id: '/admin/paths'
-      path: '/admin/paths'
-      fullPath: '/admin/paths'
-      preLoaderRoute: typeof AdminPathsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/courses': {
-      id: '/admin/courses'
-      path: '/admin/courses'
-      fullPath: '/admin/courses'
-      preLoaderRoute: typeof AdminCoursesRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -294,24 +234,6 @@ declare module './routes/projects' {
     FileRoutesByPath['/projects']['fullPath']
   >
 }
-declare module './routes/admin/courses' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/courses',
-    FileRoutesByPath['/admin/courses']['parentRoute'],
-    FileRoutesByPath['/admin/courses']['id'],
-    FileRoutesByPath['/admin/courses']['path'],
-    FileRoutesByPath['/admin/courses']['fullPath']
-  >
-}
-declare module './routes/admin/paths' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/paths',
-    FileRoutesByPath['/admin/paths']['parentRoute'],
-    FileRoutesByPath['/admin/paths']['id'],
-    FileRoutesByPath['/admin/paths']['path'],
-    FileRoutesByPath['/admin/paths']['fullPath']
-  >
-}
 declare module './routes/tips/fine-grained-react-renders' {
   const createFileRoute: CreateFileRoute<
     '/tips/fine-grained-react-renders',
@@ -339,15 +261,6 @@ declare module './routes/tips/scrollbar-gutter' {
     FileRoutesByPath['/tips/scrollbar-gutter']['fullPath']
   >
 }
-declare module './routes/admin/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/',
-    FileRoutesByPath['/admin/']['parentRoute'],
-    FileRoutesByPath['/admin/']['id'],
-    FileRoutesByPath['/admin/']['path'],
-    FileRoutesByPath['/admin/']['fullPath']
-  >
-}
 declare module './routes/tips/index' {
   const createFileRoute: CreateFileRoute<
     '/tips/',
@@ -363,12 +276,9 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRoute,
   CoursesRoute: CoursesRoute,
   ProjectsRoute: ProjectsRoute,
-  AdminCoursesRoute: AdminCoursesRoute,
-  AdminPathsRoute: AdminPathsRoute,
   TipsFineGrainedReactRendersRoute: TipsFineGrainedReactRendersRoute,
   TipsScrollContainersRoute: TipsScrollContainersRoute,
   TipsScrollbarGutterRoute: TipsScrollbarGutterRoute,
-  AdminIndexRoute: AdminIndexRoute,
   TipsIndexRoute: TipsIndexRoute,
 }
 export const routeTree = rootRouteImport
