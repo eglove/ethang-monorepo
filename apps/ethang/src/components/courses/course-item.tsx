@@ -19,15 +19,20 @@ export const CourseItem = ({ courseId }: Readonly<CourseItemProperties>) => {
   return (
     <Skeleton isLoaded={isLoaded} className="rounded-lg">
       <div className="flex min-w-0 flex-1 flex-col">
-        <Link
-          size="sm"
-          isExternal
-          color="foreground"
-          href={get(course, ["url"], "")}
-          className="text-small font-medium"
-        >
-          {get(course, ["name"], "")}
-        </Link>
+        <div>
+          <span className="text-green-400">
+            {get(course, ["order"])}.&ensp;
+          </span>
+          <Link
+            size="sm"
+            isExternal
+            color="foreground"
+            href={get(course, ["url"], "")}
+            className="text-small font-medium"
+          >
+            {get(course, ["name"], "")}
+          </Link>
+        </div>
         <span className="truncate text-tiny text-default-400">
           {get(course, ["author"], "")}
         </span>

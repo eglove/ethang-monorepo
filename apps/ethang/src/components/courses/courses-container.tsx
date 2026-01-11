@@ -9,6 +9,7 @@ import {
 import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
+import split from "lodash/split.js";
 import { SquareArrowOutUpRight } from "lucide-react";
 
 import { type GetPaths, getPaths } from "../../graphql/queries.ts";
@@ -29,12 +30,19 @@ export const CoursesContainer = () => {
         {map(paths, (path) => {
           const pathId = get(path, ["id"]);
           const url = get(path, ["url"]);
+          const names = split(get(path, ["name"]), ":");
 
           return (
             <AccordionItem
               key={pathId}
-              title={get(path, ["name"], "Loading...")}
               subtitle={`${get(path, ["_count", "courses"], 0)} courses`}
+              title={
+                <span>
+                  {names[0]}
+                  {isNil(names[1]) ? "" : ":"}
+                  <span className="text-amber-500">{names[1]}</span>
+                </span>
+              }
               startContent={
                 <Button
                   as={Link}
