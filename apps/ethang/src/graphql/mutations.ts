@@ -43,3 +43,43 @@ export const deletePath = gql`
     }
   }
 `;
+
+export type CreateCourse = {
+  createCourse: { id: string; name: string; url: string };
+};
+
+export const createCourse = gql`
+  mutation CreateCourse($data: CreateCourseInput!) {
+    createCourse(data: $data) {
+      id
+      name
+      url
+    }
+  }
+`;
+
+export type UpdateCourse = {
+  updateCourse: { id: string; name: string; url: string };
+};
+
+export const updateCourse = gql`
+  mutation UpdateCourse($id: String!, $data: UpdateCourseInput!) {
+    updateCourse(id: $id, data: $data) {
+      id
+      name
+      url
+    }
+  }
+`;
+
+export type DeleteCourse = {
+  deleteCourse: { id: string };
+};
+
+export const deleteCourse = gql`
+  mutation DeleteCourse($id: String!) {
+    deleteCourse(id: $id) {
+      id
+    }
+  }
+`;

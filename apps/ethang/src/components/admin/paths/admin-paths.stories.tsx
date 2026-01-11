@@ -1,11 +1,22 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { ApolloProvider } from "@apollo/client/react";
 import { expect, within } from "@storybook/test";
 
+import { apolloClient } from "../../../graphql/client.ts";
 import { AdminPaths } from "./admin-paths";
 
 const meta = {
   component: AdminPaths,
+  decorators: [
+    (Story) => {
+      return (
+        <ApolloProvider client={apolloClient}>
+          <Story />
+        </ApolloProvider>
+      );
+    },
+  ],
   parameters: {
     layout: "centered",
   },

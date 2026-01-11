@@ -5,7 +5,10 @@ import type { PathModel } from "../../generated/prisma/models/Path.ts";
 import type { ProjectModel } from "../../generated/prisma/models/Project.ts";
 import type { TechModel } from "../../generated/prisma/models/Tech.ts";
 
-type CourseFragment = Pick<CourseModel, "author" | "id" | "name" | "url">;
+export type CourseFragment = Pick<
+  CourseModel,
+  "author" | "id" | "name" | "order" | "url"
+>;
 
 const courseFragment = gql`
   fragment CourseFragment on Course {
@@ -13,6 +16,7 @@ const courseFragment = gql`
     name
     author
     url
+    order
   }
 `;
 
@@ -24,6 +28,25 @@ export const getCourse = gql`
   query Course($id: String!) {
     course(id: $id) {
       ...CourseFragment
+    }
+  }
+  ${courseFragment}
+`;
+
+export type GetCourses = {
+  courses: ({
+    path: Pick<PathModel, "id" | "name">;
+  } & CourseFragment)[];
+};
+
+export const getCourses = gql`
+  query Courses {
+    courses {
+      ...CourseFragment
+      path {
+        id
+        name
+      }
     }
   }
   ${courseFragment}

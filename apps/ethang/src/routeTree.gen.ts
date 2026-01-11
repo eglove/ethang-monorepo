@@ -21,6 +21,7 @@ import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar
 import { Route as TipsScrollContainersRouteImport } from './routes/tips/scroll-containers'
 import { Route as TipsFineGrainedReactRendersRouteImport } from './routes/tips/fine-grained-react-renders'
 import { Route as AdminPathsRouteImport } from './routes/admin/paths'
+import { Route as AdminCoursesRouteImport } from './routes/admin/courses'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
@@ -73,12 +74,18 @@ const AdminPathsRoute = AdminPathsRouteImport.update({
   path: '/admin/paths',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCoursesRoute = AdminCoursesRouteImport.update({
+  id: '/admin/courses',
+  path: '/admin/courses',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/projects': typeof ProjectsRoute
+  '/admin/courses': typeof AdminCoursesRoute
   '/admin/paths': typeof AdminPathsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/projects': typeof ProjectsRoute
+  '/admin/courses': typeof AdminCoursesRoute
   '/admin/paths': typeof AdminPathsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/projects': typeof ProjectsRoute
+  '/admin/courses': typeof AdminCoursesRoute
   '/admin/paths': typeof AdminPathsRoute
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/courses'
     | '/projects'
+    | '/admin/courses'
     | '/admin/paths'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/courses'
     | '/projects'
+    | '/admin/courses'
     | '/admin/paths'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/courses'
     | '/projects'
+    | '/admin/courses'
     | '/admin/paths'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
@@ -155,6 +167,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRoute
   CoursesRoute: typeof CoursesRoute
   ProjectsRoute: typeof ProjectsRoute
+  AdminCoursesRoute: typeof AdminCoursesRoute
   AdminPathsRoute: typeof AdminPathsRoute
   TipsFineGrainedReactRendersRoute: typeof TipsFineGrainedReactRendersRoute
   TipsScrollContainersRoute: typeof TipsScrollContainersRoute
@@ -235,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPathsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/courses': {
+      id: '/admin/courses'
+      path: '/admin/courses'
+      fullPath: '/admin/courses'
+      preLoaderRoute: typeof AdminCoursesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -272,6 +292,15 @@ declare module './routes/projects' {
     FileRoutesByPath['/projects']['id'],
     FileRoutesByPath['/projects']['path'],
     FileRoutesByPath['/projects']['fullPath']
+  >
+}
+declare module './routes/admin/courses' {
+  const createFileRoute: CreateFileRoute<
+    '/admin/courses',
+    FileRoutesByPath['/admin/courses']['parentRoute'],
+    FileRoutesByPath['/admin/courses']['id'],
+    FileRoutesByPath['/admin/courses']['path'],
+    FileRoutesByPath['/admin/courses']['fullPath']
   >
 }
 declare module './routes/admin/paths' {
@@ -334,6 +363,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRoute,
   CoursesRoute: CoursesRoute,
   ProjectsRoute: ProjectsRoute,
+  AdminCoursesRoute: AdminCoursesRoute,
   AdminPathsRoute: AdminPathsRoute,
   TipsFineGrainedReactRendersRoute: TipsFineGrainedReactRendersRoute,
   TipsScrollContainersRoute: TipsScrollContainersRoute,
