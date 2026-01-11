@@ -1,9 +1,47 @@
-import { course, courses } from "./courses-resolvers.ts";
-import { knowledgeArea, knowledgeAreas } from "./knowledge-area-resolvers.ts";
-import { path, paths } from "./paths-resolvers.ts";
-import { project, projects } from "./projects-resolvers.ts";
+import {
+  course,
+  courses,
+  createCourse,
+  deleteCourse,
+  updateCourse,
+} from "./courses-resolvers.ts";
+import {
+  createKnowledgeArea,
+  deleteKnowledgeArea,
+  knowledgeArea,
+  knowledgeAreas,
+  updateKnowledgeArea,
+} from "./knowledge-area-resolvers.ts";
+import {
+  createPath,
+  deletePath,
+  path,
+  paths,
+  updatePath,
+} from "./paths-resolvers.ts";
+import {
+  createProject,
+  deleteProject,
+  project,
+  projects,
+  updateProject,
+} from "./projects-resolvers.ts";
 
 export const resolvers = {
+  Mutation: {
+    createCourse,
+    createKnowledgeArea,
+    createPath,
+    createProject,
+    deleteCourse,
+    deleteKnowledgeArea,
+    deletePath,
+    deleteProject,
+    updateCourse,
+    updateKnowledgeArea,
+    updatePath,
+    updateProject,
+  },
   Query: {
     course,
     courses,

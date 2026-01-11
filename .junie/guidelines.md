@@ -1,9 +1,8 @@
 ### Junie Development Guidelines
 
 1. **Development Process**:
-    - Follow the order: **Architectural Planning** → **Tests** → **Code**.
-    - For every change, start with architectural planning (e.g., C4/sequence diagrams in .puml files).
-    - Then, follow ATDD (Acceptance Test-Driven Development): write an acceptance test first (e.g. Storybook interaction test or Playwright E2E).
+    - Follow the order: **Tests** → **Code**.
+    - Follow ATDD (Acceptance Test-Driven Development): write an acceptance test first (e.g. Storybook interaction test or Playwright E2E).
     - Use the "Double Loop" approach:
         - Outer Loop (ATDD): Write a failing acceptance test that describes the user’s goal.
         - Inner Loop (TDD): Write failing unit tests and minimal code to satisfy the acceptance test.

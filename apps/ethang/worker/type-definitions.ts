@@ -86,4 +86,74 @@ type Query {
     project(id: String!): Project @cacheControl(maxAge: 3600)
     projects(skip: Int, take: Int, where: ProjectWhereInput): [Project] @cacheControl(maxAge: 3600)
 }
+
+input CreateProjectInput {
+    code: String!
+    description: String!
+    title: String!
+    publicUrl: String
+}
+
+input UpdateProjectInput {
+    code: String
+    description: String
+    title: String
+    publicUrl: String
+}
+
+input CreateCourseInput {
+    name: String!
+    author: String!
+    url: String!
+    order: Int!
+    pathId: String!
+}
+
+input UpdateCourseInput {
+    name: String
+    author: String
+    url: String
+    order: Int
+    pathId: String
+}
+
+input CreatePathInput {
+    name: String!
+    url: String
+    order: Int!
+}
+
+input UpdatePathInput {
+    name: String
+    url: String
+    order: Int
+}
+
+input CreateKnowledgeAreaInput {
+    name: String!
+    order: Int!
+}
+
+input UpdateKnowledgeAreaInput {
+    name: String
+    order: Int
+}
+
+type Mutation {
+    createProject(data: CreateProjectInput!): Project
+    updateProject(id: String!, data: UpdateProjectInput!): Project
+    deleteProject(id: String!): Project
+
+    createCourse(data: CreateCourseInput!): Course
+    updateCourse(id: String!, data: UpdateCourseInput!): Course
+    deleteCourse(id: String!): Course
+
+    createPath(data: CreatePathInput!): Path
+    updatePath(id: String!, data: UpdatePathInput!): Path
+    deletePath(id: String!): Path
+
+    createKnowledgeArea(data: CreateKnowledgeAreaInput!): KnowledgeArea
+    updateKnowledgeArea(id: String!, data: UpdateKnowledgeAreaInput!): KnowledgeArea
+    deleteKnowledgeArea(id: String!): KnowledgeArea
+}
 `;

@@ -3,12 +3,21 @@ import type { GraphQLResolveInfo } from "graphql/type";
 import get from "lodash/get.js";
 import { describe, expect, it, vi } from "vitest";
 
-import { path, paths } from "./paths-resolvers.ts";
+import {
+  createPath,
+  deletePath,
+  path,
+  paths,
+  updatePath,
+} from "./paths-resolvers.ts";
 
 const mockPrisma = {
   path: {
+    create: vi.fn(),
+    delete: vi.fn(),
     findMany: vi.fn(),
     findUnique: vi.fn(),
+    update: vi.fn(),
   },
 };
 
@@ -63,6 +72,69 @@ describe("path resolvers", () => {
 
       expect(get(result, [0, "_count", "courses"])).toBe(10);
       expect(get(result, [0, "name"])).toBe("Backend");
+    });
+  });
+
+  describe("createPath", () => {
+    it("creates a path", async () => {
+      const mockPath = { id: "1", name: "New Path" };
+      mockPrisma.path.create.mockResolvedValue(mockPath);
+
+      const result = await createPath(
+        {},
+        {
+          data: {
+            name: "New Path",
+            order: 1,
+            url: "url",
+          },
+        },
+        // @ts-expect-error env mock
+        { env: {} },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        {} as GraphQLResolveInfo,
+      );
+
+      expect(result).toEqual(mockPath);
+    });
+  });
+
+  describe("updatePath", () => {
+    it("updates a path", async () => {
+      const mockPath = { id: "1", name: "Updated Path" };
+      mockPrisma.path.update.mockResolvedValue(mockPath);
+
+      const result = await updatePath(
+        {},
+        {
+          data: { name: "Updated Path" },
+          id: "1",
+        },
+        // @ts-expect-error env mock
+        { env: {} },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        {} as GraphQLResolveInfo,
+      );
+
+      expect(result).toEqual(mockPath);
+    });
+  });
+
+  describe("deletePath", () => {
+    it("deletes a path", async () => {
+      const mockPath = { id: "1" };
+      mockPrisma.path.delete.mockResolvedValue(mockPath);
+
+      const result = await deletePath(
+        {},
+        { id: "1" },
+        // @ts-expect-error env mock
+        { env: {} },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        {} as GraphQLResolveInfo,
+      );
+
+      expect(result).toEqual(mockPath);
     });
   });
 });

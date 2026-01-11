@@ -3,12 +3,21 @@ import type { GraphQLResolveInfo } from "graphql/type";
 import get from "lodash/get.js";
 import { describe, expect, it, vi } from "vitest";
 
-import { knowledgeArea, knowledgeAreas } from "./knowledge-area-resolvers.ts";
+import {
+  createKnowledgeArea,
+  deleteKnowledgeArea,
+  knowledgeArea,
+  knowledgeAreas,
+  updateKnowledgeArea,
+} from "./knowledge-area-resolvers.ts";
 
 const mockPrisma = {
   knowledgeArea: {
+    create: vi.fn(),
+    delete: vi.fn(),
     findMany: vi.fn(),
     findUnique: vi.fn(),
+    update: vi.fn(),
   },
 };
 
@@ -63,6 +72,68 @@ describe("knowledgeArea resolvers", () => {
 
       expect(get(result, [0, "courseCount"])).toBe(2);
       expect(get(result, [0, "name"])).toBe("React");
+    });
+  });
+
+  describe("createKnowledgeArea", () => {
+    it("creates a knowledge area", async () => {
+      const mockKA = { id: "1", name: "New KA" };
+      mockPrisma.knowledgeArea.create.mockResolvedValue(mockKA);
+
+      const result = await createKnowledgeArea(
+        {},
+        {
+          data: {
+            name: "New KA",
+            order: 1,
+          },
+        },
+        // @ts-expect-error env mock
+        { env: {} },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        {} as GraphQLResolveInfo,
+      );
+
+      expect(result).toEqual(mockKA);
+    });
+  });
+
+  describe("updateKnowledgeArea", () => {
+    it("updates a knowledge area", async () => {
+      const mockKA = { id: "1", name: "Updated KA" };
+      mockPrisma.knowledgeArea.update.mockResolvedValue(mockKA);
+
+      const result = await updateKnowledgeArea(
+        {},
+        {
+          data: { name: "Updated KA" },
+          id: "1",
+        },
+        // @ts-expect-error env mock
+        { env: {} },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        {} as GraphQLResolveInfo,
+      );
+
+      expect(result).toEqual(mockKA);
+    });
+  });
+
+  describe("deleteKnowledgeArea", () => {
+    it("deletes a knowledge area", async () => {
+      const mockKA = { id: "1" };
+      mockPrisma.knowledgeArea.delete.mockResolvedValue(mockKA);
+
+      const result = await deleteKnowledgeArea(
+        {},
+        { id: "1" },
+        // @ts-expect-error env mock
+        { env: {} },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        {} as GraphQLResolveInfo,
+      );
+
+      expect(result).toEqual(mockKA);
     });
   });
 });

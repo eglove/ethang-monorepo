@@ -2,12 +2,21 @@ import type { GraphQLResolveInfo } from "graphql/type";
 
 import { describe, expect, it, vi } from "vitest";
 
-import { course, courses } from "./courses-resolvers.ts";
+import {
+  course,
+  courses,
+  createCourse,
+  deleteCourse,
+  updateCourse,
+} from "./courses-resolvers.ts";
 
 const mockPrisma = {
   course: {
+    create: vi.fn(),
+    delete: vi.fn(),
     findMany: vi.fn(),
     findUnique: vi.fn(),
+    update: vi.fn(),
   },
 };
 
@@ -87,5 +96,70 @@ describe("courses resolver", () => {
     );
 
     expect(result).toEqual(mockCourses);
+  });
+
+  it("creates a course", async () => {
+    const mockCourse = { id: "1", name: "New Course" };
+    mockPrisma.course.create.mockResolvedValue(mockCourse);
+
+    const result = await createCourse(
+      {},
+      {
+        data: {
+          author: "Author",
+          name: "New Course",
+          order: 1,
+          pathId: "path-id",
+          url: "url",
+        },
+      },
+      // @ts-expect-error env mock
+      { env: {} },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      {} as GraphQLResolveInfo,
+    );
+
+    expect(result).toEqual(mockCourse);
+  });
+
+  it("updates a course", async () => {
+    const mockCourse = { id: "1", name: "Updated Course" };
+    mockPrisma.course.update.mockResolvedValue(mockCourse);
+
+    const result = await updateCourse(
+      {},
+      {
+        data: {
+          author: "Author",
+          name: "Updated Course",
+          order: 1,
+          pathId: "path-id",
+          url: "url",
+        },
+        id: "1",
+      },
+      // @ts-expect-error env mock
+      { env: {} },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      {} as GraphQLResolveInfo,
+    );
+
+    expect(result).toEqual(mockCourse);
+  });
+
+  it("deletes a course", async () => {
+    const mockCourse = { id: "1" };
+    mockPrisma.course.delete.mockResolvedValue(mockCourse);
+
+    const result = await deleteCourse(
+      {},
+      { id: "1" },
+      // @ts-expect-error env mock
+      { env: {} },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      {} as GraphQLResolveInfo,
+    );
+
+    expect(result).toEqual(mockCourse);
   });
 });
