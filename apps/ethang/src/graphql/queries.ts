@@ -35,7 +35,10 @@ export type GetPaths = {
       __typename: string;
       courses: number;
     };
-  } & { courses: CourseFragment[] } & Pick<PathModel, "id" | "name" | "url">[];
+  } & { courses: CourseFragment[] } & Pick<
+      PathModel,
+      "id" | "name" | "order" | "url"
+    >[];
 };
 
 export const getPaths = gql`
@@ -50,6 +53,7 @@ export const getPaths = gql`
       id
       name
       url
+      order
     }
   }
   ${courseFragment}

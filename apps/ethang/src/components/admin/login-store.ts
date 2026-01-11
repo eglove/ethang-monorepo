@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { BaseStore } from "@ethang/store";
 import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
 type LoginResponse = {
@@ -52,6 +53,16 @@ class LoginStore extends BaseStore<typeof loginStoreInitialState> {
           const sessionToken = get(data, ["sessionToken"]);
           if (isString(sessionToken) && !isEmpty(sessionToken)) {
             document.cookie = `ethang-auth-token=${sessionToken}; path=/; domain=${location.hostname}; secure; samesite=lax`;
+            const currentUrl = new URL(location.href);
+            const redirectUrl = currentUrl.searchParams.get("redirect");
+
+            if (
+              !isNil(redirectUrl) &&
+              isString(redirectUrl) &&
+              !isEmpty(redirectUrl)
+            ) {
+              location.href = redirectUrl;
+            }
           } else {
             this.update((draft) => {
               draft.loginErrorMessage = "No session token received";
