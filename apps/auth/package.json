@@ -17,8 +17,8 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.51.4",
-    "@ethang/eslint-config": "^24.2.9",
-    "@types/lodash": "^4.17.21",
+    "@ethang/eslint-config": "^24.2.10",
+    "@types/lodash": "^4.17.23",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^9.39.2",
     "rimraf": "^6.1.2",

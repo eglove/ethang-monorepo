@@ -8,7 +8,7 @@
     "./*": "./src/*"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^24.2.9",
+    "@ethang/eslint-config": "^24.2.10",
     "@ethang/project-builder": "^3.0.2",
     "eslint": "^9.39.2"
   },

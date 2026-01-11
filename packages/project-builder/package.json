@@ -6,9 +6,9 @@
     "tsup": "^8.5.1"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^24.2.9",
-    "@types/lodash": "^4.17.21",
-    "@types/node": "^25.0.3",
+    "@ethang/eslint-config": "^24.2.10",
+    "@types/lodash": "^4.17.23",
+    "@types/node": "^25.0.6",
     "eslint": "^9.39.2",
     "typescript-eslint": "^8.52.0"
   },
