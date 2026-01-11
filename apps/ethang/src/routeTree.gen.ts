@@ -16,6 +16,7 @@ import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TipsIndexRouteImport } from './routes/tips/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar-gutter'
 import { Route as TipsScrollContainersRouteImport } from './routes/tips/scroll-containers'
 import { Route as TipsFineGrainedReactRendersRouteImport } from './routes/tips/fine-grained-react-renders'
@@ -45,6 +46,11 @@ const TipsIndexRoute = TipsIndexRouteImport.update({
   path: '/tips/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TipsScrollbarGutterRoute = TipsScrollbarGutterRouteImport.update({
   id: '/tips/scrollbar-gutter',
   path: '/tips/scrollbar-gutter',
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
+  '/admin': typeof AdminIndexRoute
   '/tips': typeof TipsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
+  '/admin': typeof AdminIndexRoute
   '/tips': typeof TipsIndexRoute
 }
 export interface FileRoutesById {
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
+  '/admin/': typeof AdminIndexRoute
   '/tips/': typeof TipsIndexRoute
 }
 export interface FileRouteTypes {
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
+    | '/admin'
     | '/tips'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -113,6 +123,7 @@ export interface FileRouteTypes {
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
+    | '/admin'
     | '/tips'
   id:
     | '__root__'
@@ -123,6 +134,7 @@ export interface FileRouteTypes {
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
+    | '/admin/'
     | '/tips/'
   fileRoutesById: FileRoutesById
 }
@@ -134,6 +146,7 @@ export interface RootRouteChildren {
   TipsFineGrainedReactRendersRoute: typeof TipsFineGrainedReactRendersRoute
   TipsScrollContainersRoute: typeof TipsScrollContainersRoute
   TipsScrollbarGutterRoute: typeof TipsScrollbarGutterRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   TipsIndexRoute: typeof TipsIndexRoute
 }
 
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       path: '/tips'
       fullPath: '/tips'
       preLoaderRoute: typeof TipsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tips/scrollbar-gutter': {
@@ -261,6 +281,15 @@ declare module './routes/tips/scrollbar-gutter' {
     FileRoutesByPath['/tips/scrollbar-gutter']['fullPath']
   >
 }
+declare module './routes/admin/index' {
+  const createFileRoute: CreateFileRoute<
+    '/admin/',
+    FileRoutesByPath['/admin/']['parentRoute'],
+    FileRoutesByPath['/admin/']['id'],
+    FileRoutesByPath['/admin/']['path'],
+    FileRoutesByPath['/admin/']['fullPath']
+  >
+}
 declare module './routes/tips/index' {
   const createFileRoute: CreateFileRoute<
     '/tips/',
@@ -279,6 +308,7 @@ const rootRouteChildren: RootRouteChildren = {
   TipsFineGrainedReactRendersRoute: TipsFineGrainedReactRendersRoute,
   TipsScrollContainersRoute: TipsScrollContainersRoute,
   TipsScrollbarGutterRoute: TipsScrollbarGutterRoute,
+  AdminIndexRoute: AdminIndexRoute,
   TipsIndexRoute: TipsIndexRoute,
 }
 export const routeTree = rootRouteImport
