@@ -8,13 +8,14 @@ import type {
   PathSelect,
   PathUpdateInput,
 } from "../../generated/prisma/models/Path.ts";
+import type { ServerContext } from "../index.ts";
 
 import { getPrismaClient, prismaSelect } from "../prisma-client.ts";
 
 export const path = async (
   _parent: unknown,
   _arguments: { id: string },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -35,7 +36,7 @@ export const path = async (
 export const paths = async (
   _parent: unknown,
   _arguments: unknown,
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -60,7 +61,7 @@ export const createPath = async (
   _arguments: {
     data: Exclude<PathCreateInput, "courses" | "id">;
   },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -82,7 +83,7 @@ export const updatePath = async (
     data: Pick<PathUpdateInput, "name" | "order" | "url">;
     id: string;
   },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -103,7 +104,7 @@ export const updatePath = async (
 export const deletePath = async (
   _parent: unknown,
   _arguments: { id: string },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));

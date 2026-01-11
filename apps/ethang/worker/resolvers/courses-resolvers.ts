@@ -7,13 +7,14 @@ import type {
   CourseUncheckedCreateInput,
   CourseUncheckedUpdateInput,
 } from "../../generated/prisma/models/Course.ts";
+import type { ServerContext } from "../index.ts";
 
 import { getPrismaClient, prismaSelect } from "../prisma-client.ts";
 
 export const course = async (
   _parent: unknown,
   _arguments: { id: string },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -36,7 +37,7 @@ export const courses = async (
       knowledgeAreas?: { some?: { id?: { in?: string[] } } };
     };
   },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -60,7 +61,7 @@ export const createCourse = async (
   _arguments: {
     data: Exclude<CourseUncheckedCreateInput, "id" | "knowledgeAreas">;
   },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -85,7 +86,7 @@ export const updateCourse = async (
     >;
     id: string;
   },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -106,7 +107,7 @@ export const updateCourse = async (
 export const deleteCourse = async (
   _parent: unknown,
   _arguments: { id: string },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));

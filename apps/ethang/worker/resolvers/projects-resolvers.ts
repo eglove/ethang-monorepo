@@ -8,13 +8,14 @@ import type {
   ProjectSelect,
   ProjectUpdateInput,
 } from "../../generated/prisma/models/Project.ts";
+import type { ServerContext } from "../index.ts";
 
 import { getPrismaClient, prismaSelect } from "../prisma-client";
 
 export const project = async (
   _parent: object,
   _arguments: { id: string },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -36,7 +37,7 @@ export const projects = async (
     take?: number;
     where?: { title?: { in?: string[] } };
   },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -63,7 +64,7 @@ export const createProject = async (
   _arguments: {
     data: Exclude<ProjectCreateInput, "id" | "techs">;
   },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -88,7 +89,7 @@ export const updateProject = async (
     >;
     id: string;
   },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -109,7 +110,7 @@ export const updateProject = async (
 export const deleteProject = async (
   _parent: object,
   _arguments: { id: string },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));

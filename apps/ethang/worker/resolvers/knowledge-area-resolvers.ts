@@ -10,13 +10,14 @@ import type {
   KnowledgeAreaSelect,
   KnowledgeAreaUpdateInput,
 } from "../../generated/prisma/models/KnowledgeArea.ts";
+import type { ServerContext } from "../index.ts";
 
 import { getPrismaClient, prismaSelect } from "../prisma-client.ts";
 
 export const knowledgeArea = async (
   _parent: unknown,
   _arguments: { id: string },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -46,7 +47,7 @@ export const knowledgeArea = async (
 export const knowledgeAreas = async (
   _parent: unknown,
   _arguments: unknown,
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -78,7 +79,7 @@ export const createKnowledgeArea = async (
   _arguments: {
     data: Exclude<KnowledgeAreaCreateInput, "courses" | "id">;
   },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -100,7 +101,7 @@ export const updateKnowledgeArea = async (
     data: Pick<KnowledgeAreaUpdateInput, "name" | "order">;
     id: string;
   },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));
@@ -121,7 +122,7 @@ export const updateKnowledgeArea = async (
 export const deleteKnowledgeArea = async (
   _parent: unknown,
   _arguments: { id: string },
-  context: { env: Env },
+  context: ServerContext,
   info: GraphQLResolveInfo,
 ) => {
   const prisma = getPrismaClient(get(context, ["env"]));

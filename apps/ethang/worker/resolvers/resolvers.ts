@@ -1,3 +1,4 @@
+import { authenticated } from "../auth.ts";
 import {
   course,
   courses,
@@ -29,18 +30,18 @@ import {
 
 export const resolvers = {
   Mutation: {
-    createCourse,
-    createKnowledgeArea,
-    createPath,
-    createProject,
-    deleteCourse,
-    deleteKnowledgeArea,
-    deletePath,
-    deleteProject,
-    updateCourse,
-    updateKnowledgeArea,
-    updatePath,
-    updateProject,
+    createCourse: authenticated(createCourse),
+    createKnowledgeArea: authenticated(createKnowledgeArea),
+    createPath: authenticated(createPath),
+    createProject: authenticated(createProject),
+    deleteCourse: authenticated(deleteCourse),
+    deleteKnowledgeArea: authenticated(deleteKnowledgeArea),
+    deletePath: authenticated(deletePath),
+    deleteProject: authenticated(deleteProject),
+    updateCourse: authenticated(updateCourse),
+    updateKnowledgeArea: authenticated(updateKnowledgeArea),
+    updatePath: authenticated(updatePath),
+    updateProject: authenticated(updateProject),
   },
   Query: {
     course,
