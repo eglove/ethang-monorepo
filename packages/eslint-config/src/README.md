@@ -5,11 +5,11 @@
 > [!CAUTION]
 > Prettier is already included for styling!
 
-- 772 rules.
+- 773 rules.
 - 237 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
 - 144 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
 - 134 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
-- 109 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
+- 110 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
 - 42 rules from [eslint-plugin-lodash](https://github.com/wix-incubator/eslint-plugin-lodash)
 - 34 rules from [jsx-a11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)
 - 22 rules from [eslint-plugin-perfectionist](https://github.com/azat-io/eslint-plugin-perfectionist)
@@ -33,9 +33,9 @@
 - 53 rules for **HTML**
   - import html from "@ethang/eslint-config/config.html.js";
     - 53 rules from [@html-eslint/eslint-plugin](https://github.com/html-eslint/html-eslint)
-- 91 rules for **React**
+- 92 rules for **React**
   - `import reactConfig from "@ethang/eslint-config/config.react.js";`
-    - 62 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
+    - 63 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
     - 29 rules from [eslint-plugin-react-hooks](https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks)
 - 18 rules for **Solid**
   - `import solidConfig from "@ethang/eslint-config/config.solid.js";`

@@ -5,7 +5,7 @@ type WindowEventMapPlus = Record<string, unknown> & WindowEventMap;
 export const useEventListener = <Type extends keyof WindowEventMapPlus>(
   type: Type,
   listener: Type extends keyof WindowEventMap
-    ? (this: Window, event_: WindowEventMap[Type]) => unknown
+    ? (this: Window, event_: WindowEventMap[Type]) => void
     : EventListenerOrEventListenerObject,
   options?: AddEventListenerOptions | EventListenerOptions,
 ): void => {

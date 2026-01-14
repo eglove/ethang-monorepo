@@ -1,28 +1,28 @@
 {
   "author": "Ethan Glover <hello@ethang.email>",
   "dependencies": {
-    "@sanity/cli": "^5.2.0",
-    "@sanity/code-input": "^7.0.4",
+    "@sanity/cli": "^5.3.1",
+    "@sanity/code-input": "^7.0.5",
     "@sanity/dashboard": "^5.0.1",
     "@sanity/icons": "^3.7.4",
     "@sanity/orderable-document-list": "^1.4.2",
-    "@sanity/vision": "^5.2.0",
+    "@sanity/vision": "^5.3.1",
     "@types/react": "19.2.8",
     "lodash": "^4.17.21",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-is": "^19.2.3",
-    "sanity": "^5.2.0",
-    "styled-components": "^6.3.5"
+    "sanity": "^5.3.1",
+    "styled-components": "^6.3.6"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^24.2.10",
+    "@ethang/eslint-config": "^24.3.0",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.23",
     "eslint": "^9.39.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.52.0"
+    "typescript-eslint": "^8.53.0"
   },
   "engines": {
     "node": ">=24"

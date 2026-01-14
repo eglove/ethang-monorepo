@@ -31,7 +31,7 @@ export const animationInterval = (
       const targetNext = startNumber + roundedElapsed + ms;
       const delay = targetNext - globalThis.performance.now();
       globalThis.setTimeout(() => {
-        return globalThis.requestAnimationFrame(frame);
+        globalThis.requestAnimationFrame(frame);
       }, delay);
     }
   };
