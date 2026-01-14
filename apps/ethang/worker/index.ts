@@ -27,10 +27,6 @@ export default {
   async fetch(request, environment, context) {
     const url = new URL(request.url);
 
-    if (startsWith(url.pathname, "/blog")) {
-      return environment.ASSETS.fetch(request);
-    }
-
     if (startsWith(url.pathname, "/graphql")) {
       let user: AuthUser | undefined;
 

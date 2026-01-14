@@ -3,7 +3,7 @@ import map from "lodash/map.js";
 import slice from "lodash/slice";
 import { NewspaperIcon } from "lucide-react";
 
-import { blogs } from "../routes/blog.tsx";
+import { blogs } from "../routes/blog";
 import { TypographyH1 } from "./typography/typography-h1.tsx";
 import { TypographyH2 } from "./typography/typography-h2.tsx";
 

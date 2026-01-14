@@ -4,7 +4,7 @@
     "binding": "ASSETS",
     "directory": "./public",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*", "/blog/*", "/graphql"]
+    "run_worker_first": ["/graphql"]
   },
   "compatibility_flags": ["nodejs_compat"],
   "compatibility_date": "2026-01-14",

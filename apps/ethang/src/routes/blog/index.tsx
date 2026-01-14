@@ -1,13 +1,17 @@
 import map from "lodash/map.js";
 
-import { MainLayout } from "../components/main-layout.tsx";
-import { TypographyH1 } from "../components/typography/typography-h1.tsx";
-import { TypographyH2 } from "../components/typography/typography-h2.tsx";
+import { MainLayout } from "../../components/main-layout.tsx";
+import { TypographyH1 } from "../../components/typography/typography-h1.tsx";
+import { TypographyH2 } from "../../components/typography/typography-h2.tsx";
 
 export const blogs = [
   {
     href: "/blog/how-i-code",
     label: "How I Code",
+  },
+  {
+    href: "/blog/ethang-eslint-config-24-3",
+    label: "@ethang/eslint-config 24.3.0",
   },
   {
     href: "/blog/myth-of-total-freedom",

@@ -13,12 +13,13 @@ import type { CreateFileRoute, FileRoutesByPath } from '@tanstack/react-router'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as CoursesRouteImport } from './routes/courses'
-import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TipsIndexRouteImport } from './routes/tips/index'
+import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar-gutter'
 import { Route as TipsScrollContainersRouteImport } from './routes/tips/scroll-containers'
 import { Route as TipsFineGrainedReactRendersRouteImport } from './routes/tips/fine-grained-react-renders'
+import { Route as BlogEthangEslintConfig243RouteImport } from './routes/blog/ethang-eslint-config-24-3'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
@@ -30,11 +31,6 @@ const CoursesRoute = CoursesRouteImport.update({
   path: '/courses',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +39,11 @@ const IndexRoute = IndexRouteImport.update({
 const TipsIndexRoute = TipsIndexRouteImport.update({
   id: '/tips/',
   path: '/tips/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TipsScrollbarGutterRoute = TipsScrollbarGutterRouteImport.update({
@@ -61,79 +62,92 @@ const TipsFineGrainedReactRendersRoute =
     path: '/tips/fine-grained-react-renders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const BlogEthangEslintConfig243Route =
+  BlogEthangEslintConfig243RouteImport.update({
+    id: '/blog/ethang-eslint-config-24-3',
+    path: '/blog/ethang-eslint-config-24-3',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/projects': typeof ProjectsRoute
+  '/blog/ethang-eslint-config-24-3': typeof BlogEthangEslintConfig243Route
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
+  '/blog': typeof BlogIndexRoute
   '/tips': typeof TipsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/projects': typeof ProjectsRoute
+  '/blog/ethang-eslint-config-24-3': typeof BlogEthangEslintConfig243Route
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
+  '/blog': typeof BlogIndexRoute
   '/tips': typeof TipsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/blog': typeof BlogRoute
   '/courses': typeof CoursesRoute
   '/projects': typeof ProjectsRoute
+  '/blog/ethang-eslint-config-24-3': typeof BlogEthangEslintConfig243Route
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
+  '/blog/': typeof BlogIndexRoute
   '/tips/': typeof TipsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/blog'
     | '/courses'
     | '/projects'
+    | '/blog/ethang-eslint-config-24-3'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
+    | '/blog'
     | '/tips'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/blog'
     | '/courses'
     | '/projects'
+    | '/blog/ethang-eslint-config-24-3'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
+    | '/blog'
     | '/tips'
   id:
     | '__root__'
     | '/'
-    | '/blog'
     | '/courses'
     | '/projects'
+    | '/blog/ethang-eslint-config-24-3'
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
+    | '/blog/'
     | '/tips/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BlogRoute: typeof BlogRoute
   CoursesRoute: typeof CoursesRoute
   ProjectsRoute: typeof ProjectsRoute
+  BlogEthangEslintConfig243Route: typeof BlogEthangEslintConfig243Route
   TipsFineGrainedReactRendersRoute: typeof TipsFineGrainedReactRendersRoute
   TipsScrollContainersRoute: typeof TipsScrollContainersRoute
   TipsScrollbarGutterRoute: typeof TipsScrollbarGutterRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   TipsIndexRoute: typeof TipsIndexRoute
 }
 
@@ -153,13 +167,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoursesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -172,6 +179,13 @@ declare module '@tanstack/react-router' {
       path: '/tips'
       fullPath: '/tips'
       preLoaderRoute: typeof TipsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tips/scrollbar-gutter': {
@@ -195,6 +209,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TipsFineGrainedReactRendersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/ethang-eslint-config-24-3': {
+      id: '/blog/ethang-eslint-config-24-3'
+      path: '/blog/ethang-eslint-config-24-3'
+      fullPath: '/blog/ethang-eslint-config-24-3'
+      preLoaderRoute: typeof BlogEthangEslintConfig243RouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -205,15 +226,6 @@ declare module './routes/index' {
     FileRoutesByPath['/']['id'],
     FileRoutesByPath['/']['path'],
     FileRoutesByPath['/']['fullPath']
-  >
-}
-declare module './routes/blog' {
-  const createFileRoute: CreateFileRoute<
-    '/blog',
-    FileRoutesByPath['/blog']['parentRoute'],
-    FileRoutesByPath['/blog']['id'],
-    FileRoutesByPath['/blog']['path'],
-    FileRoutesByPath['/blog']['fullPath']
   >
 }
 declare module './routes/courses' {
@@ -232,6 +244,15 @@ declare module './routes/projects' {
     FileRoutesByPath['/projects']['id'],
     FileRoutesByPath['/projects']['path'],
     FileRoutesByPath['/projects']['fullPath']
+  >
+}
+declare module './routes/blog/ethang-eslint-config-24-3' {
+  const createFileRoute: CreateFileRoute<
+    '/blog/ethang-eslint-config-24-3',
+    FileRoutesByPath['/blog/ethang-eslint-config-24-3']['parentRoute'],
+    FileRoutesByPath['/blog/ethang-eslint-config-24-3']['id'],
+    FileRoutesByPath['/blog/ethang-eslint-config-24-3']['path'],
+    FileRoutesByPath['/blog/ethang-eslint-config-24-3']['fullPath']
   >
 }
 declare module './routes/tips/fine-grained-react-renders' {
@@ -261,6 +282,15 @@ declare module './routes/tips/scrollbar-gutter' {
     FileRoutesByPath['/tips/scrollbar-gutter']['fullPath']
   >
 }
+declare module './routes/blog/index' {
+  const createFileRoute: CreateFileRoute<
+    '/blog/',
+    FileRoutesByPath['/blog/']['parentRoute'],
+    FileRoutesByPath['/blog/']['id'],
+    FileRoutesByPath['/blog/']['path'],
+    FileRoutesByPath['/blog/']['fullPath']
+  >
+}
 declare module './routes/tips/index' {
   const createFileRoute: CreateFileRoute<
     '/tips/',
@@ -273,12 +303,13 @@ declare module './routes/tips/index' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BlogRoute: BlogRoute,
   CoursesRoute: CoursesRoute,
   ProjectsRoute: ProjectsRoute,
+  BlogEthangEslintConfig243Route: BlogEthangEslintConfig243Route,
   TipsFineGrainedReactRendersRoute: TipsFineGrainedReactRendersRoute,
   TipsScrollContainersRoute: TipsScrollContainersRoute,
   TipsScrollbarGutterRoute: TipsScrollbarGutterRoute,
+  BlogIndexRoute: BlogIndexRoute,
   TipsIndexRoute: TipsIndexRoute,
 }
 export const routeTree = rootRouteImport
