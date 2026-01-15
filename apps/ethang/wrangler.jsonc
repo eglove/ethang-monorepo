@@ -7,7 +7,7 @@
     "run_worker_first": ["/graphql"]
   },
   "compatibility_flags": ["nodejs_compat"],
-  "compatibility_date": "2026-01-14",
+  "compatibility_date": "2026-01-15",
   "d1_databases": [
     {
       "binding": "DB",

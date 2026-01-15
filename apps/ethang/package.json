@@ -17,8 +17,8 @@
     "@paljs/plugins": "^8.2.1",
     "@prisma/adapter-d1": "^7.2.0",
     "@prisma/client": "^7.2.0",
-    "@tanstack/react-router": "^1.149.3",
-    "@tanstack/react-router-devtools": "^1.149.3",
+    "@tanstack/react-router": "^1.150.0",
+    "@tanstack/react-router-devtools": "^1.150.0",
     "framer-motion": "^12.26.2",
     "graphql": "^16.12.0",
     "idb-keyval": "^6.2.2",
@@ -36,8 +36,8 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.0.0",
-    "@cloudflare/vite-plugin": "^1.20.3",
-    "@cloudflare/workers-types": "^4.20260114.0",
+    "@cloudflare/vite-plugin": "^1.21.0",
+    "@cloudflare/workers-types": "^4.20260115.0",
     "@dotenvx/dotenvx": "^1.51.4",
     "@ethang/eslint-config": "^24.3.0",
     "@storybook/addon-a11y": "^10.1.11",
@@ -47,7 +47,7 @@
     "@storybook/test": "^8.6.15",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/vite": "^4.1.18",
-    "@tanstack/router-plugin": "^1.149.3",
+    "@tanstack/router-plugin": "^1.150.0",
     "@types/lodash": "^4.17.23",
     "@types/luxon": "^3.7.1",
     "@types/react": "^19.2.8",
@@ -70,7 +70,7 @@
     "vite": "^7.3.1",
     "vite-plugin-pwa": "^1.2.0",
     "vitest": "^4.0.17",
-    "wrangler": "^4.59.1"
+    "wrangler": "^4.59.2"
   },
   "engines": {
     "node": ">=24"

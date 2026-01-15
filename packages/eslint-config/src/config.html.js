@@ -15,6 +15,7 @@ export default defineConfig({
   rules: {
     "html/attrs-newline": "off",
     "html/class-spacing": "error",
+    "html/css-no-empty-blocks": "error",
     "html/element-newline": "off",
     "html/id-naming-convention": "error",
     "html/indent": "off",

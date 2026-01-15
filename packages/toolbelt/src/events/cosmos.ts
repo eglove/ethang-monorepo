@@ -23,7 +23,7 @@ type ExtraEventListenerOptions = {
 };
 
 type Listener<T> = T extends keyof WindowEventMap
-  ? (this: Window, event_: WindowEventMap[T]) => unknown
+  ? (this: Window, event_: WindowEventMap[T]) => void
   : EventListenerOrEventListenerObject;
 
 type StoredListener<T extends keyof WindowEventMapPlus> = {
