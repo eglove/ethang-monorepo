@@ -13,11 +13,11 @@
     "react-dom": "^19.2.3",
     "react-is": "^19.2.3",
     "sanity": "^5.4.0",
-    "styled-components": "^6.3.6"
+    "styled-components": "^6.3.8"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^24.3.0",
+    "@ethang/eslint-config": "^24.4.1",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.23",
     "eslint": "^9.39.2",

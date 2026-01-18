@@ -77,8 +77,8 @@ export interface FileRoutesByFullPath {
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
-  '/blog': typeof BlogIndexRoute
-  '/tips': typeof TipsIndexRoute
+  '/blog/': typeof BlogIndexRoute
+  '/tips/': typeof TipsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -113,8 +113,8 @@ export interface FileRouteTypes {
     | '/tips/fine-grained-react-renders'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
-    | '/blog'
-    | '/tips'
+    | '/blog/'
+    | '/tips/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -177,14 +177,14 @@ declare module '@tanstack/react-router' {
     '/tips/': {
       id: '/tips/'
       path: '/tips'
-      fullPath: '/tips'
+      fullPath: '/tips/'
       preLoaderRoute: typeof TipsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/': {
       id: '/blog/'
       path: '/blog'
-      fullPath: '/blog'
+      fullPath: '/blog/'
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
