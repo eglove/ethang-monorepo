@@ -3,17 +3,17 @@
     "@portabletext/react": "^6.0.2",
     "@portabletext/types": "^4.0.1",
     "@sanity/client": "^7.14.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "luxon": "^3.7.2",
     "ts-ics": "^2.4.0"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.12.4",
+    "@cloudflare/vitest-pool-workers": "^0.12.5",
     "@types/lodash": "^4.17.23",
     "@types/luxon": "^3.7.1",
     "typescript": "^5.9.3",
     "vitest": "~4.0.17",
-    "wrangler": "^4.59.2"
+    "wrangler": "^4.59.3"
   },
   "name": "sanity-calendar-sync",
   "private": true,

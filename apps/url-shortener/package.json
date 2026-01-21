@@ -7,7 +7,7 @@
     "@ethang/toolbelt": "^4.4.11",
     "@hono/zod-validator": "^0.7.6",
     "hono": "^4.11.4",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "nanoid": "^5.1.6",
     "zod": "^4.3.5"
   },
@@ -19,7 +19,7 @@
     "eslint": "^9.39.2",
     "typescript-eslint": "^8.53.1",
     "vitest": "^4.0.17",
-    "wrangler": "^4.59.2"
+    "wrangler": "^4.59.3"
   },
   "engines": {
     "node": ">=24"
