@@ -861,6 +861,7 @@ export default defineConfig(
       "@tanstack/query/no-void-query-fn": "error",
       "@tanstack/query/stable-query-client": "error",
       "@tanstack/router/create-route-property-order": "error",
+      "@tanstack/router/route-param-names": "error",
       "a11y/alt-text": "error",
       "a11y/anchor-ambiguous-text": "error",
       "a11y/anchor-has-content": "error",
