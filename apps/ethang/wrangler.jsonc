@@ -8,14 +8,6 @@
   },
   "compatibility_flags": ["nodejs_compat"],
   "compatibility_date": "2026-01-26",
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_id": "c1423f5b-3a72-44f5-9cb4-d14b6f48f111",
-      "database_name": "ethang",
-      "remote": true
-    }
-  ],
   "main": "worker/index.ts",
   "name": "ethang",
   "observability": {

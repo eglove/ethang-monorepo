@@ -1,41 +1,28 @@
-import { useQuery } from "@apollo/client/react";
 import { Button, Link, Spinner } from "@heroui/react";
-import get from "lodash/get.js";
+import { useQuery } from "@tanstack/react-query";
 import isArray from "lodash/isArray.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 
-import { type GetProjectIds, getProjectIds } from "../../graphql/queries.ts";
+import { getTopProjectIds } from "../../sanity/queries.ts";
 import { GithubIcon } from "../svg/github-icon.tsx";
 import { TypographyH1 } from "../typography/typography-h1.tsx";
 import { ProjectCard } from "./project-card.tsx";
 
 export const ProjectSummary = () => {
-  const { data, loading } = useQuery<GetProjectIds>(getProjectIds, {
-    variables: {
-      where: {
-        title: {
-          in: ["@ethang/store", "@ethang/eslint-config", "@ethang/toolbelt"],
-        },
-      },
-    },
-  });
-
-  const projects = get(data, ["projects"]);
+  const { data, isPending } = useQuery(getTopProjectIds());
 
   return (
     <div className="grid gap-4">
       <TypographyH1 className="flex items-center gap-2">
         <GithubIcon /> Projects
       </TypographyH1>
-      {loading && <Spinner />}
-      {!loading && isArray(projects) && (
+      {isPending && <Spinner />}
+      {!isPending && isArray(data) && (
         <div className="grid gap-4 sm:grid-cols-3">
-          {map(projects, (project) => {
-            const id = get(project, ["id"]);
-
-            if (isString(id)) {
-              return <ProjectCard id={id} key={id} />;
+          {map(data, (project) => {
+            if (isString(project._id)) {
+              return <ProjectCard id={project._id} key={project._id} />;
             }
 
             return null;

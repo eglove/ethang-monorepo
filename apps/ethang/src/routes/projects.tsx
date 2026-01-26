@@ -1,16 +1,15 @@
-import { useQuery } from "@apollo/client/react";
 import { Link, Spinner } from "@heroui/react";
-import get from "lodash/get.js";
+import { useQuery } from "@tanstack/react-query";
 import map from "lodash/map.js";
 
 import { MainLayout } from "../components/main-layout.tsx";
 import { ProjectCard } from "../components/projects/project-card.tsx";
 import { GithubIcon } from "../components/svg/github-icon.tsx";
 import { TypographyH1 } from "../components/typography/typography-h1.tsx";
-import { type GetProjectIds, getProjectIds } from "../graphql/queries.ts";
+import { getProjectIds } from "../sanity/queries.ts";
 
 const RouteComponent = () => {
-  const { data, loading } = useQuery<GetProjectIds>(getProjectIds);
+  const { data, isPending } = useQuery(getProjectIds());
 
   return (
     <MainLayout>
@@ -21,16 +20,15 @@ const RouteComponent = () => {
           applications.
         </p>
       </div>
-      {loading && (
+      {isPending && (
         <div className="my-8 w-full text-center">
           <Spinner />
         </div>
       )}
-      {!loading && (
+      {!isPending && (
         <div className="my-8 grid gap-4 sm:grid-cols-3">
-          {map(get(data, ["projects"]), (project) => {
-            const id = get(project, ["id"]);
-            return <ProjectCard id={id} key={id} />;
+          {map(data, (project) => {
+            return <ProjectCard id={project._id} key={project._id} />;
           })}
         </div>
       )}

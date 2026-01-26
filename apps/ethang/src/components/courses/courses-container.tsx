@@ -1,4 +1,3 @@
-import { useQuery } from "@apollo/client/react";
 import {
   Accordion,
   AccordionItem,
@@ -6,36 +5,32 @@ import {
   Link,
   Skeleton,
 } from "@heroui/react";
-import get from "lodash/get.js";
+import { useQuery } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import split from "lodash/split.js";
 import { SquareArrowOutUpRight } from "lucide-react";
 
-import { type GetPaths, getPaths } from "../../graphql/queries.ts";
+import { getPaths } from "../../sanity/queries.ts";
 import { CourseList } from "./course-list.tsx";
 
 export const CoursesContainer = () => {
-  const { data, loading } = useQuery<GetPaths>(getPaths);
-
-  const paths = get(data, ["paths"]);
-  const isLoaded = !loading && paths !== undefined;
+  const { data, isPending } = useQuery(getPaths());
 
   return (
-    <Skeleton className="my-4" isLoaded={isLoaded}>
+    <Skeleton className="my-4" isLoaded={!isPending}>
       <Accordion
         variant="splitted"
         itemClasses={{ trigger: "cursor-pointer p-2" }}
       >
-        {map(paths, (path) => {
-          const pathId = get(path, ["id"]);
-          const url = get(path, ["url"]);
-          const names = split(get(path, ["name"]), ":");
+        {map(data, (path) => {
+          const names = split(path.name, ":");
 
           return (
             <AccordionItem
-              key={pathId}
-              subtitle={`${get(path, ["_count", "courses"], 0)} courses`}
+              key={path._id}
+              textValue={path.name}
+              subtitle={`${path.courseCount} courses`}
               title={
                 <span>
                   {names[0]}
@@ -50,15 +45,15 @@ export const CoursesContainer = () => {
                   isExternal
                   isIconOnly
                   variant="bordered"
-                  isDisabled={isNil(url)}
-                  href={isNil(url) ? "" : url}
-                  aria-label={`View ${get(path, ["name"])}`}
+                  isDisabled={isNil(path.url)}
+                  aria-label={`View ${path.name}`}
+                  href={isNil(path.url) ? "" : path.url}
                 >
                   <SquareArrowOutUpRight />
                 </Button>
               }
             >
-              <CourseList pathId={pathId} />
+              <CourseList pathId={path._id} />
             </AccordionItem>
           );
         })}

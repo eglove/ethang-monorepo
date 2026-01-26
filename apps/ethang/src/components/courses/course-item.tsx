@@ -1,40 +1,32 @@
-import { useQuery } from "@apollo/client/react";
 import { Link, Skeleton } from "@heroui/react";
+import { useQuery } from "@tanstack/react-query";
 import get from "lodash/get.js";
 
-import { type GetCourse, getCourse } from "../../graphql/queries.ts";
+import { getCourse } from "../../sanity/queries.ts";
 
 type CourseItemProperties = {
   courseId: string;
 };
 
 export const CourseItem = ({ courseId }: Readonly<CourseItemProperties>) => {
-  const { data, loading } = useQuery<GetCourse>(getCourse, {
-    variables: { id: courseId },
-  });
-
-  const course = get(data, ["course"]);
-  const isLoaded = !loading && course !== undefined;
+  const { data, isPending } = useQuery(getCourse(courseId));
 
   return (
-    <Skeleton isLoaded={isLoaded} className="rounded-lg">
+    <Skeleton isLoaded={!isPending} className="rounded-lg">
       <div className="flex min-w-0 flex-1 flex-col">
         <div>
-          <span className="text-green-400">
-            {get(course, ["order"])}.&ensp;
-          </span>
           <Link
             size="sm"
             isExternal
             color="foreground"
-            href={get(course, ["url"], "")}
+            href={get(data, ["url"], "")}
             className="text-small font-medium"
           >
-            {get(course, ["name"], "")}
+            {get(data, ["name"], "")}
           </Link>
         </div>
         <span className="truncate text-tiny text-default-400">
-          {get(course, ["author"], "")}
+          {get(data, ["author"], "")}
         </span>
       </div>
     </Skeleton>

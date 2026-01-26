@@ -1,19 +1,19 @@
 import type { PropsWithChildren } from "react";
 
-import { ApolloProvider } from "@apollo/client/react";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async";
 import { HeroUIProvider } from "@heroui/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
 
-import { apolloClient } from "../graphql/client.ts";
+const queryClient = new QueryClient();
 
 export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   const router = useRouter();
 
   return (
-    <ApolloProvider client={apolloClient}>
+    <QueryClientProvider client={queryClient}>
       <HeroUIProvider
         useHref={(url) => {
           const urlObject = attempt(() => new URL(url));
@@ -38,6 +38,6 @@ export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
       >
         {children}
       </HeroUIProvider>
-    </ApolloProvider>
+    </QueryClientProvider>
   );
 };
