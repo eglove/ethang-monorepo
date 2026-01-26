@@ -1,0 +1,42 @@
+{
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "@sanity/orderable-document-list": "^1.4.2",
+    "@sanity/vision": "^5.6.0",
+    "react": "^19.1",
+    "react-dom": "^19.1",
+    "sanity": "^5.6.0",
+    "styled-components": "^6.1.18"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "^24.5.0",
+    "@sanity/eslint-config-studio": "^6.0.0",
+    "@types/react": "^19.1",
+    "browserslist-config-baseline": "^0.5.0",
+    "eslint": "^9.39.2",
+    "prettier": "^3.5",
+    "typescript": "^5.8"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "license": "UNLICENSED",
+  "main": "package.json",
+  "name": "ethang-admin",
+  "private": true,
+  "scripts": {
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "deploy-graphql": "sanity graphql deploy",
+    "dev": "sanity dev",
+    "lint": "eslint . --fix --concurrency=auto",
+    "start": "sanity start"
+  },
+  "version": "1.0.0"
+}

@@ -28,10 +28,7 @@
       "prisma",
       "sharp",
       "workerd"
-    ],
-    "overrides": {
-      "sanity": "<=4.19"
-    }
+    ]
   },
   "scripts": {
     "build": "pnpm -r build",
