@@ -3,7 +3,7 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig(
   {
-    ignores: [],
+    ignores: [".sanity", "dist", "node_modules", "tsconfig.json"],
   },
   ...config,
   {

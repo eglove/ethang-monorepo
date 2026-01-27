@@ -2,7 +2,7 @@ import { Input } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
 import { PlusIcon } from "lucide-react";
-import { useState } from "react";
+import { type SubmitEventHandler, useState } from "react";
 import { v7 } from "uuid";
 
 import { dexieDatabase } from "../../dexie/dexie.ts";
@@ -27,7 +27,7 @@ export const TaskInput = () => {
     },
   });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     mutate();
     setTitle("");

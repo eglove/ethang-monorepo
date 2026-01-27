@@ -7,7 +7,7 @@ import {
   structureTool,
 } from "sanity/structure";
 
-import { schemaTypes } from "./schema-types";
+import { schemaTypes } from "./schema-types/index.ts";
 
 export default defineConfig({
   dataset: "production",

@@ -8,8 +8,8 @@ import replace from "lodash/replace.js";
 import {
   type ChangeEvent,
   type Dispatch,
-  type FormEvent,
   type SetStateAction,
+  type SubmitEventHandler,
   useCallback,
   useState,
 } from "react";
@@ -32,7 +32,7 @@ export type UseFormReturn<StateType> = {
   formError: string | undefined;
   formState: StateType;
   handleChange: (event: ChangeEvent) => void;
-  handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  handleSubmit: SubmitEventHandler<HTMLFormElement>;
   resetForm: () => void;
   setFormError: Dispatch<SetStateAction<string | undefined>>;
   setFormState: Dispatch<SetStateAction<StateType>>;
@@ -128,8 +128,8 @@ export const useForm = <StateType extends Record<string, unknown>>(
     return true;
   }, [formState, properties]);
 
-  const handleSubmit = useCallback(
-    (event: FormEvent): void => {
+  const handleSubmit = useCallback<SubmitEventHandler<HTMLFormElement>>(
+    (event) => {
       event.preventDefault();
 
       const validation = validate();

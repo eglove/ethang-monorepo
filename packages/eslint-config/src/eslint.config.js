@@ -23,7 +23,7 @@ export default defineConfig(
     ignores,
     languageOptions,
     settings: {
-      react: { version: "19.2.3" },
+      react: { version: "19.2.4" },
     },
     plugins: {
       compat: compat,
@@ -620,6 +620,7 @@ export default defineConfig(
       "sonar/disabled-resource-integrity": "error",
       "sonar/disabled-timeout": "error",
       "sonar/duplicates-in-character-class": "error",
+      "sonar/dynamically-constructed-templates": "error",
       "sonar/elseif-without-else": "error",
       "sonar/empty-string-repetition": "error",
       "sonar/encryption-secure-mode": "error",
@@ -641,6 +642,7 @@ export default defineConfig(
       "sonar/function-return-type": "off",
       "sonar/future-reserved-words": "error",
       "sonar/generator-without-yield": "error",
+      "sonar/hardcoded-secret-signatures": "error",
       "sonar/hashing": "error",
       "sonar/hidden-files": "error",
       "sonar/in-operator-type-error": "error",
@@ -788,6 +790,7 @@ export default defineConfig(
       "sonar/reduce-initial-value": "error",
       "sonar/redundant-type-aliases": "error",
       "sonar/regex-complexity": "error",
+      "sonar/review-blockchain-mnemonic": "error",
       "sonar/session-regeneration": "error",
       "sonar/shorthand-property-grouping": "off",
       "sonar/single-char-in-character-classes": "error",
