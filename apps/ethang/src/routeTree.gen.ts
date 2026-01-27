@@ -12,6 +12,7 @@ import type { CreateFileRoute, FileRoutesByPath } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as FocusRouteImport } from './routes/focus'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TipsIndexRouteImport } from './routes/tips/index'
@@ -24,6 +25,11 @@ import { Route as BlogEthangEslintConfig243RouteImport } from './routes/blog/eth
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FocusRoute = FocusRouteImport.update({
+  id: '/focus',
+  path: '/focus',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoursesRoute = CoursesRouteImport.update({
@@ -72,6 +78,7 @@ const BlogEthangEslintConfig243Route =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/courses': typeof CoursesRoute
+  '/focus': typeof FocusRoute
   '/projects': typeof ProjectsRoute
   '/blog/ethang-eslint-config-24-3': typeof BlogEthangEslintConfig243Route
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/courses': typeof CoursesRoute
+  '/focus': typeof FocusRoute
   '/projects': typeof ProjectsRoute
   '/blog/ethang-eslint-config-24-3': typeof BlogEthangEslintConfig243Route
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/courses': typeof CoursesRoute
+  '/focus': typeof FocusRoute
   '/projects': typeof ProjectsRoute
   '/blog/ethang-eslint-config-24-3': typeof BlogEthangEslintConfig243Route
   '/tips/fine-grained-react-renders': typeof TipsFineGrainedReactRendersRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/courses'
+    | '/focus'
     | '/projects'
     | '/blog/ethang-eslint-config-24-3'
     | '/tips/fine-grained-react-renders'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/courses'
+    | '/focus'
     | '/projects'
     | '/blog/ethang-eslint-config-24-3'
     | '/tips/fine-grained-react-renders'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/courses'
+    | '/focus'
     | '/projects'
     | '/blog/ethang-eslint-config-24-3'
     | '/tips/fine-grained-react-renders'
@@ -142,6 +154,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CoursesRoute: typeof CoursesRoute
+  FocusRoute: typeof FocusRoute
   ProjectsRoute: typeof ProjectsRoute
   BlogEthangEslintConfig243Route: typeof BlogEthangEslintConfig243Route
   TipsFineGrainedReactRendersRoute: typeof TipsFineGrainedReactRendersRoute
@@ -158,6 +171,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/focus': {
+      id: '/focus'
+      path: '/focus'
+      fullPath: '/focus'
+      preLoaderRoute: typeof FocusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/courses': {
@@ -237,6 +257,15 @@ declare module './routes/courses' {
     FileRoutesByPath['/courses']['fullPath']
   >
 }
+declare module './routes/focus' {
+  const createFileRoute: CreateFileRoute<
+    '/focus',
+    FileRoutesByPath['/focus']['parentRoute'],
+    FileRoutesByPath['/focus']['id'],
+    FileRoutesByPath['/focus']['path'],
+    FileRoutesByPath['/focus']['fullPath']
+  >
+}
 declare module './routes/projects' {
   const createFileRoute: CreateFileRoute<
     '/projects',
@@ -304,6 +333,7 @@ declare module './routes/tips/index' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CoursesRoute: CoursesRoute,
+  FocusRoute: FocusRoute,
   ProjectsRoute: ProjectsRoute,
   BlogEthangEslintConfig243Route: BlogEthangEslintConfig243Route,
   TipsFineGrainedReactRendersRoute: TipsFineGrainedReactRendersRoute,
