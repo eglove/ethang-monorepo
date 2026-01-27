@@ -1,7 +1,6 @@
 import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { useLiveQuery } from "dexie-react-hooks";
-import filter from "lodash/filter.js";
 import isNil from "lodash/isNil.js";
 import { CheckIcon, CircleIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
@@ -22,23 +21,7 @@ export const MicrotaskButton = ({
 
   const { isPending, mutate } = useMutation({
     mutationFn: async () => {
-      await dexieDatabase.microTask.update(id, { completed: true });
-
-      if (isNil(microtask)) {
-        return;
-      }
-
-      const microTasks = await dexieDatabase.microTask
-        .where({ taskId: microtask.taskId })
-        .toArray();
-
-      if (0 === filter(microTasks, (task) => !task.completed).length) {
-        await dexieDatabase.task.delete(microtask.taskId);
-        await dexieDatabase.microTask
-          .where({ taskId: microtask.taskId })
-          .delete();
-        focusStore.setSelectedTask(null);
-      }
+      await focusStore.completeMicrotask(id, microtask?.taskId);
     },
   });
 

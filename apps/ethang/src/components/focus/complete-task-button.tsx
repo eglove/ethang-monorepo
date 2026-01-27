@@ -2,7 +2,6 @@ import { Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { CheckIcon } from "lucide-react";
 
-import { dexieDatabase } from "../../dexie/dexie.ts";
 import { focusStore } from "../../stores/focus-store.ts";
 
 type CompleteTaskButtonProperties = {
@@ -14,9 +13,7 @@ export const CompleteTaskButton = ({
 }: Readonly<CompleteTaskButtonProperties>) => {
   const { isPending, mutate } = useMutation({
     mutationFn: async () => {
-      await dexieDatabase.task.delete(id);
-      await dexieDatabase.microTask.where({ taskId: id }).delete();
-      focusStore.setSelectedTask(null);
+      await focusStore.deleteTask(id);
     },
   });
 

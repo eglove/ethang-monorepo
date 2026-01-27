@@ -2,14 +2,11 @@ import { useStore } from "@ethang/store/use-store";
 import { Button, Chip } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { useLiveQuery } from "dexie-react-hooks";
-import attempt from "lodash/attempt.js";
 import isEmpty from "lodash/isEmpty";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import { CoffeeIcon, SparklesIcon, ZapIcon } from "lucide-react";
 import { Activity } from "react";
-import { v7 } from "uuid";
-import { z } from "zod";
 
 import { dexieDatabase } from "../../dexie/dexie.ts";
 import { focusStore } from "../../stores/focus-store.ts";
@@ -42,36 +39,8 @@ export const FocusTab = () => {
   }, [selectedTask]);
 
   const { isPending, mutate } = useMutation({
-    // eslint-disable-next-line sonar/no-invariant-returns
     mutationFn: async (prompt?: string) => {
-      if (isNil(prompt) || isNil(task) || !isEmpty(microTasks)) {
-        return null;
-      }
-
-      const response = await fetch(`/api/ai-microtask?prompt=${prompt}`);
-      const data = await response.json<AiTextGenerationOutput>();
-      const text = data.response;
-
-      if (isNil(text)) {
-        return null;
-      }
-
-      const parsed = attempt(() => {
-        return JSON.parse(text) as unknown;
-      });
-      const parsedTasks = z.array(z.string()).safeParse(parsed);
-
-      const bulk = map(parsedTasks.data, (_microtask) => {
-        return {
-          completed: false,
-          id: v7(),
-          taskId: task.id,
-          title: _microtask,
-        };
-      });
-      await dexieDatabase.microTask.bulkPut(bulk);
-
-      return null;
+      await focusStore.setMicroTasks(task?.id, prompt);
     },
   });
 

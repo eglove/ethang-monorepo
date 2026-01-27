@@ -17,26 +17,12 @@ export const Task = ({ id }: Readonly<TaskProperties>) => {
     return dexieDatabase.task.get(id);
   });
 
-  const { isPending: isCompletePending, mutate: completeTask } = useMutation({
+  const { isPending, mutate } = useMutation({
     mutationFn: async () => {
-      if (isNil(task)) {
-        return null;
-      }
-
-      const updated = await dexieDatabase.task.update(id, { completed: true });
-      focusStore.setSelectedTask(null);
-      return updated;
+      await focusStore.deleteTask(id);
     },
   });
 
-  const { isPending: isDeletePending, mutate: deleteTask } = useMutation({
-    mutationFn: async () => {
-      await dexieDatabase.task.delete(id);
-      await dexieDatabase.microTask.where({ taskId: id }).delete();
-    },
-  });
-
-  const isLoading = isCompletePending || isDeletePending;
   const isCompleted = true === task?.completed;
 
   return (
@@ -46,10 +32,10 @@ export const Task = ({ id }: Readonly<TaskProperties>) => {
           isIconOnly
           variant="ghost"
           className="border-0"
-          isLoading={isLoading}
+          isLoading={isPending}
           isDisabled={isCompleted}
           onPress={() => {
-            completeTask();
+            mutate();
           }}
         >
           <Activity mode={isCompleted ? "hidden" : "visible"}>
@@ -65,7 +51,7 @@ export const Task = ({ id }: Readonly<TaskProperties>) => {
         <Button
           isIconOnly
           variant="ghost"
-          isLoading={isLoading}
+          isLoading={isPending}
           isDisabled={isCompleted}
           onPress={() => {
             if (!isNil(task) && !task.completed) {
@@ -80,9 +66,9 @@ export const Task = ({ id }: Readonly<TaskProperties>) => {
           isIconOnly
           variant="ghost"
           className="border-0"
-          isLoading={isLoading}
+          isLoading={isPending}
           onPress={() => {
-            deleteTask();
+            mutate();
           }}
         >
           <Trash2Icon />

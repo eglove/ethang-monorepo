@@ -5,6 +5,7 @@ import isNil from "lodash/isNil.js";
 import { DateTime } from "luxon";
 
 import { dexieDatabase } from "../../dexie/dexie.ts";
+import { focusStore } from "../../stores/focus-store.ts";
 
 export const MedicationAlert = () => {
   const medicationLog = useLiveQuery(async () => {
@@ -21,10 +22,7 @@ export const MedicationAlert = () => {
 
   const { isPending, mutate } = useMutation({
     mutationFn: async () => {
-      await dexieDatabase.medicationLog.put({
-        date: DateTime.now().toJSDate(),
-        id: "id",
-      });
+      await focusStore.updateMedicationLog();
     },
   });
 
