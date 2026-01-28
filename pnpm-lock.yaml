@@ -102,6 +102,9 @@ importers:
       '@heroui/theme':
         specifier: 2.4.25
         version: 2.4.25(tailwindcss@4.1.18)
+      '@portabletext/react':
+        specifier: ^6.0.2
+        version: 6.0.2(react@19.2.4)
       '@sanity/client':
         specifier: ^7.14.1
         version: 7.14.1(debug@4.4.3)
@@ -166,6 +169,9 @@ importers:
       '@ethang/eslint-config':
         specifier: ^24.6.1
         version: 24.6.1(@angular/cli@21.0.2(@types/node@25.0.10)(chokidar@4.0.3))(@types/eslint@9.6.1)(@typescript-eslint/types@8.54.0)(@typescript-eslint/utils@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(chokidar@4.0.3)(jiti@2.6.1)(storybook@10.2.0(@testing-library/dom@10.4.0)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.1.18)(typescript@5.9.3)
+      '@portabletext/types':
+        specifier: ^4.0.1
+        version: 4.0.1
       '@tailwindcss/postcss':
         specifier: ^4.1.18
         version: 4.1.18
@@ -10464,6 +10470,7 @@ packages:
   tar@7.5.6:
     resolution: {integrity: sha512-xqUeu2JAIJpXyvskvU3uvQW8PAmHrtXp2KDuMJwQqW8Sqq0CaZBAQ+dKS3RBXVhU4wC5NjAdKrmh84241gO9cA==}
     engines: {node: '>=18'}
+    deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exhorbitant rates) by contacting i@izs.me
 
   temp-dir@2.0.0:
     resolution: {integrity: sha512-aoBAniQmmwtcKp/7BzsH8Cxzv8OL736p7v1ihGb5e9DJ9kTwGWHrQrVB5+lfVDzfGrdRzXch+ig7LHaY1JTOrg==}

@@ -29,7 +29,9 @@ export const MedicationAlert = () => {
   return (
     <Alert color={true === isToday ? "success" : "danger"}>
       <div className="flex w-full items-center justify-between">
-        <div>Medication Not Logged</div>
+        <div>
+          {true === isToday ? "Medication Logged" : "Medication Not Logged"}
+        </div>
         <div>
           <Button
             isLoading={isPending}

@@ -1,3 +1,5 @@
+import type { TypedObject } from "@portabletext/types";
+
 import { queryOptions } from "@tanstack/react-query";
 
 import { sanityClient } from "./sanity-client.ts";
@@ -82,7 +84,7 @@ export const getProjectIds = () => {
 
 type GetProject = {
   _id: string;
-  description: string;
+  description: TypedObject | TypedObject[];
   githubUrl: string;
   publicUrl: string;
   techs: { _id: string; name: string }[];

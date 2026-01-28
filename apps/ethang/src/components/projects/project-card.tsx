@@ -7,6 +7,7 @@ import {
   Chip,
   Link,
 } from "@heroui/react";
+import { PortableText } from "@portabletext/react";
 import { useQuery } from "@tanstack/react-query";
 import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
@@ -32,10 +33,8 @@ export const ProjectCard = ({ id }: Readonly<ProjectCardProperties>) => {
         </TypographyH2>
       </CardHeader>
       <CardBody>
-        <div className="grid h-full gap-5">
-          <p className="text-foreground-500">
-            {convertToString(get(data, ["description"], ""))}
-          </p>
+        <div className="grid h-full gap-5 [&>p]:text-foreground-500">
+          <PortableText value={get(data, ["description"], [])}></PortableText>
           <div className="flex flex-wrap gap-2 self-end">
             {map(
               data?.techs.toSorted((a, b) => {
