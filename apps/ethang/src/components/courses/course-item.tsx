@@ -12,7 +12,7 @@ export const CourseItem = ({ courseId }: Readonly<CourseItemProperties>) => {
   const { data, isPending } = useQuery(getCourse(courseId));
 
   return (
-    <Skeleton isLoaded={!isPending} className="rounded-lg">
+    <Skeleton isLoaded={!isPending} className="min-h-9 rounded-lg">
       <div className="flex min-w-0 flex-1 flex-col">
         <div>
           <Link
