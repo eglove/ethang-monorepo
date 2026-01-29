@@ -5,11 +5,11 @@
     "current node"
   ],
   "dependencies": {
-    "@angular-eslint/eslint-plugin": "^21.1.0",
-    "@angular-eslint/eslint-plugin-template": "^21.1.0",
-    "@angular-eslint/template-parser": "^21.1.0",
+    "@angular-eslint/eslint-plugin": "^21.2.0",
+    "@angular-eslint/eslint-plugin-template": "^21.2.0",
+    "@angular-eslint/template-parser": "^21.2.0",
     "@cspell/eslint-plugin": "^9.6.2",
-    "@eslint-react/eslint-plugin": "^2.7.4",
+    "@eslint-react/eslint-plugin": "^2.8.1",
     "@eslint/css": "0.14.1",
     "@eslint/js": "^9.39.2",
     "@eslint/json": "^0.14.0",
@@ -18,7 +18,7 @@
     "@tanstack/eslint-plugin-query": "^5.91.3",
     "@tanstack/eslint-plugin-router": "^1.155.0",
     "@typescript-eslint/parser": "^8.54.0",
-    "angular-eslint": "21.1.0",
+    "angular-eslint": "21.2.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^1.5.0",
@@ -42,8 +42,8 @@
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.23",
-    "@types/node": "^25.0.10",
-    "baseline-browser-mapping": "^2.9.18",
+    "@types/node": "^25.1.0",
+    "baseline-browser-mapping": "^2.9.19",
     "browserslist-config-baseline": "^0.5.0",
     "lodash": "^4.17.23",
     "tailwindcss": "^4.1.18",
@@ -64,5 +64,5 @@
     "lint": "eslint . --fix --concurrency=auto && prettier src --write"
   },
   "type": "module",
-  "version": "24.6.1"
+  "version": "24.7.0"
 }
