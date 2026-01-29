@@ -43,6 +43,27 @@ export const getCourseIds = (pathId: string) => {
   });
 };
 
+export const getCourseCount = () => {
+  return queryOptions({
+    queryFn: async () => {
+      const counts = await sanityClient.fetch<{ courseCount: number }[]>(
+        `*[_type == "learningPath"] {
+          "courseCount": count(courses)
+        }`,
+      );
+
+      let total = 0;
+
+      for (const count of counts) {
+        total += count.courseCount;
+      }
+
+      return total;
+    },
+    queryKey: ["courseCount"],
+  });
+};
+
 type GetCourse = {
   _id: string;
   author: string;

@@ -1,10 +1,17 @@
+import { useQuery } from "@tanstack/react-query";
+import isNil from "lodash/isNil.js";
+import { twMerge } from "tailwind-merge";
+
 import { CoursesContainer } from "../components/courses/courses-container.tsx";
 import { MainLayout } from "../components/main-layout.tsx";
 import { TypographyH1 } from "../components/typography/typography-h1.tsx";
 import { TypographyP } from "../components/typography/typography-p.tsx";
+import { getCourseCount } from "../sanity/queries.ts";
 import { createHead } from "../util/create-head.ts";
 
 const RouteComponent = () => {
+  const { data } = useQuery(getCourseCount());
+
   return (
     <MainLayout>
       <TypographyH1>Recommended Courses</TypographyH1>
@@ -16,11 +23,14 @@ const RouteComponent = () => {
         beyond.
       </TypographyP>
       <TypographyP>
-        These courses will take a while to get through, so I do recommend
-        signing up for Pro accounts instead of buying one-time courses. I've
-        optimized the list to focus on one platform at a time. When there is a
-        series of Udemy courses, sign up for Udemy Pro, cancel it when your
-        done, and so on.
+        These{" "}
+        <span className={twMerge(!isNil(data) && "text-warning")}>
+          {data ?? ""} courses
+        </span>{" "}
+        will take a while to get through, so I recommend signing up for Pro
+        accounts instead of buying one-time courses. I've optimized the list to
+        focus on one platform at a time. When there is a series of Udemy
+        courses, sign up for Udemy Pro, cancel it when you're done, and so on.
       </TypographyP>
 
       <CoursesContainer />
