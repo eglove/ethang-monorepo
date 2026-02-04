@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "compatibility_date": "2026-01-29",
+  "compatibility_date": "2026-02-03",
   "main": "src/index.ts",
   "name": "sanity-calendar-sync",
   "observability": {
