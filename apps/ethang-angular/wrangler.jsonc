@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist/browser"
+  },
+  "compatibility_date": "2025-09-27",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "main": "./dist/server/server.mjs",
+  "name": "ethang-angular",
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "mode": "smart"
+  }
+}
