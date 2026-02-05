@@ -4,7 +4,6 @@ import {
   computed,
   inject,
 } from "@angular/core";
-import { isNil } from "lodash";
 import map from "lodash/map.js";
 
 import { MainLayout } from "../components/main-layout/main-layout.js";
@@ -34,16 +33,6 @@ export class CoursesComponent {
     this.resourceBuilder.createResourceLoader("GetCourseCount", 0, async () =>
       this.sanity.getCourseCount(),
     );
-
-  public readonly courseCount = computed(() => {
-    const currentValue = this.courseCountResource.value();
-
-    if (isNil(currentValue)) {
-      return "courses";
-    }
-
-    return `${currentValue} courses`;
-  });
 
   public readonly pathsResource = this.resourceBuilder.createResourceLoader(
     "GetPaths",
