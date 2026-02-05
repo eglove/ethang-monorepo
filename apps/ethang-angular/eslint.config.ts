@@ -29,6 +29,7 @@ export default defineConfig(
 			"@angular-eslint/no-experimental": "off",
 			"@typescript-eslint/no-extraneous-class": "off",
 			"perfectionist/sort-objects": "off",
+			"unicorn/consistent-function-scoping": "off"
 		},
 	},
 );

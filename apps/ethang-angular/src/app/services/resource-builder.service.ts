@@ -8,7 +8,7 @@ import {
   TransferState,
 } from "@angular/core";
 
-type Keys = "GetPaths";
+type Keys = "GetCourseCount" | "GetPaths";
 
 @Injectable({
   providedIn: "root",

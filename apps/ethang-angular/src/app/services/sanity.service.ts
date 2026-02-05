@@ -27,6 +27,22 @@ export class SanityService {
     useCdn: true,
   });
 
+  public async getCourseCount() {
+    const counts = await this.sanityClient.fetch<{ courseCount: number }[]>(
+      `*[_type == "learningPath"] {
+          "courseCount": count(courses)
+        }`,
+    );
+
+    let total = 0;
+
+    for (const count of counts) {
+      total += count.courseCount;
+    }
+
+    return total;
+  }
+
   public async getPaths() {
     return this.sanityClient.fetch<GetPaths>(
       `*[_type == "learningPath"] | order(orderRank) {
@@ -35,7 +51,7 @@ export class SanityService {
         url,
         swebokFocus,
         "courseCount": count(courses),
-        "courses": courses[]-> {
+        "courses": courses[]-> | order(orderRank) {
           _id,
           name,
           author,
