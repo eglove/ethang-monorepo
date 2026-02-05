@@ -2,7 +2,11 @@ import { Link as NextUiLink } from "@heroui/react";
 import { Link as TanStackLink } from "@tanstack/react-router";
 
 type LinkProperties = Readonly<
-  Parameters<typeof NextUiLink>[0] & Partial<Parameters<typeof TanStackLink>[0]>
+  Omit<
+    Parameters<typeof NextUiLink>[0] &
+      Partial<Parameters<typeof TanStackLink>[0]>,
+    "key"
+  >
 >;
 
 export const Link = (properties: LinkProperties) => {
