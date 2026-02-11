@@ -14,7 +14,6 @@ export default defineConfig({
   name: "default",
 
   plugins: [
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     structureTool({
       structure: (S: StructureBuilder, context: StructureContext) => {
         return S.list()

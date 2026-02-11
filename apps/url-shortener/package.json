@@ -6,7 +6,7 @@
   "dependencies": {
     "@ethang/toolbelt": "^4.4.11",
     "@hono/zod-validator": "^0.7.6",
-    "hono": "^4.11.7",
+    "hono": "^4.11.9",
     "lodash": "^4.17.23",
     "nanoid": "^5.1.6",
     "zod": "^4.3.6"
@@ -17,9 +17,9 @@
     "@vitest/coverage-v8": "^4.0.18",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^9.39.2",
-    "typescript-eslint": "^8.54.0",
+    "typescript-eslint": "^8.55.0",
     "vitest": "^4.0.18",
-    "wrangler": "^4.63.0"
+    "wrangler": "^4.64.0"
   },
   "engines": {
     "node": ">=24"

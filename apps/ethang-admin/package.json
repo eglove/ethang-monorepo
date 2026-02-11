@@ -5,16 +5,16 @@
   ],
   "dependencies": {
     "@sanity/orderable-document-list": "^1.5.0",
-    "@sanity/vision": "^5.8.0",
+    "@sanity/vision": "^5.9.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "sanity": "^5.8.0",
-    "styled-components": "^6.1.18"
+    "sanity": "^5.9.0",
+    "styled-components": "^6.3.9"
   },
   "devDependencies": {
     "@ethang/eslint-config": "^24.7.3",
     "@sanity/eslint-config-studio": "^6.0.0",
-    "@types/react": "^19.2.13",
+    "@types/react": "^19.2.14",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^9.39.2",
     "prettier": "^3.5",

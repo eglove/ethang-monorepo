@@ -12,7 +12,6 @@ const widgets = [
 ];
 
 export const developmentPlugins = [
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   structureTool({
     structure: deskStructure,
   }),
@@ -25,7 +24,6 @@ export const developmentPlugins = [
 ];
 
 export const productionPlugins = [
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   structureTool({
     structure: deskStructure,
   }),
