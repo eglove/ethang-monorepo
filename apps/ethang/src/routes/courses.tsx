@@ -6,15 +6,24 @@ import { CoursesContainer } from "../components/courses/courses-container.tsx";
 import { MainLayout } from "../components/main-layout.tsx";
 import { TypographyH1 } from "../components/typography/typography-h1.tsx";
 import { TypographyP } from "../components/typography/typography-p.tsx";
-import { getCourseCount } from "../sanity/queries.ts";
+import { getCourseCount, getLatestUpdate } from "../sanity/queries.ts";
 import { createHead } from "../util/create-head.ts";
 
 const RouteComponent = () => {
   const { data } = useQuery(getCourseCount());
+  const { data: latestUpdate } = useQuery(getLatestUpdate());
 
   return (
     <MainLayout>
       <TypographyH1>Recommended Courses</TypographyH1>
+      <TypographyP>
+        Last Updated:{" "}
+        {!isNil(latestUpdate?._updatedAt) &&
+          new Date(latestUpdate._updatedAt).toLocaleString(undefined, {
+            dateStyle: "medium",
+            timeStyle: "short",
+          })}
+      </TypographyP>
       <TypographyP>
         This list is meant as a way to provide a straightforward curriculum of
         what you need to learn for development. It's updated constantly, but at

@@ -151,3 +151,17 @@ export const getTopProjectIds = () => {
     ],
   });
 };
+
+export const getLatestUpdate = () => {
+  return queryOptions({
+    queryFn: async () => {
+      return sanityClient.fetch<{ _id: string; _updatedAt: string }>(
+        `*[_type in ["course", "learningPath"]] | order(_updatedAt desc)[0] {
+          _id,
+          _updatedAt
+        }`,
+      );
+    },
+    queryKey: ["latestUpdate"],
+  });
+};
