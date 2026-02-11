@@ -165,3 +165,29 @@ export const getLatestUpdate = () => {
     queryKey: ["latestUpdate"],
   });
 };
+
+type WowTask = {
+  _id: string;
+  notes: string;
+  objective: string;
+  requirements: WowTask[];
+  taskType: string;
+  title: string;
+};
+
+export const getWowTasks = () => {
+  return queryOptions({
+    queryFn: async () => {
+      return sanityClient.fetch<
+        WowTask[]
+      >(`*[_type == "wowTask"] | order(orderRank asc) {
+  _id,
+  notes,
+  objective,
+  taskType,
+  title
+}`);
+    },
+    queryKey: ["wowTasks"],
+  });
+};
