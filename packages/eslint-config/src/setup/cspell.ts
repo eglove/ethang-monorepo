@@ -95,6 +95,7 @@ const customRules: CustomRules = [
             "Comeau",
             "autodocs",
             "agentic",
+            "pico",
           ],
         },
       },
