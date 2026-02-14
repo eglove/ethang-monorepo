@@ -273,43 +273,6 @@ importers:
         specifier: ^5.8
         version: 5.9.3
 
-  apps/ethang-html:
-    dependencies:
-      '@sanity/client':
-        specifier: ^7.14.1
-        version: 7.14.1(debug@4.4.3)
-      hono:
-        specifier: ^4.11.9
-        version: 4.11.9
-      lodash:
-        specifier: ^4.17.23
-        version: 4.17.23
-      luxon:
-        specifier: ^3.7.2
-        version: 3.7.2
-    devDependencies:
-      '@ethang/eslint-config':
-        specifier: ^24.7.5
-        version: 24.7.5(@angular/cli@21.1.2(@types/node@25.2.3)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/types@8.55.0)(@typescript-eslint/utils@8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(chokidar@5.0.0)(jiti@2.6.1)(storybook@10.2.0(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.1.18)(typescript@5.9.3)
-      '@types/lodash':
-        specifier: ^4.17.23
-        version: 4.17.23
-      '@types/luxon':
-        specifier: ^3.7.1
-        version: 3.7.1
-      '@types/node':
-        specifier: ^25.2.3
-        version: 25.2.3
-      browserslist-config-baseline:
-        specifier: ^0.5.0
-        version: 0.5.0
-      eslint:
-        specifier: ^9.39.2
-        version: 9.39.2(jiti@2.6.1)
-      wrangler:
-        specifier: ^4.65.0
-        version: 4.65.0(@cloudflare/workers-types@4.20260214.0)
-
   apps/sanity-calendar-sync:
     dependencies:
       '@portabletext/react':
