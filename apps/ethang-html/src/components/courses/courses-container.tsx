@@ -56,7 +56,7 @@ export const coursesContainer = async () => {
             <div class="link">
               {link({
                 className: "contrast",
-                href: "",
+                href: path.url,
                 isExternal: true,
                 label: path.name,
                 title: externalLinkSvg(),
