@@ -1,0 +1,32 @@
+{
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "@sanity/client": "^7.14.1",
+    "hono": "^4.11.9",
+    "lodash": "^4.17.23",
+    "luxon": "^3.7.2"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "^24.7.3",
+    "@types/lodash": "^4.17.23",
+    "@types/luxon": "^3.7.1",
+    "@types/node": "^25.2.3",
+    "browserslist-config-baseline": "^0.5.0",
+    "eslint": "^9.39.2",
+    "wrangler": "^4.65.0"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "name": "ethang-html",
+  "scripts": {
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "deploy": "wrangler deploy --minify",
+    "dev": "wrangler dev",
+    "lint": "eslint . --fix --concurrency=auto"
+  },
+  "type": "module"
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "../../packages/tsconfig/tsconfig.react.json",
+  "compilerOptions": {
+    "jsxImportSource": "hono/jsx",
+    "types": [
+      "./worker-configuration.d.ts",
+      "node"
+    ]
+  },
+}
