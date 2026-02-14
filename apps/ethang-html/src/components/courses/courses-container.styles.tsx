@@ -46,6 +46,8 @@ export const contentGrid = css`
 
 export const summaryStyles = css`
   list-style: none;
+  cursor: pointer;
+  padding: var(--pico-spacing);
 
   &::after {
     display: none !important;
@@ -55,5 +57,40 @@ export const summaryStyles = css`
 
   &::-webkit-details-marker {
     display: none;
+  }
+`;
+
+export const detailsStyles = css`
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: var(--pico-border-radius);
+  margin-bottom: var(--pico-spacing);
+  overflow: hidden;
+  transition:
+    box-shadow 0.2s ease-in-out,
+    border-color 0.2s ease-in-out;
+  interpolate-size: allow-keywords;
+
+  &[open] {
+    border-color: var(--pico-primary-background);
+    box-shadow: var(--pico-card-sectioning-background-color) 0 0 10px;
+  }
+
+  &::details-content {
+    transition:
+      block-size 0.3s ease-in-out,
+      content-visibility 0.3s ease-in-out;
+    transition-behavior: allow-discrete;
+    block-size: 0;
+    overflow: hidden;
+  }
+
+  &[open]::details-content {
+    block-size: auto;
+  }
+`;
+
+export const detailsContentStyles = css`
+  & > div {
+    padding: 0 var(--pico-spacing) var(--pico-spacing) var(--pico-spacing);
   }
 `;

@@ -14,6 +14,8 @@ import { courseList } from "./course-list.tsx";
 import {
   arrowStyles,
   contentGrid,
+  detailsContentStyles,
+  detailsStyles,
   summaryStyles,
 } from "./courses-container.styles.tsx";
 
@@ -48,7 +50,7 @@ export const coursesContainer = async () => {
     const focus = swebokFocusMap.get(path.swebokFocus);
 
     return (
-      <details>
+      <details class={detailsStyles}>
         <summary class={summaryStyles}>
           <div class={contentGrid}>
             <div class="link">
@@ -72,7 +74,9 @@ export const coursesContainer = async () => {
             <div class={arrowStyles}>{chevronLeft()}</div>
           </div>
         </summary>
-        {courseList({ pathId: path._id })}
+        <div class={detailsContentStyles}>
+          <div>{courseList({ pathId: path._id })}</div>
+        </div>
       </details>
     );
   })}`;
