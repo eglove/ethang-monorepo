@@ -984,6 +984,7 @@ export default defineConfig(
               "Comeau",
               "autodocs",
               "agentic",
+              "pico",
             ],
           },
         },
