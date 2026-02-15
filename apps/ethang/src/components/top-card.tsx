@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, CardBody, Link } from "@heroui/react";
+import { Avatar, Button, Card, CardBody, Image, Link } from "@heroui/react";
 import { MailIcon } from "lucide-react";
 
 import profileImage from "../assets/profile.jpeg";
@@ -35,6 +35,28 @@ export const TopCard = () => {
                 href="mailto:hello@ethang.email"
               >
                 <MailIcon />
+              </Link>
+              <Link
+                isExternal
+                className="text-foreground"
+                href="https://frontendmasters.com/u/ethang/"
+              >
+                <Image
+                  alt="Frontend Masters"
+                  src="/images/frontend-masters-icon.png"
+                />
+              </Link>
+              <Link
+                isExternal
+                className="text-foreground"
+                href="https://app.pluralsight.com/profile/ethan-glover-e9"
+              >
+                <Image
+                  width="25"
+                  height="25"
+                  alt="Pluralsight"
+                  src="/images/pluralsight-icon.png"
+                />
               </Link>
               <Button
                 as={Link}
