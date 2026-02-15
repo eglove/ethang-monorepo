@@ -17,7 +17,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^24.7.5",
+    "@ethang/eslint-config": "^24.8.0",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.23",
     "eslint": "^9.39.2",
