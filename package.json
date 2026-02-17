@@ -1,7 +1,7 @@
 {
   "author": "Ethan Glover",
   "devDependencies": {
-    "@ethang/eslint-config": "^24.8.1",
+    "@ethang/eslint-config": "^24.8.2",
     "@types/node": "^25.2.3",
     "bun": "^1.3.9",
     "eslint": "^9.39.2",
@@ -27,6 +27,7 @@
       "msw",
       "prisma",
       "sharp",
+      "unrs-resolver",
       "workerd"
     ]
   },
