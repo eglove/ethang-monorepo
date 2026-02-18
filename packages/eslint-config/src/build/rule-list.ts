@@ -85,7 +85,7 @@ export const ruleList: RuleConfig[] = [
     pluginName: "lodash",
     pluginValue: "lodashConfig",
     type: "core",
-    url: "https://github.com/wix-incubator/eslint-plugin-lodash",
+    url: "https://github.com/idok/eslint-plugin-lodash",
   },
   {
     importString: 'import sonar from "eslint-plugin-sonarjs";',
