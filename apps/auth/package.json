@@ -8,7 +8,7 @@
     "@ethang/toolbelt": "^4.4.11",
     "@hono/zod-validator": "^0.7.6",
     "@prisma/adapter-d1": "^7.4.0",
-    "@prisma/client": "7.4.0",
+    "@prisma/client": "7.4.1",
     "bcryptjs": "^3.0.3",
     "hono": "^4.12.0",
     "jose": "^6.1.3",
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.52.0",
-    "@ethang/eslint-config": "^24.8.3",
+    "@ethang/eslint-config": "^24.8.5",
     "@types/lodash": "^4.17.23",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^9.39.2",

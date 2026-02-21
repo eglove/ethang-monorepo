@@ -33,7 +33,7 @@
     "@cloudflare/vite-plugin": "^1.25.2",
     "@cloudflare/workers-types": "^4.20260219.0",
     "@dotenvx/dotenvx": "^1.52.0",
-    "@ethang/eslint-config": "^24.8.3",
+    "@ethang/eslint-config": "^24.8.5",
     "@portabletext/types": "^4.0.1",
     "@tailwindcss/postcss": "^4.2.0",
     "@tailwindcss/vite": "^4.2.0",
