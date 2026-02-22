@@ -13,7 +13,7 @@ describe("update-rules", () => {
     expect(createConfigFile).toHaveBeenCalledTimes(8);
     expect(createConfigFile).toHaveBeenCalledWith(
       expect.any(Array),
-      "eslint.config.js",
+      "config.main.js",
     );
   });
 

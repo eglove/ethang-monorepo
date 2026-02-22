@@ -140,7 +140,7 @@ export const updateReadme = () => {
     ],
     `${htmlCount} rules for **HTML**`,
     [
-      `import html from "@ethang/eslint-config/config.html.js";`,
+      '`import htmlConfig from "@ethang/eslint-config/config.html.js";`',
       getImports(htmlRules),
     ],
     `${reactCount} rules for **React**`,
@@ -160,7 +160,7 @@ export const updateReadme = () => {
     ],
     `${tailwindCount} rules for **Tailwind**`,
     [
-      `import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";`,
+      '`import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";`',
       getImports(tailwindRules),
     ],
   ]);
@@ -171,7 +171,7 @@ export const updateReadme = () => {
   md.header(1, "Config", 2);
   md.text("In **eslint.config.ts**", 2);
   md.codeBlock(
-    `import config from "@ethang/eslint-config/eslint.config.js";
+    `import config from "@ethang/eslint-config/config.main.js";
 import { defineConfig } from "eslint/config";
 import path from "node:path";
 import reactConfig from "@ethang/eslint-config/config.react.js"; // OPTIONAL

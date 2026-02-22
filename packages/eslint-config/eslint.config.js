@@ -1,5 +1,6 @@
-import config from "./src/eslint.config.js";
 import { defineConfig } from "eslint/config";
+
+import config from "./src/config.main.js";
 
 export default defineConfig(
   {
@@ -7,7 +8,7 @@ export default defineConfig(
       "dist",
       "coverage",
       "src/README.md",
-      "src/eslint.config.js",
+      "src/config.main.js",
       "src/config.solid.js",
       "src/config.react.js",
       "src/config.astro.js",

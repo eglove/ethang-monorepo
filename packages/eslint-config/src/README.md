@@ -31,7 +31,7 @@
   - `import astroConfig from "@ethang/eslint-config/config.astro.js";`
     - 53 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)
 - 56 rules for **HTML**
-  - import html from "@ethang/eslint-config/config.html.js";
+  - `import htmlConfig from "@ethang/eslint-config/config.html.js";`
     - 56 rules from [@html-eslint/eslint-plugin](https://github.com/html-eslint/html-eslint)
 - 92 rules for **React**
   - `import reactConfig from "@ethang/eslint-config/config.react.js";`
@@ -44,7 +44,7 @@
   - `import storybookConfig from "@ethang/eslint-config/config.storybook.js";`
     - 16 rules from [eslint-plugin-storybook](https://github.com/storybookjs/eslint-plugin-storybook)
 - 6 rules for **Tailwind**
-  - import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";
+  - `import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";`
     - 6 rules from [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss)
 
 # Install
@@ -60,7 +60,7 @@ pnpm i -D eslint @ethang/eslint-config
 In **eslint.config.ts**
 
 ```js
-import config from "@ethang/eslint-config/eslint.config.js";
+import config from "@ethang/eslint-config/config.main.js";
 import { defineConfig } from "eslint/config";
 import path from "node:path";
 import reactConfig from "@ethang/eslint-config/config.react.js"; // OPTIONAL

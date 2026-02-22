@@ -11,7 +11,7 @@ vi.mock("node:fs");
 
 describe("createConfigFile", () => {
   const testConfig = "test.config.js";
-  const eslintConfig = "eslint.config.js";
+  const eslintConfig = "config.main.js";
   const prettierString = "eslintConfigPrettier,";
 
   beforeEach(() => {
@@ -72,7 +72,7 @@ describe("createConfigFile", () => {
     const content = call?.[1];
     expect(content).toContain("const config = (options) => {");
     expect(content).toContain(prettierString);
-    expect(content).toContain("eslintPluginPrettierRecommended,");
+    expect(content).toContain("eslintPluginPrettierRecommended");
     expect(content).toContain("export default config;");
   });
 
@@ -105,6 +105,6 @@ describe("createConfigFile", () => {
       .mock.calls[0];
     const content = call?.[1];
     expect(content).toContain(prettierString);
-    expect(content).toContain("eslintPluginPrettierRecommended,");
+    expect(content).toContain("eslintPluginPrettierRecommended");
   });
 });

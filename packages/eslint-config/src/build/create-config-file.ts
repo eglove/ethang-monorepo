@@ -9,7 +9,7 @@ import type { ConfigFile } from "./update-rules.ts";
 import { createConfig } from "./create-config.ts";
 import { getTypeImportStrings } from "./list-utilities.ts";
 
-const mainFile = "eslint.config.js";
+const mainFile = "config.main.js";
 
 export const createConfigFile = async (
   listConfigs: ConfigFile[],
@@ -46,19 +46,21 @@ export const createConfigFile = async (
     }),
   );
 
+  const configArray = configs.flat();
+
+  if (mainFile === fileName) {
+    configArray.push("eslintConfigPrettier", "eslintPluginPrettierRecommended");
+  }
+
   // eslint-disable-next-line unicorn/prefer-ternary
   if (isNil(functionParameters)) {
     configFile += `\nexport default defineConfig(
-      ${configs.join("\n")}
-      ${mainFile === fileName ? "eslintConfigPrettier," : ""}
-      ${mainFile === fileName ? "eslintPluginPrettierRecommended," : ""}
+      ${configArray.join(",\n")}
     );\n`;
   } else {
     configFile += `\nconst config = (${functionParameters}) => {
       return defineConfig(
-        ${configs.join("\n")}
-        ${mainFile === fileName ? "eslintConfigPrettier," : ""}
-        ${mainFile === fileName ? "eslintPluginPrettierRecommended," : ""}
+        ${configArray.join(",\n")}
       );
     }\n\nexport default config;\n`;
   }

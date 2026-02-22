@@ -1,5 +1,6 @@
 import flow from "lodash/flow.js";
 import isNil from "lodash/isNil.js";
+import keys from "lodash/keys.js";
 import map from "lodash/map.js";
 
 import { getLatestReact } from "./get-react-version.ts";
@@ -35,8 +36,8 @@ const getIgnoresString = flow(
 export const createConfig = async (
   type: string,
   options: ConfigOptions = {},
-) => {
-  let config = "";
+): Promise<string[]> => {
+  const configs: string[] = [];
   let settings;
 
   if (!isNil(options.includeReactVersion)) {
@@ -48,7 +49,11 @@ export const createConfig = async (
 
   const list = getList(type);
   const ruleJson = getListJson(list);
-  const offRulesJson = `,${JSON.stringify(options.extraRules ?? {}).slice(1, -1)}`;
+  const extraRules = options.extraRules ?? {};
+  const hasExtraRules = 0 < keys(extraRules).length;
+  const offRulesJson = hasExtraRules
+    ? `,${JSON.stringify(extraRules).slice(1, -1)}`
+    : "";
 
   let optionals = "";
 
@@ -80,22 +85,21 @@ export const createConfig = async (
   const language = getTypeLanguage(type);
 
   if (options.globalIgnores) {
-    config += `{
+    configs.push(`{
       ignores: [${getIgnoresString(options.globalIgnores)}],
-    },`;
+    }`);
   }
 
-  config += `{
+  configs.push(`{
     files: ["${getTypeFiles(type)}"],${optionals}${language ? `language: "${language}",` : ""}
     plugins: {
       ${getListPlugins(list)}
     },
     rules: {
-      ${ruleJson}
-      ${isNil(options.extraRules) ? "" : offRulesJson}
+      ${ruleJson}${offRulesJson}
     },
     ${isNil(options.extraOptions) ? "" : options.extraOptions}
-  },`;
+  }`);
 
-  return config;
+  return configs;
 };

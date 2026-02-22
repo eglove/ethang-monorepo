@@ -6,7 +6,7 @@ import { updateReadme } from "./src/build/update-readme.js";
 import { updateRules } from "./src/build/update-rules.js";
 
 const configFiles = [
-  "src/eslint.config.js",
+  "src/config.main.js",
   "src/config.html.js",
   "src/config.astro.js",
   "src/config.react.js",

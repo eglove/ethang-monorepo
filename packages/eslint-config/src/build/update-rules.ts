@@ -13,7 +13,7 @@ const defineConfig = 'import { defineConfig } from "eslint/config";';
 
 export const coreFile = [
   {
-    importString: 'import config from "@ethang/eslint-config/eslint.config.js',
+    importString: 'import config from "@ethang/eslint-config/config.main.js";',
     label: "Core",
     name: "core",
     options: {
@@ -46,7 +46,7 @@ export const coreFile = [
 
 export const htmlFile = [
   {
-    importString: "@html-eslint/eslint-plugin",
+    importString: 'import html from "@html-eslint/eslint-plugin";',
     label: "HTML",
     name: "html",
     options: {
@@ -61,7 +61,7 @@ export const htmlFile = [
 const astroFile = [
   {
     importString:
-      'import astroConfig from "@ethang/eslint-config/config.astro.ts',
+      'import astroConfig from "@ethang/eslint-config/config.astro.js";',
     label: "Astro",
     name: "astro",
     options: {
@@ -75,7 +75,7 @@ const astroFile = [
 const reactFile = [
   {
     importString:
-      'import reactConfig from "@ethang/eslint-config/config.react.ts',
+      'import reactConfig from "@ethang/eslint-config/config.react.js";',
     label: "React",
     name: "react",
     options: {
@@ -90,7 +90,7 @@ const reactFile = [
 const solidFile = [
   {
     importString:
-      'import solidConfig from "@ethang/eslint-config/config.solid.ts',
+      'import solidConfig from "@ethang/eslint-config/config.solid.js";',
     label: "Solid",
     name: "solid",
     options: {
@@ -104,7 +104,7 @@ const solidFile = [
 const angularFile = [
   {
     importString:
-      'import angularConfig from "@ethang/eslint-config/config.angular.ts',
+      'import angularConfig from "@ethang/eslint-config/config.angular.js";',
     label: "Angular",
     name: "angular",
     options: {
@@ -128,7 +128,7 @@ const angularFile = [
 const storybookFile = [
   {
     importString:
-      'import storybookConfig from "@ethang/eslint-config/config.storybook.ts',
+      'import storybookConfig from "@ethang/eslint-config/config.storybook.js";',
     label: "Storybook",
     name: "storybook",
     options: {
@@ -142,7 +142,7 @@ const storybookFile = [
 const tailwindFile = [
   {
     importString:
-      'import tailwindConfig from "@ethang/eslint-config/config.tailwind.ts',
+      'import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";',
     label: "Tailwind",
     name: "tailwind",
     options: {
@@ -156,7 +156,7 @@ const tailwindFile = [
 
 export const updateRules = async () => {
   await Promise.all([
-    createConfigFile(coreFile, "eslint.config.js"),
+    createConfigFile(coreFile, "config.main.js"),
     createConfigFile(htmlFile, "config.html.js"),
     createConfigFile(astroFile, "config.astro.js"),
     createConfigFile(reactFile, "config.react.js"),
