@@ -78,12 +78,13 @@ export const ruleList: RuleConfig[] = [
     url: "https://github.com/sindresorhus/eslint-plugin-unicorn",
   },
   {
-    importString: 'import lodashConfig from "eslint-plugin-lodash";',
+    importString:
+      'import { fixupPluginRules } from "@eslint/compat";\nimport lodashConfig from "eslint-plugin-lodash";',
     list: lodashRules,
     name: "eslint-plugin-lodash",
     order: 4,
     pluginName: "lodash",
-    pluginValue: "lodashConfig",
+    pluginValue: "fixupPluginRules(lodashConfig)",
     type: "core",
     url: "https://github.com/idok/eslint-plugin-lodash",
   },

@@ -1,6 +1,8 @@
 import filter from "lodash/filter.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
+import split from "lodash/split.js";
+import uniq from "lodash/uniq.js";
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 
@@ -25,15 +27,18 @@ export const createConfigFile = async (
       importStrings.push(...list.options.extraImports);
     }
 
-    return importStrings;
+    return importStrings.flatMap((s) => {
+      return split(s, "\n");
+    });
   });
 
-  const importList = filter([
-    'import { ignores, languageOptions } from "./constants.js";',
-    ...imports,
-  ]).toSorted((a, b) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return a!.localeCompare(b!);
+  const importList = uniq(
+    filter([
+      'import { ignores, languageOptions } from "./constants.js";',
+      ...imports,
+    ]),
+  ).toSorted((a, b) => {
+    return a.localeCompare(b);
   });
 
   for (const item of importList) {

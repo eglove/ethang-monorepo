@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { defineConfig } from "eslint/config";
+import { fixupPluginRules } from "@eslint/compat";
 import { ignores, languageOptions } from "./constants.js";
 import a11y from "eslint-plugin-jsx-a11y";
 import compat from "eslint-plugin-compat";
@@ -29,7 +30,7 @@ export default defineConfig(
       compat: compat,
       "@typescript-eslint": tseslint.plugin,
       unicorn: unicorn,
-      lodash: lodashConfig,
+      lodash: fixupPluginRules(lodashConfig),
       sonar: sonar,
       perfectionist: perfectionist,
       "@tanstack/query": tanstackQuery,

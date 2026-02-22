@@ -10,6 +10,7 @@
     "@angular-eslint/template-parser": "^21.2.0",
     "@cspell/eslint-plugin": "^9.6.4",
     "@eslint-react/eslint-plugin": "^2.13.0",
+    "@eslint/compat": "^2.0.2",
     "@eslint/css": "0.14.1",
     "@eslint/js": "^9.39.2",
     "@eslint/json": "^1.0.1",
