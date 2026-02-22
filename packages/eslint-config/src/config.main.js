@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import { fixupPluginRules } from "@eslint/compat";
 import { ignores, languageOptions } from "./constants.js";
 import a11y from "eslint-plugin-jsx-a11y";
@@ -19,9 +19,9 @@ import tseslint from "typescript-eslint";
 import unicorn from "eslint-plugin-unicorn";
 
 export default defineConfig(
+  globalIgnores(ignores),
   {
     files: ["**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}"],
-    ignores,
     languageOptions,
     settings: {
       react: { version: "19.2.4" },

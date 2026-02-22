@@ -57,10 +57,6 @@ export const createConfig = async (
 
   let optionals = "";
 
-  if (!isNil(options.includeIgnores)) {
-    optionals += "\nignores,";
-  }
-
   if (
     !isNil(options.includeLanguageOptions) &&
     isNil(options.includeAngularLanguageOptions)
@@ -84,10 +80,12 @@ export const createConfig = async (
 
   const language = getTypeLanguage(type);
 
+  if (!isNil(options.includeIgnores)) {
+    configs.push("globalIgnores(ignores)");
+  }
+
   if (options.globalIgnores) {
-    configs.push(`{
-      ignores: [${getIgnoresString(options.globalIgnores)}],
-    }`);
+    configs.push(`globalIgnores([${getIgnoresString(options.globalIgnores)}])`);
   }
 
   configs.push(`{

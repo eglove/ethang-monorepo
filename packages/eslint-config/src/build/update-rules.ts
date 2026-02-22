@@ -9,7 +9,8 @@ export type ConfigFile = {
   options?: ConfigOptions;
 };
 
-const defineConfig = 'import { defineConfig } from "eslint/config";';
+const defineConfig =
+  'import { defineConfig, globalIgnores } from "eslint/config";';
 
 export const coreFile = [
   {

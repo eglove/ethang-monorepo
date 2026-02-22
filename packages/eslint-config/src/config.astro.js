@@ -1,11 +1,10 @@
 // @ts-nocheck
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
 import astro from "eslint-plugin-astro";
 
-export default defineConfig({
+export default defineConfig(globalIgnores(ignores), {
   files: ["**/*.{astro}"],
-  ignores,
   languageOptions,
   plugins: {
     astro: astro,

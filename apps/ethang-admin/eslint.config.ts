@@ -1,10 +1,8 @@
 import config from "@ethang/eslint-config/config.main.js";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig(
-  {
-    ignores: [".sanity", "dist", "node_modules", "tsconfig.json"],
-  },
+  globalIgnores([".sanity", "dist", "node_modules", "tsconfig.json"]),
   ...config,
   {
     languageOptions: {

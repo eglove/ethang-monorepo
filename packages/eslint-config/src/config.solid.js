@@ -1,11 +1,10 @@
 // @ts-nocheck
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
 import solid from "eslint-plugin-solid";
 
-export default defineConfig({
+export default defineConfig(globalIgnores(ignores), {
   files: ["**/*.{jsx,tsx}"],
-  ignores,
   languageOptions,
   plugins: {
     solid: solid,

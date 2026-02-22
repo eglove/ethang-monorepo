@@ -1,17 +1,15 @@
 import config from "@ethang/eslint-config/config.main.js";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig(
-  {
-    ignores: [
-      ".wrangler",
-      "node_modules",
-      "**/*.d.ts",
-      "wrangler.jsonc",
-      "tsconfig.json",
-      "coverage",
-    ],
-  },
+  globalIgnores([
+    ".wrangler",
+    "node_modules",
+    "**/*.d.ts",
+    "wrangler.jsonc",
+    "tsconfig.json",
+    "coverage",
+  ]),
   ...config,
   {
     languageOptions: {

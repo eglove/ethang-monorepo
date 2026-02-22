@@ -1,21 +1,19 @@
 import config from "@ethang/eslint-config/config.main.js";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig(
-  {
-    ignores: [
-      "**/*/dist",
-      "**/*/node_modules",
-      "packages/eslint-config/eslint.config.js",
-      "apps/**/*.gen.ts",
-      "**/*.d.ts",
-      "**/.sanity",
-      "**/storybook-static",
-      "**/convex/_generated",
-      "**/README.md",
-      "sonar.ts",
-    ],
-  },
+  globalIgnores([
+    "**/*/dist",
+    "**/*/node_modules",
+    "packages/eslint-config/eslint.config.js",
+    "apps/**/*.gen.ts",
+    "**/*.d.ts",
+    "**/.sanity",
+    "**/storybook-static",
+    "**/convex/_generated",
+    "**/README.md",
+    "sonar.ts",
+  ]),
   ...config,
   {
     languageOptions: {

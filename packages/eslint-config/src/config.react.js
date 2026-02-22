@@ -1,12 +1,11 @@
 // @ts-nocheck
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
 import react from "@eslint-react/eslint-plugin";
 import reactHooks from "eslint-plugin-react-hooks";
 
-export default defineConfig({
+export default defineConfig(globalIgnores(ignores), {
   files: ["**/*.{jsx,tsx}"],
-  ignores,
   languageOptions,
   settings: {
     react: { version: "19.2.4" },

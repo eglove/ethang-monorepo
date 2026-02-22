@@ -34,7 +34,6 @@ const getImports = flow(
   },
 );
 
-// eslint-disable-next-line sonar/max-lines-per-function
 export const updateReadme = () => {
   const md = new MarkdownGenerator();
   md.header(1, "Relentless. Unapologetic.", 2);
@@ -172,16 +171,14 @@ export const updateReadme = () => {
   md.text("In **eslint.config.ts**", 2);
   md.codeBlock(
     `import config from "@ethang/eslint-config/config.main.js";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import path from "node:path";
 import reactConfig from "@ethang/eslint-config/config.react.js"; // OPTIONAL
 import tailwindConfig from "@ethang/eslint-config/config.tailwind.js"; // OPTIONAL
 import htmlConfig from "@ethang/eslint-config/config.html.js"; // OPTIONAL
 
 export default defineConfig(
-  {
-    ignores: [], // Ignored files apply to all following configs
-  },
+  globalIgnores([]), // Ignored files apply to all following configs
   ...config,
   ...reactConfig,
   ...htmlConfig,

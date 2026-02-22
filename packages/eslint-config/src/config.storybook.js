@@ -1,11 +1,10 @@
 // @ts-nocheck
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
 import storybook from "eslint-plugin-storybook";
 
-export default defineConfig({
+export default defineConfig(globalIgnores(ignores), {
   files: ["**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)"],
-  ignores,
   languageOptions,
   plugins: {
     storybook: storybook,

@@ -1,12 +1,11 @@
 // @ts-nocheck
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
 import tailwind from "eslint-plugin-tailwindcss";
 
 const config = (/** @type {string} */ pathToConfig) => {
-  return defineConfig({
+  return defineConfig(globalIgnores(ignores), {
     files: ["**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}"],
-    ignores,
     languageOptions,
     plugins: {
       tailwind: tailwind,

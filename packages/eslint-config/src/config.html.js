@@ -1,12 +1,11 @@
 import html from "@html-eslint/eslint-plugin";
 // @ts-nocheck
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 import { ignores, languageOptions } from "./constants.js";
 
-export default defineConfig({
+export default defineConfig(globalIgnores(ignores), {
   files: ["**/*.html"],
-  ignores,
   language: "html/html",
   languageOptions,
   plugins: {

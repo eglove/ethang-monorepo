@@ -2,22 +2,20 @@ import htmlConfig from "@ethang/eslint-config/config.html.js";
 import config from "@ethang/eslint-config/config.main.js";
 import reactConfig from "@ethang/eslint-config/config.react.js";
 import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import path from "node:path";
 
 export default defineConfig(
-  {
-    ignores: [
-      "dist",
-      "node_modules",
-      "**/*.d.ts",
-      "public",
-      "src/routeTree.gen.ts",
-      "wrangler.jsonc",
-      ".wrangler",
-      "src/index.css",
-    ],
-  },
+  globalIgnores([
+    "dist",
+    "node_modules",
+    "**/*.d.ts",
+    "public",
+    "src/routeTree.gen.ts",
+    "wrangler.jsonc",
+    ".wrangler",
+    "src/index.css",
+  ]),
   ...config,
   ...htmlConfig,
   ...reactConfig,

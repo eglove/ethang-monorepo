@@ -15,7 +15,7 @@ describe("createConfig", () => {
       globalIgnores: ["dist", "node_modules"],
     });
     const config = configs.join("\n");
-    expect(config).toContain('ignores: ["dist", "node_modules"]');
+    expect(config).toContain('globalIgnores(["dist", "node_modules"])');
   });
 
   it("should include extra rules", async () => {
@@ -43,7 +43,7 @@ describe("createConfig", () => {
       processor: "my-processor",
     });
     const config = configs.join("\n");
-    expect(config).toContain("ignores,");
+    expect(config).toContain("globalIgnores(ignores)");
     expect(config).toContain("languageOptions,");
     expect(config).toContain("processor: my-processor,");
   });
