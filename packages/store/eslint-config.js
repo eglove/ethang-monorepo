@@ -1,4 +1,4 @@
-import config from "@ethang/eslint-config/eslint.config.js";
+import config from "@ethang/eslint-config/config.main.js";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig(

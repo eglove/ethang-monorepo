@@ -1,4 +1,4 @@
-import config from "@ethang/eslint-config/eslint.config.js";
+import config from "@ethang/eslint-config/config.main.js";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig(
