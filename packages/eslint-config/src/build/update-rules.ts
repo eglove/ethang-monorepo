@@ -171,4 +171,8 @@ export const updateRules = async () => {
   ]);
 };
 
-await updateRules();
+/* v8 ignore start */
+if (process.argv[1] === import.meta.filename) {
+  await updateRules();
+}
+/* v8 ignore stop */

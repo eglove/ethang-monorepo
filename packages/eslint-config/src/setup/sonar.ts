@@ -30,11 +30,4 @@ const customRules = [
 
 const rules = genRules(ruleNames, customRules, "sonar");
 
-// Turn off duplicate S# rules
-for (const key of keys(rules)) {
-  if (/^sonar\/S\d+/u.test(key)) {
-    rules[key] = "off";
-  }
-}
-
 export const sonarRules = rules;

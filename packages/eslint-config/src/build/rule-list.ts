@@ -25,7 +25,7 @@ import { unicornRules } from "../setup/unicorn.ts";
 const eslintJson = "@eslint/json";
 const eslintJsonGithub = "https://github.com/eslint/json";
 
-type RuleConfig = {
+export type RuleConfig = {
   importString?: string | undefined;
   list: Linter.RulesRecord;
   name: string;

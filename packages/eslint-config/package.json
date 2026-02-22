@@ -43,11 +43,13 @@
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.23",
     "@types/node": "^25.3.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "baseline-browser-mapping": "^2.10.0",
     "browserslist-config-baseline": "^0.5.0",
     "lodash": "^4.17.23",
     "tailwindcss": "^4.2.0",
     "typescript": "^5.9.3",
+    "vitest": "^4.0.18",
     "zod": "^4.3.6"
   },
   "engines": {
@@ -61,7 +63,9 @@
   },
   "scripts": {
     "build": "bun build.ts && pnpm lint",
-    "lint": "eslint . --fix --concurrency=auto && prettier src --write"
+    "lint": "eslint . --fix --concurrency=auto && prettier src --write",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest --coverage"
   },
   "type": "module",
   "version": "24.8.5"

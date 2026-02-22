@@ -5,6 +5,7 @@ export default defineConfig(
   {
     ignores: [
       "dist",
+      "coverage",
       "src/README.md",
       "src/eslint.config.js",
       "src/config.solid.js",

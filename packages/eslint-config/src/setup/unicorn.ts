@@ -3,7 +3,7 @@ import keys from "lodash/keys.js";
 
 import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 
-const ruleNames = keys(getNonDeprecatedRules(unicorn.rules ?? {}));
+const ruleNames = keys(getNonDeprecatedRules(unicorn.rules));
 const customRules = [
   {
     name: "empty-brace-spaces",

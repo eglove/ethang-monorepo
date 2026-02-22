@@ -1,3 +1,4 @@
+import filter from "lodash/filter.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import { writeFileSync } from "node:fs";
@@ -27,11 +28,12 @@ export const createConfigFile = async (
     return importStrings;
   });
 
-  const importList = [
+  const importList = filter([
     'import { ignores, languageOptions } from "./constants.js";',
     ...imports,
-  ].toSorted((a, b) => {
-    return (a ?? "").localeCompare(b ?? "");
+  ]).toSorted((a, b) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return a!.localeCompare(b!);
   });
 
   for (const item of importList) {
