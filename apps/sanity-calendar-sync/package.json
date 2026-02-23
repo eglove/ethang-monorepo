@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.12.14",
-    "@types/lodash": "^4.17.23",
+    "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",
     "typescript": "^5.9.3",
     "vitest": "~4.0.18",

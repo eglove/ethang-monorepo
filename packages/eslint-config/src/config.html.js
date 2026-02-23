@@ -16,6 +16,7 @@ export default defineConfig(globalIgnores(ignores), {
     "html/class-spacing": "error",
     "html/css-no-empty-blocks": "error",
     "html/element-newline": "off",
+    "html/head-order": "error",
     "html/id-naming-convention": "error",
     "html/indent": "off",
     "html/lowercase": "error",
