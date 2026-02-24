@@ -18,9 +18,9 @@
     "@html-eslint/eslint-plugin": "^0.57.0",
     "@tanstack/eslint-plugin-query": "^5.91.4",
     "@tanstack/eslint-plugin-router": "^1.161.2",
-    "@typescript-eslint/parser": "^8.56.0",
+    "@typescript-eslint/parser": "^8.56.1",
     "angular-eslint": "21.2.0",
-    "eslint": "^10.0.1",
+    "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^1.6.0",
     "eslint-plugin-compat": "^6.2.0",
@@ -31,11 +31,11 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "4.0.0",
-    "eslint-plugin-storybook": "^10.2.10",
+    "eslint-plugin-storybook": "^10.2.12",
     "eslint-plugin-tailwindcss": "^4.0.0-beta.0",
     "eslint-plugin-unicorn": "^63.0.0",
     "prettier": "^3.8.1",
-    "typescript-eslint": "^8.56.0"
+    "typescript-eslint": "^8.56.1"
   },
   "devDependencies": {
     "@ethang/markdown-generator": "^1.1.5",
@@ -69,5 +69,5 @@
     "test:watch": "vitest --coverage"
   },
   "type": "module",
-  "version": "25.1.0"
+  "version": "25.1.1"
 }
