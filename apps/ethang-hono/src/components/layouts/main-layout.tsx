@@ -2,10 +2,14 @@ import type { PropsWithChildren } from "hono/jsx";
 
 import isNil from "lodash/isNil.js";
 import "flowbite";
+import { twMerge } from "tailwind-merge";
 
 import { Navigation } from "../navigation/navigation.tsx";
 
 type MainLayoutProperties = PropsWithChildren<{
+  classNames?: {
+    main?: string;
+  };
   description?: string;
   imageUrl?: string;
   title?: string;
@@ -39,7 +43,9 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
       </head>
       <body>
         <Navigation />
-        <main class="m-4">{properties.children}</main>
+        <main class={twMerge("m-4", properties.classNames?.main)}>
+          {properties.children}
+        </main>
         <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
       </body>
     </html>

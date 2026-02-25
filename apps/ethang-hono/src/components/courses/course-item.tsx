@@ -17,8 +17,8 @@ export const CourseItem = async (properties: CourseItemProperties) => {
 
   return (
     <Link
-      target="_blank"
       href={course.url}
+      isExternal={true}
       className="flex min-w-0 flex-1 flex-col rounded p-2 hover:bg-gray"
     >
       <span className="text-sm font-medium text-fg-brand-subtle">

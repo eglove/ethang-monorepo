@@ -1,7 +1,10 @@
 import { Hono } from "hono";
 
+import { Blog } from "./components/routes/blog.tsx";
+import { WtfIsVinext } from "./components/routes/blog/wtf-is-vinext.tsx";
 import { Courses } from "./components/routes/courses.tsx";
 import { Home } from "./components/routes/home.tsx";
+import { NotFound } from "./components/routes/not-found.tsx";
 import { coursePathData } from "./stores/course-path-store.ts";
 import {
   type AppContext,
@@ -11,8 +14,18 @@ import {
 export const app = new Hono<AppContext>();
 
 app.use("*", async (context, next) => {
+  const url = new URL(context.req.url);
+
+  if ("www.ethang.dev" === url.hostname) {
+    return Response.redirect(`https://ethang.dev${url.pathname}${url.search}`);
+  }
+
   globalStore.setup(context);
   return next();
+});
+
+app.notFound(async (c) => {
+  return c.html(<NotFound />);
 });
 
 app.get("/", async (c) => {
@@ -23,6 +36,14 @@ app.get("/courses", async (c) => {
   await coursePathData.setup();
 
   return c.html(<Courses />);
+});
+
+app.get("/blog", async (c) => {
+  return c.html(<Blog />);
+});
+
+app.get("/blog/wtf-is-vinext", async (c) => {
+  return c.html(<WtfIsVinext />);
 });
 
 export default app;
