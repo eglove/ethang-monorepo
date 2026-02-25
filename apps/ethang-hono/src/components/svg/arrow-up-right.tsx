@@ -14,7 +14,7 @@ export const ArrowUpRightSvg = async (
       width={properties.width ?? "24"}
       height={properties.height ?? "24"}
       xmlns="http://www.w3.org/2000/svg"
-      class="w-6 h-6 text-gray-800 dark:text-white"
+      class="h-6 w-6 text-gray-800 dark:text-white"
     >
       <path
         stroke-width="2"

@@ -5,7 +5,15 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import path from "node:path";
 
 export default defineConfig(
-  globalIgnores(["node_modules", "**/*.d.ts", "dist", ".wrangler"]),
+  globalIgnores([
+    "node_modules",
+    "**/*.d.ts",
+    "dist",
+    ".wrangler",
+    "wrangler.jsonc",
+    "src/index.css",
+    "public",
+  ]),
   ...config,
   ...htmlConfig,
   ...tailwindConfig(path.join(import.meta.dirname, "src", "index.css")),

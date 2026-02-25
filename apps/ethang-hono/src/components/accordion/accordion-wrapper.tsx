@@ -9,7 +9,7 @@ export const AccordionWrapper = async (properties: PropsWithChildren) => {
     <div
       id={id}
       data-accordion="collapse"
-      class="rounded-base border overflow-hidden shadow-xs"
+      class="overflow-hidden rounded-base border shadow-xs"
     >
       {properties.children}
     </div>

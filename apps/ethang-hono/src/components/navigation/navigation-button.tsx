@@ -5,14 +5,14 @@ export const NavigationButton = async () => {
       aria-expanded="false"
       aria-controls="navbar-default"
       data-collapse-toggle="navbar-default"
-      class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-body rounded-base md:hidden hover:bg-neutral-secondary-soft hover:text-heading focus:outline-none focus:ring-2 focus:ring-neutral-tertiary"
+      class="inline-flex h-10 w-10 items-center justify-center rounded-base p-2 text-sm text-body hover:bg-neutral-secondary-soft hover:text-heading focus:ring-2 focus:ring-neutral-tertiary focus:outline-none md:hidden"
     >
       <span class="sr-only">Open main menu</span>
       <svg
         width="24"
         fill="none"
         height="24"
-        class="w-6 h-6"
+        class="h-6 w-6"
         aria-hidden="true"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"

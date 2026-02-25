@@ -36,8 +36,8 @@
     "deploy": "wrangler deploy --minify",
     "dev": "run-p tailwind wrangler:dev",
     "lint": "eslint . --fix",
-    "wrangler:dev": "wrangler dev",
-    "tailwind": "tailwindcss -i ./src/index.css -o ./public/index.css --watch"
+    "tailwind": "tailwindcss -i ./src/index.css -o ./public/index.css --watch",
+    "wrangler:dev": "wrangler dev"
   },
   "type": "module"
 }

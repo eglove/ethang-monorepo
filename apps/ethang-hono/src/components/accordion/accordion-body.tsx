@@ -12,7 +12,7 @@ export const AccordionBody = async (properties: AccordionBodyProperties) => {
       aria-labelledby={properties.headingId}
       class="hidden border border-s-0 border-e-0 border-t-0 border-b-default"
     >
-      <div class="p-4 md:p-5 text-body">{properties.children}</div>
+      <div class="p-4 text-body md:p-5">{properties.children}</div>
     </div>
   );
 };

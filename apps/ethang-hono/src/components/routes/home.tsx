@@ -1,9 +1,5 @@
 import { MainLayout } from "../layouts/main-layout.tsx";
 
-type HomeProperties = {
-  pathname: string;
-};
-
-export const Home = async (properties: HomeProperties) => {
-  return <MainLayout pathname={properties.pathname}></MainLayout>;
+export const Home = async () => {
+  return <MainLayout></MainLayout>;
 };

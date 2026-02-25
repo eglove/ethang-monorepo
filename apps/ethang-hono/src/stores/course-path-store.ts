@@ -1,7 +1,7 @@
 import find from "lodash/find.js";
 import flatMap from "lodash/flatMap.js";
 
-import { sanityClient } from "./sanity.ts";
+import { sanityClient } from "../clients/sanity.ts";
 
 export type CoursePathDataProperties = {
   latestUpdate: {
@@ -24,7 +24,7 @@ export type CoursePathDataProperties = {
   totalCourseCount: number;
 };
 
-export class CoursePathData {
+export class CoursePathStore {
   public latestUpdate: CoursePathDataProperties["latestUpdate"] | undefined;
   public learningPaths: CoursePathDataProperties["learningPaths"] | undefined;
   public totalCourseCount: number | undefined;
@@ -40,7 +40,7 @@ export class CoursePathData {
     return find(this.learningPaths, ["_id", pathId])?.courses;
   }
 
-  public setCoursePathData = async () => {
+  public setup = async () => {
     const resolved = await sanityClient.fetch<CoursePathDataProperties>(
       `{
       "latestUpdate": *[_type in ["course", "learningPath"]] | order(_updatedAt desc)[0] {
@@ -76,4 +76,4 @@ export class CoursePathData {
   };
 }
 
-export const coursePathData = new CoursePathData();
+export const coursePathData = new CoursePathStore();

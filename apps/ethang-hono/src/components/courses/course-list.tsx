@@ -1,6 +1,6 @@
 import map from "lodash/map.js";
 
-import { coursePathData } from "../../path-data/course-path-data.ts";
+import { coursePathData } from "../../stores/course-path-store.ts";
 import { List } from "../typography/list.tsx";
 import { CourseItem } from "./course-item.tsx";
 

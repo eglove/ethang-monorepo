@@ -1,7 +1,7 @@
 import { Fragment } from "hono/jsx";
 import isNil from "lodash/isNil.js";
 
-import { coursePathData } from "../../path-data/course-path-data.ts";
+import { coursePathData } from "../../stores/course-path-store.ts";
 import { Link } from "../typography/link.tsx";
 
 type CourseItemProperties = {
@@ -19,7 +19,7 @@ export const CourseItem = async (properties: CourseItemProperties) => {
     <Link
       target="_blank"
       href={course.url}
-      className="flex min-w-0 flex-1 flex-col hover:bg-gray p-2 rounded"
+      className="flex min-w-0 flex-1 flex-col rounded p-2 hover:bg-gray"
     >
       <span className="text-sm font-medium text-fg-brand-subtle">
         {course.name}

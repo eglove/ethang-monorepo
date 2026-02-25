@@ -8,7 +8,6 @@ import { Navigation } from "../navigation/navigation.tsx";
 type MainLayoutProperties = PropsWithChildren<{
   description?: string;
   imageUrl?: string;
-  pathname: string;
   title?: string;
 }>;
 
@@ -39,7 +38,7 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         <link rel="stylesheet" href="/index.css" />
       </head>
       <body>
-        <Navigation pathname={properties.pathname} />
+        <Navigation />
         <main class="m-4">{properties.children}</main>
         <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
       </body>

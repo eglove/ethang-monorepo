@@ -3,7 +3,7 @@ import map from "lodash/map.js";
 import split from "lodash/split.js";
 import { v7 } from "uuid";
 
-import { coursePathData } from "../../path-data/course-path-data.ts";
+import { coursePathData } from "../../stores/course-path-store.ts";
 import { AccordionBody } from "../accordion/accordion-body.tsx";
 import { AccordionHeader } from "../accordion/accordion-header.tsx";
 import { AccordionWrapper } from "../accordion/accordion-wrapper.tsx";
@@ -48,7 +48,7 @@ export const CoursesContainer = async () => {
               headingId={headingId}
               classNames={{ childrenWrapper: "w-full" }}
             >
-              <div class="flex justify-between items-center">
+              <div class="flex items-center justify-between">
                 <div class="grid place-items-start">
                   <div>
                     <span>

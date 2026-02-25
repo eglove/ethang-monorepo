@@ -18,7 +18,7 @@ export const AccordionHeader = async (
         aria-expanded="false"
         aria-controls={properties.bodyId}
         data-accordion-target={`#${properties.bodyId}`}
-        class="bg-neutral-primary flex items-center justify-between w-full p-5 font-medium rtl:text-right text-body border border-x-0 border-b-default border-t-0 hover:text-heading hover:bg-neutral-secondary-medium gap-3 cursor-pointer"
+        class="flex w-full cursor-pointer items-center justify-between gap-3 border border-x-0 border-t-0 border-b-default bg-neutral-primary p-5 font-medium text-body hover:bg-neutral-secondary-medium hover:text-heading rtl:text-right"
       >
         <span class={properties.classNames?.childrenWrapper}>
           {properties.children}
@@ -31,7 +31,7 @@ export const AccordionHeader = async (
           data-accordion-icon
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
-          class="w-5 h-5 rotate-180 shrink-0"
+          class="h-5 w-5 shrink-0 rotate-180"
         >
           <path
             stroke-width="2"
