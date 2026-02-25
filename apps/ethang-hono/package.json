@@ -1,0 +1,43 @@
+{
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "@ethang/store": "^2.3.2",
+    "@sanity/block-content-to-html": "^2.0.0",
+    "@sanity/client": "^7.16.0",
+    "flowbite": "^4.0.1",
+    "flowbite-typography": "^1.0.5",
+    "hono": "^4.12.2",
+    "lodash": "^4.17.23",
+    "luxon": "^3.7.2",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.1",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "^25.1.0",
+    "@tailwindcss/cli": "^4.2.1",
+    "@types/lodash": "^4.17.24",
+    "@types/luxon": "^3.7.1",
+    "@types/node": "^25.3.0",
+    "browserslist-config-baseline": "^0.5.0",
+    "eslint": "^10.0.2",
+    "npm-run-all": "^4.1.5",
+    "wrangler": "^4.68.1"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "name": "ethang-hono",
+  "scripts": {
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "deploy": "wrangler deploy --minify",
+    "dev": "run-p tailwind wrangler:dev",
+    "lint": "eslint . --fix",
+    "wrangler:dev": "wrangler dev",
+    "tailwind": "tailwindcss -i ./src/index.css -o ./public/index.css --watch"
+  },
+  "type": "module"
+}
