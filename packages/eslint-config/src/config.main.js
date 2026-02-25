@@ -986,6 +986,7 @@ export default defineConfig(
               "autodocs",
               "agentic",
               "pico",
+              "shiki",
             ],
           },
         },

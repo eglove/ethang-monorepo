@@ -2,16 +2,16 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "assets": {
     "binding": "ASSETS",
-    "directory": "./public",
+    "directory": "./public"
   },
-  "compatibility_date": "2025-09-27",
+  "compatibility_date": "2026-02-25",
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/index.tsx",
   "name": "ethang-hono",
   "observability": {
-    "enabled": true,
+    "enabled": true
   },
   "placement": {
-    "mode": "smart",
-  },
+    "mode": "smart"
+  }
 }

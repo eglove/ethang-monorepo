@@ -17,7 +17,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.1.0",
+    "@ethang/eslint-config": "^25.1.2",
     "@tailwindcss/cli": "^4.2.1",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",
