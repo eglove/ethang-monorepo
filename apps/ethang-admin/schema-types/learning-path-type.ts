@@ -4,6 +4,8 @@ import {
 } from "@sanity/orderable-document-list";
 import { defineField, defineType } from "sanity";
 
+import { isUrlUnique } from "../util/is-url-unique.ts";
+
 export const learningPathType = defineType({
   fields: [
     defineField({
@@ -14,6 +16,7 @@ export const learningPathType = defineType({
     defineField({
       name: "url",
       type: "url",
+      validation: (rule) => isUrlUnique(rule, false, "learningPath"),
     }),
     defineField({
       name: "swebokFocus",
