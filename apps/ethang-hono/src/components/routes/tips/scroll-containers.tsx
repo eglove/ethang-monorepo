@@ -30,7 +30,7 @@ const tailwindExample = `<div class="grid h-[100vb] grid-rows-[auto_1fr_auto]">
 
 export const ScrollContainers = async () => {
   return (
-    <BlogLayout>
+    <BlogLayout title="Easy Sticky Header/Footer">
       <H1>Easy Sticky Header/Footer</H1>
       <P>
         A very simple approach to creating both a "sticky header" and "sticky

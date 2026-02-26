@@ -12,7 +12,7 @@ const scrollbarGutter = `html {
 
 export const ScrollbarGutter = async () => {
   return (
-    <BlogLayout>
+    <BlogLayout title="scrollbar-gutter">
       <H1>scrollbar-gutter</H1>
       <P>
         Avoid content layout shifts when moving from content without a scroll to

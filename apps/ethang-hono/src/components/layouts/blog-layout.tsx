@@ -4,6 +4,9 @@ type BlogLayoutProperties = MainLayoutProperties;
 
 export const BlogLayout = async (properties: BlogLayoutProperties) => {
   return (
-    <MainLayout {...properties} classNames={{ main: "max-w-[65ch] mx-auto" }} />
+    <MainLayout
+      {...properties}
+      classNames={{ main: "max-w-[65ch] md:mx-auto" }}
+    />
   );
 };

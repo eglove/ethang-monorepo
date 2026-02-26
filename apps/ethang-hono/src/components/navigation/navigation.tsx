@@ -8,13 +8,12 @@ const navigationLinks = [
   { href: "/", title: "Home" },
   { href: "/blog", title: "Blog" },
   { href: "/tips", title: "Tips" },
-  { href: "/projects", title: "Projects" },
   { href: "/courses", title: "Courses" },
 ];
 
 export const Navigation = async () => {
   return (
-    <nav class="inset-s-0 w-full border-b border-default bg-neutral-primary">
+    <nav class="fixed inset-s-0 top-0 z-20 w-full border-b border-default bg-neutral-primary">
       <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between p-4">
         <NavigationButton />
         <div id="navbar-default" class="hidden w-full md:block md:w-auto">

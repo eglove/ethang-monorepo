@@ -16,7 +16,7 @@ export const allTips = [
 
 export const Tips = async () => {
   return (
-    <MainLayout classNames={{ main: "max-w-[65ch] mx-auto" }}>
+    <MainLayout title="Tips" classNames={{ main: "max-w-[65ch] md:mx-auto" }}>
       <H1>Tips</H1>
       <List className="my-4">
         {map(allTips, async (tip) => {

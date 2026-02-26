@@ -50,12 +50,10 @@ export const CoursesContainer = async () => {
             >
               <div class="flex items-center justify-between">
                 <div class="grid place-items-start">
-                  <div>
-                    <span>
-                      {names[0]}
-                      {isNil(names[1]) ? "" : ":"}
-                      <span className="text-warning">{names[1]}</span>
-                    </span>
+                  <div class="text-left">
+                    {names[0]}
+                    {isNil(names[1]) ? "" : ":"}
+                    <span className="text-warning">{names[1]}</span>
                   </div>
                   <span class="text-cyan-500">{path.courseCount} courses</span>
                 </div>
