@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 
 import { Blog } from "./components/routes/blog.tsx";
+import { DevelopmentJobsTrendingUpward } from "./components/routes/blog/development-jobs-trending-upward.tsx";
 import { WtfIsVinext } from "./components/routes/blog/wtf-is-vinext.tsx";
 import { Courses } from "./components/routes/courses.tsx";
 import { Home } from "./components/routes/home.tsx";
@@ -59,6 +60,10 @@ app.get("/blog", async (c) => {
 
 app.get("/blog/wtf-is-vinext", async (c) => {
   return c.html(<WtfIsVinext />);
+});
+
+app.get("/blog/development-jobs-trending-upward", async (c) => {
+  return c.html(<DevelopmentJobsTrendingUpward />);
 });
 
 export default app;

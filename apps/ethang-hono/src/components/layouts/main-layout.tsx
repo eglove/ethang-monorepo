@@ -7,6 +7,7 @@ import { twMerge } from "tailwind-merge";
 import { Navigation } from "../navigation/navigation.tsx";
 
 export type MainLayoutProperties = PropsWithChildren<{
+  canonicalUrl?: string;
   classNames?: {
     main?: string;
   };
@@ -40,6 +41,9 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         <meta name="twitter:image" content={properties.imageUrl} />
 
         <link rel="stylesheet" href="/index.css" />
+        {!isNil(properties.canonicalUrl) && (
+          <link rel="canonical" href={properties.canonicalUrl} />
+        )}
       </head>
       <body>
         <Navigation />
