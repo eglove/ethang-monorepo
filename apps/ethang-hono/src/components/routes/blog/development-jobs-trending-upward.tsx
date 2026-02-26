@@ -12,9 +12,9 @@ export const DevelopmentJobsTrendingUpward = async () => {
   return (
     <BlogLayout
       title="Dev job postings are finally trending upward"
+      imageUrl="/images/generated/Gemini_Generated_Image_yj0e8dyj0e8dyj0e.png"
       description="Dev Reads edition Dev job postings are finally trending upward"
       canonicalUrl="https://www.linkedin.com/pulse/dev-job-postings-finally-trending-upward-ethan-glover-1bljc/"
-      imageUrl="https://media.licdn.com/dms/image/v2/D5612AQFcU-m-IibNXw/article-cover_image-shrink_720_1280/B56Zya_.OyKwAU-/0/1772126995137?e=1773878400&v=beta&t=TeAzjTmPZ6FD3CbbXVuMuF07dAZm7JOD4oFRIUTVa04"
     >
       <H1>Dev job postings are finally trending upward</H1>
       <H2 className="mt-6">The software dev job market is picking up!</H2>
