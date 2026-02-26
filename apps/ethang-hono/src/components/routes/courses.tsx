@@ -5,6 +5,8 @@ import { coursePathData } from "../../stores/course-path-store.ts";
 import { globalStore } from "../../stores/global-store-properties.ts";
 import { CoursesContainer } from "../courses/courses-container.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
+import { H1 } from "../typography/h1.tsx";
+import { P } from "../typography/p.tsx";
 
 export const Courses = async () => {
   const { latestUpdate, totalCourseCount } = coursePathData;
@@ -27,25 +29,22 @@ export const Courses = async () => {
       imageUrl="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     >
       <div class="mx-auto max-w-7xl">
-        <div class="format max-w-none format-invert">
-          <h1>Recommended Courses</h1>
-          <p>Last Updated: {formatted}</p>
-          <p>
-            This list is meant as a way to provide a straightforward curriculum
-            of what you need to learn for development. It's updated constantly,
-            but at any given point in time, I believe this is the best way to
-            get started with, and learn everything you need to know to work with
-            the web and beyond.
-          </p>
-          <p>
-            These <span class="text-warning">{totalCourseCount} courses</span>{" "}
-            will take a while to get through, so I recommend signing up for Pro
-            accounts instead of buying one-time courses. I've optimized the list
-            to focus on one platform at a time. When there is a series of Udemy
-            courses, sign up for Udemy Pro, cancel it when you're done, and so
-            on.
-          </p>
-        </div>
+        <H1>Recommended Courses</H1>
+        <P>Last Updated: {formatted}</P>
+        <P>
+          This list is meant as a way to provide a straightforward curriculum of
+          what you need to learn for development. It's updated constantly, but
+          at any given point in time, I believe this is the best way to get
+          started with, and learn everything you need to know to work with the
+          web and beyond.
+        </P>
+        <P>
+          These <span class="text-warning">{totalCourseCount} courses</span>{" "}
+          will take a while to get through, so I recommend signing up for Pro
+          accounts instead of buying one-time courses. I've optimized the list
+          to focus on one platform at a time. When there is a series of Udemy
+          courses, sign up for Udemy Pro, cancel it when you're done, and so on.
+        </P>
         <div class="my-6">
           <CoursesContainer />
         </div>

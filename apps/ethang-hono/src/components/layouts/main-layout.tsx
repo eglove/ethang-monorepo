@@ -6,7 +6,7 @@ import { twMerge } from "tailwind-merge";
 
 import { Navigation } from "../navigation/navigation.tsx";
 
-type MainLayoutProperties = PropsWithChildren<{
+export type MainLayoutProperties = PropsWithChildren<{
   classNames?: {
     main?: string;
   };
@@ -46,7 +46,7 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         <main class={twMerge("m-4", properties.classNames?.main)}>
           {properties.children}
         </main>
-        <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
+        <script src="/scripts/flowbite/flowbite.min.js"></script>
       </body>
     </html>
   );

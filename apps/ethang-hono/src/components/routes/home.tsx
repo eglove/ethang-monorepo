@@ -1,10 +1,10 @@
+import { ProfileCard } from "../cards/profile-card.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
 
 export const Home = async () => {
   return (
-    <MainLayout classNames={{ main: "format format-invert mx-auto" }}>
-      <h1>Rebuilding...</h1>
-      <p>Just rebuilding my site once again...</p>
+    <MainLayout classNames={{ main: "mx-auto max-w-7xl" }}>
+      <ProfileCard />
     </MainLayout>
   );
 };

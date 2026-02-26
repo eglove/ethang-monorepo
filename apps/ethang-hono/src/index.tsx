@@ -5,6 +5,9 @@ import { WtfIsVinext } from "./components/routes/blog/wtf-is-vinext.tsx";
 import { Courses } from "./components/routes/courses.tsx";
 import { Home } from "./components/routes/home.tsx";
 import { NotFound } from "./components/routes/not-found.tsx";
+import { Tips } from "./components/routes/tips.tsx";
+import { ScrollContainers } from "./components/routes/tips/scroll-containers.tsx";
+import { ScrollbarGutter } from "./components/routes/tips/scrollbar-gutter.tsx";
 import { coursePathData } from "./stores/course-path-store.ts";
 import {
   type AppContext,
@@ -36,6 +39,18 @@ app.get("/courses", async (c) => {
   await coursePathData.setup();
 
   return c.html(<Courses />);
+});
+
+app.get("/tips", async (c) => {
+  return c.html(<Tips />);
+});
+
+app.get("/tips/scroll-containers", async (c) => {
+  return c.html(<ScrollContainers />);
+});
+
+app.get("/tips/scrollbar-gutter", async (c) => {
+  return c.html(<ScrollbarGutter />);
 });
 
 app.get("/blog", async (c) => {
