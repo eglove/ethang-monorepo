@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { defineConfig, globalIgnores } from "eslint/config";
+import { fixupPluginRules } from "@eslint/compat";
 import { ignores, languageOptions } from "./constants.js";
 import tailwind from "eslint-plugin-tailwindcss";
 
@@ -8,7 +9,7 @@ const config = (/** @type {string} */ pathToConfig) => {
     files: ["**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}"],
     languageOptions,
     plugins: {
-      tailwind: tailwind,
+      tailwind: fixupPluginRules(tailwind),
     },
     rules: {
       "tailwind/classnames-order": "error",

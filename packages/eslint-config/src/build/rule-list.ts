@@ -170,12 +170,13 @@ export const ruleList: RuleConfig[] = [
     url: "https://github.com/eslint/css",
   },
   {
-    importString: 'import tailwind from "eslint-plugin-tailwindcss";',
+    importString:
+      'import { fixupPluginRules } from "@eslint/compat";\nimport tailwind from "eslint-plugin-tailwindcss";',
     list: tailwindRules,
     name: "eslint-plugin-tailwindcss",
     order: 0,
     pluginName: "tailwind",
-    pluginValue: "tailwind",
+    pluginValue: "fixupPluginRules(tailwind)",
     type: "tailwind",
     url: "https://github.com/francoismassart/eslint-plugin-tailwindcss",
   },
