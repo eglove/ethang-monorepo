@@ -19,6 +19,11 @@ export const blogType = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "description",
+      title: "Description",
+      type: "string",
+    }),
+    defineField({
       name: "canonicalUrl",
       title: "Canonical URL",
       type: "url",

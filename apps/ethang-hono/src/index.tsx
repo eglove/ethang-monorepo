@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 
 import { Blog } from "./components/routes/blog.tsx";
+import { BlogPost } from "./components/routes/blog/blog-post.tsx";
 import { DevelopmentJobsTrendingUpward } from "./components/routes/blog/development-jobs-trending-upward.tsx";
 import { WtfIsVinext } from "./components/routes/blog/wtf-is-vinext.tsx";
 import { Courses } from "./components/routes/courses.tsx";
@@ -56,6 +57,12 @@ app.get("/tips/scrollbar-gutter", async (c) => {
 
 app.get("/blog", async (c) => {
   return c.html(<Blog />);
+});
+
+app.get("/blog/:slug", async (c) => {
+  const slug = c.req.param("slug");
+
+  return c.html(<BlogPost slug={slug} />);
 });
 
 app.get("/blog/wtf-is-vinext", async (c) => {

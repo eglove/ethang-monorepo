@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "hono/jsx";
 
-import isNil from "lodash/isNil.js";
 import "flowbite";
+import isNil from "lodash/isNil.js";
 import { twMerge } from "tailwind-merge";
 
 import { Navigation } from "../navigation/navigation.tsx";
@@ -14,7 +14,10 @@ export type MainLayoutProperties = PropsWithChildren<{
   };
   description?: string;
   imageUrl?: string;
+  isBlog?: boolean;
+  publishedAt: string;
   title?: string;
+  updatedAt: string;
 }>;
 
 export const MainLayout = async (properties: MainLayoutProperties) => {
@@ -30,6 +33,22 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         <title>{title}</title>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+          property="og:type"
+          content={true === properties.isBlog ? "article" : "website"}
+        />
+        {true === properties.isBlog && (
+          <>
+            <meta
+              content={properties.publishedAt}
+              property="article:published_time"
+            />
+            <meta
+              content={properties.updatedAt}
+              property="article:modified_time"
+            />
+          </>
+        )}
 
         <meta name="description" content={description} />
         <meta name="og:type" content="website" />
