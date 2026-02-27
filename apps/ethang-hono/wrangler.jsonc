@@ -4,7 +4,7 @@
     "binding": "ASSETS",
     "directory": "./public"
   },
-  "compatibility_date": "2026-02-26",
+  "compatibility_date": "2026-02-27",
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/index.tsx",
   "name": "ethang-hono",

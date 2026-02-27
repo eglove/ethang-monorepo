@@ -1,3 +1,4 @@
+import { codeInput } from "@sanity/code-input";
 import { orderableDocumentListDeskItem } from "@sanity/orderable-document-list";
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
@@ -36,6 +37,7 @@ export default defineConfig({
       },
     }),
     visionTool(),
+    codeInput(),
   ],
   // eslint-disable-next-line cspell/spellchecker
   projectId: "3rkvshhk",
