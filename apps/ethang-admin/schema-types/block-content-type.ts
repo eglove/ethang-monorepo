@@ -49,9 +49,19 @@ export const blockContentType = defineType({
       type: "image",
     },
     defineField({
+      name: "quote",
+      title: "Quote",
+      type: "blockquote",
+    }),
+    defineField({
       name: "code",
       title: "Code",
       type: "code",
+    }),
+    defineField({
+      name: "video",
+      title: "Video",
+      type: "videoEmbed",
     }),
   ],
   title: "Block Content",

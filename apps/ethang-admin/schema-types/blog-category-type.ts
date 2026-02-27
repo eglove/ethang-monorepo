@@ -11,5 +11,5 @@ export const blogCategoryType = defineType({
   ],
   name: "blogCategory",
   title: "Blog Category",
-  type: "document",
+  type: "object",
 });
