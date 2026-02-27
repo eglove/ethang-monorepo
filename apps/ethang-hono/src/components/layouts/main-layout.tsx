@@ -15,9 +15,9 @@ export type MainLayoutProperties = PropsWithChildren<{
   description?: string;
   imageUrl?: string;
   isBlog?: boolean;
-  publishedAt: string;
+  publishedAt?: string;
   title?: string;
-  updatedAt: string;
+  updatedAt?: string;
 }>;
 
 export const MainLayout = async (properties: MainLayoutProperties) => {

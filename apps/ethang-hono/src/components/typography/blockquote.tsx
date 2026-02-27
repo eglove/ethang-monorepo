@@ -33,9 +33,7 @@ export const Blockquote = async (properties: BlockquoteProperties) => {
               {isNil(properties.sourceUrl) ? (
                 properties.source
               ) : (
-                <Link isExternal href={properties.sourceUrl}>
-                  {properties.source}
-                </Link>
+                <Link href={properties.sourceUrl}>{properties.source}</Link>
               )}
             </cite>
           )}

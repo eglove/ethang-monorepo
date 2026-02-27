@@ -2,18 +2,28 @@ import type { PropsWithChildren } from "hono/jsx";
 
 import { twMerge } from "tailwind-merge";
 
+import { globalStore } from "../../stores/global-store-properties.ts";
+
 type LinkProperties = PropsWithChildren<{
   className?: string;
   href: string;
-  isExternal?: boolean;
 }>;
 
 export const Link = async (properties: LinkProperties) => {
+  let isExternal = false;
+
+  if (
+    URL.canParse(properties.href) &&
+    globalStore.origin !== new URL(properties.href).origin
+  ) {
+    isExternal = true;
+  }
+
   return (
     <a
       href={properties.href}
-      target={true === properties.isExternal ? "_blank" : undefined}
-      rel={true === properties.isExternal ? "noopener noreferrer" : undefined}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
       class={twMerge(
         "font-medium text-fg-brand hover:underline",
         properties.className,

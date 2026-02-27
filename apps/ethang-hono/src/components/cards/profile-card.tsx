@@ -20,10 +20,10 @@ export const ProfileCard = async () => {
           Ethan Glover
         </h1>
         <div class="my-4 flex flex-wrap items-center gap-4">
-          <Link isExternal href="https://www.linkedin.com/in/ethan-glover/">
+          <Link href="https://www.linkedin.com/in/ethan-glover/">
             <LinkedInSvg />
           </Link>
-          <Link isExternal href="https://github.com/eglove">
+          <Link href="https://github.com/eglove">
             <GitHubSvg />
           </Link>
           <Link href="mailto:hello@ethang.email">
@@ -50,7 +50,6 @@ export const ProfileCard = async () => {
           <Button
             as="a"
             size="xs"
-            isExternal
             type="button"
             href="https://www.linkedin.com/build-relation/newsletter-follow?entityUrn=7316126013938143232"
           >
@@ -59,7 +58,6 @@ export const ProfileCard = async () => {
           <Button
             as="a"
             size="xs"
-            isExternal
             type="button"
             variant="secondary"
             href="https://cal.com/ethan-glover/meet"

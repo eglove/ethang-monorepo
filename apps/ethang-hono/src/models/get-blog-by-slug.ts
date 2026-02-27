@@ -44,23 +44,6 @@ export type BlogCategory = {
   _type: string;
 };
 
-export type BlogModelType = {
-  _createdAt: string;
-  _id: string;
-  _rev: string;
-  _system: System;
-  _type: string;
-  _updatedAt: string;
-  author: string;
-  blogCategory: BlogCategory;
-  body: Body[];
-  description: string;
-  featuredImage: FeaturedImage;
-  publishedAt: string;
-  slug: Slug;
-  title: string;
-};
-
 export type Body = {
   _key: string;
   _type: string;
@@ -153,6 +136,23 @@ export type Dominant2 = {
 export type FeaturedImage = {
   alt: string;
   asset: Asset;
+};
+
+export type GetBlogBySlug = {
+  _createdAt: string;
+  _id: string;
+  _rev: string;
+  _system: System;
+  _type: string;
+  _updatedAt: string;
+  author: string;
+  blogCategory: BlogCategory;
+  body: Body[];
+  description: string;
+  featuredImage: FeaturedImage;
+  publishedAt: string;
+  slug: Slug;
+  title: string;
 };
 
 export type LightMuted = {

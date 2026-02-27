@@ -14,7 +14,6 @@ type ButtonProperties = PropsWithChildren<{
   className?: string;
   href?: string;
   id?: string;
-  isExternal?: boolean;
   size?: ButtonSize;
   type: "button" | "reset" | "submit";
   variant?: ButtonVariant;
@@ -27,7 +26,6 @@ export const Button = async (properties: ButtonProperties) => {
     className,
     href,
     id,
-    isExternal,
     size = "base",
     type,
     variant = "default",
@@ -37,11 +35,7 @@ export const Button = async (properties: ButtonProperties) => {
 
   if ("a" === as) {
     return (
-      <Link
-        href={href ?? "#"}
-        isExternal={isExternal ?? false}
-        className={twMerge(classes, className)}
-      >
+      <Link href={href ?? "#"} className={twMerge(classes, className)}>
         {children}
       </Link>
     );

@@ -18,14 +18,12 @@ export const ScrollbarGutter = async () => {
         Avoid content layout shifts when moving from content without a scroll to
         content with a scroll.{" "}
         <Link
-          isExternal
           className="underline"
           href="https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter"
         >
           MDN
         </Link>{" "}
         <Link
-          isExternal
           className="underline"
           href="https://drafts.csswg.org/css-overflow/#scrollbar-gutter-property"
         >

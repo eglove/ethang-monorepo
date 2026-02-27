@@ -1,21 +1,20 @@
 import find from "lodash/find.js";
 import flatMap from "lodash/flatMap.js";
 import isNil from "lodash/isNil.js";
-import isString from "lodash/isString.js";
 import map from "lodash/map.js";
-import startsWith from "lodash/startsWith.js";
 
-import type { BlogModelType } from "../models/blog-model-type.ts";
+import type { GetBlogBySlug } from "../models/get-blog-by-slug.ts";
 
 import { Image } from "../image.tsx";
 import { Code } from "./code.tsx";
 import { Blockquote } from "./typography/blockquote.tsx";
+import { H2 } from "./typography/h2.tsx";
 import { Link } from "./typography/link.tsx";
 import { P } from "./typography/p.tsx";
 import { YouTubeVideo } from "./you-tube-video.tsx";
 
 type PortableTextProperties = {
-  children: BlogModelType["body"];
+  children: GetBlogBySlug["body"];
 };
 
 export const PortableText = async ({ children }: PortableTextProperties) => {
@@ -41,17 +40,8 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
           );
 
           if ("link" === markDefinition?._type) {
-            const isExternal =
-              isString(markDefinition.href) &&
-              (startsWith(markDefinition.href, "http") ||
-                startsWith(markDefinition.href, "//"));
-
             // @ts-expect-error allow elements
-            content = (
-              <Link isExternal={isExternal} href={markDefinition.href}>
-                {content}
-              </Link>
-            );
+            content = <Link href={markDefinition.href}>{content}</Link>;
           }
         }
       }
@@ -65,6 +55,10 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
       if ("block" === block._type) {
         if ("normal" === block.style) {
           return <P>{renderChildren(block.children)}</P>;
+        }
+
+        if ("h2" === block.style) {
+          return <H2>{renderChildren(block.children)}</H2>;
         }
 
         if ("blockquote" === block.style) {
