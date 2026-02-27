@@ -1,60 +1,6 @@
-import { sanityClient } from "../clients/sanity.ts";
+import type { BlogModelType } from "./blog-model-type.ts";
 
-export type BlogModelType = {
-  _createdAt: string;
-  _id: string;
-  _rev: string;
-  _system: {
-    base: {
-      id: string;
-      rev: string;
-    };
-  };
-  _type: string;
-  _updatedAt: string;
-  author: string;
-  blogCategory: {
-    _ref: string;
-    _type: string;
-  };
-  body: {
-    _key: string;
-    _type: string;
-    alt?: string;
-    asset?: {
-      _ref: string;
-      _type: string;
-    };
-    author?: string;
-    children?: {
-      _key: string;
-      _type: string;
-      marks: string[];
-      text: string;
-    }[];
-    markDefs?: {
-      _key: string;
-      _type: string;
-      href: string;
-    }[];
-    quote?: string;
-    source?: string;
-    sourceUrl?: string;
-    style?: string;
-    url?: string;
-  }[];
-  description: string;
-  featuredImage: {
-    alt: string;
-    url: string;
-  };
-  publishedAt: string;
-  slug: {
-    _type: string;
-    current: string;
-  };
-  title: string;
-};
+import { sanityClient } from "../clients/sanity.ts";
 
 export class BlogModel {
   public async getBlogBySlug(slug: string) {
@@ -63,13 +9,21 @@ export class BlogModel {
         ...,
         "featuredImage": {
           "alt": featuredImage.alt,
-          "url": featuredImage.asset->url
+          "asset": featuredImage.asset->{...}
         },
         "body": body[]{
           ...,
           _type == "image" => {
             ...,
-            "url": asset->url
+            "asset": asset->{...}
+          },
+          _type == "videoEmbed" => {
+            ...,
+            "url": url
+          },
+          _type == "blockquote" || _type == "quote" => {
+            ...,
+            "quote": quote
           }
         }
       }`,

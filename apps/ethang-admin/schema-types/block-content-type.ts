@@ -44,6 +44,11 @@ export const blockContentType = defineType({
           type: "string",
           validation: (Rule) => Rule.required(),
         }),
+        defineField({
+          name: "caption",
+          title: "Caption",
+          type: "string",
+        }),
       ],
       options: { hotspot: true },
       type: "image",
