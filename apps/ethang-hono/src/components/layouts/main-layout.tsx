@@ -28,7 +28,7 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
     properties.description ?? "Messing around on the web sometimes.";
 
   return (
-    <html lang="en-US" class="dark bg-dark">
+    <html lang="en-US" class="scroll-smooth dark bg-dark">
       <head>
         <title>{title}</title>
         <meta charset="utf-8" />
@@ -66,7 +66,7 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
           <link rel="canonical" href={properties.canonicalUrl} />
         )}
       </head>
-      <body>
+      <body id="body">
         <Navigation />
         <main class={twMerge("m-4 mt-20", properties.classNames?.main)}>
           {properties.children}
