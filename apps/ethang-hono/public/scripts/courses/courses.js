@@ -12,7 +12,7 @@ for (const link of document.querySelectorAll("[data-toc-link]")) {
       return;
     }
     const id = href.slice(1);
-    const element = document.getElementById(id);
+    const element = document.querySelector(`#${id}`);
     if (element) {
       const offset = 32;
       const bodyRect = document.body.getBoundingClientRect().top;
