@@ -30,8 +30,9 @@ await tsup({
   clean: false,
   entry: entryMap,
   format: ["esm"],
-  minify: true,
+  minify: false,
   outDir: "public/scripts",
-  sourcemap: true,
+  platform: "browser",
+  sourcemap: false,
   target: "esnext",
 });
