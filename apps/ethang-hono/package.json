@@ -36,7 +36,7 @@
   "scripts": {
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "deploy": "bun ./build.ts && wrangler deploy --minify",
-    "dev": "bun ./build.ts && run-p tailwind wrangler:dev",
+    "dev": "bun ./dev.ts && run-p tailwind wrangler:dev",
     "lint": "eslint . --fix",
     "tailwind": "tailwindcss -i ./src/index.css -o ./public/index.css --watch",
     "wrangler:dev": "wrangler dev"
