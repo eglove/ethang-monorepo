@@ -53,7 +53,10 @@ export const Image = async (properties: ImageProperties) => {
   return (
     <figure
       style={{ width: displayWidth }}
-      class={twMerge("relative  m-0 overflow-hidden flex flex-col", className)}
+      class={twMerge(
+        "relative my-4 mx-0 overflow-hidden flex flex-col",
+        className,
+      )}
     >
       <img
         alt={alt}

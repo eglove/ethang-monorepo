@@ -42,7 +42,7 @@ export const Blog = async () => {
               >
                 {blog.blogCategory.title}
               </div>
-              <H2 className="mt-0">
+              <H2 className="mt-0 border-none pb-0">
                 <Link
                   className="text-fg-brand-subtle"
                   href={`/blog/${blog.slug.current}`}
@@ -50,10 +50,10 @@ export const Blog = async () => {
                   {blog.title}
                 </Link>
               </H2>
-              <P className="my-1.5 text-sm">
+              <P className="text-sm not-first:mt-1.5">
                 Published: {formattedDateTime(blog._createdAt)}
               </P>
-              <P className="my-1.5 text-xs italic">
+              <P className="text-xs italic not-first:mt-1.5">
                 Updated: {formattedDateTime(blog._updatedAt)}
               </P>
               <HR />

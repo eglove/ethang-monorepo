@@ -14,7 +14,7 @@ for (const link of document.querySelectorAll("[data-toc-link]")) {
     }
 
     const id = href.slice(1);
-    const element = document.getElementById(id);
+    const element = document.querySelector(`#${id}`);
 
     if (element) {
       const offset = 32;

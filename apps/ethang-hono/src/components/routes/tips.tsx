@@ -23,7 +23,7 @@ export const Tips = async () => {
         {map(allTips, async (tip) => {
           return (
             <li>
-              <H2>
+              <H2 className="border-none pb-0">
                 <Link href={tip.href} className="text-fg-brand-subtle">
                   {tip.title}
                 </Link>

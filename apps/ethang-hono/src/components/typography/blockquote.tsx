@@ -19,11 +19,9 @@ export const Blockquote = async (properties: BlockquoteProperties) => {
   return (
     <blockquote
       cite={properties.sourceUrl}
-      class="my-4 border-s-4 border-default bg-neutral-secondary-soft p-4"
+      class="mt-6 border-l-2 border-default bg-neutral-secondary-soft p-4 ps-6"
     >
-      <p class="text-xl leading-relaxed font-medium text-heading italic">
-        {properties.children}
-      </p>
+      <p class="leading-7 text-heading italic">{properties.children}</p>
       {hasAuthorOrSource && (
         <footer class="mt-2 text-sm text-neutral-500 not-italic">
           - {hasAuthor && <span>{properties.author}</span>}

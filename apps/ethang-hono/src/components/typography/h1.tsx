@@ -10,7 +10,7 @@ export const H1 = async (properties: H1Properties) => {
   return (
     <h1
       class={twMerge(
-        "text-5xl font-bold text-heading wrap-break-word",
+        "scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance text-heading",
         properties.className,
       )}
     >
