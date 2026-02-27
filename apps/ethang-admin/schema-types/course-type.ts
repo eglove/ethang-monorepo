@@ -16,6 +16,7 @@ export const courseType = defineType({
     }),
     defineField({
       name: "url",
+      title: "URL",
       type: "url",
       validation: (rule) => isUrlUnique(rule, true, "course"),
     }),

@@ -1,5 +1,7 @@
 import isNil from "lodash/isNil.js";
+import join from "lodash/join.js";
 import map from "lodash/map.js";
+import slice from "lodash/slice.js";
 import split from "lodash/split.js";
 import { v7 } from "uuid";
 
@@ -40,6 +42,8 @@ export const CoursesContainer = async () => {
         const bodyId = `body-${v7()}`;
         const headingId = `heading-${v7()}`;
         const names = split(path.name, ":");
+        const [firstPart] = names;
+        const secondPart = join(slice(names, 1), " ");
 
         return (
           <>
@@ -48,16 +52,18 @@ export const CoursesContainer = async () => {
               headingId={headingId}
               classNames={{ childrenWrapper: "w-full" }}
             >
-              <div class="flex items-center justify-between">
+              <div class="grid items-center md:grid-cols-[1fr_auto]">
                 <div class="grid place-items-start">
-                  <div class="text-left">
-                    {names[0]}
-                    {isNil(names[1]) ? "" : ":"}
-                    <span className="text-warning">{names[1]}</span>
+                  <div class="text-start">
+                    {firstPart}
+                    {isNil(secondPart) || "" === secondPart ? "" : ":"}
+                    {!isNil(secondPart) && "" !== secondPart && (
+                      <span className="text-warning">{secondPart}</span>
+                    )}
                   </div>
                   <span class="text-cyan-500">{path.courseCount} courses</span>
                 </div>
-                <div class="text-cyan-500">
+                <div class="text-start text-cyan-500">
                   {swebokFocusMap.get(path.swebokFocus)}
                 </div>
               </div>

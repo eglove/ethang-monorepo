@@ -31,9 +31,12 @@ export const isUrlUnique = (
       url: value,
     };
 
-    const query = `*[_type == $type && url == $url && _id != $id][0]`;
+    const query = `*[_type == $type && url == $url && _id != $id && !(_id in path('drafts.**'))][0]`;
 
-    const result = await client.fetch<{ _id: string }>(query, parameters);
-    return isNil(result) ? true : "URL must be unique";
+    const result = await client.fetch<{ _id: string; name: string }>(
+      query,
+      parameters,
+    );
+    return isNil(result) ? true : `URL already used by ${result.name}`;
   });
 };

@@ -7,6 +7,7 @@ import { twMerge } from "tailwind-merge";
 import { Navigation } from "../navigation/navigation.tsx";
 
 export type MainLayoutProperties = PropsWithChildren<{
+  author?: string;
   canonicalUrl?: string;
   classNames?: {
     main?: string;
@@ -33,8 +34,9 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         <meta name="description" content={description} />
         <meta name="og:type" content="website" />
         <meta content={title} name="og:title" />
+        <meta name="author" content={properties.author ?? "Ethan Glover"} />
         <meta content={description} name="og:description" />
-        <meta name="og:image" content={properties.imageUrl} />
+        <meta name="image" property="og:image" content={properties.imageUrl} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta content={title} name="twitter:title" />
         <meta content={description} name="twitter:description" />

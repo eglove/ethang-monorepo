@@ -15,6 +15,7 @@ export const learningPathType = defineType({
     }),
     defineField({
       name: "url",
+      title: "URL",
       type: "url",
       validation: (rule) => isUrlUnique(rule, false, "learningPath"),
     }),
