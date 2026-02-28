@@ -18,7 +18,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.1.4",
+    "@ethang/eslint-config": "^25.1.6",
     "@tailwindcss/cli": "^4.2.1",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",
@@ -37,9 +37,9 @@
   "scripts": {
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "deploy": "bun ./build.ts && wrangler deploy --minify",
-    "scripts:watch": "bun ./development.ts",
     "dev": "run-p tailwind wrangler:dev scripts:watch",
     "lint": "eslint . --fix",
+    "scripts:watch": "bun ./development.ts",
     "tailwind": "tailwindcss -i ./src/index.css -o ./public/index.css --watch",
     "wrangler:dev": "wrangler dev"
   },
