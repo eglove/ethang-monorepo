@@ -62,7 +62,7 @@ export const ProfileCard = async () => {
             variant="secondary"
             href="https://cal.com/ethan-glover/meet"
           >
-            Scheduled a Meeting
+            Schedule a Meeting
           </Button>
         </div>
       </div>
