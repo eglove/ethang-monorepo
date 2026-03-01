@@ -28,7 +28,15 @@ export const Blog = async () => {
       updatedAt={new Date().toISOString()}
       publishedAt={new Date().toISOString()}
     >
-      <H1>Blog</H1>
+      <div class="flex flex-col items-center justify-center gap-2">
+        <H1>Blog</H1>
+        <Link
+          href="https://ethang.dev/blogRss.xml"
+          className="text-sm text-fg-brand-subtle"
+        >
+          RSS Feed
+        </Link>
+      </div>
       <div class="my-6 grid gap-4">
         {map(blogs, async (blog) => {
           return (
