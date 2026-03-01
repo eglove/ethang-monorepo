@@ -5,6 +5,7 @@ export type Base = {
 
 export type Blog = {
   _createdAt: string;
+  _id: string;
   _updatedAt: string;
   author: string;
   blogCategory: BlogCategory;

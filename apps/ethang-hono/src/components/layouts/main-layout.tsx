@@ -39,6 +39,12 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         />
         {true === properties.isBlog && (
           <>
+            <link
+              rel="alternate"
+              title="EthanG | Blog"
+              type="application/rss+xml"
+              href="https://ethang.dev/blogRss.xml"
+            />
             <meta
               content={properties.publishedAt}
               property="article:published_time"

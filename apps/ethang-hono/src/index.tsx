@@ -8,6 +8,7 @@ import { NotFound } from "./components/routes/not-found.tsx";
 import { Tips } from "./components/routes/tips.tsx";
 import { ScrollContainers } from "./components/routes/tips/scroll-containers.tsx";
 import { ScrollbarGutter } from "./components/routes/tips/scrollbar-gutter.tsx";
+import { blogRss } from "./feeds/blog-rss.ts";
 import { coursePathData } from "./stores/course-path-store.ts";
 import {
   type AppContext,
@@ -61,6 +62,14 @@ app.get("/blog/:slug", async (c) => {
   const slug = c.req.param("slug");
 
   return c.html(<BlogPost slug={slug} />);
+});
+
+app.get("/blogRss.xml", async (c) => {
+  const content = await blogRss();
+
+  c.header("Content-Type", "text/xml");
+
+  return c.text(content);
 });
 
 export default app;

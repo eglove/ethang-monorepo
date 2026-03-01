@@ -29,6 +29,7 @@ export class BlogModel {
 
   public async getAllBlogs() {
     return sanityClient.fetch<GetBlogs>(`*[_type == "blog"] | order(_createdAt desc) {
+      _id,
       title,
       author,
       _updatedAt,
