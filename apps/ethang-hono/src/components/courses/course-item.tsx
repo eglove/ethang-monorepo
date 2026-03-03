@@ -16,17 +16,8 @@ export const CourseItem = async (properties: CourseItemProperties) => {
   }
 
   return (
-    <Link
-      href={course.url}
-      className="group flex flex-col transition-all hover:translate-x-2"
-    >
-      <span className="text-base tracking-tight text-gray-900 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
-        {course.name}
-      </span>
-      <span class="mt-1 inline-flex items-center text-xs tracking-widest text-fuchsia-600 uppercase dark:text-fuchsia-400">
-        <span class="mr-2 h-px w-4 bg-fuchsia-300 dark:bg-fuchsia-700"></span>
-        {course.author}
-      </span>
+    <Link href={course.url} className="underline underline-offset-2">
+      <span>{course.name}</span>
     </Link>
   );
 };
