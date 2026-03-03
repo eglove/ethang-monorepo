@@ -50,7 +50,15 @@ export const CoursesContainer = async () => {
                   rel="noopener noreferrer"
                   class="underline underline-offset-2"
                 >
-                  <span class="text-fg-purple">{firstPart}</span>
+                  <span
+                    class={
+                      hasSecondPart
+                        ? "text-fg-purple"
+                        : "text-fg-warning-subtle"
+                    }
+                  >
+                    {firstPart}
+                  </span>
                   {hasSecondPart ? ":" : ""}
                   {hasSecondPart && (
                     <span class="text-fg-warning-subtle">{secondPart}</span>
