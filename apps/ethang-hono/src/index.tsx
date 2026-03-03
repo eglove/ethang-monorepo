@@ -5,6 +5,7 @@ import { BlogPost } from "./components/routes/blog/blog-post.tsx";
 import { Courses } from "./components/routes/courses.tsx";
 import { Home } from "./components/routes/home.tsx";
 import { NotFound } from "./components/routes/not-found.tsx";
+import { SignIn } from "./components/routes/sign-in.tsx";
 import { Tips } from "./components/routes/tips.tsx";
 import { ScrollContainers } from "./components/routes/tips/scroll-containers.tsx";
 import { ScrollbarGutter } from "./components/routes/tips/scrollbar-gutter.tsx";
@@ -34,6 +35,10 @@ app.notFound(async (c) => {
 
 app.get("/", async (c) => {
   return c.html(<Home />);
+});
+
+app.get("/sign-in", async (c) => {
+  return c.html(<SignIn />);
 });
 
 app.get("/courses", async (c) => {
