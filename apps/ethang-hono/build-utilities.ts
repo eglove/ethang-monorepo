@@ -21,7 +21,7 @@ export const buildScripts = async (watch = false) => {
 
   await tsup({
     bundle: true,
-    clean: false,
+    clean: true,
     entry: entryMap,
     format: ["esm"],
     minify: false,
