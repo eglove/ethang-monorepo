@@ -9,6 +9,7 @@ export default defineConfig(
     "generated",
     "wrangler.jsonc",
     "tsconfig.json",
+    "migrations",
   ]),
   ...config,
   {

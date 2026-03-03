@@ -6,12 +6,14 @@ import {
   setCookieValue,
 } from "@ethang/toolbelt/http/cookie.js";
 import bcrypt from "bcryptjs";
+import { eq } from "drizzle-orm";
 import { jwtVerify, SignJWT } from "jose";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 
-import type { User } from "../../generated/prisma/client.js";
-import type { getPrismaClient } from "../get-prisma-client.js";
+import type { getDatabase } from "../get-database.js";
+
+import { user as userTable } from "../db/schema.js";
 
 export type AuthContext = Context<AuthContextObject>;
 export type AuthContextObject = { Bindings: CloudflareBindings };
@@ -21,7 +23,7 @@ export class AuthService {
   public static readonly TOKEN_SECRET_KEY = "token-auth" as const;
 
   public constructor(
-    private readonly prisma: ReturnType<typeof getPrismaClient>,
+    private readonly database: ReturnType<typeof getDatabase>,
     private readonly tokenSecret: string,
   ) {}
 
@@ -33,17 +35,20 @@ export class AuthService {
     }
 
     const user = await attemptAsync(async () => {
-      return this.prisma.user.create({
-        data: {
+      const [newUser] = await this.database
+        .insert(userTable)
+        .values({
           email,
           lastLoggedIn: new Date().toISOString(),
           password: hashedPassword,
           username,
-        },
-      });
+        })
+        .returning();
+
+      return newUser;
     });
 
-    if (isError(user)) {
+    if (isError(user) || isNil(user)) {
       return user;
     }
 
@@ -54,10 +59,13 @@ export class AuthService {
     }
 
     return attemptAsync(async () => {
-      return this.prisma.user.update({
-        data: { sessionToken: token },
-        where: { email: user.email },
-      });
+      const [updatedUser] = await this.database
+        .update(userTable)
+        .set({ sessionToken: token })
+        .where(eq(userTable.email, user.email))
+        .returning();
+
+      return updatedUser;
     });
   }
 
@@ -89,7 +97,7 @@ export class AuthService {
 
     const updatedUser = await this.rehashPassword(user, password);
 
-    if (isError(updatedUser)) {
+    if (isError(updatedUser) || isNil(updatedUser)) {
       return updatedUser;
     }
 
@@ -110,7 +118,7 @@ export class AuthService {
     });
   }
 
-  private async generateToken(user: Omit<User, "password">) {
+  private async generateToken(user: typeof userTable.$inferSelect) {
     const secretKey = new TextEncoder().encode(this.tokenSecret);
 
     return attemptAsync(async () => {
@@ -135,7 +143,7 @@ export class AuthService {
   }
 
   private async rehashPassword(
-    user: Omit<User, "password">,
+    user: typeof userTable.$inferSelect,
     newPassword: string,
   ) {
     const hashedPassword = await this.hashPassword(newPassword);
@@ -145,17 +153,20 @@ export class AuthService {
     }
 
     return attemptAsync(async () => {
-      return this.prisma.user.update({
-        data: {
+      const [updatedUser] = await this.database
+        .update(userTable)
+        .set({
           lastLoggedIn: new Date().toISOString(),
           password: hashedPassword,
-        },
-        where: { email: user.email },
-      });
+        })
+        .where(eq(userTable.email, user.email))
+        .returning();
+
+      return updatedUser;
     });
   }
 
-  private async updateUserToken(user: Omit<User, "password">) {
+  private async updateUserToken(user: typeof userTable.$inferSelect) {
     const token = await this.generateToken(user);
 
     if (isError(token)) {
@@ -163,38 +174,31 @@ export class AuthService {
     }
 
     return attemptAsync(async () => {
-      return this.prisma.user.update({
-        data: { sessionToken: token },
-        where: { email: user.email },
-      });
+      const [updatedUser] = await this.database
+        .update(userTable)
+        .set({ sessionToken: token })
+        .where(eq(userTable.email, user.email))
+        .returning();
+
+      return updatedUser;
     });
   }
 
   private async validateCredentials(email: string, password: string) {
-    const user = await this.prisma.user.findUnique({
-      select: {
-        email: true,
-        id: true,
-        lastLoggedIn: true,
-        password: true,
-        role: true,
-        sessionToken: true,
-        updatedAt: true,
-        username: true,
-      },
-      where: { email },
+    const userResult = await this.database.query.userTable.findFirst({
+      where: eq(userTable.email, email),
     });
 
-    if (isNil(user)) {
+    if (isNil(userResult)) {
       return new Error("Invalid Credentials");
     }
 
-    const compared = await bcrypt.compare(password, user.password);
+    const compared = await bcrypt.compare(password, userResult.password);
 
     if (!compared) {
       return new Error("Invalid Credentials");
     }
 
-    return user;
+    return userResult;
   }
 }

@@ -7,7 +7,7 @@ import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import convertToString from "lodash/toString.js";
 
-import { getPrismaClient } from "./get-prisma-client.ts";
+import { getDatabase } from "./get-database.ts";
 import {
   type AuthContextObject,
   AuthService,
@@ -17,9 +17,9 @@ const app = new Hono<AuthContextObject>();
 app.use("*", cors());
 
 app.post("/sign-up", zValidator("json", signUpSchema), async (context) => {
-  const prisma = getPrismaClient(context);
+  const database = getDatabase(context);
   const authService = new AuthService(
-    prisma,
+    database,
     convertToString(context.env[AuthService.TOKEN_SECRET_KEY]),
   );
   const body = context.req.valid("json");
@@ -30,8 +30,11 @@ app.post("/sign-up", zValidator("json", signUpSchema), async (context) => {
     body.username,
   );
 
-  if (isError(user)) {
-    return createJsonResponse({ error: user.message }, "INTERNAL_SERVER_ERROR");
+  if (isError(user) || isNil(user)) {
+    return createJsonResponse(
+      { error: user?.message },
+      "INTERNAL_SERVER_ERROR",
+    );
   }
 
   const response = createJsonResponse(user, "OK");
@@ -43,17 +46,17 @@ app.post("/sign-up", zValidator("json", signUpSchema), async (context) => {
 });
 
 app.post("/sign-in", zValidator("json", signInSchema), async (context) => {
-  const prisma = getPrismaClient(context);
+  const database = getDatabase(context);
   const authService = new AuthService(
-    prisma,
+    database,
     convertToString(context.env[AuthService.TOKEN_SECRET_KEY]),
   );
   const body = context.req.valid("json");
 
   const user = await authService.signIn(body.email, body.password);
 
-  if (isError(user)) {
-    return createJsonResponse({ error: user.message }, "UNAUTHORIZED");
+  if (isError(user) || isNil(user)) {
+    return createJsonResponse({ error: user?.message }, "UNAUTHORIZED");
   }
 
   const response = createJsonResponse(user, "OK");
@@ -64,9 +67,9 @@ app.post("/sign-in", zValidator("json", signInSchema), async (context) => {
 });
 
 app.get("/verify", async (context) => {
-  const prisma = getPrismaClient(context);
+  const database = getDatabase(context);
   const authService = new AuthService(
-    prisma,
+    database,
     convertToString(context.env[AuthService.TOKEN_SECRET_KEY]),
   );
 
