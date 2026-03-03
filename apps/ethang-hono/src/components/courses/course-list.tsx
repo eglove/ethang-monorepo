@@ -8,9 +8,12 @@ type CourseListProperties = {
 
 export const CourseList = async (properties: CourseListProperties) => {
   return (
-    <ul class="mt-2 list-inside list-decimal space-y-1 ps-5">
+    <ul class="mt-2 list-inside space-y-1 ps-5">
       {map(properties.courses, async (course) => (
-        <li key={course._id}>
+        <li
+          key={course._id}
+          class="[counter-increment:course-list] before:[content:counter(course-list)'.\a0']"
+        >
           <CourseItem courseId={course._id} />
         </li>
       ))}

@@ -33,7 +33,7 @@ export const CoursesContainer = async () => {
   const { learningPaths } = coursePathData;
 
   return (
-    <div>
+    <div class="[counter-reset:course-list]">
       <ul class="list-inside list-disc space-y-4 text-body">
         {map(learningPaths, async (path) => {
           const names = split(path.name, ":");
