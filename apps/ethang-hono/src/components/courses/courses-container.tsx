@@ -33,48 +33,44 @@ export const CoursesContainer = async () => {
   const { learningPaths } = coursePathData;
 
   return (
-    <div class="[counter-reset:course-list]">
-      <ul class="list-inside list-disc space-y-4 text-body">
-        {map(learningPaths, async (path) => {
-          const names = split(path.name, ":");
-          const [firstPart] = names;
-          const secondPart = join(slice(names, 1), " ");
-          const hasSecondPart = !isNil(secondPart) && "" !== secondPart;
+    <ul class="list-inside list-disc space-y-4 text-body">
+      {map(learningPaths, async (path) => {
+        const names = split(path.name, ":");
+        const [firstPart] = names;
+        const secondPart = join(slice(names, 1), " ");
+        const hasSecondPart = !isNil(secondPart) && "" !== secondPart;
 
-          return (
-            <li>
-              <span>
-                <a
-                  href={path.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="underline underline-offset-2"
+        return (
+          <li>
+            <span>
+              <a
+                href={path.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline underline-offset-2"
+              >
+                <span
+                  class={
+                    hasSecondPart ? "text-fg-purple" : "text-fg-warning-subtle"
+                  }
                 >
-                  <span
-                    class={
-                      hasSecondPart
-                        ? "text-fg-purple"
-                        : "text-fg-warning-subtle"
-                    }
-                  >
-                    {firstPart}
-                  </span>
-                  {hasSecondPart ? ":" : ""}
-                  {hasSecondPart && (
-                    <span class="text-fg-warning-subtle">{secondPart}</span>
-                  )}
-                </a>{" "}
-                |{" "}
-                <span class="text-fg-brand-subtle">
-                  {swebokFocusMap.get(path.swebokFocus)}
+                  {firstPart}
                 </span>
+                {hasSecondPart ? ":" : ""}
+                {hasSecondPart && (
+                  <span class="text-fg-warning-subtle">{secondPart}</span>
+                )}
+              </a>{" "}
+              |{" "}
+              <span class="text-fg-brand-subtle">
+                {swebokFocusMap.get(path.swebokFocus)}
               </span>
+            </span>
 
-              <CourseList courses={path.courses} />
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+            <CourseList courses={path.courses} />
+          </li>
+        );
+      })}
+    </ul>
   );
 };

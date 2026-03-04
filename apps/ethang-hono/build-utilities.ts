@@ -24,7 +24,7 @@ export const buildScripts = async (watch = false) => {
     clean: true,
     entry: entryMap,
     format: ["esm"],
-    minify: false,
+    minify: true,
     outDir: "public/scripts",
     platform: "browser",
     sourcemap: false,
