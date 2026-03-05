@@ -54,6 +54,7 @@ export type Body = {
   children?: Children[];
   code?: string;
   language?: string;
+  listItem?: string;
   markDefs?: MarkDef[];
   quote?: string;
   source?: string;

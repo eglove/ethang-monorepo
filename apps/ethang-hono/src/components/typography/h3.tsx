@@ -2,19 +2,19 @@ import type { PropsWithChildren } from "hono/jsx";
 
 import { twMerge } from "tailwind-merge";
 
-type H2Properties = PropsWithChildren<{
+type H3Properties = PropsWithChildren<{
   className?: string;
 }>;
 
-export const H2 = async (properties: H2Properties) => {
+export const H3 = async (properties: H3Properties) => {
   return (
-    <h2
+    <h3
       class={twMerge(
-        "scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight text-heading wrap-break-word mt-4",
+        "scroll-m-20 text-2xl font-semibold tracking-tight text-heading",
         properties.className,
       )}
     >
       {properties.children}
-    </h2>
+    </h3>
   );
 };

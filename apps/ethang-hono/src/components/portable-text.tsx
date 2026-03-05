@@ -1,6 +1,10 @@
+import type { Child } from "hono/jsx";
+
+import filter from "lodash/filter.js";
 import find from "lodash/find.js";
 import flatMap from "lodash/flatMap.js";
 import isNil from "lodash/isNil.js";
+import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 
 import type { GetBlogBySlug } from "../models/get-blog-by-slug.ts";
@@ -9,7 +13,9 @@ import { Image } from "../image.tsx";
 import { Code } from "./code.tsx";
 import { Blockquote } from "./typography/blockquote.tsx";
 import { H2 } from "./typography/h2.tsx";
+import { H3 } from "./typography/h3.tsx";
 import { Link } from "./typography/link.tsx";
+import { List } from "./typography/list.tsx";
 import { P } from "./typography/p.tsx";
 import { YouTubeVideo } from "./you-tube-video.tsx";
 
@@ -50,15 +56,33 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
     });
   };
 
+  let blockItems: Child[] = [];
+
   const nodes = await Promise.all(
+    // eslint-disable-next-line sonar/cognitive-complexity
     map(children, async (block) => {
       if ("block" === block._type) {
+        if (isString(block.listItem)) {
+          blockItems.push(<li>{renderChildren(block.children)}</li>);
+          return null;
+        }
+
+        if (!isString(block.listItem) && 0 < blockItems.length) {
+          const copy = [...blockItems];
+          blockItems = [];
+          return <List>{copy}</List>;
+        }
+
         if ("normal" === block.style) {
           return <P>{renderChildren(block.children)}</P>;
         }
 
         if ("h2" === block.style) {
           return <H2>{renderChildren(block.children)}</H2>;
+        }
+
+        if ("h3" === block.style) {
+          return <H3>{renderChildren(block.children)}</H3>;
         }
 
         if ("blockquote" === block.style) {
@@ -120,5 +144,10 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
     }),
   );
 
-  return <>{nodes}</>;
+  if (0 < blockItems.length) {
+    // @ts-expect-error it's fine?
+    nodes.push(<List>{blockItems}</List>);
+  }
+
+  return <>{filter(nodes, (value) => !isNil(value))}</>;
 };

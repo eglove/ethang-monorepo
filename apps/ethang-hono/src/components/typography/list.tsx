@@ -8,7 +8,7 @@ export const List = async (properties: ListProperties) => {
   return (
     <ul
       class={twMerge(
-        "max-w-md space-y-2 text-body list-none list-inside",
+        "my-6 ml-6 list-disc [&>li]:mt-2 text-body",
         properties.className,
       )}
     >
