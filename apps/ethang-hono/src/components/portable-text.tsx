@@ -58,7 +58,7 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
 
   let blockItems: Child[] = [];
 
-  const nodes = await Promise.all(
+  const nodes: Child[] = await Promise.all(
     // eslint-disable-next-line sonar/cognitive-complexity
     map(children, async (block) => {
       if ("block" === block._type) {
@@ -145,7 +145,6 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
   );
 
   if (0 < blockItems.length) {
-    // @ts-expect-error it's fine?
     nodes.push(<List>{blockItems}</List>);
   }
 
