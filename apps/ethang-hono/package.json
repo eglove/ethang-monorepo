@@ -5,12 +5,12 @@
   ],
   "dependencies": {
     "@ethang/store": "^2.3.2",
-    "@portabletext/toolkit": "^5.0.1",
+    "@portabletext/toolkit": "^5.0.2",
     "@sanity/block-content-to-html": "^2.0.0",
     "@sanity/client": "^7.16.0",
     "flowbite": "^4.0.1",
     "highlight.js": "^11.11.1",
-    "hono": "^4.12.4",
+    "hono": "^4.12.5",
     "lodash": "^4.17.23",
     "luxon": "^3.7.2",
     "tailwind-merge": "^3.5.0",
@@ -18,7 +18,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.1.7",
+    "@ethang/eslint-config": "^25.2.0",
     "@tailwindcss/cli": "^4.2.1",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",

@@ -59,6 +59,7 @@ export default defineConfig(globalIgnores(ignores), {
     "html/require-attrs": "error",
     "html/require-button-type": "error",
     "html/require-closing-tags": "off",
+    "html/require-details-summary": "error",
     "html/require-doctype": "error",
     "html/require-explicit-size": "error",
     "html/require-form-method": "error",
