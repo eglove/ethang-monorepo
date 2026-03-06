@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@types/node':
         specifier: ^25.3.5
         version: 25.3.5
@@ -55,11 +55,11 @@ importers:
         version: 13.0.0
     devDependencies:
       '@dotenvx/dotenvx':
-        specifier: ^1.53.0
-        version: 1.53.0
+        specifier: ^1.54.1
+        version: 1.54.1
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
@@ -164,11 +164,11 @@ importers:
         specifier: ^4.20260306.1
         version: 4.20260306.1
       '@dotenvx/dotenvx':
-        specifier: ^1.53.0
-        version: 1.53.0
+        specifier: ^1.54.1
+        version: 1.54.1
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@portabletext/types':
         specifier: ^4.0.2
         version: 4.0.2
@@ -258,8 +258,8 @@ importers:
         version: 6.3.11(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@sanity/eslint-config-studio':
         specifier: ^6.0.0
         version: 6.0.0(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
@@ -322,8 +322,8 @@ importers:
         version: 13.0.0
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@tailwindcss/cli':
         specifier: ^4.2.1
         version: 4.2.1
@@ -438,8 +438,8 @@ importers:
         version: 6.3.11(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@sanity/eslint-config-studio':
         specifier: ^6.0.0
         version: 6.0.0(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
@@ -538,8 +538,8 @@ importers:
         specifier: ^1.26.1
         version: 1.26.1(vite@7.3.1(@types/node@25.3.5)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(workerd@1.20260301.1)(wrangler@4.71.0(@cloudflare/workers-types@4.20260306.1))
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@tailwindcss/postcss':
         specifier: ^4.2.1
         version: 4.2.1
@@ -623,8 +623,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
@@ -802,8 +802,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -839,8 +839,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -870,8 +870,8 @@ importers:
         version: 4.17.23
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
@@ -895,8 +895,8 @@ importers:
         version: 4.17.23
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -926,8 +926,8 @@ importers:
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
@@ -951,8 +951,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -973,8 +973,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
@@ -998,8 +998,8 @@ importers:
         version: 1.6.0(react@19.2.4)
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -1038,8 +1038,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.3.0
-        version: 25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^25.4.0
+        version: 25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -2348,8 +2348,8 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  '@dotenvx/dotenvx@1.53.0':
-    resolution: {integrity: sha512-OnsVuJ5O2WCUMXBnyuYah08/I6Tnt1FEZ2PGH9skSRuRh3LK5UoGa6Bzi5Toj/F/0mbeFfv+eNKTsYRoGgRh3Q==}
+  '@dotenvx/dotenvx@1.54.1':
+    resolution: {integrity: sha512-41gU3q7v05GM92QPuPUf4CmUw+mmF8p4wLUh6MCRlxpCkJ9ByLcY9jUf6MwrMNmiKyG/rIckNxj9SCfmNCmCqw==}
     hasBin: true
 
   '@drizzle-team/brocli@0.10.2':
@@ -2970,8 +2970,8 @@ packages:
     resolution: {integrity: sha512-bIZEUzOI1jkhviX2cp5vNyXQc6olzb2ohewQubuYlMXZ2Q/XjBO0x0XhGPvc9fjSIiUN0vw+0hq53BJ4eQSJKQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@ethang/eslint-config@25.3.0':
-    resolution: {integrity: sha512-eHHTxc4acUGodYLOjFDUF9tz1AQcfLcs/jQbAo+CVIx2DjoV1VtdtPvQxRV7v6titGKTCqSBRbyIPoT5ma49oA==}
+  '@ethang/eslint-config@25.4.0':
+    resolution: {integrity: sha512-JVDZG46fvwvg4doxsoQkZYnPummSOoQbXAzlmaIGL3/7mwI8AdOqqs1oSYOIkZL8kzEHHkZ9SpFGplJg3SSD0Q==}
     engines: {node: '>=24'}
 
   '@ethang/markdown-generator@1.1.5':
@@ -7847,11 +7847,6 @@ packages:
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
       typescript: '>=4.8.4'
 
-  eslint-plugin-sonarjs@4.0.0:
-    resolution: {integrity: sha512-ihyH9HO52OeeWer/gWRndkW/ZhGqx9HDg+Iptu+ApSfiomT2LzhHgHCoyJrhh7DjCyKhjU3Hmmz1pzcXRf7B3g==}
-    peerDependencies:
-      eslint: ^8.0.0 || ^9.0.0 || ^10.0.0
-
   eslint-plugin-sonarjs@4.0.1:
     resolution: {integrity: sha512-lmqzFTrw0/zpHQMRmwdgdEEw50s3md0c8RE23JqNom9ovsGQxC/azZ9H00aGKVDkxIXywfcxwzyFJ9Sm3bp2ng==}
     peerDependencies:
@@ -8342,10 +8337,6 @@ packages:
 
   globals@16.5.0:
     resolution: {integrity: sha512-c/c15i26VrJ4IRt5Z89DnIzCGDn9EcebibhAOjw5ibqEHsE1wLUgkPn9RDmNcUKyU87GeaL633nyJ+pplFR2ZQ==}
-    engines: {node: '>=18'}
-
-  globals@17.3.0:
-    resolution: {integrity: sha512-yMqGUQVVCkD4tqjOJf3TnrvaaHDMYp4VlUSObbkIiuCPe/ofdMBFIAcBbCSRFWOnos6qRiTVStDwqPLUclaxIw==}
     engines: {node: '>=18'}
 
   globals@17.4.0:
@@ -9565,10 +9556,6 @@ packages:
     resolution: {integrity: sha512-fqkHx0QMKswRH9uqQQQOU/RoaS3Wjckxy3CUX3YGJr0ZIMu7ObvI+NovdYi6RIsSPthNtq+3TPmRNxjeRiasog==}
     engines: {node: '>=18.0.0'}
     hasBin: true
-
-  minimatch@10.2.1:
-    resolution: {integrity: sha512-MClCe8IL5nRRmawL6ib/eT4oLyeKMGCghibcDWK+J0hh0Q8kqSdia6BvbRMVk6mPa6WqUa5uR2oxt6C5jd533A==}
-    engines: {node: 20 || >=22}
 
   minimatch@10.2.4:
     resolution: {integrity: sha512-oRjTw/97aTBN0RHbYCdtF1MQfvusSIBQM0IZEgzl6426+8jSC0nF1a/GmnVLpfB9yyr6g6FTqWqiZVbxrtaCIg==}
@@ -13751,7 +13738,7 @@ snapshots:
       react: 19.2.4
       tslib: 2.8.1
 
-  '@dotenvx/dotenvx@1.53.0':
+  '@dotenvx/dotenvx@1.54.1':
     dependencies:
       commander: 11.1.0
       dotenv: 17.3.1
@@ -14217,7 +14204,7 @@ snapshots:
       '@eslint/core': 1.1.0
       levn: 0.4.1
 
-  '@ethang/eslint-config@25.3.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)':
+  '@ethang/eslint-config@25.4.0(@angular/cli@21.1.4(@types/node@25.3.5))(@types/eslint@9.6.1)(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.1)(typescript@5.9.3)':
     dependencies:
       '@angular-eslint/eslint-plugin': 21.3.0(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
       '@angular-eslint/eslint-plugin-template': 21.3.0(@angular-eslint/template-parser@21.3.0(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/types@8.56.1)(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
@@ -14244,7 +14231,7 @@ snapshots:
       eslint-plugin-prettier: 5.5.5(@types/eslint@9.6.1)(eslint-config-prettier@10.1.8(eslint@10.0.2(jiti@2.6.1)))(eslint@10.0.2(jiti@2.6.1))(prettier@3.8.1)
       eslint-plugin-react-hooks: 7.0.1(eslint@10.0.2(jiti@2.6.1))
       eslint-plugin-solid: 0.14.5(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
-      eslint-plugin-sonarjs: 4.0.0(eslint@10.0.2(jiti@2.6.1))
+      eslint-plugin-sonarjs: 4.0.1(eslint@10.0.2(jiti@2.6.1))
       eslint-plugin-storybook: 10.2.16(eslint@10.0.2(jiti@2.6.1))(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(typescript@5.9.3)
       eslint-plugin-tailwindcss: 4.0.0-beta.0(tailwindcss@4.2.1)
       eslint-plugin-unicorn: 63.0.0(eslint@10.0.2(jiti@2.6.1))
@@ -20807,22 +20794,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-sonarjs@4.0.0(eslint@10.0.2(jiti@2.6.1)):
-    dependencies:
-      '@eslint-community/regexpp': 4.12.2
-      builtin-modules: 3.3.0
-      bytes: 3.1.2
-      eslint: 10.0.2(jiti@2.6.1)
-      functional-red-black-tree: 1.0.1
-      globals: 17.3.0
-      jsx-ast-utils-x: 0.1.0
-      lodash.merge: 4.6.2
-      minimatch: 10.2.1
-      scslre: 0.3.0
-      semver: 7.7.4
-      ts-api-utils: 2.4.0(typescript@5.9.3)
-      typescript: 5.9.3
-
   eslint-plugin-sonarjs@4.0.1(eslint@10.0.2(jiti@2.6.1)):
     dependencies:
       '@eslint-community/regexpp': 4.12.2
@@ -21458,8 +21429,6 @@ snapshots:
   globals@15.15.0: {}
 
   globals@16.5.0: {}
-
-  globals@17.3.0: {}
 
   globals@17.4.0: {}
 
@@ -22816,10 +22785,6 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
-
-  minimatch@10.2.1:
-    dependencies:
-      brace-expansion: 5.0.4
 
   minimatch@10.2.4:
     dependencies:

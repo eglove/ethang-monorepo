@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.26.1",
-    "@ethang/eslint-config": "^25.3.0",
+    "@ethang/eslint-config": "^25.4.0",
     "@tailwindcss/postcss": "^4.2.1",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/router-plugin": "^1.166.2",

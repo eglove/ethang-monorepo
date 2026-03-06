@@ -32,8 +32,8 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.26.1",
     "@cloudflare/workers-types": "^4.20260306.1",
-    "@dotenvx/dotenvx": "^1.53.0",
-    "@ethang/eslint-config": "^25.3.0",
+    "@dotenvx/dotenvx": "^1.54.1",
+    "@ethang/eslint-config": "^25.4.0",
     "@portabletext/types": "^4.0.2",
     "@tailwindcss/postcss": "^4.2.1",
     "@tailwindcss/vite": "^4.2.1",
