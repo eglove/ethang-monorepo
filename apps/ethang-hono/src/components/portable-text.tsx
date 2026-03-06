@@ -14,6 +14,7 @@ import { Code } from "./code.tsx";
 import { Blockquote } from "./typography/blockquote.tsx";
 import { H2 } from "./typography/h2.tsx";
 import { H3 } from "./typography/h3.tsx";
+import { InlineCode } from "./typography/inline-code.tsx";
 import { Link } from "./typography/link.tsx";
 import { List } from "./typography/list.tsx";
 import { P } from "./typography/p.tsx";
@@ -31,7 +32,7 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
       return null;
     }
 
-    return map(nodeChildren, (child) => {
+    return map(nodeChildren, async (child) => {
       let content = child.text;
 
       if (0 < child.marks.length) {
@@ -44,6 +45,10 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
               return definition._key === mark;
             },
           );
+
+          if ("code" === mark) {
+            return <InlineCode>{content}</InlineCode>;
+          }
 
           if ("link" === markDefinition?._type) {
             // @ts-expect-error allow elements
@@ -82,7 +87,7 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
         }
 
         if ("h3" === block.style) {
-          return <H3>{renderChildren(block.children)}</H3>;
+          return <H3 className="mt-4">{renderChildren(block.children)}</H3>;
         }
 
         if ("blockquote" === block.style) {

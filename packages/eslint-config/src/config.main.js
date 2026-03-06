@@ -601,6 +601,7 @@ export default defineConfig(
       "sonar/chai-determinate-assertion": "error",
       "sonar/class-name": "error",
       "sonar/class-prototype": "error",
+      "sonar/code-eval": "error",
       "sonar/cognitive-complexity": "error",
       "sonar/comma-or-logical-or-case": "error",
       "sonar/comment-regex": "off",
