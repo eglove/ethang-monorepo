@@ -31,8 +31,8 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.26.0",
-    "@ethang/eslint-config": "^25.2.0",
+    "@cloudflare/vite-plugin": "^1.26.1",
+    "@ethang/eslint-config": "^25.3.0",
     "@tailwindcss/postcss": "^4.2.1",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/router-plugin": "^1.166.2",
@@ -52,7 +52,7 @@
     "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1",
     "vite-plugin-pwa": "^1.2.0",
-    "wrangler": "^4.70.0"
+    "wrangler": "^4.71.0"
   },
   "engines": {
     "node": ">=24"

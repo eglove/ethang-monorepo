@@ -4,7 +4,7 @@
     "current node"
   ],
   "dependencies": {
-    "@sanity/code-input": "^7.0.8",
+    "@sanity/code-input": "^7.0.9",
     "@sanity/orderable-document-list": "^1.5.1",
     "@sanity/vision": "^5.13.0",
     "lodash": "^4.17.23",
@@ -14,7 +14,7 @@
     "styled-components": "^6.3.10"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.2.0",
+    "@ethang/eslint-config": "^25.3.0",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.24",
     "@types/react": "^19.2.14",
