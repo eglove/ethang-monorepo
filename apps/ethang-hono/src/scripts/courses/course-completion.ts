@@ -23,19 +23,19 @@ const init = async () => {
         return;
     }
 
-    const userData = parseJwt(token.value);
+    const verification = await fetch("https://auth.ethang.dev/verify", {
+        headers: {
+           "X-Token": token.value,
+        }
+    });
 
-    if (!userData) {
-        return;
-    }
-
-    const expiresDate = new Date(userData.exp * 1000);
-
-    if (expiresDate < new Date()) {
+    if (!verification.ok) {
         await cookieStore.delete("ethang-auth-token");
+        location.reload();
         return;
     }
 
+    const userData = await verification.json<UserToken>();
     const response = await fetch(`/api/course-tracking/${userData.sub}`);
     const courseStatuses = await response.json<{
         data: Array<CourseStatus>,
@@ -155,18 +155,4 @@ const setPercentageContent = (element: HTMLDivElement | null, elementTotal: numb
             element.textContent = formatter.format(decimal);
         }
     }
-}
-
-const parseJwt = (token: string) => {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url?.replace(/-/g, '+').replace(/_/g, '/');
-
-    if (base64) {
-        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload) as UserToken;
-    }
-
-    return undefined;
 }

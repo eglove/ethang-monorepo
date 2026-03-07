@@ -73,9 +73,9 @@ app.get("/verify", async (context) => {
     convertToString(context.env[AuthService.TOKEN_SECRET_KEY]),
   );
 
-  const token = authService.getTokenFromCookie(context.req.raw.headers);
+  const token = context.req.raw.headers.get("X-Token");
 
-  if (isError(token)) {
+  if (isNil(token)) {
     return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
   }
 

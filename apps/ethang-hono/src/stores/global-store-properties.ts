@@ -51,7 +51,7 @@ export class GlobalStore {
   private async setAuthToken(value: null | string) {
     await fetch("https://auth.ethang.dev/verify", {
       headers: {
-        Cookie: `ethang-auth-token=${value}`,
+        "X-Token": value ?? "",
       },
     })
       .then(async (response) => {
@@ -72,5 +72,4 @@ export class GlobalStore {
   }
 }
 
-// @ts-expect-error shush
 export const globalStore = new GlobalStore();
