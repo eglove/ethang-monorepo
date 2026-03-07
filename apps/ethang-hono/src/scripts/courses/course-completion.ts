@@ -143,10 +143,16 @@ const setPercentageContent = (element: HTMLDivElement | null, elementTotal: numb
         element.textContent = formatter.format(decimal);
         element.setAttribute("style", `width: ${wholePercent}%`);
 
-        if (wholePercent < 3) {
+        if (wholePercent === 0) {
             element.classList.add("hidden");
         } else {
             element.classList.remove("hidden");
+        }
+
+        if (wholePercent < 7) {
+            element.textContent = "";
+        } else {
+            element.textContent = formatter.format(decimal);
         }
     }
 }

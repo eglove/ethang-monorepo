@@ -12,6 +12,8 @@ const formatter = new Intl.NumberFormat("en-US", {
   style: "percent",
 });
 
+const minToShow = 7;
+
 export const CourseProgressBar = async (
   properties?: CourseProgressBarProperties,
 ) => {
@@ -30,17 +32,17 @@ export const CourseProgressBar = async (
       <div
         id="complete-progress"
         style={`width: ${complete}%`}
-        className={twMerge(baseStyles, "bg-brand", 2 > complete && "hidden")}
+        className={twMerge(baseStyles, "bg-brand", 0 === complete && "hidden")}
       >
-        {formatter.format(complete / 100)}
+        {minToShow > complete ? "" : formatter.format(complete / 100)}
       </div>
 
       <div
         id="revisit-progress"
         style={`width: ${revisit}%`}
-        class={twMerge(baseStyles, "bg-warning", 2 > revisit && "hidden")}
+        class={twMerge(baseStyles, "bg-warning", 0 === revisit && "hidden")}
       >
-        {formatter.format(revisit / 100)}
+        {minToShow > revisit ? "" : formatter.format(revisit / 100)}
       </div>
 
       <div
@@ -49,10 +51,10 @@ export const CourseProgressBar = async (
         class={twMerge(
           baseStyles,
           "bg-neutral-quaternary",
-          2 > incomplete && "hidden",
+          100 === incomplete && "hidden",
         )}
       >
-        {formatter.format(incomplete / 100)}
+        {minToShow > incomplete ? "" : formatter.format(incomplete / 100)}
       </div>
     </div>
   );
