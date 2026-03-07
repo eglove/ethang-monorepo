@@ -287,6 +287,9 @@ importers:
       '@ethang/store':
         specifier: ^2.3.2
         version: 2.3.2(react@19.2.4)
+      '@ethang/toolbelt':
+        specifier: ^4.4.11
+        version: 4.4.11
       '@portabletext/toolkit':
         specifier: ^5.0.2
         version: 5.0.2

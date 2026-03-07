@@ -5,6 +5,7 @@
   ],
   "dependencies": {
     "@ethang/store": "^2.3.2",
+    "@ethang/toolbelt": "^4.4.11",
     "@portabletext/toolkit": "^5.0.2",
     "@sanity/block-content-to-html": "^2.0.0",
     "@sanity/client": "^7.16.0",

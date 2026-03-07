@@ -58,7 +58,8 @@ const init = async () => {
 
         button.addEventListener("click", () => {
             button.disabled = true;
-            button.classList.add("animate-spin");
+            button.classList.remove("cursor-pointer");
+            button.classList.add("animate-spin", "cursor-progress");
             fetch(`/api/course-tracking/${userData.sub}/${courseId}`, {
                 method: "PUT",
                 body: JSON.stringify({})
@@ -68,7 +69,8 @@ const init = async () => {
                 setUiState(statusElement, button, data.data);
             }).catch(console.error).finally(() => {
                 button.disabled = false;
-                button.classList.remove("animate-spin");
+                button.classList.remove("animate-spin", "cursor-progress");
+                button.classList.add("cursor-pointer");
             });
         })
     })
@@ -82,7 +84,6 @@ if ("loading" === document.readyState) {
 
 const setUiState = (statusElement: HTMLDivElement | null | undefined, button: HTMLButtonElement, courseStatus: CourseStatus | undefined) => {
     if (statusElement) {
-        statusElement.classList.remove("hidden");
         statusElement.textContent = courseStatus?.status ?? "Incomplete";
     }
 

@@ -29,7 +29,7 @@ app.use("*", async (context, next) => {
     return Response.redirect(`https://ethang.dev${url.pathname}${url.search}`);
   }
 
-  globalStore.setup(context);
+  await globalStore.setup(context);
   return next();
 });
 
@@ -46,7 +46,7 @@ app.get("/sign-in", async (c) => {
 });
 
 app.get("/courses", async (c) => {
-  await coursePathData.setup();
+  await coursePathData.setup(c);
 
   return c.html(<Courses />);
 });
@@ -116,21 +116,21 @@ app.put("/api/course-tracking/:userId/:courseId", async (context) => {
   if (isNil(courseStatus)) {
     await courseTracking.createCourseTracking(userId, courseId);
   } else {
-    if (COURSE_TRACKING_STATUS.COMPLETE === courseStatus?.status) {
+    if (COURSE_TRACKING_STATUS.COMPLETE === courseStatus.status) {
       await courseTracking.updateCourseTrackingStatus(
         courseStatus.id,
         COURSE_TRACKING_STATUS.REVISIT,
       );
     }
 
-    if (COURSE_TRACKING_STATUS.REVISIT === courseStatus?.status) {
+    if (COURSE_TRACKING_STATUS.REVISIT === courseStatus.status) {
       await courseTracking.updateCourseTrackingStatus(
         courseStatus.id,
         COURSE_TRACKING_STATUS.INCOMPLETE,
       );
     }
 
-    if (COURSE_TRACKING_STATUS.INCOMPLETE === courseStatus?.status) {
+    if (COURSE_TRACKING_STATUS.INCOMPLETE === courseStatus.status) {
       await courseTracking.updateCourseTrackingStatus(
         courseStatus.id,
         COURSE_TRACKING_STATUS.COMPLETE,
@@ -142,7 +142,6 @@ app.put("/api/course-tracking/:userId/:courseId", async (context) => {
     userId,
     courseId,
   );
-  console.log({ courseId, updated, userId });
 
   return context.json({ data: updated, status: 200 });
 });

@@ -6,6 +6,7 @@ import { globalStore } from "../../stores/global-store-properties.ts";
 import { CoursesContainer } from "../courses/courses-container.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
 import { H1 } from "../typography/h1.tsx";
+import { Link } from "../typography/link.tsx";
 import { P } from "../typography/p.tsx";
 
 export const Courses = async () => {
@@ -45,6 +46,9 @@ export const Courses = async () => {
           accounts instead of buying one-time courses. I've optimized the list
           to focus on one platform at a time. When there is a series of Udemy
           courses, sign up for Udemy Pro, cancel it when you're done, and so on.
+        </P>
+        <P className={globalStore.isAuthenticated ? "hidden" : ""}>
+          <Link href="/sign-in">Sign In To Track Changes</Link>
         </P>
         <div class="my-6">
           <CoursesContainer />
