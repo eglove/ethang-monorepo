@@ -29,8 +29,19 @@ export const swebokFocusMap = new Map([
   ["testing", "Software Testing"],
 ]);
 
+class Counter {
+  private count = 0;
+
+  public getCount() {
+    this.count += 1;
+    return this.count;
+  }
+}
+
 export const CoursesContainer = async () => {
   const { learningPaths } = coursePathData;
+
+  const counter = new Counter();
 
   return (
     <ul class="list-inside list-disc space-y-4 text-body">
@@ -67,7 +78,10 @@ export const CoursesContainer = async () => {
               </span>
             </span>
 
-            <CourseList courses={path.courses} />
+            <CourseList
+              courses={path.courses}
+              getCount={() => counter.getCount()}
+            />
           </li>
         );
       })}

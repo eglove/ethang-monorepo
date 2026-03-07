@@ -5,7 +5,17 @@
     "directory": "./public"
   },
   "compatibility_date": "2026-03-06",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "ethang_hono",
+      "database_id": "b5d9ada0-cf96-4b56-97bf-a99134949b30",
+      "database_name": "ethang-hono",
+      "remote": true
+    }
+  ],
   "main": "src/index.tsx",
   "name": "ethang-hono",
   "observability": {

@@ -1,84 +1,113 @@
 /* eslint-disable unicorn/no-abusive-eslint-disable */
 /* eslint-disable */
-const getCourseStatusKey = (courseId: string) => {
-  return `course-status-${courseId}`;
+type UserToken = {
+    exp: number;
+    iat: number;
+    sub: string;
+    email: string;
+    username: string;
+    role?: string;
 }
 
-const STATUSES = ["Complete", "Revisit", "Incomplete"] as const;
+type CourseStatus = {
+    status: string,
+    id: string,
+    courseId: string,
+    userId: string
+}
 
-type Status = (typeof STATUSES)[number];
+const init = async () => {
+    const token = await cookieStore.get("ethang-auth-token");
 
-const getStatus = (courseId: string): Status => {
-  const status = localStorage.getItem(
-    getCourseStatusKey(courseId),
-  ) as unknown as null | Status;
+    if (!token?.value) {
+        return;
+    }
 
-  if (status && (STATUSES as readonly string[]).includes(status)) {
-    return status;
-  }
-  return "Incomplete";
-};
+    const userData = parseJwt(token.value);
 
-const setStatus = (courseId: string, status: Status) => {
-  localStorage.setItem(getCourseStatusKey(courseId), status);
-};
+    if (!userData) {
+        return;
+    }
 
-const getNextStatus = (currentStatus: Status): Status => {
-  const currentIndex = STATUSES.indexOf(currentStatus);
-  const nextIndex = (currentIndex + 1) % STATUSES.length;
-  // @ts-expect-error assume correct index
-  return STATUSES[nextIndex];
-};
+    const expiresDate = new Date(userData.exp * 1000);
 
-const updateUI = (button: HTMLButtonElement, status: Status) => {
-  const { courseId } = button.dataset;
+    if (expiresDate < new Date()) {
+        await cookieStore.delete("ethang-auth-token");
+        return;
+    }
 
-  if (!courseId) {
-    return;
-  }
+    const response = await fetch(`/api/course-tracking/${userData.sub}`);
+    const courseStatuses = await response.json<{
+        data: Array<CourseStatus>,
+        status: number
+    }>();
 
-  const statusText = button.parentElement?.querySelector(".course-status-text");
-  if (statusText) {
-    statusText.textContent = status;
-  }
+    document.querySelectorAll<HTMLButtonElement>(".course-completion-button").forEach(button => {
+        button.classList.remove("hidden");
 
-  button.dataset["status"] = status;
+        const courseId = button.dataset["courseId"];
 
-  if ("Complete" === status) {
-    button.classList.add("bg-brand");
-    button.classList.remove("bg-neutral-secondary-medium", "bg-warning");
-  } else if ("Revisit" === status) {
-    button.classList.add("bg-warning");
-    button.classList.remove("bg-neutral-secondary-medium", "bg-brand");
-  } else {
-    button.classList.add("bg-neutral-secondary-medium");
-    button.classList.remove("bg-brand", "bg-warning");
-  }
-};
+        if (!courseId) {
+            return;
+        }
 
-const init = () => {
-  const buttons = document.querySelectorAll<HTMLButtonElement>(
-    ".course-completion-button",
-  );
+        const found = courseStatuses?.data?.find(status => status?.courseId === courseId);
+        const statusElement = button.parentElement?.querySelector<HTMLDivElement>(".course-status-text");
 
-  for (const button of buttons) {
-    const { courseId } = button.dataset;
-    if (!courseId) continue;
+        setUiState(statusElement, button, found);
 
-    const currentStatus = getStatus(courseId);
-    updateUI(button, currentStatus);
-
-    button.addEventListener("click", () => {
-      const current = button.dataset["status"] as Status;
-      const next = getNextStatus(current);
-      setStatus(courseId, next);
-      updateUI(button, next);
-    });
-  }
+        button.addEventListener("click", () => {
+            button.disabled = true;
+            button.classList.add("animate-spin");
+            fetch(`/api/course-tracking/${userData.sub}/${courseId}`, {
+                method: "PUT",
+                body: JSON.stringify({})
+            }).then(response => {
+                return response.json<{ data: CourseStatus, status: number }>();
+            }).then(data => {
+                setUiState(statusElement, button, data.data);
+            }).catch(console.error).finally(() => {
+                button.disabled = false;
+                button.classList.remove("animate-spin");
+            });
+        })
+    })
 };
 
 if ("loading" === document.readyState) {
-  document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", init);
 } else {
-  init();
+    init();
+}
+
+const setUiState = (statusElement: HTMLDivElement | null | undefined, button: HTMLButtonElement, courseStatus: CourseStatus | undefined) => {
+    if (statusElement) {
+        statusElement.classList.remove("hidden");
+        statusElement.textContent = courseStatus?.status ?? "Incomplete";
+    }
+
+    if ("Complete" === courseStatus?.status) {
+        button.classList.add("bg-brand");
+        button.classList.remove("bg-neutral-secondary-medium", "bg-warning");
+    } else if ("Revisit" === courseStatus?.status) {
+        button.classList.add("bg-warning");
+        button.classList.remove("bg-neutral-secondary-medium", "bg-brand");
+    } else {
+        button.classList.add("bg-neutral-secondary-medium");
+        button.classList.remove("bg-brand", "bg-warning");
+    }
+}
+
+const parseJwt = (token: string) => {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url?.replace(/-/g, '+').replace(/_/g, '/');
+
+    if (base64) {
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload) as UserToken;
+    }
+
+    return undefined;
 }
