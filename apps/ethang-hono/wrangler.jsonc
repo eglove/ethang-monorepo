@@ -4,10 +4,8 @@
     "binding": "ASSETS",
     "directory": "./public"
   },
-  "compatibility_date": "2026-03-06",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
+  "compatibility_date": "2026-03-07",
+  "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {
       "binding": "ethang_hono",

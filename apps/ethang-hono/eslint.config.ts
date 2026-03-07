@@ -13,6 +13,7 @@ export default defineConfig(
     "wrangler.jsonc",
     "src/index.css",
     "public",
+    "migrations",
   ]),
   ...config,
   ...htmlConfig,

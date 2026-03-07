@@ -5,7 +5,7 @@
     "@sanity/client": "^7.16.0",
     "lodash": "^4.17.23",
     "luxon": "^3.7.2",
-    "ts-ics": "^2.4.1"
+    "ts-ics": "^2.4.3"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.12.20",
