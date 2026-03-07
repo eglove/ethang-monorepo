@@ -2,10 +2,12 @@ import type { Context, Input } from "hono";
 
 import find from "lodash/find.js";
 import flatMap from "lodash/flatMap.js";
+import forEach from "lodash/forEach.js";
 
 import { sanityClient } from "../clients/sanity.ts";
 import { getDatabase } from "../db/database.ts";
 import { CourseTracking } from "../models/course-tracking.ts";
+import { COURSE_TRACKING_STATUS } from "../utilities/constants.ts";
 import { type AppContext, globalStore } from "./global-store-properties.ts";
 
 export type CoursePathDataProperties = {
@@ -48,8 +50,31 @@ export class CoursePathStore {
     return find(this.courseTrackings, ["courseId", courseId]);
   }
 
-  public getLearningPathCourses(pathId: string) {
-    return find(this.learningPaths, ["_id", pathId])?.courses;
+  public getStatusPercentages() {
+    let complete = 0;
+    let revisit = 0;
+    let total = 0;
+
+    forEach(this.courseTrackings, (courseTracking) => {
+      total += 1;
+
+      if (courseTracking.status === COURSE_TRACKING_STATUS.COMPLETE) {
+        complete += 1;
+      }
+
+      if (courseTracking.status === COURSE_TRACKING_STATUS.REVISIT) {
+        revisit += 1;
+      }
+    });
+
+    const typedTotal = this.totalCourseCount ?? total;
+    const incomplete = typedTotal - total;
+
+    return {
+      complete: (complete / typedTotal) * 100,
+      incomplete: (incomplete / typedTotal) * 100,
+      revisit: (revisit / typedTotal) * 100,
+    };
   }
 
   public setup = async <P extends string, I extends Input>(
@@ -98,5 +123,4 @@ export class CoursePathStore {
   };
 }
 
-// @ts-expect-error it isn't
 export const coursePathData = new CoursePathStore();

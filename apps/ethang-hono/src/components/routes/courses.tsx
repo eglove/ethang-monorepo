@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 
 import { coursePathData } from "../../stores/course-path-store.ts";
 import { globalStore } from "../../stores/global-store-properties.ts";
+import { CourseProgressBar } from "../courses/course-progress-bar.tsx";
 import { CoursesContainer } from "../courses/courses-container.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
 import { H1 } from "../typography/h1.tsx";
@@ -50,6 +51,12 @@ export const Courses = async () => {
         <P className={globalStore.isAuthenticated ? "hidden" : ""}>
           <Link href="/sign-in">Sign In To Track Changes</Link>
         </P>
+        <P>Your Progress:</P>
+        <CourseProgressBar
+          classNames={{
+            container: globalStore.isAuthenticated ? "" : "hidden",
+          }}
+        />
         <div class="my-6">
           <CoursesContainer />
         </div>

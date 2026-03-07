@@ -13,7 +13,7 @@ export class CourseTracking {
   public createCourseTracking(userId: string, courseId: string) {
     return this._database.insert(courseTrackingTable).values({
       courseId,
-      status: COURSE_TRACKING_STATUS.INCOMPLETE,
+      status: COURSE_TRACKING_STATUS.COMPLETE,
       userId,
     });
   }

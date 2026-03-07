@@ -56,22 +56,26 @@ const init = async () => {
 
         setUiState(statusElement, button, found);
 
-        button.addEventListener("click", () => {
+        button.addEventListener("click", async () => {
             button.disabled = true;
             button.classList.remove("cursor-pointer");
             button.classList.add("animate-spin", "cursor-progress");
-            fetch(`/api/course-tracking/${userData.sub}/${courseId}`, {
+            const response = await fetch(`/api/course-tracking/${userData.sub}/${courseId}`, {
                 method: "PUT",
                 body: JSON.stringify({})
-            }).then(response => {
-                return response.json<{ data: CourseStatus, status: number }>();
-            }).then(data => {
-                setUiState(statusElement, button, data.data);
-            }).catch(console.error).finally(() => {
-                button.disabled = false;
-                button.classList.remove("animate-spin", "cursor-progress");
-                button.classList.add("cursor-pointer");
             });
+
+            if (response.ok) {
+                const data = await response.json<{
+                    data: CourseStatus,
+                    status: number
+                }>();
+                setUiState(statusElement, button, data.data);
+            }
+            button.disabled = false;
+            button.classList.remove("animate-spin", "cursor-progress");
+            button.classList.add("cursor-pointer");
+            setPercentages();
         })
     })
 };
@@ -96,6 +100,49 @@ const setUiState = (statusElement: HTMLDivElement | null | undefined, button: HT
     } else {
         button.classList.add("bg-neutral-secondary-medium");
         button.classList.remove("bg-brand", "bg-warning");
+    }
+}
+
+const setPercentages = () => {
+    const statusTexts = document.querySelectorAll<HTMLDivElement>(".course-status-text");
+
+    let complete = 0;
+    let incomplete = 0;
+    let revisit = 0;
+    let total = 0;
+
+    for (const statusText of statusTexts) {
+        total += 1;
+
+        if ("Complete" === statusText.textContent) {
+            complete += 1;
+        } else if ("Revisit" === statusText.textContent) {
+            revisit += 1;
+        } else if ("Incomplete" === statusText.textContent) {
+            incomplete += 1;
+        }
+    }
+
+    const formatter = new Intl.NumberFormat("en-US", {
+        style: "percent",
+    });
+    const completeProgress = document.querySelector('#complete-progress');
+    const incompleteProgress = document.querySelector('#incomplete-progress');
+    const revisitProgress = document.querySelector('#revisit-progress');
+
+    if (completeProgress) {
+        completeProgress.textContent = formatter.format(complete / total);
+        completeProgress.setAttribute("style", `width: ${complete / total * 100}%`);
+    }
+
+    if (incompleteProgress) {
+        incompleteProgress.textContent = formatter.format(incomplete / total);
+        incompleteProgress.setAttribute("style", `width: ${incomplete / total * 100}%`);
+    }
+
+    if (revisitProgress) {
+        revisitProgress.textContent = formatter.format(revisit / total);
+        revisitProgress.setAttribute("style", `width: ${revisit / total * 100}%`);
     }
 }
 
