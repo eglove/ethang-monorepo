@@ -24,7 +24,7 @@ app.post("/sign-up", zValidator("json", signUpSchema), async (context) => {
   );
   const body = context.req.valid("json");
 
-  const user = await authService.createUser(
+  const user = await authService.signUp(
     body.email,
     body.password,
     body.username,

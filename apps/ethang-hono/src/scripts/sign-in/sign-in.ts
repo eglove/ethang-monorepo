@@ -11,7 +11,7 @@ if (form && errorMessageElement && button) {
     const data = Object.fromEntries(formData.entries());
 
     button.disabled = true;
-    fetch("https://auth.ethang.dev/sign-in", {
+    fetch("https://auth.ethang.dev/sign-up", {
       body: JSON.stringify(data),
       headers: {
         "Content-Type": "application/json",

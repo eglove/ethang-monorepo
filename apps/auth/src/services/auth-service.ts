@@ -1,10 +1,7 @@
 import type { Context } from "hono";
 
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
-import {
-  getCookieValue,
-  setCookieValue,
-} from "@ethang/toolbelt/http/cookie.js";
+import { setCookieValue } from "@ethang/toolbelt/http/cookie.js";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { jwtVerify, SignJWT } from "jose";
@@ -52,25 +49,7 @@ export class AuthService {
       return user;
     }
 
-    const token = await this.generateToken(user);
-
-    if (isError(token)) {
-      return token;
-    }
-
-    return attemptAsync(async () => {
-      const [updatedUser] = await this.database
-        .update(userTable)
-        .set({ sessionToken: token })
-        .where(eq(userTable.email, user.email))
-        .returning();
-
-      return updatedUser;
-    });
-  }
-
-  public getTokenFromCookie(headers: Headers) {
-    return getCookieValue(AuthService.AUTH_COOKIE_NAME, headers);
+    return this.updateUserToken(user);
   }
 
   public setAuthCookie(response: Response, token: string) {
@@ -108,6 +87,18 @@ export class AuthService {
     }
 
     return updatedUser;
+  }
+
+  public async signUp(email: string, password: string, username?: string) {
+    const userResult = await this.database.query.userTable.findFirst({
+      where: eq(userTable.email, email),
+    });
+
+    if (isNil(userResult)) {
+      return this.createUser(email, password, username ?? email);
+    }
+
+    return this.signIn(email, password);
   }
 
   public async verifyToken(token: string) {
