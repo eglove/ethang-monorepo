@@ -123,26 +123,31 @@ const setPercentages = () => {
         }
     }
 
-    const formatter = new Intl.NumberFormat("en-US", {
-        style: "percent",
-    });
-    const completeProgress = document.querySelector('#complete-progress');
-    const incompleteProgress = document.querySelector('#incomplete-progress');
-    const revisitProgress = document.querySelector('#revisit-progress');
+    const completeProgress = document.querySelector<HTMLDivElement>('#complete-progress');
+    const incompleteProgress = document.querySelector<HTMLDivElement>('#incomplete-progress');
+    const revisitProgress = document.querySelector<HTMLDivElement>('#revisit-progress');
 
-    if (completeProgress) {
-        completeProgress.textContent = formatter.format(complete / total);
-        completeProgress.setAttribute("style", `width: ${complete / total * 100}%`);
-    }
+    setPercentageContent(completeProgress, complete, total);
+    setPercentageContent(incompleteProgress, incomplete, total);
+    setPercentageContent(revisitProgress, revisit, total);
+}
 
-    if (incompleteProgress) {
-        incompleteProgress.textContent = formatter.format(incomplete / total);
-        incompleteProgress.setAttribute("style", `width: ${incomplete / total * 100}%`);
-    }
+const formatter = new Intl.NumberFormat("en-US", {
+    style: "percent",
+});
 
-    if (revisitProgress) {
-        revisitProgress.textContent = formatter.format(revisit / total);
-        revisitProgress.setAttribute("style", `width: ${revisit / total * 100}%`);
+const setPercentageContent = (element: HTMLDivElement | null, elementTotal: number, total: number) => {
+    if (element) {
+        const decimal = elementTotal / total;
+        const wholePercent = decimal * 100;
+        element.textContent = formatter.format(decimal);
+        element.setAttribute("style", `width: ${wholePercent}%`);
+
+        if (wholePercent < 3) {
+            element.classList.add("hidden");
+        } else {
+            element.classList.remove("hidden");
+        }
     }
 }
 

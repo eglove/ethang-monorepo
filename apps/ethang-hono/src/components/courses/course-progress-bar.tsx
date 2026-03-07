@@ -30,7 +30,7 @@ export const CourseProgressBar = async (
       <div
         id="complete-progress"
         style={`width: ${complete}%`}
-        className={twMerge(baseStyles, "bg-brand")}
+        className={twMerge(baseStyles, "bg-brand", 2 > complete && "hidden")}
       >
         {formatter.format(complete / 100)}
       </div>
@@ -38,7 +38,7 @@ export const CourseProgressBar = async (
       <div
         id="revisit-progress"
         style={`width: ${revisit}%`}
-        class={twMerge(baseStyles, "bg-warning")}
+        class={twMerge(baseStyles, "bg-warning", 2 > revisit && "hidden")}
       >
         {formatter.format(revisit / 100)}
       </div>
@@ -46,7 +46,11 @@ export const CourseProgressBar = async (
       <div
         id="incomplete-progress"
         style={`width: ${incomplete}%`}
-        class={twMerge(baseStyles, "bg-neutral-quaternary")}
+        class={twMerge(
+          baseStyles,
+          "bg-neutral-quaternary",
+          2 > incomplete && "hidden",
+        )}
       >
         {formatter.format(incomplete / 100)}
       </div>
