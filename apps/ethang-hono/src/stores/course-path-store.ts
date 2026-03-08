@@ -40,10 +40,7 @@ export class CoursePathStore {
   public totalCourseCount: number | undefined;
 
   public getCourse(courseId: string) {
-    return find(
-      flatMap(this.learningPaths, (_path) => _path.courses),
-      ["_id", courseId],
-    );
+    return find(flatMap(this.learningPaths, ["courses"]), ["_id", courseId]);
   }
 
   public getCourseTracking(courseId: string) {
