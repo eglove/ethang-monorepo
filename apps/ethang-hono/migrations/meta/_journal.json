@@ -15,6 +15,13 @@
       "when": 1772840636579,
       "tag": "0001_equal_omega_red",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1772988904368,
+      "tag": "0002_broken_blacklash",
+      "breakpoints": true
     }
   ]
 }

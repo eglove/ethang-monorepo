@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import type { getDatabase } from "../db/database.ts";
 
 import { courseTrackingTable } from "../db/schema.ts";
+import { CoursePathStore } from "../stores/course-path-store.ts";
 import { COURSE_TRACKING_STATUS } from "../utilities/constants.ts";
 
 export class CourseTracking {
@@ -10,9 +11,11 @@ export class CourseTracking {
     private readonly _database: ReturnType<typeof getDatabase>,
   ) {}
 
-  public createCourseTracking(userId: string, courseId: string) {
+  public async createCourseTracking(userId: string, courseId: string) {
+    const courseUrl = await this.getCourseUrl(courseId);
+
     return this._database.insert(courseTrackingTable).values({
-      courseId,
+      courseUrl,
       status: COURSE_TRACKING_STATUS.COMPLETE,
       userId,
     });
@@ -26,12 +29,17 @@ export class CourseTracking {
     });
   }
 
-  public getCourseTrackingByUserIdCourseId(userId: string, courseId: string) {
+  public async getCourseTrackingByUserIdCourseId(
+    userId: string,
+    courseId: string,
+  ) {
+    const courseUrl = await this.getCourseUrl(courseId);
+
     return this._database.query.courseTrackingTable.findFirst({
       where: (table, operators) => {
         return operators.and(
           operators.eq(table.userId, userId),
-          operators.eq(table.courseId, courseId),
+          operators.eq(table.courseUrl, courseUrl),
         );
       },
     });
@@ -44,5 +52,11 @@ export class CourseTracking {
         status,
       })
       .where(eq(courseTrackingTable.id, id));
+  }
+
+  private async getCourseUrl(courseId: string) {
+    const coursePathStore = new CoursePathStore();
+    const course = await coursePathStore.queryCourse(courseId);
+    return course.url;
   }
 }

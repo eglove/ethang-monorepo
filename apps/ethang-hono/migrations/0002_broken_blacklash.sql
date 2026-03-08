@@ -1,0 +1,1 @@
+ALTER TABLE `courseTracking` RENAME COLUMN "courseId" TO "courseUrl";

@@ -1,0 +1,58 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "c38008f9-3f8b-473d-9abc-c720ecf96ca6",
+  "prevId": "01149800-6113-483e-a7eb-2b4dcf108669",
+  "tables": {
+    "courseTracking": {
+      "name": "courseTracking",
+      "columns": {
+        "courseUrl": {
+          "name": "courseUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {
+      "\"courseTracking\".\"courseId\"": "\"courseTracking\".\"courseUrl\""
+    }
+  },
+  "internal": {
+    "indexes": {}
+  }
+}
