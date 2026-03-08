@@ -51,7 +51,9 @@ export const Courses = async () => {
         <P className={globalStore.isAuthenticated ? "hidden" : ""}>
           <Link href="/sign-in">Sign In To Track Changes</Link>
         </P>
-        <P>Your Progress:</P>
+        <P className={globalStore.isAuthenticated ? "" : "hidden"}>
+          Your Progress:
+        </P>
         <CourseProgressBar
           classNames={{
             container: globalStore.isAuthenticated ? "" : "hidden",
