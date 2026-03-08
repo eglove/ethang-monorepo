@@ -18,19 +18,17 @@ export type CoursePathDataProperties = {
   learningPaths: {
     _id: string;
     courseCount: number;
-    courses: CourseProperties[];
+    courses: {
+      _id: string;
+      author: string;
+      name: string;
+      url: string;
+    }[];
     name: string;
     swebokFocus: string;
     url?: string;
   }[];
   totalCourseCount: number;
-};
-
-type CourseProperties = {
-  _id: string;
-  author: string;
-  name: string;
-  url: string;
 };
 
 export class CoursePathStore {
@@ -77,12 +75,6 @@ export class CoursePathStore {
       incomplete: (incomplete / typedTotal) * 100,
       revisit: (revisit / typedTotal) * 100,
     };
-  }
-
-  public async queryCourse(courseId: string) {
-    return sanityClient.fetch<CourseProperties>(
-      `*[_type == "course" && _id == "${courseId}"][0]`,
-    );
   }
 
   public setup = async <P extends string, I extends Input>(

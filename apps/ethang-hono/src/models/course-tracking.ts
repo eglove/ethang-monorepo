@@ -2,8 +2,8 @@ import { eq } from "drizzle-orm";
 
 import type { getDatabase } from "../db/database.ts";
 
+import { sanityClient } from "../clients/sanity.ts";
 import { courseTrackingTable } from "../db/schema.ts";
-import { CoursePathStore } from "../stores/course-path-store.ts";
 import { COURSE_TRACKING_STATUS } from "../utilities/constants.ts";
 
 export class CourseTracking {
@@ -55,8 +55,9 @@ export class CourseTracking {
   }
 
   private async getCourseUrl(courseId: string) {
-    const coursePathStore = new CoursePathStore();
-    const course = await coursePathStore.queryCourse(courseId);
+    const course = await sanityClient.fetch<{ url: string }>(
+      `*[_type == "course" && _id == "${courseId}"][0]`,
+    );
     return course.url;
   }
 }
