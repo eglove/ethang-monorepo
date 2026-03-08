@@ -37,24 +37,24 @@ export class CoursePathStore {
   > = [];
   public latestUpdate: CoursePathDataProperties["latestUpdate"] | undefined;
   public learningPaths: CoursePathDataProperties["learningPaths"] | undefined;
-  public totalCourseCount: number | undefined;
+  public totalCourseCount = 0;
 
   public getCourse(courseId: string) {
-    return find(flatMap(this.learningPaths, ["courses"]), ["_id", courseId]);
+    return find(
+      flatMap(this.learningPaths, (_path) => _path.courses),
+      ["_id", courseId],
+    );
   }
 
-  public getCourseTracking(courseId: string) {
-    return find(this.courseTrackings, ["courseId", courseId]);
+  public getCourseTracking(courseUrl: string) {
+    return find(this.courseTrackings, ["courseUrl", courseUrl]);
   }
 
   public getStatusPercentages() {
     let complete = 0;
     let revisit = 0;
-    let total = 0;
 
     forEach(this.courseTrackings, (courseTracking) => {
-      total += 1;
-
       if (courseTracking.status === COURSE_TRACKING_STATUS.COMPLETE) {
         complete += 1;
       }
@@ -64,13 +64,12 @@ export class CoursePathStore {
       }
     });
 
-    const typedTotal = this.totalCourseCount ?? total;
-    const incomplete = typedTotal - total;
+    const incomplete = this.totalCourseCount - complete - revisit;
 
     return {
-      complete: (complete / typedTotal) * 100,
-      incomplete: (incomplete / typedTotal) * 100,
-      revisit: (revisit / typedTotal) * 100,
+      complete: (complete / this.totalCourseCount) * 100,
+      incomplete: (incomplete / this.totalCourseCount) * 100,
+      revisit: (revisit / this.totalCourseCount) * 100,
     };
   }
 

@@ -25,7 +25,7 @@ const init = async () => {
 
     const verification = await fetch("https://auth.ethang.dev/verify", {
         headers: {
-           "X-Token": token.value,
+            "X-Token": token.value,
         }
     });
 
@@ -36,11 +36,6 @@ const init = async () => {
     }
 
     const userData = await verification.json<UserToken>();
-    const response = await fetch(`/api/course-tracking/${userData.sub}`);
-    const courseStatuses = await response.json<{
-        data: Array<CourseStatus>,
-        status: number
-    }>();
 
     document.querySelectorAll<HTMLButtonElement>(".course-completion-button").forEach(button => {
         button.classList.remove("hidden");
@@ -51,10 +46,7 @@ const init = async () => {
             return;
         }
 
-        const found = courseStatuses?.data?.find(status => status?.courseId === courseId);
         const statusElement = button.parentElement?.querySelector<HTMLDivElement>(".course-status-text");
-
-        setUiState(statusElement, button, found);
 
         button.addEventListener("click", async () => {
             button.disabled = true;

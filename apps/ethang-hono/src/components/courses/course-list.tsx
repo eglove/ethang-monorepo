@@ -1,13 +1,16 @@
 import map from "lodash/map.js";
 import { twMerge } from "tailwind-merge";
 
-import { coursePathData } from "../../stores/course-path-store.ts";
+import {
+  coursePathData,
+  type CoursePathDataProperties,
+} from "../../stores/course-path-store.ts";
 import { globalStore } from "../../stores/global-store-properties.ts";
 import { COURSE_TRACKING_STATUS } from "../../utilities/constants.ts";
 import { CourseItem } from "./course-item.tsx";
 
 type CourseListProperties = {
-  courses: { _id: string }[];
+  courses: CoursePathDataProperties["learningPaths"][number]["courses"];
   getCount: () => number;
 };
 
@@ -15,7 +18,7 @@ export const CourseList = async (properties: CourseListProperties) => {
   return (
     <ul class="mt-2 space-y-1 ps-5">
       {map(properties.courses, async (course) => {
-        const courseData = coursePathData.getCourseTracking(course._id);
+        const courseData = coursePathData.getCourseTracking(course.url);
 
         return (
           <li
