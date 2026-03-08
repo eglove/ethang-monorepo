@@ -23,6 +23,7 @@
       "better-sqlite3",
       "bun",
       "cldr-data",
+      "core-js-pure",
       "esbuild",
       "msw",
       "prisma",

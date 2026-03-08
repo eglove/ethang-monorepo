@@ -1,4 +1,5 @@
 import { copyFileSync } from "node:fs";
+import path from "node:path";
 
 import { buildScripts } from "./build-utilities.ts";
 
@@ -16,5 +17,8 @@ const assets = [
 ];
 
 for (const asset of assets) {
-  copyFileSync(asset.src, asset.dest);
+  const source = path.resolve(asset.src);
+  const destination = path.resolve(asset.dest);
+
+  copyFileSync(source, destination);
 }

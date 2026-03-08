@@ -10,7 +10,7 @@
     "run_worker_first": ["/api/*"]
   },
   "compatibility_flags": ["nodejs_compat"],
-  "compatibility_date": "2026-03-07",
+  "compatibility_date": "2026-03-08",
   "main": "worker/index.ts",
   "name": "ethang",
   "observability": {
