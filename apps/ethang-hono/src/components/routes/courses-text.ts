@@ -1,6 +1,6 @@
 import { MarkdownGenerator } from "@ethang/markdown-generator/markdown-generator.js";
 import forEach from "lodash/forEach.js";
-import snakeCase from "lodash/snakeCase.js";
+import kebabCase from "lodash/kebabCase.js";
 import toLower from "lodash/toLower.js";
 
 import { coursePathData } from "../../stores/course-path-store.ts";
@@ -36,7 +36,7 @@ export const coursesText = () => {
       md.text(`  - **Author:** ${course.author}\n`);
       md.text(`  - **Resource:** [Direct Link](${course.url})\n`);
       md.text(
-        `  - **Semantic ID:** ethang:course:${snakeCase(toLower(course.author))}:${snakeCase(toLower(course.name))}\n`,
+        `  - **Semantic ID:** ethang:course:${kebabCase(toLower(course.author))}:${kebabCase(toLower(course.name))}\n`,
       );
     });
   });
