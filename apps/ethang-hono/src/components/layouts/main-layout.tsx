@@ -16,6 +16,7 @@ export type MainLayoutProperties = PropsWithChildren<{
   imageUrl?: string;
   isBlog?: boolean;
   publishedAt?: string;
+  textAlternate?: string;
   title?: string;
   updatedAt?: string;
 }>;
@@ -70,6 +71,13 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         <link rel="stylesheet" href="/index.css" />
         {!isNil(properties.canonicalUrl) && (
           <link rel="canonical" href={properties.canonicalUrl} />
+        )}
+        {!isNil(properties.textAlternate) && (
+          <link
+            rel="alternate"
+            type="text/plain"
+            href={properties.textAlternate}
+          />
         )}
       </head>
       <body id="body">

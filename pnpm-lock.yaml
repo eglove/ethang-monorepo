@@ -284,6 +284,9 @@ importers:
 
   apps/ethang-hono:
     dependencies:
+      '@ethang/markdown-generator':
+        specifier: ^1.2.0
+        version: 1.2.0(lodash@4.17.23)
       '@ethang/store':
         specifier: ^2.3.2
         version: 2.3.2(react@19.2.4)
@@ -2994,6 +2997,11 @@ packages:
 
   '@ethang/markdown-generator@1.1.5':
     resolution: {integrity: sha512-5olQm6ANTQVu4G2RuufMM7mEv7LVJu/3mBJhGfFvp3kt3y27QR2gX60NvF1ylRMetwyan3xTs5wiOsWMTmblhg==}
+    peerDependencies:
+      lodash: ^4.17.21
+
+  '@ethang/markdown-generator@1.2.0':
+    resolution: {integrity: sha512-/cCSbAkvFpOOEAPGbEko/67l0nz+iLTWqb3Ax/Zlq48gLeQWbvUp2xvitAKMbRv71YATQCg+oNLsdwnHGv7tZw==}
     peerDependencies:
       lodash: ^4.17.21
 
@@ -14147,6 +14155,10 @@ snapshots:
     dependencies:
       lodash: 4.17.23
 
+  '@ethang/markdown-generator@1.2.0(lodash@4.17.23)':
+    dependencies:
+      lodash: 4.17.23
+
   '@ethang/project-builder@3.0.2(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)':
     dependencies:
       lodash: 4.17.23
@@ -15898,7 +15910,7 @@ snapshots:
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.4
+      semver: 7.7.3
 
   '@npmcli/git@7.0.2':
     dependencies:
@@ -15908,7 +15920,7 @@ snapshots:
       lru-cache: 11.2.6
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.7.3
       which: 6.0.1
 
   '@npmcli/installed-package-contents@4.0.0':
@@ -15925,7 +15937,7 @@ snapshots:
       hosted-git-info: 9.0.2
       json-parse-even-better-errors: 5.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.7.3
       spdx-expression-parse: 4.0.0
 
   '@npmcli/promise-spawn@9.0.1':
@@ -22623,7 +22635,7 @@ snapshots:
       make-fetch-happen: 15.0.4
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.7.3
       tar: 7.5.11
       tinyglobby: 0.2.15
       which: 6.0.1
@@ -22662,7 +22674,7 @@ snapshots:
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.4
+      semver: 7.7.3
 
   npm-normalize-package-bin@5.0.0: {}
 
@@ -22670,7 +22682,7 @@ snapshots:
     dependencies:
       hosted-git-info: 9.0.2
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.7.3
       validate-npm-package-name: 7.0.2
 
   npm-packlist@10.0.4:
@@ -22683,7 +22695,7 @@ snapshots:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.2
-      semver: 7.7.4
+      semver: 7.7.3
 
   npm-registry-fetch@19.1.1:
     dependencies:

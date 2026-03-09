@@ -1,4 +1,3 @@
-// eslint-disable-next-line barrel/avoid-importing-barrel-files
 import { describe, expect, it } from "vitest";
 
 import { MarkdownGenerator } from "../src/markdown-generator.ts";
@@ -11,8 +10,7 @@ describe("lists", () => {
       "Level One",
       ["Level Two", "Level Two"],
       "Still One",
-      ["Back to Two",
-        ["Level 3"]],
+      ["Back to Two", ["Level 3"]],
     ]);
 
     const expected = `* Level One
@@ -21,6 +19,22 @@ describe("lists", () => {
 * Still One
 \t* Back to Two
 \t\t* Level 3
+`;
+
+    expect(md.render()).toBe(expected);
+  });
+
+  it("should render table", () => {
+    const md = new MarkdownGenerator();
+
+    md.tableHeader(["Header 1", "Header 2"]);
+    md.tableRow(["Cell 1", "Cell 2"]);
+    md.tableRow(["Cell 3", "Cell 4"]);
+
+    const expected = `| Header 1 | Header 2 |
+| --- | --- |
+| Cell 1 | Cell 2 |
+| Cell 3 | Cell 4 |
 `;
 
     expect(md.render()).toBe(expected);

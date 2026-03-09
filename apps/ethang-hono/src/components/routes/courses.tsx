@@ -27,6 +27,7 @@ export const Courses = async () => {
   return (
     <MainLayout
       title="Recommended Courses"
+      textAlternate="/courses?format=text"
       imageUrl="/images/generated/Gemini_Generated_Image_2ac79s2ac79s2ac7.png"
       description="A curated list of recommended courses for development. Learn from industry experts and stay up-to-date with the latest technologies."
     >

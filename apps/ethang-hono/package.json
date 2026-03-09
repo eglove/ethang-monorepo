@@ -4,6 +4,7 @@
     "current node"
   ],
   "dependencies": {
+    "@ethang/markdown-generator": "^1.2.0",
     "@ethang/store": "^2.3.2",
     "@ethang/toolbelt": "^4.4.11",
     "@portabletext/toolkit": "^5.0.2",

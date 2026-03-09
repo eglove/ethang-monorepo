@@ -1,8 +1,10 @@
 import { Hono } from "hono";
 import isNil from "lodash/isNil.js";
+import isString from "lodash/isString.js";
 
 import { Blog } from "./components/routes/blog.tsx";
 import { BlogPost } from "./components/routes/blog/blog-post.tsx";
+import { coursesText } from "./components/routes/courses-text.ts";
 import { Courses } from "./components/routes/courses.tsx";
 import { Home } from "./components/routes/home.tsx";
 import { NotFound } from "./components/routes/not-found.tsx";
@@ -47,6 +49,12 @@ app.get("/sign-in", async (c) => {
 
 app.get("/courses", async (c) => {
   await coursePathData.setup(c);
+
+  const format = c.req.query("format");
+
+  if (isString(format) && "text" === format) {
+    return c.text(coursesText());
+  }
 
   return c.html(<Courses />);
 });

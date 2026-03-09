@@ -112,6 +112,28 @@ ${text}
     this.newLine(lineBreaksAfter);
   }
 
+  public tableHeader(columnTitles: string[]) {
+    this.markdown += "|";
+    for (const columnTitle of columnTitles) {
+      this.markdown += ` ${columnTitle} |`;
+    }
+    this.newLine();
+    this.markdown += "|";
+    // eslint-disable-next-line sonar/no-unused-vars
+    for (const _ of columnTitles) {
+      this.markdown += " --- |";
+    }
+    this.newLine();
+  }
+
+  public tableRow(cells: string[], lineBreaksAfter = 1) {
+    this.markdown += "|";
+    for (const cell of cells) {
+      this.markdown += ` ${cell} |`;
+    }
+    this.newLine(lineBreaksAfter);
+  }
+
   public taskList(
     texts: {
       isComplete: boolean;
