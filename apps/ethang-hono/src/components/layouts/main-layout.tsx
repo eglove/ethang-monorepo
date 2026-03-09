@@ -69,6 +69,12 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         <meta name="twitter:image" content={properties.imageUrl} />
 
         <link rel="stylesheet" href="/index.css" />
+        <link
+          rel="sitemap"
+          title="Sitemap"
+          href="/sitemap.xml"
+          type="application/xml"
+        />
         {!isNil(properties.canonicalUrl) && (
           <link rel="canonical" href={properties.canonicalUrl} />
         )}

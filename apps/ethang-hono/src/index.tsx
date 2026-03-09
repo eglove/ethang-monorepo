@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
+import { routes } from "../routes.ts";
 import { Blog } from "./components/routes/blog.tsx";
 import { BlogPost } from "./components/routes/blog/blog-post.tsx";
 import { coursesText } from "./components/routes/courses-text.ts";
@@ -15,6 +16,7 @@ import { ScrollbarGutter } from "./components/routes/tips/scrollbar-gutter.tsx";
 import { getDatabase } from "./db/database.ts";
 import { blogRss } from "./feeds/blog-rss.ts";
 import { CourseTracking } from "./models/course-tracking.ts";
+import { sitemap } from "./sitemap.ts";
 import { coursePathData } from "./stores/course-path-store.ts";
 import {
   type AppContext,
@@ -43,11 +45,21 @@ app.get("/", async (c) => {
   return c.html(<Home />);
 });
 
+app.get("/sitemap.xml", async () => {
+  const sitemapString = await sitemap();
+
+  return new Response(sitemapString, {
+    headers: {
+      "Content-Type": "application/xml",
+    },
+  });
+});
+
 app.get("/sign-in", async (c) => {
   return c.html(<SignIn />);
 });
 
-app.get("/courses", async (c) => {
+app.get(routes.courses, async (c) => {
   await coursePathData.setup(c);
 
   const format = c.req.query("format");
@@ -59,19 +71,19 @@ app.get("/courses", async (c) => {
   return c.html(<Courses />);
 });
 
-app.get("/tips", async (c) => {
+app.get(routes.tips, async (c) => {
   return c.html(<Tips />);
 });
 
-app.get("/tips/scroll-containers", async (c) => {
+app.get(routes.scrollContainers, async (c) => {
   return c.html(<ScrollContainers />);
 });
 
-app.get("/tips/scrollbar-gutter", async (c) => {
+app.get(routes.scrollbarGutter, async (c) => {
   return c.html(<ScrollbarGutter />);
 });
 
-app.get("/blog", async (c) => {
+app.get(routes.blog, async (c) => {
   return c.html(<Blog />);
 });
 
