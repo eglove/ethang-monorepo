@@ -72,10 +72,33 @@ const init = async () => {
     })
 };
 
+const setupVideoDialog = () => {
+    const dialog = document.querySelector<HTMLDialogElement>("#video-dialog");
+    const outer = document.querySelector<HTMLButtonElement>("#video-dialog-outer");
+    const inner = document.querySelector<HTMLButtonElement>("#video-dialog-inner");
+
+    outer?.addEventListener('click', () => {
+        if (dialog) {
+            dialog.showModal();
+            dialog.classList.remove("hidden");
+            dialog.classList.add("grid");
+        }
+    })
+
+    inner?.addEventListener('click', () => {
+        if (dialog) {
+            dialog.close();
+            dialog.classList.remove("grid");
+            dialog.classList.add("hidden");
+        }
+    })
+}
+
 if ("loading" === document.readyState) {
     document.addEventListener("DOMContentLoaded", init);
 } else {
     init();
+    setupVideoDialog();
 }
 
 const setUiState = (statusElement: HTMLDivElement | null | undefined, button: HTMLButtonElement, courseStatus: CourseStatus | undefined) => {

@@ -12,6 +12,8 @@ import {
 type ButtonProperties = PropsWithChildren<{
   as?: "a" | "button";
   className?: string;
+  command?: string;
+  commandFor?: string;
   href?: string;
   id?: string;
   size?: ButtonSize;

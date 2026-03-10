@@ -9,9 +9,10 @@ import { MainLayout } from "../layouts/main-layout.tsx";
 import { H1 } from "../typography/h1.tsx";
 import { Link } from "../typography/link.tsx";
 import { P } from "../typography/p.tsx";
+import { YouTubeVideo } from "../you-tube-video.tsx";
 
 export const Courses = async () => {
-  const { latestUpdate, totalCourseCount } = coursePathData;
+  const { latestUpdate } = coursePathData;
 
   const formatted = DateTime.fromISO(
     get(latestUpdate, ["_updatedAt"], DateTime.now().toISO()),
@@ -35,20 +36,11 @@ export const Courses = async () => {
       <div class="mx-auto max-w-7xl">
         <H1>Recommended Courses</H1>
         <P>Last Updated: {formatted}</P>
-        <P>
-          This list is meant as a way to provide a straightforward curriculum of
-          what you need to learn for development. It's updated constantly, but
-          at any given point in time, I believe this is the best way to get
-          started with, and learn everything you need to know to work with the
-          web and beyond.
-        </P>
-        <P>
-          These <span class="text-warning">{totalCourseCount} courses</span>{" "}
-          will take a while to get through, so I recommend signing up for Pro
-          accounts instead of buying one-time courses. I've optimized the list
-          to focus on one platform at a time. When there is a series of Udemy
-          courses, sign up for Udemy Pro, cancel it when you're done, and so on.
-        </P>
+        <YouTubeVideo
+          videoId="5uxDJJdl_jA"
+          title="EthanG | Recommended Courses"
+          classNames={{ container: "max-h-96 mx-auto" }}
+        />
         <P className={globalStore.isAuthenticated ? "hidden" : ""}>
           <Link href="/sign-in">Sign In To Track Changes</Link>
         </P>
