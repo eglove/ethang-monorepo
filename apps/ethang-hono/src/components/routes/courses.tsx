@@ -39,7 +39,7 @@ export const Courses = async () => {
         <YouTubeVideo
           videoId="5uxDJJdl_jA"
           title="EthanG | Recommended Courses"
-          classNames={{ container: "max-h-96 mx-auto" }}
+          classNames={{ container: "max-h-96" }}
         />
         <P className={globalStore.isAuthenticated ? "hidden" : ""}>
           <Link href="/sign-in">Sign In To Track Changes</Link>
