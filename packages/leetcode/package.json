@@ -6,12 +6,12 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.4.2",
+    "@ethang/eslint-config": "^25.4.3",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^25.4.0",
+    "@types/node": "^25.5.0",
     "eslint": "^10.0.3",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "engines": {
     "node": ">=24"
