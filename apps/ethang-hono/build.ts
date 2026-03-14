@@ -1,24 +1,28 @@
-import { copyFileSync } from "node:fs";
-import path from "node:path";
+import { globSync } from "fast-glob";
+import reduce from "lodash/reduce.js";
+import replace from "lodash/replace.js";
+import { build as tsup } from "tsup";
 
-import { buildScripts } from "./build-utilities.ts";
-
-await buildScripts();
-
-const assets = [
-  {
-    dest: "public/scripts/flowbite/flowbite.min.js",
-    src: "node_modules/flowbite/dist/flowbite.min.js",
+const entries = globSync("src/scripts/**/*.ts");
+const entryMap = reduce(
+  entries,
+  (accumulator, entry) => {
+    const relativePath = replace(replace(entry, "src/scripts/", ""), ".ts", "");
+    accumulator[relativePath] = entry;
+    return accumulator;
   },
-  {
-    dest: "public/scripts/flowbite/flowbite.min.js.map",
-    src: "node_modules/flowbite/dist/flowbite.min.js.map",
-  },
-];
+  {} as Record<string, string>,
+);
 
-for (const asset of assets) {
-  const source = path.resolve(asset.src);
-  const destination = path.resolve(asset.dest);
-
-  copyFileSync(source, destination);
-}
+await tsup({
+  bundle: true,
+  clean: false,
+  entry: entryMap,
+  format: ["esm"],
+  minify: true,
+  noExternal: [/./u],
+  outDir: "public/scripts",
+  platform: "browser",
+  sourcemap: false,
+  target: "esnext",
+});
