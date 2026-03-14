@@ -91,7 +91,8 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         <main class={twMerge("m-4 mt-20", properties.classNames?.main)}>
           {properties.children}
         </main>
-        <script src="/scripts/flowbite/flowbite.min.js"></script>
+        <script type="module" src="/scripts/flowbite.js"></script>
+        <script type="module" src="/scripts/highlight.js"></script>
       </body>
     </html>
   );

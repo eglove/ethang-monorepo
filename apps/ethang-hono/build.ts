@@ -19,6 +19,7 @@ await tsup({
   clean: false,
   entry: entryMap,
   format: ["esm"],
+  injectStyle: true,
   minify: true,
   noExternal: [/./u],
   outDir: "public/scripts",
