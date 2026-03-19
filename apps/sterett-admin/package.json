@@ -1,7 +1,7 @@
 {
   "author": "Ethan Glover <hello@ethang.email>",
   "dependencies": {
-    "@sanity/cli": "^6.1.8",
+    "@sanity/cli": "^6.2.0",
     "@sanity/code-input": "^7.0.12",
     "@sanity/dashboard": "^5.0.1",
     "@sanity/icons": "^3.7.4",
@@ -13,11 +13,11 @@
     "react-dom": "^19.2.4",
     "react-is": "^19.2.4",
     "sanity": "^5.17.1",
-    "styled-components": "^6.3.10"
+    "styled-components": "^6.3.12"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.5.0",
+    "@ethang/eslint-config": "^25.5.1",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.24",
     "eslint": "^10.0.3",

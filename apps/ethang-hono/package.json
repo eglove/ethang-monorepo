@@ -9,7 +9,7 @@
     "@ethang/toolbelt": "^4.4.11",
     "@portabletext/toolkit": "^5.0.2",
     "@sanity/block-content-to-html": "^2.0.0",
-    "@sanity/client": "^7.17.0",
+    "@sanity/client": "^7.18.0",
     "bignumber.js": "^10.0.2",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
@@ -23,7 +23,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.5.0",
+    "@ethang/eslint-config": "^25.5.1",
     "@tailwindcss/cli": "^4.2.2",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",
