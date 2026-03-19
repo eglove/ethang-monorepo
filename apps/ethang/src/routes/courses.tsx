@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import isNil from "lodash/isNil.js";
+import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { CoursesContainer } from "../components/courses/courses-container.tsx";
@@ -13,17 +14,21 @@ const RouteComponent = () => {
   const { data } = useQuery(getCourseCount());
   const { data: latestUpdate } = useQuery(getLatestUpdate());
 
+  const formattedUpdatedAt = useMemo(() => {
+    if (!isNil(latestUpdate?._updatedAt)) {
+      return new Date(latestUpdate._updatedAt).toLocaleString(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+    }
+
+    return "";
+  }, [latestUpdate]);
+
   return (
     <MainLayout>
       <TypographyH1>Recommended Courses</TypographyH1>
-      <TypographyP>
-        Last Updated:{" "}
-        {!isNil(latestUpdate?._updatedAt) &&
-          new Date(latestUpdate._updatedAt).toLocaleString(undefined, {
-            dateStyle: "medium",
-            timeStyle: "short",
-          })}
-      </TypographyP>
+      <TypographyP>Last Updated: {formattedUpdatedAt}</TypographyP>
       <TypographyP>
         This list is meant as a way to provide a straightforward curriculum of
         what you need to learn for development. It's updated constantly, but at
