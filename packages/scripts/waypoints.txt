@@ -1,6 +1,7 @@
-/way #2413 65.70 32.75 4 Stumpy
-/way #2413 27.39 71.39 7 Pterrock (cave)
-/way #2413 44.48 17.12 8 Annulus the Worldshaker
-/way #2413 68.20 39.28 9 Chironex
-/way #2413 72.63 69.26 10 Tallcap the Truthspreader
-/way #2413 28.11 81.81 14 Oro'ohna
+/way #2405 35.62 81.08 2 Tremora (Cave)
+/way #2405 47.05 80.63 3 Bane of the Vilebloods
+/way #2405 37.88 71.78 4 Lotus Darkblossom
+/way #2405 48.81 53.17 5 Ravengerus
+/way #2405 34.05 82.06 8 Territorial Voidscythe
+/way #2405 39.49 64.64 10 Aeonelle Blackstar (Cave)
+/way #2405 55.72 79.45 11 Queen o' War (Click Crown of the Lost Queen)

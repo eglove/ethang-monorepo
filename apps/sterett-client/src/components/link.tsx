@@ -5,7 +5,7 @@ type LinkProperties = Readonly<
   Omit<
     Parameters<typeof NextUiLink>[0] &
       Partial<Parameters<typeof TanStackLink>[0]>,
-    "key"
+    "key" | "ref"
   >
 >;
 

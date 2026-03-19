@@ -33,9 +33,9 @@
 - 58 rules for **HTML**
   - `import htmlConfig from "@ethang/eslint-config/config.html.js";`
     - 58 rules from [@html-eslint/eslint-plugin](https://github.com/html-eslint/html-eslint)
-- 92 rules for **React**
+- 95 rules for **React**
   - `import reactConfig from "@ethang/eslint-config/config.react.js";`
-    - 63 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
+    - 66 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
     - 29 rules from [eslint-plugin-react-hooks](https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks)
 - 18 rules for **Solid**
   - `import solidConfig from "@ethang/eslint-config/config.solid.js";`
