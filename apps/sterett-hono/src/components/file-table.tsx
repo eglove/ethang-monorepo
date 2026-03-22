@@ -28,7 +28,7 @@ export const FileTable = async ({ files, title }: FileTableProperties) => {
               >
                 {file.title}
               </a>
-              <span class="shrink-0 text-white/40">
+              <span class="shrink-0 text-white/60">
                 {new Date(file.date).toLocaleDateString("en-US", {
                   dateStyle: "medium",
                 })}

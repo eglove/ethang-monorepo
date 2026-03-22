@@ -1,102 +1,19 @@
-import { toHTML } from "@portabletext/to-html";
-import constant from "lodash/constant.js";
 import filter from "lodash/filter.js";
-import isArray from "lodash/isArray.js";
 import map from "lodash/map.js";
-import padStart from "lodash/padStart.js";
 import slice from "lodash/slice.js";
 
+import { getCalendarEvents } from "../../sanity/get-calendar-events.ts";
 import {
-  type CalendarEventRecord,
-  getCalendarEvents,
-} from "../../sanity/get-calendar-events.ts";
+  buildCalendarWeeks,
+  buildEventsByDate,
+  formatDateTime,
+  renderDescriptionHtml,
+  toDateKey,
+} from "../../utils/calendar.ts";
 import { MainLayout } from "../layouts/main-layout.tsx";
 
 const CHICAGO = "America/Chicago";
 const DAY_HEADERS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-const formatDateTime = (iso: string) =>
-  new Date(iso).toLocaleString("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: CHICAGO,
-  });
-
-const toDateKey = (year: number, month: number, day: number) =>
-  `${year}-${padStart(String(month), 2, "0")}-${padStart(String(day), 2, "0")}`;
-
-// Build a map of YYYY-MM-DD → events[] covering every day an event spans.
-const buildEventsByDate = (events: CalendarEventRecord[]) => {
-  const _map = new Map<string, CalendarEventRecord[]>();
-
-  for (const event of events) {
-    const cursor = new Date(event.startsAt);
-    const end = new Date(event.endsAt);
-    cursor.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
-
-    // eslint-disable-next-line no-unmodified-loop-condition
-    while (cursor <= end) {
-      const key = cursor.toISOString().slice(0, 10);
-      if (!_map.has(key)) _map.set(key, []);
-      _map.get(key)?.push(event);
-      cursor.setDate(cursor.getDate() + 1);
-    }
-  }
-
-  return _map;
-};
-
-type CalendarCell = {
-  current: boolean;
-  day: number;
-  month: number;
-  year: number;
-};
-
-const buildCalendarWeeks = (year: number, month: number): CalendarCell[][] => {
-  const firstDay = new Date(year, month - 1, 1).getDay();
-  const daysInMonth = new Date(year, month, 0).getDate();
-  const daysInPreviousMonth = new Date(year, month - 1, 0).getDate();
-  const previousMonth = 1 === month ? 12 : month - 1;
-  const previousYear = 1 === month ? year - 1 : year;
-  const nextMonth = 12 === month ? 1 : month + 1;
-  const nextYear = 12 === month ? year + 1 : year;
-
-  const cells: CalendarCell[] = [];
-
-  for (let index = firstDay - 1; 0 <= index; index -= 1) {
-    cells.push({
-      current: false,
-      day: daysInPreviousMonth - index,
-      month: previousMonth,
-      year: previousYear,
-    });
-  }
-  for (let d = 1; d <= daysInMonth; d += 1) {
-    cells.push({ current: true, day: d, month, year });
-  }
-  const remainder = cells.length % 7;
-  if (0 < remainder) {
-    for (let d = 1; d <= 7 - remainder; d += 1) {
-      cells.push({ current: false, day: d, month: nextMonth, year: nextYear });
-    }
-  }
-
-  const weeks: CalendarCell[][] = [];
-  for (let index = 0; index < cells.length; index += 7) {
-    weeks.push(cells.slice(index, index + 7));
-  }
-  return weeks;
-};
-
-const renderDescriptionHtml = (
-  description: CalendarEventRecord["description"],
-): string => {
-  if (!description) return "";
-  const blocks = isArray(description) ? description : [description];
-  return toHTML(blocks, { components: { types: { image: constant("") } } });
-};
 
 export const CalendarPage = async ({
   month,

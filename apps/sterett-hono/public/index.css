@@ -3,8 +3,7 @@
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
-    --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-sky-500: oklch(68.5% 0.169 237.323);
@@ -40,6 +39,7 @@
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
     --color-lake-deep: #1a5f7a;
+    --font-display: "Playfair Display", ui-serif, Georgia, serif;
   }
 }
 @layer base {
@@ -197,6 +197,17 @@
   .visible {
     visibility: visible;
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
   .absolute {
     position: absolute;
   }
@@ -217,9 +228,6 @@
   }
   .top-0 {
     top: calc(var(--spacing) * 0);
-  }
-  .isolate {
-    isolation: isolate;
   }
   .z-10 {
     z-index: 10;
@@ -871,9 +879,6 @@
   .grid {
     display: grid;
   }
-  .hidden {
-    display: none;
-  }
   .inline {
     display: inline;
   }
@@ -912,9 +917,6 @@
   }
   .cursor-pointer {
     cursor: pointer;
-  }
-  .resize {
-    resize: both;
   }
   .grid-cols-7 {
     grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -1101,6 +1103,9 @@
   }
   .text-left {
     text-align: left;
+  }
+  .font-display {
+    font-family: var(--font-display);
   }
   .text-2xl {
     font-size: var(--text-2xl);
@@ -1335,6 +1340,16 @@
 html {
   overflow-block: scroll;
   background: #051e2e;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), serif;
+}
+.prose {
+  --tw-prose-font-body: var(--font-sans, sans-serif);
+  font-family: var(--font-sans), sans-serif;
+}
+.prose :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-display), serif;
 }
 body {
   min-block-size: 100vb;

@@ -14,6 +14,8 @@ export default defineConfig(
     ".wrangler",
     ".claude",
     "public/index.css",
+    "playwright-report",
+    "coverage",
   ]),
   ...config,
   ...htmlConfig,
@@ -26,6 +28,7 @@ export default defineConfig(
       },
     },
     rules: {
+      "css/no-invalid-properties": "off",
       "css/use-layers": "off",
     },
   },

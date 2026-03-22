@@ -38,6 +38,16 @@ export const MainLayout: FC<MainLayoutProperties> = async ({
           type="image/png"
           href="/favicon-16x16.png"
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          crossorigin="anonymous"
+          href="https://fonts.gstatic.com"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&display=swap"
+        />
         <link rel="stylesheet" href="/index.css" />
         <link rel="manifest" href="/manifest.json" />
         <meta content="#4a90b8" name="theme-color" />
@@ -50,30 +60,35 @@ export const MainLayout: FC<MainLayoutProperties> = async ({
 
         {/* Fish swimming underwater (all below the 63% waterline) */}
         <span
+          aria-hidden="true"
           class="fish fish-right"
           style="top:67%;animation-duration:18s;animation-delay:0s;"
         >
           🐟
         </span>
         <span
+          aria-hidden="true"
           class="fish fish-left"
           style="top:75%;animation-duration:24s;animation-delay:6s;"
         >
           🐠
         </span>
         <span
+          aria-hidden="true"
           class="fish fish-right"
           style="top:70%;animation-duration:30s;animation-delay:12s;font-size:1rem;"
         >
           🐟
         </span>
         <span
+          aria-hidden="true"
           class="fish fish-left"
           style="top:83%;animation-duration:20s;animation-delay:3s;font-size:2rem;"
         >
           🐡
         </span>
         <span
+          aria-hidden="true"
           class="fish fish-right"
           style="top:91%;animation-duration:26s;animation-delay:9s;font-size:1.1rem;"
         >
@@ -83,32 +98,38 @@ export const MainLayout: FC<MainLayoutProperties> = async ({
         {/* Rising bubbles */}
         <span
           class="bubble"
+          aria-hidden="true"
           style="bottom:5%;left:12%;width:10px;height:10px;animation-duration:8s;animation-delay:0s;"
         ></span>
         <span
           class="bubble"
+          aria-hidden="true"
           style="bottom:5%;left:28%;width:6px;height:6px;animation-duration:11s;animation-delay:2s;"
         ></span>
         <span
           class="bubble"
+          aria-hidden="true"
           style="bottom:5%;left:45%;width:14px;height:14px;animation-duration:9s;animation-delay:5s;"
         ></span>
         <span
           class="bubble"
+          aria-hidden="true"
           style="bottom:5%;left:63%;width:8px;height:8px;animation-duration:13s;animation-delay:1s;"
         ></span>
         <span
           class="bubble"
+          aria-hidden="true"
           style="bottom:5%;left:78%;width:10px;height:10px;animation-duration:10s;animation-delay:7s;"
         ></span>
         <span
           class="bubble"
+          aria-hidden="true"
           style="bottom:5%;left:90%;width:6px;height:6px;animation-duration:12s;animation-delay:4s;"
         ></span>
 
         <header class="sticky top-0 z-20 border-b border-white/10 bg-black/20 px-4 py-4 backdrop-blur-sm sm:px-6">
           <div class="mx-auto flex max-w-4xl flex-col items-center gap-3 sm:flex-row sm:justify-between">
-            <span class="text-center text-lg font-semibold tracking-wide drop-shadow sm:text-left">
+            <span class="text-center font-display text-lg font-semibold tracking-wide drop-shadow sm:text-left">
               Sterett Creek Village Trustee
             </span>
             <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/80 sm:justify-end">

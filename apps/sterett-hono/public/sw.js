@@ -1,7 +1,9 @@
-const STATIC_CACHE = "static-resources-v1";
-const IMAGE_CACHE = "image-cache-v1";
-const SANITY_CACHE = "sanity-image-cache-v1";
-const HTML_CACHE = "html-cache-v1";
+const SW_VERSION = "375ed1c6";
+
+const STATIC_CACHE = `static-${SW_VERSION}`;
+const IMAGE_CACHE = `images-${SW_VERSION}`;
+const SANITY_CACHE = `sanity-${SW_VERSION}`;
+const HTML_CACHE = `html-${SW_VERSION}`;
 
 const ALL_CACHES = new Set([
   HTML_CACHE,
@@ -9,10 +11,6 @@ const ALL_CACHES = new Set([
   SANITY_CACHE,
   STATIC_CACHE,
 ]);
-
-const IMAGE_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 1 day
-const IMAGE_MAX_ENTRIES = 50;
-const SANITY_MAX_ENTRIES = 100;
 
 const NAV_ROUTES = ["/", "/news", "/calendar", "/files", "/trustees"];
 
@@ -45,63 +43,31 @@ self.addEventListener("fetch", (event) => {
   // Only handle http(s) requests
   if (!url.protocol.startsWith("http")) return;
 
-  // Sanity CDN images — CacheFirst, 30 days, 100 entries
+  // Sanity CDN images
   if ("cdn.sanity.io" === url.hostname) {
-    event.respondWith(cacheFirst(request, SANITY_CACHE, SANITY_MAX_ENTRIES));
+    event.respondWith(staleWhileRevalidate(request, SANITY_CACHE));
     return;
   }
 
-  // Local static assets
   const { pathname } = url;
 
-  // JS / CSS — StaleWhileRevalidate
+  // JS / CSS
   if (/\.(js|css)$/.test(pathname)) {
     event.respondWith(staleWhileRevalidate(request, STATIC_CACHE));
     return;
   }
 
-  // Images — CacheFirst, 30 days, 50 entries
+  // Images
   if (/\.(png|jpe?g|svg|gif|ico|webp)$/.test(pathname)) {
-    event.respondWith(cacheFirst(request, IMAGE_CACHE, IMAGE_MAX_ENTRIES));
+    event.respondWith(staleWhileRevalidate(request, IMAGE_CACHE));
     return;
   }
 
-  // HTML / navigation — NetworkFirst
+  // HTML / navigation
   if ("navigate" === request.mode || pathname.endsWith(".html")) {
-    event.respondWith(networkFirst(request, HTML_CACHE));
+    event.respondWith(staleWhileRevalidate(request, HTML_CACHE));
   }
 });
-
-async function cacheFirst(request, cacheName, maxEntries) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
-
-  if (cached) {
-    const cachedDate = cached.headers.get("date");
-    const age = cachedDate ? Date.now() - new Date(cachedDate).getTime() : Infinity;
-    if (age < IMAGE_MAX_AGE_MS) return cached;
-  }
-
-  const response = await fetch(request);
-  if (response.ok) {
-    await cache.put(request, response.clone());
-    await trimCache(cache, maxEntries);
-  }
-  return response;
-}
-
-async function networkFirst(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  try {
-    const response = await fetch(request);
-    if (response.ok) cache.put(request, response.clone());
-    return response;
-  } catch {
-    const cached = await cache.match(request);
-    if (cached) return cached;
-    throw new Error("Network error and no cached response available");
-  }
-}
 
 async function staleWhileRevalidate(request, cacheName) {
   const cache = await caches.open(cacheName);
@@ -111,13 +77,4 @@ async function staleWhileRevalidate(request, cacheName) {
     return response;
   });
   return cached ?? networkPromise;
-}
-
-async function trimCache(cache, maxEntries) {
-  const keys = await cache.keys();
-  if (keys.length > maxEntries) {
-    await Promise.all(
-      keys.slice(0, keys.length - maxEntries).map((k) => cache.delete(k)),
-    );
-  }
 }

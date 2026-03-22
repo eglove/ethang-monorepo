@@ -9,12 +9,33 @@
   --color-lake-water: #0d3d57;
   --color-forest: #2d5a27;
   --color-shore: #c8a96e;
+
+  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", ui-serif, Georgia, serif;
 }
 
 html {
   overflow-block: scroll;
   /* Fallback colour when page content exceeds the viewport */
   background: #051e2e;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display), serif;
+}
+
+.prose {
+  --tw-prose-font-body: var(--font-sans, sans-serif);
+  font-family: var(--font-sans), sans-serif;
+}
+
+.prose :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-display), serif;
 }
 
 body {

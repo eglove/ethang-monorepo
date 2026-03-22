@@ -9,7 +9,7 @@ type EventProperties = {
   data: CalendarEventReturn;
 };
 
-const getIsHappeningNow = (start: string, end: string) => {
+export const getIsHappeningNow = (start: string, end: string) => {
   const now = Date.now();
   return new Date(start).getTime() <= now && now <= new Date(end).getTime();
 };

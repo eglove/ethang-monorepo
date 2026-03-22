@@ -10,6 +10,7 @@ export const HomePage = async () => {
       title="Sterett Creek Village Trustee | Home"
       description="Homepage of the Sterett Creek Village Trustee Board"
     >
+      <h1 class="sr-only">Sterett Creek Village Trustee</h1>
       <PortableText content={pageData?.content} />
     </MainLayout>
   );
