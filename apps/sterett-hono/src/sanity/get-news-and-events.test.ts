@@ -1,7 +1,18 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import split from "lodash/split.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { eventRangeFormat, getRelativeDate } from "./get-news-and-events.ts";
+vi.mock("../clients/sanity-client.ts", () => ({
+  NO_DRAFTS: "!(_id in path('drafts.**'))",
+  sterettSanityClient: { fetch: vi.fn() },
+}));
+
+import { sterettSanityClient } from "../clients/sanity-client.ts";
+import {
+  eventRangeFormat,
+  getNewsAndEvents,
+  getRelativeDate,
+} from "./get-news-and-events.ts";
 
 // Fixed "now" for all relative date tests: 2024-06-15 12:00:00 UTC
 const NOW = new Date("2024-06-15T12:00:00.000Z");
@@ -106,5 +117,59 @@ describe("getRelativeDate", () => {
   it("returns months for 30+ days ago", () => {
     const ago1Month = new Date(NOW.getTime() - 1000 * 60 * 60 * 24 * 30);
     expect(getRelativeDate(ago1Month.toISOString())).toBe("last month");
+  });
+});
+
+describe("getNewsAndEvents", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns an empty array when there are no events or updates", async () => {
+    // @ts-expect-error for test
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([]);
+    // @ts-expect-error for test
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([]);
+
+    const result = await getNewsAndEvents();
+    expect(result).toEqual([]);
+  });
+
+  it("merges events and updates sorted by date ascending", async () => {
+    const mockEvent = {
+      _id: "evt-1",
+      _updatedAt: "2024-06-15T12:00:00Z",
+      description: null,
+      endsAt: "2024-06-15T15:00:00Z",
+      startsAt: "2024-06-15T13:00:00Z",
+      title: "Board Meeting",
+    };
+    const mockUpdate = {
+      _id: "upd-1",
+      _updatedAt: "2024-06-14T12:00:00Z",
+      date: "2024-06-14",
+      description: null,
+      title: "News Update",
+    };
+
+    // @ts-expect-error for test
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([mockEvent]);
+    // @ts-expect-error for test
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([mockUpdate]);
+
+    const result = await getNewsAndEvents();
+
+    expect(result).toHaveLength(2);
+    expect(result[0]?._id).toBe("upd-1"); // Jun 14 sorts before Jun 15
+    expect(result[1]?._id).toBe("evt-1");
+  });
+
+  it("calls fetch twice (once for events, once for updates)", async () => {
+    // @ts-expect-error for test
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValue([]);
+
+    await getNewsAndEvents();
+
+    expect(sterettSanityClient.fetch).toHaveBeenCalledTimes(2);
   });
 });

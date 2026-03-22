@@ -1,224 +1,201 @@
-import { google, ics, office365, outlook, yahoo } from "calendar-link";
 import filter from "lodash/filter.js";
+import includes from "lodash/includes.js";
+import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
-import slice from "lodash/slice.js";
+import { DateTime } from "luxon";
+import { twMerge } from "tailwind-merge";
 
 import { getCalendarEvents } from "../../sanity/get-calendar-events.ts";
 import {
   buildCalendarWeeks,
   buildEventsByDate,
-  formatDateTime,
-  renderDescriptionHtml,
-  toDateKey,
-  toPlainText,
+  formatDayHeading,
+  formatWeekHeading,
+  getViewDateRange,
+  getWeekDays,
+  shiftDate,
 } from "../../utils/calendar.ts";
+import { DayView } from "../calendar-day-view.tsx";
+import { CalendarEventDialog } from "../calendar-event-dialog.tsx";
+import { MonthView } from "../calendar-month-view.tsx";
+import { WeekView } from "../calendar-week-view.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
 
 const CHICAGO = "America/Chicago";
-const DAY_HEADERS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const CAL_SERVICES = [
-  { key: "google" as const, label: "Google" },
-  { key: "ics" as const, label: "Apple / ICS" },
-  { key: "outlook" as const, label: "Outlook" },
-  { key: "office365" as const, label: "Office 365" },
-  { key: "yahoo" as const, label: "Yahoo" },
-];
+
+const tabClass = (active: boolean) =>
+  twMerge(
+    "px-4 py-1.5 text-sm rounded-md text-white/60 hover:text-white hover:bg-white/10 transition-colors",
+    active && "bg-white/20 text-white font-medium",
+  );
 
 export const CalendarPage = async ({
+  date,
   month,
+  view,
   year,
 }: {
+  date: string;
   month: number;
+  view: "day" | "month" | "week";
   year: number;
 }) => {
-  const events = await getCalendarEvents();
-  const updatedAt = map(events, (calendarEvent) => calendarEvent._updatedAt)
+  const { rangeEndExclusive, rangeStart } = getViewDateRange(
+    view,
+    year,
+    month,
+    date,
+  );
+  const events = await getCalendarEvents(rangeStart, rangeEndExclusive);
+  const updatedAt = map(events, (event) => event._updatedAt)
     .toSorted((a, b) => a.localeCompare(b))
     .at(-1);
 
   const eventsByDate = buildEventsByDate(events);
+  const todayDt = DateTime.now().setZone(CHICAGO);
+  const today = todayDt.toISODate();
+  if (isNil(today)) throw new Error("Could not determine current date");
 
+  // Month view locals
   const weeks = buildCalendarWeeks(year, month);
-  const today = new Date().toLocaleDateString("en-CA", { timeZone: CHICAGO });
-  const todayYear = Number(today.slice(0, 4));
-  const todayMonth = Number(today.slice(5, 7));
+  const currentMonthDt = DateTime.fromObject(
+    { day: 1, month, year },
+    { zone: CHICAGO },
+  );
+  const previousMonth = currentMonthDt.minus({ months: 1 }).month;
+  const previousYear = currentMonthDt.minus({ months: 1 }).year;
+  const nextMonth = currentMonthDt.plus({ months: 1 }).month;
+  const nextYear = currentMonthDt.plus({ months: 1 }).year;
+  const monthName = currentMonthDt.toLocaleString(
+    { month: "long" },
+    { locale: "en-US" },
+  );
+  const todayYear = todayDt.year;
+  const todayMonth = todayDt.month;
   const isCurrentMonth = year === todayYear && month === todayMonth;
 
-  const previousMonth = 1 === month ? 12 : month - 1;
-  const previousYear = 1 === month ? year - 1 : year;
-  const nextMonth = 12 === month ? 1 : month + 1;
-  const nextYear = 12 === month ? year + 1 : year;
-  const monthName = new Date(year, month - 1, 1).toLocaleString("en-US", {
-    month: "long",
-  });
+  // Week view locals
+  const weekDays = getWeekDays(date);
+  const isCurrentWeek = includes(weekDays, today);
+
+  // Day view locals
+  const isToday = date === today;
+
+  // Cross-view navigation: derive a representative date from whatever is currently displayed.
+  // On month view the URL has no `date` param, so we use the 1st of the displayed month.
+  // On week/day view `date` is already a meaningful ISO date.
+  const crossViewDt =
+    "month" === view
+      ? currentMonthDt
+      : DateTime.fromISO(date, { zone: CHICAGO });
+  const crossViewDate = crossViewDt.toISODate();
+  if (isNil(crossViewDate))
+    throw new Error("Could not determine cross-view date");
+  const crossViewYear = crossViewDt.year;
+  const crossViewMonth = crossViewDt.month;
 
   const navLinkClass =
     "inline-flex min-h-6 items-center rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors";
-  const calLinkClass =
-    "inline-flex items-center rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 hover:text-white transition-colors";
+
+  const navConfig = {
+    day: {
+      heading: formatDayHeading(date),
+      nextHref: `/calendar?view=day&date=${shiftDate(date, 1)}`,
+      prevHref: `/calendar?view=day&date=${shiftDate(date, -1)}`,
+      // Show "Today" when viewing any day other than today
+      showToday: !isToday,
+      todayHref: `/calendar?view=day&date=${today}`,
+    },
+    month: {
+      heading: `${monthName} ${year}`,
+      nextHref: `/calendar?view=month&year=${nextYear}&month=${nextMonth}`,
+      prevHref: `/calendar?view=month&year=${previousYear}&month=${previousMonth}`,
+      // Show "Today" when the viewed month doesn't contain today
+      showToday: !isCurrentMonth,
+      todayHref: `/calendar?view=month&year=${todayYear}&month=${todayMonth}`,
+    },
+    week: {
+      heading: formatWeekHeading(date),
+      nextHref: `/calendar?view=week&date=${shiftDate(date, 7)}`,
+      prevHref: `/calendar?view=week&date=${shiftDate(date, -7)}`,
+      // Show "Today" when the viewed week doesn't contain today
+      showToday: !isCurrentWeek,
+      todayHref: `/calendar?view=week&date=${today}`,
+    },
+  }[view];
+
+  const tabMonthHref = `/calendar?view=month&year=${crossViewYear}&month=${crossViewMonth}`;
+  const tabWeekHref = `/calendar?view=week&date=${crossViewDate}`;
+  const tabDayHref = `/calendar?view=day&date=${crossViewDate}`;
+  const prefetch = filter(
+    [
+      navConfig.prevHref,
+      navConfig.nextHref,
+      "month" === view ? null : tabMonthHref,
+      "week" === view ? null : tabWeekHref,
+      "day" === view ? null : tabDayHref,
+    ],
+    (value) => !isNil(value),
+  );
 
   return (
     <MainLayout
+      prefetch={prefetch}
       updatedAt={updatedAt}
       title="Sterett Creek Village Trustee | Calendar"
       description="Events calendar for Sterett Creek Village Trustee"
     >
-      {/* Calendar header */}
+      {/* View switcher */}
+      <div class="mx-auto mb-4 flex w-fit gap-1 rounded-lg border border-white/10 bg-white/5 p-1">
+        <a href={tabMonthHref} class={tabClass("month" === view)}>
+          Month
+        </a>
+        <a href={tabWeekHref} class={tabClass("week" === view)}>
+          Week
+        </a>
+        <a href={tabDayHref} class={tabClass("day" === view)}>
+          Day
+        </a>
+      </div>
+
+      {/* Navigation header */}
       <div class="mb-4 flex items-center justify-between gap-4">
-        <a
-          class={navLinkClass}
-          href={`/calendar?year=${previousYear}&month=${previousMonth}`}
-        >
+        <a class={navLinkClass} href={navConfig.prevHref}>
           ← Prev
         </a>
         <div class="flex flex-col items-center gap-1">
-          <h1 class="text-xl font-bold tracking-wide">
-            {monthName} {year}
-          </h1>
-          {!isCurrentMonth && (
+          <h1 class="text-xl font-bold tracking-wide">{navConfig.heading}</h1>
+          {navConfig.showToday && (
             <a
-              href={`/calendar?year=${todayYear}&month=${todayMonth}`}
+              href={navConfig.todayHref}
               class="text-xs text-white/50 underline transition-colors hover:text-white"
             >
               Today
             </a>
           )}
         </div>
-        <a
-          class={navLinkClass}
-          href={`/calendar?year=${nextYear}&month=${nextMonth}`}
-        >
+        <a class={navLinkClass} href={navConfig.nextHref}>
           Next →
         </a>
       </div>
 
-      {/* Day-of-week headers */}
-      <div class="grid grid-cols-7 border-b border-white/10">
-        {map(DAY_HEADERS, async (d) => (
-          <div
-            key={d}
-            class="py-2 text-center text-xs font-medium text-white/50"
-          >
-            {d}
-          </div>
-        ))}
-      </div>
+      {"month" === view && (
+        <MonthView today={today} weeks={weeks} eventsByDate={eventsByDate} />
+      )}
 
-      {/* Calendar grid */}
-      <div class="grid grid-cols-7">
-        {map(weeks, (week) =>
-          map(week, async (cell) => {
-            const key = toDateKey(cell.year, cell.month, cell.day);
-            const cellEvents = eventsByDate.get(key) ?? [];
-            const isToday = key === today;
+      {"week" === view && (
+        <WeekView
+          today={today}
+          weekDays={weekDays}
+          eventsByDate={eventsByDate}
+        />
+      )}
 
-            return (
-              <div
-                key={key}
-                class={filter(
-                  [
-                    "min-h-16 border border-white/5 p-1",
-                    cell.current ? "" : "opacity-30",
-                    isToday ? "bg-white/10" : "",
-                  ],
-                  Boolean,
-                ).join(" ")}
-              >
-                <span
-                  class={
-                    isToday
-                      ? "inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-lake-deep"
-                      : "text-xs text-white/60"
-                  }
-                >
-                  {cell.day}
-                </span>
-                <div class="mt-1 flex flex-col gap-0.5">
-                  {map(slice(cellEvents, 0, 3), async (event) => (
-                    <button
-                      key={event._id}
-                      onclick={`document.getElementById('cal-${event._id}').showModal()`}
-                      class="w-full cursor-pointer truncate rounded bg-sky-600/60 px-1 py-0.5 text-left text-xs text-white transition-colors hover:bg-sky-500/80"
-                    >
-                      {event.title}
-                    </button>
-                  ))}
-                  {3 < cellEvents.length && (
-                    <span class="text-xs text-white/40">
-                      +{cellEvents.length - 3} more
-                    </span>
-                  )}
-                </div>
-              </div>
-            );
-          }),
-        )}
-      </div>
+      {"day" === view && <DayView events={eventsByDate.get(date) ?? []} />}
 
-      {map(events, async (event) => {
-        const calEvent = {
-          description: toPlainText(event.description),
-          end: event.endsAt,
-          start: event.startsAt,
-          title: event.title,
-        };
-        const links = {
-          google: google(calEvent),
-          ics: ics(calEvent),
-          office365: office365(calEvent),
-          outlook: outlook(calEvent),
-          yahoo: yahoo(calEvent),
-        };
-
-        return (
-          <dialog key={event._id} id={`cal-${event._id}`}>
-            <div class="flex flex-col gap-4 p-6">
-              <div class="flex items-start justify-between gap-4">
-                <h2 class="text-lg leading-snug font-semibold">
-                  {event.title}
-                </h2>
-                <button
-                  aria-label="Close"
-                  onclick={`document.getElementById('cal-${event._id}').close()`}
-                  class="shrink-0 rounded-full p-1 text-white/50 transition-colors hover:text-white"
-                >
-                  ✕
-                </button>
-              </div>
-              <div class="space-y-1 text-sm text-white/70">
-                <p>Starts: {formatDateTime(event.startsAt)}</p>
-                <p>Ends: {formatDateTime(event.endsAt)}</p>
-              </div>
-              {event.description && (
-                <div
-                  class="prose prose-sm prose-invert"
-                  dangerouslySetInnerHTML={{
-                    __html: renderDescriptionHtml(event.description),
-                  }}
-                />
-              )}
-              <div class="flex flex-col gap-2 border-t border-white/10 pt-3">
-                <p class="text-xs font-medium text-white/50">
-                  Add to my Calendar
-                </p>
-                <div class="flex flex-wrap gap-2">
-                  {map(CAL_SERVICES, async (service) => (
-                    <a
-                      target="_blank"
-                      key={service.key}
-                      class={calLinkClass}
-                      href={links[service.key]}
-                      rel="noopener noreferrer"
-                    >
-                      {service.label}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </dialog>
-        );
-      })}
+      {map(events, async (event) => (
+        <CalendarEventDialog event={event} key={event._id} />
+      ))}
     </MainLayout>
   );
 };

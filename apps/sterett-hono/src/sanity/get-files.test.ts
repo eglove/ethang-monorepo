@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/unbound-method */
+import every from "lodash/every.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../clients/sanity-client.ts", () => ({
@@ -31,7 +33,9 @@ describe("getFiles", () => {
     const meetingMinutes = [makeFile("4", "Meeting Minute")];
 
     vi.mocked(sterettSanityClient.fetch)
+      // @ts-expect-error for test
       .mockResolvedValueOnce(generalCovenant)
+      // @ts-expect-error for test
       .mockResolvedValueOnce(meetingMinutes);
 
     const result = await getFiles();
@@ -42,6 +46,7 @@ describe("getFiles", () => {
   });
 
   it("returns empty arrays when no files exist", async () => {
+    // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue([]);
 
     const result = await getFiles();
@@ -57,12 +62,16 @@ describe("getFiles", () => {
       makeFile("c2", "Covenant"),
     ];
     vi.mocked(sterettSanityClient.fetch)
+      // @ts-expect-error for test
       .mockResolvedValueOnce(generalCovenant)
+      // @ts-expect-error for test
       .mockResolvedValueOnce([]);
 
     const result = await getFiles();
 
-    expect(result.covenants.every((f) => "Covenant" === f.category)).toBe(true);
+    expect(every(result.covenants, (f) => "Covenant" === f.category)).toBe(
+      true,
+    );
     expect(result.general).toHaveLength(0);
   });
 
@@ -72,12 +81,14 @@ describe("getFiles", () => {
       makeFile("g2", "General"),
     ];
     vi.mocked(sterettSanityClient.fetch)
+      // @ts-expect-error for test
       .mockResolvedValueOnce(generalCovenant)
+      // @ts-expect-error for test
       .mockResolvedValueOnce([]);
 
     const result = await getFiles();
 
-    expect(result.general.every((f) => "General" === f.category)).toBe(true);
+    expect(every(result.general, (f) => "General" === f.category)).toBe(true);
     expect(result.covenants).toHaveLength(0);
   });
 });

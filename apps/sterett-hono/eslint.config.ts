@@ -16,6 +16,7 @@ export default defineConfig(
     "public/index.css",
     "playwright-report",
     "coverage",
+    "test-results",
   ]),
   ...config,
   ...htmlConfig,

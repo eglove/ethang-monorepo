@@ -1,6 +1,7 @@
 import type { FC } from "hono/jsx";
 
 import isNil from "lodash/isNil.js";
+import map from "lodash/map.js";
 
 import { BeachScene } from "../beach-scene.tsx";
 import { BoatScene } from "../boat-scene.tsx";
@@ -9,6 +10,7 @@ import { ForestScene } from "../forest-scene.tsx";
 type MainLayoutProperties = {
   children?: unknown;
   description?: string;
+  prefetch?: string[];
   title?: string;
   updatedAt?: string | undefined;
 };
@@ -16,6 +18,7 @@ type MainLayoutProperties = {
 export const MainLayout: FC<MainLayoutProperties> = async ({
   children,
   description,
+  prefetch,
   title,
   updatedAt,
 }) => {
@@ -30,6 +33,9 @@ export const MainLayout: FC<MainLayoutProperties> = async ({
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
         {!isNil(updatedAt) && <meta content={updatedAt} name="last-modified" />}
+        {map(prefetch, async (href) => (
+          <link key={href} href={href} rel="prefetch" />
+        ))}
         <link rel="icon" sizes="any" href="/favicon.ico" />
         <link
           rel="icon"

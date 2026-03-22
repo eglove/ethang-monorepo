@@ -53,4 +53,17 @@ describe("MainLayout", () => {
     const html = await renderMainLayout({ children: "Hello from children" });
     expect(html).toContain("Hello from children");
   });
+
+  it("renders prefetch link tags when prefetch urls are provided", async () => {
+    const html = await renderMainLayout({
+      prefetch: ["/calendar?view=month&year=2024&month=6"],
+    });
+    expect(html).toContain('rel="prefetch"');
+    expect(html).toContain("/calendar?view=month");
+  });
+
+  it("does not render prefetch links when prefetch is not provided", async () => {
+    const html = await renderMainLayout({});
+    expect(html).not.toContain('rel="prefetch"');
+  });
 });

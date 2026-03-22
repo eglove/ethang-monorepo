@@ -16,6 +16,8 @@ export const test = base.extend({
   page: async ({ page }, use) => {
     await use(page);
 
+    await page.waitForLoadState("load");
+
     // @ts-expect-error no idea
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
     const results = await new AxeBuilder({ page })

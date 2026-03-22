@@ -11,7 +11,13 @@ export type CalendarEventRecord = {
   title: string;
 };
 
-export const getCalendarEvents = async (): Promise<CalendarEventRecord[]> => {
-  const query = `*[_type == "calendarEvent" && ${NO_DRAFTS}]{_id, _updatedAt, title, startsAt, endsAt, description}`;
-  return sterettSanityClient.fetch<CalendarEventRecord[]>(query);
+export const getCalendarEvents = async (
+  rangeStart: string,
+  rangeEndExclusive: string,
+): Promise<CalendarEventRecord[]> => {
+  const query = `*[_type == "calendarEvent" && ${NO_DRAFTS} && startsAt < $rangeEndExclusive && endsAt >= $rangeStart]{_id, _updatedAt, title, startsAt, endsAt, description}`;
+  return sterettSanityClient.fetch<CalendarEventRecord[]>(query, {
+    rangeEndExclusive,
+    rangeStart,
+  });
 };

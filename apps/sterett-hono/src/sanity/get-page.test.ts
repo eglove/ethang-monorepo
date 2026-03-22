@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../clients/sanity-client.ts", () => ({
@@ -20,6 +21,7 @@ describe("getPage", () => {
       content: [],
       title: "Home",
     };
+    // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue([mockPage]);
 
     const result = await getPage("home");
@@ -32,6 +34,7 @@ describe("getPage", () => {
   });
 
   it("returns undefined when no page matches the slug", async () => {
+    // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue([]);
 
     const result = await getPage("nonexistent");
@@ -40,6 +43,7 @@ describe("getPage", () => {
   });
 
   it("passes the slug parameter to the query", async () => {
+    // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue([]);
 
     await getPage("about");
