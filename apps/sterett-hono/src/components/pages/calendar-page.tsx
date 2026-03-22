@@ -5,7 +5,10 @@ import map from "lodash/map.js";
 import { DateTime } from "luxon";
 import { twMerge } from "tailwind-merge";
 
-import { getCalendarEvents } from "../../sanity/get-calendar-events.ts";
+import {
+  getCalendarEvents,
+  getLatestCalendarEventUpdatedAt,
+} from "../../sanity/get-calendar-events.ts";
 import {
   buildCalendarWeeks,
   buildEventsByDate,
@@ -47,9 +50,10 @@ export const CalendarPage = async ({
     date,
   );
   const events = await getCalendarEvents(rangeStart, rangeEndExclusive);
-  const updatedAt = map(events, (event) => event._updatedAt)
-    .toSorted((a, b) => a.localeCompare(b))
-    .at(-1);
+  const updatedAt =
+    map(events, (event) => event._updatedAt)
+      .toSorted((a, b) => a.localeCompare(b))
+      .at(-1) ?? (await getLatestCalendarEventUpdatedAt());
 
   const eventsByDate = buildEventsByDate(events);
   const todayDt = DateTime.now().setZone(CHICAGO);

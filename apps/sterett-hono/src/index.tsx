@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { validator } from "hono/validator";
 import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
+import isNil from "lodash/isNil.js";
 import last from "lodash/last.js";
 import map from "lodash/map.js";
 import { DateTime } from "luxon";
@@ -13,6 +14,40 @@ import { NewsPage } from "./components/pages/news-page.tsx";
 import { TrusteesPage } from "./components/pages/trustees-page.tsx";
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
+
+// After each HTML response is rendered, lift the <meta name="last-modified">
+// value into a proper Last-Modified HTTP header so the service worker can
+// compare timestamps via headers without reading the response body.
+app.use(async (c, next) => {
+  await next();
+  if (
+    !c.res.body ||
+    !includes(c.res.headers.get("content-type") ?? "", "text/html")
+  ) {
+    return;
+  }
+
+  const text = await c.res.clone().text();
+  const tagMatch = /<meta[^>]+name="last-modified"[^>]*>/iu.exec(text);
+  if (!tagMatch) {
+    return;
+  }
+  const contentMatch = /content="(?<v>[^"]+)"/iu.exec(tagMatch[0]);
+  if (isNil(contentMatch?.groups?.["v"])) {
+    return;
+  }
+  const date = new Date(contentMatch.groups["v"]);
+  if (Number.isNaN(date.getTime())) {
+    return;
+  }
+  const headers = new Headers(c.res.headers);
+  headers.set("Last-Modified", date.toUTCString());
+  c.res = new Response(c.res.body, {
+    headers,
+    status: c.res.status,
+    statusText: c.res.statusText,
+  });
+});
 
 const CALENDAR_VIEWS = ["day", "month", "week"] as const;
 type CalendarView = (typeof CALENDAR_VIEWS)[number];
