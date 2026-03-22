@@ -7,10 +7,14 @@ vi.mock("../clients/sanity-client.ts", () => ({
 }));
 
 import { sterettSanityClient } from "../clients/sanity-client.ts";
-import { getCalendarEvents } from "./get-calendar-events.ts";
+import {
+  getCalendarEvents,
+  getLatestCalendarEventUpdatedAt,
+} from "./get-calendar-events.ts";
 
 const RANGE_START = "2024-06-01";
 const RANGE_END = "2024-06-30";
+const LATEST_UPDATED_AT = "2024-06-15T00:00:00Z";
 
 const makeEvent = (id: string) => ({
   _id: id,
@@ -19,6 +23,37 @@ const makeEvent = (id: string) => ({
   endsAt: "2024-06-15T15:00:00Z",
   startsAt: "2024-06-15T13:00:00Z",
   title: `Event ${id}`,
+});
+
+describe("getLatestCalendarEventUpdatedAt", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("queries ordered by _updatedAt descending", async () => {
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValue(LATEST_UPDATED_AT);
+
+    await getLatestCalendarEventUpdatedAt();
+
+    const [query] = vi.mocked(sterettSanityClient.fetch).mock.calls[0] ?? [];
+    expect(query).toContain("order(_updatedAt desc)");
+  });
+
+  it("returns the _updatedAt string of the most recent event", async () => {
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValue(LATEST_UPDATED_AT);
+
+    const result = await getLatestCalendarEventUpdatedAt();
+
+    expect(result).toBe(LATEST_UPDATED_AT);
+  });
+
+  it("returns null when there are no calendar events", async () => {
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValue(null);
+
+    const result = await getLatestCalendarEventUpdatedAt();
+
+    expect(result).toBeNull();
+  });
 });
 
 describe("getCalendarEvents", () => {
