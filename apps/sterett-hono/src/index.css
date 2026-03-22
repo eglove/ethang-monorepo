@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-lake-sky-light: #d0e8f2;
+  --color-lake-sky: #7bb8d4;
+  --color-lake-deep: #1a5f7a;
+  --color-lake-water: #0d3d57;
+  --color-forest: #2d5a27;
+  --color-shore: #c8a96e;
+}
+
+html {
+  overflow-block: scroll;
+  /* Fallback colour when page content exceeds the viewport */
+  background: #051e2e;
+}
+
+body {
+  min-block-size: 100vb;
+  position: relative;
+}
+
+/* Fixed background gradient — avoids background-attachment:fixed (buggy on iOS) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    /* soft sun glow at top */
+    radial-gradient(ellipse 80% 40% at 50% 0%, #fdf3dc22 0%, transparent 55%),
+    /* sky to water gradient — waterline at ~63% */
+    linear-gradient(
+        to bottom,
+        #4a90b8 0%,
+        #2d7fa3 20%,
+        #226d8f 45%,
+        #1e6485 60%,
+        #1a6a8a 63%,
+        #0d4f6e 70%,
+        #082e42 86%,
+        #051e2e 100%
+      );
+}
+
+/* Calendar event dialog */
+dialog {
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  background: #082e42;
+  color: white;
+  max-inline-size: min(90vi, 520px);
+  inline-size: 100%;
+  max-block-size: 80vb;
+  overflow-block: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  position: fixed;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+/* SVG boat scene bobber animation */
+@keyframes bob {
+  from {
+    transform: translateY(-2px);
+  }
+  to {
+    transform: translateY(2px);
+  }
+}
+
+.svg-bobber {
+  animation: bob ease-in-out 2s infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Fish animations */
+@keyframes swim-right {
+  0% {
+    transform: translateX(-120px) scaleX(-1);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100vi + 120px)) scaleX(-1);
+    opacity: 0;
+  }
+}
+
+@keyframes swim-left {
+  0% {
+    transform: translateX(calc(100vi + 120px)) scaleX(1);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-120px) scaleX(1);
+    opacity: 0;
+  }
+}
+
+@keyframes bubble-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.5;
+  }
+  70% {
+    transform: translateY(-22vb) scale(1.1);
+    opacity: 0.25;
+  }
+  100% {
+    transform: translateY(-28vb) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.fish {
+  position: fixed;
+  font-size: 1.5rem;
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform;
+}
+
+.fish-right {
+  animation: swim-right linear infinite;
+  animation-fill-mode: backwards;
+}
+.fish-left {
+  animation: swim-left linear infinite;
+  animation-fill-mode: backwards;
+}
+
+.bubble {
+  position: fixed;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+  z-index: 1;
+  animation: bubble-rise ease-in infinite;
+  animation-fill-mode: backwards;
+  will-change: transform;
+}
+
+/* Subtle shimmer line where sky meets water */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 61%,
+    rgba(255, 255, 255, 0.1) 63%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}

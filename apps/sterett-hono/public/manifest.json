@@ -1,0 +1,27 @@
+{
+  "background_color": "#051e2e",
+  "description": "Sterett Creek Village Trustee Board",
+  "display": "standalone",
+  "icons": [
+    {
+      "sizes": "192x192",
+      "src": "/android-chrome-192x192.png",
+      "type": "image/png"
+    },
+    {
+      "sizes": "512x512",
+      "src": "/android-chrome-512x512.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "any",
+      "sizes": "180x180",
+      "src": "/apple-touch-icon.png",
+      "type": "image/png"
+    }
+  ],
+  "name": "Sterett Creek Village Trustee",
+  "short_name": "Sterett Creek",
+  "start_url": "/",
+  "theme_color": "#4a90b8"
+}
