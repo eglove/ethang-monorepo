@@ -1,5 +1,7 @@
 import type { FC } from "hono/jsx";
 
+import isNil from "lodash/isNil.js";
+
 import { BeachScene } from "../beach-scene.tsx";
 import { BoatScene } from "../boat-scene.tsx";
 import { ForestScene } from "../forest-scene.tsx";
@@ -8,12 +10,14 @@ type MainLayoutProperties = {
   children?: unknown;
   description?: string;
   title?: string;
+  updatedAt?: string | undefined;
 };
 
 export const MainLayout: FC<MainLayoutProperties> = async ({
   children,
   description,
   title,
+  updatedAt,
 }) => {
   const pageTitle = title ?? "Sterett Creek Village Trustee";
   const pageDescription = description ?? "Sterett Creek Village Trustee Board";
@@ -25,6 +29,7 @@ export const MainLayout: FC<MainLayoutProperties> = async ({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
+        {!isNil(updatedAt) && <meta content={updatedAt} name="last-modified" />}
         <link rel="icon" sizes="any" href="/favicon.ico" />
         <link
           rel="icon"
@@ -185,6 +190,14 @@ export const MainLayout: FC<MainLayoutProperties> = async ({
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('/sw.js');
+  });
+  navigator.serviceWorker.addEventListener('message', function (event) {
+    if (event.data && event.data.type === 'CONTENT_UPDATED') {
+      var updatedUrl = new URL(event.data.url);
+      if (updatedUrl.pathname === location.pathname) {
+        location.reload();
+      }
+    }
   });
 }
         `,

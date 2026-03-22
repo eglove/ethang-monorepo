@@ -7,9 +7,13 @@ import { NewsUpdate } from "../news-update.tsx";
 
 export const NewsPage = async () => {
   const items = await getNewsAndEvents();
+  const updatedAt = map(items, (index) => index._updatedAt)
+    .toSorted((a, b) => a.localeCompare(b))
+    .at(-1);
 
   return (
     <MainLayout
+      updatedAt={updatedAt}
       title="Sterett Creek Village Trustee | News"
       description="News and Event Updates for Sterett Creek Village Trustee"
     >

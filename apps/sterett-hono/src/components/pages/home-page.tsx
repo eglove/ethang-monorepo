@@ -7,6 +7,7 @@ export const HomePage = async () => {
 
   return (
     <MainLayout
+      updatedAt={pageData?._updatedAt}
       title="Sterett Creek Village Trustee | Home"
       description="Homepage of the Sterett Creek Village Trustee Board"
     >

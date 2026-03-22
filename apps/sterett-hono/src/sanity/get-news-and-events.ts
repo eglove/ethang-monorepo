@@ -4,6 +4,7 @@ import { NO_DRAFTS, sterettSanityClient } from "../clients/sanity-client.ts";
 
 export type CalendarEventReturn = {
   _id: string;
+  _updatedAt: string;
   description: PortableTextBlock;
   endsAt: string;
   startsAt: string;
@@ -14,6 +15,7 @@ export type NewsAndEvents = (CalendarEventReturn | NewsUpdateReturn)[];
 
 export type NewsUpdateReturn = {
   _id: string;
+  _updatedAt: string;
   date: string;
   description: PortableTextBlock;
   title: string;
@@ -61,11 +63,11 @@ export const getNewsAndEvents = async (): Promise<NewsAndEvents> => {
 
   const eventQuery = `*[_type == "calendarEvent"
     && (startsAt >= "${formattedDate}" || endsAt >= "${formattedDate}")
-    && ${NO_DRAFTS}] | order(startsAt asc){_id, title, startsAt, endsAt, description}`;
+    && ${NO_DRAFTS}] | order(startsAt asc){_id, _updatedAt, title, startsAt, endsAt, description}`;
 
   const updateQuery = `*[_type == "newsUpdate"
     && (expireDate != null && expireDate >= "${formattedDate}")
-    && ${NO_DRAFTS}] | order(date asc){_id, title, date, description}`;
+    && ${NO_DRAFTS}] | order(date asc){_id, _updatedAt, title, date, description}`;
 
   const [events, updates] = await Promise.all([
     sterettSanityClient.fetch<CalendarEventReturn[]>(eventQuery),

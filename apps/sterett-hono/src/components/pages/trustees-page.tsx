@@ -6,9 +6,13 @@ import { TrusteeCard } from "../trustee-card.tsx";
 
 export const TrusteesPage = async () => {
   const trustees = await getTrustees();
+  const updatedAt = map(trustees, (t) => t._updatedAt)
+    .toSorted((a, b) => a.localeCompare(b))
+    .at(-1);
 
   return (
     <MainLayout
+      updatedAt={updatedAt}
       title="Sterett Creek Village Trustee | Trustees"
       description="Trustee contact information for Sterett Creek Village Trustee Board"
     >

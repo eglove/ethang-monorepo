@@ -1,12 +1,21 @@
+import map from "lodash/map.js";
+
 import { getFiles } from "../../sanity/get-files.ts";
 import { FileTable } from "../file-table.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
 
 export const FilesPage = async () => {
   const { covenants, general, meetingMinutes } = await getFiles();
+  const updatedAt = map(
+    [...covenants, ...general, ...meetingMinutes],
+    (f) => f._updatedAt,
+  )
+    .toSorted((a, b) => a.localeCompare(b))
+    .at(-1);
 
   return (
     <MainLayout
+      updatedAt={updatedAt}
       title="Sterett Creek Village Trustee | Files"
       description="Covenants and files for Sterett Creek Village Trustee"
     >

@@ -23,6 +23,9 @@ export const CalendarPage = async ({
   year: number;
 }) => {
   const events = await getCalendarEvents();
+  const updatedAt = map(events, (calendarEvent) => calendarEvent._updatedAt)
+    .toSorted((a, b) => a.localeCompare(b))
+    .at(-1);
 
   const eventsByDate = buildEventsByDate(events);
 
@@ -67,6 +70,7 @@ export const CalendarPage = async ({
 
   return (
     <MainLayout
+      updatedAt={updatedAt}
       title="Sterett Creek Village Trustee | Calendar"
       description="Events calendar for Sterett Creek Village Trustee"
     >
