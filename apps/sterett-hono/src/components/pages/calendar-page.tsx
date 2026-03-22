@@ -1,3 +1,4 @@
+import { google, ics, office365, outlook, yahoo } from "calendar-link";
 import filter from "lodash/filter.js";
 import map from "lodash/map.js";
 import slice from "lodash/slice.js";
@@ -9,11 +10,19 @@ import {
   formatDateTime,
   renderDescriptionHtml,
   toDateKey,
+  toPlainText,
 } from "../../utils/calendar.ts";
 import { MainLayout } from "../layouts/main-layout.tsx";
 
 const CHICAGO = "America/Chicago";
 const DAY_HEADERS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const CAL_SERVICES = [
+  { key: "google" as const, label: "Google" },
+  { key: "ics" as const, label: "Apple / ICS" },
+  { key: "outlook" as const, label: "Outlook" },
+  { key: "office365" as const, label: "Office 365" },
+  { key: "yahoo" as const, label: "Yahoo" },
+];
 
 export const CalendarPage = async ({
   month,
@@ -29,27 +38,11 @@ export const CalendarPage = async ({
 
   const eventsByDate = buildEventsByDate(events);
 
-  // Pre-render all event data for the client-side modal.
-  const eventData: Record<
-    string,
-    {
-      descriptionHtml: string;
-      endLabel: string;
-      startLabel: string;
-      title: string;
-    }
-  > = {};
-  for (const event of events) {
-    eventData[event._id] = {
-      descriptionHtml: renderDescriptionHtml(event.description),
-      endLabel: formatDateTime(event.endsAt),
-      startLabel: formatDateTime(event.startsAt),
-      title: event.title,
-    };
-  }
-
   const weeks = buildCalendarWeeks(year, month);
   const today = new Date().toLocaleDateString("en-CA", { timeZone: CHICAGO });
+  const todayYear = Number(today.slice(0, 4));
+  const todayMonth = Number(today.slice(5, 7));
+  const isCurrentMonth = year === todayYear && month === todayMonth;
 
   const previousMonth = 1 === month ? 12 : month - 1;
   const previousYear = 1 === month ? year - 1 : year;
@@ -59,14 +52,10 @@ export const CalendarPage = async ({
     month: "long",
   });
 
-  // Escape </script> to safely embed JSON in a script tag.
-  const safeJson = JSON.stringify(eventData).replaceAll(
-    /<\/script>/giu,
-    String.raw`<\/script>`,
-  );
-
   const navLinkClass =
-    "rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors";
+    "inline-flex min-h-6 items-center rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors";
+  const calLinkClass =
+    "inline-flex items-center rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 hover:text-white transition-colors";
 
   return (
     <MainLayout
@@ -82,9 +71,19 @@ export const CalendarPage = async ({
         >
           ← Prev
         </a>
-        <h1 class="text-xl font-bold tracking-wide">
-          {monthName} {year}
-        </h1>
+        <div class="flex flex-col items-center gap-1">
+          <h1 class="text-xl font-bold tracking-wide">
+            {monthName} {year}
+          </h1>
+          {!isCurrentMonth && (
+            <a
+              href={`/calendar?year=${todayYear}&month=${todayMonth}`}
+              class="text-xs text-white/50 underline transition-colors hover:text-white"
+            >
+              Today
+            </a>
+          )}
+        </div>
         <a
           class={navLinkClass}
           href={`/calendar?year=${nextYear}&month=${nextMonth}`}
@@ -138,7 +137,7 @@ export const CalendarPage = async ({
                   {map(slice(cellEvents, 0, 3), async (event) => (
                     <button
                       key={event._id}
-                      onclick={`openCalendarEvent('${event._id}')`}
+                      onclick={`document.getElementById('cal-${event._id}').showModal()`}
                       class="w-full cursor-pointer truncate rounded bg-sky-600/60 px-1 py-0.5 text-left text-xs text-white transition-colors hover:bg-sky-500/80"
                     >
                       {event.title}
@@ -156,63 +155,70 @@ export const CalendarPage = async ({
         )}
       </div>
 
-      {/* Native dialog */}
-      <dialog id="cal-dialog">
-        <div class="flex flex-col gap-4 p-6">
-          <div class="flex items-start justify-between gap-4">
-            {/* eslint-disable-next-line a11y/heading-has-content */}
-            <h2
-              id="cal-dialog-title"
-              class="text-lg leading-snug font-semibold"
-            ></h2>
-            <button
-              aria-label="Close"
-              onclick="document.getElementById('cal-dialog').close()"
-              class="shrink-0 rounded-full p-1 text-white/50 transition-colors hover:text-white"
-            >
-              ✕
-            </button>
-          </div>
-          <div class="space-y-1 text-sm text-white/70">
-            <p id="cal-dialog-start"></p>
-            <p id="cal-dialog-end"></p>
-          </div>
-          <div
-            id="cal-dialog-description"
-            class="prose prose-sm prose-invert"
-          ></div>
-        </div>
-      </dialog>
+      {map(events, async (event) => {
+        const calEvent = {
+          description: toPlainText(event.description),
+          end: event.endsAt,
+          start: event.startsAt,
+          title: event.title,
+        };
+        const links = {
+          google: google(calEvent),
+          ics: ics(calEvent),
+          office365: office365(calEvent),
+          outlook: outlook(calEvent),
+          yahoo: yahoo(calEvent),
+        };
 
-      {/* Embed event data */}
-      <script
-        dangerouslySetInnerHTML={{ __html: `const CAL_EVENTS = ${safeJson};` }}
-      />
-
-      {/* Dialog interaction */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-(function () {
-  const dialog = document.getElementById('cal-dialog');
-
-  window.openCalendarEvent = function (id) {
-    const e = CAL_EVENTS[id];
-    if (!e) return;
-    document.getElementById('cal-dialog-title').textContent = e.title;
-    document.getElementById('cal-dialog-start').textContent = 'Starts: ' + e.startLabel;
-    document.getElementById('cal-dialog-end').textContent = 'Ends: ' + e.endLabel;
-    document.getElementById('cal-dialog-description').innerHTML = e.descriptionHtml;
-    dialog.showModal();
-  };
-
-  dialog.addEventListener('click', function (e) {
-    if (e.target === dialog) dialog.close();
-  });
-})();
-`,
-        }}
-      />
+        return (
+          <dialog key={event._id} id={`cal-${event._id}`}>
+            <div class="flex flex-col gap-4 p-6">
+              <div class="flex items-start justify-between gap-4">
+                <h2 class="text-lg leading-snug font-semibold">
+                  {event.title}
+                </h2>
+                <button
+                  aria-label="Close"
+                  onclick={`document.getElementById('cal-${event._id}').close()`}
+                  class="shrink-0 rounded-full p-1 text-white/50 transition-colors hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+              <div class="space-y-1 text-sm text-white/70">
+                <p>Starts: {formatDateTime(event.startsAt)}</p>
+                <p>Ends: {formatDateTime(event.endsAt)}</p>
+              </div>
+              {event.description && (
+                <div
+                  class="prose prose-sm prose-invert"
+                  dangerouslySetInnerHTML={{
+                    __html: renderDescriptionHtml(event.description),
+                  }}
+                />
+              )}
+              <div class="flex flex-col gap-2 border-t border-white/10 pt-3">
+                <p class="text-xs font-medium text-white/50">
+                  Add to my Calendar
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  {map(CAL_SERVICES, async (service) => (
+                    <a
+                      target="_blank"
+                      key={service.key}
+                      class={calLinkClass}
+                      href={links[service.key]}
+                      rel="noopener noreferrer"
+                    >
+                      {service.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </dialog>
+        );
+      })}
     </MainLayout>
   );
 };

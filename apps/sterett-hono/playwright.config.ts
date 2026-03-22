@@ -35,17 +35,12 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
   ],
-  reporter: "html",
+  reporter: [["html", { open: "never" }]],
   retries: isNil(process.env["CI"]) ? 0 : 2,
   testDir: "./e2e",
   testMatch: "**/*.spec.ts",
   use: {
     baseURL: "http://localhost:8787",
-  },
-  webServer: {
-    command: "pnpm dev",
-    reuseExistingServer: isNil(process.env["CI"]),
-    url: "http://localhost:8787",
   },
   workers: isNil(process.env["CI"]) ? undefined : 1,
 });

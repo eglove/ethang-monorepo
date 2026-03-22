@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test as base, expect } from "@playwright/test";
 
+// https://www.deque.com/axe/core-documentation/api-documentation/#axecore-tags
 const A11Y_TAGS = [
   "wcag2a",
   "wcag2aa",
@@ -8,6 +9,7 @@ const A11Y_TAGS = [
   "wcag21aa",
   "wcag22aa",
   "best-practice",
+  "cat.*",
 ];
 
 export const test = base.extend({

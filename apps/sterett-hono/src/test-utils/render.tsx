@@ -9,7 +9,9 @@ import type { TrusteeRecord } from "../sanity/get-trustees.ts";
 
 import { CalendarEvent } from "../components/event.tsx";
 import { FileTable } from "../components/file-table.tsx";
+import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { NewsUpdate } from "../components/news-update.tsx";
+import { PortableText } from "../components/portable-text.tsx";
 import { TrusteeCard } from "../components/trustee-card.tsx";
 
 // eslint-disable-next-line unicorn/no-await-expression-member
@@ -36,5 +38,35 @@ export const renderNewsUpdate = async (data: NewsUpdateReturn) => {
 export const renderTrusteeCard = async (trustee: TrusteeRecord) => {
   const app = new Hono();
   app.get("/", async (c) => c.html(<TrusteeCard trustee={trustee} />));
+  return html(app);
+};
+
+export const renderMainLayout = async (properties: {
+  children?: unknown;
+  description?: string;
+  title?: string;
+  updatedAt?: string;
+}) => {
+  const app = new Hono();
+  app.get("/", async (c) =>
+    c.html(
+      // @ts-expect-error for testing
+      <MainLayout
+        title={properties.title}
+        updatedAt={properties.updatedAt}
+        description={properties.description}
+      >
+        {properties.children}
+      </MainLayout>,
+    ),
+  );
+  return html(app);
+};
+
+export const renderPortableText = async (
+  content: Parameters<typeof PortableText>[0]["content"],
+) => {
+  const app = new Hono();
+  app.get("/", async (c) => c.html(<PortableText content={content} />));
   return html(app);
 };

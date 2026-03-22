@@ -91,3 +91,19 @@ export const renderDescriptionHtml = (
   const blocks = isArray(description) ? description : [description];
   return toHTML(blocks, { components: { types: { image: constant("") } } });
 };
+
+export const toPlainText = (
+  description: CalendarEventRecord["description"],
+): string => {
+  if (!description) return "";
+  const blocks = isArray(description) ? description : [description];
+  return blocks
+    .filter((b) => "block" === b._type)
+    .map((b) =>
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      ((b as { children?: { text?: string }[] }).children ?? [])
+        .map((s) => s.text ?? "")
+        .join(""),
+    )
+    .join("\n");
+};
