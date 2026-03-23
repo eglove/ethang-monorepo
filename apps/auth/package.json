@@ -9,14 +9,14 @@
     "@hono/zod-validator": "^0.7.6",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.1",
-    "hono": "^4.12.8",
+    "hono": "^4.12.9",
     "jose": "^6.2.2",
     "lodash": "^4.17.23",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "^1.57.1",
-    "@ethang/eslint-config": "^25.5.2",
+    "@dotenvx/dotenvx": "^1.57.2",
+    "@ethang/eslint-config": "^25.5.3",
     "@types/lodash": "^4.17.24",
     "browserslist-config-baseline": "^0.5.0",
     "drizzle-kit": "^0.31.10",

@@ -16,7 +16,7 @@
     "@eslint/json": "^1.2.0",
     "@eslint/markdown": "^7.5.1",
     "@html-eslint/eslint-plugin": "^0.58.1",
-    "@tanstack/eslint-plugin-query": "^5.94.5",
+    "@tanstack/eslint-plugin-query": "^5.95.0",
     "@tanstack/eslint-plugin-router": "^1.161.6",
     "@typescript-eslint/parser": "^8.57.1",
     "angular-eslint": "21.3.1",
@@ -31,7 +31,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-solid": "^0.14.5",
     "eslint-plugin-sonarjs": "4.0.2",
-    "eslint-plugin-storybook": "^10.3.1",
+    "eslint-plugin-storybook": "^10.3.2",
     "eslint-plugin-tailwindcss": "^4.0.0-beta.0",
     "eslint-plugin-unicorn": "^63.0.0",
     "prettier": "^3.8.1",
@@ -69,5 +69,5 @@
     "test:watch": "vitest --coverage"
   },
   "type": "module",
-  "version": "25.5.2"
+  "version": "25.5.3"
 }
