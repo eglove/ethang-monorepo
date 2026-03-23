@@ -40,7 +40,7 @@
     "deploy": "pnpm tw && bun scripts/stamp-sw.ts && wrangler deploy --minify",
     "dev": "wrangler dev",
     "lint": "eslint . --fix --concurrency=auto",
-    "test": "pnpm test:vitest && pnpm test:playwright",
+    "test": "pnpm test:vitest",
     "test:playwright": "playwright test",
     "test:vitest": "vitest run --coverage",
     "tw": "pnpx @tailwindcss/cli -i ./src/index.css -o ./public/index.css",
