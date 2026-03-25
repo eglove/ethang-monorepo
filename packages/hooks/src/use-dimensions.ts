@@ -23,9 +23,7 @@ export const useDimensions = ({
   initialDimensions = {},
   liveMeasure = true,
 }: UseDimensionsProperties): UseDimensionsReturn => {
-  const [dimensions, setDimensions] = useState<
-    DOMRect | Record<string, unknown>
-  >(initialDimensions);
+  const [dimensions, setDimensions] = useState(initialDimensions);
   const [element, setElement] = useState<Element | undefined>();
 
   const reference = useCallback((node: Element | undefined) => {

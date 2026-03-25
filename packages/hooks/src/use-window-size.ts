@@ -9,10 +9,7 @@ export const useWindowSize = (
   height: number;
   width: number;
 } => {
-  const [state, setState] = useState<{
-    height: number;
-    width: number;
-  }>({
+  const [state, setState] = useState({
     height: isBrowser ? globalThis.innerHeight : initialHeight,
     width: isBrowser ? globalThis.innerWidth : initialWidth,
   });

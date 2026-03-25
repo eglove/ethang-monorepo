@@ -1,5 +1,3 @@
-import type { FC } from "hono/jsx";
-
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
@@ -15,13 +13,13 @@ type MainLayoutProperties = {
   updatedAt?: string | undefined;
 };
 
-export const MainLayout: FC<MainLayoutProperties> = async ({
+export const MainLayout = async ({
   children,
   description,
   prefetch,
   title,
   updatedAt,
-}) => {
+}: MainLayoutProperties) => {
   const pageTitle = title ?? "Sterett Creek Village Trustee";
   const pageDescription = description ?? "Sterett Creek Village Trustee Board";
 

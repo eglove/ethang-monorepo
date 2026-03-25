@@ -13,7 +13,7 @@ export class Tree<T> {
   private buildTree(values: T[]): TreeNode<T> {
     const firstValue = get(values, [0]);
 
-    const root = new TreeNode<T>(firstValue, null, null);
+    const root = new TreeNode(firstValue, null, null);
     const queue = [root];
     let index = 1;
 
@@ -28,7 +28,7 @@ export class Tree<T> {
         const value = values[index];
 
         if (!isNil(value)) {
-          current.left = new TreeNode<T>(value, null, null);
+          current.left = new TreeNode(value, null, null);
           index += 1;
           queue.push(current.left);
         }
@@ -38,7 +38,7 @@ export class Tree<T> {
         const value = values[index];
 
         if (!isNil(value)) {
-          current.right = new TreeNode<T>(value, null, null);
+          current.right = new TreeNode(value, null, null);
           index += 1;
           queue.push(current.right);
         }

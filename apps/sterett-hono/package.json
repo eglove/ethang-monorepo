@@ -17,19 +17,19 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
-    "@ethang/eslint-config": "^25.5.3",
-    "@faker-js/faker": "^10.3.0",
+    "@ethang/eslint-config": "^25.5.4",
+    "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.58.2",
     "@portabletext/types": "^4.0.2",
     "@tailwindcss/typography": "^0.5.19",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.5.0",
-    "@vitest/coverage-v8": "^4.1.0",
+    "@vitest/coverage-v8": "^4.1.1",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.1.0",
-    "vitest": "^4.1.0",
-    "wrangler": "^4.76.0"
+    "vitest": "^4.1.1",
+    "wrangler": "^4.77.0"
   },
   "engines": {
     "node": ">=24"
