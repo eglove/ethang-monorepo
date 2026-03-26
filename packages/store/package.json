@@ -27,7 +27,7 @@
   "name": "@ethang/store",
   "scripts": {
     "build": "bun build.ts",
-    "lint": "eslint ./src --fix --concurrency=auto",
+    "lint": "eslint ./src --fix",
     "test": "vitest run"
   },
   "type": "module",

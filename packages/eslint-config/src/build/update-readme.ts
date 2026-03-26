@@ -201,7 +201,7 @@ export default defineConfig(
   md.bold("Scripts", 2);
   md.codeBlock(
     `"scripts": {
-  "lint": "eslint . --fix --concurrency=auto"
+  "lint": "eslint . --fix"
 }`,
     "json",
     2,

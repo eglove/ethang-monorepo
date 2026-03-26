@@ -27,7 +27,7 @@
   "repository": "https://github.com/eglove/hooks",
   "scripts": {
     "build": "bun build.ts",
-    "lint": "eslint src/ --fix --concurrency=auto"
+    "lint": "eslint src/ --fix"
   },
   "type": "module",
   "version": "2.3.1"

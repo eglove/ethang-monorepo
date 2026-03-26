@@ -91,7 +91,7 @@ export default defineConfig(
 
 ```json
 "scripts": {
-  "lint": "eslint . --fix --concurrency=auto"
+  "lint": "eslint . --fix"
 }
 ```
 

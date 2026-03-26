@@ -38,7 +38,7 @@
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
     "dev": "sanity dev",
-    "lint": "eslint . --fix --concurrency=auto",
+    "lint": "eslint . --fix",
     "start": "sanity start"
   },
   "type": "module",

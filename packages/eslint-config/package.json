@@ -64,7 +64,7 @@
   },
   "scripts": {
     "build": "bun build.ts && pnpm lint",
-    "lint": "eslint . --fix --concurrency=auto && prettier src --write",
+    "lint": "eslint . --fix && prettier src --write",
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage"
   },
