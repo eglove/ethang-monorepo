@@ -1008,6 +1008,7 @@ export default defineConfig(
     },
     rules: {
       "markdown/fenced-code-language": "error",
+      "markdown/fenced-code-meta": "error",
       "markdown/heading-increment": "error",
       "markdown/no-bare-urls": "error",
       "markdown/no-duplicate-definitions": "error",
