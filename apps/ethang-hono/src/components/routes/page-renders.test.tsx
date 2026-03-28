@@ -2,10 +2,10 @@ import type { JSX } from "hono/jsx/jsx-runtime";
 
 import { Hono } from "hono";
 import isArray from "lodash/isArray.js";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-vi.mock("flowbite", () => ({}));
-vi.mock("../../models/blog-model.ts", () => ({
+vi.mock(import("flowbite"), () => ({}));
+vi.mock(import("../../models/blog-model.ts"), () => ({
   BlogModel: vi.fn(),
 }));
 
@@ -27,22 +27,33 @@ const render = async (component: JSX.Element): Promise<string> => {
   return response.text();
 };
 
-describe("Home", () => {
+const mockBlogModelWith = (getAllBlogs: ReturnType<typeof vi.fn>) => {
+  vi.mocked(BlogModel).mockImplementation(
+    class {
+      public getAllBlogs = getAllBlogs;
+    } as never,
+  );
+};
+
+describe(Home, () => {
   it(RENDERS_FULL_HTML, async () => {
     const html = await render(<Home />);
+
     expect(html).toContain("<html");
     expect(html).toContain("</html>");
   });
 
   it("includes EthanG in the title", async () => {
     const html = await render(<Home />);
+
     expect(html).toContain("EthanG");
   });
 });
 
-describe("SignIn", () => {
+describe(SignIn, () => {
   it("renders a full HTML document with sign-in form", async () => {
     const html = await render(<SignIn />);
+
     expect(html).toContain("<html");
     expect(html).toContain("<form");
     expect(html).toContain('id="sign-in-form"');
@@ -50,45 +61,51 @@ describe("SignIn", () => {
 
   it("includes email and password inputs", async () => {
     const html = await render(<SignIn />);
+
     expect(html).toContain('type="email"');
     expect(html).toContain('type="password"');
   });
 
   it("includes a submit button", async () => {
     const html = await render(<SignIn />);
+
     expect(html).toContain('type="submit"');
   });
 });
 
-describe("NotFound", () => {
+describe(NotFound, () => {
   it(RENDERS_FULL_HTML, async () => {
     const html = await render(<NotFound />);
+
     expect(html).toContain("<html");
     expect(html).toContain("</html>");
   });
 
   it("includes 404 not found text", async () => {
     const html = await render(<NotFound />);
+
     expect(html).toContain("404 Not Found");
   });
 });
 
-describe("Tips", () => {
+describe(Tips, () => {
   it(RENDERS_FULL_HTML, async () => {
     const html = await render(<Tips />);
+
     expect(html).toContain("<html");
     expect(html).toContain("Tips");
   });
 
   it("includes links to tip pages", async () => {
     const html = await render(<Tips />);
+
     expect(html).toContain("/tips/scroll-containers");
     expect(html).toContain("/tips/scrollbar-gutter");
   });
 
   it("exports the allTips array with two tips", () => {
     expect(isArray(allTips)).toBe(true);
-    expect(allTips.length).toBe(2);
+    expect(allTips).toHaveLength(2);
   });
 
   it("allTips contains href and title properties", () => {
@@ -99,65 +116,54 @@ describe("Tips", () => {
   });
 });
 
-let mockGetAllBlogs = vi.fn();
-
-describe("Blog", () => {
-  beforeEach(() => {
-    mockGetAllBlogs = vi.fn();
-    vi.mocked(BlogModel).mockImplementation(
-      class {
-        public getAllBlogs = mockGetAllBlogs;
-      } as never,
-    );
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
+describe(Blog, () => {
   it("renders HTML page listing blogs", async () => {
-    mockGetAllBlogs.mockResolvedValue([
-      {
-        _createdAt: "2024-01-01T00:00:00Z",
-        _id: "blog-1",
-        _updatedAt: "2024-02-01T00:00:00Z",
-        author: "Author",
-        blogCategory: { _id: "cat-1", title: "Blog" },
-        description: "A post",
-        slug: { current: "my-post" },
-        title: "My Post",
-      },
-    ]);
+    vi.clearAllMocks();
+    mockBlogModelWith(
+      vi.fn().mockResolvedValue([
+        {
+          _createdAt: "2024-01-01T00:00:00Z",
+          _id: "blog-1",
+          _updatedAt: "2024-02-01T00:00:00Z",
+          author: "Author",
+          blogCategory: { _id: "cat-1", title: "Blog" },
+          description: "A post",
+          slug: { current: "my-post" },
+          title: "My Post",
+        },
+      ]),
+    );
 
     const html = await render(<Blog />);
+
     expect(html).toContain("<html");
     expect(html).toContain("Blog");
   });
 
   it("renders empty state when no blogs", async () => {
-    mockGetAllBlogs.mockResolvedValue([]);
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn().mockResolvedValue([]));
 
     const html = await render(<Blog />);
+
     expect(html).toContain("<html");
   });
 });
 
-describe("Courses", () => {
-  afterEach(() => {
-    coursePathData.learningPaths = undefined;
-    coursePathData.latestUpdate = undefined;
-  });
-
+describe(Courses, () => {
   it("renders HTML page with courses content", async () => {
+    vi.clearAllMocks();
     coursePathData.learningPaths = [];
     coursePathData.latestUpdate = undefined;
 
     const html = await render(<Courses />);
+
     expect(html).toContain("<html");
     expect(html).toContain("Recommended Courses");
   });
 
   it("includes last updated date when latestUpdate is set", async () => {
+    vi.clearAllMocks();
     coursePathData.learningPaths = [];
     coursePathData.latestUpdate = {
       _id: "update-1",
@@ -165,6 +171,7 @@ describe("Courses", () => {
     };
 
     const html = await render(<Courses />);
+
     expect(html).toContain("Last Updated:");
   });
 });

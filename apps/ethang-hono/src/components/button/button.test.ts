@@ -3,9 +3,10 @@ import { describe, expect, it } from "vitest";
 
 import { Button } from "./button.tsx";
 
-describe("Button", () => {
+describe(Button, () => {
   it("renders a button element by default", async () => {
     const html = String(await Button({ children: "Click me", type: "button" }));
+
     expect(html).toContain("<button");
     expect(html).toContain("Click me");
   });
@@ -23,6 +24,7 @@ describe("Button", () => {
     });
     const response = await testApp.request("/");
     const html = await response.text();
+
     expect(html).toContain("<a");
     expect(html).toContain('href="/about"');
     expect(html).toContain("Go here");
@@ -32,6 +34,7 @@ describe("Button", () => {
     const html = String(
       await Button({ children: "x", className: "my-btn", type: "submit" }),
     );
+
     expect(html).toContain("my-btn");
   });
 
@@ -39,6 +42,7 @@ describe("Button", () => {
     const html = String(
       await Button({ children: "x", id: "my-id", type: "reset" }),
     );
+
     expect(html).toContain('id="my-id"');
   });
 
@@ -54,6 +58,7 @@ describe("Button", () => {
     });
     const response = await testApp.request("/");
     const html = await response.text();
+
     expect(html).toContain('href="#"');
   });
 });

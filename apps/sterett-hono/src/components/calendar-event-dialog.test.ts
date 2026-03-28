@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("../clients/sanity-client.ts", () => ({
+vi.mock(import("../clients/sanity-client.ts"), () => ({
   NO_DRAFTS: "!(_id in path('drafts.**'))",
   sanityImage: { image: () => ({}) },
   sterettSanityClient: { fetch: vi.fn() },
@@ -22,11 +22,12 @@ const makeEvent = (
   ...overrides,
 });
 
-describe("CalendarEventDialog", () => {
+describe("calendarEventDialog", () => {
   it("renders dialog with correct id", async () => {
     const html = await renderCalendarEventDialog(
       makeEvent({ _id: "my-event" }),
     );
+
     expect(html).toContain("cal-my-event");
   });
 
@@ -34,17 +35,20 @@ describe("CalendarEventDialog", () => {
     const html = await renderCalendarEventDialog(
       makeEvent({ title: "Annual Meeting" }),
     );
+
     expect(html).toContain("Annual Meeting");
   });
 
   it("renders formatted start and end times", async () => {
     const html = await renderCalendarEventDialog(makeEvent());
+
     expect(html).toContain("Starts:");
     expect(html).toContain("Ends:");
   });
 
   it("renders calendar service links", async () => {
     const html = await renderCalendarEventDialog(makeEvent());
+
     expect(html).toContain("Google");
     expect(html).toContain("Apple / ICS");
     expect(html).toContain("Outlook");
@@ -54,11 +58,13 @@ describe("CalendarEventDialog", () => {
 
   it("renders 'Add to my Calendar' section", async () => {
     const html = await renderCalendarEventDialog(makeEvent());
+
     expect(html).toContain("Add to my Calendar");
   });
 
   it("renders close button", async () => {
     const html = await renderCalendarEventDialog(makeEvent());
+
     expect(html).toContain("Close");
   });
 
@@ -82,6 +88,7 @@ describe("CalendarEventDialog", () => {
       ],
     });
     const html = await renderCalendarEventDialog(event);
+
     expect(html).toContain("Event description text");
   });
 
@@ -89,6 +96,7 @@ describe("CalendarEventDialog", () => {
     const html = await renderCalendarEventDialog(
       makeEvent({ description: null }),
     );
+
     expect(html).not.toContain("prose");
   });
 });

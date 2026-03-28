@@ -1,6 +1,7 @@
 import htmlConfig from "@ethang/eslint-config/config.html.js";
 import config from "@ethang/eslint-config/config.main.js";
 import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";
+import vitestConfig from "@ethang/eslint-config/config.vitest.js";
 import { defineConfig, globalIgnores } from "eslint/config";
 import path from "node:path";
 
@@ -20,6 +21,7 @@ export default defineConfig(
     "test-results",
   ]),
   ...config,
+  ...vitestConfig,
   ...htmlConfig,
   ...tailwindConfig(path.join(import.meta.dirname, "src", "index.css")),
   {
@@ -30,12 +32,5 @@ export default defineConfig(
       },
     },
     rules: {},
-  },
-  {
-    files: ["**/*.test.ts", "**/*.test.tsx"],
-    rules: {
-      "@typescript-eslint/no-unsafe-type-assertion": "off",
-      "unicorn/no-useless-undefined": "off",
-    },
   },
 );

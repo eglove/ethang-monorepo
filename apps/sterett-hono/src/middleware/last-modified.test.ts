@@ -13,7 +13,7 @@ const metaTag = (content: string) =>
 const htmlWith = (meta: string) =>
   `<html><head>${meta}</head><body>Hello</body></html>`;
 
-describe("lastModifiedMiddleware", () => {
+describe(lastModifiedMiddleware, () => {
   it("sets Last-Modified header from a valid meta tag", async () => {
     const app = new Hono();
     app.use(lastModifiedMiddleware);
@@ -74,7 +74,7 @@ describe("lastModifiedMiddleware", () => {
 
     const response = await app.request("/");
 
-    expect(await response.text()).toBe(originalHtml);
+    await expect(response.text()).resolves.toBe(originalHtml);
   });
 
   it("preserves existing response headers", async () => {

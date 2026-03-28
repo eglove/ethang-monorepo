@@ -72,7 +72,7 @@ export default defineConfig(globalIgnores(ignores), {
     "vitest/prefer-strict-boolean-matchers": "error",
     "vitest/prefer-strict-equal": "error",
     "vitest/prefer-to-be": "error",
-    "vitest/prefer-to-be-falsy": "error",
+    "vitest/prefer-to-be-falsy": "off",
     "vitest/prefer-to-be-object": "error",
     "vitest/prefer-to-be-truthy": "off",
     "vitest/prefer-to-contain": "error",

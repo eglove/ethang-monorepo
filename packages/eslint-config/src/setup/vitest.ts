@@ -32,6 +32,10 @@ const customRules = [
     rule: "off",
   },
   {
+    name: "prefer-to-be-falsy",
+    rule: "off",
+  },
+  {
     name: "require-mock-type-parameters",
     rule: "off",
   },

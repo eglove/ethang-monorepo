@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-vi.mock("../models/blog-model.ts", () => ({
+vi.mock(import("../models/blog-model.ts"), () => ({
   BlogModel: vi.fn(),
 }));
 
@@ -18,24 +18,19 @@ const makeBlog = (overrides = {}) => ({
   ...overrides,
 });
 
-let mockGetAllBlogs = vi.fn();
+const mockBlogModelWith = (getAllBlogs: ReturnType<typeof vi.fn>) => {
+  vi.mocked(BlogModel).mockImplementation(
+    class {
+      public getAllBlogs = getAllBlogs;
+    } as never,
+  );
+};
 
-describe("blogRss", () => {
-  beforeEach(() => {
-    mockGetAllBlogs = vi.fn();
-    vi.mocked(BlogModel).mockImplementation(
-      class {
-        public getAllBlogs = mockGetAllBlogs;
-      } as never,
-    );
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
+describe(blogRss, () => {
   it("returns valid RSS XML structure", async () => {
-    mockGetAllBlogs.mockResolvedValue([]);
+    vi.clearAllMocks();
+    const mockGetAllBlogs = vi.fn().mockResolvedValue([]);
+    mockBlogModelWith(mockGetAllBlogs);
 
     const result = await blogRss();
 
@@ -47,7 +42,9 @@ describe("blogRss", () => {
   });
 
   it("includes feed metadata", async () => {
-    mockGetAllBlogs.mockResolvedValue([]);
+    vi.clearAllMocks();
+    const mockGetAllBlogs = vi.fn().mockResolvedValue([]);
+    mockBlogModelWith(mockGetAllBlogs);
 
     const result = await blogRss();
 
@@ -58,16 +55,20 @@ describe("blogRss", () => {
   });
 
   it("uses current date for lastBuildDate when blogs list is empty", async () => {
-    mockGetAllBlogs.mockResolvedValue([]);
+    vi.clearAllMocks();
+    const mockGetAllBlogs = vi.fn().mockResolvedValue([]);
+    mockBlogModelWith(mockGetAllBlogs);
 
     const before = new Date();
     const result = await blogRss();
     const after = new Date();
 
     const match = /<lastBuildDate>(?<date>.+?)<\/lastBuildDate>/u.exec(result);
+
     expect(match).not.toBeNull();
 
     const parsedDate = new Date(match?.groups?.["date"] ?? "");
+
     expect(parsedDate.getTime()).toBeGreaterThanOrEqual(
       before.getTime() - 1000,
     );
@@ -75,12 +76,14 @@ describe("blogRss", () => {
   });
 
   it("uses last blog _updatedAt for lastBuildDate", async () => {
+    vi.clearAllMocks();
     const updatedAt = "2024-07-15T09:30:00.000Z";
     const blogs = [
       makeBlog({ _updatedAt: "2024-01-01T00:00:00Z" }),
       makeBlog({ _updatedAt: updatedAt }),
     ];
-    mockGetAllBlogs.mockResolvedValue(blogs);
+    const mockGetAllBlogs = vi.fn().mockResolvedValue(blogs);
+    mockBlogModelWith(mockGetAllBlogs);
 
     const result = await blogRss();
 
@@ -88,8 +91,10 @@ describe("blogRss", () => {
   });
 
   it("includes an item for each blog", async () => {
+    vi.clearAllMocks();
     const blogs = [makeBlog(), makeBlog(), makeBlog()];
-    mockGetAllBlogs.mockResolvedValue(blogs);
+    const mockGetAllBlogs = vi.fn().mockResolvedValue(blogs);
+    mockBlogModelWith(mockGetAllBlogs);
 
     const result = await blogRss();
     const itemCount = (result.match(/<item>/gu) ?? []).length;
@@ -98,13 +103,15 @@ describe("blogRss", () => {
   });
 
   it("includes blog title, link, description, and guid in each item", async () => {
+    vi.clearAllMocks();
     const blog = makeBlog({
       _id: "unique-guid-123",
       description: "A great post about testing",
       slug: { current: "testing-tips" },
       title: "Testing Tips",
     });
-    mockGetAllBlogs.mockResolvedValue([blog]);
+    const mockGetAllBlogs = vi.fn().mockResolvedValue([blog]);
+    mockBlogModelWith(mockGetAllBlogs);
 
     const result = await blogRss();
 
@@ -115,9 +122,11 @@ describe("blogRss", () => {
   });
 
   it("formats pubDate as UTC string from _createdAt", async () => {
+    vi.clearAllMocks();
     const createdAt = "2024-03-01T14:00:00.000Z";
     const blog = makeBlog({ _createdAt: createdAt });
-    mockGetAllBlogs.mockResolvedValue([blog]);
+    const mockGetAllBlogs = vi.fn().mockResolvedValue([blog]);
+    mockBlogModelWith(mockGetAllBlogs);
 
     const result = await blogRss();
 

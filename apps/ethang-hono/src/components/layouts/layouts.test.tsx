@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("flowbite", () => ({}));
+vi.mock(import("flowbite"), () => ({}));
 
 import { BlogLayout } from "./blog-layout.tsx";
 import { MainLayout, type MainLayoutProperties } from "./main-layout.tsx";
@@ -15,9 +15,10 @@ const renderMain = async (
   return response.text();
 };
 
-describe("MainLayout", () => {
+describe(MainLayout, () => {
   it("renders full HTML document structure", async () => {
     const html = await renderMain({ children: "content" });
+
     expect(html).toContain("<html");
     expect(html).toContain("<head");
     expect(html).toContain("<body");
@@ -26,16 +27,19 @@ describe("MainLayout", () => {
 
   it("defaults title to EthanG when not provided", async () => {
     const html = await renderMain({ children: "" });
+
     expect(html).toContain("<title>EthanG</title>");
   });
 
   it("formats title as EthanG | <title> when provided", async () => {
     const html = await renderMain({ children: "", title: "Blog" });
+
     expect(html).toContain("<title>EthanG | Blog</title>");
   });
 
   it("uses default description when not provided", async () => {
     const html = await renderMain({ children: "" });
+
     expect(html).toContain("Messing around on the web sometimes.");
   });
 
@@ -44,6 +48,7 @@ describe("MainLayout", () => {
       children: "",
       description: "Custom description",
     });
+
     expect(html).toContain("Custom description");
   });
 
@@ -54,6 +59,7 @@ describe("MainLayout", () => {
       publishedAt: "2024-01-01",
       updatedAt: "2024-02-01",
     });
+
     expect(html).toContain("blogRss.xml");
     expect(html).toContain("article:published_time");
     expect(html).toContain("article:modified_time");
@@ -61,6 +67,7 @@ describe("MainLayout", () => {
 
   it("does not include blog RSS link when isBlog is false", async () => {
     const html = await renderMain({ children: "", isBlog: false });
+
     expect(html).not.toContain("article:published_time");
   });
 
@@ -69,12 +76,14 @@ describe("MainLayout", () => {
       canonicalUrl: "https://ethang.dev/page",
       children: "",
     });
+
     expect(html).toContain('rel="canonical"');
     expect(html).toContain("https://ethang.dev/page");
   });
 
   it("does not include canonical link when canonicalUrl is absent", async () => {
     const html = await renderMain({ children: "" });
+
     expect(html).not.toContain('rel="canonical"');
   });
 
@@ -83,6 +92,7 @@ describe("MainLayout", () => {
       children: "",
       textAlternate: "/page?format=text",
     });
+
     expect(html).toContain("text/plain");
     expect(html).toContain("/page?format=text");
   });
@@ -90,22 +100,25 @@ describe("MainLayout", () => {
   it("includes last-modified meta tag when updatedAt is provided", async () => {
     const updatedAt = "2024-06-15T10:00:00Z";
     const html = await renderMain({ children: "", updatedAt });
+
     expect(html).toContain('name="last-modified"');
     expect(html).toContain(updatedAt);
   });
 
   it("does not include last-modified meta tag when updatedAt is absent", async () => {
     const html = await renderMain({ children: "" });
+
     expect(html).not.toContain('name="last-modified"');
   });
 
   it("renders children content", async () => {
     const html = await renderMain({ children: "My page content here" });
+
     expect(html).toContain("My page content here");
   });
 });
 
-describe("BlogLayout", () => {
+describe(BlogLayout, () => {
   it("delegates to MainLayout with isBlog=true", async () => {
     const testApp = new Hono();
     testApp.get("/", async (c) =>
@@ -113,6 +126,7 @@ describe("BlogLayout", () => {
     );
     const response = await testApp.request("/");
     const html = await response.text();
+
     expect(html).toContain("<html");
     expect(html).toContain("Blog content");
     expect(html).toContain("blogRss.xml");

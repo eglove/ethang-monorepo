@@ -10,58 +10,74 @@ import { LinkedInSvg } from "./linked-in.tsx";
 
 const RENDERS_SVG = "renders an SVG element";
 
-const expectSvg = (html: string) => {
-  expect(html).toContain("<svg");
-  expect(html).toContain("</svg>");
-};
-
-describe("ArrowUpRightSvg", () => {
+describe(ArrowUpRightSvg, () => {
   it(RENDERS_SVG, async () => {
-    expectSvg(String(await ArrowUpRightSvg({})));
+    const html = String(await ArrowUpRightSvg({}));
+
+    expect(html).toContain("<svg");
+    expect(html).toContain("</svg>");
   });
 });
 
-describe("ArrowUpSvg", () => {
+describe(ArrowUpSvg, () => {
   it(RENDERS_SVG, async () => {
-    expectSvg(String(await ArrowUpSvg({})));
+    const html = String(await ArrowUpSvg({}));
+
+    expect(html).toContain("<svg");
+    expect(html).toContain("</svg>");
   });
 });
 
-describe("ChevronDownSvg", () => {
+describe(ChevronDownSvg, () => {
   it(RENDERS_SVG, async () => {
-    expectSvg(String(await ChevronDownSvg({})));
+    const html = String(await ChevronDownSvg({}));
+
+    expect(html).toContain("<svg");
+    expect(html).toContain("</svg>");
   });
 });
 
-describe("ChevronUpSvg", () => {
+describe(ChevronUpSvg, () => {
   it(RENDERS_SVG, async () => {
-    expectSvg(String(await ChevronUpSvg({})));
+    const html = String(await ChevronUpSvg({}));
+
+    expect(html).toContain("<svg");
+    expect(html).toContain("</svg>");
   });
 });
 
-describe("EmailSvg", () => {
+describe(EmailSvg, () => {
   it(RENDERS_SVG, async () => {
-    expectSvg(String(await EmailSvg({})));
+    const html = String(await EmailSvg({}));
+
+    expect(html).toContain("<svg");
+    expect(html).toContain("</svg>");
   });
 });
 
-describe("GitHubSvg", () => {
+describe(GitHubSvg, () => {
   it("renders an SVG element with default dimensions", async () => {
     const html = String(await GitHubSvg({}));
-    expectSvg(html);
+
+    expect(html).toContain("<svg");
+    expect(html).toContain("</svg>");
     expect(html).toContain('width="24"');
     expect(html).toContain('height="24"');
   });
 
   it("accepts custom width and height", async () => {
     const html = String(await GitHubSvg({ height: "32", width: "32" }));
+
     expect(html).toContain('width="32"');
     expect(html).toContain('height="32"');
   });
 });
 
-describe("LinkedInSvg", () => {
+describe(LinkedInSvg, () => {
   it(RENDERS_SVG, async () => {
-    expectSvg(String(await LinkedInSvg({})));
+    const html = String(await LinkedInSvg({}));
+
+    expect(html).toContain("<svg");
+    expect(html).toContain("</svg>");
   });
 });

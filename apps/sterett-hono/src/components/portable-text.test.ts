@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import { renderPortableText } from "../test-utils/render.tsx";
 
-describe("PortableText", () => {
+describe("portableText", () => {
   it("renders a prose div when content is undefined", async () => {
     const html = await renderPortableText();
+
     expect(html).toContain("prose");
   });
 
@@ -20,8 +21,9 @@ describe("PortableText", () => {
         style: "normal",
       },
     ];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
     const html = await renderPortableText(content as never);
+
     expect(html).toContain("Hello world");
   });
 
@@ -42,8 +44,9 @@ describe("PortableText", () => {
         style: "normal",
       },
     ];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
     const html = await renderPortableText(content as never);
+
     expect(html).toContain("First");
     expect(html).toContain("Second");
   });
@@ -61,8 +64,9 @@ describe("PortableText", () => {
         },
       },
     ];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
     const html = await renderPortableText(content as never);
+
     expect(html).toContain('alt="A scenic lake"');
     expect(html).toContain("https://example.com/lake.jpg");
   });
@@ -75,8 +79,9 @@ describe("PortableText", () => {
         altText: "No asset",
       },
     ];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
     const html = await renderPortableText(content as never);
+
     expect(html).toContain("prose");
   });
 });

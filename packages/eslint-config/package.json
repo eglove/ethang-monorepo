@@ -70,5 +70,5 @@
     "test:watch": "vitest --coverage"
   },
   "type": "module",
-  "version": "25.8.1"
+  "version": "25.8.3"
 }

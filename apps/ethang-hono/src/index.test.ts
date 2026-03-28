@@ -1,19 +1,19 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-vi.mock("flowbite", () => ({}));
-vi.mock("@ethang/toolbelt/http/cookie.js", () => ({
+vi.mock(import("flowbite"), () => ({}));
+vi.mock(import("@ethang/toolbelt/http/cookie.js"), () => ({
   getCookieValue: vi.fn().mockReturnValue(new Error("no cookie")),
 }));
-vi.mock("./models/blog-model.ts", () => ({
+vi.mock(import("./models/blog-model.ts"), () => ({
   BlogModel: vi.fn(),
 }));
-vi.mock("./clients/sanity.ts", () => ({
+vi.mock(import("./clients/sanity.ts"), () => ({
   sanityClient: { fetch: vi.fn() },
 }));
-vi.mock("./db/database.ts", () => ({
+vi.mock(import("./db/database.ts"), () => ({
   getDatabase: vi.fn(),
 }));
-vi.mock("./stores/course-path-store.ts", () => {
+vi.mock(import("./stores/course-path-store.ts"), () => {
   const mockStore = {
     courseTrackings: [],
     getCourse: vi.fn(),
@@ -40,139 +40,160 @@ const RETURNS_200_HTML = "returns 200 with HTML";
 const TEXT_HTML = "text/html";
 const COURSES_URL = "https://ethang.dev/courses";
 
-let mockGetAllBlogs = vi.fn();
-let mockGetBlogBySlug = vi.fn();
+const mockBlogModelWith = (
+  getAllBlogs: ReturnType<typeof vi.fn>,
+  getBlogBySlug: ReturnType<typeof vi.fn> = vi.fn(),
+) => {
+  vi.mocked(BlogModel).mockImplementation(
+    class {
+      public getAllBlogs = getAllBlogs;
+      public getBlogBySlug = getBlogBySlug;
+    } as never,
+  );
+};
 
-describe("app — pages", () => {
-  beforeEach(() => {
-    mockGetAllBlogs = vi.fn();
-    mockGetBlogBySlug = vi.fn();
-    vi.mocked(BlogModel).mockImplementation(
-      class {
-        public getAllBlogs = mockGetAllBlogs;
-        public getBlogBySlug = mockGetBlogBySlug;
-      } as never,
+describe("app — www redirect", () => {
+  it("redirects www.ethang.dev to ethang.dev", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request("https://www.ethang.dev/");
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("Location")).toBe("https://ethang.dev/");
+  });
+
+  it("preserves pathname in redirect", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request("https://www.ethang.dev/blog/my-post");
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("Location")).toBe(
+      "https://ethang.dev/blog/my-post",
     );
   });
 
-  afterEach(() => {
+  it("preserves query string in redirect", async () => {
     vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request(
+      "https://www.ethang.dev/courses?format=text",
+    );
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("Location")).toBe(
+      "https://ethang.dev/courses?format=text",
+    );
+  });
+});
+
+describe("app — feeds", () => {
+  it("sitemap returns XML content type", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn().mockResolvedValue([]), vi.fn());
+    const response = await app.request("https://ethang.dev/sitemap.xml");
+
+    expect(response.headers.get(CONTENT_TYPE)).toContain("application/xml");
   });
 
-  describe("www redirect middleware", () => {
-    it("redirects www.ethang.dev to ethang.dev", async () => {
-      const response = await app.request("https://www.ethang.dev/");
-      expect(response.status).toBe(302);
-      expect(response.headers.get("Location")).toBe("https://ethang.dev/");
-    });
+  it("sitemap returns 200 status", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn().mockResolvedValue([]), vi.fn());
+    const response = await app.request("https://ethang.dev/sitemap.xml");
 
-    it("preserves pathname in redirect", async () => {
-      const response = await app.request("https://www.ethang.dev/blog/my-post");
-      expect(response.status).toBe(302);
-      expect(response.headers.get("Location")).toBe(
-        "https://ethang.dev/blog/my-post",
-      );
-    });
-
-    it("preserves query string in redirect", async () => {
-      const response = await app.request(
-        "https://www.ethang.dev/courses?format=text",
-      );
-      expect(response.status).toBe(302);
-      expect(response.headers.get("Location")).toBe(
-        "https://ethang.dev/courses?format=text",
-      );
-    });
+    expect(response.status).toBe(200);
   });
 
-  describe("GET /sitemap.xml", () => {
-    beforeEach(() => {
-      mockGetAllBlogs.mockResolvedValue([]);
-    });
+  it("blogRss returns XML content type", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn().mockResolvedValue([]), vi.fn());
+    const response = await app.request("https://ethang.dev/blogRss.xml");
 
-    it("returns XML content type", async () => {
-      const response = await app.request("https://ethang.dev/sitemap.xml");
-      expect(response.headers.get(CONTENT_TYPE)).toContain("application/xml");
-    });
-
-    it("returns 200 status", async () => {
-      const response = await app.request("https://ethang.dev/sitemap.xml");
-      expect(response.status).toBe(200);
-    });
+    expect(response.headers.get(CONTENT_TYPE)).toContain("text/xml");
   });
 
-  describe("GET /blogRss.xml", () => {
-    beforeEach(() => {
-      mockGetAllBlogs.mockResolvedValue([]);
-    });
+  it("blogRss returns 200 status", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn().mockResolvedValue([]), vi.fn());
+    const response = await app.request("https://ethang.dev/blogRss.xml");
 
-    it("returns XML content type", async () => {
-      const response = await app.request("https://ethang.dev/blogRss.xml");
-      expect(response.headers.get(CONTENT_TYPE)).toContain("text/xml");
-    });
+    expect(response.status).toBe(200);
+  });
+});
 
-    it("returns 200 status", async () => {
-      const response = await app.request("https://ethang.dev/blogRss.xml");
-      expect(response.status).toBe(200);
-    });
+describe("app — static pages", () => {
+  it(`home ${RETURNS_200_HTML}`, async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request("https://ethang.dev/");
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
   });
 
-  describe("GET / (home)", () => {
-    it(RETURNS_200_HTML, async () => {
-      const response = await app.request("https://ethang.dev/");
-      expect(response.status).toBe(200);
-      expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
-    });
+  it(`sign-in ${RETURNS_200_HTML}`, async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request("https://ethang.dev/sign-in");
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
   });
 
-  describe("GET /sign-in", () => {
-    it(RETURNS_200_HTML, async () => {
-      const response = await app.request("https://ethang.dev/sign-in");
-      expect(response.status).toBe(200);
-      expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
-    });
+  it(`tips ${RETURNS_200_HTML}`, async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request("https://ethang.dev/tips");
+
+    expect(response.status).toBe(200);
   });
 
-  describe("GET /tips", () => {
-    it(RETURNS_200_HTML, async () => {
-      const response = await app.request("https://ethang.dev/tips");
-      expect(response.status).toBe(200);
-    });
+  it(`tips/scroll-containers ${RETURNS_200_HTML}`, async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request(
+      "https://ethang.dev/tips/scroll-containers",
+    );
+
+    expect(response.status).toBe(200);
   });
 
-  describe("GET /tips/scroll-containers", () => {
-    it(RETURNS_200_HTML, async () => {
-      const response = await app.request(
-        "https://ethang.dev/tips/scroll-containers",
-      );
-      expect(response.status).toBe(200);
-    });
+  it(`tips/scrollbar-gutter ${RETURNS_200_HTML}`, async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request(
+      "https://ethang.dev/tips/scrollbar-gutter",
+    );
+
+    expect(response.status).toBe(200);
   });
 
-  describe("GET /tips/scrollbar-gutter", () => {
-    it(RETURNS_200_HTML, async () => {
-      const response = await app.request(
-        "https://ethang.dev/tips/scrollbar-gutter",
-      );
-      expect(response.status).toBe(200);
-    });
+  it("not found returns HTML for unknown routes", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request(
+      "https://ethang.dev/this-does-not-exist",
+    );
+
+    expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
+  });
+});
+
+describe("app — blog pages", () => {
+  it(RETURNS_200_HTML, async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn().mockResolvedValue([]), vi.fn());
+    const response = await app.request("https://ethang.dev/blog");
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
   });
 
-  describe("GET /blog", () => {
-    beforeEach(() => {
-      mockGetAllBlogs.mockResolvedValue([]);
-    });
-
-    it(RETURNS_200_HTML, async () => {
-      const response = await app.request("https://ethang.dev/blog");
-      expect(response.status).toBe(200);
-      expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
-    });
-  });
-
-  describe("GET /blog/:slug", () => {
-    beforeEach(() => {
-      mockGetBlogBySlug.mockResolvedValue({
+  it(`blog/:slug ${RETURNS_200_HTML}`, async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(
+      vi.fn(),
+      vi.fn().mockResolvedValue({
         _createdAt: "2024-01-01T00:00:00Z",
         _id: "blog-1",
         _updatedAt: "2024-06-01T00:00:00Z",
@@ -182,47 +203,48 @@ describe("app — pages", () => {
         featuredImage: { asset: { url: "https://example.com/image.jpg" } },
         slug: { current: "my-post" },
         title: "My Test Post",
-      });
-    });
+      }),
+    );
+    const response = await app.request("https://ethang.dev/blog/my-post");
 
-    it(RETURNS_200_HTML, async () => {
-      const response = await app.request("https://ethang.dev/blog/my-post");
-      expect(response.status).toBe(200);
-      expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
-    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
+  });
+});
+
+describe("app — courses page", () => {
+  it(RETURNS_200_HTML, async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request(COURSES_URL);
+
+    expect(response.status).toBe(200);
   });
 
-  describe("not found", () => {
-    it("returns HTML for unknown routes", async () => {
-      const response = await app.request(
-        "https://ethang.dev/this-does-not-exist",
-      );
-      expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
-    });
+  it("returns text/plain when format=text", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request(`${COURSES_URL}?format=text`);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get(CONTENT_TYPE)).toContain("text/plain");
   });
 
-  describe("GET /courses", () => {
-    it(RETURNS_200_HTML, async () => {
-      const response = await app.request(COURSES_URL);
-      expect(response.status).toBe(200);
-    });
+  it("renders sign-in-prompt element for client-side auth reconciliation", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request(COURSES_URL);
+    const html = await response.text();
 
-    it("returns text/plain when format=text", async () => {
-      const response = await app.request(`${COURSES_URL}?format=text`);
-      expect(response.status).toBe(200);
-      expect(response.headers.get(CONTENT_TYPE)).toContain("text/plain");
-    });
+    expect(html).toContain('id="sign-in-prompt"');
+  });
 
-    it("renders sign-in-prompt element for client-side auth reconciliation", async () => {
-      const response = await app.request(COURSES_URL);
-      const html = await response.text();
-      expect(html).toContain('id="sign-in-prompt"');
-    });
+  it("renders auth-section-header element for client-side auth reconciliation", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request(COURSES_URL);
+    const html = await response.text();
 
-    it("renders auth-section-header element for client-side auth reconciliation", async () => {
-      const response = await app.request(COURSES_URL);
-      const html = await response.text();
-      expect(html).toContain('id="auth-section-header"');
-    });
+    expect(html).toContain('id="auth-section-header"');
   });
 });

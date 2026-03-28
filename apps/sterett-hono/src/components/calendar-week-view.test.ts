@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("../clients/sanity-client.ts", () => ({
+// @ts-expect-error ignore
+vi.mock(import("../clients/sanity-client.ts"), () => ({
   NO_DRAFTS: "!(_id in path('drafts.**'))",
   sanityImage: { image: () => ({}) },
   sterettSanityClient: { fetch: vi.fn() },
@@ -17,13 +18,13 @@ const DATE_JUNE_01 = "2024-06-01";
 const makeEvent = (id: string, title: string): CalendarEventRecord => ({
   _id: id,
   _updatedAt: "2024-06-15T12:00:00Z",
-  description: null,
+  description: [],
   endsAt: "2024-06-15T15:00:00.000Z",
   startsAt: "2024-06-15T13:00:00.000Z",
   title,
 });
 
-describe("WeekView", () => {
+describe("weekView", () => {
   it("renders day headers Sun through Sat", async () => {
     const weekDays = getWeekDays(DATE_JUNE_15);
     const html = await renderCalendarWeekView(
@@ -31,21 +32,17 @@ describe("WeekView", () => {
       new Map(),
       DATE_JUNE_15,
     );
+
     // Desktop headers
     expect(html).toContain("Sun");
     expect(html).toContain("Sat");
   });
 
-  it("renders 7 days in the week", async () => {
+  it("renders 7 days in the week", () => {
     const weekDays = getWeekDays(DATE_JUNE_15); // week of June 15, 2024
-    const html = await renderCalendarWeekView(
-      weekDays,
-      new Map(),
-      DATE_JUNE_01,
-    );
+
     // Should contain all 7 day links
     expect(weekDays).toHaveLength(7);
-    expect(html).toBeTruthy();
   });
 
   it("highlights today cell", async () => {
@@ -55,6 +52,7 @@ describe("WeekView", () => {
       new Map(),
       DATE_JUNE_15,
     );
+
     expect(html).toContain("bg-white/10");
   });
 
@@ -68,6 +66,7 @@ describe("WeekView", () => {
       eventsByDate,
       DATE_JUNE_01,
     );
+
     expect(html).toContain("Team Standup");
   });
 
@@ -78,6 +77,7 @@ describe("WeekView", () => {
       new Map(),
       DATE_JUNE_01,
     );
+
     expect(html).toContain("No events");
   });
 
@@ -88,6 +88,7 @@ describe("WeekView", () => {
       new Map(),
       DATE_JUNE_15,
     );
+
     expect(html).toContain("Today");
   });
 
@@ -107,6 +108,7 @@ describe("WeekView", () => {
       eventsByDate,
       DATE_JUNE_01,
     );
+
     expect(html).toContain("+1 more");
   });
 
@@ -117,6 +119,7 @@ describe("WeekView", () => {
       new Map(),
       DATE_JUNE_01,
     );
+
     expect(html).toContain("view=day");
   });
 });

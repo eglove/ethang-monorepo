@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import split from "lodash/split.js";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-vi.mock("../clients/sanity-client.ts", () => ({
+vi.mock(import("../clients/sanity-client.ts"), () => ({
   NO_DRAFTS: "!(_id in path('drafts.**'))",
   sterettSanityClient: { fetch: vi.fn() },
 }));
@@ -17,7 +17,7 @@ import {
 // Fixed "now" for all relative date tests: 2024-06-15 12:00:00 UTC
 const NOW = new Date("2024-06-15T12:00:00.000Z");
 
-describe("eventRangeFormat", () => {
+describe(eventRangeFormat, () => {
   it("formats a same-day event with start datetime and end time only", () => {
     const result = eventRangeFormat(
       "2024-06-15T14:00:00.000Z",
@@ -25,8 +25,10 @@ describe("eventRangeFormat", () => {
     );
 
     expect(result).toContain("–");
+
     // End portion should not repeat the date
     const [, end] = split(result, " – ");
+
     expect(end).not.toMatch(/\d{4}/u); // no year in end portion
   });
 
@@ -37,7 +39,9 @@ describe("eventRangeFormat", () => {
     );
 
     expect(result).toContain("–");
+
     const [start, end] = split(result, " – ");
+
     expect(start).toMatch(/\d{4}/u); // year in start
     expect(end).toMatch(/\d{4}/u); // year in end
   });
@@ -50,92 +54,144 @@ describe("eventRangeFormat", () => {
     );
 
     const [, end] = split(result, " – ");
+
     expect(end).not.toMatch(/\d{4}/u);
   });
 });
 
-describe("getRelativeDate", () => {
-  beforeEach(() => {
+describe(getRelativeDate, () => {
+  it('returns "Today" for the current moment', () => {
     vi.useFakeTimers();
     vi.setSystemTime(NOW);
-  });
 
-  afterEach(() => {
+    expect(getRelativeDate(NOW.toISOString())).toBe("Today");
+
     vi.useRealTimers();
   });
 
-  it('returns "Today" for the current moment', () => {
-    expect(getRelativeDate(NOW.toISOString())).toBe("Today");
-  });
-
   it('returns "Today" for a date within the same rounding boundary', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
     const almostTomorrow = new Date(NOW.getTime() + 1000 * 60 * 60 * 11); // +11h
+
     expect(getRelativeDate(almostTomorrow.toISOString())).toBe("Today");
+
+    vi.useRealTimers();
   });
 
   it('returns "tomorrow" for 1 day in the future', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
     const tomorrow = new Date(NOW.getTime() + 1000 * 60 * 60 * 24);
+
     expect(getRelativeDate(tomorrow.toISOString())).toBe("tomorrow");
+
+    vi.useRealTimers();
   });
 
   it('returns "yesterday" for 1 day in the past', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
     const yesterday = new Date(NOW.getTime() - 1000 * 60 * 60 * 24);
+
     expect(getRelativeDate(yesterday.toISOString())).toBe("yesterday");
+
+    vi.useRealTimers();
   });
 
   it("returns days for 2–6 days in the future", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
     const in3Days = new Date(NOW.getTime() + 1000 * 60 * 60 * 24 * 3);
+
     expect(getRelativeDate(in3Days.toISOString())).toBe("in 3 days");
+
+    vi.useRealTimers();
   });
 
   it("returns days for 2–6 days in the past", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
     const ago3Days = new Date(NOW.getTime() - 1000 * 60 * 60 * 24 * 3);
+
     expect(getRelativeDate(ago3Days.toISOString())).toBe("3 days ago");
+
+    vi.useRealTimers();
   });
 
   it("returns weeks for 7–29 days out", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
     const in1Week = new Date(NOW.getTime() + 1000 * 60 * 60 * 24 * 7);
+
     expect(getRelativeDate(in1Week.toISOString())).toBe("next week");
 
     const in2Weeks = new Date(NOW.getTime() + 1000 * 60 * 60 * 24 * 14);
+
     expect(getRelativeDate(in2Weeks.toISOString())).toBe("in 2 weeks");
+
+    vi.useRealTimers();
   });
 
   it("returns weeks for 7–29 days ago", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
     const ago1Week = new Date(NOW.getTime() - 1000 * 60 * 60 * 24 * 7);
+
     expect(getRelativeDate(ago1Week.toISOString())).toBe("last week");
+
+    vi.useRealTimers();
   });
 
   it("returns months for 30+ days out", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
     const in1Month = new Date(NOW.getTime() + 1000 * 60 * 60 * 24 * 30);
+
     expect(getRelativeDate(in1Month.toISOString())).toBe("next month");
 
     const in2Months = new Date(NOW.getTime() + 1000 * 60 * 60 * 24 * 60);
+
     expect(getRelativeDate(in2Months.toISOString())).toBe("in 2 months");
+
+    vi.useRealTimers();
   });
 
   it("returns months for 30+ days ago", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
     const ago1Month = new Date(NOW.getTime() - 1000 * 60 * 60 * 24 * 30);
+
     expect(getRelativeDate(ago1Month.toISOString())).toBe("last month");
+
+    vi.useRealTimers();
   });
 });
 
-describe("getNewsAndEvents", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
+describe(getNewsAndEvents, () => {
   it("returns an empty array when there are no events or updates", async () => {
+    vi.clearAllMocks();
     // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([]);
     // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([]);
 
     const result = await getNewsAndEvents();
-    expect(result).toEqual([]);
+
+    expect(result).toStrictEqual([]);
   });
 
   it("merges events and updates sorted by date ascending", async () => {
+    vi.clearAllMocks();
     const mockEvent = {
       _id: "evt-1",
       _updatedAt: "2024-06-15T12:00:00Z",
@@ -165,6 +221,7 @@ describe("getNewsAndEvents", () => {
   });
 
   it("calls fetch twice (once for events, once for updates)", async () => {
+    vi.clearAllMocks();
     // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue([]);
 

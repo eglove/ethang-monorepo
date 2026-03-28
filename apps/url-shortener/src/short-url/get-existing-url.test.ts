@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { getExistingUrl } from "./get-existing-url.ts"; // Update this path
 
-describe("getExistingUrl", () => {
+describe(getExistingUrl, () => {
   const mockEnvironment = {
     url_shortener: {
       get: vi.fn(),
@@ -11,11 +11,8 @@ describe("getExistingUrl", () => {
 
   const testUrl = "https://example.com";
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it("should return the correct URL if it exists and the data is valid", async () => {
+    vi.clearAllMocks();
     const expectedShortenedUrl = "abcde12";
     const mockStorageObject = {
       json: vi.fn().mockResolvedValue({ [testUrl]: expectedShortenedUrl }),
@@ -33,6 +30,7 @@ describe("getExistingUrl", () => {
   });
 
   it('should return "DOES_NOT_EXIST" if the URL is not found', async () => {
+    vi.clearAllMocks();
     mockEnvironment.url_shortener.get.mockResolvedValue(null);
 
     // @ts-expect-error minimal test object
@@ -44,6 +42,7 @@ describe("getExistingUrl", () => {
   });
 
   it('should return "FAILED_TO_PARSE" if the stored JSON is malformed', async () => {
+    vi.clearAllMocks();
     const mockStorageObject = {
       json: vi.fn().mockResolvedValue({ somethingElse: "invalid" }),
     };
@@ -60,6 +59,7 @@ describe("getExistingUrl", () => {
   });
 
   it('should return "FAILED_TO_PARSE" if the stored JSON is missing the key', async () => {
+    vi.clearAllMocks();
     const mockStorageObject = {
       json: vi.fn().mockResolvedValue({ someOtherKey: "someValue" }),
     };

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import every from "lodash/every.js";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-vi.mock("../clients/sanity-client.ts", () => ({
+vi.mock(import("../clients/sanity-client.ts"), () => ({
   NO_DRAFTS: "!(_id in path('drafts.**'))",
   sterettSanityClient: { fetch: vi.fn() },
 }));
@@ -19,12 +19,9 @@ const makeFile = (id: string, category: string) => ({
   title: `File ${id}`,
 });
 
-describe("getFiles", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
+describe(getFiles, () => {
   it("splits covenant and general files into separate buckets", async () => {
+    vi.clearAllMocks();
     const generalCovenant = [
       makeFile("1", "Covenant"),
       makeFile("2", "General"),
@@ -46,6 +43,7 @@ describe("getFiles", () => {
   });
 
   it("returns empty arrays when no files exist", async () => {
+    vi.clearAllMocks();
     // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue([]);
 
@@ -57,6 +55,7 @@ describe("getFiles", () => {
   });
 
   it("correctly identifies covenant files", async () => {
+    vi.clearAllMocks();
     const generalCovenant = [
       makeFile("c1", "Covenant"),
       makeFile("c2", "Covenant"),
@@ -76,6 +75,7 @@ describe("getFiles", () => {
   });
 
   it("correctly identifies general files", async () => {
+    vi.clearAllMocks();
     const generalCovenant = [
       makeFile("g1", "General"),
       makeFile("g2", "General"),

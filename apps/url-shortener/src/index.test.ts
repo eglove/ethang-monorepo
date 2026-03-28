@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import app from "./index";
 
-describe("URL Shortener", () => {
+describe("uRL Shortener", () => {
   it("should return a HAL-FORMS root response with _links", async () => {
     const response = await app.request("/");
     const json = await response.json();

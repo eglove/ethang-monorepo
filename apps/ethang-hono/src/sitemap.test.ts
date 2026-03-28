@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-vi.mock("./models/blog-model.ts", () => ({
+vi.mock(import("./models/blog-model.ts"), () => ({
   BlogModel: vi.fn(),
 }));
 
@@ -17,24 +17,18 @@ const makeBlog = (overrides = {}) => ({
   ...overrides,
 });
 
-let mockGetAllBlogs = vi.fn();
+const mockBlogModelWith = (getAllBlogs: ReturnType<typeof vi.fn>) => {
+  vi.mocked(BlogModel).mockImplementation(
+    class {
+      public getAllBlogs = getAllBlogs;
+    } as never,
+  );
+};
 
-describe("sitemap", () => {
-  beforeEach(() => {
-    mockGetAllBlogs = vi.fn();
-    vi.mocked(BlogModel).mockImplementation(
-      class {
-        public getAllBlogs = mockGetAllBlogs;
-      } as never,
-    );
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
+describe(sitemap, () => {
   it("returns valid XML sitemap structure", async () => {
-    mockGetAllBlogs.mockResolvedValue([]);
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn().mockResolvedValue([]));
 
     const result = await sitemap();
 
@@ -46,7 +40,8 @@ describe("sitemap", () => {
   });
 
   it("includes all static routes", async () => {
-    mockGetAllBlogs.mockResolvedValue([]);
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn().mockResolvedValue([]));
 
     const result = await sitemap();
 
@@ -58,7 +53,8 @@ describe("sitemap", () => {
   });
 
   it("includes today's date as lastmod for static routes", async () => {
-    mockGetAllBlogs.mockResolvedValue([]);
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn().mockResolvedValue([]));
 
     const result = await sitemap();
     const today = DateTime.now().toFormat("yyyy-MM-dd");
@@ -67,8 +63,9 @@ describe("sitemap", () => {
   });
 
   it("includes blog entries with their slugs", async () => {
+    vi.clearAllMocks();
     const blog = makeBlog({ slug: { current: "my-great-post" } });
-    mockGetAllBlogs.mockResolvedValue([blog]);
+    mockBlogModelWith(vi.fn().mockResolvedValue([blog]));
 
     const result = await sitemap();
 
@@ -76,9 +73,10 @@ describe("sitemap", () => {
   });
 
   it("formats blog lastmod as yyyy-MM-dd from _updatedAt", async () => {
+    vi.clearAllMocks();
     const updatedAt = "2024-09-25T16:45:00.000Z";
     const blog = makeBlog({ _updatedAt: updatedAt });
-    mockGetAllBlogs.mockResolvedValue([blog]);
+    mockBlogModelWith(vi.fn().mockResolvedValue([blog]));
 
     const result = await sitemap();
 
@@ -86,8 +84,9 @@ describe("sitemap", () => {
   });
 
   it("includes an entry for each blog", async () => {
+    vi.clearAllMocks();
     const blogs = [makeBlog(), makeBlog(), makeBlog()];
-    mockGetAllBlogs.mockResolvedValue(blogs);
+    mockBlogModelWith(vi.fn().mockResolvedValue(blogs));
 
     const result = await sitemap();
     const locCount = (result.match(/<loc>/gu) ?? []).length;
@@ -97,8 +96,9 @@ describe("sitemap", () => {
   });
 
   it("generates valid URLs for blog entries", async () => {
+    vi.clearAllMocks();
     const blog = makeBlog({ slug: { current: "clean-code" } });
-    mockGetAllBlogs.mockResolvedValue([blog]);
+    mockBlogModelWith(vi.fn().mockResolvedValue([blog]));
 
     const result = await sitemap();
 

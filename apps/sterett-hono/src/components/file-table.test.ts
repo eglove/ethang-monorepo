@@ -13,30 +13,35 @@ const makeFile = (overrides: Partial<FileRecord> = {}): FileRecord => ({
   ...overrides,
 });
 
-describe("FileTable", () => {
+describe("fileTable", () => {
   it("renders the section title", async () => {
     const html = await renderFileTable([], "General");
+
     expect(html).toContain("General");
   });
 
   it("shows empty state when files array is empty", async () => {
     const html = await renderFileTable([], "General");
+
     expect(html).toContain("No files available.");
   });
 
   it("does not show empty state when files are present", async () => {
     const html = await renderFileTable([makeFile()], "General");
+
     expect(html).not.toContain("No files available.");
   });
 
   it("renders file title as a link", async () => {
     const html = await renderFileTable([makeFile()], "General");
+
     expect(html).toContain("Test Document");
     expect(html).toContain("https://cdn.sanity.io/test.pdf");
   });
 
   it("renders the formatted date", async () => {
     const html = await renderFileTable([makeFile()], "General");
+
     expect(html).toContain("Mar 15, 2024");
   });
 
@@ -46,12 +51,14 @@ describe("FileTable", () => {
       makeFile({ _id: "f2", title: "Doc Two" }),
     ];
     const html = await renderFileTable(files, "General");
+
     expect(html).toContain("Doc One");
     expect(html).toContain("Doc Two");
   });
 
   it("opens file links in a new tab", async () => {
     const html = await renderFileTable([makeFile()], "General");
+
     expect(html).toContain('target="_blank"');
   });
 });

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { Image } from "./image.tsx";
 
-describe("Image", () => {
+describe(Image, () => {
   it("renders a figure with an img element", async () => {
     const html = String(
       await Image({
@@ -13,6 +13,7 @@ describe("Image", () => {
         width: 300,
       }),
     );
+
     expect(html).toContain("<figure");
     expect(html).toContain("<img");
     expect(html).toContain("</figure>");
@@ -27,6 +28,7 @@ describe("Image", () => {
         width: 100,
       }),
     );
+
     expect(html).toContain('alt="Sunset view"');
   });
 
@@ -39,6 +41,7 @@ describe("Image", () => {
         width: 50,
       }),
     );
+
     expect(html).toContain('src="https://example.com/img.png"');
   });
 
@@ -46,6 +49,7 @@ describe("Image", () => {
     const html = String(
       await Image({ alt: "x", height: 400, src: "a.jpg", width: 800 }),
     );
+
     expect(html).toContain('width="800"');
     expect(html).toContain('height="400"');
   });
@@ -60,6 +64,7 @@ describe("Image", () => {
         width: 400,
       }),
     );
+
     expect(html).toContain("<figcaption");
     expect(html).toContain("Figure 1: Sales data");
   });
@@ -68,6 +73,7 @@ describe("Image", () => {
     const html = String(
       await Image({ alt: "No caption", height: 100, src: "a.jpg", width: 100 }),
     );
+
     expect(html).not.toContain("<figcaption");
   });
 
@@ -75,6 +81,7 @@ describe("Image", () => {
     const html = String(
       await Image({ alt: "x", height: 100, src: "a.jpg", width: 100 }),
     );
+
     expect(html).toContain('loading="lazy"');
   });
 
@@ -88,6 +95,7 @@ describe("Image", () => {
         width: 100,
       }),
     );
+
     expect(html).toContain('loading="eager"');
   });
 
@@ -101,6 +109,7 @@ describe("Image", () => {
         width: 100,
       }),
     );
+
     expect(html).toContain('loading="eager"');
     expect(html).toContain('fetchpriority="high"');
   });
@@ -109,6 +118,7 @@ describe("Image", () => {
     const html = String(
       await Image({ alt: "x", height: 100, src: "a.jpg", width: 100 }),
     );
+
     expect(html).toContain('fetchpriority="auto"');
   });
 
@@ -122,6 +132,7 @@ describe("Image", () => {
         width: 640,
       }),
     );
+
     expect(html).toContain("640px");
   });
 
@@ -135,6 +146,7 @@ describe("Image", () => {
         width: 100,
       }),
     );
+
     expect(html).toContain("50%");
   });
 
@@ -143,6 +155,7 @@ describe("Image", () => {
     const html = String(
       await Image({ alt: "x", height: 100, src: "a.jpg", srcset, width: 100 }),
     );
+
     expect(html).toContain(srcset);
   });
 
@@ -151,6 +164,7 @@ describe("Image", () => {
     const html = String(
       await Image({ alt: "x", height: 100, sizes, src: "a.jpg", width: 100 }),
     );
+
     expect(html).toContain(sizes);
   });
 });

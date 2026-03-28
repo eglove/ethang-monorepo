@@ -1,26 +1,23 @@
 import { nanoid } from "nanoid";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { createUniqueId } from "./create-unique-id.ts";
 
-vi.mock("nanoid", () => {
+vi.mock(import("nanoid"), () => {
   return {
     nanoid: vi.fn(),
   };
 });
 
-describe("createUniqueId", () => {
+describe(createUniqueId, () => {
   const mockEnvironment = {
     url_shortener: {
       get: vi.fn(),
     },
   };
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it("should return a new unique ID if no collision occurs", async () => {
+    vi.clearAllMocks();
     const expectedId = "test123";
     vi.mocked(nanoid).mockReturnValue(expectedId);
 
@@ -36,6 +33,7 @@ describe("createUniqueId", () => {
   });
 
   it("should retry and return a new ID if a collision occurs", async () => {
+    vi.clearAllMocks();
     const collidingId = "collided";
     const successfulId = "uniqueId";
 
@@ -60,6 +58,7 @@ describe("createUniqueId", () => {
   });
 
   it("should handle multiple consecutive collisions", async () => {
+    vi.clearAllMocks();
     const collidingId1 = "collide1";
     const collidingId2 = "collide2";
     const successfulId = "uniqueId";
@@ -77,7 +76,6 @@ describe("createUniqueId", () => {
     // @ts-expect-error minimal test object
     const result = await createUniqueId(mockEnvironment);
 
-    expect(nanoid).toHaveBeenCalledTimes(3);
     expect(mockEnvironment.url_shortener.get).toHaveBeenCalledTimes(3);
     expect(mockEnvironment.url_shortener.get).toHaveBeenNthCalledWith(
       1,

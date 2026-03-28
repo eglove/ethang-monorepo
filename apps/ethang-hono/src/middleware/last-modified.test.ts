@@ -12,7 +12,7 @@ const makeContext = (html: string, contentType = "text/html") => {
   };
 };
 
-describe("lastModifiedMiddleware", () => {
+describe(lastModifiedMiddleware, () => {
   it("sets Last-Modified header from meta tag content", async () => {
     const isoDate = "2024-06-15T12:00:00Z";
     const html = `<html><head><meta name="last-modified" content="${isoDate}"></head></html>`;
@@ -24,6 +24,7 @@ describe("lastModifiedMiddleware", () => {
     );
 
     const lastModified = context.res.headers.get("Last-Modified");
+
     expect(lastModified).toBe(new Date(isoDate).toUTCString());
   });
 

@@ -11,15 +11,16 @@ const makeUpdate = (
 ): NewsUpdateReturn => ({
   _id: "n1",
   date: "2024-06-15",
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
   description: undefined as never,
   title: TITLE,
   ...overrides,
 });
 
-describe("NewsUpdate", () => {
+describe("newsUpdate", () => {
   it("renders the news title", async () => {
     const html = await renderNewsUpdate(makeUpdate());
+
     expect(html).toContain(TITLE);
   });
 
@@ -34,17 +35,17 @@ describe("NewsUpdate", () => {
       style: "normal",
     };
     const html = await renderNewsUpdate(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       makeUpdate({ description: description as never }),
     );
+
     expect(html).toContain("Important update");
   });
 
   it("renders without crashing when description is undefined", async () => {
     const html = await renderNewsUpdate(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       makeUpdate({ description: undefined as never }),
     );
+
     expect(html).toContain(TITLE);
   });
 });

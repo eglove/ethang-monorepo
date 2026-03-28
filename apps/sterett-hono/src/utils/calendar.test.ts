@@ -1,5 +1,6 @@
 import every from "lodash/every.js";
 import filter from "lodash/filter.js";
+import get from "lodash/get.js";
 import { describe, expect, it } from "vitest";
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
@@ -28,10 +29,11 @@ import {
 
 // ─── formatDateTime ──────────────────────────────────────────────────────────
 
-describe("formatDateTime", () => {
+describe(formatDateTime, () => {
   it("formats a UTC ISO string as a medium date with short time in Chicago timezone", () => {
     // 2024-06-15T18:00:00Z = 1:00 PM CDT
     const result = formatDateTime("2024-06-15T18:00:00.000Z");
+
     expect(result).toContain("Jun");
     expect(result).toContain("15");
     expect(result).toContain("2024");
@@ -41,7 +43,7 @@ describe("formatDateTime", () => {
 
 // ─── toDateKey ───────────────────────────────────────────────────────────────
 
-describe("toDateKey", () => {
+describe(toDateKey, () => {
   it("zero-pads single-digit month and day", () => {
     expect(toDateKey(2024, 3, 5)).toBe("2024-03-05");
   });
@@ -62,7 +64,6 @@ const makeEvent = (
   startsAt: string,
   endsAt: string,
 ): CalendarEventRecord =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   ({
     _id: id,
     endsAt,
@@ -70,9 +71,9 @@ const makeEvent = (
     title: id,
   }) as CalendarEventRecord;
 
-describe("buildEventsByDate", () => {
+describe(buildEventsByDate, () => {
   it("returns an empty map for no events", () => {
-    expect(buildEventsByDate([])).toEqual(new Map());
+    expect(buildEventsByDate([])).toStrictEqual(new Map());
   });
 
   it("maps a single-day event to its date key", () => {
@@ -83,7 +84,7 @@ describe("buildEventsByDate", () => {
     );
     const map = buildEventsByDate([event]);
 
-    expect(map.get(DATE_KEY_JUNE_15)).toEqual([event]);
+    expect(map.get(DATE_KEY_JUNE_15)).toStrictEqual([event]);
     expect(map.size).toBe(1);
   });
 
@@ -95,9 +96,9 @@ describe("buildEventsByDate", () => {
     );
     const map = buildEventsByDate([event]);
 
-    expect(map.get("2024-06-13")).toEqual([event]);
-    expect(map.get("2024-06-14")).toEqual([event]);
-    expect(map.get(DATE_KEY_JUNE_15)).toEqual([event]);
+    expect(map.get("2024-06-13")).toStrictEqual([event]);
+    expect(map.get("2024-06-14")).toStrictEqual([event]);
+    expect(map.get(DATE_KEY_JUNE_15)).toStrictEqual([event]);
     expect(map.size).toBe(3);
   });
 
@@ -114,7 +115,7 @@ describe("buildEventsByDate", () => {
     );
     const map = buildEventsByDate([event1, event2]);
 
-    expect(map.get(DATE_KEY_JUNE_15)).toEqual([event1, event2]);
+    expect(map.get(DATE_KEY_JUNE_15)).toStrictEqual([event1, event2]);
   });
 
   it("handles events spanning a month boundary", () => {
@@ -145,7 +146,7 @@ describe("buildEventsByDate", () => {
 
 // ─── buildCalendarWeeks ──────────────────────────────────────────────────────
 
-describe("buildCalendarWeeks", () => {
+describe(buildCalendarWeeks, () => {
   it("returns rows where every row has exactly 7 cells", () => {
     const weeks = buildCalendarWeeks(2024, 6);
     for (const week of weeks) {
@@ -166,7 +167,8 @@ describe("buildCalendarWeeks", () => {
   it("handles a month starting on Sunday (no leading cells from prior month)", () => {
     // January 2023 starts on Sunday
     const weeks = buildCalendarWeeks(2023, 1);
-    expect(weeks[0]?.[0]).toEqual({
+
+    expect(weeks[0]?.[0]).toStrictEqual({
       current: true,
       day: 1,
       month: 1,
@@ -177,12 +179,14 @@ describe("buildCalendarWeeks", () => {
   it("handles February in a leap year (29 days)", () => {
     const weeks = buildCalendarWeeks(2024, 2);
     const currentCells = filter(weeks.flat(), (c) => c.current);
+
     expect(currentCells).toHaveLength(29);
   });
 
   it("handles February in a non-leap year (28 days)", () => {
     const weeks = buildCalendarWeeks(2025, 2);
     const currentCells = filter(weeks.flat(), (c) => c.current);
+
     expect(currentCells).toHaveLength(28);
   });
 
@@ -192,10 +196,8 @@ describe("buildCalendarWeeks", () => {
     const lastWeek = weeks.at(-1);
     const trailingCells = filter(lastWeek, (c) => !c.current);
 
-    if (0 < trailingCells.length) {
-      expect(trailingCells[0]?.month).toBe(1);
-      expect(trailingCells[0]?.year).toBe(2025);
-    }
+    expect(trailingCells[0]?.month).toBe(1);
+    expect(trailingCells[0]?.year).toBe(2025);
   });
 
   it("wraps correctly from January — leading cells should be December of prior year", () => {
@@ -203,16 +205,14 @@ describe("buildCalendarWeeks", () => {
     const weeks = buildCalendarWeeks(2024, 1);
     const leadingCells = filter(weeks[0], (c) => !c.current);
 
-    if (0 < leadingCells.length) {
-      expect(leadingCells[0]?.month).toBe(12);
-      expect(leadingCells[0]?.year).toBe(2023);
-    }
+    expect(leadingCells[0]?.month).toBe(12);
+    expect(leadingCells[0]?.year).toBe(2023);
   });
 });
 
 // ─── renderDescriptionHtml ───────────────────────────────────────────────────
 
-describe("renderDescriptionHtml", () => {
+describe(renderDescriptionHtml, () => {
   it("returns empty string for undefined", () => {
     // @ts-expect-error for test
     expect(renderDescriptionHtml()).toBe("");
@@ -227,8 +227,8 @@ describe("renderDescriptionHtml", () => {
       style: "normal",
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const html = renderDescriptionHtml(block as never);
+
     expect(html).toContain("Hello world");
     expect(html).toContain("<p>");
   });
@@ -251,23 +251,24 @@ describe("renderDescriptionHtml", () => {
       },
     ];
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const html = renderDescriptionHtml(blocks as never);
+
     expect(html).toContain("First");
     expect(html).toContain("Second");
   });
 
   it("returns empty string for image blocks (images are suppressed)", () => {
     const block = { _key: "img1", _type: "image" };
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
     const html = renderDescriptionHtml(block as never);
+
     expect(html).toBe("");
   });
 });
 
 // ─── shiftDate ───────────────────────────────────────────────────────────────
 
-describe("shiftDate", () => {
+describe(shiftDate, () => {
   it("shifts forward by a positive number of days", () => {
     expect(shiftDate(DATE_KEY_JUNE_15, 1)).toBe(DATE_KEY_JUNE_16);
   });
@@ -287,7 +288,7 @@ describe("shiftDate", () => {
 
 // ─── getWeekDays ─────────────────────────────────────────────────────────────
 
-describe("getWeekDays", () => {
+describe(getWeekDays, () => {
   it("returns 7 days", () => {
     expect(getWeekDays(DATE_KEY_JUNE_15)).toHaveLength(7);
   });
@@ -295,12 +296,14 @@ describe("getWeekDays", () => {
   it("starts on Sunday regardless of anchor day", () => {
     // 2024-06-15 is Saturday
     const days = getWeekDays(DATE_KEY_JUNE_15);
+
     expect(days[0]).toBe(DATE_KEY_JUNE_09); // Sunday
     expect(days[6]).toBe(DATE_KEY_JUNE_15); // Saturday
   });
 
   it("returns the same week when anchor is Sunday", () => {
     const days = getWeekDays(DATE_KEY_JUNE_09);
+
     expect(days[0]).toBe(DATE_KEY_JUNE_09);
     expect(days[6]).toBe(DATE_KEY_JUNE_15);
   });
@@ -308,45 +311,51 @@ describe("getWeekDays", () => {
 
 // ─── formatTimeOnly ──────────────────────────────────────────────────────────
 
-describe("formatTimeOnly", () => {
+describe(formatTimeOnly, () => {
   it("formats a UTC ISO string as Chicago time", () => {
     // 18:00 UTC = 1:00 PM CDT (UTC-5)
     const result = formatTimeOnly("2024-06-15T18:00:00.000Z");
+
     expect(result).toMatch(/1:00\s?PM/u);
   });
 
   it("includes minutes", () => {
     const result = formatTimeOnly("2024-06-15T18:30:00.000Z");
+
     expect(result).toContain("30");
   });
 });
 
 // ─── formatDayHeading ────────────────────────────────────────────────────────
 
-describe("formatDayHeading", () => {
+describe(formatDayHeading, () => {
   it("includes the full weekday name", () => {
     // 2024-06-15 is a Saturday
     const result = formatDayHeading(DATE_KEY_JUNE_15);
+
     expect(result).toContain("Saturday");
   });
 
   it("includes the month name", () => {
     const result = formatDayHeading(DATE_KEY_JUNE_15);
+
     expect(result).toContain("June");
   });
 
   it("includes the year", () => {
     const result = formatDayHeading(DATE_KEY_JUNE_15);
+
     expect(result).toContain("2024");
   });
 });
 
 // ─── formatWeekHeading ───────────────────────────────────────────────────────
 
-describe("formatWeekHeading", () => {
+describe(formatWeekHeading, () => {
   it("includes the start and end of the week", () => {
     // Week of 2024-06-09 (Sun) to 2024-06-15 (Sat)
     const result = formatWeekHeading(DATE_KEY_JUNE_15);
+
     expect(result).toContain("Jun");
     expect(result).toContain("9");
     expect(result).toContain("15");
@@ -354,18 +363,20 @@ describe("formatWeekHeading", () => {
 
   it("includes the year in the end date", () => {
     const result = formatWeekHeading(DATE_KEY_JUNE_15);
+
     expect(result).toContain("2024");
   });
 
   it("contains an en-dash separator", () => {
     const result = formatWeekHeading(DATE_KEY_JUNE_15);
+
     expect(result).toContain("–");
   });
 });
 
 // ─── toPlainText ─────────────────────────────────────────────────────────────
 
-describe("toPlainText", () => {
+describe(toPlainText, () => {
   it("returns empty string for undefined", () => {
     // @ts-expect-error for test
     expect(toPlainText()).toBe("");
@@ -379,7 +390,7 @@ describe("toPlainText", () => {
       markDefs: [],
       style: "normal",
     };
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
     expect(toPlainText(block as never)).toBe("Hello");
   });
 
@@ -400,20 +411,20 @@ describe("toPlainText", () => {
         style: "normal",
       },
     ];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
     expect(toPlainText(blocks as never)).toBe("First\nSecond");
   });
 
   it("skips non-block types", () => {
     const block = { _key: "img1", _type: "image" };
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
     expect(toPlainText(block as never)).toBe("");
   });
 });
 
 // ─── getViewDateRange ─────────────────────────────────────────────────────────
 
-describe("getViewDateRange", () => {
+describe(getViewDateRange, () => {
   it("day view: rangeStart is the date and rangeEndExclusive is the next day", () => {
     const { rangeEndExclusive, rangeStart } = getViewDateRange(
       "day",
@@ -421,6 +432,7 @@ describe("getViewDateRange", () => {
       6,
       DATE_KEY_JUNE_15,
     );
+
     expect(rangeStart).toBe(DATE_KEY_JUNE_15);
     expect(rangeEndExclusive).toBe(DATE_KEY_JUNE_16);
   });
@@ -432,6 +444,7 @@ describe("getViewDateRange", () => {
       6,
       DATE_KEY_JUNE_30,
     );
+
     expect(rangeStart).toBe(DATE_KEY_JUNE_30);
     expect(rangeEndExclusive).toBe(DATE_KEY_JULY_01);
   });
@@ -444,6 +457,7 @@ describe("getViewDateRange", () => {
       6,
       DATE_KEY_JUNE_15,
     );
+
     expect(rangeStart).toBe(DATE_KEY_JUNE_09);
     expect(rangeEndExclusive).toBe(DATE_KEY_JUNE_16);
   });
@@ -456,6 +470,7 @@ describe("getViewDateRange", () => {
       6,
       DATE_KEY_JUNE_09,
     );
+
     expect(rangeStart).toBe(DATE_KEY_JUNE_09);
     expect(rangeEndExclusive).toBe(DATE_KEY_JUNE_16);
   });
@@ -468,6 +483,7 @@ describe("getViewDateRange", () => {
       6,
       "2024-06-01",
     );
+
     // Grid starts on Sunday 2024-05-26 (day before June 1 which is a Saturday)
     expect(rangeStart).toBe("2024-05-26");
     // Grid ends Saturday 2024-07-06 (completing the row that starts with June 30, a Sunday)
@@ -477,6 +493,7 @@ describe("getViewDateRange", () => {
   it("month view: rangeStart equals the 1st when it falls on Sunday", () => {
     // September 2024: 1st is a Sunday
     const { rangeStart } = getViewDateRange("month", 2024, 9, "2024-09-01");
+
     expect(rangeStart).toBe("2024-09-01");
   });
 
@@ -493,6 +510,7 @@ describe("getViewDateRange", () => {
       1,
       "2022-01-01",
     );
+
     // Jan 31 is Monday (weekday % 7 = 1), trailing days = 7 - 1 = 6, grid ends Sat Feb 5, exclusive Feb 6
     expect(rangeEndExclusive).toBe("2022-02-06");
   });
@@ -509,23 +527,20 @@ describe("getViewDateRange", () => {
       "2024-06-01",
     );
 
-    if (firstCell) {
-      const firstCellKey = toDateKey(
-        firstCell.year,
-        firstCell.month,
-        firstCell.day,
-      );
-      expect(Date.parse(firstCellKey) >= Date.parse(rangeStart)).toBe(true);
-    }
-    if (lastCell) {
-      const lastCellKey = toDateKey(
-        lastCell.year,
-        lastCell.month,
-        lastCell.day,
-      );
-      expect(Date.parse(lastCellKey) < Date.parse(rangeEndExclusive)).toBe(
-        true,
-      );
-    }
+    const firstCellKey = toDateKey(
+      get(firstCell, ["year"]),
+      get(firstCell, ["month"]),
+      get(firstCell, ["day"]),
+    );
+    const lastCellKey = toDateKey(
+      get(lastCell, ["year"]),
+      get(lastCell, ["month"]),
+      get(lastCell, ["day"]),
+    );
+
+    expect(Date.parse(firstCellKey)).toBeGreaterThanOrEqual(
+      Date.parse(rangeStart),
+    );
+    expect(Date.parse(lastCellKey)).toBeLessThan(Date.parse(rangeEndExclusive));
   });
 });

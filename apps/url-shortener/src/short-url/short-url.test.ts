@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { ShortUrl } from "./short-url.ts";
 
@@ -6,13 +6,12 @@ const getFunction = vi.fn();
 const putFunction = vi.fn();
 const deleteFunction = vi.fn();
 const TEST_URL = "https://example.com";
+const BASE_URL = "http://localhost";
 
-describe("ShortUrl.create", () => {
-  let shortUrl: ShortUrl;
-
-  beforeEach(() => {
+describe("shortUrl.create", () => {
+  it("should create new short url if it does not exist", async () => {
     vi.resetAllMocks();
-    shortUrl = new ShortUrl(
+    const shortUrl = new ShortUrl(
       {
         // @ts-expect-error works for test
         url_shortener: {
@@ -21,11 +20,8 @@ describe("ShortUrl.create", () => {
           put: putFunction,
         },
       },
-      "http://localhost",
+      BASE_URL,
     );
-  });
-
-  it("should create new short url if it does not exist", async () => {
     putFunction.mockResolvedValueOnce("1234567");
     putFunction.mockResolvedValueOnce(TEST_URL);
 
@@ -36,6 +32,18 @@ describe("ShortUrl.create", () => {
   });
 
   it("should return errors if properties fail to create", async () => {
+    vi.resetAllMocks();
+    const shortUrl = new ShortUrl(
+      {
+        // @ts-expect-error works for test
+        url_shortener: {
+          delete: deleteFunction,
+          get: getFunction,
+          put: putFunction,
+        },
+      },
+      BASE_URL,
+    );
     putFunction.mockResolvedValueOnce(null);
     const result = await shortUrl.create(TEST_URL);
 
@@ -51,6 +59,18 @@ describe("ShortUrl.create", () => {
   });
 
   it("should return error if database structure is incorrect", async () => {
+    vi.resetAllMocks();
+    const shortUrl = new ShortUrl(
+      {
+        // @ts-expect-error works for test
+        url_shortener: {
+          delete: deleteFunction,
+          get: getFunction,
+          put: putFunction,
+        },
+      },
+      BASE_URL,
+    );
     getFunction.mockResolvedValueOnce({
       json: () => {
         return { "invalid url": "invalid url" };
@@ -71,6 +91,18 @@ describe("ShortUrl.create", () => {
   });
 
   it("should return existing url id if it already exists", async () => {
+    vi.resetAllMocks();
+    const shortUrl = new ShortUrl(
+      {
+        // @ts-expect-error works for test
+        url_shortener: {
+          delete: deleteFunction,
+          get: getFunction,
+          put: putFunction,
+        },
+      },
+      BASE_URL,
+    );
     getFunction.mockResolvedValueOnce({
       json: () => {
         return { [TEST_URL]: "1234567" };
@@ -82,7 +114,7 @@ describe("ShortUrl.create", () => {
     expect(result).toStrictEqual({
       _links: {
         redirect: { href: TEST_URL },
-        self: { href: "http://localhost/links/1234567" },
+        self: { href: `${BASE_URL}/links/1234567` },
       },
       _status: 201,
       id: "1234567",
@@ -90,23 +122,19 @@ describe("ShortUrl.create", () => {
   });
 });
 
-describe("ShortUrl.getById", () => {
-  let shortUrl: ShortUrl;
-
-  beforeEach(() => {
+describe("shortUrl.getById", () => {
+  it("should return not found if url does not exist", async () => {
     vi.clearAllMocks();
-    shortUrl = new ShortUrl(
+    const shortUrl = new ShortUrl(
       {
         // @ts-expect-error works for test
         url_shortener: {
           get: getFunction,
         },
       },
-      "http://localhost",
+      BASE_URL,
     );
-  });
 
-  it("should return not found if url does not exist", async () => {
     const result = await shortUrl.getById("1234567");
 
     expect(result).toStrictEqual({
@@ -121,6 +149,16 @@ describe("ShortUrl.getById", () => {
   });
 
   it("should return internal server error if data is malformed", async () => {
+    vi.clearAllMocks();
+    const shortUrl = new ShortUrl(
+      {
+        // @ts-expect-error works for test
+        url_shortener: {
+          get: getFunction,
+        },
+      },
+      BASE_URL,
+    );
     getFunction.mockResolvedValueOnce({
       json: () => {
         return { "invalid url": "invalid url" };
@@ -141,6 +179,16 @@ describe("ShortUrl.getById", () => {
   });
 
   it("should return a success response", async () => {
+    vi.clearAllMocks();
+    const shortUrl = new ShortUrl(
+      {
+        // @ts-expect-error works for test
+        url_shortener: {
+          get: getFunction,
+        },
+      },
+      BASE_URL,
+    );
     getFunction.mockResolvedValueOnce({
       json: () => {
         return { id: "1234567", url: TEST_URL };
@@ -152,7 +200,7 @@ describe("ShortUrl.getById", () => {
     expect(result).toStrictEqual({
       _links: {
         redirect: { href: TEST_URL },
-        self: { href: "http://localhost/links/1234567" },
+        self: { href: `${BASE_URL}/links/1234567` },
       },
       _status: 200,
       id: "1234567",

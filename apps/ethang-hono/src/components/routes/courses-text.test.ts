@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { afterEach, describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { coursePathData } from "../../stores/course-path-store.ts";
 import { coursesText } from "./courses-text.ts";
@@ -22,11 +22,7 @@ const makeLearningPath = (courses = [makeCourse()], overrides = {}) => ({
   ...overrides,
 });
 
-describe("coursesText", () => {
-  afterEach(() => {
-    coursePathData.learningPaths = undefined;
-  });
-
+describe(coursesText, () => {
   it("includes the main header", () => {
     coursePathData.learningPaths = [];
 
@@ -48,7 +44,8 @@ describe("coursesText", () => {
 
     const result = coursesText();
 
-    expect(typeof result).toBe("string");
+    expectTypeOf(result).toBeString();
+
     expect(result.length).toBeGreaterThan(0);
   });
 

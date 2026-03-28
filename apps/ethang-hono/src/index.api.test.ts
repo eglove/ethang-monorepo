@@ -1,19 +1,19 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-vi.mock("flowbite", () => ({}));
-vi.mock("@ethang/toolbelt/http/cookie.js", () => ({
+vi.mock(import("flowbite"), () => ({}));
+vi.mock(import("@ethang/toolbelt/http/cookie.js"), () => ({
   getCookieValue: vi.fn().mockReturnValue(new Error("no cookie")),
 }));
-vi.mock("./models/blog-model.ts", () => ({
+vi.mock(import("./models/blog-model.ts"), () => ({
   BlogModel: vi.fn(),
 }));
-vi.mock("./clients/sanity.ts", () => ({
+vi.mock(import("./clients/sanity.ts"), () => ({
   sanityClient: { fetch: vi.fn() },
 }));
-vi.mock("./db/database.ts", () => ({
+vi.mock(import("./db/database.ts"), () => ({
   getDatabase: vi.fn(),
 }));
-vi.mock("./stores/course-path-store.ts", () => {
+vi.mock(import("./stores/course-path-store.ts"), () => {
   const mockStore = {
     courseTrackings: [],
     getCourse: vi.fn(),
@@ -67,22 +67,14 @@ const makeMockDatabase = () => {
 };
 
 describe("app — API", () => {
-  describe("PUT /api/course-tracking/:userId/:courseId — status cycle", () => {
-    let mockDatabase: ReturnType<typeof makeMockDatabase>;
-
-    beforeEach(() => {
-      mockDatabase = makeMockDatabase();
+  describe("pUT /api/course-tracking/:userId/:courseId — status cycle", () => {
+    it("creates a new tracking entry with COMPLETE status when none exists", async () => {
+      vi.clearAllMocks();
+      const mockDatabase = makeMockDatabase();
       vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
       vi.mocked(sanityClient).fetch.mockResolvedValue({
         url: COURSE_EXAMPLE_URL,
       } as never);
-    });
-
-    afterEach(() => {
-      vi.clearAllMocks();
-    });
-
-    it("creates a new tracking entry with COMPLETE status when none exists", async () => {
       mockDatabase._findFirst.mockResolvedValue(undefined);
 
       const response = await app.request(TRACKING_API_URL, { method: "PUT" });
@@ -97,6 +89,12 @@ describe("app — API", () => {
     });
 
     it("cycles COMPLETE status to REVISIT", async () => {
+      vi.clearAllMocks();
+      const mockDatabase = makeMockDatabase();
+      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
+      vi.mocked(sanityClient).fetch.mockResolvedValue({
+        url: COURSE_EXAMPLE_URL,
+      } as never);
       const existing = {
         courseUrl: COURSE_EXAMPLE_URL,
         id: "track-id",
@@ -119,6 +117,12 @@ describe("app — API", () => {
     });
 
     it("cycles REVISIT status to INCOMPLETE", async () => {
+      vi.clearAllMocks();
+      const mockDatabase = makeMockDatabase();
+      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
+      vi.mocked(sanityClient).fetch.mockResolvedValue({
+        url: COURSE_EXAMPLE_URL,
+      } as never);
       const existing = {
         courseUrl: COURSE_EXAMPLE_URL,
         id: "track-id",
@@ -141,6 +145,12 @@ describe("app — API", () => {
     });
 
     it("cycles INCOMPLETE status to COMPLETE", async () => {
+      vi.clearAllMocks();
+      const mockDatabase = makeMockDatabase();
+      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
+      vi.mocked(sanityClient).fetch.mockResolvedValue({
+        url: COURSE_EXAMPLE_URL,
+      } as never);
       const existing = {
         courseUrl: COURSE_EXAMPLE_URL,
         id: "track-id",
@@ -163,6 +173,12 @@ describe("app — API", () => {
     });
 
     it("returns updated tracking data as JSON", async () => {
+      vi.clearAllMocks();
+      const mockDatabase = makeMockDatabase();
+      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
+      vi.mocked(sanityClient).fetch.mockResolvedValue({
+        url: COURSE_EXAMPLE_URL,
+      } as never);
       const existing = {
         courseUrl: COURSE_EXAMPLE_URL,
         id: "track-id",
@@ -177,23 +193,16 @@ describe("app — API", () => {
       const response = await app.request(TRACKING_API_URL, { method: "PUT" });
 
       const json = await response.json<Record<string, unknown>>();
+
       expect(json["status"]).toBe(200);
     });
   });
 
-  describe("GET /api/course-tracking/:userId", () => {
-    let mockDatabase: ReturnType<typeof makeMockDatabase>;
-
-    beforeEach(() => {
-      mockDatabase = makeMockDatabase();
-      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
-    });
-
-    afterEach(() => {
-      vi.clearAllMocks();
-    });
-
+  describe("gET /api/course-tracking/:userId", () => {
     it("returns course trackings for a user", async () => {
+      vi.clearAllMocks();
+      const mockDatabase = makeMockDatabase();
+      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
       const trackings = [
         {
           courseUrl: COURSE_EXAMPLE_URL,
@@ -210,26 +219,18 @@ describe("app — API", () => {
       const json = await response.json<Record<string, unknown>>();
 
       expect(response.status).toBe(200);
-      expect(json["data"]).toEqual(trackings);
+      expect(json["data"]).toStrictEqual(trackings);
     });
   });
 
-  describe("GET /api/course-tracking/:userId/:courseId", () => {
-    let mockDatabase: ReturnType<typeof makeMockDatabase>;
-
-    beforeEach(() => {
-      mockDatabase = makeMockDatabase();
+  describe("gET /api/course-tracking/:userId/:courseId", () => {
+    it("returns the course tracking entry", async () => {
+      vi.clearAllMocks();
+      const mockDatabase = makeMockDatabase();
       vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
       vi.mocked(sanityClient).fetch.mockResolvedValue({
         url: COURSE_EXAMPLE_URL,
       } as never);
-    });
-
-    afterEach(() => {
-      vi.clearAllMocks();
-    });
-
-    it("returns the course tracking entry", async () => {
       const tracking = {
         courseUrl: COURSE_EXAMPLE_URL,
         id: "t1",
@@ -242,10 +243,16 @@ describe("app — API", () => {
       const json = await response.json<Record<string, unknown>>();
 
       expect(response.status).toBe(200);
-      expect(json["data"]).toEqual(tracking);
+      expect(json["data"]).toStrictEqual(tracking);
     });
 
     it("returns null data when tracking does not exist", async () => {
+      vi.clearAllMocks();
+      const mockDatabase = makeMockDatabase();
+      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
+      vi.mocked(sanityClient).fetch.mockResolvedValue({
+        url: COURSE_EXAMPLE_URL,
+      } as never);
       mockDatabase._findFirst.mockResolvedValue(undefined);
 
       const response = await app.request(TRACKING_API_URL);

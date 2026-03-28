@@ -2,7 +2,7 @@ import type { JSX } from "hono/jsx/jsx-runtime";
 
 import { faker } from "@faker-js/faker";
 import { Hono } from "hono";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { coursePathData } from "../../stores/course-path-store.ts";
 import { COURSE_TRACKING_STATUS } from "../../utilities/constants.ts";
@@ -44,18 +44,23 @@ const makeTracking = (overrides = {}) => ({
   ...overrides,
 });
 
-describe("CourseItem", () => {
-  afterEach(() => {
-    coursePathData.learningPaths = undefined;
-  });
+const resetCoursePathData = () => {
+  coursePathData.learningPaths = undefined;
+  coursePathData.courseTrackings = [];
+  coursePathData.totalCourseCount = 0;
+};
 
+describe(CourseItem, () => {
   it("renders nothing when course is not found", async () => {
+    resetCoursePathData();
     coursePathData.learningPaths = [];
     const html = await renderJsx(<CourseItem courseId="nonexistent" />);
+
     expect(html).not.toContain("<a");
   });
 
   it("renders a link when course is found", async () => {
+    resetCoursePathData();
     const courseId = faker.string.uuid();
     const course = makeCourse({
       _id: courseId,
@@ -64,18 +69,15 @@ describe("CourseItem", () => {
     coursePathData.learningPaths = [makeLearningPath([course])];
 
     const html = await renderJsx(<CourseItem courseId={courseId} />);
+
     expect(html).toContain("https://course.example.com");
     expect(html).toContain(course.name);
   });
 });
 
-describe("CourseList", () => {
-  afterEach(() => {
-    coursePathData.learningPaths = undefined;
-    coursePathData.courseTrackings = [];
-  });
-
+describe(CourseList, () => {
   it("renders a list with courses", async () => {
+    resetCoursePathData();
     const course = makeCourse({ _id: "c1", url: "https://example.com/c1" });
     coursePathData.learningPaths = [makeLearningPath([course])];
     coursePathData.courseTrackings = [];
@@ -90,11 +92,13 @@ describe("CourseList", () => {
         }}
       />,
     );
+
     expect(html).toContain("<ul");
     expect(html).toContain("<li");
   });
 
   it("shows incomplete status when no tracking data", async () => {
+    resetCoursePathData();
     const course = makeCourse({ _id: "c1" });
     coursePathData.learningPaths = [makeLearningPath([course])];
     coursePathData.courseTrackings = [];
@@ -109,10 +113,12 @@ describe("CourseList", () => {
         }}
       />,
     );
+
     expect(html).toContain(COURSE_TRACKING_STATUS.INCOMPLETE);
   });
 
   it("includes data-course-url on the completion button", async () => {
+    resetCoursePathData();
     const courseUrl = "https://example.com/the-course";
     const course = makeCourse({ _id: "c1", url: courseUrl });
     coursePathData.learningPaths = [makeLearningPath([course])];
@@ -128,10 +134,12 @@ describe("CourseList", () => {
         }}
       />,
     );
+
     expect(html).toContain(`data-course-url="${courseUrl}"`);
   });
 
   it("shows tracking status when tracking data exists", async () => {
+    resetCoursePathData();
     const courseUrl = faker.internet.url();
     const course = makeCourse({ _id: "c1", url: courseUrl });
     coursePathData.learningPaths = [makeLearningPath([course])];
@@ -149,10 +157,12 @@ describe("CourseList", () => {
         }}
       />,
     );
+
     expect(html).toContain(COURSE_TRACKING_STATUS.COMPLETE);
   });
 
   it("applies bg-neutral-secondary-medium class when status is INCOMPLETE", async () => {
+    resetCoursePathData();
     const courseUrl = faker.internet.url();
     const course = makeCourse({ _id: "c1", url: courseUrl });
     coursePathData.learningPaths = [makeLearningPath([course])];
@@ -170,10 +180,12 @@ describe("CourseList", () => {
         }}
       />,
     );
+
     expect(html).toContain("bg-neutral-secondary-medium");
   });
 
   it("applies bg-warning class when status is REVISIT", async () => {
+    resetCoursePathData();
     const courseUrl = faker.internet.url();
     const course = makeCourse({ _id: "c1", url: courseUrl });
     coursePathData.learningPaths = [makeLearningPath([course])];
@@ -191,66 +203,89 @@ describe("CourseList", () => {
         }}
       />,
     );
+
     expect(html).toContain("bg-warning");
   });
 });
 
-describe("CourseProgressBar", () => {
-  beforeEach(() => {
+describe(CourseProgressBar, () => {
+  it("renders three progress bars", async () => {
+    resetCoursePathData();
     coursePathData.totalCourseCount = 4;
     coursePathData.courseTrackings = [
       makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
       makeTracking({ status: COURSE_TRACKING_STATUS.REVISIT }),
       makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
     ];
-  });
-
-  afterEach(() => {
-    coursePathData.totalCourseCount = 0;
-    coursePathData.courseTrackings = [];
-  });
-
-  it("renders three progress bars", async () => {
     const html = String(await CourseProgressBar());
+
     expect(html).toContain('id="complete-progress"');
     expect(html).toContain('id="revisit-progress"');
     expect(html).toContain('id="incomplete-progress"');
   });
 
   it("hides complete bar when complete is 0%", async () => {
+    resetCoursePathData();
     coursePathData.totalCourseCount = 2;
     coursePathData.courseTrackings = [
       makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
       makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
     ];
     const html = String(await CourseProgressBar());
+
     expect(html).toContain("complete-progress");
     expect(html).toContain("width: 0%");
   });
 
   it("accepts optional container className", async () => {
+    resetCoursePathData();
+    coursePathData.totalCourseCount = 4;
+    coursePathData.courseTrackings = [
+      makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.REVISIT }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
+    ];
     const html = String(
       await CourseProgressBar({ classNames: { container: "my-custom-class" } }),
     );
+
     expect(html).toContain("my-custom-class");
   });
 
   it("renders without props", async () => {
+    resetCoursePathData();
+    coursePathData.totalCourseCount = 4;
+    coursePathData.courseTrackings = [
+      makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.REVISIT }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
+    ];
     const html = String(await CourseProgressBar());
+
     expect(html).toContain("<div");
   });
 
   it("renders container with id course-progress-bar", async () => {
+    resetCoursePathData();
+    coursePathData.totalCourseCount = 4;
+    coursePathData.courseTrackings = [
+      makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.REVISIT }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
+    ];
     const html = String(await CourseProgressBar());
+
     expect(html).toContain('id="course-progress-bar"');
   });
 
   it("shows percentage text when incomplete is above minToShow threshold", async () => {
+    resetCoursePathData();
     coursePathData.totalCourseCount = 10;
     coursePathData.courseTrackings = [
       makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
     ];
     const html = String(await CourseProgressBar());
+
     // incomplete = 90% which is > minToShow(7), so formatter.format is called
     expect(html).toContain("incomplete-progress");
     expect(html).not.toContain('style="width: 100%"');
@@ -258,35 +293,37 @@ describe("CourseProgressBar", () => {
 
   it("hides percentage text when incomplete is below minToShow threshold", async () => {
     // incomplete < 7 means we render "" instead of the formatted percentage
+    resetCoursePathData();
     coursePathData.totalCourseCount = 100;
     coursePathData.courseTrackings = Array.from({ length: 95 }, () =>
       makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
     );
     // incomplete = 5% < minToShow(7), so the ternary returns ""
     const html = String(await CourseProgressBar());
+
     expect(html).toContain("incomplete-progress");
   });
 });
 
-describe("CoursesContainer", () => {
-  afterEach(() => {
-    coursePathData.learningPaths = undefined;
-    coursePathData.courseTrackings = [];
-  });
-
+describe(CoursesContainer, () => {
   it("renders an empty list when no learning paths", async () => {
+    resetCoursePathData();
     coursePathData.learningPaths = [];
     const html = String(await CoursesContainer());
+
     expect(html).toContain("<ul");
   });
 
   it("renders undefined learningPaths gracefully", async () => {
+    resetCoursePathData();
     coursePathData.learningPaths = undefined;
     const html = String(await CoursesContainer());
+
     expect(html).toContain("<ul");
   });
 
   it("renders learning paths with courses", async () => {
+    resetCoursePathData();
     const course = makeCourse({ _id: "c1" });
     coursePathData.learningPaths = [
       makeLearningPath([course], {
@@ -297,11 +334,13 @@ describe("CoursesContainer", () => {
     ];
     coursePathData.courseTrackings = [];
     const html = await renderJsx(<CoursesContainer />);
+
     expect(html).toContain("<li");
     expect(html).toContain("Software Testing");
   });
 
   it("renders path names with colon split into two parts", async () => {
+    resetCoursePathData();
     const course = makeCourse({ _id: "c2" });
     coursePathData.learningPaths = [
       makeLearningPath([course], {
@@ -311,11 +350,13 @@ describe("CoursesContainer", () => {
     ];
     coursePathData.courseTrackings = [];
     const html = await renderJsx(<CoursesContainer />);
+
     expect(html).toContain("Part One");
     expect(html).toContain("Part Two");
   });
 
   it("renders path name without colon as single part", async () => {
+    resetCoursePathData();
     const course = makeCourse({ _id: "c3" });
     coursePathData.learningPaths = [
       makeLearningPath([course], {
@@ -325,6 +366,7 @@ describe("CoursesContainer", () => {
     ];
     coursePathData.courseTrackings = [];
     const html = await renderJsx(<CoursesContainer />);
+
     expect(html).toContain("Single Name");
   });
 
@@ -336,8 +378,11 @@ describe("CoursesContainer", () => {
 
   it("covers all swebokFocus map entries", () => {
     expect(swebokFocusMap.size).toBeGreaterThan(0);
+
     for (const [, value] of swebokFocusMap) {
-      expect(typeof value).toBe("string");
+      expectTypeOf(value).toBeString();
+
+      expect(value).toBeTypeOf("string");
     }
   });
 });

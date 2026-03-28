@@ -5,31 +5,35 @@ import { NavigationButton } from "./navigation-button.tsx";
 import { NavigationLink } from "./navigation-link.tsx";
 import { Navigation } from "./navigation.tsx";
 
-describe("NavigationButton", () => {
+describe(NavigationButton, () => {
   it("renders a button element", async () => {
     const html = String(await NavigationButton());
+
     expect(html).toContain("<button");
     expect(html).toContain("</button>");
   });
 
   it("includes hamburger menu SVG icon", async () => {
     const html = String(await NavigationButton());
+
     expect(html).toContain("<svg");
     expect(html).toContain("Open main menu");
   });
 
   it("has data-collapse-toggle attribute for flowbite", async () => {
     const html = String(await NavigationButton());
+
     expect(html).toContain("data-collapse-toggle");
     expect(html).toContain("navbar-default");
   });
 });
 
-describe("NavigationLink", () => {
+describe(NavigationLink, () => {
   it("renders an anchor element", async () => {
     const html = String(
       await NavigationLink({ children: "Home", href: "/", pathname: "/blog" }),
     );
+
     expect(html).toContain("<a");
     expect(html).toContain("Home");
     expect(html).toContain('href="/"');
@@ -43,6 +47,7 @@ describe("NavigationLink", () => {
         pathname: "/blog",
       }),
     );
+
     expect(html).toContain('aria-current="page"');
     expect(html).toContain("bg-brand");
   });
@@ -55,6 +60,7 @@ describe("NavigationLink", () => {
         pathname: "/blog",
       }),
     );
+
     expect(html).not.toContain('aria-current="page"');
     expect(html).not.toContain("bg-brand");
   });
@@ -63,16 +69,18 @@ describe("NavigationLink", () => {
     const html = String(
       await NavigationLink({ children: "Tips", href: "/tips", pathname: "/" }),
     );
+
     expect(html).not.toContain("aria-current");
   });
 });
 
-describe("Navigation", () => {
+describe(Navigation, () => {
   it("renders a nav element", async () => {
     const testApp = new Hono();
     testApp.get("/", async (c) => c.html(<Navigation />));
     const response = await testApp.request("/");
     const html = await response.text();
+
     expect(html).toContain("<nav");
     expect(html).toContain("</nav>");
   });
@@ -82,6 +90,7 @@ describe("Navigation", () => {
     testApp.get("/", async (c) => c.html(<Navigation />));
     const response = await testApp.request("/");
     const html = await response.text();
+
     expect(html).toContain('href="/"');
     expect(html).toContain('href="/blog"');
     expect(html).toContain('href="/tips"');

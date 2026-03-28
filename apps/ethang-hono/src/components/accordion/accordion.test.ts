@@ -4,7 +4,7 @@ import { AccordionBody } from "./accordion-body.tsx";
 import { AccordionHeader } from "./accordion-header.tsx";
 import { AccordionWrapper } from "./accordion-wrapper.tsx";
 
-describe("AccordionBody", () => {
+describe(AccordionBody, () => {
   it("renders a div with the given bodyId", async () => {
     const html = String(
       await AccordionBody({
@@ -13,6 +13,7 @@ describe("AccordionBody", () => {
         headingId: "heading-1",
       }),
     );
+
     expect(html).toContain('id="body-1"');
   });
 
@@ -24,6 +25,7 @@ describe("AccordionBody", () => {
         headingId: "heading-1",
       }),
     );
+
     expect(html).toContain('aria-labelledby="heading-1"');
   });
 
@@ -35,11 +37,12 @@ describe("AccordionBody", () => {
         headingId: "h",
       }),
     );
+
     expect(html).toContain("My content");
   });
 });
 
-describe("AccordionHeader", () => {
+describe(AccordionHeader, () => {
   it("renders h2 with headingId", async () => {
     const html = String(
       await AccordionHeader({
@@ -48,6 +51,7 @@ describe("AccordionHeader", () => {
         headingId: "heading-1",
       }),
     );
+
     expect(html).toContain("<h2");
     expect(html).toContain('id="heading-1"');
   });
@@ -60,6 +64,7 @@ describe("AccordionHeader", () => {
         headingId: "heading-1",
       }),
     );
+
     expect(html).toContain('aria-controls="body-1"');
   });
 
@@ -71,6 +76,7 @@ describe("AccordionHeader", () => {
         headingId: "h",
       }),
     );
+
     expect(html).toContain("Section Title");
   });
 
@@ -83,23 +89,27 @@ describe("AccordionHeader", () => {
         headingId: "h",
       }),
     );
+
     expect(html).toContain("text-brand");
   });
 });
 
-describe("AccordionWrapper", () => {
+describe(AccordionWrapper, () => {
   it("renders a div with data-accordion attribute", async () => {
     const html = String(await AccordionWrapper({ children: "content" }));
+
     expect(html).toContain('data-accordion="collapse"');
   });
 
   it("renders children inside the wrapper", async () => {
     const html = String(await AccordionWrapper({ children: "Inner Content" }));
+
     expect(html).toContain("Inner Content");
   });
 
   it("generates a unique id with accordion- prefix", async () => {
     const html = String(await AccordionWrapper({ children: "" }));
+
     expect(html).toMatch(/id="accordion-[\da-f-]+"/u);
   });
 });

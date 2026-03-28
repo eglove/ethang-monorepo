@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("../clients/sanity-client.ts", () => ({
+vi.mock(import("../clients/sanity-client.ts"), () => ({
   NO_DRAFTS: "!(_id in path('drafts.**'))",
   sanityImage: { image: () => ({}) },
   sterettSanityClient: { fetch: vi.fn() },
@@ -22,9 +22,10 @@ const makeEvent = (
   ...overrides,
 });
 
-describe("DayView", () => {
+describe("dayView", () => {
   it("renders 'No events scheduled' when events array is empty", async () => {
     const html = await renderCalendarDayView([]);
+
     expect(html).toContain("No events scheduled");
   });
 
@@ -32,6 +33,7 @@ describe("DayView", () => {
     const html = await renderCalendarDayView([
       makeEvent({ title: "Board Meeting" }),
     ]);
+
     expect(html).toContain("Board Meeting");
   });
 
@@ -42,12 +44,14 @@ describe("DayView", () => {
         startsAt: "2024-06-15T13:00:00.000Z",
       }),
     ]);
+
     // Should contain formatted times (Chicago timezone)
     expect(html).toMatch(/AM|PM/u);
   });
 
   it("renders a Details button for each event", async () => {
     const html = await renderCalendarDayView([makeEvent()]);
+
     expect(html).toContain("Details");
   });
 
@@ -57,12 +61,14 @@ describe("DayView", () => {
       makeEvent({ _id: "evt-2", title: "Afternoon Call" }),
     ];
     const html = await renderCalendarDayView(events);
+
     expect(html).toContain("Morning Meeting");
     expect(html).toContain("Afternoon Call");
   });
 
   it("renders button with correct dialog id for event", async () => {
     const html = await renderCalendarDayView([makeEvent({ _id: "abc123" })]);
+
     expect(html).toContain("cal-abc123");
   });
 });

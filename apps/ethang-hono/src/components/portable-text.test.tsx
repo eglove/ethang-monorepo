@@ -33,26 +33,30 @@ const makeBlock = (style: string, text: string, overrides = {}) => ({
   ...overrides,
 });
 
-describe("PortableText", () => {
+describe(PortableText, () => {
   it("renders nothing for empty body", async () => {
     const html = await renderPortableText([]);
+
     expect(html).toBeDefined();
   });
 
   it("renders normal paragraph blocks", async () => {
     const html = await renderPortableText([makeBlock("normal", "Hello world")]);
+
     expect(html).toContain("Hello world");
     expect(html).toContain("<p");
   });
 
   it("renders h2 blocks", async () => {
     const html = await renderPortableText([makeBlock("h2", "Section Heading")]);
+
     expect(html).toContain("Section Heading");
     expect(html).toContain("<h2");
   });
 
   it("renders h3 blocks", async () => {
     const html = await renderPortableText([makeBlock("h3", "Sub Heading")]);
+
     expect(html).toContain("Sub Heading");
     expect(html).toContain("<h3");
   });
@@ -61,6 +65,7 @@ describe("PortableText", () => {
     const html = await renderPortableText([
       makeBlock("blockquote", "A famous quote"),
     ]);
+
     expect(html).toContain("A famous quote");
     expect(html).toContain("blockquote");
   });
@@ -70,6 +75,7 @@ describe("PortableText", () => {
       { ...makeBlock("normal", "item"), listItem: "bullet" },
       { ...makeBlock("normal", "item2"), _key: "b2", listItem: "bullet" },
     ]);
+
     expect(html).toContain("<ul");
     expect(html).toContain("<li");
   });
@@ -83,6 +89,7 @@ describe("PortableText", () => {
         language: "javascript",
       },
     ]);
+
     expect(html).toContain("const x = 1;");
   });
 
@@ -95,6 +102,7 @@ describe("PortableText", () => {
         videoId: "abc123",
       },
     ]);
+
     expect(html).toContain("abc123");
   });
 
@@ -102,6 +110,7 @@ describe("PortableText", () => {
     const html = await renderPortableText([
       { _key: "q1", _type: "quote" as const, quote: "An inspiring quote" },
     ]);
+
     expect(html).toContain("An inspiring quote");
   });
 
@@ -116,6 +125,7 @@ describe("PortableText", () => {
       style: "blockquote",
     };
     const html = await renderPortableText([block]);
+
     expect(html).toContain("A great thought");
     expect(html).toContain("blockquote");
   });
@@ -129,6 +139,7 @@ describe("PortableText", () => {
       style: "normal",
     };
     const html = await renderPortableText([block]);
+
     expect(html).toContain("myVar");
     expect(html).toContain("<code");
   });
@@ -142,6 +153,7 @@ describe("PortableText", () => {
       // markDefs intentionally omitted to cover the `?? []` fallback
     };
     const html = await renderPortableText([block]);
+
     expect(html).toContain("emphasized text");
   });
 
@@ -155,6 +167,7 @@ describe("PortableText", () => {
         style: "h4",
       },
     ]);
+
     expect(html).toBeDefined();
   });
 
@@ -169,6 +182,7 @@ describe("PortableText", () => {
       style: "normal",
     };
     const html = await renderPortableText([block]);
+
     expect(html).toContain("click here");
     expect(html).toContain("https://example.com");
   });
@@ -184,6 +198,7 @@ describe("PortableText", () => {
       },
     };
     const html = await renderPortableText([imageBlock] as unknown as Body);
+
     expect(html).toContain("img");
   });
 
@@ -192,6 +207,7 @@ describe("PortableText", () => {
       { ...makeBlock("normal", "List Item"), listItem: "bullet" },
       { ...makeBlock("normal", "After list"), _key: "b2" },
     ]);
+
     expect(html).toContain("<ul");
     expect(html).toContain("List Item");
   });
@@ -200,6 +216,7 @@ describe("PortableText", () => {
     const html = await renderPortableText([
       { ...makeBlock("normal", "Only list item"), listItem: "bullet" },
     ]);
+
     expect(html).toContain("<ul");
     expect(html).toContain("<li");
   });
@@ -208,6 +225,7 @@ describe("PortableText", () => {
     const html = await renderPortableText([
       { _key: "c2", _type: "code" as const, code: "let y = 2;" },
     ]);
+
     expect(html).toContain("let y = 2;");
   });
 
@@ -215,6 +233,7 @@ describe("PortableText", () => {
     const html = await renderPortableText([
       { _key: "v2", _type: "video" as const, videoId: "xyz789" },
     ]);
+
     expect(html).toContain("xyz789");
   });
 
@@ -229,6 +248,7 @@ describe("PortableText", () => {
         },
       },
     ] as unknown as Body);
+
     expect(html).toContain("img");
   });
 
@@ -236,6 +256,7 @@ describe("PortableText", () => {
     const html = await renderPortableText([
       { _key: "u1", _type: "unknown-type" } as unknown as Body[number],
     ]);
+
     expect(html).toBeDefined();
   });
 
@@ -250,6 +271,7 @@ describe("PortableText", () => {
         style: "normal",
       },
     ]);
+
     expect(html).toBeDefined();
   });
 });

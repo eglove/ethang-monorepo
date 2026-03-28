@@ -1,5 +1,26 @@
 {
   "mcpServers": {
+    "sonarqube": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--init",
+        "--pull=always",
+        "-i",
+        "--rm",
+        "-v",
+        "C:\\Users\\glove\\projects\\ethang-monorepo",
+        "-e",
+        "SONARQUBE_TOKEN",
+        "-e",
+        "SONARQUBE_ORG",
+        "mcp/sonarqube",
+        "."
+      ],
+      "env": {
+        "SONARQUBE_ORG": "eglove"
+      }
+    },
     "playwright-test": {
       "command": "cmd",
       "args": [

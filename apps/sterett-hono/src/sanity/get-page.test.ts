@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-vi.mock("../clients/sanity-client.ts", () => ({
+vi.mock(import("../clients/sanity-client.ts"), () => ({
   NO_DRAFTS: "!(_id in path('drafts.**'))",
   sterettSanityClient: { fetch: vi.fn() },
 }));
@@ -9,12 +9,9 @@ vi.mock("../clients/sanity-client.ts", () => ({
 import { sterettSanityClient } from "../clients/sanity-client.ts";
 import { getPage } from "./get-page.ts";
 
-describe("getPage", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
+describe(getPage, () => {
   it("fetches a page by slug and returns the first result", async () => {
+    vi.clearAllMocks();
     const mockPage = {
       _id: "abc",
       _updatedAt: "2024-01-01T00:00:00Z",
@@ -30,10 +27,11 @@ describe("getPage", () => {
       expect.stringContaining("$slug"),
       { slug: "home" },
     );
-    expect(result).toEqual(mockPage);
+    expect(result).toStrictEqual(mockPage);
   });
 
   it("returns undefined when no page matches the slug", async () => {
+    vi.clearAllMocks();
     // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue([]);
 
@@ -43,6 +41,7 @@ describe("getPage", () => {
   });
 
   it("passes the slug parameter to the query", async () => {
+    vi.clearAllMocks();
     // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue([]);
 
