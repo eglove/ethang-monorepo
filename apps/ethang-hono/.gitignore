@@ -3,6 +3,8 @@ dist/
 
 # test
 coverage/
+playwright-report/
+test-results/
 
 # dev
 .yarn/
