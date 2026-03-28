@@ -98,10 +98,7 @@ app.get("/blog/:slug", async (c) => {
 
 app.get("/blogRss.xml", async (c) => {
   const content = await blogRss();
-
-  c.header("Content-Type", "text/xml");
-
-  return c.text(content);
+  return c.text(content, 200, { "Content-Type": "text/xml" });
 });
 
 app.get("/api/course-tracking/:userId/:courseId", async (context) => {

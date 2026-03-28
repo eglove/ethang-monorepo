@@ -1,0 +1,164 @@
+import { Hono } from "hono";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("flowbite", () => ({}));
+vi.mock("../../models/blog-model.ts", () => ({
+  BlogModel: vi.fn(),
+}));
+
+import { BlogModel } from "../../models/blog-model.ts";
+import { coursePathData } from "../../stores/course-path-store.ts";
+import { Blog } from "./blog.tsx";
+import { Courses } from "./courses.tsx";
+import { Home } from "./home.tsx";
+import { NotFound } from "./not-found.tsx";
+import { SignIn } from "./sign-in.tsx";
+import { allTips, Tips } from "./tips.tsx";
+
+const render = async (component: JSX.Element): Promise<string> => {
+  const testApp = new Hono();
+  testApp.get("/", (c) => c.html(component));
+  const res = await testApp.request("/");
+  return res.text();
+};
+
+describe("Home", () => {
+  it("renders a full HTML document", async () => {
+    const html = await render(<Home />);
+    expect(html).toContain("<html");
+    expect(html).toContain("</html>");
+  });
+
+  it("includes EthanG in the title", async () => {
+    const html = await render(<Home />);
+    expect(html).toContain("EthanG");
+  });
+});
+
+describe("SignIn", () => {
+  it("renders a full HTML document with sign-in form", async () => {
+    const html = await render(<SignIn />);
+    expect(html).toContain("<html");
+    expect(html).toContain("<form");
+    expect(html).toContain('id="sign-in-form"');
+  });
+
+  it("includes email and password inputs", async () => {
+    const html = await render(<SignIn />);
+    expect(html).toContain('type="email"');
+    expect(html).toContain('type="password"');
+  });
+
+  it("includes a submit button", async () => {
+    const html = await render(<SignIn />);
+    expect(html).toContain('type="submit"');
+  });
+});
+
+describe("NotFound", () => {
+  it("renders a full HTML document", async () => {
+    const html = await render(<NotFound />);
+    expect(html).toContain("<html");
+    expect(html).toContain("</html>");
+  });
+
+  it("includes 404 not found text", async () => {
+    const html = await render(<NotFound />);
+    expect(html).toContain("404 Not Found");
+  });
+});
+
+describe("Tips", () => {
+  it("renders a full HTML document", async () => {
+    const html = await render(<Tips />);
+    expect(html).toContain("<html");
+    expect(html).toContain("Tips");
+  });
+
+  it("includes links to tip pages", async () => {
+    const html = await render(<Tips />);
+    expect(html).toContain("/tips/scroll-containers");
+    expect(html).toContain("/tips/scrollbar-gutter");
+  });
+
+  it("exports the allTips array with two tips", () => {
+    expect(Array.isArray(allTips)).toBe(true);
+    expect(allTips.length).toBe(2);
+  });
+
+  it("allTips contains href and title properties", () => {
+    for (const tip of allTips) {
+      expect(tip).toHaveProperty("href");
+      expect(tip).toHaveProperty("title");
+    }
+  });
+});
+
+describe("Blog", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("renders HTML page listing blogs", async () => {
+    vi.mocked(BlogModel).mockImplementation(
+      class {
+        getAllBlogs = vi
+          .fn()
+          .mockResolvedValue([
+            {
+              _createdAt: "2024-01-01T00:00:00Z",
+              _id: "blog-1",
+              _updatedAt: "2024-02-01T00:00:00Z",
+              author: "Author",
+              blogCategory: { _id: "cat-1", title: "Blog" },
+              description: "A post",
+              slug: { current: "my-post" },
+              title: "My Post",
+            },
+          ]);
+      } as never,
+    );
+
+    const html = await render(<Blog />);
+    expect(html).toContain("<html");
+    expect(html).toContain("Blog");
+  });
+
+  it("renders empty state when no blogs", async () => {
+    vi.mocked(BlogModel).mockImplementation(
+      class {
+        getAllBlogs = vi.fn().mockResolvedValue([]);
+      } as never,
+    );
+
+    const html = await render(<Blog />);
+    expect(html).toContain("<html");
+  });
+});
+
+describe("Courses", () => {
+  afterEach(() => {
+    coursePathData.learningPaths = undefined;
+    coursePathData.latestUpdate = undefined;
+  });
+
+  it("renders HTML page with courses content", async () => {
+    coursePathData.learningPaths = [];
+    coursePathData.latestUpdate = undefined;
+
+    const html = await render(<Courses />);
+    expect(html).toContain("<html");
+    expect(html).toContain("Recommended Courses");
+  });
+
+  it("includes last updated date when latestUpdate is set", async () => {
+    coursePathData.learningPaths = [];
+    coursePathData.latestUpdate = {
+      _id: "update-1",
+      _updatedAt: "2024-06-01T00:00:00Z",
+    };
+
+    const html = await render(<Courses />);
+    expect(html).toContain("Last Updated:");
+  });
+});
