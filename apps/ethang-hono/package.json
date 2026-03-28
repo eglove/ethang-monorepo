@@ -50,7 +50,7 @@
     "drizzle:generate": "drizzle-kit generate",
     "lint": "eslint . --fix",
     "tailwind": "tailwindcss -i ./src/index.css -o ./public/index.css --watch",
-    "test": "vitest run --coverage",
+    "test": "pnpm test:vitest",
     "test:vitest": "vitest run --coverage",
     "wrangler:dev": "wrangler dev"
   },
