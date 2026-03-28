@@ -5,6 +5,10 @@ import isNil from "lodash/isNil.js";
 
 export const lastModifiedMiddleware: MiddlewareHandler = async (c, next) => {
   await next();
+  // c.res.clone() is safe here: clone() creates a new Response that shares the
+  // same underlying body stream. Calling .text() on the clone reads the clone's
+  // copy, leaving c.res.body intact. Hono's c.html() always produces a fully
+  // buffered body, so the clone is consumed synchronously in memory.
   if (
     !c.res.body ||
     !includes(c.res.headers.get("content-type") ?? "", "text/html")

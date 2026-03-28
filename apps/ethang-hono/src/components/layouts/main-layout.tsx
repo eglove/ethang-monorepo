@@ -100,7 +100,7 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
             __html: `
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/sw.js');
+    navigator.serviceWorker.register('/sw.js').catch(console.error);
   });
   navigator.serviceWorker.addEventListener('message', function (event) {
     if (event.data && event.data.type === 'CONTENT_UPDATED') {
