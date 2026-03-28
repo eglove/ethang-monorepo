@@ -1,6 +1,7 @@
 import map from "lodash/map.js";
 
 import { globalStore } from "../../stores/global-store-properties.ts";
+import { registerScript } from "../../utilities/register-script.ts";
 import { NavigationButton } from "./navigation-button.tsx";
 import { NavigationLink } from "./navigation-link.tsx";
 
@@ -12,6 +13,8 @@ const navigationLinks = [
 ];
 
 export const Navigation = async () => {
+  registerScript(globalStore, "components/navigation/navigation");
+
   return (
     <nav class="fixed inset-s-0 top-0 z-20 w-full border-b border-default bg-neutral-primary">
       <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between p-4">

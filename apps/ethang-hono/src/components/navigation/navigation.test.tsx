@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 
+import { globalStore } from "../../stores/global-store-properties.ts";
 import { NavigationButton } from "./navigation-button.tsx";
 import { NavigationLink } from "./navigation-link.tsx";
 import { Navigation } from "./navigation.tsx";
@@ -20,11 +21,11 @@ describe(NavigationButton, () => {
     expect(html).toContain("Open main menu");
   });
 
-  it("has data-collapse-toggle attribute for flowbite", async () => {
+  it("has aria-controls pointing to navbar-default", async () => {
     const html = String(await NavigationButton());
 
-    expect(html).toContain("data-collapse-toggle");
-    expect(html).toContain("navbar-default");
+    expect(html).toContain('aria-controls="navbar-default"');
+    expect(html).toContain('aria-expanded="false"');
   });
 });
 
@@ -95,5 +96,16 @@ describe(Navigation, () => {
     expect(html).toContain('href="/blog"');
     expect(html).toContain('href="/tips"');
     expect(html).toContain('href="/courses"');
+  });
+
+  it("registers the navigation client script", async () => {
+    globalStore.scripts = new Set();
+    const testApp = new Hono();
+    testApp.get("/", async (c) => c.html(<Navigation />));
+    await testApp.request("/");
+
+    expect(globalStore.scripts.has("components/navigation/navigation")).toBe(
+      true,
+    );
   });
 });

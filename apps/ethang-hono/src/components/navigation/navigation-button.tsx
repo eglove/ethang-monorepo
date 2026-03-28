@@ -4,7 +4,6 @@ export const NavigationButton = async () => {
       type="button"
       aria-expanded="false"
       aria-controls="navbar-default"
-      data-collapse-toggle="navbar-default"
       class="inline-flex h-10 w-10 items-center justify-center rounded-base p-2 text-sm text-body hover:bg-neutral-secondary-soft hover:text-heading focus:ring-2 focus:ring-neutral-tertiary focus:outline-none md:hidden"
     >
       <span class="sr-only">Open main menu</span>
