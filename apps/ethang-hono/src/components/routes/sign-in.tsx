@@ -1,12 +1,15 @@
+import { globalStore } from "../../stores/global-store-properties.ts";
 import { DEPLOY_TIME } from "../../utilities/deploy-info.ts";
+import { registerScript } from "../../utilities/register-script.ts";
 import { MainLayout } from "../layouts/main-layout.tsx";
 import { H1 } from "../typography/h1.tsx";
 import { P } from "../typography/p.tsx";
 
 export const SignIn = async () => {
+  registerScript(globalStore, "components/routes/sign-in");
+
   return (
     <MainLayout updatedAt={DEPLOY_TIME}>
-      <script type="module" src="/scripts/sign-in/sign-in.js" />
       <H1>Sign In</H1>
       <form id="sign-in-form" class="mx-auto max-w-sm">
         <div class="mb-5">

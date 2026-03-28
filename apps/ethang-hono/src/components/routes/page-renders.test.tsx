@@ -72,6 +72,15 @@ describe(SignIn, () => {
 
     expect(html).toContain('type="submit"');
   });
+
+  it("registers sign-in script", async () => {
+    globalStore.scripts = new Set();
+    const testApp = new Hono();
+    testApp.get("/", async (c) => c.html(<SignIn />));
+    await testApp.request("/");
+
+    expect(globalStore.scripts.has("components/routes/sign-in")).toBe(true);
+  });
 });
 
 describe(NotFound, () => {

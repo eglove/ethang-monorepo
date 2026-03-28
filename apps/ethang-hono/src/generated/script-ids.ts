@@ -4,4 +4,5 @@
 export type ScriptId =
   | "components/code"
   | "components/courses/course-completion"
-  | "components/navigation/navigation";
+  | "components/navigation/navigation"
+  | "components/routes/sign-in";
