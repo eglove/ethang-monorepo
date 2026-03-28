@@ -54,6 +54,7 @@
     "lint": "eslint . --fix",
     "tailwind": "tailwindcss -i ./src/index.css -o ./public/index.css --watch",
     "test": "pnpm test:vitest",
+    "test:e2e": "playwright test",
     "test:vitest": "vitest run --coverage",
     "wrangler:dev": "wrangler dev"
   },
