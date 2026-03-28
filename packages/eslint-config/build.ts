@@ -1,21 +1,15 @@
+import map from "lodash/map.js";
 import replace from "lodash/replace.js";
 import { copyFileSync, writeFileSync } from "node:fs";
 
 import { projectBuilder } from "../project-builder/src/project-builder.ts";
+import { outputConfigs } from "./src/build/output-config.ts";
 import { updateReadme } from "./src/build/update-readme.js";
 import { updateRules } from "./src/build/update-rules.js";
 
-const configFiles = [
-  "src/config.main.js",
-  "src/config.html.js",
-  "src/config.astro.js",
-  "src/config.react.js",
-  "src/config.solid.js",
-  "src/config.angular.js",
-  "src/config.storybook.js",
-  "src/config.tailwind.js",
-  "src/config.vitest.js",
-];
+const configFiles = map(outputConfigs, (c) => {
+  return `src/${c.fileName}`;
+});
 
 await updateRules();
 updateReadme();
