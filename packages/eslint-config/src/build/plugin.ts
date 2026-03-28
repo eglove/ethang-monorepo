@@ -1,6 +1,7 @@
 import type { Linter } from "eslint";
 
 import filter from "lodash/filter.js";
+import isArray from "lodash/isArray.js";
 import values from "lodash/values.js";
 
 export type PluginOptions = {
@@ -38,7 +39,8 @@ export class Plugin {
 
   public get ruleCount(): number {
     return filter(values(this.rules), (value) => {
-      return "off" !== value;
+      const severity = isArray(value) ? value[0] : value;
+      return "off" !== severity;
     }).length;
   }
 

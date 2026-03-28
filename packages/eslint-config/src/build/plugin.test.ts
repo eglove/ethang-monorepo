@@ -48,5 +48,14 @@ describe(Plugin, () => {
 
       expect(plugin.ruleCount).toBe(1);
     });
+
+    it("does not count array-config off rules", () => {
+      const plugin = new Plugin({
+        ...base,
+        rules: { "rule-a": ["off", { option: true }], "rule-b": "error" },
+      });
+
+      expect(plugin.ruleCount).toBe(1);
+    });
   });
 });
