@@ -6,9 +6,11 @@ vi.mock("flowbite", () => ({}));
 import { BlogLayout } from "./blog-layout.tsx";
 import { MainLayout, type MainLayoutProperties } from "./main-layout.tsx";
 
-const renderMain = async (props: MainLayoutProperties): Promise<string> => {
+const renderMain = async (
+  properties: MainLayoutProperties,
+): Promise<string> => {
   const testApp = new Hono();
-  testApp.get("/", (c) => c.html(<MainLayout {...props} />));
+  testApp.get("/", async (c) => c.html(<MainLayout {...properties} />));
   const res = await testApp.request("/");
   return res.text();
 };
@@ -38,7 +40,10 @@ describe("MainLayout", () => {
   });
 
   it("uses custom description when provided", async () => {
-    const html = await renderMain({ children: "", description: "Custom description" });
+    const html = await renderMain({
+      children: "",
+      description: "Custom description",
+    });
     expect(html).toContain("Custom description");
   });
 
@@ -74,7 +79,10 @@ describe("MainLayout", () => {
   });
 
   it("includes text alternate link when textAlternate is provided", async () => {
-    const html = await renderMain({ children: "", textAlternate: "/page?format=text" });
+    const html = await renderMain({
+      children: "",
+      textAlternate: "/page?format=text",
+    });
     expect(html).toContain("text/plain");
     expect(html).toContain("/page?format=text");
   });
@@ -100,7 +108,7 @@ describe("MainLayout", () => {
 describe("BlogLayout", () => {
   it("delegates to MainLayout with isBlog=true", async () => {
     const testApp = new Hono();
-    testApp.get("/", (c) =>
+    testApp.get("/", async (c) =>
       c.html(<BlogLayout title="My Post">Blog content</BlogLayout>),
     );
     const res = await testApp.request("/");

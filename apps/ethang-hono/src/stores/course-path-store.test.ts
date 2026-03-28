@@ -251,8 +251,20 @@ describe("CoursePathStore", () => {
       (sanityClient.fetch as Mock).mockResolvedValue({
         latestUpdate: { _id: "lu1", _updatedAt: "2024-01-01" },
         learningPaths: [
-          { _id: "lp1", courseCount: 3, courses: [], name: "A", swebokFocus: "testing" },
-          { _id: "lp2", courseCount: 5, courses: [], name: "B", swebokFocus: "quality" },
+          {
+            _id: "lp1",
+            courseCount: 3,
+            courses: [],
+            name: "A",
+            swebokFocus: "testing",
+          },
+          {
+            _id: "lp2",
+            courseCount: 5,
+            courses: [],
+            name: "B",
+            swebokFocus: "quality",
+          },
         ],
       });
       (CourseTracking as Mock).mockImplementation(

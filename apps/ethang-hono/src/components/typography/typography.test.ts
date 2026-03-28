@@ -19,7 +19,9 @@ describe("H1", () => {
   });
 
   it("merges custom className with base classes", async () => {
-    const html = String(await H1({ children: "x", className: "my-custom-class" }));
+    const html = String(
+      await H1({ children: "x", className: "my-custom-class" }),
+    );
     expect(html).toContain("my-custom-class");
     expect(html).toContain("text-4xl");
   });
@@ -128,7 +130,9 @@ describe("Blockquote", () => {
   });
 
   it("renders author attribution when author is provided", async () => {
-    const html = String(await Blockquote({ author: "Confucius", children: "Quote" }));
+    const html = String(
+      await Blockquote({ author: "Confucius", children: "Quote" }),
+    );
     expect(html).toContain("Confucius");
     expect(html).toContain("<footer");
   });
@@ -150,14 +154,20 @@ describe("Blockquote", () => {
   });
 
   it("renders source without link when only source is provided", async () => {
-    const html = String(await Blockquote({ children: "Quote", source: "The Source" }));
+    const html = String(
+      await Blockquote({ children: "Quote", source: "The Source" }),
+    );
     expect(html).toContain("The Source");
     expect(html).toContain("<cite");
   });
 
   it("renders author and source separated by comma", async () => {
     const html = String(
-      await Blockquote({ author: "Author", children: "Quote", source: "Source" }),
+      await Blockquote({
+        author: "Author",
+        children: "Quote",
+        source: "Source",
+      }),
     );
     expect(html).toContain("Author");
     expect(html).toContain("Source");

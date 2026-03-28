@@ -37,7 +37,11 @@ describe("NavigationLink", () => {
 
   it("applies active styles when pathname matches href", async () => {
     const html = String(
-      await NavigationLink({ children: "Blog", href: "/blog", pathname: "/blog" }),
+      await NavigationLink({
+        children: "Blog",
+        href: "/blog",
+        pathname: "/blog",
+      }),
     );
     expect(html).toContain('aria-current="page"');
     expect(html).toContain("bg-brand");
@@ -66,7 +70,7 @@ describe("NavigationLink", () => {
 describe("Navigation", () => {
   it("renders a nav element", async () => {
     const testApp = new Hono();
-    testApp.get("/", (c) => c.html(<Navigation />));
+    testApp.get("/", async (c) => c.html(<Navigation />));
     const res = await testApp.request("/");
     const html = await res.text();
     expect(html).toContain("<nav");
@@ -75,7 +79,7 @@ describe("Navigation", () => {
 
   it("includes navigation links for main routes", async () => {
     const testApp = new Hono();
-    testApp.get("/", (c) => c.html(<Navigation />));
+    testApp.get("/", async (c) => c.html(<Navigation />));
     const res = await testApp.request("/");
     const html = await res.text();
     expect(html).toContain('href="/"');

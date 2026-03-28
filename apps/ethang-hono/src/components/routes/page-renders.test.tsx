@@ -17,7 +17,7 @@ import { allTips, Tips } from "./tips.tsx";
 
 const render = async (component: JSX.Element): Promise<string> => {
   const testApp = new Hono();
-  testApp.get("/", (c) => c.html(component));
+  testApp.get("/", async (c) => c.html(component));
   const res = await testApp.request("/");
   return res.text();
 };
@@ -102,20 +102,18 @@ describe("Blog", () => {
   it("renders HTML page listing blogs", async () => {
     vi.mocked(BlogModel).mockImplementation(
       class {
-        getAllBlogs = vi
-          .fn()
-          .mockResolvedValue([
-            {
-              _createdAt: "2024-01-01T00:00:00Z",
-              _id: "blog-1",
-              _updatedAt: "2024-02-01T00:00:00Z",
-              author: "Author",
-              blogCategory: { _id: "cat-1", title: "Blog" },
-              description: "A post",
-              slug: { current: "my-post" },
-              title: "My Post",
-            },
-          ]);
+        getAllBlogs = vi.fn().mockResolvedValue([
+          {
+            _createdAt: "2024-01-01T00:00:00Z",
+            _id: "blog-1",
+            _updatedAt: "2024-02-01T00:00:00Z",
+            author: "Author",
+            blogCategory: { _id: "cat-1", title: "Blog" },
+            description: "A post",
+            slug: { current: "my-post" },
+            title: "My Post",
+          },
+        ]);
       } as never,
     );
 

@@ -91,8 +91,8 @@ describe("BlogModel", () => {
       const model = new BlogModel();
       await model.getBlogBySlug("specific-slug");
 
-      const [, params] = (sanityClient.fetch as Mock).mock.calls[0];
-      expect(params).toEqual({ slug: "specific-slug" });
+      const [, parameters] = (sanityClient.fetch as Mock).mock.calls[0];
+      expect(parameters).toEqual({ slug: "specific-slug" });
     });
 
     it("queries using slug.current parameter", async () => {

@@ -13,22 +13,26 @@ import { sanityClient } from "../clients/sanity.ts";
 import { COURSE_TRACKING_STATUS } from "../utilities/constants.ts";
 import { CourseTracking } from "./course-tracking.ts";
 
-const mockTable = { courseUrl: "courseUrl", id: "id", status: "status", userId: "userId" };
+const mockTable = {
+  courseUrl: "courseUrl",
+  id: "id",
+  status: "status",
+  userId: "userId",
+};
 const mockOperators = { and: vi.fn(), eq: vi.fn() };
 
-const makeMockDb = () => {
-  const mockWhere = vi.fn().mockResolvedValue(undefined);
+const makeMockDatabase = () => {
+  const mockWhere = vi.fn().mockResolvedValue();
   const mockSet = vi.fn().mockReturnValue({ where: mockWhere });
-  const mockValues = vi.fn().mockResolvedValue(undefined);
+  const mockValues = vi.fn().mockResolvedValue();
   const mockInsert = vi.fn().mockReturnValue({ values: mockValues });
   const mockUpdate = vi.fn().mockReturnValue({ set: mockSet });
-  const mockFindMany = vi.fn().mockImplementation((options) => {
+  const mockFindMany = vi.fn().mockImplementation(async (options) => {
     options?.where?.(mockTable, mockOperators);
-    return Promise.resolve([]);
+    return [];
   });
-  const mockFindFirst = vi.fn().mockImplementation((options) => {
+  const mockFindFirst = vi.fn().mockImplementation(async (options) => {
     options?.where?.(mockTable, mockOperators);
-    return Promise.resolve(undefined);
   });
 
   return {
@@ -49,13 +53,13 @@ const makeMockDb = () => {
 };
 
 describe("CourseTracking", () => {
-  let db: ReturnType<typeof makeMockDb>;
+  let database: ReturnType<typeof makeMockDatabase>;
   let courseTracking: CourseTracking;
   const courseUrl = faker.internet.url();
 
   beforeEach(() => {
-    db = makeMockDb();
-    courseTracking = new CourseTracking(db as never);
+    database = makeMockDatabase();
+    courseTracking = new CourseTracking(database as never);
     (sanityClient.fetch as Mock).mockResolvedValue({ url: courseUrl });
   });
 
@@ -70,7 +74,7 @@ describe("CourseTracking", () => {
 
       await courseTracking.createCourseTracking(userId, courseId);
 
-      expect(db._mockValues).toHaveBeenCalledWith(
+      expect(database._mockValues).toHaveBeenCalledWith(
         expect.objectContaining({
           courseUrl,
           status: COURSE_TRACKING_STATUS.COMPLETE,
@@ -93,18 +97,23 @@ describe("CourseTracking", () => {
     it("queries the database for the given userId", async () => {
       const userId = faker.string.uuid();
       const trackings = [
-        { courseUrl: faker.internet.url(), id: faker.string.uuid(), status: COURSE_TRACKING_STATUS.COMPLETE, userId },
+        {
+          courseUrl: faker.internet.url(),
+          id: faker.string.uuid(),
+          status: COURSE_TRACKING_STATUS.COMPLETE,
+          userId,
+        },
       ];
-      db._mockFindMany.mockResolvedValue(trackings);
+      database._mockFindMany.mockResolvedValue(trackings);
 
       const result = await courseTracking.getCourseTrackingByUserId(userId);
 
       expect(result).toEqual(trackings);
-      expect(db._mockFindMany).toHaveBeenCalledOnce();
+      expect(database._mockFindMany).toHaveBeenCalledOnce();
     });
 
     it("returns an empty array when user has no trackings", async () => {
-      db._mockFindMany.mockResolvedValue([]);
+      database._mockFindMany.mockResolvedValue([]);
 
       const result = await courseTracking.getCourseTrackingByUserId("unknown");
 
@@ -123,8 +132,13 @@ describe("CourseTracking", () => {
     it("resolves the course URL from Sanity and queries the database", async () => {
       const userId = faker.string.uuid();
       const courseId = faker.string.uuid();
-      const tracking = { courseUrl, id: faker.string.uuid(), status: COURSE_TRACKING_STATUS.REVISIT, userId };
-      db._mockFindFirst.mockResolvedValue(tracking);
+      const tracking = {
+        courseUrl,
+        id: faker.string.uuid(),
+        status: COURSE_TRACKING_STATUS.REVISIT,
+        userId,
+      };
+      database._mockFindFirst.mockResolvedValue(tracking);
 
       const result = await courseTracking.getCourseTrackingByUserIdCourseId(
         userId,
@@ -138,7 +152,7 @@ describe("CourseTracking", () => {
     });
 
     it("returns undefined when no matching tracking entry exists", async () => {
-      db._mockFindFirst.mockResolvedValue(undefined);
+      database._mockFindFirst.mockResolvedValue();
 
       const result = await courseTracking.getCourseTrackingByUserIdCourseId(
         "user",
@@ -164,8 +178,8 @@ describe("CourseTracking", () => {
 
       await courseTracking.updateCourseTrackingStatus(id, newStatus);
 
-      expect(db._mockSet).toHaveBeenCalledWith({ status: newStatus });
-      expect(db._mockWhere).toHaveBeenCalledOnce();
+      expect(database._mockSet).toHaveBeenCalledWith({ status: newStatus });
+      expect(database._mockWhere).toHaveBeenCalledOnce();
     });
 
     it("accepts all valid status values", async () => {
@@ -180,8 +194,8 @@ describe("CourseTracking", () => {
           faker.string.uuid(),
           status,
         );
-        expect(db._mockSet).toHaveBeenCalledWith({ status });
-        db._mockSet.mockClear();
+        expect(database._mockSet).toHaveBeenCalledWith({ status });
+        database._mockSet.mockClear();
       }
     });
   });

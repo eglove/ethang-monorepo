@@ -5,7 +5,12 @@ import { Image } from "./image.tsx";
 describe("Image", () => {
   it("renders a figure with an img element", async () => {
     const html = String(
-      await Image({ alt: "A photo", height: 200, src: "photo.jpg", width: 300 }),
+      await Image({
+        alt: "A photo",
+        height: 200,
+        src: "photo.jpg",
+        width: 300,
+      }),
     );
     expect(html).toContain("<figure");
     expect(html).toContain("<img");
@@ -14,14 +19,24 @@ describe("Image", () => {
 
   it("passes alt text to the img element", async () => {
     const html = String(
-      await Image({ alt: "Sunset view", height: 100, src: "a.jpg", width: 100 }),
+      await Image({
+        alt: "Sunset view",
+        height: 100,
+        src: "a.jpg",
+        width: 100,
+      }),
     );
     expect(html).toContain('alt="Sunset view"');
   });
 
   it("passes src to the img element", async () => {
     const html = String(
-      await Image({ alt: "x", height: 50, src: "https://example.com/img.png", width: 50 }),
+      await Image({
+        alt: "x",
+        height: 50,
+        src: "https://example.com/img.png",
+        width: 50,
+      }),
     );
     expect(html).toContain('src="https://example.com/img.png"');
   });

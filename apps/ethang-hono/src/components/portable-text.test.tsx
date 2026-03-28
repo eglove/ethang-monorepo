@@ -58,7 +58,9 @@ describe("PortableText", () => {
   });
 
   it("renders blockquote style blocks", async () => {
-    const html = await renderPortableText([makeBlock("blockquote", "A famous quote")]);
+    const html = await renderPortableText([
+      makeBlock("blockquote", "A famous quote"),
+    ]);
     expect(html).toContain("A famous quote");
     expect(html).toContain("blockquote");
   });
@@ -74,14 +76,24 @@ describe("PortableText", () => {
 
   it("renders code blocks", async () => {
     const html = await renderPortableText([
-      { _key: "c1", _type: "code" as const, code: "const x = 1;", language: "javascript" },
+      {
+        _key: "c1",
+        _type: "code" as const,
+        code: "const x = 1;",
+        language: "javascript",
+      },
     ]);
     expect(html).toContain("const x = 1;");
   });
 
   it("renders video embed blocks", async () => {
     const html = await renderPortableText([
-      { _key: "v1", _type: "video" as const, title: "My Video", videoId: "abc123" },
+      {
+        _key: "v1",
+        _type: "video" as const,
+        title: "My Video",
+        videoId: "abc123",
+      },
     ]);
     expect(html).toContain("abc123");
   });
@@ -137,7 +149,13 @@ describe("PortableText", () => {
   it("renders nothing for block type with unrecognized style", async () => {
     const html = await renderPortableText([
       // @ts-expect-error testing unrecognized style
-      { _key: "b1", _type: "block" as const, children: [], markDefs: [], style: "h4" },
+      {
+        _key: "b1",
+        _type: "block" as const,
+        children: [],
+        markDefs: [],
+        style: "h4",
+      },
     ]);
     expect(html).toBeDefined();
   });
@@ -147,7 +165,9 @@ describe("PortableText", () => {
       _key: "b1",
       _type: "block" as const,
       children: [makeChild("click here", ["link-key"])],
-      markDefs: [{ _key: "link-key", _type: "link", href: "https://example.com" }],
+      markDefs: [
+        { _key: "link-key", _type: "link", href: "https://example.com" },
+      ],
       style: "normal",
     };
     const html = await renderPortableText([block]);

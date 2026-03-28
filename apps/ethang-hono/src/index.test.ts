@@ -23,12 +23,12 @@ vi.mock("./stores/course-path-store.ts", () => {
       .mockReturnValue({ complete: 0, incomplete: 100, revisit: 0 }),
     latestUpdate: undefined,
     learningPaths: [],
-    setup: vi.fn().mockResolvedValue(undefined),
+    setup: vi.fn().mockResolvedValue(),
     totalCourseCount: 0,
   };
   return {
-    CoursePathStore: vi.fn(),
     coursePathData: mockStore,
+    CoursePathStore: vi.fn(),
   };
 });
 
@@ -36,16 +36,16 @@ import type { Mock } from "vitest";
 
 import { sanityClient } from "./clients/sanity.ts";
 import { getDatabase } from "./db/database.ts";
+import { app } from "./index.tsx";
 import { BlogModel } from "./models/blog-model.ts";
 import { COURSE_TRACKING_STATUS } from "./utilities/constants.ts";
-import { app } from "./index.tsx";
 
-const makeMockDb = () => {
+const makeMockDatabase = () => {
   const mockFindFirst = vi.fn();
   const mockFindMany = vi.fn().mockResolvedValue([]);
-  const mockValues = vi.fn().mockResolvedValue(undefined);
+  const mockValues = vi.fn().mockResolvedValue();
   const mockInsert = vi.fn().mockReturnValue({ values: mockValues });
-  const mockWhere = vi.fn().mockResolvedValue(undefined);
+  const mockWhere = vi.fn().mockResolvedValue();
   const mockSet = vi.fn().mockReturnValue({ where: mockWhere });
   const mockUpdate = vi.fn().mockReturnValue({ set: mockSet });
 
@@ -175,9 +175,7 @@ describe("app", () => {
 
   describe("GET /tips/scrollbar-gutter", () => {
     it("returns 200 with HTML", async () => {
-      const res = await app.request(
-        "https://ethang.dev/tips/scrollbar-gutter",
-      );
+      const res = await app.request("https://ethang.dev/tips/scrollbar-gutter");
       expect(res.status).toBe(200);
     });
   });
@@ -240,11 +238,11 @@ describe("app", () => {
   });
 
   describe("PUT /api/course-tracking/:userId/:courseId — status cycle", () => {
-    let mockDb: ReturnType<typeof makeMockDb>;
+    let mockDatabase: ReturnType<typeof makeMockDatabase>;
 
     beforeEach(() => {
-      mockDb = makeMockDb();
-      (getDatabase as Mock).mockReturnValue(mockDb);
+      mockDatabase = makeMockDatabase();
+      (getDatabase as Mock).mockReturnValue(mockDatabase);
       (sanityClient.fetch as Mock).mockResolvedValue({
         url: "https://course.example.com",
       });
@@ -255,7 +253,7 @@ describe("app", () => {
     });
 
     it("creates a new tracking entry with COMPLETE status when none exists", async () => {
-      mockDb._findFirst.mockResolvedValue(undefined);
+      mockDatabase._findFirst.mockResolvedValue();
 
       const res = await app.request(
         "https://ethang.dev/api/course-tracking/user1/course1",
@@ -263,7 +261,7 @@ describe("app", () => {
       );
 
       expect(res.status).toBe(200);
-      expect(mockDb._values).toHaveBeenCalledWith(
+      expect(mockDatabase._values).toHaveBeenCalledWith(
         expect.objectContaining({
           status: COURSE_TRACKING_STATUS.COMPLETE,
           userId: "user1",
@@ -278,9 +276,12 @@ describe("app", () => {
         status: COURSE_TRACKING_STATUS.COMPLETE,
         userId: "user1",
       };
-      mockDb._findFirst
+      mockDatabase._findFirst
         .mockResolvedValueOnce(existing)
-        .mockResolvedValueOnce({ ...existing, status: COURSE_TRACKING_STATUS.REVISIT });
+        .mockResolvedValueOnce({
+          ...existing,
+          status: COURSE_TRACKING_STATUS.REVISIT,
+        });
 
       const res = await app.request(
         "https://ethang.dev/api/course-tracking/user1/course1",
@@ -288,7 +289,7 @@ describe("app", () => {
       );
 
       expect(res.status).toBe(200);
-      expect(mockDb._set).toHaveBeenCalledWith({
+      expect(mockDatabase._set).toHaveBeenCalledWith({
         status: COURSE_TRACKING_STATUS.REVISIT,
       });
     });
@@ -300,7 +301,7 @@ describe("app", () => {
         status: COURSE_TRACKING_STATUS.REVISIT,
         userId: "user1",
       };
-      mockDb._findFirst
+      mockDatabase._findFirst
         .mockResolvedValueOnce(existing)
         .mockResolvedValueOnce({
           ...existing,
@@ -313,7 +314,7 @@ describe("app", () => {
       );
 
       expect(res.status).toBe(200);
-      expect(mockDb._set).toHaveBeenCalledWith({
+      expect(mockDatabase._set).toHaveBeenCalledWith({
         status: COURSE_TRACKING_STATUS.INCOMPLETE,
       });
     });
@@ -325,7 +326,7 @@ describe("app", () => {
         status: COURSE_TRACKING_STATUS.INCOMPLETE,
         userId: "user1",
       };
-      mockDb._findFirst
+      mockDatabase._findFirst
         .mockResolvedValueOnce(existing)
         .mockResolvedValueOnce({
           ...existing,
@@ -338,7 +339,7 @@ describe("app", () => {
       );
 
       expect(res.status).toBe(200);
-      expect(mockDb._set).toHaveBeenCalledWith({
+      expect(mockDatabase._set).toHaveBeenCalledWith({
         status: COURSE_TRACKING_STATUS.COMPLETE,
       });
     });
@@ -351,7 +352,9 @@ describe("app", () => {
         userId: "user1",
       };
       const updated = { ...existing, status: COURSE_TRACKING_STATUS.REVISIT };
-      mockDb._findFirst.mockResolvedValueOnce(existing).mockResolvedValueOnce(updated);
+      mockDatabase._findFirst
+        .mockResolvedValueOnce(existing)
+        .mockResolvedValueOnce(updated);
 
       const res = await app.request(
         "https://ethang.dev/api/course-tracking/user1/course1",
@@ -364,11 +367,11 @@ describe("app", () => {
   });
 
   describe("GET /api/course-tracking/:userId", () => {
-    let mockDb: ReturnType<typeof makeMockDb>;
+    let mockDatabase: ReturnType<typeof makeMockDatabase>;
 
     beforeEach(() => {
-      mockDb = makeMockDb();
-      (getDatabase as Mock).mockReturnValue(mockDb);
+      mockDatabase = makeMockDatabase();
+      (getDatabase as Mock).mockReturnValue(mockDatabase);
     });
 
     afterEach(() => {
@@ -384,7 +387,7 @@ describe("app", () => {
           userId: "user1",
         },
       ];
-      mockDb._findMany.mockResolvedValue(trackings);
+      mockDatabase._findMany.mockResolvedValue(trackings);
 
       const res = await app.request(
         "https://ethang.dev/api/course-tracking/user1",
@@ -397,11 +400,11 @@ describe("app", () => {
   });
 
   describe("GET /api/course-tracking/:userId/:courseId", () => {
-    let mockDb: ReturnType<typeof makeMockDb>;
+    let mockDatabase: ReturnType<typeof makeMockDatabase>;
 
     beforeEach(() => {
-      mockDb = makeMockDb();
-      (getDatabase as Mock).mockReturnValue(mockDb);
+      mockDatabase = makeMockDatabase();
+      (getDatabase as Mock).mockReturnValue(mockDatabase);
       (sanityClient.fetch as Mock).mockResolvedValue({
         url: "https://course.example.com",
       });
@@ -418,7 +421,7 @@ describe("app", () => {
         status: COURSE_TRACKING_STATUS.COMPLETE,
         userId: "user1",
       };
-      mockDb._findFirst.mockResolvedValue(tracking);
+      mockDatabase._findFirst.mockResolvedValue(tracking);
 
       const res = await app.request(
         "https://ethang.dev/api/course-tracking/user1/course1",
@@ -430,7 +433,7 @@ describe("app", () => {
     });
 
     it("returns null data when tracking does not exist", async () => {
-      mockDb._findFirst.mockResolvedValue(undefined);
+      mockDatabase._findFirst.mockResolvedValue();
 
       const res = await app.request(
         "https://ethang.dev/api/course-tracking/user1/course1",
@@ -449,9 +452,7 @@ describe("app", () => {
     });
 
     it("returns text/plain when format=text", async () => {
-      const res = await app.request(
-        "https://ethang.dev/courses?format=text",
-      );
+      const res = await app.request("https://ethang.dev/courses?format=text");
       expect(res.status).toBe(200);
       expect(res.headers.get("Content-Type")).toContain("text/plain");
     });

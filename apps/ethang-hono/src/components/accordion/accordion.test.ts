@@ -6,35 +6,71 @@ import { AccordionWrapper } from "./accordion-wrapper.tsx";
 
 describe("AccordionBody", () => {
   it("renders a div with the given bodyId", async () => {
-    const html = String(await AccordionBody({ bodyId: "body-1", children: "Content", headingId: "heading-1" }));
+    const html = String(
+      await AccordionBody({
+        bodyId: "body-1",
+        children: "Content",
+        headingId: "heading-1",
+      }),
+    );
     expect(html).toContain('id="body-1"');
   });
 
   it("renders aria-labelledby with headingId", async () => {
-    const html = String(await AccordionBody({ bodyId: "body-1", children: "Content", headingId: "heading-1" }));
+    const html = String(
+      await AccordionBody({
+        bodyId: "body-1",
+        children: "Content",
+        headingId: "heading-1",
+      }),
+    );
     expect(html).toContain('aria-labelledby="heading-1"');
   });
 
   it("renders children content", async () => {
-    const html = String(await AccordionBody({ bodyId: "b", children: "My content", headingId: "h" }));
+    const html = String(
+      await AccordionBody({
+        bodyId: "b",
+        children: "My content",
+        headingId: "h",
+      }),
+    );
     expect(html).toContain("My content");
   });
 });
 
 describe("AccordionHeader", () => {
   it("renders h2 with headingId", async () => {
-    const html = String(await AccordionHeader({ bodyId: "body-1", children: "Title", headingId: "heading-1" }));
-    expect(html).toContain('<h2');
+    const html = String(
+      await AccordionHeader({
+        bodyId: "body-1",
+        children: "Title",
+        headingId: "heading-1",
+      }),
+    );
+    expect(html).toContain("<h2");
     expect(html).toContain('id="heading-1"');
   });
 
   it("renders button with aria-controls pointing to bodyId", async () => {
-    const html = String(await AccordionHeader({ bodyId: "body-1", children: "Title", headingId: "heading-1" }));
+    const html = String(
+      await AccordionHeader({
+        bodyId: "body-1",
+        children: "Title",
+        headingId: "heading-1",
+      }),
+    );
     expect(html).toContain('aria-controls="body-1"');
   });
 
   it("renders children as button label", async () => {
-    const html = String(await AccordionHeader({ bodyId: "b", children: "Section Title", headingId: "h" }));
+    const html = String(
+      await AccordionHeader({
+        bodyId: "b",
+        children: "Section Title",
+        headingId: "h",
+      }),
+    );
     expect(html).toContain("Section Title");
   });
 
@@ -64,6 +100,6 @@ describe("AccordionWrapper", () => {
 
   it("generates a unique id with accordion- prefix", async () => {
     const html = String(await AccordionWrapper({ children: "" }));
-    expect(html).toMatch(/id="accordion-[a-f0-9-]+"/);
+    expect(html).toMatch(/id="accordion-[\da-f-]+"/);
   });
 });

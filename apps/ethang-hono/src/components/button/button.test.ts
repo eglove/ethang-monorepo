@@ -45,7 +45,11 @@ describe("Button", () => {
   it("falls back to # when as=a has no href", async () => {
     const testApp = new Hono();
     testApp.get("/", async (c) => {
-      const result = await Button({ as: "a", children: "Link", type: "button" });
+      const result = await Button({
+        as: "a",
+        children: "Link",
+        type: "button",
+      });
       return c.html(result as never);
     });
     const res = await testApp.request("/");

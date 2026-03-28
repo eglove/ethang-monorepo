@@ -21,7 +21,7 @@ describe("getButtonClasses", () => {
   it("returns an array of strings", () => {
     const result = getButtonClasses("default");
     expect(Array.isArray(result)).toBe(true);
-    expect(result.every((c) => typeof c === "string")).toBe(true);
+    expect(result.every((c) => "string" === typeof c)).toBe(true);
   });
 
   it("always includes base classes", () => {

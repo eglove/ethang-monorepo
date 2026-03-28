@@ -11,7 +11,7 @@ import { CoursesContainer, swebokFocusMap } from "./courses-container.tsx";
 
 const renderJsx = async (jsx: JSX.Element): Promise<string> => {
   const testApp = new Hono();
-  testApp.get("/", (c) => c.html(jsx));
+  testApp.get("/", async (c) => c.html(jsx));
   const res = await testApp.request("/");
   return res.text();
 };
@@ -55,7 +55,10 @@ describe("CourseItem", () => {
 
   it("renders a link when course is found", async () => {
     const courseId = faker.string.uuid();
-    const course = makeCourse({ _id: courseId, url: "https://course.example.com" });
+    const course = makeCourse({
+      _id: courseId,
+      url: "https://course.example.com",
+    });
     coursePathData.learningPaths = [makeLearningPath([course])];
 
     const html = await renderJsx(<CourseItem courseId={courseId} />);

@@ -33,7 +33,7 @@ describe("createCounter", () => {
 
     for (const value of counter) {
       count += 1;
-      if (count === 1000) {
+      if (1000 === count) {
         expect(value).toBe(1000);
         break;
       }

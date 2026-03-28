@@ -68,7 +68,9 @@ describe("blogRss", () => {
     expect(match).not.toBeNull();
 
     const parsedDate = new Date(match![1]);
-    expect(parsedDate.getTime()).toBeGreaterThanOrEqual(before.getTime() - 1000);
+    expect(parsedDate.getTime()).toBeGreaterThanOrEqual(
+      before.getTime() - 1000,
+    );
     expect(parsedDate.getTime()).toBeLessThanOrEqual(after.getTime() + 1000);
   });
 
