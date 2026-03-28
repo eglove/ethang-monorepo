@@ -1,7 +1,7 @@
+import { DEPLOY_TIME } from "../../../utilities/deploy-info.ts";
 import { Button } from "../../button/button.tsx";
 import { Code } from "../../code.tsx";
 import { BlogLayout } from "../../layouts/blog-layout.tsx";
-import { DEPLOY_TIME } from "../../../utilities/deploy-info.ts";
 import { H1 } from "../../typography/h1.tsx";
 import { H2 } from "../../typography/h2.tsx";
 import { Link } from "../../typography/link.tsx";
@@ -13,7 +13,7 @@ const scrollbarGutter = `html {
 
 export const ScrollbarGutter = async () => {
   return (
-    <BlogLayout title="scrollbar-gutter" updatedAt={DEPLOY_TIME}>
+    <BlogLayout updatedAt={DEPLOY_TIME} title="scrollbar-gutter">
       <H1>scrollbar-gutter</H1>
       <P>
         Avoid content layout shifts when moving from content without a scroll to

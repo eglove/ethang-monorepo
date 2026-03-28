@@ -25,8 +25,5 @@ const deployInfoPath = fileURLToPath(
   new URL("../src/utilities/deploy-info.ts", import.meta.url),
 );
 const deployTime = new Date().toISOString();
-writeFileSync(
-  deployInfoPath,
-  `export const DEPLOY_TIME = "${deployTime}";\n`,
-);
+writeFileSync(deployInfoPath, `export const DEPLOY_TIME = "${deployTime}";\n`);
 globalThis.console.log(`Deploy time stamped: ${deployTime}`);

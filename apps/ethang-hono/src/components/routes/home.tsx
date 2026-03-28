@@ -4,7 +4,10 @@ import { MainLayout } from "../layouts/main-layout.tsx";
 
 export const Home = async () => {
   return (
-    <MainLayout classNames={{ main: "mx-auto max-w-7xl" }} updatedAt={DEPLOY_TIME}>
+    <MainLayout
+      updatedAt={DEPLOY_TIME}
+      classNames={{ main: "mx-auto max-w-7xl" }}
+    >
       <ProfileCard />
     </MainLayout>
   );

@@ -1,6 +1,6 @@
 // Bump SW_VERSION to force all clients to discard old caches and
 // install this new worker on their next page load.
-const SW_VERSION = "00000000";
+const SW_VERSION = "83c1fb21";
 
 const ASSETS_CACHE = `assets-${SW_VERSION}`;
 const HTML_CACHE = `html-${SW_VERSION}`;

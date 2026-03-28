@@ -1,7 +1,7 @@
 import map from "lodash/map.js";
 
-import { MainLayout } from "../layouts/main-layout.tsx";
 import { DEPLOY_TIME } from "../../utilities/deploy-info.ts";
+import { MainLayout } from "../layouts/main-layout.tsx";
 import { H1 } from "../typography/h1.tsx";
 import { H2 } from "../typography/h2.tsx";
 import { HR } from "../typography/hr.tsx";
@@ -18,7 +18,11 @@ export const allTips = [
 
 export const Tips = async () => {
   return (
-    <MainLayout title="Tips" classNames={{ main: "max-w-[65ch] md:mx-auto" }} updatedAt={DEPLOY_TIME}>
+    <MainLayout
+      title="Tips"
+      updatedAt={DEPLOY_TIME}
+      classNames={{ main: "max-w-[65ch] md:mx-auto" }}
+    >
       <H1>Tips</H1>
       <List className="my-6">
         {map(allTips, async (tip) => {

@@ -15,10 +15,10 @@ export type MainLayoutProperties = PropsWithChildren<{
   description?: string;
   imageUrl?: string;
   isBlog?: boolean;
-  publishedAt?: string;
+  publishedAt?: string | undefined;
   textAlternate?: string;
   title?: string;
-  updatedAt?: string;
+  updatedAt?: string | undefined;
 }>;
 
 export const MainLayout = async (properties: MainLayoutProperties) => {
