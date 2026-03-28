@@ -45,7 +45,7 @@ export const ScrollContainers = async () => {
       <H2>Tailwind</H2>
       <Code language="html">{tailwindExample}</Code>
       <H2>Demo</H2>
-      <div className="my-4 grid grid-rows-[auto_1fr_auto] gap-4 border-2 border-body px-2 py-4">
+      <div className="border-body my-4 grid grid-rows-[auto_1fr_auto] gap-4 border-2 px-2 py-4">
         <H2 className="border-b pb-4">Header</H2>
         <section
           tabindex={0}
@@ -71,7 +71,7 @@ export const ScrollContainers = async () => {
             );
           })}
         </section>
-        <div className="my-4 border-t border-t-body pt-4">
+        <div className="border-t-body my-4 border-t pt-4">
           <P>Footer</P>
         </div>
       </div>

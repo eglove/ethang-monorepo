@@ -73,7 +73,7 @@ export const Image = async (properties: ImageProperties) => {
         )}
       />
       {!isNil(caption) && (
-        <figcaption class="mt-2 text-center text-sm text-body-subtle">
+        <figcaption class="text-body-subtle mt-2 text-center text-sm">
           {caption}
         </figcaption>
       )}

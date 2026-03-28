@@ -34,7 +34,7 @@ export const Blog = async () => {
         <H1>Blog</H1>
         <Link
           href="https://ethang.dev/blogRss.xml"
-          className="text-sm text-fg-brand-subtle"
+          className="text-fg-brand-subtle text-sm"
         >
           RSS Feed
         </Link>

@@ -50,15 +50,15 @@ export const ScrollbarGutter = async () => {
         </Button>
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
-          <div className="rounded-md border border-body p-4">
-            <div className="mb-2  font-semibold text-body">
+          <div className="border-body rounded-md border p-4">
+            <div className="text-body  mb-2 font-semibold">
               With scrollbar-gutter
             </div>
             <section
               tabindex={0}
               style={{ scrollbarGutter: "stable" }}
               aria-label="With scrollbar-gutter demo"
-              className="h-100 overflow-auto rounded-md border border-body p-4"
+              className="border-body h-100 overflow-auto rounded-md border p-4"
             >
               <P>
                 This container has <code>scrollbar-gutter: stable</code>{" "}
@@ -87,15 +87,15 @@ export const ScrollbarGutter = async () => {
               </div>
             </section>
           </div>
-          <div className="rounded-md border border-body p-4">
-            <div className="mb-2 font-semibold text-body">
+          <div className="border-body rounded-md border p-4">
+            <div className="text-body mb-2 font-semibold">
               Without scrollbar-gutter
             </div>
             <section
               tabindex={0}
               style={{ scrollbarGutter: "auto" }}
               aria-label="Without scrollbar-gutter demo"
-              className="h-100 overflow-auto rounded-md border border-body p-4"
+              className="border-body h-100 overflow-auto rounded-md border p-4"
             >
               <P>This container does not have scrollbar-gutter applied.</P>
               <P>

@@ -41,7 +41,7 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
   ));
 
   return (
-    <html lang="en-US" class="scroll-smooth dark bg-dark">
+    <html lang="en-US" class="dark bg-dark scroll-smooth">
       <head>
         <title>{title}</title>
         <meta charset="utf-8" />

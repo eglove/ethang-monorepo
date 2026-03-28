@@ -44,7 +44,7 @@ export const CoursesContainer = async () => {
   const counter = new Counter();
 
   return (
-    <ul class="list-inside list-disc space-y-4 text-body">
+    <ul class="text-body list-inside list-disc space-y-4">
       {map(learningPaths, async (path) => {
         const names = split(path.name, ":");
         const [firstPart] = names;
