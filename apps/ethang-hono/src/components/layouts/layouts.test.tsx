@@ -1,8 +1,7 @@
 import { Hono } from "hono";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-vi.mock(import("flowbite"), () => ({}));
-
+import { globalStore } from "../../stores/global-store-properties.ts";
 import { BlogLayout } from "./blog-layout.tsx";
 import { MainLayout, type MainLayoutProperties } from "./main-layout.tsx";
 
@@ -115,6 +114,30 @@ describe(MainLayout, () => {
     const html = await renderMain({ children: "My page content here" });
 
     expect(html).toContain("My page content here");
+  });
+
+  it("emits a module script tag for each registered script id", async () => {
+    globalStore.scripts = new Set([
+      "components/code",
+      "components/navigation/navigation",
+    ]);
+    const html = await renderMain({ children: "" });
+
+    expect(html).toContain(
+      '<script type="module" src="/scripts/components/navigation/navigation.client.js">',
+    );
+    expect(html).toContain(
+      '<script type="module" src="/scripts/components/code.client.js">',
+    );
+  });
+
+  it("emits no extra script tags when scripts set is empty", async () => {
+    globalStore.scripts = new Set();
+    const html = await renderMain({ children: "" });
+
+    expect(html).not.toContain(
+      '<script type="module" src="/scripts/components/code.client.js">',
+    );
   });
 });
 

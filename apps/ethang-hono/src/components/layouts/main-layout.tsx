@@ -1,9 +1,10 @@
 import type { PropsWithChildren } from "hono/jsx";
 
-import "flowbite";
 import isNil from "lodash/isNil.js";
+import map from "lodash/map.js";
 import { twMerge } from "tailwind-merge";
 
+import { globalStore } from "../../stores/global-store-properties.ts";
 import { Navigation } from "../navigation/navigation.tsx";
 
 export type MainLayoutProperties = PropsWithChildren<{
@@ -27,6 +28,10 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
     : `EthanG | ${properties.title}`;
   const description =
     properties.description ?? "Messing around on the web sometimes.";
+
+  const scriptTags = map([...globalStore.scripts], async (id) => (
+    <script type="module" src={`/scripts/${id}.client.js`}></script>
+  ));
 
   return (
     <html lang="en-US" class="scroll-smooth dark bg-dark">
@@ -88,13 +93,13 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         {!isNil(properties.updatedAt) && (
           <meta name="last-modified" content={properties.updatedAt} />
         )}
+        {scriptTags}
       </head>
       <body id="body">
         <Navigation />
         <main class={twMerge("m-4 mt-20", properties.classNames?.main)}>
           {properties.children}
         </main>
-        <script type="module" src="/scripts/libraries.js"></script>
         <script
           dangerouslySetInnerHTML={{
             __html: `
