@@ -2,6 +2,7 @@
 **/.wrangler/
 .output.txt
 .claude
+!.claude/settings.json
 .worktrees/
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,jetbrains+all,visualstudiocode,storybookjs

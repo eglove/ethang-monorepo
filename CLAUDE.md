@@ -10,23 +10,6 @@ When a `cspell/spellchecker` error appears for a legitimate technical term, add 
 
 Until the updated package is published, suppress the specific error inline with a `// cspell:ignore <word>` comment at the top of the affected file. Remove the inline suppress once the package is published and the dependency is updated.
 
-## ESLint & TypeScript — Fix Immediately, Not Later
-
-Run ESLint and `tsc` on any file you modify **before moving on**. Do not batch lint or type-check fixes for the end of an implementation. The pattern is: write code → lint → type-check → fix errors → continue.
-
-```bash
-# Lint a specific file
-pnpm eslint <file> --fix
-
-# Lint a package
-pnpm --filter <package> lint --fix
-
-# Type-check a package (no emit)
-pnpm --filter <package> exec tsc --noEmit
-```
-
-If a lint or type error cannot be fixed without breaking the intended logic, stop and flag it rather than suppressing it with a disable comment or `@ts-ignore`.
-
 ## Test-Driven Development (TDD) — All Code
 
 Write the test first. No implementation code without a failing test that demands it.
@@ -139,6 +122,21 @@ await app.request("https://ethang.dev/courses");
 await app.request("https://ethang.dev/courses");
 await app.request("https://ethang.dev/courses");
 ```
+
+## WebStorm MCP Server — Prefer Over Built-in Tools
+
+When the WebStorm MCP server (`mcp__webstorm__*`) is available, prefer its tools over the built-in equivalents for all file and project operations:
+
+- **File search** — use `mcp__webstorm__find_files_by_glob` or `mcp__webstorm__find_files_by_name_keyword` instead of Glob
+- **Content search** — use `mcp__webstorm__search_in_files_by_text` or `mcp__webstorm__search_in_files_by_regex` instead of Grep
+- **File reading** — use `mcp__webstorm__read_file` or `mcp__webstorm__get_file_text_by_path` instead of Read
+- **File editing** — use `mcp__webstorm__replace_text_in_file` instead of Edit or Write
+- **Terminal commands** — use `mcp__webstorm__execute_terminal_command` instead of Bash
+- **Run configurations** — use `mcp__webstorm__execute_run_configuration` to run builds, tests, and scripts
+- **Symbol lookup** — use `mcp__webstorm__get_symbol_info` or `mcp__webstorm__search_symbol` for navigating code
+- **Diagnostics** — use `mcp__webstorm__get_file_problems` for lint and type errors
+
+Use any other `mcp__webstorm__*` tool it exposes when it is the most direct way to accomplish the task. Fall back to built-in tools only when the MCP server does not expose the needed capability.
 
 ## Opportunistic Code Improvement
 
