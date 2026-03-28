@@ -13,17 +13,32 @@ const makePlugin = (files: string, rules: Record<string, string> = {}) => {
 describe(OutputConfig, () => {
   it("stores all provided options as readonly properties", () => {
     const plugin = makePlugin("**/*.ts");
+    const readmeImport = `import testConfig from "@ethang/eslint-config/${TEST_FILE_NAME}";`;
     const config = new OutputConfig({
+      extraConfigEntries: ["extra: true,"],
+      extraImports: ['import foo from "foo";'],
       fileName: TEST_FILE_NAME,
+      functionParameters: "/** @type {string} */ path",
+      globalIgnores: ["**/*.spec.ts"],
       includeIgnores: true,
       includeLanguageOptions: true,
+      includeReactVersion: true,
       plugins: [plugin],
+      readmeImport,
+      readmeLabel: "Test",
     });
 
     expect(config.fileName).toBe(TEST_FILE_NAME);
     expect(config.plugins).toHaveLength(1);
     expect(config.includeIgnores).toBe(true);
     expect(config.includeLanguageOptions).toBe(true);
+    expect(config.extraConfigEntries).toEqual(["extra: true,"]);
+    expect(config.extraImports).toEqual(['import foo from "foo";']);
+    expect(config.functionParameters).toBe("/** @type {string} */ path");
+    expect(config.globalIgnores).toEqual(["**/*.spec.ts"]);
+    expect(config.includeReactVersion).toBe(true);
+    expect(config.readmeImport).toBe(readmeImport);
+    expect(config.readmeLabel).toBe("Test");
   });
 
   describe("ruleCount", () => {
