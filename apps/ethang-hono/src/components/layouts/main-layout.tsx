@@ -5,6 +5,7 @@ import map from "lodash/map.js";
 import { twMerge } from "tailwind-merge";
 
 import { globalStore } from "../../stores/global-store-properties.ts";
+import { registerScript } from "../../utilities/register-script.ts";
 import { Navigation } from "../navigation/navigation.tsx";
 
 export type MainLayoutProperties = PropsWithChildren<{
@@ -23,6 +24,8 @@ export type MainLayoutProperties = PropsWithChildren<{
 }>;
 
 export const MainLayout = async (properties: MainLayoutProperties) => {
+  registerScript(globalStore, "components/navigation/navigation");
+
   const title = isNil(properties.title)
     ? "EthanG"
     : `EthanG | ${properties.title}`;

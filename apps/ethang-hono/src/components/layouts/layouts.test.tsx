@@ -116,6 +116,15 @@ describe(MainLayout, () => {
     expect(html).toContain("My page content here");
   });
 
+  it("registers the navigation script before computing script tags", async () => {
+    globalStore.scripts = new Set();
+    await renderMain({ children: "" });
+
+    expect(globalStore.scripts.has("components/navigation/navigation")).toBe(
+      true,
+    );
+  });
+
   it("emits a module script tag for each registered script id", async () => {
     globalStore.scripts = new Set([
       "components/code",

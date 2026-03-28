@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 
-import { globalStore } from "../../stores/global-store-properties.ts";
 import { NavigationButton } from "./navigation-button.tsx";
 import { NavigationLink } from "./navigation-link.tsx";
 import { Navigation } from "./navigation.tsx";
@@ -98,14 +97,13 @@ describe(Navigation, () => {
     expect(html).toContain('href="/courses"');
   });
 
-  it("registers the navigation client script", async () => {
-    globalStore.scripts = new Set();
+  it("renders the hamburger button and nav link list", async () => {
     const testApp = new Hono();
     testApp.get("/", async (c) => c.html(<Navigation />));
-    await testApp.request("/");
+    const response = await testApp.request("/");
+    const html = await response.text();
 
-    expect(globalStore.scripts.has("components/navigation/navigation")).toBe(
-      true,
-    );
+    expect(html).toContain("<button");
+    expect(html).toContain("<ul");
   });
 });
