@@ -74,6 +74,12 @@ describe("globalStore — default state", () => {
 
     expect(store.pathname).toBe("/");
   });
+
+  it("starts with empty scripts set", () => {
+    const store = makeStore();
+
+    expect(store.scripts.size).toBe(0);
+  });
 });
 
 describe("globalStore — setup() request parsing", () => {
@@ -254,5 +260,17 @@ describe("globalStore — setup() auth", () => {
         headers: expect.objectContaining({ "X-Token": "" }),
       }),
     );
+  });
+});
+
+describe("globalStore — scripts registry", () => {
+  it("resets scripts to empty set on each setup() call", async () => {
+    const store = makeStore();
+    store.scripts.add("components/navigation/navigation");
+    const context = makeContext(EXAMPLE_URL);
+
+    await store.setup(context as never);
+
+    expect(store.scripts.size).toBe(0);
   });
 });
