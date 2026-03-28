@@ -13,6 +13,7 @@ import { BlogModel } from "../../models/blog-model.ts";
 
 const RENDERS_FULL_HTML = "renders a full HTML document";
 import { coursePathData } from "../../stores/course-path-store.ts";
+import { globalStore } from "../../stores/global-store-properties.ts";
 import { Blog } from "./blog.tsx";
 import { Courses } from "./courses.tsx";
 import { Home } from "./home.tsx";
@@ -173,5 +174,16 @@ describe(Courses, () => {
     const html = await render(<Courses />);
 
     expect(html).toContain("Last Updated:");
+  });
+
+  it("registers course-completion script", async () => {
+    globalStore.scripts = new Set();
+    const testApp = new Hono();
+    testApp.get("/", async (c) => c.html(<Courses />));
+    await testApp.request("/");
+
+    expect(
+      globalStore.scripts.has("components/courses/course-completion"),
+    ).toBe(true);
   });
 });

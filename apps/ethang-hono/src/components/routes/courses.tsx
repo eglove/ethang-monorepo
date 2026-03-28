@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 
 import { coursePathData } from "../../stores/course-path-store.ts";
 import { globalStore } from "../../stores/global-store-properties.ts";
+import { registerScript } from "../../utilities/register-script.ts";
 import { CourseProgressBar } from "../courses/course-progress-bar.tsx";
 import { CoursesContainer } from "../courses/courses-container.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
@@ -12,6 +13,8 @@ import { P } from "../typography/p.tsx";
 import { YouTubeVideo } from "../you-tube-video.tsx";
 
 export const Courses = async () => {
+  registerScript(globalStore, "components/courses/course-completion");
+
   const { latestUpdate } = coursePathData;
 
   const formatted = DateTime.fromISO(
@@ -33,7 +36,6 @@ export const Courses = async () => {
       imageUrl="/images/generated/Gemini_Generated_Image_2ac79s2ac79s2ac7.png"
       description="A curated list of recommended courses for development. Learn from industry experts and stay up-to-date with the latest technologies."
     >
-      <script type="module" src="/scripts/courses/course-completion.js" />
       <div class="mx-auto max-w-7xl">
         <H1>Recommended Courses</H1>
         <P>Last Updated: {formatted}</P>
