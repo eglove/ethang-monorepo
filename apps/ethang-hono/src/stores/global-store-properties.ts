@@ -15,6 +15,7 @@ type GlobalStoreProperties = {
   locale: string;
   origin: string;
   pathname: string;
+  scripts: Set<string>;
   timezone: string;
 };
 
