@@ -3,25 +3,10 @@ import compact from "lodash/compact.js";
 import filter from "lodash/filter.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
-import values from "lodash/values.js";
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 
-import type { genRules } from "../setup/gen-rules.ts";
-
-import { getList } from "./list-utilities.ts";
 import { outputConfigs } from "./output-config.ts";
-
-const getRuleCount = (rules: ReturnType<typeof genRules>) => {
-  let count = 0;
-  for (const value of values(rules)) {
-    if ("off" !== value) {
-      count += 1;
-    }
-  }
-
-  return count;
-};
 
 export const updateReadme = () => {
   const md = new MarkdownGenerator();
@@ -29,30 +14,18 @@ export const updateReadme = () => {
   md.link("View Config", "https://eslint-config-ethang.pages.dev/rules", 2);
   md.alert("CAUTION", "Prettier is already included for styling!", 2);
 
-  const coreRules = map(
-    [
-      ...getList("core"),
-      ...getList("json"),
-      ...getList("css"),
-      ...getList("markdown"),
-    ],
-    (rules) => {
-      return {
-        ...rules,
-        count: 0,
-      };
-    },
-  );
-
-  let total = 0;
-  for (const list of coreRules) {
-    const count = getRuleCount(list.list);
-    total += count;
-    list.count = count;
-  }
-  coreRules.sort((a, b) => {
+  const [mainConfig] = outputConfigs;
+  const coreRules = map(mainConfig?.plugins ?? [], (plugin) => {
+    return {
+      count: plugin.ruleCount,
+      name: plugin.name,
+      url: plugin.url,
+    };
+  }).toSorted((a, b) => {
     return b.count - a.count;
   });
+
+  const total = mainConfig?.ruleCount ?? 0;
 
   const ruleDocumentation = [`${total} rules.`];
   for (const list of coreRules) {
