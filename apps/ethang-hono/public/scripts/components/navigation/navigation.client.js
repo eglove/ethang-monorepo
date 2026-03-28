@@ -1,0 +1,1 @@
+var e=document.querySelector("[aria-controls='navbar-default']"),n=document.querySelector("#navbar-default");e?.addEventListener("click",()=>{let t=e.getAttribute("aria-expanded")==="true";e.setAttribute("aria-expanded",String(!t)),n?.classList.toggle("hidden")});
