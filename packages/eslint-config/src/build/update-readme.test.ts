@@ -3,19 +3,22 @@ import { describe, expect, it, vi } from "vitest";
 
 import { updateReadme } from "./update-readme.ts";
 
-vi.mock("node:fs");
+vi.mock(import("node:fs"));
 
 describe("update-readme", () => {
   it("should generate and write README.md", () => {
     updateReadme();
     expect(writeFileSync).toHaveBeenCalled();
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@typescript-eslint/prefer-destructuring
     const call = (writeFileSync as unknown as { mock: { calls: string[][] } })
       .mock.calls[0];
     const path = call?.[0];
     const content = call?.[1];
+
     expect(path).toContain("README.md");
     expect(content).toContain("# Relentless. Unapologetic.");
+    expect(content).toContain("config.vitest.js");
   });
 
   it("should execute if it is the main module", async () => {
@@ -33,15 +36,17 @@ describe("update-readme", () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const after = (writeFileSync as unknown as { mock: { calls: string[][] } })
       .mock.calls.length;
+
     expect(after).toBeGreaterThanOrEqual(before);
 
-    // @ts-expect-error restoring read-only
     import.meta.filename = originalFilename;
   });
 
   it("should NOT execute if it is NOT the main module", async () => {
     vi.clearAllMocks();
+    // @ts-expect-error for test
     await import("./update-readme.ts?test-branch-false");
+
     expect(writeFileSync).not.toHaveBeenCalled();
   });
 });

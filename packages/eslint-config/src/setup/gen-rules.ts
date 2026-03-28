@@ -24,6 +24,7 @@ export const getNonDeprecatedRules = (rules: unknown) => {
 export type CustomRules = {
   name: string;
   rule: CustomRule;
+  skipPrefix?: boolean;
 }[];
 
 type CustomRule = (Record<string, unknown> | string)[] | string;
@@ -58,9 +59,9 @@ export const genRules = (
 
   if (!isNil(customRules)) {
     for (const rule of customRules) {
-      if (includes(ruleNames, rule.name)) {
+      if (includes(ruleNames, rule.name) || true === rule.skipPrefix) {
         // eslint-disable-next-line sonar/nested-control-flow
-        if (prefix === undefined) {
+        if (prefix === undefined || true === rule.skipPrefix) {
           rules[rule.name] = rule.rule;
         } else {
           rules[`${prefix}/${rule.name}`] = rule.rule;

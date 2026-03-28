@@ -7,9 +7,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createConfigFile } from "./create-config-file.ts";
 
-vi.mock("node:fs");
+vi.mock(import("node:fs"));
 
-describe("createConfigFile", () => {
+describe(createConfigFile, () => {
   const testConfig = "test.config.js";
   const eslintConfig = "config.main.js";
   const prettierString = "eslintConfigPrettier,";
@@ -30,6 +30,7 @@ describe("createConfigFile", () => {
 
     const expectedPath = path.join(import.meta.dirname, `../${testConfig}`);
     expect(writeFileSync).toHaveBeenCalled();
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@typescript-eslint/prefer-destructuring
     const call = (writeFileSync as unknown as { mock: { calls: string[][] } })
       .mock.calls[0];
@@ -55,6 +56,7 @@ describe("createConfigFile", () => {
     const call = (writeFileSync as unknown as { mock: { calls: string[][] } })
       .mock.calls[0];
     const content = call?.[1];
+
     expect(content).toContain("const config = (options) => {");
     expect(content).not.toContain(prettierString);
     expect(content).toContain("export default config;");
@@ -70,6 +72,7 @@ describe("createConfigFile", () => {
     const call = (writeFileSync as unknown as { mock: { calls: string[][] } })
       .mock.calls[0];
     const content = call?.[1];
+
     expect(content).toContain("const config = (options) => {");
     expect(content).toContain(prettierString);
     expect(content).toContain("eslintPluginPrettierRecommended");
@@ -92,6 +95,7 @@ describe("createConfigFile", () => {
     const content = call?.[1];
     const lines = split(String(content), "\n");
     const hasUndefinedLine = some(lines, (l) => "undefined" === trim(l));
+
     expect(hasUndefinedLine).toBe(false);
   });
 
@@ -104,6 +108,7 @@ describe("createConfigFile", () => {
     const call = (writeFileSync as unknown as { mock: { calls: string[][] } })
       .mock.calls[0];
     const content = call?.[1];
+
     expect(content).toContain(prettierString);
     expect(content).toContain("eslintPluginPrettierRecommended");
   });

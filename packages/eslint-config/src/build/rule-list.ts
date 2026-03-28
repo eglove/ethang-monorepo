@@ -21,6 +21,7 @@ import { tanstackQueryRules } from "../setup/tanstack-query.ts";
 import { tanstackRouterRules } from "../setup/tanstack-router.js";
 import { typescriptRules } from "../setup/typescript-eslint.ts";
 import { unicornRules } from "../setup/unicorn.ts";
+import { vitestRules } from "../setup/vitest.ts";
 
 const eslintJson = "@eslint/json";
 const eslintJsonGithub = "https://github.com/eslint/json";
@@ -168,6 +169,16 @@ export const ruleList: RuleConfig[] = [
     pluginValue: "css",
     type: "css",
     url: "https://github.com/eslint/css",
+  },
+  {
+    importString: 'import vitest from "@vitest/eslint-plugin";',
+    list: vitestRules,
+    name: "@vitest/eslint-plugin",
+    order: 0,
+    pluginName: "vitest",
+    pluginValue: "vitest",
+    type: "vitest",
+    url: "https://github.com/vitest-dev/eslint-plugin-vitest",
   },
   {
     importString:

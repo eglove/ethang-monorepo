@@ -46,6 +46,9 @@
 - 6 rules for **Tailwind**
   - `import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";`
     - 6 rules from [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss)
+- 80 rules for **Vitest**
+  - `import vitestConfig from "@ethang/eslint-config/config.vitest.js";`
+    - 80 rules from [@vitest/eslint-plugin](https://github.com/vitest-dev/eslint-plugin-vitest)
 
 # Install
 

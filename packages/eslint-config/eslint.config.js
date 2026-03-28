@@ -14,6 +14,7 @@ export default defineConfig(
     "src/config.angular.js",
     "src/config.storybook.js",
     "src/config.tailwind.js",
+    "src/config.vitest.js",
     "**/*.d.ts",
   ]),
   ...config,

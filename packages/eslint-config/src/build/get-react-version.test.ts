@@ -11,6 +11,7 @@ describe("get-react-version", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse));
 
     const result = await getLatestReact();
+
     expect(result).toEqual({ version: "18.2.0" });
     expect(globalThis.fetch).toHaveBeenCalledWith(
       "https://registry.npmjs.org/react/latest",
@@ -34,6 +35,7 @@ describe("get-react-version", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse));
 
     const result = await getLatestReact();
+
     expect(result).toBeUndefined();
   });
 });

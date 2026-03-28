@@ -2,10 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 
 import { createConfig } from "./create-config.ts";
 
-describe("createConfig", () => {
+describe(createConfig, () => {
   it("should create a basic config", async () => {
     const configs = await createConfig("core");
     const config = configs.join("\n");
+
     expect(config).toContain('files: ["**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}"]');
     expect(config).toContain('"compat": compat,');
   });
@@ -15,6 +16,7 @@ describe("createConfig", () => {
       globalIgnores: ["dist", "node_modules"],
     });
     const config = configs.join("\n");
+
     expect(config).toContain('globalIgnores(["dist", "node_modules"])');
   });
 
@@ -23,15 +25,17 @@ describe("createConfig", () => {
       extraRules: { "no-console": "off" },
     });
     const config = configs.join("\n");
+
     expect(config).toContain('"no-console":"off"');
   });
 
   it("should include react version when requested", async () => {
-    vi.mock("./get-react-version.ts", () => ({
+    vi.mock(import("./get-react-version.ts"), () => ({
       getLatestReact: vi.fn().mockResolvedValue({ version: "18.3.0" }),
     }));
     const configs = await createConfig("react", { includeReactVersion: true });
     const config = configs.join("\n");
+
     expect(config).toContain("settings: {");
     expect(config).toContain('"react":{"version":"18.3.0"}');
   });
@@ -43,6 +47,7 @@ describe("createConfig", () => {
       processor: "my-processor",
     });
     const config = configs.join("\n");
+
     expect(config).toContain("globalIgnores(ignores)");
     expect(config).toContain("languageOptions,");
     expect(config).toContain("processor: my-processor,");
@@ -54,6 +59,7 @@ describe("createConfig", () => {
       includeLanguageOptions: true,
     });
     const config = configs.join("\n");
+
     expect(config).toContain("languageOptions: angularLanguageOptions,");
     // eslint-disable-next-line sonar/slow-regex
     expect(config).not.toMatch(/^\s*languageOptions,$/mu);
@@ -62,6 +68,7 @@ describe("createConfig", () => {
   it("should include language for specific types", async () => {
     const configs = await createConfig("css");
     const config = configs.join("\n");
+
     expect(config).toContain('language: "css/css"');
   });
 
@@ -70,6 +77,7 @@ describe("createConfig", () => {
       extraOptions: "custom: true,",
     });
     const config = configs.join("\n");
+
     expect(config).toContain("custom: true,");
   });
 });

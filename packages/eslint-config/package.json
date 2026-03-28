@@ -19,6 +19,7 @@
     "@tanstack/eslint-plugin-query": "^5.95.2",
     "@tanstack/eslint-plugin-router": "^1.161.6",
     "@typescript-eslint/parser": "^8.57.2",
+    "@vitest/eslint-plugin": "^1.6.13",
     "angular-eslint": "21.3.1",
     "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",

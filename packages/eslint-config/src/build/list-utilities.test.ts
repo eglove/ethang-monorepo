@@ -13,9 +13,10 @@ import {
 } from "./list-utilities.ts";
 
 describe("list-utilities", () => {
-  describe("getList", () => {
+  describe(getList, () => {
     it("should return a filtered and sorted list by type", () => {
       const coreList = getList("core");
+
       expect(coreList.length).toBeGreaterThan(0);
       expect(every(coreList, (item) => "core" === item.type)).toBe(true);
 
@@ -32,9 +33,10 @@ describe("list-utilities", () => {
     });
   });
 
-  describe("getTypeImportStrings", () => {
+  describe(getTypeImportStrings, () => {
     it("should return import strings for a given type", () => {
       const coreImports = getTypeImportStrings("core");
+
       expect(coreImports).toContain(
         'import tseslint from "typescript-eslint";',
       );
@@ -42,7 +44,7 @@ describe("list-utilities", () => {
     });
   });
 
-  describe("getListJson", () => {
+  describe(getListJson, () => {
     it("should return a stringified version of rules in the list", () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const mockList = [
@@ -50,11 +52,12 @@ describe("list-utilities", () => {
         { list: { rule2: "warn" } },
       ] as unknown as RuleConfig[];
       const result = getListJson(mockList);
+
       expect(result).toBe('"rule1":"error","rule2":"warn"');
     });
   });
 
-  describe("getTypeLanguage", () => {
+  describe(getTypeLanguage, () => {
     it("should return correct language for known types", () => {
       expect(getTypeLanguage("css")).toBe("css/css");
       expect(getTypeLanguage("html")).toBe("html/html");
@@ -68,7 +71,7 @@ describe("list-utilities", () => {
     });
   });
 
-  describe("getTypeFiles", () => {
+  describe(getTypeFiles, () => {
     it("should return correct file patterns", () => {
       expect(getTypeFiles("angular")).toBe("**/*.ts");
       expect(getTypeFiles("angular:template")).toBe("**/*.html");
@@ -88,6 +91,7 @@ describe("list-utilities", () => {
       expect(getTypeFiles("storybook")).toBe(
         "**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)",
       );
+      expect(getTypeFiles("vitest")).toBe("**/*.test.{ts,tsx,js,jsx,mjs,cjs}");
     });
 
     it("should return empty string for unknown type", () => {
@@ -95,7 +99,7 @@ describe("list-utilities", () => {
     });
   });
 
-  describe("getListPlugins", () => {
+  describe(getListPlugins, () => {
     it("should return formatted plugin string", () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const mockList = [
@@ -104,6 +108,7 @@ describe("list-utilities", () => {
         { pluginName: "p3", pluginValue: null },
       ] as RuleConfig[];
       const result = getListPlugins(mockList);
+
       expect(result).toBe('"p1": v1,"p2": v2,');
     });
   });

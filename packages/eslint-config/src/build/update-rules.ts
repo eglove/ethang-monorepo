@@ -140,6 +140,20 @@ const storybookFile = [
   },
 ];
 
+const testFile = [
+  {
+    importString:
+      'import testConfig from "@ethang/eslint-config/config.vitest.js";',
+    label: "Test",
+    name: "vitest",
+    options: {
+      extraImports: [defineConfig],
+      includeIgnores: true,
+      includeLanguageOptions: true,
+    },
+  },
+];
+
 const tailwindFile = [
   {
     importString:
@@ -164,6 +178,7 @@ export const updateRules = async () => {
     createConfigFile(solidFile, "config.solid.js"),
     createConfigFile(angularFile, "config.angular.js"),
     createConfigFile(storybookFile, "config.storybook.js"),
+    createConfigFile(testFile, "config.vitest.js"),
     createConfigFile(
       tailwindFile,
       "config.tailwind.js",

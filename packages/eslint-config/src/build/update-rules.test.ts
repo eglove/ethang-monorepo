@@ -3,14 +3,15 @@ import { describe, expect, it, vi } from "vitest";
 import { createConfigFile } from "./create-config-file.ts";
 import { updateRules } from "./update-rules.ts";
 
-vi.mock("./create-config-file.ts", () => ({
+vi.mock(import("./create-config-file.ts"), () => ({
   createConfigFile: vi.fn(),
 }));
 
 describe("update-rules", () => {
   it("should call createConfigFile for each config", async () => {
     await updateRules();
-    expect(createConfigFile).toHaveBeenCalledTimes(8);
+
+    expect(createConfigFile).toHaveBeenCalledTimes(9);
     expect(createConfigFile).toHaveBeenCalledWith(
       expect.any(Array),
       "config.main.js",
@@ -27,7 +28,6 @@ describe("update-rules", () => {
 
     expect(createConfigFile).toBeDefined();
 
-    // @ts-expect-error restoring read-only
     import.meta.filename = originalFilename;
   });
 
@@ -40,7 +40,9 @@ describe("update-rules", () => {
     // more than the explicit call in updateRules test.
 
     vi.clearAllMocks();
+    // @ts-expect-error for test
     await import("./update-rules.ts?test-branch-false");
+
     // Should only have been called if we explicitly called updateRules()
     expect(createConfigFile).not.toHaveBeenCalled();
   });

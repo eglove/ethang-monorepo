@@ -10,6 +10,15 @@ import type { genRules } from "../setup/gen-rules.ts";
 
 import { getList } from "./list-utilities.ts";
 
+const countRules = (rules: ReturnType<typeof getList>) => {
+  let count = 0;
+  for (const rule of rules) {
+    count += getRuleCount(rule.list);
+  }
+
+  return count;
+};
+
 const getRuleCount = (rules: ReturnType<typeof genRules>) => {
   let count = 0;
   for (const value of values(rules)) {
@@ -86,41 +95,16 @@ export const updateReadme = () => {
   const angularRules = getList("angular");
   const angularTemplateRules = getList("angular:template");
   const storybookRules = getList("storybook");
+  const vitestTestRules = getList("vitest");
 
-  let htmlCount = 0;
-  for (const htmlRule of htmlRules) {
-    htmlCount += getRuleCount(htmlRule.list);
-  }
-
-  let tailwindCount = 0;
-  for (const tailwindRule of tailwindRules) {
-    tailwindCount += getRuleCount(tailwindRule.list);
-  }
-
-  let astroCount = 0;
-  for (const astroRule of astroRules) {
-    astroCount += getRuleCount(astroRule.list);
-  }
-
-  let reactCount = 0;
-  for (const reactRule of reactRules) {
-    reactCount += getRuleCount(reactRule.list);
-  }
-
-  let solidCount = 0;
-  for (const solidRule of solidRules) {
-    solidCount += getRuleCount(solidRule.list);
-  }
-
-  let angularCount = 0;
-  for (const angularRule of [...angularRules, ...angularTemplateRules]) {
-    angularCount += getRuleCount(angularRule.list);
-  }
-
-  let storybookCount = 0;
-  for (const storybookRule of storybookRules) {
-    storybookCount += getRuleCount(storybookRule.list);
-  }
+  const htmlCount = countRules(htmlRules);
+  const tailwindCount = countRules(tailwindRules);
+  const astroCount = countRules(astroRules);
+  const reactCount = countRules(reactRules);
+  const solidCount = countRules(solidRules);
+  const angularCount = countRules([...angularRules, ...angularTemplateRules]);
+  const storybookCount = countRules(storybookRules);
+  const vitestCount = countRules(vitestTestRules);
 
   md.unorderedList(ruleDocumentation);
   md.newLine();
@@ -161,6 +145,11 @@ export const updateReadme = () => {
     [
       '`import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";`',
       getImports(tailwindRules),
+    ],
+    `${vitestCount} rules for **Vitest**`,
+    [
+      '`import vitestConfig from "@ethang/eslint-config/config.vitest.js";`',
+      getImports(vitestTestRules),
     ],
   ]);
   md.newLine();

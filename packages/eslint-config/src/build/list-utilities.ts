@@ -118,6 +118,10 @@ export const getTypeFiles = (type: string) => {
       return "**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)";
     }
 
+    case "vitest": {
+      return "**/*.test.{ts,tsx,js,jsx,mjs,cjs}";
+    }
+
     default: {
       return "";
     }
