@@ -85,6 +85,9 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
             href={properties.textAlternate}
           />
         )}
+        {!isNil(properties.updatedAt) && (
+          <meta name="last-modified" content={properties.updatedAt} />
+        )}
       </head>
       <body id="body">
         <Navigation />
@@ -92,6 +95,25 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
           {properties.children}
         </main>
         <script type="module" src="/scripts/libraries.js"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js');
+  });
+  navigator.serviceWorker.addEventListener('message', function (event) {
+    if (event.data && event.data.type === 'CONTENT_UPDATED') {
+      var updatedUrl = new URL(event.data.url);
+      if (updatedUrl.pathname === location.pathname) {
+        location.reload();
+      }
+    }
+  });
+}
+    `,
+          }}
+        />
       </body>
     </html>
   );
