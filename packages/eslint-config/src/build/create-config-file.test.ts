@@ -12,13 +12,14 @@ vi.mock(import("./get-react-version.ts"), () => ({
 }));
 
 const TEST_FILE_NAME = "config.test.js";
+const TEST_PLUGIN_IMPORT = 'import testPlugin from "test-plugin";';
 
 const makePlugin = (
   overrides: Partial<ConstructorParameters<typeof Plugin>[0]> = {},
 ) => {
   return new Plugin({
     files: "**/*.ts",
-    importString: 'import testPlugin from "test-plugin";',
+    importString: TEST_PLUGIN_IMPORT,
     name: "test-plugin",
     pluginName: "test",
     pluginValue: "testPlugin",
@@ -75,7 +76,7 @@ describe(createConfigFile, () => {
       expect(content).toContain(
         'import { defineConfig, globalIgnores } from "eslint/config";',
       );
-      expect(content).toContain('import testPlugin from "test-plugin";');
+      expect(content).toContain(TEST_PLUGIN_IMPORT);
       expect(content).toContain('files: ["**/*.ts"]');
       expect(content).toContain('"test": testPlugin');
       expect(content).toContain('"test-rule": "error"');
@@ -325,5 +326,49 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
     expect(getWrittenContent()).toContain(
       "settings: { tailwindcss: { config: pathToConfig } },",
     );
+  });
+
+  it("skips import line when plugin has no importString", async () => {
+    const output = new OutputConfig({
+      fileName: TEST_FILE_NAME,
+      plugins: [makePlugin({ importString: undefined })],
+    });
+
+    await createConfigFile(output);
+
+    const content = getWrittenContent();
+    expect(content).toContain("// @ts-nocheck");
+    expect(content).not.toContain(TEST_PLUGIN_IMPORT);
+  });
+
+  it("skips plugin entry when pluginName is not set", async () => {
+    const output = new OutputConfig({
+      fileName: TEST_FILE_NAME,
+      plugins: [makePlugin({ pluginName: undefined, pluginValue: undefined })],
+    });
+
+    await createConfigFile(output);
+
+    const content = getWrittenContent();
+    expect(content).toContain("plugins:");
+    expect(content).not.toContain('"test":');
+  });
+
+  it("merges extraRules into the config block rules", async () => {
+    const output = new OutputConfig({
+      fileName: TEST_FILE_NAME,
+      plugins: [
+        makePlugin({
+          extraRules: { "extra-rule": "warn" },
+          rules: { "base-rule": "error" },
+        }),
+      ],
+    });
+
+    await createConfigFile(output);
+
+    const content = getWrittenContent();
+    expect(content).toContain('"base-rule": "error"');
+    expect(content).toContain('"extra-rule": "warn"');
   });
 });

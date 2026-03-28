@@ -37,6 +37,8 @@ import { BlogModel } from "./models/blog-model.ts";
 
 const CONTENT_TYPE = "Content-Type";
 const RETURNS_200_HTML = "returns 200 with HTML";
+const TEXT_HTML = "text/html";
+const COURSES_URL = "https://ethang.dev/courses";
 
 let mockGetAllBlogs = vi.fn();
 let mockGetBlogBySlug = vi.fn();
@@ -119,7 +121,7 @@ describe("app — pages", () => {
     it(RETURNS_200_HTML, async () => {
       const response = await app.request("https://ethang.dev/");
       expect(response.status).toBe(200);
-      expect(response.headers.get(CONTENT_TYPE)).toContain("text/html");
+      expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
     });
   });
 
@@ -127,7 +129,7 @@ describe("app — pages", () => {
     it(RETURNS_200_HTML, async () => {
       const response = await app.request("https://ethang.dev/sign-in");
       expect(response.status).toBe(200);
-      expect(response.headers.get(CONTENT_TYPE)).toContain("text/html");
+      expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
     });
   });
 
@@ -164,7 +166,7 @@ describe("app — pages", () => {
     it(RETURNS_200_HTML, async () => {
       const response = await app.request("https://ethang.dev/blog");
       expect(response.status).toBe(200);
-      expect(response.headers.get(CONTENT_TYPE)).toContain("text/html");
+      expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
     });
   });
 
@@ -186,7 +188,7 @@ describe("app — pages", () => {
     it(RETURNS_200_HTML, async () => {
       const response = await app.request("https://ethang.dev/blog/my-post");
       expect(response.status).toBe(200);
-      expect(response.headers.get(CONTENT_TYPE)).toContain("text/html");
+      expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
     });
   });
 
@@ -195,22 +197,32 @@ describe("app — pages", () => {
       const response = await app.request(
         "https://ethang.dev/this-does-not-exist",
       );
-      expect(response.headers.get(CONTENT_TYPE)).toContain("text/html");
+      expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
     });
   });
 
   describe("GET /courses", () => {
     it(RETURNS_200_HTML, async () => {
-      const response = await app.request("https://ethang.dev/courses");
+      const response = await app.request(COURSES_URL);
       expect(response.status).toBe(200);
     });
 
     it("returns text/plain when format=text", async () => {
-      const response = await app.request(
-        "https://ethang.dev/courses?format=text",
-      );
+      const response = await app.request(`${COURSES_URL}?format=text`);
       expect(response.status).toBe(200);
       expect(response.headers.get(CONTENT_TYPE)).toContain("text/plain");
+    });
+
+    it("renders sign-in-prompt element for client-side auth reconciliation", async () => {
+      const response = await app.request(COURSES_URL);
+      const html = await response.text();
+      expect(html).toContain('id="sign-in-prompt"');
+    });
+
+    it("renders auth-section-header element for client-side auth reconciliation", async () => {
+      const response = await app.request(COURSES_URL);
+      const html = await response.text();
+      expect(html).toContain('id="auth-section-header"');
     });
   });
 });

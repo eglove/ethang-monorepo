@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
-    "@ethang/eslint-config": "^25.7.0",
+    "@ethang/eslint-config": "^25.8.1",
     "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.58.2",
     "@tailwindcss/cli": "^4.2.2",

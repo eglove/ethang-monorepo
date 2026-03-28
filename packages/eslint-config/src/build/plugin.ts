@@ -22,18 +22,18 @@ export type PluginOptions = {
 };
 
 export class Plugin {
-  public readonly auxiliaryImport?: string;
-  public readonly extraOptions?: string;
-  public readonly extraRules?: Record<string, string>;
+  public readonly auxiliaryImport?: string | undefined;
+  public readonly extraOptions?: string | undefined;
+  public readonly extraRules?: Record<string, string> | undefined;
   public readonly files: string;
-  public readonly importString?: string;
-  public readonly includeAngularLanguageOptions?: boolean;
-  public readonly language?: string;
+  public readonly importString?: string | undefined;
+  public readonly includeAngularLanguageOptions?: boolean | undefined;
+  public readonly language?: string | undefined;
   public readonly name: string;
-  public readonly order?: number;
-  public readonly pluginName?: string;
-  public readonly pluginValue?: string;
-  public readonly processor?: string;
+  public readonly order?: number | undefined;
+  public readonly pluginName?: string | undefined;
+  public readonly pluginValue?: string | undefined;
+  public readonly processor?: string | undefined;
   public readonly rules: Linter.RulesRecord;
   public readonly url: string;
 

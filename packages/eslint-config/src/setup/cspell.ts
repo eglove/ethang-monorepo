@@ -102,6 +102,8 @@ const customRules: CustomRules = [
             "vibing",
             "vibed",
             "Microslop",
+            "networkidle",
+            "testuser",
             "influencers",
             "headspace",
             "PTSD",

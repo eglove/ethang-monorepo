@@ -42,10 +42,16 @@ export const Courses = async () => {
           title="EthanG | Recommended Courses"
           classNames={{ container: "max-h-96" }}
         />
-        <P className={globalStore.isAuthenticated ? "hidden" : ""}>
+        <P
+          id="sign-in-prompt"
+          className={globalStore.isAuthenticated ? "hidden" : ""}
+        >
           <Link href="/sign-in">Sign In To Track Changes</Link>
         </P>
-        <P className={globalStore.isAuthenticated ? "" : "hidden"}>
+        <P
+          id="auth-section-header"
+          className={globalStore.isAuthenticated ? "" : "hidden"}
+        >
           Your Progress:
         </P>
         <CourseProgressBar

@@ -112,6 +112,25 @@ describe("CourseList", () => {
     expect(html).toContain(COURSE_TRACKING_STATUS.INCOMPLETE);
   });
 
+  it("includes data-course-url on the completion button", async () => {
+    const courseUrl = "https://example.com/the-course";
+    const course = makeCourse({ _id: "c1", url: courseUrl });
+    coursePathData.learningPaths = [makeLearningPath([course])];
+    coursePathData.courseTrackings = [];
+
+    let count = 0;
+    const html = await renderJsx(
+      <CourseList
+        courses={[course]}
+        getCount={() => {
+          count += 1;
+          return count;
+        }}
+      />,
+    );
+    expect(html).toContain(`data-course-url="${courseUrl}"`);
+  });
+
   it("shows tracking status when tracking data exists", async () => {
     const courseUrl = faker.internet.url();
     const course = makeCourse({ _id: "c1", url: courseUrl });
@@ -219,6 +238,11 @@ describe("CourseProgressBar", () => {
   it("renders without props", async () => {
     const html = String(await CourseProgressBar());
     expect(html).toContain("<div");
+  });
+
+  it("renders container with id course-progress-bar", async () => {
+    const html = String(await CourseProgressBar());
+    expect(html).toContain('id="course-progress-bar"');
   });
 
   it("shows percentage text when incomplete is above minToShow threshold", async () => {

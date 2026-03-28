@@ -27,31 +27,31 @@ import { unicornPlugin } from "../setup/unicorn.ts";
 import { vitestPlugin } from "../setup/vitest.ts";
 
 export type OutputConfigOptions = {
-  extraConfigEntries?: string[];
-  extraImports?: string[];
+  extraConfigEntries?: string[] | undefined;
+  extraImports?: string[] | undefined;
   fileName: string;
-  functionParameters?: string;
-  globalIgnores?: string[];
-  includeIgnores?: boolean;
-  includeLanguageOptions?: boolean;
-  includeReactVersion?: boolean;
+  functionParameters?: string | undefined;
+  globalIgnores?: string[] | undefined;
+  includeIgnores?: boolean | undefined;
+  includeLanguageOptions?: boolean | undefined;
+  includeReactVersion?: boolean | undefined;
   plugins: Plugin[];
-  readmeImport?: string;
-  readmeLabel?: string;
+  readmeImport?: string | undefined;
+  readmeLabel?: string | undefined;
 };
 
 export class OutputConfig {
-  public readonly extraConfigEntries?: string[];
-  public readonly extraImports?: string[];
+  public readonly extraConfigEntries?: string[] | undefined;
+  public readonly extraImports?: string[] | undefined;
   public readonly fileName: string;
-  public readonly functionParameters?: string;
-  public readonly globalIgnores?: string[];
-  public readonly includeIgnores?: boolean;
-  public readonly includeLanguageOptions?: boolean;
-  public readonly includeReactVersion?: boolean;
+  public readonly functionParameters?: string | undefined;
+  public readonly globalIgnores?: string[] | undefined;
+  public readonly includeIgnores?: boolean | undefined;
+  public readonly includeLanguageOptions?: boolean | undefined;
+  public readonly includeReactVersion?: boolean | undefined;
   public readonly plugins: Plugin[];
-  public readonly readmeImport?: string;
-  public readonly readmeLabel?: string;
+  public readonly readmeImport?: string | undefined;
+  public readonly readmeLabel?: string | undefined;
 
   public get pluginsByFiles(): Record<string, Plugin[]> {
     return groupBy(this.plugins, (plugin) => plugin.files);
@@ -107,7 +107,7 @@ export const outputConfigs: OutputConfig[] = [
       jsonPlugin,
       jsoncPlugin,
       json5Plugin,
-    ],
+    ] as const,
   }),
   new OutputConfig({
     fileName: "config.html.js",
@@ -122,7 +122,7 @@ export const outputConfigs: OutputConfig[] = [
     fileName: "config.astro.js",
     includeIgnores: true,
     includeLanguageOptions: true,
-    plugins: [astroPlugin],
+    plugins: [astroPlugin] as const,
     readmeImport:
       'import astroConfig from "@ethang/eslint-config/config.astro.js";',
     readmeLabel: "Astro",
@@ -132,7 +132,7 @@ export const outputConfigs: OutputConfig[] = [
     includeIgnores: true,
     includeLanguageOptions: true,
     includeReactVersion: true,
-    plugins: [reactPlugin, reactHooksPlugin],
+    plugins: [reactPlugin, reactHooksPlugin] as const,
     readmeImport:
       'import reactConfig from "@ethang/eslint-config/config.react.js";',
     readmeLabel: "React",
@@ -141,7 +141,7 @@ export const outputConfigs: OutputConfig[] = [
     fileName: "config.solid.js",
     includeIgnores: true,
     includeLanguageOptions: true,
-    plugins: [solidPlugin],
+    plugins: [solidPlugin] as const,
     readmeImport:
       'import solidConfig from "@ethang/eslint-config/config.solid.js";',
     readmeLabel: "Solid",
@@ -160,7 +160,7 @@ export const outputConfigs: OutputConfig[] = [
     fileName: "config.storybook.js",
     includeIgnores: true,
     includeLanguageOptions: true,
-    plugins: [storybookPlugin],
+    plugins: [storybookPlugin] as const,
     readmeImport:
       'import storybookConfig from "@ethang/eslint-config/config.storybook.js";',
     readmeLabel: "Storybook",
@@ -170,7 +170,7 @@ export const outputConfigs: OutputConfig[] = [
     functionParameters: "/** @type {string} */ pathToConfig",
     includeIgnores: true,
     includeLanguageOptions: true,
-    plugins: [tailwindPlugin],
+    plugins: [tailwindPlugin] as const,
     readmeImport:
       'import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";',
     readmeLabel: "Tailwind",
@@ -179,7 +179,7 @@ export const outputConfigs: OutputConfig[] = [
     fileName: "config.vitest.js",
     includeIgnores: true,
     includeLanguageOptions: true,
-    plugins: [vitestPlugin],
+    plugins: [vitestPlugin] as const,
     readmeImport:
       'import vitestConfig from "@ethang/eslint-config/config.vitest.js";',
     readmeLabel: "Vitest",

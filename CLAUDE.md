@@ -4,6 +4,12 @@
 
 Do not modify any ESLint configuration files (`eslint.config.*`, `.eslintrc.*`, `.eslintignore`, or any file that configures ESLint rules, plugins, or parsers) without explicit user permission. If a lint error seems to require a config change to resolve, stop and ask the user first.
 
+## CSpell — Unknown Words
+
+When a `cspell/spellchecker` error appears for a legitimate technical term, add the word to the shared list in `packages/eslint-config/src/setup/cspell.ts` and **notify the user** that `@ethang/eslint-config` needs to be published before the word will be recognized.
+
+Until the updated package is published, suppress the specific error inline with a `// cspell:ignore <word>` comment at the top of the affected file. Remove the inline suppress once the package is published and the dependency is updated.
+
 ## ESLint & TypeScript — Fix Immediately, Not Later
 
 Run ESLint and `tsc` on any file you modify **before moving on**. Do not batch lint or type-check fixes for the end of an implementation. The pattern is: write code → lint → type-check → fix errors → continue.
@@ -118,6 +124,21 @@ This applies to:
 - Async flows (pending/settled/retrying/cancelled)
 
 If a branch of a conditional is "impossible," document why rather than leaving it implicit. Impossible states should be made unrepresentable in the type system where practical.
+
+## Test Files — No Repeated String Literals
+
+Any string literal that appears 3 or more times in a test file must be extracted to a named constant at the top of the file. This applies to URLs, content-type values, test description strings, and any other repeated literal.
+
+```ts
+// good
+const COURSES_URL = "https://ethang.dev/courses";
+const TEXT_HTML = "text/html";
+
+// bad — same string scattered across multiple test cases
+await app.request("https://ethang.dev/courses");
+await app.request("https://ethang.dev/courses");
+await app.request("https://ethang.dev/courses");
+```
 
 ## Opportunistic Code Improvement
 

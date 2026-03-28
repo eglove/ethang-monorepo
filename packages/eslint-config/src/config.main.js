@@ -1032,6 +1032,8 @@ export default defineConfig(
               "vibing",
               "vibed",
               "Microslop",
+              "networkidle",
+              "testuser",
               "influencers",
               "headspace",
               "PTSD",

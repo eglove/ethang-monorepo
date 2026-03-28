@@ -40,6 +40,7 @@ export const CourseList = async (properties: CourseListProperties) => {
             <button
               type="button"
               data-course-id={course._id}
+              data-course-url={course.url}
               title="Update course status"
               aria-label="Update course status"
               class={twMerge(

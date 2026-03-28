@@ -24,6 +24,7 @@ export const CourseProgressBar = async (
 
   return (
     <div
+      id="course-progress-bar"
       class={twMerge(
         "flex w-full rounded-full overflow-hidden bg-neutral-quaternary",
         properties?.classNames?.container,

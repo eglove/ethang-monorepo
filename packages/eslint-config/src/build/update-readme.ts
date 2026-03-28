@@ -55,10 +55,6 @@ export const updateReadme = () => {
 
     const perPlugin = compact(
       map(output.plugins, (plugin) => {
-        if (0 >= plugin.ruleCount) {
-          return null;
-        }
-
         const ruleWord = 1 >= plugin.ruleCount ? "rule" : "rules";
         return `${plugin.ruleCount} ${ruleWord} from [${plugin.name}](${plugin.url})`;
       }),
