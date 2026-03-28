@@ -10,10 +10,11 @@ export default defineConfig({
         autoUpdate: true,
         branches: 0,
         functions: 0,
-        lines: 0,
-        statements: 0,
+        lines: 0.17,
+        statements: 0.17,
       },
     },
+    environment: "node",
     include: ["src/**/*.test.{ts,tsx}"],
   },
 });
