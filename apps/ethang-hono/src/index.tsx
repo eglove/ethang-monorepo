@@ -15,6 +15,7 @@ import { ScrollContainers } from "./components/routes/tips/scroll-containers.tsx
 import { ScrollbarGutter } from "./components/routes/tips/scrollbar-gutter.tsx";
 import { getDatabase } from "./db/database.ts";
 import { blogRss } from "./feeds/blog-rss.ts";
+import { lastModifiedMiddleware } from "./middleware/last-modified.ts";
 import { CourseTracking } from "./models/course-tracking.ts";
 import { sitemap } from "./sitemap.ts";
 import { coursePathData } from "./stores/course-path-store.ts";
@@ -36,6 +37,8 @@ app.use("*", async (context, next) => {
   await globalStore.setup(context);
   return next();
 });
+
+app.use("*", lastModifiedMiddleware);
 
 app.notFound(async (c) => {
   return c.html(<NotFound />);
