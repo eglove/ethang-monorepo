@@ -1,6 +1,8 @@
 // eslint-disable-next-line cspell/spellchecker
 /* eslint-disable a11y/no-noninteractive-tabindex */
+import { globalStore } from "../../../stores/global-store-properties.ts";
 import { DEPLOY_TIME } from "../../../utilities/deploy-info.ts";
+import { registerScript } from "../../../utilities/register-script.ts";
 import { Button } from "../../button/button.tsx";
 import { Code } from "../../code.tsx";
 import { BlogLayout } from "../../layouts/blog-layout.tsx";
@@ -14,6 +16,7 @@ const scrollbarGutter = `html {
 }`;
 
 export const ScrollbarGutter = async () => {
+  registerScript(globalStore, "components/routes/tips/scrollbar-gutter");
   return (
     <BlogLayout updatedAt={DEPLOY_TIME} title="scrollbar-gutter">
       <H1>scrollbar-gutter</H1>
@@ -38,7 +41,6 @@ export const ScrollbarGutter = async () => {
       </P>
       <H2>Demo</H2>
       <div class="mt-4">
-        <script type="module" src="/scripts/tips/scrollbar-gutter.js"></script>
         <Button
           type="button"
           className="mb-4"

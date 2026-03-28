@@ -20,6 +20,7 @@ import { Home } from "./home.tsx";
 import { NotFound } from "./not-found.tsx";
 import { SignIn } from "./sign-in.tsx";
 import { allTips, Tips } from "./tips.tsx";
+import { ScrollbarGutter } from "./tips/scrollbar-gutter.tsx";
 
 const render = async (component: JSX.Element): Promise<string> => {
   const testApp = new Hono();
@@ -123,6 +124,19 @@ describe(Tips, () => {
       expect(tip).toHaveProperty("href");
       expect(tip).toHaveProperty("title");
     }
+  });
+});
+
+describe(ScrollbarGutter, () => {
+  it("registers scrollbar-gutter script", async () => {
+    globalStore.scripts = new Set();
+    const testApp = new Hono();
+    testApp.get("/", async (c) => c.html(<ScrollbarGutter />));
+    await testApp.request("/");
+
+    expect(
+      globalStore.scripts.has("components/routes/tips/scrollbar-gutter"),
+    ).toBe(true);
   });
 });
 
