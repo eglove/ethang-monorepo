@@ -43,7 +43,7 @@
   "name": "ethang-hono",
   "scripts": {
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
-    "deploy": "bun ./build.ts && wrangler deploy --minify",
+    "deploy": "bun ./build.ts && bun scripts/stamp-sw.ts && wrangler deploy --minify",
     "dev": "run-p tailwind wrangler:dev",
     "drizzle:generate": "drizzle-kit generate",
     "lint": "eslint . --fix",
