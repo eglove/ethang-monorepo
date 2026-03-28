@@ -31,6 +31,7 @@ export const Courses = async () => {
       textAlternate="/courses?format=text"
       imageUrl="/images/generated/Gemini_Generated_Image_2ac79s2ac79s2ac7.png"
       description="A curated list of recommended courses for development. Learn from industry experts and stay up-to-date with the latest technologies."
+      updatedAt={coursePathData.latestUpdate?._updatedAt}
     >
       <script type="module" src="/scripts/courses/course-completion.js" />
       <div class="mx-auto max-w-7xl">

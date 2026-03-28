@@ -1,4 +1,5 @@
 import map from "lodash/map.js";
+import maxBy from "lodash/maxBy.js";
 import { DateTime } from "luxon";
 import { twMerge } from "tailwind-merge";
 
@@ -20,13 +21,14 @@ const formattedDateTime = (dateTime: string) => {
 export const Blog = async () => {
   const blogModel = new BlogModel();
   const blogs = await blogModel.getAllBlogs();
+  const latestBlog = maxBy(blogs, "_updatedAt");
 
   return (
     <BlogLayout
       title="Blog"
       description="Ethan Glover's blog."
-      updatedAt={new Date().toISOString()}
-      publishedAt={new Date().toISOString()}
+      updatedAt={latestBlog?._updatedAt}
+      publishedAt={latestBlog?._createdAt}
     >
       <div class="flex flex-col items-center justify-center gap-2">
         <H1>Blog</H1>
