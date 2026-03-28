@@ -23,8 +23,10 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.1",
     "@ethang/eslint-config": "^25.6.0",
     "@faker-js/faker": "^10.4.0",
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/cli": "^4.2.2",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",

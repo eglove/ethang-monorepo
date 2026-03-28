@@ -188,12 +188,18 @@ importers:
         specifier: ^13.0.0
         version: 13.0.0
     devDependencies:
+      '@axe-core/playwright':
+        specifier: ^4.11.1
+        version: 4.11.1(playwright-core@1.58.2)
       '@ethang/eslint-config':
         specifier: ^25.6.0
         version: 25.6.0(@angular/cli@21.1.4(@types/node@25.5.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/types@8.57.2)(@typescript-eslint/utils@8.57.2(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2))(chokidar@5.0.0)(jiti@2.6.1)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tailwindcss@4.2.2)(typescript@6.0.2)
       '@faker-js/faker':
         specifier: ^10.4.0
         version: 10.4.0
+      '@playwright/test':
+        specifier: ^1.58.2
+        version: 1.58.2
       '@tailwindcss/cli':
         specifier: ^4.2.2
         version: 4.2.2
