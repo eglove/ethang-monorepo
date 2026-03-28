@@ -1,6 +1,6 @@
 // Bump SW_VERSION to force all clients to discard old caches and
 // install this new worker on their next page load.
-const SW_VERSION = "83c1fb21";
+const SW_VERSION = "5fe6e3b4";
 
 const ASSETS_CACHE = `assets-${SW_VERSION}`;
 const HTML_CACHE = `html-${SW_VERSION}`;
@@ -10,11 +10,32 @@ const HTML_CACHE = `html-${SW_VERSION}`;
 // during activation.
 const ALL_CACHES = new Set([ASSETS_CACHE, HTML_CACHE]);
 
-// Skip waiting immediately — no pre-caching. The cache builds
-// organically as pages are visited.
+// Skip waiting immediately — no pre-caching on install. The cache
+// builds organically as pages are visited, and is supplemented by
+// link-driven precaching messages sent from each controlled page.
 self.addEventListener("install", (event) => {
   event.waitUntil(globalThis.skipWaiting());
 });
+
+// Receive a list of same-origin URLs from a controlled page and cache
+// any that are not already in the HTML cache. URLs that are already
+// cached are skipped so repeat navigations don't cause redundant fetches.
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "PRECACHE_LINKS") {
+    event.waitUntil(precacheLinks(event.data.urls));
+  }
+});
+
+async function precacheLinks(urls) {
+  const cache = await caches.open(HTML_CACHE);
+  await Promise.allSettled(
+    urls.map(async (url) => {
+      if (await cache.match(url)) return;
+      const response = await fetch(url);
+      if (response.ok) await cache.put(url, response);
+    }),
+  );
+}
 
 // Delete every cache that belongs to a previous SW version, then
 // claim all open clients so this worker takes effect without requiring

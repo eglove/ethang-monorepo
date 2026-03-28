@@ -1,4 +1,4 @@
-/*! tailwindcss v4.2.1 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.2.2 | MIT License | https://tailwindcss.com */
 @layer properties;
 @layer theme, base, components, utilities;
 @layer theme {
@@ -2334,8 +2334,8 @@
   .text-heading {
     color: var(--color-heading);
   }
-  .text-neutral-500 {
-    color: var(--color-neutral-500);
+  .text-red-500 {
+    color: var(--color-red-500);
   }
   .text-white {
     color: var(--color-white);
@@ -2979,6 +2979,21 @@
   --color-brand-light: var(--color-blue-600);
   --color-dark-subtle: var(--color-gray-700);
   --color-dark-backdrop: var(--color-gray-950);
+}
+.dark {
+  --color-fg-brand: var(--color-blue-300);
+  --color-fg-purple: var(--color-purple-300);
+}
+pre > code:not(.hljs) {
+  color: var(--color-body);
+}
+.hljs-comment {
+  color: #93b5bf !important;
+}
+code.hljs, pre code.hljs {
+  overflow-x: visible !important;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
 }
 @layer base {
   .tooltip-arrow,.tooltip-arrow:before {

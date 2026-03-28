@@ -20,13 +20,16 @@ export const ProfileCard = async () => {
           Ethan Glover
         </h1>
         <div class="my-4 flex flex-wrap items-center gap-4">
-          <Link href="https://www.linkedin.com/in/ethan-glover/">
+          <Link
+            aria-label="LinkedIn"
+            href="https://www.linkedin.com/in/ethan-glover/"
+          >
             <LinkedInSvg />
           </Link>
-          <Link href="https://github.com/eglove">
+          <Link aria-label="GitHub" href="https://github.com/eglove">
             <GitHubSvg />
           </Link>
-          <Link href="mailto:hello@ethang.email">
+          <Link aria-label="Email" href="mailto:hello@ethang.email">
             <EmailSvg />
           </Link>
           <Link href="https://frontendmasters.com/u/ethang/">
@@ -42,8 +45,8 @@ export const ProfileCard = async () => {
             <Image
               width={48}
               height={48}
+              alt="Pluralsight"
               containerWidth={24}
-              alt="Frontend Masters"
               src="/images/pluralsight-icon.png"
             />
           </Link>

@@ -5,6 +5,7 @@ import { twMerge } from "tailwind-merge";
 import { globalStore } from "../../stores/global-store-properties.ts";
 
 type LinkProperties = PropsWithChildren<{
+  "aria-label"?: string;
   className?: string;
   href: string;
 }>;
@@ -22,6 +23,7 @@ export const Link = async (properties: LinkProperties) => {
   return (
     <a
       href={properties.href}
+      aria-label={properties["aria-label"]}
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}
       class={twMerge(

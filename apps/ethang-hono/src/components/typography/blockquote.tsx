@@ -23,7 +23,7 @@ export const Blockquote = async (properties: BlockquoteProperties) => {
     >
       <p class="leading-7 text-heading italic">{properties.children}</p>
       {hasAuthorOrSource && (
-        <footer class="mt-2 text-sm text-neutral-500 not-italic">
+        <footer class="mt-2 text-sm text-body not-italic">
           - {hasAuthor && <span>{properties.author}</span>}
           {hasAuthorAndSource && ", "}
           {hasSource && (

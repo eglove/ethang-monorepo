@@ -101,6 +101,23 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('/sw.js').catch(console.error);
+    navigator.serviceWorker.ready.then(function (registration) {
+      var seen = Object.create(null);
+      var urls = [];
+      document.querySelectorAll('a[href]').forEach(function (a) {
+        try {
+          var url = new URL(a.href);
+          if (url.origin !== location.origin) return;
+          var key = url.pathname + url.search;
+          if (seen[key]) return;
+          seen[key] = true;
+          urls.push(url.origin + key);
+        } catch {}
+      });
+      if (urls.length > 0 && registration.active) {
+        registration.active.postMessage({ type: 'PRECACHE_LINKS', urls: urls });
+      }
+    });
   });
   navigator.serviceWorker.addEventListener('message', function (event) {
     if (event.data && event.data.type === 'CONTENT_UPDATED') {

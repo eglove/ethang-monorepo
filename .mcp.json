@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "playwright-test": {
+      "command": "npx",
+      "args": [
+        "playwright",
+        "run-test-mcp-server"
+      ]
+    },
+    "webstorm": {
+      "command": "C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\jbr\\bin\\java",
+      "args": [
+        "-classpath",
+        "C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\plugins\\mcpserver\\lib\\mcpserver-frontend.jar",
+        "com.intellij.mcpserver.stdio.McpStdioRunnerKt"
+      ],
+      "env": {
+        "IJ_MCP_SERVER_PORT": "64495"
+      }
+    }
+  }
+}

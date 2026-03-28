@@ -6,3 +6,32 @@
 @source "../node_modules/flowbite";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* Override dark mode brand/purple tokens to meet WCAG AA 4.5:1 contrast on bg-dark */
+.dark {
+  --color-fg-brand: var(--color-blue-300);
+  --color-fg-purple: var(--color-purple-300);
+}
+
+/* Ensure code blocks have readable color before highlight.js client-side script
+   processes them — without this, text defaults to black on our dark background. */
+pre > code:not(.hljs) {
+  color: var(--color-body);
+}
+
+/* Raise Night Owl comment contrast to meet WCAG AA 4.5:1 on #011627 background.
+   !important required — highlight.js injects its theme via a runtime <style> tag which
+   has higher cascade priority than an external stylesheet. */
+.hljs-comment {
+  color: #93b5bf !important;
+}
+
+/* Prevent horizontal scrolling on code blocks — wrapping is more accessible than
+   requiring a pointing device to scroll, and removes the scrollable-region axe violation.
+   !important required for the same reason as .hljs-comment above. */
+code.hljs,
+pre code.hljs {
+  overflow-x: visible !important;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+}

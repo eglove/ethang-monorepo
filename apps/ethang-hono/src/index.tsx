@@ -41,7 +41,7 @@ app.use("*", async (context, next) => {
 app.use("*", lastModifiedMiddleware);
 
 app.notFound(async (c) => {
-  return c.html(<NotFound />);
+  return c.html(<NotFound />, 404);
 });
 
 app.get("/", async (c) => {

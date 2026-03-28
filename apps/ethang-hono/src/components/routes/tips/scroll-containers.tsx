@@ -1,3 +1,5 @@
+// eslint-disable-next-line cspell/spellchecker
+/* eslint-disable a11y/no-noninteractive-tabindex */
 import times from "lodash/times.js";
 
 import { DEPLOY_TIME } from "../../../utilities/deploy-info.ts";
@@ -45,7 +47,11 @@ export const ScrollContainers = async () => {
       <H2>Demo</H2>
       <div className="my-4 grid grid-rows-[auto_1fr_auto] gap-4 border-2 border-body px-2 py-4">
         <H2 className="border-b pb-4">Header</H2>
-        <div className="h-64 overflow-auto">
+        <section
+          tabindex={0}
+          className="h-64 overflow-auto"
+          aria-label="Scroll container demo"
+        >
           {times(5, async () => {
             return (
               <>
@@ -64,7 +70,7 @@ export const ScrollContainers = async () => {
               </>
             );
           })}
-        </div>
+        </section>
         <div className="my-4 border-t border-t-body pt-4">
           <P>Footer</P>
         </div>

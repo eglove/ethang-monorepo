@@ -1,3 +1,5 @@
+// eslint-disable-next-line cspell/spellchecker
+/* eslint-disable a11y/no-noninteractive-tabindex */
 import { DEPLOY_TIME } from "../../../utilities/deploy-info.ts";
 import { Button } from "../../button/button.tsx";
 import { Code } from "../../code.tsx";
@@ -50,8 +52,10 @@ export const ScrollbarGutter = async () => {
             <div className="mb-2  font-semibold text-body">
               With scrollbar-gutter
             </div>
-            <div
+            <section
+              tabindex={0}
               style={{ scrollbarGutter: "stable" }}
+              aria-label="With scrollbar-gutter demo"
               className="h-100 overflow-auto rounded-md border border-body p-4"
             >
               <P>
@@ -79,14 +83,16 @@ export const ScrollbarGutter = async () => {
                 <P>Even more content to ensure scrolling...</P>
                 <P>Final line of additional content.</P>
               </div>
-            </div>
+            </section>
           </div>
           <div className="rounded-md border border-body p-4">
             <div className="mb-2 font-semibold text-body">
               Without scrollbar-gutter
             </div>
-            <div
+            <section
+              tabindex={0}
               style={{ scrollbarGutter: "auto" }}
+              aria-label="Without scrollbar-gutter demo"
               className="h-100 overflow-auto rounded-md border border-body p-4"
             >
               <P>This container does not have scrollbar-gutter applied.</P>
@@ -111,7 +117,7 @@ export const ScrollbarGutter = async () => {
                 <P>Even more content to ensure scrolling...</P>
                 <P>Final line of additional content.</P>
               </div>
-            </div>
+            </section>
           </div>
         </div>
       </div>
