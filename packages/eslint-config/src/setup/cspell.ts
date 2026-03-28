@@ -1,6 +1,7 @@
 import cspell from "@cspell/eslint-plugin";
 import keys from "lodash/keys.js";
 
+import { Plugin } from "../build/plugin.ts";
 import {
   type CustomRules,
   genRules,
@@ -112,3 +113,14 @@ const customRules: CustomRules = [
 ];
 
 export const cspellRules = genRules(ruleNames, customRules, "cspell");
+
+export const cspellPlugin = new Plugin({
+  files: "**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}",
+  importString: 'import cspell from "@cspell/eslint-plugin";',
+  name: "@cspell/eslint-plugin",
+  order: 10,
+  pluginName: "cspell",
+  pluginValue: "cspell",
+  rules: cspellRules,
+  url: "https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell-eslint-plugin",
+});

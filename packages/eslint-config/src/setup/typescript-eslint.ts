@@ -1,6 +1,7 @@
 import keys from "lodash/keys.js";
 import tseslint from "typescript-eslint";
 
+import { Plugin } from "../build/plugin.ts";
 import {
   type EsLintRules,
   genRules,
@@ -112,3 +113,14 @@ export const typescriptRules = genRules(
   customRules,
   "@typescript-eslint",
 );
+
+export const typescriptPlugin = new Plugin({
+  files: "**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}",
+  importString: 'import tseslint from "typescript-eslint";',
+  name: "@typescript/eslint",
+  order: 2,
+  pluginName: "@typescript-eslint",
+  pluginValue: "tseslint.plugin",
+  rules: typescriptRules,
+  url: "https://github.com/typescript-eslint/typescript-eslint",
+});
