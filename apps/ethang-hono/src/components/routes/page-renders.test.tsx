@@ -1,5 +1,8 @@
+import type { JSX } from "hono/jsx/jsx-runtime";
+
 import { Hono } from "hono";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import isArray from "lodash/isArray.js";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("flowbite", () => ({}));
 vi.mock("../../models/blog-model.ts", () => ({
@@ -7,6 +10,8 @@ vi.mock("../../models/blog-model.ts", () => ({
 }));
 
 import { BlogModel } from "../../models/blog-model.ts";
+
+const RENDERS_FULL_HTML = "renders a full HTML document";
 import { coursePathData } from "../../stores/course-path-store.ts";
 import { Blog } from "./blog.tsx";
 import { Courses } from "./courses.tsx";
@@ -18,12 +23,12 @@ import { allTips, Tips } from "./tips.tsx";
 const render = async (component: JSX.Element): Promise<string> => {
   const testApp = new Hono();
   testApp.get("/", async (c) => c.html(component));
-  const res = await testApp.request("/");
-  return res.text();
+  const response = await testApp.request("/");
+  return response.text();
 };
 
 describe("Home", () => {
-  it("renders a full HTML document", async () => {
+  it(RENDERS_FULL_HTML, async () => {
     const html = await render(<Home />);
     expect(html).toContain("<html");
     expect(html).toContain("</html>");
@@ -56,7 +61,7 @@ describe("SignIn", () => {
 });
 
 describe("NotFound", () => {
-  it("renders a full HTML document", async () => {
+  it(RENDERS_FULL_HTML, async () => {
     const html = await render(<NotFound />);
     expect(html).toContain("<html");
     expect(html).toContain("</html>");
@@ -69,7 +74,7 @@ describe("NotFound", () => {
 });
 
 describe("Tips", () => {
-  it("renders a full HTML document", async () => {
+  it(RENDERS_FULL_HTML, async () => {
     const html = await render(<Tips />);
     expect(html).toContain("<html");
     expect(html).toContain("Tips");
@@ -82,7 +87,7 @@ describe("Tips", () => {
   });
 
   it("exports the allTips array with two tips", () => {
-    expect(Array.isArray(allTips)).toBe(true);
+    expect(isArray(allTips)).toBe(true);
     expect(allTips.length).toBe(2);
   });
 
@@ -94,28 +99,35 @@ describe("Tips", () => {
   });
 });
 
+let mockGetAllBlogs = vi.fn();
+
 describe("Blog", () => {
+  beforeEach(() => {
+    mockGetAllBlogs = vi.fn();
+    vi.mocked(BlogModel).mockImplementation(
+      class {
+        public getAllBlogs = mockGetAllBlogs;
+      } as never,
+    );
+  });
+
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   it("renders HTML page listing blogs", async () => {
-    vi.mocked(BlogModel).mockImplementation(
-      class {
-        getAllBlogs = vi.fn().mockResolvedValue([
-          {
-            _createdAt: "2024-01-01T00:00:00Z",
-            _id: "blog-1",
-            _updatedAt: "2024-02-01T00:00:00Z",
-            author: "Author",
-            blogCategory: { _id: "cat-1", title: "Blog" },
-            description: "A post",
-            slug: { current: "my-post" },
-            title: "My Post",
-          },
-        ]);
-      } as never,
-    );
+    mockGetAllBlogs.mockResolvedValue([
+      {
+        _createdAt: "2024-01-01T00:00:00Z",
+        _id: "blog-1",
+        _updatedAt: "2024-02-01T00:00:00Z",
+        author: "Author",
+        blogCategory: { _id: "cat-1", title: "Blog" },
+        description: "A post",
+        slug: { current: "my-post" },
+        title: "My Post",
+      },
+    ]);
 
     const html = await render(<Blog />);
     expect(html).toContain("<html");
@@ -123,11 +135,7 @@ describe("Blog", () => {
   });
 
   it("renders empty state when no blogs", async () => {
-    vi.mocked(BlogModel).mockImplementation(
-      class {
-        getAllBlogs = vi.fn().mockResolvedValue([]);
-      } as never,
-    );
+    mockGetAllBlogs.mockResolvedValue([]);
 
     const html = await render(<Blog />);
     expect(html).toContain("<html");

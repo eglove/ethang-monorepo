@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { lastModifiedMiddleware } from "./last-modified.ts";
 
-const noop = async () => {};
+const noop: () => Promise<void> = vi.fn().mockResolvedValue(undefined);
 
 const makeContext = (html: string, contentType = "text/html") => {
   return {
@@ -18,7 +18,10 @@ describe("lastModifiedMiddleware", () => {
     const html = `<html><head><meta name="last-modified" content="${isoDate}"></head></html>`;
     const context = makeContext(html);
 
-    await lastModifiedMiddleware(context as never, noop);
+    await lastModifiedMiddleware(
+      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
+      noop,
+    );
 
     const lastModified = context.res.headers.get("Last-Modified");
     expect(lastModified).toBe(new Date(isoDate).toUTCString());
@@ -27,20 +30,26 @@ describe("lastModifiedMiddleware", () => {
   it("leaves response unchanged when no meta last-modified tag", async () => {
     const html = "<html><head><title>No meta</title></head></html>";
     const context = makeContext(html);
-    const originalRes = context.res;
+    const originalResponse = context.res;
 
-    await lastModifiedMiddleware(context as never, noop);
+    await lastModifiedMiddleware(
+      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
+      noop,
+    );
 
-    expect(context.res).toBe(originalRes);
+    expect(context.res).toBe(originalResponse);
   });
 
   it("leaves response unchanged for non-HTML content type", async () => {
     const context = makeContext('{"key":"value"}', "application/json");
-    const originalRes = context.res;
+    const originalResponse = context.res;
 
-    await lastModifiedMiddleware(context as never, noop);
+    await lastModifiedMiddleware(
+      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
+      noop,
+    );
 
-    expect(context.res).toBe(originalRes);
+    expect(context.res).toBe(originalResponse);
   });
 
   it("leaves response unchanged when body is null", async () => {
@@ -49,31 +58,40 @@ describe("lastModifiedMiddleware", () => {
         headers: { "Content-Type": "text/html" },
       }),
     };
-    const originalRes = context.res;
+    const originalResponse = context.res;
 
-    await lastModifiedMiddleware(context as never, noop);
+    await lastModifiedMiddleware(
+      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
+      noop,
+    );
 
-    expect(context.res).toBe(originalRes);
+    expect(context.res).toBe(originalResponse);
   });
 
   it("leaves response unchanged when content attribute has invalid date", async () => {
     const html = `<html><head><meta name="last-modified" content="not-a-date"></head></html>`;
     const context = makeContext(html);
-    const originalRes = context.res;
+    const originalResponse = context.res;
 
-    await lastModifiedMiddleware(context as never, noop);
+    await lastModifiedMiddleware(
+      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
+      noop,
+    );
 
-    expect(context.res).toBe(originalRes);
+    expect(context.res).toBe(originalResponse);
   });
 
   it("leaves response unchanged when meta tag has no content attribute", async () => {
     const html = `<html><head><meta name="last-modified"></head></html>`;
     const context = makeContext(html);
-    const originalRes = context.res;
+    const originalResponse = context.res;
 
-    await lastModifiedMiddleware(context as never, noop);
+    await lastModifiedMiddleware(
+      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
+      noop,
+    );
 
-    expect(context.res).toBe(originalRes);
+    expect(context.res).toBe(originalResponse);
   });
 
   it("preserves original response status and statusText", async () => {
@@ -87,7 +105,10 @@ describe("lastModifiedMiddleware", () => {
       }),
     };
 
-    await lastModifiedMiddleware(context as never, noop);
+    await lastModifiedMiddleware(
+      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
+      noop,
+    );
 
     expect(context.res.status).toBe(201);
     expect(context.res.statusText).toBe("Created");
@@ -95,13 +116,16 @@ describe("lastModifiedMiddleware", () => {
 
   it("calls next before processing the response", async () => {
     let nextCalled = false;
-    const trackingNext = async () => {
+    const trackingNext = vi.fn().mockImplementation(() => {
       nextCalled = true;
-    };
+    });
     const html = `<html><head><meta name="last-modified" content="2024-01-01T00:00:00Z"></head></html>`;
     const context = makeContext(html);
 
-    await lastModifiedMiddleware(context as never, trackingNext);
+    await lastModifiedMiddleware(
+      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
+      trackingNext,
+    );
 
     expect(nextCalled).toBe(true);
   });
@@ -110,11 +134,14 @@ describe("lastModifiedMiddleware", () => {
     const context = {
       res: new Response("some body", { headers: {} }),
     };
-    const originalRes = context.res;
+    const originalResponse = context.res;
 
-    await lastModifiedMiddleware(context as never, noop);
+    await lastModifiedMiddleware(
+      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
+      noop,
+    );
 
-    expect(context.res).toBe(originalRes);
+    expect(context.res).toBe(originalResponse);
   });
 
   it("is case-insensitive for meta tag matching", async () => {
@@ -122,7 +149,10 @@ describe("lastModifiedMiddleware", () => {
     const html = `<html><head><META NAME="Last-Modified" CONTENT="${isoDate}"></head></html>`;
     const context = makeContext(html);
 
-    await lastModifiedMiddleware(context as never, noop);
+    await lastModifiedMiddleware(
+      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
+      noop,
+    );
 
     expect(context.res.headers.get("Last-Modified")).toBe(
       new Date(isoDate).toUTCString(),

@@ -21,8 +21,8 @@ describe("Button", () => {
       });
       return c.html(result as never);
     });
-    const res = await testApp.request("/");
-    const html = await res.text();
+    const response = await testApp.request("/");
+    const html = await response.text();
     expect(html).toContain("<a");
     expect(html).toContain('href="/about"');
     expect(html).toContain("Go here");
@@ -52,8 +52,8 @@ describe("Button", () => {
       });
       return c.html(result as never);
     });
-    const res = await testApp.request("/");
-    const html = await res.text();
+    const response = await testApp.request("/");
+    const html = await response.text();
     expect(html).toContain('href="#"');
   });
 });

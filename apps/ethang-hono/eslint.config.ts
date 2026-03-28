@@ -14,6 +14,7 @@ export default defineConfig(
     "src/index.css",
     "public",
     "migrations",
+    "coverage",
   ]),
   ...config,
   ...htmlConfig,
@@ -26,5 +27,12 @@ export default defineConfig(
       },
     },
     rules: {},
+  },
+  {
+    files: ["**/*.test.ts", "**/*.test.tsx"],
+    rules: {
+      "@typescript-eslint/no-unsafe-type-assertion": "off",
+      "unicorn/no-useless-undefined": "off",
+    },
   },
 );

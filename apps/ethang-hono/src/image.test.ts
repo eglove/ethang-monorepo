@@ -1,3 +1,4 @@
+// cspell:ignore fetchpriority
 import { describe, expect, it } from "vitest";
 
 import { Image } from "./image.tsx";

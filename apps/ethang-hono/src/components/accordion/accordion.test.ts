@@ -100,6 +100,6 @@ describe("AccordionWrapper", () => {
 
   it("generates a unique id with accordion- prefix", async () => {
     const html = String(await AccordionWrapper({ children: "" }));
-    expect(html).toMatch(/id="accordion-[\da-f-]+"/);
+    expect(html).toMatch(/id="accordion-[\da-f-]+"/u);
   });
 });

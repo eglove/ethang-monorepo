@@ -1,3 +1,4 @@
+// cspell:ignore noopener noreferrer hrefs
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 
@@ -147,8 +148,8 @@ describe("Blockquote", () => {
       });
       return c.html(result as never);
     });
-    const res = await testApp.request("/");
-    const html = await res.text();
+    const response = await testApp.request("/");
+    const html = await response.text();
     expect(html).toContain("The Book");
     expect(html).toContain('href="https://example.com"');
   });

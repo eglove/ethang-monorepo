@@ -18,14 +18,14 @@ const makeBlog = (overrides = {}) => ({
   ...overrides,
 });
 
-describe("blogRss", () => {
-  let mockGetAllBlogs: ReturnType<typeof vi.fn>;
+let mockGetAllBlogs = vi.fn();
 
+describe("blogRss", () => {
   beforeEach(() => {
     mockGetAllBlogs = vi.fn();
     vi.mocked(BlogModel).mockImplementation(
       class {
-        getAllBlogs = mockGetAllBlogs;
+        public getAllBlogs = mockGetAllBlogs;
       } as never,
     );
   });
@@ -64,10 +64,10 @@ describe("blogRss", () => {
     const result = await blogRss();
     const after = new Date();
 
-    const match = /<lastBuildDate>(.+?)<\/lastBuildDate>/u.exec(result);
+    const match = /<lastBuildDate>(?<date>.+?)<\/lastBuildDate>/u.exec(result);
     expect(match).not.toBeNull();
 
-    const parsedDate = new Date(match![1]);
+    const parsedDate = new Date(match?.groups?.["date"] ?? "");
     expect(parsedDate.getTime()).toBeGreaterThanOrEqual(
       before.getTime() - 1000,
     );

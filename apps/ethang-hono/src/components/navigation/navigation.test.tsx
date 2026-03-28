@@ -71,8 +71,8 @@ describe("Navigation", () => {
   it("renders a nav element", async () => {
     const testApp = new Hono();
     testApp.get("/", async (c) => c.html(<Navigation />));
-    const res = await testApp.request("/");
-    const html = await res.text();
+    const response = await testApp.request("/");
+    const html = await response.text();
     expect(html).toContain("<nav");
     expect(html).toContain("</nav>");
   });
@@ -80,8 +80,8 @@ describe("Navigation", () => {
   it("includes navigation links for main routes", async () => {
     const testApp = new Hono();
     testApp.get("/", async (c) => c.html(<Navigation />));
-    const res = await testApp.request("/");
-    const html = await res.text();
+    const response = await testApp.request("/");
+    const html = await response.text();
     expect(html).toContain('href="/"');
     expect(html).toContain('href="/blog"');
     expect(html).toContain('href="/tips"');

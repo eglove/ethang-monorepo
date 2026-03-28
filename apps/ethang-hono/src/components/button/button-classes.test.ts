@@ -1,3 +1,6 @@
+import every from "lodash/every.js";
+import isArray from "lodash/isArray.js";
+import isString from "lodash/isString.js";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -5,6 +8,8 @@ import {
   type ButtonVariant,
   getButtonClasses,
 } from "./button-classes.ts";
+
+const TEXT_WHITE = "text-white";
 
 describe("getButtonClasses", () => {
   const variants: ButtonVariant[] = [
@@ -20,8 +25,8 @@ describe("getButtonClasses", () => {
 
   it("returns an array of strings", () => {
     const result = getButtonClasses("default");
-    expect(Array.isArray(result)).toBe(true);
-    expect(result.every((c) => "string" === typeof c)).toBe(true);
+    expect(isArray(result)).toBe(true);
+    expect(every(result, isString)).toBe(true);
   });
 
   it("always includes base classes", () => {
@@ -38,7 +43,7 @@ describe("getButtonClasses", () => {
     it("default variant includes brand classes", () => {
       const classes = getButtonClasses("default");
       expect(classes).toContain("bg-brand");
-      expect(classes).toContain("text-white");
+      expect(classes).toContain(TEXT_WHITE);
     });
 
     it("secondary variant includes neutral classes", () => {
@@ -55,25 +60,25 @@ describe("getButtonClasses", () => {
     it("success variant includes success color classes", () => {
       const classes = getButtonClasses("success");
       expect(classes).toContain("bg-success");
-      expect(classes).toContain("text-white");
+      expect(classes).toContain(TEXT_WHITE);
     });
 
     it("danger variant includes danger color classes", () => {
       const classes = getButtonClasses("danger");
       expect(classes).toContain("bg-danger");
-      expect(classes).toContain("text-white");
+      expect(classes).toContain(TEXT_WHITE);
     });
 
     it("warning variant includes warning color classes", () => {
       const classes = getButtonClasses("warning");
       expect(classes).toContain("bg-warning");
-      expect(classes).toContain("text-white");
+      expect(classes).toContain(TEXT_WHITE);
     });
 
     it("dark variant includes dark color classes", () => {
       const classes = getButtonClasses("dark");
       expect(classes).toContain("bg-dark");
-      expect(classes).toContain("text-white");
+      expect(classes).toContain(TEXT_WHITE);
     });
 
     it("ghost variant includes transparent background", () => {

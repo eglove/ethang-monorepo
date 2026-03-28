@@ -12,12 +12,23 @@ vi.mock("../models/course-tracking.ts", () => ({
   CourseTracking: vi.fn(),
 }));
 
-import type { Mock } from "vitest";
-
 import { sanityClient } from "../clients/sanity.ts";
 import { CourseTracking } from "../models/course-tracking.ts";
 import { COURSE_TRACKING_STATUS } from "../utilities/constants.ts";
 import { CoursePathStore } from "./course-path-store.ts";
+
+const LATEST_UPDATE_DATE = "2024-01-01";
+
+const makeContext = async (courseStore: CoursePathStore) => {
+  const testApp = new Hono();
+  testApp.get("/", async (c) => {
+    await courseStore.setup(
+      c as unknown as Parameters<typeof courseStore.setup>[0],
+    );
+    return c.json({ ok: true });
+  });
+  await testApp.request("/");
+};
 
 const makeCourse = (overrides = {}) => ({
   _id: faker.string.uuid(),
@@ -208,17 +219,16 @@ describe("CoursePathStore", () => {
   });
 
   describe("setup", () => {
-    const makeContext = async (store: CoursePathStore) => {
-      const testApp = new Hono();
-      testApp.get("/", async (c) => {
-        await store.setup(c as never);
-        return c.json({ ok: true });
-      });
-      await testApp.request("/");
-    };
+    let mockGetCourseTrackingByUserId = vi.fn();
 
     beforeEach(() => {
       vi.clearAllMocks();
+      mockGetCourseTrackingByUserId = vi.fn();
+      vi.mocked(CourseTracking).mockImplementation(
+        class {
+          public getCourseTrackingByUserId = mockGetCourseTrackingByUserId;
+        } as never,
+      );
     });
 
     it("sets learningPaths from sanity data", async () => {
@@ -232,15 +242,11 @@ describe("CoursePathStore", () => {
           url: faker.internet.url(),
         },
       ];
-      (sanityClient.fetch as Mock).mockResolvedValue({
-        latestUpdate: { _id: "lu1", _updatedAt: "2024-01-01" },
+      vi.mocked(sanityClient).fetch.mockResolvedValue({
+        latestUpdate: { _id: "lu1", _updatedAt: LATEST_UPDATE_DATE },
         learningPaths,
-      });
-      (CourseTracking as Mock).mockImplementation(
-        class {
-          getCourseTrackingByUserId = vi.fn().mockResolvedValue([]);
-        } as never,
-      );
+      } as never);
+      mockGetCourseTrackingByUserId.mockResolvedValue([]);
 
       await makeContext(store);
 
@@ -248,8 +254,8 @@ describe("CoursePathStore", () => {
     });
 
     it("sums courseCount across all learning paths for totalCourseCount", async () => {
-      (sanityClient.fetch as Mock).mockResolvedValue({
-        latestUpdate: { _id: "lu1", _updatedAt: "2024-01-01" },
+      vi.mocked(sanityClient).fetch.mockResolvedValue({
+        latestUpdate: { _id: "lu1", _updatedAt: LATEST_UPDATE_DATE },
         learningPaths: [
           {
             _id: "lp1",
@@ -266,12 +272,8 @@ describe("CoursePathStore", () => {
             swebokFocus: "quality",
           },
         ],
-      });
-      (CourseTracking as Mock).mockImplementation(
-        class {
-          getCourseTrackingByUserId = vi.fn().mockResolvedValue([]);
-        } as never,
-      );
+      } as never);
+      mockGetCourseTrackingByUserId.mockResolvedValue([]);
 
       await makeContext(store);
 
@@ -280,15 +282,11 @@ describe("CoursePathStore", () => {
 
     it("sets courseTrackings from database", async () => {
       const trackings = [makeCourseTracking()];
-      (sanityClient.fetch as Mock).mockResolvedValue({
-        latestUpdate: { _id: "lu1", _updatedAt: "2024-01-01" },
+      vi.mocked(sanityClient).fetch.mockResolvedValue({
+        latestUpdate: { _id: "lu1", _updatedAt: LATEST_UPDATE_DATE },
         learningPaths: [],
-      });
-      (CourseTracking as Mock).mockImplementation(
-        class {
-          getCourseTrackingByUserId = vi.fn().mockResolvedValue(trackings);
-        } as never,
-      );
+      } as never);
+      mockGetCourseTrackingByUserId.mockResolvedValue(trackings);
 
       await makeContext(store);
 
@@ -297,15 +295,11 @@ describe("CoursePathStore", () => {
 
     it("sets latestUpdate from sanity data", async () => {
       const latestUpdate = { _id: "lu-1", _updatedAt: "2024-06-01T00:00:00Z" };
-      (sanityClient.fetch as Mock).mockResolvedValue({
+      vi.mocked(sanityClient).fetch.mockResolvedValue({
         latestUpdate,
         learningPaths: [],
-      });
-      (CourseTracking as Mock).mockImplementation(
-        class {
-          getCourseTrackingByUserId = vi.fn().mockResolvedValue([]);
-        } as never,
-      );
+      } as never);
+      mockGetCourseTrackingByUserId.mockResolvedValue([]);
 
       await makeContext(store);
 

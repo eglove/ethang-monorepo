@@ -1,3 +1,5 @@
+import type { JSX } from "hono/jsx/jsx-runtime";
+
 import { faker } from "@faker-js/faker";
 import { Hono } from "hono";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -12,8 +14,8 @@ import { CoursesContainer, swebokFocusMap } from "./courses-container.tsx";
 const renderJsx = async (jsx: JSX.Element): Promise<string> => {
   const testApp = new Hono();
   testApp.get("/", async (c) => c.html(jsx));
-  const res = await testApp.request("/");
-  return res.text();
+  const response = await testApp.request("/");
+  return response.text();
 };
 
 const makeCourse = (overrides = {}) => ({

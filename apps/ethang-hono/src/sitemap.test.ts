@@ -17,14 +17,14 @@ const makeBlog = (overrides = {}) => ({
   ...overrides,
 });
 
-describe("sitemap", () => {
-  let mockGetAllBlogs: ReturnType<typeof vi.fn>;
+let mockGetAllBlogs = vi.fn();
 
+describe("sitemap", () => {
   beforeEach(() => {
     mockGetAllBlogs = vi.fn();
     vi.mocked(BlogModel).mockImplementation(
       class {
-        getAllBlogs = mockGetAllBlogs;
+        public getAllBlogs = mockGetAllBlogs;
       } as never,
     );
   });

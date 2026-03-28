@@ -11,8 +11,8 @@ const renderMain = async (
 ): Promise<string> => {
   const testApp = new Hono();
   testApp.get("/", async (c) => c.html(<MainLayout {...properties} />));
-  const res = await testApp.request("/");
-  return res.text();
+  const response = await testApp.request("/");
+  return response.text();
 };
 
 describe("MainLayout", () => {
@@ -111,8 +111,8 @@ describe("BlogLayout", () => {
     testApp.get("/", async (c) =>
       c.html(<BlogLayout title="My Post">Blog content</BlogLayout>),
     );
-    const res = await testApp.request("/");
-    const html = await res.text();
+    const response = await testApp.request("/");
+    const html = await response.text();
     expect(html).toContain("<html");
     expect(html).toContain("Blog content");
     expect(html).toContain("blogRss.xml");

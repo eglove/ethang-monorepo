@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import get from "lodash/get.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../clients/sanity.ts", () => ({
@@ -6,8 +7,6 @@ vi.mock("../clients/sanity.ts", () => ({
     fetch: vi.fn(),
   },
 }));
-
-import type { Mock } from "vitest";
 
 import { sanityClient } from "../clients/sanity.ts";
 import { BlogModel } from "./blog-model.ts";
@@ -31,7 +30,7 @@ describe("BlogModel", () => {
   describe("getAllBlogs", () => {
     it("fetches blogs from Sanity", async () => {
       const blogs = [makeBlog(), makeBlog()];
-      (sanityClient.fetch as Mock).mockResolvedValue(blogs);
+      vi.mocked(sanityClient).fetch.mockResolvedValue(blogs as never);
 
       const model = new BlogModel();
       const result = await model.getAllBlogs();
@@ -40,23 +39,23 @@ describe("BlogModel", () => {
     });
 
     it("queries for blog type ordered by creation date descending", async () => {
-      (sanityClient.fetch as Mock).mockResolvedValue([]);
+      vi.mocked(sanityClient).fetch.mockResolvedValue([] as never);
 
       const model = new BlogModel();
       await model.getAllBlogs();
 
-      const query = (sanityClient.fetch as Mock).mock.calls[0][0] as string;
+      const query = get(vi.mocked(sanityClient).fetch.mock.calls, "[0][0]");
       expect(query).toContain('*[_type == "blog"]');
       expect(query).toContain("_createdAt desc");
     });
 
     it("selects required blog fields", async () => {
-      (sanityClient.fetch as Mock).mockResolvedValue([]);
+      vi.mocked(sanityClient).fetch.mockResolvedValue([] as never);
 
       const model = new BlogModel();
       await model.getAllBlogs();
 
-      const query = (sanityClient.fetch as Mock).mock.calls[0][0] as string;
+      const query = get(vi.mocked(sanityClient).fetch.mock.calls, "[0][0]");
       expect(query).toContain("_id");
       expect(query).toContain("title");
       expect(query).toContain("slug");
@@ -65,7 +64,7 @@ describe("BlogModel", () => {
     });
 
     it("returns an empty array when no blogs exist", async () => {
-      (sanityClient.fetch as Mock).mockResolvedValue([]);
+      vi.mocked(sanityClient).fetch.mockResolvedValue([] as never);
 
       const model = new BlogModel();
       const result = await model.getAllBlogs();
@@ -77,7 +76,7 @@ describe("BlogModel", () => {
   describe("getBlogBySlug", () => {
     it("fetches a blog by slug from Sanity", async () => {
       const blog = makeBlog();
-      (sanityClient.fetch as Mock).mockResolvedValue(blog);
+      vi.mocked(sanityClient).fetch.mockResolvedValue(blog as never);
 
       const model = new BlogModel();
       const result = await model.getBlogBySlug("my-post");
@@ -86,32 +85,35 @@ describe("BlogModel", () => {
     });
 
     it("passes slug as a query parameter", async () => {
-      (sanityClient.fetch as Mock).mockResolvedValue(null);
+      vi.mocked(sanityClient).fetch.mockResolvedValue(null as never);
 
       const model = new BlogModel();
       await model.getBlogBySlug("specific-slug");
 
-      const [, parameters] = (sanityClient.fetch as Mock).mock.calls[0];
+      const parameters = get(
+        vi.mocked(sanityClient).fetch.mock.calls,
+        "[0][1]",
+      );
       expect(parameters).toEqual({ slug: "specific-slug" });
     });
 
     it("queries using slug.current parameter", async () => {
-      (sanityClient.fetch as Mock).mockResolvedValue(null);
+      vi.mocked(sanityClient).fetch.mockResolvedValue(null as never);
 
       const model = new BlogModel();
       await model.getBlogBySlug("my-slug");
 
-      const query = (sanityClient.fetch as Mock).mock.calls[0][0] as string;
+      const query = get(vi.mocked(sanityClient).fetch.mock.calls, "[0][0]");
       expect(query).toContain("slug.current == $slug");
     });
 
     it("uses the blog schema to expand body content", async () => {
-      (sanityClient.fetch as Mock).mockResolvedValue(null);
+      vi.mocked(sanityClient).fetch.mockResolvedValue(null as never);
 
       const model = new BlogModel();
       await model.getBlogBySlug("any-slug");
 
-      const query = (sanityClient.fetch as Mock).mock.calls[0][0] as string;
+      const query = get(vi.mocked(sanityClient).fetch.mock.calls, "[0][0]");
       expect(query).toContain("body");
       expect(query).toContain("videoEmbed");
     });

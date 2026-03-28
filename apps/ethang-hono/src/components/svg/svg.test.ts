@@ -8,37 +8,39 @@ import { EmailSvg } from "./email.tsx";
 import { GitHubSvg } from "./github.tsx";
 import { LinkedInSvg } from "./linked-in.tsx";
 
+const RENDERS_SVG = "renders an SVG element";
+
 const expectSvg = (html: string) => {
   expect(html).toContain("<svg");
   expect(html).toContain("</svg>");
 };
 
 describe("ArrowUpRightSvg", () => {
-  it("renders an SVG element", async () => {
+  it(RENDERS_SVG, async () => {
     expectSvg(String(await ArrowUpRightSvg({})));
   });
 });
 
 describe("ArrowUpSvg", () => {
-  it("renders an SVG element", async () => {
+  it(RENDERS_SVG, async () => {
     expectSvg(String(await ArrowUpSvg({})));
   });
 });
 
 describe("ChevronDownSvg", () => {
-  it("renders an SVG element", async () => {
+  it(RENDERS_SVG, async () => {
     expectSvg(String(await ChevronDownSvg({})));
   });
 });
 
 describe("ChevronUpSvg", () => {
-  it("renders an SVG element", async () => {
+  it(RENDERS_SVG, async () => {
     expectSvg(String(await ChevronUpSvg({})));
   });
 });
 
 describe("EmailSvg", () => {
-  it("renders an SVG element", async () => {
+  it(RENDERS_SVG, async () => {
     expectSvg(String(await EmailSvg({})));
   });
 });
@@ -59,7 +61,7 @@ describe("GitHubSvg", () => {
 });
 
 describe("LinkedInSvg", () => {
-  it("renders an SVG element", async () => {
+  it(RENDERS_SVG, async () => {
     expectSvg(String(await LinkedInSvg({})));
   });
 });

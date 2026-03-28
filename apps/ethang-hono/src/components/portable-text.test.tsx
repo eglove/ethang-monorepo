@@ -13,8 +13,8 @@ const renderPortableText = async (blocks: Body): Promise<string> => {
     const result = await PortableText({ children: blocks });
     return c.html(result as never);
   });
-  const res = await testApp.request("/");
-  return res.text();
+  const response = await testApp.request("/");
+  return response.text();
 };
 
 const makeChild = (text: string, marks: string[] = []) => ({
@@ -109,7 +109,6 @@ describe("PortableText", () => {
     const block = {
       _key: "bq1",
       _type: "block" as const,
-      // @ts-expect-error blockquote style with extra props
       author: "Famous Person",
       children: [makeChild("A great thought")],
       markDefs: [],
@@ -148,7 +147,6 @@ describe("PortableText", () => {
 
   it("renders nothing for block type with unrecognized style", async () => {
     const html = await renderPortableText([
-      // @ts-expect-error testing unrecognized style
       {
         _key: "b1",
         _type: "block" as const,
@@ -185,7 +183,7 @@ describe("PortableText", () => {
         url: "https://example.com/image.jpg",
       },
     };
-    const html = await renderPortableText([imageBlock]);
+    const html = await renderPortableText([imageBlock] as unknown as Body);
     expect(html).toContain("img");
   });
 
@@ -230,14 +228,13 @@ describe("PortableText", () => {
           url: "https://example.com/no-alt.jpg",
         },
       },
-    ]);
+    ] as unknown as Body);
     expect(html).toContain("img");
   });
 
   it("renders nothing for unrecognized block types", async () => {
     const html = await renderPortableText([
-      // @ts-expect-error testing unrecognized type
-      { _key: "u1", _type: "unknown-type" },
+      { _key: "u1", _type: "unknown-type" } as unknown as Body[number],
     ]);
     expect(html).toBeDefined();
   });

@@ -1,15 +1,13 @@
 import { faker } from "@faker-js/faker";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+const mockSanityFetch = vi.hoisted(() => vi.fn());
+
 vi.mock("../clients/sanity.ts", () => ({
   sanityClient: {
-    fetch: vi.fn(),
+    fetch: mockSanityFetch,
   },
 }));
-
-import type { Mock } from "vitest";
-
-import { sanityClient } from "../clients/sanity.ts";
 import { COURSE_TRACKING_STATUS } from "../utilities/constants.ts";
 import { CourseTracking } from "./course-tracking.ts";
 
@@ -21,19 +19,27 @@ const mockTable = {
 };
 const mockOperators = { and: vi.fn(), eq: vi.fn() };
 
+type MockFindOptions = {
+  where?: (table: typeof mockTable, operators: typeof mockOperators) => void;
+};
+
 const makeMockDatabase = () => {
-  const mockWhere = vi.fn().mockResolvedValue();
+  const mockWhere = vi.fn().mockResolvedValue(undefined);
   const mockSet = vi.fn().mockReturnValue({ where: mockWhere });
-  const mockValues = vi.fn().mockResolvedValue();
+  const mockValues = vi.fn().mockResolvedValue(undefined);
   const mockInsert = vi.fn().mockReturnValue({ values: mockValues });
   const mockUpdate = vi.fn().mockReturnValue({ set: mockSet });
-  const mockFindMany = vi.fn().mockImplementation(async (options) => {
-    options?.where?.(mockTable, mockOperators);
-    return [];
-  });
-  const mockFindFirst = vi.fn().mockImplementation(async (options) => {
-    options?.where?.(mockTable, mockOperators);
-  });
+  const mockFindMany = vi
+    .fn()
+    .mockImplementation((options: MockFindOptions) => {
+      options.where?.(mockTable, mockOperators);
+      return [];
+    });
+  const mockFindFirst = vi
+    .fn()
+    .mockImplementation((options: MockFindOptions) => {
+      options.where?.(mockTable, mockOperators);
+    });
 
   return {
     _mockFindFirst: mockFindFirst,
@@ -59,8 +65,10 @@ describe("CourseTracking", () => {
 
   beforeEach(() => {
     database = makeMockDatabase();
-    courseTracking = new CourseTracking(database as never);
-    (sanityClient.fetch as Mock).mockResolvedValue({ url: courseUrl });
+    courseTracking = new CourseTracking(
+      database as unknown as ConstructorParameters<typeof CourseTracking>[0],
+    );
+    mockSanityFetch.mockResolvedValue({ url: courseUrl });
   });
 
   afterEach(() => {
@@ -87,7 +95,7 @@ describe("CourseTracking", () => {
       const courseId = "sanity-course-id";
       await courseTracking.createCourseTracking("user-1", courseId);
 
-      expect(sanityClient.fetch).toHaveBeenCalledWith(
+      expect(mockSanityFetch).toHaveBeenCalledWith(
         expect.stringContaining(courseId),
       );
     });
@@ -146,13 +154,13 @@ describe("CourseTracking", () => {
       );
 
       expect(result).toEqual(tracking);
-      expect(sanityClient.fetch).toHaveBeenCalledWith(
+      expect(mockSanityFetch).toHaveBeenCalledWith(
         expect.stringContaining(courseId),
       );
     });
 
     it("returns undefined when no matching tracking entry exists", async () => {
-      database._mockFindFirst.mockResolvedValue();
+      database._mockFindFirst.mockResolvedValue(undefined);
 
       const result = await courseTracking.getCourseTrackingByUserIdCourseId(
         "user",
@@ -183,20 +191,31 @@ describe("CourseTracking", () => {
     });
 
     it("accepts all valid status values", async () => {
-      const statuses = [
+      await courseTracking.updateCourseTrackingStatus(
+        faker.string.uuid(),
         COURSE_TRACKING_STATUS.COMPLETE,
-        COURSE_TRACKING_STATUS.REVISIT,
-        COURSE_TRACKING_STATUS.INCOMPLETE,
-      ];
+      );
+      expect(database._mockSet).toHaveBeenCalledWith({
+        status: COURSE_TRACKING_STATUS.COMPLETE,
+      });
+      database._mockSet.mockClear();
 
-      for (const status of statuses) {
-        await courseTracking.updateCourseTrackingStatus(
-          faker.string.uuid(),
-          status,
-        );
-        expect(database._mockSet).toHaveBeenCalledWith({ status });
-        database._mockSet.mockClear();
-      }
+      await courseTracking.updateCourseTrackingStatus(
+        faker.string.uuid(),
+        COURSE_TRACKING_STATUS.REVISIT,
+      );
+      expect(database._mockSet).toHaveBeenCalledWith({
+        status: COURSE_TRACKING_STATUS.REVISIT,
+      });
+      database._mockSet.mockClear();
+
+      await courseTracking.updateCourseTrackingStatus(
+        faker.string.uuid(),
+        COURSE_TRACKING_STATUS.INCOMPLETE,
+      );
+      expect(database._mockSet).toHaveBeenCalledWith({
+        status: COURSE_TRACKING_STATUS.INCOMPLETE,
+      });
     });
   });
 });
