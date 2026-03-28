@@ -1,3 +1,5 @@
+import type { Linter } from "eslint";
+
 import keys from "lodash/keys.js";
 import { describe, expect, it } from "vitest";
 
@@ -6,38 +8,55 @@ import { Plugin } from "./plugin.ts";
 
 const TEST_FILE_NAME = "config.test.js";
 
-const makePlugin = (files: string, rules: Record<string, string> = {}) => {
+const makePlugin = (files: string, rules: Linter.RulesRecord = {}) => {
   return new Plugin({ files, name: "test", rules, url: "https://example.com" });
 };
 
 describe(OutputConfig, () => {
-  it("stores all provided options as readonly properties", () => {
+  it("stores core file and plugin properties", () => {
     const plugin = makePlugin("**/*.ts");
-    const readmeImport = `import testConfig from "@ethang/eslint-config/${TEST_FILE_NAME}";`;
     const config = new OutputConfig({
       extraConfigEntries: ["extra: true,"],
-      extraImports: ['import foo from "foo";'],
       fileName: TEST_FILE_NAME,
-      functionParameters: "/** @type {string} */ path",
-      globalIgnores: ["**/*.spec.ts"],
       includeIgnores: true,
       includeLanguageOptions: true,
-      includeReactVersion: true,
       plugins: [plugin],
-      readmeImport,
-      readmeLabel: "Test",
     });
 
     expect(config.fileName).toBe(TEST_FILE_NAME);
     expect(config.plugins).toHaveLength(1);
     expect(config.includeIgnores).toBe(true);
     expect(config.includeLanguageOptions).toBe(true);
-    expect(config.extraConfigEntries).toEqual(["extra: true,"]);
-    expect(config.extraImports).toEqual(['import foo from "foo";']);
+    expect(config.extraConfigEntries).toStrictEqual(["extra: true,"]);
+  });
+
+  it("stores extra config and readme properties", () => {
+    const readmeImport = `import testConfig from "@ethang/eslint-config/${TEST_FILE_NAME}";`;
+    const config = new OutputConfig({
+      extraImports: ['import foo from "foo";'],
+      fileName: TEST_FILE_NAME,
+      functionParameters: "/** @type {string} */ path",
+      globalIgnores: ["**/*.spec.ts"],
+      includeReactVersion: true,
+      plugins: [makePlugin("**/*.ts")],
+      readmeImport,
+      readmeLabel: "Test",
+    });
+
+    expect(config.extraImports).toStrictEqual(['import foo from "foo";']);
     expect(config.functionParameters).toBe("/** @type {string} */ path");
-    expect(config.globalIgnores).toEqual(["**/*.spec.ts"]);
+    expect(config.globalIgnores).toStrictEqual(["**/*.spec.ts"]);
     expect(config.includeReactVersion).toBe(true);
     expect(config.readmeImport).toBe(readmeImport);
+  });
+
+  it("stores readme label", () => {
+    const config = new OutputConfig({
+      fileName: TEST_FILE_NAME,
+      plugins: [makePlugin("**/*.ts")],
+      readmeLabel: "Test",
+    });
+
     expect(config.readmeLabel).toBe("Test");
   });
 

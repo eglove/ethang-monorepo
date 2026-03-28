@@ -12,6 +12,34 @@ const customRules = [
     rule: "off",
   },
   {
+    name: "no-importing-vitest-globals",
+    rule: "off",
+  },
+  {
+    name: "require-test-timeout",
+    rule: "off",
+  },
+  {
+    name: "prefer-expect-assertions",
+    rule: "off",
+  },
+  {
+    name: "valid-title",
+    rule: "off",
+  },
+  {
+    name: "prefer-to-be-truthy",
+    rule: "off",
+  },
+  {
+    name: "require-mock-type-parameters",
+    rule: "off",
+  },
+  {
+    name: "prefer-called-once",
+    rule: "off",
+  },
+  {
     name: "@typescript-eslint/no-unsafe-type-assertion",
     rule: "off",
     skipPrefix: true,

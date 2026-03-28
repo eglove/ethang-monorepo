@@ -8,9 +8,10 @@ vi.mock(import("node:fs"));
 describe("update-readme", () => {
   it("should generate and write README.md", () => {
     updateReadme();
-    expect(writeFileSync).toHaveBeenCalled();
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@typescript-eslint/prefer-destructuring
+    expect(writeFileSync).toHaveBeenCalledTimes(1);
+
+    // eslint-disable-next-line @typescript-eslint/prefer-destructuring
     const call = (writeFileSync as unknown as { mock: { calls: string[][] } })
       .mock.calls[0];
     const path = call?.[0];
@@ -27,13 +28,11 @@ describe("update-readme", () => {
     // @ts-expect-error mocking read-only
     import.meta.filename = script;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const before = (writeFileSync as unknown as { mock: { calls: string[][] } })
       .mock.calls.length;
 
     await import("./update-readme.ts");
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const after = (writeFileSync as unknown as { mock: { calls: string[][] } })
       .mock.calls.length;
 

@@ -12,10 +12,13 @@ describe("lodash setup", () => {
   });
 
   it("should include custom rules with correct configuration", () => {
-    expect(lodashRules["lodash/chain-style"]).toEqual([2, "as-needed"]);
-    expect(lodashRules["lodash/consistent-compose"]).toEqual([2, "flow"]);
-    expect(lodashRules["lodash/identity-shorthand"]).toEqual([2, "always"]);
-    expect(lodashRules["lodash/import-scope"]).toEqual([2, "method"]);
+    expect(lodashRules["lodash/chain-style"]).toStrictEqual([2, "as-needed"]);
+    expect(lodashRules["lodash/consistent-compose"]).toStrictEqual([2, "flow"]);
+    expect(lodashRules["lodash/identity-shorthand"]).toStrictEqual([
+      2,
+      "always",
+    ]);
+    expect(lodashRules["lodash/import-scope"]).toStrictEqual([2, "method"]);
   });
 
   it("should prefix rules with lodash/", () => {

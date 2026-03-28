@@ -1,5 +1,5 @@
 import { writeFileSync } from "node:fs";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { OutputConfig } from "./output-config.ts";
 import { Plugin } from "./plugin.ts";
@@ -36,23 +36,19 @@ const makePlugin = (
   });
 };
 
-beforeEach(() => {
-  testOutputConfigs.length = 0;
-  vi.clearAllMocks();
-});
-
 describe("updateReadme — mainConfig undefined branches", () => {
   it("handles empty outputConfigs without throwing", () => {
+    testOutputConfigs.length = 0;
+    vi.clearAllMocks();
     // testOutputConfigs is empty → mainConfig is undefined
     updateReadme();
 
-    expect(writeFileSync).toHaveBeenCalled();
+    expect(writeFileSync).toHaveBeenCalledTimes(1);
 
-    /* eslint-disable @typescript-eslint/no-unsafe-type-assertion */
     const content = (
       writeFileSync as unknown as { mock: { calls: string[][] } }
     ).mock.calls[0]?.[1];
-    /* eslint-enable @typescript-eslint/no-unsafe-type-assertion */
+
     expect(content).toContain("# Relentless. Unapologetic.");
     expect(content).toContain("0 rules.");
   });
@@ -60,6 +56,8 @@ describe("updateReadme — mainConfig undefined branches", () => {
 
 describe("updateReadme — featured config branches", () => {
   it("uses singular 'rule' when a plugin has exactly one active rule", () => {
+    testOutputConfigs.length = 0;
+    vi.clearAllMocks();
     const singleRulePlugin = makePlugin({
       rules: { "only-rule": "error" },
     });
@@ -76,15 +74,16 @@ describe("updateReadme — featured config branches", () => {
 
     updateReadme();
 
-    /* eslint-disable @typescript-eslint/no-unsafe-type-assertion */
     const content = (
       writeFileSync as unknown as { mock: { calls: string[][] } }
     ).mock.calls[0]?.[1];
-    /* eslint-enable @typescript-eslint/no-unsafe-type-assertion */
+
     expect(content).toContain("1 rule from");
   });
 
   it("outputs empty string for readmeImport when not set", () => {
+    testOutputConfigs.length = 0;
+    vi.clearAllMocks();
     testOutputConfigs.push(
       new OutputConfig({
         fileName: "config.test.js",
@@ -96,6 +95,6 @@ describe("updateReadme — featured config branches", () => {
 
     updateReadme();
 
-    expect(writeFileSync).toHaveBeenCalled();
+    expect(writeFileSync).toHaveBeenCalledTimes(1);
   });
 });

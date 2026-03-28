@@ -12,7 +12,7 @@ describe("get-react-version", () => {
 
     const result = await getLatestReact();
 
-    expect(result).toEqual({ version: "18.2.0" });
+    expect(result).toStrictEqual({ version: "18.2.0" });
     expect(globalThis.fetch).toHaveBeenCalledWith(
       "https://registry.npmjs.org/react/latest",
     );

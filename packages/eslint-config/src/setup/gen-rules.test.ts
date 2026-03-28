@@ -24,7 +24,7 @@ describe("gen-rules", () => {
       const ruleNames = ["rule1", "rule2"];
       const result = genRules(ruleNames, undefined, "my-plugin", "warn");
 
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         "my-plugin/rule1": "warn",
         "my-plugin/rule2": "warn",
       });
@@ -37,7 +37,7 @@ describe("gen-rules", () => {
       ];
       const result = genRules(ruleNames, customRules, "prefix");
 
-      expect(result["prefix/rule1"]).toEqual(["error", { option: true }]);
+      expect(result["prefix/rule1"]).toStrictEqual(["error", { option: true }]);
       expect(result["prefix/rule2"]).toBe("error");
     });
 
@@ -95,7 +95,7 @@ describe("gen-rules", () => {
       const result = genRules(ruleNames);
       const ruleKeys = keys(result);
 
-      expect(ruleKeys).toEqual(["a", "b", "c"]);
+      expect(ruleKeys).toStrictEqual(["a", "b", "c"]);
     });
   });
 });

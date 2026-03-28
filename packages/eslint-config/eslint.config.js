@@ -1,6 +1,7 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 
 import config from "./src/config.main.js";
+import vitestConfig from "./src/config.vitest.js";
 
 export default defineConfig(
   globalIgnores([
@@ -19,6 +20,7 @@ export default defineConfig(
     "docs/**",
   ]),
   ...config,
+  ...vitestConfig,
   {
     languageOptions: {
       parserOptions: {

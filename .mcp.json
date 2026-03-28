@@ -10,15 +10,9 @@
       ]
     },
     "webstorm": {
-      "command": "C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\jbr\\bin\\java",
-      "args": [
-        "-classpath",
-        "C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\plugins\\mcpserver\\lib\\mcpserver-frontend.jar",
-        "com.intellij.mcpserver.stdio.McpStdioRunnerKt"
-      ],
-      "env": {
-        "IJ_MCP_SERVER_PORT": "64495"
-      }
+      "type": "sse",
+      "url": "http://127.0.0.1:64495/sse",
+      "headers": {}
     }
   }
 }

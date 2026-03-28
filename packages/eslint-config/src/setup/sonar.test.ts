@@ -6,6 +6,7 @@ import { sonarRules } from "./sonar.ts";
 
 describe("sonar rules", () => {
   it("should have sonar rules", () => {
+    expect.assertions(1);
     expect(keys(sonarRules).length).toBeGreaterThan(0);
   });
 
