@@ -2,6 +2,7 @@ import times from "lodash/times.js";
 
 import { Code } from "../../code.tsx";
 import { BlogLayout } from "../../layouts/blog-layout.tsx";
+import { DEPLOY_TIME } from "../../../utilities/deploy-info.ts";
 import { H1 } from "../../typography/h1.tsx";
 import { H2 } from "../../typography/h2.tsx";
 import { P } from "../../typography/p.tsx";
@@ -30,7 +31,7 @@ const tailwindExample = `<div class="grid h-[100vb] grid-rows-[auto_1fr_auto]">
 
 export const ScrollContainers = async () => {
   return (
-    <BlogLayout title="Easy Sticky Header/Footer">
+    <BlogLayout title="Easy Sticky Header/Footer" updatedAt={DEPLOY_TIME}>
       <H1>Easy Sticky Header/Footer</H1>
       <P>
         A very simple approach to creating both a "sticky header" and "sticky

@@ -1,9 +1,10 @@
 import { MainLayout } from "../layouts/main-layout.tsx";
+import { DEPLOY_TIME } from "../../utilities/deploy-info.ts";
 import { P } from "../typography/p.tsx";
 
 export const SignIn = async () => {
   return (
-    <MainLayout>
+    <MainLayout updatedAt={DEPLOY_TIME}>
       <script type="module" src="/scripts/sign-in/sign-in.js" />
       <form id="sign-in-form" class="mx-auto max-w-sm">
         <div class="mb-5">

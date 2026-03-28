@@ -1,9 +1,10 @@
+import { DEPLOY_TIME } from "../../utilities/deploy-info.ts";
 import { ProfileCard } from "../cards/profile-card.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
 
 export const Home = async () => {
   return (
-    <MainLayout classNames={{ main: "mx-auto max-w-7xl" }}>
+    <MainLayout classNames={{ main: "mx-auto max-w-7xl" }} updatedAt={DEPLOY_TIME}>
       <ProfileCard />
     </MainLayout>
   );
