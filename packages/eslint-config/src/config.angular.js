@@ -21,7 +21,11 @@ export default defineConfig(
       "@angular-eslint/component-max-inline-declarations": "error",
       "@angular-eslint/component-selector": [
         "error",
-        { prefix: "app", style: "kebab-case", type: "element" },
+        {
+          prefix: "app",
+          style: "kebab-case",
+          type: "element",
+        },
       ],
       "@angular-eslint/computed-must-return": "error",
       "@angular-eslint/consistent-component-styles": "error",
@@ -30,7 +34,11 @@ export default defineConfig(
       "@angular-eslint/directive-class-suffix": "error",
       "@angular-eslint/directive-selector": [
         "error",
-        { prefix: "app", style: "camelCase", type: "attribute" },
+        {
+          prefix: "app",
+          style: "camelCase",
+          type: "attribute",
+        },
       ],
       "@angular-eslint/no-async-lifecycle-method": "error",
       "@angular-eslint/no-attribute-decorator": "error",
