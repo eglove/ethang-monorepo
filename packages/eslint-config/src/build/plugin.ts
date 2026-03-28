@@ -40,7 +40,7 @@ export class Plugin {
   public get ruleCount(): number {
     return filter(values(this.rules), (value) => {
       const severity = isArray(value) ? value[0] : value;
-      return "off" !== severity;
+      return "off" !== severity && 0 !== severity;
     }).length;
   }
 

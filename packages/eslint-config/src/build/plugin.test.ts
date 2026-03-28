@@ -57,5 +57,23 @@ describe(Plugin, () => {
 
       expect(plugin.ruleCount).toBe(1);
     });
+
+    it("does not count numeric 0 (off) rules", () => {
+      const plugin = new Plugin({
+        ...base,
+        rules: { "rule-a": 0, "rule-b": 2 },
+      });
+
+      expect(plugin.ruleCount).toBe(1);
+    });
+
+    it("counts numeric 1 and 2 severity rules", () => {
+      const plugin = new Plugin({
+        ...base,
+        rules: { "rule-a": 1, "rule-b": 2 },
+      });
+
+      expect(plugin.ruleCount).toBe(2);
+    });
   });
 });
