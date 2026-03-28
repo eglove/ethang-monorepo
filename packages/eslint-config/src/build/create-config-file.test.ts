@@ -309,4 +309,21 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
       'import angular from "angular-eslint";',
     );
   });
+
+  it("includes extraOptions from plugins in config block", async () => {
+    const output = new OutputConfig({
+      fileName: "config.test.js",
+      plugins: [
+        makePlugin({
+          extraOptions: "settings: { tailwindcss: { config: pathToConfig } },",
+        }),
+      ],
+    });
+
+    await createConfigFile(output);
+
+    expect(getWrittenContent()).toContain(
+      "settings: { tailwindcss: { config: pathToConfig } },",
+    );
+  });
 });
