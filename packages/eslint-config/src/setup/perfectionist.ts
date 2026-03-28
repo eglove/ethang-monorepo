@@ -1,6 +1,7 @@
 import perfectionist from "eslint-plugin-perfectionist";
 import keys from "lodash/keys.js";
 
+import { Plugin } from "../build/plugin.ts";
 import {
   type EsLintRules,
   genRules,
@@ -54,3 +55,14 @@ export const perfectionistRules = genRules(
   customRules,
   "perfectionist",
 );
+
+export const perfectionistPlugin = new Plugin({
+  files: "**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}",
+  importString: 'import perfectionist from "eslint-plugin-perfectionist";',
+  name: "eslint-plugin-perfectionist",
+  order: 6,
+  pluginName: "perfectionist",
+  pluginValue: "perfectionist",
+  rules: perfectionistRules,
+  url: "https://github.com/azat-io/eslint-plugin-perfectionist",
+});

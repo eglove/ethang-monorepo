@@ -2,6 +2,7 @@ import angularTS from "@angular-eslint/eslint-plugin";
 import angularTemplate from "@angular-eslint/eslint-plugin-template";
 import keys from "lodash/keys.js";
 
+import { Plugin } from "../build/plugin.ts";
 import { genRules, getNonDeprecatedRules } from "./gen-rules.js";
 
 const tsRuleNames = keys(getNonDeprecatedRules(angularTS.rules));
@@ -34,3 +35,27 @@ export const angularTemplateRules = genRules(
   customTemplateRules,
   "@angular-eslint/template",
 );
+
+export const angularTsPlugin = new Plugin({
+  auxiliaryImport: 'import angular from "angular-eslint";',
+  files: "**/*.ts",
+  importString: 'import angularTS from "@angular-eslint/eslint-plugin";',
+  name: "@angular-eslint/eslint-plugin",
+  pluginName: "@angular-eslint",
+  pluginValue: "angularTS",
+  processor: "angular.processInlineTemplates",
+  rules: angularTsRules,
+  url: "https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md",
+});
+
+export const angularTemplatePlugin = new Plugin({
+  files: "**/*.html",
+  importString:
+    'import angularTemplate from "@angular-eslint/eslint-plugin-template";',
+  includeAngularLanguageOptions: true,
+  name: "@angular-eslint/eslint-plugin-template",
+  pluginName: "@angular-eslint/template",
+  pluginValue: "angularTemplate",
+  rules: angularTemplateRules,
+  url: "https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md",
+});

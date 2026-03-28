@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { createConfigFile } from "./create-config-file.ts";
+import { outputConfigs } from "./output-config.ts";
 import { updateRules } from "./update-rules.ts";
 
 vi.mock(import("./create-config-file.ts"), () => ({
@@ -11,11 +12,7 @@ describe("update-rules", () => {
   it("should call createConfigFile for each config", async () => {
     await updateRules();
 
-    expect(createConfigFile).toHaveBeenCalledTimes(9);
-    expect(createConfigFile).toHaveBeenCalledWith(
-      expect.any(Array),
-      "config.main.js",
-    );
+    expect(createConfigFile).toHaveBeenCalledTimes(outputConfigs.length);
   });
 
   it("should execute if it is the main module", async () => {

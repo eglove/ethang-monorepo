@@ -60,7 +60,13 @@ export default defineConfig(
       "for-direction": "error",
       "func-name-matching": "error",
       "func-names": "off",
-      "func-style": ["error", "declaration", { allowArrowFunctions: true }],
+      "func-style": [
+        "error",
+        "declaration",
+        {
+          allowArrowFunctions: true,
+        },
+      ],
       "getter-return": "error",
       "grouped-accessor-pairs": "error",
       "guard-for-in": "error",
@@ -189,7 +195,9 @@ export default defineConfig(
       "no-unsafe-negation": "error",
       "no-unsafe-optional-chaining": [
         "error",
-        { disallowArithmeticOperators: true },
+        {
+          disallowArithmeticOperators: true,
+        },
       ],
       "no-unused-expressions": "off",
       "no-unused-labels": "error",
@@ -257,7 +265,9 @@ export default defineConfig(
       "@typescript-eslint/consistent-type-exports": "error",
       "@typescript-eslint/consistent-type-imports": [
         "error",
-        { fixStyle: "inline-type-imports" },
+        {
+          fixStyle: "inline-type-imports",
+        },
       ],
       "@typescript-eslint/default-param-last": "error",
       "@typescript-eslint/dot-notation": "error",
@@ -553,7 +563,12 @@ export default defineConfig(
       "lodash/prefer-flat-map": "error",
       "lodash/prefer-get": "error",
       "lodash/prefer-immutable-method": "error",
-      "lodash/prefer-includes": [2, { includeNative: true }],
+      "lodash/prefer-includes": [
+        2,
+        {
+          includeNative: true,
+        },
+      ],
       "lodash/prefer-invoke-map": "error",
       "lodash/prefer-is-nil": "error",
       "lodash/prefer-lodash-chain": "error",
@@ -564,7 +579,12 @@ export default defineConfig(
       "lodash/prefer-noop": "error",
       "lodash/prefer-over-quantifier": "error",
       "lodash/prefer-reject": "error",
-      "lodash/prefer-some": [2, { includeNative: true }],
+      "lodash/prefer-some": [
+        2,
+        {
+          includeNative: true,
+        },
+      ],
       "lodash/prefer-startswith": "error",
       "lodash/prefer-thru": "error",
       "lodash/prefer-times": "error",
@@ -643,7 +663,9 @@ export default defineConfig(
       "sonar/function-inside-loop": "error",
       "sonar/function-name": [
         "error",
-        { format: "^(?:[a-z][a-zA-Z0-9]*|[A-Z][A-Z0-9]*)$" },
+        {
+          format: "^(?:[a-z][a-zA-Z0-9]*|[A-Z][A-Z0-9]*)$",
+        },
       ],
       "sonar/function-return-type": "off",
       "sonar/future-reserved-words": "error",
@@ -841,7 +863,10 @@ export default defineConfig(
       "perfectionist/sort-jsx-props": [
         "error",
         {
-          fallbackSort: { order: "asc", type: "alphabetical" },
+          fallbackSort: {
+            order: "asc",
+            type: "alphabetical",
+          },
           order: "asc",
           type: "line-length",
         },
@@ -851,16 +876,27 @@ export default defineConfig(
       "perfectionist/sort-named-exports": "error",
       "perfectionist/sort-named-imports": "error",
       "perfectionist/sort-object-types": "error",
-      "perfectionist/sort-objects": ["error", { partitionByComment: true }],
+      "perfectionist/sort-objects": [
+        "error",
+        {
+          partitionByComment: true,
+        },
+      ],
       "perfectionist/sort-sets": "error",
       "perfectionist/sort-switch-case": [
         "error",
-        { order: "asc", type: "alphabetical" },
+        {
+          order: "asc",
+          type: "alphabetical",
+        },
       ],
       "perfectionist/sort-union-types": "error",
       "perfectionist/sort-variable-declarations": [
         "error",
-        { order: "asc", type: "alphabetical" },
+        {
+          order: "asc",
+          type: "alphabetical",
+        },
       ],
       "@tanstack/query/exhaustive-deps": "error",
       "@tanstack/query/infinite-query-property-order": "error",
@@ -1007,6 +1043,10 @@ export default defineConfig(
   },
   {
     files: ["**/*.md"],
+    languageOptions,
+    settings: {
+      react: { version: "19.2.4" },
+    },
     plugins: {
       markdown: markdown,
     },
@@ -1036,6 +1076,10 @@ export default defineConfig(
   },
   {
     files: ["**/*.css"],
+    languageOptions,
+    settings: {
+      react: { version: "19.2.4" },
+    },
     language: "css/css",
     plugins: {
       css: css,
@@ -1054,12 +1098,21 @@ export default defineConfig(
       "css/prefer-logical-properties": "error",
       "css/relative-font-units": "error",
       "css/selector-complexity": "error",
-      "css/use-baseline": ["error", { available: "newly" }],
+      "css/use-baseline": [
+        "error",
+        {
+          available: "newly",
+        },
+      ],
       "css/use-layers": "error",
     },
   },
   {
     files: ["**/*.json"],
+    languageOptions,
+    settings: {
+      react: { version: "19.2.4" },
+    },
     language: "json/json",
     plugins: {
       json: json,
@@ -1075,6 +1128,10 @@ export default defineConfig(
   },
   {
     files: ["**/*.jsonc"],
+    languageOptions,
+    settings: {
+      react: { version: "19.2.4" },
+    },
     language: "json/jsonc",
     plugins: {
       json: json,
@@ -1090,6 +1147,10 @@ export default defineConfig(
   },
   {
     files: ["**/*.json5"],
+    languageOptions,
+    settings: {
+      react: { version: "19.2.4" },
+    },
     language: "json/json5",
     plugins: {
       json: json,

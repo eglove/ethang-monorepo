@@ -1,6 +1,7 @@
 import eslint from "@eslint/js";
 import keys from "lodash/keys.js";
 
+import { Plugin } from "../build/plugin.ts";
 import { type CustomRules, genRules } from "./gen-rules.ts";
 
 const ruleNames = keys(eslint.configs.all.rules);
@@ -248,3 +249,11 @@ export const eslintRules = genRules(
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   customRules as unknown as CustomRules,
 );
+
+export const eslintPlugin = new Plugin({
+  files: "**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}",
+  name: "@eslint/js",
+  order: 1,
+  rules: eslintRules,
+  url: "https://github.com/eslint/eslint/tree/main/packages/js",
+});

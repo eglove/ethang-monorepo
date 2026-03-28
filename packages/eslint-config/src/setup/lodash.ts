@@ -2,6 +2,7 @@
 import lodash from "eslint-plugin-lodash";
 import keys from "lodash/keys.js";
 
+import { Plugin } from "../build/plugin.ts";
 import {
   type EsLintRules,
   genRules,
@@ -57,3 +58,15 @@ const customRules = [
 
 // @ts-expect-error loose types
 export const lodashRules = genRules(ruleNames, customRules, "lodash");
+
+export const lodashPlugin = new Plugin({
+  files: "**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}",
+  importString:
+    'import { fixupPluginRules } from "@eslint/compat";\nimport lodashConfig from "eslint-plugin-lodash";',
+  name: "eslint-plugin-lodash",
+  order: 4,
+  pluginName: "lodash",
+  pluginValue: "fixupPluginRules(lodashConfig)",
+  rules: lodashRules,
+  url: "https://github.com/idok/eslint-plugin-lodash",
+});

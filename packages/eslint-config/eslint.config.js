@@ -16,6 +16,7 @@ export default defineConfig(
     "src/config.tailwind.js",
     "src/config.vitest.js",
     "**/*.d.ts",
+    "docs/**",
   ]),
   ...config,
   {

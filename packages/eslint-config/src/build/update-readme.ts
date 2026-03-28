@@ -1,47 +1,12 @@
 import { MarkdownGenerator } from "@ethang/markdown-generator/markdown-generator.js";
+import compact from "lodash/compact.js";
 import filter from "lodash/filter.js";
-import flow from "lodash/flow.js";
+import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
-import values from "lodash/values.js";
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 
-import type { genRules } from "../setup/gen-rules.ts";
-
-import { getList } from "./list-utilities.ts";
-
-const countRules = (rules: ReturnType<typeof getList>) => {
-  let count = 0;
-  for (const rule of rules) {
-    count += getRuleCount(rule.list);
-  }
-
-  return count;
-};
-
-const getRuleCount = (rules: ReturnType<typeof genRules>) => {
-  let count = 0;
-  for (const value of values(rules)) {
-    if ("off" !== value) {
-      count += 1;
-    }
-  }
-
-  return count;
-};
-
-const getImports = flow(
-  (rules: ReturnType<typeof getList>) => {
-    return filter(rules, (rule) => {
-      return 0 < getRuleCount(rule.list);
-    });
-  },
-  (filteredRules) => {
-    return map(filteredRules, (rule) => {
-      return `${getRuleCount(rule.list)} rules from [${rule.name}](${rule.url})`;
-    });
-  },
-);
+import { outputConfigs } from "./output-config.ts";
 
 export const updateReadme = () => {
   const md = new MarkdownGenerator();
@@ -49,30 +14,18 @@ export const updateReadme = () => {
   md.link("View Config", "https://eslint-config-ethang.pages.dev/rules", 2);
   md.alert("CAUTION", "Prettier is already included for styling!", 2);
 
-  const coreRules = map(
-    [
-      ...getList("core"),
-      ...getList("json"),
-      ...getList("css"),
-      ...getList("markdown"),
-    ],
-    (rules) => {
-      return {
-        ...rules,
-        count: 0,
-      };
-    },
-  );
-
-  let total = 0;
-  for (const list of coreRules) {
-    const count = getRuleCount(list.list);
-    total += count;
-    list.count = count;
-  }
-  coreRules.sort((a, b) => {
+  const [mainConfig] = outputConfigs;
+  const coreRules = map(mainConfig?.plugins ?? [], (plugin) => {
+    return {
+      count: plugin.ruleCount,
+      name: plugin.name,
+      url: plugin.url,
+    };
+  }).toSorted((a, b) => {
     return b.count - a.count;
   });
+
+  const total = mainConfig?.ruleCount ?? 0;
 
   const ruleDocumentation = [`${total} rules.`];
   for (const list of coreRules) {
@@ -87,71 +40,37 @@ export const updateReadme = () => {
     /* v8 ignore stop */
   }
 
-  const htmlRules = getList("html");
-  const tailwindRules = getList("tailwind");
-  const astroRules = getList("astro");
-  const reactRules = getList("react");
-  const solidRules = getList("solid");
-  const angularRules = getList("angular");
-  const angularTemplateRules = getList("angular:template");
-  const storybookRules = getList("storybook");
-  const vitestTestRules = getList("vitest");
-
-  const htmlCount = countRules(htmlRules);
-  const tailwindCount = countRules(tailwindRules);
-  const astroCount = countRules(astroRules);
-  const reactCount = countRules(reactRules);
-  const solidCount = countRules(solidRules);
-  const angularCount = countRules([...angularRules, ...angularTemplateRules]);
-  const storybookCount = countRules(storybookRules);
-  const vitestCount = countRules(vitestTestRules);
-
   md.unorderedList(ruleDocumentation);
   md.newLine();
   md.header(1, "Add Even More!", 2);
-  md.unorderedList([
-    `${angularCount} rules for **Angular**`,
-    [
-      '`import angularConfig from "@ethang/eslint-config/config.angular.js";`',
-      getImports(angularRules),
-      getImports(angularTemplateRules),
-    ],
-    `${astroCount} rules for **Astro**`,
-    [
-      '`import astroConfig from "@ethang/eslint-config/config.astro.js";`',
-      getImports(astroRules),
-    ],
-    `${htmlCount} rules for **HTML**`,
-    [
-      '`import htmlConfig from "@ethang/eslint-config/config.html.js";`',
-      getImports(htmlRules),
-    ],
-    `${reactCount} rules for **React**`,
-    [
-      '`import reactConfig from "@ethang/eslint-config/config.react.js";`',
-      getImports(reactRules),
-    ],
-    `${solidCount} rules for **Solid**`,
-    [
-      '`import solidConfig from "@ethang/eslint-config/config.solid.js";`',
-      getImports(solidRules),
-    ],
-    `${storybookCount} rules for **Storybook**`,
-    [
-      '`import storybookConfig from "@ethang/eslint-config/config.storybook.js";`',
-      getImports(storybookRules),
-    ],
-    `${tailwindCount} rules for **Tailwind**`,
-    [
-      '`import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";`',
-      getImports(tailwindRules),
-    ],
-    `${vitestCount} rules for **Vitest**`,
-    [
-      '`import vitestConfig from "@ethang/eslint-config/config.vitest.js";`',
-      getImports(vitestTestRules),
-    ],
-  ]);
+
+  const featuredOutputs = filter(outputConfigs, (c) => {
+    return !isNil(c.readmeLabel);
+  });
+
+  const listItems: (string | string[])[] = [];
+
+  for (const output of featuredOutputs) {
+    listItems.push(`${output.ruleCount} rules for **${output.readmeLabel}**`);
+
+    const perPlugin = compact(
+      map(output.plugins, (plugin) => {
+        if (0 >= plugin.ruleCount) {
+          return null;
+        }
+
+        const ruleWord = 1 >= plugin.ruleCount ? "rule" : "rules";
+        return `${plugin.ruleCount} ${ruleWord} from [${plugin.name}](${plugin.url})`;
+      }),
+    );
+
+    listItems.push([
+      isNil(output.readmeImport) ? "" : `\`${output.readmeImport}\``,
+      ...perPlugin,
+    ]);
+  }
+
+  md.unorderedList(listItems);
   md.newLine();
   md.header(1, "Install", 2);
   md.codeBlock("pnpm i -D eslint @ethang/eslint-config", "powershell", 2);
