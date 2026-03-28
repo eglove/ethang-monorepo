@@ -24,7 +24,11 @@ export type MainLayoutProperties = PropsWithChildren<{
 }>;
 
 export const MainLayout = async (properties: MainLayoutProperties) => {
-  registerScript(globalStore, "components/navigation/navigation");
+  registerScript(
+    globalStore,
+    "components/code",
+    "components/navigation/navigation",
+  );
 
   const title = isNil(properties.title)
     ? "EthanG"

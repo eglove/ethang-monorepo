@@ -125,6 +125,13 @@ describe(MainLayout, () => {
     );
   });
 
+  it("registers the code client script", async () => {
+    globalStore.scripts = new Set();
+    await renderMain({ children: "" });
+
+    expect(globalStore.scripts.has("components/code")).toBe(true);
+  });
+
   it("emits a module script tag for each registered script id", async () => {
     globalStore.scripts = new Set([
       "components/code",
@@ -140,12 +147,12 @@ describe(MainLayout, () => {
     );
   });
 
-  it("emits no extra script tags when scripts set is empty", async () => {
+  it("does not emit script tags for unregistered script ids", async () => {
     globalStore.scripts = new Set();
     const html = await renderMain({ children: "" });
 
     expect(html).not.toContain(
-      '<script type="module" src="/scripts/components/code.client.js">',
+      '<script type="module" src="/scripts/components/course-completion.client.js">',
     );
   });
 });
