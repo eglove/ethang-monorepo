@@ -108,6 +108,7 @@ const customRules: CustomRules = [
             "headspace",
             "PTSD",
             "inlines",
+            "viewports",
           ],
         },
       },
