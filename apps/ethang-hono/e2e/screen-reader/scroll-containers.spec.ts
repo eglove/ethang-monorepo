@@ -2,6 +2,7 @@ import { nvdaTest as test } from "@guidepup/playwright";
 import { expect } from "@playwright/test";
 
 import { routes } from "../../routes.ts";
+import { navigateToWebContent } from "../helpers/screen-reader-helpers.ts";
 
 test.describe("scroll-containers page — screen reader (NVDA)", () => {
   test("announces Easy Sticky Header/Footer heading", async ({
@@ -9,7 +10,7 @@ test.describe("scroll-containers page — screen reader (NVDA)", () => {
     page,
   }) => {
     await page.goto(routes.scrollContainers, { waitUntil: "load" });
-    await nvda.navigateToWebContent();
+    await navigateToWebContent(nvda, page);
 
     await nvda.perform(nvda.keyboardCommands.moveToNextHeading);
     expect(await nvda.lastSpokenPhrase()).toContain("Sticky");
@@ -20,7 +21,7 @@ test.describe("scroll-containers page — screen reader (NVDA)", () => {
     page,
   }) => {
     await page.goto(routes.scrollContainers, { waitUntil: "load" });
-    await nvda.navigateToWebContent();
+    await navigateToWebContent(nvda, page);
 
     const headings: string[] = [];
     for (let index = 0; 5 > index; index++) {

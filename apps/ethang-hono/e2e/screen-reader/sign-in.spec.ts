@@ -3,13 +3,16 @@ import { expect } from "@playwright/test";
 
 import { routes } from "../../routes.ts";
 import { mockSignInError } from "../helpers/courses-auth-helpers.ts";
-import { nvdaPress } from "../helpers/screen-reader-helpers.ts";
+import {
+  navigateToWebContent,
+  nvdaPress,
+} from "../helpers/screen-reader-helpers.ts";
 
 test.describe("sign-in page — screen reader (NVDA)", () => {
   test.describe("field navigation", () => {
     test.beforeEach(async ({ nvda, page }) => {
       await page.goto(routes.signIn, { waitUntil: "load" });
-      await nvda.navigateToWebContent();
+      await navigateToWebContent(nvda, page);
     });
 
     test("announces page heading", async ({ nvda }) => {
@@ -46,7 +49,7 @@ test.describe("sign-in page — screen reader (NVDA)", () => {
 
     await page.locator("#sign-in-error").waitFor({ state: "visible" });
 
-    await nvda.navigateToWebContent();
+    await navigateToWebContent(nvda, page);
     let found = false;
     for (let index = 0; 10 > index; index++) {
       await nvda.next();

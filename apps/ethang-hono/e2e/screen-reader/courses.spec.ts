@@ -9,13 +9,14 @@ import {
   mockVerifyOk,
   setAuthCookie,
 } from "../helpers/courses-auth-helpers.ts";
+import { navigateToWebContent } from "../helpers/screen-reader-helpers.ts";
 
 const COMPLETION_BUTTON = ".course-completion-button";
 
 test.describe("courses page — screen reader (NVDA, unauthenticated)", () => {
   test("announces Recommended Courses heading", async ({ nvda, page }) => {
     await page.goto(routes.courses, { waitUntil: "load" });
-    await nvda.navigateToWebContent();
+    await navigateToWebContent(nvda, page);
 
     await nvda.perform(nvda.keyboardCommands.moveToNextHeading);
     expect(await nvda.lastSpokenPhrase()).toContain("Recommended Courses");
@@ -26,7 +27,7 @@ test.describe("courses page — screen reader (NVDA, unauthenticated)", () => {
     page,
   }) => {
     await page.goto(routes.courses, { waitUntil: "networkidle" });
-    await nvda.navigateToWebContent();
+    await navigateToWebContent(nvda, page);
 
     let found = false;
     for (let index = 0; 30 > index; index++) {
@@ -60,7 +61,7 @@ test.describe("courses page — screen reader (NVDA, authenticated)", () => {
     page,
   }) => {
     await page.goto(routes.courses, { waitUntil: "networkidle" });
-    await nvda.navigateToWebContent();
+    await navigateToWebContent(nvda, page);
 
     let found = false;
     for (let index = 0; 10 > index; index++) {
@@ -79,7 +80,7 @@ test.describe("courses page — screen reader (NVDA, authenticated)", () => {
     page,
   }) => {
     await page.goto(routes.courses, { waitUntil: "networkidle" });
-    await nvda.navigateToWebContent();
+    await navigateToWebContent(nvda, page);
 
     let found = false;
     for (let index = 0; 40 > index; index++) {
