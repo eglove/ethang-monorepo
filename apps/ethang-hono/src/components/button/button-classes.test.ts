@@ -9,8 +9,6 @@ import {
   getButtonClasses,
 } from "./button-classes.ts";
 
-const TEXT_WHITE = "text-white";
-
 describe(getButtonClasses, () => {
   const variants: ButtonVariant[] = [
     "danger",
@@ -37,64 +35,68 @@ describe(getButtonClasses, () => {
       expect(classes).toContain("border");
       expect(classes).toContain("cursor-pointer");
       expect(classes).toContain("font-medium");
-      expect(classes).toContain("rounded-base");
+      expect(classes).toContain("rounded-lg");
     }
   });
 
   describe("variant classes", () => {
-    it("default variant includes brand classes", () => {
+    it("default variant includes sky tinted classes", () => {
       const classes = getButtonClasses("default");
 
-      expect(classes).toContain("bg-brand");
-      expect(classes).toContain(TEXT_WHITE);
+      expect(classes).toContain("bg-sky-300/10");
+      expect(classes).toContain("border-sky-300/30");
+      expect(classes).toContain("text-sky-300");
     });
 
     it("secondary variant includes neutral classes", () => {
       const classes = getButtonClasses("secondary");
 
-      expect(classes).toContain("bg-neutral-secondary-medium");
-      expect(classes).toContain("text-body");
+      expect(classes).toContain("bg-slate-700");
+      expect(classes).toContain("text-slate-200");
     });
 
     it("tertiary variant includes soft neutral classes", () => {
       const classes = getButtonClasses("tertiary");
 
-      expect(classes).toContain("bg-neutral-primary-soft");
+      expect(classes).toContain("bg-slate-800");
     });
 
-    it("success variant includes success color classes", () => {
+    it("success variant includes success tinted classes", () => {
       const classes = getButtonClasses("success");
 
-      expect(classes).toContain("bg-success");
-      expect(classes).toContain(TEXT_WHITE);
+      expect(classes).toContain("bg-green-400/10");
+      expect(classes).toContain("border-green-400/30");
+      expect(classes).toContain("text-green-400");
     });
 
-    it("danger variant includes danger color classes", () => {
+    it("danger variant includes danger tinted classes", () => {
       const classes = getButtonClasses("danger");
 
-      expect(classes).toContain("bg-danger");
-      expect(classes).toContain(TEXT_WHITE);
+      expect(classes).toContain("bg-red-400/10");
+      expect(classes).toContain("border-red-400/30");
+      expect(classes).toContain("text-red-400");
     });
 
-    it("warning variant includes warning color classes", () => {
+    it("warning variant includes warning tinted classes", () => {
       const classes = getButtonClasses("warning");
 
-      expect(classes).toContain("bg-warning");
-      expect(classes).toContain(TEXT_WHITE);
+      expect(classes).toContain("bg-amber-400/10");
+      expect(classes).toContain("border-amber-400/30");
+      expect(classes).toContain("text-amber-400");
     });
 
-    it("dark variant includes dark color classes", () => {
+    it("dark variant includes dark depth classes", () => {
       const classes = getButtonClasses("dark");
 
-      expect(classes).toContain("bg-dark");
-      expect(classes).toContain(TEXT_WHITE);
+      expect(classes).toContain("bg-slate-900");
+      expect(classes).toContain("text-slate-100");
     });
 
-    it("ghost variant includes transparent background", () => {
+    it("ghost variant includes transparent background and slate text", () => {
       const classes = getButtonClasses("ghost");
 
       expect(classes).toContain("bg-transparent");
-      expect(classes).toContain("text-heading");
+      expect(classes).toContain("text-slate-200");
     });
   });
 
