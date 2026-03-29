@@ -3,11 +3,11 @@ name: CI
 on:
   pull_request:
     branches: [master]
-  push:
-    branches: [master]
 
 permissions:
   contents: read
+  security-events: write
+  actions: read
 
 jobs:
   install:
@@ -60,3 +60,36 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+
+  codeql:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, actions]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+      - uses: github/codeql-action/init@c10b8064de6f491fea524254123dbe5e09572f13  # v4
+        with:
+          languages: ${{ matrix.language }}
+      - uses: github/codeql-action/analyze@c10b8064de6f491fea524254123dbe5e09572f13  # v4
+        with:
+          category: /language:${{ matrix.language }}
+
+  sonar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1  # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9  # v7.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

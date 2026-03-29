@@ -31,7 +31,7 @@
   "scripts": {
     "build": "bun build.ts",
     "lint": "eslint src --fix && pnpm tsc --noEmit",
-    "test": "vitest run --coverage.enabled=true",
+    "test": "vitest run --coverage",
     "test:ui": "vitest --ui --coverage.enabled=true --open=false",
     "test:watch": "vitest"
   },

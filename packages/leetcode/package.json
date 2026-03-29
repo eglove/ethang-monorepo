@@ -9,6 +9,7 @@
     "@ethang/eslint-config": "^25.8.6",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.5.0",
+    "@vitest/coverage-v8": "^4.1.2",
     "eslint": "^10.1.0",
     "typescript": "^6.0.2",
     "vitest": "^4.1.2"
@@ -22,7 +23,7 @@
   "name": "leetcode",
   "scripts": {
     "bench": "vitest bench",
-    "test": "vitest run"
+    "test": "vitest run --coverage"
   },
   "type": "module",
   "version": "1.0.1"
