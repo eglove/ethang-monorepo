@@ -32,7 +32,9 @@ test.describe("scroll-containers page — keyboard user", () => {
 
     for (const name of navLinks) {
       const link = page.getByRole("link", { name });
+      // eslint-disable-next-line no-await-in-loop
       await link.focus();
+      // eslint-disable-next-line no-await-in-loop
       await expect(link).toBeFocused();
     }
   });

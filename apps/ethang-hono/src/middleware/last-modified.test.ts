@@ -132,8 +132,16 @@ describe(lastModifiedMiddleware, () => {
   });
 
   it("leaves response unchanged when no Content-Type header is set", async () => {
+    // String bodies auto-set "text/plain" per Fetch spec — use a ReadableStream
+    // to get a body with no auto-detected MIME type, making get("content-type") null.
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode("body content"));
+        controller.close();
+      },
+    });
     const context = {
-      res: new Response("some body", { headers: {} }),
+      res: new Response(stream, { headers: {} }),
     };
     const originalResponse = context.res;
 

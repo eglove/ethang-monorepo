@@ -370,6 +370,43 @@ describe(CoursesContainer, () => {
     expect(html).toContain("Single Name");
   });
 
+  it("renders path without URL as plain span (no colon in name)", async () => {
+    resetCoursePathData();
+    const course = makeCourse({ _id: "c4" });
+    coursePathData.learningPaths = [
+      makeLearningPath([course], {
+        name: "No URL Path",
+        swebokFocus: "testing",
+        url: undefined,
+      }),
+    ];
+    coursePathData.courseTrackings = [];
+    const html = await renderJsx(<CoursesContainer />);
+
+    expect(html).toContain("No URL Path");
+    // path name should be in a span, not wrapped in a path-level anchor
+    expect(html).toContain("text-amber-400/70");
+  });
+
+  it("renders path without URL and colon-split name as two spans (hasSecondPart=true)", async () => {
+    resetCoursePathData();
+    const course = makeCourse({ _id: "c5" });
+    coursePathData.learningPaths = [
+      makeLearningPath([course], {
+        name: "NoURL: WithColon",
+        swebokFocus: "testing",
+        url: undefined,
+      }),
+    ];
+    coursePathData.courseTrackings = [];
+    const html = await renderJsx(<CoursesContainer />);
+
+    expect(html).toContain("NoURL");
+    expect(html).toContain("WithColon");
+    // colon separator should appear between parts
+    expect(html).toContain(":");
+  });
+
   it("maps known swebokFocus to readable name", () => {
     expect(swebokFocusMap.get("testing")).toBe("Software Testing");
     expect(swebokFocusMap.get("architecture")).toBe("Software Architecture");

@@ -1,6 +1,9 @@
+// cspell:ignore viewports
 import { expect, test } from "@playwright/test";
 
+const ARIA_EXPANDED = "aria-expanded";
 const HAMBURGER_BUTTON_NAME = "Open main menu";
+const MOBILE_ONLY_MESSAGE = "Hamburger menu only appears on mobile viewports";
 const NAV_MENU = "#navbar-default";
 
 test.describe("navigation hamburger menu — keyboard user (mobile)", () => {
@@ -8,7 +11,7 @@ test.describe("navigation hamburger menu — keyboard user (mobile)", () => {
     isMobile,
     page,
   }) => {
-    test.skip(!isMobile, "Hamburger menu only appears on mobile viewports");
+    test.skip(!isMobile, MOBILE_ONLY_MESSAGE);
 
     await page.goto("/");
 
@@ -19,11 +22,11 @@ test.describe("navigation hamburger menu — keyboard user (mobile)", () => {
     await expect(hamburgerButton).toBeFocused();
 
     await page.keyboard.press("Enter");
-    await expect(hamburgerButton).toHaveAttribute("aria-expanded", "true");
+    await expect(hamburgerButton).toHaveAttribute(ARIA_EXPANDED, "true");
     await expect(page.locator(NAV_MENU)).toBeVisible();
 
     await page.keyboard.press("Enter");
-    await expect(hamburgerButton).toHaveAttribute("aria-expanded", "false");
+    await expect(hamburgerButton).toHaveAttribute(ARIA_EXPANDED, "false");
     await expect(page.locator(NAV_MENU)).toBeHidden();
   });
 
@@ -31,7 +34,7 @@ test.describe("navigation hamburger menu — keyboard user (mobile)", () => {
     isMobile,
     page,
   }) => {
-    test.skip(!isMobile, "Hamburger menu only appears on mobile viewports");
+    test.skip(!isMobile, MOBILE_ONLY_MESSAGE);
 
     await page.goto("/");
 
@@ -40,7 +43,7 @@ test.describe("navigation hamburger menu — keyboard user (mobile)", () => {
     });
     await hamburgerButton.focus();
     await page.keyboard.press("Space");
-    await expect(hamburgerButton).toHaveAttribute("aria-expanded", "true");
+    await expect(hamburgerButton).toHaveAttribute(ARIA_EXPANDED, "true");
     await expect(page.locator(NAV_MENU)).toBeVisible();
   });
 });

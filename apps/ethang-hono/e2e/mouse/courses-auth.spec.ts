@@ -173,6 +173,7 @@ test.describe("courses page — completion button interactions", () => {
     // hold the in-flight request open until we are ready to release it.
     let resolveRoute!: () => void;
     const routeHandlerFired = new Promise<void>((outerResolve) => {
+      // eslint-disable-next-line no-void
       void axePage.route(
         new RegExp(`/api/course-tracking/${MOCK_USER_ID}/`, "u"),
         async (route) => {

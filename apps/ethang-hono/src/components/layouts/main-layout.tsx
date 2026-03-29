@@ -97,7 +97,11 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         <script defer src="/scripts/loader.js" />
       </head>
       <body id="body">
-        <Navigation pathname={properties.pathname} />
+        <Navigation
+          {...(properties.pathname === undefined
+            ? {}
+            : { pathname: properties.pathname })}
+        />
         <main class={twMerge("m-4 mt-20", properties.classNames?.main)}>
           {properties.children}
         </main>

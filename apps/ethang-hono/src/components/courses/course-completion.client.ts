@@ -1,5 +1,7 @@
 import find from "lodash/find.js";
 import isNil from "lodash/isNil.js";
+import split from "lodash/split.js";
+import startsWith from "lodash/startsWith.js";
 
 const AUTH_COOKIE_NAME = "ethang-auth-token";
 
@@ -11,11 +13,11 @@ const getCookieValue = async (name: string): Promise<string | undefined> => {
     return entry?.value;
   }
 
-  const match = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(`${name}=`));
+  const match = find(split(document.cookie, "; "), (row) =>
+    startsWith(row, `${name}=`),
+  );
 
-  return match?.split("=")[1];
+  return isNil(match) ? undefined : split(match, "=")[1];
 };
 
 const deleteCookie = async (name: string): Promise<void> => {
@@ -45,6 +47,8 @@ type UserToken = {
 
 const BUTTON_SELECTOR = ".course-completion-button";
 const STATUS_SELECTOR = ".course-status-text";
+const BG_DEFAULT = "bg-default";
+const BG_WARNING = "bg-warning";
 
 // All helpers that are called during the top-level await (init → applyStoredStatuses)
 // must be declared before the if/else block at the bottom of this module. ES modules
@@ -62,13 +66,13 @@ const setUiState = (
 
   if ("Complete" === courseStatus?.status) {
     button.classList.add("bg-brand");
-    button.classList.remove("bg-default", "bg-warning");
+    button.classList.remove(BG_DEFAULT, BG_WARNING);
   } else if ("Revisit" === courseStatus?.status) {
-    button.classList.add("bg-warning");
-    button.classList.remove("bg-default", "bg-brand");
+    button.classList.add(BG_WARNING);
+    button.classList.remove(BG_DEFAULT, "bg-brand");
   } else {
-    button.classList.add("bg-default");
-    button.classList.remove("bg-brand", "bg-warning");
+    button.classList.add(BG_DEFAULT);
+    button.classList.remove("bg-brand", BG_WARNING);
   }
 };
 

@@ -2,9 +2,9 @@ import { faker } from "@faker-js/faker";
 import { Hono } from "hono";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("../clients/sanity.ts"), () => ({
+vi.mock(import("../clients/sanity.ts"), (() => ({
   sanityClient: { fetch: vi.fn() },
-}));
+})) as never);
 vi.mock(import("../db/database.ts"), () => ({
   getDatabase: vi.fn().mockReturnValue({}),
 }));

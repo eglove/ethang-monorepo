@@ -4,7 +4,8 @@ import { Hono } from "hono";
 import isArray from "lodash/isArray.js";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("flowbite"), () => ({}));
+import { globalStore } from "../../stores/global-store-properties.ts";
+
 vi.mock(import("../../models/blog-model.ts"), () => ({
   BlogModel: vi.fn(),
 }));
@@ -165,6 +166,28 @@ describe(Blog, () => {
 
     expect(html).toContain("<html");
   });
+
+  it("applies sky-300 class for Dev Reads category", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(
+      vi.fn().mockResolvedValue([
+        {
+          _createdAt: "2024-01-01T00:00:00Z",
+          _id: "blog-2",
+          _updatedAt: "2024-02-01T00:00:00Z",
+          blogCategory: { _id: "cat-2", title: "Dev Reads" },
+          description: "A dev reads post",
+          slug: { current: "dev-reads-post" },
+          title: "Dev Reads Post",
+        },
+      ]),
+    );
+
+    const html = await render(<Blog />);
+
+    expect(html).toContain("Dev Reads");
+    expect(html).toContain("text-sky-300");
+  });
 });
 
 describe(Courses, () => {
@@ -198,5 +221,23 @@ describe(Courses, () => {
     expect(html).toContain(
       'data-script="components/courses/course-completion"',
     );
+  });
+
+  it("hides sign-in prompt and shows progress section when authenticated", async () => {
+    vi.clearAllMocks();
+    coursePathData.learningPaths = [];
+    coursePathData.latestUpdate = undefined;
+    globalStore.isAuthenticated = true;
+
+    let html = "";
+
+    try {
+      html = await render(<Courses />);
+    } finally {
+      globalStore.isAuthenticated = false;
+    }
+
+    expect(html).toContain('id="sign-in-prompt"');
+    expect(html).toContain('id="auth-section-header"');
   });
 });

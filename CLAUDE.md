@@ -143,3 +143,12 @@ When touching existing code, take the opportunity to improve it. Do not make cha
 - Align structure with the patterns described in this file
 
 Scope improvements to the code you are already reading or modifying. Do not refactor entire files unprompted.
+
+## Persistent Instructions: Progressive Mapping
+
+You are tasked with reducing future search latency. Every time you successfully trace a bug or implement a feature:
+1. **Internalize the Map:** Update your mental model of the project's "Functional Traces."
+2. **Leave Breadcrumbs:** If you find a connection between files that isn't obvious from the directory structure, document it immediately in `INTERNAL_MAP.md`.
+3. **Search Heuristics:** If you find that `grep` failed but a specific keyword worked, record that "Search Hint" for your future self.
+
+**Objective:** Minimize the number of `read_file` calls required for the next agent who works on this module.

@@ -33,7 +33,9 @@ test.describe("sign-in page — keyboard user", () => {
     test.beforeEach(async ({ page }) => {
       await mockSignInSuccess(page);
       await page.goto(routes.signIn, { waitUntil: "networkidle" });
+      // eslint-disable-next-line lodash/prefer-lodash-method
       await page.getByLabel("Email").fill("test@example.com");
+      // eslint-disable-next-line lodash/prefer-lodash-method
       await page.getByLabel("Password").fill("password");
       await page.getByRole("button", { name: "Submit" }).focus();
     });
@@ -55,7 +57,9 @@ test.describe("sign-in page — keyboard user", () => {
     await mockSignInError(page);
 
     await page.goto(routes.signIn);
+    // eslint-disable-next-line lodash/prefer-lodash-method
     await page.getByLabel("Email").fill("bad@example.com");
+    // eslint-disable-next-line lodash/prefer-lodash-method
     await page.getByLabel("Password").fill("wrong");
     await page.getByRole("button", { name: "Submit" }).click();
 

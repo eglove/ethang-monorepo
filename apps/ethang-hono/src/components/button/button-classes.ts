@@ -33,22 +33,26 @@ const defaultClasses = new Set([
   "text-sky-300",
 ]);
 
+const FOCUS_RING_SLATE_400 = "focus:ring-slate-400/30";
+const TEXT_SLATE_200 = "text-slate-200";
+const HOVER_BORDER_SLATE_500 = "hover:border-slate-500";
+
 const secondaryClasses = new Set([
   "bg-slate-700",
   "border-slate-500",
-  "focus:ring-slate-400/30",
+  FOCUS_RING_SLATE_400,
   "hover:bg-slate-600",
   "hover:border-slate-400",
-  "text-slate-200",
+  TEXT_SLATE_200,
 ]);
 
 const tertiaryClasses = new Set([
   "bg-slate-800",
   "border-slate-600",
-  "focus:ring-slate-400/30",
+  FOCUS_RING_SLATE_400,
+  HOVER_BORDER_SLATE_500,
   "hover:bg-slate-700",
-  "hover:border-slate-500",
-  "text-slate-200",
+  TEXT_SLATE_200,
 ]);
 
 const successClasses = new Set([
@@ -81,19 +85,19 @@ const warningClasses = new Set([
 const darkClasses = new Set([
   "bg-slate-900",
   "border-slate-600",
-  "focus:ring-slate-400/30",
+  FOCUS_RING_SLATE_400,
+  HOVER_BORDER_SLATE_500,
   "hover:bg-slate-800",
-  "hover:border-slate-500",
   "text-slate-100",
 ]);
 
 const ghostClasses = new Set([
   "bg-transparent",
   "border-transparent",
-  "focus:ring-slate-400/30",
+  FOCUS_RING_SLATE_400,
+  HOVER_BORDER_SLATE_500,
   "hover:bg-slate-700",
-  "hover:border-slate-500",
-  "text-slate-200",
+  TEXT_SLATE_200,
 ]);
 
 const extraSmallClasses = new Set(["px-3", "py-1.5", "text-xs"]);

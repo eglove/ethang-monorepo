@@ -54,22 +54,37 @@ export const CoursesContainer = async () => {
         return (
           <li>
             <span>
-              <a
-                href={path.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="underline underline-offset-2"
-              >
-                <span
-                  class={hasSecondPart ? "text-sky-300" : "text-amber-400/70"}
+              {!isNil(path.url) && (
+                <a
+                  href={path.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="underline underline-offset-2"
                 >
-                  {firstPart}
-                </span>
-                {hasSecondPart ? ":" : ""}
-                {hasSecondPart && (
-                  <span class="text-amber-400/70">{secondPart}</span>
-                )}
-              </a>{" "}
+                  <span
+                    class={hasSecondPart ? "text-sky-300" : "text-amber-400/70"}
+                  >
+                    {firstPart}
+                  </span>
+                  {hasSecondPart ? ":" : ""}
+                  {hasSecondPart && (
+                    <span class="text-amber-400/70">{secondPart}</span>
+                  )}
+                </a>
+              )}
+              {isNil(path.url) && (
+                <>
+                  <span
+                    class={hasSecondPart ? "text-sky-300" : "text-amber-400/70"}
+                  >
+                    {firstPart}
+                  </span>
+                  {hasSecondPart ? ":" : ""}
+                  {hasSecondPart && (
+                    <span class="text-amber-400/70">{secondPart}</span>
+                  )}
+                </>
+              )}{" "}
               |{" "}
               <span class="text-slate-300">
                 {swebokFocusMap.get(path.swebokFocus)}
