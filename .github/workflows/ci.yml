@@ -6,6 +6,8 @@ on:
 
 permissions:
   contents: read
+  security-events: write
+  actions: read
 
 jobs:
   install:
@@ -58,6 +60,21 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+
+  codeql:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, actions]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+      - uses: github/codeql-action/init@ce28f5bb42b49b5d7a87a03a1cf4a1c4eb7ff535  # v3
+        with:
+          languages: ${{ matrix.language }}
+      - uses: github/codeql-action/analyze@ce28f5bb42b49b5d7a87a03a1cf4a1c4eb7ff535  # v3
+        with:
+          category: /language:${{ matrix.language }}
 
   sonar:
     needs: test
