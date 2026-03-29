@@ -11,7 +11,7 @@ test.describe("home page — keyboard user", () => {
       // eslint-disable-next-line no-await-in-loop
       await allLinks.nth(index).focus();
       // eslint-disable-next-line no-await-in-loop
-      await expect(allLinks.nth(index)).toBeFocused();
+      await expect.soft(allLinks.nth(index)).toBeFocused();
     }
   });
 });

@@ -7,7 +7,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.8.6",
+    "@ethang/eslint-config": "^25.9.2",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.5.0",
     "eslint": "^10.1.0",
@@ -21,7 +21,7 @@
   "main": "index.js",
   "name": "scripts",
   "scripts": {
-    "lint": "eslint . --fix && pnpm tsc --noEmit"
+    "lint": "eslint . --fix --cache && pnpm tsc --noEmit"
   },
   "type": "module",
   "version": "1.0.0"

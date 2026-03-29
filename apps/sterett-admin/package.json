@@ -17,7 +17,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.8.6",
+    "@ethang/eslint-config": "^25.9.2",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.24",
     "eslint": "^10.1.0",
@@ -38,7 +38,7 @@
   "scripts": {
     "build": "sanity build",
     "dev": "sanity dev",
-    "lint": "eslint . --fix && pnpm tsc --noEmit",
+    "lint": "eslint . --fix --cache && pnpm tsc --noEmit",
     "start": "sanity start"
   },
   "type": "module",

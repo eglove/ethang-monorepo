@@ -6,7 +6,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && pnpm lint && pnpm tsc --noEmit && pnpm test"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/quality-check.sh\"",
+            "statusMessage": "Running tests and lint...",
+            "timeout": 300
           }
         ]
       }

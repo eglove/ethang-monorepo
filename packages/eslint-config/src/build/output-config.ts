@@ -15,6 +15,7 @@ import { json5Plugin, jsoncPlugin, jsonPlugin } from "../setup/json.ts";
 import { lodashPlugin } from "../setup/lodash.ts";
 import { markdownPlugin } from "../setup/markdown.ts";
 import { perfectionistPlugin } from "../setup/perfectionist.ts";
+import { playwrightPlugin } from "../setup/playwright.ts";
 import { reactHooksPlugin, reactPlugin } from "../setup/react.ts";
 import { solidPlugin } from "../setup/solid.ts";
 import { sonarPlugin } from "../setup/sonar.ts";
@@ -183,5 +184,13 @@ export const outputConfigs: OutputConfig[] = [
     readmeImport:
       'import vitestConfig from "@ethang/eslint-config/config.vitest.js";',
     readmeLabel: "Vitest",
+  }),
+  new OutputConfig({
+    fileName: "config.playwright.js",
+    includeIgnores: true,
+    includeLanguageOptions: true,
+    plugins: [playwrightPlugin] as const,
+    readmeImport: 'import playwright from "eslint-plugin-playwright";',
+    readmeLabel: "Playwright",
   }),
 ];

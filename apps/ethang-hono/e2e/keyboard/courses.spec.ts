@@ -16,16 +16,16 @@ test.describe("courses page — keyboard user (unauthenticated)", () => {
   test("sign-in link is reachable via keyboard and activates on Enter", async ({
     page,
   }) => {
-    await page.goto(routes.courses, { waitUntil: "networkidle" });
+    await page.goto(routes.courses, { waitUntil: "load" });
 
     const signInLink = page.getByRole("link", {
       name: "Sign In To Track Changes",
     });
     await signInLink.focus();
-    await expect(signInLink).toBeFocused();
+    await expect.soft(signInLink).toBeFocused();
 
     await page.keyboard.press("Enter");
-    await expect(page).toHaveURL(/sign-in/u);
+    await expect.soft(page).toHaveURL(/sign-in/u);
   });
 });
 
@@ -41,16 +41,16 @@ test.describe("courses page — keyboard user (authenticated)", () => {
       },
     ]);
     await setAuthCookie(page);
-    await page.goto(routes.courses, { waitUntil: "networkidle" });
+    await page.goto(routes.courses, { waitUntil: "load" });
   });
 
   test("completion buttons are focusable", async ({ page }) => {
     const firstButton = page.locator(COMPLETION_BUTTON).first();
     await firstButton.focus();
-    await expect(firstButton).toBeFocused();
+    await expect.soft(firstButton).toBeFocused();
   });
 
-  test("Enter on completion button triggers status update", async ({
+  test("enter on completion button triggers status update", async ({
     page,
   }) => {
     await mockCourseStatusUpdate(page, { id: "t2", status: "Complete" });
@@ -59,10 +59,10 @@ test.describe("courses page — keyboard user (authenticated)", () => {
     await firstButton.focus();
     await page.keyboard.press("Enter");
 
-    await expect(firstButton).toHaveClass(/bg-brand/u);
+    await expect.soft(firstButton).toHaveClass(/bg-brand/u);
   });
 
-  test("Space on completion button triggers status update", async ({
+  test("space on completion button triggers status update", async ({
     page,
   }) => {
     await mockCourseStatusUpdate(page, { id: "t3", status: "Revisit" });
@@ -71,6 +71,6 @@ test.describe("courses page — keyboard user (authenticated)", () => {
     await firstButton.focus();
     await page.keyboard.press("Space");
 
-    await expect(firstButton).toHaveClass(/bg-warning/u);
+    await expect.soft(firstButton).toHaveClass(/bg-warning/u);
   });
 });

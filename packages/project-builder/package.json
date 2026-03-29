@@ -6,7 +6,7 @@
     "tsup": "^8.5.1"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.8.6",
+    "@ethang/eslint-config": "^25.9.2",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.5.0",
     "eslint": "^10.1.0",
@@ -17,7 +17,7 @@
   "name": "@ethang/project-builder",
   "scripts": {
     "build": "bun build.ts",
-    "lint": "eslint . --fix && pnpm tsc --noEmit"
+    "lint": "eslint . --fix --cache && pnpm tsc --noEmit"
   },
   "type": "module",
   "version": "3.0.2"

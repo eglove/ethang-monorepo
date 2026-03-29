@@ -6,18 +6,20 @@ import {
   mockSignInSuccess,
 } from "../helpers/courses-auth-helpers.ts";
 
+const SIGN_IN_ERROR = "#sign-in-error";
+
 test.describe("sign-in page — keyboard user", () => {
   test("email field is focusable", async ({ page }) => {
     await page.goto(routes.signIn);
     await page.getByLabel("Email").focus();
-    await expect(page.getByLabel("Email")).toBeFocused();
+    await expect.soft(page.getByLabel("Email")).toBeFocused();
   });
 
   test("password field receives focus after email on Tab", async ({ page }) => {
     await page.goto(routes.signIn);
     await page.getByLabel("Email").focus();
     await page.keyboard.press("Tab");
-    await expect(page.getByLabel("Password")).toBeFocused();
+    await expect.soft(page.getByLabel("Password")).toBeFocused();
   });
 
   test("submit button receives focus after password on Tab", async ({
@@ -26,13 +28,15 @@ test.describe("sign-in page — keyboard user", () => {
     await page.goto(routes.signIn);
     await page.getByLabel("Password").focus();
     await page.keyboard.press("Tab");
-    await expect(page.getByRole("button", { name: "Submit" })).toBeFocused();
+    await expect
+      .soft(page.getByRole("button", { name: "Submit" }))
+      .toBeFocused();
   });
 
   test.describe("submit button key activation", () => {
     test.beforeEach(async ({ page }) => {
       await mockSignInSuccess(page);
-      await page.goto(routes.signIn, { waitUntil: "networkidle" });
+      await page.goto(routes.signIn, { waitUntil: "load" });
       // eslint-disable-next-line lodash/prefer-lodash-method
       await page.getByLabel("Email").fill("test@example.com");
       // eslint-disable-next-line lodash/prefer-lodash-method
@@ -40,14 +44,14 @@ test.describe("sign-in page — keyboard user", () => {
       await page.getByRole("button", { name: "Submit" }).focus();
     });
 
-    test("Enter submits the form", async ({ page }) => {
+    test("enter submits the form", async ({ page }) => {
       await page.keyboard.press("Enter");
-      await page.waitForURL("**/courses");
+      await expect.soft(page).toHaveURL(/courses/u);
     });
 
-    test("Space submits the form", async ({ page }) => {
+    test("space submits the form", async ({ page }) => {
       await page.keyboard.press("Space");
-      await page.waitForURL("**/courses");
+      await expect.soft(page).toHaveURL(/courses/u);
     });
   });
 
@@ -63,8 +67,8 @@ test.describe("sign-in page — keyboard user", () => {
     await page.getByLabel("Password").fill("wrong");
     await page.getByRole("button", { name: "Submit" }).click();
 
-    const errorElement = page.locator("#sign-in-error");
-    await expect(errorElement).toBeVisible();
-    await expect(errorElement).toHaveText("Failed to sign in");
+    const errorElement = page.locator(SIGN_IN_ERROR);
+    await expect.soft(errorElement).toBeVisible();
+    await expect.soft(errorElement).toHaveText("Failed to sign in");
   });
 });

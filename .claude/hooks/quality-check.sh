@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# Runs tests and lint scoped to the package containing the edited file.
+# Falls back to full recursive run if the file is outside apps/ or packages/.
+# Outputs hookSpecificOutput JSON so Claude sees failures and continues fixing.
+# On success, prompts Claude to review INTERNAL_MAP.md per progressive-mapper guidelines.
+
+set -uo pipefail
+
+FILE=$(jq -r '.tool_input.file_path')
+
+# Skip quality checks when editing the map itself — no need to re-run tests
+# for documentation-only changes to INTERNAL_MAP.md.
+if echo "$FILE" | grep -qE 'INTERNAL_MAP\.md$'; then
+  exit 0
+fi
+
+REL="${FILE#$CLAUDE_PROJECT_DIR/}"
+PKG=$(echo "$REL" | cut -d'/' -f1-2)
+
+# shellcheck disable=SC2164
+cd "$CLAUDE_PROJECT_DIR"
+
+if echo "$PKG" | grep -qE '^(apps|packages)/'; then
+  FILTER="./$PKG"
+  TEST_OUT=$(pnpm --filter "$FILTER" test 2>&1); TEST_CODE=$?
+  LINT_OUT=$(pnpm --filter "$FILTER" lint 2>&1); LINT_CODE=$?
+else
+  TEST_OUT=$(pnpm -r test 2>&1); TEST_CODE=$?
+  LINT_OUT=$(pnpm -r lint 2>&1); LINT_CODE=$?
+fi
+
+if [ "$TEST_CODE" -ne 0 ] || [ "$LINT_CODE" -ne 0 ]; then
+  TF=false; LF=false
+  [ "$TEST_CODE" -ne 0 ] && TF=true
+  [ "$LINT_CODE" -ne 0 ] && LF=true
+
+  jq -n \
+    --arg t "$TEST_OUT" \
+    --arg l "$LINT_OUT" \
+    --argjson tf "$TF" \
+    --argjson lf "$LF" \
+    '{
+      hookSpecificOutput: {
+        hookEventName: "PostToolUse",
+        additionalContext: (
+          (if $tf then "TESTS FAILED:\n" + $t + "\n\n" else "" end) +
+          (if $lf then "LINT FAILED:\n" + $l else "" end)
+        )
+      }
+    }'
+else
+  # Quality checks passed — prompt to maintain the progressive map.
+  jq -n '{
+    hookSpecificOutput: {
+      hookEventName: "PostToolUse",
+      additionalContext: "Quality checks passed.\n\nReview INTERNAL_MAP.md per progressive-mapper guidelines:\n- Add any non-obvious file connections or search hints discovered this session\n- Remove or correct any entries that are now stale or misleading\n- If nothing changed, leave it as-is"
+    }
+  }'
+fi

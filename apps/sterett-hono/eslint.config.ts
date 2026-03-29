@@ -1,5 +1,6 @@
 import htmlConfig from "@ethang/eslint-config/config.html.js";
 import config from "@ethang/eslint-config/config.main.js";
+import playwrightConfig from "@ethang/eslint-config/config.playwright.js";
 import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";
 import vitestConfig from "@ethang/eslint-config/config.vitest.js";
 import { defineConfig, globalIgnores } from "eslint/config";
@@ -20,9 +21,10 @@ export default defineConfig(
     "test-results",
   ]),
   ...config,
-  ...vitestConfig,
   ...htmlConfig,
   ...tailwindConfig(path.join(import.meta.dirname, "src", "index.css")),
+  ...vitestConfig,
+  ...playwrightConfig,
   {
     languageOptions: {
       parserOptions: {
