@@ -78,6 +78,10 @@ test.describe("sign-in form — submission behavior", () => {
         status: 200,
       });
     });
+    // Mock verify and tracking so the courses client does not delete the auth
+    // cookie after the redirect, leaving the page in an unexpected state.
+    await mockVerifyOk(axePage);
+    await mockTrackingApi(axePage, []);
 
     await axePage.goto(routes.signIn);
     await axePage.getByLabel("Email").fill(MOCK_EMAIL);
