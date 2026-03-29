@@ -14,5 +14,6 @@ export default defineConfig({
         statements: 59.57,
       },
     },
+    environment: "node",
   },
 });
