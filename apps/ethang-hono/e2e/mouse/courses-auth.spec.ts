@@ -18,17 +18,15 @@ const COMPLETION_BUTTON = ".course-completion-button";
 const HIDDEN_BUTTON = ".course-completion-button.hidden";
 
 const mockPutTracking = async (page: Page, tracking: Tracking) =>
-  page
-    .context()
-    .route(
-      new RegExp(`/api/course-tracking/${MOCK_USER_ID}/`, "u"),
-      async (route) =>
-        route.fulfill({
-          body: JSON.stringify({ data: tracking, status: 200 }),
-          contentType: "application/json",
-          status: 200,
-        }),
-    );
+  page.route(
+    new RegExp(`/api/course-tracking/${MOCK_USER_ID}/`, "u"),
+    async (route) =>
+      route.fulfill({
+        body: JSON.stringify({ data: tracking, status: 200 }),
+        contentType: "application/json",
+        status: 200,
+      }),
+  );
 
 test.describe("courses page — unauthenticated", () => {
   test("hides completion buttons and progress bar", async ({ axePage }) => {
@@ -123,19 +121,9 @@ test.describe("courses page — authenticated", () => {
 });
 
 test.describe("courses page — completion button interactions", () => {
-  // Playwright WebKit cannot intercept PUT requests to localhost — the network
-  // stack bypasses context/page-level route handlers for same-host PUT requests.
-  // These tests are fully covered by Chromium and Firefox; skipping on webkit
-  // avoids false failures caused by the confirmed Playwright limitation.
-
   test("clicking a completion button applies Revisit styling after API responds", async ({
     axePage,
-    browserName,
   }) => {
-    test.skip(
-      "webkit" === browserName,
-      "WebKit cannot intercept PUT to localhost",
-    );
     await mockVerifyOk(axePage);
     await mockTrackingApi(axePage, []);
     await mockPutTracking(axePage, {
@@ -156,12 +144,7 @@ test.describe("courses page — completion button interactions", () => {
 
   test("clicking a completion button applies Complete styling after API responds", async ({
     axePage,
-    browserName,
   }) => {
-    test.skip(
-      "webkit" === browserName,
-      "WebKit cannot intercept PUT to localhost",
-    );
     await mockVerifyOk(axePage);
     await mockTrackingApi(axePage, []);
     await mockPutTracking(axePage, {
@@ -182,12 +165,7 @@ test.describe("courses page — completion button interactions", () => {
 
   test("completion button is disabled and shows spinner while request is in flight", async ({
     axePage,
-    browserName,
   }) => {
-    test.skip(
-      "webkit" === browserName,
-      "WebKit cannot intercept PUT to localhost",
-    );
     await mockVerifyOk(axePage);
     await mockTrackingApi(axePage, []);
 
@@ -239,12 +217,7 @@ test.describe("courses page — completion button interactions", () => {
 
   test("progress bar percentages update after completion button click", async ({
     axePage,
-    browserName,
   }) => {
-    test.skip(
-      "webkit" === browserName,
-      "WebKit cannot intercept PUT to localhost",
-    );
     await mockVerifyOk(axePage);
     await mockTrackingApi(axePage, []);
     await mockPutTracking(axePage, {

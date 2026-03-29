@@ -51,13 +51,8 @@ test.describe("courses page — keyboard user (authenticated)", () => {
   });
 
   test("Enter on completion button triggers status update", async ({
-    browserName,
     page,
   }) => {
-    test.skip(
-      "webkit" === browserName,
-      "WebKit cannot intercept PUT to localhost",
-    );
     await mockCourseStatusUpdate(page, { id: "t2", status: "Complete" });
 
     const firstButton = page.locator(COMPLETION_BUTTON).first();
