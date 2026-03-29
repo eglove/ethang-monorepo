@@ -15,7 +15,7 @@ const customRules = [
 export const playwrightRules = genRules(ruleNames, customRules, "playwright");
 
 export const playwrightPlugin = new Plugin({
-  files: "**/*.spec.ts",
+  files: "**/*.spec.{ts,tsx,js,jsx,mjs,cjs}",
   importString: 'import playwright from "eslint-plugin-playwright";',
   name: "eslint-plugin-playwright",
   pluginName: "playwright",
