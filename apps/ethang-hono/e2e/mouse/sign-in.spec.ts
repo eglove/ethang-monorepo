@@ -8,6 +8,8 @@ import {
   MOCK_SESSION_TOKEN,
   mockSignInError,
   mockSignInSuccess,
+  mockTrackingApi,
+  mockVerifyOk,
 } from "../helpers/courses-auth-helpers.ts";
 import { expect, test } from "../index.ts";
 
@@ -32,6 +34,10 @@ test.describe("sign-in form — submission behavior", () => {
     axePage,
   }) => {
     await mockSignInSuccess(axePage);
+    // Mock the verify and tracking endpoints so the courses client does not
+    // delete the auth cookie when it checks the token after redirect.
+    await mockVerifyOk(axePage);
+    await mockTrackingApi(axePage, []);
 
     await axePage.goto(routes.signIn);
     await axePage.getByLabel("Email").fill(MOCK_EMAIL);

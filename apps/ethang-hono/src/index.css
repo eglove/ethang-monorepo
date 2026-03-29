@@ -43,6 +43,20 @@
   }
 }
 
+/* Midnight space semantic background tokens — used by course-completion.client.ts
+   to apply status-driven button backgrounds without raw Tailwind color references. */
+@utility bg-brand {
+  background-color: color-mix(in srgb, var(--color-sky-300) 10%, transparent);
+}
+
+@utility bg-warning {
+  background-color: color-mix(in srgb, #fbbf24 10%, transparent);
+}
+
+@utility bg-default {
+  background-color: var(--color-slate-700);
+}
+
 /* Ensure code blocks have readable color before highlight.js client-side script
    processes them — without this, text defaults to black on our dark background. */
 pre > code:not(.hljs) {

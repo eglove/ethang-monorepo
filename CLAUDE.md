@@ -121,6 +121,16 @@ await app.request("https://ethang.dev/courses");
 await app.request("https://ethang.dev/courses");
 ```
 
+## Feature Development Agents — Architecture, Exploration, and Review
+
+This guidance applies to any agent, subagent, or skill currently running. The `feature-dev` skill provides three specialized agents whose methods should supplement your own:
+
+- **`feature-dev:code-architect`** — designs feature architectures by analyzing existing codebase patterns, providing implementation blueprints with specific files to create/modify, component designs, data flows, and build sequences.
+- **`feature-dev:code-explorer`** — deeply analyzes existing features by tracing execution paths, mapping architecture layers, understanding abstractions, and documenting dependencies.
+- **`feature-dev:code-reviewer`** — reviews code for bugs, logic errors, security vulnerabilities, and adherence to project conventions using confidence-based filtering.
+
+When architecting, exploring, or reviewing code, use the methods from these agents in addition to your own. They can also be invoked directly via the Agent tool.
+
 ## Opportunistic Code Improvement
 
 When touching existing code, take the opportunity to improve it. Do not make changes for their own sake, but if you notice something in or near code you are already modifying, fix it:
