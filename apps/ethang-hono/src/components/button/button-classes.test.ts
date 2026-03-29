@@ -40,13 +40,21 @@ describe(getButtonClasses, () => {
   });
 
   describe("variant classes", () => {
-    it("default variant includes sky tinted classes", () => {
-      const classes = getButtonClasses("default");
+    it.each([
+      ["default", "bg-sky-300/10", "border-sky-300/30", "text-sky-300"],
+      ["success", "bg-green-400/10", "border-green-400/30", "text-green-400"],
+      ["danger", "bg-red-400/10", "border-red-400/30", "text-red-400"],
+      ["warning", "bg-amber-400/10", "border-amber-400/30", "text-amber-400"],
+    ] as const)(
+      "%s variant includes tinted classes",
+      (variant, bg, border, text) => {
+        const classes = getButtonClasses(variant);
 
-      expect(classes).toContain("bg-sky-300/10");
-      expect(classes).toContain("border-sky-300/30");
-      expect(classes).toContain("text-sky-300");
-    });
+        expect(classes).toContain(bg);
+        expect(classes).toContain(border);
+        expect(classes).toContain(text);
+      },
+    );
 
     it("secondary variant includes neutral classes", () => {
       const classes = getButtonClasses("secondary");
@@ -59,30 +67,6 @@ describe(getButtonClasses, () => {
       const classes = getButtonClasses("tertiary");
 
       expect(classes).toContain("bg-slate-800");
-    });
-
-    it("success variant includes success tinted classes", () => {
-      const classes = getButtonClasses("success");
-
-      expect(classes).toContain("bg-green-400/10");
-      expect(classes).toContain("border-green-400/30");
-      expect(classes).toContain("text-green-400");
-    });
-
-    it("danger variant includes danger tinted classes", () => {
-      const classes = getButtonClasses("danger");
-
-      expect(classes).toContain("bg-red-400/10");
-      expect(classes).toContain("border-red-400/30");
-      expect(classes).toContain("text-red-400");
-    });
-
-    it("warning variant includes warning tinted classes", () => {
-      const classes = getButtonClasses("warning");
-
-      expect(classes).toContain("bg-amber-400/10");
-      expect(classes).toContain("border-amber-400/30");
-      expect(classes).toContain("text-amber-400");
     });
 
     it("dark variant includes dark depth classes", () => {
@@ -116,23 +100,20 @@ describe(getButtonClasses, () => {
       expect(classes).toContain("py-2");
     });
 
-    it("lg size adds large padding and removes leading-5", () => {
-      const classes = getButtonClasses("default", "lg");
+    it.each([
+      ["lg", "px-5", "py-3"],
+      ["xl", "px-6", "py-3.5"],
+    ] as const)(
+      "%s size adds large padding and removes leading-5",
+      (size, px, py) => {
+        const classes = getButtonClasses("default", size);
 
-      expect(classes).toContain("px-5");
-      expect(classes).toContain("py-3");
-      expect(classes).toContain("text-base");
-      expect(classes).not.toContain("leading-5");
-    });
-
-    it("xl size adds extra-large padding and removes leading-5", () => {
-      const classes = getButtonClasses("default", "xl");
-
-      expect(classes).toContain("px-6");
-      expect(classes).toContain("py-3.5");
-      expect(classes).toContain("text-base");
-      expect(classes).not.toContain("leading-5");
-    });
+        expect(classes).toContain(px);
+        expect(classes).toContain(py);
+        expect(classes).toContain("text-base");
+        expect(classes).not.toContain("leading-5");
+      },
+    );
 
     it("xs size adds extra-small padding", () => {
       const classes = getButtonClasses("default", "xs");
