@@ -5,5 +5,6 @@ export const routes = {
   courses: "/courses",
   scrollbarGutter: "/tips/scrollbar-gutter",
   scrollContainers: "/tips/scroll-containers",
+  signIn: "/sign-in",
   tips: "/tips",
 };
