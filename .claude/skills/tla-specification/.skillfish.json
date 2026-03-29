@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "tla-specification",
+  "owner": "melodic-software",
+  "repo": "claude-code-plugins",
+  "path": "plugins/formal-specification/skills/tla-specification",
+  "branch": "main",
+  "sha": "1a5b20c8252bbf5bf0af422920177dabfa03837c",
+  "source": "manual"
+}
