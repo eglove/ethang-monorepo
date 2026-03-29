@@ -29,7 +29,7 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
     properties.description ?? "Messing around on the web sometimes.";
 
   return (
-    <html lang="en-US" class="dark bg-dark scroll-smooth">
+    <html lang="en-US" class="scroll-smooth">
       <head>
         <title>{title}</title>
         <meta charset="utf-8" />
