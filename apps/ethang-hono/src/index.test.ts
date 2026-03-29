@@ -35,10 +35,11 @@ vi.mock(import("./stores/course-path-store.ts"), () => {
 import { app } from "./index.tsx";
 import { BlogModel } from "./models/blog-model.ts";
 
+const BASE_URL = "https://ethang.dev/";
 const CONTENT_TYPE = "Content-Type";
+const COURSES_URL = "https://ethang.dev/courses";
 const RETURNS_200_HTML = "returns 200 with HTML";
 const TEXT_HTML = "text/html";
-const COURSES_URL = "https://ethang.dev/courses";
 
 const mockBlogModelWith = (
   getAllBlogs: ReturnType<typeof vi.fn>,
@@ -59,7 +60,7 @@ describe("app — www redirect", () => {
     const response = await app.request("https://www.ethang.dev/");
 
     expect(response.status).toBe(302);
-    expect(response.headers.get("Location")).toBe("https://ethang.dev/");
+    expect(response.headers.get("Location")).toBe(BASE_URL);
   });
 
   it("preserves pathname in redirect", async () => {
@@ -125,7 +126,7 @@ describe("app — static pages", () => {
   it(`home ${RETURNS_200_HTML}`, async () => {
     vi.clearAllMocks();
     mockBlogModelWith(vi.fn(), vi.fn());
-    const response = await app.request("https://ethang.dev/");
+    const response = await app.request(BASE_URL);
 
     expect(response.status).toBe(200);
     expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
@@ -209,6 +210,38 @@ describe("app — blog pages", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
+  });
+});
+
+describe("app — script loading", () => {
+  it("inlines script manifest JSON in head", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request(BASE_URL);
+    const html = await response.text();
+
+    expect(html).toContain('id="script-manifest"');
+  });
+
+  it("loads loader script with defer", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request(BASE_URL);
+    const html = await response.text();
+
+    expect(html).toContain('src="/scripts/loader.js"');
+    expect(html).toContain("defer");
+  });
+
+  it("does not emit individual module script tags for registered scripts", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(vi.fn(), vi.fn());
+    const response = await app.request(BASE_URL);
+    const html = await response.text();
+
+    expect(html).not.toContain(
+      'src="/scripts/components/navigation/navigation.client.js"',
+    );
   });
 });
 

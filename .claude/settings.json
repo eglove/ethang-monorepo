@@ -2,7 +2,7 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "TaskCompleted",
+        "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",

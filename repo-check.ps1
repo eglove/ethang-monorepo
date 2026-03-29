@@ -1,0 +1,1 @@
+pnpm -r prisma-gen && pnpm -r cf-typegen && pnpm -r build && pnpm -r test && pnpm -r lint && pnpm dedupe && pnpm store prune

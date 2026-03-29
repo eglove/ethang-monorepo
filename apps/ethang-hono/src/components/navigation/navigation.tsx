@@ -13,7 +13,10 @@ const navigationLinks = [
 
 export const Navigation = async () => {
   return (
-    <nav class="border-default bg-neutral-primary fixed inset-s-0 top-0 z-20 w-full border-b">
+    <nav
+      data-script="components/navigation/navigation"
+      class="border-default bg-neutral-primary fixed inset-s-0 top-0 z-20 w-full border-b"
+    >
       <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between p-4">
         <NavigationButton />
         <div id="navbar-default" class="hidden w-full md:block md:w-auto">

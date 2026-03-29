@@ -13,7 +13,6 @@ import { BlogModel } from "../../models/blog-model.ts";
 
 const RENDERS_FULL_HTML = "renders a full HTML document";
 import { coursePathData } from "../../stores/course-path-store.ts";
-import { globalStore } from "../../stores/global-store-properties.ts";
 import { Blog } from "./blog.tsx";
 import { Courses } from "./courses.tsx";
 import { Home } from "./home.tsx";
@@ -74,13 +73,10 @@ describe(SignIn, () => {
     expect(html).toContain('type="submit"');
   });
 
-  it("registers sign-in script", async () => {
-    globalStore.scripts = new Set();
-    const testApp = new Hono();
-    testApp.get("/", async (c) => c.html(<SignIn />));
-    await testApp.request("/");
+  it("declares sign-in script via data-script on the form", async () => {
+    const html = await render(<SignIn />);
 
-    expect(globalStore.scripts.has("components/routes/sign-in")).toBe(true);
+    expect(html).toContain('data-script="components/routes/sign-in"');
   });
 });
 
@@ -128,15 +124,12 @@ describe(Tips, () => {
 });
 
 describe(ScrollbarGutter, () => {
-  it("registers scrollbar-gutter script", async () => {
-    globalStore.scripts = new Set();
-    const testApp = new Hono();
-    testApp.get("/", async (c) => c.html(<ScrollbarGutter />));
-    await testApp.request("/");
+  it("declares scrollbar-gutter script via data-script on the demo container", async () => {
+    const html = await render(<ScrollbarGutter />);
 
-    expect(
-      globalStore.scripts.has("components/routes/tips/scrollbar-gutter"),
-    ).toBe(true);
+    expect(html).toContain(
+      'data-script="components/routes/tips/scrollbar-gutter"',
+    );
   });
 });
 
@@ -199,14 +192,11 @@ describe(Courses, () => {
     expect(html).toContain("Last Updated:");
   });
 
-  it("registers course-completion script", async () => {
-    globalStore.scripts = new Set();
-    const testApp = new Hono();
-    testApp.get("/", async (c) => c.html(<Courses />));
-    await testApp.request("/");
+  it("declares course-completion script via data-script on the courses container", async () => {
+    const html = await render(<Courses />);
 
-    expect(
-      globalStore.scripts.has("components/courses/course-completion"),
-    ).toBe(true);
+    expect(html).toContain(
+      'data-script="components/courses/course-completion"',
+    );
   });
 });

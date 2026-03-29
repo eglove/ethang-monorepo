@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 
-import { globalStore } from "../../stores/global-store-properties.ts";
 import { BlogLayout } from "./blog-layout.tsx";
 import { MainLayout, type MainLayoutProperties } from "./main-layout.tsx";
 
@@ -116,44 +115,25 @@ describe(MainLayout, () => {
     expect(html).toContain("My page content here");
   });
 
-  it("registers the navigation script before computing script tags", async () => {
-    globalStore.scripts = new Set();
-    await renderMain({ children: "" });
-
-    expect(globalStore.scripts.has("components/navigation/navigation")).toBe(
-      true,
-    );
-  });
-
-  it("registers the code client script", async () => {
-    globalStore.scripts = new Set();
-    await renderMain({ children: "" });
-
-    expect(globalStore.scripts.has("components/code")).toBe(true);
-  });
-
-  it("emits a module script tag for each registered script id", async () => {
-    globalStore.scripts = new Set([
-      "components/code",
-      "components/navigation/navigation",
-    ]);
+  it("inlines the script manifest as JSON", async () => {
     const html = await renderMain({ children: "" });
 
-    expect(html).toContain(
-      '<script type="module" src="/scripts/components/navigation/navigation.client.js">',
-    );
-    expect(html).toContain(
-      '<script type="module" src="/scripts/components/code.client.js">',
-    );
+    expect(html).toContain('id="script-manifest"');
+    expect(html).toContain('"components/code"');
+    expect(html).toContain('"components/navigation/navigation"');
   });
 
-  it("does not emit script tags for unregistered script ids", async () => {
-    globalStore.scripts = new Set();
+  it("loads the loader script with defer", async () => {
     const html = await renderMain({ children: "" });
 
-    expect(html).not.toContain(
-      '<script type="module" src="/scripts/components/course-completion.client.js">',
-    );
+    expect(html).toContain('src="/scripts/loader.js"');
+    expect(html).toContain("defer");
+  });
+
+  it("does not emit individual module script tags", async () => {
+    const html = await renderMain({ children: "" });
+
+    expect(html).not.toContain('type="module" src="/scripts/');
   });
 });
 

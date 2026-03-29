@@ -3,7 +3,6 @@ import { DateTime } from "luxon";
 
 import { coursePathData } from "../../stores/course-path-store.ts";
 import { globalStore } from "../../stores/global-store-properties.ts";
-import { registerScript } from "../../utilities/register-script.ts";
 import { CourseProgressBar } from "../courses/course-progress-bar.tsx";
 import { CoursesContainer } from "../courses/courses-container.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
@@ -13,8 +12,6 @@ import { P } from "../typography/p.tsx";
 import { YouTubeVideo } from "../you-tube-video.tsx";
 
 export const Courses = async () => {
-  registerScript(globalStore, "components/courses/course-completion");
-
   const { latestUpdate } = coursePathData;
 
   const formatted = DateTime.fromISO(
@@ -61,7 +58,7 @@ export const Courses = async () => {
             container: globalStore.isAuthenticated ? "" : "hidden",
           }}
         />
-        <div class="my-6">
+        <div class="my-6" data-script="components/courses/course-completion">
           <CoursesContainer />
         </div>
       </div>

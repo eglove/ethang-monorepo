@@ -14,6 +14,7 @@ type ButtonProperties = PropsWithChildren<{
   className?: string;
   command?: string;
   commandFor?: string;
+  "data-script"?: string;
   href?: string;
   id?: string;
   size?: ButtonSize;
@@ -44,7 +45,12 @@ export const Button = async (properties: ButtonProperties) => {
   }
 
   return (
-    <button id={id} type={type} class={twMerge(classes, className)}>
+    <button
+      id={id}
+      type={type}
+      class={twMerge(classes, className)}
+      data-script={properties["data-script"]}
+    >
       {children}
     </button>
   );

@@ -12,4 +12,10 @@ describe(Code, () => {
     expect(html).toContain('<code class="language-ts"');
     expect(html).toContain(CODE_CONTENT);
   });
+
+  it("declares its script dependency via data-script on the pre element", async () => {
+    const html = String(await Code({ children: CODE_CONTENT, language: "ts" }));
+
+    expect(html).toContain('data-script="components/code"');
+  });
 });

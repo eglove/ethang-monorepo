@@ -1037,6 +1037,7 @@ export default defineConfig(
               "influencers",
               "headspace",
               "PTSD",
+              "inlines",
             ],
           },
         },

@@ -1,11 +1,9 @@
 import type { PropsWithChildren } from "hono/jsx";
 
 import isNil from "lodash/isNil.js";
-import map from "lodash/map.js";
 import { twMerge } from "tailwind-merge";
 
-import { globalStore } from "../../stores/global-store-properties.ts";
-import { registerScript } from "../../utilities/register-script.ts";
+import { scriptManifest } from "../../generated/script-manifest.ts";
 import { Navigation } from "../navigation/navigation.tsx";
 
 export type MainLayoutProperties = PropsWithChildren<{
@@ -24,21 +22,11 @@ export type MainLayoutProperties = PropsWithChildren<{
 }>;
 
 export const MainLayout = async (properties: MainLayoutProperties) => {
-  registerScript(
-    globalStore,
-    "components/code",
-    "components/navigation/navigation",
-  );
-
   const title = isNil(properties.title)
     ? "EthanG"
     : `EthanG | ${properties.title}`;
   const description =
     properties.description ?? "Messing around on the web sometimes.";
-
-  const scriptTags = map([...globalStore.scripts], async (id) => (
-    <script type="module" src={`/scripts/${id}.client.js`}></script>
-  ));
 
   return (
     <html lang="en-US" class="dark bg-dark scroll-smooth">
@@ -100,7 +88,12 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         {!isNil(properties.updatedAt) && (
           <meta name="last-modified" content={properties.updatedAt} />
         )}
-        {scriptTags}
+        <script
+          id="script-manifest"
+          type="application/json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(scriptManifest) }}
+        />
+        <script defer src="/scripts/loader.js" />
       </head>
       <body id="body">
         <Navigation />

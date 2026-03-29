@@ -107,6 +107,7 @@ const customRules: CustomRules = [
             "influencers",
             "headspace",
             "PTSD",
+            "inlines",
           ],
         },
       },

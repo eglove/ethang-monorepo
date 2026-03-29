@@ -4,6 +4,10 @@
 
 Do not modify any ESLint configuration files (`eslint.config.*`, `.eslintrc.*`, `.eslintignore`, or any file that configures ESLint rules, plugins, or parsers) without explicit user permission. If a lint error seems to require a config change to resolve, stop and ask the user first.
 
+## Vitest Coverage Thresholds — Never Lower Without Permission
+
+Do not manually lower coverage threshold values in any `vitest.config.*` file. Thresholds are managed automatically by `autoUpdate: true`, which only raises them. If coverage drops below a threshold, find and add tests that cover the missing lines. Stop and ask the user before lowering any threshold value.
+
 ## CSpell — Unknown Words
 
 When a `cspell/spellchecker` error appears for a legitimate technical term, add the word to the shared list in `packages/eslint-config/src/setup/cspell.ts` and **notify the user** that `@ethang/eslint-config` needs to be published before the word will be recognized.
@@ -108,9 +112,9 @@ This applies to:
 
 If a branch of a conditional is "impossible," document why rather than leaving it implicit. Impossible states should be made unrepresentable in the type system where practical.
 
-## Test Files — No Repeated String Literals
+## No Repeated String Literals
 
-Any string literal that appears 3 or more times in a test file must be extracted to a named constant at the top of the file. This applies to URLs, content-type values, test description strings, and any other repeated literal.
+Any string literal that appears 3 or more times in any file must be extracted to a named constant at the top of the file. This applies to URLs, content-type values, test description strings, and any other repeated literal.
 
 ```ts
 // good

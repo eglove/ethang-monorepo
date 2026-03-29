@@ -119,6 +119,6 @@ Update-WranglerTypes -prefix "packages" -directories $packages
 
 # Return to root directory and run final commands
 Set-Location $scriptDir
-pnpm -r prisma-gen && pnpm -r cf-typegen && pnpm -r build && pnpm -r test && pnpm -r lint && pnpm dedupe && pnpm store prune
+./repo-check.ps1
 
 Write-Host "Bump process completed successfully!"

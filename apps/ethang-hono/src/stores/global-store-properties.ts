@@ -15,7 +15,6 @@ type GlobalStoreProperties = {
   locale: string;
   origin: string;
   pathname: string;
-  scripts: Set<string>;
   timezone: string;
 };
 
@@ -25,7 +24,6 @@ export class GlobalStore {
   public locale = "en-US";
   public origin = "https://ethang.dev";
   public pathname = "/";
-  public scripts = new Set<string>();
   public timezone = "UTC";
   public userId: null | string = null;
 
@@ -42,7 +40,6 @@ export class GlobalStore {
 
     this.origin = origin;
     this.pathname = pathname;
-    this.scripts = new Set<string>();
     this.timezone = timezone;
     this.locale = locale;
 
