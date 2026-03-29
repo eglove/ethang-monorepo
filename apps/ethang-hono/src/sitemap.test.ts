@@ -91,8 +91,8 @@ describe(sitemap, () => {
     const result = await sitemap();
     const locCount = (result.match(/<loc>/gu) ?? []).length;
 
-    // 5 static routes + 3 blogs
-    expect(locCount).toBe(8);
+    // 6 static routes + 3 blogs
+    expect(locCount).toBe(9);
   });
 
   it("generates valid URLs for blog entries", async () => {
