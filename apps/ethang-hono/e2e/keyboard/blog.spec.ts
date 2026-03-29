@@ -14,7 +14,7 @@ test.describe("blog listing page — keyboard user", () => {
   test("blog post links are keyboard accessible", async ({ page }) => {
     await page.goto(routes.blog);
 
-    const firstPostLink = page.getByRole("link").nth(1);
+    const firstPostLink = page.locator(`a[href^="${routes.blog}/"]`).first();
     await firstPostLink.focus();
     await expect(firstPostLink).toBeFocused();
     await page.keyboard.press("Enter");

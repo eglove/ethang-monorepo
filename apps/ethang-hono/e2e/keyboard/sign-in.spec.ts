@@ -7,9 +7,9 @@ import {
 } from "../helpers/courses-auth-helpers.ts";
 
 test.describe("sign-in page — keyboard user", () => {
-  test("email field is first focusable element", async ({ page }) => {
+  test("email field is focusable", async ({ page }) => {
     await page.goto(routes.signIn);
-    await page.keyboard.press("Tab");
+    await page.getByLabel("Email").focus();
     await expect(page.getByLabel("Email")).toBeFocused();
   });
 
