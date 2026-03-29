@@ -2,9 +2,9 @@
 import find from "lodash/find.js";
 
 import { routes } from "../../routes.ts";
+import { AUTH_SIGN_UP_URL } from "../helpers/courses-auth-helpers.ts";
 import { expect, test } from "../index.ts";
 
-const AUTH_SIGN_UP_URL = "https://auth.ethang.dev/sign-up";
 const MOCK_SESSION_TOKEN = "mock-session-token-value";
 const CONTENT_TYPE_JSON = "application/json";
 const MOCK_EMAIL = "test@example.com";
@@ -25,9 +25,9 @@ test("sign-in form has accessible email and password fields", async ({
 
 test.describe("sign-in form — submission behavior", () => {
   test("successful sign-in sets auth cookie and redirects to /courses", async ({
-    page,
+    axePage,
   }) => {
-    await page.context().route(AUTH_SIGN_UP_URL, async (route) =>
+    await axePage.context().route(AUTH_SIGN_UP_URL, async (route) =>
       route.fulfill({
         body: JSON.stringify({ sessionToken: MOCK_SESSION_TOKEN }),
         contentType: CONTENT_TYPE_JSON,
@@ -35,38 +35,38 @@ test.describe("sign-in form — submission behavior", () => {
       }),
     );
 
-    await page.goto(routes.signIn);
-    await page.getByLabel("Email").fill(MOCK_EMAIL);
-    await page.getByLabel("Password").fill("password123");
-    await page.getByRole("button", { name: "Submit" }).click();
+    await axePage.goto(routes.signIn);
+    await axePage.getByLabel("Email").fill(MOCK_EMAIL);
+    await axePage.getByLabel("Password").fill("password123");
+    await axePage.getByRole("button", { name: "Submit" }).click();
 
-    await page.waitForURL("**/courses");
+    await axePage.waitForURL("**/courses");
 
-    const cookies = await page.context().cookies();
+    const cookies = await axePage.context().cookies();
     const authCookie = find(cookies, (c) => "ethang-auth-token" === c.name);
     expect(authCookie?.value).toBe(MOCK_SESSION_TOKEN);
   });
 
-  test("failed sign-in shows error message", async ({ page }) => {
-    await page
+  test("failed sign-in shows error message", async ({ axePage }) => {
+    await axePage
       .context()
       .route(AUTH_SIGN_UP_URL, async (route) => route.fulfill({ status: 401 }));
 
-    await page.goto(routes.signIn);
-    await page.getByLabel("Email").fill(MOCK_EMAIL);
-    await page.getByLabel("Password").fill("wrong-password");
-    await page.getByRole("button", { name: "Submit" }).click();
+    await axePage.goto(routes.signIn);
+    await axePage.getByLabel("Email").fill(MOCK_EMAIL);
+    await axePage.getByLabel("Password").fill("wrong-password");
+    await axePage.getByRole("button", { name: "Submit" }).click();
 
-    const errorElement = page.locator("#sign-in-error");
+    const errorElement = axePage.locator("#sign-in-error");
     await expect(errorElement).toBeVisible();
     await expect(errorElement).toHaveText("Failed to sign in");
   });
 
   test("submit button is disabled while request is in flight", async ({
-    page,
+    axePage,
   }) => {
     let resolveRoute!: () => void;
-    await page.context().route(AUTH_SIGN_UP_URL, async (route) => {
+    await axePage.context().route(AUTH_SIGN_UP_URL, async (route) => {
       await new Promise<void>((resolve) => {
         resolveRoute = resolve;
       });
@@ -77,16 +77,16 @@ test.describe("sign-in form — submission behavior", () => {
       });
     });
 
-    await page.goto(routes.signIn);
-    await page.getByLabel("Email").fill(MOCK_EMAIL);
-    await page.getByLabel("Password").fill("password");
+    await axePage.goto(routes.signIn);
+    await axePage.getByLabel("Email").fill(MOCK_EMAIL);
+    await axePage.getByLabel("Password").fill("password");
 
-    const submitButton = page.getByRole("button", { name: "Submit" });
+    const submitButton = axePage.getByRole("button", { name: "Submit" });
     await submitButton.click();
 
     await expect(submitButton).toBeDisabled();
 
     resolveRoute();
-    await page.waitForURL("**/courses");
+    await axePage.waitForURL("**/courses");
   });
 });

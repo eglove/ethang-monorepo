@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 import { routes } from "../../routes.ts";
+import { AUTH_SIGN_UP_URL } from "../helpers/courses-auth-helpers.ts";
 
-const AUTH_SIGN_UP_URL = "https://auth.ethang.dev/sign-up";
 const MOCK_TOKEN = "mock-token";
 const CONTENT_TYPE_JSON = "application/json";
 

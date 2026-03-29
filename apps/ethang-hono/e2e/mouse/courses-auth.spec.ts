@@ -29,29 +29,29 @@ const mockPutTracking = async (page: Page, tracking: Tracking) =>
     );
 
 test.describe("courses page — unauthenticated", () => {
-  test("hides completion buttons and progress bar", async ({ page }) => {
-    await page.goto(routes.courses, { waitUntil: "networkidle" });
+  test("hides completion buttons and progress bar", async ({ axePage }) => {
+    await axePage.goto(routes.courses, { waitUntil: "networkidle" });
 
-    await expect(page.locator(HIDDEN_BUTTON).first()).not.toBeVisible();
-    await expect(page.locator(COMPLETION_BUTTON).first()).toHaveClass(
+    await expect(axePage.locator(HIDDEN_BUTTON).first()).not.toBeVisible();
+    await expect(axePage.locator(COMPLETION_BUTTON).first()).toHaveClass(
       /hidden/u,
     );
-    await expect(page.locator(PROGRESS_BAR)).not.toBeVisible();
+    await expect(axePage.locator(PROGRESS_BAR)).not.toBeVisible();
   });
 
-  test("shows sign-in prompt", async ({ page }) => {
-    await page.goto(routes.courses, { waitUntil: "networkidle" });
+  test("shows sign-in prompt", async ({ axePage }) => {
+    await axePage.goto(routes.courses, { waitUntil: "networkidle" });
 
     await expect(
-      page.getByRole("link", { name: "Sign In To Track Changes" }),
+      axePage.getByRole("link", { name: "Sign In To Track Changes" }),
     ).toBeVisible();
-    await expect(page.locator(SIGN_IN_PROMPT)).toBeVisible();
+    await expect(axePage.locator(SIGN_IN_PROMPT)).toBeVisible();
   });
 
-  test("hides Your Progress header", async ({ page }) => {
-    await page.goto(routes.courses, { waitUntil: "networkidle" });
+  test("hides Your Progress header", async ({ axePage }) => {
+    await axePage.goto(routes.courses, { waitUntil: "networkidle" });
 
-    await expect(page.locator(AUTH_HEADER)).not.toBeVisible();
+    await expect(axePage.locator(AUTH_HEADER)).not.toBeVisible();
   });
 });
 
@@ -70,37 +70,37 @@ test.describe("courses page — authenticated", () => {
     await page.goto(routes.courses, { waitUntil: "networkidle" });
   });
 
-  test("shows progress bar", async ({ page }) => {
-    await expect(page.locator(PROGRESS_BAR)).toBeVisible();
+  test("shows progress bar", async ({ axePage }) => {
+    await expect(axePage.locator(PROGRESS_BAR)).toBeVisible();
   });
 
-  test("hides sign-in prompt", async ({ page }) => {
-    await expect(page.locator(SIGN_IN_PROMPT)).not.toBeVisible();
+  test("hides sign-in prompt", async ({ axePage }) => {
+    await expect(axePage.locator(SIGN_IN_PROMPT)).not.toBeVisible();
   });
 
-  test("shows Your Progress header", async ({ page }) => {
-    await expect(page.locator(AUTH_HEADER)).toBeVisible();
+  test("shows Your Progress header", async ({ axePage }) => {
+    await expect(axePage.locator(AUTH_HEADER)).toBeVisible();
   });
 
-  test("reveals all completion buttons", async ({ page }) => {
-    await expect(page.locator(HIDDEN_BUTTON)).toHaveCount(0);
+  test("reveals all completion buttons", async ({ axePage }) => {
+    await expect(axePage.locator(HIDDEN_BUTTON)).toHaveCount(0);
   });
 
   test("applies Revisit status styling to tracked course button", async ({
-    page,
+    axePage,
   }) => {
-    const revisitButton = page.locator(
+    const revisitButton = axePage.locator(
       `${COMPLETION_BUTTON}[data-course-url="${MOCK_TRACKED_URL}"]`,
     );
     await expect(revisitButton).toHaveClass(/bg-warning/u);
   });
 
   test("applies Complete status styling to tracked course button", async ({
-    page,
+    axePage,
   }) => {
-    await page.context().unrouteAll({ behavior: "wait" });
-    await mockVerifyOk(page);
-    await mockTrackingApi(page, [
+    await axePage.context().unrouteAll({ behavior: "wait" });
+    await mockVerifyOk(axePage);
+    await mockTrackingApi(axePage, [
       {
         courseUrl: MOCK_TRACKED_URL,
         id: "t1",
@@ -108,9 +108,9 @@ test.describe("courses page — authenticated", () => {
         userId: MOCK_USER_ID,
       },
     ]);
-    await page.reload({ waitUntil: "networkidle" });
+    await axePage.reload({ waitUntil: "networkidle" });
 
-    const completeButton = page.locator(
+    const completeButton = axePage.locator(
       `${COMPLETION_BUTTON}[data-course-url="${MOCK_TRACKED_URL}"]`,
     );
     await expect(completeButton).toHaveClass(/bg-brand/u);
@@ -126,16 +126,16 @@ test.describe("courses page — completion button interactions", () => {
   });
 
   test("clicking a completion button applies Revisit styling after API responds", async ({
-    page,
+    axePage,
   }) => {
-    await mockPutTracking(page, {
+    await mockPutTracking(axePage, {
       courseUrl: MOCK_TRACKED_URL,
       id: "t2",
       status: "Revisit",
       userId: MOCK_USER_ID,
     });
 
-    const button = page.locator(COMPLETION_BUTTON).first();
+    const button = axePage.locator(COMPLETION_BUTTON).first();
     await button.click();
 
     await expect(button).toHaveClass(/bg-warning/u);
@@ -143,16 +143,16 @@ test.describe("courses page — completion button interactions", () => {
   });
 
   test("clicking a completion button applies Complete styling after API responds", async ({
-    page,
+    axePage,
   }) => {
-    await mockPutTracking(page, {
+    await mockPutTracking(axePage, {
       courseUrl: MOCK_TRACKED_URL,
       id: "t3",
       status: "Complete",
       userId: MOCK_USER_ID,
     });
 
-    const button = page.locator(COMPLETION_BUTTON).first();
+    const button = axePage.locator(COMPLETION_BUTTON).first();
     await button.click();
 
     await expect(button).toHaveClass(/bg-brand/u);
@@ -160,10 +160,10 @@ test.describe("courses page — completion button interactions", () => {
   });
 
   test("completion button is disabled and shows spinner while request is in flight", async ({
-    page,
+    axePage,
   }) => {
     let resolveRoute!: () => void;
-    await page
+    await axePage
       .context()
       .route(`**/api/course-tracking/${MOCK_USER_ID}/**`, async (route) => {
         await new Promise<void>((resolve) => {
@@ -184,7 +184,7 @@ test.describe("courses page — completion button interactions", () => {
         });
       });
 
-    const button = page.locator(COMPLETION_BUTTON).first();
+    const button = axePage.locator(COMPLETION_BUTTON).first();
     await button.click();
 
     await expect(button).toBeDisabled();
@@ -197,17 +197,17 @@ test.describe("courses page — completion button interactions", () => {
   });
 
   test("progress bar percentages update after completion button click", async ({
-    page,
+    axePage,
   }) => {
-    await mockPutTracking(page, {
+    await mockPutTracking(axePage, {
       courseUrl: MOCK_TRACKED_URL,
       id: "t5",
       status: "Complete",
       userId: MOCK_USER_ID,
     });
 
-    const completeProgress = page.locator("#complete-progress");
-    const button = page.locator(COMPLETION_BUTTON).first();
+    const completeProgress = axePage.locator("#complete-progress");
+    const button = axePage.locator(COMPLETION_BUTTON).first();
     await button.click();
 
     await expect(completeProgress).not.toHaveClass(/hidden/u);
@@ -216,32 +216,32 @@ test.describe("courses page — completion button interactions", () => {
 
 test.describe("courses page — stale cache regression", () => {
   test("hides auth UI when cookie removed after authenticated cache entry", async ({
-    page,
+    axePage,
   }) => {
-    await mockVerifyOk(page);
-    await mockTrackingApi(page, []);
-    await setAuthCookie(page);
-    await page.goto(routes.courses, { waitUntil: "networkidle" });
-    await expect(page.locator(PROGRESS_BAR)).toBeVisible();
+    await mockVerifyOk(axePage);
+    await mockTrackingApi(axePage, []);
+    await setAuthCookie(axePage);
+    await axePage.goto(routes.courses, { waitUntil: "networkidle" });
+    await expect(axePage.locator(PROGRESS_BAR)).toBeVisible();
 
-    await page.context().clearCookies();
-    await page.context().unrouteAll({ behavior: "wait" });
-    await page.goto(routes.courses, { waitUntil: "networkidle" });
+    await axePage.context().clearCookies();
+    await axePage.context().unrouteAll({ behavior: "wait" });
+    await axePage.goto(routes.courses, { waitUntil: "networkidle" });
 
-    await expect(page.locator(PROGRESS_BAR)).not.toBeVisible();
-    await expect(page.locator(SIGN_IN_PROMPT)).toBeVisible();
-    await expect(page.locator(COMPLETION_BUTTON).first()).toHaveClass(
+    await expect(axePage.locator(PROGRESS_BAR)).not.toBeVisible();
+    await expect(axePage.locator(SIGN_IN_PROMPT)).toBeVisible();
+    await expect(axePage.locator(COMPLETION_BUTTON).first()).toHaveClass(
       /hidden/u,
     );
   });
 
   test("shows auth UI and applies statuses when navigating from another page", async ({
-    page,
+    axePage,
   }) => {
-    await page.goto("/", { waitUntil: "networkidle" });
+    await axePage.goto("/", { waitUntil: "networkidle" });
 
-    await mockVerifyOk(page);
-    await mockTrackingApi(page, [
+    await mockVerifyOk(axePage);
+    await mockTrackingApi(axePage, [
       {
         courseUrl: MOCK_TRACKED_URL,
         id: "t1",
@@ -249,14 +249,14 @@ test.describe("courses page — stale cache regression", () => {
         userId: MOCK_USER_ID,
       },
     ]);
-    await setAuthCookie(page);
-    await page.goto(routes.courses, { waitUntil: "networkidle" });
+    await setAuthCookie(axePage);
+    await axePage.goto(routes.courses, { waitUntil: "networkidle" });
 
-    await expect(page.locator(PROGRESS_BAR)).toBeVisible();
-    await expect(page.locator(AUTH_HEADER)).toBeVisible();
-    await expect(page.locator(SIGN_IN_PROMPT)).not.toBeVisible();
+    await expect(axePage.locator(PROGRESS_BAR)).toBeVisible();
+    await expect(axePage.locator(AUTH_HEADER)).toBeVisible();
+    await expect(axePage.locator(SIGN_IN_PROMPT)).not.toBeVisible();
 
-    const revisitButton = page.locator(
+    const revisitButton = axePage.locator(
       `${COMPLETION_BUTTON}[data-course-url="${MOCK_TRACKED_URL}"]`,
     );
     await expect(revisitButton).toHaveClass(/bg-warning/u);

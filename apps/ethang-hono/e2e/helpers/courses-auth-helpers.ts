@@ -1,6 +1,8 @@
 import type { Page } from "@playwright/test";
 
 export const AUTH_VERIFY_URL = "https://auth.ethang.dev/verify";
+// The auth service uses /sign-up as its authentication endpoint (not /sign-in)
+export const AUTH_SIGN_UP_URL = "https://auth.ethang.dev/sign-up";
 export const MOCK_USER_ID = "test-user-regression-123";
 export const MOCK_TRACKED_URL =
   "https://frontendmasters.com/courses/deep-javascript-v3/";

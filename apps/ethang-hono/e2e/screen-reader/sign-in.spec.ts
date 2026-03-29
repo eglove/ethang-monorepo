@@ -2,9 +2,7 @@ import { nvdaTest as test } from "@guidepup/playwright";
 import { expect } from "@playwright/test";
 
 import { routes } from "../../routes.ts";
-
-// The auth service uses /sign-up as its authentication endpoint (not /sign-in)
-const AUTH_SIGN_UP_URL = "https://auth.ethang.dev/sign-up";
+import { AUTH_SIGN_UP_URL } from "../helpers/courses-auth-helpers.ts";
 
 test.describe("sign-in page — screen reader (NVDA)", () => {
   test("announces page heading", async ({ page, nvda }) => {
