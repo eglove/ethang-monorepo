@@ -38,7 +38,7 @@ export const updateWidget = (config?: {
     component: function component(): JSX.Element {
       return <UpdateWidget />;
     },
-    layout: config?.layout,
+    ...(config?.layout !== undefined && { layout: config.layout }),
     name: "update-widget",
   };
 };

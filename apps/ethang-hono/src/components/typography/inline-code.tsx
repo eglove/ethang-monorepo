@@ -10,7 +10,7 @@ export const InlineCode = async (properties: InlineCodeProperties) => {
   return (
     <code
       className={twMerge(
-        "relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold",
+        "relative rounded bg-slate-700 border border-slate-600 px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold text-sky-300",
         properties.className,
       )}
     >

@@ -1,15 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("flowbite"), () => ({}));
 vi.mock(import("@ethang/toolbelt/http/cookie.js"), () => ({
   getCookieValue: vi.fn().mockReturnValue(new Error("no cookie")),
 }));
 vi.mock(import("./models/blog-model.ts"), () => ({
   BlogModel: vi.fn(),
 }));
-vi.mock(import("./clients/sanity.ts"), () => ({
+vi.mock(import("./clients/sanity.ts"), (() => ({
   sanityClient: { fetch: vi.fn() },
-}));
+})) as never);
 vi.mock(import("./db/database.ts"), () => ({
   getDatabase: vi.fn(),
 }));

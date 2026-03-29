@@ -44,7 +44,7 @@ export const CoursesContainer = async () => {
   const counter = new Counter();
 
   return (
-    <ul class="text-body list-inside list-disc space-y-4">
+    <ul class="list-inside list-disc space-y-4 text-slate-200">
       {map(learningPaths, async (path) => {
         const names = split(path.name, ":");
         const [firstPart] = names;
@@ -54,26 +54,39 @@ export const CoursesContainer = async () => {
         return (
           <li>
             <span>
-              <a
-                href={path.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="underline underline-offset-2"
-              >
-                <span
-                  class={
-                    hasSecondPart ? "text-fg-purple" : "text-fg-warning-subtle"
-                  }
+              {!isNil(path.url) && (
+                <a
+                  href={path.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="underline underline-offset-2"
                 >
-                  {firstPart}
-                </span>
-                {hasSecondPart ? ":" : ""}
-                {hasSecondPart && (
-                  <span class="text-fg-warning-subtle">{secondPart}</span>
-                )}
-              </a>{" "}
+                  <span
+                    class={hasSecondPart ? "text-sky-300" : "text-amber-400/70"}
+                  >
+                    {firstPart}
+                  </span>
+                  {hasSecondPart ? ":" : ""}
+                  {hasSecondPart && (
+                    <span class="text-amber-400/70">{secondPart}</span>
+                  )}
+                </a>
+              )}
+              {isNil(path.url) && (
+                <>
+                  <span
+                    class={hasSecondPart ? "text-sky-300" : "text-amber-400/70"}
+                  >
+                    {firstPart}
+                  </span>
+                  {hasSecondPart ? ":" : ""}
+                  {hasSecondPart && (
+                    <span class="text-amber-400/70">{secondPart}</span>
+                  )}
+                </>
+              )}{" "}
               |{" "}
-              <span class="text-fg-brand-subtle">
+              <span class="text-slate-300">
                 {swebokFocusMap.get(path.swebokFocus)}
               </span>
             </span>

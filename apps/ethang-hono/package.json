@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
-    "@ethang/eslint-config": "^25.8.4",
+    "@ethang/eslint-config": "^25.8.6",
     "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.58.2",
     "@tailwindcss/cli": "^4.2.2",
@@ -54,7 +54,6 @@
     "tailwind": "tailwindcss -i ./src/index.css -o ./public/index.css --watch",
     "test": "pnpm test:vitest",
     "test:e2e": "playwright test",
-    "test:e2e:sr": "playwright test --config=playwright.screen-reader.config.ts",
     "test:vitest": "vitest run --coverage",
     "wrangler:dev": "wrangler dev"
   },

@@ -3,11 +3,11 @@ import { describe, expect, it, vi } from "vitest";
 
 const mockSanityFetch = vi.hoisted(() => vi.fn());
 
-vi.mock(import("../clients/sanity.ts"), () => ({
+vi.mock(import("../clients/sanity.ts"), (() => ({
   sanityClient: {
     fetch: mockSanityFetch,
   },
-}));
+})) as never);
 import { COURSE_TRACKING_STATUS } from "../utilities/constants.ts";
 import { CourseTracking } from "./course-tracking.ts";
 

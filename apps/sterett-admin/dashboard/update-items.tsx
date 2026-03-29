@@ -80,7 +80,10 @@ export const UpdateItems = () => {
     <>
       {map(items, (item) => {
         return (
-          <UpdateItem key={item.id} date={item.date}>
+          <UpdateItem
+            key={item.id}
+            {...(item.date !== undefined && { date: item.date })}
+          >
             {item.children}
           </UpdateItem>
         );

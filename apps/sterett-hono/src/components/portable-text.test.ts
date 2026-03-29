@@ -4,6 +4,7 @@ import { renderPortableText } from "../test-utils/render.tsx";
 
 describe("portableText", () => {
   it("renders a prose div when content is undefined", async () => {
+    // @ts-expect-error testing
     const html = await renderPortableText();
 
     expect(html).toContain("prose");

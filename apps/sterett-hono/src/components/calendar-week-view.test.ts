@@ -1,10 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 
-// @ts-expect-error ignore
+// @ts-expect-error mock
 vi.mock(import("../clients/sanity-client.ts"), () => ({
-  NO_DRAFTS: "!(_id in path('drafts.**'))",
+  NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
   sanityImage: { image: () => ({}) },
-  sterettSanityClient: { fetch: vi.fn() },
+  sterettSanityClient: {
+    fetch: vi.fn(),
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
 }));
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";

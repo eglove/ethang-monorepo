@@ -1,11 +1,14 @@
+import { globalStore } from "../../stores/global-store-properties.ts";
 import { DEPLOY_TIME } from "../../utilities/deploy-info.ts";
 import { MainLayout } from "../layouts/main-layout.tsx";
 import { H1 } from "../typography/h1.tsx";
 import { P } from "../typography/p.tsx";
 
 export const SignIn = async () => {
+  const { pathname } = globalStore;
+
   return (
-    <MainLayout updatedAt={DEPLOY_TIME}>
+    <MainLayout pathname={pathname} updatedAt={DEPLOY_TIME}>
       <H1>Sign In</H1>
       <form
         id="sign-in-form"
@@ -14,7 +17,7 @@ export const SignIn = async () => {
       >
         <div class="mb-5">
           <label for="email">
-            <span class="text-heading mb-2.5 block text-sm font-medium">
+            <span class="mb-2.5 block text-sm font-medium text-slate-100">
               Email
             </span>
             <input
@@ -24,13 +27,13 @@ export const SignIn = async () => {
               type="email"
               autocomplete="email"
               placeholder="name@gmail.com"
-              class="rounded-base border-default-medium bg-neutral-secondary-medium text-heading placeholder:text-body focus:border-brand focus:ring-brand block w-full border px-3 py-2.5 text-sm shadow-xs"
+              class="block w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 transition-colors placeholder:text-slate-300 focus:border-sky-300 focus:ring-2 focus:ring-sky-300/15 focus:outline-none"
             />
           </label>
         </div>
         <div class="mb-5">
           <label for="password">
-            <span class="text-heading mb-2.5 block text-sm font-medium">
+            <span class="mb-2.5 block text-sm font-medium text-slate-100">
               Password
             </span>
             <input
@@ -40,20 +43,20 @@ export const SignIn = async () => {
               type="password"
               placeholder="••••••••"
               autocomplete="current-password"
-              class="rounded-base border-default-medium bg-neutral-secondary-medium text-heading placeholder:text-body focus:border-brand focus:ring-brand block w-full border px-3 py-2.5 text-sm shadow-xs"
+              class="block w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 transition-colors placeholder:text-slate-300 focus:border-sky-300 focus:ring-2 focus:ring-sky-300/15 focus:outline-none"
             />
           </label>
         </div>
         <button
           type="submit"
           id="sign-in-button"
-          class="rounded-base bg-brand hover:bg-brand-strong focus:ring-brand-medium disabled:bg-fg-disabled box-border cursor-pointer border border-transparent px-4 py-2.5 text-sm leading-5 font-medium text-white shadow-xs focus:ring-4 focus:outline-none disabled:cursor-default"
+          class="box-border w-full cursor-pointer rounded-lg border border-sky-300/30 bg-sky-300/10 px-4 py-2.5 text-sm leading-5 font-medium text-sky-300 transition-colors hover:border-sky-300/50 hover:bg-sky-300/20 focus:ring-4 focus:ring-sky-300/30 focus:outline-none disabled:cursor-default disabled:opacity-40"
         >
           Submit
         </button>
       </form>
       <div class="mx-auto mt-2 max-w-sm">
-        <P id="sign-in-error" className="text-danger"></P>
+        <P id="sign-in-error" className="text-red-400"></P>
       </div>
     </MainLayout>
   );

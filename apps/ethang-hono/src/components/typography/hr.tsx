@@ -1,3 +1,3 @@
 export const HR = async () => {
-  return <hr class="bg-neutral-quaternary my-8 h-px border-0" />;
+  return <hr class="my-8 h-px border-0 bg-slate-600" />;
 };

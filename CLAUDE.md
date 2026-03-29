@@ -27,6 +27,8 @@ Tests live alongside the code they cover. Use Vitest for all packages in this mo
 
 ## Domain-Driven Design (DDD) — Business Logic
 
+See @~/.claude/skills/ddd-architect/SKILL.md for the full DDD architecture methodology.
+
 Apply to all backend/domain logic, regardless of what framework delivers it.
 
 - Organize around domain concepts, not technical layers
@@ -36,9 +38,11 @@ Apply to all backend/domain logic, regardless of what framework delivers it.
 
 ## Atomic & Component-Driven Design — UI
 
-See @.claude/skills/atomic-design-planning/SKILL.md for the full methodology, hierarchy, and rules.
+See @~/.claude/skills/atomic-design-planning/SKILL.md for the full methodology, hierarchy, and rules.
 
 ## Behavior-Driven Development (BDD) — UI
+
+See @~/.claude/skills/doc-bdd/SKILL.md for the full BDD methodology and test structure.
 
 Apply to all UI code, regardless of whether it is delivered by a dedicated frontend app or server-rendered.
 
@@ -85,6 +89,8 @@ The array form avoids ambiguity when keys contain dots and makes numeric indices
 
 ## State Machine Mindset — Enumerate All States
 
+See @~/.claude/skills/tla-specification/SKILL.md for formal state machine specification with TLA+.
+
 Before implementing any feature, enumerate the possible states explicitly. You do not need to use XState or TLA+ tooling, but reason as if you were modeling a state machine:
 
 - What are all the states this can be in? (idle, loading, success, error, partial, stale, etc.)
@@ -115,20 +121,15 @@ await app.request("https://ethang.dev/courses");
 await app.request("https://ethang.dev/courses");
 ```
 
-## WebStorm MCP Server — Prefer Over Built-in Tools
+## Feature Development Agents — Architecture, Exploration, and Review
 
-When the WebStorm MCP server (`mcp__webstorm__*`) is available, prefer its tools over the built-in equivalents for all file and project operations:
+This guidance applies to any agent, subagent, or skill currently running. The `feature-dev` skill provides three specialized agents whose methods should supplement your own:
 
-- **File search** — use `mcp__webstorm__find_files_by_glob` or `mcp__webstorm__find_files_by_name_keyword` instead of Glob
-- **Content search** — use `mcp__webstorm__search_in_files_by_text` or `mcp__webstorm__search_in_files_by_regex` instead of Grep
-- **File reading** — use `mcp__webstorm__read_file` or `mcp__webstorm__get_file_text_by_path` instead of Read; the MCP server can read any file in the project, so always prefer it over the built-in Read tool
-- **File editing** — use `mcp__webstorm__replace_text_in_file` instead of Edit or Write
-- **Terminal commands** — use `mcp__webstorm__execute_terminal_command` instead of Bash
-- **Run configurations** — use `mcp__webstorm__execute_run_configuration` to run builds, tests, and scripts
-- **Symbol lookup** — use `mcp__webstorm__get_symbol_info` or `mcp__webstorm__search_symbol` for navigating code
-- **Diagnostics** — use `mcp__webstorm__get_file_problems` for lint and type errors
+- **`feature-dev:code-architect`** — designs feature architectures by analyzing existing codebase patterns, providing implementation blueprints with specific files to create/modify, component designs, data flows, and build sequences.
+- **`feature-dev:code-explorer`** — deeply analyzes existing features by tracing execution paths, mapping architecture layers, understanding abstractions, and documenting dependencies.
+- **`feature-dev:code-reviewer`** — reviews code for bugs, logic errors, security vulnerabilities, and adherence to project conventions using confidence-based filtering.
 
-Use any other `mcp__webstorm__*` tool it exposes when it is the most direct way to accomplish the task. Fall back to built-in tools only when the MCP server does not expose the needed capability.
+When architecting, exploring, or reviewing code, use the methods from these agents in addition to your own. They can also be invoked directly via the Agent tool.
 
 ## Opportunistic Code Improvement
 
@@ -142,3 +143,12 @@ When touching existing code, take the opportunity to improve it. Do not make cha
 - Align structure with the patterns described in this file
 
 Scope improvements to the code you are already reading or modifying. Do not refactor entire files unprompted.
+
+## Persistent Instructions: Progressive Mapping
+
+You are tasked with reducing future search latency. Every time you successfully trace a bug or implement a feature:
+1. **Internalize the Map:** Update your mental model of the project's "Functional Traces."
+2. **Leave Breadcrumbs:** If you find a connection between files that isn't obvious from the directory structure, document it immediately in `INTERNAL_MAP.md`.
+3. **Search Heuristics:** If you find that `grep` failed but a specific keyword worked, record that "Search Hint" for your future self.
+
+**Objective:** Minimize the number of `read_file` calls required for the next agent who works on this module.

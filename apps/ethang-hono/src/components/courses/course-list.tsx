@@ -44,13 +44,13 @@ export const CourseList = async (properties: CourseListProperties) => {
               title="Update course status"
               aria-label="Update course status"
               class={twMerge(
-                "course-completion-button size-6 cursor-pointer self-center rounded-sm border border-default-medium text-brand focus:ring-brand",
+                "course-completion-button size-6 cursor-pointer self-center rounded-sm border border-slate-600 text-sky-300 focus:ring-sky-300/20",
                 COURSE_TRACKING_STATUS.INCOMPLETE === courseData?.status &&
-                  "bg-neutral-secondary-medium",
+                  "bg-slate-700",
                 COURSE_TRACKING_STATUS.COMPLETE === courseData?.status &&
-                  "bg-brand",
+                  "bg-sky-300",
                 COURSE_TRACKING_STATUS.REVISIT === courseData?.status &&
-                  "bg-warning",
+                  "bg-amber-400",
                 !globalStore.isAuthenticated && "hidden",
               )}
             />

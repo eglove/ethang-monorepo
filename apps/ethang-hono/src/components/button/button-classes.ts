@@ -10,11 +10,6 @@ export type ButtonVariant =
   | "tertiary"
   | "warning";
 
-const borderTransparent = "border-transparent";
-const boxBorder = "box-border";
-const textWhite = "text-white";
-const focusRingNeutralTertiary = "focus:ring-neutral-tertiary";
-
 const baseClasses = new Set([
   "border",
   "cursor-pointer",
@@ -24,88 +19,85 @@ const baseClasses = new Set([
   "leading-5",
   "px-4",
   "py-2.5",
-  "rounded-base",
+  "rounded-lg",
   "text-sm",
+  "transition-colors",
 ]);
 
 const defaultClasses = new Set([
-  "bg-brand",
-  borderTransparent,
-  boxBorder,
-  "focus:ring-brand-medium",
-  "hover:bg-brand-strong",
-  "shadow-xs",
-  textWhite,
+  "bg-sky-300/10",
+  "border-sky-300/30",
+  "focus:ring-sky-300/30",
+  "hover:bg-sky-300/20",
+  "hover:border-sky-300/50",
+  "text-sky-300",
 ]);
 
+const FOCUS_RING_SLATE_400 = "focus:ring-slate-400/30";
+const TEXT_SLATE_200 = "text-slate-200";
+const HOVER_BORDER_SLATE_500 = "hover:border-slate-500";
+
 const secondaryClasses = new Set([
-  "bg-neutral-secondary-medium",
-  "border-default-medium",
-  boxBorder,
-  focusRingNeutralTertiary,
-  "hover:bg-neutral-tertiary-medium",
-  "hover:text-heading",
-  "shadow-xs",
-  "text-body",
+  "bg-slate-700",
+  "border-slate-500",
+  FOCUS_RING_SLATE_400,
+  "hover:bg-slate-600",
+  "hover:border-slate-400",
+  TEXT_SLATE_200,
 ]);
 
 const tertiaryClasses = new Set([
-  "bg-neutral-primary-soft",
-  "border-default",
-  "focus:ring-neutral-tertiary-soft",
-  "hover:bg-neutral-secondary-medium",
-  "hover:text-heading",
-  "shadow-xs",
-  "text-body",
+  "bg-slate-800",
+  "border-slate-600",
+  FOCUS_RING_SLATE_400,
+  HOVER_BORDER_SLATE_500,
+  "hover:bg-slate-700",
+  TEXT_SLATE_200,
 ]);
 
 const successClasses = new Set([
-  "bg-success",
-  borderTransparent,
-  boxBorder,
-  "focus:ring-success-medium",
-  "hover:bg-success-strong",
-  "shadow-xs",
-  textWhite,
+  "bg-green-400/10",
+  "border-green-400/30",
+  "focus:ring-green-400/30",
+  "hover:bg-green-400/20",
+  "hover:border-green-400/50",
+  "text-green-400",
 ]);
 
 const dangerClasses = new Set([
-  "bg-danger",
-  borderTransparent,
-  boxBorder,
-  "focus:ring-danger-medium",
-  "hover:bg-danger-strong",
-  "shadow-xs",
-  textWhite,
+  "bg-red-400/10",
+  "border-red-400/30",
+  "focus:ring-red-400/30",
+  "hover:bg-red-400/20",
+  "hover:border-red-400/50",
+  "text-red-400",
 ]);
 
 const warningClasses = new Set([
-  "bg-warning",
-  borderTransparent,
-  boxBorder,
-  "focus:ring-warning-medium",
-  "hover:bg-warning-strong",
-  "shadow-xs",
-  textWhite,
+  "bg-amber-400/10",
+  "border-amber-400/30",
+  "focus:ring-amber-400/30",
+  "hover:bg-amber-400/20",
+  "hover:border-amber-400/50",
+  "text-amber-400",
 ]);
 
 const darkClasses = new Set([
-  "bg-dark",
-  borderTransparent,
-  boxBorder,
-  focusRingNeutralTertiary,
-  "hover:bg-dark-strong",
-  "shadow-xs",
-  textWhite,
+  "bg-slate-900",
+  "border-slate-600",
+  FOCUS_RING_SLATE_400,
+  HOVER_BORDER_SLATE_500,
+  "hover:bg-slate-800",
+  "text-slate-100",
 ]);
 
 const ghostClasses = new Set([
   "bg-transparent",
-  borderTransparent,
-  boxBorder,
-  focusRingNeutralTertiary,
-  "hover:bg-neutral-secondary-medium",
-  "text-heading",
+  "border-transparent",
+  FOCUS_RING_SLATE_400,
+  HOVER_BORDER_SLATE_500,
+  "hover:bg-slate-700",
+  TEXT_SLATE_200,
 ]);
 
 const extraSmallClasses = new Set(["px-3", "py-1.5", "text-xs"]);

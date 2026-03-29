@@ -8,15 +8,16 @@ const NOW = new Date("2024-06-15T12:00:00.000Z");
 
 const makeEvent = (
   overrides: Partial<CalendarEventReturn> = {},
-): CalendarEventReturn => ({
-  _id: "e1",
+): CalendarEventReturn =>
+  ({
+    _id: "e1",
 
-  description: undefined as never,
-  endsAt: "2024-06-15T14:00:00.000Z",
-  startsAt: "2024-06-15T13:00:00.000Z",
-  title: "Board Meeting",
-  ...overrides,
-});
+    description: undefined as never,
+    endsAt: "2024-06-15T14:00:00.000Z",
+    startsAt: "2024-06-15T13:00:00.000Z",
+    title: "Board Meeting",
+    ...overrides,
+  }) as CalendarEventReturn;
 
 describe("calendarEvent", () => {
   it('shows "Happening Now!" for an active event', async () => {

@@ -6,13 +6,13 @@ type LinkedInSvgProperties = {
 export const LinkedInSvg = async (properties: LinkedInSvgProperties) => {
   return (
     <svg
+      class="h-6 w-6"
       aria-hidden="true"
       fill="currentColor"
       viewBox="0 0 24 24"
       width={properties.width ?? 24}
       height={properties.height ?? 24}
       xmlns="http://www.w3.org/2000/svg"
-      class="h-6 w-6 text-gray-800 dark:text-white"
     >
       <path
         clip-rule="evenodd"

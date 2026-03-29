@@ -2,11 +2,11 @@ import { faker } from "@faker-js/faker";
 import get from "lodash/get.js";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("../clients/sanity.ts"), () => ({
+vi.mock(import("../clients/sanity.ts"), (() => ({
   sanityClient: {
     fetch: vi.fn(),
   },
-}));
+})) as never);
 
 import { sanityClient } from "../clients/sanity.ts";
 import { BlogModel } from "./blog-model.ts";

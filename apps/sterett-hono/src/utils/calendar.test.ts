@@ -1,6 +1,5 @@
 import every from "lodash/every.js";
 import filter from "lodash/filter.js";
-import get from "lodash/get.js";
 import { describe, expect, it } from "vitest";
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
@@ -528,14 +527,14 @@ describe(getViewDateRange, () => {
     );
 
     const firstCellKey = toDateKey(
-      get(firstCell, ["year"]),
-      get(firstCell, ["month"]),
-      get(firstCell, ["day"]),
+      firstCell?.year ?? 0,
+      firstCell?.month ?? 0,
+      firstCell?.day ?? 0,
     );
     const lastCellKey = toDateKey(
-      get(lastCell, ["year"]),
-      get(lastCell, ["month"]),
-      get(lastCell, ["day"]),
+      lastCell?.year ?? 0,
+      lastCell?.month ?? 0,
+      lastCell?.day ?? 0,
     );
 
     expect(Date.parse(firstCellKey)).toBeGreaterThanOrEqual(

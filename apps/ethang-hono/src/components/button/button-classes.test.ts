@@ -9,8 +9,6 @@ import {
   getButtonClasses,
 } from "./button-classes.ts";
 
-const TEXT_WHITE = "text-white";
-
 describe(getButtonClasses, () => {
   const variants: ButtonVariant[] = [
     "danger",
@@ -37,64 +35,52 @@ describe(getButtonClasses, () => {
       expect(classes).toContain("border");
       expect(classes).toContain("cursor-pointer");
       expect(classes).toContain("font-medium");
-      expect(classes).toContain("rounded-base");
+      expect(classes).toContain("rounded-lg");
     }
   });
 
   describe("variant classes", () => {
-    it("default variant includes brand classes", () => {
-      const classes = getButtonClasses("default");
+    it.each([
+      ["default", "bg-sky-300/10", "border-sky-300/30", "text-sky-300"],
+      ["success", "bg-green-400/10", "border-green-400/30", "text-green-400"],
+      ["danger", "bg-red-400/10", "border-red-400/30", "text-red-400"],
+      ["warning", "bg-amber-400/10", "border-amber-400/30", "text-amber-400"],
+    ] as const)(
+      "%s variant includes tinted classes",
+      (variant, bg, border, text) => {
+        const classes = getButtonClasses(variant);
 
-      expect(classes).toContain("bg-brand");
-      expect(classes).toContain(TEXT_WHITE);
-    });
+        expect(classes).toContain(bg);
+        expect(classes).toContain(border);
+        expect(classes).toContain(text);
+      },
+    );
 
     it("secondary variant includes neutral classes", () => {
       const classes = getButtonClasses("secondary");
 
-      expect(classes).toContain("bg-neutral-secondary-medium");
-      expect(classes).toContain("text-body");
+      expect(classes).toContain("bg-slate-700");
+      expect(classes).toContain("text-slate-200");
     });
 
     it("tertiary variant includes soft neutral classes", () => {
       const classes = getButtonClasses("tertiary");
 
-      expect(classes).toContain("bg-neutral-primary-soft");
+      expect(classes).toContain("bg-slate-800");
     });
 
-    it("success variant includes success color classes", () => {
-      const classes = getButtonClasses("success");
-
-      expect(classes).toContain("bg-success");
-      expect(classes).toContain(TEXT_WHITE);
-    });
-
-    it("danger variant includes danger color classes", () => {
-      const classes = getButtonClasses("danger");
-
-      expect(classes).toContain("bg-danger");
-      expect(classes).toContain(TEXT_WHITE);
-    });
-
-    it("warning variant includes warning color classes", () => {
-      const classes = getButtonClasses("warning");
-
-      expect(classes).toContain("bg-warning");
-      expect(classes).toContain(TEXT_WHITE);
-    });
-
-    it("dark variant includes dark color classes", () => {
+    it("dark variant includes dark depth classes", () => {
       const classes = getButtonClasses("dark");
 
-      expect(classes).toContain("bg-dark");
-      expect(classes).toContain(TEXT_WHITE);
+      expect(classes).toContain("bg-slate-900");
+      expect(classes).toContain("text-slate-100");
     });
 
-    it("ghost variant includes transparent background", () => {
+    it("ghost variant includes transparent background and slate text", () => {
       const classes = getButtonClasses("ghost");
 
       expect(classes).toContain("bg-transparent");
-      expect(classes).toContain("text-heading");
+      expect(classes).toContain("text-slate-200");
     });
   });
 
@@ -114,23 +100,20 @@ describe(getButtonClasses, () => {
       expect(classes).toContain("py-2");
     });
 
-    it("lg size adds large padding and removes leading-5", () => {
-      const classes = getButtonClasses("default", "lg");
+    it.each([
+      ["lg", "px-5", "py-3"],
+      ["xl", "px-6", "py-3.5"],
+    ] as const)(
+      "%s size adds large padding and removes leading-5",
+      (size, px, py) => {
+        const classes = getButtonClasses("default", size);
 
-      expect(classes).toContain("px-5");
-      expect(classes).toContain("py-3");
-      expect(classes).toContain("text-base");
-      expect(classes).not.toContain("leading-5");
-    });
-
-    it("xl size adds extra-large padding and removes leading-5", () => {
-      const classes = getButtonClasses("default", "xl");
-
-      expect(classes).toContain("px-6");
-      expect(classes).toContain("py-3.5");
-      expect(classes).toContain("text-base");
-      expect(classes).not.toContain("leading-5");
-    });
+        expect(classes).toContain(px);
+        expect(classes).toContain(py);
+        expect(classes).toContain("text-base");
+        expect(classes).not.toContain("leading-5");
+      },
+    );
 
     it("xs size adds extra-small padding", () => {
       const classes = getButtonClasses("default", "xs");

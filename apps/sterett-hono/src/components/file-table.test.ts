@@ -4,14 +4,15 @@ import type { FileRecord } from "../sanity/get-files.ts";
 
 import { renderFileTable } from "../test-utils/render.tsx";
 
-const makeFile = (overrides: Partial<FileRecord> = {}): FileRecord => ({
-  _id: "file-1",
-  category: "General",
-  date: "2024-03-15T12:00:00.000Z",
-  file: { asset: { url: "https://cdn.sanity.io/test.pdf" } },
-  title: "Test Document",
-  ...overrides,
-});
+const makeFile = (overrides: Partial<FileRecord> = {}): FileRecord =>
+  ({
+    _id: "file-1",
+    category: "General",
+    date: "2024-03-15T12:00:00.000Z",
+    file: { asset: { url: "https://cdn.sanity.io/test.pdf" } },
+    title: "Test Document",
+    ...overrides,
+  }) as FileRecord;
 
 describe("fileTable", () => {
   it("renders the section title", async () => {

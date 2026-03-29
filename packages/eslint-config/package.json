@@ -51,6 +51,7 @@
     "lodash": "^4.17.23",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2",
+    "vite": "^8.0.3",
     "vitest": "^4.1.2",
     "zod": "^4.3.6"
   },
@@ -70,5 +71,5 @@
     "test:watch": "vitest --coverage"
   },
   "type": "module",
-  "version": "25.8.4"
+  "version": "25.8.6"
 }

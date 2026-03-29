@@ -19,6 +19,7 @@ const formattedDateTime = (dateTime: string) => {
 };
 
 export const Blog = async () => {
+  const { pathname } = globalStore;
   const blogModel = new BlogModel();
   const blogs = await blogModel.getAllBlogs();
   const latestBlog = maxBy(blogs, "_updatedAt");
@@ -26,6 +27,7 @@ export const Blog = async () => {
   return (
     <BlogLayout
       title="Blog"
+      pathname={pathname}
       description="Ethan Glover's blog."
       updatedAt={latestBlog?._updatedAt}
       publishedAt={latestBlog?._createdAt}
@@ -33,8 +35,8 @@ export const Blog = async () => {
       <div class="flex flex-col items-center justify-center gap-2">
         <H1>Blog</H1>
         <Link
+          className="text-sm text-slate-300"
           href="https://ethang.dev/blogRss.xml"
-          className="text-fg-brand-subtle text-sm"
         >
           RSS Feed
         </Link>
@@ -46,15 +48,15 @@ export const Blog = async () => {
               <div
                 class={twMerge(
                   "text-base uppercase",
-                  "Dev Reads" === blog.blogCategory.title && "text-fg-brand",
-                  "Blog" === blog.blogCategory.title && "text-fg-purple",
+                  "Dev Reads" === blog.blogCategory.title && "text-sky-300",
+                  "Blog" === blog.blogCategory.title && "text-sky-300",
                 )}
               >
                 {blog.blogCategory.title}
               </div>
               <H2 className="mt-0 border-none pb-0">
                 <Link
-                  className="text-fg-brand-subtle"
+                  className="text-slate-300"
                   href={`/blog/${blog.slug.current}`}
                 >
                   {blog.title}

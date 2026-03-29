@@ -19,11 +19,11 @@ export const Blockquote = async (properties: BlockquoteProperties) => {
   return (
     <blockquote
       cite={properties.sourceUrl}
-      class="border-default bg-neutral-secondary-soft mt-6 border-l-2 p-4 ps-6"
+      class="mt-6 rounded-r-lg border-l-[3px] border-sky-300 bg-sky-300/10 p-4 ps-6"
     >
-      <p class="text-heading leading-7 italic">{properties.children}</p>
+      <p class="leading-7 text-slate-100 italic">{properties.children}</p>
       {hasAuthorOrSource && (
-        <footer class="text-body mt-2 text-sm not-italic">
+        <footer class="mt-2 text-sm text-slate-200 not-italic">
           - {hasAuthor && <span>{properties.author}</span>}
           {hasAuthorAndSource && ", "}
           {hasSource && (

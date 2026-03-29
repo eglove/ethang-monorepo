@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && pnpm lint && pnpm tsc --noEmit && pnpm test 2>/dev/null || true"
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && pnpm lint && pnpm tsc --noEmit && pnpm test"
           }
         ]
       }

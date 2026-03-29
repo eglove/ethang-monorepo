@@ -24,14 +24,14 @@ describe("promiseAllSettled", () => {
       success: promiseFunction(1),
     });
 
-    expect(isError(results.success)).toBe(false);
-    expect(isError(results.fail)).toBe(true);
-    expect(results.fail).toBeInstanceOf(Error);
+    expect(isError(results["success"])).toBe(false);
+    expect(isError(results["fail"])).toBe(true);
+    expect(results["fail"]).toBeInstanceOf(Error);
 
-    expect(results.success).toBe("good!");
+    expect(results["success"]).toBe("good!");
 
-    if (isError(results.fail)) {
-      expect(results.fail.message).toBe("wrong number");
+    if (isError(results["fail"])) {
+      expect(results["fail"].message).toBe("wrong number");
     }
   });
 
