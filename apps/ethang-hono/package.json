@@ -50,7 +50,7 @@
     "deploy": "bun ./build.ts && bun scripts/stamp-sw.ts && wrangler deploy --minify",
     "dev": "run-p tailwind wrangler:dev",
     "drizzle:generate": "drizzle-kit generate",
-    "lint": "eslint . --fix",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
     "tailwind": "tailwindcss -i ./src/index.css -o ./public/index.css --watch",
     "test": "pnpm test:vitest",
     "test:e2e": "playwright test",

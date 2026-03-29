@@ -39,7 +39,7 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "deploy": "pnpm tw && bun scripts/stamp-sw.ts && wrangler deploy --minify",
     "dev": "wrangler dev",
-    "lint": "eslint . --fix",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
     "test": "pnpm test:vitest",
     "test:playwright": "playwright test",
     "test:vitest": "vitest run --coverage",

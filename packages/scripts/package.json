@@ -20,7 +20,7 @@
   "main": "index.js",
   "name": "scripts",
   "scripts": {
-    "lint": "eslint . --fix"
+    "lint": "eslint . --fix && pnpm tsc --noEmit"
   },
   "type": "module",
   "version": "1.0.0"

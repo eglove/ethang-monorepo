@@ -65,7 +65,7 @@
   },
   "scripts": {
     "build": "bun build.ts && pnpm lint",
-    "lint": "eslint . --fix && prettier src --write",
+    "lint": "eslint . --fix && prettier src --write && pnpm tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage"
   },
