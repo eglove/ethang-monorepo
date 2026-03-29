@@ -36,19 +36,7 @@ Apply to all backend/domain logic, regardless of what framework delivers it.
 
 ## Atomic & Component-Driven Design — UI
 
-Structure UI using atomic design principles:
-
-- **Atoms** — smallest indivisible elements: buttons, inputs, labels, icons
-- **Molecules** — simple combinations of atoms that form a single unit: search bar, form field with label
-- **Organisms** — complex sections composed of molecules/atoms: navigation bar, product card grid
-- **Templates** — page-level layout structure with slots for organisms
-- **Pages** — templates filled with real content; the entry point for routes
-
-Rules:
-- Components own only the state and behavior relevant to their level
-- Atoms and molecules are purely presentational — no data fetching, no side effects
-- Data fetching and business logic live at the organism level or above, then flow down as props
-- Prefer composition over configuration: build complex UI by assembling smaller components, not by adding props to a single large one
+See @.claude/skills/atomic-design-planning/SKILL.md for the full methodology, hierarchy, and rules.
 
 ## Behavior-Driven Development (BDD) — UI
 
@@ -133,7 +121,7 @@ When the WebStorm MCP server (`mcp__webstorm__*`) is available, prefer its tools
 
 - **File search** — use `mcp__webstorm__find_files_by_glob` or `mcp__webstorm__find_files_by_name_keyword` instead of Glob
 - **Content search** — use `mcp__webstorm__search_in_files_by_text` or `mcp__webstorm__search_in_files_by_regex` instead of Grep
-- **File reading** — use `mcp__webstorm__read_file` or `mcp__webstorm__get_file_text_by_path` instead of Read
+- **File reading** — use `mcp__webstorm__read_file` or `mcp__webstorm__get_file_text_by_path` instead of Read; the MCP server can read any file in the project, so always prefer it over the built-in Read tool
 - **File editing** — use `mcp__webstorm__replace_text_in_file` instead of Edit or Write
 - **Terminal commands** — use `mcp__webstorm__execute_terminal_command` instead of Bash
 - **Run configurations** — use `mcp__webstorm__execute_run_configuration` to run builds, tests, and scripts
