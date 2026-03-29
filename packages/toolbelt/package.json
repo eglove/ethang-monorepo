@@ -19,6 +19,7 @@
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.1.0",
     "typescript": "^6.0.2",
+    "vite": "^8.0.3",
     "vitest": "^4.1.2",
     "vitest-fetch-mock": "^0.4.5"
   },

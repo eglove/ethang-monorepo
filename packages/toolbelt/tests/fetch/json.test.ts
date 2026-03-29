@@ -23,11 +23,9 @@ describe("fetch json", () => {
   });
 
   it("should parse response body correctly", async () => {
-    const response = new Response(
-      JSON.stringify({
-        json: "stuff",
-      }),
-    );
+    const response = Response.json({
+      json: "stuff",
+    });
     const results = await parseFetchJson(
       response,
       z.object({ json: z.string() }),
@@ -66,6 +64,7 @@ describe("error cases", () => {
     });
     const results = await parseFetchJson(
       request,
+      // @ts-expect-error testing
       z.array(z.object({ fail: z.string() })),
     );
 
@@ -86,6 +85,7 @@ describe("error cases", () => {
     });
     const results = await parseFetchJson(
       request,
+      // @ts-expect-error testing
       z.array(z.object({ fail: z.string() })),
     );
 

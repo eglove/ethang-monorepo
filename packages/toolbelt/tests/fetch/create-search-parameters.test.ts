@@ -31,7 +31,7 @@ describe("create search parameters", () => {
     expected.append("numbers", "3");
     expected.append("to", "tomorrow");
 
-    expect(expected.toString()).toEqual(result.toString());
+    expect(expected.toString()).toEqual(result?.toString());
     expect(expected).toStrictEqual(result);
   });
 
