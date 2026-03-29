@@ -93,6 +93,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - run: find . -name "*.sarif" 2>/dev/null || echo "No SARIF files found"
       - uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13  # v4
         with:
           sarif_file: .sonarqube/out/.sonar/sonar-report.sarif
