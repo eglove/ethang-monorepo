@@ -17,7 +17,6 @@ jobs:
           - ethang-hono
           - sterett-hono
           - auth
-          - url-shortener
           - sanity-calendar-sync
           - ethang-admin
     steps:
