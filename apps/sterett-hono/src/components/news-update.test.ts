@@ -8,14 +8,14 @@ const TITLE = "Road Closure Notice";
 
 const makeUpdate = (
   overrides: Partial<NewsUpdateReturn> = {},
-): NewsUpdateReturn => ({
-  _id: "n1",
-  date: "2024-06-15",
-
-  description: undefined as never,
-  title: TITLE,
-  ...overrides,
-});
+): NewsUpdateReturn =>
+  ({
+    _id: "n1",
+    date: "2024-06-15",
+    description: undefined as never,
+    title: TITLE,
+    ...overrides,
+  }) as NewsUpdateReturn;
 
 describe("newsUpdate", () => {
   it("renders the news title", async () => {

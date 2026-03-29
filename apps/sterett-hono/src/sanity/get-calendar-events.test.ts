@@ -2,8 +2,11 @@
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock(import("../clients/sanity-client.ts"), () => ({
-  NO_DRAFTS: "!(_id in path('drafts.**'))",
-  sterettSanityClient: { fetch: vi.fn() },
+  NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
+  sterettSanityClient: {
+    fetch: vi.fn(),
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
 }));
 
 import { sterettSanityClient } from "../clients/sanity-client.ts";
@@ -28,6 +31,7 @@ const makeEvent = (id: string) => ({
 describe(getLatestCalendarEventUpdatedAt, () => {
   it("queries ordered by _updatedAt descending", async () => {
     vi.clearAllMocks();
+    // @ts-expect-error mock
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue(LATEST_UPDATED_AT);
 
     await getLatestCalendarEventUpdatedAt();
@@ -40,6 +44,7 @@ describe(getLatestCalendarEventUpdatedAt, () => {
 
   it("returns the _updatedAt string of the most recent event", async () => {
     vi.clearAllMocks();
+    // @ts-expect-error mock
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue(LATEST_UPDATED_AT);
 
     const result = await getLatestCalendarEventUpdatedAt();
@@ -49,6 +54,7 @@ describe(getLatestCalendarEventUpdatedAt, () => {
 
   it("returns null when there are no calendar events", async () => {
     vi.clearAllMocks();
+    // @ts-expect-error mock
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue(null);
 
     const result = await getLatestCalendarEventUpdatedAt();

@@ -7,7 +7,6 @@ import { defineType, type Rule } from "sanity";
 
 export default defineType({
   fields: [
-    // @ts-expect-error assume this works
     orderRankField({ type: "navigation" }),
     {
       name: "title",

@@ -133,6 +133,9 @@ importers:
       typescript:
         specifier: ^6.0.2
         version: 6.0.2
+      vite:
+        specifier: ^8.0.3
+        version: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
   apps/ethang-hono:
     dependencies:
@@ -340,6 +343,9 @@ importers:
       typescript-eslint:
         specifier: ^8.57.2
         version: 8.57.2(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2)
+      vite:
+        specifier: ^8.0.3
+        version: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
   apps/sterett-hono:
     dependencies:
@@ -13249,7 +13255,7 @@ snapshots:
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   '@npmcli/git@7.0.2':
     dependencies:
@@ -13259,7 +13265,7 @@ snapshots:
       lru-cache: 11.2.7
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       which: 6.0.1
 
   '@npmcli/installed-package-contents@4.0.0':
@@ -13276,7 +13282,7 @@ snapshots:
       hosted-git-info: 9.0.2
       json-parse-even-better-errors: 5.0.0
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       spdx-expression-parse: 4.0.0
 
   '@npmcli/promise-spawn@9.0.1':
@@ -13970,7 +13976,7 @@ snapshots:
       '@sanity/export': 6.1.0
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
-      '@sanity/import': 6.0.0(@sanity/client@7.20.0)(@types/react@19.2.14)
+      '@sanity/import': 6.0.0(@sanity/client@7.20.0(debug@4.4.3))(@types/react@19.2.14)
       '@sanity/migrate': 6.1.0(@oclif/core@4.10.2)(@sanity/cli-core@1.2.1(@noble/hashes@2.0.1)(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))(@types/react@19.2.14)(xstate@5.29.0)
       '@sanity/runtime-cli': 14.7.0(@types/node@25.5.0)(debug@4.4.3)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3)
       '@sanity/schema': 5.18.0(@types/react@19.2.14)(debug@4.4.3)
@@ -14065,7 +14071,7 @@ snapshots:
       '@sanity/export': 6.1.0
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
-      '@sanity/import': 6.0.0(@sanity/client@7.20.0)(@types/react@19.2.14)
+      '@sanity/import': 6.0.0(@sanity/client@7.20.0(debug@4.4.3))(@types/react@19.2.14)
       '@sanity/migrate': 6.1.0(@oclif/core@4.10.2)(@sanity/cli-core@1.2.1(@noble/hashes@2.0.1)(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))(@types/react@19.2.14)(xstate@5.29.0)
       '@sanity/runtime-cli': 14.7.0(@types/node@25.5.0)(debug@4.4.3)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3)
       '@sanity/schema': 5.18.0(@types/react@19.2.14)(debug@4.4.3)
@@ -14385,7 +14391,7 @@ snapshots:
     dependencies:
       '@sanity/signed-urls': 2.0.2
 
-  '@sanity/import@6.0.0(@sanity/client@7.20.0)(@types/react@19.2.14)':
+  '@sanity/import@6.0.0(@sanity/client@7.20.0(debug@4.4.3))(@types/react@19.2.14)':
     dependencies:
       '@sanity/asset-utils': 2.3.0
       '@sanity/client': 7.20.0(debug@4.4.3)
@@ -14552,15 +14558,15 @@ snapshots:
       - react-is
       - rxjs
 
-  '@sanity/presentation-comlink@2.0.1(@sanity/client@7.20.0)(@sanity/types@5.18.0(@types/react@19.2.14)(debug@4.4.3))':
+  '@sanity/presentation-comlink@2.0.1(@sanity/client@7.20.0(debug@4.4.3))(@sanity/types@5.18.0(@types/react@19.2.14)(debug@4.4.3))':
     dependencies:
       '@sanity/comlink': 4.0.1
-      '@sanity/visual-editing-types': 1.1.8(@sanity/client@7.20.0)(@sanity/types@5.18.0(@types/react@19.2.14)(debug@4.4.3))
+      '@sanity/visual-editing-types': 1.1.8(@sanity/client@7.20.0(debug@4.4.3))(@sanity/types@5.18.0(@types/react@19.2.14)(debug@4.4.3))
     transitivePeerDependencies:
       - '@sanity/client'
       - '@sanity/types'
 
-  '@sanity/preview-url-secret@4.0.4(@sanity/client@7.20.0)':
+  '@sanity/preview-url-secret@4.0.4(@sanity/client@7.20.0(debug@4.4.3))':
     dependencies:
       '@sanity/client': 7.20.0(debug@4.4.3)
       '@sanity/uuid': 3.0.2
@@ -14813,7 +14819,7 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/visual-editing-types@1.1.8(@sanity/client@7.20.0)(@sanity/types@5.18.0(@types/react@19.2.14)(debug@4.4.3))':
+  '@sanity/visual-editing-types@1.1.8(@sanity/client@7.20.0(debug@4.4.3))(@sanity/types@5.18.0(@types/react@19.2.14)(debug@4.4.3))':
     dependencies:
       '@sanity/client': 7.20.0(debug@4.4.3)
     optionalDependencies:
@@ -19047,7 +19053,7 @@ snapshots:
       make-fetch-happen: 15.0.5
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       tar: 7.5.13
       tinyglobby: 0.2.15
       which: 6.0.1
@@ -19086,7 +19092,7 @@ snapshots:
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   npm-normalize-package-bin@5.0.0: {}
 
@@ -19094,7 +19100,7 @@ snapshots:
     dependencies:
       hosted-git-info: 9.0.2
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       validate-npm-package-name: 7.0.2
 
   npm-packlist@10.0.4:
@@ -19107,7 +19113,7 @@ snapshots:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.2
-      semver: 7.7.3
+      semver: 7.7.4
 
   npm-registry-fetch@19.1.1:
     dependencies:
@@ -20136,8 +20142,8 @@ snapshots:
       '@sanity/migrate': 6.1.0(@oclif/core@4.10.2)(@sanity/cli-core@1.2.1(@noble/hashes@2.0.1)(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))(@types/react@19.2.14)(xstate@5.29.0)
       '@sanity/mutate': 0.16.1(debug@4.4.3)(xstate@5.29.0)
       '@sanity/mutator': 5.18.0(@types/react@19.2.14)
-      '@sanity/presentation-comlink': 2.0.1(@sanity/client@7.20.0)(@sanity/types@5.18.0(@types/react@19.2.14)(debug@4.4.3))
-      '@sanity/preview-url-secret': 4.0.4(@sanity/client@7.20.0)
+      '@sanity/presentation-comlink': 2.0.1(@sanity/client@7.20.0(debug@4.4.3))(@sanity/types@5.18.0(@types/react@19.2.14)(debug@4.4.3))
+      '@sanity/preview-url-secret': 4.0.4(@sanity/client@7.20.0(debug@4.4.3))
       '@sanity/schema': 5.18.0(@types/react@19.2.14)(debug@4.4.3)
       '@sanity/sdk': 2.1.2(@types/react@19.2.14)(debug@4.4.3)(immer@11.1.4)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
       '@sanity/telemetry': 0.9.0(react@19.2.4)
@@ -20270,8 +20276,8 @@ snapshots:
       '@sanity/migrate': 6.1.0(@oclif/core@4.10.2)(@sanity/cli-core@1.2.1(@noble/hashes@2.0.1)(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))(@types/react@19.2.14)(xstate@5.29.0)
       '@sanity/mutate': 0.16.1(debug@4.4.3)(xstate@5.29.0)
       '@sanity/mutator': 5.18.0(@types/react@19.2.14)
-      '@sanity/presentation-comlink': 2.0.1(@sanity/client@7.20.0)(@sanity/types@5.18.0(@types/react@19.2.14)(debug@4.4.3))
-      '@sanity/preview-url-secret': 4.0.4(@sanity/client@7.20.0)
+      '@sanity/presentation-comlink': 2.0.1(@sanity/client@7.20.0(debug@4.4.3))(@sanity/types@5.18.0(@types/react@19.2.14)(debug@4.4.3))
+      '@sanity/preview-url-secret': 4.0.4(@sanity/client@7.20.0(debug@4.4.3))
       '@sanity/schema': 5.18.0(@types/react@19.2.14)(debug@4.4.3)
       '@sanity/sdk': 2.1.2(@types/react@19.2.14)(debug@4.4.3)(immer@11.1.4)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
       '@sanity/telemetry': 0.9.0(react@19.2.4)
