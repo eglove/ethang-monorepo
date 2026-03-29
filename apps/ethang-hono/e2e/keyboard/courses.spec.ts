@@ -4,6 +4,7 @@ import { routes } from "../../routes.ts";
 import {
   MOCK_TRACKED_URL,
   MOCK_USER_ID,
+  mockCourseStatusUpdate,
   mockTrackingApi,
   mockVerifyOk,
   setAuthCookie,
@@ -12,10 +13,14 @@ import {
 const COMPLETION_BUTTON = ".course-completion-button";
 
 test.describe("courses page — keyboard user (unauthenticated)", () => {
-  test("sign-in link is reachable via keyboard and activates on Enter", async ({ page }) => {
+  test("sign-in link is reachable via keyboard and activates on Enter", async ({
+    page,
+  }) => {
     await page.goto(routes.courses, { waitUntil: "networkidle" });
 
-    const signInLink = page.getByRole("link", { name: "Sign In To Track Changes" });
+    const signInLink = page.getByRole("link", {
+      name: "Sign In To Track Changes",
+    });
     await signInLink.focus();
     await expect(signInLink).toBeFocused();
 
@@ -45,24 +50,10 @@ test.describe("courses page — keyboard user (authenticated)", () => {
     await expect(firstButton).toBeFocused();
   });
 
-  test("Enter on completion button triggers status update", async ({ page }) => {
-    await page.context().route(
-      `**/api/course-tracking/${MOCK_USER_ID}/**`,
-      async (route) =>
-        route.fulfill({
-          body: JSON.stringify({
-            data: {
-              courseUrl: MOCK_TRACKED_URL,
-              id: "t2",
-              status: "Complete",
-              userId: MOCK_USER_ID,
-            },
-            status: 200,
-          }),
-          contentType: "application/json",
-          status: 200,
-        }),
-    );
+  test("Enter on completion button triggers status update", async ({
+    page,
+  }) => {
+    await mockCourseStatusUpdate(page, { id: "t2", status: "Complete" });
 
     const firstButton = page.locator(COMPLETION_BUTTON).first();
     await firstButton.focus();
@@ -71,24 +62,10 @@ test.describe("courses page — keyboard user (authenticated)", () => {
     await expect(firstButton).toHaveClass(/bg-brand/u);
   });
 
-  test("Space on completion button triggers status update", async ({ page }) => {
-    await page.context().route(
-      `**/api/course-tracking/${MOCK_USER_ID}/**`,
-      async (route) =>
-        route.fulfill({
-          body: JSON.stringify({
-            data: {
-              courseUrl: MOCK_TRACKED_URL,
-              id: "t3",
-              status: "Revisit",
-              userId: MOCK_USER_ID,
-            },
-            status: 200,
-          }),
-          contentType: "application/json",
-          status: 200,
-        }),
-    );
+  test("Space on completion button triggers status update", async ({
+    page,
+  }) => {
+    await mockCourseStatusUpdate(page, { id: "t3", status: "Revisit" });
 
     const firstButton = page.locator(COMPLETION_BUTTON).first();
     await firstButton.focus();

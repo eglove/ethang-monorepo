@@ -2,7 +2,7 @@ import { nvdaTest as test } from "@guidepup/playwright";
 import { expect } from "@playwright/test";
 
 test.describe("home page — screen reader (NVDA)", () => {
-  test("announces main heading", async ({ page, nvda }) => {
+  test("announces main heading", async ({ nvda, page }) => {
     await page.goto("/", { waitUntil: "load" });
     await nvda.navigateToWebContent();
 
@@ -12,12 +12,15 @@ test.describe("home page — screen reader (NVDA)", () => {
     expect(phrase.toLowerCase()).toContain("heading");
   });
 
-  test("navigation links are announced with accessible names", async ({ page, nvda }) => {
+  test("navigation links are announced with accessible names", async ({
+    nvda,
+    page,
+  }) => {
     await page.goto("/", { waitUntil: "load" });
     await nvda.navigateToWebContent();
 
     const phrases: string[] = [];
-    for (let i = 0; i < 10; i++) {
+    for (let index = 0; 10 > index; index++) {
       await nvda.press("Tab");
       phrases.push(await nvda.lastSpokenPhrase());
     }

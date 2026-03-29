@@ -2,48 +2,42 @@ import { nvdaTest as test } from "@guidepup/playwright";
 import { expect } from "@playwright/test";
 
 import { routes } from "../../routes.ts";
-import { AUTH_SIGN_UP_URL } from "../helpers/courses-auth-helpers.ts";
+import { mockSignInError } from "../helpers/courses-auth-helpers.ts";
+import { nvdaPress } from "../helpers/screen-reader-helpers.ts";
 
 test.describe("sign-in page — screen reader (NVDA)", () => {
-  test("announces page heading", async ({ page, nvda }) => {
-    await page.goto(routes.signIn, { waitUntil: "load" });
-    await nvda.navigateToWebContent();
+  test.describe("field navigation", () => {
+    test.beforeEach(async ({ nvda, page }) => {
+      await page.goto(routes.signIn, { waitUntil: "load" });
+      await nvda.navigateToWebContent();
+    });
 
-    await nvda.perform(nvda.keyboardCommands.moveToNextHeading);
-    expect(await nvda.lastSpokenPhrase()).toContain("Sign In");
+    test("announces page heading", async ({ nvda }) => {
+      await nvda.perform(nvda.keyboardCommands.moveToNextHeading);
+      expect(await nvda.lastSpokenPhrase()).toContain("Sign In");
+    });
+
+    test("announces Email field label when focused", async ({ nvda }) => {
+      await nvda.press("Tab");
+      expect(await nvda.lastSpokenPhrase()).toContain("Email");
+    });
+
+    test("announces Password field label when focused", async ({ nvda }) => {
+      await nvdaPress(nvda, "Tab", 2);
+      expect(await nvda.lastSpokenPhrase()).toContain("Password");
+    });
+
+    test("announces Submit button when focused", async ({ nvda }) => {
+      await nvdaPress(nvda, "Tab", 3);
+      expect(await nvda.lastSpokenPhrase()).toContain("Submit");
+    });
   });
 
-  test("announces Email field label when focused", async ({ page, nvda }) => {
-    await page.goto(routes.signIn, { waitUntil: "load" });
-    await nvda.navigateToWebContent();
-
-    await nvda.press("Tab");
-    expect(await nvda.lastSpokenPhrase()).toContain("Email");
-  });
-
-  test("announces Password field label when focused", async ({ page, nvda }) => {
-    await page.goto(routes.signIn, { waitUntil: "load" });
-    await nvda.navigateToWebContent();
-
-    await nvda.press("Tab");
-    await nvda.press("Tab");
-    expect(await nvda.lastSpokenPhrase()).toContain("Password");
-  });
-
-  test("announces Submit button when focused", async ({ page, nvda }) => {
-    await page.goto(routes.signIn, { waitUntil: "load" });
-    await nvda.navigateToWebContent();
-
-    await nvda.press("Tab");
-    await nvda.press("Tab");
-    await nvda.press("Tab");
-    expect(await nvda.lastSpokenPhrase()).toContain("Submit");
-  });
-
-  test("announces error message after failed submission", async ({ page, nvda }) => {
-    await page.context().route(AUTH_SIGN_UP_URL, async (route) =>
-      route.fulfill({ status: 401 }),
-    );
+  test("announces error message after failed submission", async ({
+    nvda,
+    page,
+  }) => {
+    await mockSignInError(page);
 
     await page.goto(routes.signIn, { waitUntil: "load" });
     await page.getByLabel("Email").fill("bad@example.com");
@@ -54,7 +48,7 @@ test.describe("sign-in page — screen reader (NVDA)", () => {
 
     await nvda.navigateToWebContent();
     let found = false;
-    for (let i = 0; i < 10; i++) {
+    for (let index = 0; 10 > index; index++) {
       await nvda.next();
       const phrase = await nvda.lastSpokenPhrase();
       if (phrase.includes("Failed to sign in")) {

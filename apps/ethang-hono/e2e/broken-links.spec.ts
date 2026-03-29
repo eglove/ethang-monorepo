@@ -1,9 +1,8 @@
-// cspell:ignore ethang
-import type { GetBlogs } from "../src/models/get-blogs.ts";
-
+import { expect, test } from "@playwright/test";
 import get from "lodash/get.js";
 
-import { expect, test } from "@playwright/test";
+// cspell:ignore ethang
+import type { GetBlogs } from "../src/models/get-blogs.ts";
 
 import { routes } from "../routes.ts";
 import { sanityClient } from "../src/clients/sanity.ts";
@@ -22,7 +21,7 @@ type BrokenLink = {
 const fetchWithTimeout = async (
   url: string,
   method: "GET" | "HEAD",
-): Promise<Response | "timeout"> => {
+): Promise<"timeout" | Response> => {
   const controller = new AbortController();
   const timer = setTimeout(() => {
     controller.abort();
@@ -72,7 +71,7 @@ const ALL_PAGES = [
   routes.tips,
   routes.scrollbarGutter,
   routes.scrollContainers,
-  ...blogs.map((b) => `${routes.blog}/${get(b, ["slug", "current"]) as string}`),
+  ...blogs.map((b) => `${routes.blog}/${get(b, ["slug", "current"])}`),
 ];
 
 test("no broken links across all pages", async ({ page }) => {

@@ -4,7 +4,7 @@ import { expect } from "@playwright/test";
 import { routes } from "../../routes.ts";
 
 test.describe("scrollbar-gutter page — screen reader (NVDA)", () => {
-  test("announces page heading", async ({ page, nvda }) => {
+  test("announces page heading", async ({ nvda, page }) => {
     await page.goto(routes.scrollbarGutter, { waitUntil: "load" });
     await nvda.navigateToWebContent();
 
@@ -12,12 +12,12 @@ test.describe("scrollbar-gutter page — screen reader (NVDA)", () => {
     expect(await nvda.lastSpokenPhrase()).toContain("scrollbar-gutter");
   });
 
-  test("announces Show extra content button", async ({ page, nvda }) => {
+  test("announces Show extra content button", async ({ nvda, page }) => {
     await page.goto(routes.scrollbarGutter, { waitUntil: "load" });
     await nvda.navigateToWebContent();
 
     let found = false;
-    for (let i = 0; i < 20; i++) {
+    for (let index = 0; 20 > index; index++) {
       await nvda.press("Tab");
       const phrase = await nvda.lastSpokenPhrase();
       if (
@@ -31,7 +31,10 @@ test.describe("scrollbar-gutter page — screen reader (NVDA)", () => {
     expect(found).toBe(true);
   });
 
-  test("announces Hide extra content button after toggle", async ({ page, nvda }) => {
+  test("announces Hide extra content button after toggle", async ({
+    nvda,
+    page,
+  }) => {
     await page.goto(routes.scrollbarGutter, { waitUntil: "load" });
 
     await page.getByRole("button", { name: "Show extra content" }).click();
@@ -39,7 +42,7 @@ test.describe("scrollbar-gutter page — screen reader (NVDA)", () => {
     await nvda.navigateToWebContent();
 
     let found = false;
-    for (let i = 0; i < 20; i++) {
+    for (let index = 0; 20 > index; index++) {
       await nvda.press("Tab");
       const phrase = await nvda.lastSpokenPhrase();
       if (

@@ -10,9 +10,7 @@ test.describe("scroll-containers page — keyboard user", () => {
       page.getByRole("heading", { name: "Easy Sticky Header/Footer" }),
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: "CSS" })).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Tailwind" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Tailwind" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Demo" })).toBeVisible();
   });
 

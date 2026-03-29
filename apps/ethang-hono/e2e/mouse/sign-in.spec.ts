@@ -2,11 +2,15 @@
 import find from "lodash/find.js";
 
 import { routes } from "../../routes.ts";
-import { AUTH_SIGN_UP_URL } from "../helpers/courses-auth-helpers.ts";
+import {
+  AUTH_SIGN_UP_URL,
+  CONTENT_TYPE_JSON,
+  MOCK_SESSION_TOKEN,
+  mockSignInError,
+  mockSignInSuccess,
+} from "../helpers/courses-auth-helpers.ts";
 import { expect, test } from "../index.ts";
 
-const MOCK_SESSION_TOKEN = "mock-session-token-value";
-const CONTENT_TYPE_JSON = "application/json";
 const MOCK_EMAIL = "test@example.com";
 
 test("sign-in page loads and passes a11y", async ({ axePage }) => {
@@ -27,13 +31,7 @@ test.describe("sign-in form — submission behavior", () => {
   test("successful sign-in sets auth cookie and redirects to /courses", async ({
     axePage,
   }) => {
-    await axePage.context().route(AUTH_SIGN_UP_URL, async (route) =>
-      route.fulfill({
-        body: JSON.stringify({ sessionToken: MOCK_SESSION_TOKEN }),
-        contentType: CONTENT_TYPE_JSON,
-        status: 200,
-      }),
-    );
+    await mockSignInSuccess(axePage);
 
     await axePage.goto(routes.signIn);
     await axePage.getByLabel("Email").fill(MOCK_EMAIL);
@@ -48,9 +46,7 @@ test.describe("sign-in form — submission behavior", () => {
   });
 
   test("failed sign-in shows error message", async ({ axePage }) => {
-    await axePage
-      .context()
-      .route(AUTH_SIGN_UP_URL, async (route) => route.fulfill({ status: 401 }));
+    await mockSignInError(axePage);
 
     await axePage.goto(routes.signIn);
     await axePage.getByLabel("Email").fill(MOCK_EMAIL);

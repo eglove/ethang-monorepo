@@ -26,4 +26,3 @@ test("hamburger menu button toggles nav menu visibility", async ({
   await expect(hamburgerButton).toHaveAttribute("aria-expanded", "false");
   await expect(navMenu).toBeHidden();
 });
-

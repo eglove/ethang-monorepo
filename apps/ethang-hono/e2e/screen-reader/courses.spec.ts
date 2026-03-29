@@ -13,7 +13,7 @@ import {
 const COMPLETION_BUTTON = ".course-completion-button";
 
 test.describe("courses page — screen reader (NVDA, unauthenticated)", () => {
-  test("announces Recommended Courses heading", async ({ page, nvda }) => {
+  test("announces Recommended Courses heading", async ({ nvda, page }) => {
     await page.goto(routes.courses, { waitUntil: "load" });
     await nvda.navigateToWebContent();
 
@@ -21,12 +21,15 @@ test.describe("courses page — screen reader (NVDA, unauthenticated)", () => {
     expect(await nvda.lastSpokenPhrase()).toContain("Recommended Courses");
   });
 
-  test("announces sign-in link when unauthenticated", async ({ page, nvda }) => {
+  test("announces sign-in link when unauthenticated", async ({
+    nvda,
+    page,
+  }) => {
     await page.goto(routes.courses, { waitUntil: "networkidle" });
     await nvda.navigateToWebContent();
 
     let found = false;
-    for (let i = 0; i < 30; i++) {
+    for (let index = 0; 30 > index; index++) {
       await nvda.next();
       const phrase = await nvda.lastSpokenPhrase();
       if (phrase.includes("Sign In To Track Changes")) {
@@ -52,12 +55,15 @@ test.describe("courses page — screen reader (NVDA, authenticated)", () => {
     await setAuthCookie(page);
   });
 
-  test("announces Your Progress heading when authenticated", async ({ page, nvda }) => {
+  test("announces Your Progress heading when authenticated", async ({
+    nvda,
+    page,
+  }) => {
     await page.goto(routes.courses, { waitUntil: "networkidle" });
     await nvda.navigateToWebContent();
 
     let found = false;
-    for (let i = 0; i < 10; i++) {
+    for (let index = 0; 10 > index; index++) {
       await nvda.perform(nvda.keyboardCommands.moveToNextHeading);
       const phrase = await nvda.lastSpokenPhrase();
       if (phrase.includes("Your Progress")) {
@@ -68,17 +74,24 @@ test.describe("courses page — screen reader (NVDA, authenticated)", () => {
     expect(found).toBe(true);
   });
 
-  test("announces completion button label when focused", async ({ page, nvda }) => {
+  test("announces completion button label when focused", async ({
+    nvda,
+    page,
+  }) => {
     await page.goto(routes.courses, { waitUntil: "networkidle" });
     await nvda.navigateToWebContent();
 
     let found = false;
-    for (let i = 0; i < 40; i++) {
+    for (let index = 0; 40 > index; index++) {
       await nvda.press("Tab");
       const phrase = await nvda.lastSpokenPhrase();
       if (phrase.toLowerCase().includes("button")) {
         const firstButton = page.locator(COMPLETION_BUTTON).first();
-        if (await firstButton.evaluate((el) => document.activeElement === el)) {
+        if (
+          await firstButton.evaluate(
+            (element) => document.activeElement === element,
+          )
+        ) {
           found = true;
           break;
         }

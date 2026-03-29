@@ -6,17 +6,17 @@ const WITH_EXAMPLE = "#scrollbar-gutter-with-example";
 const WITHOUT_EXAMPLE = "#scrollbar-gutter-without-example";
 
 test.describe("scrollbar-gutter page — keyboard user", () => {
-  test("Show extra content button is focusable", async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto(routes.scrollbarGutter);
+  });
 
+  test("Show extra content button is focusable", async ({ page }) => {
     const button = page.getByRole("button", { name: "Show extra content" });
     await button.focus();
     await expect(button).toBeFocused();
   });
 
   test("Enter on show button reveals demo content", async ({ page }) => {
-    await page.goto(routes.scrollbarGutter);
-
     const button = page.getByRole("button", { name: "Show extra content" });
     await button.focus();
     await page.keyboard.press("Enter");
@@ -26,8 +26,6 @@ test.describe("scrollbar-gutter page — keyboard user", () => {
   });
 
   test("Space on show button reveals demo content", async ({ page }) => {
-    await page.goto(routes.scrollbarGutter);
-
     const button = page.getByRole("button", { name: "Show extra content" });
     await button.focus();
     await page.keyboard.press("Space");
@@ -37,8 +35,6 @@ test.describe("scrollbar-gutter page — keyboard user", () => {
   });
 
   test("Enter on hide button hides demo content again", async ({ page }) => {
-    await page.goto(routes.scrollbarGutter);
-
     await page.getByRole("button", { name: "Show extra content" }).focus();
     await page.keyboard.press("Enter");
 

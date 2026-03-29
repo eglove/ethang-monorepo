@@ -6,6 +6,8 @@ export const AUTH_SIGN_UP_URL = "https://auth.ethang.dev/sign-up";
 export const MOCK_USER_ID = "test-user-regression-123";
 export const MOCK_TRACKED_URL =
   "https://frontendmasters.com/courses/deep-javascript-v3/";
+export const MOCK_SESSION_TOKEN = "mock-session-token-value";
+export const CONTENT_TYPE_JSON = "application/json";
 
 export type Tracking = {
   courseUrl: string;
@@ -49,3 +51,42 @@ export const setAuthCookie = async (page: Page) =>
       value: "mock-token-value",
     },
   ]);
+
+export const mockSignInSuccess = async (
+  page: Page,
+  token = MOCK_SESSION_TOKEN,
+) =>
+  page.context().route(AUTH_SIGN_UP_URL, async (route) =>
+    route.fulfill({
+      body: JSON.stringify({ sessionToken: token }),
+      contentType: CONTENT_TYPE_JSON,
+      status: 200,
+    }),
+  );
+
+export const mockSignInError = async (page: Page) =>
+  page
+    .context()
+    .route(AUTH_SIGN_UP_URL, async (route) => route.fulfill({ status: 401 }));
+
+export const mockCourseStatusUpdate = async (
+  page: Page,
+  { id, status }: { id: string; status: string },
+) =>
+  page
+    .context()
+    .route(`**/api/course-tracking/${MOCK_USER_ID}/**`, async (route) =>
+      route.fulfill({
+        body: JSON.stringify({
+          data: {
+            courseUrl: MOCK_TRACKED_URL,
+            id,
+            status,
+            userId: MOCK_USER_ID,
+          },
+          status: 200,
+        }),
+        contentType: CONTENT_TYPE_JSON,
+        status: 200,
+      }),
+    );

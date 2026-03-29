@@ -7,9 +7,9 @@ test.describe("home page — keyboard user", () => {
     const allLinks = page.getByRole("link");
     const count = await allLinks.count();
 
-    for (let i = 0; i < count; i++) {
-      await allLinks.nth(i).focus();
-      await expect(allLinks.nth(i)).toBeFocused();
+    for (let index = 0; index < count; index++) {
+      await allLinks.nth(index).focus();
+      await expect(allLinks.nth(index)).toBeFocused();
     }
   });
 });

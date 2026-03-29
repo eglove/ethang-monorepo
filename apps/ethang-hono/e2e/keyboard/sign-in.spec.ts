@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 
 import { routes } from "../../routes.ts";
-import { AUTH_SIGN_UP_URL } from "../helpers/courses-auth-helpers.ts";
-
-const MOCK_TOKEN = "mock-token";
-const CONTENT_TYPE_JSON = "application/json";
+import {
+  mockSignInError,
+  mockSignInSuccess,
+} from "../helpers/courses-auth-helpers.ts";
 
 test.describe("sign-in page — keyboard user", () => {
   test("email field is first focusable element", async ({ page }) => {
@@ -20,61 +20,47 @@ test.describe("sign-in page — keyboard user", () => {
     await expect(page.getByLabel("Password")).toBeFocused();
   });
 
-  test("submit button receives focus after password on Tab", async ({ page }) => {
+  test("submit button receives focus after password on Tab", async ({
+    page,
+  }) => {
     await page.goto(routes.signIn);
     await page.getByLabel("Password").focus();
     await page.keyboard.press("Tab");
     await expect(page.getByRole("button", { name: "Submit" })).toBeFocused();
   });
 
-  test("Enter on submit button submits the form", async ({ page }) => {
-    await page.context().route(AUTH_SIGN_UP_URL, async (route) =>
-      route.fulfill({
-        body: JSON.stringify({ sessionToken: MOCK_TOKEN }),
-        contentType: CONTENT_TYPE_JSON,
-        status: 200,
-      }),
-    );
+  test.describe("submit button key activation", () => {
+    test.beforeEach(async ({ page }) => {
+      await mockSignInSuccess(page);
+      await page.goto(routes.signIn);
+      await page.getByLabel("Email").fill("test@example.com");
+      await page.getByLabel("Password").fill("password");
+      await page.getByRole("button", { name: "Submit" }).focus();
+    });
 
-    await page.goto(routes.signIn);
-    await page.getByLabel("Email").fill("test@example.com");
-    await page.getByLabel("Password").fill("password");
-    await page.getByRole("button", { name: "Submit" }).focus();
-    await page.keyboard.press("Enter");
+    test("Enter submits the form", async ({ page }) => {
+      await page.keyboard.press("Enter");
+      await page.waitForURL("**/courses");
+    });
 
-    await page.waitForURL("**/courses");
+    test("Space submits the form", async ({ page }) => {
+      await page.keyboard.press("Space");
+      await page.waitForURL("**/courses");
+    });
   });
 
-  test("Space on submit button submits the form", async ({ page }) => {
-    await page.context().route(AUTH_SIGN_UP_URL, async (route) =>
-      route.fulfill({
-        body: JSON.stringify({ sessionToken: MOCK_TOKEN }),
-        contentType: CONTENT_TYPE_JSON,
-        status: 200,
-      }),
-    );
-
-    await page.goto(routes.signIn);
-    await page.getByLabel("Email").fill("test@example.com");
-    await page.getByLabel("Password").fill("password");
-    await page.getByRole("button", { name: "Submit" }).focus();
-    await page.keyboard.press("Space");
-
-    await page.waitForURL("**/courses");
-  });
-
-  test("error message is in the DOM and readable after failed login", async ({ page }) => {
-    await page.context().route(AUTH_SIGN_UP_URL, async (route) =>
-      route.fulfill({ status: 401 }),
-    );
+  test("error message is in the DOM and readable after failed login", async ({
+    page,
+  }) => {
+    await mockSignInError(page);
 
     await page.goto(routes.signIn);
     await page.getByLabel("Email").fill("bad@example.com");
     await page.getByLabel("Password").fill("wrong");
     await page.getByRole("button", { name: "Submit" }).click();
 
-    const errorEl = page.locator("#sign-in-error");
-    await expect(errorEl).toBeVisible();
-    await expect(errorEl).toHaveText("Failed to sign in");
+    const errorElement = page.locator("#sign-in-error");
+    await expect(errorElement).toBeVisible();
+    await expect(errorElement).toHaveText("Failed to sign in");
   });
 });

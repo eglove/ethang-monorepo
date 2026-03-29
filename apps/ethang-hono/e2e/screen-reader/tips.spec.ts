@@ -4,7 +4,7 @@ import { expect } from "@playwright/test";
 import { routes } from "../../routes.ts";
 
 test.describe("tips page — screen reader (NVDA)", () => {
-  test("announces Tips heading", async ({ page, nvda }) => {
+  test("announces Tips heading", async ({ nvda, page }) => {
     await page.goto(routes.tips, { waitUntil: "load" });
     await nvda.navigateToWebContent();
 
@@ -13,18 +13,22 @@ test.describe("tips page — screen reader (NVDA)", () => {
     expect(phrase.toLowerCase()).toContain("tip");
   });
 
-  test("tip links are announced with accessible names", async ({ page, nvda }) => {
+  test("tip links are announced with accessible names", async ({
+    nvda,
+    page,
+  }) => {
     await page.goto(routes.tips, { waitUntil: "load" });
     await nvda.navigateToWebContent();
 
     let scrollContainersFound = false;
     let scrollbarGutterFound = false;
 
-    for (let i = 0; i < 20; i++) {
+    for (let index = 0; 20 > index; index++) {
       await nvda.press("Tab");
       const phrase = await nvda.lastSpokenPhrase();
       if (phrase.toLowerCase().includes("sticky")) scrollContainersFound = true;
-      if (phrase.toLowerCase().includes("scrollbar-gutter")) scrollbarGutterFound = true;
+      if (phrase.toLowerCase().includes("scrollbar-gutter"))
+        scrollbarGutterFound = true;
       if (scrollContainersFound && scrollbarGutterFound) break;
     }
 

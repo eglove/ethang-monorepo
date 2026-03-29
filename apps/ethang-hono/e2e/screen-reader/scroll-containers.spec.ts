@@ -4,7 +4,10 @@ import { expect } from "@playwright/test";
 import { routes } from "../../routes.ts";
 
 test.describe("scroll-containers page — screen reader (NVDA)", () => {
-  test("announces Easy Sticky Header/Footer heading", async ({ page, nvda }) => {
+  test("announces Easy Sticky Header/Footer heading", async ({
+    nvda,
+    page,
+  }) => {
     await page.goto(routes.scrollContainers, { waitUntil: "load" });
     await nvda.navigateToWebContent();
 
@@ -12,12 +15,15 @@ test.describe("scroll-containers page — screen reader (NVDA)", () => {
     expect(await nvda.lastSpokenPhrase()).toContain("Sticky");
   });
 
-  test("announces CSS, Tailwind, and Demo section headings", async ({ page, nvda }) => {
+  test("announces CSS, Tailwind, and Demo section headings", async ({
+    nvda,
+    page,
+  }) => {
     await page.goto(routes.scrollContainers, { waitUntil: "load" });
     await nvda.navigateToWebContent();
 
     const headings: string[] = [];
-    for (let i = 0; i < 5; i++) {
+    for (let index = 0; 5 > index; index++) {
       await nvda.perform(nvda.keyboardCommands.moveToNextHeading);
       headings.push(await nvda.lastSpokenPhrase());
     }
