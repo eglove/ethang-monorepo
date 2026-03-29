@@ -3,6 +3,9 @@
 .output.txt
 .claude/settings.local.json
 .worktrees/
+.superpowers
+.remember
+.sonarcloud.properties
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,jetbrains+all,visualstudiocode,storybookjs
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,react,jetbrains+all,visualstudiocode,storybookjs

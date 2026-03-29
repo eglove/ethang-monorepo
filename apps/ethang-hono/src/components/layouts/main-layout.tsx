@@ -15,6 +15,7 @@ export type MainLayoutProperties = PropsWithChildren<{
   description?: string;
   imageUrl?: string;
   isBlog?: boolean;
+  pathname?: string;
   publishedAt?: string | undefined;
   textAlternate?: string;
   title?: string;
@@ -29,7 +30,7 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
     properties.description ?? "Messing around on the web sometimes.";
 
   return (
-    <html lang="en-US" class="dark bg-dark scroll-smooth">
+    <html lang="en-US" class="scroll-smooth">
       <head>
         <title>{title}</title>
         <meta charset="utf-8" />
@@ -96,7 +97,11 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         <script defer src="/scripts/loader.js" />
       </head>
       <body id="body">
-        <Navigation />
+        <Navigation
+          {...(properties.pathname === undefined
+            ? {}
+            : { pathname: properties.pathname })}
+        />
         <main class={twMerge("m-4 mt-20", properties.classNames?.main)}>
           {properties.children}
         </main>

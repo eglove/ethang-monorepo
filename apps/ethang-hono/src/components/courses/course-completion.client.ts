@@ -1,5 +1,33 @@
 import find from "lodash/find.js";
 import isNil from "lodash/isNil.js";
+import split from "lodash/split.js";
+import startsWith from "lodash/startsWith.js";
+
+const AUTH_COOKIE_NAME = "ethang-auth-token";
+
+// CookieStore API is not supported in WebKit (Safari). Fall back to parsing
+// document.cookie directly when the API is unavailable.
+const getCookieValue = async (name: string): Promise<string | undefined> => {
+  if ("cookieStore" in globalThis) {
+    const entry = await cookieStore.get(name);
+    return entry?.value;
+  }
+
+  const match = find(split(document.cookie, "; "), (row) =>
+    startsWith(row, `${name}=`),
+  );
+
+  return isNil(match) ? undefined : split(match, "=")[1];
+};
+
+const deleteCookie = async (name: string): Promise<void> => {
+  if ("cookieStore" in globalThis) {
+    await cookieStore.delete(name);
+    return;
+  }
+
+  document.cookie = `${name}=; Max-Age=0; path=/`;
+};
 
 type CourseStatus = {
   courseUrl: string;
@@ -19,6 +47,8 @@ type UserToken = {
 
 const BUTTON_SELECTOR = ".course-completion-button";
 const STATUS_SELECTOR = ".course-status-text";
+const BG_DEFAULT = "bg-default";
+const BG_WARNING = "bg-warning";
 
 // All helpers that are called during the top-level await (init → applyStoredStatuses)
 // must be declared before the if/else block at the bottom of this module. ES modules
@@ -36,14 +66,13 @@ const setUiState = (
 
   if ("Complete" === courseStatus?.status) {
     button.classList.add("bg-brand");
-    // eslint-disable-next-line sonar/no-duplicate-string
-    button.classList.remove("bg-neutral-secondary-medium", "bg-warning");
+    button.classList.remove(BG_DEFAULT, BG_WARNING);
   } else if ("Revisit" === courseStatus?.status) {
-    button.classList.add("bg-warning");
-    button.classList.remove("bg-neutral-secondary-medium", "bg-brand");
+    button.classList.add(BG_WARNING);
+    button.classList.remove(BG_DEFAULT, "bg-brand");
   } else {
-    button.classList.add("bg-neutral-secondary-medium");
-    button.classList.remove("bg-brand", "bg-warning");
+    button.classList.add(BG_DEFAULT);
+    button.classList.remove("bg-brand", BG_WARNING);
   }
 };
 
@@ -175,10 +204,9 @@ const applyStoredStatuses = async (userId: string) => {
 };
 
 const init = async () => {
-  // eslint-disable-next-line compat/compat
-  const token = await cookieStore.get("ethang-auth-token");
+  const tokenValue = await getCookieValue(AUTH_COOKIE_NAME);
 
-  if (isNil(token?.value)) {
+  if (isNil(tokenValue)) {
     // No auth token — the SW may have served a cached authenticated page.
     // Actively reset auth-dependent UI to the logged-out state.
     hideAuthenticatedUi();
@@ -187,12 +215,12 @@ const init = async () => {
 
   const verification = await fetch("https://auth.ethang.dev/verify", {
     headers: {
-      "X-Token": token.value,
+      "X-Token": tokenValue,
     },
   });
 
   if (!verification.ok) {
-    await cookieStore.delete("ethang-auth-token");
+    await deleteCookie(AUTH_COOKIE_NAME);
     location.reload();
     return;
   }
@@ -244,36 +272,9 @@ const init = async () => {
   }
 };
 
-const setupVideoDialog = () => {
-  const dialog = document.querySelector<HTMLDialogElement>("#video-dialog");
-  const outer = document.querySelector<HTMLButtonElement>(
-    "#video-dialog-outer",
-  );
-  const inner = document.querySelector<HTMLButtonElement>(
-    "#video-dialog-inner",
-  );
-
-  outer?.addEventListener("click", () => {
-    if (dialog) {
-      dialog.showModal();
-      dialog.classList.remove("hidden");
-      dialog.classList.add("grid");
-    }
-  });
-
-  inner?.addEventListener("click", () => {
-    if (dialog) {
-      dialog.close();
-      dialog.classList.remove("grid");
-      dialog.classList.add("hidden");
-    }
-  });
-};
-
 if ("loading" === document.readyState) {
   // eslint-disable-next-line @typescript-eslint/no-misused-promises,@typescript-eslint/strict-void-return
   document.addEventListener("DOMContentLoaded", init);
 } else {
   await init();
-  setupVideoDialog();
 }

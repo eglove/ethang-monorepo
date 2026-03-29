@@ -49,7 +49,7 @@ describe(NavigationLink, () => {
     );
 
     expect(html).toContain('aria-current="page"');
-    expect(html).toContain("bg-brand");
+    expect(html).toContain("bg-sky-300/10");
   });
 
   it("applies inactive styles when pathname does not match href", async () => {
@@ -62,7 +62,7 @@ describe(NavigationLink, () => {
     );
 
     expect(html).not.toContain('aria-current="page"');
-    expect(html).not.toContain("bg-brand");
+    expect(html).not.toContain("bg-sky-300/10");
   });
 
   it("does not include aria-current when not current page", async () => {

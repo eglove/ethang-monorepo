@@ -11,7 +11,7 @@ import {
 const ruleNames = keys(
   getNonDeprecatedRules(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    tseslint.plugin.rules as unknown as EsLintRules,
+    (tseslint.plugin as unknown as { rules: EsLintRules }).rules,
   ),
 );
 const customRules = [

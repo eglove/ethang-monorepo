@@ -27,7 +27,7 @@ export const Link = async (properties: LinkProperties) => {
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}
       class={twMerge(
-        "font-medium text-fg-brand hover:underline",
+        "font-medium text-sky-300 hover:underline",
         properties.className,
       )}
     >

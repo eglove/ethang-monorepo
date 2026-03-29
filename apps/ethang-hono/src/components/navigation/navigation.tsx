@@ -11,23 +11,26 @@ const navigationLinks = [
   { href: "/courses", title: "Courses" },
 ];
 
-export const Navigation = async () => {
+type NavigationProperties = {
+  pathname?: string;
+};
+
+export const Navigation = async ({ pathname }: NavigationProperties = {}) => {
+  const currentPathname = pathname ?? globalStore.pathname;
+
   return (
     <nav
       data-script="components/navigation/navigation"
-      class="border-default bg-neutral-primary fixed inset-s-0 top-0 z-20 w-full border-b"
+      class="fixed top-0 z-20 w-full border-b border-slate-600 bg-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
     >
       <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between p-4">
         <NavigationButton />
         <div id="navbar-default" class="hidden w-full md:block md:w-auto">
-          <ul class="rounded-base border-default bg-neutral-secondary-soft md:bg-neutral-primary mt-4 flex flex-col border p-4 font-medium md:mt-0 md:flex-row md:space-x-8 md:border-0 md:p-0 rtl:space-x-reverse">
+          <ul class="mt-4 flex flex-col rounded-lg border border-slate-600 bg-slate-700 p-4 font-medium md:mt-0 md:flex-row md:space-x-8 md:border-0 md:bg-slate-800 md:p-0 rtl:space-x-reverse">
             {map(navigationLinks, async (link) => {
               return (
                 <li>
-                  <NavigationLink
-                    href={link.href}
-                    pathname={globalStore.pathname}
-                  >
+                  <NavigationLink href={link.href} pathname={currentPathname}>
                     {link.title}
                   </NavigationLink>
                 </li>

@@ -7,7 +7,7 @@ import { Link } from "../typography/link.tsx";
 
 export const ProfileCard = async () => {
   return (
-    <div class="rounded-base border-default bg-neutral-primary-soft flex flex-col items-center border p-6 shadow-xs md:flex-row">
+    <div class="flex flex-col items-center rounded-lg border border-slate-600 bg-slate-800 p-6 shadow-[0_6px_24px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.04)] md:flex-row">
       <img
         width={200}
         height={200}
@@ -16,7 +16,7 @@ export const ProfileCard = async () => {
         class="mb-4 size-24 rounded-full object-cover"
       />
       <div class="grid p-4">
-        <h1 class="text-heading mb-2 text-2xl font-bold tracking-tight">
+        <h1 class="mb-2 font-heading text-2xl font-bold tracking-tight text-slate-100">
           Ethan Glover
         </h1>
         <div class="my-4 flex flex-wrap items-center gap-4">

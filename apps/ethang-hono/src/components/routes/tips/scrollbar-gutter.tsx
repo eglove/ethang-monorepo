@@ -48,7 +48,7 @@ export const ScrollbarGutter = async () => {
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
           <div className="border-body rounded-md border p-4">
-            <div className="text-body  mb-2 font-semibold">
+            <div className="mb-2  font-semibold text-slate-200">
               With scrollbar-gutter
             </div>
             <section
@@ -85,7 +85,7 @@ export const ScrollbarGutter = async () => {
             </section>
           </div>
           <div className="border-body rounded-md border p-4">
-            <div className="text-body mb-2 font-semibold">
+            <div className="mb-2 font-semibold text-slate-200">
               Without scrollbar-gutter
             </div>
             <section

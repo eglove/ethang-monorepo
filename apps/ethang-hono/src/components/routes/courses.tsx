@@ -12,13 +12,14 @@ import { P } from "../typography/p.tsx";
 import { YouTubeVideo } from "../you-tube-video.tsx";
 
 export const Courses = async () => {
+  const { isAuthenticated, locale, pathname, timezone } = globalStore;
   const { latestUpdate } = coursePathData;
 
   const formatted = DateTime.fromISO(
     get(latestUpdate, ["_updatedAt"], DateTime.now().toISO()),
     {
-      locale: globalStore.locale,
-      zone: globalStore.timezone,
+      locale,
+      zone: timezone,
     },
   ).toLocaleString({
     dateStyle: "medium",
@@ -27,6 +28,7 @@ export const Courses = async () => {
 
   return (
     <MainLayout
+      pathname={pathname}
       title="Recommended Courses"
       textAlternate="/courses?format=text"
       updatedAt={latestUpdate?._updatedAt}
@@ -41,21 +43,15 @@ export const Courses = async () => {
           title="EthanG | Recommended Courses"
           classNames={{ container: "max-h-96" }}
         />
-        <P
-          id="sign-in-prompt"
-          className={globalStore.isAuthenticated ? "hidden" : ""}
-        >
+        <P id="sign-in-prompt" className={isAuthenticated ? "hidden" : ""}>
           <Link href="/sign-in">Sign In To Track Changes</Link>
         </P>
-        <P
-          id="auth-section-header"
-          className={globalStore.isAuthenticated ? "" : "hidden"}
-        >
+        <P id="auth-section-header" className={isAuthenticated ? "" : "hidden"}>
           Your Progress:
         </P>
         <CourseProgressBar
           classNames={{
-            container: globalStore.isAuthenticated ? "" : "hidden",
+            container: isAuthenticated ? "" : "hidden",
           }}
         />
         <div class="my-6" data-script="components/courses/course-completion">

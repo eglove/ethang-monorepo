@@ -33,8 +33,11 @@ export class GlobalStore {
     const { origin, pathname } = new URL(context.req.url);
     const cfTimezone = context.req.raw.cf?.timezone;
     const timezone = isString(cfTimezone) ? cfTimezone : "UTC";
-    const locale =
-      first(split(context.req.header("Accept-Language"), ",")) ?? "en-US";
+    const rawLocale = first(split(context.req.header("Accept-Language"), ","));
+    // lodash split always returns [""] for null/undefined headers, so first() returns ""
+    // not undefined — the "en-US" fallback is defensive but unreachable via normal inputs
+    /* v8 ignore next */
+    const locale = rawLocale ?? "en-US";
 
     const token = getCookieValue("ethang-auth-token", context.req.raw.headers);
 
