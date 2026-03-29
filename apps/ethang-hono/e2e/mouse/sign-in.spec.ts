@@ -1,9 +1,13 @@
+/* eslint-disable lodash/prefer-lodash-method -- Playwright Locator.fill() is not Array.prototype.fill */
+import find from "lodash/find.js";
+
 import { routes } from "../../routes.ts";
 import { expect, test } from "../index.ts";
 
 const AUTH_SIGN_UP_URL = "https://auth.ethang.dev/sign-up";
 const MOCK_SESSION_TOKEN = "mock-session-token-value";
 const CONTENT_TYPE_JSON = "application/json";
+const MOCK_EMAIL = "test@example.com";
 
 test("sign-in page loads and passes a11y", async ({ axePage }) => {
   const response = await axePage.goto(routes.signIn);
@@ -32,14 +36,14 @@ test.describe("sign-in form — submission behavior", () => {
     );
 
     await page.goto(routes.signIn);
-    await page.getByLabel("Email").fill("test@example.com");
+    await page.getByLabel("Email").fill(MOCK_EMAIL);
     await page.getByLabel("Password").fill("password123");
     await page.getByRole("button", { name: "Submit" }).click();
 
     await page.waitForURL("**/courses");
 
     const cookies = await page.context().cookies();
-    const authCookie = cookies.find((c) => "ethang-auth-token" === c.name);
+    const authCookie = find(cookies, (c) => "ethang-auth-token" === c.name);
     expect(authCookie?.value).toBe(MOCK_SESSION_TOKEN);
   });
 
@@ -49,14 +53,13 @@ test.describe("sign-in form — submission behavior", () => {
       .route(AUTH_SIGN_UP_URL, async (route) => route.fulfill({ status: 401 }));
 
     await page.goto(routes.signIn);
-    await page.getByLabel("Email").fill("test@example.com");
+    await page.getByLabel("Email").fill(MOCK_EMAIL);
     await page.getByLabel("Password").fill("wrong-password");
     await page.getByRole("button", { name: "Submit" }).click();
 
-    await expect(page.locator("#sign-in-error")).toBeVisible();
-    await expect(page.locator("#sign-in-error")).toHaveText(
-      "Failed to sign in",
-    );
+    const errorElement = page.locator("#sign-in-error");
+    await expect(errorElement).toBeVisible();
+    await expect(errorElement).toHaveText("Failed to sign in");
   });
 
   test("submit button is disabled while request is in flight", async ({
@@ -75,7 +78,7 @@ test.describe("sign-in form — submission behavior", () => {
     });
 
     await page.goto(routes.signIn);
-    await page.getByLabel("Email").fill("test@example.com");
+    await page.getByLabel("Email").fill(MOCK_EMAIL);
     await page.getByLabel("Password").fill("password");
 
     const submitButton = page.getByRole("button", { name: "Submit" });

@@ -17,6 +17,17 @@ const AUTH_HEADER = "#auth-section-header";
 const COMPLETION_BUTTON = ".course-completion-button";
 const HIDDEN_BUTTON = ".course-completion-button.hidden";
 
+const mockPutTracking = async (page: Page, tracking: Tracking) =>
+  page
+    .context()
+    .route(`**/api/course-tracking/${MOCK_USER_ID}/**`, async (route) =>
+      route.fulfill({
+        body: JSON.stringify({ data: tracking, status: 200 }),
+        contentType: "application/json",
+        status: 200,
+      }),
+    );
+
 test.describe("courses page — unauthenticated", () => {
   test("hides completion buttons and progress bar", async ({ page }) => {
     await page.goto(routes.courses, { waitUntil: "networkidle" });
@@ -107,17 +118,6 @@ test.describe("courses page — authenticated", () => {
 });
 
 test.describe("courses page — completion button interactions", () => {
-  const mockPutTracking = async (page: Page, tracking: Tracking) =>
-    page
-      .context()
-      .route(`**/api/course-tracking/${MOCK_USER_ID}/**`, async (route) =>
-        route.fulfill({
-          body: JSON.stringify({ data: tracking, status: 200 }),
-          contentType: "application/json",
-          status: 200,
-        }),
-      );
-
   test.beforeEach(async ({ page }) => {
     await mockVerifyOk(page);
     await mockTrackingApi(page, []);

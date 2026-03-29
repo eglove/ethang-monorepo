@@ -1,3 +1,4 @@
+// cspell:ignore viewports
 import { expect, test } from "../index.ts";
 
 // The hamburger button is md:hidden — only visible on mobile viewports.
