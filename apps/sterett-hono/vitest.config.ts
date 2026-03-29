@@ -5,7 +5,7 @@ export default defineConfig({
     coverage: {
       include: ["src/**/*.{ts,tsx}"],
       provider: "v8",
-      reporter: ["text", "json", "html"],
+      reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
         branches: 62.73,
