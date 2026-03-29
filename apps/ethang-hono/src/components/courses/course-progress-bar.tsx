@@ -18,7 +18,7 @@ export const CourseProgressBar = async (
   properties?: CourseProgressBarProperties,
 ) => {
   const baseStyles =
-    "flex h-4 items-center justify-center p-0.5 text-center text-xs leading-none font-medium text-white transition-all duration-500 ease-out";
+    "flex h-4 items-center justify-center p-0.5 text-center text-xs leading-none font-medium transition-all duration-500 ease-out";
   const { complete, incomplete, revisit } =
     coursePathData.getStatusPercentages();
 
@@ -26,14 +26,18 @@ export const CourseProgressBar = async (
     <div
       id="course-progress-bar"
       class={twMerge(
-        "flex w-full rounded-full overflow-hidden bg-neutral-quaternary",
+        "flex w-full rounded-full overflow-hidden bg-slate-700",
         properties?.classNames?.container,
       )}
     >
       <div
         id="complete-progress"
         style={`width: ${complete}%`}
-        className={twMerge(baseStyles, "bg-brand", 0 === complete && "hidden")}
+        class={twMerge(
+          baseStyles,
+          "bg-sky-300 text-slate-900",
+          0 === complete && "hidden",
+        )}
       >
         {minToShow > complete ? "" : formatter.format(complete / 100)}
       </div>
@@ -41,7 +45,11 @@ export const CourseProgressBar = async (
       <div
         id="revisit-progress"
         style={`width: ${revisit}%`}
-        class={twMerge(baseStyles, "bg-warning", 0 === revisit && "hidden")}
+        class={twMerge(
+          baseStyles,
+          "bg-amber-400 text-slate-900",
+          0 === revisit && "hidden",
+        )}
       >
         {minToShow > revisit ? "" : formatter.format(revisit / 100)}
       </div>
@@ -51,7 +59,7 @@ export const CourseProgressBar = async (
         style={`width: ${incomplete}%`}
         class={twMerge(
           baseStyles,
-          "bg-neutral-quaternary",
+          "bg-slate-600 text-slate-200",
           100 === incomplete && "hidden",
         )}
       >

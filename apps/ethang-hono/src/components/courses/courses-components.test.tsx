@@ -181,10 +181,10 @@ describe(CourseList, () => {
       />,
     );
 
-    expect(html).toContain("bg-neutral-secondary-medium");
+    expect(html).toContain("bg-slate-700");
   });
 
-  it("applies bg-warning class when status is REVISIT", async () => {
+  it("applies bg-amber-400/10 class when status is REVISIT", async () => {
     resetCoursePathData();
     const courseUrl = faker.internet.url();
     const course = makeCourse({ _id: "c1", url: courseUrl });
@@ -204,7 +204,7 @@ describe(CourseList, () => {
       />,
     );
 
-    expect(html).toContain("bg-warning");
+    expect(html).toContain("bg-amber-400/10");
   });
 });
 
