@@ -39,7 +39,7 @@ test.describe("sign-in form — submission behavior", () => {
     await mockVerifyOk(axePage);
     await mockTrackingApi(axePage, []);
 
-    await axePage.goto(routes.signIn);
+    await axePage.goto(routes.signIn, { waitUntil: "networkidle" });
     await axePage.getByLabel("Email").fill(MOCK_EMAIL);
     await axePage.getByLabel("Password").fill("password123");
     await axePage.getByRole("button", { name: "Submit" }).click();
@@ -83,7 +83,7 @@ test.describe("sign-in form — submission behavior", () => {
     await mockVerifyOk(axePage);
     await mockTrackingApi(axePage, []);
 
-    await axePage.goto(routes.signIn);
+    await axePage.goto(routes.signIn, { waitUntil: "networkidle" });
     await axePage.getByLabel("Email").fill(MOCK_EMAIL);
     await axePage.getByLabel("Password").fill("password");
 

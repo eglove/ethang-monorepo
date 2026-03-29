@@ -15,9 +15,16 @@ test.describe("scroll-containers page — keyboard user", () => {
   });
 
   test("nav links are keyboard accessible (no keyboard trap)", async ({
+    isMobile,
     page,
   }) => {
     await page.goto(routes.scrollContainers);
+
+    // On mobile the nav links live inside the hamburger menu — open it first
+    // so the links are in the accessibility tree and can receive focus.
+    if (isMobile) {
+      await page.getByRole("button", { name: "Open main menu" }).click();
+    }
 
     // The scroll-containers page has no page-specific interactive elements.
     // Verify nav links are reachable so keyboard users are not trapped.

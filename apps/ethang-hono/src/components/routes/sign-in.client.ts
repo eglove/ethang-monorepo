@@ -1,3 +1,16 @@
+const AUTH_COOKIE_NAME = "ethang-auth-token";
+
+// CookieStore API is not supported in WebKit (Safari). Fall back to
+// document.cookie when the API is unavailable.
+const setAuthCookie = async (token: string): Promise<void> => {
+  if ("cookieStore" in globalThis) {
+    await globalThis.cookieStore.set(AUTH_COOKIE_NAME, token);
+    return;
+  }
+
+  document.cookie = `${AUTH_COOKIE_NAME}=${token}; path=/`;
+};
+
 const form = document.querySelector<HTMLFormElement>("#sign-in-form");
 const button = document.querySelector<HTMLButtonElement>("#sign-in-button");
 const errorMessageElement =
@@ -25,14 +38,10 @@ if (form && errorMessageElement && button) {
         }
         throw new Error("Failed to sign in");
       })
-      .then((_data) => {
-        globalThis.cookieStore
-          .set("ethang-auth-token", _data.sessionToken)
-          .then(() => {
-            globalThis.location.href = "/courses";
-            button.disabled = false;
-          })
-          .catch(globalThis.console.error);
+      .then(async (_data) => {
+        await setAuthCookie(_data.sessionToken);
+        globalThis.location.href = "/courses";
+        button.disabled = false;
       })
       .catch(() => {
         errorMessageElement.textContent = "Failed to sign in";

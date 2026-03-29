@@ -1,6 +1,32 @@
 import find from "lodash/find.js";
 import isNil from "lodash/isNil.js";
 
+const AUTH_COOKIE_NAME = "ethang-auth-token";
+
+// CookieStore API is not supported in WebKit (Safari). Fall back to parsing
+// document.cookie directly when the API is unavailable.
+const getCookieValue = async (name: string): Promise<string | undefined> => {
+  if ("cookieStore" in globalThis) {
+    const entry = await cookieStore.get(name);
+    return entry?.value;
+  }
+
+  const match = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${name}=`));
+
+  return match?.split("=")[1];
+};
+
+const deleteCookie = async (name: string): Promise<void> => {
+  if ("cookieStore" in globalThis) {
+    await cookieStore.delete(name);
+    return;
+  }
+
+  document.cookie = `${name}=; Max-Age=0; path=/`;
+};
+
 type CourseStatus = {
   courseUrl: string;
   id: string;
@@ -174,10 +200,9 @@ const applyStoredStatuses = async (userId: string) => {
 };
 
 const init = async () => {
-  // eslint-disable-next-line compat/compat
-  const token = await cookieStore.get("ethang-auth-token");
+  const tokenValue = await getCookieValue(AUTH_COOKIE_NAME);
 
-  if (isNil(token?.value)) {
+  if (isNil(tokenValue)) {
     // No auth token — the SW may have served a cached authenticated page.
     // Actively reset auth-dependent UI to the logged-out state.
     hideAuthenticatedUi();
@@ -186,12 +211,12 @@ const init = async () => {
 
   const verification = await fetch("https://auth.ethang.dev/verify", {
     headers: {
-      "X-Token": token.value,
+      "X-Token": tokenValue,
     },
   });
 
   if (!verification.ok) {
-    await cookieStore.delete("ethang-auth-token");
+    await deleteCookie(AUTH_COOKIE_NAME);
     location.reload();
     return;
   }

@@ -34,13 +34,21 @@ export const mockVerifyOk = async (page: Page) =>
 export const mockTrackingApi = async (page: Page, trackings: Tracking[]) =>
   page
     .context()
-    .route(`**/api/course-tracking/${MOCK_USER_ID}`, async (route) =>
-      route.fulfill({
+    .route(`**/api/course-tracking/${MOCK_USER_ID}`, async (route) => {
+      // Only intercept GET requests — PUT requests (course status updates) are
+      // handled by separate per-test mocks. In WebKit the broad glob pattern
+      // also matches longer PUT URLs, so we fall through for non-GET methods.
+      if ("GET" !== route.request().method()) {
+        await route.fallback();
+        return;
+      }
+
+      await route.fulfill({
         body: JSON.stringify({ data: trackings, status: 200 }),
         contentType: "application/json",
         status: 200,
-      }),
-    );
+      });
+    });
 
 export const setAuthCookie = async (page: Page) =>
   page.context().addCookies([
@@ -73,9 +81,11 @@ export const mockCourseStatusUpdate = async (
   page: Page,
   { id, status }: { id: string; status: string },
 ) =>
-  page
-    .context()
-    .route(`**/api/course-tracking/${MOCK_USER_ID}/**`, async (route) =>
+  // Use page.route() (not context.route()) so WebKit honours the mock even
+  // when it is registered after the page has already navigated.
+  page.route(
+    new RegExp(`/api/course-tracking/${MOCK_USER_ID}/`, "u"),
+    async (route) =>
       route.fulfill({
         body: JSON.stringify({
           data: {
@@ -89,4 +99,4 @@ export const mockCourseStatusUpdate = async (
         contentType: CONTENT_TYPE_JSON,
         status: 200,
       }),
-    );
+  );

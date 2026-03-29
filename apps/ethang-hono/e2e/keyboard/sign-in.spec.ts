@@ -32,7 +32,7 @@ test.describe("sign-in page — keyboard user", () => {
   test.describe("submit button key activation", () => {
     test.beforeEach(async ({ page }) => {
       await mockSignInSuccess(page);
-      await page.goto(routes.signIn);
+      await page.goto(routes.signIn, { waitUntil: "networkidle" });
       await page.getByLabel("Email").fill("test@example.com");
       await page.getByLabel("Password").fill("password");
       await page.getByRole("button", { name: "Submit" }).focus();

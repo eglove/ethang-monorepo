@@ -25,6 +25,9 @@ export default defineConfig({
     {
       name: "broken-links",
       testMatch: "**/broken-links.spec.ts",
+      // The broken-links test crawls hundreds of external URLs; each carries
+      // a 10 s per-link timeout so the total can well exceed 5 minutes.
+      timeout: 5 * 60 * 1000,
       use: { ...devices["Desktop Chrome"] },
     },
   ],
@@ -32,6 +35,10 @@ export default defineConfig({
   testDir: "./e2e",
   use: {
     baseURL: "http://localhost:8787",
+    // Block the service worker so Playwright route handlers can intercept
+    // all fetch requests — including non-GET requests (e.g. PUT) that the SW
+    // would otherwise proxy through its own fetch(), bypassing page.route().
+    serviceWorkers: "block",
     trace: "on-first-retry",
   },
 });
