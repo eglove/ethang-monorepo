@@ -244,36 +244,9 @@ const init = async () => {
   }
 };
 
-const setupVideoDialog = () => {
-  const dialog = document.querySelector<HTMLDialogElement>("#video-dialog");
-  const outer = document.querySelector<HTMLButtonElement>(
-    "#video-dialog-outer",
-  );
-  const inner = document.querySelector<HTMLButtonElement>(
-    "#video-dialog-inner",
-  );
-
-  outer?.addEventListener("click", () => {
-    if (dialog) {
-      dialog.showModal();
-      dialog.classList.remove("hidden");
-      dialog.classList.add("grid");
-    }
-  });
-
-  inner?.addEventListener("click", () => {
-    if (dialog) {
-      dialog.close();
-      dialog.classList.remove("grid");
-      dialog.classList.add("hidden");
-    }
-  });
-};
-
 if ("loading" === document.readyState) {
   // eslint-disable-next-line @typescript-eslint/no-misused-promises,@typescript-eslint/strict-void-return
   document.addEventListener("DOMContentLoaded", init);
 } else {
   await init();
-  setupVideoDialog();
 }
