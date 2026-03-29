@@ -35,15 +35,15 @@ const setUiState = (
   }
 
   if ("Complete" === courseStatus?.status) {
-    button.classList.add("bg-brand");
+    button.classList.add("bg-sky-300/10");
     // eslint-disable-next-line sonar/no-duplicate-string
-    button.classList.remove("bg-neutral-secondary-medium", "bg-warning");
+    button.classList.remove("bg-slate-700", "bg-amber-400/10");
   } else if ("Revisit" === courseStatus?.status) {
-    button.classList.add("bg-warning");
-    button.classList.remove("bg-neutral-secondary-medium", "bg-brand");
+    button.classList.add("bg-amber-400/10");
+    button.classList.remove("bg-slate-700", "bg-sky-300/10");
   } else {
-    button.classList.add("bg-neutral-secondary-medium");
-    button.classList.remove("bg-brand", "bg-warning");
+    button.classList.add("bg-slate-700");
+    button.classList.remove("bg-sky-300/10", "bg-amber-400/10");
   }
 };
 

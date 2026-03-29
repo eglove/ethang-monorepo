@@ -29,7 +29,7 @@ export const Tips = async () => {
           return (
             <li>
               <H2 className="border-none pb-0">
-                <Link href={tip.href} className="text-fg-brand-subtle">
+                <Link href={tip.href} className="text-slate-300">
                   {tip.title}
                 </Link>
               </H2>
