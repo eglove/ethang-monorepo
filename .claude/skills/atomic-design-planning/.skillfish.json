@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "atomic-design-planning",
+  "owner": "jclfocused",
+  "repo": "claude-agents",
+  "path": "custom_plugins/plugins/linear-planning-workflow/skills/atomic-design-planning",
+  "branch": "main",
+  "sha": "9221d8dc0498a8e4c2209d21eecf3389fe62f184",
+  "source": "manual"
+}

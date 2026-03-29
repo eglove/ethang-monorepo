@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "doc-bdd",
+  "owner": "vladm3105",
+  "repo": "aidoc-flow-framework",
+  "path": ".claude/skills/doc-bdd",
+  "branch": "main",
+  "sha": "8dfad5383af13fe36fe0c077aa37dd5f3ba4ac7f",
+  "source": "manual"
+}
