@@ -19,6 +19,7 @@ const formattedDateTime = (dateTime: string) => {
 };
 
 export const Blog = async () => {
+  const { pathname } = globalStore;
   const blogModel = new BlogModel();
   const blogs = await blogModel.getAllBlogs();
   const latestBlog = maxBy(blogs, "_updatedAt");
@@ -26,6 +27,7 @@ export const Blog = async () => {
   return (
     <BlogLayout
       title="Blog"
+      pathname={pathname}
       description="Ethan Glover's blog."
       updatedAt={latestBlog?._updatedAt}
       publishedAt={latestBlog?._createdAt}

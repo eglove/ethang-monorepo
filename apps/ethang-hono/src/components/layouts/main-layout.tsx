@@ -15,6 +15,7 @@ export type MainLayoutProperties = PropsWithChildren<{
   description?: string;
   imageUrl?: string;
   isBlog?: boolean;
+  pathname?: string;
   publishedAt?: string | undefined;
   textAlternate?: string;
   title?: string;
@@ -96,7 +97,7 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
         <script defer src="/scripts/loader.js" />
       </head>
       <body id="body">
-        <Navigation />
+        <Navigation pathname={properties.pathname} />
         <main class={twMerge("m-4 mt-20", properties.classNames?.main)}>
           {properties.children}
         </main>

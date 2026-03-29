@@ -27,6 +27,8 @@ Tests live alongside the code they cover. Use Vitest for all packages in this mo
 
 ## Domain-Driven Design (DDD) — Business Logic
 
+See @~/.claude/skills/ddd-architect/SKILL.md for the full DDD architecture methodology.
+
 Apply to all backend/domain logic, regardless of what framework delivers it.
 
 - Organize around domain concepts, not technical layers
@@ -36,9 +38,11 @@ Apply to all backend/domain logic, regardless of what framework delivers it.
 
 ## Atomic & Component-Driven Design — UI
 
-See @.claude/skills/atomic-design-planning/SKILL.md for the full methodology, hierarchy, and rules.
+See @~/.claude/skills/atomic-design-planning/SKILL.md for the full methodology, hierarchy, and rules.
 
 ## Behavior-Driven Development (BDD) — UI
+
+See @~/.claude/skills/doc-bdd/SKILL.md for the full BDD methodology and test structure.
 
 Apply to all UI code, regardless of whether it is delivered by a dedicated frontend app or server-rendered.
 
@@ -85,6 +89,8 @@ The array form avoids ambiguity when keys contain dots and makes numeric indices
 
 ## State Machine Mindset — Enumerate All States
 
+See @~/.claude/skills/tla-specification/SKILL.md for formal state machine specification with TLA+.
+
 Before implementing any feature, enumerate the possible states explicitly. You do not need to use XState or TLA+ tooling, but reason as if you were modeling a state machine:
 
 - What are all the states this can be in? (idle, loading, success, error, partial, stale, etc.)
@@ -114,21 +120,6 @@ await app.request("https://ethang.dev/courses");
 await app.request("https://ethang.dev/courses");
 await app.request("https://ethang.dev/courses");
 ```
-
-## WebStorm MCP Server — Prefer Over Built-in Tools
-
-When the WebStorm MCP server (`mcp__webstorm__*`) is available, prefer its tools over the built-in equivalents for all file and project operations:
-
-- **File search** — use `mcp__webstorm__find_files_by_glob` or `mcp__webstorm__find_files_by_name_keyword` instead of Glob
-- **Content search** — use `mcp__webstorm__search_in_files_by_text` or `mcp__webstorm__search_in_files_by_regex` instead of Grep
-- **File reading** — use `mcp__webstorm__read_file` or `mcp__webstorm__get_file_text_by_path` instead of Read; the MCP server can read any file in the project, so always prefer it over the built-in Read tool
-- **File editing** — use `mcp__webstorm__replace_text_in_file` instead of Edit or Write
-- **Terminal commands** — use `mcp__webstorm__execute_terminal_command` instead of Bash
-- **Run configurations** — use `mcp__webstorm__execute_run_configuration` to run builds, tests, and scripts
-- **Symbol lookup** — use `mcp__webstorm__get_symbol_info` or `mcp__webstorm__search_symbol` for navigating code
-- **Diagnostics** — use `mcp__webstorm__get_file_problems` for lint and type errors
-
-Use any other `mcp__webstorm__*` tool it exposes when it is the most direct way to accomplish the task. Fall back to built-in tools only when the MCP server does not expose the needed capability.
 
 ## Opportunistic Code Improvement
 

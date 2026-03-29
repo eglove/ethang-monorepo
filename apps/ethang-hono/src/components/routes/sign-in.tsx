@@ -1,11 +1,14 @@
+import { globalStore } from "../../stores/global-store-properties.ts";
 import { DEPLOY_TIME } from "../../utilities/deploy-info.ts";
 import { MainLayout } from "../layouts/main-layout.tsx";
 import { H1 } from "../typography/h1.tsx";
 import { P } from "../typography/p.tsx";
 
 export const SignIn = async () => {
+  const { pathname } = globalStore;
+
   return (
-    <MainLayout updatedAt={DEPLOY_TIME}>
+    <MainLayout pathname={pathname} updatedAt={DEPLOY_TIME}>
       <H1>Sign In</H1>
       <form
         id="sign-in-form"

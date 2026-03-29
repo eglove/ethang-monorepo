@@ -1,5 +1,6 @@
 import map from "lodash/map.js";
 
+import { globalStore } from "../../stores/global-store-properties.ts";
 import { DEPLOY_TIME } from "../../utilities/deploy-info.ts";
 import { MainLayout } from "../layouts/main-layout.tsx";
 import { H1 } from "../typography/h1.tsx";
@@ -17,9 +18,12 @@ export const allTips = [
 ];
 
 export const Tips = async () => {
+  const { pathname } = globalStore;
+
   return (
     <MainLayout
       title="Tips"
+      pathname={pathname}
       updatedAt={DEPLOY_TIME}
       classNames={{ main: "max-w-[65ch] md:mx-auto" }}
     >

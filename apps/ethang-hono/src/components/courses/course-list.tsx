@@ -48,9 +48,9 @@ export const CourseList = async (properties: CourseListProperties) => {
                 COURSE_TRACKING_STATUS.INCOMPLETE === courseData?.status &&
                   "bg-slate-700",
                 COURSE_TRACKING_STATUS.COMPLETE === courseData?.status &&
-                  "bg-sky-300/10",
+                  "bg-sky-300",
                 COURSE_TRACKING_STATUS.REVISIT === courseData?.status &&
-                  "bg-amber-400/10",
+                  "bg-amber-400",
                 !globalStore.isAuthenticated && "hidden",
               )}
             />

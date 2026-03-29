@@ -11,7 +11,13 @@ const navigationLinks = [
   { href: "/courses", title: "Courses" },
 ];
 
-export const Navigation = async () => {
+type NavigationProperties = {
+  pathname?: string;
+};
+
+export const Navigation = async ({ pathname }: NavigationProperties = {}) => {
+  const currentPathname = pathname ?? globalStore.pathname;
+
   return (
     <nav
       data-script="components/navigation/navigation"
@@ -24,10 +30,7 @@ export const Navigation = async () => {
             {map(navigationLinks, async (link) => {
               return (
                 <li>
-                  <NavigationLink
-                    href={link.href}
-                    pathname={globalStore.pathname}
-                  >
+                  <NavigationLink href={link.href} pathname={currentPathname}>
                     {link.title}
                   </NavigationLink>
                 </li>
