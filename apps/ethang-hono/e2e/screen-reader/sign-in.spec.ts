@@ -3,6 +3,9 @@ import { expect } from "@playwright/test";
 
 import { routes } from "../../routes.ts";
 
+// The auth service uses /sign-up as its authentication endpoint (not /sign-in)
+const AUTH_SIGN_UP_URL = "https://auth.ethang.dev/sign-up";
+
 test.describe("sign-in page — screen reader (NVDA)", () => {
   test("announces page heading", async ({ page, nvda }) => {
     await page.goto(routes.signIn, { waitUntil: "load" });
@@ -40,7 +43,7 @@ test.describe("sign-in page — screen reader (NVDA)", () => {
   });
 
   test("announces error message after failed submission", async ({ page, nvda }) => {
-    await page.context().route("https://auth.ethang.dev/sign-up", async (route) =>
+    await page.context().route(AUTH_SIGN_UP_URL, async (route) =>
       route.fulfill({ status: 401 }),
     );
 
