@@ -14,7 +14,7 @@ test("hamburger menu button toggles nav menu visibility", async ({
 
   // Only run on mobile viewports where the button is visible
   const isVisible = await hamburgerButton.isVisible();
-  if (!isVisible) return;
+  test.skip(!isVisible, "Hamburger menu only appears on mobile viewports");
 
   const navMenu = axePage.locator("#navbar-default");
 
