@@ -56,6 +56,7 @@
     "tailwind": "tailwindcss -i ./src/index.css -o ./public/index.css --watch",
     "test": "pnpm test:vitest",
     "test:e2e": "playwright test",
+    "test:e2e:sr": "playwright test --config=playwright.screen-reader.config.ts",
     "test:vitest": "vitest run --coverage",
     "wrangler:dev": "wrangler dev"
   },
