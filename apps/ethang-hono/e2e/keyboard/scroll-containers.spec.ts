@@ -2,40 +2,56 @@ import { expect, test } from "@playwright/test";
 
 import { routes } from "../../routes.ts";
 
+const NAV_LINKS = ["Home", "Blog", "Tips", "Courses"];
+const OPEN_MAIN_MENU = "Open main menu";
+
 test.describe("scroll-containers page — keyboard user", () => {
   test("page loads and all content headings are visible", async ({ page }) => {
     await page.goto(routes.scrollContainers);
 
-    await expect(
-      page.getByRole("heading", { name: "Easy Sticky Header/Footer" }),
-    ).toBeVisible();
-    await expect(page.getByRole("heading", { name: "CSS" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Tailwind" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Demo" })).toBeVisible();
+    await expect
+      .soft(page.getByRole("heading", { name: "Easy Sticky Header/Footer" }))
+      .toBeVisible();
+    await expect.soft(page.getByRole("heading", { name: "CSS" })).toBeVisible();
+    await expect
+      .soft(page.getByRole("heading", { name: "Tailwind" }))
+      .toBeVisible();
+    await expect
+      .soft(page.getByRole("heading", { name: "Demo" }))
+      .toBeVisible();
   });
 
-  test("nav links are keyboard accessible (no keyboard trap)", async ({
-    isMobile,
-    page,
-  }) => {
-    await page.goto(routes.scrollContainers);
+  test(
+    "nav links are keyboard accessible (no keyboard trap)",
+    { tag: "@desktop" },
+    async ({ page }) => {
+      await page.goto(routes.scrollContainers);
 
-    // On mobile the nav links live inside the hamburger menu — open it first
-    // so the links are in the accessibility tree and can receive focus.
-    if (isMobile) {
-      await page.getByRole("button", { name: "Open main menu" }).click();
-    }
+      for (const name of NAV_LINKS) {
+        const link = page.getByRole("link", { name });
+        // eslint-disable-next-line no-await-in-loop
+        await link.focus();
+        // eslint-disable-next-line no-await-in-loop
+        await expect.soft(link).toBeFocused();
+      }
+    },
+  );
 
-    // The scroll-containers page has no page-specific interactive elements.
-    // Verify nav links are reachable so keyboard users are not trapped.
-    const navLinks = ["Home", "Blog", "Tips", "Courses"];
+  test(
+    "nav links are keyboard accessible on mobile (no keyboard trap)",
+    { tag: "@mobile" },
+    async ({ page }) => {
+      await page.goto(routes.scrollContainers);
 
-    for (const name of navLinks) {
-      const link = page.getByRole("link", { name });
-      // eslint-disable-next-line no-await-in-loop
-      await link.focus();
-      // eslint-disable-next-line no-await-in-loop
-      await expect(link).toBeFocused();
-    }
-  });
+      await page.getByRole("button", { name: OPEN_MAIN_MENU }).click();
+
+      for (const name of NAV_LINKS) {
+        const link = page.getByRole("link", { name });
+        // eslint-disable-next-line no-await-in-loop
+        await link.focus();
+        // eslint-disable-next-line no-await-in-loop
+        await expect.soft(link).toBeFocused();
+      }
+    },
+  );
 });

@@ -14,11 +14,11 @@ test.describe("tips page — keyboard user", () => {
       name: SCROLL_CONTAINERS_TITLE,
     });
     await scrollContainersLink.focus();
-    await expect(scrollContainersLink).toBeFocused();
+    await expect.soft(scrollContainersLink).toBeFocused();
     await page.keyboard.press("Enter");
 
-    await expect(
-      page.getByRole("heading", { name: SCROLL_CONTAINERS_TITLE }),
-    ).toBeVisible();
+    await expect
+      .soft(page.getByRole("heading", { name: SCROLL_CONTAINERS_TITLE }))
+      .toBeVisible();
   });
 });

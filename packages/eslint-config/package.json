@@ -28,6 +28,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-lodash": "^8.0.0",
     "eslint-plugin-perfectionist": "^5.7.0",
+    "eslint-plugin-playwright": "^2.10.1",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-solid": "^0.14.5",
@@ -66,10 +67,10 @@
   },
   "scripts": {
     "build": "bun build.ts && pnpm lint",
-    "lint": "eslint . --fix && prettier src --write && pnpm tsc --noEmit",
+    "lint": "eslint . --fix --cache && prettier src --write --cache && pnpm tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage"
   },
   "type": "module",
-  "version": "25.8.6"
+  "version": "25.9.2"
 }

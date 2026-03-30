@@ -6,6 +6,8 @@ import last from "lodash/last.js";
 import map from "lodash/map.js";
 import { DateTime } from "luxon";
 
+import type { NewsAndEvents } from "./sanity/get-news-and-events.ts";
+
 import { CalendarPage } from "./components/pages/calendar-page.tsx";
 import { FilesPage } from "./components/pages/files-page.tsx";
 import { HomePage } from "./components/pages/home-page.tsx";
@@ -28,6 +30,14 @@ const lastQuery = (value: string | string[] | undefined): string | undefined =>
 
 app.get("/", async (c) => c.html(<HomePage />));
 app.get("/news", async (c) => c.html(<NewsPage />));
+
+app.post("/news-preview", async (c) => {
+  if ("true" !== c.env.ENABLE_TEST_ROUTES) {
+    return c.text("Not Found", 404);
+  }
+  const items = await c.req.json<NewsAndEvents>();
+  return c.html(<NewsPage items={items} />);
+});
 app.get("/files", async (c) => c.html(<FilesPage />));
 app.get(
   "/calendar",
@@ -35,10 +45,7 @@ app.get(
     const now = DateTime.now().setZone("America/Chicago");
     const rawView = lastQuery(value["view"]) ?? "month";
     return {
-      date:
-        lastQuery(value["date"]) ??
-        now.toISODate() ??
-        now.toFormat("yyyy-MM-dd"),
+      date: lastQuery(value["date"]) ?? now.toFormat("yyyy-MM-dd"),
       month: Number(lastQuery(value["month"]) ?? now.month),
       view: isCalendarView(rawView) ? rawView : "month",
       year: Number(lastQuery(value["year"]) ?? now.year),

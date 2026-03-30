@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
-    "@ethang/eslint-config": "^25.8.6",
+    "@ethang/eslint-config": "^25.9.2",
     "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.58.2",
     "@portabletext/types": "^4.0.2",
@@ -39,7 +39,7 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "deploy": "pnpm tw && bun scripts/stamp-sw.ts && wrangler deploy --minify",
     "dev": "wrangler dev",
-    "lint": "eslint . --fix && pnpm tsc --noEmit",
+    "lint": "eslint . --fix --cache && pnpm tsc --noEmit",
     "test": "pnpm test:vitest",
     "test:playwright": "playwright test",
     "test:vitest": "vitest run --coverage",

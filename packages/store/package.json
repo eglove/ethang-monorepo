@@ -10,7 +10,7 @@
   },
   "description": "Fine grained state management",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.8.6",
+    "@ethang/eslint-config": "^25.9.2",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.24",
     "@types/use-sync-external-store": "^1.5.0",
@@ -29,7 +29,7 @@
   "name": "@ethang/store",
   "scripts": {
     "build": "bun build.ts",
-    "lint": "eslint ./src --fix && pnpm tsc --noEmit",
+    "lint": "eslint ./src --fix --cache && pnpm tsc --noEmit",
     "test": "vitest run --coverage"
   },
   "type": "module",

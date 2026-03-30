@@ -4,6 +4,7 @@ import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 import type { FileRecord } from "../sanity/get-files.ts";
 import type {
   CalendarEventReturn,
+  NewsAndEvents,
   NewsUpdateReturn,
 } from "../sanity/get-news-and-events.ts";
 import type { TrusteeRecord } from "../sanity/get-trustees.ts";
@@ -17,6 +18,11 @@ import { CalendarEvent } from "../components/event.tsx";
 import { FileTable } from "../components/file-table.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { NewsUpdate } from "../components/news-update.tsx";
+import { CalendarPage } from "../components/pages/calendar-page.tsx";
+import { FilesPage } from "../components/pages/files-page.tsx";
+import { HomePage } from "../components/pages/home-page.tsx";
+import { NewsPage } from "../components/pages/news-page.tsx";
+import { TrusteesPage } from "../components/pages/trustees-page.tsx";
 import { PortableText } from "../components/portable-text.tsx";
 import { TrusteeCard } from "../components/trustee-card.tsx";
 
@@ -120,5 +126,44 @@ export const renderPortableText = async (
 ) => {
   const app = new Hono();
   app.get("/", async (c) => c.html(<PortableText content={content} />));
+  return html(app);
+};
+
+export const renderHomePage = async () => {
+  const app = new Hono();
+  app.get("/", async (c) => c.html(<HomePage />));
+  return html(app);
+};
+
+export const renderFilesPage = async () => {
+  const app = new Hono();
+  app.get("/", async (c) => c.html(<FilesPage />));
+  return html(app);
+};
+
+export const renderTrusteesPage = async () => {
+  const app = new Hono();
+  app.get("/", async (c) => c.html(<TrusteesPage />));
+  return html(app);
+};
+
+export const renderNewsPage = async (items?: NewsAndEvents) => {
+  const app = new Hono();
+  app.get("/", async (c) =>
+    items === undefined
+      ? c.html(<NewsPage />)
+      : c.html(<NewsPage items={items} />),
+  );
+  return html(app);
+};
+
+export const renderCalendarPage = async (properties: {
+  date: string;
+  month: number;
+  view: "day" | "month" | "week";
+  year: number;
+}) => {
+  const app = new Hono();
+  app.get("/", async (c) => c.html(<CalendarPage {...properties} />));
   return html(app);
 };

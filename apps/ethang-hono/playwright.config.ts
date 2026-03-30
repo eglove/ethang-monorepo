@@ -1,10 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 import map from "lodash/map.js";
 
-const DESKTOP_MOBILE_BROWSERS = [
+const DESKTOP_BROWSERS = [
   { name: "chromium", use: { ...devices["Desktop Chrome"] } },
   { name: "firefox", use: { ...devices["Desktop Firefox"] } },
   { name: "webkit", use: { ...devices["Desktop Safari"] } },
+] as const;
+
+const MOBILE_BROWSERS = [
   { name: "Mobile Chrome", use: { ...devices["Pixel 7"] } },
   { name: "Mobile Safari", use: { ...devices["iPhone 15"] } },
 ] as const;
@@ -12,13 +15,27 @@ const DESKTOP_MOBILE_BROWSERS = [
 export default defineConfig({
   fullyParallel: true,
   projects: [
-    ...map(DESKTOP_MOBILE_BROWSERS, (b) => ({
+    ...map(DESKTOP_BROWSERS, (b) => ({
       ...b,
+      grepInvert: /@mobile/u,
       name: `mouse-${b.name}`,
       testMatch: "**/mouse/**/*.spec.ts",
     })),
-    ...map(DESKTOP_MOBILE_BROWSERS, (b) => ({
+    ...map(MOBILE_BROWSERS, (b) => ({
       ...b,
+      grepInvert: /@desktop/u,
+      name: `mouse-${b.name}`,
+      testMatch: "**/mouse/**/*.spec.ts",
+    })),
+    ...map(DESKTOP_BROWSERS, (b) => ({
+      ...b,
+      grepInvert: /@mobile/u,
+      name: `keyboard-${b.name}`,
+      testMatch: "**/keyboard/**/*.spec.ts",
+    })),
+    ...map(MOBILE_BROWSERS, (b) => ({
+      ...b,
+      grepInvert: /@desktop/u,
       name: `keyboard-${b.name}`,
       testMatch: "**/keyboard/**/*.spec.ts",
     })),

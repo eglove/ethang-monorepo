@@ -3,12 +3,12 @@ import { expect, test } from "@playwright/test";
 import { routes } from "../../routes.ts";
 
 test.describe("blog listing page — keyboard user", () => {
-  test("RSS Feed link is keyboard accessible", async ({ page }) => {
+  test("rss Feed link is keyboard accessible", async ({ page }) => {
     await page.goto(routes.blog);
 
     const rssLink = page.getByRole("link", { name: "RSS Feed" });
     await rssLink.focus();
-    await expect(rssLink).toBeFocused();
+    await expect.soft(rssLink).toBeFocused();
   });
 
   test("blog post links are keyboard accessible", async ({ page }) => {
@@ -16,9 +16,9 @@ test.describe("blog listing page — keyboard user", () => {
 
     const firstPostLink = page.locator(`a[href^="${routes.blog}/"]`).first();
     await firstPostLink.focus();
-    await expect(firstPostLink).toBeFocused();
+    await expect.soft(firstPostLink).toBeFocused();
     await page.keyboard.press("Enter");
 
-    await expect(page).toHaveURL(new RegExp(`${routes.blog}/`, "u"));
+    await expect.soft(page).toHaveURL(new RegExp(`${routes.blog}/`, "u"));
   });
 });

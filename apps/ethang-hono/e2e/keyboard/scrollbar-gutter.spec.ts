@@ -7,35 +7,35 @@ const WITHOUT_EXAMPLE = "#scrollbar-gutter-without-example";
 const SHOW_EXTRA_CONTENT = "Show extra content";
 
 test.describe("scrollbar-gutter page — keyboard user", () => {
-  test.beforeEach(async ({ page }) => {
+  test("show extra content button is focusable", async ({ page }) => {
     await page.goto(routes.scrollbarGutter);
-  });
-
-  test("Show extra content button is focusable", async ({ page }) => {
     const button = page.getByRole("button", { name: SHOW_EXTRA_CONTENT });
     await button.focus();
-    await expect(button).toBeFocused();
+    await expect.soft(button).toBeFocused();
   });
 
-  test("Enter on show button reveals demo content", async ({ page }) => {
+  test("enter on show button reveals demo content", async ({ page }) => {
+    await page.goto(routes.scrollbarGutter);
     const button = page.getByRole("button", { name: SHOW_EXTRA_CONTENT });
     await button.focus();
     await page.keyboard.press("Enter");
 
-    await expect(page.locator(WITH_EXAMPLE)).toBeVisible();
-    await expect(page.locator(WITHOUT_EXAMPLE)).toBeVisible();
+    await expect.soft(page.locator(WITH_EXAMPLE)).toBeVisible();
+    await expect.soft(page.locator(WITHOUT_EXAMPLE)).toBeVisible();
   });
 
-  test("Space on show button reveals demo content", async ({ page }) => {
+  test("space on show button reveals demo content", async ({ page }) => {
+    await page.goto(routes.scrollbarGutter);
     const button = page.getByRole("button", { name: SHOW_EXTRA_CONTENT });
     await button.focus();
     await page.keyboard.press("Space");
 
-    await expect(page.locator(WITH_EXAMPLE)).toBeVisible();
-    await expect(page.locator(WITHOUT_EXAMPLE)).toBeVisible();
+    await expect.soft(page.locator(WITH_EXAMPLE)).toBeVisible();
+    await expect.soft(page.locator(WITHOUT_EXAMPLE)).toBeVisible();
   });
 
-  test("Enter on hide button hides demo content again", async ({ page }) => {
+  test("enter on hide button hides demo content again", async ({ page }) => {
+    await page.goto(routes.scrollbarGutter);
     await page.getByRole("button", { name: SHOW_EXTRA_CONTENT }).focus();
     await page.keyboard.press("Enter");
 
@@ -43,7 +43,7 @@ test.describe("scrollbar-gutter page — keyboard user", () => {
     await hideButton.focus();
     await page.keyboard.press("Enter");
 
-    await expect(page.locator(WITH_EXAMPLE)).toBeHidden();
-    await expect(page.locator(WITHOUT_EXAMPLE)).toBeHidden();
+    await expect.soft(page.locator(WITH_EXAMPLE)).toBeHidden();
+    await expect.soft(page.locator(WITHOUT_EXAMPLE)).toBeHidden();
   });
 });

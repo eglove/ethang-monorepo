@@ -1,12 +1,21 @@
 import map from "lodash/map.js";
 
-import { getNewsAndEvents } from "../../sanity/get-news-and-events.ts";
+import {
+  getNewsAndEvents,
+  type NewsAndEvents,
+} from "../../sanity/get-news-and-events.ts";
 import { CalendarEvent } from "../event.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
 import { NewsUpdate } from "../news-update.tsx";
 
-export const NewsPage = async () => {
-  const items = await getNewsAndEvents();
+type NewsPageProperties = {
+  items?: NewsAndEvents;
+};
+
+export const NewsPage = async ({
+  items: providedItems,
+}: NewsPageProperties = {}) => {
+  const items = providedItems ?? (await getNewsAndEvents());
   const updatedAt = map(items, (index) => index._updatedAt)
     .toSorted((a, b) => a.localeCompare(b))
     .at(-1);
