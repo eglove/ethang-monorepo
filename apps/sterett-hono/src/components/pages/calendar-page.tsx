@@ -1,4 +1,3 @@
-import filter from "lodash/filter.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
@@ -10,13 +9,15 @@ import {
   getLatestCalendarEventUpdatedAt,
 } from "../../sanity/get-calendar-events.ts";
 import {
+  buildCrossViewDate,
+  buildNavConfig,
+  buildPrefetchUrls,
+} from "../../utils/calendar-nav.ts";
+import {
   buildCalendarWeeks,
   buildEventsByDate,
-  formatDayHeading,
-  formatWeekHeading,
   getViewDateRange,
   getWeekDays,
-  shiftDate,
 } from "../../utils/calendar.ts";
 import { DayView } from "../calendar-day-view.tsx";
 import { CalendarEventDialog } from "../calendar-event-dialog.tsx";
@@ -85,62 +86,42 @@ export const CalendarPage = async ({
   // Day view locals
   const isToday = date === today;
 
-  // Cross-view navigation: derive a representative date from whatever is currently displayed.
-  // On month view the URL has no `date` param, so we use the 1st of the displayed month.
-  // On week/day view `date` is already a meaningful ISO date.
-  const crossViewDt =
-    "month" === view
-      ? currentMonthDt
-      : DateTime.fromISO(date, { zone: CHICAGO });
+  const crossViewDt = buildCrossViewDate(view, date, currentMonthDt);
   const crossViewDate = crossViewDt.toISODate();
   if (isNil(crossViewDate))
     throw new Error("Could not determine cross-view date");
+
   const crossViewYear = crossViewDt.year;
   const crossViewMonth = crossViewDt.month;
 
   const navLinkClass =
     "inline-flex min-h-6 items-center rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors";
 
-  const navConfig = {
-    day: {
-      heading: formatDayHeading(date),
-      nextHref: `/calendar?view=day&date=${shiftDate(date, 1)}`,
-      prevHref: `/calendar?view=day&date=${shiftDate(date, -1)}`,
-      // Show "Today" when viewing any day other than today
-      showToday: !isToday,
-      todayHref: `/calendar?view=day&date=${today}`,
-    },
-    month: {
-      heading: `${monthName} ${year}`,
-      nextHref: `/calendar?view=month&year=${nextYear}&month=${nextMonth}`,
-      prevHref: `/calendar?view=month&year=${previousYear}&month=${previousMonth}`,
-      // Show "Today" when the viewed month doesn't contain today
-      showToday: !isCurrentMonth,
-      todayHref: `/calendar?view=month&year=${todayYear}&month=${todayMonth}`,
-    },
-    week: {
-      heading: formatWeekHeading(date),
-      nextHref: `/calendar?view=week&date=${shiftDate(date, 7)}`,
-      prevHref: `/calendar?view=week&date=${shiftDate(date, -7)}`,
-      // Show "Today" when the viewed week doesn't contain today
-      showToday: !isCurrentWeek,
-      todayHref: `/calendar?view=week&date=${today}`,
-    },
-  }[view];
-
   const tabMonthHref = `/calendar?view=month&year=${crossViewYear}&month=${crossViewMonth}`;
   const tabWeekHref = `/calendar?view=week&date=${crossViewDate}`;
   const tabDayHref = `/calendar?view=day&date=${crossViewDate}`;
-  const prefetch = filter(
-    [
-      navConfig.prevHref,
-      navConfig.nextHref,
-      "month" === view ? null : tabMonthHref,
-      "week" === view ? null : tabWeekHref,
-      "day" === view ? null : tabDayHref,
-    ],
-    (value) => !isNil(value),
-  );
+
+  const navConfig = buildNavConfig({
+    date,
+    isCurrentMonth,
+    isCurrentWeek,
+    isToday,
+    month,
+    monthName,
+    nextMonth,
+    nextYear,
+    previousMonth,
+    previousYear,
+    today,
+    view,
+    year,
+  });
+
+  const prefetch = buildPrefetchUrls(navConfig, view, {
+    tabDayHref,
+    tabMonthHref,
+    tabWeekHref,
+  });
 
   return (
     <MainLayout
