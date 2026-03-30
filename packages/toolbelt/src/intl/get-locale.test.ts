@@ -18,12 +18,20 @@ describe(getLocale, () => {
       expect(result).toBeNull();
     });
 
-    it("falls through to the next source when accept-language source is absent", () => {
-      vi.stubGlobal("navigator", { language: "fr-FR" });
-      const result = getLocale([ACCEPT_LANGUAGE, "navigator"]);
+    describe("falls through to the next source when accept-language source is absent", () => {
+      beforeEach(() => {
+        vi.stubGlobal("navigator", { language: "fr-FR" });
+      });
 
-      expect(result).toBe("fr-FR");
-      vi.unstubAllGlobals();
+      afterEach(() => {
+        vi.unstubAllGlobals();
+      });
+
+      it("uses the next source in order", () => {
+        const result = getLocale([ACCEPT_LANGUAGE, "navigator"]);
+
+        expect(result).toBe("fr-FR");
+      });
     });
   });
 
@@ -93,11 +101,19 @@ describe(getLocale, () => {
     expect(result).toBeNull();
   });
 
-  it("respects source type order — first matching wins", () => {
-    vi.stubGlobal("navigator", { language: "es-ES" });
-    const result = getLocale(["navigator", ACCEPT_LANGUAGE], "en-US");
+  describe("respects source type order — first matching wins", () => {
+    beforeEach(() => {
+      vi.stubGlobal("navigator", { language: "es-ES" });
+    });
 
-    expect(result).toBe("es-ES");
-    vi.unstubAllGlobals();
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it("returns the first source that resolves", () => {
+      const result = getLocale(["navigator", ACCEPT_LANGUAGE], "en-US");
+
+      expect(result).toBe("es-ES");
+    });
   });
 });
