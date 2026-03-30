@@ -39,6 +39,12 @@ describe(getLocale, () => {
 
       expect(result).toBeNull();
     });
+
+    it("returns locale from cookie string", () => {
+      const result = getLocale(["cookie"], "locale=en-GB; Path=/", "locale");
+
+      expect(result).toBe("en-GB");
+    });
   });
 
   describe("navigator source", () => {
