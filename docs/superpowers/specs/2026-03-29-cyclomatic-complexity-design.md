@@ -30,6 +30,8 @@ Both rules remain enabled. No config changes are needed.
 
 ## Violations Inventory
 
+### Cyclomatic Complexity (`sonar/cyclomatic-complexity`)
+
 | File | Cyclomatic | Cognitive disable? |
 |---|---|---|
 | `apps/ethang-hono/src/components/button/button-classes.ts` | 14 | no |
@@ -38,6 +40,28 @@ Both rules remain enabled. No config changes are needed.
 | `packages/toolbelt/src/events/cosmos.ts` | 22 | yes |
 | `packages/toolbelt/src/intl/get-locale.ts` | 12 | no |
 | `packages/leetcode/src/waterfall-streams/waterfall-streams.ts` | 12 | yes |
+
+### Cognitive Complexity Suppressions (`sonar/cognitive-complexity`)
+
+These are `// eslint-disable-next-line sonar/cognitive-complexity` comments that exist
+**independently of the cyclomatic violations**. Before implementation begins, grep the entire
+codebase for all occurrences:
+
+```
+grep -r "sonar/cognitive-complexity" --include="*.ts" --include="*.tsx" .
+```
+
+Known suppressions at time of spec (3 files):
+
+| File | Line | Notes |
+|---|---|---|
+| `apps/ethang-hono/src/components/portable-text.tsx` | 67 | also has cyclomatic violation |
+| `packages/toolbelt/src/events/cosmos.ts` | 200 | also has cyclomatic violation |
+| `packages/leetcode/src/waterfall-streams/waterfall-streams.ts` | 8 | also has cyclomatic violation |
+
+Every suppression comment must be **removed and the underlying complexity fixed** — not just
+the three above. Re-run the grep at the start of implementation to catch any that were added
+after this spec was written.
 
 ---
 
@@ -187,12 +211,17 @@ Projected complexity: ≤5 per function.
 
 ## Worktree Strategy
 
-The current branch has unstaged changes (the `sonar/cyclomatic-complexity` enable in `sonar.ts`
-plus other package changes from git status). When moving to a git worktree:
-1. Stash or copy the unstaged changes from the current branch
-2. Create the worktree from the current branch (not main) so the ESLint changes are included
-3. Apply the stashed changes in the worktree
-4. All implementation happens in the worktree
+The current branch has uncommitted changes across many files (ESLint config in `sonar.ts`,
+package.json version bumps, `pnpm-lock.yaml`, config files, etc. — see `git status`).
+All of these must be present in the worktree before implementation begins.
+
+Steps:
+1. Run `git stash --include-untracked` on the current branch to capture **all** uncommitted changes
+2. Create a new worktree from the current branch:
+   `git worktree add ../ethang-monorepo-complexity <branch-name>`
+3. In the new worktree, apply the stash: `git stash pop`
+4. Confirm the ESLint change (`sonar.ts`) and all package bumps are present before starting work
+5. All implementation happens in the worktree; the original checkout is left clean
 
 ---
 
