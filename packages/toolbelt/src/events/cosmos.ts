@@ -189,54 +189,105 @@ export class Cosmos {
     });
   }
 
+  private listenerMatchesFilters(
+    id: string,
+    listener: StoredListener<string>,
+    filters: EventListenerFilters<string>,
+  ): boolean {
+    return (
+      this.matchesById(id, filters) ||
+      this.matchesByListenerAndEvent(listener, filters) ||
+      this.matchesByListenerAndEventAndOptions(listener, filters) ||
+      this.matchesByEventAndTarget(listener, filters)
+    );
+  }
+
+  private matchesByAny(
+    listener: StoredListener<string>,
+    filters: EventListenerFilters<string>,
+  ): boolean {
+    const isEventNameEqual =
+      !isNil(filters.eventName) && filters.eventName === listener.eventName;
+    const isListenerEqual =
+      !isNil(filters.listener) && filters.listener === listener.listener;
+    const isOptionsEqual =
+      !isNil(filters.options) && filters.options === listener.options;
+    const isTargetEqual =
+      !isNil(filters.eventTarget) &&
+      listener.eventTarget === filters.eventTarget;
+
+    return (
+      isEventNameEqual || isTargetEqual || isListenerEqual || isOptionsEqual
+    );
+  }
+
+  private matchesByEventAndTarget(
+    listener: StoredListener<string>,
+    filters: EventListenerFilters<string>,
+  ): boolean {
+    const isEventNameEqual =
+      !isNil(filters.eventName) && filters.eventName === listener.eventName;
+    const isTargetEqual =
+      !isNil(filters.eventTarget) &&
+      listener.eventTarget === filters.eventTarget;
+
+    return isEventNameEqual && isTargetEqual;
+  }
+
+  private matchesById(
+    id: string,
+    filters: EventListenerFilters<string>,
+  ): boolean {
+    return !isNil(filters.id) && id === filters.id;
+  }
+
+  private matchesByListenerAndEvent(
+    listener: StoredListener<string>,
+    filters: EventListenerFilters<string>,
+  ): boolean {
+    const isOptionsEmpty = isNil(filters.options) || isEmpty(filters.options);
+    const isEventNameEqual =
+      !isNil(filters.eventName) && filters.eventName === listener.eventName;
+    const isListenerEqual =
+      !isNil(filters.listener) && filters.listener === listener.listener;
+
+    return isEventNameEqual && isListenerEqual && isOptionsEmpty;
+  }
+
+  private matchesByListenerAndEventAndOptions(
+    listener: StoredListener<string>,
+    filters: EventListenerFilters<string>,
+  ): boolean {
+    const isEventNameEqual =
+      !isNil(filters.eventName) && filters.eventName === listener.eventName;
+    const isListenerEqual =
+      !isNil(filters.listener) && filters.listener === listener.listener;
+    const isOptionsEqual =
+      !isNil(filters.options) && filters.options === listener.options;
+
+    return isEventNameEqual && isListenerEqual && isOptionsEqual;
+  }
+
   /*
    * Uses priority filtering.
    * 1st priority: If Id is defined in filters, callback will run based on id.
-   * 2nd priority: Listener + EventName
+   * 2nd priority: Listener + EventName (no options)
    * 3rd priority: Listener + EventName + Options
    * 4th: EventName + Target
-   * 5th: EvenName OR Target
+   * 5th: EventName OR Target OR Listener OR Options
+   * 6th: Empty filters — match all
    */
-  // eslint-disable-next-line sonar/cognitive-complexity
   private onEventListenerFilter<T extends keyof WindowEventMapPlus>(
     filters: EventListenerFilters<T>,
     callback: (id: string, listener: StoredListener<string>) => void,
   ) {
     for (const [id, listener] of this._nativeListeners) {
-      const isOptionsEmpty = isNil(filters.options) || isEmpty(filters.options);
-
-      const isIsIdEqual = !isNil(filters.id) && id === filters.id;
-
-      const isEventNameEqual =
-        !isNil(filters.eventName) && filters.eventName === listener.eventName;
-      const isListenerEqual =
-        !isNil(filters.listener) && filters.listener === listener.listener;
-      const isOptionsEqual =
-        !isNil(filters.options) && filters.options === listener.options;
-
-      const isTargetEqual =
-        !isNil(filters.eventTarget) &&
-        listener.eventTarget === filters.eventTarget;
-
-      if (isIsIdEqual) {
-        callback(id, listener);
-      } else if (isEventNameEqual && isListenerEqual && isOptionsEmpty) {
-        callback(id, listener);
-      } else if (isEventNameEqual && isListenerEqual && isOptionsEqual) {
-        callback(id, listener);
-      } else if (isEventNameEqual && isTargetEqual) {
-        callback(id, listener);
-      } else if (
-        isEventNameEqual ||
-        isTargetEqual ||
-        isListenerEqual ||
-        isOptionsEqual
+      if (
+        this.listenerMatchesFilters(id, listener, filters) ||
+        this.matchesByAny(listener, filters) ||
+        isEmpty(filters)
       ) {
         callback(id, listener);
-      } else if (isEmpty(filters)) {
-        callback(id, listener);
-      } else {
-        // Nothing
       }
     }
   }
