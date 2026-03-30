@@ -16,13 +16,16 @@ import type {
 import { sterettSanityClient } from "../../clients/sanity-client.ts";
 import { renderNewsPage } from "../../test-utils/render.tsx";
 
+const BOARD_MEETING = "Board Meeting";
+const NEWS_UPDATE = "News Update";
+
 const mockEvent: CalendarEventReturn = {
   _id: "evt-1",
   _updatedAt: "2024-06-15T00:00:00Z",
   description: null as unknown as CalendarEventReturn["description"],
   endsAt: "2024-06-15T15:00:00Z",
   startsAt: "2024-06-15T13:00:00Z",
-  title: "Board Meeting",
+  title: BOARD_MEETING,
 };
 
 const mockUpdate: NewsUpdateReturn = {
@@ -30,7 +33,7 @@ const mockUpdate: NewsUpdateReturn = {
   _updatedAt: "2024-06-14T00:00:00Z",
   date: "2024-06-14",
   description: null as unknown as NewsUpdateReturn["description"],
-  title: "News Update",
+  title: NEWS_UPDATE,
 };
 
 describe("newsPage", () => {
@@ -49,27 +52,27 @@ describe("newsPage", () => {
   it("renders a calendar event item", async () => {
     const html = await renderNewsPage([mockEvent]);
 
-    expect(html).toContain("Board Meeting");
+    expect(html).toContain(BOARD_MEETING);
   });
 
   it("renders a news update item", async () => {
     const html = await renderNewsPage([mockUpdate]);
 
-    expect(html).toContain("News Update");
+    expect(html).toContain(NEWS_UPDATE);
   });
 
   it("renders both event and update items together", async () => {
     const html = await renderNewsPage([mockEvent, mockUpdate]);
 
-    expect(html).toContain("Board Meeting");
-    expect(html).toContain("News Update");
+    expect(html).toContain(BOARD_MEETING);
+    expect(html).toContain(NEWS_UPDATE);
   });
 
   it("fetches news from sanity when no items are provided", async () => {
     vi.clearAllMocks();
-    vi.mocked(sterettSanityClient.fetch).mockResolvedValue(
-      [] as unknown as never,
-    );
+    // @ts-expect-error for test
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValue([]);
     const html = await renderNewsPage();
 
     expect(html).toContain("No upcoming news or events");

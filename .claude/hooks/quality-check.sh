@@ -48,9 +48,11 @@ if [ "$TEST_CODE" -ne 0 ] || [ "$LINT_CODE" -ne 0 ] || [ "$TSC_CODE" -ne 0 ]; th
       hookSpecificOutput: {
         hookEventName: "PostToolUse",
         additionalContext: (
+          "QUALITY CHECK FAILED — you MUST fix all issues before continuing. Do not move on, do not skip, do not mark any task complete until every failure below is resolved.\n\n" +
           (if $tf then "TESTS FAILED:\n" + $t + "\n\n" else "" end) +
           (if $lf then "LINT FAILED:\n" + $l + "\n\n" else "" end) +
-          (if $tscf then "TYPE CHECK FAILED:\n" + $tsc else "" end)
+          (if $tscf then "TYPE CHECK FAILED:\n" + $tsc + "\n\n" else "" end) +
+          "Fix the failures above, then re-run the checks. If you are stuck or cannot determine how to fix an issue, stop and ask the user for guidance before proceeding."
         )
       }
     }'
