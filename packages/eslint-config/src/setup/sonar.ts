@@ -8,7 +8,6 @@ const ruleNames = keys(getNonDeprecatedRules(sonar.rules));
 const customRules = [
   { name: "arrow-function-convention", rule: "off" },
   { name: "comment-regex", rule: "off" },
-  { name: "cyclomatic-complexity", rule: "off" },
   { name: "file-header", rule: "off" },
   {
     name: "function-name",
@@ -29,9 +28,7 @@ const customRules = [
   { name: "no-reference-error", rule: "off" },
 ];
 
-const rules = genRules(ruleNames, customRules, "sonar");
-
-export const sonarRules = rules;
+export const sonarRules = genRules(ruleNames, customRules, "sonar");
 
 export const sonarPlugin = new Plugin({
   files: "**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}",

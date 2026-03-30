@@ -637,7 +637,7 @@ export default defineConfig(
       "sonar/cookie-no-httponly": "error",
       "sonar/cors": "error",
       "sonar/csrf": "error",
-      "sonar/cyclomatic-complexity": "off",
+      "sonar/cyclomatic-complexity": "error",
       "sonar/declarations-in-global-scope": "error",
       "sonar/deprecation": "error",
       "sonar/destructuring-assignment-syntax": "error",

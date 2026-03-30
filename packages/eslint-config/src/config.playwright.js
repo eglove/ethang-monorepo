@@ -5,7 +5,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import { ignores, languageOptions } from "./constants.js";
 
 export default defineConfig(globalIgnores(ignores), {
-  files: ["**/*.spec.ts"],
+  files: ["**/*.spec.{ts,tsx,js,jsx,mjs,cjs}"],
   languageOptions,
   plugins: {
     playwright,
