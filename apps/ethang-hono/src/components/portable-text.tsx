@@ -20,138 +20,228 @@ import { List } from "./typography/list.tsx";
 import { P } from "./typography/p.tsx";
 import { YouTubeVideo } from "./you-tube-video.tsx";
 
+type Block = Body[number];
+type BlockChildren = NonNullable<Block["children"]>;
+type Body = GetBlogBySlug["body"];
+
+type MarkDefinition = { _key: string; _type: string; href?: string };
+
 type PortableTextProperties = {
-  children: GetBlogBySlug["body"];
+  children: Body;
+};
+
+type RenderContext = {
+  allChildren: Body;
+  renderChildren: (
+    nodeChildren: BlockChildren | undefined,
+  ) => null | ReturnType<typeof map>;
+};
+
+const STYLE_RENDERERS: Record<
+  string,
+  (block: Block, context: RenderContext) => Child
+> = {
+  blockquote: async (block, context) => (
+    // @ts-expect-error ignore
+    <Blockquote
+      author={block.author}
+      source={block.source}
+      sourceUrl={block.sourceUrl}
+    >
+      {context.renderChildren(block.children)}
+    </Blockquote>
+  ),
+  h2: async (block, context) => (
+    <H2>{context.renderChildren(block.children)}</H2>
+  ),
+  h3: async (block, context) => (
+    <H3 className="mt-4">{context.renderChildren(block.children)}</H3>
+  ),
+  normal: async (block, context) => (
+    <P>{context.renderChildren(block.children)}</P>
+  ),
+};
+
+const renderImageBlock = (block: Block): Child => {
+  if (isNil(block.asset?.url)) {
+    return null;
+  }
+
+  return (
+    // @ts-expect-error ignore
+    <Image
+      alt={block.alt ?? ""}
+      src={block.asset.url}
+      caption={block.caption}
+      width={block.asset.metadata.dimensions.width}
+      height={block.asset.metadata.dimensions.height}
+    />
+  );
+};
+
+const renderCodeBlock = (block: Block): Child => {
+  if (isNil(block.code)) {
+    return null;
+  }
+
+  return <Code language={block.language ?? "typescript"}>{block.code}</Code>;
+};
+
+const renderVideoBlock = (block: Block): Child => {
+  if (isNil(block.videoId)) {
+    return null;
+  }
+
+  return <YouTubeVideo videoId={block.videoId} title={block.title ?? ""} />;
+};
+
+const renderQuoteBlock = (block: Block): Child => {
+  if (isNil(block.quote)) {
+    return null;
+  }
+
+  return (
+    // @ts-expect-error ignore
+    <Blockquote
+      author={block.author}
+      source={block.source}
+      sourceUrl={block.sourceUrl}
+    >
+      {block.quote}
+    </Blockquote>
+  );
+};
+
+const TYPE_RENDERERS: Record<
+  string,
+  (block: Block, context: RenderContext) => Child
+> = {
+  blockquote: renderQuoteBlock,
+  code: renderCodeBlock,
+  image: renderImageBlock,
+  quote: renderQuoteBlock,
+  video: renderVideoBlock,
+};
+
+const applyMark = (
+  content: Child,
+  mark: string,
+  markDefs: MarkDefinition[],
+): { content: Child; done: boolean } => {
+  if ("code" === mark) {
+    return { content: <InlineCode>{content}</InlineCode>, done: true };
+  }
+
+  const markDefinition = find(markDefs, (definition) => {
+    return definition._key === mark;
+  });
+
+  if ("link" === markDefinition?._type) {
+    // @ts-expect-error allow elements
+    return {
+      content: <Link href={markDefinition.href}>{content}</Link>,
+      done: false,
+    };
+  }
+
+  return { content, done: false };
+};
+
+const resolveMarkedText = async (
+  text: string,
+  marks: string[],
+  markDefs: MarkDefinition[],
+): Promise<Child> => {
+  let content: Child = text;
+
+  for (const mark of marks) {
+    const { content: updated, done } = applyMark(content, mark, markDefs);
+    content = updated;
+    if (done) return content;
+  }
+
+  return content;
+};
+
+const renderBlockChildren = (
+  nodeChildren: BlockChildren,
+  allMarkDefs: MarkDefinition[],
+): ReturnType<typeof map> => {
+  return map(nodeChildren, async (child) => {
+    if (0 < child.marks.length) {
+      return resolveMarkedText(child.text, child.marks, allMarkDefs);
+    }
+
+    return child.text;
+  });
+};
+
+const renderStyledBlock = (block: Block, context: RenderContext): Child => {
+  const styleRenderer = STYLE_RENDERERS[block.style ?? ""];
+  return styleRenderer ? styleRenderer(block, context) : null;
+};
+
+const renderNonBlockType = (block: Block, context: RenderContext): Child => {
+  const typeRenderer = TYPE_RENDERERS[block._type];
+  return typeRenderer ? typeRenderer(block, context) : null;
 };
 
 export const PortableText = async ({ children }: PortableTextProperties) => {
+  const allMarkDefs = flatMap(children, (block) => {
+    return (block.markDefs ?? []) as MarkDefinition[];
+  });
+
   const renderChildren = (
-    nodeChildren: (typeof children)[number]["children"],
-  ) => {
+    nodeChildren: BlockChildren | undefined,
+  ): null | ReturnType<typeof map> => {
     if (isNil(nodeChildren)) {
       return null;
     }
 
-    return map(nodeChildren, async (child) => {
-      let content = child.text;
-
-      if (0 < child.marks.length) {
-        for (const mark of child.marks) {
-          const markDefinition = find(
-            flatMap(children, (block) => {
-              return block.markDefs ?? [];
-            }),
-            (definition) => {
-              return definition._key === mark;
-            },
-          );
-
-          if ("code" === mark) {
-            return <InlineCode>{content}</InlineCode>;
-          }
-
-          if ("link" === markDefinition?._type) {
-            // @ts-expect-error allow elements
-            content = <Link href={markDefinition.href}>{content}</Link>;
-          }
-        }
-      }
-
-      return content;
-    });
+    return renderBlockChildren(nodeChildren, allMarkDefs);
   };
 
+  const context: RenderContext = { allChildren: children, renderChildren };
   let blockItems: Child[] = [];
+  const nodes: Child[] = [];
 
-  const nodes: Child[] = await Promise.all(
-    // eslint-disable-next-line sonar/cognitive-complexity
-    map(children, async (block) => {
-      if ("block" === block._type) {
-        if (isString(block.listItem)) {
-          blockItems.push(<li>{renderChildren(block.children)}</li>);
-          return null;
-        }
+  const flushList = () => {
+    if (0 < blockItems.length) {
+      const copy = [...blockItems];
+      blockItems = [];
+      nodes.push(<List>{copy}</List>);
+    }
+  };
 
-        if (!isString(block.listItem) && 0 < blockItems.length) {
-          const copy = [...blockItems];
-          blockItems = [];
-          return <List>{copy}</List>;
-        }
+  const processListBlock = (block: Block) => {
+    blockItems.push(<li>{renderChildren(block.children)}</li>);
+  };
 
-        if ("normal" === block.style) {
-          return <P>{renderChildren(block.children)}</P>;
-        }
+  const processStyledBlock = (block: Block) => {
+    flushList();
+    const node = renderStyledBlock(block, context);
+    if (!isNil(node)) nodes.push(node);
+  };
 
-        if ("h2" === block.style) {
-          return <H2>{renderChildren(block.children)}</H2>;
-        }
+  const processTypedBlock = (block: Block) => {
+    flushList();
+    const node = renderNonBlockType(block, context);
+    if (!isNil(node)) nodes.push(node);
+  };
 
-        if ("h3" === block.style) {
-          return <H3 className="mt-4">{renderChildren(block.children)}</H3>;
-        }
-
-        if ("blockquote" === block.style) {
-          return (
-            // @ts-expect-error ignore
-            <Blockquote
-              author={block.author}
-              source={block.source}
-              sourceUrl={block.sourceUrl}
-            >
-              {renderChildren(block.children)}
-            </Blockquote>
-          );
-        }
+  for (const block of children) {
+    if ("block" === block._type) {
+      if (isString(block.listItem)) {
+        processListBlock(block);
+      } else {
+        processStyledBlock(block);
       }
-
-      if ("image" === block._type && !isNil(block.asset?.url)) {
-        return (
-          // @ts-expect-error ignore
-          <Image
-            alt={block.alt ?? ""}
-            src={block.asset.url}
-            caption={block.caption}
-            width={block.asset.metadata.dimensions.width}
-            height={block.asset.metadata.dimensions.height}
-          />
-        );
-      }
-
-      if ("code" === block._type && !isNil(block.code)) {
-        return (
-          <Code language={block.language ?? "typescript"}>{block.code}</Code>
-        );
-      }
-
-      if ("video" === block._type && !isNil(block.videoId)) {
-        return (
-          <YouTubeVideo videoId={block.videoId} title={block.title ?? ""} />
-        );
-      }
-
-      if (
-        ("blockquote" === block._type || "quote" === block._type) &&
-        !isNil(block.quote)
-      ) {
-        return (
-          // @ts-expect-error ignore
-          <Blockquote
-            author={block.author}
-            source={block.source}
-            sourceUrl={block.sourceUrl}
-          >
-            {block.quote}
-          </Blockquote>
-        );
-      }
-
-      return null;
-    }),
-  );
-
-  if (0 < blockItems.length) {
-    nodes.push(<List>{blockItems}</List>);
+    } else {
+      processTypedBlock(block);
+    }
   }
+
+  flushList();
 
   return <>{filter(nodes, (value) => !isNil(value))}</>;
 };
