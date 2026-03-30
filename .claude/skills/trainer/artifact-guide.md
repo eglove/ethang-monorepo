@@ -17,10 +17,16 @@ When input is ambiguous, infer from the trigger: automated triggers → hook; us
 | Artifact | Location | Naming pattern |
 |---|---|---|
 | Hook | `.claude/hooks/<name>.sh` | kebab-case verb phrase: `check-coverage.sh` |
-| Command | `.claude/skills/commands/<name>/SKILL.md` | kebab-case noun/action phrase: `peer-review/SKILL.md` |
-| Agent | `.claude/skills/agents/<name>/SKILL.md` | kebab-case role noun: `sql-expert/SKILL.md` |
+| Command | `.claude/skills/<name>/SKILL.md` | kebab-case noun/action phrase: `peer-review/SKILL.md` |
+| Internal agent | `.claude/skills/<name>/AGENT.md` | kebab-case role noun: `trainer/AGENT.md` |
 | Orchestrator | `.claude/skills/orchestrators/<name>/SKILL.md` | kebab-case role noun: `debate-moderator/SKILL.md` |
 | Suite | `.<parent>/<suite-name>/` with an `index.md` | kebab-case domain noun |
+
+### SKILL.md vs AGENT.md
+
+Use `SKILL.md` when the artifact is **user-invokable** — it will appear in the skills list and users can call it directly.
+
+Use `AGENT.md` when the artifact is **internal only** — it is dispatched by `/questioner` or another agent, never called directly by users. It will be hidden from the skills list but is still discoverable by `/questioner`'s scan and readable by the Agent tool.
 
 ## Naming Conventions
 
