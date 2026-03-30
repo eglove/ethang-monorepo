@@ -11,6 +11,7 @@ const spreadWaterRight = (
   let rightIndex = index;
 
   // eslint-disable-next-line sonar/too-many-break-or-continue-in-loop
+  // Water reaching the right grid edge is discarded (falls off grid)
   while (rightIndex + 1 < rowAbove.length) {
     rightIndex += 1;
 
@@ -19,7 +20,6 @@ const spreadWaterRight = (
     }
 
     if (1 !== currentRow[rightIndex]) {
-      // @ts-expect-error ignore
       currentRow[rightIndex] += splitWater;
       break;
     }
@@ -35,6 +35,7 @@ const spreadWaterLeft = (
   let leftIndex = index;
 
   // eslint-disable-next-line sonar/too-many-break-or-continue-in-loop
+  // Water reaching the left grid edge is discarded (falls off grid)
   while (0 <= leftIndex - 1) {
     leftIndex -= 1;
 
@@ -43,7 +44,6 @@ const spreadWaterLeft = (
     }
 
     if (1 !== currentRow[leftIndex]) {
-      // @ts-expect-error ignore
       currentRow[leftIndex] += splitWater;
       break;
     }
