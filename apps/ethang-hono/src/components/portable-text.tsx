@@ -41,7 +41,7 @@ const STYLE_RENDERERS: Record<
   string,
   (block: Block, context: RenderContext) => Child
 > = {
-  blockquote: async (block, context) => (
+  blockquote: (block, context): Child => (
     // @ts-expect-error ignore
     <Blockquote
       author={block.author}
@@ -51,13 +51,13 @@ const STYLE_RENDERERS: Record<
       {context.renderChildren(block.children)}
     </Blockquote>
   ),
-  h2: async (block, context) => (
+  h2: (block, context): Child => (
     <H2>{context.renderChildren(block.children)}</H2>
   ),
-  h3: async (block, context) => (
+  h3: (block, context): Child => (
     <H3 className="mt-4">{context.renderChildren(block.children)}</H3>
   ),
-  normal: async (block, context) => (
+  normal: (block, context): Child => (
     <P>{context.renderChildren(block.children)}</P>
   ),
 };
@@ -116,10 +116,10 @@ const TYPE_RENDERERS: Record<
   string,
   (block: Block, context: RenderContext) => Child
 > = {
-  blockquote: renderQuoteBlock,
+  blockquote: renderQuoteBlock, // Sanity "blockquote" _type — same renderer as "quote"
   code: renderCodeBlock,
   image: renderImageBlock,
-  quote: renderQuoteBlock,
+  quote: renderQuoteBlock, // Sanity "quote" _type — same renderer as "blockquote"
   video: renderVideoBlock,
 };
 
