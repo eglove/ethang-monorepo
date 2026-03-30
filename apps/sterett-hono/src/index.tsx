@@ -45,10 +45,7 @@ app.get(
     const now = DateTime.now().setZone("America/Chicago");
     const rawView = lastQuery(value["view"]) ?? "month";
     return {
-      date:
-        lastQuery(value["date"]) ??
-        now.toISODate() ??
-        now.toFormat("yyyy-MM-dd"),
+      date: lastQuery(value["date"]) ?? now.toFormat("yyyy-MM-dd"),
       month: Number(lastQuery(value["month"]) ?? now.month),
       view: isCalendarView(rawView) ? rawView : "month",
       year: Number(lastQuery(value["year"]) ?? now.year),

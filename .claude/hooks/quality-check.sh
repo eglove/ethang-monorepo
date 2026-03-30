@@ -24,27 +24,33 @@ if echo "$PKG" | grep -qE '^(apps|packages)/'; then
   FILTER="./$PKG"
   TEST_OUT=$(pnpm --filter "$FILTER" test 2>&1); TEST_CODE=$?
   LINT_OUT=$(pnpm --filter "$FILTER" lint 2>&1); LINT_CODE=$?
+  TSC_OUT=$(pnpm --filter "$FILTER" exec tsc --noEmit 2>&1); TSC_CODE=$?
 else
   TEST_OUT=$(pnpm -r test 2>&1); TEST_CODE=$?
   LINT_OUT=$(pnpm -r lint 2>&1); LINT_CODE=$?
+  TSC_OUT=$(pnpm -r exec tsc --noEmit 2>&1); TSC_CODE=$?
 fi
 
-if [ "$TEST_CODE" -ne 0 ] || [ "$LINT_CODE" -ne 0 ]; then
-  TF=false; LF=false
+if [ "$TEST_CODE" -ne 0 ] || [ "$LINT_CODE" -ne 0 ] || [ "$TSC_CODE" -ne 0 ]; then
+  TF=false; LF=false; TSCF=false
   [ "$TEST_CODE" -ne 0 ] && TF=true
   [ "$LINT_CODE" -ne 0 ] && LF=true
+  [ "$TSC_CODE" -ne 0 ] && TSCF=true
 
   jq -n \
     --arg t "$TEST_OUT" \
     --arg l "$LINT_OUT" \
+    --arg tsc "$TSC_OUT" \
     --argjson tf "$TF" \
     --argjson lf "$LF" \
+    --argjson tscf "$TSCF" \
     '{
       hookSpecificOutput: {
         hookEventName: "PostToolUse",
         additionalContext: (
           (if $tf then "TESTS FAILED:\n" + $t + "\n\n" else "" end) +
-          (if $lf then "LINT FAILED:\n" + $l else "" end)
+          (if $lf then "LINT FAILED:\n" + $l + "\n\n" else "" end) +
+          (if $tscf then "TYPE CHECK FAILED:\n" + $tsc else "" end)
         )
       }
     }'

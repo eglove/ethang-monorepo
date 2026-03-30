@@ -13,6 +13,7 @@ import type {
   NewsUpdateReturn,
 } from "../../sanity/get-news-and-events.ts";
 
+import { sterettSanityClient } from "../../clients/sanity-client.ts";
 import { renderNewsPage } from "../../test-utils/render.tsx";
 
 const mockEvent: CalendarEventReturn = {
@@ -55,5 +56,22 @@ describe("newsPage", () => {
     const html = await renderNewsPage([mockUpdate]);
 
     expect(html).toContain("News Update");
+  });
+
+  it("renders both event and update items together", async () => {
+    const html = await renderNewsPage([mockEvent, mockUpdate]);
+
+    expect(html).toContain("Board Meeting");
+    expect(html).toContain("News Update");
+  });
+
+  it("fetches news from sanity when no items are provided", async () => {
+    vi.clearAllMocks();
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValue(
+      [] as unknown as never,
+    );
+    const html = await renderNewsPage();
+
+    expect(html).toContain("No upcoming news or events");
   });
 });

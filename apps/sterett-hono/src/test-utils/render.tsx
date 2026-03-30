@@ -147,7 +147,7 @@ export const renderTrusteesPage = async () => {
   return html(app);
 };
 
-export const renderNewsPage = async (items: NewsAndEvents) => {
+export const renderNewsPage = async (items?: NewsAndEvents) => {
   const app = new Hono();
   app.get("/", async (c) => c.html(<NewsPage items={items} />));
   return html(app);
