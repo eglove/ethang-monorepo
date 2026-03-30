@@ -113,6 +113,7 @@ const customRules: CustomRules = [
             "noreferrer",
             "hrefs",
             "fetchpriority",
+            "initialises",
           ],
         },
       },

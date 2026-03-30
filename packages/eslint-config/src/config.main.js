@@ -1043,6 +1043,7 @@ export default defineConfig(
               "noreferrer",
               "hrefs",
               "fetchpriority",
+              "initialises",
             ],
           },
         },

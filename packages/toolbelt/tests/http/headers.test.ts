@@ -76,6 +76,15 @@ describe("headers", () => {
     expect(value).toStrictEqual(result);
   });
 
+  it("keeps quality at 1 when the quality value is not a number", () => {
+    const value = getAcceptLanguage("en;q=not-a-number");
+
+    expect(value).not.toBeInstanceOf(Error);
+    if (!isError(value)) {
+      expect(value[0]?.quality).toBe(1);
+    }
+  });
+
   it("should return error if accept-language source is not found", () => {
     const headers = new Headers();
     const result = getAcceptLanguage(headers);

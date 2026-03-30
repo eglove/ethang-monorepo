@@ -32,9 +32,7 @@ type PortableTextProperties = {
 
 type RenderContext = {
   allChildren: Body;
-  renderChildren: (
-    nodeChildren: BlockChildren | undefined,
-  ) => null | ReturnType<typeof map>;
+  renderChildren: (nodeChildren: BlockChildren | undefined) => Child[] | null;
 };
 
 const STYLE_RENDERERS: Record<
@@ -137,9 +135,8 @@ const applyMark = (
   });
 
   if ("link" === markDefinition?._type) {
-    // @ts-expect-error allow elements
     return {
-      content: <Link href={markDefinition.href}>{content}</Link>,
+      content: <Link href={markDefinition.href ?? ""}>{content}</Link>,
       done: false,
     };
   }
@@ -166,7 +163,8 @@ const resolveMarkedText = async (
 const renderBlockChildren = (
   nodeChildren: BlockChildren,
   allMarkDefs: MarkDefinition[],
-): ReturnType<typeof map> => {
+): Child[] => {
+  // @ts-expect-error -- hono's Child only includes Promise<string>, but async children are supported at runtime
   return map(nodeChildren, async (child) => {
     if (0 < child.marks.length) {
       return resolveMarkedText(child.text, child.marks, allMarkDefs);
@@ -193,7 +191,7 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
 
   const renderChildren = (
     nodeChildren: BlockChildren | undefined,
-  ): null | ReturnType<typeof map> => {
+  ): Child[] | null => {
     if (isNil(nodeChildren)) {
       return null;
     }

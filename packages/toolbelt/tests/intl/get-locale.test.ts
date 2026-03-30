@@ -56,4 +56,16 @@ describe("getLocale", () => {
 
     expect(locale).toBe(null);
   });
+
+  it("should return null when localStorage key does not exist", () => {
+    // @ts-expect-error set for test
+    // eslint-disable-next-line n/no-unsupported-features/node-builtins
+    globalThis.localStorage = {
+      getItem: constant(null),
+    };
+
+    const locale = getLocale(["localStorage"], undefined, "missing-key");
+
+    expect(locale).toBeNull();
+  });
 });

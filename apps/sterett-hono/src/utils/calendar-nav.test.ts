@@ -8,6 +8,7 @@ import {
 } from "./calendar-nav.ts";
 
 const CHICAGO = "America/Chicago";
+const JUNE_26_2026 = "2024-06-15";
 
 describe(buildCrossViewDate, () => {
   it("returns currentMonthDt for month view", () => {
@@ -15,7 +16,7 @@ describe(buildCrossViewDate, () => {
       { day: 1, month: 6, year: 2024 },
       { zone: CHICAGO },
     );
-    const result = buildCrossViewDate("month", "2024-06-15", currentMonthDt);
+    const result = buildCrossViewDate("month", JUNE_26_2026, currentMonthDt);
 
     expect(result.toISODate()).toBe("2024-06-01");
   });
@@ -25,9 +26,9 @@ describe(buildCrossViewDate, () => {
       { day: 1, month: 6, year: 2024 },
       { zone: CHICAGO },
     );
-    const result = buildCrossViewDate("week", "2024-06-15", currentMonthDt);
+    const result = buildCrossViewDate("week", JUNE_26_2026, currentMonthDt);
 
-    expect(result.toISODate()).toBe("2024-06-15");
+    expect(result.toISODate()).toBe(JUNE_26_2026);
   });
 
   it("returns date-parsed DateTime for day view", () => {
@@ -35,15 +36,15 @@ describe(buildCrossViewDate, () => {
       { day: 1, month: 6, year: 2024 },
       { zone: CHICAGO },
     );
-    const result = buildCrossViewDate("day", "2024-06-15", currentMonthDt);
+    const result = buildCrossViewDate("day", JUNE_26_2026, currentMonthDt);
 
-    expect(result.toISODate()).toBe("2024-06-15");
+    expect(result.toISODate()).toBe(JUNE_26_2026);
   });
 });
 
 describe(buildNavConfig, () => {
-  const baseArgs = {
-    date: "2024-06-15",
+  const baseArguments = {
+    date: JUNE_26_2026,
     isCurrentMonth: false,
     isCurrentWeek: false,
     isToday: false,
@@ -58,53 +59,61 @@ describe(buildNavConfig, () => {
   };
 
   it("day view: heading uses formatDayHeading output format", () => {
-    const config = buildNavConfig({ ...baseArgs, view: "day" });
+    const config = buildNavConfig({ ...baseArguments, view: "day" });
 
     expect(config.heading).toContain("June");
     expect(config.heading).toContain("2024");
   });
 
   it("day view: nextHref shifts date by 1", () => {
-    const config = buildNavConfig({ ...baseArgs, view: "day" });
+    const config = buildNavConfig({ ...baseArguments, view: "day" });
 
     expect(config.nextHref).toBe("/calendar?view=day&date=2024-06-16");
   });
 
   it("day view: prevHref shifts date by -1", () => {
-    const config = buildNavConfig({ ...baseArgs, view: "day" });
+    const config = buildNavConfig({ ...baseArguments, view: "day" });
 
     expect(config.prevHref).toBe("/calendar?view=day&date=2024-06-14");
   });
 
   it("day view: showToday is true when not viewing today", () => {
-    const config = buildNavConfig({ ...baseArgs, view: "day", isToday: false });
+    const config = buildNavConfig({
+      ...baseArguments,
+      isToday: false,
+      view: "day",
+    });
 
     expect(config.showToday).toBe(true);
   });
 
   it("day view: showToday is false when viewing today", () => {
-    const config = buildNavConfig({ ...baseArgs, view: "day", isToday: true });
+    const config = buildNavConfig({
+      ...baseArguments,
+      isToday: true,
+      view: "day",
+    });
 
     expect(config.showToday).toBe(false);
   });
 
   it("month view: heading includes month name and year", () => {
-    const config = buildNavConfig({ ...baseArgs, view: "month" });
+    const config = buildNavConfig({ ...baseArguments, view: "month" });
 
     expect(config.heading).toBe("June 2024");
   });
 
   it("month view: nextHref uses next month/year", () => {
-    const config = buildNavConfig({ ...baseArgs, view: "month" });
+    const config = buildNavConfig({ ...baseArguments, view: "month" });
 
     expect(config.nextHref).toBe("/calendar?view=month&year=2024&month=7");
   });
 
   it("month view: showToday is false when viewing current month", () => {
     const config = buildNavConfig({
-      ...baseArgs,
-      view: "month",
+      ...baseArguments,
       isCurrentMonth: true,
+      view: "month",
     });
 
     expect(config.showToday).toBe(false);
@@ -112,9 +121,9 @@ describe(buildNavConfig, () => {
 
   it("week view: showToday is false when viewing current week", () => {
     const config = buildNavConfig({
-      ...baseArgs,
-      view: "week",
+      ...baseArguments,
       isCurrentWeek: true,
+      view: "week",
     });
 
     expect(config.showToday).toBe(false);
