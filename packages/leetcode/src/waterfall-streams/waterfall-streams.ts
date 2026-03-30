@@ -2,11 +2,55 @@ import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
-export const waterfallStreams = (
-  array: number[][],
-  source: number,
-  // eslint-disable-next-line sonar/cognitive-complexity
-) => {
+const spreadWaterRight = (
+  rowAbove: number[],
+  currentRow: number[],
+  index: number,
+  splitWater: number,
+): void => {
+  let rightIndex = index;
+
+  // eslint-disable-next-line sonar/too-many-break-or-continue-in-loop
+  // Water reaching the right grid edge is discarded (falls off grid)
+  while (rightIndex + 1 < rowAbove.length) {
+    rightIndex += 1;
+
+    if (1 === rowAbove[rightIndex]) {
+      break;
+    }
+
+    if (1 !== currentRow[rightIndex]) {
+      currentRow[rightIndex] += splitWater;
+      break;
+    }
+  }
+};
+
+const spreadWaterLeft = (
+  rowAbove: number[],
+  currentRow: number[],
+  index: number,
+  splitWater: number,
+): void => {
+  let leftIndex = index;
+
+  // eslint-disable-next-line sonar/too-many-break-or-continue-in-loop
+  // Water reaching the left grid edge is discarded (falls off grid)
+  while (0 <= leftIndex - 1) {
+    leftIndex -= 1;
+
+    if (1 === rowAbove[leftIndex]) {
+      break;
+    }
+
+    if (1 !== currentRow[leftIndex]) {
+      currentRow[leftIndex] += splitWater;
+      break;
+    }
+  }
+};
+
+export const waterfallStreams = (array: number[][], source: number) => {
   let rowAbove = [...get(array, [0])];
   rowAbove[source] = -1;
 
@@ -30,48 +74,14 @@ export const waterfallStreams = (
       }
 
       const splitWater = valueAbove / 2;
-
-      let rightIndex = index;
-      // eslint-disable-next-line sonar/too-many-break-or-continue-in-loop
-      while (rightIndex + 1 < rowAbove.length) {
-        rightIndex += 1;
-        // eslint-disable-next-line sonar/nested-control-flow
-        if (1 === rowAbove[rightIndex]) {
-          break;
-        }
-
-        // eslint-disable-next-line sonar/nested-control-flow
-        if (1 !== currentRow[rightIndex]) {
-          // @ts-expect-error ignore
-          currentRow[rightIndex] += splitWater;
-          break;
-        }
-      }
-
-      let leftIndex = index;
-      // eslint-disable-next-line sonar/too-many-break-or-continue-in-loop
-      while (0 <= leftIndex - 1) {
-        leftIndex -= 1;
-        // eslint-disable-next-line sonar/nested-control-flow
-        if (1 === rowAbove[leftIndex]) {
-          break;
-        }
-
-        // eslint-disable-next-line sonar/nested-control-flow
-        if (1 !== currentRow[leftIndex]) {
-          // @ts-expect-error ignore
-          currentRow[leftIndex] += splitWater;
-          break;
-        }
-      }
+      spreadWaterRight(rowAbove, currentRow, index, splitWater);
+      spreadWaterLeft(rowAbove, currentRow, index, splitWater);
     }
 
     rowAbove = currentRow;
   }
 
   return map(rowAbove, (_number) => {
-    return 0 > _number
-      ? _number * -100
-      : _number;
+    return 0 > _number ? _number * -100 : _number;
   });
 };

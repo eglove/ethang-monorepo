@@ -17,6 +17,19 @@ describe("attemptAsync", () => {
     expect(body).toStrictEqual({ name: "John" });
   });
 
+  it("returns a new Error when a non-Error value is thrown", async () => {
+    const fn = async () => {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw "string error";
+    };
+    const body = await attemptAsync(fn);
+
+    expect(body).toBeInstanceOf(Error);
+    if (body instanceof Error) {
+      expect(body.message).toBe("fn failed");
+    }
+  });
+
   it("should return error with unsuccessful response", async () => {
     const request = new Request("http://example.com", {
       body: "",

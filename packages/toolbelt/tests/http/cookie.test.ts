@@ -110,6 +110,23 @@ describe("get cookie", () => {
     expect(value).toBe("");
   });
 
+  it("should skip config keys with a false boolean value", () => {
+    const cookieName = "test-cookie";
+    const cookieValue = "test-val";
+    const mockResponse = new Response();
+
+    setCookieValue({
+      config: { Secure: false },
+      cookieName,
+      cookieValue,
+      response: mockResponse,
+    });
+
+    expect(mockResponse.headers.get("Set-Cookie")).toBe(
+      `${cookieName}=${cookieValue}`,
+    );
+  });
+
   it("should return an empty string for a cookie name with no equals sign", () => {
     const value = getCookieValue("noValue", "noValue; other=value");
     expect(isError(value)).toBe(false);

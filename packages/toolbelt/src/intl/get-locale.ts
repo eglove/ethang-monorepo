@@ -6,39 +6,57 @@ import isNil from "lodash/isNil.js";
 import { getCookieValue } from "../http/cookie.ts";
 import { getAcceptLanguage } from "../http/headers.ts";
 
+type LocaleHandler = (
+  source?: Readonly<Headers> | string,
+  valueName?: string,
+) => null | string | undefined;
+
 type LocaleSource = "accept-language" | "cookie" | "localStorage" | "navigator";
+
+const acceptLanguageHandler: LocaleHandler = (source) => {
+  return isNil(source) ? undefined : getFromAcceptLanguage(source);
+};
+
+const cookieHandler: LocaleHandler = (source, valueName) => {
+  return isNil(source) || isNil(valueName)
+    ? undefined
+    : getFromCookie(valueName, source);
+};
+
+const navigatorHandler: LocaleHandler = () => {
+  return "undefined" === typeof navigator ? undefined : navigator.language;
+};
+
+const localStorageHandler: LocaleHandler = (_, valueName) => {
+  return isNil(valueName) || "undefined" === typeof localStorage
+    ? undefined
+    : getFromLocalStorage(valueName);
+};
+
+const SOURCE_HANDLERS: Record<LocaleSource, LocaleHandler> = {
+  "accept-language": acceptLanguageHandler,
+  cookie: cookieHandler,
+  localStorage: localStorageHandler,
+  navigator: navigatorHandler,
+};
 
 export const getLocale = (
   sourceTypes: readonly LocaleSource[],
-  source?: Readonly<Headers | string>,
-  valueName?: Readonly<string>,
-) => {
+  source?: Readonly<Headers> | string,
+  valueName?: string,
+): null | string => {
   for (const sourceType of sourceTypes) {
-    if ("accept-language" === sourceType && !isNil(source)) {
-      return getFromAcceptLanguage(source);
-    }
+    const result = SOURCE_HANDLERS[sourceType](source, valueName);
 
-    if ("cookie" === sourceType && !isNil(valueName) && !isNil(source)) {
-      return getFromCookie(valueName, source);
-    }
-
-    if ("navigator" === sourceType && "undefined" !== typeof navigator) {
-      return navigator.language;
-    }
-
-    if (
-      "localStorage" === sourceType &&
-      "undefined" !== typeof localStorage &&
-      !isNil(valueName)
-    ) {
-      return getFromLocalStorage(valueName);
+    if (undefined !== result) {
+      return result;
     }
   }
 
   return null;
 };
 
-const getFromAcceptLanguage = (source: Readonly<Headers | string>) => {
+const getFromAcceptLanguage = (source: Readonly<Headers> | string) => {
   const value = getAcceptLanguage(source);
 
   if (isError(value)) {
@@ -47,6 +65,7 @@ const getFromAcceptLanguage = (source: Readonly<Headers | string>) => {
 
   let language = get(value, [0, "language"]);
   const country = get(value, [0, "country"]);
+
   if (!isNil(language)) {
     if (!isNil(country)) {
       language += `-${country}`;
@@ -60,7 +79,7 @@ const getFromAcceptLanguage = (source: Readonly<Headers | string>) => {
 
 const getFromCookie = (
   valueName: string,
-  source: Readonly<Headers | string>,
+  source: Readonly<Headers> | string,
 ) => {
   const value = getCookieValue(valueName, source);
 

@@ -105,80 +105,36 @@ const smallClasses = new Set(["px-3", "py-2", "text-sm"]);
 const largeClasses = new Set(["px-5", "py-3", "text-base"]);
 const xLargeClasses = new Set(["px-6", "py-3.5", "text-base"]);
 
+const VARIANT_CLASSES: Record<ButtonVariant, Set<string>> = {
+  danger: dangerClasses,
+  dark: darkClasses,
+  default: defaultClasses,
+  ghost: ghostClasses,
+  secondary: secondaryClasses,
+  success: successClasses,
+  tertiary: tertiaryClasses,
+  warning: warningClasses,
+};
+
+const SIZE_CLASSES: Record<ButtonSize, Set<string>> = {
+  base: new Set(),
+  lg: largeClasses,
+  sm: smallClasses,
+  xl: xLargeClasses,
+  xs: extraSmallClasses,
+};
+
+const SIZES_WITHOUT_LEADING = new Set<ButtonSize>(["lg", "xl"]);
+
 export const getButtonClasses = (
   variant: ButtonVariant,
   size: ButtonSize = "base",
 ) => {
-  let classSet = new Set(baseClasses);
+  let classSet = new Set(baseClasses).union(VARIANT_CLASSES[variant]);
+  classSet = classSet.union(SIZE_CLASSES[size]);
 
-  switch (variant) {
-    case "danger": {
-      classSet = classSet.union(dangerClasses);
-      break;
-    }
-
-    case "dark": {
-      classSet = classSet.union(darkClasses);
-      break;
-    }
-
-    case "default": {
-      classSet = classSet.union(defaultClasses);
-      break;
-    }
-
-    case "ghost": {
-      classSet = classSet.union(ghostClasses);
-      break;
-    }
-
-    case "secondary": {
-      classSet = classSet.union(secondaryClasses);
-      break;
-    }
-
-    case "success": {
-      classSet = classSet.union(successClasses);
-      break;
-    }
-
-    case "tertiary": {
-      classSet = classSet.union(tertiaryClasses);
-      break;
-    }
-
-    case "warning": {
-      classSet = classSet.union(warningClasses);
-      break;
-    }
-  }
-
-  switch (size) {
-    case "base": {
-      break;
-    }
-
-    case "lg": {
-      classSet = classSet.union(largeClasses);
-      classSet.delete("leading-5");
-      break;
-    }
-
-    case "sm": {
-      classSet = classSet.union(smallClasses);
-      break;
-    }
-
-    case "xl": {
-      classSet = classSet.union(xLargeClasses);
-      classSet.delete("leading-5");
-      break;
-    }
-
-    case "xs": {
-      classSet = classSet.union(extraSmallClasses);
-      break;
-    }
+  if (SIZES_WITHOUT_LEADING.has(size)) {
+    classSet.delete("leading-5");
   }
 
   return [...classSet];

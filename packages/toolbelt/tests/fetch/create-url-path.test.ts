@@ -53,4 +53,10 @@ describe("createUrlPath", () => {
       expect(result.message).toBe("must provide path variables schema");
     }
   });
+
+  it("returns the path unchanged when parameters is empty and no schema is provided", () => {
+    const result = createUrlPath("user/profile", {});
+
+    expect(result).toBe("user/profile");
+  });
 });

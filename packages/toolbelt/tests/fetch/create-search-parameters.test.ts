@@ -35,6 +35,20 @@ describe("create search parameters", () => {
     expect(expected).toStrictEqual(result);
   });
 
+  it("skips nil values within an array parameter", () => {
+    const result = createSearchParameters(
+      // @ts-expect-error testing nil guard in array
+      { tags: [null, "a", undefined, "b"] },
+      z.object({ tags: z.array(z.string().nullable().optional()) }),
+    );
+
+    const expected = new URLSearchParams();
+    expected.append("tags", "a");
+    expected.append("tags", "b");
+
+    expect(result?.toString()).toBe(expected.toString());
+  });
+
   it("should return error when validation fails", () => {
     const result = createSearchParameters(
       {

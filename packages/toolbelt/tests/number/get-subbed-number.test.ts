@@ -53,4 +53,11 @@ describe("getSubbedNumber", () => {
 
     expect(value).toStrictEqual(expected);
   });
+
+  it("falls back to Number(value) when isNumber returns false (NaN input)", () => {
+    // NaN is typeof "number" but isNumber(NaN) === false
+    const result = getSubbedNumber({ value: Number.NaN });
+
+    expect(result).toBeDefined();
+  });
 });

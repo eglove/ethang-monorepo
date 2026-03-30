@@ -9,9 +9,9 @@ export default defineConfig({
       thresholds: {
         autoUpdate: true,
         branches: 90.36,
-        functions: 85.88,
-        lines: 93.55,
-        statements: 93.7,
+        functions: 86.2,
+        lines: 93.6,
+        statements: 93.75,
       },
     },
     environment: "node",
