@@ -6,6 +6,8 @@ import { formatDayHeading, formatWeekHeading, shiftDate } from "./calendar.ts";
 
 const CHICAGO = "America/Chicago";
 
+export type CalendarView = "day" | "month" | "week";
+
 export type NavConfig = {
   heading: string;
   nextHref: string;
@@ -19,7 +21,6 @@ type BuildNavConfigArguments = {
   isCurrentMonth: boolean;
   isCurrentWeek: boolean;
   isToday: boolean;
-  month: number;
   monthName: string;
   nextMonth: number;
   nextYear: number;
@@ -29,8 +30,6 @@ type BuildNavConfigArguments = {
   view: CalendarView;
   year: number;
 };
-
-type CalendarView = "day" | "month" | "week";
 
 type TabHrefs = {
   tabDayHref: string;

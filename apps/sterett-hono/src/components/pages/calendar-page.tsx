@@ -12,6 +12,7 @@ import {
   buildCrossViewDate,
   buildNavConfig,
   buildPrefetchUrls,
+  type CalendarView,
 } from "../../utils/calendar-nav.ts";
 import {
   buildCalendarWeeks,
@@ -41,7 +42,7 @@ export const CalendarPage = async ({
 }: {
   date: string;
   month: number;
-  view: "day" | "month" | "week";
+  view: CalendarView;
   year: number;
 }) => {
   const { rangeEndExclusive, rangeStart } = getViewDateRange(
@@ -106,7 +107,6 @@ export const CalendarPage = async ({
     isCurrentMonth,
     isCurrentWeek,
     isToday,
-    month,
     monthName,
     nextMonth,
     nextYear,
