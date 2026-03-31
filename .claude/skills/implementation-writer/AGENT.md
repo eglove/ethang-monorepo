@@ -92,6 +92,47 @@ After drafting all steps, perform the coverage audit:
 
 Save the plan to `docs/implementation/YYYY-MM-DD_<topic-slug>.md`. Create the `docs/implementation/` directory if it does not exist.
 
+### 7. Derive Execution Tiers
+
+After the implementation steps are finalized and the coverage audit passes, group the steps into parallelizable execution tiers for Stage 6 (Pair Programming):
+
+1. **Build a dependency DAG** from the step dependencies. Each step is a node; each "Dependencies: Step N" is a directed edge.
+2. **Assign tiers** using topological sort with level assignment:
+   - Tier 1: all steps with no dependencies (or only depending on constants/types defined in the same tier)
+   - Tier N: steps whose dependencies are all satisfied by tiers 1 through N-1
+3. **Validate the DAG:**
+   - No cycles (if found, the step breakdown is malformed -- restructure)
+   - No backward dependencies (tier N step depending on tier N+1)
+   - No file overlap within a tier (two parallel tasks modifying the same file is a race condition -- move one to the next tier)
+4. **Identify blockers:** A step is a blocker if any later-tier step depends on it. Mark blockers explicitly.
+
+### 8. Assign Agent Pairs
+
+For each step, assign one code writer and one test writer from the available agents:
+
+**Code writers** (select one per task):
+- `typescript-writer` — general TypeScript domain logic, utilities, types, state machines, pure functions (.ts files)
+- `hono-writer` — Hono route handlers, middleware, server-side HTTP code (.ts files with Hono patterns)
+- `ui-writer` — JSX components, server-rendered or client-rendered UI (.tsx files)
+
+**Test writers** (select one per task):
+- `vitest-writer` — unit tests, integration tests, component tests (.test.ts files)
+- `playwright-writer` — E2E browser tests, full-page acceptance tests (.spec.ts files)
+
+**Pairing rules:**
+- Always exactly 1 code writer + 1 test writer per task (never 2 code writers or 2 test writers)
+- Any code writer can pair with any test writer (open 3x2 matrix)
+- Select the best-match pair based on the task's primary file type and test scope
+- Provide a one-sentence rationale per pairing explaining why this pair was chosen
+
+**Selection guidance:**
+- Pure domain logic, types, state machines -> typescript-writer + vitest-writer
+- Hono routes, middleware, API endpoints -> hono-writer + vitest-writer
+- JSX components with component-level tests -> ui-writer + vitest-writer
+- Full-page UI features needing browser verification -> ui-writer + playwright-writer
+- Server-rendered pages needing browser verification -> hono-writer + playwright-writer
+- Markdown or documentation files -> typescript-writer + vitest-writer (vitest-writer validates structure)
+
 ## Output Format
 
 The implementation plan file uses the following structure:
@@ -146,25 +187,6 @@ The implementation plan file uses the following structure:
 
 ---
 
-### Step 2: <Title>
-
-**Files:**
-- `<path/to/file>` (create | modify)
-
-**Description:**
-<Plain-language explanation.>
-
-**Dependencies:** Step 1
-
-**Test (write first):**
-<Specific test description.>
-
-**TLA+ Coverage:**
-- Transition: `<action name>`
-- State: `<state name>`
-
----
-
 <... additional steps ...>
 
 ---
@@ -180,6 +202,39 @@ All TLA+ states, transitions, and properties are covered by the implementation p
 ### Unmapped States
 
 - `<state or transition name>` — <explanation of why it is unmapped and recommendation>
+
+---
+
+## Execution Tiers
+
+### Tier 1: <Title> (<rationale for parallelism>)
+
+<Description of what this tier accomplishes and why these tasks are independent.>
+
+| Task ID | Step | Title |
+|---------|------|-------|
+| T1 | Step 1 | <title> |
+| T2 | Step 2 | <title> |
+
+### Tier 2: <Title> (depends on Tier 1 — <reason>)
+
+<Description of dependencies and what this tier adds.>
+
+| Task ID | Step | Title |
+|---------|------|-------|
+| T3 | Step 3 | <title> |
+
+<... additional tiers ...>
+
+---
+
+## Task Assignment Table
+
+| Task ID | Title | Tier | Code Writer | Test Writer | Dependencies | Rationale |
+|---------|-------|------|-------------|-------------|--------------|-----------|
+| T1 | <title> | 1 | <agent> | <agent> | None | <one sentence> |
+| T2 | <title> | 1 | <agent> | <agent> | None | <one sentence> |
+| T3 | <title> | 2 | <agent> | <agent> | T1 | <one sentence> |
 ```
 
 On completion, present a summary to the caller:
@@ -191,6 +246,7 @@ File created:
   docs/implementation/YYYY-MM-DD_<slug>.md
 
 Steps: <count>
+Tiers: <count>
 TLA+ coverage: <count> states, <count> transitions, <count> invariants, <count> properties
 Unmapped: <count or "None">
 
@@ -200,4 +256,6 @@ TLA+ spec: docs/tla-specs/<slug>/
 
 ## Handoff
 
-None. This agent produces the implementation plan and stops. The plan is presented to the user for review. Execution of the plan is a separate activity — this agent does not dispatch downstream agents or begin implementation.
+- **Passes to:** design-pipeline Stage 6 orchestrator (via the design-pipeline SKILL.md)
+- **Passes:** Implementation plan file path, execution tiers, task assignment table
+- **Format:** Markdown implementation plan with Execution Tiers and Task Assignment Table sections that Stage 6 consumes directly to create worktrees, dispatch agent pairs, and manage tier execution
