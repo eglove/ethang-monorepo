@@ -43,14 +43,18 @@ Walk these branches in order. Each must be fully resolved before advancing:
 8. **Error states** — What can go wrong? How should failures surface?
 9. **Naming** — What is it called?
 10. **Scope and edge cases** — What is explicitly out of scope? Unusual inputs?
+11. **Expert council** — Based on everything above, which experts should review this design? Walk through the full list of 8 experts at `.claude/skills/agents/` (expert-tdd, expert-ddd, expert-bdd, expert-atomic-design, expert-tla, expert-performance, expert-edge-cases, expert-continuous-delivery). For each, recommend include or exclude with a one-sentence reason. Present the full recommendation to the user for confirmation or adjustment.
 
 ## Phase 3 — Sign-Off
 
 When all branches are resolved:
 
-1. Produce a concise **recap** covering: purpose, artifact type, trigger, inputs, outputs, handoff (if applicable), name, and scope. One screen maximum.
-2. Ask explicitly: **"Does this match what you want? Say yes to proceed."**
+1. Produce a concise **recap** covering: purpose, artifact type, trigger, inputs, outputs, handoff (if applicable), name, scope, and **expert council recommendation** (included experts with reasons, excluded experts with reasons). One screen maximum.
+2. Ask explicitly: **"Does this match what you want? Would you like to adjust the expert list? Say yes to proceed."**
 3. Do not write the briefing file or dispatch any agents until the user confirms with a clear yes.
+4. After the recap is confirmed, ask: **"Would you like this to go through expert debate before proceeding?"**
+   - When invoked from `/design-pipeline`: skip this prompt — debate is always yes.
+   - When invoked standalone: the user decides yes or no.
 
 ## Phase 4 — Save and Dispatch
 
@@ -76,6 +80,8 @@ After sign-off:
 | User rejects all proposed targets | Ask directly which skill they want to hand off to |
 | User stops mid-session without sign-off | Save partial briefing marked `[INCOMPLETE]` to session file, then stop |
 | Multiple valid downstream targets | Propose all; dispatch in parallel after user confirms |
+| Invoked from `/design-pipeline` | Debate is always yes — skip the debate prompt in Phase 3, record `Yes` in session file |
+| User adjusts expert list during sign-off | Update the recommendation to match; re-confirm before proceeding |
 
 ## Output Format
 
@@ -122,6 +128,16 @@ After sign-off:
 
 ## Edge Cases
 <unusual inputs, boundary conditions>
+
+## Expert Council
+### Included
+- expert-name — reason for inclusion
+
+### Excluded
+- expert-name — reason for exclusion
+
+## Debate Requested
+Yes / No
 
 ---
 
