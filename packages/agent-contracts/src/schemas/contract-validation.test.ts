@@ -1,8 +1,22 @@
+import get from "lodash/get.js";
+import includes from "lodash/includes.js";
+import map from "lodash/map.js";
+import some from "lodash/some.js";
 import { describe, expect, it } from "vitest";
 import { ZodError } from "zod";
 
 import { TrainerInputSchema } from "./trainer-input.ts";
 import { TrainerOutputSchema } from "./trainer-output.ts";
+
+const getZodPaths = (error: unknown): string[] => {
+  if (error instanceof ZodError) {
+    return map(error.issues, (issue) => {
+      return issue.path.join(".");
+    });
+  }
+
+  return [];
+};
 
 const FRONTMATTER_PATH = "frontmatter";
 const SECTIONS_PATH = "sections";
@@ -28,6 +42,7 @@ const validManifest = [
 const validSections = [{ heading: "## When to Use", required: true }];
 
 const validTrainerOutput = {
+  // @ts-expect-error for test
   artifactType: SKILL_ARTIFACT_TYPE as const,
   frontmatter: validFrontmatter,
   handoff: validHandoff,
@@ -60,14 +75,11 @@ describe("contract validation failures", () => {
       expect.unreachable("should have thrown");
     } catch (error: unknown) {
       expect(error).toBeInstanceOf(ZodError);
-      const zodError = error as ZodError;
-      const paths = zodError.issues.map((issue) => {
-        return issue.path.join(".");
-      });
+      const paths = getZodPaths(error);
 
       expect(
-        paths.some((p) => {
-          return p.includes(FRONTMATTER_PATH);
+        some(paths, (p) => {
+          return includes(p, FRONTMATTER_PATH);
         }),
       ).toBe(true);
     }
@@ -81,14 +93,11 @@ describe("contract validation failures", () => {
       expect.unreachable("should have thrown");
     } catch (error: unknown) {
       expect(error).toBeInstanceOf(ZodError);
-      const zodError = error as ZodError;
-      const paths = zodError.issues.map((issue) => {
-        return issue.path.join(".");
-      });
+      const paths = getZodPaths(error);
 
       expect(
-        paths.some((p) => {
-          return p.includes(SECTIONS_PATH);
+        some(paths, (p) => {
+          return includes(p, SECTIONS_PATH);
         }),
       ).toBe(true);
     }
@@ -107,7 +116,9 @@ describe("contract validation failures", () => {
 
     const result = TrainerInputSchema.parse(input);
 
-    expect(result.files[0].path).toBe(String.raw`src\schemas\trainer-input.ts`);
+    expect(get(result, ["files", 0, "path"])).toBe(
+      String.raw`src\schemas\trainer-input.ts`,
+    );
   });
 
   it("demonstrates retry pattern: two failures then corrected fixture passes", () => {
@@ -115,7 +126,7 @@ describe("contract validation failures", () => {
     const maxContractRetries = 1;
     const errors: ZodError[] = [];
 
-    for (let attempt = 0; attempt <= maxContractRetries; attempt++) {
+    for (let attempt = 0; attempt <= maxContractRetries; attempt += 1) {
       try {
         TrainerOutputSchema.parse(invalidFixture);
       } catch (error: unknown) {

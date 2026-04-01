@@ -1,3 +1,5 @@
+import find from "lodash/find.js";
+import map from "lodash/map.js";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -9,6 +11,7 @@ const TYPESCRIPT_WRITER = "typescript-writer";
 const HONO_WRITER = "hono-writer";
 const UI_WRITER = "ui-writer";
 const TRAINER_WRITER = "trainer-writer";
+const PLAYWRIGHT_WRITER = "playwright-writer";
 const VITEST_WRITER = "vitest-writer";
 const FIXTURE_INCLUDES_EXACTLY_4 =
   "fixture includes exactly 4 code writers: typescript-writer, hono-writer, ui-writer, trainer-writer";
@@ -27,7 +30,7 @@ const codeWriterFixture: CodeWriterEntry[] = [
       "general TypeScript domain logic, utilities, types, state machines, pure functions (.ts files)",
     fileTypes: [".ts"],
     name: TYPESCRIPT_WRITER,
-    pairingRules: [VITEST_WRITER, "playwright-writer"],
+    pairingRules: [VITEST_WRITER, PLAYWRIGHT_WRITER],
     selectionGuidance:
       "Pure domain logic, types, state machines -> typescript-writer + vitest-writer",
   },
@@ -36,7 +39,7 @@ const codeWriterFixture: CodeWriterEntry[] = [
       "Hono route handlers, middleware, server-side HTTP code (.ts files with Hono patterns)",
     fileTypes: [".ts"],
     name: HONO_WRITER,
-    pairingRules: [VITEST_WRITER, "playwright-writer"],
+    pairingRules: [VITEST_WRITER, PLAYWRIGHT_WRITER],
     selectionGuidance:
       "Hono routes, middleware, API endpoints -> hono-writer + vitest-writer",
   },
@@ -45,7 +48,7 @@ const codeWriterFixture: CodeWriterEntry[] = [
       "JSX components, server-rendered or client-rendered UI (.tsx files)",
     fileTypes: [".tsx"],
     name: UI_WRITER,
-    pairingRules: [VITEST_WRITER, "playwright-writer"],
+    pairingRules: [VITEST_WRITER, PLAYWRIGHT_WRITER],
     selectionGuidance:
       "JSX components with component-level tests -> ui-writer + vitest-writer",
   },
@@ -70,7 +73,7 @@ describe("ImplementationWriterContract", () => {
   it(FIXTURE_INCLUDES_EXACTLY_4, () => {
     expect(codeWriterFixture).toHaveLength(4);
 
-    const names = codeWriterFixture.map((writer) => {
+    const names = map(codeWriterFixture, (writer) => {
       return writer.name;
     });
 
@@ -83,7 +86,7 @@ describe("ImplementationWriterContract", () => {
   });
 
   it(TRAINER_PAIRING_DESCRIPTION, () => {
-    const trainerWriter = codeWriterFixture.find((writer) => {
+    const trainerWriter = find(codeWriterFixture, (writer) => {
       return writer.name === TRAINER_WRITER;
     });
 
@@ -92,7 +95,7 @@ describe("ImplementationWriterContract", () => {
   });
 
   it(TRAINER_FILE_TYPES_DESCRIPTION, () => {
-    const trainerWriter = codeWriterFixture.find((writer) => {
+    const trainerWriter = find(codeWriterFixture, (writer) => {
       return writer.name === TRAINER_WRITER;
     });
 
@@ -102,7 +105,7 @@ describe("ImplementationWriterContract", () => {
   });
 
   it(TRAINER_SELECTION_GUIDANCE_DESCRIPTION, () => {
-    const trainerWriter = codeWriterFixture.find((writer) => {
+    const trainerWriter = find(codeWriterFixture, (writer) => {
       return writer.name === TRAINER_WRITER;
     });
 

@@ -1,3 +1,4 @@
+import every from "lodash/every.js";
 import { describe, expect, it } from "vitest";
 
 import { isValidTransition } from "../state-machine/step-lifecycle.js";
@@ -6,6 +7,10 @@ import { TrainerOutputSchema } from "./trainer-output.ts";
 const STEP_COMPLETE = "STEP_COMPLETE" as const;
 const STEP_FAILED = "STEP_FAILED" as const;
 const ALL_DONE = "ALL_DONE" as const;
+const TERMINAL_STATES: ReadonlySet<string> = new Set([
+  STEP_COMPLETE,
+  STEP_FAILED,
+]);
 
 type PipelineFixture = {
   implPhase: string;
@@ -22,8 +27,8 @@ type StepRecord = {
 };
 
 const allStepsTerminal = (steps: StepRecord[]): boolean => {
-  return steps.every((s) => {
-    return s.state === STEP_COMPLETE || s.state === STEP_FAILED;
+  return every(steps, (s) => {
+    return TERMINAL_STATES.has(s.state);
   });
 };
 
@@ -32,7 +37,7 @@ const pipelineCanComplete = (fixture: PipelineFixture): boolean => {
 };
 
 const trainerContractRequired = (steps: StepRecord[]): boolean => {
-  return steps.every((s) => {
+  return every(steps, (s) => {
     if ("trainer_writer" === s.writer && s.state === STEP_COMPLETE) {
       return s.inputContractValid && s.outputContractValid;
     }
@@ -42,7 +47,7 @@ const trainerContractRequired = (steps: StepRecord[]): boolean => {
 };
 
 const completionRequiresTdd = (steps: StepRecord[]): boolean => {
-  return steps.every((s) => {
+  return every(steps, (s) => {
     if (s.state === STEP_COMPLETE) {
       return 1 <= s.tddCycle;
     }
@@ -149,6 +154,7 @@ describe("pipeline completion verification", () => {
         {
           inputContractValid: false,
           outputContractValid: false,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- intentional invalid state for testing
           state: "RED" as "STEP_COMPLETE",
           tddCycle: 1,
           writer: "hono_writer",

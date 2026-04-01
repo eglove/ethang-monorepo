@@ -46,10 +46,12 @@ describe("questioner contract", () => {
     });
 
     it("should include a row where trigger matches agent/skill artifacts and recommendation includes /design-pipeline", () => {
+      const DESIGN_PIPELINE = "/design-pipeline";
       const hasDesignPipelineRow = some(DECISION_GUIDE_ROWS, (row) => {
         return (
-          /agent.*skill|skill.*artifact/i.test(row.trigger) &&
-          row.recommendation.includes("/design-pipeline")
+          /agent.*skill|skill.*artifact/iu.test(row.trigger) &&
+          // eslint-disable-next-line lodash/prefer-lodash-method -- lodash includes causes no-unsafe-call with string args
+          row.recommendation.includes(DESIGN_PIPELINE)
         );
       });
 

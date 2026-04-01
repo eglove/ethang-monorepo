@@ -1,3 +1,4 @@
+import map from "lodash/map.js";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
@@ -60,7 +61,7 @@ describe("trainer agent contract", () => {
   });
 
   it("declares questioner-briefing and implementation-step shapes", () => {
-    const shapeNames = trainerAgentFixture.inputShapes.map((s) => {
+    const shapeNames = map(trainerAgentFixture.inputShapes, (s) => {
       return s.name;
     });
 
