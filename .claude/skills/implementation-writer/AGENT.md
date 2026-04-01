@@ -114,6 +114,7 @@ For each step, assign one code writer and one test writer from the available age
 - `typescript-writer` — general TypeScript domain logic, utilities, types, state machines, pure functions (.ts files)
 - `hono-writer` — Hono route handlers, middleware, server-side HTTP code (.ts files with Hono patterns)
 - `ui-writer` — JSX components, server-rendered or client-rendered UI (.tsx files)
+- `trainer-writer` — Claude Code artifacts: SKILL.md, AGENT.md, .sh hook files, skill/agent definitions (files in .claude/)
 
 **Test writers** (select one per task):
 - `vitest-writer` — unit tests, integration tests, component tests (.test.ts files)
@@ -121,7 +122,7 @@ For each step, assign one code writer and one test writer from the available age
 
 **Pairing rules:**
 - Always exactly 1 code writer + 1 test writer per task (never 2 code writers or 2 test writers)
-- Any code writer can pair with any test writer (open 3x2 matrix)
+- Any code writer can pair with any test writer (open 4x2 matrix)
 - Select the best-match pair based on the task's primary file type and test scope
 - Provide a one-sentence rationale per pairing explaining why this pair was chosen
 
@@ -132,6 +133,7 @@ For each step, assign one code writer and one test writer from the available age
 - Full-page UI features needing browser verification -> ui-writer + playwright-writer
 - Server-rendered pages needing browser verification -> hono-writer + playwright-writer
 - Markdown or documentation files -> typescript-writer + vitest-writer (vitest-writer validates structure)
+- Agent/skill artifacts (.claude/ directory) -> trainer-writer + vitest-writer
 
 ## Output Format
 

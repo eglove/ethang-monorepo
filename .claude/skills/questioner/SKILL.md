@@ -61,7 +61,7 @@ When all branches are resolved:
 After sign-off:
 
 1. Save the structured briefing to `docs/questioner-sessions/YYYY-MM-DD_<topic-slug>.md` (see Output Format below).
-2. Scan `.claude/skills/` for both `SKILL.md` (user-facing commands) and `AGENT.md` (internal agents not user-invokable) to identify downstream targets that match what was described.
+2. Scan `.claude/skills/` for both `SKILL.md` (user-facing commands) and `AGENT.md` (internal agents not user-invokable) to identify downstream targets that match what was described. **Exclude the trainer from dispatch target scanning — the trainer is not a valid dispatch target from the questioner.**
 3. Propose the matched targets to the user: *"Based on what you've described, I recommend dispatching to: [list]. Shall I proceed?"*
 4. After user confirms, dispatch all targets **in parallel** via the Agent tool. Each receives:
    - The full briefing document content
@@ -82,6 +82,7 @@ After sign-off:
 | Multiple valid downstream targets | Propose all; dispatch in parallel after user confirms |
 | Invoked from `/design-pipeline` | Debate is always yes — skip the debate prompt in Phase 3, record `Yes` in session file |
 | User adjusts expert list during sign-off | Update the recommendation to match; re-confirm before proceeding |
+| User describes agent/skill artifacts | Recommend `/design-pipeline` as entry point — agent artifact creation goes through the full pipeline |
 
 ## Output Format
 

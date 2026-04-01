@@ -14,25 +14,60 @@ Trainer is dispatched when:
 - A lesson file (transcript, document) has been described in the questioner session and needs distilling into an artifact
 - An Expert Council (multiple agents + orchestrator) has been fully specified through a questioner session
 
-## Expected Inputs
+## Input Shapes
 
-Trainer receives from `/questioner`:
+Trainer accepts two distinct input shapes. The orient phase determines which shape was received and adjusts its workflow accordingly.
+
+### questioner-briefing
+
+The existing input from `/questioner`. Trainer receives:
 
 - **Full briefing document** — the structured Markdown produced by the questioner session
 - **Briefing file path** — path to the saved `docs/questioner-sessions/YYYY-MM-DD_<topic-slug>.md`
 - **Role framing** — one sentence from questioner: *"Your job is to create the artifact described in this brief."*
 
+### implementation-step
+
+A task assignment row from the implementation-writer agent. Fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `stepNumber` | number | Sequence position in the implementation plan |
+| `title` | string | Short name for the step |
+| `files` | string[] | Files to create or modify |
+| `description` | string | What the step accomplishes |
+| `dependencies` | string[] | Prior steps this step depends on |
+| `testDescription` | string | What the test for this step should verify |
+| `tlaCoverage` | string | Which TLA+ spec states or transitions this step covers |
+
+Schema: `packages/agent-contracts/src/schemas/trainer-input.ts` (`TrainerInputSchema`)
+
+## Expected Inputs
+
+Trainer receives one of the two input shapes above:
+
+- **questioner-briefing** — from `/questioner` after a requirements session is complete
+- **implementation-step** — from the implementation-writer agent as part of a design-pipeline execution
+
 ## Three-Phase Flow
 
 ### Phase 1 — Orient
 
-1. Read the questioner briefing in full. This is the source of truth — do not re-ask questions the briefing already answers.
-2. Read any lesson files referenced in the briefing (transcripts, documents, PDFs).
-3. Scan `.claude/` for existing artifacts to avoid duplication:
+1. **Determine input shape.** Inspect the received input:
+   - If the input contains a briefing file path (ending in `.md` under `docs/questioner-sessions/`), treat it as a **questioner-briefing**.
+   - If the input contains a `stepNumber`, `files`, and `testDescription`, treat it as an **implementation-step**.
+2. **For questioner-briefing inputs:**
+   1. Read the questioner briefing in full. This is the source of truth — do not re-ask questions the briefing already answers.
+   2. Read any lesson files referenced in the briefing (transcripts, documents, PDFs).
+   3. Confirm artifact type inference from the briefing (see `artifact-guide.md`).
+3. **For implementation-step inputs:**
+   1. Read the referenced files to understand current state.
+   2. Read the `testDescription` and `tlaCoverage` fields to understand acceptance criteria.
+   3. Identify which artifacts (skills, agents, hooks) the step requires creating or modifying.
+4. Scan `.claude/` for existing artifacts to avoid duplication:
    ```bash
    find .claude -name "SKILL.md" -o -name "AGENT.md" -o -name "*.sh" | grep -v trainer
    ```
-4. Confirm artifact type inference from the briefing (see `artifact-guide.md`).
 
 ### Phase 2 — Research
 

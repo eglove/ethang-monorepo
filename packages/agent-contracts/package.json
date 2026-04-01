@@ -1,0 +1,28 @@
+{
+  "author": "Ethan Glover",
+  "dependencies": {
+    "lodash": "^4.17.23",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "^25.11.1",
+    "@types/lodash": "^4.17.24",
+    "@vitest/coverage-v8": "^4.1.2",
+    "eslint": "^10.1.0",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.3",
+    "vitest": "^4.1.2"
+  },
+  "exports": {
+    "./*": "./src/*"
+  },
+  "license": "ISC",
+  "name": "@ethang/agent-contracts",
+  "private": true,
+  "scripts": {
+    "lint": "eslint src --fix --cache && pnpm tsc --noEmit",
+    "test": "vitest run --coverage"
+  },
+  "type": "module",
+  "version": "1.0.0"
+}
