@@ -5,11 +5,11 @@
     "current node"
   ],
   "dependencies": {
-    "lodash": "^4.17.23"
+    "lodash": "^4.18.1"
   },
   "description": "Markdown Generator following GitHub syntax.",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.11.1",
+    "@ethang/eslint-config": "^25.12.0",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.24",
     "@vitest/coverage-v8": "^4.1.2",

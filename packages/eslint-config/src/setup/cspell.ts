@@ -114,7 +114,7 @@ const customRules: CustomRules = [
             "hrefs",
             "fetchpriority",
             "initialises",
-            "PKCE", // cspell:ignore PKCE
+            "PKCE",
           ],
         },
       },

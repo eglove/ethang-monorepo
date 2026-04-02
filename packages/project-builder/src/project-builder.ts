@@ -31,6 +31,7 @@ export const projectBuilder = async (basePath: string, options?: Options) => {
       outDir: config.outDir,
       target: "esnext",
     },
+    exclude: ["**/*.test.ts"],
     include: config.entry,
   });
 

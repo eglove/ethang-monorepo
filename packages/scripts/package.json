@@ -2,12 +2,12 @@
   "author": "",
   "dependencies": {
     "@ethang/toolbelt": "^4.4.11",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "zod": "^4.3.6"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.11.1",
+    "@ethang/eslint-config": "^25.12.0",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.5.0",
     "eslint": "^10.1.0",
