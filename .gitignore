@@ -279,3 +279,8 @@ storybook-static/
 
 # End of https://www.toptal.com/developers/gitignore/api/node,react,jetbrains+all,visualstudiocode,storybookjs
 *storybook.log
+
+# Design pipeline ephemeral state
+state.json
+state.tmp.json
+state.lock

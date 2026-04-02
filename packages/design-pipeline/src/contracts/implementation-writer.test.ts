@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   type CodeWriterEntry,
   CodeWriterListSchema,
-} from "./implementation-writer-contract.ts";
+} from "./implementation-writer.ts";
 
 const TYPESCRIPT_WRITER = "typescript-writer";
 const HONO_WRITER = "hono-writer";
