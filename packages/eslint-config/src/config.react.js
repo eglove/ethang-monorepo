@@ -40,6 +40,8 @@ export default defineConfig(globalIgnores(ignores), {
     "react/jsx-no-children-prop-with-children": "error",
     "react/jsx-no-comment-textnodes": "error",
     "react/jsx-no-key-after-spread": "error",
+    "react/jsx-no-leaked-dollar": "error",
+    "react/jsx-no-leaked-semicolon": "error",
     "react/jsx-no-namespace": "error",
     "react/jsx-no-useless-fragment": "error",
     "react/naming-convention-context-name": "error",
