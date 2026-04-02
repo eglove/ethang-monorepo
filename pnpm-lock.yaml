@@ -276,6 +276,9 @@ importers:
       typescript:
         specifier: ^6.0.2
         version: 6.0.2
+      vite:
+        specifier: ^8.0.3
+        version: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.5)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
       vitest:
         specifier: ~4.1.2
         version: 4.1.2(@types/node@25.5.0)(@vitest/ui@4.1.2)(happy-dom@20.8.9)(jsdom@29.0.1(@noble/hashes@2.0.1))(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.5)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
@@ -13815,7 +13818,7 @@ snapshots:
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   '@npmcli/git@7.0.2':
     dependencies:
@@ -13825,7 +13828,7 @@ snapshots:
       lru-cache: 11.2.7
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       which: 6.0.1
 
   '@npmcli/installed-package-contents@4.0.0':
@@ -13842,7 +13845,7 @@ snapshots:
       hosted-git-info: 9.0.2
       json-parse-even-better-errors: 5.0.0
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       spdx-expression-parse: 4.0.0
 
   '@npmcli/promise-spawn@9.0.1':
@@ -19573,7 +19576,7 @@ snapshots:
       make-fetch-happen: 15.0.5
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       tar: 7.5.13
       tinyglobby: 0.2.15
       which: 6.0.1
@@ -19612,7 +19615,7 @@ snapshots:
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   npm-normalize-package-bin@5.0.0: {}
 
@@ -19620,7 +19623,7 @@ snapshots:
     dependencies:
       hosted-git-info: 9.0.2
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       validate-npm-package-name: 7.0.2
 
   npm-packlist@10.0.4:
@@ -19633,7 +19636,7 @@ snapshots:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.2
-      semver: 7.7.3
+      semver: 7.7.4
 
   npm-registry-fetch@19.1.1:
     dependencies:

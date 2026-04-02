@@ -92,6 +92,7 @@ export const saveSession = async (
   const serialized = JSON.stringify(validState, null, 2);
 
   await writeFile(temporaryPath, serialized, "utf8");
+  await unlink(statePath).catch(noop);
   await rename(temporaryPath, statePath);
 
   if (TERMINAL_PHASES.has(validState.phase)) {

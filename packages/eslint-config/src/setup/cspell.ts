@@ -115,6 +115,8 @@ const customRules: CustomRules = [
             "fetchpriority",
             "initialises",
             "PKCE",
+            "startuml", // cspell:ignore startuml
+            "enduml", // cspell:ignore enduml
           ],
         },
       },

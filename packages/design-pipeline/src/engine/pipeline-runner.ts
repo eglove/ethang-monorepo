@@ -1,3 +1,5 @@
+import isPlainObject from "lodash/isPlainObject.js";
+
 import type {
   HaltReason,
   PipelinePhase,
@@ -6,6 +8,7 @@ import type { PipelineState } from "../state-machine/pipeline-state.js";
 
 import {
   advancePipeline,
+  advancePipelineWithOutput,
   getPipelineStatus,
   haltPipeline,
   type PipelineResponse,
@@ -45,7 +48,7 @@ const isPipelinePhase = (value: string): value is PipelinePhase => {
 const USAGE_TEXT = `Usage: pipeline-runner <command> [args]
 
 Commands:
-  start <slug>                     Start a new pipeline
+  start <slug> [questioner-json]   Start a new pipeline; optionally advance past phase 1 with inline questioner JSON
   advance <slug> <output-json>     Advance pipeline with output file
   status <slug>                    Get pipeline status
   halt <slug> <reason>             Halt pipeline with reason
@@ -90,11 +93,54 @@ const toResult = (response: PipelineResponse | PipelineState): RunnerResult => {
   };
 };
 
+const INVALID_JSON = "Questioner output is not valid JSON";
+const NOT_AN_OBJECT = "Questioner output must be a JSON object";
+
+const parseQuestionerJson = (
+  raw: string,
+): Record<string, unknown> | RunnerResult => {
+  let parsed: unknown;
+
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return errorResult(INVALID_JSON);
+  }
+
+  if (!isPlainObject(parsed)) {
+    return errorResult(NOT_AN_OBJECT);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- isPlainObject guarantees object shape
+  return parsed as Record<string, unknown>;
+};
+
+const isRunnerResult = (
+  value: Record<string, unknown> | RunnerResult,
+): value is RunnerResult => {
+  return "exitCode" in value;
+};
+
 const handleStart = async (
   slug: string,
   stateDirectory: string,
+  questionerJson?: string,
 ): Promise<RunnerResult> => {
-  return toResult(await startPipeline(slug, stateDirectory));
+  const startResult = await startPipeline(slug, stateDirectory);
+
+  if ("error" in startResult || questionerJson === undefined) {
+    return toResult(startResult);
+  }
+
+  const output = parseQuestionerJson(questionerJson);
+
+  if (isRunnerResult(output)) {
+    return output;
+  }
+
+  return toResult(
+    await advancePipelineWithOutput(slug, output, stateDirectory),
+  );
 };
 
 const handleAdvance = async (
@@ -184,7 +230,7 @@ export const parseAndExecute = async (
     }
 
     case "start": {
-      return handleStart(slug, stateDirectory);
+      return handleStart(slug, stateDirectory, commandRest[0]);
     }
 
     case "status": {

@@ -80,6 +80,7 @@ export {
 
 export {
   advancePipeline,
+  advancePipelineWithOutput,
   getPipelineStatus,
   haltPipeline,
   retryPipeline,

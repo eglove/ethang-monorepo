@@ -9,6 +9,7 @@ import { startPipeline } from "./pipeline-engine.js";
 import { parseAndExecute } from "./pipeline-runner.js";
 
 const PHASE_1 = "PHASE_1_QUESTIONER";
+const PHASE_2 = "PHASE_2_DESIGN_DEBATE";
 const PHASE_3 = "PHASE_3_TLA_WRITER";
 const EXIT_CODE_ERROR = 1;
 const EXIT_CODE_SUCCESS = 0;
@@ -47,6 +48,47 @@ const coreCommandTests = (): void => {
 
     const parsed: unknown = JSON.parse(result.stdout);
     expect(parsed).toHaveProperty("phase", PHASE_1);
+  });
+
+  it("start with questioner JSON advances directly to PHASE_2", async () => {
+    const questionerJson = JSON.stringify({
+      briefingPath: "/fixtures/briefing.md",
+      experts: ["expert-a", "expert-b"],
+    });
+
+    const result = await parseAndExecute(
+      ["start", "start-with-json-slug", questionerJson],
+      stateDirectory,
+    );
+
+    expect(result.exitCode).toBe(EXIT_CODE_SUCCESS);
+
+    const parsed: unknown = JSON.parse(result.stdout);
+    expect(parsed).toHaveProperty("phase", PHASE_2);
+  });
+
+  it("start with invalid JSON returns exit code 1 and error in body", async () => {
+    const result = await parseAndExecute(
+      ["start", "start-bad-json-slug", "not-valid-json{{{"],
+      stateDirectory,
+    );
+
+    expect(result.exitCode).toBe(EXIT_CODE_ERROR);
+
+    const parsed: unknown = JSON.parse(result.stdout);
+    expect(parsed).toHaveProperty("error");
+  });
+
+  it("start with non-object JSON returns exit code 1 and error in body", async () => {
+    const result = await parseAndExecute(
+      ["start", "start-array-json-slug", JSON.stringify([1, 2, 3])],
+      stateDirectory,
+    );
+
+    expect(result.exitCode).toBe(EXIT_CODE_ERROR);
+
+    const parsed: unknown = JSON.parse(result.stdout);
+    expect(parsed).toHaveProperty("error");
   });
 
   it("status command returns current pipeline state", async () => {
