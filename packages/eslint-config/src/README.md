@@ -7,12 +7,12 @@
 
 - 797 rules.
 - 241 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
-- 144 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
+- 143 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
 - 139 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
 - 110 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
 - 42 rules from [eslint-plugin-lodash](https://github.com/idok/eslint-plugin-lodash)
 - 34 rules from [jsx-a11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)
-- 22 rules from [eslint-plugin-perfectionist](https://github.com/azat-io/eslint-plugin-perfectionist)
+- 23 rules from [eslint-plugin-perfectionist](https://github.com/azat-io/eslint-plugin-perfectionist)
 - 21 rules from [@eslint/markdown](https://github.com/eslint/markdown)
 - 14 rules from [@eslint/css](https://github.com/eslint/css)
 - 8 rules from [@tanstack/eslint-plugin-query](https://tanstack.com/query/latest/docs/eslint/eslint-plugin-query)
@@ -31,9 +31,9 @@
 - 53 rules for **Astro**
   - `import astroConfig from "@ethang/eslint-config/config.astro.js";`
   - 53 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)
-- 174 rules for **React**
+- 176 rules for **React**
   - `import reactConfig from "@ethang/eslint-config/config.react.js";`
-  - 145 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
+  - 147 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
   - 29 rules from [eslint-plugin-react-hooks](https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks)
 - 18 rules for **Solid**
   - `import solidConfig from "@ethang/eslint-config/config.solid.js";`

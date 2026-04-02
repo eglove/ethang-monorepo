@@ -242,6 +242,10 @@ const customRules = [
     name: "yoda",
     rule: ["error", "always"],
   },
+  {
+    name: "prefer-named-capture-group",
+    rule: "off",
+  },
 ];
 
 export const eslintRules = genRules(

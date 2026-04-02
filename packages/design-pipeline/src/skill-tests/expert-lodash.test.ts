@@ -17,10 +17,8 @@ const SKILL_PATH = path.join(
 
 const content = readFileSync(SKILL_PATH, "utf8");
 
-const frontmatterMatch = /^---\n(?:[\S\s]*?)\n---/u.exec(content);
-const frontmatter = frontmatterMatch
-  ? content.slice(3, frontmatterMatch[0].length - 4)
-  : "";
+const frontmatterMatch = /^---\r?\n([\S\s]*?)\r?\n---/u.exec(content);
+const frontmatter = frontmatterMatch?.[1] ?? "";
 const body = frontmatterMatch
   ? content.slice(frontmatterMatch[0].length)
   : content;
