@@ -115,6 +115,19 @@ STAGE_6_GLOBAL_REVIEW           → HALTED                        (fails, cap re
 STAGE_6_FIX_SESSION             → STAGE_6_GLOBAL_REVIEW          (fix done — FixSessionComplete)
 ```
 
+## Pipeline Change Tracking
+
+The orchestrator tracks structural pipeline changes using a `changeFlag` boolean:
+
+- `changeFlag` starts `FALSE` at the beginning of each pipeline run
+- Any stage that modifies pipeline structure sets `changeFlag = TRUE`. Structural changes include:
+  - A new expert is added to the roster
+  - A stage's role or responsibilities change
+  - A new stage is added or removed
+  - Stage ordering changes
+- `changeFlag` is checked once at Stage 6 completion
+- **At most one structural change is captured per write cycle.** Subsequent structural changes during an active `.puml` update (PENDING/WRITING states) are silently dropped. This is an explicit design simplification documented in the TLA+ spec (`PipelineImprovements.tla`, Machine 3).
+
 ## Accumulated Context
 
 Every stage receives all outputs from prior stages. The orchestrator maintains an `accumulated_context` object that grows as stages complete:
@@ -485,6 +498,15 @@ Spawn a targeted fix session for the failing issue:
 On `COMPLETE`, the terminal artifact is a commit on the named branch `design-pipeline/<topic-slug>`. This is durable -- a crash or timeout cannot lose the work.
 
 **Invariant enforced:** `HaltReasonConsistent` -- when HALTED, haltReason is always set to a non-NONE value.
+
+### PlantUML Diagram Update
+
+At pipeline completion (`COMPLETE` state), if `changeFlag = TRUE`:
+
+1. Write the updated pipeline diagram to a temp file: `design-pipeline.puml.tmp`
+2. Rename `design-pipeline.puml.tmp` → `design-pipeline.puml` (atomic rename)
+3. If the rename fails, the original `design-pipeline.puml` remains unchanged
+4. If `changeFlag = FALSE`, skip the update entirely — do not create spurious diffs
 
 #### Worktree Management
 
