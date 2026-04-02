@@ -13,6 +13,9 @@
     "vite": "^8.0.3",
     "vitest": "^4.1.2"
   },
+  "bin": {
+    "pipeline-runner": "./src/bin.ts"
+  },
   "exports": {
     "./*": "./src/*"
   },

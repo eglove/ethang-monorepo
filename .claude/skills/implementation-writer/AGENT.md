@@ -92,7 +92,29 @@ After drafting all steps, perform the coverage audit:
 
 Save the plan to `docs/implementation/YYYY-MM-DD_<topic-slug>.md`. Create the `docs/implementation/` directory if it does not exist.
 
-### 7. Derive Execution Tiers
+### 7. Check for Needed Code Writer Types (Post-Hoc Annotation)
+
+After the implementation plan is fully written and saved, check whether any step in the plan requires a code writer type that does not exist in the current roster (`typescript-writer`, `hono-writer`, `ui-writer`, `trainer-writer`). If a needed type is absent from the roster, append an entry to `docs/user_notes.md`.
+
+**Rules:**
+
+- This step never blocks or delays plan delivery — it runs after the plan file is saved
+- If `docs/user_notes.md` is ABSENT (does not exist) or EMPTY (zero bytes), create it with the standard header `# User Notes — Agent Requests` before appending
+- Entries are append-only; never overwrite existing content
+- Normalize agent names to lowercase before checking the roster
+- entries are user-curated; no automatic deletion is performed by agents
+- Only request code writer types (`typescript-writer`, `hono-writer`, `ui-writer`, `trainer-writer` variants) — not test writers, not experts
+
+**Entry format:**
+
+```
+- requested_by: implementation-writer
+  expert_needed: <lowercase-normalized writer name>
+  rationale: <why this code writer type is needed for this plan>
+  source_session: <implementation plan filename>
+```
+
+### 8. Derive Execution Tiers
 
 After the implementation steps are finalized and the coverage audit passes, group the steps into parallelizable execution tiers for Stage 6 (Pair Programming):
 

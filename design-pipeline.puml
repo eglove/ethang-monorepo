@@ -1,0 +1,45 @@
+@startuml
+title Design Pipeline State Machine
+note "Pipeline structure as of: 2026-04-01" as N1
+
+[*] --> STAGE_1_QUESTIONER
+
+STAGE_1_QUESTIONER --> STAGE_2_DESIGN_DEBATE : questioner completes
+STAGE_1_QUESTIONER --> HALTED : user abandons
+
+STAGE_2_DESIGN_DEBATE --> STAGE_3_TLA_WRITER : consensus or user accepts partial
+STAGE_2_DESIGN_DEBATE --> HALTED : user stops at stalemate
+
+STAGE_3_TLA_WRITER --> STAGE_4_TLA_REVIEW : TLC passes or user accepts as-is
+STAGE_3_TLA_WRITER --> STAGE_3_TLA_WRITER : retry tla-writer
+STAGE_3_TLA_WRITER --> STAGE_1_QUESTIONER : back to questioner (restart)
+
+STAGE_4_TLA_REVIEW --> STAGE_5_IMPLEMENTATION : review passes or user accepts as-is
+STAGE_4_TLA_REVIEW --> STAGE_3_TLA_WRITER : back to tla-writer, then re-review
+STAGE_4_TLA_REVIEW --> STAGE_1_QUESTIONER : back to questioner (restart)
+
+STAGE_5_IMPLEMENTATION --> STAGE_6_CONFIRMATION_GATE : plan delivered with tiers and agent pairs
+
+STAGE_6_CONFIRMATION_GATE --> STAGE_6_TIER_EXECUTING : UserConfirms
+STAGE_6_CONFIRMATION_GATE --> HALTED : user rejects plan
+
+STAGE_6_TIER_EXECUTING --> STAGE_6_TIER_MERGING : all sessions done (BeginTierMerging)
+STAGE_6_TIER_EXECUTING --> HALTED : all sessions failed (TierAllFailed)
+
+STAGE_6_TIER_MERGING --> STAGE_6_INTER_TIER_VERIFICATION : all merges done (BeginInterTierVerification)
+STAGE_6_TIER_MERGING --> HALTED : merge conflict unresolvable (MergeConflictEscalates)
+
+STAGE_6_INTER_TIER_VERIFICATION --> STAGE_6_TIER_EXECUTING : passes, more tiers remain (VerificationPasses)
+STAGE_6_INTER_TIER_VERIFICATION --> STAGE_6_GLOBAL_REVIEW : passes, last tier (VerificationPasses)
+STAGE_6_INTER_TIER_VERIFICATION --> HALTED : fails (VerificationFails)
+
+STAGE_6_GLOBAL_REVIEW --> COMPLETE : GlobalReviewPasses
+STAGE_6_GLOBAL_REVIEW --> STAGE_6_FIX_SESSION : fails, under cap (GlobalReviewFails)
+STAGE_6_GLOBAL_REVIEW --> HALTED : fails, cap reached (GlobalReviewExhausted)
+
+STAGE_6_FIX_SESSION --> STAGE_6_GLOBAL_REVIEW : fix done (FixSessionComplete)
+
+COMPLETE --> [*]
+HALTED --> [*]
+
+@enduml

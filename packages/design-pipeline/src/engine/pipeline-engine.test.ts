@@ -12,6 +12,7 @@ import {
 } from "../state-machine/pipeline-phases.js";
 import {
   advancePipeline,
+  advancePipelineWithOutput,
   getPipelineStatus,
   haltPipeline,
   type PipelineResponse,
@@ -298,6 +299,62 @@ describe("advancePipeline", () => {
     await writeFile(fakePath, "{}", "utf8");
 
     const result = await advancePipeline(TEST_SLUG, fakePath, testDirectory);
+
+    expect(result).toHaveProperty("error");
+  });
+});
+
+describe("advancePipelineWithOutput", () => {
+  it("transitions to PHASE_2 with valid questioner output object", async () => {
+    await startPipeline(TEST_SLUG, testDirectory);
+
+    const result = await advancePipelineWithOutput(
+      TEST_SLUG,
+      { briefingPath: BRIEFING_PATH, experts: [EXPERT_A, EXPERT_B] },
+      testDirectory,
+    );
+
+    expect(result).toStrictEqual({
+      context: {
+        briefingPath: BRIEFING_PATH,
+        experts: [EXPERT_A, EXPERT_B],
+      },
+      phase: PHASE_2,
+    });
+
+    const status = await getPipelineStatus(TEST_SLUG, testDirectory);
+    expect(status).toHaveProperty("phase", PHASE_2);
+  });
+
+  it("returns validation errors for invalid debate output object", async () => {
+    await startPipeline(TEST_SLUG, testDirectory);
+    await advancePipelineWithOutput(
+      TEST_SLUG,
+      { briefingPath: BRIEFING_PATH, experts: [EXPERT_A, EXPERT_B] },
+      testDirectory,
+    );
+
+    const result = await advancePipelineWithOutput(
+      TEST_SLUG,
+      {
+        consensusReached: true,
+        participatingExperts: [EXPERT_A, EXPERT_B],
+        rounds: 3,
+        unresolvedDissents: [],
+      },
+      testDirectory,
+    );
+
+    expect(result).toHaveProperty("valid", false);
+    expect(result).toHaveProperty("errors");
+  });
+
+  it(NO_SESSION_ERROR, async () => {
+    const result = await advancePipelineWithOutput(
+      "no-session-slug",
+      { briefingPath: BRIEFING_PATH, experts: [EXPERT_A] },
+      testDirectory,
+    );
 
     expect(result).toHaveProperty("error");
   });

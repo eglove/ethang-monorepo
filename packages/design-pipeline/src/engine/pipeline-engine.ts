@@ -287,6 +287,38 @@ const applyForwardTransition = async (
   };
 };
 
+const processOutput = async (
+  state: PipelineState,
+  output: Record<string, unknown>,
+  stateDirectory: string,
+): Promise<PipelineResponse> => {
+  const validationError = await runPhaseValidation(
+    state,
+    output,
+    stateDirectory,
+  );
+
+  if (validationError !== undefined) {
+    return validationError;
+  }
+
+  return applyForwardTransition(state, output, stateDirectory);
+};
+
+export const advancePipelineWithOutput = async (
+  slug: string,
+  output: Record<string, unknown>,
+  stateDirectory: string,
+): Promise<PipelineResponse> => {
+  const state = await loadSession(slug, stateDirectory);
+
+  if ("error" in state) {
+    return state;
+  }
+
+  return processOutput(state, output, stateDirectory);
+};
+
 export const advancePipeline = async (
   slug: string,
   outputPath: string,
@@ -304,17 +336,7 @@ export const advancePipeline = async (
     return output;
   }
 
-  const validationError = await runPhaseValidation(
-    state,
-    output,
-    stateDirectory,
-  );
-
-  if (validationError !== undefined) {
-    return validationError;
-  }
-
-  return applyForwardTransition(state, output, stateDirectory);
+  return processOutput(state, output, stateDirectory);
 };
 
 export const retryPipeline = async (

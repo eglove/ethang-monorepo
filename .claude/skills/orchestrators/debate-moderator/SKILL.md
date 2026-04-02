@@ -21,6 +21,7 @@ The Debate Moderator orchestrates a council of domain experts to evaluate any to
 | expert-performance | `.claude/skills/agents/expert-performance/SKILL.md` | Performance Engineering |
 | expert-edge-cases | `.claude/skills/agents/expert-edge-cases/SKILL.md` | Edge Case and Failure Hunting |
 | expert-continuous-delivery | `.claude/skills/agents/expert-continuous-delivery/SKILL.md` | Continuous Delivery and Deployment |
+| expert-lodash | `.claude/skills/agents/expert-lodash/SKILL.md` | Lodash Utility Library |
 
 ## When to Use
 
@@ -33,27 +34,23 @@ The Debate Moderator orchestrates a council of domain experts to evaluate any to
 ```
 Topic:    The idea, question, code snippet, or artifact being evaluated. Free text or pasted code.
 Context:  Optional background (e.g., "this is a React server component in a monorepo").
-Experts:  Optional list of which experts to include. If omitted, the moderator lists available
-          experts and halts — it does not proceed without an explicit expert selection.
+Experts:  Optional list of which experts to include. If omitted, the moderator selects experts
+          autonomously using selectExperts(topic) (see Autonomous Expert Selection below).
 ```
 
-**Expert selection is mandatory.** If the user or caller does not specify experts, respond with:
+## Autonomous Expert Selection
 
-```
-Available experts:
-  - expert-tdd          Test-Driven Development
-  - expert-ddd          Domain-Driven Design
-  - expert-bdd          Behavior-Driven Development
-  - expert-atomic-design  Atomic / Component-Driven UI Design
-  - expert-tla          TLA+ Formal Specification
-  - expert-performance  Performance Engineering
-  - expert-edge-cases   Edge Case and Failure Hunting
-  - expert-continuous-delivery  Continuous Delivery and Deployment
+When no explicit `--experts` argument is provided by the caller, the moderator selects experts autonomously using `selectExperts(topic)`:
 
-Which experts should participate? List them by name (or say "all").
-```
+1. Read the topic and context to identify the relevant domains.
+2. For each expert in the roster, evaluate whether their domain is relevant to the topic.
+3. Return the subset of experts whose domains are relevant.
 
-Then stop. Do not proceed until an explicit selection is received.
+**Hard precondition:** If `selectExperts(topic)` returns an empty set, the moderator fails with a hard precondition error — it never silently proceeds with zero experts. The caller must provide a broader or more descriptive topic.
+
+**At most one selection per debate:** `selectExperts` is called once before round 1 and the result is fixed for all rounds.
+
+When an explicit `--experts` list is provided, use it directly without re-evaluating.
 
 ## Debate Protocol
 
@@ -91,7 +88,7 @@ If only one expert is selected, the debate proceeds as a solo review. No cross-e
 
 ## Fan-Out Protocol
 
-1. Confirm expert selection (halt if not provided)
+1. Confirm expert selection (run autonomous selectExperts(topic) if not explicitly provided)
 2. Dispatch all selected experts in parallel for round 1
 3. Collect all outputs before proceeding
 4. Check for consensus (no new objections across all outputs)
@@ -163,9 +160,28 @@ Saved to `docs/debate-moderator-sessions/YYYY-MM-DD_<topic-slug>.md` after every
 - **Passes:** Full synthesis content + path to session file
 - **Format:** Markdown inline output as described above, followed by the file path on its own line
 
+## Post-Hoc Expert Gap Annotation
+
+After the synthesis is written and the session file is saved, check whether any needed expert domain was absent from the roster. If an expert domain was identified as needed during the debate but no roster member covers it, append an entry to `docs/user_notes.md`.
+
+**Rules:**
+- This step never blocks or delays the synthesis output — it runs after the session file is saved
+- Normalize expert names to lowercase before checking the roster
+- If `docs/user_notes.md` is ABSENT (does not exist) or EMPTY (zero bytes), create it with the header `# User Notes — Agent Requests` before appending
+- Entries are append-only; never overwrite or delete existing content
+- entries are user-curated; no automatic deletion is performed by agents
+
+**Entry format:**
+```
+- requested_by: debate-moderator
+  expert_needed: <lowercase-normalized name>
+  rationale: <one sentence why this domain is needed>
+  source_session: <session filename>
+```
+
 ## Constraints
 
 - The moderator does not form opinions, edit files, or cast deciding votes
 - No topic is out of scope — experts engage from their domain angle regardless
-- Expert selection is mandatory before any debate begins
-- The moderator never modifies existing files; it only creates new session documents in `docs/debate-moderator-sessions/`
+- Expert selection occurs at most one time per debate (before round 1) or is provided by the caller
+- The moderator never modifies existing files; it only creates new session documents in `docs/debate-moderator-sessions/` and appends to `docs/user_notes.md`
