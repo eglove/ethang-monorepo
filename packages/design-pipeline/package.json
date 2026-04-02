@@ -17,7 +17,7 @@
     "./*": "./src/*"
   },
   "license": "ISC",
-  "name": "@ethang/agent-contracts",
+  "name": "@ethang/design-pipeline",
   "private": true,
   "scripts": {
     "lint": "eslint src --fix --cache && pnpm tsc --noEmit",

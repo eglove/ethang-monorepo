@@ -22,7 +22,7 @@ const TlaCoverageSchema = z
     );
   }, "must map to at least one TLA+ spec element");
 
-export const TrainerInputSchema = z.object({
+export const CodeWriterInputSchema = z.object({
   dependencies: z.array(z.number().int().min(1)),
   description: z.string().min(1),
   files: z.array(FileEntrySchema).min(1),
@@ -31,3 +31,5 @@ export const TrainerInputSchema = z.object({
   title: z.string().min(1),
   tlaCoverage: TlaCoverageSchema,
 });
+
+export type CodeWriterInput = z.infer<typeof CodeWriterInputSchema>;

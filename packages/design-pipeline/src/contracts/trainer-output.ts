@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-import { FrontmatterSchema } from "./frontmatter.ts";
-import { HandoffContractSchema } from "./handoff-contract.ts";
-import { SectionSchema } from "./section.ts";
+import { FrontmatterSchema } from "./shared/frontmatter.ts";
+import { HandoffContractSchema } from "./shared/handoff-contract.ts";
+import { SectionSchema } from "./shared/section.ts";
 
 const ManifestEntrySchema = z.object({
   action: z.enum(["create", "modify"]),

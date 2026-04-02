@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   decisionGuideRowSchema,
   dispatchTargetListSchema,
-} from "./questioner-contract.ts";
+} from "./questioner.ts";
 
 const DISPATCH_TARGETS = ["debate-moderator"];
 
