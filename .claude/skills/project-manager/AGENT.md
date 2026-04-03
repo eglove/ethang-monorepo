@@ -333,6 +333,24 @@ State file: docs/pipeline-state.md
 - Merge conflict retries are bounded per task (MaxFixRetries)
 - Sessions cannot be resumed — if halted, start a new `/design-pipeline` run
 
+## Reviewer Gate
+
+### Crash/Timeout Handling
+
+Each reviewer gets `MaxReviewerRetries = 2` retry attempts when a crash or timeout occurs. If retries are exhausted, the reviewer is marked `UNAVAILABLE` and the gate proceeds with N-1 reviewers. If the number of responded reviewers falls below `MinReviewQuorum = 5`, the task FAILS — the gate cannot produce a valid verdict without sufficient reviewer coverage.
+
+**Design decision — per-round retry reset:** Retry counts reset to zero on each revision cycle. A reviewer that crashed during round 1 gets a fresh `MaxReviewerRetries = 2` budget in round 2. This is an explicit design decision per TLA+ review amendment 5: transient failures (network, resource pressure) are unlikely to persist across revision boundaries, and penalizing reviewers for prior-round crashes would unnecessarily shrink the quorum over time.
+
+### Contradictory Reviewer Findings
+
+When reviewers produce conflicting findings (e.g., simplicity reviewer vs type-design reviewer disagree on approach), both sets of findings are sent to the implementing pair to reconcile. The project-manager does NOT arbitrate between reviewers — it is not qualified to make domain judgments.
+
+If contradictions persist after `MaxReviewRevisions` revision cycles are exhausted, the session FAILS with structured metadata: `{conflicting_reviewers: [...], conflict_details: [...], revision_history: [...]}`. This metadata enables post-mortem analysis of why consensus could not be reached.
+
+### Scope/Verdict Consistency
+
+An `OUT_OF_SCOPE + PASS` verdict means the reviewer's domain was not applicable to the session diff. These verdicts count toward quorum (the reviewer responded and evaluated), but the review gate requires at least one `SESSION_DIFF`-scoped `PASS` to pass the gate. This prevents an all-`OUT_OF_SCOPE` pass — a semantic hole identified during TLA+ review — where every reviewer declares the diff outside their domain and the gate passes vacuously with no substantive review.
+
 ## Handoff
 
 - **Receives from:** Design pipeline orchestrator (after confirmation gate passes)
