@@ -15,7 +15,7 @@ const SKILL_PATH = path.join(
   "SKILL.md",
 );
 
-const content = readFileSync(SKILL_PATH, "utf8");
+const content = readFileSync(SKILL_PATH, "utf8").replaceAll("\r\n", "\n");
 
 const frontmatterMatch = /^---\r?\n([\S\s]*?)\r?\n---/u.exec(content);
 const frontmatter = frontmatterMatch?.[1] ?? "";

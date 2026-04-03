@@ -278,6 +278,21 @@ Source briefing: docs/questioner-sessions/<file>
 TLA+ spec: docs/tla-specs/<slug>/
 ```
 
+## Pipeline State File
+
+When called from the design pipeline, the implementation-writer writes its results to the global state file. These instructions are conditional — they apply only when the pipeline context is detected.
+
+**Detection:** The implementation-writer knows it is in a pipeline run when `docs/pipeline-state.md` exists and the run-level Status is `ACCUMULATING`.
+
+**Pre-Write Validation:** Before writing, validate that Stage 1, Stage 2, Stage 3, and Stage 4 StageResult sections in `docs/pipeline-state.md` are populated (Status is not empty). If any prior stage is missing or has an empty Status, report the validation error to the caller and do not write.
+
+**Writing the Stage 5 StageResult:** After completing the implementation plan (Process step 6), update the Stage 5 section in `docs/pipeline-state.md` with:
+- **Status:** `COMPLETE`
+- **Artifact:** the implementation plan file path (e.g., `docs/implementation/YYYY-MM-DD_<slug>.md`)
+- **Timestamp:** current date/time
+
+**Section-Scoped Ownership:** Write only to the Stage 5 section. Do not modify any other stage's section, the run metadata, or the Git section. Cross-section writes are domain invariant violations.
+
 ## Handoff
 
 - **Passes to:** design-pipeline Stage 6 orchestrator (via the design-pipeline SKILL.md)
