@@ -41,12 +41,14 @@ const RETURNS_200_HTML = "returns 200 with HTML";
 const TEXT_HTML = "text/html";
 
 const mockBlogModelWith = (
-  getAllBlogs: ReturnType<typeof vi.fn>,
+  getPaginatedBlogs: ReturnType<typeof vi.fn>,
   getBlogBySlug: ReturnType<typeof vi.fn> = vi.fn(),
+  getAllBlogs: ReturnType<typeof vi.fn> = vi.fn(),
 ) => {
   vi.mocked(BlogModel).mockImplementation(
     class {
       public getAllBlogs = getAllBlogs;
+      public getPaginatedBlogs = getPaginatedBlogs;
       public getBlogBySlug = getBlogBySlug;
     } as never,
   );
@@ -90,7 +92,7 @@ describe("app — www redirect", () => {
 describe("app — feeds", () => {
   it("sitemap returns XML content type", async () => {
     vi.clearAllMocks();
-    mockBlogModelWith(vi.fn().mockResolvedValue([]), vi.fn());
+    mockBlogModelWith(vi.fn(), vi.fn(), vi.fn().mockResolvedValue([]));
     const response = await app.request("https://ethang.dev/sitemap.xml");
 
     expect(response.headers.get(CONTENT_TYPE)).toContain("application/xml");
@@ -98,7 +100,7 @@ describe("app — feeds", () => {
 
   it("sitemap returns 200 status", async () => {
     vi.clearAllMocks();
-    mockBlogModelWith(vi.fn().mockResolvedValue([]), vi.fn());
+    mockBlogModelWith(vi.fn(), vi.fn(), vi.fn().mockResolvedValue([]));
     const response = await app.request("https://ethang.dev/sitemap.xml");
 
     expect(response.status).toBe(200);
@@ -106,7 +108,7 @@ describe("app — feeds", () => {
 
   it("blogRss returns XML content type", async () => {
     vi.clearAllMocks();
-    mockBlogModelWith(vi.fn().mockResolvedValue([]), vi.fn());
+    mockBlogModelWith(vi.fn(), vi.fn(), vi.fn().mockResolvedValue([]));
     const response = await app.request("https://ethang.dev/blogRss.xml");
 
     expect(response.headers.get(CONTENT_TYPE)).toContain("text/xml");
@@ -114,7 +116,7 @@ describe("app — feeds", () => {
 
   it("blogRss returns 200 status", async () => {
     vi.clearAllMocks();
-    mockBlogModelWith(vi.fn().mockResolvedValue([]), vi.fn());
+    mockBlogModelWith(vi.fn(), vi.fn(), vi.fn().mockResolvedValue([]));
     const response = await app.request("https://ethang.dev/blogRss.xml");
 
     expect(response.status).toBe(200);
@@ -182,7 +184,10 @@ describe("app — static pages", () => {
 describe("app — blog pages", () => {
   it(RETURNS_200_HTML, async () => {
     vi.clearAllMocks();
-    mockBlogModelWith(vi.fn().mockResolvedValue([]), vi.fn());
+    mockBlogModelWith(
+      vi.fn().mockResolvedValue({ maxPages: 1, posts: [], total: 0 }),
+      vi.fn(),
+    );
     const response = await app.request("https://ethang.dev/blog");
 
     expect(response.status).toBe(200);

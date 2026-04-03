@@ -127,4 +127,115 @@ describe(BlogModel, () => {
       expect(query).toContain("videoEmbed");
     });
   });
+
+  describe("getPaginatedBlogs", () => {
+    const pageSize = 10;
+
+    it("returns posts, total, and maxPages for page 1 with 25 total", async () => {
+      vi.clearAllMocks();
+      vi.mocked(sanityClient).fetch.mockResolvedValue([
+        { posts: Array.from({ length: 10 }, () => makeBlog()) },
+        { total: 25 },
+      ] as never);
+
+      const model = new BlogModel();
+      const result = await model.getPaginatedBlogs(1, pageSize);
+
+      expect(result.posts).toHaveLength(10);
+      expect(result.total).toBe(25);
+      expect(result.maxPages).toBe(3);
+    });
+
+    it("returns correct slice parameters for page 2", async () => {
+      vi.clearAllMocks();
+      vi.mocked(sanityClient).fetch.mockResolvedValue([
+        { posts: Array.from({ length: 10 }, () => makeBlog()) },
+        { total: 25 },
+      ] as never);
+
+      const model = new BlogModel();
+      await model.getPaginatedBlogs(2, pageSize);
+
+      const params = get(vi.mocked(sanityClient).fetch.mock.calls, "[0][1]");
+      expect(params).toMatchObject({ start: 10, end: 20 });
+    });
+
+    it("returns correct slice parameters for page 3", async () => {
+      vi.clearAllMocks();
+      vi.mocked(sanityClient).fetch.mockResolvedValue([
+        { posts: Array.from({ length: 5 }, () => makeBlog()) },
+        { total: 25 },
+      ] as never);
+
+      const model = new BlogModel();
+      await model.getPaginatedBlogs(3, pageSize);
+
+      const params = get(vi.mocked(sanityClient).fetch.mock.calls, "[0][1]");
+      expect(params).toMatchObject({ start: 20, end: 30 });
+    });
+
+    it("returns empty posts for out-of-range page", async () => {
+      vi.clearAllMocks();
+      vi.mocked(sanityClient).fetch.mockResolvedValue([
+        { posts: [] },
+        { total: 25 },
+      ] as never);
+
+      const model = new BlogModel();
+      const result = await model.getPaginatedBlogs(4, pageSize);
+
+      expect(result.posts).toHaveLength(0);
+      expect(result.total).toBe(25);
+      expect(result.maxPages).toBe(3);
+    });
+
+    it("returns maxPages=1 for zero total posts", async () => {
+      vi.clearAllMocks();
+      vi.mocked(sanityClient).fetch.mockResolvedValue([
+        { posts: [] },
+        { total: 0 },
+      ] as never);
+
+      const model = new BlogModel();
+      const result = await model.getPaginatedBlogs(1, pageSize);
+
+      expect(result.posts).toHaveLength(0);
+      expect(result.total).toBe(0);
+      expect(result.maxPages).toBe(1);
+    });
+
+    it("returns maxPages=1 for 5 total posts with pageSize=10", async () => {
+      vi.clearAllMocks();
+      vi.mocked(sanityClient).fetch.mockResolvedValue([
+        { posts: Array.from({ length: 5 }, () => makeBlog()) },
+        { total: 5 },
+      ] as never);
+
+      const model = new BlogModel();
+      const result = await model.getPaginatedBlogs(1, pageSize);
+
+      expect(result.posts).toHaveLength(5);
+      expect(result.total).toBe(5);
+      expect(result.maxPages).toBe(1);
+    });
+
+    it("uses GROQ multi-query syntax", async () => {
+      vi.clearAllMocks();
+      vi.mocked(sanityClient).fetch.mockResolvedValue([
+        { posts: [] },
+        { total: 0 },
+      ] as never);
+
+      const model = new BlogModel();
+      await model.getPaginatedBlogs(1, pageSize);
+
+      const query = get(vi.mocked(sanityClient).fetch.mock.calls, "[0][0]");
+
+      expect(query).toContain('"posts"');
+      expect(query).toContain('"total"');
+      expect(query).toContain("count(");
+      expect(query).toContain("$start");
+      expect(query).toContain("$end");
+    });
+  });
 });

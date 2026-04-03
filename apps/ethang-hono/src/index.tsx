@@ -16,6 +16,7 @@ import { ScrollbarGutter } from "./components/routes/tips/scrollbar-gutter.tsx";
 import { getDatabase } from "./db/database.ts";
 import { blogRss } from "./feeds/blog-rss.ts";
 import { lastModifiedMiddleware } from "./middleware/last-modified.ts";
+import { BlogModel } from "./models/blog-model.ts";
 import { CourseTracking } from "./models/course-tracking.ts";
 import { sitemap } from "./sitemap.ts";
 import { coursePathData } from "./stores/course-path-store.ts";
@@ -88,6 +89,29 @@ app.get(routes.scrollbarGutter, async (c) => {
 
 app.get(routes.blog, async (c) => {
   return c.html(<Blog />);
+});
+
+app.get("/blog/page/:page", async (c) => {
+  const rawPage = c.req.param("page");
+
+  const parsed = Number(rawPage);
+
+  if (!rawPage || isNaN(parsed) || !Number.isInteger(parsed) || parsed < 1) {
+    return c.redirect("/blog", 302);
+  }
+
+  if (parsed === 1) {
+    return c.redirect("/blog", 301);
+  }
+
+  const blogModel = new BlogModel();
+  const { maxPages } = await blogModel.getPaginatedBlogs(parsed, 10);
+
+  if (parsed > maxPages) {
+    return c.redirect(`/blog/page/${maxPages}`, 302);
+  }
+
+  return c.html(<Blog page={parsed} />);
 });
 
 app.get("/blog/:slug", async (c) => {
