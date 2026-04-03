@@ -1,3 +1,5 @@
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
 ### SKILL: Progressive Workflow Mapping
 **ID:** `sys_progressive_map_2026`
 **Trigger:** Whenever a multi-file logic path is identified or a "hidden" dependency is discovered.

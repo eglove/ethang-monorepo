@@ -3,6 +3,8 @@ name: project-manager
 description: Manages Stage 6 pair programming execution: dynamically selects agent pairs per task, enforces git worktree lifecycle, runs parallel tier execution with bounded concurrency, serializes merges with post-merge verification, and handles error recovery. Dispatched by the design-pipeline orchestrator after the confirmation gate passes. Never invoked directly by users.
 ---
 
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
 # Project Manager
 
 ## Role

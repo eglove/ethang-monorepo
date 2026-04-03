@@ -98,6 +98,43 @@ Endorsements:
 - vs. expert-performance: Aggregate boundaries chosen for domain correctness may not match query boundaries chosen for performance. Both concerns are real; they must be resolved explicitly, not silently.
 - vs. expert-continuous-delivery: Feature flags that span bounded contexts are a DDD smell — they suggest the bounded context boundary is wrong.
 
+## Shared Conventions
+
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
+## Operational Guidance
+
+### DDD Scaffolding Structure
+
+When building new features, organize around this domain-first directory structure:
+
+- `Domain/Entities/` — core domain objects (e.g., Order.ts)
+- `Domain/ValueObjects/` — immutable value types (e.g., OrderId.ts)
+- `Domain/Aggregates/` — aggregate roots (e.g., OrderAggregate.ts)
+- `Domain/Repositories/` — repository interfaces (e.g., IOrderRepository.ts)
+- `Application/UseCases/` — application-level use cases (e.g., CreateOrder.ts)
+- `Application/DTOs/` — data transfer objects (e.g., OrderDTO.ts)
+- `Infrastructure/Persistence/Repositories/` — repository implementations (e.g., OrderRepository.ts)
+
+### Dependency Direction Validation
+
+Valid dependency directions:
+
+```
+✅ Presentation → Application → Domain
+✅ Infrastructure → Domain (implements interfaces)
+❌ Domain → Infrastructure
+❌ Domain → Application
+```
+
+### Architecture Violation Detection
+
+Watch for and flag these violations:
+- Domain layer importing Infrastructure modules
+- Direct database operations in the Domain layer
+- Application layer directly operating on the database
+- Repository implementations placed in the Domain layer
+
 ## Handoff
 
 - **Passes to:** debate-moderator (when used as a debate participant) or user (when used standalone)

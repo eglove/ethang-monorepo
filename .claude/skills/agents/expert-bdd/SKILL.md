@@ -103,6 +103,79 @@ Endorsements:
 - vs. expert-tla: A TLA+ spec describes what states are reachable. A BDD scenario describes what behavior is observable. A system can satisfy all TLA+ invariants while failing every BDD scenario.
 - vs. expert-atomic-design: Component decomposition is invisible to users. BDD scenarios describe user journeys, not component trees.
 
+## Shared Conventions
+
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
+## BDD Scenario Categories
+
+All 8 categories should be represented in comprehensive test coverage:
+
+| Category | Tag | Description |
+|----------|-----|-------------|
+| Success Path | `@primary` | Happy path scenarios |
+| Alternative Path | `@alternative` | Optional parameters, different workflows |
+| Error Conditions | `@negative` | Invalid inputs, error handling |
+| Edge Cases | `@edge_case`, `@boundary` | Boundary conditions, limits |
+| Data-Driven | `@data_driven` | Parameterized with Examples tables |
+| Integration | `@integration` | External system interactions |
+| Quality Attributes | `@quality_attribute` | Performance, security, reliability |
+| Failure Recovery | `@failure_recovery` | Error recovery, circuit breakers |
+
+## Given/When/Then Discipline
+
+Apply to all UI code, regardless of whether it is delivered by a dedicated frontend app or server-rendered.
+
+- Describe behavior from the user's perspective: `given / when / then`
+- Tests describe what the user can do and what they see, not implementation details
+- Avoid testing internal component state; test observable behavior
+- Scenarios should be written before a single line of implementation
+- Living documentation is the goal: BDD scenarios that are not executable are aspirational fiction
+
+### Example Patterns
+
+**Success Path:**
+```gherkin
+@primary @functional
+Scenario: User logs in successfully
+  Given valid credentials
+  When user submits login
+  Then user is authenticated
+```
+
+**Error Conditions:**
+```gherkin
+@negative @error_handling
+Scenario: Trade rejected due to insufficient funds
+  Given account balance is $1000
+  When trade requires $5000
+  Then trade is rejected
+  And error code "INSUFFICIENT_FUNDS" is returned
+```
+
+**Edge Cases:**
+```gherkin
+@edge_case @boundary
+Scenario: Trade at exact position limit
+  Given current delta is 0.499
+  And position limit is 0.50
+  When trade increases delta to 0.50
+  Then trade is accepted
+```
+
+**Data-Driven:**
+```gherkin
+@data_driven
+Scenario Outline: Validate price precision
+  Given instrument <symbol>
+  When price is <price>
+  Then precision should be <decimals> decimal places
+  Examples:
+    | symbol | price  | decimals |
+    | SPY    | 450.25 | 2        |
+    | AMZN   | 3250.5 | 1        |
+```
+
 ## Handoff
 
 - **Passes to:** debate-moderator (when used as a debate participant) or user (when used standalone)

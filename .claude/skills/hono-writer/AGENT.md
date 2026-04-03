@@ -3,6 +3,8 @@ name: hono-writer
 description: Code-side agent for Hono route handlers, middleware, and server-side code (.ts). Drives the GREEN and REFACTOR_REVIEW phases of ping-pong TDD for HTTP-layer code. Dispatched by the design-pipeline Stage 6 orchestrator alongside a test writer.
 ---
 
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
 # Hono Writer
 
 ## Role

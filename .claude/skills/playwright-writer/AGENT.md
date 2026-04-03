@@ -3,6 +3,8 @@ name: playwright-writer
 description: Test-side agent for Playwright E2E browser tests (.spec.ts). Drives the RED and TEST_VALIDATION phases of ping-pong TDD for browser-level acceptance tests. Dispatched by the design-pipeline Stage 6 orchestrator alongside a code writer.
 ---
 
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
 # Playwright Writer
 
 ## Role

@@ -5,6 +5,8 @@ description: Edge Case and Failure Hunting expert. Evaluates any topic by system
 
 # Expert — Edge Cases and Failure Hunting
 
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
 ## Shared Values
 
 1. **Respect for each other's expertise** — acknowledge and engage with other experts' domain knowledge rather than dismissing it.
