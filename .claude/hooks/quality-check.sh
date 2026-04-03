@@ -2,15 +2,15 @@
 # Runs tests and lint scoped to the package containing the edited file.
 # Falls back to full recursive run if the file is outside apps/ or packages/.
 # Outputs hookSpecificOutput JSON so Claude sees failures and continues fixing.
-# On success, prompts Claude to review INTERNAL_MAP.md per progressive-mapper guidelines.
+# On success, prompts Claude to consult the librarian index for codebase context.
 
 set -uo pipefail
 
 FILE=$(jq -r '.tool_input.file_path')
 
-# Skip quality checks when editing the map itself — no need to re-run tests
-# for documentation-only changes to INTERNAL_MAP.md.
-if echo "$FILE" | grep -qE 'INTERNAL_MAP\.md$'; then
+# Skip quality checks when editing librarian index files — no need to re-run
+# tests for documentation-only changes to docs/librarian/.
+if echo "$FILE" | grep -qE 'docs/librarian/'; then
   exit 0
 fi
 
@@ -57,11 +57,11 @@ if [ "$TEST_CODE" -ne 0 ] || [ "$LINT_CODE" -ne 0 ] || [ "$TSC_CODE" -ne 0 ]; th
       }
     }'
 else
-  # Quality checks passed — prompt to maintain the progressive map.
+  # Quality checks passed — prompt to consult librarian index.
   jq -n '{
     hookSpecificOutput: {
       hookEventName: "PostToolUse",
-      additionalContext: "Quality checks passed.\n\nReview INTERNAL_MAP.md per progressive-mapper guidelines:\n- Add any non-obvious file connections or search hints discovered this session\n- Remove or correct any entries that are now stale or misleading\n- If nothing changed, leave it as-is"
+      additionalContext: "Quality checks passed.\n\nConsult docs/librarian/INDEX.md for codebase context if needed."
     }
   }'
 fi
