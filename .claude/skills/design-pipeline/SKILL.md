@@ -73,7 +73,7 @@ The orchestrator is a state machine with these states:
 | `STAGE_6_INTER_TIER_VERIFICATION` | Full test suite + type-check after all tier merges complete |
 | `STAGE_6_GLOBAL_REVIEW` | Cross-task integration review after all tiers complete |
 | `STAGE_6_FIX_SESSION` | Targeted fix session spawned from failed global review |
-| `STAGE_6_REVIEWING` | All 8 reviewers dispatched and running in parallel |
+| `STAGE_6_REVIEWING` | All 9 reviewers dispatched and running in parallel |
 | `STAGE_6_REVIEW_PASSED` | All responded reviewers passed with quorum met |
 | `STAGE_6_REVIEW_FAILED` | At least one responded reviewer failed |
 | `STAGE_6_REVISING` | Pair session revising based on reviewer findings |
@@ -551,7 +551,21 @@ At pipeline completion (`COMPLETE` state), if `changeFlag = TRUE`:
 | MaxMergeConflictRetries | bounded | Prevents infinite merge conflict resolution |
 | MaxReviewRevisions | 3 | Max full review-revision cycles per task |
 | MaxReviewerRetries | 2 | Max retries per reviewer on crash/timeout |
-| MinReviewQuorum | 5 | Minimum reviewers required for valid gate (of 8) |
+| MinReviewQuorum | ceil(2n/3) | Quorum formula: ceil(2n/3) where n = number of non-UNAVAILABLE reviewers. See `.claude/skills/shared/quorum.md`. At n=9, quorum=6. At n=2, quorum=2 (unanimity). |
+
+#### Reviewer Roster
+
+The review gate dispatches the following 9 reviewers in parallel:
+
+1. `artifact-reviewer`
+2. `compliance-reviewer`
+3. `bug-reviewer`
+4. `simplicity-reviewer`
+5. `type-design-reviewer`
+6. `security-reviewer`
+7. `backlog-reviewer`
+8. `test-reviewer`
+9. `a11y-reviewer`
 
 #### ReviewVerdict Schema
 
