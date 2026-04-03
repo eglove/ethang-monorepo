@@ -20,10 +20,10 @@ const NAV_ROUTES = ["/", "/news", "/calendar", "/files", "/trustees"];
 // fails cleanly rather than leaving a partially-installed worker.
 self.addEventListener("install", (event) => {
   event.waitUntil(
-      Promise.all([
-        caches.open(HTML_CACHE).then((cache) => cache.addAll(NAV_ROUTES)),
-        globalThis.skipWaiting(),
-      ]),
+    Promise.all([
+      caches.open(HTML_CACHE).then((cache) => cache.addAll(NAV_ROUTES)),
+      globalThis.skipWaiting(),
+    ]),
   );
 });
 
@@ -32,16 +32,16 @@ self.addEventListener("install", (event) => {
 // a full page reload.
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-      caches
-          .keys()
-          .then(async (keys) =>
-              Promise.all(
-                  keys
-                      .filter((key) => !ALL_CACHES.has(key))
-                      .map(async (key) => caches.delete(key)),
-              ),
-          )
-          .then(() => globalThis.clients.claim()),
+    caches
+      .keys()
+      .then(async (keys) =>
+        Promise.all(
+          keys
+            .filter((key) => !ALL_CACHES.has(key))
+            .map(async (key) => caches.delete(key)),
+        ),
+      )
+      .then(() => globalThis.clients.claim()),
   );
 });
 
