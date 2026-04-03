@@ -73,3 +73,23 @@ When touching existing code, take the opportunity to improve it. Do not make cha
 - Align structure with the patterns described in this file
 
 Scope improvements to the code you are already reading or modifying. Do not refactor entire files unprompted.
+
+## User Notes
+
+All agents may write free-form observations to `docs/user_notes/` at any time during execution. These are non-critical suggestions the user audits periodically — not an action queue.
+
+**File naming:** `docs/user_notes/<agent-name>-<YYYY-MM-DD>-<HH-MM-SS>.md`
+
+Each file is agent-scoped to avoid concurrent write conflicts from parallel agents. Never write to a shared single file.
+
+**Entry format:**
+- Agent name and timestamp in the file header
+- Free-form markdown body with observations, suggestions, or flagged items
+- No structured schema required — write whatever is worth noting
+
+**Rules:**
+- Any agent can write at any time (fire-and-forget)
+- Write failures are non-blocking: warn and continue, never halt the pipeline
+- Create the `docs/user_notes/` directory if it does not exist
+- Entries are append-only per file; never overwrite or delete other agents' notes
+- The user audits and trims manually — no automated cleanup or summarization
