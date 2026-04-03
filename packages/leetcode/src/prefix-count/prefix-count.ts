@@ -1,9 +1,6 @@
-import startsWith from "lodash/startsWith";
+import startsWith from "lodash/startsWith.js";
 
-export const prefixCount = (
-  words: string[],
-  pref: string,
-): number => {
+export const prefixCount = (words: string[], pref: string): number => {
   let count = 0;
 
   for (const word of words) {
