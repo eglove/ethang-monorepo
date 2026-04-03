@@ -15,68 +15,33 @@ const ALL_CACHES = new Set([ASSETS_CACHE, HTML_CACHE]);
 // has had a chance to populate the cache organically.
 const NAV_ROUTES = ["/", "/news", "/calendar", "/files", "/trustees"];
 
-// Dedicated offline fallback page, also precached at install time.
-const OFFLINE_FALLBACK = "/offline";
-
-// Maximum number of concurrent fetch requests during install-time
-// precaching. Prevents overwhelming the network on constrained devices.
-const PRECACHE_CONCURRENCY = 10;
-
-// Pre-cache NAV_ROUTES and the offline fallback page at install time
-// using a concurrency-limited approach, then skip the waiting phase.
+// Pre-cache the nav routes and skip the waiting phase atomically.
+// Both are inside Promise.all so if cache.addAll fails the install
+// fails cleanly rather than leaving a partially-installed worker.
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    Promise.all([
-      precacheUrls([...NAV_ROUTES, OFFLINE_FALLBACK]),
-      globalThis.skipWaiting(),
-    ]),
+      Promise.all([
+        caches.open(HTML_CACHE).then((cache) => cache.addAll(NAV_ROUTES)),
+        globalThis.skipWaiting(),
+      ]),
   );
 });
-
-// Fetch each URL and store the response in the HTML cache, with at most
-// PRECACHE_CONCURRENCY requests in flight at once. URLs that fail are
-// silently skipped — they will be cached on the next organic navigation.
-async function precacheUrls(urls) {
-  const cache = await caches.open(HTML_CACHE);
-  const queue = [...urls];
-
-  async function worker() {
-    while (queue.length > 0) {
-      const url = queue.shift();
-      try {
-        if (await cache.match(url)) continue;
-        const response = await fetch(url);
-        if (response.ok) {
-          await cache.put(url, response);
-        }
-      } catch {
-        // Network or cache-write failure — skip this URL.
-      }
-    }
-  }
-
-  const workers = Array.from(
-    { length: Math.min(PRECACHE_CONCURRENCY, urls.length) },
-    () => worker(),
-  );
-  await Promise.allSettled(workers);
-}
 
 // Delete every cache that belongs to a previous SW version, then
 // claim all open clients so this worker takes effect without requiring
 // a full page reload.
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then(async (keys) =>
-        Promise.all(
-          keys
-            .filter((key) => !ALL_CACHES.has(key))
-            .map(async (key) => caches.delete(key)),
-        ),
-      )
-      .then(() => globalThis.clients.claim()),
+      caches
+          .keys()
+          .then(async (keys) =>
+              Promise.all(
+                  keys
+                      .filter((key) => !ALL_CACHES.has(key))
+                      .map(async (key) => caches.delete(key)),
+              ),
+          )
+          .then(() => globalThis.clients.claim()),
   );
 });
 
@@ -85,7 +50,7 @@ self.addEventListener("activate", (event) => {
 // Navigation requests (full page loads) use the HTML strategy which
 // includes last-modified comparison and client reload notification.
 // Everything else (images, fonts, scripts, stylesheets) uses the
-// cache-first asset strategy.
+// generic assets strategy.
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
@@ -94,7 +59,7 @@ self.addEventListener("fetch", (event) => {
   if ("navigate" === request.mode) {
     event.respondWith(staleWhileRevalidateHtml(request));
   } else {
-    event.respondWith(cacheFirstAsset(request));
+    event.respondWith(staleWhileRevalidate(request, ASSETS_CACHE));
   }
 });
 
@@ -108,13 +73,6 @@ async function notifyClientsToReload(url) {
   }
 }
 
-// Return the cached offline fallback page. Used when both the cache and
-// the network have failed for a request.
-async function offlineFallback() {
-  const cache = await caches.open(HTML_CACHE);
-  return cache.match(OFFLINE_FALLBACK);
-}
-
 // Stale-while-revalidate for HTML navigation requests with automatic
 // cache invalidation based on the Last-Modified response header.
 //
@@ -125,8 +83,15 @@ async function offlineFallback() {
 //    update the cache and notify all clients on that page to reload.
 //    If they match (or no Last-Modified header is present) update the
 //    cache silently — the user already has current content.
-// 4. Network failures are swallowed when a cached response was already
-//    returned. If there is no cached fallback the offline page is served.
+// 4. The response body is never read by the worker, so there is no
+//    need to decode, reconstruct, or strip compression headers.
+// 5. Cache writes are isolated in a try/catch so a storage failure
+//    (e.g. quota exceeded) does not prevent the response from being
+//    delivered to the browser.
+// 6. Network failures are swallowed when a cached response was already
+//    returned, since the user is already being served. If there is no
+//    cached fallback the error is re-thrown so the browser surfaces a
+//    real network error rather than hanging.
 async function staleWhileRevalidateHtml(request) {
   const cache = await caches.open(HTML_CACHE);
   const cached = await cache.match(request);
@@ -135,9 +100,9 @@ async function staleWhileRevalidateHtml(request) {
     let response;
     try {
       response = await fetch(request);
-    } catch {
+    } catch (error) {
       if (cached) return;
-      return offlineFallback();
+      throw error;
     }
 
     if (!response.ok) return response;
@@ -162,34 +127,35 @@ async function staleWhileRevalidateHtml(request) {
   return cached ?? networkPromise;
 }
 
-// Cache-first strategy for non-navigation assets (images, fonts,
+// Stale-while-revalidate for all other GET assets (images, fonts,
 // scripts, stylesheets). Non-GET requests bypass the cache entirely
 // since the Cache API only supports GET.
 //
-// Cache hit  → return immediately, no network request.
-// Cache miss → fetch from network, cache the response, return it.
-// Cache miss + network failure → serve the offline fallback page.
-async function cacheFirstAsset(request) {
+// Serve from cache immediately if available, fetch from the network
+// in the background, and update the cache on success. Cache writes are
+// isolated so a storage failure does not prevent the response from
+// being delivered.
+async function staleWhileRevalidate(request, cacheName) {
   if ("GET" !== request.method) return fetch(request);
 
-  const cache = await caches.open(ASSETS_CACHE);
+  const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
-  if (cached) return cached;
-
-  let response;
-  try {
-    response = await fetch(request);
-  } catch {
-    return offlineFallback();
-  }
-
-  if (response.ok) {
+  const networkPromise = (async () => {
+    let response;
     try {
-      await cache.put(request, response.clone());
-    } catch {
-      // Cache write failed. Still return the response below.
+      response = await fetch(request);
+    } catch (error) {
+      if (cached) return;
+      throw error;
     }
-  }
-
-  return response;
+    if (response.ok) {
+      try {
+        await cache.put(request, response.clone());
+      } catch {
+        // Cache write failed. Still return the response below.
+      }
+    }
+    return response;
+  })();
+  return cached ?? networkPromise;
 }

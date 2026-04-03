@@ -4,11 +4,8 @@ import type { ScriptId } from "./script-ids.ts";
 
 export const scriptManifest: Record<ScriptId, string> = {
   "components/code": "/scripts/components/code.client.js",
-  "components/courses/course-completion":
-    "/scripts/components/courses/course-completion.client.js",
-  "components/navigation/navigation":
-    "/scripts/components/navigation/navigation.client.js",
+  "components/courses/course-completion": "/scripts/components/courses/course-completion.client.js",
+  "components/navigation/navigation": "/scripts/components/navigation/navigation.client.js",
   "components/routes/sign-in": "/scripts/components/routes/sign-in.client.js",
-  "components/routes/tips/scrollbar-gutter":
-    "/scripts/components/routes/tips/scrollbar-gutter.client.js",
+  "components/routes/tips/scrollbar-gutter": "/scripts/components/routes/tips/scrollbar-gutter.client.js",
 };

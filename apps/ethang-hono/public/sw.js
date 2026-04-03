@@ -29,11 +29,11 @@ self.addEventListener("message", (event) => {
 async function precacheLinks(urls) {
   const cache = await caches.open(HTML_CACHE);
   await Promise.allSettled(
-    urls.map(async (url) => {
-      if (await cache.match(url)) return;
-      const response = await fetch(url);
-      if (response.ok) await cache.put(url, response);
-    }),
+      urls.map(async (url) => {
+        if (await cache.match(url)) return;
+        const response = await fetch(url);
+        if (response.ok) await cache.put(url, response);
+      }),
   );
 }
 
@@ -42,16 +42,16 @@ async function precacheLinks(urls) {
 // a full page reload.
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then(async (keys) =>
-        Promise.all(
-          keys
-            .filter((key) => !ALL_CACHES.has(key))
-            .map(async (key) => caches.delete(key)),
-        ),
-      )
-      .then(() => globalThis.clients.claim()),
+      caches
+          .keys()
+          .then(async (keys) =>
+              Promise.all(
+                  keys
+                      .filter((key) => !ALL_CACHES.has(key))
+                      .map(async (key) => caches.delete(key)),
+              ),
+          )
+          .then(() => globalThis.clients.claim()),
   );
 });
 
