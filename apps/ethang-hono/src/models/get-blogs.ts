@@ -26,6 +26,12 @@ export type BlogCategory = {
 
 export type GetBlogs = Blog[];
 
+export type PaginatedBlogResult = {
+  maxPages: number;
+  posts: Blog[];
+  total: number;
+};
+
 export type Slug = {
   _type: string;
   current: string;

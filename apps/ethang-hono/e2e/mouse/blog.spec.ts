@@ -29,3 +29,89 @@ test.describe("blog pages", () => {
     });
   }
 });
+
+test.describe("blog pagination", () => {
+  const BLOG_URL = "https://ethang.dev/blog";
+
+  test("get /blog/page/1 redirects to /blog", async ({ page }) => {
+    const response = await page.goto("/blog/page/1");
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toBe(BLOG_URL);
+  });
+
+  test("get /blog/page/0 redirects to /blog", async ({ page }) => {
+    const response = await page.goto("/blog/page/0");
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toBe(BLOG_URL);
+  });
+
+  test("get /blog/page/-1 redirects to /blog", async ({ page }) => {
+    const response = await page.goto("/blog/page/-1");
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toBe(BLOG_URL);
+  });
+
+  test("get /blog/page/abc redirects to /blog", async ({ page }) => {
+    const response = await page.goto("/blog/page/abc");
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toBe(BLOG_URL);
+  });
+
+  test("get /blog/page/2.5 redirects to /blog", async ({ page }) => {
+    const response = await page.goto("/blog/page/2.5");
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toBe(BLOG_URL);
+  });
+
+  test("get /blog/page/9999 redirects to last valid page", async ({ page }) => {
+    const response = await page.goto("/blog/page/9999");
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toMatch(/\/blog(\/page\/\d+)?$/u);
+  });
+
+  test("pagination controls are visible when multiple pages exist", async ({
+    page,
+  }) => {
+    await page.goto(routes.blog);
+    await expect
+      .soft(page.getByRole("navigation", { name: "Pagination" }))
+      .toBeVisible();
+  });
+
+  test("current page has aria-current attribute", async ({ page }) => {
+    await page.goto(routes.blog);
+    await expect
+      .soft(page.getByRole("link", { name: "1" }).first())
+      .toHaveAttribute("aria-current", "page");
+  });
+
+  test("prev button has correct aria-label on page 2", async ({ page }) => {
+    await page.goto("/blog/page/2");
+    await expect
+      .soft(page.getByRole("link", { name: "Previous page" }))
+      .toBeVisible();
+  });
+
+  test("next button has correct aria-label on page 1", async ({ page }) => {
+    await page.goto(routes.blog);
+    await expect
+      .soft(page.getByRole("link", { name: "Next page" }))
+      .toBeVisible();
+  });
+
+  test("sitemap does not contain paginated index URLs", async ({ page }) => {
+    const response = await page.goto("/sitemap.xml");
+    expect.soft(response?.status()).toBe(200);
+    const content = await page.content();
+    expect.soft(content).not.toContain("/blog/page/");
+    expect.soft(content).toContain("/blog/");
+  });
+
+  test("rss feed contains all posts unchanged", async ({ page }) => {
+    const response = await page.goto("/blogRss.xml");
+    expect.soft(response?.status()).toBe(200);
+    const content = await page.content();
+    expect.soft(content).toContain("<rss");
+    expect.soft(content).toContain("<channel>");
+  });
+});

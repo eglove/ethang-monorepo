@@ -29,13 +29,27 @@ const render = async (component: JSX.Element): Promise<string> => {
   return response.text();
 };
 
-const mockBlogModelWith = (getAllBlogs: ReturnType<typeof vi.fn>) => {
+const mockBlogModelWith = (getPaginatedBlogs: ReturnType<typeof vi.fn>) => {
   vi.mocked(BlogModel).mockImplementation(
     class {
-      public getAllBlogs = getAllBlogs;
+      public getPaginatedBlogs = getPaginatedBlogs;
     } as never,
   );
 };
+
+const BLOG_CATEGORY = { _id: "cat-1", title: "Blog" };
+const BLOG_CREATED = "2024-01-01T00:00:00Z";
+const BLOG_UPDATED = "2024-02-01T00:00:00Z";
+
+const makeBlogPost = (index: number) => ({
+  _createdAt: BLOG_CREATED,
+  _id: `blog-${index}`,
+  _updatedAt: BLOG_UPDATED,
+  blogCategory: BLOG_CATEGORY,
+  description: `Post ${index}`,
+  slug: { current: `post-${index}` },
+  title: `Post ${index}`,
+});
 
 describe(Home, () => {
   it(RENDERS_FULL_HTML, async () => {
@@ -138,18 +152,22 @@ describe(Blog, () => {
   it("renders HTML page listing blogs", async () => {
     vi.clearAllMocks();
     mockBlogModelWith(
-      vi.fn().mockResolvedValue([
-        {
-          _createdAt: "2024-01-01T00:00:00Z",
-          _id: "blog-1",
-          _updatedAt: "2024-02-01T00:00:00Z",
-          author: "Author",
-          blogCategory: { _id: "cat-1", title: "Blog" },
-          description: "A post",
-          slug: { current: "my-post" },
-          title: "My Post",
-        },
-      ]),
+      vi.fn().mockResolvedValue({
+        maxPages: 1,
+        posts: [
+          {
+            _createdAt: BLOG_CREATED,
+            _id: "blog-1",
+            _updatedAt: BLOG_UPDATED,
+            author: "Author",
+            blogCategory: BLOG_CATEGORY,
+            description: "A post",
+            slug: { current: "my-post" },
+            title: "My Post",
+          },
+        ],
+        total: 1,
+      }),
     );
 
     const html = await render(<Blog />);
@@ -160,7 +178,9 @@ describe(Blog, () => {
 
   it("renders empty state when no blogs", async () => {
     vi.clearAllMocks();
-    mockBlogModelWith(vi.fn().mockResolvedValue([]));
+    mockBlogModelWith(
+      vi.fn().mockResolvedValue({ maxPages: 1, posts: [], total: 0 }),
+    );
 
     const html = await render(<Blog />);
 
@@ -170,23 +190,75 @@ describe(Blog, () => {
   it("applies sky-300 class for Dev Reads category", async () => {
     vi.clearAllMocks();
     mockBlogModelWith(
-      vi.fn().mockResolvedValue([
-        {
-          _createdAt: "2024-01-01T00:00:00Z",
-          _id: "blog-2",
-          _updatedAt: "2024-02-01T00:00:00Z",
-          blogCategory: { _id: "cat-2", title: "Dev Reads" },
-          description: "A dev reads post",
-          slug: { current: "dev-reads-post" },
-          title: "Dev Reads Post",
-        },
-      ]),
+      vi.fn().mockResolvedValue({
+        maxPages: 1,
+        posts: [
+          {
+            _createdAt: BLOG_CREATED,
+            _id: "blog-2",
+            _updatedAt: BLOG_UPDATED,
+            blogCategory: { _id: "cat-2", title: "Dev Reads" },
+            description: "A dev reads post",
+            slug: { current: "dev-reads-post" },
+            title: "Dev Reads Post",
+          },
+        ],
+        total: 1,
+      }),
     );
 
     const html = await render(<Blog />);
 
     expect(html).toContain("Dev Reads");
     expect(html).toContain("text-sky-300");
+  });
+
+  it("renders pagination controls when multiple pages exist", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(
+      vi.fn().mockResolvedValue({
+        maxPages: 5,
+        posts: Array.from({ length: 10 }, (_, index) => makeBlogPost(index)),
+        total: 50,
+      }),
+    );
+
+    const html = await render(<Blog page={3} />);
+
+    expect(html).toContain("aria-label");
+    expect(html).toContain("Pagination");
+    expect(html).toContain("aria-current");
+  });
+
+  it("renders ellipsis in pagination for many pages", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(
+      vi.fn().mockResolvedValue({
+        maxPages: 10,
+        posts: Array.from({ length: 10 }, (_, index) => makeBlogPost(index)),
+        total: 100,
+      }),
+    );
+
+    const html = await render(<Blog page={5} />);
+
+    expect(html).toContain("…");
+  });
+
+  it("renders prev button on page 2", async () => {
+    vi.clearAllMocks();
+    mockBlogModelWith(
+      vi.fn().mockResolvedValue({
+        maxPages: 5,
+        posts: Array.from({ length: 10 }, (_, index) => makeBlogPost(index)),
+        total: 50,
+      }),
+    );
+
+    const html = await render(<Blog page={2} />);
+
+    expect(html).toContain("Previous page");
+    expect(html).toContain("/blog");
   });
 });
 
