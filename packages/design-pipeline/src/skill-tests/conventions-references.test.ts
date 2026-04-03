@@ -1,3 +1,4 @@
+import split from "lodash/split.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -36,7 +37,7 @@ describe("conventions references", () => {
       });
 
       it(`reference appears within the first ${String(MAX_HEADER_LINES)} lines`, () => {
-        const lines = content.split("\n").slice(0, MAX_HEADER_LINES);
+        const lines = split(content, "\n").slice(0, MAX_HEADER_LINES);
         const headerBlock = lines.join("\n");
 
         expect(headerBlock).toContain(CONVENTIONS_REF);

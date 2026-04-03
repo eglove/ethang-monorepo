@@ -1,3 +1,5 @@
+import filter from "lodash/filter.js";
+import trim from "lodash/trim.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -32,8 +34,8 @@ const SECTION_NAMES = [
 
 const EXPECTED_ROW_COUNT = 14;
 const TABLE_ROW_PATTERN = /^\|[^|]+\|[^|]+\|[^|]+\|$/gmu;
-const SEPARATOR_PATTERN = /^\|[-\s|]+\|$/u;
-const DESTINATION_CELL_PATTERN = /^\|[^|]+\|\s*([^|]+?)\s*\|[^|]+\|$/u;
+const SEPARATOR_PATTERN = /^\|[^a-z]+\|$/iu;
+const DESTINATION_CELL_PATTERN = /^\|[^|]+\|([^|]+)\|[^|]+\|$/u;
 
 const content = readFileSync(CHECKLIST_PATH, "utf8");
 
@@ -44,8 +46,8 @@ describe("dissolution checklist", () => {
 
   it("contains exactly 14 data rows in the table", () => {
     const allRows = content.match(TABLE_ROW_PATTERN) ?? [];
-    const dataRows = allRows.filter((row) => {
-      return !SEPARATOR_PATTERN.test(row.trim());
+    const dataRows = filter(allRows, (row) => {
+      return !SEPARATOR_PATTERN.test(trim(row));
     });
     const headerRow = 1;
     expect(dataRows.length - headerRow).toBe(EXPECTED_ROW_COUNT);
@@ -59,15 +61,15 @@ describe("dissolution checklist", () => {
 
   it("every row has a non-empty destination file path", () => {
     const allRows = content.match(TABLE_ROW_PATTERN) ?? [];
-    const dataRows = allRows.filter((row) => {
-      return !SEPARATOR_PATTERN.test(row.trim());
+    const dataRows = filter(allRows, (row) => {
+      return !SEPARATOR_PATTERN.test(trim(row));
     });
     const rowsWithoutHeader = dataRows.slice(1);
 
     for (const row of rowsWithoutHeader) {
       const match = DESTINATION_CELL_PATTERN.exec(row);
       expect(match).not.toBeNull();
-      const destination = match?.[1]?.trim() ?? "";
+      const destination = trim(match?.[1] ?? "");
       expect(destination.length).toBeGreaterThan(0);
     }
   });

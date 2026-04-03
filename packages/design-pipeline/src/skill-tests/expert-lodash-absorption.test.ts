@@ -18,7 +18,7 @@ const content = readFileSync(SKILL_PATH, "utf8");
 
 describe("expert-lodash SKILL.md absorption", () => {
   it("contains a Quick Reference section", () => {
-    expect(content).toMatch(/^## Quick Reference$/m);
+    expect(content).toMatch(/^## Quick Reference$/mu);
   });
 
   it("contains the per-method import syntax example", () => {
@@ -30,8 +30,8 @@ describe("expert-lodash SKILL.md absorption", () => {
   });
 
   it("explains why array-path form is preferred", () => {
-    expect(content).toMatch(/ambigui/i);
-    expect(content).toMatch(/numeric ind/i);
+    expect(content).toMatch(/ambigui/iu);
+    expect(content).toMatch(/numeric ind/iu);
   });
 
   it("contains a reference to shared conventions", () => {
@@ -39,6 +39,6 @@ describe("expert-lodash SKILL.md absorption", () => {
   });
 
   it("uses LF line endings", () => {
-    expect(content).not.toMatch(/\r\n/);
+    expect(content).not.toMatch(/\r\n/u);
   });
 });
