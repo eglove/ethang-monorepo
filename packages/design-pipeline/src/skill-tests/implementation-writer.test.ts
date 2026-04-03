@@ -3,7 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const AGENT_PATH = path.join(
-  __dirname,
+  import.meta.dirname,
   "..",
   "..",
   "..",
@@ -16,9 +16,9 @@ const AGENT_PATH = path.join(
 
 const content = readFileSync(AGENT_PATH, "utf8");
 
-describe("implementation-writer AGENT.md — post-hoc user_notes.md annotation step", () => {
-  it("contains a section describing post-hoc user_notes.md annotation", () => {
-    expect(content).toMatch(/user_notes\.md/iu);
+describe("implementation-writer AGENT.md — post-hoc user_notes annotation step", () => {
+  it("contains a section describing post-hoc user_notes annotation", () => {
+    expect(content).toMatch(/user_notes/iu);
   });
 
   it("describes the annotation step as occurring AFTER the plan is written/saved", () => {
@@ -28,16 +28,16 @@ describe("implementation-writer AGENT.md — post-hoc user_notes.md annotation s
     expect(content).toMatch(afterMatch);
   });
 
-  it("contains the exact header string '# User Notes — Agent Requests'", () => {
-    expect(content).toContain("# User Notes — Agent Requests");
+  it("references docs/user_notes/ directory convention", () => {
+    expect(content).toContain("docs/user_notes/");
   });
 
-  it("describes handling of ABSENT (file missing) state", () => {
-    expect(content).toMatch(/absent|does not exist|missing/iu);
+  it("describes handling of absent directory state", () => {
+    expect(content).toMatch(/does not exist|missing/iu);
   });
 
-  it("describes handling of EMPTY (zero bytes) file state", () => {
-    expect(content).toMatch(/empty|zero bytes/iu);
+  it("describes creating directory if absent", () => {
+    expect(content).toMatch(/create.*directory/iu);
   });
 
   it("contains 'entries are user-curated'", () => {

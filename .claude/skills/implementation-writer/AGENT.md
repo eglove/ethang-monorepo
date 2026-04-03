@@ -96,13 +96,14 @@ Save the plan to `docs/implementation/YYYY-MM-DD_<topic-slug>.md`. Create the `d
 
 ### 7. Check for Needed Code Writer Types (Post-Hoc Annotation)
 
-After the implementation plan is fully written and saved, check whether any step in the plan requires a code writer type that does not exist in the current roster (`typescript-writer`, `hono-writer`, `ui-writer`, `trainer-writer`). If a needed type is absent from the roster, append an entry to `docs/user_notes.md`.
+After the implementation plan is fully written and saved, check whether any step in the plan requires a code writer type that does not exist in the current roster (`typescript-writer`, `hono-writer`, `ui-writer`, `trainer-writer`). If a needed type is absent from the roster, create a note file in the `docs/user_notes/` directory.
 
 **Rules:**
 
 - This step never blocks or delays plan delivery — it runs after the plan file is saved
-- If `docs/user_notes.md` is ABSENT (does not exist) or EMPTY (zero bytes), create it with the standard header `# User Notes — Agent Requests` before appending
-- Entries are append-only; never overwrite existing content
+- If `docs/user_notes/` directory does not exist, create the directory before writing
+- File naming: `docs/user_notes/implementation-writer-<YYYY-MM-DD>-<HH-MM-SS>.md`
+- Each note is a separate file; never overwrite existing files
 - Normalize agent names to lowercase before checking the roster
 - entries are user-curated; no automatic deletion is performed by agents
 - Only request code writer types (`typescript-writer`, `hono-writer`, `ui-writer`, `trainer-writer` variants) — not test writers, not experts
