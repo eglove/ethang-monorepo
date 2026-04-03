@@ -25,7 +25,7 @@ describe("simplicity-reviewer AGENT.md", () => {
   describe("YAML frontmatter", () => {
     it("contains frontmatter with name: simplicity-reviewer", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/^---\n/);
+      expect(content).toMatch(/^---\n/u);
       expect(content).toContain("name: simplicity-reviewer");
     });
   });

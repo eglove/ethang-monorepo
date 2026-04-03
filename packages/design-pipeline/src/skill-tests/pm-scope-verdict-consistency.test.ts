@@ -24,7 +24,9 @@ describe("project-manager AGENT.md — scope/verdict consistency", () => {
 
   it("requires at least one SESSION_DIFF-scoped PASS for gate pass", () => {
     expect(content).toMatch(/SESSION_DIFF/u);
-    expect(content).toMatch(/at least one.*SESSION_DIFF.*PASS|SESSION_DIFF.*scoped.*PASS/iu);
+    expect(content).toMatch(
+      /at least one.*SESSION_DIFF.*PASS|SESSION_DIFF.*scoped.*PASS/iu,
+    );
   });
 
   it("explains OUT_OF_SCOPE verdicts count toward quorum but do not satisfy review alone", () => {

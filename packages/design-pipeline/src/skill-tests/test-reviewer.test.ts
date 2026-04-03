@@ -25,7 +25,7 @@ describe("test-reviewer AGENT.md", () => {
   describe("YAML frontmatter", () => {
     it("contains frontmatter with name: test-reviewer", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/^---\n/);
+      expect(content).toMatch(/^---\n/u);
       expect(content).toContain("name: test-reviewer");
     });
   });
@@ -33,37 +33,41 @@ describe("test-reviewer AGENT.md", () => {
   describe("differentiated scope — simulated integration merge", () => {
     it("specifies cherry-pick into temp branch for simulated merge", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/cherry.pick/i);
-      expect(content).toMatch(/temp.*branch/i);
+      expect(content).toMatch(/cherry.pick/iu);
+      expect(content).toMatch(/temp.*branch/iu);
     });
 
     it("specifies simulated integration merge as its core scope", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/simulated.*merge/i);
+      expect(content).toMatch(/simulated.*merge/iu);
     });
   });
 
   describe("not a duplication of existing reviews", () => {
     it("explicitly states NOT a duplication of LOCAL_REVIEW", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/not.*(?:duplication|duplicate|replacement).*LOCAL_REVIEW/i);
+      expect(content).toMatch(
+        /not.*(?:duplication|duplicate|replacement).*local_review/iu,
+      );
     });
 
     it("explicitly states NOT a duplication of Phase 3 Verification", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/not.*(?:duplication|duplicate|replacement).*Phase 3/i);
+      expect(content).toMatch(
+        /not.*(?:duplication|duplicate|replacement).*phase 3/iu,
+      );
     });
   });
 
   describe("code execution — tests, lint, tsc", () => {
     it("specifies running tests against the simulated merge", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/run.*test/i);
+      expect(content).toMatch(/run.*test/iu);
     });
 
     it("specifies running lint against the simulated merge", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/lint/i);
+      expect(content).toMatch(/lint/iu);
     });
 
     it("specifies running tsc against the simulated merge", () => {
@@ -73,7 +77,7 @@ describe("test-reviewer AGENT.md", () => {
 
     it("is the ONLY reviewer that executes code", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/only.*reviewer.*execut/i);
+      expect(content).toMatch(/only.*reviewer.*execut/iu);
     });
   });
 
@@ -122,7 +126,7 @@ describe("test-reviewer AGENT.md", () => {
   describe("interaction protocol", () => {
     it("never interacts with pairs directly", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/never interacts with pairs directly/i);
+      expect(content).toMatch(/never interacts with pairs directly/iu);
     });
   });
 });

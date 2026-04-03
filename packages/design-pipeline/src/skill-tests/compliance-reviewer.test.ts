@@ -66,7 +66,9 @@ describe("compliance-reviewer AGENT.md", () => {
   });
 
   it("states the reviewer never interacts with pairs directly", () => {
-    expect(content).toMatch(/never.*interact.*(?:pair|directly)|no.*direct.*(?:interaction|contact).*pair/iu);
+    expect(content).toMatch(
+      /never.*interact.*(?:pair|directly)|no.*direct.*(?:interaction|contact).*pair/iu,
+    );
   });
 
   it("does not contain CRLF line endings", () => {

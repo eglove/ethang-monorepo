@@ -1,3 +1,4 @@
+import toLower from "lodash/toLower.js";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -25,7 +26,7 @@ describe("bug-reviewer AGENT.md", () => {
   describe("YAML frontmatter", () => {
     it("contains frontmatter with name: bug-reviewer", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/^---\n/);
+      expect(content).toMatch(/^---\n/u);
       expect(content).toContain("name: bug-reviewer");
     });
   });
@@ -33,39 +34,39 @@ describe("bug-reviewer AGENT.md", () => {
   describe("review criteria", () => {
     it("specifies logic errors criterion", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content.toLowerCase()).toContain("logic error");
+      expect(toLower(content)).toContain("logic error");
     });
 
     it("specifies off-by-one criterion", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content.toLowerCase()).toContain("off-by-one");
+      expect(toLower(content)).toContain("off-by-one");
     });
 
     it("specifies null handling criterion", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content.toLowerCase()).toContain("null");
+      expect(toLower(content)).toContain("null");
     });
 
     it("specifies race conditions criterion", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content.toLowerCase()).toContain("race condition");
+      expect(toLower(content)).toContain("race condition");
     });
 
     it("specifies incorrect assumptions criterion", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content.toLowerCase()).toContain("incorrect assumption");
+      expect(toLower(content)).toContain("incorrect assumption");
     });
   });
 
   describe("inputs", () => {
     it("specifies git history as input", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content.toLowerCase()).toContain("git history");
+      expect(toLower(content)).toContain("git history");
     });
 
     it("specifies PR context as input", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/PR context/i);
+      expect(content).toMatch(/pr context/iu);
     });
   });
 

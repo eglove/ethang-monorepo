@@ -24,7 +24,9 @@ describe("security-reviewer AGENT.md", () => {
   });
 
   it("has YAML frontmatter with name: security-reviewer", () => {
-    expect(content).toMatch(/^---\n[\s\S]*?name:\s*security-reviewer[\s\S]*?---/);
+    expect(content).toMatch(
+      /^---\n[\S\s]*?name:\s*security-reviewer[\S\s]*?---/u,
+    );
   });
 
   it("requires checking for hardcoded secrets", () => {

@@ -25,7 +25,7 @@ describe("type-design-reviewer AGENT.md", () => {
   describe("YAML frontmatter", () => {
     it("contains frontmatter with name: type-design-reviewer", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/^---\n/);
+      expect(content).toMatch(/^---\n/u);
       expect(content).toContain("name: type-design-reviewer");
     });
   });
@@ -33,7 +33,7 @@ describe("type-design-reviewer AGENT.md", () => {
   describe("TLA+ spec input", () => {
     it("specifies TLA+ spec as required input for invariant checking", () => {
       const content = readFileSync(AGENT_PATH, "utf8");
-      expect(content).toMatch(/TLA\+/);
+      expect(content).toMatch(/TLA\+/u);
       expect(content).toContain("invariant");
     });
   });

@@ -1,4 +1,8 @@
+// cspell:ignore arbitrat
+import find from "lodash/find.js";
 import includes from "lodash/includes.js";
+import split from "lodash/split.js";
+import toLower from "lodash/toLower.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -24,11 +28,10 @@ describe("project-manager AGENT.md — contradictory reviewer findings", () => {
 
   it("specifies conflicting findings sent to pair (not arbitrated by project-manager)", () => {
     expect(content).toMatch(/sent to.*pair|pair.*reconcile/iu);
-    const lines = content.split("\n");
-    const arbitrateLine = lines.find((line: string) => {
+    const lines = split(content, "\n");
+    const arbitrateLine = find(lines, (line: string) => {
       return (
-        includes(line.toLowerCase(), "arbitrat") &&
-        includes(line.toLowerCase(), "not")
+        includes(toLower(line), "arbitrat") && includes(toLower(line), "not")
       );
     });
 
