@@ -22,6 +22,7 @@ The Debate Moderator orchestrates a council of domain experts to evaluate any to
 | expert-edge-cases | `.claude/skills/agents/expert-edge-cases/SKILL.md` | Edge Case and Failure Hunting |
 | expert-continuous-delivery | `.claude/skills/agents/expert-continuous-delivery/SKILL.md` | Continuous Delivery and Deployment |
 | expert-lodash | `.claude/skills/agents/expert-lodash/SKILL.md` | Lodash Utility Library |
+| expert-a11y | `.claude/skills/agents/expert-a11y/SKILL.md` | Accessibility (WCAG 2.2 AA, WAI-ARIA 1.2) |
 
 ## When to Use
 
@@ -51,6 +52,14 @@ When no explicit `--experts` argument is provided by the caller, the moderator s
 **At most one selection per debate:** `selectExperts` is called once before round 1 and the result is fixed for all rounds.
 
 When an explicit `--experts` list is provided, use it directly without re-evaluating.
+
+### Accessibility Expert Selection Criteria
+
+The `expert-a11y` expert is conditionally selected based on topic relevance:
+
+- **Include when:** The topic involves UI components, frontend rendering, user interaction patterns, accessibility concerns, or any mixed-scope topic that has both backend and frontend aspects. Keywords: "UI", "frontend", "component", "accessibility", "a11y", "form", "dialog", "navigation", "layout", "rendering".
+- **Exclude when:** The topic is purely backend -- database schema, API logic, infrastructure, DevOps, CI/CD, or server-side processing with no user-facing component.
+- **Mixed-scope:** When a topic spans both backend and frontend (e.g., an API that serves a UI, a full-stack feature), include `expert-a11y` because the frontend portion may have accessibility implications.
 
 ## Debate Protocol
 
