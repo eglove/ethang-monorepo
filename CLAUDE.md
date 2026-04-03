@@ -1,5 +1,9 @@
 # Claude Code Instructions
 
+## Line Endings — LF Only
+
+All files in this repository use LF (`\n`) line endings. This is enforced by `.gitattributes` (`* text=lf`), `.editorconfig` (`end_of_line = lf`), and Prettier defaults. Never write files with CRLF line endings.
+
 ## ESLint Config — Never Modify Without Permission
 
 Do not modify any ESLint configuration files (`eslint.config.*`, `.eslintrc.*`, `.eslintignore`, or any file that configures ESLint rules, plugins, or parsers) without explicit user permission. If a lint error seems to require a config change to resolve, stop and ask the user first.
