@@ -336,6 +336,20 @@ If `(b)`: Transition to `HALTED`.
 
 **Invariant enforced:** `CompletionRequiresConfirmation` -- COMPLETE is unreachable without user confirmation.
 
+#### 6a-dispatch. Project-Manager Dispatch
+
+After the user confirms at the STAGE_6_CONFIRMATION_GATE, dispatch the project-manager agent to take over all Stage 6 execution:
+
+1. Create the integration branch: `design-pipeline/<topic-slug>`
+2. Dispatch the project-manager agent (`.claude/skills/project-manager/AGENT.md`) via the Agent tool
+3. Pass the following to the project-manager:
+   - **Implementation plan** file path (from Stage 5)
+   - **Full accumulated pipeline context**: briefing (Stage 1), design consensus (Stage 2), TLA+ spec (Stage 3), TLA+ review (Stage 4), implementation plan (Stage 5)
+   - **Integration branch** name (`design-pipeline/<topic-slug>`)
+4. The project-manager takes over all Stage 6 execution: tier management, worktree lifecycle, pair dispatch, reviewer gate, and merge queue
+
+The orchestrator does not directly manage tier execution, merging, or pair sessions. After dispatching the project-manager, the orchestrator waits for the project-manager to report completion or failure, then transitions to `COMPLETE` or `HALTED` accordingly.
+
 #### 6b. Tier Execution (STAGE_6_TIER_EXECUTING)
 
 For the current tier, dispatch all assigned tasks in parallel (up to MaxConcurrent = 3):
