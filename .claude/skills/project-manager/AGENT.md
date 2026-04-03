@@ -42,6 +42,9 @@ Do **not** dispatch when:
   - `MaxFixRetries` — bounded per task (implementation plan defines)
   - `SessionTimeout` — ticks before session timeout (implementation plan defines)
   - `VerificationCriteria` — list of criteria per task (compile, lint, test pass, TLA+ coverage)
+  - `MaxReviewRevisions = 3` — maximum revision cycles before session FAILED
+  - `MaxReviewerRetries = 2` — maximum retries per reviewer for crash/timeout before marked UNAVAILABLE
+  - `MinReviewQuorum = 5` — minimum number of non-UNAVAILABLE reviewer responses required (out of 8)
 
 ## Domain Types
 
@@ -59,11 +62,11 @@ INPUT_INVALID (halt)    TIER_FAILED (halt)    MERGING → MERGE_ROLLBACK (halt)
 ### Task States
 
 ```
-PENDING → DISPATCHED → RUNNING → COMPLETED → MERGED
-                        ↓           ↓
-                     FAILED    RE_DISPATCHING → RUNNING (re-dispatch path)
-                        ↓
-                   FIX_SESSION → COMPLETED (fix success, retry merge)
+PENDING → DISPATCHED → RUNNING → COMPLETED → LOCAL_REVIEW → REVIEWING → REVIEW_PASSED → MERGED
+                        ↓           ↓                           ↓
+                     FAILED    RE_DISPATCHING → RUNNING    REVIEW_FAILED → REVISING → REVIEWING (revision loop)
+                        ↓                                       ↓
+                   FIX_SESSION → COMPLETED (fix success)     FAILED (revision exhaustion → halt)
                         ↓
                      FAILED (fix exhaustion → halt)
 ```
@@ -165,6 +168,66 @@ When all tasks in the current tier reach a terminal state (`COMPLETED`, `FAILED`
 
 4. **Verification fails:** Any completed task fails any criterion, with no active sessions remaining. Halt with `developerError = "VERIFICATION_HALT"`, `errorCause = "Inter-tier verification failed - task-graph defect"`. This is a task-graph defect — escalate to user.
 
+### Phase 3b — Reviewer Gate
+
+After LOCAL_REVIEW completes for a task, the project-manager dispatches all 8 reviewer agents in parallel:
+
+1. `artifact-reviewer`
+2. `compliance-reviewer`
+3. `bug-reviewer`
+4. `simplicity-reviewer`
+5. `type-design-reviewer`
+6. `security-reviewer`
+7. `backlog-reviewer`
+8. `test-reviewer`
+
+#### Reviewer Input
+
+Each reviewer receives:
+- Session diff (the changes produced by the pair)
+- Task assignment context (files, tier, TLA+ coverage targets)
+- Pipeline artifacts: briefing, TLA+ spec, design consensus
+
+#### Reviewer Output
+
+Each reviewer returns a structured `ReviewVerdict`:
+- `verdict`: `PASS` | `FAIL`
+- `scope`: `SESSION_DIFF` | `OUT_OF_SCOPE`
+- `findings[]`: list of findings with location, severity, and description
+
+#### Gate Evaluation
+
+- All 8 reviewers must finish (or be marked UNAVAILABLE after retry exhaustion).
+- A quorum of `MinReviewQuorum` (5 of 8) must have responded (not UNAVAILABLE).
+- All responded reviewers must have a `PASS` verdict.
+
+#### Gate Outcomes
+
+- **Pass:** All responded reviewers returned PASS and quorum met. Transition to `REVIEW_PASSED`, proceed to merge.
+- **Fail:** Any responded reviewer returned FAIL. Transition to `REVIEW_FAILED`, send all findings to the pair for revision.
+- **No quorum:** Fewer than `MinReviewQuorum` reviewers responded. Transition to `FAILED` (escalate to user).
+
+#### Revision Cycle
+
+On `REVIEW_FAILED`, the pair revises based on reviewer findings. The task transitions to `REVISING`. After the pair completes revisions, ALL 8 reviewers re-run (full re-run, not selective).
+
+**Full re-run rationale:** Safety over efficiency — any revision could invalidate any reviewer's prior pass. Cross-domain regressions are possible (e.g., a security fix could break simplicity or type design). Running all reviewers on every revision eliminates the risk of stale passes.
+
+The revision cycle is bounded by `MaxReviewRevisions` (3). On exhaustion, the session transitions to `FAILED`.
+
+#### Reviewer Retries
+
+Each individual reviewer has `MaxReviewerRetries` (2) for crash or timeout. After exhaustion, the reviewer is marked `UNAVAILABLE` and excluded from quorum counting.
+
+#### Mediation
+
+The project-manager mediates between pairs and reviewers. Pairs never interact with reviewers directly — all findings and revision requests flow through the project-manager.
+
+#### Handoff Chain
+
+`LOCAL_REVIEW` → `REVIEWING` (all 8 reviewers dispatched) → `REVIEW_PASSED` → `MERGED` (via merge phase)
+`REVIEW_FAILED` → `REVISING` (pair revises) → `REVIEWING` (full re-run)
+
 ### Phase 4 — Merge
 
 1. **Begin merging:** Transition to `MERGING`. Only tasks with `mergeState = "PENDING"` are queued.
@@ -240,6 +303,9 @@ The following invariants are enforced at all times (verified by TLA+ TLC model c
 | `NoReDispatchAfterCorruption` | Corrupted tasks cannot be re-dispatched |
 | `MergedTasksSubset` | `mergedTasks` is always a subset of completed tasks |
 | `ConcurrentSessionsBounded` | Active sessions never exceed `MaxConcurrent` |
+| `ReviewRevisionsBounded` | Revision count per task never exceeds `MaxReviewRevisions` |
+| `ReviewerRetriesBounded` | Retry count per reviewer never exceeds `MaxReviewerRetries` |
+| `ReviewAfterLocalReview` | Tasks only enter REVIEWING after LOCAL_REVIEW completes |
 
 ## Liveness Properties
 
@@ -332,6 +398,24 @@ State file: docs/pipeline-state.md
 - Re-dispatches are bounded per task (MaxReDispatches)
 - Merge conflict retries are bounded per task (MaxFixRetries)
 - Sessions cannot be resumed — if halted, start a new `/design-pipeline` run
+
+## Reviewer Gate
+
+### Crash/Timeout Handling
+
+Each reviewer gets `MaxReviewerRetries = 2` retry attempts when a crash or timeout occurs. If retries are exhausted, the reviewer is marked `UNAVAILABLE` and the gate proceeds with N-1 reviewers. If the number of responded reviewers falls below `MinReviewQuorum = 5`, the task FAILS — the gate cannot produce a valid verdict without sufficient reviewer coverage.
+
+**Design decision — per-round retry reset:** Retry counts reset to zero on each revision cycle. A reviewer that crashed during round 1 gets a fresh `MaxReviewerRetries = 2` budget in round 2. This is an explicit design decision per TLA+ review amendment 5: transient failures (network, resource pressure) are unlikely to persist across revision boundaries, and penalizing reviewers for prior-round crashes would unnecessarily shrink the quorum over time.
+
+### Contradictory Reviewer Findings
+
+When reviewers produce conflicting findings (e.g., simplicity reviewer vs type-design reviewer disagree on approach), both sets of findings are sent to the implementing pair to reconcile. The project-manager does NOT arbitrate between reviewers — it is not qualified to make domain judgments.
+
+If contradictions persist after `MaxReviewRevisions` revision cycles are exhausted, the session FAILS with structured metadata: `{conflicting_reviewers: [...], conflict_details: [...], revision_history: [...]}`. This metadata enables post-mortem analysis of why consensus could not be reached.
+
+### Scope/Verdict Consistency
+
+An `OUT_OF_SCOPE + PASS` verdict means the reviewer's domain was not applicable to the session diff. These verdicts count toward quorum (the reviewer responded and evaluated), but the review gate requires at least one `SESSION_DIFF`-scoped `PASS` to pass the gate. This prevents an all-`OUT_OF_SCOPE` pass — a semantic hole identified during TLA+ review — where every reviewer declares the diff outside their domain and the gate passes vacuously with no substantive review.
 
 ## Handoff
 

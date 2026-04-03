@@ -73,6 +73,10 @@ The orchestrator is a state machine with these states:
 | `STAGE_6_INTER_TIER_VERIFICATION` | Full test suite + type-check after all tier merges complete |
 | `STAGE_6_GLOBAL_REVIEW` | Cross-task integration review after all tiers complete |
 | `STAGE_6_FIX_SESSION` | Targeted fix session spawned from failed global review |
+| `STAGE_6_REVIEWING` | All 8 reviewers dispatched and running in parallel |
+| `STAGE_6_REVIEW_PASSED` | All responded reviewers passed with quorum met |
+| `STAGE_6_REVIEW_FAILED` | At least one responded reviewer failed |
+| `STAGE_6_REVISING` | Pair session revising based on reviewer findings |
 
 ### Terminal States
 
@@ -113,6 +117,13 @@ STAGE_6_GLOBAL_REVIEW           → COMPLETE                      (passes — Gl
 STAGE_6_GLOBAL_REVIEW           → STAGE_6_FIX_SESSION            (fails, under cap — GlobalReviewFails)
 STAGE_6_GLOBAL_REVIEW           → HALTED                        (fails, cap reached — GlobalReviewExhausted)
 STAGE_6_FIX_SESSION             → STAGE_6_GLOBAL_REVIEW          (fix done — FixSessionComplete)
+STAGE_6_TIER_MERGING            → STAGE_6_REVIEWING               (all merges done, reviewers dispatched — BeginReviewing)
+STAGE_6_REVIEWING               → STAGE_6_REVIEW_PASSED           (all responded reviewers passed, quorum met — ReviewQuorumPassed)
+STAGE_6_REVIEWING               → STAGE_6_REVIEW_FAILED           (at least one reviewer failed — ReviewerFailed)
+STAGE_6_REVIEW_PASSED           → STAGE_6_INTER_TIER_VERIFICATION (review gate cleared — ReviewGateCleared)
+STAGE_6_REVIEW_FAILED           → STAGE_6_REVISING                (findings sent to pair session — BeginRevision)
+STAGE_6_REVISING                → STAGE_6_REVIEWING               (revision complete, re-review — ResubmitForReview)
+STAGE_6_REVISING                → HALTED                         (MaxReviewRevisions reached — ReviewRevisionsExhausted)
 ```
 
 ## Pipeline State File
@@ -325,6 +336,20 @@ If `(b)`: Transition to `HALTED`.
 
 **Invariant enforced:** `CompletionRequiresConfirmation` -- COMPLETE is unreachable without user confirmation.
 
+#### 6a-dispatch. Project-Manager Dispatch
+
+After the user confirms at the STAGE_6_CONFIRMATION_GATE, dispatch the project-manager agent to take over all Stage 6 execution:
+
+1. Create the integration branch: `design-pipeline/<topic-slug>`
+2. Dispatch the project-manager agent (`.claude/skills/project-manager/AGENT.md`) via the Agent tool
+3. Pass the following to the project-manager:
+   - **Implementation plan** file path (from Stage 5)
+   - **Full accumulated pipeline context**: briefing (Stage 1), design consensus (Stage 2), TLA+ spec (Stage 3), TLA+ review (Stage 4), implementation plan (Stage 5)
+   - **Integration branch** name (`design-pipeline/<topic-slug>`)
+4. The project-manager takes over all Stage 6 execution: tier management, worktree lifecycle, pair dispatch, reviewer gate, and merge queue
+
+The orchestrator does not directly manage tier execution, merging, or pair sessions. After dispatching the project-manager, the orchestrator waits for the project-manager to report completion or failure, then transitions to `COMPLETE` or `HALTED` accordingly.
+
 #### 6b. Tier Execution (STAGE_6_TIER_EXECUTING)
 
 For the current tier, dispatch all assigned tasks in parallel (up to MaxConcurrent = 3):
@@ -524,6 +549,29 @@ At pipeline completion (`COMPLETE` state), if `changeFlag = TRUE`:
 | MaxValidationRetries | bounded | Prevents infinite test validation loops |
 | MaxReDispatches | bounded | Prevents infinite re-dispatch loops |
 | MaxMergeConflictRetries | bounded | Prevents infinite merge conflict resolution |
+| MaxReviewRevisions | 3 | Max full review-revision cycles per task |
+| MaxReviewerRetries | 2 | Max retries per reviewer on crash/timeout |
+| MinReviewQuorum | 5 | Minimum reviewers required for valid gate (of 8) |
+
+#### ReviewVerdict Schema
+
+Each reviewer returns a structured ReviewVerdict:
+
+| Field | Type | Description |
+|---|---|---|
+| `verdict` | `PASS \| FAIL` | Whether the reviewer approves the session diff |
+| `scope` | `SESSION_DIFF \| OUT_OF_SCOPE` | Whether findings are within the session diff or outside it |
+| `findings` | `Finding[]` | Array of issues found during review |
+
+**Finding structure:**
+
+| Field | Type | Description |
+|---|---|---|
+| `file` | string | File path relative to worktree root |
+| `line` | number | Line number of the issue |
+| `issue` | string | Description of the problem |
+| `recommendation` | string | Suggested fix |
+| `severity` | `ERROR \| WARNING` | Severity level |
 
 #### Safety Invariants (TLA+ spec)
 
@@ -543,6 +591,9 @@ At pipeline completion (`COMPLETE` state), if `changeFlag = TRUE`:
 | `MergeConflictRetriesBounded` | mergeConflictRetries <= MaxMergeConflictRetries |
 | `TerminalArtifactOnlyOnComplete` | terminalArtifact TRUE only when COMPLETE |
 | `HaltReasonConsistent` | haltReason != NONE when HALTED |
+| `ReviewRevisionsBounded` | reviewRevisionCount <= MaxReviewRevisions per task |
+| `ReviewerRetriesBounded` | reviewerRetryCount <= MaxReviewerRetries per reviewer |
+| `ReviewQuorumRequired` | REVIEW_PASSED requires at least MinReviewQuorum responding reviewers |
 
 #### Liveness Properties (TLA+ spec)
 
