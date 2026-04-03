@@ -24,6 +24,21 @@ export type MainLayoutProperties = PropsWithChildren<{
   updatedAt?: string | undefined;
 }>;
 
+const LinkTags = async (properties: { properties: MainLayoutProperties }) => {
+  const { canonicalUrl, nextUrl, prevUrl, textAlternate } =
+    properties.properties;
+  return (
+    <>
+      {!isNil(canonicalUrl) && <link rel="canonical" href={canonicalUrl} />}
+      {!isNil(prevUrl) && <link rel="prev" href={prevUrl} />}
+      {!isNil(nextUrl) && <link rel="next" href={nextUrl} />}
+      {!isNil(textAlternate) && (
+        <link rel="alternate" type="text/plain" href={textAlternate} />
+      )}
+    </>
+  );
+};
+
 export const MainLayout = async (properties: MainLayoutProperties) => {
   const title = isNil(properties.title)
     ? "EthanG"
@@ -78,22 +93,7 @@ export const MainLayout = async (properties: MainLayoutProperties) => {
           href="/sitemap.xml"
           type="application/xml"
         />
-        {!isNil(properties.canonicalUrl) && (
-          <link rel="canonical" href={properties.canonicalUrl} />
-        )}
-        {!isNil(properties.prevUrl) && (
-          <link rel="prev" href={properties.prevUrl} />
-        )}
-        {!isNil(properties.nextUrl) && (
-          <link rel="next" href={properties.nextUrl} />
-        )}
-        {!isNil(properties.textAlternate) && (
-          <link
-            rel="alternate"
-            type="text/plain"
-            href={properties.textAlternate}
-          />
-        )}
+        <LinkTags properties={properties} />
         {!isNil(properties.updatedAt) && (
           <meta name="last-modified" content={properties.updatedAt} />
         )}

@@ -96,11 +96,16 @@ app.get("/blog/page/:page", async (c) => {
 
   const parsed = Number(rawPage);
 
-  if (!rawPage || isNaN(parsed) || !Number.isInteger(parsed) || parsed < 1) {
+  if (
+    !rawPage ||
+    Number.isNaN(parsed) ||
+    !Number.isInteger(parsed) ||
+    1 > parsed
+  ) {
     return c.redirect("/blog", 302);
   }
 
-  if (parsed === 1) {
+  if (1 === parsed) {
     return c.redirect("/blog", 301);
   }
 

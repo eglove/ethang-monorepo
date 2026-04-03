@@ -18,72 +18,114 @@ const formattedDateTime = (dateTime: string) => {
   }).toLocaleString({ dateStyle: "medium", timeStyle: "short" });
 };
 
-const generatePageNumbers = (
-  current: number,
-  max: number,
-): (number | "...")[] => {
-  if (max <= 1) return [];
+type PageEntry = "..." | number;
 
-  const pages: (number | "...")[] = [];
+const shouldIncludePage = (
+  pageNumber: number,
+  max: number,
+  current: number,
+  range: number,
+) => {
+  const isFirst = 1 === pageNumber;
+  const isLast = pageNumber === max;
+  const isInRange =
+    pageNumber >= current - range && pageNumber <= current + range;
+  return isFirst || isLast || isInRange;
+};
+
+const needsEllipsis = (pages: PageEntry[], pageNumber: number) => {
+  if (0 === pages.length) return false;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- pages.length > 0 guarantees at(-1) returns a value
+  const lastEntry = pages.at(-1)!;
+  if ("..." === lastEntry) return false;
+  return 1 < pageNumber - lastEntry;
+};
+
+const generatePageNumbers = (current: number, max: number): PageEntry[] => {
+  if (2 > max) return [];
+
+  const pages: PageEntry[] = [];
   const range = 2;
 
-  for (let i = 1; i <= max; i++) {
-    if (
-      i === 1 ||
-      i === max ||
-      (i >= current - range && i <= current + range)
-    ) {
-      if (
-        pages.length > 0 &&
-        pages[pages.length - 1] !== "..." &&
-        i - (pages[pages.length - 1] as number) > 1
-      ) {
+  for (let pageNumber = 1; pageNumber <= max; pageNumber += 1) {
+    if (shouldIncludePage(pageNumber, max, current, range)) {
+      if (needsEllipsis(pages, pageNumber)) {
         pages.push("...");
       }
-      pages.push(i);
+      pages.push(pageNumber);
     }
   }
 
   return pages;
 };
 
+const renderPageLink = async (pageNumber: PageEntry, currentPage: number) => {
+  if ("..." === pageNumber) {
+    return <span className="px-2 text-slate-400">…</span>;
+  }
+  const isActive = currentPage === pageNumber;
+  const href = 1 === pageNumber ? "/blog" : `/blog/page/${pageNumber}`;
+  const ariaCurrent = isActive ? "page" : undefined;
+  return (
+    <Link
+      href={href}
+      className={twMerge(
+        "px-3 py-1 rounded text-sm",
+        isActive
+          ? "bg-sky-600 text-white font-semibold"
+          : "text-slate-300 hover:bg-slate-700",
+      )}
+      {...(undefined === ariaCurrent ? {} : { "aria-current": ariaCurrent })}
+    >
+      {pageNumber}
+    </Link>
+  );
+};
+
+const computePreviousUrl = (page: number): string | undefined => {
+  if (1 >= page) return undefined;
+  if (2 === page) return "https://ethang.dev/blog";
+  return `https://ethang.dev/blog/page/${page - 1}`;
+};
+
+const computeNextUrl = (page: number, maxPages: number): string | undefined => {
+  if (page >= maxPages) return undefined;
+  return `https://ethang.dev/blog/page/${page + 1}`;
+};
+
+const computeTitle = (page: number): string =>
+  1 === page ? "Blog" : `Blog - Page ${page}`;
+
+const computeCanonicalUrl = (page: number): string =>
+  1 === page
+    ? "https://ethang.dev/blog"
+    : `https://ethang.dev/blog/page/${page}`;
+
 export const Blog = async ({ page = 1 }: { page?: number }) => {
   const { pathname } = globalStore;
   const blogModel = new BlogModel();
   const pageSize = 10;
-  const { posts: blogs, maxPages } = await blogModel.getPaginatedBlogs(
+  const { maxPages, posts: blogs } = await blogModel.getPaginatedBlogs(
     page,
     pageSize,
   );
   const latestBlog = maxBy(blogs, "_updatedAt");
 
-  const title = page === 1 ? "Blog" : `Blog - Page ${page}`;
-  const canonicalUrl =
-    page === 1
-      ? "https://ethang.dev/blog"
-      : `https://ethang.dev/blog/page/${page}`;
-
-  const prevUrl =
-    page > 1
-      ? page === 2
-        ? "https://ethang.dev/blog"
-        : `https://ethang.dev/blog/page/${page - 1}`
-      : undefined;
-  const nextUrl =
-    page < maxPages
-      ? `https://ethang.dev/blog/page/${page + 1}`
-      : undefined;
+  const title = computeTitle(page);
+  const canonicalUrl = computeCanonicalUrl(page);
+  const previousUrl = computePreviousUrl(page);
+  const nextUrl = computeNextUrl(page, maxPages);
 
   return (
     <BlogLayout
       title={title}
       pathname={pathname}
+      canonicalUrl={canonicalUrl}
       description="Ethan Glover's blog."
       updatedAt={latestBlog?._updatedAt}
       publishedAt={latestBlog?._createdAt}
-      canonicalUrl={canonicalUrl}
-      {...(prevUrl !== undefined ? { prevUrl } : {})}
-      {...(nextUrl !== undefined ? { nextUrl } : {})}
+      {...(previousUrl === undefined ? {} : { prevUrl: previousUrl })}
+      {...(nextUrl === undefined ? {} : { nextUrl })}
     >
       <div class="flex flex-col items-center justify-center gap-2">
         <H1>{title}</H1>
@@ -127,40 +169,22 @@ export const Blog = async ({ page = 1 }: { page?: number }) => {
         })}
       </div>
 
-      {maxPages > 1 && (
+      {1 < maxPages && (
         <nav
           aria-label="Pagination"
-          class="flex items-center justify-center gap-1 mt-6"
+          class="mt-6 flex items-center justify-center gap-1"
         >
-          {map(generatePageNumbers(page, maxPages), (p) => {
-            if (p === "...") {
-              return <span class="px-2 text-slate-400">…</span>;
-            }
-            const isActive = p === page;
-            const href = p === 1 ? "/blog" : `/blog/page/${p}`;
-            return (
-              <Link
-                href={href}
-                className={twMerge(
-                  "px-3 py-1 rounded text-sm",
-                  isActive
-                    ? "bg-sky-600 text-white font-semibold"
-                    : "text-slate-300 hover:bg-slate-700",
-                )}
-                {...(isActive ? { "aria-current": "page" as const } : {})}
-              >
-                {p}
-              </Link>
-            );
-          })}
+          {map(generatePageNumbers(page, maxPages), async (p) =>
+            renderPageLink(p, page),
+          )}
         </nav>
       )}
 
-      {page > 1 && (
+      {1 < page && (
         <Link
-          href={page === 2 ? "/blog" : `/blog/page/${page - 1}`}
-          className="fixed bottom-4 left-4 z-50 rounded-full bg-slate-800 px-4 py-2 text-sm text-slate-300 shadow-lg hover:bg-slate-700"
           aria-label="Previous page"
+          href={2 === page ? "/blog" : `/blog/page/${page - 1}`}
+          className="fixed bottom-4 left-4 z-50 rounded-full bg-slate-800 px-4 py-2 text-sm text-slate-300 shadow-lg hover:bg-slate-700"
         >
           ← Prev
         </Link>
@@ -168,9 +192,9 @@ export const Blog = async ({ page = 1 }: { page?: number }) => {
 
       {page < maxPages && (
         <Link
-          href={`/blog/page/${page + 1}`}
-          className="fixed bottom-4 right-4 z-50 rounded-full bg-slate-800 px-4 py-2 text-sm text-slate-300 shadow-lg hover:bg-slate-700"
           aria-label="Next page"
+          href={`/blog/page/${page + 1}`}
+          className="fixed right-4 bottom-4 z-50 rounded-full bg-slate-800 px-4 py-2 text-sm text-slate-300 shadow-lg hover:bg-slate-700"
         >
           Next →
         </Link>

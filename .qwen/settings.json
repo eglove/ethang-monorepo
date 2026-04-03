@@ -40,7 +40,24 @@
       "Bash(\"c:\\users\\glove\\projects\\tla-toolbox\\plugins\\org.lamport.openjdk.win32.x86_64_14.0.1.7\\jre\\bin\\java.exe\" *)",
       "Bash(type *)",
       "Bash(powershell.exe *)",
-      "mcp__webstorm__build_project"
+      "mcp__webstorm__build_project",
+      "WebSearch"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".qwen/hooks/quality-check.sh",
+            "name": "quality-check",
+            "description": "Run lint, type-check, and tests after file edits",
+            "timeout": 120000
+          }
+        ]
+      }
     ]
   },
   "$version": 3

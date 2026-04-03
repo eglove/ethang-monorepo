@@ -156,8 +156,12 @@ describe(BlogModel, () => {
       const model = new BlogModel();
       await model.getPaginatedBlogs(2, pageSize);
 
-      const params = get(vi.mocked(sanityClient).fetch.mock.calls, "[0][1]");
-      expect(params).toMatchObject({ start: 10, end: 20 });
+      const parameters = get(
+        vi.mocked(sanityClient).fetch.mock.calls,
+        "[0][1]",
+      );
+
+      expect(parameters).toMatchObject({ end: 20, start: 10 });
     });
 
     it("returns correct slice parameters for page 3", async () => {
@@ -170,8 +174,12 @@ describe(BlogModel, () => {
       const model = new BlogModel();
       await model.getPaginatedBlogs(3, pageSize);
 
-      const params = get(vi.mocked(sanityClient).fetch.mock.calls, "[0][1]");
-      expect(params).toMatchObject({ start: 20, end: 30 });
+      const parameters = get(
+        vi.mocked(sanityClient).fetch.mock.calls,
+        "[0][1]",
+      );
+
+      expect(parameters).toMatchObject({ end: 30, start: 20 });
     });
 
     it("returns empty posts for out-of-range page", async () => {
@@ -219,7 +227,7 @@ describe(BlogModel, () => {
       expect(result.maxPages).toBe(1);
     });
 
-    it("uses GROQ multi-query syntax", async () => {
+    it("uses multi-query syntax", async () => {
       vi.clearAllMocks();
       vi.mocked(sanityClient).fetch.mockResolvedValue([
         { posts: [] },

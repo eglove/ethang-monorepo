@@ -41,6 +41,13 @@ export class BlogModel {
     }`);
   }
 
+  public async getBlogBySlug(slug: string) {
+    return sanityClient.fetch<GetBlogBySlug>(
+      `*[_type == "blog" && slug.current == $slug][0]${this.blogSchema}`,
+      { slug },
+    );
+  }
+
   public async getPaginatedBlogs(
     page: number,
     pageSize: number,
@@ -65,20 +72,12 @@ export class BlogModel {
       } },
       { "total": count(*[_type == "blog"]) }
     ]`,
-      { start, end },
+      { end, start },
     );
 
-    const posts = result[0].posts;
-    const total = result[1].total;
+    const [{ posts }, { total }] = result;
     const maxPages = Math.ceil(total / pageSize) || 1;
 
     return { maxPages, posts, total };
-  }
-
-  public async getBlogBySlug(slug: string) {
-    return sanityClient.fetch<GetBlogBySlug>(
-      `*[_type == "blog" && slug.current == $slug][0]${this.blogSchema}`,
-      { slug },
-    );
   }
 }

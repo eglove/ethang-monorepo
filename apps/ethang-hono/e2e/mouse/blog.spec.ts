@@ -31,40 +31,42 @@ test.describe("blog pages", () => {
 });
 
 test.describe("blog pagination", () => {
-  test("GET /blog/page/1 redirects to /blog", async ({ page }) => {
+  const BLOG_URL = "https://ethang.dev/blog";
+
+  test("get /blog/page/1 redirects to /blog", async ({ page }) => {
     const response = await page.goto("/blog/page/1");
-    expect(response?.status()).toBe(200);
-    expect(response?.url()).toBe("https://ethang.dev/blog");
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toBe(BLOG_URL);
   });
 
-  test("GET /blog/page/0 redirects to /blog", async ({ page }) => {
+  test("get /blog/page/0 redirects to /blog", async ({ page }) => {
     const response = await page.goto("/blog/page/0");
-    expect(response?.status()).toBe(200);
-    expect(response?.url()).toBe("https://ethang.dev/blog");
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toBe(BLOG_URL);
   });
 
-  test("GET /blog/page/-1 redirects to /blog", async ({ page }) => {
+  test("get /blog/page/-1 redirects to /blog", async ({ page }) => {
     const response = await page.goto("/blog/page/-1");
-    expect(response?.status()).toBe(200);
-    expect(response?.url()).toBe("https://ethang.dev/blog");
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toBe(BLOG_URL);
   });
 
-  test("GET /blog/page/abc redirects to /blog", async ({ page }) => {
+  test("get /blog/page/abc redirects to /blog", async ({ page }) => {
     const response = await page.goto("/blog/page/abc");
-    expect(response?.status()).toBe(200);
-    expect(response?.url()).toBe("https://ethang.dev/blog");
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toBe(BLOG_URL);
   });
 
-  test("GET /blog/page/2.5 redirects to /blog", async ({ page }) => {
+  test("get /blog/page/2.5 redirects to /blog", async ({ page }) => {
     const response = await page.goto("/blog/page/2.5");
-    expect(response?.status()).toBe(200);
-    expect(response?.url()).toBe("https://ethang.dev/blog");
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toBe(BLOG_URL);
   });
 
-  test("GET /blog/page/9999 redirects to last valid page", async ({ page }) => {
+  test("get /blog/page/9999 redirects to last valid page", async ({ page }) => {
     const response = await page.goto("/blog/page/9999");
-    expect(response?.status()).toBe(200);
-    expect(response?.url()).toMatch(/\/blog(\/page\/\d+)?$/);
+    expect.soft(response?.status()).toBe(200);
+    expect.soft(response?.url()).toMatch(/\/blog(\/page\/\d+)?$/u);
   });
 
   test("pagination controls are visible when multiple pages exist", async ({
@@ -92,27 +94,24 @@ test.describe("blog pagination", () => {
 
   test("next button has correct aria-label on page 1", async ({ page }) => {
     await page.goto(routes.blog);
-    const paginationNav = page.getByRole("navigation", { name: "Pagination" });
-    if (await paginationNav.isVisible()) {
-      await expect
-        .soft(page.getByRole("link", { name: "Next page" }))
-        .toBeVisible();
-    }
+    await expect
+      .soft(page.getByRole("link", { name: "Next page" }))
+      .toBeVisible();
   });
 
   test("sitemap does not contain paginated index URLs", async ({ page }) => {
     const response = await page.goto("/sitemap.xml");
     expect.soft(response?.status()).toBe(200);
     const content = await page.content();
-    expect(content).not.toContain("/blog/page/");
-    expect(content).toContain("/blog/");
+    expect.soft(content).not.toContain("/blog/page/");
+    expect.soft(content).toContain("/blog/");
   });
 
-  test("RSS feed contains all posts unchanged", async ({ page }) => {
+  test("rss feed contains all posts unchanged", async ({ page }) => {
     const response = await page.goto("/blogRss.xml");
     expect.soft(response?.status()).toBe(200);
     const content = await page.content();
-    expect(content).toContain("<rss");
-    expect(content).toContain("<channel>");
+    expect.soft(content).toContain("<rss");
+    expect.soft(content).toContain("<channel>");
   });
 });
