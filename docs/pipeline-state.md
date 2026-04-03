@@ -2,48 +2,48 @@
 
 ## Run Metadata
 
-- **Topic:** Consolidate user-scoped skills to project scope, migrate CLAUDE.md, setup merge queues
-- **Status:** STAGE_1_QUESTIONER
-- **Started:** 2026-04-03T00:00:00Z
-- **Current Stage:** Stage 2 — Debate Moderator
+- **Topic:** Wire up project-manager, introduce reviewer agents, free-form user_notes
+- **Status:** COMPLETE
+- **Started:** 2026-04-03T14:00:00Z
+- **Current Stage:** Complete
 
 ## Stage 1 — Questioner
 
 - **Status:** COMPLETE
-- **Artifact:** docs/questioner-sessions/2026-04-03_skill-consolidation-claude-md-merge-queues.md
-- **Timestamp:** 2026-04-03T00:00:00Z
+- **Artifact:** docs/questioner-sessions/2026-04-03_wire-project-manager-reviewers-user-notes.md
+- **Timestamp:** 2026-04-03T14:15:00Z
 
 ## Stage 2 — Debate Moderator
 
 - **Status:** CONSENSUS REACHED
-- **Artifact:** docs/debate-moderator-sessions/2026-04-03_skill-consolidation-claude-md-merge-queues.md
-- **Timestamp:** 2026-04-03T12:00:00Z
+- **Artifact:** docs/debate-moderator-sessions/2026-04-03_wire-project-manager-reviewers-user-notes.md
+- **Timestamp:** 2026-04-03T14:45:00Z
 
 ## Stage 3 — TLA+ Specification
 
 - **Status:** COMPLETE
-- **Artifact:** docs/tla-specs/skill-consolidation-claude-md-merge-queues/
-- **Timestamp:** 2026-04-03T12:05:54Z
+- **Artifact:** docs/tla-specs/wire-project-manager-reviewers-user-notes/
+- **Timestamp:** 2026-04-03T14:40:00Z
 
 ## Stage 4 — Expert Review
 
 - **Status:** CONSENSUS REACHED
-- **Artifact:** docs/debate-moderator-sessions/2026-04-03_tla-review-skill-consolidation.md
-- **Timestamp:** 2026-04-03T12:30:00Z
+- **Artifact:** docs/debate-moderator-sessions/2026-04-03_tla-review-wire-project-manager-reviewers.md
+- **Timestamp:** 2026-04-03T15:10:00Z
 
 ## Stage 5 — Implementation Planning
 
 - **Status:** COMPLETE
-- **Artifact:** docs/implementation/2026-04-03_skill-consolidation-claude-md-merge-queues.md
-- **Timestamp:** 2026-04-03T13:00:00Z
+- **Artifact:** docs/implementation/2026-04-03_wire-project-manager-reviewers-user-notes.md
+- **Timestamp:** 2026-04-03T16:00:00Z
 
 ## Stage 6 — Pair Programming
 
 - **Status:** COMPLETE
-- **Artifact:** design-pipeline/skill-consolidation-claude-md-merge-queues
-- **Timestamp:** 2026-04-03T13:20:00Z
+- **Artifact:** design-pipeline/wire-project-manager-reviewers-user-notes
+- **Timestamp:** 2026-04-03T16:05:00Z
 
 ## Git
 
-- **Committed:** no
-- **Halt Reason:**
+- **Committed:** yes
+- **Halt Reason:** N/A
