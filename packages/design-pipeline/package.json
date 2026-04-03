@@ -1,11 +1,7 @@
 {
   "author": "Ethan Glover",
-  "bin": {
-    "pipeline-runner": "./src/bin.ts"
-  },
   "dependencies": {
-    "lodash": "^4.18.1",
-    "zod": "^4.3.6"
+    "lodash": "^4.18.1"
   },
   "devDependencies": {
     "@ethang/eslint-config": "^25.13.1",
@@ -15,9 +11,6 @@
     "typescript": "^6.0.2",
     "vite": "^8.0.3",
     "vitest": "^4.1.2"
-  },
-  "exports": {
-    "./*": "./src/*"
   },
   "license": "ISC",
   "name": "@ethang/design-pipeline",
