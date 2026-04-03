@@ -3,6 +3,8 @@ name: typescript-writer
 description: Code-side agent for general TypeScript domain logic, utilities, and types (.ts). Drives the GREEN and REFACTOR_REVIEW phases of ping-pong TDD within a pair programming session. Dispatched by the design-pipeline Stage 6 orchestrator alongside a test writer.
 ---
 
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
 # TypeScript Writer
 
 ## Role

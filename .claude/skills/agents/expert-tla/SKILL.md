@@ -116,6 +116,60 @@ Endorsements:
 - vs. expert-ddd: Aggregates enforce invariants only within a single transaction. Distributed saga patterns can violate invariants across aggregate boundaries in ways that neither the domain model nor the tests will catch.
 - vs. expert-performance: Optimistic concurrency patterns (compare-and-swap, optimistic locking) introduce states that formal specifications must model explicitly — they are not "just a performance detail."
 
+## Shared Conventions
+
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
+## State Machine Mindset — Operational Guidance
+
+Before implementing any feature, enumerate the possible states explicitly. You do not need to use XState or TLA+ tooling, but reason as if you were modeling a state machine:
+
+- What are all the states this can be in? (idle, loading, success, error, partial, stale, etc.)
+- What are the valid transitions between states?
+- What inputs are valid in each state?
+- What happens on invalid transitions — is that even possible?
+
+This applies to:
+- UI components (loading/error/empty/populated)
+- API handlers (unauthenticated/authorized/forbidden/not found/conflict)
+- Domain entities (valid state transitions, guard conditions)
+- Async flows (pending/settled/retrying/cancelled)
+
+If a branch of a conditional is "impossible," document why rather than leaving it implicit. Impossible states should be made unrepresentable in the type system where practical.
+
+### Why TLA+?
+
+TLA+ enables:
+
+1. **Precise Design**: Mathematical precision in system design
+2. **Early Bug Detection**: Find concurrency bugs before coding
+3. **Model Checking**: Exhaustive verification with TLC
+4. **Documentation**: Executable specifications that document intent
+5. **Industry Adoption**: Used by Amazon (AWS), Microsoft, MongoDB, etc.
+
+### Workflow
+
+When creating TLA+ specifications:
+
+1. **Identify State**: What variables define system state?
+2. **Define Types**: What are valid values for each variable?
+3. **Specify Init**: What is the initial state?
+4. **Define Actions**: What state transitions are possible?
+5. **Write Invariants**: What must always be true (safety)?
+6. **Write Liveness**: What must eventually happen?
+7. **Model Check**: Run TLC to verify properties
+8. **Refine**: Add detail or fix discovered bugs
+
+### Best Practices
+
+1. **Start Simple**: Begin with minimal spec, add complexity gradually
+2. **Check Types First**: TypeOK should pass before complex properties
+3. **Use Constants**: Parameterize for easy model size adjustment
+4. **Add Constraints**: Bound state space for tractable checking
+5. **Symmetry**: Exploit symmetry to reduce state space
+6. **Trace Errors**: Use TLC traces to understand failures
+7. **Document Intent**: Comments explain why, not what
+
 ## Handoff
 
 - **Passes to:** debate-moderator (when used as a debate participant) or user (when used standalone)

@@ -5,6 +5,8 @@ description: Translates design briefings into formally verified TLA+ specificati
 
 # TLA+ Writer
 
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
 ## Role
 
 Internal quality gate that sits between requirements gathering and implementation. Reads a structured briefing, enumerates every possible state the described system can occupy, writes a TLA+ specification with safety and liveness properties, and runs TLC to model-check it. The output is a verified specification that proves the design handles all reachable states correctly — or a clear report of which states are unguarded.
@@ -47,7 +49,7 @@ Do **not** dispatch when:
 
 ### 3. Write the TLA+ Specification
 
-1. Reference the TLA+ syntax and patterns from `.claude/skills/tla-specification/SKILL.md`.
+1. Use the TLA+ syntax reference below to write the specification.
 2. Create the `.tla` file in the output directory with:
    - `EXTENDS` clause for required modules (Integers, Sequences, FiniteSets, TLC as needed)
    - `CONSTANTS` for all parameterizable values
@@ -209,3 +211,154 @@ Write only to the Stage 3 section. Do not modify any other stage's section, the 
 ## Handoff
 
 None. This agent verifies and stops. Results are presented to the user. No downstream agent is dispatched.
+
+---
+
+## TLA+ Syntax Reference
+
+### Module Structure
+
+```tla
+--------------------------- MODULE Name ---------------------------
+EXTENDS Integers, Sequences, FiniteSets, TLC
+
+CONSTANTS
+    MaxItems,
+    Nodes
+
+VARIABLES
+    state,
+    queue
+
+vars == <<state, queue>>
+
+Init == ...
+Next == ...
+Spec == Init /\ [][Next]_vars
+=============================================================================
+```
+
+### Temporal Operators
+
+```text
+[]P          - Always P (invariant)
+<>P          - Eventually P
+P ~> Q       - P leads to Q (if P then eventually Q)
+[]<>P        - Infinitely often P
+<>[]P        - Eventually always P
+P /\ Q       - P and Q
+P \/ Q       - P or Q
+~P           - Not P
+P => Q       - P implies Q
+ENABLED A    - Action A is enabled
+[A]_v        - A or v unchanged
+<<A>>_v      - A and v changes
+WF_v(A)      - Weak fairness
+SF_v(A)      - Strong fairness
+```
+
+### PlusCal
+
+PlusCal is an algorithm language that compiles to TLA+:
+
+```tla
+(*--algorithm name
+
+variables
+    x = 0;
+
+define
+    Invariant == x >= 0
+end define;
+
+fair process Worker \in 1..N
+begin
+    Step1:
+        x := x + 1;
+    Step2:
+        await x > 0;
+        goto Step1;
+end process;
+
+end algorithm; *)
+```
+
+#### PlusCal Constructs
+
+```text
+variables         - Global variable declarations
+define            - Define operators/invariants
+process           - Process definition (fair = fair scheduling)
+procedure         - Reusable procedure
+begin/end         - Process body
+await             - Wait for condition
+either/or         - Non-deterministic choice
+while             - Loop
+if/then/else      - Conditional
+goto              - Jump to label
+call              - Procedure call
+return            - Return from procedure
+with              - Atomic with non-deterministic selection
+```
+
+### TLC Configuration (.cfg)
+
+```text
+SPECIFICATION Spec
+
+CONSTANTS
+    Nodes = {n1, n2, n3}
+    Values = {v1, v2}
+    NULL = NULL
+
+INVARIANT TypeOK
+INVARIANT Safety1
+
+PROPERTY Liveness1
+
+CONSTRAINT StateConstraint
+SYMMETRY Symmetry
+```
+
+### Common Patterns
+
+#### Consensus
+
+```tla
+Propose(n, v) ==
+    /\ proposed[n] = NULL
+    /\ proposed' = [proposed EXCEPT ![n] = v]
+    /\ UNCHANGED <<accepted, decided>>
+
+Decide(n) ==
+    /\ decided[n] = NULL
+    /\ \E v \in Values :
+        /\ Cardinality({m \in Nodes : accepted[m] = v}) >= Quorum
+        /\ decided' = [decided EXCEPT ![n] = v]
+    /\ UNCHANGED <<proposed, accepted>>
+
+Agreement ==
+    \A n1, n2 \in Nodes :
+        decided[n1] /= NULL /\ decided[n2] /= NULL =>
+            decided[n1] = decided[n2]
+```
+
+#### Two-Phase Commit
+
+```tla
+Prepare(p) ==
+    /\ partState[p] = "working"
+    /\ partState' = [partState EXCEPT ![p] = "prepared"]
+    /\ prepared' = prepared \cup {p}
+
+DecideCommit ==
+    /\ coordState = "waiting"
+    /\ prepared = Participants
+    /\ coordState' = "committed"
+    /\ decision' = "commit"
+
+Atomicity ==
+    decision /= "pending" =>
+        \A p \in Participants :
+            (decision = "commit" => partState[p] = "committed")
+```

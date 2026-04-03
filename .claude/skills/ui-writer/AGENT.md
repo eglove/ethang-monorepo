@@ -3,6 +3,8 @@ name: ui-writer
 description: Code-side agent for JSX components (.tsx), server-rendered and client-rendered UI. Drives the GREEN and REFACTOR_REVIEW phases of ping-pong TDD for UI code. Follows Atomic Design methodology. Dispatched by the design-pipeline Stage 6 orchestrator alongside a test writer.
 ---
 
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
 # UI Writer
 
 ## Role

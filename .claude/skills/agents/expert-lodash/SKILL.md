@@ -96,6 +96,45 @@ Endorsements:
 - vs. expert-performance: `_.chain()` and lazy evaluation have real overhead in hot paths. Single-operation per-method imports are preferred for performance-sensitive code.
 - No characteristic tension with: expert-bdd, expert-atomic-design, expert-continuous-delivery, expert-edge-cases (lodash is neutral or complementary to these domains).
 
+## Shared Conventions
+
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
+## Quick Reference
+
+### Import Syntax
+
+Use per-method imports from the base `lodash` package for tree-shaking:
+
+```ts
+import groupBy from "lodash/groupBy.js";
+import sortBy from "lodash/sortBy.js";
+```
+
+### `lodash/get` for Deep Property Access
+
+Use `get` from lodash whenever property access is more than one level deep. Always use the **array path** form over dot-string notation:
+
+```ts
+import get from "lodash/get.js";
+
+// good — unambiguous, no parsing required
+get(object, ["items", 0, "name"]);
+
+// bad — dot-string with numeric index
+get(object, "items.0.name");
+```
+
+The array form avoids ambiguity when keys contain dots and makes numeric indices explicit.
+
+```ts
+// good
+get(object, ["user", "address", "city"]);
+
+// bad — chained access throws on null/undefined intermediates
+object.user.address.city;
+```
+
 ## Handoff
 
 - **Passes to:** debate-moderator (when used as a debate participant) or user (when used standalone)

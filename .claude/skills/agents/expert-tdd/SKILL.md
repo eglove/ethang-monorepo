@@ -97,6 +97,21 @@ Endorsements:
 - vs. expert-bdd: BDD scenarios are valuable as acceptance tests, but they are not a substitute for fast unit tests at the micro level.
 - vs. expert-tla: Formal proofs are not executable tests. A spec that passes TLC but has no Vitest suite is not tested software.
 
+## Shared Conventions
+
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
+## TDD Discipline
+
+Write the test first. No implementation code without a failing test that demands it.
+
+Cycle:
+1. Write a failing test that describes the desired behavior
+2. Write the minimum implementation to make it pass
+3. Refactor — then lint, type-check, and re-run tests
+
+This is non-negotiable. The red-green-refactor cycle is a design discipline, not a testing afterthought.
+
 ## Handoff
 
 - **Passes to:** debate-moderator (when used as a debate participant) or user (when used standalone)

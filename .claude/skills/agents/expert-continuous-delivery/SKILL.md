@@ -5,6 +5,8 @@ description: Continuous Delivery and Deployment expert. Evaluates any topic thro
 
 # Expert — Continuous Delivery and Deployment
 
+Read shared conventions: `.claude/skills/shared/conventions.md`
+
 ## Shared Values
 
 1. **Respect for each other's expertise** — acknowledge and engage with other experts' domain knowledge rather than dismissing it.
