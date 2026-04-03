@@ -26,7 +26,7 @@ If `seed` is provided, it is passed to the questioner as the starting context. I
 ## Pipeline Stages
 
 ```
-Stage 1: Questioner            ─── elicit requirements + expert selection
+Stage 1: Questioner            ─── elicit requirements
     │
     ▼
 Stage 2: Debate-Moderator      ─── design debate with selected experts
@@ -134,10 +134,10 @@ Every stage receives all outputs from prior stages. The orchestrator maintains a
 
 | After Stage | Context Contains |
 |---|---|
-| 1 | briefing, expert list |
-| 2 | briefing, expert list, design consensus synthesis |
-| 3 | briefing, expert list, design consensus, TLA+ spec + TLC results |
-| 4 | briefing, expert list, design consensus, TLA+ spec + TLC results, TLA+ review consensus |
+| 1 | briefing |
+| 2 | briefing, design consensus synthesis |
+| 3 | briefing, design consensus, TLA+ spec + TLC results |
+| 4 | briefing, design consensus, TLA+ spec + TLC results, TLA+ review consensus |
 | 5 | all of the above + implementation plan (with execution tiers + task assignment table) |
 | 6 | all of the above + committed code on named branch (terminal artifact) |
 
@@ -152,16 +152,12 @@ Invoke the questioner skill (`.claude/skills/questioner/SKILL.md`) via the Agent
 **Input:** User seed (if provided), plus the following role framing:
 
 ```
-You are being called from the /design-pipeline orchestrator. This is a pipeline run — when you reach Phase 3 sign-off, include an "Expert Council" section listing:
-- Included experts: which experts from the debate-moderator roster should participate, with reasons
-- Excluded experts: which experts should sit out, with reasons
-
-Present the expert list during the sign-off recap for user confirmation or adjustment. Do not prompt whether the user wants expert debate — debate is mandatory in this pipeline. After sign-off, save the briefing file but do not dispatch any downstream agents. Return the briefing content and file path to the caller.
+You are being called from the /design-pipeline orchestrator. This is a pipeline run. After sign-off, save the briefing file but do not dispatch any downstream agents. Return the briefing content and file path to the caller.
 ```
 
-**Output expected:** Briefing file path + briefing content including the Expert Council section.
+**Output expected:** Briefing file path + briefing content.
 
-**On completion:** Extract the expert list from the Expert Council section. Add briefing and expert list to accumulated context. Advance to `STAGE_2_DESIGN_DEBATE`.
+**On completion:** Add briefing to accumulated context. Advance to `STAGE_2_DESIGN_DEBATE`.
 
 **On abandonment:** If the user stops mid-session without sign-off, the questioner saves a partial briefing marked `[INCOMPLETE]`. The orchestrator transitions to `HALTED` and records `STAGE 1 — INCOMPLETE` in the session file.
 
@@ -171,7 +167,6 @@ Invoke the debate-moderator skill (`.claude/skills/orchestrators/debate-moderato
 
 **Input:**
 - **Topic:** The full briefing content from Stage 1
-- **Experts:** The expert list confirmed in Stage 1
 - **Context:** `"Debate the design described in this briefing. Focus on correctness, trade-offs, and gaps. Evaluate whether the proposed states, transitions, error handling, and scope are complete and sound."`
 
 **Output expected:** Debate synthesis (consensus or partial consensus) + session file path.
@@ -239,7 +234,6 @@ Invoke the debate-moderator skill (`.claude/skills/orchestrators/debate-moderato
 
 **Input:**
 - **Topic:** The TLA+ specification content (full .tla file) plus the briefing and design consensus
-- **Experts:** The same expert list from Stage 1
 - **Context:** `"Review this TLA+ specification against the agreed design consensus and original briefing. Focus on whether the spec correctly captures all states, transitions, safety properties, and liveness properties. Identify any states or transitions from the design that are missing from the spec, any properties that should be verified but are not, and any spec behaviors that contradict the design."`
 
 **Output expected:** Review debate synthesis + session file path.
@@ -710,7 +704,6 @@ To restart, run /design-pipeline again.
 
 - The orchestrator does not form opinions, write code, or make design decisions
 - No stage can be skipped or run out of order
-- Expert selection from Stage 1 is reused in both Stage 2 and Stage 4 -- the same council reviews from start to finish
 - The orchestrator never modifies files created by downstream agents -- it only creates and updates the pipeline session index
 - Sessions cannot be resumed -- if halted, start a new `/design-pipeline` run
 - Stage 6 requires user confirmation before any autonomous work begins (confirmation gate)
