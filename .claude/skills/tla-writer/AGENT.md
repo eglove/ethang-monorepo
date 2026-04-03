@@ -182,6 +182,30 @@ TLC Result: FAIL
 Action needed: <specific question for the user about the design>
 ```
 
+## Pipeline State File
+
+When called from the design pipeline, the tla-writer writes its results to the global state file at `docs/pipeline-state.md`.
+
+### Detection
+
+The tla-writer knows it is in a pipeline run when `docs/pipeline-state.md` exists and the run-level Status is `ACCUMULATING`.
+
+### Pre-Write Validation
+
+Before writing, validate that Stage 1 and Stage 2 StageResult sections in `docs/pipeline-state.md` are populated (Status is not empty). If validation fails, report the error to the caller — do not write a Stage 3 result on top of missing prior stages.
+
+### Writing the Stage 3 StageResult
+
+After completing the TLA+ specification (Process step 5 or after error handling), update the Stage 3 section in `docs/pipeline-state.md` with:
+
+- **Status:** `COMPLETE` (TLC passed) or `UNVERIFIED` (TLC failed and user accepted as-is)
+- **Artifact:** the TLA+ spec directory path (e.g., `docs/tla-specs/<slug>/`)
+- **Timestamp:** current date/time
+
+### Section-Scoped Ownership
+
+Write only to the Stage 3 section. Do not modify any other stage's section, the run metadata, or the Git section. Cross-section writes are domain invariant violations.
+
 ## Handoff
 
 None. This agent verifies and stops. Results are presented to the user. No downstream agent is dispatched.

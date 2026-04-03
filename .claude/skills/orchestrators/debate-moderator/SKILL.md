@@ -179,6 +179,25 @@ After the synthesis is written and the session file is saved, check whether any 
   source_session: <session filename>
 ```
 
+## Pipeline State File
+
+When called from the design pipeline, the debate-moderator writes its StageResult to `docs/pipeline-state.md`. These instructions are conditional — they apply only when a pipeline run is active. The debate-moderator is also used standalone, in which case this section does not apply.
+
+**Detection:** The debate-moderator knows it is in a pipeline run when `docs/pipeline-state.md` exists and the run-level Status is `ACCUMULATING`. The caller (design-pipeline orchestrator) indicates which stage this debate is for: Stage 2 (Design Debate) or Stage 4 (TLA+ Review).
+
+**Pre-Write Validation:** Before writing a StageResult section, validate that all prior StageResult sections are populated:
+- For Stage 2: validate the Stage 1 StageResult is populated.
+- For Stage 4: validate the Stages 1, 2, and 3 StageResult sections are populated.
+
+If validation fails, report the error to the caller and do not write. Do not attempt to fill in missing prior stages.
+
+**Writing the StageResult:** After the synthesis is written and the session file is saved, update the appropriate stage section in `docs/pipeline-state.md`:
+- **Status:** `CONSENSUS REACHED` or `PARTIAL CONSENSUS`
+- **Artifact:** the debate session file path (e.g., `docs/debate-moderator-sessions/YYYY-MM-DD_<topic-slug>.md`)
+- **Timestamp:** current date/time
+
+**Section-Scoped Ownership:** Write only to the assigned stage's section (Stage 2 or Stage 4, as indicated by the caller). Do not modify any other stage's section, the run metadata, or the Git section. Cross-section writes are domain invariant violations.
+
 ## Constraints
 
 - The moderator does not form opinions, edit files, or cast deciding votes

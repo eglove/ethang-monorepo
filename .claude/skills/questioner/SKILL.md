@@ -70,6 +70,23 @@ After sign-off:
    - The path to the saved `.md` file
 5. Once dispatched, the Questioner's job is done.
 
+
+## Pipeline State File
+
+When the questioner is called as part of a design pipeline run, it must write its Stage 1 results to `docs/pipeline-state.md` after saving the briefing file.
+
+**Detection:** The questioner knows it is in a pipeline run when `docs/pipeline-state.md` exists and the run-level **Status:** is `CLEARED` or `ACCUMULATING`. When invoked standalone (no state file or status is not `CLEARED`/`ACCUMULATING`), skip this section entirely.
+
+**After saving the briefing file, write the Stage 1 StageResult:**
+
+1. Check that `docs/pipeline-state.md` exists and contains the expected template structure before writing. If the file does not exist or is malformed, log a warning and skip the state file update.
+2. Update the `## Stage 1 — Questioner` section with:
+   - **Status:** `COMPLETE` (or `INCOMPLETE` if sign-off was not reached)
+   - **Artifact:** the briefing file path (e.g., `docs/questioner-sessions/2026-04-02_payment-flow.md`)
+   - **Timestamp:** current date/time in ISO 8601 format
+3. Write only to the Stage 1 section — do not modify any other stage section (section-scoped ownership).
+4. If sign-off was not reached and the session is incomplete, set **Status:** to `INCOMPLETE` and still record the partial artifact path and timestamp.
+
 ## Decision Guide
 
 | Situation | Recommended action |

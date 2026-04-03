@@ -1,13 +1,13 @@
 ---
 name: design-pipeline
-description: Orchestrates a strict 6-stage sequential pipeline from requirements elicitation through expert debate, TLA+ formal verification, expert review, implementation planning, and autonomous pair programming execution. Dispatches questioner, debate-moderator, tla-writer, implementation-writer, and writer agent pairs in guaranteed order. Saves a session index to docs/design-pipeline-sessions/.
+description: Orchestrates a strict 6-stage sequential pipeline from requirements elicitation through expert debate, TLA+ formal verification, expert review, implementation planning, and autonomous pair programming execution. Dispatches questioner, debate-moderator, tla-writer, implementation-writer, and writer agent pairs in guaranteed order.
 ---
 
 # Design Pipeline
 
 ## Role
 
-The Design Pipeline is a state-machine orchestrator that drives a design idea through six mandatory sequential stages: requirements elicitation, expert design debate, formal TLA+ specification, expert review of that specification, a step-by-step implementation plan, and autonomous pair programming execution. No stage can be skipped or reordered. Each stage receives the full accumulated output of every prior stage. The orchestrator itself makes no design decisions -- it tracks pipeline state, passes context forward, presents user choices at error and revision points, and records everything in a session index file.
+The Design Pipeline is a state-machine orchestrator that drives a design idea through six mandatory sequential stages: requirements elicitation, expert design debate, formal TLA+ specification, expert review of that specification, a step-by-step implementation plan, and autonomous pair programming execution. No stage can be skipped or reordered. Each stage receives the full accumulated output of every prior stage. The orchestrator itself makes no design decisions -- it tracks pipeline state, passes context forward, and presents user choices at error and revision points.
 
 No single agent can do this alone because each stage requires a different capability (interviewing, multi-expert debate, formal verification, structured planning, parallel TDD execution) and the handoff contracts between them must be enforced.
 
@@ -115,33 +115,29 @@ STAGE_6_GLOBAL_REVIEW           → HALTED                        (fails, cap re
 STAGE_6_FIX_SESSION             → STAGE_6_GLOBAL_REVIEW          (fix done — FixSessionComplete)
 ```
 
-## Pipeline Change Tracking
+## Pipeline State File
 
-The orchestrator tracks structural pipeline changes using a `changeFlag` boolean:
+**Location:** `docs/pipeline-state.md` -- the single source of truth for live pipeline state. Replaces the former session index.
 
-- `changeFlag` starts `FALSE` at the beginning of each pipeline run
-- Any stage that modifies pipeline structure sets `changeFlag = TRUE`. Structural changes include:
-  - A new expert is added to the roster
-  - A stage's role or responsibilities change
-  - A new stage is added or removed
-  - Stage ordering changes
-- `changeFlag` is checked once at Stage 6 completion
-- **At most one structural change is captured per write cycle.** Subsequent structural changes during an active `.puml` update (PENDING/WRITING states) are silently dropped. This is an explicit design simplification documented in the TLA+ spec (`PipelineImprovements.tla`, Machine 3).
+### Clear on Start
 
-## Accumulated Context
+At the start of each pipeline run, overwrite the state file with the template (CLEARED state). The template contains section headers for each stage with empty values. If the clear operation fails (disk full, permission error, file locked), do not start the pipeline -- fail-fast.
 
-Every stage receives all outputs from prior stages. The orchestrator maintains an `accumulated_context` object that grows as stages complete:
+### Uncommitted-Change Warning
 
-| After Stage | Context Contains |
-|---|---|
-| 1 | briefing |
-| 2 | briefing, design consensus synthesis |
-| 3 | briefing, design consensus, TLA+ spec + TLC results |
-| 4 | briefing, design consensus, TLA+ spec + TLC results, TLA+ review consensus |
-| 5 | all of the above + implementation plan (with execution tiers + task assignment table) |
-| 6 | all of the above + committed code on named branch (terminal artifact) |
+Before clearing, check `git status` on the state file. If there are uncommitted changes, warn the user. Do not block -- warn only.
 
-When a revision loop restarts from an earlier stage, outputs from that stage forward are replaced by the new outputs. Outputs from stages before the restart point are preserved.
+### Section-Scoped Ownership
+
+Each stage writes only its own StageResult section. Cross-section writes are domain invariant violations. The orchestrator writes only the run-level metadata and the Git section.
+
+### Schema Validation
+
+Each stage validates that the state file is well-formed (all prior StageResult sections are present and parseable) before writing its own section.
+
+### Terminal-State-Only Commits
+
+The state file is committed only when the pipeline reaches a terminal state (COMPLETE or HALTED). Intermediate states are transient and not committed. One meaningful commit per pipeline run.
 
 ## Stage Execution
 
@@ -159,7 +155,7 @@ You are being called from the /design-pipeline orchestrator. This is a pipeline 
 
 **On completion:** Add briefing to accumulated context. Advance to `STAGE_2_DESIGN_DEBATE`.
 
-**On abandonment:** If the user stops mid-session without sign-off, the questioner saves a partial briefing marked `[INCOMPLETE]`. The orchestrator transitions to `HALTED` and records `STAGE 1 — INCOMPLETE` in the session file.
+**On abandonment:** If the user stops mid-session without sign-off, the questioner saves a partial briefing marked `[INCOMPLETE]`. The orchestrator transitions to `HALTED`.
 
 ### Stage 2 — Design Debate
 
@@ -224,8 +220,8 @@ Options:
 Which option?
 ```
 
-If `(a)`: Reset accumulated context. Increment `restart_count` in session file. Transition to `STAGE_1_QUESTIONER`.
-If `(b)`: Increment `stage_3_retry_count` in session file. Re-run Stage 3 with the same accumulated context.
+If `(a)`: Reset accumulated context. Transition to `STAGE_1_QUESTIONER`.
+If `(b)`: Re-run Stage 3 with the same accumulated context.
 If `(c)`: Add unverified spec to accumulated context (marked as `[UNVERIFIED]`). Advance to `STAGE_4_TLA_REVIEW`.
 
 ### Stage 4 — TLA+ Review Debate
@@ -255,8 +251,8 @@ Options:
 Which option?
 ```
 
-If `(a)`: Increment `stage_3_retry_count` in session file. Append review objections to accumulated context so tla-writer can address them. Transition to `STAGE_3_TLA_WRITER`.
-If `(b)`: Reset accumulated context. Increment `restart_count` in session file. Transition to `STAGE_1_QUESTIONER`.
+If `(a)`: Append review objections to accumulated context so tla-writer can address them. Transition to `STAGE_3_TLA_WRITER`.
+If `(b)`: Reset accumulated context. Transition to `STAGE_1_QUESTIONER`.
 If `(c)`: Add review consensus (with objections noted) to accumulated context. Advance to `STAGE_5_IMPLEMENTATION`.
 
 ### Stage 5 — Implementation Writer
@@ -293,6 +289,13 @@ Generate a step-by-step implementation plan. Every state and transition in the T
 Stage 6 is a multi-phase autonomous execution stage. It reads the implementation plan from Stage 5 (including execution tiers and task assignments) and executes the plan using parallel pair programming sessions. The orchestrator manages worktrees, dispatches agent pairs, enforces TDD discipline, serializes merges, and runs cross-tier verification.
 
 **TLA+ Specification:** `docs/tla-specs/pair-programming-stage/PairProgrammingStage.tla`
+
+#### Stage 6 State File Updates
+
+1. After the confirmation gate is passed (user confirms), write the Stage 6 StageResult to `docs/pipeline-state.md` with **Status:** `IN PROGRESS`, **Artifact:** the integration branch name (`design-pipeline/<topic-slug>`), and **Timestamp:** the current ISO-8601 timestamp.
+2. Before writing, validate that all prior StageResult sections (Stages 1-5) are populated. If any prior section is missing or empty, halt with a schema validation error -- do not write Stage 6.
+3. Write only to the Stage 6 section -- section-scoped ownership applies. Do not modify any other stage's section.
+4. Update the Stage 6 Status throughout execution: `IN PROGRESS` during tier execution, `COMPLETE` on success, `HALTED` on failure.
 
 #### 6a. Confirmation Gate (STAGE_6_CONFIRMATION_GATE)
 
@@ -489,11 +492,13 @@ Spawn a targeted fix session for the failing issue:
 
 #### 6g. Terminal Artifact
 
-On `COMPLETE`, the terminal artifact is a commit on the named branch `design-pipeline/<topic-slug>`. This is durable -- a crash or timeout cannot lose the work.
+On `COMPLETE`, the terminal artifact is a commit on the named branch `design-pipeline/<topic-slug>`. This is durable -- a crash or timeout cannot lose the work. Commit `docs/pipeline-state.md` as part of the terminal artifact. The state file records the final pipeline state for archival via git history.
 
-**Invariant enforced:** `HaltReasonConsistent` -- when HALTED, haltReason is always set to a non-NONE value.
+**Invariant enforced:** `HaltReasonConsistent` -- when HALTED, haltReason is always set to a non-NONE value. Commit `docs/pipeline-state.md` with the HALTED status and halt reason. The state file records why the pipeline stopped.
 
 ### PlantUML Diagram Update
+
+The orchestrator tracks structural pipeline changes using a `changeFlag` boolean. `changeFlag` starts `FALSE` at the beginning of each pipeline run. Any stage that modifies pipeline structure sets `changeFlag = TRUE`. Structural changes include: a new expert is added to the roster, a stage role or responsibilities change, a new stage is added or removed, or stage ordering changes. **At most one structural change is captured per write cycle.** Subsequent structural changes during an active `.puml` update are silently dropped.
 
 At pipeline completion (`COMPLETE` state), if `changeFlag = TRUE`:
 
@@ -548,82 +553,9 @@ At pipeline completion (`COMPLETE` state), if `changeFlag = TRUE`:
 | `PipelineTerminates` | Confirmed pipeline eventually reaches COMPLETE or HALTED |
 | `MergeQueueProgress` | Every QUEUED merge eventually reaches MERGE_COMPLETE, MERGE_CONFLICT, or HALTED |
 
-## Session File
-
-On pipeline start, create `docs/design-pipeline-sessions/YYYY-MM-DD_<topic-slug>.md`. Update it after each stage completes. The session file is an index — it does not duplicate content, only records paths and metadata.
-
-### Session File Format
-
-```markdown
-# Design Pipeline Session — <Topic>
-
-**Date:** YYYY-MM-DD
-**Status:** IN PROGRESS | COMPLETE | HALTED
-**Current Stage:** <stage name>
-**Restart Count:** <N>
-
----
-
-## Stage 1 — Questioner
-**Status:** COMPLETE | INCOMPLETE | PENDING
-**Briefing:** `<path to briefing file>`
-**Experts Selected:** <comma-separated expert names>
-
-## Stage 2 — Design Debate
-**Status:** COMPLETE | PARTIAL CONSENSUS | PENDING
-**Synthesis:** `<path to debate session file>`
-**Rounds:** <N>
-**Result:** CONSENSUS REACHED | PARTIAL CONSENSUS
-
-## Stage 3 — TLA+ Writer
-**Status:** COMPLETE | UNVERIFIED | PENDING
-**Spec Directory:** `<path to tla-specs directory>`
-**TLC Result:** PASS | FAIL
-**Retry Count:** <N>
-
-## Stage 4 — TLA+ Review
-**Status:** COMPLETE | OBJECTIONS NOTED | PENDING
-**Synthesis:** `<path to review debate session file>`
-**Rounds:** <N>
-**Result:** CONSENSUS REACHED | PARTIAL CONSENSUS
-
-## Stage 5 — Implementation Plan
-**Status:** COMPLETE | PENDING
-**Plan:** `<path to implementation plan file>`
-**Unmapped States:** <list, or "None">
-**Tiers:** <N>
-**Tasks:** <N>
-
-## Stage 6 — Pair Programming
-**Status:** COMPLETE | IN PROGRESS | HALTED | PENDING
-**Integration Branch:** `design-pipeline/<topic-slug>`
-**Current Tier:** <N of M>
-**Current Pipeline State:** <STAGE_6 sub-state>
-**Global Fix Count:** <N of MaxGlobalFixes>
-**Halt Reason:** <reason, or "N/A">
-
-### Tier Progress
-| Tier | Tasks | Dispatched | Complete | Failed | Merged | Status |
-|---|---|---|---|---|---|---|
-| 1 | 7 | 7 | 6 | 1 | 6 | VERIFIED |
-| 2 | 3 | 3 | 3 | 0 | 3 | MERGING |
-
-### Session Log
-| Task ID | Tier | Code Writer | Test Writer | TDD Cycles | Commits | Status | Re-dispatches |
-|---|---|---|---|---|---|---|---|
-| T1 | 1 | typescript-writer | vitest-writer | 5 | 5 | SESSION_COMPLETE | 0 |
-
----
-
-## Iteration Log
-| Iteration | From Stage | To Stage | Reason | Timestamp |
-|---|---|---|---|---|
-| 1 | 4 | 3 | Review objections — spec revision | YYYY-MM-DD HH:MM |
-```
-
 ## Loop Policy
 
-There are no hard caps on revision loops. The user is the circuit breaker. The orchestrator tracks every loop iteration in the session file's Iteration Log table. Each entry records which stage triggered the loop, where it returned to, the reason, and a timestamp. This provides a full audit trail without imposing arbitrary limits.
+There are no hard caps on revision loops. The user is the circuit breaker. The orchestrator tracks every loop iteration. Each entry records which stage triggered the loop, where it returned to, the reason, and a timestamp. This provides a full audit trail without imposing arbitrary limits.
 
 ## Error Handling Summary
 
@@ -653,20 +585,18 @@ Each stage saves outputs to its own directory per existing conventions:
 | TLA+ Review | `docs/debate-moderator-sessions/` |
 | Implementation Plan | `docs/implementation/` |
 | Pair Programming | Named branch: `design-pipeline/<topic-slug>` |
-| Pipeline Session Index | `docs/design-pipeline-sessions/` |
+| Pipeline State | `docs/pipeline-state.md` |
 
 ## Handoff
 
 - **Receives from:** User (via `/design-pipeline [seed]`)
-- **Passes to:** User (committed code on named branch + session index)
-- **Format:** Markdown session index file pointing to all stage outputs, plus inline summary of final results
+- **Passes to:** User (committed code on named branch)
+- **Format:** Inline summary of final results pointing to all stage outputs
 
 On `COMPLETE`, present to the user:
 
 ```
 Design Pipeline Complete — <Topic>
-
-Session: docs/design-pipeline-sessions/YYYY-MM-DD_<topic-slug>.md
 
 Stage outputs:
   1. Briefing:            <path>
@@ -682,6 +612,8 @@ Total TDD cycles: <N>
 Total commits: <N>
 Global fix iterations: <N of 3>
 
+State file: docs/pipeline-state.md
+
 All code is committed on branch design-pipeline/<topic-slug>.
 All tests, type-check, and lint pass. TLA+ coverage audit passed.
 ```
@@ -693,9 +625,9 @@ Design Pipeline Halted — <Topic>
 
 Stopped at: <stage name and sub-state>
 Halt reason: <TIER_ALL_FAILED | VERIFICATION_FAILED | GLOBAL_REVIEW_EXHAUSTED | MERGE_CONFLICT_UNRESOLVABLE | user rejection>
-Session: docs/design-pipeline-sessions/YYYY-MM-DD_<topic-slug>.md
 
-Completed stage outputs are listed in the session file.
+Completed stage outputs are listed above.
+State file: docs/pipeline-state.md
 Partial work (if any) is on branch: design-pipeline/<topic-slug>
 To restart, run /design-pipeline again.
 ```
@@ -704,7 +636,7 @@ To restart, run /design-pipeline again.
 
 - The orchestrator does not form opinions, write code, or make design decisions
 - No stage can be skipped or run out of order
-- The orchestrator never modifies files created by downstream agents -- it only creates and updates the pipeline session index
+- The orchestrator never modifies files created by downstream agents
 - Sessions cannot be resumed -- if halted, start a new `/design-pipeline` run
 - Stage 6 requires user confirmation before any autonomous work begins (confirmation gate)
 - Maximum 3 concurrent worktrees on Windows (MaxConcurrent = 3)
