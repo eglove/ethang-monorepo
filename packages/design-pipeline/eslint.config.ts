@@ -11,6 +11,9 @@ export default defineConfig(
         tsconfigRootDir: import.meta.dirname,
       },
     },
-    rules: {},
+    rules: {
+      "compat/compat": "off",
+      "sonar/declarations-in-global-scope": "off",
+    },
   },
 );

@@ -35,8 +35,8 @@ describe("design-pipeline.puml — state machine diagram", () => {
     expect(content).toContain("STAGE_3_TLA_WRITER");
   });
 
-  it("contains STAGE_4_TLA_REVIEW", () => {
-    expect(content).toContain("STAGE_4_TLA_REVIEW");
+  it("contains STAGE_4_EXPERT_REVIEW", () => {
+    expect(content).toContain("STAGE_4_EXPERT_REVIEW");
   });
 
   it("contains STAGE_5_IMPLEMENTATION", () => {
