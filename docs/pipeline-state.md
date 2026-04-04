@@ -2,54 +2,48 @@
 
 ## Run Metadata
 
-- **Topic:** @ethang/store Refactor — waitFor, Reentrant Safety, Event-Driven Architecture
-- **Status:** COMPLETE
+- **Topic:** Design-Pipeline Questioner Refactor — Event-Driven @ethang/store Architecture
+- **Status:** ACCUMULATING
 - **Started:** 2026-04-04T00:00:00Z
-- **Current Stage:** COMPLETE
+- **Current Stage:** STAGE_1_QUESTIONER
 
 ## Stage 1 — Questioner
 
 - **Status:** COMPLETE
-- **Artifact:** docs/questioner-sessions/2026-04-04_store-refactor.md
-- **Timestamp:** 2026-04-04T00:00:00Z
+- **Artifact:** docs/questioner-sessions/2026-04-04_questioner-stage-rewrite.md
+- **Timestamp:** 2026-04-04T18:00:00Z
 
 ## Stage 2 — Debate Moderator
 
 - **Status:** CONSENSUS REACHED
-- **Artifact:** docs/debate-moderator-sessions/2026-04-04_store-refactor.md
-- **Timestamp:** 2026-04-04T00:00:00Z
+- **Artifact:** docs/debate-moderator-sessions/2026-04-04_questioner-stage-rewrite.md
+- **Timestamp:** 2026-04-04T19:00:00Z
 
 ## Stage 3 — TLA+ Specification
 
 - **Status:** COMPLETE
-- **Artifact:** docs/tla-specs/store-refactor/
-- **Timestamp:** 2026-04-04T13:08:52Z
-- **TLC:** PASS (revised) — 6,549,122 states generated, 762,048 distinct states, depth 24
+- **Artifact:** docs/tla-specs/questioner-stage-rewrite/
+- **Timestamp:** 2026-04-04T15:05:50Z
 
 ## Stage 4 — Expert Review
 
 - **Status:** CONSENSUS REACHED
-- **Artifact:** docs/debate-moderator-sessions/2026-04-04_store-refactor-tla-re-review.md
-- **Timestamp:** 2026-04-04T14:00:00Z
-- **Note:** Re-review of revised spec. All 5 original issues + 3 secondary cleanups verified as correctly addressed. No new correctness issues.
+- **Artifact:** docs/debate-moderator-sessions/2026-04-04_questioner-stage-rewrite-tla-review.md
+- **Timestamp:** 2026-04-04T15:30:00Z
 
 ## Stage 5 — Implementation Planning
 
 - **Status:** COMPLETE
-- **Artifact:** docs/implementation/2026-04-04_store-refactor.md
-- **Timestamp:** 2026-04-04T15:00:00Z
+- **Artifact:** docs/implementation/2026-04-04_questioner-stage-rewrite.md
+- **Timestamp:** 2026-04-04T16:00:00Z
 
 ## Stage 6 — Pair Programming
 
-- **Status:** COMPLETE
-- **Artifact:** design-pipeline/store-refactor
-- **Timestamp:** 2026-04-04T16:00:00Z
-- **Tasks Completed:** 9 of 9
-- **Tiers Executed:** 6
-- **Total Tests:** 53 (was 25)
-- **Global Review:** PASS (double-pass clean)
+- **Status:**
+- **Artifact:**
+- **Timestamp:**
 
 ## Git
 
-- **Committed:** pending
+- **Committed:**
 - **Halt Reason:**

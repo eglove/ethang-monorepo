@@ -1,3 +1,5 @@
+// Feature flag removal plan: Remove stages 2-7 legacy flags after each stage
+// is migrated to SDK-based orchestration. Track via individual stage migration.
 import { type StageName, STAGES } from "../constants.ts";
 
 export type FeatureFlags = {

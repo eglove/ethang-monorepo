@@ -11,6 +11,11 @@ export const ERROR_KINDS = [
   "git_retry_exhausted",
   "compensation_failed",
   "pair_routing_api_failed",
+  "signoff_exhausted",
+  "turn_cap_exceeded",
+  "lint_exhausted",
+  "questioner_session_failed",
+  "questioner_runner_missing",
 ] as const;
 
 export type ErrorKind = (typeof ERROR_KINDS)[number];

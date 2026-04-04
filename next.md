@@ -1,34 +1,11 @@
-Refactor @ethang/store to remove the localStorage backups and related code. This will be a breaking change that is acceptable.
-Store will become less about persistance and more about syncronization that is agnostic to the platform. Meaning it should
-be able to represent both state-machines and aid an event-driven architecture.
+Refactor the ts design-pipeline to fully take advantage of @ethang/store and an event driven architecture rather than passing objects around
+  waitFor and reentract protection was recently added to the store. It's already used in the project but we can design around it better
 
-There are two major changes I want to implent.
+The framework for a working design-pipeline already exists. We only need to fill it out. So we'll do 1 stage at a time.
+First is the questioner. Currently the questioner.ts prompt is just one line and a seed. This doesn't nearly cover what is in the questioner claude skill.
+We want to take everything from that skill except for programmatic instruction that is better handled by the TS cli.
+The cli will validate output, but it doesn't necessarily have to keep track of an exact number of questions. The questioner should run as a single agent session.
+While the user reads and answers one question it should be planning more in the background to help speed up the process.
+Instead of having a hard cap on the  # of questions the user should be able to, at any point, ask what the current summary is and approve it.
 
-1. waitFor that allows a system to waitFor a specific change:
-
-public waitFor(predicate: (state: State) => boolean): Promise<State> {
-  if (predicate(this._state)) return Promise.resolve(this._state);
-  return new Promise((resolve) => {
-  const unsubscribe = this.subscribe((state) => {
-    if (predicate(state)) {
-      unsubscribe();
-      resolve(state);
-    }
-  });
-  });
-}
-
-2. Reentrant update safety to prevent rercursive statck growth, and keep notification order deterministic.
-
-protected update(updater, shouldNotify = true) {
-  // ... produce new state ...
-  if (this._isNotifying) {
-    this._pendingPatches.push(...patches);  // queue, don't fire
-    return;
-  }
-  this._isNotifying = true;
-  // drain patches + notify subscribers
-  this._isNotifying = false;
-}
-
-I am also open to other changes that would be helpful such as introducing dependency graphs. Unless the way immer works already cover this.
+Since other phases of the pipeline are incomplete, when the questioner is done I'd like to call the next stage as a skill and let claude take over from there. Meaning the cli doesn't run stages 2-7, it's completely handed off. This helps with incremental adoption and testing.
