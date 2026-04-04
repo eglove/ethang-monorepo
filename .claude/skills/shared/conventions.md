@@ -104,3 +104,15 @@ Key behaviors:
 - **Current roster:** 9 reviewers (including a11y-reviewer). At full availability, quorum = `ceil(18/3) = 6`.
 
 The formula is owned by the review gate specification. Individual reviewers do not need to know it.
+
+## Consult-First Pattern (Librarian Index)
+
+Before performing broad file searches across the codebase, agents should consult `docs/librarian/INDEX.md` to locate relevant category files. The librarian index follows the **Shared Kernel** pattern: a well-defined contract (Markdown table with columns Path, Kind, Summary, Updated) owned by the librarian agent, with all other agents as read-only consumers.
+
+**This is advisory, not blocking.** If the index is missing, corrupt, or stale, agents fall back to direct file reads. The index improves search efficiency but must never gate progress.
+
+How to use:
+1. Read `docs/librarian/INDEX.md` to discover which category files exist.
+2. Read the relevant category file(s) to find file paths matching your need.
+3. If no match is found in the index, fall back to standard file search (Glob, Grep).
+4. If the index file does not exist or cannot be read, skip the consult step entirely and proceed with direct file search.
