@@ -37,17 +37,16 @@ describe("quorum formula and reviewer roster atomic update", () => {
     expect(quorumLines).toHaveLength(0);
   });
 
-  it("should document quorum formula in shared conventions", () => {
+  it("should have quorum breadcrumb in conventions referencing project-manager", () => {
     const conventionsContent = readFileSync(CONVENTIONS_PATH, "utf8");
-    const hasQuorum =
-      conventionsContent.includes("ceil(2n/3)") ||
-      conventionsContent.includes("quorum formula") ||
-      conventionsContent.includes("Quorum Formula");
-    expect(hasQuorum).toBe(true);
+    const lower = conventionsContent.toLowerCase();
+    expect(lower).toContain("project-manager");
+    expect(lower).toContain("quorum");
   });
 
-  it("should document n=2 unanimity in conventions", () => {
+  it("conventions should NOT contain the quorum formula (owned by project-manager)", () => {
     const conventionsContent = readFileSync(CONVENTIONS_PATH, "utf8");
-    expect(conventionsContent.toLowerCase()).toContain("unanimity");
+    expect(conventionsContent).not.toContain("ceil(2n/3)");
+    expect(conventionsContent).not.toContain("## Review Gate Quorum Formula");
   });
 });
