@@ -5,7 +5,7 @@
 - **Topic:** @ethang/store Refactor — waitFor, Reentrant Safety, Event-Driven Architecture
 - **Status:** COMPLETE
 - **Started:** 2026-04-04T00:00:00Z
-- **Current Stage:** STAGE_6_ALL_TIERS_COMPLETE
+- **Current Stage:** COMPLETE
 
 ## Stage 1 — Questioner
 

@@ -88,6 +88,8 @@ PENDING → DISPATCHED → RUNNING → COMPLETED → LOCAL_REVIEW → REVIEWING 
 
 ## Process
 
+CRITICAL! The project manager may NOT write code or complete tasks. Everything MUST go through subagent paired programming steps.
+
 ### Phase 1 — Input Validation
 
 1. Read the implementation plan file in full.

@@ -157,7 +157,7 @@ The state file is committed only when the pipeline reaches a terminal state (COM
 
 ### Stage 1 — Questioner
 
-Invoke the questioner skill (`.claude/skills/questioner/SKILL.md`) via the Agent tool.
+Invoke the questioner skill (`.claude/skills/questioner/SKILL.md`) via the Agent tool. CRITICAL! Do NOT dispatch a new agent for every question, the questioner should ask all questions in the same session.
 
 **Input:** User seed (if provided), plus the following role framing:
 
