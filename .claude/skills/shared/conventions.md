@@ -93,3 +93,14 @@ Each file is agent-scoped to avoid concurrent write conflicts from parallel agen
 - Create the `docs/user_notes/` directory if it does not exist
 - Entries are append-only per file; never overwrite or delete other agents' notes
 - The user audits and trims manually — no automated cleanup or summarization
+
+## Review Gate Quorum Formula
+
+The review gate quorum is computed as `ceil(2n/3)` where `n` is the number of non-UNAVAILABLE reviewers that responded. The full specification is at `.claude/skills/shared/quorum.md`.
+
+Key behaviors:
+- **Floor guard:** `n >= 1` is a hard precondition. If fewer than 1 reviewer responds, the gate cannot produce a valid verdict.
+- **At n=2, unanimity is required:** `ceil(4/3) = 2`. Both reviewers must pass. This is an intentional design decision, not a bug.
+- **Current roster:** 9 reviewers (including a11y-reviewer). At full availability, quorum = `ceil(18/3) = 6`.
+
+The formula is owned by the review gate specification. Individual reviewers do not need to know it.
