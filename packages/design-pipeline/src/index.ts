@@ -65,10 +65,12 @@ export async function runPipeline(topic = "pipeline"): Promise<PipelineResult> {
         ...deps,
         client: anthropicClient,
         readline: readlinePort,
+        rootDirectory: MONOREPO_ROOT,
         topic,
       });
     },
     readlinePort,
+    rootDirectory: MONOREPO_ROOT,
   });
 }
 

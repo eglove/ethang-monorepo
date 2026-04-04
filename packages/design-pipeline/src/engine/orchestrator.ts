@@ -69,6 +69,7 @@ export type OrchestratorDeps = {
   gitAdapter: GitAdapter;
   questionerRunner?: QuestionerRunner;
   readlinePort?: ReadlinePort;
+  rootDirectory?: string;
 };
 
 export type PipelineResult = {
@@ -343,6 +344,7 @@ async function executeQuestionerSdkPath(
         deps.anthropicClient,
         deps.eslintRunner,
         deps.readlinePort,
+        deps.rootDirectory,
       );
     }
 
@@ -362,7 +364,11 @@ async function executeQuestionerSdkPath(
     store.advanceStage();
 
     return true;
-  } catch {
+  } catch (error: unknown) {
+    globalThis.console.error(
+      "[orchestrator] Questioner SDK path failed:",
+      error,
+    );
     store.failCurrentStage("questioner_session_failed");
     return false;
   }
@@ -559,7 +565,13 @@ async function runLintFixerOnBriefing(
   aiClient: AnthropicClient,
   eslintRunner: EslintRunner,
   readlinePort?: ReadlinePort,
+  rootDirectory?: string,
 ): Promise<void> {
+  const recipesPath =
+    rootDirectory === undefined
+      ? "lint-fixer-recipes.md"
+      : `${rootDirectory}/packages/design-pipeline/lint-fixer-recipes.md`;
+
   const userPort = {
     async askUser(prompt: string): Promise<string> {
       if (readlinePort === undefined) {
@@ -575,7 +587,7 @@ async function runLintFixerOnBriefing(
     {
       interactive: readlinePort !== undefined,
       maxLintPasses: 10,
-      recipesPath: "lint-fixer-recipes.md",
+      recipesPath,
     },
     { messages: aiClient.messages } satisfies LintAiClient,
     userPort,

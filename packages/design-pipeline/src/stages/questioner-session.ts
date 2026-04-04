@@ -54,6 +54,7 @@ export type QuestionerDeps = {
   config: QuestionerConfig;
   dateString?: string;
   readline: ReadlinePort;
+  rootDirectory?: string;
   topic: string;
 };
 
@@ -78,6 +79,7 @@ type SessionContext = {
   dateString: string;
   messages: MessageParameter[];
   readline: ReadlinePort;
+  rootDirectory: string | undefined;
   signoffAttempts: number;
   systemPrompt: string;
   topic: string;
@@ -107,6 +109,7 @@ export async function runQuestionerSession(
     config,
     dateString: rawDate,
     readline,
+    rootDirectory,
     topic,
   } = deps;
   const dateString = rawDate ?? new Date().toISOString().slice(0, 10);
@@ -126,13 +129,19 @@ export async function runQuestionerSession(
     process.removeListener("SIGINT", onSigint);
   };
 
+  const initialMessage =
+    "" === topic || "pipeline" === topic
+      ? "Begin the interview. Ask your first question."
+      : `The topic is: ${topic}. Begin the interview. Ask your first question.`;
+
   const context: SessionContext = {
     artifact: createEmptyQuestionerArtifact(),
     client,
     config,
     dateString,
-    messages: [],
+    messages: [{ content: initialMessage, role: "user" }],
     readline,
+    rootDirectory,
     signoffAttempts: 0,
     systemPrompt: buildQuestionerPrompt(topic),
     topic,
@@ -166,13 +175,20 @@ async function callWithRetry(
   config: QuestionerConfig,
 ): Promise<QuestionerMessage | undefined> {
   for (let attempt = 0; attempt <= config.maxRetries; attempt += 1) {
-    // eslint-disable-next-line no-await-in-loop
-    const response = await callLlm(client, systemPrompt, messages);
-    const raw = extractText(response);
-    const parsed = parseMessage(raw);
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const response = await callLlm(client, systemPrompt, messages);
+      const raw = extractText(response);
+      const parsed = parseMessage(raw);
 
-    if (parsed !== undefined) {
-      return parsed;
+      if (parsed !== undefined) {
+        return parsed;
+      }
+    } catch (error: unknown) {
+      globalThis.console.error(
+        `[questioner] API error on attempt ${String(attempt + 1)}:`,
+        error,
+      );
     }
 
     if (attempt < config.maxRetries) {
@@ -279,6 +295,7 @@ function handleSignoff(context: SessionContext, content: string): TurnOutcome {
         artifact,
         context.topic,
         context.dateString,
+        context.rootDirectory,
       ),
       success: true,
     },
@@ -371,6 +388,7 @@ function makeFailResult(context: SessionContext, error: string): SessionResult {
       artifact,
       context.topic,
       context.dateString,
+      context.rootDirectory,
     ),
     error,
     success: false,
@@ -442,12 +460,13 @@ function writePartialBriefing(
   artifact: QuestionerArtifact,
   topic: string,
   dateString: string,
+  rootDirectory: string | undefined,
 ): null | string {
   if (0 === artifact.questions.length) {
     return null;
   }
   try {
-    return writer.writeFile(artifact, topic, dateString);
+    return writer.writeFile(artifact, topic, dateString, rootDirectory);
   } catch {
     return null;
   }

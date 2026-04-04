@@ -59,8 +59,13 @@ export function writeBriefingFile(
   artifact: QuestionerArtifact,
   topic: string,
   date: string,
+  rootDirectory?: string,
 ): string {
-  const filePath = generateBriefingPath(topic, date);
+  const relativePath = generateBriefingPath(topic, date);
+  const filePath =
+    rootDirectory === undefined
+      ? relativePath
+      : path.join(rootDirectory, relativePath);
   const content = formatBriefingMarkdown(artifact, topic, date);
   mkdirSync(path.dirname(filePath), { recursive: true });
   writeFileSync(filePath, content, "utf8");

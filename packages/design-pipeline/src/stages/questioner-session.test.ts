@@ -1,6 +1,6 @@
 import includes from "lodash/includes.js";
 import noop from "lodash/noop.js";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import type {
   AnthropicClient,
@@ -583,6 +583,40 @@ describe("runQuestionerSession — branch gap coverage", () => {
     expect(result.error).toBe("retry_exhausted");
   });
 
+  it("API throw is caught and retried then fails with retry_exhausted", async () => {
+    const config = createQuestionerConfig({
+      maxRetries: 1,
+      maxSignoffAttempts: 3,
+      maxTurns: 50,
+      retryBaseDelayMs: 0,
+    });
+    const errorSpy = vi
+      .spyOn(globalThis.console, "error")
+      .mockImplementation(noop);
+    const client: AnthropicClient = {
+      messages: {
+        // eslint-disable-next-line @typescript-eslint/require-await -- test mock must throw inside async to simulate API error
+        create: async () => {
+          throw new Error("network timeout");
+        },
+      },
+    };
+    const readline = createMockReadline([]);
+
+    const result = await runQuestionerSession(
+      makeDeps({ client, config, readline }),
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("retry_exhausted");
+    expect(result.artifact.sessionState).toBe(FAILED);
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining("[questioner] API error on attempt"),
+      expect.any(Error),
+    );
+    errorSpy.mockRestore();
+  });
+
   it("parseMessage returns undefined for valid JSON that fails schema (line 374)", async () => {
     const config = createQuestionerConfig({
       maxRetries: 1,
@@ -603,5 +637,17 @@ describe("runQuestionerSession — branch gap coverage", () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toBe("retry_exhausted");
+  });
+
+  it("uses generic initial message when topic is empty or 'pipeline'", async () => {
+    const client = createMockClient([signoffJson("Done.")]);
+    const readline = createMockReadline([]);
+    const writer = createMockWriter();
+
+    const result = await runQuestionerSession(
+      makeDeps({ briefingWriter: writer, client, readline, topic: "" }),
+    );
+
+    expect(result.success).toBe(true);
   });
 });

@@ -129,6 +129,35 @@ describe("writeBriefingFile", () => {
     rmSync(temporaryDirectory, { force: true, recursive: true });
   });
 
+  it("anchors file to rootDirectory when provided", () => {
+    const artifact = {
+      ...createEmptyQuestionerArtifact(),
+      artifactState: "complete" as const,
+      questions: [{ answer: "Yes", question: "Is it anchored?" }],
+      sessionState: "completed" as const,
+      summary: "Anchored correctly.",
+      turnCount: 2,
+    };
+
+    const filePath = writeBriefingFile(
+      artifact,
+      "Anchored Topic",
+      TEST_DATE,
+      temporaryDirectory,
+    );
+
+    const expected = path.join(
+      temporaryDirectory,
+      `docs/questioner-sessions/${TEST_DATE}_anchored-topic.md`,
+    );
+    expect(filePath).toBe(expected);
+    expect(existsSync(filePath)).toBe(true);
+
+    const content = readFileSync(filePath, "utf8");
+    expect(content).toContain("# Questioner Session — Anchored Topic");
+    expect(content).toContain("Anchored correctly.");
+  });
+
   it("creates the directory and writes the briefing file", () => {
     const artifact = {
       ...createEmptyQuestionerArtifact(),

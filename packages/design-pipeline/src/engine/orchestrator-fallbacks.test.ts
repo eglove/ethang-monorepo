@@ -308,6 +308,52 @@ describe("Orchestrator ?? fallback branches", () => {
     }
   });
 
+  it("runs lint-fixer with rootDirectory to build full recipesPath", async () => {
+    const { executeOrchestrator } = await import("../engine/orchestrator.ts");
+    const { runLintFixer } = await import("../stages/lint-fixer.ts");
+
+    vi.mocked(runLintFixer).mockClear();
+
+    const claude = makeClaudeAdapter();
+    const git = makeGitAdapter();
+
+    const anthropicClient = {
+      messages: { create: constant(Promise.resolve({ content: [] })) },
+    };
+    const eslintRunner: EslintRunner = {
+      fix: vi.fn().mockReturnValue({ clean: true, errors: "" }),
+    };
+
+    const result = await executeOrchestrator(
+      {
+        anthropicClient,
+        claudeAdapter: claude,
+        config: defaultPipelineConfig,
+        eslintRunner,
+        gitAdapter: git,
+        questionerRunner: runnerWithBriefing,
+        rootDirectory: "/workspace",
+      },
+      undefined,
+      "run-lint-fixer-root-dir",
+    );
+
+    expect(result.success).toBe(true);
+    expect(runLintFixer).toHaveBeenCalledOnce();
+    expect(runLintFixer).toHaveBeenCalledWith(
+      BRIEFING_PATH,
+      expect.objectContaining({
+        interactive: false,
+        maxLintPasses: 10,
+        recipesPath:
+          "/workspace/packages/design-pipeline/lint-fixer-recipes.md",
+      }),
+      expect.objectContaining({ messages: anthropicClient.messages }),
+      expect.objectContaining({ askUser: anyFunction }),
+      eslintRunner,
+    );
+  });
+
   it("runs lint-fixer in interactive mode when readlinePort is provided", async () => {
     const { executeOrchestrator } = await import("../engine/orchestrator.ts");
     const { runLintFixer } = await import("../stages/lint-fixer.ts");
