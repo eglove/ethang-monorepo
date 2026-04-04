@@ -72,7 +72,7 @@ Do **not** dispatch when:
 Execute the model checker:
 
 ```
-java -jar C:\Users\glove\projects\tla-toolbox\tla2tools.jar -config <name>.cfg -workers 4 <name>.tla
+java -XX:+UseParallelGC -jar C:\Users\glove\projects\tla-toolbox\tla2tools.jar -config <name>.cfg -workers auto <name>.tla
 ```
 
 ### 5. Handle Results

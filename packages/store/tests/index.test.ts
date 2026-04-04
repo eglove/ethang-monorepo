@@ -1,4 +1,4 @@
-/* eslint-disable lodash/prefer-noop,@typescript-eslint/no-empty-function */
+/* eslint-disable lodash/prefer-noop,@typescript-eslint/no-empty-function,@typescript-eslint/strict-void-return,lodash/prefer-lodash-method,@typescript-eslint/no-unsafe-type-assertion */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { BaseStore } from "../src/index.js";
@@ -375,6 +375,254 @@ describe("BaseStore", () => {
         }),
       );
       expect(store.state.items).toContain(newItem);
+    });
+  });
+
+  describe("destroy", () => {
+    it("should set destroyed to true", () => {
+      expect(store.destroyed).toBe(false);
+      store.destroy();
+      expect(store.destroyed).toBe(true);
+    });
+
+    it("should abort cleanupSignal", () => {
+      const unsubscribe = store.subscribe(() => {});
+      const signal = store.publicCleanupSignal;
+      expect(signal.aborted).toBe(false);
+
+      store.destroy();
+      expect(signal.aborted).toBe(true);
+      expect(signal.reason).toBe("destroy");
+      unsubscribe();
+    });
+
+    it("should return a function from subscribe after destroy", () => {
+      store.destroy();
+      const result = store.subscribe(vi.fn());
+      expect(typeof result).toBe("function");
+      // Calling the returned noop should not throw
+      result();
+    });
+
+    it("should not change state after destroy when update is called", () => {
+      store.destroy();
+      const stateBefore = store.state;
+      store.increment();
+      expect(store.state).toBe(stateBefore);
+      expect(store.state.count).toBe(0);
+    });
+
+    it("should not throw on double destroy", () => {
+      store.destroy();
+      expect(() => {
+        store.destroy();
+      }).not.toThrow();
+      expect(store.destroyed).toBe(true);
+    });
+
+    it("should clear subscribers on destroy", () => {
+      const subscriber = vi.fn();
+      store.subscribe(subscriber);
+      store.destroy();
+      store.increment(); // This is a no-op since destroyed
+      expect(subscriber).not.toHaveBeenCalled();
+    });
+
+    it("should stop remaining callbacks when destroy is called during drain", () => {
+      const callback1 = vi.fn();
+      const callback2 = vi.fn();
+
+      store.subscribe(() => {
+        callback1();
+        store.destroy();
+      });
+      store.subscribe(() => {
+        callback2();
+      });
+
+      store.increment();
+
+      expect(callback1).toHaveBeenCalledTimes(1);
+      expect(callback2).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("reentrant update", () => {
+    it("should batch reentrant updates from subscriber callbacks", () => {
+      const subscriber = vi.fn();
+      let reentrantDone = false;
+
+      store.subscribe((state) => {
+        subscriber(state);
+        // Trigger a reentrant update only once
+        if (!reentrantDone) {
+          reentrantDone = true;
+          store.setName("Reentrant");
+        }
+      });
+
+      store.increment();
+
+      // Final state should have both mutations
+      expect(store.state.count).toBe(1);
+      expect(store.state.name).toBe("Reentrant");
+      // subscriber called twice: once for increment, once for reentrant
+      expect(subscriber).toHaveBeenCalledTimes(2);
+    });
+
+    it("should surface depth overflow error via queueMicrotask", () => {
+      const captured: (() => void)[] = [];
+      const queueMicrotaskSpy = vi
+        .spyOn(globalThis, "queueMicrotask")
+        .mockImplementation((callback: () => void) => {
+          captured.push(callback);
+        });
+
+      // Subscribe a callback that always triggers another update (infinite loop)
+      store.subscribe(() => {
+        store.increment();
+      });
+
+      store.increment();
+
+      // Find the overflow error callback
+      const overflowCallback = captured.find((callback) => {
+        try {
+          callback();
+          return false;
+        } catch (error) {
+          return (error as Error).message.includes("reentrant depth overflow");
+        }
+      });
+      expect(overflowCallback).toBeDefined();
+
+      queueMicrotaskSpy.mockRestore();
+    });
+
+    it("should catch throwing subscriber and still notify other subscribers", () => {
+      const captured: (() => void)[] = [];
+      const queueMicrotaskSpy = vi
+        .spyOn(globalThis, "queueMicrotask")
+        .mockImplementation((callback: () => void) => {
+          captured.push(callback);
+        });
+
+      const errorSubscriber = vi.fn(() => {
+        throw new Error("subscriber error");
+      });
+      const normalSubscriber = vi.fn();
+
+      store.subscribe(errorSubscriber);
+      store.subscribe(normalSubscriber);
+
+      store.increment();
+
+      // Both should be invoked
+      expect(errorSubscriber).toHaveBeenCalledTimes(1);
+      expect(normalSubscriber).toHaveBeenCalledTimes(1);
+
+      // Error surfaced via queueMicrotask
+      const errorCallback = captured.find((callback) => {
+        try {
+          callback();
+          return false;
+        } catch (error) {
+          return "subscriber error" === (error as Error).message;
+        }
+      });
+      expect(errorCallback).toBeDefined();
+
+      queueMicrotaskSpy.mockRestore();
+    });
+  });
+
+  describe("reset", () => {
+    it("should restore original constructor state and notify subscribers", () => {
+      const subscriber = vi.fn();
+      store.subscribe(subscriber);
+
+      store.increment();
+      store.increment();
+      expect(store.state.count).toBe(2);
+
+      store.reset();
+      expect(store.state).toEqual(initialState);
+      // subscriber called for 2 increments + 1 reset
+      expect(subscriber).toHaveBeenCalledTimes(3);
+    });
+
+    it("should reset to provided state and notify subscribers", () => {
+      const subscriber = vi.fn();
+      store.subscribe(subscriber);
+
+      const newState: TestState = {
+        count: 99,
+        items: ["x"],
+        name: "Reset",
+        person: { name: { firstName: "A", lastName: "B" } },
+      };
+      store.reset(newState);
+      expect(store.state).toEqual(newState);
+      expect(subscriber).toHaveBeenCalledTimes(1);
+    });
+
+    it("should preserve original initialState when reset() called with no arg", () => {
+      store.increment();
+      store.reset();
+      expect(store.state).toEqual(initialState);
+
+      // Reset again — should still be original
+      store.increment();
+      store.reset();
+      expect(store.state).toEqual(initialState);
+    });
+
+    it("should update stored initialState when reset(newState) is called", () => {
+      const newState: TestState = {
+        count: 50,
+        items: [],
+        name: "New Init",
+        person: { name: { firstName: "X", lastName: "Y" } },
+      };
+      store.reset(newState);
+      expect(store.state).toEqual(newState);
+
+      // Subsequent reset() without arg should use the new initialState
+      store.increment();
+      store.reset();
+      expect(store.state).toEqual(newState);
+    });
+
+    it("should enqueue reset during drain (reentrant-safe)", () => {
+      let resetDone = false;
+
+      store.subscribe(() => {
+        if (!resetDone) {
+          resetDone = true;
+          store.reset();
+        }
+      });
+
+      store.increment();
+      // After drain completes, state should be the reset (initial) state
+      expect(store.state).toEqual(initialState);
+    });
+
+    it("should be a no-op after destroy", () => {
+      store.increment();
+      const stateBeforeDestroy = store.state;
+      store.destroy();
+      store.reset();
+      expect(store.state).toBe(stateBeforeDestroy);
+    });
+
+    it("should not abort cleanupSignal", () => {
+      const unsubscribe = store.subscribe(() => {});
+      const signal = store.publicCleanupSignal;
+
+      store.reset();
+      expect(signal.aborted).toBe(false);
+      unsubscribe();
     });
   });
 });

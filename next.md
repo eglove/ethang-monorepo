@@ -1,15 +1,34 @@
-We have some more cleanup/refactor of the pipeline based on the last run. Claude is technically running everything and succeeding but not explicilty as planned in some places.
-Here are the pain points.
+Refactor @ethang/store to remove the localStorage backups and related code. This will be a breaking change that is acceptable.
+Store will become less about persistance and more about syncronization that is agnostic to the platform. Meaning it should
+be able to represent both state-machines and aid an event-driven architecture.
 
-First, I don't know that debate moderator is dispatching it's own subagents, and not just simulating a debate. I want to make sure opinions of experts are made in isolated context, not togetgher.
+There are two major changes I want to implent.
 
-Second, and new agent is being created for every question by the questioner. This should not happen. The questioner should be one agent that goes through the questions and sends the results back to the pipeline.
+1. waitFor that allows a system to waitFor a specific change:
 
-Third, similar to the debate moderator, the project manager may not be spawning subagents in isolated contexts. It should create the worktree, and send the agent pair programmers to it. The pair programmers should use the documented handshake system and communicate back and forth.
-Reviewers should also be seperate subagents dispatched to review each worktree before merge.
-After merge the project manager may handle the double-pass testing.
+public waitFor(predicate: (state: State) => boolean): Promise<State> {
+  if (predicate(this._state)) return Promise.resolve(this._state);
+  return new Promise((resolve) => {
+  const unsubscribe = this.subscribe((state) => {
+    if (predicate(state)) {
+      unsubscribe();
+      resolve(state);
+    }
+  });
+  });
+}
 
-I am open to solutions on how to solve this.
-Do we simply need more explicity language using steps/checklists?
-Is there conflicting information that breaks this process?
-Is any step too complicated such as phase 6 that needs to be broken up?
+2. Reentrant update safety to prevent rercursive statck growth, and keep notification order deterministic.
+
+protected update(updater, shouldNotify = true) {
+  // ... produce new state ...
+  if (this._isNotifying) {
+    this._pendingPatches.push(...patches);  // queue, don't fire
+    return;
+  }
+  this._isNotifying = true;
+  // drain patches + notify subscribers
+  this._isNotifying = false;
+}
+
+I am also open to other changes that would be helpful such as introducing dependency graphs. Unless the way immer works already cover this.
