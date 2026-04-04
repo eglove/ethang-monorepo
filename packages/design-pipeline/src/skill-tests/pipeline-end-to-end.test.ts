@@ -1,8 +1,8 @@
-import every from "lodash/every.js";
+import endsWith from "lodash/endsWith.js";
 import filter from "lodash/filter.js";
+import findIndex from "lodash/findIndex.js";
 import forEach from "lodash/forEach.js";
 import includes from "lodash/includes.js";
-import map from "lodash/map.js";
 import some from "lodash/some.js";
 import split from "lodash/split.js";
 import toLower from "lodash/toLower.js";
@@ -14,35 +14,49 @@ const ROOT = path.join(import.meta.dirname, "..", "..", "..", "..");
 const SKILLS_DIR = path.join(ROOT, ".claude", "skills");
 const SETTINGS_PATH = path.join(ROOT, ".claude", "settings.json");
 
+const AGENT_MD = "AGENT.md";
+const PROJECT_MANAGER = "project-manager";
 const SKILL_PATH = path.join(SKILLS_DIR, "design-pipeline", "SKILL.md");
-const PM_PATH = path.join(SKILLS_DIR, "project-manager", "AGENT.md");
+const PM_PATH = path.join(SKILLS_DIR, PROJECT_MANAGER, AGENT_MD);
 const STATE_TEMPLATE_PATH = path.join(ROOT, "docs", "pipeline-state.md");
+
+const QUESTIONER_SKILL = ".claude/skills/questioner/SKILL.md";
+const DEBATE_MODERATOR_SKILL =
+  ".claude/skills/orchestrators/debate-moderator/SKILL.md";
+const TLA_WRITER_AGENT = ".claude/skills/tla-writer/AGENT.md";
+const IMPL_WRITER_AGENT = ".claude/skills/implementation-writer/AGENT.md";
+const PM_AGENT = ".claude/skills/project-manager/AGENT.md";
 
 const skillContent = readFileSync(SKILL_PATH, "utf8");
 const pmContent = readFileSync(PM_PATH, "utf8");
 const settingsContent = readFileSync(SETTINGS_PATH, "utf8");
 
+const READ_SHARED_CONVENTIONS = "Read shared conventions";
+const CONVENTIONS_MD = "conventions.md";
+
 // ── Helpers ──────────────────────────────────────────────────
 
-function collectMarkdownFiles(directory: string): string[] {
+const collectMarkdownFiles = (directory: string): string[] => {
   const results: string[] = [];
 
-  function walk(dir: string): void {
-    const entries = readdirSync(dir);
+  const walk = (currentDirectory: string): void => {
+    const entries = readdirSync(currentDirectory);
     for (const entry of entries) {
-      const fullPath = path.join(dir, entry);
+      const fullPath = path.join(currentDirectory, entry);
       const stat = statSync(fullPath);
       if (stat.isDirectory()) {
         walk(fullPath);
-      } else if (entry.endsWith(".md")) {
+      } else if (endsWith(entry, ".md")) {
         results.push(fullPath);
+      } else {
+        // Non-directory, non-markdown file — skip
       }
     }
-  }
+  };
 
   walk(directory);
   return results;
-}
+};
 
 // ── Dimension 1: Stage Ordering ──────────────────────────────
 
@@ -67,8 +81,10 @@ describe("dimension 1: stage ordering", () => {
     const lines = split(skillContent, "\n");
     let lastIndex = -1;
     forEach(stageLabels, (label) => {
-      const index = lines.findIndex(
-        (line, index_) => index_ > lastIndex && includes(line, label),
+      const index = findIndex(
+        lines,
+        (line) => includes(line, label),
+        lastIndex + 1,
       );
       expect(index).toBeGreaterThan(lastIndex);
       lastIndex = index;
@@ -104,11 +120,11 @@ describe("dimension 1: stage ordering", () => {
 
 describe("dimension 2: agent file existence", () => {
   const agentFiles = [
-    ".claude/skills/questioner/SKILL.md",
-    ".claude/skills/orchestrators/debate-moderator/SKILL.md",
-    ".claude/skills/tla-writer/AGENT.md",
-    ".claude/skills/implementation-writer/AGENT.md",
-    ".claude/skills/project-manager/AGENT.md",
+    QUESTIONER_SKILL,
+    DEBATE_MODERATOR_SKILL,
+    TLA_WRITER_AGENT,
+    IMPL_WRITER_AGENT,
+    PM_AGENT,
     ".claude/skills/agents/librarian/AGENT.md",
     ".claude/skills/typescript-writer/AGENT.md",
     ".claude/skills/hono-writer/AGENT.md",
@@ -130,11 +146,11 @@ describe("dimension 2: agent file existence", () => {
 
 describe("dimension 3: handoff contracts", () => {
   const agentFilesWithHandoff = [
-    ".claude/skills/questioner/SKILL.md",
-    ".claude/skills/orchestrators/debate-moderator/SKILL.md",
-    ".claude/skills/tla-writer/AGENT.md",
-    ".claude/skills/implementation-writer/AGENT.md",
-    ".claude/skills/project-manager/AGENT.md",
+    QUESTIONER_SKILL,
+    DEBATE_MODERATOR_SKILL,
+    TLA_WRITER_AGENT,
+    IMPL_WRITER_AGENT,
+    PM_AGENT,
   ];
 
   forEach(agentFilesWithHandoff, (file) => {
@@ -246,7 +262,7 @@ describe("dimension 6: stage-to-agent mapping", () => {
     { agent: "tla-writer", stage: "Stage 3" },
     { agent: "debate-moderator", stage: "Stage 4" },
     { agent: "implementation-writer", stage: "Stage 5" },
-    { agent: "project-manager", stage: "Stage 6" },
+    { agent: PROJECT_MANAGER, stage: "Stage 6" },
   ];
 
   forEach(stageAgentMap, ({ agent, stage }) => {
@@ -257,10 +273,10 @@ describe("dimension 6: stage-to-agent mapping", () => {
 
   it("stage-to-agent mapping is bidirectional: agents reference the pipeline", () => {
     const coreAgents = [
-      ".claude/skills/questioner/SKILL.md",
-      ".claude/skills/tla-writer/AGENT.md",
-      ".claude/skills/implementation-writer/AGENT.md",
-      ".claude/skills/project-manager/AGENT.md",
+      QUESTIONER_SKILL,
+      TLA_WRITER_AGENT,
+      IMPL_WRITER_AGENT,
+      PM_AGENT,
     ];
     forEach(coreAgents, (agentFile) => {
       const content = readFileSync(path.join(ROOT, agentFile), "utf8");
@@ -286,7 +302,7 @@ describe("dimension 7: negative cleanup assertion", () => {
   it("no .md file under .claude/skills/ contains 'Read shared conventions'", () => {
     const violators = filter(allMdFiles, (filePath) => {
       const content = readFileSync(filePath, "utf8");
-      return includes(content, "Read shared conventions");
+      return includes(content, READ_SHARED_CONVENTIONS);
     });
     expect(violators).toEqual([]);
   });
@@ -295,14 +311,24 @@ describe("dimension 7: negative cleanup assertion", () => {
 // ── PreToolUse Hook Validation ───────────────────────────────
 
 describe("PreToolUse hook validation", () => {
-  const settings = JSON.parse(settingsContent) as {
+  type SettingsHook = {
+    additionalContext?: boolean | string;
+    command?: string;
+  };
+
+  type SettingsEntry = {
+    hooks?: SettingsHook[];
+    matcher?: string;
+  };
+
+  type Settings = {
     hooks?: {
-      PreToolUse?: {
-        hooks?: { additionalContext?: boolean | string; command?: string }[];
-        matcher?: string;
-      }[];
+      PreToolUse?: SettingsEntry[];
     };
   };
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- JSON.parse returns unknown
+  const settings = JSON.parse(settingsContent) as Settings;
 
   it("settings.json has a PreToolUse hook entry", () => {
     expect(settings.hooks?.PreToolUse).toBeDefined();
@@ -320,14 +346,14 @@ describe("PreToolUse hook validation", () => {
     const hooks = settings.hooks?.PreToolUse ?? [];
     const referencesConventions = some(hooks, (entry) =>
       some(entry.hooks ?? [], (hook) =>
-        includes(hook.command ?? "", "conventions.md"),
+        includes(hook.command ?? "", CONVENTIONS_MD),
       ),
     );
     expect(referencesConventions).toBe(true);
   });
 
   it("conventions.md file exists at the referenced path", () => {
-    const conventionsPath = path.join(SKILLS_DIR, "shared", "conventions.md");
+    const conventionsPath = path.join(SKILLS_DIR, "shared", CONVENTIONS_MD);
     expect(existsSync(conventionsPath)).toBe(true);
   });
 });
@@ -336,7 +362,7 @@ describe("PreToolUse hook validation", () => {
 
 describe("conventions.md content validation", () => {
   const conventionsContent = readFileSync(
-    path.join(SKILLS_DIR, "shared", "conventions.md"),
+    path.join(SKILLS_DIR, "shared", CONVENTIONS_MD),
     "utf8",
   );
 
@@ -356,7 +382,7 @@ describe("conventions.md content validation", () => {
   });
 
   it("contains a breadcrumb referencing project-manager and quorum", () => {
-    expect(toLower(conventionsContent)).toContain("project-manager");
+    expect(toLower(conventionsContent)).toContain(PROJECT_MANAGER);
     expect(toLower(conventionsContent)).toContain("quorum");
   });
 });

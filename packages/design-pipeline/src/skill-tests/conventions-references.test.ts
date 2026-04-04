@@ -19,7 +19,6 @@ const FILES = [
   ".claude/skills/progressive-mapper.md",
 ] as const;
 
-const CONVENTIONS_REF = ".claude/skills/shared/conventions.md";
 const MAX_HEADER_LINES = 20;
 
 describe("conventions references — cleanup verification", () => {

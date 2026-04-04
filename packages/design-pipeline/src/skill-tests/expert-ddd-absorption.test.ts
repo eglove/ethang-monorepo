@@ -18,8 +18,6 @@ const SKILL_PATH = path.join(
 const content = readFileSync(SKILL_PATH, "utf8");
 
 const OPERATIONAL_GUIDANCE_HEADING = "## Operational Guidance";
-const SHARED_CONVENTIONS_REF = ".claude/skills/shared/conventions.md";
-
 describe("expert-ddd SKILL.md absorption", () => {
   it("contains an Operational Guidance section", () => {
     expect(content).toContain(OPERATIONAL_GUIDANCE_HEADING);

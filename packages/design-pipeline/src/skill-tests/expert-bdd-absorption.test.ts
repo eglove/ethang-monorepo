@@ -17,8 +17,6 @@ const SKILL_PATH = path.join(
 
 const content = readFileSync(SKILL_PATH, "utf8");
 
-const SHARED_CONVENTIONS_REF = ".claude/skills/shared/conventions.md";
-
 describe("expert-bdd SKILL.md absorption", () => {
   it("contains all 8 scenario category tags", () => {
     const tags = [

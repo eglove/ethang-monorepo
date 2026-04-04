@@ -26,7 +26,6 @@ const VITEST_WRITER_PATH = path.join(
   "AGENT.md",
 );
 
-const SHARED_CONVENTIONS_REF = ".claude/skills/shared/conventions.md";
 const WRITE_TEST_FIRST = "Write the test first";
 const FAILING_TEST = "failing test";
 const MINIMUM_IMPLEMENTATION = "minimum implementation";
