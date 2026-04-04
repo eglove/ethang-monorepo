@@ -16,29 +16,21 @@ const SKILL_PATH = path.join(
 
 const content = readFileSync(SKILL_PATH, "utf8");
 
-describe("questioner SKILL.md — branch 11 removed", () => {
-  it("Decision Tree does not contain 'Expert council' branch", () => {
-    const decisionTreeMatch = /### Decision Tree[\S\s]*?(?=##\s|$)/u.exec(
-      content,
-    );
-    const decisionTree = decisionTreeMatch?.[0] ?? content;
-    expect(decisionTree).not.toMatch(/expert council/iu);
+describe("questioner SKILL.md — freeform discovery", () => {
+  it("does not contain fixed Decision Tree section", () => {
+    expect(content).not.toMatch(/### Decision Tree/u);
   });
 
-  it("Decision Tree does not contain '**11.**' numbering", () => {
-    const decisionTreeMatch = /### Decision Tree[\S\s]*?(?=##\s|$)/u.exec(
-      content,
-    );
-    const decisionTree = decisionTreeMatch?.[0] ?? content;
-    expect(decisionTree).not.toMatch(/\*\*11\.\*\*/u);
+  it("contains Freeform Discovery section", () => {
+    expect(content).toMatch(/### Freeform Discovery/u);
   });
 
-  it("Decision Tree does not contain bare '11.' followed by expert council content", () => {
-    const decisionTreeMatch = /### Decision Tree[\S\s]*?(?=##\s|$)/u.exec(
-      content,
-    );
-    const decisionTree = decisionTreeMatch?.[0] ?? content;
-    expect(decisionTree).not.toMatch(/11\.\s+\*\*Expert/u);
+  it("does not contain 'Expert council' branch", () => {
+    expect(content).not.toMatch(/expert council/iu);
+  });
+
+  it("does not contain '**11.**' numbering", () => {
+    expect(content).not.toMatch(/\*\*11\.\*\*/u);
   });
 
   it("Phase 3 sign-off does not contain 'expert council recommendation'", () => {
@@ -53,8 +45,16 @@ describe("questioner SKILL.md — branch 11 removed", () => {
     expect(content).toMatch(/## Debate Requested/u);
   });
 
-  it("role description states questioner handles requirements elicitation through branches 1-10", () => {
-    expect(content).toMatch(/1[-\u2013]10/u);
+  it("contains completeness check before sign-off", () => {
+    expect(content).toMatch(/completeness check/iu);
+  });
+
+  it("contains hard turn cap (MaxTurns)", () => {
+    expect(content).toMatch(/MaxTurns:\s*50/u);
+  });
+
+  it("retains one question per message rule", () => {
+    expect(content).toMatch(/one question per message/iu);
   });
 
   it("Decision Guide does not contain 'User adjusts expert list during sign-off' row", () => {

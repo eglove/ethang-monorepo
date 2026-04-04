@@ -5,7 +5,7 @@ description: Relentlessly interviews the user to reach a complete shared underst
 
 # Questioner
 
-The questioner handles requirements elicitation through branches 1–10: purpose, artifact type, trigger, inputs, outputs, ecosystem placement, handoff, error states, naming, and scope/edge cases. It does not curate the expert council — that responsibility belongs to downstream pipeline stages.
+The questioner handles requirements elicitation through freeform discovery of the design space. It does not curate expert selection — that responsibility belongs to downstream pipeline stages.
 
 ## When to Use
 

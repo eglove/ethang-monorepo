@@ -23,8 +23,12 @@ const SKILL_PATH = path.join(
 const content = readFileSync(SKILL_PATH, "utf8");
 
 describe("debate-moderator SKILL.md", () => {
-  it("roster table contains expert-lodash (ninth expert added)", () => {
+  it("roster table contains expert-lodash", () => {
     expect(content).toContain("expert-lodash");
+  });
+
+  it("roster table contains expert-a11y (tenth expert added)", () => {
+    expect(content).toContain("expert-a11y");
   });
 
   it("contains a section about autonomous expert selection", () => {
@@ -81,6 +85,6 @@ describe("debate-moderator SKILL.md", () => {
         1 < trimmed.length
       );
     });
-    expect(dataRows).toHaveLength(9);
+    expect(dataRows).toHaveLength(10);
   });
 });

@@ -56,8 +56,8 @@ describe("design-pipeline SKILL.md — reviewer gate constants", () => {
     expect(content).toMatch(/MaxReviewerRetries\s*\|\s*2/u);
   });
 
-  it("contains MinReviewQuorum with value 5", () => {
-    expect(content).toMatch(/MinReviewQuorum\s*\|\s*5/u);
+  it("contains MinReviewQuorum with ceil(2n/3) formula", () => {
+    expect(content).toMatch(/MinReviewQuorum\s*\|\s*ceil\(2n\/3\)/u);
   });
 });
 
