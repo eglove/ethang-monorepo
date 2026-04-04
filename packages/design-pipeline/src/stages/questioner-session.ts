@@ -1,4 +1,5 @@
 import find from "lodash/find.js";
+import replace from "lodash/replace.js";
 import toLower from "lodash/toLower.js";
 import trim from "lodash/trim.js";
 
@@ -148,6 +149,10 @@ export async function runQuestionerSession(
     writer,
   };
 
+  globalThis.console.log(
+    `[questioner] Session starting (topic: "${topic}", maxTurns: ${String(config.maxTurns)})`,
+  );
+
   try {
     return await sessionLoop(context, abortedReference);
   } finally {
@@ -175,6 +180,9 @@ async function callWithRetry(
   config: QuestionerConfig,
 ): Promise<QuestionerMessage | undefined> {
   for (let attempt = 0; attempt <= config.maxRetries; attempt += 1) {
+    globalThis.console.log(
+      `[questioner] Calling API (attempt ${String(attempt + 1)}/${String(config.maxRetries + 1)})…`,
+    );
     try {
       // eslint-disable-next-line no-await-in-loop
       const response = await callLlm(client, systemPrompt, messages);
@@ -184,18 +192,25 @@ async function callWithRetry(
       if (parsed !== undefined) {
         return parsed;
       }
+
+      globalThis.console.log(
+        `[questioner] Response did not match expected schema (attempt ${String(attempt + 1)}). Raw response:\n${raw}`,
+      );
     } catch (error: unknown) {
-      globalThis.console.error(
+      globalThis.console.log(
         `[questioner] API error on attempt ${String(attempt + 1)}:`,
         error,
       );
     }
 
     if (attempt < config.maxRetries) {
+      const delayMs = config.retryBaseDelayMs * 2 ** attempt;
+      globalThis.console.log(`[questioner] Retrying in ${String(delayMs)}ms…`);
       // eslint-disable-next-line no-await-in-loop
-      await delay(config.retryBaseDelayMs * 2 ** attempt);
+      await delay(delayMs);
     }
   }
+  globalThis.console.log("[questioner] All retry attempts exhausted.");
   return undefined;
 }
 
@@ -399,7 +414,9 @@ function makeFailResult(context: SessionContext, error: string): SessionResult {
 
 function parseMessage(raw: string): QuestionerMessage | undefined {
   try {
-    const result = QuestionerMessageSchema.safeParse(JSON.parse(raw));
+    const result = QuestionerMessageSchema.safeParse(
+      JSON.parse(stripCodeFence(raw)),
+    );
     return result.success ? result.data : undefined;
   } catch {
     return undefined;
@@ -453,6 +470,11 @@ async function sessionLoop(
       return outcome.result;
     }
   }
+}
+
+function stripCodeFence(raw: string): string {
+  const trimmed = trim(raw);
+  return trim(replace(replace(trimmed, /^```(?:\w+)?\s*/u, ""), /```$/u, ""));
 }
 
 function writePartialBriefing(

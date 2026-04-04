@@ -591,7 +591,7 @@ describe("runQuestionerSession — branch gap coverage", () => {
       retryBaseDelayMs: 0,
     });
     const errorSpy = vi
-      .spyOn(globalThis.console, "error")
+      .spyOn(globalThis.console, "log")
       .mockImplementation(noop);
     const client: AnthropicClient = {
       messages: {
