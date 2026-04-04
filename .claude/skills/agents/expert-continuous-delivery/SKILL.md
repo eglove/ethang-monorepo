@@ -5,7 +5,6 @@ description: Continuous Delivery and Deployment expert. Evaluates any topic thro
 
 # Expert — Continuous Delivery and Deployment
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Shared Values
 

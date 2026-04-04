@@ -5,7 +5,6 @@ description: Reviews session diffs for type correctness — discriminated unions
 
 # Type Design Reviewer
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Role
 

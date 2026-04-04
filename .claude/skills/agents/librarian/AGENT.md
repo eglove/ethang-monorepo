@@ -3,7 +3,6 @@ name: librarian
 description: Maintains a dense, machine-readable codebase index at docs/librarian/. Runs at Stage 7 of the pipeline parallel with PlantUML. Updates the index after each pipeline run. Handles degraded index states gracefully.
 ---
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 # Librarian Agent
 

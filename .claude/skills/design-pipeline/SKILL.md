@@ -488,26 +488,28 @@ If any fail: transition to `HALTED` with `haltReason = VERIFICATION_FAILED`. Cro
 
 **Invariant enforced:** `TierOrderingValid` -- no tier N+1 executes before tier N is verified.
 
-#### 6e. Global Review (STAGE_6_GLOBAL_REVIEW)
+#### 6e. Global Review — Double-Pass Protocol (STAGE_6_GLOBAL_REVIEW)
 
-After all tiers are merged and verified:
+After all tiers are merged and verified, the project-manager executes the Global Review Double-Pass Protocol. The canonical specification lives in `.claude/skills/project-manager/AGENT.md` under the "Global Review Double-Pass Protocol" section, formally verified by `docs/tla-specs/conventions-hook-cleanup-e2e-global-review/GlobalReview.tla`.
 
-1. **Full test suite** passes (all tasks together)
-2. **Type-check** passes across whole project
-3. **Lint** passes across whole project
-4. **Cross-task integration check:** imports resolve, shared types are consistent, API contracts match
-5. **TLA+ coverage audit:** every state, transition, and invariant from the spec is covered by at least one test
+The double-pass runs a 3-step sequence (test, lint, tsc) twice consecutively:
 
-If all pass: transition to `COMPLETE`. Set `terminalArtifact = TRUE`.
+1. **Pass 1:** Execute all 3 steps. If a step fails, the project-manager applies at most 1 inline fix per step (per-step retry cap). If the retry also fails, the entire sequence restarts (fixCount increments).
+2. **Pass 2:** Re-execute all 3 steps. Both passes must complete cleanly for the global review to pass.
 
-If any fail (and `globalFixCount < MaxGlobalFixes`):
-- Increment `globalFixCount`
-- Transition to `STAGE_6_FIX_SESSION`
+Additionally, the global review includes:
+- **Cross-task integration check:** imports resolve, shared types are consistent, API contracts match
+- **TLA+ coverage audit:** every state, transition, and invariant from the spec is covered by at least one test
 
-If fail and `globalFixCount >= MaxGlobalFixes` (hard cap of 3): transition to `HALTED` with `haltReason = GLOBAL_REVIEW_EXHAUSTED`.
+If both passes complete cleanly: transition to `COMPLETE`. Set `terminalArtifact = TRUE`.
+
+If any step fails after retry and `fixCount < MaxGlobalFixes(3)`: restart the full sequence from pass 1, step 1.
+
+If `fixCount >= MaxGlobalFixes(3)`: transition to `HALTED` with `haltReason = GLOBAL_REVIEW_EXHAUSTED`.
 
 **Invariants enforced:**
-- `GlobalFixBounded` -- globalFixCount never exceeds MaxGlobalFixes (3)
+- `GlobalFixBounded` -- fixCount never exceeds MaxGlobalFixes (3)
+- `Pass2RequiresCleanPass1` -- pass 2 only begins after a complete clean pass 1
 - `TerminalArtifactOnlyOnComplete` -- terminalArtifact is TRUE only when pipeline is COMPLETE
 
 #### 6f. Fix Session (STAGE_6_FIX_SESSION)

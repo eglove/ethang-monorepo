@@ -5,7 +5,6 @@ description: Reviews session diffs for improvement observations — refactoring 
 
 # Backlog Reviewer
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Role
 

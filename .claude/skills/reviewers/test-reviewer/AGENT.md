@@ -5,7 +5,6 @@ description: Executes tests, lint, and tsc against a simulated integration merge
 
 # Test Reviewer
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Role
 

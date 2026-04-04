@@ -105,7 +105,6 @@ Endorsements:
 
 ## Shared Conventions
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ### The Reuse-First Principle
 
