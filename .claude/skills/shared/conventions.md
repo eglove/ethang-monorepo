@@ -93,3 +93,26 @@ Each file is agent-scoped to avoid concurrent write conflicts from parallel agen
 - Create the `docs/user_notes/` directory if it does not exist
 - Entries are append-only per file; never overwrite or delete other agents' notes
 - The user audits and trims manually — no automated cleanup or summarization
+
+## Review Gate Quorum Formula
+
+The review gate quorum is computed as `ceil(2n/3)` where `n` is the number of non-UNAVAILABLE reviewers that responded. The full specification is at `.claude/skills/shared/quorum.md`.
+
+Key behaviors:
+- **Floor guard:** `n >= 1` is a hard precondition. If fewer than 1 reviewer responds, the gate cannot produce a valid verdict.
+- **At n=2, unanimity is required:** `ceil(4/3) = 2`. Both reviewers must pass. This is an intentional design decision, not a bug.
+- **Current roster:** 9 reviewers (including a11y-reviewer). At full availability, quorum = `ceil(18/3) = 6`.
+
+The formula is owned by the review gate specification. Individual reviewers do not need to know it.
+
+## Consult-First Pattern (Librarian Index)
+
+Before performing broad file searches across the codebase, agents should consult `docs/librarian/INDEX.md` to locate relevant category files. The librarian index follows the **Shared Kernel** pattern: a well-defined contract (Markdown table with columns Path, Kind, Summary, Updated) owned by the librarian agent, with all other agents as read-only consumers.
+
+**This is advisory, not blocking.** If the index is missing, corrupt, or stale, agents fall back to direct file reads. The index improves search efficiency but must never gate progress.
+
+How to use:
+1. Read `docs/librarian/INDEX.md` to discover which category files exist.
+2. Read the relevant category file(s) to find file paths matching your need.
+3. If no match is found in the index, fall back to standard file search (Glob, Grep).
+4. If the index file does not exist or cannot be read, skip the consult step entirely and proceed with direct file search.

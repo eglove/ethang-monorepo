@@ -1,10 +1,5 @@
-1. design-pipeline and implementation-writer need to be updated to use the project-manager. This was created by never wired up. This also means updating the state document and any other relevant claude artifacts.
-2. Introduce the idea of "reviewers", that review the work of writers and send back for revision when needed. I am open to any types of reviewers that the council may want to suggest in addition to:
-   1. Claude artifact reviewer (skills, agents, commands, hooks)
-   2. Compliance reviewer (according to upstream pipeline specs)
-   3. Bug reviewer (potential code bugs, loook at code, comments, git history, and pr's of files to see if anything new introduced bugs)
-   4. Simplicity reviewer (focuses on keeping things simple, reduce unnecessary complexity, elimintae redunant code and abstractions, improve readability, consolidate related logic, remove unecessary comments, clarity over brevity)
-   5. Type-design reviewer (review invariant strength, encapsulation quality, practical usefulness)
-   6. Security reviewer
-   7. Backlog reviewer (identify anything that could potentially be a future feature or fix but is not important for this pipeline)
-3. Currently there are multiple agents allowed to add suggestions to user_notes. I want all agents to be able to do this at any time and it be much more free form. The user will audit everything in it. But if any agent calls out or notices something that is not important but might be worth exploring, adding, modifying, etc. in the future add a note to user_notes.
+1. The plantuml diagram update for design-pipeline should be the last step of the workflow and explicitly happen. (It is not being updated currently, the step is being ignored.)
+2. The questioner should not have specific "branches" it follows. The interview process should be more freeform to figure out the users idea. Conceptually the idea is the same. Take the users input and go down every "branch of the design tree". But what the design tree is, isn't a encoded rule, just instruction for the questioner to work through every part of the idea until it's complete.
+3. The should be a librarian agent that runs as the last tep of the pipeline. This can be aftger the plantuml diagram or in parallel. It's job is to create an internal map of the codebase and changes made. We want it to replace the claude built in read tool. How it works, on a hook watching for reads, agents are told instead to ask the librarian. The librian, if it doesn't already have the information, runs the normal read and returns results. For every new result the librarian obtains it indexes it with very short notes. It's very important that it maintains a dense, machine readable indexing and mapping. This is not for human consumption. Instead it is meant to reduce token usage on searches, reading entire files, etc. It's goal is to know exactly how to get only the information agents need.
+   1. I have deleted the old internal_map file and we need to remove any remaining references to it in claude artifacts.
+4. We also need both an accessibility expert and reviewer that focuses on a11y, aria, wai, and wcag for UI tasks.

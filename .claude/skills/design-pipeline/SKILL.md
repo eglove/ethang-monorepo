@@ -1,13 +1,13 @@
 ---
 name: design-pipeline
-description: Orchestrates a strict 6-stage sequential pipeline from requirements elicitation through expert debate, TLA+ formal verification, expert review, implementation planning, and autonomous pair programming execution. Dispatches questioner, debate-moderator, tla-writer, implementation-writer, and writer agent pairs in guaranteed order.
+description: Orchestrates a strict 7-stage sequential pipeline from requirements elicitation through expert debate, TLA+ formal verification, expert review, implementation planning, autonomous pair programming execution, and post-execution fork-join (PlantUML + librarian). Dispatches questioner, debate-moderator, tla-writer, implementation-writer, writer agent pairs, and librarian in guaranteed order.
 ---
 
 # Design Pipeline
 
 ## Role
 
-The Design Pipeline is a state-machine orchestrator that drives a design idea through six mandatory sequential stages: requirements elicitation, expert design debate, formal TLA+ specification, expert review of that specification, a step-by-step implementation plan, and autonomous pair programming execution. No stage can be skipped or reordered. Each stage receives the full accumulated output of every prior stage. The orchestrator itself makes no design decisions -- it tracks pipeline state, passes context forward, and presents user choices at error and revision points.
+The Design Pipeline is a state-machine orchestrator that drives a design idea through seven mandatory sequential stages: requirements elicitation, expert design debate, formal TLA+ specification, expert review of that specification, a step-by-step implementation plan, autonomous pair programming execution, and a post-execution fork-join (PlantUML diagram update + librarian index update). No stage can be skipped or reordered. Each stage receives the full accumulated output of every prior stage. The orchestrator itself makes no design decisions -- it tracks pipeline state, passes context forward, and presents user choices at error and revision points.
 
 No single agent can do this alone because each stage requires a different capability (interviewing, multi-expert debate, formal verification, structured planning, parallel TDD execution) and the handoff contracts between them must be enforced.
 
@@ -47,6 +47,9 @@ Stage 5: Implementation-Writer  ─── step-by-step implementation plan + tie
     └─────────┬───────────────┘
               ▼
 Stage 6: Pair Programming      ─── autonomous TDD execution via agent pairs
+    │
+    ▼
+Stage 7: Fork-Join             ─── PlantUML diagram + librarian index (parallel)
 ```
 
 ## State Machine
@@ -73,7 +76,7 @@ The orchestrator is a state machine with these states:
 | `STAGE_6_INTER_TIER_VERIFICATION` | Full test suite + type-check after all tier merges complete |
 | `STAGE_6_GLOBAL_REVIEW` | Cross-task integration review after all tiers complete |
 | `STAGE_6_FIX_SESSION` | Targeted fix session spawned from failed global review |
-| `STAGE_6_REVIEWING` | All 8 reviewers dispatched and running in parallel |
+| `STAGE_6_REVIEWING` | All 9 reviewers dispatched and running in parallel |
 | `STAGE_6_REVIEW_PASSED` | All responded reviewers passed with quorum met |
 | `STAGE_6_REVIEW_FAILED` | At least one responded reviewer failed |
 | `STAGE_6_REVISING` | Pair session revising based on reviewer findings |
@@ -521,6 +524,43 @@ On `COMPLETE`, the terminal artifact is a commit on the named branch `design-pip
 
 **Invariant enforced:** `HaltReasonConsistent` -- when HALTED, haltReason is always set to a non-NONE value. Commit `docs/pipeline-state.md` with the HALTED status and halt reason. The state file records why the pipeline stopped.
 
+### Stage 7 — Fork-Join (PlantUML + Librarian)
+
+Stage 7 runs after Stage 6 completes (all tiers executed, review gate passed). It is a fork-join: the PlantUML diagram update and the librarian index update run in parallel. Both must complete before a single atomic commit is made.
+
+#### Fork-Join Structure
+
+```
+Stage 6 COMPLETE
+    │
+    ├─── PlantUML diagram update (parallel)
+    │
+    ├─── Librarian index update  (parallel)
+    │
+    ▼
+Both complete → single atomic commit → Stage 7 COMPLETE → Pipeline COMPLETE
+```
+
+#### PlantUML Task
+
+Updates the `design-pipeline.puml` diagram if structural changes occurred during the pipeline run. Uses the `changeFlag` mechanism described below. Failure is non-fatal -- the diagram is informational. If PlantUML fails, log a warning and continue.
+
+#### Librarian Task
+
+Dispatches the librarian agent (`.claude/skills/agents/librarian/AGENT.md`) to update `docs/librarian/` with any files created or modified during the pipeline run. Failure is non-fatal -- if the librarian fails, agents fall back to direct file reads.
+
+#### Atomic Commit Strategy
+
+Both tasks stage their changes independently. After both tasks complete (or fail gracefully), a single atomic commit captures all Stage 7 outputs. The commit message includes both PlantUML and librarian changes.
+
+#### Error Handling
+
+Neither task blocks the pipeline COMPLETE status on failure:
+- **PlantUML failure:** Non-fatal. The diagram is informational only. Log a warning.
+- **Librarian failure:** Non-fatal. The index is advisory. Agents fall back to direct file reads.
+
+If both tasks fail, Stage 7 still transitions to COMPLETE with a warning noting both failures.
+
 ### PlantUML Diagram Update
 
 The orchestrator tracks structural pipeline changes using a `changeFlag` boolean. `changeFlag` starts `FALSE` at the beginning of each pipeline run. Any stage that modifies pipeline structure sets `changeFlag = TRUE`. Structural changes include: a new expert is added to the roster, a stage role or responsibilities change, a new stage is added or removed, or stage ordering changes. **At most one structural change is captured per write cycle.** Subsequent structural changes during an active `.puml` update are silently dropped.
@@ -551,7 +591,21 @@ At pipeline completion (`COMPLETE` state), if `changeFlag = TRUE`:
 | MaxMergeConflictRetries | bounded | Prevents infinite merge conflict resolution |
 | MaxReviewRevisions | 3 | Max full review-revision cycles per task |
 | MaxReviewerRetries | 2 | Max retries per reviewer on crash/timeout |
-| MinReviewQuorum | 5 | Minimum reviewers required for valid gate (of 8) |
+| MinReviewQuorum | ceil(2n/3) | Quorum formula: ceil(2n/3) where n = number of non-UNAVAILABLE reviewers. See `.claude/skills/shared/quorum.md`. At n=9, quorum=6. At n=2, quorum=2 (unanimity). |
+
+#### Reviewer Roster
+
+The review gate dispatches the following 9 reviewers in parallel:
+
+1. `artifact-reviewer`
+2. `compliance-reviewer`
+3. `bug-reviewer`
+4. `simplicity-reviewer`
+5. `type-design-reviewer`
+6. `security-reviewer`
+7. `backlog-reviewer`
+8. `test-reviewer`
+9. `a11y-reviewer`
 
 #### ReviewVerdict Schema
 

@@ -5,7 +5,7 @@ description: Relentlessly interviews the user to reach a complete shared underst
 
 # Questioner
 
-The questioner handles requirements elicitation through branches 1–10: purpose, artifact type, trigger, inputs, outputs, ecosystem placement, handoff, error states, naming, and scope/edge cases. It does not curate the expert council — that responsibility belongs to downstream pipeline stages.
+The questioner handles requirements elicitation through freeform discovery of the design space. It does not curate expert selection — that responsibility belongs to downstream pipeline stages.
 
 ## When to Use
 
@@ -31,26 +31,23 @@ Walk every branch of the decision tree. Rules:
 - **You do not make decisions.** Codebase and research inform your questions; the user's answers are the source of truth.
 - **Keep going.** Do not stop until all branches are resolved and the user has signed off.
 
-### Decision Tree
+### Freeform Discovery
 
-Walk these branches in order. Each must be fully resolved before advancing:
+There is no fixed decision tree. Discover and exhaust all branches of the design space organically based on the user's idea. What those branches are emerges from the topic — not from an encoded checklist.
 
-1. **Purpose** — What problem does this solve? Who uses it? When?
-2. **Artifact/output type** — What kind of thing are we building or planning?
-3. **Trigger** — What initiates it?
-4. **Inputs** — What context or data does it receive?
-5. **Outputs** — What does it produce? In what format?
-6. **Ecosystem placement** — Standalone, part of a chain, or both?
-7. **Handoff** — If chained: what does it pass downstream and to whom?
-8. **Error states** — What can go wrong? How should failures surface?
-9. **Naming** — What is it called?
-10. **Scope and edge cases** — What is explicitly out of scope? Unusual inputs?
+### Hard Turn Cap
+
+**MaxTurns: 50.** The questioner must stop after 50 question-answer turns and proceed to sign-off regardless of completeness. This is a liveness guarantee — the interview must eventually terminate.
 
 ## Phase 3 — Sign-Off
 
+### Completeness Check
+
+Before moving to sign-off, review all accumulated answers and ask yourself whether any obvious dimension of the design was never addressed (error handling, naming, scope boundaries, deployment, etc.). If any gap is found, ask about it before proceeding.
+
 When all branches are resolved:
 
-1. Produce a concise **recap** covering: purpose, artifact type, trigger, inputs, outputs, handoff (if applicable), name, and scope. One screen maximum.
+1. Produce a concise **recap** covering all resolved dimensions. One screen maximum.
 2. Ask explicitly: **"Does this match what you want? Say yes to proceed."**
 3. Do not write the briefing file or dispatch any agents until the user confirms with a clear yes.
 4. After the recap is confirmed, ask: **"Would you like this to go through expert debate before proceeding?"**
