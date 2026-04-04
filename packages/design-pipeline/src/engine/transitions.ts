@@ -71,7 +71,6 @@ export function advanceStage(run: RunRecord): TransitionResult {
   next.currentStage = run.currentStage + 1;
   // currentStage is 1-6 here (guard above blocks >=7), so next is 2-7 and always valid
   const nextStageName = getCurrentStageName(next.currentStage);
-  /* v8 ignore next 3 -- currentStage is guarded to 1-6 above, so +1 is always 2-7 (valid) */
   if (!nextStageName) {
     return { ok: false, reason: REASON_INVALID_STAGE };
   }

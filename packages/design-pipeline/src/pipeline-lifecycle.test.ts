@@ -4,9 +4,13 @@ import { describe, expect, it } from "vitest";
 
 import type { ClaudeAdapter, ClaudeResult } from "./ports/claude-adapter.ts";
 import type { GitAdapter } from "./ports/git-adapter.ts";
+import type { SessionResult } from "./stages/questioner-session.ts";
 
 import { defaultPipelineConfig } from "./constants.ts";
-import { executeOrchestrator } from "./engine/orchestrator.ts";
+import {
+  executeOrchestrator,
+  type QuestionerRunner,
+} from "./engine/orchestrator.ts";
 
 function makeClaudeAdapter(responses: ClaudeResult[]): ClaudeAdapter {
   let callIndex = 0;
@@ -31,6 +35,20 @@ function makeClaudeAdapter(responses: ClaudeResult[]): ClaudeAdapter {
     },
   };
 }
+
+// eslint-disable-next-line @typescript-eslint/require-await
+const failedQuestionerRunner: QuestionerRunner = async () => ({
+  artifact: {
+    artifactState: "empty",
+    questions: [],
+    sessionState: "failed",
+    summary: null,
+    turnCount: 0,
+  },
+  briefingPath: null,
+  error: "user_abandon",
+  success: false,
+});
 
 function makeFailOnceGitAdapter(): GitAdapter {
   let commitCalls = 0;
@@ -97,15 +115,33 @@ function makeGitAdapter(commitOk = true, checkoutOk = true): GitAdapter {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await
+const questionerRunner: QuestionerRunner = async () =>
+  makeSuccessfulSessionResult();
+
+function makeSuccessfulSessionResult(): SessionResult {
+  return {
+    artifact: {
+      artifactState: "complete",
+      questions: [{ answer: "constraint-1", question: "requirement-1" }],
+      sessionState: "completed",
+      summary: "Test summary",
+      turnCount: 2,
+    },
+    briefingPath: null,
+    success: true,
+  };
+}
+
+// Stages 2-7 responses (questioner is now handled by SDK runner)
 const happyPathResponses: ClaudeResult[] = [
-  { data: {}, ok: true },
-  {
-    data: { constraints: ["c"], requirements: ["r"], summary: "S" },
-    ok: true,
-  },
+  // Stage 2 (DebateModerator): execute
   { data: { consensus: "C", dissent: [], recommendations: ["r"] }, ok: true },
+  // Stage 3 (TlaWriter): execute
   { data: { cfgContent: "C", tlaContent: "T", tlcOutput: "O" }, ok: true },
+  // Stage 4 (ExpertReview): execute
   { data: { amendments: [], consensus: "R", gaps: [] }, ok: true },
+  // Stage 5 (ImplementationPlanning): streaming + execute
   { data: {}, ok: true },
   {
     data: {
@@ -114,6 +150,7 @@ const happyPathResponses: ClaudeResult[] = [
     },
     ok: true,
   },
+  // Stage 6 (PairProgramming): pair routing + execute
   { data: {}, ok: true },
   {
     data: {
@@ -124,6 +161,7 @@ const happyPathResponses: ClaudeResult[] = [
     },
     ok: true,
   },
+  // Stage 7 (ForkJoin): execute
   {
     data: {
       branchName: "b2",
@@ -136,15 +174,14 @@ const happyPathResponses: ClaudeResult[] = [
 ];
 
 const retryTimeoutResponses: ClaudeResult[] = [
-  { data: {}, ok: true },
-  {
-    data: { constraints: ["c"], requirements: ["r"], summary: "S" },
-    ok: true,
-  },
+  // Stage 2: timeout then success
   { errorKind: "claude_api_timeout", message: "Timeout", ok: false },
   { data: { consensus: "C", dissent: [], recommendations: [] }, ok: true },
+  // Stage 3
   { data: { cfgContent: "C", tlaContent: "T", tlcOutput: "O" }, ok: true },
+  // Stage 4
   { data: { amendments: [], consensus: "R", gaps: [] }, ok: true },
+  // Stage 5: streaming + execute
   { data: {}, ok: true },
   {
     data: {
@@ -153,6 +190,7 @@ const retryTimeoutResponses: ClaudeResult[] = [
     },
     ok: true,
   },
+  // Stage 6: pair routing + execute
   { data: {}, ok: true },
   {
     data: {
@@ -163,6 +201,7 @@ const retryTimeoutResponses: ClaudeResult[] = [
     },
     ok: true,
   },
+  // Stage 7
   {
     data: {
       branchName: "b",
@@ -175,15 +214,14 @@ const retryTimeoutResponses: ClaudeResult[] = [
 ];
 
 const zodRetryResponses: ClaudeResult[] = [
-  { data: {}, ok: true },
+  // Stage 2: bad then good
   { data: { bad: true }, ok: true },
-  {
-    data: { constraints: ["c"], requirements: ["r"], summary: "S" },
-    ok: true,
-  },
   { data: { consensus: "C", dissent: [], recommendations: [] }, ok: true },
+  // Stage 3
   { data: { cfgContent: "C", tlaContent: "T", tlcOutput: "O" }, ok: true },
+  // Stage 4
   { data: { amendments: [], consensus: "R", gaps: [] }, ok: true },
+  // Stage 5: streaming + execute
   { data: {}, ok: true },
   {
     data: {
@@ -192,6 +230,7 @@ const zodRetryResponses: ClaudeResult[] = [
     },
     ok: true,
   },
+  // Stage 6: pair routing + execute
   { data: {}, ok: true },
   {
     data: {
@@ -202,6 +241,7 @@ const zodRetryResponses: ClaudeResult[] = [
     },
     ok: true,
   },
+  // Stage 7
   {
     data: {
       branchName: "b",
@@ -214,14 +254,13 @@ const zodRetryResponses: ClaudeResult[] = [
 ];
 
 const streamLimitResponses: ClaudeResult[] = [
-  { data: {}, ok: true },
-  {
-    data: { constraints: ["c"], requirements: ["r"], summary: "S" },
-    ok: true,
-  },
+  // Stage 2
   { data: { consensus: "C", dissent: [], recommendations: [] }, ok: true },
+  // Stage 3
   { data: { cfgContent: "C", tlaContent: "T", tlcOutput: "O" }, ok: true },
+  // Stage 4
   { data: { amendments: [], consensus: "R", gaps: [] }, ok: true },
+  // Stage 5: streaming messages that will exceed limit
   { data: {}, ok: true },
   { data: {}, ok: true },
   { data: {}, ok: true },
@@ -234,6 +273,7 @@ describe("Pipeline Lifecycle Integration", () => {
         claudeAdapter: makeClaudeAdapter(happyPathResponses),
         config: defaultPipelineConfig,
         gitAdapter: makeGitAdapter(),
+        questionerRunner,
       },
       undefined,
       "happy-1",
@@ -244,16 +284,13 @@ describe("Pipeline Lifecycle Integration", () => {
   });
 
   it("(c) Failure at stage 1 with no checkpoint", async () => {
-    const responses: ClaudeResult[] = [
-      { data: {}, ok: true },
-      { data: { bad: true }, ok: true },
-      { data: { bad: true }, ok: true },
-    ];
+    const failRunner = failedQuestionerRunner;
     const result = await executeOrchestrator(
       {
-        claudeAdapter: makeClaudeAdapter(responses),
+        claudeAdapter: makeClaudeAdapter([]),
         config: { maxRetries: 1, maxStreamTurns: 1, retryBaseDelayMs: 0 },
         gitAdapter: makeGitAdapter(),
+        questionerRunner: failRunner,
       },
       undefined,
       "fail-1",
@@ -268,6 +305,7 @@ describe("Pipeline Lifecycle Integration", () => {
         claudeAdapter: makeClaudeAdapter(retryTimeoutResponses),
         config: defaultPipelineConfig,
         gitAdapter: makeGitAdapter(),
+        questionerRunner,
       },
       undefined,
       "retry-1",
@@ -281,6 +319,7 @@ describe("Pipeline Lifecycle Integration", () => {
         claudeAdapter: makeClaudeAdapter(zodRetryResponses),
         config: defaultPipelineConfig,
         gitAdapter: makeGitAdapter(),
+        questionerRunner,
       },
       undefined,
       "zod-retry-1",
@@ -315,6 +354,7 @@ describe("Pipeline Lifecycle Integration", () => {
         claudeAdapter: makeClaudeAdapter(responses),
         config: defaultPipelineConfig,
         gitAdapter: makeFailOnceGitAdapter(),
+        questionerRunner,
       },
       undefined,
       "git-retry-1",
@@ -322,17 +362,19 @@ describe("Pipeline Lifecycle Integration", () => {
     expect(result.state.state).toBeDefined();
   });
 
-  it("(i) Streaming input at stage 1 multi-turn conversation", async () => {
+  it("(i) Streaming input at stage 1 uses SDK runner (ignores streamingInputs)", async () => {
     const result = await executeOrchestrator(
       {
         claudeAdapter: makeClaudeAdapter(happyPathResponses),
         config: defaultPipelineConfig,
         gitAdapter: makeGitAdapter(),
+        questionerRunner,
       },
       { Questioner: ["turn1", "turn2"] },
       "stream-1",
     );
     expect(result.state).toBeDefined();
+    expect(result.success).toBe(true);
   });
 
   it("(j) Stream limit reached at stage 5", async () => {
@@ -341,6 +383,7 @@ describe("Pipeline Lifecycle Integration", () => {
         claudeAdapter: makeClaudeAdapter(streamLimitResponses),
         config: { maxRetries: 3, maxStreamTurns: 1, retryBaseDelayMs: 0 },
         gitAdapter: makeGitAdapter(),
+        questionerRunner,
       },
       {
         ImplementationPlanning: ["msg1", "msg2", "msg3"],

@@ -1,7 +1,23 @@
+import constant from "lodash/constant.js";
+import map from "lodash/map.js";
+import noop from "lodash/noop.js";
+import some from "lodash/some.js";
+
 import type { ClaudeAdapter } from "../ports/claude-adapter.ts";
 import type { GitAdapter } from "../ports/git-adapter.ts";
 import type { StageResult } from "../stages/base-coordinator.ts";
+import type {
+  AnthropicClient,
+  QuestionerDeps,
+  ReadlinePort,
+  SessionResult,
+} from "../stages/questioner-session.ts";
 
+import {
+  createDefaultFeatureFlags,
+  type FeatureFlags,
+  isSdkEnabled,
+} from "../config/feature-flags.ts";
 import {
   defaultPipelineConfig,
   PairStage,
@@ -32,18 +48,27 @@ import {
   executeStreamingConfirmation,
 } from "../stages/implementation-planning.ts";
 import {
+  type EslintRunner,
+  type LintAiClient,
+  runLintFixer,
+} from "../stages/lint-fixer.ts";
+import {
   executePairProgramming,
   executePairRouting,
 } from "../stages/pair-programming.ts";
-import { executeQuestioner, executeStreaming } from "../stages/questioner.ts";
 import { executeTlaWriter } from "../stages/tla-writer.ts";
 import { executeCompensation, shouldCompensate } from "./compensation.ts";
 import { type PipelineState, PipelineStore } from "./pipeline-store.ts";
 
 export type OrchestratorDeps = {
+  anthropicClient?: AnthropicClient;
   claudeAdapter: ClaudeAdapter;
   config?: PipelineConfig;
+  eslintRunner?: EslintRunner;
+  featureFlags?: FeatureFlags;
   gitAdapter: GitAdapter;
+  questionerRunner?: QuestionerRunner;
+  readlinePort?: ReadlinePort;
 };
 
 export type PipelineResult = {
@@ -54,18 +79,49 @@ export type PipelineResult = {
   success: boolean;
 };
 
+export type QuestionerRunner = (deps: QuestionerDeps) => Promise<SessionResult>;
+
 export async function executeOrchestrator(
   deps: OrchestratorDeps,
   streamingInputs?: Record<string, string[]>,
   runId?: string,
 ): Promise<PipelineResult> {
   const config = deps.config ?? defaultPipelineConfig;
+  const flags = deps.featureFlags ?? createDefaultFeatureFlags();
   const id = runId ?? `run-${Date.now()}`;
   const store = new PipelineStore();
 
   store.startRun();
 
-  for (let stageIndex = 1; 7 >= stageIndex; stageIndex += 1) {
+  // Stage 1 (Questioner) always uses the new SDK path
+  const questionerSuccess = await executeQuestionerSdkPath(
+    deps,
+    store,
+    config,
+    streamingInputs,
+    id,
+  );
+
+  if (!questionerSuccess) {
+    return handleFailure(store, deps.gitAdapter, id);
+  }
+
+  // Stages 2-7: check feature flag for SDK vs legacy handoff
+  const remainingStagesUseSdk = checkRemainingStagesSdk(flags);
+
+  if (!remainingStagesUseSdk) {
+    // Legacy handoff: stages 2-7 would be dispatched to claude CLI subprocess.
+    // Stub: return current state indicating handoff to legacy CLI.
+    // Cannot call completeRun() because stage 7 has not completed in-process.
+    return {
+      artifacts: store.state.artifacts,
+      state: store.state,
+      success: true,
+    };
+  }
+
+  // SDK path: continue orchestrator loop for stages 2-7
+  for (let stageIndex = 2; 7 >= stageIndex; stageIndex += 1) {
     // eslint-disable-next-line no-await-in-loop
     const success = await executeStageIteration(
       stageIndex,
@@ -87,6 +143,52 @@ export async function executeOrchestrator(
     state: store.state,
     success: true,
   };
+}
+
+export async function executeStage(
+  stageName: StageName,
+  deps: OrchestratorDeps,
+  config: PipelineConfig,
+  store: PipelineStore,
+  runId: string,
+): Promise<StageResult> {
+  switch (stageName) {
+    case "DebateModerator": {
+      return buildDebateModeratorResult(deps, config, store);
+    }
+
+    case "ExpertReview": {
+      return buildExpertReviewResult(deps, config, store);
+    }
+
+    case "ForkJoin": {
+      return buildForkJoinResult(deps, config, store, runId);
+    }
+
+    case "ImplementationPlanning": {
+      return buildImplementationPlanningResult(deps, config, store);
+    }
+
+    case "PairProgramming": {
+      return buildPairProgrammingResult(deps, config, store, runId);
+    }
+
+    case "Questioner": {
+      return { error: "questioner_uses_sdk_path", success: false };
+    }
+
+    case "TlaWriter": {
+      return buildTlaWriterResult(deps, config, store);
+    }
+  }
+}
+
+export function getStageName(stageIndex: number): StageName {
+  const name = STAGES[stageIndex - 1];
+  if (name === undefined) {
+    throw new Error(`Invalid stage index: ${stageIndex}`);
+  }
+  return name;
 }
 
 async function buildDebateModeratorResult(
@@ -160,19 +262,6 @@ async function buildPairProgrammingResult(
   );
 }
 
-async function buildQuestionerResult(
-  deps: OrchestratorDeps,
-  config: PipelineConfig,
-  store: PipelineStore,
-): Promise<StageResult> {
-  return executeQuestioner(
-    deps.claudeAdapter,
-    config,
-    store,
-    "pipeline context",
-  );
-}
-
 async function buildTlaWriterResult(
   deps: OrchestratorDeps,
   config: PipelineConfig,
@@ -186,41 +275,96 @@ async function buildTlaWriterResult(
   );
 }
 
-async function executeStage(
-  stageName: StageName,
+function checkRemainingStagesSdk(flags: FeatureFlags): boolean {
+  // Check if ANY of stages 2-7 have SDK enabled.
+  // If all are disabled, hand off to legacy claude CLI subprocess.
+  const remainingStages: StageName[] = [
+    "DebateModerator",
+    "TlaWriter",
+    "ExpertReview",
+    "ImplementationPlanning",
+    "PairProgramming",
+    "ForkJoin",
+  ];
+  return some(remainingStages, (stage) => isSdkEnabled(flags, stage));
+}
+
+async function executeQuestionerSdkPath(
   deps: OrchestratorDeps,
-  config: PipelineConfig,
   store: PipelineStore,
-  runId: string,
-): Promise<StageResult> {
-  switch (stageName) {
-    case "DebateModerator": {
-      return buildDebateModeratorResult(deps, config, store);
+  config: PipelineConfig,
+  _streamingInputs: Record<string, string[]> | undefined,
+  _runId: string,
+): Promise<boolean> {
+  const runner = deps.questionerRunner;
+
+  if (runner === undefined) {
+    store.failCurrentStage("questioner_runner_missing");
+    return false;
+  }
+
+  // The store is at stage 1 (Questioner) with streaming_input status after startRun().
+  // Transition through: streaming_input -> executing -> validating -> completed.
+  store.streamInput(config.maxStreamTurns);
+  store.completeStreaming();
+
+  try {
+    const result = await runner({
+      client: deps.anthropicClient ?? {
+        messages: { create: constant(Promise.resolve({ content: [] })) },
+      },
+      config: {
+        maxLintPasses: 10,
+        maxRetries: config.maxRetries,
+        maxSignoffAttempts: 3,
+        maxTurns: config.maxStreamTurns,
+        retryBaseDelayMs: config.retryBaseDelayMs,
+      },
+      readline: deps.readlinePort ?? {
+        close: noop,
+        question: constant(Promise.resolve("")),
+      },
+      topic: "pipeline",
+    });
+
+    if (!result.success) {
+      store.failCurrentStage("questioner_session_failed");
+      return false;
     }
 
-    case "ExpertReview": {
-      return buildExpertReviewResult(deps, config, store);
+    // Run lint-fixer on the produced briefing markdown file
+    if (
+      null !== result.briefingPath &&
+      deps.anthropicClient !== undefined &&
+      deps.eslintRunner !== undefined
+    ) {
+      await runLintFixerOnBriefing(
+        result.briefingPath,
+        deps.anthropicClient,
+        deps.eslintRunner,
+        deps.readlinePort,
+      );
     }
 
-    case "ForkJoin": {
-      return buildForkJoinResult(deps, config, store, runId);
-    }
+    // Map session artifact to the BriefingResult shape expected by downstream stages
+    const artifact = {
+      constraints: map(result.artifact.questions, "answer"),
+      requirements: map(result.artifact.questions, "question"),
+      summary: result.artifact.summary ?? "",
+    };
 
-    case "ImplementationPlanning": {
-      return buildImplementationPlanningResult(deps, config, store);
-    }
+    // Transition: executing -> validating -> completed
+    store.finishExecution();
+    store.validationPass(artifact);
+    store.storeArtifact("Questioner", artifact);
 
-    case "PairProgramming": {
-      return buildPairProgrammingResult(deps, config, store, runId);
-    }
+    // Advance to stage 2
+    store.advanceStage();
 
-    case "Questioner": {
-      return buildQuestionerResult(deps, config, store);
-    }
-
-    case "TlaWriter": {
-      return buildTlaWriterResult(deps, config, store);
-    }
+    return true;
+  } catch {
+    store.failCurrentStage("questioner_session_failed");
+    return false;
   }
 }
 
@@ -331,15 +475,6 @@ function getArtifactAsTlaReviewSynthesis(
   return { amendments: [], consensus: "", gaps: [] };
 }
 
-function getStageName(stageIndex: number): StageName {
-  const name = STAGES[stageIndex - 1];
-  /* v8 ignore next 3 -- stageIndex is always 1-7 from executeOrchestrator loop */
-  if (name === undefined) {
-    throw new Error(`Invalid stage index: ${stageIndex}`);
-  }
-  return name;
-}
-
 async function handleFailure(
   store: PipelineStore,
   gitAdapter: GitAdapter,
@@ -384,20 +519,8 @@ async function handleStreamingStage(
   store: PipelineStore,
   config: PipelineConfig,
 ): Promise<{ failed: boolean }> {
-  if ("Questioner" === stageName) {
-    await executeStreaming(
-      deps.claudeAdapter,
-      store,
-      config.maxStreamTurns,
-      messages,
-    );
-    if ("failed" === store.state.stages[stageName].status) {
-      return { failed: true };
-    }
-    store.completeStreaming();
-    return { failed: false };
-  }
-
+  // Questioner streaming is now handled by the SDK path (executeQuestionerSdkPath).
+  // Only ImplementationPlanning streaming goes through here.
   await executeStreamingConfirmation(
     deps.claudeAdapter,
     store,
@@ -429,4 +552,33 @@ async function prepareStageExecution(
 
   store.beginNonStreamingStage();
   return { failed: false };
+}
+
+async function runLintFixerOnBriefing(
+  briefingPath: string,
+  aiClient: AnthropicClient,
+  eslintRunner: EslintRunner,
+  readlinePort?: ReadlinePort,
+): Promise<void> {
+  const userPort = {
+    async askUser(prompt: string): Promise<string> {
+      if (readlinePort === undefined) {
+        return "";
+      }
+
+      return readlinePort.question(prompt);
+    },
+  };
+
+  await runLintFixer(
+    briefingPath,
+    {
+      interactive: readlinePort !== undefined,
+      maxLintPasses: 10,
+      recipesPath: "lint-fixer-recipes.md",
+    },
+    { messages: aiClient.messages } satisfies LintAiClient,
+    userPort,
+    eslintRunner,
+  );
 }

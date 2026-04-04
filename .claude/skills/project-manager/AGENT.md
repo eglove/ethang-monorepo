@@ -430,6 +430,10 @@ Each pass executes three steps in order:
 2. **lint** — Run the linter (`npx eslint .`)
 3. **tsc** — Run the type checker (`npx tsc --noEmit`)
 
+### Multi-Agent Parallel Fixes
+
+First run the sequence once to determine which files need to be fixed. Dispatch a subagent for every file and it's test file. That subagent will run test, lint, and tsc on the two individual files it's been assigned to. This should include getting 100% test coverage as well as passes.
+
 ### States
 
 The double-pass protocol is a state machine with 7 states:

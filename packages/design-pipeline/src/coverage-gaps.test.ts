@@ -20,7 +20,6 @@ import {
   executePairProgramming,
   executePairRouting,
 } from "./stages/pair-programming.ts";
-import { executeQuestioner } from "./stages/questioner.ts";
 import { executeTlaWriter } from "./stages/tla-writer.ts";
 
 function makeAdapter(responses: ClaudeResult[]) {
@@ -147,18 +146,6 @@ describe("base-coordinator coverage", () => {
     );
     expect(result.success).toBe(false);
     expect(store.state.stages.Questioner.error).toBe("retry_exhausted");
-  });
-
-  it("executeQuestioner rejects non-executing", async () => {
-    const adapter = makeAdapter([]);
-    const store = makeStoreAtStage(1, "Questioner", "pending");
-    const result = await executeQuestioner(
-      adapter,
-      defaultPipelineConfig,
-      store,
-      "ctx",
-    );
-    expect(result.success).toBe(false);
   });
 
   it("executeDebateModerator rejects non-executing", async () => {
