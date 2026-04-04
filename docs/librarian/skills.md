@@ -2,12 +2,12 @@
 
 | Path | Kind | Summary | Updated |
 |------|------|---------|---------|
-| .claude/skills/design-pipeline/SKILL.md | skill | 6-stage design pipeline orchestrator | 2026-04-03 |
+| .claude/skills/design-pipeline/SKILL.md | skill | 7-stage design pipeline orchestrator with double-pass global review | 2026-04-03 |
 | .claude/skills/questioner/SKILL.md | skill | Requirements elicitation via freeform interview | 2026-04-03 |
 | .claude/skills/orchestrators/debate-moderator/SKILL.md | skill | Multi-expert debate orchestrator | 2026-04-03 |
 | .claude/skills/tla-writer/AGENT.md | agent | TLA+ specification writer | 2026-04-03 |
 | .claude/skills/implementation-writer/AGENT.md | agent | Implementation plan writer | 2026-04-03 |
-| .claude/skills/project-manager/AGENT.md | agent | Stage 6 pair programming execution manager | 2026-04-03 |
+| .claude/skills/project-manager/AGENT.md | agent | Stage 6 execution manager with Global Review Double-Pass Protocol | 2026-04-03 |
 | .claude/skills/typescript-writer/AGENT.md | agent | TypeScript code writer (pair programming) | 2026-04-03 |
 | .claude/skills/hono-writer/AGENT.md | agent | Hono framework code writer (pair programming) | 2026-04-03 |
 | .claude/skills/ui-writer/AGENT.md | agent | UI component code writer (pair programming) | 2026-04-03 |
@@ -34,5 +34,5 @@
 | .claude/skills/reviewers/backlog-reviewer/AGENT.md | reviewer | Technical debt and backlog reviewer | 2026-04-03 |
 | .claude/skills/reviewers/test-reviewer/AGENT.md | reviewer | Test quality and coverage reviewer | 2026-04-03 |
 | .claude/skills/reviewers/a11y-reviewer/AGENT.md | reviewer | WCAG 2.2 AA accessibility reviewer | 2026-04-03 |
-| .claude/skills/shared/conventions.md | config | Global shared conventions for all agents | 2026-04-03 |
+| .claude/skills/shared/conventions.md | config | Shared conventions (Feature Dev and Quorum sections removed, breadcrumb added) | 2026-04-03 |
 | .claude/skills/shared/quorum.md | config | Review gate quorum formula specification | 2026-04-03 |
