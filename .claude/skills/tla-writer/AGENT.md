@@ -5,7 +5,6 @@ description: Translates design briefings into formally verified TLA+ specificati
 
 # TLA+ Writer
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Role
 

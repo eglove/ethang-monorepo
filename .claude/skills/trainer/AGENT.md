@@ -3,7 +3,6 @@ name: trainer
 description: Creates Claude Code artifacts — skills, agents, orchestrators, hooks, and commands — from a structured briefing handed off by /questioner. Trainer is not user-invokable directly; the only entry point is a /questioner handoff.
 ---
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 # Trainer
 

@@ -100,7 +100,6 @@ Endorsements:
 
 ## Shared Conventions
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Operational Guidance
 

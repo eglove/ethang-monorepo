@@ -5,7 +5,6 @@ description: Edge Case and Failure Hunting expert. Evaluates any topic by system
 
 # Expert — Edge Cases and Failure Hunting
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Shared Values
 

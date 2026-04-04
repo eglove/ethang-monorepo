@@ -110,7 +110,6 @@ Endorsements:
 
 ## Shared Conventions
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Handoff
 

@@ -1,5 +1,13 @@
-1. The plantuml diagram update for design-pipeline should be the last step of the workflow and explicitly happen. (It is not being updated currently, the step is being ignored.)
-2. The questioner should not have specific "branches" it follows. The interview process should be more freeform to figure out the users idea. Conceptually the idea is the same. Take the users input and go down every "branch of the design tree". But what the design tree is, isn't a encoded rule, just instruction for the questioner to work through every part of the idea until it's complete.
-3. The should be a librarian agent that runs as the last tep of the pipeline. This can be aftger the plantuml diagram or in parallel. It's job is to create an internal map of the codebase and changes made. We want it to replace the claude built in read tool. How it works, on a hook watching for reads, agents are told instead to ask the librarian. The librian, if it doesn't already have the information, runs the normal read and returns results. For every new result the librarian obtains it indexes it with very short notes. It's very important that it maintains a dense, machine readable indexing and mapping. This is not for human consumption. Instead it is meant to reduce token usage on searches, reading entire files, etc. It's goal is to know exactly how to get only the information agents need.
-   1. I have deleted the old internal_map file and we need to remove any remaining references to it in claude artifacts.
-4. We also need both an accessibility expert and reviewer that focuses on a11y, aria, wai, and wcag for UI tasks.
+I can tell agents are not reading from the shared/conventions.md, a mention in their files is not good enough
+  Instead, I want to add a hook that runs when an Agent launches to tell them to read it.
+  When that hook is created we can remove the instruction from the individual agent files.
+
+The Review Gate Quorum Formula also doesn’t belong in shared, it can be passed along by the project manager. Conventions.md should be considered global.
+
+Remove reference to feature-dev plugins, these are no longer relevant, everything is within the project scope.
+
+Create a pipeline "e2e" test that validates the entire flow links together as it should. This can be done in the same way as current tests but it should validate
+  that the pipeline links the correct agents in the correct order, has the right steps and tasks. Every cross agent change to the pipeline should break this test.
+
+The final "global review" should be updated to run the following. test -> fix -> lint -> fix -> tsc -> fix, in a loop each one at a time. They must all pass twice in a row.
+  This is to avoid issues with a test fix breaking a lint change which can break a tsc change.

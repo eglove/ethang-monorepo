@@ -18,8 +18,6 @@ const SKILL_PATH = path.join(
 const content = readFileSync(SKILL_PATH, "utf8");
 
 const OPERATIONAL_GUIDANCE_HEADING = "## Operational Guidance";
-const SHARED_CONVENTIONS_REF = ".claude/skills/shared/conventions.md";
-
 describe("expert-ddd SKILL.md absorption", () => {
   it("contains an Operational Guidance section", () => {
     expect(content).toContain(OPERATIONAL_GUIDANCE_HEADING);
@@ -41,8 +39,8 @@ describe("expert-ddd SKILL.md absorption", () => {
     expect(content).toMatch(/Domain.*import.*Infrastructure/iu);
   });
 
-  it("contains a reference to shared conventions", () => {
-    expect(content).toContain(SHARED_CONVENTIONS_REF);
+  it("does NOT contain a Read shared conventions instruction", () => {
+    expect(content).not.toContain("Read shared conventions");
   });
 
   it("uses LF line endings", () => {

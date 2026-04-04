@@ -5,7 +5,6 @@ description: Reviews session diffs for well-formed artifacts — correct directo
 
 # Artifact Reviewer
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Role
 

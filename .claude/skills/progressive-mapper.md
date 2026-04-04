@@ -1,4 +1,3 @@
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ### SKILL: Progressive Workflow Mapping
 **ID:** `sys_progressive_map_2026`

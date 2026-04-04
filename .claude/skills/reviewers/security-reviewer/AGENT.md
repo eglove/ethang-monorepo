@@ -3,7 +3,6 @@ name: security-reviewer
 description: Reviews session diffs for OWASP-style security concerns. Returns a structured ReviewVerdict. Dispatched by orchestrators after code changes; never interacts with pairs directly.
 ---
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 # Security Reviewer
 

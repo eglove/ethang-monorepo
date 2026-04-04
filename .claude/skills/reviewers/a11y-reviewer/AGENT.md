@@ -3,7 +3,6 @@ name: a11y-reviewer
 description: Reviews session diffs for WCAG 2.2 AA compliance and WAI-ARIA 1.2 pattern correctness. Returns a structured ReviewVerdict. Dispatched by orchestrators after code changes; never interacts with pairs directly.
 ---
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 # Accessibility Reviewer
 

@@ -7,7 +7,6 @@ description: Test-side agent for Vitest unit/integration tests (.test.ts). Drive
 
 ## Shared Conventions
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Framework
 

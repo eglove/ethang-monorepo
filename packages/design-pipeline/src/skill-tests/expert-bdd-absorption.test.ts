@@ -17,8 +17,6 @@ const SKILL_PATH = path.join(
 
 const content = readFileSync(SKILL_PATH, "utf8");
 
-const SHARED_CONVENTIONS_REF = ".claude/skills/shared/conventions.md";
-
 describe("expert-bdd SKILL.md absorption", () => {
   it("contains all 8 scenario category tags", () => {
     const tags = [
@@ -67,8 +65,8 @@ describe("expert-bdd SKILL.md absorption", () => {
     expect(content).not.toMatch(/\bE041\b/u);
   });
 
-  it("contains a reference to shared conventions", () => {
-    expect(content).toContain(SHARED_CONVENTIONS_REF);
+  it("does NOT contain a Read shared conventions instruction", () => {
+    expect(content).not.toContain("Read shared conventions");
   });
 
   it("uses LF line endings", () => {

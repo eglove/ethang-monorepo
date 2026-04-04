@@ -26,7 +26,6 @@ const VITEST_WRITER_PATH = path.join(
   "AGENT.md",
 );
 
-const SHARED_CONVENTIONS_REF = ".claude/skills/shared/conventions.md";
 const WRITE_TEST_FIRST = "Write the test first";
 const FAILING_TEST = "failing test";
 const MINIMUM_IMPLEMENTATION = "minimum implementation";
@@ -44,8 +43,8 @@ describe("expert-tdd SKILL.md TDD absorption", () => {
     expect(content).toContain("Refactor");
   });
 
-  it("references shared conventions", () => {
-    expect(content).toContain(SHARED_CONVENTIONS_REF);
+  it("does NOT contain a Read shared conventions instruction", () => {
+    expect(content).not.toContain("Read shared conventions");
   });
 
   it("uses LF line endings", () => {
@@ -64,8 +63,8 @@ describe("vitest-writer AGENT.md TDD absorption", () => {
     expect(content).toContain("Tests live alongside the code they cover");
   });
 
-  it("references shared conventions", () => {
-    expect(content).toContain(SHARED_CONVENTIONS_REF);
+  it("does NOT contain a Read shared conventions instruction", () => {
+    expect(content).not.toContain("Read shared conventions");
   });
 
   it("uses LF line endings", () => {

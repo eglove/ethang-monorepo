@@ -5,7 +5,6 @@ description: Reviews session diffs for unnecessary complexity — over-abstracti
 
 # Simplicity Reviewer
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Role
 

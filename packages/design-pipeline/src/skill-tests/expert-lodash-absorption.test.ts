@@ -34,8 +34,8 @@ describe("expert-lodash SKILL.md absorption", () => {
     expect(content).toMatch(/numeric ind/iu);
   });
 
-  it("contains a reference to shared conventions", () => {
-    expect(content).toContain(".claude/skills/shared/conventions.md");
+  it("does NOT contain a Read shared conventions instruction", () => {
+    expect(content).not.toContain("Read shared conventions");
   });
 
   it("uses LF line endings", () => {

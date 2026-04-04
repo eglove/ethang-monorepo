@@ -5,7 +5,6 @@ description: Performance Engineering expert. Evaluates any topic through the len
 
 # Expert — Performance Engineering
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Shared Values
 

@@ -3,7 +3,6 @@ name: implementation-writer
 description: Translates a verified TLA+ specification and its surrounding design context into a step-by-step, TDD-first implementation plan. Expects accumulated pipeline outputs (briefing, design consensus, TLA+ spec, TLA+ review consensus) — dispatched by the design-pipeline orchestrator, never invoked directly by users.
 ---
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 # Implementation Writer
 

@@ -5,7 +5,6 @@ description: Reviews session diffs for logic errors, off-by-one mistakes, null/u
 
 # Bug Reviewer
 
-Read shared conventions: `.claude/skills/shared/conventions.md`
 
 ## Role
 
