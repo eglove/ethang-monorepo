@@ -41,8 +41,8 @@ describe("expert-ddd SKILL.md absorption", () => {
     expect(content).toMatch(/Domain.*import.*Infrastructure/iu);
   });
 
-  it("contains a reference to shared conventions", () => {
-    expect(content).toContain(SHARED_CONVENTIONS_REF);
+  it("does NOT contain a Read shared conventions instruction", () => {
+    expect(content).not.toContain("Read shared conventions");
   });
 
   it("uses LF line endings", () => {

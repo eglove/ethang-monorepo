@@ -64,8 +64,8 @@ describe("expert-atomic-design SKILL.md — absorbed atomic design methodology",
     expect(content).not.toContain("Integration with Linear");
   });
 
-  it("contains a reference to shared conventions", () => {
-    expect(content).toContain(".claude/skills/shared/conventions.md");
+  it("does NOT contain a Read shared conventions instruction", () => {
+    expect(content).not.toContain("Read shared conventions");
   });
 
   it("uses LF line endings", () => {

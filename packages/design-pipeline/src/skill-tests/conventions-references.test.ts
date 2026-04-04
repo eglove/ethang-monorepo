@@ -22,25 +22,27 @@ const FILES = [
 const CONVENTIONS_REF = ".claude/skills/shared/conventions.md";
 const MAX_HEADER_LINES = 20;
 
-describe("conventions references", () => {
+describe("conventions references — cleanup verification", () => {
   for (const file of FILES) {
     describe(file, () => {
       const fullPath = path.join(ROOT, file);
       const content = readFileSync(fullPath, "utf8");
 
-      it("contains a reference to shared conventions", () => {
-        expect(content).toContain(CONVENTIONS_REF);
+      it("does NOT contain a Read shared conventions instruction", () => {
+        expect(content).not.toContain("Read shared conventions");
+      });
+
+      it("does NOT reference conventions.md in the first header lines", () => {
+        const lines = split(content, "\n").slice(0, MAX_HEADER_LINES);
+        const headerBlock = lines.join("\n");
+
+        expect(headerBlock).not.toMatch(
+          /Read shared conventions.*conventions\.md/u,
+        );
       });
 
       it("uses LF line endings", () => {
         expect(content).not.toContain("\r\n");
-      });
-
-      it(`reference appears within the first ${String(MAX_HEADER_LINES)} lines`, () => {
-        const lines = split(content, "\n").slice(0, MAX_HEADER_LINES);
-        const headerBlock = lines.join("\n");
-
-        expect(headerBlock).toContain(CONVENTIONS_REF);
       });
     });
   }

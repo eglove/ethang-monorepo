@@ -54,8 +54,8 @@ describe("shared conventions.md", () => {
     expect(content).toContain(NO_REPEATED_STRINGS_HEADING);
   });
 
-  it("contains a Feature Development Agents section", () => {
-    expect(content).toContain(FEATURE_DEV_AGENTS_HEADING);
+  it("does NOT contain a Feature Development Agents section", () => {
+    expect(content).not.toContain(FEATURE_DEV_AGENTS_HEADING);
   });
 
   it("contains an Opportunistic Code Improvement section", () => {
