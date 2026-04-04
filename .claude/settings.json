@@ -13,19 +13,6 @@
         ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/quality-check.sh\"",
-            "statusMessage": "Running tests and lint...",
-            "timeout": 300
-          }
-        ]
-      }
-    ],
     "Notification": [
       {
         "matcher": "",

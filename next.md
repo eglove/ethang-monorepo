@@ -1,13 +1,15 @@
-I can tell agents are not reading from the shared/conventions.md, a mention in their files is not good enough
-  Instead, I want to add a hook that runs when an Agent launches to tell them to read it.
-  When that hook is created we can remove the instruction from the individual agent files.
+We have some more cleanup/refactor of the pipeline based on the last run. Claude is technically running everything and succeeding but not explicilty as planned in some places.
+Here are the pain points.
 
-The Review Gate Quorum Formula also doesn’t belong in shared, it can be passed along by the project manager. Conventions.md should be considered global.
+First, I don't know that debate moderator is dispatching it's own subagents, and not just simulating a debate. I want to make sure opinions of experts are made in isolated context, not togetgher.
 
-Remove reference to feature-dev plugins, these are no longer relevant, everything is within the project scope.
+Second, and new agent is being created for every question by the questioner. This should not happen. The questioner should be one agent that goes through the questions and sends the results back to the pipeline.
 
-Create a pipeline "e2e" test that validates the entire flow links together as it should. This can be done in the same way as current tests but it should validate
-  that the pipeline links the correct agents in the correct order, has the right steps and tasks. Every cross agent change to the pipeline should break this test.
+Third, similar to the debate moderator, the project manager may not be spawning subagents in isolated contexts. It should create the worktree, and send the agent pair programmers to it. The pair programmers should use the documented handshake system and communicate back and forth.
+Reviewers should also be seperate subagents dispatched to review each worktree before merge.
+After merge the project manager may handle the double-pass testing.
 
-The final "global review" should be updated to run the following. test -> fix -> lint -> fix -> tsc -> fix, in a loop each one at a time. They must all pass twice in a row.
-  This is to avoid issues with a test fix breaking a lint change which can break a tsc change.
+I am open to solutions on how to solve this.
+Do we simply need more explicity language using steps/checklists?
+Is there conflicting information that breaks this process?
+Is any step too complicated such as phase 6 that needs to be broken up?

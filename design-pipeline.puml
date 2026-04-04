@@ -1,6 +1,6 @@
 @startuml
-title Design Pipeline — Full State Machine
-note "Pipeline structure as of: 2026-04-03" as N1
+title Design Pipeline SDK — Architecture & Stage Flow
+note "SDK rewrite as of: 2026-04-03\npackages/design-pipeline" as N1
 
 skinparam state {
   BackgroundColor<<stage>> #E8F4FD
@@ -11,71 +11,172 @@ skinparam state {
   BackgroundColor<<fork>> #D5F5E3
 }
 
-' ─── Stages 1-5: Sequential Design Stages ───
+skinparam component {
+  BackgroundColor<<sdk>> #DDEEFF
+  BackgroundColor<<port>> #FCE4EC
+  BackgroundColor<<adapter>> #FFF9C4
+  BackgroundColor<<agent>> #F3E5F5
+}
+
+' ═══════════════════════════════════════════════
+' COMPONENT ARCHITECTURE
+' ═══════════════════════════════════════════════
+
+package "SKILL.md (thin wrapper)" as Skill {
+  component "runPipeline()" as entry
+}
+
+package "TypeScript SDK\npackages/design-pipeline" as SDK <<sdk>> {
+
+  package "Engine" {
+    component "Orchestrator" as orch
+    component "Transitions" as trans
+    component "Retry + Compensation" as retry
+  }
+
+  package "Stage Coordinators" {
+    component "questioner" as sc_q
+    component "debate-moderator" as sc_dm
+    component "tla-writer" as sc_tla
+    component "expert-review" as sc_er
+    component "implementation-planning" as sc_ip
+    component "pair-programming" as sc_pp
+    component "fork-join" as sc_fj
+  }
+
+  package "Zod Schemas" as schemas {
+    component "Stage boundary\nvalidation" as zod
+  }
+
+  package "In-Memory State" as state {
+    component "RunRecord\n(instance-scoped)" as run
+  }
+}
+
+package "Ports (interfaces)" as Ports <<port>> {
+  interface "ClaudeAdapter" as p_claude
+  interface "GitAdapter" as p_git
+}
+
+package "Adapters (implementations)" as Adapters <<adapter>> {
+  component "ClaudeSdkAdapter" as a_claude
+  component "ChildProcessGitAdapter" as a_git
+}
+
+package "Agent Prompts\nsrc/prompts/" as Prompts <<agent>> {
+  component "questioner" as ap_q
+  component "debate-moderator" as ap_dm
+  component "tla-writer" as ap_tla
+  component "expert-review" as ap_er
+  component "implementation-planning" as ap_ip
+  component "pair-programming" as ap_pp
+  component "fork-join" as ap_fj
+}
+
+' ─── Wiring ───
+
+entry --> orch : calls
+
+orch --> trans : state transitions
+orch --> retry : retries + compensation
+orch --> zod : validates every\nstage boundary
+
+orch --> sc_q
+orch --> sc_dm
+orch --> sc_tla
+orch --> sc_er
+orch --> sc_ip
+orch --> sc_pp
+orch --> sc_fj
+
+sc_q ..> p_claude : streamPrompt
+sc_dm ..> p_claude : executePrompt
+sc_tla ..> p_claude : executePrompt
+sc_er ..> p_claude : executePrompt
+sc_ip ..> p_claude : streamPrompt
+sc_pp ..> p_claude : routePairMessage
+sc_pp ..> p_git : branch, commit, push
+sc_fj ..> p_git : commit
+sc_fj ..> p_claude : executePrompt
+
+p_claude <|.. a_claude : implements
+p_git <|.. a_git : implements
+
+sc_q --> ap_q : template literal\nprompt
+sc_dm --> ap_dm : template literal\nprompt
+sc_tla --> ap_tla : template literal\nprompt
+sc_er --> ap_er : template literal\nprompt
+sc_ip --> ap_ip : template literal\nprompt
+sc_pp --> ap_pp : template literal\nprompt
+sc_fj --> ap_fj : template literal\nprompt
+
+orch --> run : reads/writes\nin-memory state
+
+' ═══════════════════════════════════════════════
+' 7-STAGE PIPELINE FLOW
+' ═══════════════════════════════════════════════
 
 [*] --> STAGE_1_QUESTIONER
 
 state "Stage 1: Questioner" as STAGE_1_QUESTIONER <<stage>> {
-  state "Eliciting requirements" as S1
+  state "Streaming user interview\n(SDK streams input)" as S1
 }
 
 state "Stage 2: Design Debate" as STAGE_2_DESIGN_DEBATE <<stage>> {
-  state "Expert debate via debate-moderator" as S2
+  state "SDK dispatches experts\nvia debate-moderator coordinator" as S2
 }
 
 state "Stage 3: TLA+ Writer" as STAGE_3_TLA_WRITER <<stage>> {
-  state "Writing and verifying TLA+ spec" as S3
+  state "SDK calls tla-writer agent\nZod validates TlaResult" as S3
 }
 
-state "Stage 4: TLA+ Review" as STAGE_4_TLA_REVIEW <<stage>> {
-  state "Expert review of TLA+ spec" as S4
+state "Stage 4: Expert Review" as STAGE_4_EXPERT_REVIEW <<stage>> {
+  state "SDK calls expert-review agent\nZod validates TlaReviewSynthesis" as S4
 }
 
-state "Stage 5: Implementation" as STAGE_5_IMPLEMENTATION <<stage>> {
-  state "Generating plan + tiers + agent pairs" as S5
+state "Stage 5: Implementation Planning" as STAGE_5_IMPLEMENTATION <<stage>> {
+  state "SDK calls implementation-planning\nStreaming confirmation gate\nZod validates ImplementationPlan" as S5
 }
 
-STAGE_1_QUESTIONER --> STAGE_2_DESIGN_DEBATE : questioner completes
+STAGE_1_QUESTIONER --> STAGE_2_DESIGN_DEBATE : BriefingResult\n(Zod validated)
 STAGE_1_QUESTIONER --> HALTED : user abandons
 
-STAGE_2_DESIGN_DEBATE --> STAGE_3_TLA_WRITER : consensus or\nuser accepts partial
-STAGE_2_DESIGN_DEBATE --> HALTED : user stops at stalemate
+STAGE_2_DESIGN_DEBATE --> STAGE_3_TLA_WRITER : DebateSynthesis\n(Zod validated)
+STAGE_2_DESIGN_DEBATE --> HALTED : stalemate
 
-STAGE_3_TLA_WRITER --> STAGE_4_TLA_REVIEW : TLC passes or\nuser accepts as-is
-STAGE_3_TLA_WRITER --> STAGE_3_TLA_WRITER : retry tla-writer
-STAGE_3_TLA_WRITER --> STAGE_1_QUESTIONER : back to questioner\n(restart)
+STAGE_3_TLA_WRITER --> STAGE_4_EXPERT_REVIEW : TlaResult\n(Zod validated)
+STAGE_3_TLA_WRITER --> STAGE_3_TLA_WRITER : retry (compensation)
 
-STAGE_4_TLA_REVIEW --> STAGE_5_IMPLEMENTATION : review passes or\nuser accepts as-is
-STAGE_4_TLA_REVIEW --> STAGE_3_TLA_WRITER : back to tla-writer\n(then re-review)
-STAGE_4_TLA_REVIEW --> STAGE_1_QUESTIONER : back to questioner\n(restart)
+STAGE_4_EXPERT_REVIEW --> STAGE_5_IMPLEMENTATION : TlaReviewSynthesis\n(Zod validated)
+STAGE_4_EXPERT_REVIEW --> STAGE_3_TLA_WRITER : back to tla-writer
 
-STAGE_5_IMPLEMENTATION --> STAGE_6_CONFIRMATION_GATE : plan delivered\nwith tiers + agent pairs
+STAGE_5_IMPLEMENTATION --> STAGE_6 : ImplementationPlan\n(Zod validated)
 
 ' ─── Stage 6: Pair Programming ───
 
 state "Stage 6: Pair Programming" as STAGE_6 {
 
   state "Confirmation Gate" as STAGE_6_CONFIRMATION_GATE <<gate>> {
-    state "User reviews plan, tiers, pairings" as S6gate
+    state "User reviews plan via\nstreaming input" as S6gate
   }
 
   state "Tier Executing" as STAGE_6_TIER_EXECUTING <<stage>> {
-    state "Parallel pair sessions\n(max 3 worktrees)" as S6exec
+    state "SDK routes messages\nsynchronously per pair" as S6exec
   }
 
   state "Tier Merging" as STAGE_6_TIER_MERGING <<stage>> {
-    state "Serialized merge queue" as S6merge
+    state "GitAdapter: branch, merge, commit" as S6merge
   }
 
   state "Reviewing" as STAGE_6_REVIEWING <<review>> {
-    state "9 reviewers dispatched\nin parallel" as S6review
+    state "SDK dispatches 9 reviewer\nagents in parallel" as S6review
   }
 
   state "Review Passed" as STAGE_6_REVIEW_PASSED <<review>>
   state "Review Failed" as STAGE_6_REVIEW_FAILED <<review>>
 
   state "Revising" as STAGE_6_REVISING <<review>> {
-    state "Pair revises based\non reviewer findings" as S6revise
+    state "Pair revises via\nroutePairMessage" as S6revise
   }
 
   state "Inter-Tier Verification" as STAGE_6_INTER_TIER_VERIFICATION <<stage>> {
@@ -160,7 +261,7 @@ STAGE_6_REVISING --> HALTED : ReviewRevisionsExhausted\n(MaxReviewRevisions reac
 
 ' ─── Stage 7 -> Terminal ───
 
-STAGE_7 --> COMPLETE : atomic commit\n(both tasks done)
+STAGE_7 --> COMPLETE : atomic commit\n(via GitAdapter)
 
 COMPLETE --> [*]
 HALTED --> [*]
@@ -176,25 +277,35 @@ legend right
   | <#D4EDDA> | Complete (terminal) |
   | <#F8D7DA> | Halted (terminal) |
   ---
-  **Agents by Stage:**
-  Stage 1: questioner
+  **SDK Architecture:**
+  SKILL.md -> runPipeline() -> Orchestrator
+  Orchestrator -> Stage Coordinators -> Agent Prompts
+  Stage Coordinators use Ports (ClaudeAdapter, GitAdapter)
+  Adapters implement Ports (ClaudeSdkAdapter, ChildProcessGitAdapter)
+  Zod validates all stage boundary outputs
+  RunRecord: in-memory, instance-scoped (no file I/O)
+  ---
+  **Agents (domain-instruction-only prompts):**
+  Stage 1: questioner (streaming input)
   Stage 2: debate-moderator + expert roster
-  Stage 3: tla-writer (+ expert-tla on escalation)
-  Stage 4: debate-moderator + expert roster
-  Stage 5: implementation-writer
-  Stage 6: project-manager
+  Stage 3: tla-writer
+  Stage 4: expert-review
+  Stage 5: implementation-planning (streaming confirmation)
+  Stage 6: pair-programming (synchronous message routing)
+    -> project-manager (selection only)
     -> trainer/ts/hono/ui-writer + vitest/playwright-writer
     -> 9 reviewers (artifact, compliance, bug,
        simplicity, type-design, security,
        backlog, test, a11y)
-  Stage 7: librarian
+  Stage 7: fork-join (librarian + PlantUML)
   ---
   **Key Constants:**
-  MaxConcurrent: 3 (Windows worktree cap)
+  maxRetries: 3
+  maxStreamTurns: 20
+  retryBaseDelayMs: 1000
   MaxGlobalFixes: 3 (double-pass restart cap)
   MaxReviewRevisions: 3
   MinReviewQuorum: ceil(2n/3)
-  Per-step retry cap: 1 (inline fix)
 endlegend
 
 @enduml

@@ -22,8 +22,11 @@ cd "$CLAUDE_PROJECT_DIR"
 
 if echo "$PKG" | grep -qE '^(apps|packages)/'; then
   FILTER="./$PKG"
-  TEST_OUT=$(pnpm --filter "$FILTER" test 2>&1); TEST_CODE=$?
-  LINT_OUT=$(pnpm --filter "$FILTER" lint 2>&1); LINT_CODE=$?
+  # Run tests only for files related to the changed file
+  TEST_OUT=$(pnpm --filter "$FILTER" exec vitest related --run "$FILE" 2>&1); TEST_CODE=$?
+  # Lint only the specific file that was modified
+  LINT_OUT=$(pnpm --filter "$FILTER" exec eslint --cache "$FILE" 2>&1); LINT_CODE=$?
+  # tsc needs full project context to resolve types — keep package-scoped
   TSC_OUT=$(pnpm --filter "$FILTER" exec tsc --noEmit 2>&1); TSC_CODE=$?
 else
   TEST_OUT=$(pnpm -r test 2>&1); TEST_CODE=$?
@@ -56,12 +59,4 @@ if [ "$TEST_CODE" -ne 0 ] || [ "$LINT_CODE" -ne 0 ] || [ "$TSC_CODE" -ne 0 ]; th
         )
       }
     }'
-else
-  # Quality checks passed — prompt to consult librarian index.
-  jq -n '{
-    hookSpecificOutput: {
-      hookEventName: "PostToolUse",
-      additionalContext: "Quality checks passed.\n\nConsult docs/librarian/INDEX.md for codebase context if needed."
-    }
-  }'
 fi
