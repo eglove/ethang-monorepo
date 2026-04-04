@@ -51,16 +51,6 @@ await app.request("https://ethang.dev/courses");
 await app.request("https://ethang.dev/courses");
 ```
 
-## Feature Development Agents
-
-This guidance applies to any agent, subagent, or skill currently running. The `feature-dev` skill provides three specialized agents whose methods should supplement your own:
-
-- **`feature-dev:code-architect`** — designs feature architectures by analyzing existing codebase patterns, providing implementation blueprints with specific files to create/modify, component designs, data flows, and build sequences.
-- **`feature-dev:code-explorer`** — deeply analyzes existing features by tracing execution paths, mapping architecture layers, understanding abstractions, and documenting dependencies.
-- **`feature-dev:code-reviewer`** — reviews code for bugs, logic errors, security vulnerabilities, and adherence to project conventions using confidence-based filtering.
-
-When architecting, exploring, or reviewing code, use the methods from these agents in addition to your own. They can also be invoked directly via the Agent tool.
-
 ## Opportunistic Code Improvement
 
 When touching existing code, take the opportunity to improve it. Do not make changes for their own sake, but if you notice something in or near code you are already modifying, fix it:
@@ -94,16 +84,7 @@ Each file is agent-scoped to avoid concurrent write conflicts from parallel agen
 - Entries are append-only per file; never overwrite or delete other agents' notes
 - The user audits and trims manually — no automated cleanup or summarization
 
-## Review Gate Quorum Formula
-
-The review gate quorum is computed as `ceil(2n/3)` where `n` is the number of non-UNAVAILABLE reviewers that responded. The full specification is at `.claude/skills/shared/quorum.md`.
-
-Key behaviors:
-- **Floor guard:** `n >= 1` is a hard precondition. If fewer than 1 reviewer responds, the gate cannot produce a valid verdict.
-- **At n=2, unanimity is required:** `ceil(4/3) = 2`. Both reviewers must pass. This is an intentional design decision, not a bug.
-- **Current roster:** 9 reviewers (including a11y-reviewer). At full availability, quorum = `ceil(18/3) = 6`.
-
-The formula is owned by the review gate specification. Individual reviewers do not need to know it.
+<!-- Review gate quorum formula is now owned by project-manager/AGENT.md. See that file for the canonical quorum specification. -->
 
 ## Consult-First Pattern (Librarian Index)
 

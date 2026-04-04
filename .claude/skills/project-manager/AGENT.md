@@ -417,6 +417,74 @@ If contradictions persist after `MaxReviewRevisions` revision cycles are exhaust
 
 An `OUT_OF_SCOPE + PASS` verdict means the reviewer's domain was not applicable to the session diff. These verdicts count toward quorum (the reviewer responded and evaluated), but the review gate requires at least one `SESSION_DIFF`-scoped `PASS` to pass the gate. This prevents an all-`OUT_OF_SCOPE` pass — a semantic hole identified during TLA+ review — where every reviewer declares the diff outside their domain and the gate passes vacuously with no substantive review.
 
+## Global Review Double-Pass Protocol
+
+After all tiers are merged and inter-tier verification passes, the project-manager executes a double-pass global review before declaring Stage 6 complete. This protocol is formally verified by the TLA+ specification in `docs/tla-specs/conventions-hook-cleanup-e2e-global-review/GlobalReview.tla`.
+
+### 3-Step Sequence
+
+Each pass executes three steps in order:
+
+1. **test** — Run the full test suite (`vitest run`)
+2. **lint** — Run the linter (`npx eslint .`)
+3. **tsc** — Run the type checker (`npx tsc --noEmit`)
+
+### States
+
+The double-pass protocol is a state machine with 7 states:
+
+| State | Description |
+|---|---|
+| `idle` | PM has not started global review |
+| `running` | PM is executing a step (test/lint/tsc) within a pass |
+| `fixing` | PM is applying an inline fix after a step's first failure |
+| `clean1` | Pass 1 completed with all steps eventually passing |
+| `success` | Pass 2 completed cleanly; global review passes |
+| `restarting` | Full-sequence restart after a retry failure; fixCount increments |
+| `exhausted` | fixCount >= MaxGlobalFixes(3); pipeline halts with GLOBAL_REVIEW_EXHAUSTED |
+
+### Transitions
+
+| Transition | From | To | Condition |
+|---|---|---|---|
+| `StartReview` | idle | running | Enter global review, start pass 1 at step 1 |
+| `StepClean` | running | running | Current step passes, advance to next step |
+| `LastStepCleanPass1` | running | clean1 | Last step passes on pass 1 |
+| `LastStepCleanPass2` | running | success | Last step passes on pass 2 |
+| `StartPass2` | clean1 | running | Begin pass 2 at step 1 |
+| `StepFailFirstAttempt` | running | fixing | Step fails with retryFlag=0 (per-step retry cap not yet used) |
+| `ApplyInlineFix` | fixing | running | PM fixes inline, re-runs step with retryFlag=1 |
+| `StepFailAfterRetry` | running | restarting | Step fails with retryFlag=1 (per-step retry cap of 1 exceeded) |
+| `RestartSequence` | restarting | running | fixCount+1 < MaxGlobalFixes, restart from step 1 pass 1 |
+| `BecomeExhausted` | restarting | exhausted | fixCount+1 >= MaxGlobalFixes |
+| `Stutter` | success/exhausted | unchanged | Terminal state stuttering |
+
+### Safety Rules
+
+These rules are enforced at all times (verified by TLA+ model checking):
+
+- **FixCountBounded:** fixCount never exceeds MaxGlobalFixes(3)
+- **Pass2RequiresCleanPass1:** Pass 2 (passNumber=2) only begins after a complete clean pass 1
+- **RetryCapRespected:** Each step gets at most 1 inline fix attempt per pass (retryFlag in {0, 1}, per-step retry cap of 1)
+- **SuccessRequiresPass2:** The `success` state is only reachable after completing pass 2
+- **ExhaustedRequiresMaxFixes:** The `exhausted` state is only reachable when fixCount equals MaxGlobalFixes(3)
+- **InlineFixOnlyOnFirstFailure:** The `fixing` state is only entered when retryFlag=0 (first failure)
+- **NoFixWithoutRunning:** The `fixing` state requires currentStep >= 1 (a step was actually running)
+
+### Termination
+
+The protocol always terminates (EventualTermination liveness property): the pipeline eventually reaches either `success` (pass 2 completed cleanly) or `exhausted` (fixCount reached MaxGlobalFixes). On `exhausted`, the pipeline halts with `GLOBAL_REVIEW_EXHAUSTED`.
+
+### Execution Procedure
+
+1. Enter `idle`. Transition to `running` (StartReview).
+2. Execute each step (test, lint, tsc) in order.
+3. If a step passes, advance to the next step (StepClean).
+4. If a step fails on first attempt (retryFlag=0), transition to `fixing`. Apply an inline fix targeting the specific failure, then re-run the same step with retryFlag=1 (ApplyInlineFix).
+5. If a step fails after retry (retryFlag=1), transition to `restarting`. Increment fixCount. If fixCount < MaxGlobalFixes(3), restart the entire sequence from step 1, pass 1 (RestartSequence). Otherwise, transition to `exhausted` (BecomeExhausted).
+6. If all 3 steps pass on pass 1, transition to `clean1`. Then start pass 2 (StartPass2).
+7. If all 3 steps pass on pass 2, transition to `success`. Global review passes.
+
 ## Handoff
 
 - **Receives from:** Design pipeline orchestrator (after confirmation gate passes)
