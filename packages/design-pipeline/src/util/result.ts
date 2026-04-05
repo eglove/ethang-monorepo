@@ -16,9 +16,11 @@ export type ErrorResult = { error: ErrorKind; message: string; ok: false };
 export type OkResult<T> = { ok: true; value: T };
 export type Result<T> = ErrorResult | OkResult<T>;
 
-export const ok = <T>(value: T): OkResult<T> => {
-  return { ok: true, value };
-};
+export function ok(): OkResult<void>;
+export function ok<T>(value: T): OkResult<T>;
+export function ok<T>(value?: T): OkResult<T | void> {
+  return { ok: true, value } as OkResult<T | void>;
+}
 
 export const resultError = (error: ErrorKind, message: string): ErrorResult => {
   return { error, message, ok: false };
