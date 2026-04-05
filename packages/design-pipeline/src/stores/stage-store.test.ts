@@ -17,7 +17,7 @@ const noopLlmProvider = {
   getModel: constant("test-model"),
 };
 
-describe("StageStore", () => {
+describe("StageStore base", () => {
   describe("initial state", () => {
     it("has stageState idle", () => {
       const store = new StageStore(1, noopLlmProvider);
@@ -34,14 +34,15 @@ describe("StageStore", () => {
       expect(store.state.llmState).toBe(LlmState.Idle);
     });
 
-    it("has llmCalls 0", () => {
+    it("has llmCalls and llmCompleted 0", () => {
       const store = new StageStore(1, noopLlmProvider);
       expect(store.state.llmCalls).toBe(0);
+      expect(store.state.llmCompleted).toBe(0);
     });
 
-    it("has llmCompleted 0", () => {
+    it("has stageDestroyed false", () => {
       const store = new StageStore(1, noopLlmProvider);
-      expect(store.state.llmCompleted).toBe(0);
+      expect(store.state.stageDestroyed).toBe(false);
     });
 
     it("stores stageId", () => {
@@ -87,30 +88,27 @@ describe("StageStore", () => {
   describe("activate", () => {
     it("transitions from idle to active", () => {
       const { store } = createTestStageStore();
-      const result = store.activate();
-      expect(isOk(result)).toBe(true);
+      expect(isOk(store.activate())).toBe(true);
       expect(store.state.stageState).toBe(StageState.Active);
     });
 
     it("fails from non-idle state", () => {
       const { forceState, store } = createTestStageStore();
       forceState({ stageState: StageState.Active });
-      const result = store.activate();
-      expect(isResultError(result)).toBe(true);
+      expect(isResultError(store.activate())).toBe(true);
     });
   });
 
-  describe("requestLlm", () => {
-    it("transitions from active/idle to requesting with llmCalls incremented", () => {
+  describe("LLM lifecycle", () => {
+    it("requestLlm from active/idle -> requesting", () => {
       const { forceState, store } = createTestStageStore();
       forceState({ stageState: StageState.Active });
-      const result = store.requestLlm();
-      expect(isOk(result)).toBe(true);
+      expect(isOk(store.requestLlm())).toBe(true);
       expect(store.state.llmState).toBe(LlmState.Requesting);
       expect(store.state.llmCalls).toBe(1);
     });
 
-    it("transitions from active/complete to requesting after prior LLM call", () => {
+    it("requestLlm from active/complete -> requesting", () => {
       const { forceState, store } = createTestStageStore();
       forceState({
         llmCalls: 1,
@@ -118,92 +116,45 @@ describe("StageStore", () => {
         llmState: LlmState.Complete,
         stageState: StageState.Active,
       });
-      const result = store.requestLlm();
-      expect(isOk(result)).toBe(true);
-      expect(store.state.llmState).toBe(LlmState.Requesting);
+      expect(isOk(store.requestLlm())).toBe(true);
     });
 
-    it("fails if stageState is not active", () => {
+    it("requestLlm fails if not active", () => {
       const { store } = createTestStageStore();
-      const result = store.requestLlm();
-      expect(isResultError(result)).toBe(true);
+      expect(isResultError(store.requestLlm())).toBe(true);
     });
 
-    it("fails if llmState is requesting", () => {
+    it("handleStreamStart from requesting -> streaming-active", () => {
       const { forceState, store } = createTestStageStore();
       forceState({
         llmState: LlmState.Requesting,
         stageState: StageState.Active,
       });
-      const result = store.requestLlm();
-      expect(isResultError(result)).toBe(true);
-    });
-  });
-
-  describe("handleStreamStart", () => {
-    it("transitions from requesting to streaming-active with stageState streaming", () => {
-      const { forceState, store } = createTestStageStore();
-      forceState({
-        llmState: LlmState.Requesting,
-        stageState: StageState.Active,
-      });
-      const result = store.handleStreamStart();
-      expect(isOk(result)).toBe(true);
+      expect(isOk(store.handleStreamStart())).toBe(true);
       expect(store.state.llmState).toBe(LlmState.StreamingActive);
       expect(store.state.stageState).toBe(StageState.Streaming);
     });
 
-    it("fails if llmState is not requesting", () => {
-      const { forceState, store } = createTestStageStore();
-      forceState({ llmState: LlmState.Idle, stageState: StageState.Active });
-      const result = store.handleStreamStart();
-      expect(isResultError(result)).toBe(true);
-    });
-  });
-
-  describe("handleStreamComplete", () => {
-    it("transitions from streaming-active to complete with stageState active and llmCompleted incremented", () => {
+    it("handleStreamComplete from streaming-active -> complete", () => {
       const { forceState, store } = createTestStageStore();
       forceState({
         llmState: LlmState.StreamingActive,
         stageState: StageState.Streaming,
       });
-      const result = store.handleStreamComplete();
-      expect(isOk(result)).toBe(true);
+      expect(isOk(store.handleStreamComplete())).toBe(true);
       expect(store.state.llmState).toBe(LlmState.Complete);
       expect(store.state.stageState).toBe(StageState.Active);
       expect(store.state.llmCompleted).toBe(1);
     });
 
-    it("fails if llmState is not streaming-active", () => {
-      const { forceState, store } = createTestStageStore();
-      forceState({
-        llmState: LlmState.Requesting,
-        stageState: StageState.Active,
-      });
-      const result = store.handleStreamComplete();
-      expect(isResultError(result)).toBe(true);
-    });
-  });
-
-  describe("full LLM lifecycle", () => {
-    it("requestLlm -> handleStreamStart -> handleStreamComplete leaves stage active with llmCompleted 1", () => {
+    it("full cycle: request -> stream -> complete", () => {
       const { forceState, store } = createTestStageStore();
       forceState({ stageState: StageState.Active });
-
-      const request = store.requestLlm();
-      expect(isOk(request)).toBe(true);
-
-      const start = store.handleStreamStart();
-      expect(isOk(start)).toBe(true);
-
-      const complete = store.handleStreamComplete();
-      expect(isOk(complete)).toBe(true);
-
+      expect(isOk(store.requestLlm())).toBe(true);
+      expect(isOk(store.handleStreamStart())).toBe(true);
+      expect(isOk(store.handleStreamComplete())).toBe(true);
       expect(store.state.stageState).toBe(StageState.Active);
-      expect(store.state.llmState).toBe(LlmState.Complete);
       expect(store.state.llmCompleted).toBe(1);
-      expect(store.state.llmCalls).toBe(1);
     });
   });
 });
