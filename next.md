@@ -1,11 +1,11 @@
-Refactor the ts design-pipeline to fully take advantage of @ethang/store and an event driven architecture rather than passing objects around
-  waitFor and reentract protection was recently added to the store. It's already used in the project but we can design around it better
+I'm not a fan of the design of design-pipeline tyepscript cli.
 
-The framework for a working design-pipeline already exists. We only need to fill it out. So we'll do 1 stage at a time.
-First is the questioner. Currently the questioner.ts prompt is just one line and a seed. This doesn't nearly cover what is in the questioner claude skill.
-We want to take everything from that skill except for programmatic instruction that is better handled by the TS cli.
-The cli will validate output, but it doesn't necessarily have to keep track of an exact number of questions. The questioner should run as a single agent session.
-While the user reads and answers one question it should be planning more in the background to help speed up the process.
-Instead of having a hard cap on the  # of questions the user should be able to, at any point, ask what the current summary is and approve it.
+Use @ethang/store for state machines and it's methods to follow an event driven architecture
 
-Since other phases of the pipeline are incomplete, when the questioner is done I'd like to call the next stage as a skill and let claude take over from there. Meaning the cli doesn't run stages 2-7, it's completely handed off. This helps with incremental adoption and testing.
+Find ALL opportunities in the current design-pipeline to not pass objects as parameters and then mutate them.
+In ALL of these cases we should be using a @ethang/store and watching for events.
+We want to minimize the number of parameters per function to nearly 0.
+Prefer store classes that communicate via events, (classes are easy to mock for tests)
+If you need to implement a general event bus, this makes sense to have, but @ethang/store already provides the mechanism for this.
+Except in the case of pure functions such as utilities.
+Also use functional error handling everywhere. Make use of lodash attempt, and @ethang/toolbelt attemptAsync
