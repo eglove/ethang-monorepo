@@ -16,3 +16,10 @@
 | docs/debate-moderator-sessions/2026-04-04_store-refactor-tla-re-review.md | session | Stage 4 TLA+ spec re-review after revision; consensus reached in 1 round | 2026-04-04 |
 | docs/implementation/2026-04-04_store-refactor.md | plan | Implementation plan for @ethang/store refactor (BaseStore, waitFor, tests) | 2026-04-04 |
 | docs/pipeline-state.md | state | Shared pipeline state file tracking current pipeline run and stage progress | 2026-04-04 |
+| docs/questioner-sessions/2026-04-04_design-pipeline-event-driven-refactor.md | session | Stage 1 briefing for design-pipeline event-driven refactor (stores, DAG, retry, CLI) | 2026-04-04 |
+| docs/debate-moderator-sessions/2026-04-04_design-pipeline-event-driven-refactor.md | session | Stage 2 expert debate on event-driven refactor architecture | 2026-04-04 |
+| docs/debate-moderator-sessions/2026-04-04_design-pipeline-event-driven-refactor-tla-review.md | session | Stage 4 TLA+ spec review for event-driven refactor | 2026-04-04 |
+| docs/debate-moderator-sessions/2026-04-04_design-pipeline-event-driven-refactor-tla-review-v2.md | session | Stage 4 TLA+ spec re-review (v2) for event-driven refactor | 2026-04-04 |
+| docs/tla-specs/design-pipeline-event-driven-refactor/ | spec | TLA+ formal specification v1 for design-pipeline event-driven refactor | 2026-04-04 |
+| docs/tla-specs/design-pipeline-event-driven-refactor-v2/ | spec | TLA+ formal specification v2 for design-pipeline event-driven refactor | 2026-04-04 |
+| docs/implementation/2026-04-04_design-pipeline-event-driven-refactor.md | plan | Implementation plan for event-driven refactor (13 stores, DAG executor, retry, file-system port) | 2026-04-04 |

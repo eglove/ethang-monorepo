@@ -2,7 +2,7 @@
 
 | Path | Kind | Summary | Updated |
 |------|------|---------|---------|
-| packages/design-pipeline | package | Design pipeline TypeScript engine (deprecated) | 2026-04-03 |
+| packages/design-pipeline | package | 7-stage design pipeline TypeScript SDK with event-driven state machine engine, store-based stages, and Claude SDK adapter | 2026-04-04 |
 | packages/eslint-config | package | Shared ESLint configuration with CSpell integration | 2026-04-03 |
 | packages/fetch | package | Fetch wrapper utilities | 2026-04-03 |
 | packages/hooks | package | Shared React hooks | 2026-04-03 |

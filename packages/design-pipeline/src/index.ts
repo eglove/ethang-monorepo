@@ -1,81 +1,134 @@
-import Anthropic from "@anthropic-ai/sdk";
-import isError from "lodash/isError.js";
-import { execFileSync } from "node:child_process";
-import path from "node:path";
-import { createInterface } from "node:readline";
+import type { StageStore } from "./stores/stage-store.ts";
+import type { RunState } from "./util/enums.ts";
+import type {
+  FileOperations,
+  GitOperations,
+  LlmProvider,
+} from "./util/interfaces.ts";
 
-import type { EslintRunner } from "./stages/lint-fixer.ts";
-
-import { ClaudeSdkAdapter } from "./adapters/claude-sdk.ts";
-import { ChildProcessGitAdapter } from "./adapters/git-child-process.ts";
-import { defaultPipelineConfig } from "./constants.ts";
+import { BriefingWriterStore } from "./stores/briefing-writer-store.ts";
+import { DebateModeratorStore } from "./stores/debate-moderator-store.ts";
+import { ExpertReviewStore } from "./stores/expert-review-store.ts";
+import { ForkJoinStore } from "./stores/fork-join-store.ts";
+import { ImplementationPlanningStore } from "./stores/implementation-planning-store.ts";
+import { LintFixerStore } from "./stores/lint-fixer-store.ts";
+import { OrchestratorStore } from "./stores/orchestrator-store.ts";
+import { PairProgrammingStore } from "./stores/pair-programming-store.ts";
+import { QuestionerSessionStore } from "./stores/questioner-session-store.ts";
+import { TlaWriterStore } from "./stores/tla-writer-store.ts";
+import { isDAG } from "./util/dag.ts";
 import {
-  executeOrchestrator,
-  type PipelineResult,
-} from "./engine/orchestrator.ts";
-import { runQuestionerSession } from "./stages/questioner-session.ts";
+  ErrorKind,
+  isResultError,
+  ok,
+  type Result,
+  resultError,
+} from "./util/result.ts";
 
-const MONOREPO_ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
+export type PipelineConfig = {
+  numStages: number;
+};
 
-export async function runPipeline(topic = "pipeline"): Promise<PipelineResult> {
-  const claudeAdapter = new ClaudeSdkAdapter();
-  const gitAdapter = new ChildProcessGitAdapter(MONOREPO_ROOT);
-  const anthropicClient = new Anthropic();
+export type PipelineResult = {
+  runState: RunState;
+  success: boolean;
+};
 
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+const DEFAULT_CONFIG: PipelineConfig = { numStages: 10 };
 
-  const readlinePort = {
-    close(): void {
-      rl.close();
+type StageFactory = (stageIndex: number) => StageStore;
+
+const createStageFactory = (
+  llmProvider: LlmProvider,
+  fileOperations: FileOperations,
+  gitOperations: GitOperations,
+): StageFactory => {
+  const factories: Record<number, () => StageStore> = {
+    1: () => {
+      return new QuestionerSessionStore(llmProvider, fileOperations);
     },
-    async question(prompt: string): Promise<string> {
-      return new Promise((resolve) => {
-        rl.question(prompt, resolve);
-      });
+    10: () => {
+      return new LintFixerStore(llmProvider, 10);
+    },
+    2: () => {
+      return new DebateModeratorStore(llmProvider, fileOperations);
+    },
+    3: () => {
+      return new ExpertReviewStore(llmProvider, fileOperations);
+    },
+    4: () => {
+      return new BriefingWriterStore(llmProvider, fileOperations);
+    },
+    5: () => {
+      return new ImplementationPlanningStore(llmProvider, fileOperations);
+    },
+    6: () => {
+      return new PairProgrammingStore(
+        llmProvider,
+        fileOperations,
+        gitOperations,
+      );
+    },
+    7: () => {
+      return new ForkJoinStore(llmProvider);
+    },
+    8: () => {
+      return new LintFixerStore(llmProvider);
+    },
+    9: () => {
+      return new TlaWriterStore(llmProvider, fileOperations);
     },
   };
 
-  const eslintRunner: EslintRunner = {
-    fix(filePath: string): { clean: boolean; errors: string } {
-      try {
-        // eslint-disable-next-line sonar/no-os-command-from-path -- CLI entry point, npx resolved from project node_modules
-        execFileSync("npx", ["eslint", "--fix", filePath], {
-          encoding: "utf8",
-          shell: true,
-        });
-        return { clean: true, errors: "" };
-      } catch (error: unknown) {
-        const message = isError(error) ? error.message : String(error);
-        return { clean: false, errors: message };
-      }
-    },
+  return (stageIndex: number): StageStore => {
+    const factory = factories[stageIndex];
+    if (undefined === factory) {
+      throw new Error(`No factory for stage ${String(stageIndex)}`);
+    }
+
+    return factory();
+  };
+};
+
+export const createPipeline = (
+  llmProvider: LlmProvider,
+  fileOperations: FileOperations,
+  gitOperations: GitOperations,
+  config: PipelineConfig = DEFAULT_CONFIG,
+): Result<{
+  destroy: () => void;
+  orchestrator: OrchestratorStore;
+  stageFactory: StageFactory;
+}> => {
+  const orchestrator = new OrchestratorStore(config.numStages);
+
+  // Validate subscription graph at wiring time
+  const edges: (readonly [number, number])[] = [];
+  for (let index = 1; config.numStages > index; index += 1) {
+    edges.push([index, index + 1]);
+  }
+
+  const dagResult = isDAG(edges);
+  if (isResultError(dagResult)) {
+    orchestrator.destroy();
+    return resultError(ErrorKind.ValidationError, "Invalid subscription DAG");
+  }
+
+  const stageFactory = createStageFactory(
+    llmProvider,
+    fileOperations,
+    gitOperations,
+  );
+
+  const destroy = (): void => {
+    orchestrator.destroy();
   };
 
-  return executeOrchestrator({
-    anthropicClient,
-    claudeAdapter,
-    config: defaultPipelineConfig,
-    eslintRunner,
-    gitAdapter,
-    questionerRunner: async (deps) => {
-      return runQuestionerSession({
-        ...deps,
-        client: anthropicClient,
-        readline: readlinePort,
-        rootDirectory: MONOREPO_ROOT,
-        topic,
-      });
-    },
-    readlinePort,
-    rootDirectory: MONOREPO_ROOT,
-  });
-}
+  return ok({ destroy, orchestrator, stageFactory });
+};
 
-export { defaultPipelineConfig, type PipelineConfig } from "./constants.ts";
-export {
-  executeOrchestrator,
-  type PipelineResult,
-} from "./engine/orchestrator.ts";
+export const startPipeline = (
+  orchestrator: OrchestratorStore,
+): Result<null> => {
+  return orchestrator.start();
+};
