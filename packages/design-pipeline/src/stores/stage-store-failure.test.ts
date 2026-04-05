@@ -109,6 +109,12 @@ describe("StageStore retry, direct error, timeout", () => {
   });
 
   describe("handleDirectError", () => {
+    it("from non-active state -> err", () => {
+      const { forceState, store } = createTestStageStore();
+      forceState({ stageState: StageState.Streaming });
+      expect(isResultError(store.handleDirectError())).toBe(true);
+    });
+
     it("with retries remaining -> retrying", () => {
       const { forceState, store } = createTestStageStore();
       forceState({ llmState: LlmState.Idle, stageState: StageState.Active });

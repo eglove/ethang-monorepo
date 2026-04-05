@@ -17,6 +17,30 @@ const noopLlmProvider = {
   getModel: constant("test-model"),
 };
 
+describe("testable stage store factory", () => {
+  it("mock LLM provider chat returns ok with stream", async () => {
+    const { store } = createTestStageStore();
+    const result = await store.llmProvider.chat({
+      messages: [{ content: "test", role: "user" }],
+      model: "test",
+    });
+    expect(isOk(result)).toBe(true);
+    if (isOk(result)) {
+      const chunks: string[] = [];
+      for await (const chunk of result.value) {
+        chunks.push(chunk.content);
+      }
+
+      expect(chunks).toStrictEqual([""]);
+    }
+  });
+
+  it("mock LLM provider getModel returns test-model", () => {
+    const { store } = createTestStageStore();
+    expect(store.llmProvider.getModel("test")).toBe("test-model");
+  });
+});
+
 describe("StageStore base", () => {
   describe("initial state", () => {
     it("has stageState idle", () => {
@@ -117,6 +141,40 @@ describe("StageStore base", () => {
         stageState: StageState.Active,
       });
       expect(isOk(store.requestLlm())).toBe(true);
+    });
+
+    it("requestLlm fails when llmState is streaming-active", () => {
+      const { forceState, store } = createTestStageStore();
+      forceState({
+        llmState: LlmState.StreamingActive,
+        stageState: StageState.Active,
+      });
+      expect(isResultError(store.requestLlm())).toBe(true);
+    });
+
+    it("requestLlm fails when max LLM calls exceeded", () => {
+      const { forceState, store } = createTestStageStore();
+      forceState({
+        llmCalls: 100,
+        llmState: LlmState.Idle,
+        stageState: StageState.Active,
+      });
+      expect(isResultError(store.requestLlm())).toBe(true);
+    });
+
+    it("handleStreamStart fails from idle llmState", () => {
+      const { forceState, store } = createTestStageStore();
+      forceState({
+        llmState: LlmState.Complete,
+        stageState: StageState.Active,
+      });
+      expect(isResultError(store.handleStreamStart())).toBe(true);
+    });
+
+    it("handleStreamComplete fails from non-streaming llmState", () => {
+      const { forceState, store } = createTestStageStore();
+      forceState({ llmState: LlmState.Idle, stageState: StageState.Active });
+      expect(isResultError(store.handleStreamComplete())).toBe(true);
     });
 
     it("requestLlm fails if not active", () => {

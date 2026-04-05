@@ -58,6 +58,18 @@ describe("createTestGitStore", () => {
     expect(isOk(result)).toBe(true);
   });
 
+  it("diff returns ok with mock output", async () => {
+    const { store } = createTestGitStore();
+    const result = await store.diff();
+    expect(isOk(result)).toBe(true);
+  });
+
+  it("add returns ok with mock output", async () => {
+    const { store } = createTestGitStore();
+    const result = await store.add(["file.ts"]);
+    expect(isOk(result)).toBe(true);
+  });
+
   it("injectOutput customizes command results", async () => {
     const { injectOutput, store } = createTestGitStore();
     injectOutput("status", "modified: file.ts");

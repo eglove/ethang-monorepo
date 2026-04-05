@@ -52,11 +52,32 @@ describe("OrchestratorStore advanceStage", () => {
     expect(store.state.currentStage).toBe(3);
   });
 
+  it("fails with cyclic subscription (forced DAG violation)", () => {
+    const { forceState, store } = createTestOrchestratorStore(3);
+    // Force a state with existing cyclic subscriptions
+    forceState({
+      currentStage: 1,
+      runState: RunState.Running,
+      stageCreated: { 1: true, 2: false, 3: false },
+      subscriptions: [[2, 1]],
+    });
+    // advanceStage would add edge (1, 2), creating a cycle with existing (2, 1)
+    const result = store.advanceStage(StageState.Complete);
+    expect(isResultError(result)).toBe(true);
+  });
+
   it("fails during abort", () => {
     const { forceState, store } = createTestOrchestratorStore(3);
     forceState({ currentStage: 1, runState: RunState.Aborting });
     const result = store.advanceStage(StageState.Complete);
     expect(isResultError(result)).toBe(true);
+  });
+});
+
+describe("OrchestratorStore completeAbort guards", () => {
+  it("completeAbort from non-aborting state -> err", () => {
+    const { store } = createTestOrchestratorStore(3);
+    expect(isResultError(store.completeAbort())).toBe(true);
   });
 });
 
@@ -101,6 +122,14 @@ describe("OrchestratorStore completePipeline", () => {
   });
 });
 
+describe("OrchestratorStore completePipeline guards", () => {
+  it("completePipeline from non-running state -> err", () => {
+    const { store } = createTestOrchestratorStore(3);
+    const result = store.completePipeline(StageState.Complete);
+    expect(isResultError(result)).toBe(true);
+  });
+});
+
 describe("OrchestratorStore handlePipelineError", () => {
   it("transitions to error when stage in error with retries exhausted", () => {
     const { store } = createTestOrchestratorStore(3);
@@ -121,6 +150,14 @@ describe("OrchestratorStore handlePipelineError", () => {
     const { store } = createTestOrchestratorStore(3);
     store.start();
     const result = store.handlePipelineError(StageState.Active, true);
+    expect(isResultError(result)).toBe(true);
+  });
+});
+
+describe("OrchestratorStore handlePipelineError guards", () => {
+  it("handlePipelineError from non-running state -> err", () => {
+    const { store } = createTestOrchestratorStore(3);
+    const result = store.handlePipelineError(StageState.Error, true);
     expect(isResultError(result)).toBe(true);
   });
 });

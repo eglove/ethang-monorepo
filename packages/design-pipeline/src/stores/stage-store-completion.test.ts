@@ -27,6 +27,12 @@ describe("StageStore completion", () => {
       expect(isResultError(store.decideComplete())).toBe(true);
     });
 
+    it("from non-active state -> err", () => {
+      const { forceState, store } = createTestStageStore();
+      forceState({ llmCompleted: 1, stageState: StageState.Streaming });
+      expect(isResultError(store.decideComplete())).toBe(true);
+    });
+
     it("with llmCompleted 0 -> err", () => {
       const { forceState, store } = createTestStageStore();
       forceState({ llmState: LlmState.Idle, stageState: StageState.Active });
@@ -50,6 +56,12 @@ describe("StageStore completion", () => {
   });
 
   describe("completeDirectly", () => {
+    it("from non-active state -> err", () => {
+      const { forceState, store } = createTestStageStore();
+      forceState({ stageState: StageState.Streaming });
+      expect(isResultError(store.completeDirectly())).toBe(true);
+    });
+
     it("from active with no LLM calls -> complete", () => {
       const { forceState, store } = createTestStageStore();
       forceState({ stageState: StageState.Active });

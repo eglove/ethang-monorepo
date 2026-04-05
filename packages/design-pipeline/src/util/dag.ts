@@ -54,7 +54,8 @@ const topologicalSort = (
     processed += 1;
 
     for (const neighbor of adjacency.get(current) ?? []) {
-      const newDegree = (inDegree.get(neighbor) ?? 1) - 1;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const newDegree = inDegree.get(neighbor)! - 1;
       inDegree.set(neighbor, newDegree);
 
       if (0 === newDegree) {
