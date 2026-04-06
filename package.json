@@ -14,6 +14,7 @@
     "onlyBuiltDependencies": [
       "@apollo/protobufjs",
       "@heroui/shared-utils",
+      "@openrouter/sdk",
       "@parcel/watcher",
       "@prisma/client",
       "@prisma/engines",
