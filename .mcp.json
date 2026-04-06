@@ -32,7 +32,7 @@
     },
     "webstorm": {
       "type": "sse",
-      "url": "http://127.0.0.1:64495/sse",
+      "url": "http://127.0.0.1:64506/sse",
       "headers": {}
     }
   }
