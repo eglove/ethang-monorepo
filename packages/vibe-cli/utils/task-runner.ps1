@@ -1,4 +1,4 @@
-. "$PSScriptRoot/tdd-loop.ps1"
+﻿. "$PSScriptRoot/tdd-loop.ps1"
 . "$PSScriptRoot/cleanup-loop.ps1"
 . "$PSScriptRoot/review-runner.ps1"
 
@@ -51,8 +51,6 @@ Work in directory: $WorktreePath
 
         Write-Host "[$($Task.id)] Cleanup..." -ForegroundColor Cyan
         $cleanupResult = Invoke-CleanupLoop `
-            -CodeWriterFile $codeWriterFile `
-            -TaskContext $taskContext `
             -WorktreePath $WorktreePath `
             -TaskId $Task.id
 
@@ -84,9 +82,9 @@ Work in directory: $WorktreePath
             # Reviews found blocking issues — feed them back through TDD
             Write-Host "[$($Task.id)] $($reviewResult.BlockingCount) blocking issues found. Fixing via TDD..." -ForegroundColor Yellow
             Write-PipelineLog "[$($Task.id)] Review FAILED blocking=$($reviewResult.BlockingCount)"
-            $issueList = ($reviewResult.Issues | Where-Object { $_.severity -in 'critical','high' } | ForEach-Object {
-                "[$($_.severity)] $($_.file):$($_.line) — $($_.issue) (fix: $($_.recommendation))"
-            }) -join "`n"
+            $issueList = ($reviewResult.Issues | Where-Object { $_.severity -in 'critical', 'high' } | ForEach-Object {
+                    "[$($_.severity)] $($_.file):$($_.line) — $($_.issue) (fix: $($_.recommendation))"
+                }) -join "`n"
             $taskContext += "`n`nReviewer issues (must fix):`n$issueList"
             continue
         }

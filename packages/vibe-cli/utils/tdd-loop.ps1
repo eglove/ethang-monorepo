@@ -1,4 +1,4 @@
-function Invoke-TddLoop {
+﻿function Invoke-TddLoop {
     param(
         [Parameter(Mandatory)]
         [string]$TestWriterFile,
@@ -30,7 +30,8 @@ function Invoke-TddLoop {
         Write-Host "    [$TaskId] RED: writing failing test..." -ForegroundColor Red
         $redFeedback = if ($redSkipCount -gt 0) {
             "`nYour last $redSkipCount test(s) already passed without needing new code — the existing implementation already covers them. If all behavior is covered, return status DONE."
-        } else { "" }
+        }
+        else { "" }
         $testTurn = Invoke-Claude `
             -SystemPromptFile $TestWriterFile `
             -JsonSchema $turnSchema `
@@ -49,7 +50,7 @@ function Invoke-TddLoop {
 
         # Verify RED — test must actually fail
         Push-Location $WorktreePath
-        pnpm test 2>&1 | Out-Null
+        & ([scriptblock]::Create($Config.VerifyTest)) 2>&1 | Out-Null
         $redPassed = $LASTEXITCODE -eq 0
         Pop-Location
 
@@ -73,7 +74,7 @@ function Invoke-TddLoop {
 
         # Verify GREEN — tests must pass
         Push-Location $WorktreePath
-        $testOutput = pnpm test 2>&1
+        $testOutput = & ([scriptblock]::Create($Config.VerifyTest)) 2>&1
         $greenPassed = $LASTEXITCODE -eq 0
         Pop-Location
 
@@ -90,7 +91,7 @@ function Invoke-TddLoop {
                     Out-Null
 
                 Push-Location $WorktreePath
-                $testOutput = pnpm test 2>&1
+                $testOutput = & ([scriptblock]::Create($Config.VerifyTest)) 2>&1
                 $retryPassed = $LASTEXITCODE -eq 0
                 Pop-Location
 

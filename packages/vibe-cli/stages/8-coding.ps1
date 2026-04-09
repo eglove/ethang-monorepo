@@ -1,3 +1,47 @@
+﻿$VerifyProfiles = @{
+    powershell = @{
+        Test = 'pwsh -Command "Invoke-Pester -CI"'
+        Lint = 'pwsh -Command "Get-ChildItem -Recurse -Filter *.ps1 | ForEach-Object { $f = $_.FullName; $raw = Get-Content $f -Raw; $fmt = Invoke-Formatter -ScriptDefinition $raw; if ($fmt -ne $raw) { Set-Content $f -Value $fmt -NoNewline } }; Invoke-ScriptAnalyzer -Path . -Recurse -EnableExit"'
+        Tsc  = 'echo ok'
+    }
+    typescript = @{
+        Test = 'pnpm test'
+        Lint = 'pnpm lint'
+        Tsc  = 'pnpm tsc'
+    }
+}
+
+function Resolve-VerifyProfile {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Plan
+    )
+
+    $default = $VerifyProfiles.typescript
+
+    $extensions = @{}
+    foreach ($tier in $Plan.tiers) {
+        foreach ($task in $tier.tasks) {
+            foreach ($file in $task.files) {
+                $ext = [System.IO.Path]::GetExtension($file).ToLower()
+                if ($ext -and $ext -ne '.md') {
+                    $extensions[$ext] = ($extensions[$ext] ?? 0) + 1
+                }
+            }
+        }
+    }
+
+    if ($extensions.Count -eq 0) { return $default }
+
+    $dominant = ($extensions.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First 1).Key
+
+    switch ($dominant) {
+        { $_ -in '.ps1', '.psm1', '.psd1' } { return $VerifyProfiles.powershell }
+        { $_ -in '.ts', '.tsx', '.js', '.jsx' } { return $VerifyProfiles.typescript }
+        default { return $default }
+    }
+}
+
 function Invoke-CodingStage {
     param(
         [Parameter(Mandatory)]
@@ -15,10 +59,17 @@ function Invoke-CodingStage {
 
     Write-Host "`n=== Stage 8: Coding ===" -ForegroundColor Cyan
 
-    $plan             = Get-Content $ImplJson | ConvertFrom-Json
+    $plan = Get-Content $ImplJson | ConvertFrom-Json
     $implPlanMarkdown = Get-Content $ImplFile -Raw
-    $featureSlug      = Split-Path $FeatureDir -Leaf
+    $featureSlug = Split-Path $FeatureDir -Leaf
     $integrationBranch = "feature/$featureSlug"
+
+    # Auto-detect verify commands from file extensions in the plan
+    $verifyProfile = Resolve-VerifyProfile -Plan $plan
+    $Config.VerifyTest = $verifyProfile.Test
+    $Config.VerifyLint = $verifyProfile.Lint
+    $Config.VerifyTsc = $verifyProfile.Tsc
+    Write-PipelineLog "Verify profile: test=$($verifyProfile.Test) lint=$($verifyProfile.Lint) tsc=$($verifyProfile.Tsc)"
 
     git checkout -b $integrationBranch 2>&1
     if ($LASTEXITCODE -ne 0) { throw "Failed to create branch $integrationBranch — does it already exist?" }
@@ -36,14 +87,14 @@ function Invoke-CodingStage {
         # Dispatch all tasks in parallel
         $repoRoot = $PWD.Path
         $throttle = $Config.WorktreeThrottleLimit
-        $cfg      = $Config
+        $cfg = $Config
 
         $taskResults = $tier.tasks | ForEach-Object -Parallel {
-            $task     = $_
-            $rootDir  = $using:Root
+            $task = $_
+            $rootDir = $using:Root
             $implPlan = $using:implPlanMarkdown
-            $Config   = $using:cfg
-            $wtPath   = Join-Path $using:repoRoot "wt/$($task.id)"
+            $Config = $using:cfg
+            $wtPath = Join-Path $using:repoRoot "wt/$($task.id)"
 
             . "$rootDir/utils/config.ps1"
             . "$rootDir/utils/task-runner.ps1"

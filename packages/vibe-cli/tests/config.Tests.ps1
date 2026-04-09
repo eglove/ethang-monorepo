@@ -41,6 +41,9 @@ Describe 'Config values' {
         $Config.Keys | Should -Contain 'MaxTlcAttempts'
         $Config.Keys | Should -Contain 'MaxGlobalFixRounds'
         $Config.Keys | Should -Contain 'MaxElicitorTurns'
+        $Config.Keys | Should -Contain 'VerifyTest'
+        $Config.Keys | Should -Contain 'VerifyLint'
+        $Config.Keys | Should -Contain 'VerifyTsc'
     }
 
     It 'has positive integer values for all caps' {

@@ -1,11 +1,5 @@
-function Invoke-CleanupLoop {
+﻿function Invoke-CleanupLoop {
     param(
-        [Parameter(Mandatory)]
-        [string]$CodeWriterFile,
-
-        [Parameter(Mandatory)]
-        [string]$TaskContext,
-
         [Parameter(Mandatory)]
         [string]$WorktreePath,
 
@@ -21,7 +15,7 @@ function Invoke-CleanupLoop {
 
         # Lint
         Write-Host "    [$TaskId] lint..." -ForegroundColor Gray
-        $lintOutput = pnpm lint 2>&1
+        $lintOutput = & ([scriptblock]::Create($Config.VerifyLint)) 2>&1
         $lintPassed = $LASTEXITCODE -eq 0
 
         if (-not $lintPassed) {
@@ -33,7 +27,7 @@ function Invoke-CleanupLoop {
 
         # Test
         Write-Host "    [$TaskId] test..." -ForegroundColor Gray
-        $testOutput = pnpm test 2>&1
+        $testOutput = & ([scriptblock]::Create($Config.VerifyTest)) 2>&1
         $testPassed = $LASTEXITCODE -eq 0
 
         if (-not $testPassed) {
@@ -45,7 +39,7 @@ function Invoke-CleanupLoop {
 
         # Type check
         Write-Host "    [$TaskId] tsc..." -ForegroundColor Gray
-        $tscOutput = pnpm tsc 2>&1
+        $tscOutput = & ([scriptblock]::Create($Config.VerifyTsc)) 2>&1
         $tscPassed = $LASTEXITCODE -eq 0
 
         Pop-Location

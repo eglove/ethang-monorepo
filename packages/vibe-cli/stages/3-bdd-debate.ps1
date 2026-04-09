@@ -1,4 +1,4 @@
-function Invoke-BddDebate {
+﻿function Invoke-BddDebate {
     param(
         [Parameter(Mandatory)]
         [string]$GherkinFile,
@@ -28,7 +28,7 @@ function Invoke-BddDebate {
         -BriefingFile "$FeatureDir/elicitor.md" `
         -StageName "BDD" `
         -BuildRevisionPrompt {
-            param($current, $objections)
-            "Briefing:`n$Briefing`n`nPrevious scenarios:`n$current`n`nDebate objections:`n- $objections`n`nRevise the scenarios to address all objections. Save to $GherkinFile"
-        }.GetNewClosure()
+        param($current, $objections)
+        "Briefing:`n$Briefing`n`nPrevious scenarios:`n$current`n`nDebate objections:`n- $objections`n`nRevise the scenarios to address all objections. Save to $GherkinFile"
+    }.GetNewClosure()
 }

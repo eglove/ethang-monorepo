@@ -7,6 +7,75 @@ BeforeAll {
     . "$PSScriptRoot/../stages/8-coding.ps1"
 }
 
+Describe 'Resolve-VerifyProfile' {
+    It 'returns powershell profile when all files are .ps1' {
+        $plan = @{
+            tiers = @(
+                @{ tasks = @(
+                    @{ files = @('utils/lint-fixer/types.ps1', 'utils/lint-fixer/types.Tests.ps1') }
+                    @{ files = @('utils/lint-fixer/suppress.ps1') }
+                )}
+            )
+        }
+
+        $profile = Resolve-VerifyProfile -Plan $plan
+        $profile.Test | Should -Match 'Pester'
+        $profile.Lint | Should -Not -Be 'pnpm lint'
+    }
+
+    It 'returns typescript profile when all files are .ts' {
+        $plan = @{
+            tiers = @(
+                @{ tasks = @(
+                    @{ files = @('src/index.ts', 'src/index.test.ts') }
+                )}
+            )
+        }
+
+        $profile = Resolve-VerifyProfile -Plan $plan
+        $profile.Test | Should -Be 'pnpm test'
+        $profile.Lint | Should -Be 'pnpm lint'
+        $profile.Tsc | Should -Be 'pnpm tsc'
+    }
+
+    It 'returns default profile for non-code files like .md' {
+        $plan = @{
+            tiers = @(
+                @{ tasks = @(
+                    @{ files = @('docs/learned.md', 'agents/lint-fixer.md') }
+                )}
+            )
+        }
+
+        $profile = Resolve-VerifyProfile -Plan $plan
+        $profile.Test | Should -Be 'pnpm test'
+    }
+
+    It 'uses dominant extension when mixed' {
+        $plan = @{
+            tiers = @(
+                @{ tasks = @(
+                    @{ files = @('utils/types.ps1', 'utils/types.Tests.ps1', 'utils/run.ps1') }
+                    @{ files = @('docs/readme.md') }
+                )}
+            )
+        }
+
+        # 3 .ps1 files vs 1 .md — PowerShell dominates
+        $profile = Resolve-VerifyProfile -Plan $plan
+        $profile.Test | Should -Match 'Pester'
+    }
+
+    It 'falls back to defaults when no code files found' {
+        $plan = @{ tiers = @() }
+
+        $profile = Resolve-VerifyProfile -Plan $plan
+        $profile.Test | Should -Be 'pnpm test'
+        $profile.Lint | Should -Be 'pnpm lint'
+        $profile.Tsc | Should -Be 'pnpm tsc'
+    }
+}
+
 Describe 'Invoke-CodingStage' {
     BeforeAll {
         Mock Write-PipelineLog {}

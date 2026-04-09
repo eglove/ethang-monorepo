@@ -1,4 +1,4 @@
-function Invoke-ReviewRunner {
+﻿function Invoke-ReviewRunner {
     param(
         [Parameter(Mandatory)]
         [string]$WorktreePath,
@@ -21,7 +21,8 @@ function Invoke-ReviewRunner {
     $mergeBase = git merge-base HEAD master 2>$null
     if ($LASTEXITCODE -eq 0 -and $mergeBase) {
         $diff = git diff $mergeBase HEAD 2>&1
-    } else {
+    }
+    else {
         # Fallback: show the latest commit
         $diff = git show HEAD --format="" 2>&1
     }
@@ -35,10 +36,10 @@ function Invoke-ReviewRunner {
     $results = $reviewerFiles | ForEach-Object -Parallel {
         $reviewerFile = $_.FullName
         $reviewerName = $_.BaseName
-        $schema       = $using:reviewSchema
-        $diffContent  = $using:diff
-        $ctx          = $using:Context
-        $rootDir      = $using:AgentsDir | Split-Path -Parent
+        $schema = $using:reviewSchema
+        $diffContent = $using:diff
+        $ctx = $using:Context
+        $rootDir = $using:AgentsDir | Split-Path -Parent
 
         . "$rootDir/utils/config.ps1"
         $global:InvokeClaudeBatched = $true
@@ -100,9 +101,9 @@ function Invoke-ReviewRunner {
 
     # Report
     $criticalCount = ($allIssues | Where-Object { $_.severity -eq 'critical' }).Count
-    $highCount     = ($allIssues | Where-Object { $_.severity -eq 'high' }).Count
-    $mediumCount   = ($allIssues | Where-Object { $_.severity -eq 'medium' }).Count
-    $lowCount      = ($allIssues | Where-Object { $_.severity -eq 'low' }).Count
+    $highCount = ($allIssues | Where-Object { $_.severity -eq 'high' }).Count
+    $mediumCount = ($allIssues | Where-Object { $_.severity -eq 'medium' }).Count
+    $lowCount = ($allIssues | Where-Object { $_.severity -eq 'low' }).Count
 
     Write-Host "  Reviews complete: $criticalCount critical, $highCount high, $mediumCount medium, $lowCount low" -ForegroundColor $(if ($anyFail) { 'Red' } else { 'Green' })
 

@@ -1015,16 +1015,16 @@ None -- all states, transitions, invariants, liveness properties, and debate obj
 
 | Task ID | Title | Tier | Code Writer | Test Writer | Dependencies | Rationale |
 |---------|-------|------|-------------|-------------|--------------|-----------|
-| T1 | Phase/Result enums, state factory, clone utility, config | 1 | `typescript-writer` | `vitest-writer` | None | Domain type definitions, clone utility, AD3 tracker, AD4 runId, and validation logic -- pure logic, no I/O |
+| T1 | Phase/Result enums, state factory, clone utility, config | 1 | `powershell-writer` | `pester-writer` | None | Domain type definitions, clone utility, AD3 tracker, AD4 runId, and validation logic -- pure logic, no I/O |
 | T2 | Learned-fixes template | 1 | `trainer-writer` | `vitest-writer` | None | Knowledge base artifact with structured markdown format |
 | T3 | Agent prompt definition | 1 | `trainer-writer` | `vitest-writer` | None | Claude Code agent prompt -- trainer-writer specializes in agent artifacts; includes D-1 identity, H6 scope, H8 false-positive |
-| T4 | Suppression utility with rollback | 1 | `typescript-writer` | `vitest-writer` | None | File mutation utility with atomic rollback + H9 double-fault + D-1 same-line consolidation -- independently testable (AD2) |
-| T5 | Initialize phase | 2 | `typescript-writer` | `vitest-writer` | T1 | File I/O + git operations + D-2 marker file -- general logic with mocked externals |
-| T6 | Autofix phase | 2 | `typescript-writer` | `vitest-writer` | T1 | Process execution + output parsing + AD3 tracker init + D-1 same-line keys + P-7 malformed output -- pure orchestration logic |
-| T7 | Verify phases | 2 | `typescript-writer` | `vitest-writer` | T1, T4 | Lint verification + VM loop control -- depends on suppression utility for VerifyCapReached (AD2); H9 double-fault propagation; P-7 malformed output |
-| T8 | Manual fix phase | 2 | `typescript-writer` | `vitest-writer` | T1, T3, T4 | Agent dispatch + AD3 attempt tracking + D-1 same-line independence + P-1 guard -- H1/H3/H4/H7/H8 tests; depends on prompt and suppression utility |
-| T9 | Learn phase | 2 | `typescript-writer` | `vitest-writer` | T1, T2 | Knowledge base mutation -- depends on template for file format |
-| T10 | Commit phase | 2 | `typescript-writer` | `vitest-writer` | T1 | Git operations + message formatting + AD4 trailer + P-4 empty-diff guard -- deterministic logic |
-| T11 | Main lifecycle runner | 3 | `typescript-writer` | `vitest-writer` | T5-T10 | Phase dispatch loop + D-2 marker cleanup -- H5 split tests; AD3 consistency validation; D-2 re-entry idempotency test |
-| T12 | Stage 9 integration | 4 | `typescript-writer` | `vitest-writer` | T11 | Orchestrator wiring -- P-3 sliding-window oscillation, D-4/P-8 trailer-based crash recovery with re-dispatch, H6 scope tests, H11 retry cap |
-| T13 | E2E lifecycle tests | 5 | `typescript-writer` | `vitest-writer` | T12 | Full lifecycle validation -- exercises entire state machine including AD1-AD4; P-1/P-3/P-4/P-6/P-7/P-8 scenarios; 4-layer mock architecture |
+| T4 | Suppression utility with rollback | 1 | `powershell-writer` | `pester-writer` | None | File mutation utility with atomic rollback + H9 double-fault + D-1 same-line consolidation -- independently testable (AD2) |
+| T5 | Initialize phase | 2 | `powershell-writer` | `pester-writer` | T1 | File I/O + git operations + D-2 marker file -- general logic with mocked externals |
+| T6 | Autofix phase | 2 | `powershell-writer` | `pester-writer` | T1 | Process execution + output parsing + AD3 tracker init + D-1 same-line keys + P-7 malformed output -- pure orchestration logic |
+| T7 | Verify phases | 2 | `powershell-writer` | `pester-writer` | T1, T4 | Lint verification + VM loop control -- depends on suppression utility for VerifyCapReached (AD2); H9 double-fault propagation; P-7 malformed output |
+| T8 | Manual fix phase | 2 | `powershell-writer` | `pester-writer` | T1, T3, T4 | Agent dispatch + AD3 attempt tracking + D-1 same-line independence + P-1 guard -- H1/H3/H4/H7/H8 tests; depends on prompt and suppression utility |
+| T9 | Learn phase | 2 | `powershell-writer` | `pester-writer` | T1, T2 | Knowledge base mutation -- depends on template for file format |
+| T10 | Commit phase | 2 | `powershell-writer` | `pester-writer` | T1 | Git operations + message formatting + AD4 trailer + P-4 empty-diff guard -- deterministic logic |
+| T11 | Main lifecycle runner | 3 | `powershell-writer` | `pester-writer` | T5-T10 | Phase dispatch loop + D-2 marker cleanup -- H5 split tests; AD3 consistency validation; D-2 re-entry idempotency test |
+| T12 | Stage 9 integration | 4 | `powershell-writer` | `pester-writer` | T11 | Orchestrator wiring -- P-3 sliding-window oscillation, D-4/P-8 trailer-based crash recovery with re-dispatch, H6 scope tests, H11 retry cap |
+| T13 | E2E lifecycle tests | 5 | `powershell-writer` | `pester-writer` | T12 | Full lifecycle validation -- exercises entire state machine including AD1-AD4; P-1/P-3/P-4/P-6/P-7/P-8 scenarios; 4-layer mock architecture |

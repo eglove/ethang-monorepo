@@ -1,4 +1,4 @@
-function Invoke-TlaDebate {
+﻿function Invoke-TlaDebate {
     param(
         [Parameter(Mandatory)]
         [object]$TlaFile,
@@ -23,8 +23,8 @@ function Invoke-TlaDebate {
 
     . "$Root/utils/tlc-runner.ps1"
 
-    $gherkin        = Get-Content $GherkinFile -Raw
-    $tlaWriterFile  = "$Root/agents/doc-writers/tla-writer.md"
+    $gherkin = Get-Content $GherkinFile -Raw
+    $tlaWriterFile = "$Root/agents/doc-writers/tla-writer.md"
 
     Invoke-DebateLoop `
         -DebateModFile "$Root/agents/debate-moderator.md" `
@@ -36,15 +36,15 @@ function Invoke-TlaDebate {
         -BriefingFile "$FeatureDir/elicitor.md" `
         -ReferenceFile $GherkinFile `
         -PostRevision {
-            Write-Host "  Running TLC after debate revision..." -ForegroundColor Yellow
-            Invoke-TlcCheck `
-                -TlaDir $TlaDir `
-                -TlaWriterFile $tlaWriterFile `
-                -FixContext "Original Gherkin scenarios:`n$gherkin"
-        }.GetNewClosure() `
+        Write-Host "  Running TLC after debate revision..." -ForegroundColor Yellow
+        Invoke-TlcCheck `
+            -TlaDir $TlaDir `
+            -TlaWriterFile $tlaWriterFile `
+            -FixContext "Original Gherkin scenarios:`n$gherkin"
+    }.GetNewClosure() `
         -StageName "TLA+" `
         -BuildRevisionPrompt {
-            param($current, $objections)
-            "Gherkin scenarios:`n$gherkin`n`nCurrent spec:`n$current`n`nDebate objections:`n- $objections`n`nRevise the specification to address all objections. Save all files to $TlaDir"
-        }.GetNewClosure()
+        param($current, $objections)
+        "Gherkin scenarios:`n$gherkin`n`nCurrent spec:`n$current`n`nDebate objections:`n- $objections`n`nRevise the specification to address all objections. Save all files to $TlaDir"
+    }.GetNewClosure()
 }

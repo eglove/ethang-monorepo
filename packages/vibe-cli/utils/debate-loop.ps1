@@ -1,4 +1,4 @@
-function Invoke-DebateLoop {
+﻿function Invoke-DebateLoop {
     param(
         [Parameter(Mandatory)]
         [string]$DebateModFile,
@@ -33,7 +33,7 @@ function Invoke-DebateLoop {
         [string]$StageName = "Debate"
     )
 
-    $briefing  = Get-Content $BriefingFile -Raw
+    $briefing = Get-Content $BriefingFile -Raw
     $reference = if ($ReferenceFile) { Get-Content $ReferenceFile -Raw } else { $null }
 
     for ($round = 1; $round -le $MaxRounds; $round++) {
