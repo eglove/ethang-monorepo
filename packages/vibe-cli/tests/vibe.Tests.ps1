@@ -113,3 +113,136 @@ Describe 'vibe.ps1 debateSchema' {
         $schema.required | Should -Contain 'result'
     }
 }
+
+Describe 'vibe.ps1 pipeline execution' {
+    BeforeAll {
+        . "$PSScriptRoot/../utils/config.ps1"
+        . "$PSScriptRoot/../utils/debate-loop.ps1"
+        . "$PSScriptRoot/../utils/task-runner.ps1"
+        . "$PSScriptRoot/../utils/review-runner.ps1"
+        . "$PSScriptRoot/../utils/tlc-runner.ps1"
+        . "$PSScriptRoot/../stages/1-elicitor.ps1"
+        . "$PSScriptRoot/../stages/2-bdd-writer.ps1"
+        . "$PSScriptRoot/../stages/3-bdd-debate.ps1"
+        . "$PSScriptRoot/../stages/4-tla-writer.ps1"
+        . "$PSScriptRoot/../stages/5-tla-debate.ps1"
+        . "$PSScriptRoot/../stages/6-implementation-writer.ps1"
+        . "$PSScriptRoot/../stages/7-implementation-debate.ps1"
+        . "$PSScriptRoot/../stages/8-coding.ps1"
+        . "$PSScriptRoot/../stages/9-global-review.ps1"
+
+        Mock Write-PipelineLog {}
+        Mock Write-Host {}
+
+        $script:vibeRoot = Resolve-Path "$PSScriptRoot/.."
+    }
+
+    It 'runs full pipeline from stage 1 through stage 9' {
+        $featureName = "test-e2e-$(Get-Random)"
+        $featureDir = Join-Path $script:vibeRoot "docs/$featureName"
+        New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
+
+        Mock Invoke-Elicitor {
+            @{ FeatureDir = $featureDir; Briefing = 'test briefing' }
+        }
+        Mock Invoke-BddWriter { "$featureDir/bdd.feature" }
+        Mock Invoke-BddDebate {}
+        Mock Invoke-TlaWriter {
+            @{
+                TlaFile = [PSCustomObject]@{ FullName = "$featureDir/tla/Spec.tla" }
+                TlaDir  = "$featureDir/tla"
+            }
+        }
+        Mock Invoke-TlaDebate {}
+        Mock Invoke-ImplementationWriter {
+            @{
+                ImplFile = "$featureDir/implementation-plan.md"
+                ImplJson = "$featureDir/implementation-plan.json"
+            }
+        }
+        Mock Invoke-ImplementationDebate {}
+        Mock Invoke-CodingStage { "feature/$featureName" }
+        Mock Invoke-GlobalReview {}
+
+        & "$PSScriptRoot/../vibe.ps1" "test seed"
+
+        Should -Invoke Invoke-Elicitor -Times 1
+        Should -Invoke Invoke-BddWriter -Times 1
+        Should -Invoke Invoke-BddDebate -Times 1
+        Should -Invoke Invoke-TlaWriter -Times 1
+        Should -Invoke Invoke-TlaDebate -Times 1
+        Should -Invoke Invoke-ImplementationWriter -Times 1
+        Should -Invoke Invoke-ImplementationDebate -Times 1
+        Should -Invoke Invoke-CodingStage -Times 1
+        Should -Invoke Invoke-GlobalReview -Times 1
+
+        Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It 'resumes at stage 3 skipping earlier stages' {
+        $featureName = "test-resume-$(Get-Random)"
+        $featureDir = Join-Path $script:vibeRoot "docs/$featureName"
+        New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
+        Set-Content (Join-Path $featureDir 'elicitor.md') -Value '# Test briefing'
+        Set-Content (Join-Path $featureDir 'bdd.feature') -Value 'Feature: test'
+
+        Mock Invoke-BddDebate {}
+        Mock Invoke-TlaWriter {
+            @{
+                TlaFile = [PSCustomObject]@{ FullName = "$featureDir/tla/Spec.tla" }
+                TlaDir  = "$featureDir/tla"
+            }
+        }
+        Mock Invoke-TlaDebate {}
+        Mock Invoke-ImplementationWriter {
+            @{
+                ImplFile = "$featureDir/implementation-plan.md"
+                ImplJson = "$featureDir/implementation-plan.json"
+            }
+        }
+        Mock Invoke-ImplementationDebate {}
+        Mock Invoke-CodingStage { "feature/$featureName" }
+        Mock Invoke-GlobalReview {}
+
+        & "$PSScriptRoot/../vibe.ps1" -Stage 3 -Feature $featureName
+
+        Should -Invoke Invoke-BddDebate -Times 1
+        Should -Invoke Invoke-TlaWriter -Times 1
+
+        Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It 'resumes at stage 9 and derives integrationBranch from feature slug' {
+        $featureName = "test-stage9-$(Get-Random)"
+        $featureDir = Join-Path $script:vibeRoot "docs/$featureName"
+        New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
+        Set-Content (Join-Path $featureDir 'elicitor.md') -Value '# Briefing'
+        Set-Content (Join-Path $featureDir 'bdd.feature') -Value 'Feature: test'
+        $tlaDir = Join-Path $featureDir 'tla'
+        New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+        Set-Content (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE Spec ----'
+        Set-Content (Join-Path $featureDir 'implementation-plan.md') -Value '# Plan'
+        Set-Content (Join-Path $featureDir 'implementation-plan.json') -Value '{}'
+
+        Mock Invoke-GlobalReview {}
+
+        & "$PSScriptRoot/../vibe.ps1" -Stage 9 -Feature $featureName
+
+        Should -Invoke Invoke-GlobalReview -Times 1
+
+        Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It 'catch block logs error and re-throws on stage failure' {
+        $featureName = "test-error-$(Get-Random)"
+        $featureDir = Join-Path $script:vibeRoot "docs/$featureName"
+        New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
+
+        Mock Invoke-Elicitor { throw 'Elicitor exploded' }
+
+        { & "$PSScriptRoot/../vibe.ps1" "boom seed" } |
+            Should -Throw '*Elicitor exploded*'
+
+        Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}

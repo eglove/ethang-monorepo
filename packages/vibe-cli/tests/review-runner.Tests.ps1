@@ -150,6 +150,32 @@ Describe 'Invoke-ReviewRunner aggregation logic' {
 
         Remove-Item (Join-Path $script:agentsDir 'reviewers/security-reviewer.md')
     }
+
+    It 'falls back to git diff --cached when merge-base and show return empty' {
+        Mock Push-Location {}
+        Mock Pop-Location {}
+
+        Mock git {
+            if ($args[0] -eq 'merge-base') {
+                $global:LASTEXITCODE = 1
+                return $null
+            }
+            if ($args[0] -eq 'show') {
+                return $null
+            }
+            if ($args[0] -eq 'diff') {
+                return 'cached diff content'
+            }
+        }
+
+        $result = Invoke-ReviewRunner `
+            -WorktreePath $script:wtDir `
+            -AgentsDir $script:agentsDir `
+            -UserNotesPath $script:userNotes `
+            -Context 'cached test'
+
+        $result.Passed | Should -BeTrue
+    }
 }
 
 Describe 'ReviewRunner aggregation unit tests' {

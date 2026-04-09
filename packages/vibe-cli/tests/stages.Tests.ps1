@@ -135,6 +135,26 @@ Describe 'Invoke-BddDebate' {
 
         Should -Invoke Invoke-DebateLoop -Times 1
     }
+
+    It 'BuildRevisionPrompt closure includes briefing and artifact content' {
+        $script:capturedRevision = $null
+        Mock Invoke-DebateLoop {
+            $revision = & $BuildRevisionPrompt 'current scenarios' 'missing edge case'
+            $script:capturedRevision = $revision
+            @{ result = 'CONSENSUS_REACHED' }
+        }
+
+        Invoke-BddDebate `
+            -GherkinFile $script:gherkinFile `
+            -Briefing 'test briefing' `
+            -FeatureDir $script:featureDir `
+            -Root $script:tempRoot `
+            -DebateSchema $script:debateSchema
+
+        $script:capturedRevision | Should -Match 'test briefing'
+        $script:capturedRevision | Should -Match 'current scenarios'
+        $script:capturedRevision | Should -Match 'missing edge case'
+    }
 }
 
 Describe 'Invoke-TlaWriter' {
@@ -227,6 +247,53 @@ Describe 'Invoke-TlaDebate' {
             -DebateSchema $script:debateSchema
 
         Should -Invoke Invoke-DebateLoop -Times 1
+    }
+
+    It 'BuildRevisionPrompt closure includes gherkin and spec content' {
+        $script:capturedRevision = $null
+        Mock Invoke-DebateLoop {
+            $revision = & $BuildRevisionPrompt 'current spec' 'invariant missing'
+            $script:capturedRevision = $revision
+            @{ result = 'CONSENSUS_REACHED' }
+        }
+
+        $utilsDir = Join-Path $script:tempRoot 'utils'
+        New-Item -ItemType Directory -Path $utilsDir -Force | Out-Null
+        Set-Content (Join-Path $utilsDir 'tlc-runner.ps1') -Value 'function Invoke-TlcCheck { param([string]$TlaDir, [string]$TlaWriterFile, [string]$FixContext) }'
+
+        Invoke-TlaDebate `
+            -TlaFile $script:tlaFile `
+            -TlaDir $script:tlaDir `
+            -GherkinFile $script:gherkinFile `
+            -FeatureDir $script:featureDir `
+            -Root $script:tempRoot `
+            -DebateSchema $script:debateSchema
+
+        $script:capturedRevision | Should -Match 'Feature: test'
+        $script:capturedRevision | Should -Match 'current spec'
+        $script:capturedRevision | Should -Match 'invariant missing'
+    }
+
+    It 'PostRevision closure calls Invoke-TlcCheck' {
+        Mock Invoke-DebateLoop {
+            if ($PostRevision) { & $PostRevision }
+            @{ result = 'CONSENSUS_REACHED' }
+        }
+        Mock Invoke-TlcCheck {}
+
+        $utilsDir = Join-Path $script:tempRoot 'utils'
+        New-Item -ItemType Directory -Path $utilsDir -Force | Out-Null
+        Set-Content (Join-Path $utilsDir 'tlc-runner.ps1') -Value 'function Invoke-TlcCheck { param([string]$TlaDir, [string]$TlaWriterFile, [string]$FixContext) }'
+
+        Invoke-TlaDebate `
+            -TlaFile $script:tlaFile `
+            -TlaDir $script:tlaDir `
+            -GherkinFile $script:gherkinFile `
+            -FeatureDir $script:featureDir `
+            -Root $script:tempRoot `
+            -DebateSchema $script:debateSchema
+
+        Should -Invoke Invoke-TlcCheck -Times 1
     }
 }
 
@@ -335,6 +402,27 @@ Describe 'Invoke-ImplementationDebate' {
             -DebateSchema $script:debateSchema
 
         Should -Invoke Invoke-DebateLoop -Times 1
+    }
+
+    It 'BuildRevisionPrompt closure includes TLA spec and plan content' {
+        $script:capturedRevision = $null
+        Mock Invoke-DebateLoop {
+            $revision = & $BuildRevisionPrompt 'current plan' 'step ordering wrong'
+            $script:capturedRevision = $revision
+            @{ result = 'CONSENSUS_REACHED' }
+        }
+
+        Invoke-ImplementationDebate `
+            -ImplFile $script:implFile `
+            -ImplJson $script:implJson `
+            -TlaFile $script:tlaFile `
+            -FeatureDir $script:featureDir `
+            -Root $script:tempRoot `
+            -DebateSchema $script:debateSchema
+
+        $script:capturedRevision | Should -Match 'MODULE Spec'
+        $script:capturedRevision | Should -Match 'current plan'
+        $script:capturedRevision | Should -Match 'step ordering wrong'
     }
 }
 

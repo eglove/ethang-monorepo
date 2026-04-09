@@ -376,6 +376,46 @@ Describe 'Invoke-ClaudeBatched' {
         # Should attempt to clean up outFile and errFile
         $script:removedFiles.Count | Should -BeGreaterThan 0
     }
+
+    It 'returns structured_output through actual batched parsing' {
+        Mock Start-Process {
+            [PSCustomObject]@{ ExitCode = 0 }
+        }
+        Mock Test-Path { $true }
+        Mock Get-Content { '{"type":"result","subtype":"success","structured_output":{"status":"ok"},"total_cost_usd":0.01}' } -ParameterFilter { $Raw }
+        Mock Remove-Item {}
+
+        $result = Invoke-ClaudeBatched -CommandArgs @('--print') -AgentName 'test'
+
+        $parsed = $result | ConvertFrom-Json
+        $parsed.status | Should -Be 'ok'
+    }
+
+    It 'returns result text through actual batched parsing' {
+        Mock Start-Process {
+            [PSCustomObject]@{ ExitCode = 0 }
+        }
+        Mock Test-Path { $true }
+        Mock Get-Content { '{"type":"result","subtype":"success","result":"batch parsed","total_cost_usd":0.01}' } -ParameterFilter { $Raw }
+        Mock Remove-Item {}
+
+        $result = Invoke-ClaudeBatched -CommandArgs @('--print') -AgentName 'test'
+
+        $result | Should -Be 'batch parsed'
+    }
+
+    It 'escapes args with spaces in actual batched execution' {
+        Mock Start-Process {
+            [PSCustomObject]@{ ExitCode = 0 }
+        }
+        Mock Test-Path { $true }
+        Mock Get-Content { '{"type":"result","subtype":"success","result":"space ok","total_cost_usd":0.01}' } -ParameterFilter { $Raw }
+        Mock Remove-Item {}
+
+        $result = Invoke-ClaudeBatched -CommandArgs @('--system-prompt-file', '/path/with spaces/file.md') -AgentName 'test'
+
+        $result | Should -Be 'space ok'
+    }
 }
 
 Describe 'Invoke-Claude print mode argument construction' {
@@ -446,5 +486,24 @@ Describe 'Invoke-Claude print mode argument construction' {
         $parsed = $result | ConvertFrom-Json
 
         $parsed.key | Should -Be 'value'
+    }
+
+    It 'calls claude without stdin when no Prompt given' {
+        Mock claude { '{"type":"result","subtype":"success","result":"no-prompt result","total_cost_usd":0.01}' }
+        $global:InvokeClaudeBatched = $false
+
+        $result = Invoke-Claude -SystemPromptFile '/tmp/agent.md'
+
+        $result | Should -Be 'no-prompt result'
+        Should -Invoke claude -Times 1
+    }
+
+    It 'handles result event without total_cost_usd' {
+        Mock claude { '{"type":"result","subtype":"success","result":"cost-free"}' }
+        $global:InvokeClaudeBatched = $false
+
+        $result = Invoke-Claude -Prompt 'test'
+
+        $result | Should -Be 'cost-free'
     }
 }
