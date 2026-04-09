@@ -62,6 +62,44 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
+  powershell-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - shell: pwsh
+        working-directory: packages/vibe-cli
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          Get-ChildItem -Path ./utils,./stages -Recurse -Filter *.ps1 | ForEach-Object {
+            $f = $_.FullName
+            $raw = Get-Content $f -Raw
+            $fmt = Invoke-Formatter -ScriptDefinition $raw
+            if ($fmt -ne $raw) {
+              Set-Content $f -Value $fmt -NoNewline
+            }
+          }
+          $f = './vibe.ps1'
+          $raw = Get-Content $f -Raw
+          $fmt = Invoke-Formatter -ScriptDefinition $raw
+          if ($fmt -ne $raw) {
+            Set-Content $f -Value $fmt -NoNewline
+          }
+          git diff --exit-code
+          Invoke-ScriptAnalyzer -Path ./utils -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 -EnableExit
+          Invoke-ScriptAnalyzer -Path ./stages -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 -EnableExit
+          Invoke-ScriptAnalyzer -Path ./vibe.ps1 -Settings ./PSScriptAnalyzerSettings.psd1 -EnableExit
+
+  powershell-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - shell: pwsh
+        working-directory: packages/vibe-cli
+        run: |
+          Install-Module -Name Pester -Force -Scope CurrentUser -MinimumVersion 5.0
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          . ./tests/pester.config.ps1
+
   codeql:
     runs-on: ubuntu-latest
     strategy:
