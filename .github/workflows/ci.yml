@@ -63,7 +63,7 @@ jobs:
       - run: pnpm build
 
   powershell-lint:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
       - shell: pwsh
@@ -90,7 +90,7 @@ jobs:
           Invoke-ScriptAnalyzer -Path ./vibe.ps1 -Settings ./PSScriptAnalyzerSettings.psd1 -EnableExit
 
   powershell-test:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
       - shell: pwsh
