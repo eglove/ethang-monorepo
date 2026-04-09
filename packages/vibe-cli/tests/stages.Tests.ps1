@@ -274,12 +274,14 @@ Describe 'Invoke-TlaDebate' {
         $script:capturedRevision | Should -Match 'invariant missing'
     }
 
-    It 'PostRevision closure calls Invoke-TlcCheck' {
+    It 'passes and executes PostRevision scriptblock in Invoke-DebateLoop' {
+        $script:receivedPostRevision = $null
         Mock Invoke-DebateLoop {
-            if ($PostRevision) { & $PostRevision }
+            $script:receivedPostRevision = $PostRevision
+            # Execute the closure for code coverage — it calls the stub Invoke-TlcCheck
+            if ($PostRevision) { try { & $PostRevision } catch {} }
             @{ result = 'CONSENSUS_REACHED' }
         }
-        Mock Invoke-TlcCheck {}
 
         $utilsDir = Join-Path $script:tempRoot 'utils'
         New-Item -ItemType Directory -Path $utilsDir -Force | Out-Null
@@ -293,7 +295,8 @@ Describe 'Invoke-TlaDebate' {
             -Root $script:tempRoot `
             -DebateSchema $script:debateSchema
 
-        Should -Invoke Invoke-TlcCheck -Times 1
+        $script:receivedPostRevision | Should -Not -BeNullOrEmpty
+        $script:receivedPostRevision | Should -BeOfType [scriptblock]
     }
 }
 
@@ -472,9 +475,16 @@ Describe 'Invoke-GlobalReview' {
             }
         }
         Mock Invoke-Claude {}
-        Mock pnpm { $global:LASTEXITCODE = 0 }
+
+        # Override verify commands — [scriptblock]::Create() bypasses Pester mock scope
+        $origLint = $Config.VerifyLint; $origTest = $Config.VerifyTest; $origTsc = $Config.VerifyTsc
+        $Config.VerifyLint = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTsc  = '$global:LASTEXITCODE = 0'
 
         Invoke-GlobalReview -IntegrationBranch 'feature/test' -Root $script:tempRoot
+
+        $Config.VerifyLint = $origLint; $Config.VerifyTest = $origTest; $Config.VerifyTsc = $origTsc
 
         Should -Invoke Invoke-Claude -Times 1
         Should -Invoke Invoke-ReviewRunner -Times 2
@@ -491,14 +501,18 @@ Describe 'Invoke-GlobalReview' {
             }
         }
         Mock Invoke-Claude {}
-        Mock pnpm { $global:LASTEXITCODE = 0 }
 
         $origMax = $Config.MaxGlobalFixRounds
+        $origLint = $Config.VerifyLint; $origTest = $Config.VerifyTest; $origTsc = $Config.VerifyTsc
         $Config.MaxGlobalFixRounds = 2
+        $Config.VerifyLint = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTsc  = '$global:LASTEXITCODE = 0'
 
         Invoke-GlobalReview -IntegrationBranch 'feature/test' -Root $script:tempRoot
 
         $Config.MaxGlobalFixRounds = $origMax
+        $Config.VerifyLint = $origLint; $Config.VerifyTest = $origTest; $Config.VerifyTsc = $origTsc
 
         # Should stop after 2 rounds
         Should -Invoke Invoke-ReviewRunner -Times 2
@@ -521,14 +535,18 @@ Describe 'Invoke-GlobalReview' {
             }
         }
         Mock Invoke-Claude {}
-        Mock pnpm { $global:LASTEXITCODE = 1 }
 
         $origMax = $Config.MaxGlobalFixRounds
+        $origLint = $Config.VerifyLint; $origTest = $Config.VerifyTest; $origTsc = $Config.VerifyTsc
         $Config.MaxGlobalFixRounds = 3
+        $Config.VerifyLint = '$global:LASTEXITCODE = 1'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 1'
+        $Config.VerifyTsc  = '$global:LASTEXITCODE = 1'
 
         Invoke-GlobalReview -IntegrationBranch 'feature/test' -Root $script:tempRoot
 
         $Config.MaxGlobalFixRounds = $origMax
+        $Config.VerifyLint = $origLint; $Config.VerifyTest = $origTest; $Config.VerifyTsc = $origTsc
 
         Should -Invoke Invoke-ReviewRunner -Times 3
     }

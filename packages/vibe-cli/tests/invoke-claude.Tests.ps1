@@ -43,12 +43,11 @@ Describe 'Invoke-Claude argument building' {
     }
 
     It 'does not use Start-Process in print mode' {
-        Mock claude {
-            '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}'
-        }
-        $global:InvokeClaudeBatched = $false
+        $global:InvokeClaudeBatched = $true
+        Mock Invoke-ClaudeBatched { return 'ok' }
         Invoke-Claude -Prompt 'test' | Out-Null
         Should -Invoke Start-Process -Times 0 -Exactly -Scope It
+        $global:InvokeClaudeBatched = $false
     }
 }
 
@@ -425,21 +424,31 @@ Describe 'Invoke-Claude print mode argument construction' {
     }
 
     It 'adds --json-schema when JsonSchema provided' {
-        Mock claude { '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}' }
+        $global:InvokeClaudeBatched = $true
+        $script:capturedArgs = $null
+        Mock Invoke-ClaudeBatched {
+            $script:capturedArgs = $CommandArgs
+            return 'ok'
+        }
+
+        Invoke-Claude -Prompt 'test' -JsonSchema '{"type":"object"}'
+
+        $script:capturedArgs | Should -Contain '--json-schema'
         $global:InvokeClaudeBatched = $false
-
-        Invoke-Claude -Prompt 'test' -JsonSchema '{"type":"object"}' | Out-Null
-
-        Should -Invoke claude -Times 1
     }
 
     It 'adds --add-dir when AddDir provided' {
-        Mock claude { '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}' }
+        $global:InvokeClaudeBatched = $true
+        $script:capturedArgs = $null
+        Mock Invoke-ClaudeBatched {
+            $script:capturedArgs = $CommandArgs
+            return 'ok'
+        }
+
+        Invoke-Claude -Prompt 'test' -AddDir '/tmp/workdir'
+
+        $script:capturedArgs | Should -Contain '--add-dir'
         $global:InvokeClaudeBatched = $false
-
-        Invoke-Claude -Prompt 'test' -AddDir '/tmp/workdir' | Out-Null
-
-        Should -Invoke claude -Times 1
     }
 
     It 'routes to Invoke-ClaudeBatched when InvokeClaudeBatched is set' {
@@ -454,56 +463,119 @@ Describe 'Invoke-Claude print mode argument construction' {
         $global:InvokeClaudeBatched = $false
     }
 
-    It 'writes prompt to temp file and cleans up' {
-        Mock claude { '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}' }
+    It 'writes prompt to temp file and passes to batched' {
+        $global:InvokeClaudeBatched = $true
+        $script:capturedPromptFile = 'NOT_SET'
+        Mock Invoke-ClaudeBatched {
+            $script:capturedPromptFile = $PromptFile
+            return 'ok'
+        }
+
+        Invoke-Claude -Prompt 'temp file test'
+
+        $script:capturedPromptFile | Should -Not -BeNullOrEmpty
+        $script:capturedPromptFile | Should -Not -Be 'NOT_SET'
         $global:InvokeClaudeBatched = $false
-
-        Invoke-Claude -Prompt 'temp file test' | Out-Null
-
-        # If it got here without error, temp file handling worked
-        Should -Invoke claude -Times 1
     }
 
-    It 'handles tool_use events in stream output' {
-        $streamOutput = @(
-            '{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Edit","id":"abc","input":{}}]}}'
-            '{"type":"result","subtype":"success","result":"done","total_cost_usd":0.02}'
-        )
-
-        Mock claude { $streamOutput }
-        $global:InvokeClaudeBatched = $false
+    It 'returns result from batched path' {
+        $global:InvokeClaudeBatched = $true
+        Mock Invoke-ClaudeBatched { return 'done' }
 
         $result = Invoke-Claude -Prompt 'test'
 
         $result | Should -Be 'done'
+        $global:InvokeClaudeBatched = $false
     }
 
-    It 'returns structured_output over result text' {
-        Mock claude { '{"type":"result","subtype":"success","result":"","structured_output":{"key":"value"},"total_cost_usd":0.01}' }
-        $global:InvokeClaudeBatched = $false
+    It 'returns structured_output from batched path' {
+        $global:InvokeClaudeBatched = $true
+        Mock Invoke-ClaudeBatched { return '{"key":"value"}' }
 
         $result = Invoke-Claude -Prompt 'test'
         $parsed = $result | ConvertFrom-Json
 
         $parsed.key | Should -Be 'value'
+        $global:InvokeClaudeBatched = $false
     }
 
-    It 'calls claude without stdin when no Prompt given' {
-        Mock claude { '{"type":"result","subtype":"success","result":"no-prompt result","total_cost_usd":0.01}' }
-        $global:InvokeClaudeBatched = $false
+    It 'passes no PromptFile when no Prompt given' {
+        $global:InvokeClaudeBatched = $true
+        $script:capturedPromptFile = 'NOT_SET'
+        Mock Invoke-ClaudeBatched {
+            $script:capturedPromptFile = $PromptFile
+            return 'no-prompt result'
+        }
 
         $result = Invoke-Claude -SystemPromptFile '/tmp/agent.md'
 
         $result | Should -Be 'no-prompt result'
-        Should -Invoke claude -Times 1
+        $script:capturedPromptFile | Should -BeNullOrEmpty
+        $global:InvokeClaudeBatched = $false
     }
 
-    It 'handles result event without total_cost_usd' {
-        Mock claude { '{"type":"result","subtype":"success","result":"cost-free"}' }
+    It 'includes --system-prompt-file in args' {
+        $global:InvokeClaudeBatched = $true
+        $script:capturedArgs = $null
+        Mock Invoke-ClaudeBatched {
+            $script:capturedArgs = $CommandArgs
+            return 'ok'
+        }
+
+        Invoke-Claude -Prompt 'test' -SystemPromptFile '/tmp/agent.md'
+
+        $script:capturedArgs | Should -Contain '--system-prompt-file'
+        $global:InvokeClaudeBatched = $false
+    }
+}
+
+Describe 'Invoke-Claude streaming path' {
+    # Uses a global:claude function (not a Pester mock) so it resolves inside & { ... } blocks.
+    # Pester mocks use scope-specific overrides that & { ... } may not find;
+    # global functions are always visible as the last-resort scope.
+
+    BeforeAll {
+        Mock Write-PipelineLog {}
+        Mock Write-Host {}
+    }
+
+    AfterEach {
+        Remove-Item Function:\claude -ErrorAction SilentlyContinue
+        $global:InvokeClaudeBatched = $false
+    }
+
+    It 'parses result with cost from stream output' {
+        function global:claude {
+            '{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Edit","id":"x","input":{}}]}}'
+            '{"type":"result","subtype":"success","result":"stream-ok","total_cost_usd":0.01}'
+        }
         $global:InvokeClaudeBatched = $false
 
         $result = Invoke-Claude -Prompt 'test'
 
-        $result | Should -Be 'cost-free'
+        $result | Should -Be 'stream-ok'
+    }
+
+    It 'returns structured_output over result text in streaming mode' {
+        function global:claude {
+            '{"type":"result","subtype":"success","result":"","structured_output":{"key":"val"},"total_cost_usd":0.05}'
+        }
+        $global:InvokeClaudeBatched = $false
+
+        $result = Invoke-Claude -SystemPromptFile '/tmp/agent.md'
+        $parsed = $result | ConvertFrom-Json
+
+        $parsed.key | Should -Be 'val'
+    }
+
+    It 'handles result event without total_cost_usd in streaming mode' {
+        function global:claude {
+            '{"type":"result","subtype":"success","result":"no-cost"}'
+        }
+        $global:InvokeClaudeBatched = $false
+
+        $result = Invoke-Claude -Prompt 'test'
+
+        $result | Should -Be 'no-cost'
     }
 }

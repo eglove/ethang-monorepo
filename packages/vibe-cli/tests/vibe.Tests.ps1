@@ -27,12 +27,7 @@ Describe 'vibe.ps1 parameter validation' {
 
 Describe 'Resolve-PipelineState edge cases' {
     BeforeAll {
-        # Extract Resolve-PipelineState from vibe.ps1
-        $vibeContent = Get-Content "$PSScriptRoot/../vibe.ps1" -Raw
-        $funcMatch = [regex]::Match($vibeContent, '(?s)(function Resolve-PipelineState \{.+?\n\})')
-        if ($funcMatch.Success) {
-            Invoke-Expression $funcMatch.Value
-        }
+        . "$PSScriptRoot/../utils/pipeline-state.ps1"
 
         $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibestate-test-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null

@@ -1,13 +1,6 @@
 BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
-
-    # Source just the Resolve-PipelineState function from vibe.ps1
-    # Extract it since vibe.ps1 has top-level execution code
-    $vibeContent = Get-Content "$PSScriptRoot/../vibe.ps1" -Raw
-    $funcMatch = [regex]::Match($vibeContent, '(?s)(function Resolve-PipelineState \{.+?\n\})')
-    if ($funcMatch.Success) {
-        Invoke-Expression $funcMatch.Value
-    }
+    . "$PSScriptRoot/../utils/pipeline-state.ps1"
 }
 
 Describe 'Resolve-PipelineState' {

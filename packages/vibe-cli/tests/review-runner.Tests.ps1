@@ -25,6 +25,21 @@ Describe 'Invoke-ReviewRunner aggregation logic' {
 
         $script:wtDir = Join-Path $script:tempDir 'worktree'
         New-Item -ItemType Directory -Path $script:wtDir -Force | Out-Null
+
+        # Create mock stub files for ForEach-Object -Parallel blocks
+        # Parallel runspaces can't see Pester mocks — they source these stubs instead
+        $utilsDir = Join-Path $script:tempDir 'utils'
+        New-Item -ItemType Directory -Path $utilsDir -Force | Out-Null
+
+        Set-Content (Join-Path $utilsDir 'invoke-claude.ps1') -Value @'
+function Invoke-Claude { return $null }
+function Invoke-ClaudeBatched { return $null }
+'@
+
+        Set-Content (Join-Path $utilsDir 'config.ps1') -Value @'
+. "$PSScriptRoot/invoke-claude.ps1"
+function Write-PipelineLog { param([Parameter(ValueFromPipeline)] [string]$Message) }
+'@
     }
 
     AfterAll {
@@ -175,6 +190,49 @@ Describe 'Invoke-ReviewRunner aggregation logic' {
             -Context 'cached test'
 
         $result.Passed | Should -BeTrue
+    }
+
+    It 'aggregates FAIL results with issues and writes user_notes' {
+        Mock Push-Location {}
+        Mock Pop-Location {}
+        Mock git {
+            if ($args[0] -eq 'merge-base') {
+                $global:LASTEXITCODE = 0
+                'abc'
+            } else { 'diff' }
+        }
+
+        # Override stub to return FAIL — parallel runspaces source this file at runtime
+        $stubPath = Join-Path $script:tempDir 'utils/invoke-claude.ps1'
+        $origStub = Get-Content $stubPath -Raw
+        Set-Content $stubPath -Value @'
+function Invoke-Claude {
+    param([string]$SystemPromptFile, [string]$AppendSystemPromptFile, [string]$Prompt,
+          [string]$JsonSchema, [string]$AddDir, [switch]$Interactive)
+    return '{"verdict":"FAIL","reviewer":"stub","issues":[{"file":"app.ts","line":10,"issue":"SQL injection","recommendation":"parameterize","severity":"critical","weight":9},{"file":"utils.ts","line":null,"issue":"unused import","recommendation":"remove","severity":"low","weight":2}]}'
+}
+function Invoke-ClaudeBatched { return $null }
+'@
+
+        try {
+            $result = Invoke-ReviewRunner `
+                -WorktreePath $script:wtDir `
+                -AgentsDir $script:agentsDir `
+                -UserNotesPath $script:userNotes `
+                -Context 'fail test'
+
+            $result.Passed | Should -BeFalse
+            $result.BlockingCount | Should -Be 1
+            $result.Issues.Count | Should -Be 2
+            $result.Issues[0].weight | Should -Be 9
+            Test-Path $script:userNotes | Should -BeTrue
+            $content = Get-Content $script:userNotes -Raw
+            $content | Should -Match 'SQL injection'
+            $content | Should -Match 'app\.ts:10'
+        }
+        finally {
+            Set-Content $stubPath -Value $origStub
+        }
     }
 }
 

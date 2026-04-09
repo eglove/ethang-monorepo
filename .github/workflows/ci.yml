@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: read
-  security-events: write
-  actions: read
 
 jobs:
   install:
@@ -20,7 +18,7 @@ jobs:
         with:
           node-version: '24'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
 
   lint:
     needs: install
@@ -32,7 +30,7 @@ jobs:
         with:
           node-version: '24'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm lint
       - run: git diff --exit-code
 
@@ -46,7 +44,7 @@ jobs:
         with:
           node-version: '24'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm test
 
   build:
@@ -59,7 +57,7 @@ jobs:
         with:
           node-version: '24'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm build
 
   powershell-lint:
@@ -101,6 +99,10 @@ jobs:
           . ./tests/pester.config.ps1
 
   codeql:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -126,7 +128,7 @@ jobs:
         with:
           node-version: '24'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm test
       - uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9  # v7.0.0
         env:

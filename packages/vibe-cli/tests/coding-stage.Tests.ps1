@@ -74,6 +74,20 @@ Describe 'Resolve-VerifyProfile' {
         $profile.Lint | Should -Be 'pnpm lint'
         $profile.Tsc | Should -Be 'pnpm tsc'
     }
+
+    It 'falls back to defaults for unrecognized code extensions' {
+        $plan = @{
+            tiers = @(
+                @{ tasks = @(
+                    @{ files = @('app.rb', 'lib/helper.rb', 'spec/test.rb') }
+                )}
+            )
+        }
+
+        $profile = Resolve-VerifyProfile -Plan $plan
+        $profile.Test | Should -Be 'pnpm test'
+        $profile.Lint | Should -Be 'pnpm lint'
+    }
 }
 
 Describe 'Invoke-CodingStage' {
@@ -92,6 +106,28 @@ Describe 'Invoke-CodingStage' {
         Set-Content (Join-Path $agentDir 'code-writers/typescript-writer.md') -Value 'writer'
         Set-Content (Join-Path $agentDir 'test-writers/vitest-writer.md') -Value 'test writer'
         Set-Content (Join-Path $agentDir 'reviewers/test-reviewer.md') -Value 'reviewer'
+
+        # Create mock stub files for ForEach-Object -Parallel blocks
+        # Parallel runspaces can't see Pester mocks — they source these stubs instead
+        $utilsDir = Join-Path $script:tempRoot 'utils'
+        New-Item -ItemType Directory -Path $utilsDir -Force | Out-Null
+
+        Set-Content (Join-Path $utilsDir 'invoke-claude.ps1') -Value @'
+function Invoke-Claude { return $null }
+function Invoke-ClaudeBatched { return $null }
+'@
+
+        Set-Content (Join-Path $utilsDir 'config.ps1') -Value @'
+. "$PSScriptRoot/invoke-claude.ps1"
+function Write-PipelineLog { param([Parameter(ValueFromPipeline)] [string]$Message) }
+'@
+
+        Set-Content (Join-Path $utilsDir 'task-runner.ps1') -Value @'
+function Invoke-TaskRunner {
+    param($Task, $ImplPlanMarkdown, $WorktreePath, $AgentsDir)
+    return @{ Status = 'DONE'; FixRounds = 1; Reviews = @{ Issues = @() } }
+}
+'@
 
         # Create impl plan JSON
         $script:implJson = Join-Path $script:featureDir 'implementation-plan.json'
@@ -198,6 +234,30 @@ Describe 'Invoke-CodingStage' {
         ($script:gitCommands | Where-Object { $_ -match 'merge --no-ff' }).Count | Should -Be 1
         ($script:gitCommands | Where-Object { $_ -match 'worktree remove' }).Count | Should -Be 1
         ($script:gitCommands | Where-Object { $_ -match 'branch -d' }).Count | Should -Be 1
+    }
+
+    It 'warns but continues when worktree remove or branch delete fails' {
+        Mock git {
+            $cmd = $args -join ' '
+            if ($cmd -match 'worktree remove' -or $cmd -match 'branch -d') {
+                $global:LASTEXITCODE = 1
+            } else {
+                $global:LASTEXITCODE = 0
+            }
+        }
+
+        Mock Invoke-TaskRunner {
+            @{ Status = 'DONE'; FixRounds = 1; Reviews = @{ Issues = @(@{ severity = 'low'; weight = 1 }) } }
+        }
+
+        # Should not throw — warnings are non-fatal
+        $result = Invoke-CodingStage `
+            -ImplJson $script:implJson `
+            -ImplFile $script:implFile `
+            -FeatureDir $script:featureDir `
+            -Root $script:tempRoot
+
+        $result | Should -Be 'feature/test-feat'
     }
 
     It 'throws when merge fails' {
