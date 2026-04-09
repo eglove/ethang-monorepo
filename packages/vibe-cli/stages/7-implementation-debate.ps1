@@ -1,4 +1,4 @@
-function Invoke-ImplementationDebate {
+﻿function Invoke-ImplementationDebate {
     param(
         [Parameter(Mandatory)]
         [string]$ImplFile,
@@ -34,7 +34,7 @@ function Invoke-ImplementationDebate {
         -ReferenceFile $TlaFile.FullName `
         -StageName "Implementation" `
         -BuildRevisionPrompt {
-            param($current, $objections)
-            "TLA+ specification:`n$tlaSpec`n`nCurrent plan:`n$current`n`nDebate objections:`n- $objections`n`nRevise the plan to address all objections. Save markdown to $ImplFile and JSON manifest to $ImplJson"
-        }.GetNewClosure()
+        param($current, $objections)
+        "TLA+ specification:`n$tlaSpec`n`nCurrent plan:`n$current`n`nDebate objections:`n- $objections`n`nRevise the plan to address all objections. Save markdown to $ImplFile and JSON manifest to $ImplJson"
+    }.GetNewClosure()
 }

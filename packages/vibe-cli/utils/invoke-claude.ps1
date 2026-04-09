@@ -1,4 +1,4 @@
-function Invoke-Claude {
+﻿function Invoke-Claude {
     param(
         [string]$SystemPromptFile,
         [string]$AppendSystemPromptFile,
@@ -10,10 +10,10 @@ function Invoke-Claude {
 
     $args_ = @('--strict-mcp-config', '--dangerously-skip-permissions')
 
-    if ($SystemPromptFile)       { $args_ += '--system-prompt-file',       $SystemPromptFile }
+    if ($SystemPromptFile) { $args_ += '--system-prompt-file', $SystemPromptFile }
     if ($AppendSystemPromptFile) { $args_ += '--append-system-prompt-file', $AppendSystemPromptFile }
-    if ($JsonSchema)             { $args_ += '--json-schema',              $JsonSchema }
-    if ($AddDir)                 { $args_ += '--add-dir',                  $AddDir }
+    if ($JsonSchema) { $args_ += '--json-schema', $JsonSchema }
+    if ($AddDir) { $args_ += '--add-dir', $AddDir }
 
     $agentName = if ($SystemPromptFile) { Split-Path $SystemPromptFile -Leaf } elseif ($AppendSystemPromptFile) { Split-Path $AppendSystemPromptFile -Leaf } else { 'unknown' }
 
@@ -47,7 +47,7 @@ function Invoke-Claude {
         $inParallel = $global:InvokeClaudeBatched -eq $true
 
         if ($inParallel) {
-            return Invoke-ClaudeBatched -Args $args_ -PromptFile $promptFile -AgentName $agentName
+            return Invoke-ClaudeBatched -CommandArgs $args_ -PromptFile $promptFile -AgentName $agentName
         }
 
         $resultText = $null
@@ -56,7 +56,8 @@ function Invoke-Claude {
         & {
             if ($promptFile) {
                 Get-Content $promptFile -Raw | claude @args_ 2>$null
-            } else {
+            }
+            else {
                 claude @args_ 2>$null
             }
         } | ForEach-Object {
@@ -103,16 +104,16 @@ function Invoke-Claude {
 # File-based invocation for parallel runspaces where direct piping fails
 function Invoke-ClaudeBatched {
     param(
-        [array]$Args,
+        [array]$CommandArgs,
         [string]$PromptFile,
         [string]$AgentName
     )
 
     $outFile = [System.IO.Path]::GetTempFileName()
     $errFile = [System.IO.Path]::GetTempFileName()
-    $inFile  = if ($PromptFile) { $PromptFile } else { $null }
+    $inFile = if ($PromptFile) { $PromptFile } else { $null }
 
-    $escapedArgs = $Args | ForEach-Object {
+    $escapedArgs = $CommandArgs | ForEach-Object {
         if ($_ -match '\s') { "`"$_`"" } else { $_ }
     }
     $argString = $escapedArgs -join ' '

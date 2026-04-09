@@ -10,23 +10,49 @@ Describe 'Invoke-CleanupLoop' {
 
         $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "cleanup-test-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
-
-        $script:codeWriterFile = Join-Path $script:tempDir 'writer.md'
-        Set-Content $script:codeWriterFile -Value 'writer prompt'
     }
 
     AfterAll {
         Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
     }
 
+    BeforeEach {
+        # Use scriptblock verify commands that set LASTEXITCODE
+        $script:origLint = $Config.VerifyLint
+        $script:origTest = $Config.VerifyTest
+        $script:origTsc = $Config.VerifyTsc
+    }
+
+    AfterEach {
+        $Config.VerifyLint = $script:origLint
+        $Config.VerifyTest = $script:origTest
+        $Config.VerifyTsc = $script:origTsc
+    }
+
+    It 'uses Config verify commands instead of hardcoded pnpm' {
+        Mock Push-Location {}
+        Mock Pop-Location {}
+
+        $Config.VerifyLint = '$global:LASTEXITCODE = 0; "lint ok"'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 0; "test ok"'
+        $Config.VerifyTsc = '$global:LASTEXITCODE = 0; "tsc ok"'
+
+        $result = Invoke-CleanupLoop `
+            -WorktreePath $script:tempDir `
+            -TaskId 'T1'
+
+        $result.Passed | Should -BeTrue
+    }
+
     It 'returns Passed when all checks pass for required passes' {
         Mock Push-Location {}
         Mock Pop-Location {}
-        Mock pnpm { $global:LASTEXITCODE = 0 }
+
+        $Config.VerifyLint = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTsc = '$global:LASTEXITCODE = 0'
 
         $result = Invoke-CleanupLoop `
-            -CodeWriterFile $script:codeWriterFile `
-            -TaskContext 'test context' `
             -WorktreePath $script:tempDir `
             -TaskId 'T1'
 
@@ -36,18 +62,12 @@ Describe 'Invoke-CleanupLoop' {
     It 'returns failure at lint when lint fails' {
         Mock Push-Location {}
         Mock Pop-Location {}
-        Mock pnpm {
-            if ($args[0] -eq 'lint') {
-                $global:LASTEXITCODE = 1
-                'lint error output'
-            } else {
-                $global:LASTEXITCODE = 0
-            }
-        }
+
+        $Config.VerifyLint = '$global:LASTEXITCODE = 1; "lint error output"'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTsc = '$global:LASTEXITCODE = 0'
 
         $result = Invoke-CleanupLoop `
-            -CodeWriterFile $script:codeWriterFile `
-            -TaskContext 'test context' `
             -WorktreePath $script:tempDir `
             -TaskId 'T1'
 
@@ -57,22 +77,14 @@ Describe 'Invoke-CleanupLoop' {
     }
 
     It 'returns failure at test when test fails' {
-        $script:callCount = 0
         Mock Push-Location {}
         Mock Pop-Location {}
-        Mock pnpm {
-            $script:callCount++
-            if ($args[0] -eq 'test') {
-                $global:LASTEXITCODE = 1
-                'test error output'
-            } else {
-                $global:LASTEXITCODE = 0
-            }
-        }
+
+        $Config.VerifyLint = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 1; "test error output"'
+        $Config.VerifyTsc = '$global:LASTEXITCODE = 0'
 
         $result = Invoke-CleanupLoop `
-            -CodeWriterFile $script:codeWriterFile `
-            -TaskContext 'test context' `
             -WorktreePath $script:tempDir `
             -TaskId 'T1'
 
@@ -83,18 +95,12 @@ Describe 'Invoke-CleanupLoop' {
     It 'returns failure at tsc when tsc fails' {
         Mock Push-Location {}
         Mock Pop-Location {}
-        Mock pnpm {
-            if ($args[0] -eq 'tsc') {
-                $global:LASTEXITCODE = 1
-                'tsc error output'
-            } else {
-                $global:LASTEXITCODE = 0
-            }
-        }
+
+        $Config.VerifyLint = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTsc = '$global:LASTEXITCODE = 1; "tsc error output"'
 
         $result = Invoke-CleanupLoop `
-            -CodeWriterFile $script:codeWriterFile `
-            -TaskContext 'test context' `
             -WorktreePath $script:tempDir `
             -TaskId 'T1'
 
@@ -105,14 +111,12 @@ Describe 'Invoke-CleanupLoop' {
     It 'includes output in failure result' {
         Mock Push-Location {}
         Mock Pop-Location {}
-        Mock pnpm {
-            $global:LASTEXITCODE = 1
-            'detailed error message'
-        }
+
+        $Config.VerifyLint = '$global:LASTEXITCODE = 1; "detailed error message"'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTsc = '$global:LASTEXITCODE = 0'
 
         $result = Invoke-CleanupLoop `
-            -CodeWriterFile $script:codeWriterFile `
-            -TaskContext 'test context' `
             -WorktreePath $script:tempDir `
             -TaskId 'T1'
 

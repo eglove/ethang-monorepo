@@ -1,4 +1,4 @@
-$TlaToolsJar = "C:\Users\glove\projects\tla-toolbox\tla2tools.jar"
+﻿$TlaToolsJar = "C:\Users\glove\projects\tla-toolbox\tla2tools.jar"
 
 function Invoke-TlcCheck {
     param(

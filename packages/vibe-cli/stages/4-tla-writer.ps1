@@ -1,4 +1,4 @@
-. "$PSScriptRoot/../utils/tlc-runner.ps1"
+﻿. "$PSScriptRoot/../utils/tlc-runner.ps1"
 
 function Invoke-TlaWriter {
     param(
@@ -14,9 +14,9 @@ function Invoke-TlaWriter {
 
     Write-Host "`n=== Stage 4: TLA+ Writer ===" -ForegroundColor Cyan
 
-    $gherkin        = Get-Content $GherkinFile -Raw
-    $tlaDir         = (Resolve-Path $FeatureDir).Path | Join-Path -ChildPath "tla"
-    $tlaWriterFile  = "$Root/agents/doc-writers/tla-writer.md"
+    $gherkin = Get-Content $GherkinFile -Raw
+    $tlaDir = (Resolve-Path $FeatureDir).Path | Join-Path -ChildPath "tla"
+    $tlaWriterFile = "$Root/agents/doc-writers/tla-writer.md"
 
     Invoke-Claude `
         -SystemPromptFile $tlaWriterFile `

@@ -1,4 +1,4 @@
-function Invoke-Elicitor {
+﻿function Invoke-Elicitor {
     param(
         [Parameter(Mandatory)]
         [string]$Seed,

@@ -1,4 +1,4 @@
-function Invoke-ImplementationWriter {
+﻿function Invoke-ImplementationWriter {
     param(
         [Parameter(Mandatory)]
         [object]$TlaFile,
@@ -12,10 +12,10 @@ function Invoke-ImplementationWriter {
 
     Write-Host "`n=== Stage 6: Implementation Writer ===" -ForegroundColor Cyan
 
-    $tlaSpec   = Get-Content $TlaFile -Raw
-    $absDir    = (Resolve-Path $FeatureDir).Path
-    $implFile  = Join-Path $absDir "implementation-plan.md"
-    $implJson  = Join-Path $absDir "implementation-plan.json"
+    $tlaSpec = Get-Content $TlaFile -Raw
+    $absDir = (Resolve-Path $FeatureDir).Path
+    $implFile = Join-Path $absDir "implementation-plan.md"
+    $implJson = Join-Path $absDir "implementation-plan.json"
 
     Invoke-Claude `
         -SystemPromptFile "$Root/agents/doc-writers/implementation-writer.md" `

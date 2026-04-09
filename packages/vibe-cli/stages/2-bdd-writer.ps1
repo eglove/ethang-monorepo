@@ -1,4 +1,4 @@
-function Invoke-BddWriter {
+﻿function Invoke-BddWriter {
     param(
         [Parameter(Mandatory)]
         [string]$Briefing,
