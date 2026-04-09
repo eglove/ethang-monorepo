@@ -32,7 +32,11 @@ Describe 'Invoke-ReviewRunner aggregation logic' {
         New-Item -ItemType Directory -Path $utilsDir -Force | Out-Null
 
         Set-Content (Join-Path $utilsDir 'invoke-claude.ps1') -Value @'
-function Invoke-Claude { return $null }
+function Invoke-Claude {
+    param([string]$SystemPromptFile, [string]$AppendSystemPromptFile, [string]$Prompt,
+          [string]$JsonSchema, [string]$AddDir, [switch]$Interactive)
+    return '{"verdict":"PASS","reviewer":"stub","issues":[]}'
+}
 function Invoke-ClaudeBatched { return $null }
 '@
 
@@ -143,7 +147,8 @@ function Write-PipelineLog { param([Parameter(ValueFromPipeline)] [string]$Messa
 
     It 'dispatches correct number of reviewers' {
         # Add a second reviewer
-        Set-Content (Join-Path $script:agentsDir 'reviewers/security-reviewer.md') -Value 'sec prompt'
+        $extraReviewer = Join-Path $script:agentsDir 'reviewers/security-reviewer.md'
+        Set-Content $extraReviewer -Value 'sec prompt'
 
         Mock Push-Location {}
         Mock Pop-Location {}
@@ -154,16 +159,19 @@ function Write-PipelineLog { param([Parameter(ValueFromPipeline)] [string]$Messa
             } else { 'diff' }
         }
 
-        $result = Invoke-ReviewRunner `
-            -WorktreePath $script:wtDir `
-            -AgentsDir $script:agentsDir `
-            -UserNotesPath $script:userNotes `
-            -Context 'multi reviewer'
+        try {
+            $result = Invoke-ReviewRunner `
+                -WorktreePath $script:wtDir `
+                -AgentsDir $script:agentsDir `
+                -UserNotesPath $script:userNotes `
+                -Context 'multi reviewer'
 
-        # Both reviewers fall back to PASS since claude isn't available
-        $result.Passed | Should -BeTrue
-
-        Remove-Item (Join-Path $script:agentsDir 'reviewers/security-reviewer.md')
+            # Both reviewers return PASS from stub
+            $result.Passed | Should -BeTrue
+        }
+        finally {
+            Remove-Item $extraReviewer -ErrorAction SilentlyContinue
+        }
     }
 
     It 'falls back to git diff --cached when merge-base and show return empty' {
