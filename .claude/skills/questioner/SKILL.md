@@ -156,7 +156,7 @@ Yes / No
 ## Out of Scope
 
 - Writing code or implementation artifacts
-- Making design decisions without user input
+- Making design decisions without user inputD
 - Orchestrating or monitoring downstream agents after dispatch
 - Resuming a prior session (start a new `/questioner` session instead)
 - Post-handoff error handling

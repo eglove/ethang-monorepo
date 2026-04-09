@@ -1,0 +1,3 @@
+docs/*/tla/states
+pipeline.log
+coverage.xml
