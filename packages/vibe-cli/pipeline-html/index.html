@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vibe-cli Pipeline</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>vibe-cli</h1>
+    <p class="subtitle">9-Stage Design Pipeline</p>
+    <div class="file-flow">
+      <span class="flow-item">seed prompt</span>
+      <span class="flow-arrow"></span>
+      <span class="flow-item">elicitor.md</span>
+      <span class="flow-arrow"></span>
+      <span class="flow-item">bdd.feature</span>
+      <span class="flow-arrow"></span>
+      <span class="flow-item">*.tla / *.cfg</span>
+      <span class="flow-arrow"></span>
+      <span class="flow-item">impl plan</span>
+      <span class="flow-arrow"></span>
+      <span class="flow-item">code</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Stage 1 -->
+    <section class="stage stage--interactive" id="s1">
+      <div class="stage-header">
+        <span class="stage-num">1</span>
+        <div>
+          <h2>Elicitor</h2>
+          <span class="badge badge--interactive">Interactive</span>
+        </div>
+      </div>
+      <div class="stage-body">
+        <p>Opens a new terminal for a freeform interview. One question at a time until all design dimensions are resolved.</p>
+        <div class="io">
+          <div class="io-in"><strong>In</strong> Seed prompt</div>
+          <div class="io-out"><strong>Out</strong> docs/&lt;feature&gt;/elicitor.md</div>
+        </div>
+        <div class="meta">
+          <span class="agent">elicitor.md</span>
+          <span class="cap">50 turns</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 2 -->
+    <section class="stage stage--writer" id="s2">
+      <div class="stage-header">
+        <span class="stage-num">2</span>
+        <h2>BDD Writer</h2>
+      </div>
+      <div class="stage-body">
+        <p>Transforms the elicitor briefing into Gherkin BDD scenarios.</p>
+        <div class="io">
+          <div class="io-in"><strong>In</strong> elicitor.md</div>
+          <div class="io-out"><strong>Out</strong> bdd.feature</div>
+        </div>
+        <div class="meta">
+          <span class="agent">bdd-writer.md</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 3 -->
+    <section class="stage stage--debate" id="s3">
+      <div class="stage-header">
+        <span class="stage-num">3</span>
+        <div>
+          <h2>BDD Debate</h2>
+          <span class="badge badge--loop">Loop</span>
+        </div>
+      </div>
+      <div class="stage-body">
+        <p>Expert panel debates the BDD scenarios against the original briefing. On consensus, the recommendation is applied by the writer.</p>
+        <div class="debate-context">
+          <table>
+            <tr><th>Briefing</th><td>elicitor.md</td></tr>
+            <tr><th>Artifact</th><td>bdd.feature</td></tr>
+            <tr><th>Reference</th><td>&mdash;</td></tr>
+          </table>
+        </div>
+        <div class="loop-diagram">
+          <div class="loop-node loop-node--moderator">Debate Moderator</div>
+          <div class="loop-arrow loop-arrow--down">
+            <span class="loop-label-partial">PARTIAL_CONSENSUS</span>
+          </div>
+          <div class="loop-node loop-node--writer">BDD Writer revises</div>
+          <div class="loop-arrow loop-arrow--up"></div>
+          <div class="loop-exit">
+            <span class="loop-label-consensus">CONSENSUS_REACHED</span>
+            BDD Writer applies recommendation
+          </div>
+        </div>
+        <div class="meta">
+          <span class="agent">debate-moderator.md + bdd-writer.md</span>
+          <span class="cap">100 rounds</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 4 -->
+    <section class="stage stage--verify" id="s4">
+      <div class="stage-header">
+        <span class="stage-num">4</span>
+        <div>
+          <h2>TLA+ Writer + TLC</h2>
+          <span class="badge badge--loop">Loop</span>
+        </div>
+      </div>
+      <div class="stage-body">
+        <p>Writes a TLA+ formal specification from the BDD scenarios, then runs the TLC model checker. Loops until the spec passes verification.</p>
+        <div class="io">
+          <div class="io-in"><strong>In</strong> bdd.feature</div>
+          <div class="io-out"><strong>Out</strong> tla/*.tla, *.cfg</div>
+        </div>
+        <div class="loop-diagram">
+          <div class="loop-node loop-node--writer">TLA+ Writer</div>
+          <div class="loop-arrow loop-arrow--down"></div>
+          <div class="loop-node loop-node--verify">
+            TLC Model Checker
+            <code>java -jar tla2tools.jar</code>
+          </div>
+          <div class="loop-arrow loop-arrow--up">
+            <span class="loop-label-partial">errors</span>
+          </div>
+          <div class="loop-exit">
+            <span class="loop-label-consensus">pass</span>
+            Spec verified
+          </div>
+        </div>
+        <div class="meta">
+          <span class="agent">tla-writer.md</span>
+          <span class="cap">100 attempts</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 5 -->
+    <section class="stage stage--debate" id="s5">
+      <div class="stage-header">
+        <span class="stage-num">5</span>
+        <div>
+          <h2>TLA+ Debate</h2>
+          <span class="badge badge--loop">Loop</span>
+        </div>
+      </div>
+      <div class="stage-body">
+        <p>Expert panel reviews the TLA+ spec against the elicitor briefing, using the BDD scenarios as reference to verify alignment.</p>
+        <div class="debate-context">
+          <table>
+            <tr><th>Briefing</th><td>elicitor.md</td></tr>
+            <tr><th>Artifact</th><td>*.tla</td></tr>
+            <tr><th>Reference</th><td class="ref-highlight">bdd.feature</td></tr>
+          </table>
+        </div>
+        <div class="loop-diagram">
+          <div class="loop-node loop-node--moderator">Debate Moderator</div>
+          <div class="loop-arrow loop-arrow--down">
+            <span class="loop-label-partial">PARTIAL_CONSENSUS</span>
+          </div>
+          <div class="loop-node loop-node--writer">TLA+ Writer revises</div>
+          <div class="loop-arrow loop-arrow--up"></div>
+          <div class="loop-exit">
+            <span class="loop-label-consensus">CONSENSUS_REACHED</span>
+            TLA+ Writer applies recommendation
+          </div>
+        </div>
+        <div class="meta">
+          <span class="agent">debate-moderator.md + tla-writer.md</span>
+          <span class="cap">100 rounds</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 6 -->
+    <section class="stage stage--writer" id="s6">
+      <div class="stage-header">
+        <span class="stage-num">6</span>
+        <h2>Implementation Writer</h2>
+      </div>
+      <div class="stage-body">
+        <p>Produces a detailed implementation plan with task breakdown, execution tiers, and a JSON manifest for the coding stage.</p>
+        <div class="io">
+          <div class="io-in"><strong>In</strong> *.tla</div>
+          <div class="io-out"><strong>Out</strong> implementation-plan.md + .json</div>
+        </div>
+        <div class="meta">
+          <span class="agent">implementation-writer.md</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 7 -->
+    <section class="stage stage--debate" id="s7">
+      <div class="stage-header">
+        <span class="stage-num">7</span>
+        <div>
+          <h2>Implementation Debate</h2>
+          <span class="badge badge--loop">Loop</span>
+        </div>
+      </div>
+      <div class="stage-body">
+        <p>Expert panel reviews the implementation plan against the elicitor briefing, using the TLA+ spec as reference for state/transition coverage.</p>
+        <div class="debate-context">
+          <table>
+            <tr><th>Briefing</th><td>elicitor.md</td></tr>
+            <tr><th>Artifact</th><td>implementation-plan.md</td></tr>
+            <tr><th>Reference</th><td class="ref-highlight">*.tla</td></tr>
+          </table>
+        </div>
+        <div class="loop-diagram">
+          <div class="loop-node loop-node--moderator">Debate Moderator</div>
+          <div class="loop-arrow loop-arrow--down">
+            <span class="loop-label-partial">PARTIAL_CONSENSUS</span>
+          </div>
+          <div class="loop-node loop-node--writer">Impl Writer revises</div>
+          <div class="loop-arrow loop-arrow--up"></div>
+          <div class="loop-exit">
+            <span class="loop-label-consensus">CONSENSUS_REACHED</span>
+            Impl Writer applies recommendation
+          </div>
+        </div>
+        <div class="meta">
+          <span class="agent">debate-moderator.md + implementation-writer.md</span>
+          <span class="cap">100 rounds</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 8 -->
+    <section class="stage stage--coding" id="s8">
+      <div class="stage-header">
+        <span class="stage-num">8</span>
+        <div>
+          <h2>Coding</h2>
+          <span class="badge badge--loop">Nested Loops</span>
+        </div>
+      </div>
+      <div class="stage-body">
+        <p>Parses the implementation plan JSON, creates git worktrees, and executes tasks in parallel with TDD, cleanup, and review cycles.</p>
+        <div class="io">
+          <div class="io-in"><strong>In</strong> implementation-plan.json</div>
+          <div class="io-out"><strong>Out</strong> feature/&lt;name&gt; branch</div>
+        </div>
+
+        <div class="coding-tiers">
+          <div class="tier">
+            <h3>Per Tier <span class="tier-note">(sequential)</span></h3>
+            <div class="task-parallel">
+              <h4>Per Task <span class="tier-note">(parallel, max 3 worktrees)</span></h4>
+              <div class="nested-loops">
+                <div class="nested-loop">
+                  <div class="nested-loop-header">Fix Round Loop <span class="cap">cap: 20</span></div>
+                  <div class="nested-loop-body">
+                    <div class="nested-loop">
+                      <div class="nested-loop-header nested-loop-header--tdd">TDD Loop <span class="cap">cap: 20 cycles</span></div>
+                      <div class="nested-loop-body">
+                        <div class="tdd-steps">
+                          <div class="tdd-step tdd-red">RED<span>Test Writer writes failing test</span></div>
+                          <div class="tdd-step tdd-green">GREEN<span>Code Writer makes it pass</span></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="cleanup-step">Cleanup: lint + test + tsc <span class="cap">2 consecutive passes</span></div>
+                    <div class="review-step">
+                      Parallel Reviewers (agents/reviewers/*.md)
+                      <div class="review-feedback">blocking issues feed back to TDD</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="merge-step">Merge task branches into feature/ branch</div>
+          </div>
+        </div>
+
+        <div class="meta">
+          <span class="agent">code-writers + test-writers + reviewers</span>
+          <span class="cap">MaxGreenRetries: 20</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 9 -->
+    <section class="stage stage--review" id="s9">
+      <div class="stage-header">
+        <span class="stage-num">9</span>
+        <div>
+          <h2>Global Review</h2>
+          <span class="badge badge--loop">Loop</span>
+        </div>
+      </div>
+      <div class="stage-body">
+        <p>All reviewers run against the full integration branch diff. Blocking issues are fixed by the code writer and re-verified.</p>
+        <div class="loop-diagram">
+          <div class="loop-node loop-node--moderator">Parallel Reviewers</div>
+          <div class="loop-arrow loop-arrow--down">
+            <span class="loop-label-partial">blocking issues</span>
+          </div>
+          <div class="loop-node loop-node--writer">Code Writer fixes + verify lint/test/tsc</div>
+          <div class="loop-arrow loop-arrow--up"></div>
+          <div class="loop-exit">
+            <span class="loop-label-consensus">pass</span>
+            Feature branch ready
+          </div>
+        </div>
+        <div class="meta">
+          <span class="agent">reviewers/*.md + typescript-writer.md</span>
+          <span class="cap">20 rounds</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="complete">
+      <div class="complete-icon">&#10003;</div>
+      <h2>Pipeline Complete</h2>
+      <p>Feature branch ready for merge</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="legend">
+      <h3>Legend</h3>
+      <div class="legend-items">
+        <span class="legend-item"><span class="legend-swatch legend-swatch--interactive"></span> Interactive</span>
+        <span class="legend-item"><span class="legend-swatch legend-swatch--writer"></span> Writer</span>
+        <span class="legend-item"><span class="legend-swatch legend-swatch--debate"></span> Debate</span>
+        <span class="legend-item"><span class="legend-swatch legend-swatch--verify"></span> TLC Verification</span>
+        <span class="legend-item"><span class="legend-swatch legend-swatch--coding"></span> Coding</span>
+        <span class="legend-item"><span class="legend-swatch legend-swatch--review"></span> Global Review</span>
+      </div>
+    </div>
+    <div class="usage">
+      <h3>Usage</h3>
+      <code>./vibe.ps1 "your prompt"</code>
+      <code>./vibe.ps1 -Stage 3 -Feature lint-fixer</code>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
