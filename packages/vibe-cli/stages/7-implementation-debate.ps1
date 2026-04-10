@@ -13,19 +13,13 @@
         [string]$FeatureDir,
 
         [Parameter(Mandatory)]
-        [string]$Root,
-
-        [Parameter(Mandatory)]
-        [string]$DebateSchema
+        [string]$Root
     )
-
-    Write-Host "`n=== Stage 7: Implementation Debate ===" -ForegroundColor Cyan
 
     $tlaSpec = Get-Content $TlaFile -Raw
 
     Invoke-DebateLoop `
         -DebateModFile "$Root/agents/debate-moderator.md" `
-        -DebateSchema $DebateSchema `
         -WriterFile "$Root/agents/doc-writers/implementation-writer.md" `
         -DebateContext "Review this implementation plan against the TLA+ specification. Focus on whether every state and transition is covered, whether step ordering respects dependencies, whether test descriptions are specific enough, and whether the execution tiers are correctly parallelized." `
         -SessionFile "$FeatureDir/impl-debate.md" `

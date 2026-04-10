@@ -19,8 +19,6 @@ Describe 'Invoke-DebateLoop' {
 
         $script:sessionFile = Join-Path $script:tempDir 'session.md'
 
-        $script:debateSchema = '{"type":"object","properties":{"result":{"type":"string"},"rounds":{"type":"integer"},"experts":{"type":"array","items":{"type":"string"}},"recommendation":{"type":"string"},"objections":{"type":"array","items":{"type":"string"}},"sessionFile":{"type":"string"}},"required":["result","rounds","experts","recommendation","objections","sessionFile"]}'
-
         $script:modFile = Join-Path $script:tempDir 'moderator.md'
         Set-Content $script:modFile -Value 'moderator prompt'
 
@@ -39,7 +37,6 @@ Describe 'Invoke-DebateLoop' {
 
         $result = Invoke-DebateLoop `
             -DebateModFile $script:modFile `
-            -DebateSchema $script:debateSchema `
             -WriterFile $script:writerFile `
             -DebateContext 'test context' `
             -SessionFile $script:sessionFile `
@@ -66,7 +63,6 @@ Describe 'Invoke-DebateLoop' {
 
         $result = Invoke-DebateLoop `
             -DebateModFile $script:modFile `
-            -DebateSchema $script:debateSchema `
             -WriterFile $script:writerFile `
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
@@ -99,7 +95,6 @@ Describe 'Invoke-DebateLoop' {
 
         $result = Invoke-DebateLoop `
             -DebateModFile $script:modFile `
-            -DebateSchema $script:debateSchema `
             -WriterFile $script:writerFile `
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
@@ -120,7 +115,6 @@ Describe 'Invoke-DebateLoop' {
 
         $result = Invoke-DebateLoop `
             -DebateModFile $script:modFile `
-            -DebateSchema $script:debateSchema `
             -WriterFile $script:writerFile `
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
@@ -146,7 +140,6 @@ Describe 'Invoke-DebateLoop' {
 
         $result = Invoke-DebateLoop `
             -DebateModFile $script:modFile `
-            -DebateSchema $script:debateSchema `
             -WriterFile $script:writerFile `
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
@@ -172,7 +165,6 @@ Describe 'Invoke-DebateLoop' {
 
         Invoke-DebateLoop `
             -DebateModFile $script:modFile `
-            -DebateSchema $script:debateSchema `
             -WriterFile $script:writerFile `
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
@@ -200,7 +192,6 @@ Describe 'Invoke-DebateLoop' {
 
         Invoke-DebateLoop `
             -DebateModFile $script:modFile `
-            -DebateSchema $script:debateSchema `
             -WriterFile $script:writerFile `
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
@@ -227,7 +218,6 @@ Describe 'Invoke-DebateLoop' {
 
         Invoke-DebateLoop `
             -DebateModFile $script:modFile `
-            -DebateSchema $script:debateSchema `
             -WriterFile $script:writerFile `
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `

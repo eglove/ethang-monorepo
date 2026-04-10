@@ -7,6 +7,7 @@ Describe 'vibe.ps1 parameter validation' {
         Mock Write-PipelineLog {}
         Mock Write-Host {}
         Mock Set-Content {}
+        Mock Start-HeadroomProxy {}
     }
 
     It 'throws when Stage > 1 and no Feature provided' {
@@ -66,11 +67,11 @@ Describe 'Resolve-PipelineState edge cases' {
         $state.ImplFile | Should -BeNullOrEmpty
     }
 
-    It 'returns all state for stage 8+' {
+    It 'returns all state for stage 7+' {
         Set-Content (Join-Path $script:tempDir 'implementation-plan.md') -Value '# Plan'
         Set-Content (Join-Path $script:tempDir 'implementation-plan.json') -Value '{}'
 
-        $state = Resolve-PipelineState -FromStage 8 -Dir $script:tempDir
+        $state = Resolve-PipelineState -FromStage 7 -Dir $script:tempDir
         $state.FeatureDir | Should -Be $script:tempDir
         $state.Briefing | Should -Not -BeNullOrEmpty
         $state.GherkinFile | Should -Not -BeNullOrEmpty
@@ -96,10 +97,10 @@ Describe 'Resolve-PipelineState edge cases' {
     }
 }
 
-Describe 'vibe.ps1 debateSchema' {
+Describe 'debate-loop.ps1 debateSchema' {
     It 'has valid JSON debate schema' {
-        $vibeContent = Get-Content "$PSScriptRoot/../vibe.ps1" -Raw
-        $schemaMatch = [regex]::Match($vibeContent, "(?s)\`$debateSchema = @'`n(.+?)`n'@")
+        $content = Get-Content "$PSScriptRoot/../utils/debate-loop.ps1" -Raw
+        $schemaMatch = [regex]::Match($content, "(?s)\`$DebateSchema = @'`n(.+?)`n'@")
         $schemaMatch.Success | Should -BeTrue
 
         $schema = $schemaMatch.Groups[1].Value | ConvertFrom-Json
@@ -113,8 +114,6 @@ Describe 'vibe.ps1 pipeline execution' {
     BeforeAll {
         . "$PSScriptRoot/../utils/config.ps1"
         . "$PSScriptRoot/../utils/debate-loop.ps1"
-        . "$PSScriptRoot/../utils/task-runner.ps1"
-        . "$PSScriptRoot/../utils/review-runner.ps1"
         . "$PSScriptRoot/../utils/tlc-runner.ps1"
         . "$PSScriptRoot/../stages/1-elicitor.ps1"
         . "$PSScriptRoot/../stages/2-bdd-writer.ps1"
@@ -123,16 +122,14 @@ Describe 'vibe.ps1 pipeline execution' {
         . "$PSScriptRoot/../stages/5-tla-debate.ps1"
         . "$PSScriptRoot/../stages/6-implementation-writer.ps1"
         . "$PSScriptRoot/../stages/7-implementation-debate.ps1"
-        . "$PSScriptRoot/../stages/8-coding.ps1"
-        . "$PSScriptRoot/../stages/9-global-review.ps1"
-
         Mock Write-PipelineLog {}
         Mock Write-Host {}
+        Mock Start-HeadroomProxy {}
 
         $script:vibeRoot = Resolve-Path "$PSScriptRoot/.."
     }
 
-    It 'runs full pipeline from stage 1 through stage 9' {
+    It 'runs full pipeline from stage 1 through stage 7' {
         $featureName = "test-e2e-$(Get-Random)"
         $featureDir = Join-Path $script:vibeRoot "docs/$featureName"
         New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
@@ -156,8 +153,6 @@ Describe 'vibe.ps1 pipeline execution' {
             }
         }
         Mock Invoke-ImplementationDebate {}
-        Mock Invoke-CodingStage { "feature/$featureName" }
-        Mock Invoke-GlobalReview {}
 
         & "$PSScriptRoot/../vibe.ps1" "test seed"
 
@@ -168,8 +163,6 @@ Describe 'vibe.ps1 pipeline execution' {
         Should -Invoke Invoke-TlaDebate -Times 1
         Should -Invoke Invoke-ImplementationWriter -Times 1
         Should -Invoke Invoke-ImplementationDebate -Times 1
-        Should -Invoke Invoke-CodingStage -Times 1
-        Should -Invoke Invoke-GlobalReview -Times 1
 
         Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
     }
@@ -196,34 +189,11 @@ Describe 'vibe.ps1 pipeline execution' {
             }
         }
         Mock Invoke-ImplementationDebate {}
-        Mock Invoke-CodingStage { "feature/$featureName" }
-        Mock Invoke-GlobalReview {}
 
         & "$PSScriptRoot/../vibe.ps1" -Stage 3 -Feature $featureName
 
         Should -Invoke Invoke-BddDebate -Times 1
         Should -Invoke Invoke-TlaWriter -Times 1
-
-        Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-    It 'resumes at stage 9 and derives integrationBranch from feature slug' {
-        $featureName = "test-stage9-$(Get-Random)"
-        $featureDir = Join-Path $script:vibeRoot "docs/$featureName"
-        New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
-        Set-Content (Join-Path $featureDir 'elicitor.md') -Value '# Briefing'
-        Set-Content (Join-Path $featureDir 'bdd.feature') -Value 'Feature: test'
-        $tlaDir = Join-Path $featureDir 'tla'
-        New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
-        Set-Content (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE Spec ----'
-        Set-Content (Join-Path $featureDir 'implementation-plan.md') -Value '# Plan'
-        Set-Content (Join-Path $featureDir 'implementation-plan.json') -Value '{}'
-
-        Mock Invoke-GlobalReview {}
-
-        & "$PSScriptRoot/../vibe.ps1" -Stage 9 -Feature $featureName
-
-        Should -Invoke Invoke-GlobalReview -Times 1
 
         Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
     }

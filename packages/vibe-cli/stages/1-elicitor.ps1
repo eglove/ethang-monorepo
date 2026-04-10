@@ -7,8 +7,6 @@
         [string]$Root
     )
 
-    Write-Host "`n=== Stage 1: Elicitor ===" -ForegroundColor Cyan
-
     Invoke-Claude -Interactive `
         -AppendSystemPromptFile "$Root/agents/doc-writers/elicitor.md" `
         -Prompt "Interview me about: $Seed"

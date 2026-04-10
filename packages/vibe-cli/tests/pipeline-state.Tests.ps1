@@ -55,7 +55,7 @@ Describe 'Resolve-PipelineState' {
 
     It 'returns ImplFile and ImplJson for stage 7 when both exist' {
         Set-Content (Join-Path $script:tempDir 'implementation-plan.md') -Value '# Plan'
-        Set-Content (Join-Path $script:tempDir 'implementation-plan.json') -Value '{}'
+        Set-Content (Join-Path $script:tempDir 'implementation-plan.json') -Value '{"tiers":[{"tier":1,"tasks":[{"id":"T1","title":"A"}]}]}'
 
         $state = Resolve-PipelineState -FromStage 7 -Dir $script:tempDir
         $state.ImplFile | Should -Match 'implementation-plan\.md'
@@ -67,5 +67,62 @@ Describe 'Resolve-PipelineState' {
         $state.GherkinFile | Should -BeNullOrEmpty
         $state.TlaFile | Should -BeNullOrEmpty
         $state.ImplFile | Should -BeNullOrEmpty
+    }
+
+    Context 'Stage 8 resume' {
+        BeforeAll {
+            # Create tickets directory with task logs
+            $ticketsDir = Join-Path $script:tempDir 'tickets'
+            New-Item -ItemType Directory -Path $ticketsDir -Force | Out-Null
+            Set-Content (Join-Path $ticketsDir 'T1-config.md') -Value '# T1'
+            Set-Content (Join-Path $ticketsDir 'T1-log.txt') -Value "[2026-04-10] [T1] done | COMPLETED`n[2026-04-10] [T1] done | MERGED"
+            Set-Content (Join-Path $ticketsDir 'T2-workspace.md') -Value '# T2'
+            Set-Content (Join-Path $ticketsDir 'T2-log.txt') -Value "[2026-04-10] [T2] green | running"
+
+            # Sync-FallbackLog may not be loaded in this test context, define a stub
+            if (-not (Get-Command Sync-FallbackLog -ErrorAction SilentlyContinue)) {
+                function global:Sync-FallbackLog { }
+            }
+            Mock Sync-FallbackLog {}
+        }
+
+        It 'returns Plan, Tickets, and TlaFile for stage 8' {
+            $state = Resolve-PipelineState -FromStage 8 -Dir $script:tempDir
+            $state.Plan | Should -Not -BeNullOrEmpty
+            $state.Tickets | Should -Not -BeNullOrEmpty
+            $state.TlaFile | Should -Not -BeNullOrEmpty
+        }
+
+        It 'detects completed tasks from log files' {
+            $state = Resolve-PipelineState -FromStage 8 -Dir $script:tempDir
+            $state.CompletedTasks | Should -Contain 'T1'
+            $state.CompletedTasks | Should -Not -Contain 'T2'
+        }
+
+        It 'detects merged tasks from log files' {
+            $state = Resolve-PipelineState -FromStage 8 -Dir $script:tempDir
+            $state.MergedTasks | Should -Contain 'T1'
+            $state.MergedTasks | Should -Not -Contain 'T2'
+        }
+
+        It 'throws when tickets directory missing' {
+            $emptyDir = Join-Path ([System.IO.Path]::GetTempPath()) "empty-$(Get-Random)"
+            New-Item -ItemType Directory -Path $emptyDir -Force | Out-Null
+            Set-Content (Join-Path $emptyDir 'elicitor.md') -Value '# Briefing'
+            Set-Content (Join-Path $emptyDir 'bdd.feature') -Value 'Feature: test'
+            $tlaDir2 = Join-Path $emptyDir 'tla'
+            New-Item -ItemType Directory -Path $tlaDir2 -Force | Out-Null
+            Set-Content (Join-Path $tlaDir2 'Spec.tla') -Value '---- MODULE ----'
+            Set-Content (Join-Path $emptyDir 'implementation-plan.md') -Value '# Plan'
+            Set-Content (Join-Path $emptyDir 'implementation-plan.json') -Value '{}'
+
+            { Resolve-PipelineState -FromStage 8 -Dir $emptyDir } | Should -Throw '*tickets*'
+            Remove-Item $emptyDir -Recurse -Force
+        }
+
+        It 'calls Sync-FallbackLog before parsing logs' {
+            Resolve-PipelineState -FromStage 8 -Dir $script:tempDir
+            Should -Invoke Sync-FallbackLog
+        }
     }
 }

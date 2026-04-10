@@ -1,12 +1,11 @@
 # vibe-cli
 
-A 9-stage design pipeline that takes a seed idea through requirements elicitation, formal verification, expert debate, and TDD-driven implementation — all orchestrated by Claude Code agents.
+A 7-stage design pipeline that takes a seed idea through requirements elicitation, formal verification, and expert debate — all orchestrated by Claude Code agents.
 
 ## Prerequisites
 
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) authenticated (OAuth or API key)
 - PowerShell 7+
-- Node.js + pnpm (for lint/test/tsc in coding stages)
 - Java (for TLC model checker in stage 4)
 - TLA+ toolbox jar at `C:\Users\glove\projects\tla-toolbox\tla2tools.jar`
 
@@ -18,7 +17,7 @@ A 9-stage design pipeline that takes a seed idea through requirements elicitatio
 ./vibe.ps1 "your idea or feature description"
 ```
 
-This starts at stage 1 (elicitor interview) and runs through all 9 stages.
+This starts at stage 1 (elicitor interview) and runs through all 7 stages.
 
 ### Resume from a stage
 
@@ -36,9 +35,6 @@ If the pipeline fails or you want to re-run from a specific stage, use `-Stage` 
 
 # Re-run TLA+ writing after editing scenarios
 ./vibe.ps1 -Stage 4 -Feature my-feature
-
-# Skip to coding after manually fixing the implementation plan
-./vibe.ps1 -Stage 8 -Feature my-feature
 ```
 
 ## Stages
@@ -52,8 +48,6 @@ If the pipeline fails or you want to re-run from a specific stage, use `-Stage` 
 | 5 | TLA+ Debate | Print | revises TLA+ spec |
 | 6 | Implementation Writer | Print | `docs/<feature>/implementation-plan.md`, `.json` |
 | 7 | Implementation Debate | Print | revises implementation plan |
-| 8 | Coding | Print | TDD in git worktrees, merges to `feature/<name>` branch |
-| 9 | Global Review | Print | review + fix cycle on the integration branch |
 
 ### Stage details
 
@@ -62,10 +56,6 @@ If the pipeline fails or you want to re-run from a specific stage, use `-Stage` 
 **Stages 2/4/6 — Writers**: Non-interactive agents that produce artifacts from the prior stage's output. Stage 4 additionally runs TLC model checking and loops until the spec passes.
 
 **Stages 3/5/7 — Debates**: A debate moderator assembles expert panels to review the artifact against the elicitor briefing. On consensus, objections are applied as a final revision by the writer. On partial consensus, the writer revises and the debate continues.
-
-**Stage 8 — Coding**: Reads the implementation plan JSON manifest, creates git worktrees for parallel task execution. Each task runs a TDD loop (RED/GREEN), cleanup (lint/test/tsc), and review cycle.
-
-**Stage 9 — Global Review**: Runs all reviewers against the full integration branch diff. Blocking issues are fixed by the code writer and re-verified.
 
 ## Configuration
 
@@ -78,9 +68,7 @@ All loop caps and thresholds are in `utils/config.ps1`:
 | `MaxGreenRetries` | 20 | Code fix attempts when GREEN fails |
 | `CleanupPasses` | 2 | Consecutive clean lint/test/tsc passes required |
 | `MaxFixRounds` | 20 | TDD + cleanup + review retry cap per task |
-| `WorktreeThrottleLimit` | 3 | Max concurrent git worktrees |
 | `MaxTlcAttempts` | 100 | TLA+ writer + TLC verify loop cap |
-| `MaxGlobalFixRounds` | 20 | Global review fix cycles |
 | `MaxElicitorTurns` | 50 | Interview question cap |
 
 ## Directory structure
@@ -94,7 +82,7 @@ vibe-cli/
     test-writers/        # Test writer prompts
     reviewers/           # Reviewer prompts (run in parallel)
     debate-moderator.md  # Debate panel moderator prompt
-  stages/                # Stage scripts (1-9)
+  stages/                # Stage scripts (1-7)
   utils/
     config.ps1           # Pipeline configuration
     invoke-claude.ps1    # Claude CLI wrapper (handles auth, MCP, streaming)

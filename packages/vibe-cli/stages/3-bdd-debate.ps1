@@ -10,17 +10,11 @@
         [string]$FeatureDir,
 
         [Parameter(Mandatory)]
-        [string]$Root,
-
-        [Parameter(Mandatory)]
-        [string]$DebateSchema
+        [string]$Root
     )
-
-    Write-Host "`n=== Stage 3: BDD Debate ===" -ForegroundColor Cyan
 
     Invoke-DebateLoop `
         -DebateModFile "$Root/agents/debate-moderator.md" `
-        -DebateSchema $DebateSchema `
         -WriterFile "$Root/agents/doc-writers/bdd-writer.md" `
         -DebateContext "Debate the BDD scenarios against the original briefing. Focus on completeness, correctness, and whether all edge cases and error states have scenarios." `
         -SessionFile "$FeatureDir/bdd-debate.md" `
