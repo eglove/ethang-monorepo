@@ -10,14 +10,14 @@
         [string]$Root
     )
 
-    $tlaSpec = Get-Content $TlaFile -Raw
+    $tlaPath = (Resolve-Path $TlaFile).Path
     $absDir = (Resolve-Path $FeatureDir).Path
     $implFile = Join-Path $absDir "implementation-plan.md"
     $implJson = Join-Path $absDir "implementation-plan.json"
 
     Invoke-Claude `
         -SystemPromptFile "$Root/agents/doc-writers/implementation-writer.md" `
-        -Prompt "TLA+ specification:`n$tlaSpec`n`nSave the markdown plan to: $implFile`nSave the JSON manifest to: $implJson" | Out-Null
+        -Prompt "Read the TLA+ specification from: $tlaPath`n`nSave the markdown plan to: $implFile`nSave the JSON manifest to: $implJson" | Out-Null
 
     if (-not (Test-Path $implFile)) { throw "Implementation writer did not produce $implFile" }
     if (-not (Test-Path $implJson)) { throw "Implementation writer did not produce $implJson" }

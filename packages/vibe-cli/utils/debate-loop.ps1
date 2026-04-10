@@ -34,17 +34,16 @@ function Invoke-DebateLoop {
         [string]$StageName = "Debate"
     )
 
-    $briefing = Get-Content $BriefingFile -Raw
-    $reference = if ($ReferenceFile) { Get-Content $ReferenceFile -Raw } else { $null }
+    $briefingPath = (Resolve-Path $BriefingFile).Path
+    $referencePath = if ($ReferenceFile) { (Resolve-Path $ReferenceFile).Path } else { $null }
+    $artifactPath = (Resolve-Path $ArtifactFile).Path
 
     for ($round = 1; $round -le $MaxRounds; $round++) {
         Write-PipelineLog "$StageName debate round $round..." -Color Yellow
 
-        $currentTopic = Get-Content $ArtifactFile -Raw
-
-        $prompt = "Elicitor briefing:`n$briefing`n`n"
-        if ($reference) { $prompt += "Reference document (prior stage output):`n$reference`n`n" }
-        $prompt += "Artifact under review:`n$currentTopic`n`nContext: $DebateContext`nSave session to $SessionFile"
+        $prompt = "Read the elicitor briefing from: $briefingPath`n`n"
+        if ($referencePath) { $prompt += "Read the reference document (prior stage output) from: $referencePath`n`n" }
+        $prompt += "Read the artifact under review from: $artifactPath`n`nContext: $DebateContext`nSave session to $SessionFile"
 
         try {
             $debate = Invoke-Claude `
@@ -67,7 +66,7 @@ function Invoke-DebateLoop {
             # Apply the consensus recommendation as a final revision
             if ($debate.recommendation) {
                 Write-PipelineLog "Applying consensus recommendation to $ArtifactFile ..." -Color Cyan
-                $revisionPrompt = & $BuildRevisionPrompt $currentTopic $debate.recommendation
+                $revisionPrompt = & $BuildRevisionPrompt $artifactPath $debate.recommendation
                 Invoke-Claude -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
                 if ($PostRevision) {
                     Write-PipelineLog "Running post-revision check..." -Color Yellow
@@ -91,7 +90,7 @@ function Invoke-DebateLoop {
         $objectionList = $debate.objections -join "`n- "
         Write-PipelineLog "Revising ($($debate.objections.Count) objections)..." -Color Yellow
 
-        $revisionPrompt = & $BuildRevisionPrompt $currentTopic $objectionList
+        $revisionPrompt = & $BuildRevisionPrompt $artifactPath $objectionList
         Invoke-Claude -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
         if ($PostRevision) {
             Write-PipelineLog "Running post-revision check..." -Color Yellow

@@ -205,7 +205,7 @@ Describe 'Invoke-DebateLoop' {
         $script:postRevisionCount | Should -Be 1
     }
 
-    It 'includes reference document in prompt when ReferenceFile provided' {
+    It 'includes reference document path in prompt when ReferenceFile provided' {
         $refFile = Join-Path $script:tempDir 'ref.feature'
         Set-Content $refFile -Value 'BDD scenarios here'
 
@@ -228,6 +228,6 @@ Describe 'Invoke-DebateLoop' {
             -MaxRounds 5
 
         $script:capturedPrompt | Should -Match 'Reference document'
-        $script:capturedPrompt | Should -Match 'BDD scenarios here'
+        $script:capturedPrompt | Should -Match 'ref\.feature'
     }
 }

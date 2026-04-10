@@ -75,7 +75,7 @@ try {
 
     if ($Stage -le 3) {
         Write-PipelineLog "--- Stage 3: BDD Debate ---" -Color Cyan
-        Invoke-BddDebate -GherkinFile $gherkinFile -Briefing $briefing -FeatureDir $featureDir -Root $root
+        Invoke-BddDebate -GherkinFile $gherkinFile -FeatureDir $featureDir -Root $root
     }
 
     if ($Stage -le 4) {
