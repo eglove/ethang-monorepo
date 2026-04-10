@@ -126,6 +126,58 @@ Describe 'Invoke-CleanupPhase' {
         $result.Status | Should -Be 'escalated'
         $counters.cleanupRemediations | Should -Be 0
     }
+
+    It 'initializes missing counter keys' {
+        Mock Invoke-VerifyCommand { 0 }
+
+        $counters = @{}  # No cleanupCleanPasses or cleanupRemediations keys
+        $result = Invoke-CleanupPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Status | Should -Be 'completed'
+        $counters.cleanupCleanPasses | Should -BeGreaterOrEqual $Config.CleanupPasses
+    }
+
+    It 'passes WorkspacePath through to verify commands' {
+        Mock Invoke-VerifyCommand { 0 } -ParameterFilter { $WorkingDirectory -eq '/tmp/ws' }
+
+        $counters = @{ cleanupCleanPasses = 0; cleanupRemediations = 0 }
+        $result = Invoke-CleanupPhase -Task $script:task -Root $script:root -Counters $counters -WorkspacePath '/tmp/ws'
+        $result.Status | Should -Be 'completed'
+    }
+
+    It 'escalates on infrastructure failure during blame dispatch' {
+        $script:cleanVerifyCall = 0
+        Mock Invoke-VerifyCommand {
+            $script:cleanVerifyCall++
+            if ($script:cleanVerifyCall -eq 1) { return 1 }  # First call fails
+            return 0
+        }
+        Mock Invoke-Claude { throw 'blame infra failure' }
+
+        $counters = @{ cleanupCleanPasses = 0; cleanupRemediations = 0 }
+        $result = Invoke-CleanupPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Status | Should -Be 'escalated'
+        $result.Phase | Should -Be 'cleanup_remed'
+    }
+
+    It 'escalates on infrastructure failure during remediation dispatch' {
+        $script:cleanVerifyCall2 = 0
+        Mock Invoke-VerifyCommand {
+            $script:cleanVerifyCall2++
+            if ($script:cleanVerifyCall2 -eq 1) { return 1 }  # First call fails
+            return 0
+        }
+        $script:cleanClaudeCall2 = 0
+        Mock Invoke-Claude {
+            $script:cleanClaudeCall2++
+            if ($script:cleanClaudeCall2 -eq 1) { return '{"blame":"code"}' }  # Blame OK
+            throw 'remediation infra failure'  # Fix dispatch fails
+        }
+
+        $counters = @{ cleanupCleanPasses = 0; cleanupRemediations = 0 }
+        $result = Invoke-CleanupPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Status | Should -Be 'escalated'
+        $result.Phase | Should -Be 'cleanup_remed'
+    }
 }
 
 Describe 'Reset-CleanupCounters' {

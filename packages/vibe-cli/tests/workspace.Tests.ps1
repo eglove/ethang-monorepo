@@ -129,6 +129,76 @@ Describe 'Reset-WorktreeState' {
         Remove-Item $dir -Force
     }
 
+    It 'recovers via index lock removal when checkout fails' {
+        $dir = Join-Path ([System.IO.Path]::GetTempPath()) "reset-lock-$(Get-Random)"
+        $gitDir = Join-Path $dir '.git'
+        New-Item -ItemType Directory -Path $gitDir -Force | Out-Null
+        Set-Content (Join-Path $gitDir 'index.lock') -Value 'lockdata'
+
+        $script:checkoutAttempt = 0
+        Mock Invoke-GitWithRetry {
+            if ($Arguments -contains 'checkout') {
+                $script:checkoutAttempt++
+                if ($script:checkoutAttempt -eq 1) { throw 'index.lock exists' }
+            }
+        }
+        Mock git { '' }
+
+        $result = Reset-WorktreeState -WorktreePath $dir -TaskId 'T1'
+        $result | Should -BeTrue
+        (Join-Path $gitDir 'index.lock') | Should -Not -Exist
+
+        Remove-Item $dir -Recurse -Force
+    }
+
+    It 'recreates worktree when checkout and clean both fail' {
+        $dir = Join-Path ([System.IO.Path]::GetTempPath()) "reset-recreate-$(Get-Random)"
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+
+        Mock Invoke-GitWithRetry {
+            if ($Arguments -contains 'checkout' -or $Arguments -contains 'clean') { throw 'corrupted' }
+        }
+        Mock git { 'main' }  # rev-parse returns branch name
+
+        # Re-mock for worktree remove and add to succeed
+        Mock Invoke-GitWithRetry {
+            if ($Arguments -contains 'checkout' -or $Arguments -contains 'clean') { throw 'corrupted' }
+            # worktree remove and add succeed (default)
+        }
+
+        $result = Reset-WorktreeState -WorktreePath $dir -TaskId 'T1'
+        $result | Should -BeFalse  # Recreated
+
+        Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It 'throws when branch cannot be determined' {
+        $dir = Join-Path ([System.IO.Path]::GetTempPath()) "reset-nobranch-$(Get-Random)"
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+
+        Mock Invoke-GitWithRetry { throw 'corrupted' }
+        Mock git { $null }  # rev-parse returns nothing
+
+        { Reset-WorktreeState -WorktreePath $dir } | Should -Throw '*cannot determine branch*'
+
+        Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It 'throws when worktree re-add fails' {
+        $dir = Join-Path ([System.IO.Path]::GetTempPath()) "reset-readd-$(Get-Random)"
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+
+        Mock Invoke-GitWithRetry {
+            if ($Arguments -contains 'checkout' -or $Arguments -contains 'clean') { throw 'corrupted' }
+            if ($Arguments -contains 'add') { throw 'worktree add failed' }
+        }
+        Mock git { 'main' }
+
+        { Reset-WorktreeState -WorktreePath $dir -TaskId 'T1' } | Should -Throw '*Failed to recreate*'
+
+        Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
     It 'logs warning when dirty files exist' {
         Mock git { 'M file1.ps1'; 'M file2.ps1' }
         Mock Write-TaskLog {} -Verifiable

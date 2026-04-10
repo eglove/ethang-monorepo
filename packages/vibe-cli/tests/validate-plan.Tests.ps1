@@ -140,6 +140,56 @@ Describe 'Test-ImplementationPlan' {
         $result.Status | Should -Be 'failed'
         ($result.Errors | Where-Object { $_ -match 'not found' }).Count | Should -BeGreaterThan 0
     }
+
+    It 'fails on invalid JSON' {
+        $planFile = Join-Path $script:tempDir 'bad-json.json'
+        Set-Content $planFile -Value 'NOT VALID JSON {{'
+        $result = Test-ImplementationPlan -PlanJsonPath $planFile -Root $script:root
+        $result.Status | Should -Be 'failed'
+        ($result.Errors | Where-Object { $_ -match 'Invalid JSON' }).Count | Should -BeGreaterThan 0
+    }
+
+    It 'detects task missing id field' {
+        $plan = @{
+            tiers = @(@{ tier = 1; tasks = @(
+                @{ step = 1; title = 'A'; files = @('a.ps1'); codeWriter = $null; testWriter = $null; dependencies = @() }
+            )})
+        }
+        $planFile = Join-Path $script:tempDir 'no-id.json'
+        $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
+
+        $result = Test-ImplementationPlan -PlanJsonPath $planFile -Root $script:root
+        $result.Status | Should -Be 'failed'
+        ($result.Errors | Where-Object { $_ -match "missing 'id'" }).Count | Should -BeGreaterThan 0
+    }
+
+    It 'detects task missing required fields' {
+        $plan = @{
+            tiers = @(@{ tier = 1; tasks = @(
+                @{ id = 'T1'; codeWriter = $null; testWriter = $null; dependencies = @() }
+            )})
+        }
+        $planFile = Join-Path $script:tempDir 'missing-fields.json'
+        $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
+
+        $result = Test-ImplementationPlan -PlanJsonPath $planFile -Root $script:root
+        $result.Status | Should -Be 'failed'
+        ($result.Errors | Where-Object { $_ -match 'missing required field' }).Count | Should -BeGreaterThan 0
+    }
+
+    It 'detects unknown testWriter' {
+        $plan = @{
+            tiers = @(@{ tier = 1; tasks = @(
+                @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'powershell-writer'; testWriter = 'nonexistent-test-writer'; dependencies = @() }
+            )})
+        }
+        $planFile = Join-Path $script:tempDir 'bad-testwriter.json'
+        $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
+
+        $result = Test-ImplementationPlan -PlanJsonPath $planFile -Root $script:root
+        $result.Status | Should -Be 'failed'
+        ($result.Errors | Where-Object { $_ -match 'testWriter' }).Count | Should -BeGreaterThan 0
+    }
 }
 
 Describe 'New-PipelineLock' {

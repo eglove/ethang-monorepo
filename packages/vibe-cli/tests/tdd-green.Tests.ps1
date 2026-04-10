@@ -86,6 +86,25 @@ Describe 'Invoke-GreenPhase' {
         $result.Status | Should -Be 'escalated'
         $counters.greenAttempts | Should -Be 0
     }
+
+    It 'passes WorkspacePath through to verify command' {
+        Mock Invoke-Claude { '{"filesModified":[]}' }
+        Mock Invoke-VerifyCommand { 0 } -ParameterFilter { $WorkingDirectory -eq '/tmp/ws' }
+
+        $counters = @{ greenAttempts = 0 }
+        $result = Invoke-GreenPhase -Task $script:task -Root $script:root -Counters $counters -WorkspacePath '/tmp/ws'
+        $result.Phase | Should -Be 'cleanup'
+    }
+
+    It 'escalates when verify command throws' {
+        Mock Invoke-Claude { '{"filesModified":[]}' }
+        Mock Invoke-VerifyCommand { throw 'verify crashed' }
+
+        $counters = @{ greenAttempts = 0 }
+        $result = Invoke-GreenPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Status | Should -Be 'escalated'
+        $result.Phase | Should -Be 'green'
+    }
 }
 
 Describe 'Reset-GreenCounters' {

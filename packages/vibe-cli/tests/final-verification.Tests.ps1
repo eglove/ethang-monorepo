@@ -63,6 +63,54 @@ Describe 'Invoke-FinalVerification' {
         $result = Invoke-FinalVerification -Root $script:root -Counters $counters
         $result.finalVerifPhase | Should -Be 'escalated'
     }
+
+    It 'initializes counters when missing' {
+        Mock Invoke-VerifyCommand { 0 }
+        $counters = @{}  # No finalCleanPasses or finalRemediations
+        $result = Invoke-FinalVerification -Root $script:root -Counters $counters
+        $result.finalVerifPhase | Should -Be 'completed'
+        $counters.finalCleanPasses | Should -BeGreaterOrEqual $Config.CleanupPasses
+    }
+
+    It 'escalates when remediation Claude call throws' {
+        $script:fvVerifyIdx = 0
+        Mock Invoke-VerifyCommand {
+            $script:fvVerifyIdx++
+            if ($script:fvVerifyIdx -eq 1) { return 1 }  # First call fails
+            return 0
+        }
+        Mock Invoke-Claude { throw 'infra failure' }
+        Mock git { @('file.ps1') }
+
+        $counters = @{ finalCleanPasses = 0; finalRemediations = 0 }
+        $result = Invoke-FinalVerification -Root $script:root -Counters $counters
+        $result.finalVerifPhase | Should -Be 'escalated'
+    }
+
+    It 'attributes remediation to task with most file overlap' {
+        $script:fvVerifyIdx2 = 0
+        Mock Invoke-VerifyCommand {
+            $script:fvVerifyIdx2++
+            if ($script:fvVerifyIdx2 -eq 1) { return 1 }  # First call fails
+            return 0
+        }
+        Mock Invoke-Claude { '{}' }
+        Mock git { @('utils/config.ps1', 'utils/task-log.ps1') }
+
+        $featDir = Join-Path ([System.IO.Path]::GetTempPath()) "fv-attr-$(Get-Random)"
+        $ticketsDir = Join-Path $featDir 'tickets'
+        New-Item -ItemType Directory -Path $ticketsDir -Force | Out-Null
+        Set-Content (Join-Path $ticketsDir 'T1-log.txt') -Value 'modified utils/config.ps1'
+        Set-Content (Join-Path $ticketsDir 'T2-log.txt') -Value 'modified utils/config.ps1 and utils/task-log.ps1'
+
+        $counters = @{ finalCleanPasses = 0; finalRemediations = 0 }
+        $result = Invoke-FinalVerification -Root $script:root -Counters $counters -TaskWriters @('powershell-writer') -FeatureDir $featDir
+
+        $result.finalVerifPhase | Should -Be 'completed'
+        $counters.finalRemediations | Should -Be 1
+
+        Remove-Item $featDir -Recurse -Force
+    }
 }
 
 Describe 'Reset-FinalCounters' {

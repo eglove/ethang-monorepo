@@ -799,6 +799,205 @@ Describe 'Coding Stage Integration Tests' {
         $result.PipelineStatus | Should -Be 'halted'
     }
 
+    # ── Scenario 34: Lock failure halts pipeline ──
+    It 'Scenario 34: Lock creation failure returns halted with lock_failed' {
+        Mock New-PipelineLock { throw 'Lock already exists' }
+
+        $planFile = New-TestPlan @(@{ tier = 1; tasks = @(
+            @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+        )})
+
+        $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+        $result.PipelineStatus | Should -Be 'halted'
+        $result.Reason | Should -Be 'lock_failed'
+        $result.Error | Should -Match 'Lock already exists'
+    }
+
+    # ── Scenario 35: Resume with all tasks completed skips entire tier ──
+    It 'Scenario 35: Resume where every task in tier is completed skips tier' {
+        Mock Invoke-WithTimeout {}
+        Mock New-TaskWorkspace { $null }
+        Mock Add-MergeQueue { $true }
+        Mock Test-MergeQueueEmpty { $true }
+        Mock Start-NextMerge { $null }
+        Mock Sync-FallbackLog {}
+        Mock Invoke-FinalVerification { $Counters.finalVerifPhase = 'completed'; return $Counters }
+
+        $planFile = New-TestPlan @(@{ tier = 1; tasks = @(
+            @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+        )})
+
+        $resumeState = @{
+            CompletedTasks = [System.Collections.Generic.HashSet[string]]::new([string[]]@('T1'))
+            MergedTasks = [System.Collections.Generic.HashSet[string]]::new()
+        }
+
+        $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir -ResumeState $resumeState
+        $result.PipelineStatus | Should -Be 'completed'
+        Should -Not -Invoke Invoke-WithTimeout
+    }
+
+    # ── Scenario 36: Workspace failure -> Stop halts pipeline ──
+    It 'Scenario 36: Workspace failure with Stop decision halts pipeline' {
+        Mock New-TaskWorkspace { throw 'worktree corrupted' }
+        Mock Read-Escalation {
+            return @{ Decision = 'Stop'; Source = 'workspace'; TaskId = $null; Phase = $null; PreStopSnapshot = @{}; Reason = $null }
+        }
+        Mock Sync-FallbackLog {}
+
+        $planFile = New-TestPlan @(@{ tier = 1; tasks = @(
+            @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+        )})
+
+        $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+        $result.PipelineStatus | Should -Be 'halted'
+        $result.Reason | Should -Be 'workspace_failure'
+    }
+
+    # ── Scenario 37: Merge failure in drain -> Stop ──
+    It 'Scenario 37: Merge failure in drain loop with Stop halts pipeline' {
+        Mock Invoke-WithTimeout {
+            param($ScriptBlock, $TaskId)
+            return @{ TimedOut = $false; TaskId = $TaskId; Result = @{ TaskId = $TaskId; Phase = 'done'; Status = 'completed'; Counters = @{}; Escalated = $false }; Error = $null; KilledPids = @() }
+        }
+        Mock New-TaskWorkspace { @{ T1 = '/tmp/wt1'; T2 = '/tmp/wt2' } }
+        Mock Add-MergeQueue { $true }
+        $script:mergeQueueEmpty37 = $false
+        Mock Test-MergeQueueEmpty { $script:mergeQueueEmpty37 }
+        $script:mergeDequeue37 = 0
+        Mock Start-NextMerge {
+            $script:mergeDequeue37++
+            if ($script:mergeDequeue37 -eq 1) { 'T1' } else { $script:mergeQueueEmpty37 = $true; $null }
+        }
+        Mock Invoke-Merge {
+            return @{ TaskId = 'T1'; Success = $false; Conflict = $true; RetryCount = 3; AbortedClean = $true; WorkspaceRemoved = $false }
+        }
+        Mock Read-Escalation {
+            return @{ Decision = 'Stop'; Source = 'merge'; TaskId = 'T1'; Phase = 'done'; PreStopSnapshot = @{}; Reason = $null }
+        }
+        Mock Sync-FallbackLog {}
+
+        $planFile = New-TestPlan @(@{ tier = 1; tasks = @(
+            @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+            @{ id = 'T2'; step = 2; title = 'B'; files = @('b.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+        )})
+
+        $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+        $result.PipelineStatus | Should -Be 'halted'
+        $result.Reason | Should -Be 'merge_exhausted'
+    }
+
+    # ── Scenario 38: Merge failure -> KeepGoing resets and continues ──
+    It 'Scenario 38: Merge failure with KeepGoing resets and pipeline completes' {
+        Mock Invoke-WithTimeout {
+            param($ScriptBlock, $TaskId)
+            return @{ TimedOut = $false; TaskId = $TaskId; Result = @{ TaskId = $TaskId; Phase = 'done'; Status = 'completed'; Counters = @{}; Escalated = $false }; Error = $null; KilledPids = @() }
+        }
+        Mock New-TaskWorkspace { @{ T1 = '/tmp/wt1'; T2 = '/tmp/wt2' } }
+        Mock Add-MergeQueue { $true }
+        $script:mergeQueueEmpty38 = $false
+        Mock Test-MergeQueueEmpty { $script:mergeQueueEmpty38 }
+        $script:mergeDequeue38 = 0
+        Mock Start-NextMerge {
+            $script:mergeDequeue38++
+            if ($script:mergeDequeue38 -eq 1) { 'T1' } else { $script:mergeQueueEmpty38 = $true; $null }
+        }
+        Mock Invoke-Merge {
+            return @{ TaskId = 'T1'; Success = $false; Conflict = $true; RetryCount = 3; AbortedClean = $true; WorkspaceRemoved = $false }
+        }
+        Mock Read-Escalation {
+            return @{ Decision = 'KeepGoing'; Source = 'merge'; TaskId = 'T1'; Phase = 'done'; Reason = $null; PreStopSnapshot = $null }
+        }
+        Mock Sync-FallbackLog {}
+        Mock Invoke-FinalVerification { $Counters.finalVerifPhase = 'completed'; return $Counters }
+
+        $planFile = New-TestPlan @(@{ tier = 1; tasks = @(
+            @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+            @{ id = 'T2'; step = 2; title = 'B'; files = @('b.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+        )})
+
+        $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+        $result.PipelineStatus | Should -Be 'completed'
+        Should -Invoke Read-Escalation -Times 1
+    }
+
+    # ── Scenario 39: Final verification non-completed halts pipeline ──
+    It 'Scenario 39: Final verification returning non-completed state halts pipeline' {
+        Mock Invoke-WithTimeout {
+            return @{ TimedOut = $false; TaskId = 'T1'; Result = @{ TaskId = 'T1'; Phase = 'done'; Status = 'completed'; Counters = @{}; Escalated = $false }; Error = $null; KilledPids = @() }
+        }
+        Mock New-TaskWorkspace { $null }
+        Mock Add-MergeQueue { $true }
+        Mock Test-MergeQueueEmpty { $true }
+        Mock Start-NextMerge { $null }
+        Mock Sync-FallbackLog {}
+        Mock Invoke-FinalVerification { $Counters.finalVerifPhase = 'failed'; return $Counters }
+
+        $planFile = New-TestPlan @(@{ tier = 1; tasks = @(
+            @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+        )})
+
+        $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+        $result.PipelineStatus | Should -Be 'halted'
+    }
+
+    # ── Scenario 40: Final verification exhausted -> Stop ──
+    It 'Scenario 40: Final verification exhaustion with Stop halts pipeline' {
+        Mock Invoke-WithTimeout {
+            return @{ TimedOut = $false; TaskId = 'T1'; Result = @{ TaskId = 'T1'; Phase = 'done'; Status = 'completed'; Counters = @{}; Escalated = $false }; Error = $null; KilledPids = @() }
+        }
+        Mock New-TaskWorkspace { $null }
+        Mock Add-MergeQueue { $true }
+        Mock Test-MergeQueueEmpty { $true }
+        Mock Start-NextMerge { $null }
+        Mock Sync-FallbackLog {}
+        Mock Invoke-FinalVerification { $Counters.finalVerifPhase = 'escalated'; return $Counters }
+        Mock Read-Escalation {
+            return @{ Decision = 'Stop'; Source = 'final'; TaskId = $null; Phase = $null; PreStopSnapshot = @{}; Reason = $null }
+        }
+
+        $planFile = New-TestPlan @(@{ tier = 1; tasks = @(
+            @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+        )})
+
+        $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+        $result.PipelineStatus | Should -Be 'halted'
+        $result.Reason | Should -Be 'final_verification_exhausted'
+    }
+
+    # ── Scenario 41: Merge drain timeout ──
+    It 'Scenario 41: Pipeline timeout during merge drain halts' {
+        $origTimeout = $Config.PipelineTimeoutSeconds
+        try {
+            Mock Invoke-WithTimeout {
+                param($ScriptBlock, $TaskId)
+                return @{ TimedOut = $false; TaskId = $TaskId; Result = @{ TaskId = $TaskId; Phase = 'done'; Status = 'completed'; Counters = @{}; Escalated = $false }; Error = $null; KilledPids = @() }
+            }
+            Mock New-TaskWorkspace { @{ T1 = '/tmp/wt1'; T2 = '/tmp/wt2' } }
+            Mock Add-MergeQueue { $true }
+            Mock Test-MergeQueueEmpty { $false }
+            Mock Start-NextMerge { 'T1' }
+            Mock Invoke-Merge {
+                # Trigger timeout by setting it to 0 after entering merge drain
+                $Config.PipelineTimeoutSeconds = 0
+                return @{ TaskId = 'T1'; Success = $true; Conflict = $false; RetryCount = 0; AbortedClean = $true; WorkspaceRemoved = $true }
+            }
+            Mock Sync-FallbackLog {}
+
+            $planFile = New-TestPlan @(@{ tier = 1; tasks = @(
+                @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+                @{ id = 'T2'; step = 2; title = 'B'; files = @('b.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+            )})
+
+            $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+            $result.PipelineStatus | Should -Be 'halted'
+            $result.Reason | Should -Be 'timeout'
+        }
+        finally {
+            $Config.PipelineTimeoutSeconds = $origTimeout
+        }
+    }
+
     # ── Scenario 33: PID registry fallback (objection #61) ──
     It 'Scenario 33: Timeout without registered PID still escalates cleanly' {
         Mock Invoke-WithTimeout {
