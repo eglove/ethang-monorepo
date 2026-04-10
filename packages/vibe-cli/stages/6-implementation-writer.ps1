@@ -10,8 +10,6 @@
         [string]$Root
     )
 
-    Write-Host "`n=== Stage 6: Implementation Writer ===" -ForegroundColor Cyan
-
     $tlaSpec = Get-Content $TlaFile -Raw
     $absDir = (Resolve-Path $FeatureDir).Path
     $implFile = Join-Path $absDir "implementation-plan.md"

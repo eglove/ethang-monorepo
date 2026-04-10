@@ -1,320 +1,172 @@
 BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
-    . "$PSScriptRoot/../utils/tdd-loop.ps1"
-    . "$PSScriptRoot/../utils/cleanup-loop.ps1"
-    . "$PSScriptRoot/../utils/review-runner.ps1"
-    . "$PSScriptRoot/../utils/task-runner.ps1"
     . "$PSScriptRoot/../stages/8-coding.ps1"
-}
 
-Describe 'Resolve-VerifyProfile' {
-    It 'returns powershell profile when all files are .ps1' {
-        $plan = @{
-            tiers = @(
-                @{ tasks = @(
-                    @{ files = @('utils/lint-fixer/types.ps1', 'utils/lint-fixer/types.Tests.ps1') }
-                    @{ files = @('utils/lint-fixer/suppress.ps1') }
-                )}
-            )
-        }
-
-        $profile = Resolve-VerifyProfile -Plan $plan
-        $profile.Test | Should -Match 'Pester'
-        $profile.Lint | Should -Not -Be 'pnpm lint'
-    }
-
-    It 'returns typescript profile when all files are .ts' {
-        $plan = @{
-            tiers = @(
-                @{ tasks = @(
-                    @{ files = @('src/index.ts', 'src/index.test.ts') }
-                )}
-            )
-        }
-
-        $profile = Resolve-VerifyProfile -Plan $plan
-        $profile.Test | Should -Be 'pnpm test'
-        $profile.Lint | Should -Be 'pnpm lint'
-        $profile.Tsc | Should -Be 'pnpm tsc'
-    }
-
-    It 'returns default profile for non-code files like .md' {
-        $plan = @{
-            tiers = @(
-                @{ tasks = @(
-                    @{ files = @('docs/learned.md', 'agents/lint-fixer.md') }
-                )}
-            )
-        }
-
-        $profile = Resolve-VerifyProfile -Plan $plan
-        $profile.Test | Should -Be 'pnpm test'
-    }
-
-    It 'uses dominant extension when mixed' {
-        $plan = @{
-            tiers = @(
-                @{ tasks = @(
-                    @{ files = @('utils/types.ps1', 'utils/types.Tests.ps1', 'utils/run.ps1') }
-                    @{ files = @('docs/readme.md') }
-                )}
-            )
-        }
-
-        # 3 .ps1 files vs 1 .md — PowerShell dominates
-        $profile = Resolve-VerifyProfile -Plan $plan
-        $profile.Test | Should -Match 'Pester'
-    }
-
-    It 'falls back to defaults when no code files found' {
-        $plan = @{ tiers = @() }
-
-        $profile = Resolve-VerifyProfile -Plan $plan
-        $profile.Test | Should -Be 'pnpm test'
-        $profile.Lint | Should -Be 'pnpm lint'
-        $profile.Tsc | Should -Be 'pnpm tsc'
-    }
-
-    It 'falls back to defaults for unrecognized code extensions' {
-        $plan = @{
-            tiers = @(
-                @{ tasks = @(
-                    @{ files = @('app.rb', 'lib/helper.rb', 'spec/test.rb') }
-                )}
-            )
-        }
-
-        $profile = Resolve-VerifyProfile -Plan $plan
-        $profile.Test | Should -Be 'pnpm test'
-        $profile.Lint | Should -Be 'pnpm lint'
-    }
+    Mock Write-PipelineLog {}
+    Mock Write-Host {}
 }
 
 Describe 'Invoke-CodingStage' {
     BeforeAll {
-        Mock Write-PipelineLog {}
-        Mock Write-Host {}
-
-        $script:tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "coding-test-$(Get-Random)"
-        $script:featureDir = Join-Path $script:tempRoot 'docs/test-feat'
-        New-Item -ItemType Directory -Path $script:featureDir -Force | Out-Null
-
-        $agentDir = Join-Path $script:tempRoot 'agents'
-        New-Item -ItemType Directory -Path "$agentDir/code-writers" -Force | Out-Null
-        New-Item -ItemType Directory -Path "$agentDir/test-writers" -Force | Out-Null
-        New-Item -ItemType Directory -Path "$agentDir/reviewers" -Force | Out-Null
-        Set-Content (Join-Path $agentDir 'code-writers/typescript-writer.md') -Value 'writer'
-        Set-Content (Join-Path $agentDir 'test-writers/vitest-writer.md') -Value 'test writer'
-        Set-Content (Join-Path $agentDir 'reviewers/test-reviewer.md') -Value 'reviewer'
-
-        # Create mock stub files for ForEach-Object -Parallel blocks
-        # Parallel runspaces can't see Pester mocks — they source these stubs instead
-        $utilsDir = Join-Path $script:tempRoot 'utils'
-        New-Item -ItemType Directory -Path $utilsDir -Force | Out-Null
-
-        Set-Content (Join-Path $utilsDir 'invoke-claude.ps1') -Value @'
-function Invoke-Claude { return $null }
-function Invoke-ClaudeBatched { return $null }
-'@
-
-        Set-Content (Join-Path $utilsDir 'config.ps1') -Value @'
-. "$PSScriptRoot/invoke-claude.ps1"
-function Write-PipelineLog { param([Parameter(ValueFromPipeline)] [string]$Message) }
-'@
-
-        Set-Content (Join-Path $utilsDir 'task-runner.ps1') -Value @'
-function Invoke-TaskRunner {
-    param($Task, $ImplPlanMarkdown, $WorktreePath, $AgentsDir)
-    return @{ Status = 'DONE'; FixRounds = 1; Reviews = @{ Issues = @() } }
-}
-'@
-
-        # Create impl plan JSON
-        $script:implJson = Join-Path $script:featureDir 'implementation-plan.json'
-        $script:implFile = Join-Path $script:featureDir 'implementation-plan.md'
-
-        $plan = @{
-            tiers = @(
-                @{
-                    tier = 1
-                    title = 'Foundation'
-                    tasks = @(
-                        @{
-                            id = 'T1'
-                            title = 'Setup types'
-                            files = @('src/types.ts')
-                            codeWriter = 'typescript-writer'
-                            testWriter = 'vitest-writer'
-                        }
-                    )
-                }
-            )
-        }
-        $plan | ConvertTo-Json -Depth 10 | Set-Content $script:implJson
-        Set-Content $script:implFile -Value '# Implementation Plan'
+        $script:root = (Resolve-Path "$PSScriptRoot/..").Path
+        $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "coding-test-$(Get-Random)"
+        New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
+        $ticketsDir = Join-Path $script:tempDir 'tickets'
+        New-Item -ItemType Directory -Path $ticketsDir -Force | Out-Null
     }
 
     AfterAll {
-        Remove-Item $script:tempRoot -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
     }
 
-    It 'creates integration branch and worktrees for each task' {
-        $script:gitCommands = @()
-        Mock git {
-            $script:gitCommands += ($args -join ' ')
-            $global:LASTEXITCODE = 0
-        }
-
-        Mock Invoke-TaskRunner {
-            @{ Status = 'DONE'; FixRounds = 1; Reviews = @{ Issues = @() } }
-        }
-
-        $result = Invoke-CodingStage `
-            -ImplJson $script:implJson `
-            -ImplFile $script:implFile `
-            -FeatureDir $script:featureDir `
-            -Root $script:tempRoot
-
-        $result | Should -Be 'feature/test-feat'
-        $script:gitCommands | Should -Contain 'checkout -b feature/test-feat'
-        ($script:gitCommands | Where-Object { $_ -match 'worktree add' }).Count | Should -Be 1
+    AfterEach {
+        $lockPath = Join-Path $script:tempDir 'pipeline.lock'
+        Remove-Item $lockPath -ErrorAction SilentlyContinue
     }
 
-    It 'throws when branch creation fails' {
-        Mock git {
-            if ($args[0] -eq 'checkout') {
-                $global:LASTEXITCODE = 1
-            } else {
-                $global:LASTEXITCODE = 0
+    It 'halts on validation failure (S11)' {
+        $plan = @{ tiers = @(@{ tier = 1; tasks = @(
+            @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'nonexistent-writer'; testWriter = $null; dependencies = @('T1') }
+        )}) }
+        $planFile = Join-Path $script:tempDir 'bad-plan.json'
+        $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
+
+        $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+        $result.PipelineStatus | Should -Be 'halted'
+        $result.Reason | Should -Be 'validation_failed'
+    }
+
+    It 'completes immediately for zero-tier plan' {
+        $plan = @{ tiers = @() }
+        $planFile = Join-Path $script:tempDir 'zero-tier.json'
+        $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
+
+        $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+        $result.PipelineStatus | Should -Be 'completed'
+        $result.CurrentTier | Should -Be 1
+    }
+
+    It 'generates a pipeline RunId' {
+        $plan = @{ tiers = @() }
+        $planFile = Join-Path $script:tempDir 'runid-test.json'
+        $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
+
+        $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+        $result.RunId | Should -Not -BeNullOrEmpty
+        $result.RunId | Should -Match '[a-f0-9-]+'
+    }
+
+    It 'creates and removes lock file' {
+        $plan = @{ tiers = @() }
+        $planFile = Join-Path $script:tempDir 'lock-test.json'
+        $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
+
+        $lockPath = Join-Path $script:tempDir 'pipeline.lock'
+
+        Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+        $lockPath | Should -Not -Exist  # Cleaned up in finally block
+    }
+
+    Context 'with single-task plan' {
+        BeforeAll {
+            Mock Invoke-Claude { '{"filesModified":[],"summary":"done"}' }
+            Mock Invoke-VerifyCommand { 0 }
+            Mock New-TaskWorkspace { $null }
+            Mock Remove-TaskWorkspace {}
+            Mock Invoke-GitWithRetry {}
+            Mock Sync-FallbackLog {}
+            Mock Add-MergeQueue { $true }
+            Mock Test-MergeQueueEmpty { $true }
+            Mock Start-NextMerge { $null }
+        }
+
+        It 'completes a single TDD task' {
+            $plan = @{
+                tiers = @(@{ tier = 1; tasks = @(
+                    @{ id = 'T1'; step = 1; title = 'Config'; files = @('utils/config.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+                )})
             }
-        }
+            $planFile = Join-Path $script:tempDir 'single-task.json'
+            $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
 
-        { Invoke-CodingStage `
-            -ImplJson $script:implJson `
-            -ImplFile $script:implFile `
-            -FeatureDir $script:featureDir `
-            -Root $script:tempRoot } |
-            Should -Throw '*Failed to create branch*'
-    }
-
-    It 'throws when worktree creation fails' {
-        Mock git {
-            if ($args[0] -eq 'worktree') {
-                $global:LASTEXITCODE = 1
-            } else {
-                $global:LASTEXITCODE = 0
-            }
-        }
-
-        { Invoke-CodingStage `
-            -ImplJson $script:implJson `
-            -ImplFile $script:implFile `
-            -FeatureDir $script:featureDir `
-            -Root $script:tempRoot } |
-            Should -Throw '*Failed to create worktree*'
-    }
-
-    It 'merges task branches and cleans up worktrees' {
-        $script:gitCommands = @()
-        Mock git {
-            $script:gitCommands += ($args -join ' ')
-            $global:LASTEXITCODE = 0
-        }
-
-        Mock Invoke-TaskRunner {
-            @{ Status = 'DONE'; FixRounds = 1; Reviews = @{ Issues = @() } }
-        }
-
-        Invoke-CodingStage `
-            -ImplJson $script:implJson `
-            -ImplFile $script:implFile `
-            -FeatureDir $script:featureDir `
-            -Root $script:tempRoot
-
-        ($script:gitCommands | Where-Object { $_ -match 'merge --no-ff' }).Count | Should -Be 1
-        ($script:gitCommands | Where-Object { $_ -match 'worktree remove' }).Count | Should -Be 1
-        ($script:gitCommands | Where-Object { $_ -match 'branch -d' }).Count | Should -Be 1
-    }
-
-    It 'warns but continues when worktree remove or branch delete fails' {
-        Mock git {
-            $cmd = $args -join ' '
-            if ($cmd -match 'worktree remove' -or $cmd -match 'branch -d') {
-                $global:LASTEXITCODE = 1
-            } else {
-                $global:LASTEXITCODE = 0
-            }
-        }
-
-        Mock Invoke-TaskRunner {
-            @{ Status = 'DONE'; FixRounds = 1; Reviews = @{ Issues = @(@{ severity = 'low'; weight = 1 }) } }
-        }
-
-        # Should not throw — warnings are non-fatal
-        $result = Invoke-CodingStage `
-            -ImplJson $script:implJson `
-            -ImplFile $script:implFile `
-            -FeatureDir $script:featureDir `
-            -Root $script:tempRoot
-
-        $result | Should -Be 'feature/test-feat'
-    }
-
-    It 'throws when merge fails' {
-        Mock git {
-            if (($args -join ' ') -match 'merge') {
-                $global:LASTEXITCODE = 1
-            } else {
-                $global:LASTEXITCODE = 0
-            }
-        }
-
-        Mock Invoke-TaskRunner {
-            @{ Status = 'DONE'; FixRounds = 1; Reviews = @{ Issues = @() } }
-        }
-
-        { Invoke-CodingStage `
-            -ImplJson $script:implJson `
-            -ImplFile $script:implFile `
-            -FeatureDir $script:featureDir `
-            -Root $script:tempRoot } |
-            Should -Throw '*Merge conflict*'
-    }
-
-    It 'handles multi-tier plans with multiple tasks' {
-        $multiPlan = @{
-            tiers = @(
-                @{
-                    tier = 1
-                    title = 'Tier 1'
-                    tasks = @(
-                        @{ id = 'T1'; title = 'Task 1'; files = @('a.ts'); codeWriter = 'typescript-writer'; testWriter = 'vitest-writer' }
-                        @{ id = 'T2'; title = 'Task 2'; files = @('b.ts'); codeWriter = 'typescript-writer'; testWriter = 'vitest-writer' }
-                    )
+            Mock Invoke-WithTimeout {
+                return @{
+                    TimedOut = $false; TaskId = 'T1'
+                    Result = @{ TaskId = 'T1'; Phase = 'done'; Status = 'completed'; Counters = @{}; Escalated = $false }
+                    Error = $null; KilledPids = @()
                 }
-                @{
-                    tier = 2
-                    title = 'Tier 2'
-                    tasks = @(
-                        @{ id = 'T3'; title = 'Task 3'; files = @('c.ts'); codeWriter = 'typescript-writer'; testWriter = 'vitest-writer' }
-                    )
+            }
+            Mock Invoke-FinalVerification {
+                $Counters.finalVerifPhase = 'completed'
+                return $Counters
+            }
+
+            $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+            $result.PipelineStatus | Should -Be 'completed'
+        }
+
+        It 'completes an agent-writer task (S3)' {
+            $plan = @{
+                tiers = @(@{ tier = 1; tasks = @(
+                    @{ id = 'T4'; step = 4; title = 'Agent Prompts'; files = @('agents/test.md'); codeWriter = 'agent-writer'; testWriter = $null; dependencies = @() }
+                )})
+            }
+            $planFile = Join-Path $script:tempDir 'agent-task.json'
+            $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
+
+            Mock Invoke-WithTimeout {
+                return @{
+                    TimedOut = $false; TaskId = 'T4'
+                    Result = @{ TaskId = 'T4'; Phase = 'done'; Status = 'completed'; Counters = @{}; Escalated = $false }
+                    Error = $null; KilledPids = @()
                 }
-            )
+            }
+            Mock Invoke-FinalVerification {
+                $Counters.finalVerifPhase = 'completed'
+                return $Counters
+            }
+
+            $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+            $result.PipelineStatus | Should -Be 'completed'
         }
-        $multiJson = Join-Path $script:featureDir 'multi-plan.json'
-        $multiPlan | ConvertTo-Json -Depth 10 | Set-Content $multiJson
+    }
 
-        Mock git { $global:LASTEXITCODE = 0 }
-        Mock Invoke-TaskRunner {
-            @{ Status = 'DONE'; FixRounds = 1; Reviews = @{ Issues = @() } }
+    Context 'escalation' {
+        BeforeAll {
+            Mock Invoke-Claude { '{}' }
+            Mock Invoke-VerifyCommand { 0 }
+            Mock New-TaskWorkspace { $null }
+            Mock Sync-FallbackLog {}
+            Mock Add-MergeQueue { $true }
+            Mock Test-MergeQueueEmpty { $true }
+            Mock Start-NextMerge { $null }
         }
 
-        $result = Invoke-CodingStage `
-            -ImplJson $multiJson `
-            -ImplFile $script:implFile `
-            -FeatureDir $script:featureDir `
-            -Root $script:tempRoot
+        It 'halts on user Stop' {
+            $plan = @{
+                tiers = @(@{ tier = 1; tasks = @(
+                    @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'powershell-writer'; testWriter = 'pester'; dependencies = @() }
+                )})
+            }
+            $planFile = Join-Path $script:tempDir 'stop-test.json'
+            $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
 
-        $result | Should -Be 'feature/test-feat'
+            Mock Invoke-WithTimeout {
+                return @{
+                    TimedOut = $true; TaskId = 'T1'
+                    Result = $null; Error = 'Timed out'; KilledPids = @()
+                }
+            }
+            Mock Read-Escalation {
+                return @{
+                    Decision = 'Stop'; Source = 'task'; TaskId = 'T1'
+                    PreStopSnapshot = @{ T1 = 'escalated' }
+                    Phase = $null; Reason = $null
+                }
+            }
+
+            $result = Invoke-CodingStage -PlanJsonPath $planFile -Root $script:root -FeatureDir $script:tempDir
+            $result.PipelineStatus | Should -Be 'halted'
+            $result.Reason | Should -Be 'user_stop'
+        }
     }
 }

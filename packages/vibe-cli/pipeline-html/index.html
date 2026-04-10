@@ -9,7 +9,7 @@
 <body>
   <header>
     <h1>vibe-cli</h1>
-    <p class="subtitle">9-Stage Design Pipeline</p>
+    <p class="subtitle">7-Stage Design Pipeline</p>
     <div class="file-flow">
       <span class="flow-item">seed prompt</span>
       <span class="flow-arrow"></span>
@@ -20,8 +20,6 @@
       <span class="flow-item">*.tla / *.cfg</span>
       <span class="flow-arrow"></span>
       <span class="flow-item">impl plan</span>
-      <span class="flow-arrow"></span>
-      <span class="flow-item">code</span>
     </div>
   </header>
 
@@ -232,94 +230,10 @@
       </div>
     </section>
 
-    <!-- Stage 8 -->
-    <section class="stage stage--coding" id="s8">
-      <div class="stage-header">
-        <span class="stage-num">8</span>
-        <div>
-          <h2>Coding</h2>
-          <span class="badge badge--loop">Nested Loops</span>
-        </div>
-      </div>
-      <div class="stage-body">
-        <p>Parses the implementation plan JSON, creates git worktrees, and executes tasks in parallel with TDD, cleanup, and review cycles.</p>
-        <div class="io">
-          <div class="io-in"><strong>In</strong> implementation-plan.json</div>
-          <div class="io-out"><strong>Out</strong> feature/&lt;name&gt; branch</div>
-        </div>
-
-        <div class="coding-tiers">
-          <div class="tier">
-            <h3>Per Tier <span class="tier-note">(sequential)</span></h3>
-            <div class="task-parallel">
-              <h4>Per Task <span class="tier-note">(parallel, max 3 worktrees)</span></h4>
-              <div class="nested-loops">
-                <div class="nested-loop">
-                  <div class="nested-loop-header">Fix Round Loop <span class="cap">cap: 20</span></div>
-                  <div class="nested-loop-body">
-                    <div class="nested-loop">
-                      <div class="nested-loop-header nested-loop-header--tdd">TDD Loop <span class="cap">cap: 20 cycles</span></div>
-                      <div class="nested-loop-body">
-                        <div class="tdd-steps">
-                          <div class="tdd-step tdd-red">RED<span>Test Writer writes failing test</span></div>
-                          <div class="tdd-step tdd-green">GREEN<span>Code Writer makes it pass</span></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="cleanup-step">Cleanup: lint + test + tsc <span class="cap">2 consecutive passes</span></div>
-                    <div class="review-step">
-                      Parallel Reviewers (agents/reviewers/*.md)
-                      <div class="review-feedback">blocking issues feed back to TDD</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="merge-step">Merge task branches into feature/ branch</div>
-          </div>
-        </div>
-
-        <div class="meta">
-          <span class="agent">code-writers + test-writers + reviewers</span>
-          <span class="cap">MaxGreenRetries: 20</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Stage 9 -->
-    <section class="stage stage--review" id="s9">
-      <div class="stage-header">
-        <span class="stage-num">9</span>
-        <div>
-          <h2>Global Review</h2>
-          <span class="badge badge--loop">Loop</span>
-        </div>
-      </div>
-      <div class="stage-body">
-        <p>All reviewers run against the full integration branch diff. Blocking issues are fixed by the code writer and re-verified.</p>
-        <div class="loop-diagram">
-          <div class="loop-node loop-node--moderator">Parallel Reviewers</div>
-          <div class="loop-arrow loop-arrow--down">
-            <span class="loop-label-partial">blocking issues</span>
-          </div>
-          <div class="loop-node loop-node--writer">Code Writer fixes + verify lint/test/tsc</div>
-          <div class="loop-arrow loop-arrow--up"></div>
-          <div class="loop-exit">
-            <span class="loop-label-consensus">pass</span>
-            Feature branch ready
-          </div>
-        </div>
-        <div class="meta">
-          <span class="agent">reviewers/*.md + typescript-writer.md</span>
-          <span class="cap">20 rounds</span>
-        </div>
-      </div>
-    </section>
-
     <section class="complete">
       <div class="complete-icon">&#10003;</div>
       <h2>Pipeline Complete</h2>
-      <p>Feature branch ready for merge</p>
+      <p>Implementation plan ready</p>
     </section>
   </main>
 
@@ -331,8 +245,6 @@
         <span class="legend-item"><span class="legend-swatch legend-swatch--writer"></span> Writer</span>
         <span class="legend-item"><span class="legend-swatch legend-swatch--debate"></span> Debate</span>
         <span class="legend-item"><span class="legend-swatch legend-swatch--verify"></span> TLC Verification</span>
-        <span class="legend-item"><span class="legend-swatch legend-swatch--coding"></span> Coding</span>
-        <span class="legend-item"><span class="legend-swatch legend-swatch--review"></span> Global Review</span>
       </div>
     </div>
     <div class="usage">

@@ -12,10 +12,9 @@ function Invoke-TlaWriter {
         [string]$Root
     )
 
-    Write-Host "`n=== Stage 4: TLA+ Writer ===" -ForegroundColor Cyan
-
     $gherkin = Get-Content $GherkinFile -Raw
     $tlaDir = (Resolve-Path $FeatureDir).Path | Join-Path -ChildPath "tla"
+    New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
     $tlaWriterFile = "$Root/agents/doc-writers/tla-writer.md"
 
     Invoke-Claude `

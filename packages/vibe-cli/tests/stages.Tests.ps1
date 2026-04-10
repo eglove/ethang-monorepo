@@ -2,7 +2,6 @@ BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/debate-loop.ps1"
     . "$PSScriptRoot/../utils/tlc-runner.ps1"
-    . "$PSScriptRoot/../utils/review-runner.ps1"
     . "$PSScriptRoot/../stages/1-elicitor.ps1"
     . "$PSScriptRoot/../stages/2-bdd-writer.ps1"
     . "$PSScriptRoot/../stages/3-bdd-debate.ps1"
@@ -10,7 +9,6 @@ BeforeAll {
     . "$PSScriptRoot/../stages/5-tla-debate.ps1"
     . "$PSScriptRoot/../stages/6-implementation-writer.ps1"
     . "$PSScriptRoot/../stages/7-implementation-debate.ps1"
-    . "$PSScriptRoot/../stages/9-global-review.ps1"
 }
 
 Describe 'Invoke-Elicitor' {
@@ -114,7 +112,6 @@ Describe 'Invoke-BddDebate' {
         $script:gherkinFile = Join-Path $script:featureDir 'bdd.feature'
         Set-Content $script:gherkinFile -Value 'Feature: test'
 
-        $script:debateSchema = '{"type":"object","properties":{"result":{"type":"string"},"rounds":{"type":"integer"},"experts":{"type":"array","items":{"type":"string"}},"recommendation":{"type":"string"},"objections":{"type":"array","items":{"type":"string"}},"sessionFile":{"type":"string"}},"required":["result","rounds","experts","recommendation","objections","sessionFile"]}'
     }
 
     AfterAll {
@@ -131,8 +128,7 @@ Describe 'Invoke-BddDebate' {
             -Briefing 'test briefing' `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            -DebateSchema $script:debateSchema
-
+            
         Should -Invoke Invoke-DebateLoop -Times 1
     }
 
@@ -149,8 +145,7 @@ Describe 'Invoke-BddDebate' {
             -Briefing 'test briefing' `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            -DebateSchema $script:debateSchema
-
+            
         $script:capturedRevision | Should -Match 'test briefing'
         $script:capturedRevision | Should -Match 'current scenarios'
         $script:capturedRevision | Should -Match 'missing edge case'
@@ -220,7 +215,6 @@ Describe 'Invoke-TlaDebate' {
             $script:tlaFile = Get-Item (Join-Path $script:tlaDir 'Spec.tla')
         }
 
-        $script:debateSchema = '{"type":"object","properties":{"result":{"type":"string"}}}'
     }
 
     AfterAll {
@@ -244,8 +238,7 @@ Describe 'Invoke-TlaDebate' {
             -GherkinFile $script:gherkinFile `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            -DebateSchema $script:debateSchema
-
+            
         Should -Invoke Invoke-DebateLoop -Times 1
     }
 
@@ -267,8 +260,7 @@ Describe 'Invoke-TlaDebate' {
             -GherkinFile $script:gherkinFile `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            -DebateSchema $script:debateSchema
-
+            
         $script:capturedRevision | Should -Match 'Feature: test'
         $script:capturedRevision | Should -Match 'current spec'
         $script:capturedRevision | Should -Match 'invariant missing'
@@ -293,8 +285,7 @@ Describe 'Invoke-TlaDebate' {
             -GherkinFile $script:gherkinFile `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            -DebateSchema $script:debateSchema
-
+            
         $script:receivedPostRevision | Should -Not -BeNullOrEmpty
         $script:receivedPostRevision | Should -BeOfType [scriptblock]
     }
@@ -384,7 +375,6 @@ Describe 'Invoke-ImplementationDebate' {
         Set-Content $script:implFile -Value '# Plan'
         Set-Content $script:implJson -Value '{}'
 
-        $script:debateSchema = '{"type":"object","properties":{"result":{"type":"string"}}}'
     }
 
     AfterAll {
@@ -402,8 +392,7 @@ Describe 'Invoke-ImplementationDebate' {
             -TlaFile $script:tlaFile `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            -DebateSchema $script:debateSchema
-
+            
         Should -Invoke Invoke-DebateLoop -Times 1
     }
 
@@ -421,133 +410,9 @@ Describe 'Invoke-ImplementationDebate' {
             -TlaFile $script:tlaFile `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            -DebateSchema $script:debateSchema
-
+            
         $script:capturedRevision | Should -Match 'MODULE Spec'
         $script:capturedRevision | Should -Match 'current plan'
         $script:capturedRevision | Should -Match 'step ordering wrong'
-    }
-}
-
-Describe 'Invoke-GlobalReview' {
-    BeforeAll {
-        Mock Write-PipelineLog {}
-        Mock Write-Host {}
-
-        $script:tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "global-review-test-$(Get-Random)"
-        New-Item -ItemType Directory -Path $script:tempRoot -Force | Out-Null
-
-        $agentDir = Join-Path $script:tempRoot 'agents'
-        New-Item -ItemType Directory -Path "$agentDir/code-writers" -Force | Out-Null
-        New-Item -ItemType Directory -Path "$agentDir/reviewers" -Force | Out-Null
-        Set-Content (Join-Path $agentDir 'code-writers/typescript-writer.md') -Value 'writer'
-        Set-Content (Join-Path $agentDir 'reviewers/test-reviewer.md') -Value 'reviewer'
-    }
-
-    AfterAll {
-        Remove-Item $script:tempRoot -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-    It 'exits early when review passes on first round' {
-        Mock Invoke-ReviewRunner {
-            @{ Passed = $true; Issues = @(); BlockingCount = 0 }
-        }
-
-        Invoke-GlobalReview -IntegrationBranch 'feature/test' -Root $script:tempRoot
-
-        Should -Invoke Invoke-ReviewRunner -Times 1
-    }
-
-    It 'fixes blocking issues and re-reviews' {
-        $script:reviewCallCount = 0
-        Mock Invoke-ReviewRunner {
-            $script:reviewCallCount++
-            if ($script:reviewCallCount -eq 1) {
-                @{
-                    Passed = $false
-                    BlockingCount = 1
-                    Issues = @(
-                        @{ severity = 'critical'; weight = 9; file = 'a.ts'; line = 1; issue = 'bug'; recommendation = 'fix' }
-                    )
-                }
-            } else {
-                @{ Passed = $true; Issues = @(); BlockingCount = 0 }
-            }
-        }
-        Mock Invoke-Claude {}
-
-        # Override verify commands — [scriptblock]::Create() bypasses Pester mock scope
-        $origLint = $Config.VerifyLint; $origTest = $Config.VerifyTest; $origTsc = $Config.VerifyTsc
-        $Config.VerifyLint = '$global:LASTEXITCODE = 0'
-        $Config.VerifyTest = '$global:LASTEXITCODE = 0'
-        $Config.VerifyTsc  = '$global:LASTEXITCODE = 0'
-
-        Invoke-GlobalReview -IntegrationBranch 'feature/test' -Root $script:tempRoot
-
-        $Config.VerifyLint = $origLint; $Config.VerifyTest = $origTest; $Config.VerifyTsc = $origTsc
-
-        Should -Invoke Invoke-Claude -Times 1
-        Should -Invoke Invoke-ReviewRunner -Times 2
-    }
-
-    It 'stops after MaxGlobalFixRounds even with blocking issues' {
-        Mock Invoke-ReviewRunner {
-            @{
-                Passed = $false
-                BlockingCount = 1
-                Issues = @(
-                    @{ severity = 'high'; weight = 7; file = 'b.ts'; line = 5; issue = 'issue'; recommendation = 'fix' }
-                )
-            }
-        }
-        Mock Invoke-Claude {}
-
-        $origMax = $Config.MaxGlobalFixRounds
-        $origLint = $Config.VerifyLint; $origTest = $Config.VerifyTest; $origTsc = $Config.VerifyTsc
-        $Config.MaxGlobalFixRounds = 2
-        $Config.VerifyLint = '$global:LASTEXITCODE = 0'
-        $Config.VerifyTest = '$global:LASTEXITCODE = 0'
-        $Config.VerifyTsc  = '$global:LASTEXITCODE = 0'
-
-        Invoke-GlobalReview -IntegrationBranch 'feature/test' -Root $script:tempRoot
-
-        $Config.MaxGlobalFixRounds = $origMax
-        $Config.VerifyLint = $origLint; $Config.VerifyTest = $origTest; $Config.VerifyTsc = $origTsc
-
-        # Should stop after 2 rounds
-        Should -Invoke Invoke-ReviewRunner -Times 2
-    }
-
-    It 'continues to next round when verify fails after fix' {
-        $script:reviewCallCount = 0
-        Mock Invoke-ReviewRunner {
-            $script:reviewCallCount++
-            if ($script:reviewCallCount -le 2) {
-                @{
-                    Passed = $false
-                    BlockingCount = 1
-                    Issues = @(
-                        @{ severity = 'critical'; weight = 10; file = 'c.ts'; line = 1; issue = 'vuln'; recommendation = 'patch' }
-                    )
-                }
-            } else {
-                @{ Passed = $true; Issues = @(); BlockingCount = 0 }
-            }
-        }
-        Mock Invoke-Claude {}
-
-        $origMax = $Config.MaxGlobalFixRounds
-        $origLint = $Config.VerifyLint; $origTest = $Config.VerifyTest; $origTsc = $Config.VerifyTsc
-        $Config.MaxGlobalFixRounds = 3
-        $Config.VerifyLint = '$global:LASTEXITCODE = 1'
-        $Config.VerifyTest = '$global:LASTEXITCODE = 1'
-        $Config.VerifyTsc  = '$global:LASTEXITCODE = 1'
-
-        Invoke-GlobalReview -IntegrationBranch 'feature/test' -Root $script:tempRoot
-
-        $Config.MaxGlobalFixRounds = $origMax
-        $Config.VerifyLint = $origLint; $Config.VerifyTest = $origTest; $Config.VerifyTsc = $origTsc
-
-        Should -Invoke Invoke-ReviewRunner -Times 3
     }
 }

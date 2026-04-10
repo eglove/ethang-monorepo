@@ -10,8 +10,6 @@
         [string]$Root
     )
 
-    Write-Host "`n=== Stage 2: BDD Writer ===" -ForegroundColor Cyan
-
     $outputFile = (Resolve-Path $FeatureDir).Path | Join-Path -ChildPath "bdd.feature"
 
     Invoke-Claude `

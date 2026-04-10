@@ -41,19 +41,9 @@ Describe 'Invoke-Claude argument building' {
         Invoke-Claude -Interactive -Prompt 'hello'
         Should -Invoke Start-Process -Times 1
     }
-
-    It 'does not use Start-Process in print mode' {
-        $global:InvokeClaudeBatched = $true
-        Mock Invoke-ClaudeBatched { return 'ok' }
-        Invoke-Claude -Prompt 'test' | Out-Null
-        Should -Invoke Start-Process -Times 0 -Exactly -Scope It
-        $global:InvokeClaudeBatched = $false
-    }
 }
 
 Describe 'Stream JSON result parsing' {
-    # Test the parsing logic directly without calling claude
-
     It 'extracts result text from a result event' {
         $line = '{"type":"result","subtype":"success","result":"hello world","total_cost_usd":0.05}'
         $evt = $line | ConvertFrom-Json
@@ -121,95 +111,6 @@ Describe 'Stream JSON result parsing' {
     }
 }
 
-Describe 'Batched stream parsing logic' {
-    It 'extracts result from multi-line stream-json' {
-        $testOutput = @(
-            '{"type":"system","subtype":"init"}'
-            '{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Read","id":"1","input":{}}]}}'
-            '{"type":"result","subtype":"success","result":"batched result","total_cost_usd":0.1}'
-        ) -join "`n"
-
-        $resultText = $null
-        foreach ($line in ($testOutput -split "`n")) {
-            $trimmed = $line.Trim()
-            if (-not $trimmed.StartsWith('{')) { continue }
-            $sanitized = $trimmed -replace '(?<=:)\s*Infinity', '0'
-            try { $evt = $sanitized | ConvertFrom-Json } catch { continue }
-            if ($evt.type -eq 'result' -and $evt.subtype -eq 'success') {
-                if ($evt.structured_output) {
-                    $resultText = $evt.structured_output | ConvertTo-Json -Depth 10 -Compress
-                } elseif ($evt.result) {
-                    $resultText = $evt.result
-                }
-            }
-        }
-
-        $resultText | Should -Be 'batched result'
-    }
-
-    It 'extracts structured_output from stream-json' {
-        $testOutput = '{"type":"result","subtype":"success","result":"","structured_output":{"status":"DONE","summary":"all good"},"total_cost_usd":0.1}'
-
-        $resultText = $null
-        foreach ($line in ($testOutput -split "`n")) {
-            $trimmed = $line.Trim()
-            if (-not $trimmed.StartsWith('{')) { continue }
-            try { $evt = $trimmed | ConvertFrom-Json } catch { continue }
-            if ($evt.type -eq 'result' -and $evt.subtype -eq 'success') {
-                if ($evt.structured_output) {
-                    $resultText = $evt.structured_output | ConvertTo-Json -Depth 10 -Compress
-                } elseif ($evt.result) {
-                    $resultText = $evt.result
-                }
-            }
-        }
-
-        $parsed = $resultText | ConvertFrom-Json
-        $parsed.status | Should -Be 'DONE'
-        $parsed.summary | Should -Be 'all good'
-    }
-
-    It 'returns nothing when no result event exists' {
-        $testOutput = @(
-            '{"type":"system","subtype":"init"}'
-            '{"type":"assistant","message":{"content":[]}}'
-        ) -join "`n"
-
-        $resultText = $null
-        foreach ($line in ($testOutput -split "`n")) {
-            $trimmed = $line.Trim()
-            if (-not $trimmed.StartsWith('{')) { continue }
-            try { $evt = $trimmed | ConvertFrom-Json } catch { continue }
-            if ($evt.type -eq 'result' -and $evt.subtype -eq 'success' -and $evt.result) {
-                $resultText = $evt.result
-            }
-        }
-
-        $resultText | Should -BeNullOrEmpty
-    }
-
-    It 'handles mixed JSON and non-JSON lines' {
-        $testOutput = @(
-            'Loading...'
-            ''
-            '{"type":"result","subtype":"success","result":"found","total_cost_usd":0.01}'
-            'Done.'
-        ) -join "`n"
-
-        $resultText = $null
-        foreach ($line in ($testOutput -split "`n")) {
-            $trimmed = $line.Trim()
-            if (-not $trimmed.StartsWith('{')) { continue }
-            try { $evt = $trimmed | ConvertFrom-Json } catch { continue }
-            if ($evt.type -eq 'result' -and $evt.subtype -eq 'success' -and $evt.result) {
-                $resultText = $evt.result
-            }
-        }
-
-        $resultText | Should -Be 'found'
-    }
-}
-
 Describe 'Prompt temp file handling' {
     It 'writes prompt to a temp file' {
         $promptFile = [System.IO.Path]::GetTempFileName()
@@ -252,288 +153,7 @@ Describe 'Agent name extraction' {
     }
 }
 
-Describe 'Parallel runspace detection' {
-    It 'uses streaming path when InvokeClaudeBatched is not set' {
-        $global:InvokeClaudeBatched = $false
-        $inParallel = $global:InvokeClaudeBatched -eq $true
-        $inParallel | Should -BeFalse
-    }
-
-    It 'uses batched path when InvokeClaudeBatched is true' {
-        $global:InvokeClaudeBatched = $true
-        $inParallel = $global:InvokeClaudeBatched -eq $true
-        $inParallel | Should -BeTrue
-        $global:InvokeClaudeBatched = $false
-    }
-}
-
-Describe 'Invoke-ClaudeBatched' {
-    BeforeAll {
-        Mock Write-PipelineLog {}
-    }
-
-    It 'calls Start-Process with claude' {
-        Mock Start-Process {
-            [PSCustomObject]@{ ExitCode = 0 }
-        }
-        Mock Test-Path { $false }
-        Mock Remove-Item {}
-
-        Invoke-ClaudeBatched -Args @('--print', '--verbose') -AgentName 'test-agent'
-
-        Should -Invoke Start-Process -Times 1
-    }
-
-    It 'parses result from stream-json output' {
-        $outFile = [System.IO.Path]::GetTempFileName()
-        Set-Content $outFile -Value '{"type":"result","subtype":"success","result":"batched output","total_cost_usd":0.05}'
-
-        Mock Start-Process {
-            [PSCustomObject]@{ ExitCode = 0 }
-        }
-        Mock Test-Path { $true } -ParameterFilter { $Path -eq $outFile }
-        Mock Get-Content { Get-Content $using:outFile -Raw } -ParameterFilter { $Raw }
-        Mock Remove-Item {}
-
-        # Directly test the parsing logic
-        $output = '{"type":"result","subtype":"success","result":"batched output","total_cost_usd":0.05}'
-        $resultText = $null
-        foreach ($line in ($output -split "`n")) {
-            $trimmed = $line.Trim()
-            if (-not $trimmed.StartsWith('{')) { continue }
-            $sanitized = $trimmed -replace '(?<=:)\s*Infinity', '0'
-            try { $evt = $sanitized | ConvertFrom-Json } catch { continue }
-            if ($evt.type -eq 'result' -and $evt.subtype -eq 'success') {
-                if ($evt.structured_output) {
-                    $resultText = $evt.structured_output | ConvertTo-Json -Depth 10 -Compress
-                } elseif ($evt.result) {
-                    $resultText = $evt.result
-                }
-            }
-        }
-
-        $resultText | Should -Be 'batched output'
-        Remove-Item $outFile -ErrorAction SilentlyContinue
-    }
-
-    It 'handles PromptFile param by passing RedirectStandardInput' {
-        $promptFile = [System.IO.Path]::GetTempFileName()
-        Set-Content $promptFile -Value 'test prompt'
-
-        $script:capturedParams = @{}
-        Mock Start-Process {
-            $script:capturedParams = $PSBoundParameters
-            [PSCustomObject]@{ ExitCode = 0 }
-        }
-        Mock Test-Path { $false }
-        Mock Remove-Item {}
-
-        Invoke-ClaudeBatched -Args @('--print') -PromptFile $promptFile -AgentName 'test'
-
-        # The function should set RedirectStandardInput
-        Should -Invoke Start-Process -Times 1
-
-        Remove-Item $promptFile -ErrorAction SilentlyContinue
-    }
-
-    It 'returns nothing when no result event in output' {
-        Mock Start-Process {
-            [PSCustomObject]@{ ExitCode = 0 }
-        }
-        Mock Test-Path { $true }
-        Mock Get-Content { '{"type":"system","subtype":"init"}' } -ParameterFilter { $Raw }
-        Mock Remove-Item {}
-
-        $result = Invoke-ClaudeBatched -Args @('--print') -AgentName 'test'
-
-        $result | Should -BeNullOrEmpty
-    }
-
-    It 'escapes args with spaces in arg string' {
-        # Test the escaping logic directly
-        $testArgs = @('--system-prompt-file', '/path/with spaces/file.md')
-        $escapedArgs = $testArgs | ForEach-Object {
-            if ($_ -match '\s') { "`"$_`"" } else { $_ }
-        }
-        $argString = $escapedArgs -join ' '
-
-        $argString | Should -Match '"/path/with spaces/file.md"'
-    }
-
-    It 'cleans up temp files' {
-        $script:removedFiles = @()
-        Mock Start-Process {
-            [PSCustomObject]@{ ExitCode = 0 }
-        }
-        Mock Test-Path { $false }
-        Mock Remove-Item {
-            $script:removedFiles += $Path
-        }
-
-        Invoke-ClaudeBatched -Args @('--print') -AgentName 'test'
-
-        # Should attempt to clean up outFile and errFile
-        $script:removedFiles.Count | Should -BeGreaterThan 0
-    }
-
-    It 'returns structured_output through actual batched parsing' {
-        Mock Start-Process {
-            [PSCustomObject]@{ ExitCode = 0 }
-        }
-        Mock Test-Path { $true }
-        Mock Get-Content { '{"type":"result","subtype":"success","structured_output":{"status":"ok"},"total_cost_usd":0.01}' } -ParameterFilter { $Raw }
-        Mock Remove-Item {}
-
-        $result = Invoke-ClaudeBatched -CommandArgs @('--print') -AgentName 'test'
-
-        $parsed = $result | ConvertFrom-Json
-        $parsed.status | Should -Be 'ok'
-    }
-
-    It 'returns result text through actual batched parsing' {
-        Mock Start-Process {
-            [PSCustomObject]@{ ExitCode = 0 }
-        }
-        Mock Test-Path { $true }
-        Mock Get-Content { '{"type":"result","subtype":"success","result":"batch parsed","total_cost_usd":0.01}' } -ParameterFilter { $Raw }
-        Mock Remove-Item {}
-
-        $result = Invoke-ClaudeBatched -CommandArgs @('--print') -AgentName 'test'
-
-        $result | Should -Be 'batch parsed'
-    }
-
-    It 'escapes args with spaces in actual batched execution' {
-        Mock Start-Process {
-            [PSCustomObject]@{ ExitCode = 0 }
-        }
-        Mock Test-Path { $true }
-        Mock Get-Content { '{"type":"result","subtype":"success","result":"space ok","total_cost_usd":0.01}' } -ParameterFilter { $Raw }
-        Mock Remove-Item {}
-
-        $result = Invoke-ClaudeBatched -CommandArgs @('--system-prompt-file', '/path/with spaces/file.md') -AgentName 'test'
-
-        $result | Should -Be 'space ok'
-    }
-}
-
-Describe 'Invoke-Claude print mode argument construction' {
-    BeforeAll {
-        Mock Write-PipelineLog {}
-        Mock Write-Host {}
-    }
-
-    It 'adds --json-schema when JsonSchema provided' {
-        $global:InvokeClaudeBatched = $true
-        $script:capturedArgs = $null
-        Mock Invoke-ClaudeBatched {
-            $script:capturedArgs = $CommandArgs
-            return 'ok'
-        }
-
-        Invoke-Claude -Prompt 'test' -JsonSchema '{"type":"object"}'
-
-        $script:capturedArgs | Should -Contain '--json-schema'
-        $global:InvokeClaudeBatched = $false
-    }
-
-    It 'adds --add-dir when AddDir provided' {
-        $global:InvokeClaudeBatched = $true
-        $script:capturedArgs = $null
-        Mock Invoke-ClaudeBatched {
-            $script:capturedArgs = $CommandArgs
-            return 'ok'
-        }
-
-        Invoke-Claude -Prompt 'test' -AddDir '/tmp/workdir'
-
-        $script:capturedArgs | Should -Contain '--add-dir'
-        $global:InvokeClaudeBatched = $false
-    }
-
-    It 'routes to Invoke-ClaudeBatched when InvokeClaudeBatched is set' {
-        $global:InvokeClaudeBatched = $true
-        Mock Invoke-ClaudeBatched { 'batched result' }
-
-        $result = Invoke-Claude -Prompt 'test'
-
-        $result | Should -Be 'batched result'
-        Should -Invoke Invoke-ClaudeBatched -Times 1
-
-        $global:InvokeClaudeBatched = $false
-    }
-
-    It 'writes prompt to temp file and passes to batched' {
-        $global:InvokeClaudeBatched = $true
-        $script:capturedPromptFile = 'NOT_SET'
-        Mock Invoke-ClaudeBatched {
-            $script:capturedPromptFile = $PromptFile
-            return 'ok'
-        }
-
-        Invoke-Claude -Prompt 'temp file test'
-
-        $script:capturedPromptFile | Should -Not -BeNullOrEmpty
-        $script:capturedPromptFile | Should -Not -Be 'NOT_SET'
-        $global:InvokeClaudeBatched = $false
-    }
-
-    It 'returns result from batched path' {
-        $global:InvokeClaudeBatched = $true
-        Mock Invoke-ClaudeBatched { return 'done' }
-
-        $result = Invoke-Claude -Prompt 'test'
-
-        $result | Should -Be 'done'
-        $global:InvokeClaudeBatched = $false
-    }
-
-    It 'returns structured_output from batched path' {
-        $global:InvokeClaudeBatched = $true
-        Mock Invoke-ClaudeBatched { return '{"key":"value"}' }
-
-        $result = Invoke-Claude -Prompt 'test'
-        $parsed = $result | ConvertFrom-Json
-
-        $parsed.key | Should -Be 'value'
-        $global:InvokeClaudeBatched = $false
-    }
-
-    It 'passes no PromptFile when no Prompt given' {
-        $global:InvokeClaudeBatched = $true
-        $script:capturedPromptFile = 'NOT_SET'
-        Mock Invoke-ClaudeBatched {
-            $script:capturedPromptFile = $PromptFile
-            return 'no-prompt result'
-        }
-
-        $result = Invoke-Claude -SystemPromptFile '/tmp/agent.md'
-
-        $result | Should -Be 'no-prompt result'
-        $script:capturedPromptFile | Should -BeNullOrEmpty
-        $global:InvokeClaudeBatched = $false
-    }
-
-    It 'includes --system-prompt-file in args' {
-        $global:InvokeClaudeBatched = $true
-        $script:capturedArgs = $null
-        Mock Invoke-ClaudeBatched {
-            $script:capturedArgs = $CommandArgs
-            return 'ok'
-        }
-
-        Invoke-Claude -Prompt 'test' -SystemPromptFile '/tmp/agent.md'
-
-        $script:capturedArgs | Should -Contain '--system-prompt-file'
-        $global:InvokeClaudeBatched = $false
-    }
-}
-
 Describe 'Invoke-Claude streaming path' {
-    # Uses a global:claude function (not a Pester mock) so it resolves inside & { ... } blocks.
-    # Pester mocks use scope-specific overrides that & { ... } may not find;
-    # global functions are always visible as the last-resort scope.
-
     BeforeAll {
         Mock Write-PipelineLog {}
         Mock Write-Host {}
@@ -541,7 +161,6 @@ Describe 'Invoke-Claude streaming path' {
 
     AfterEach {
         Remove-Item Function:\claude -ErrorAction SilentlyContinue
-        $global:InvokeClaudeBatched = $false
     }
 
     It 'parses result with cost from stream output' {
@@ -549,18 +168,16 @@ Describe 'Invoke-Claude streaming path' {
             '{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Edit","id":"x","input":{}}]}}'
             '{"type":"result","subtype":"success","result":"stream-ok","total_cost_usd":0.01}'
         }
-        $global:InvokeClaudeBatched = $false
 
         $result = Invoke-Claude -Prompt 'test'
 
         $result | Should -Be 'stream-ok'
     }
 
-    It 'returns structured_output over result text in streaming mode' {
+    It 'returns structured_output over result text' {
         function global:claude {
             '{"type":"result","subtype":"success","result":"","structured_output":{"key":"val"},"total_cost_usd":0.05}'
         }
-        $global:InvokeClaudeBatched = $false
 
         $result = Invoke-Claude -SystemPromptFile '/tmp/agent.md'
         $parsed = $result | ConvertFrom-Json
@@ -568,14 +185,60 @@ Describe 'Invoke-Claude streaming path' {
         $parsed.key | Should -Be 'val'
     }
 
-    It 'handles result event without total_cost_usd in streaming mode' {
+    It 'handles result event without total_cost_usd' {
         function global:claude {
             '{"type":"result","subtype":"success","result":"no-cost"}'
         }
-        $global:InvokeClaudeBatched = $false
 
         $result = Invoke-Claude -Prompt 'test'
 
         $result | Should -Be 'no-cost'
+    }
+
+    It 'includes --json-schema when JsonSchema provided' {
+        $script:capturedArgs = $null
+        function global:claude {
+            $script:capturedArgs = $args
+            '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}'
+        }
+
+        Invoke-Claude -Prompt 'test' -JsonSchema '{"type":"object"}'
+
+        $script:capturedArgs | Should -Contain '--json-schema'
+    }
+
+    It 'includes --add-dir when AddDir provided' {
+        $script:capturedArgs = $null
+        function global:claude {
+            $script:capturedArgs = $args
+            '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}'
+        }
+
+        Invoke-Claude -Prompt 'test' -AddDir '/tmp/workdir'
+
+        $script:capturedArgs | Should -Contain '--add-dir'
+    }
+
+    It 'includes --system-prompt-file in args' {
+        $script:capturedArgs = $null
+        function global:claude {
+            $script:capturedArgs = $args
+            '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}'
+        }
+
+        Invoke-Claude -Prompt 'test' -SystemPromptFile '/tmp/agent.md'
+
+        $script:capturedArgs | Should -Contain '--system-prompt-file'
+    }
+
+    It 'returns nothing when no result event' {
+        function global:claude {
+            '{"type":"system","subtype":"init"}'
+            '{"type":"assistant","message":{"content":[]}}'
+        }
+
+        $result = Invoke-Claude -Prompt 'test'
+
+        $result | Should -BeNullOrEmpty
     }
 }

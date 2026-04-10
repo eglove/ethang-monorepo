@@ -48,103 +48,16 @@ The caller provides the output directory path. Create it if it does not exist.
    - `PROPERTY` entries for all liveness properties
    - `SYMMETRY` sets where applicable to reduce state space
 
-### 4. Run TLC
-
-Execute the model checker:
-
-```
-java -XX:+UseParallelGC -jar C:\Users\glove\projects\tla-toolbox\tla2tools.jar -config <name>.cfg -workers auto <name>.tla
-```
-
-### 5. Handle Results
-
-**If TLC passes (no errors):**
-- Record the number of states explored and the properties verified.
-- Write the README.md in the output directory.
-- Present results to the user.
-
-**If TLC reports errors, follow the tiered error protocol:**
-
-#### Tier 1 — Syntax/Parse Errors
-Self-fix immediately. These are mechanical mistakes (missing operators, typos, wrong module names). No consultation needed. Re-run TLC after each fix.
-
-#### Tier 2 — Invariant/Property Violations
-TLC provides a counterexample trace. Analyze the trace to understand which transition violates which property. Attempt a fix (adjust guards, add missing states, correct the property definition). Re-run TLC.
-
-- **Attempt limit:** 3 self-fix attempts for Tier 2 errors.
-- **On exhaustion:** Escalate to expert-tla via the Agent tool. Provide:
-  - The full `.tla` spec
-  - The counterexample trace from TLC
-  - A summary of the 3 fix attempts and why each failed
-  - The specific question: what is wrong with the state model?
-- Apply expert-tla's recommendations and re-run TLC.
-
-#### Tier 3 — Design Ambiguity
-If expert-tla determines the scenarios are contradictory or underspecified (the spec cannot be fixed because the design itself is unclear), escalate to the user with:
-- The specific ambiguity identified
-- The conflicting requirements from the scenarios
-- A concrete question about the design intent
-
-#### Tier 4 — Environment Failures
-Java not found, jar path wrong, out of memory, or other infrastructure issues. Surface to the user immediately as an environment issue with the exact error message. Do not retry environment failures.
-
-### 6. Write README
-
-Create `README.md` in the output directory with:
-
-```markdown
-# TLA+ Specification: <Topic>
-
-## Source
-Scenarios: `<relative path to gherkin file>`
-
-## Specification
-- **Module:** `<Name>.tla`
-- **Config:** `<Name>.cfg`
-
-## States
-<List all states enumerated in the spec>
-
-## Properties Verified
-### Safety (Invariants)
-<List each safety property and what it guarantees>
-
-### Liveness
-<List each liveness property and what it guarantees>
-
-## TLC Results
-- **States explored:** <count>
-- **Distinct states:** <count>
-- **Result:** <PASS or FAIL with details>
-- **Workers:** auto
-- **Date:** <YYYY-MM-DD>
-```
-
 ## Output
 
-Save all files (.tla, .cfg, README.md) to the output directory specified by the caller. Return to stdout as plain text:
-
-```
-TLA+ Specification: <Topic>
-
-Files created:
-  <dir>/<Name>.tla  — specification (<N> states, <M> transitions)
-  <dir>/<Name>.cfg  — TLC configuration
-  <dir>/README.md   — verification summary
-
-TLC Result: PASS | FAIL
-  States explored: <count>
-  Distinct states: <count>
-  Properties verified:
-    - <safety property 1>
-    - <liveness property 1>
-```
+Save the `.tla` and `.cfg` files to the output directory specified by the caller. Do NOT run TLC or any other tools — the pipeline handles verification separately. Do NOT invoke skills, bash commands, or any tools other than file writes.
 
 ## Constraints
 
 - Does not write implementation code
 - Does not modify the Gherkin scenarios
-- Fixes the spec, not the design — if the design is ambiguous, escalate
+- Does not run TLC — the pipeline handles this
+- Only uses the file write tool to create `.tla` and `.cfg` files
 
 ---
 

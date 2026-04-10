@@ -1,0 +1,265 @@
+BeforeAll {
+    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/../utils/result-contracts.ps1"
+    . "$PSScriptRoot/../utils/task-log.ps1"
+    . "$PSScriptRoot/../utils/git-retry.ps1"
+    . "$PSScriptRoot/../utils/workspace.ps1"
+    . "$PSScriptRoot/../utils/merge-queue.ps1"
+    . "$PSScriptRoot/helpers/claude-test-double.ps1"
+
+    Mock Write-PipelineLog {}
+    Mock Write-Host {}
+    Mock Write-TaskLog {}
+}
+
+Describe 'Add-MergeQueue' {
+    BeforeEach { Reset-MergeQueue }
+
+    It 'enqueues a task and returns true' {
+        Add-MergeQueue -TaskId 'T1' | Should -BeTrue
+    }
+
+    It 'rejects duplicate via TryAdd' {
+        Add-MergeQueue -TaskId 'T1'
+        Add-MergeQueue -TaskId 'T1' | Should -BeFalse
+    }
+
+    It 'rejects during escalation' {
+        Add-MergeQueue -TaskId 'T1' -EscalationActive $true | Should -BeFalse
+    }
+}
+
+Describe 'Start-NextMerge' {
+    BeforeEach { Reset-MergeQueue }
+
+    It 'dequeues in FIFO order' {
+        Add-MergeQueue -TaskId 'T3'
+        Add-MergeQueue -TaskId 'T1'
+        Add-MergeQueue -TaskId 'T2'
+
+        Start-NextMerge | Should -Be 'T3'
+    }
+
+    It 'returns null when nothing in queue' {
+        Start-NextMerge | Should -BeNullOrEmpty
+    }
+
+    It 'returns null when merge already in progress' {
+        Add-MergeQueue -TaskId 'T1'
+        Start-NextMerge  # T1 now in progress
+        Add-MergeQueue -TaskId 'T2'
+        Start-NextMerge | Should -BeNullOrEmpty
+    }
+}
+
+Describe 'Invoke-Merge' {
+    BeforeAll {
+        $script:root = (Resolve-Path "$PSScriptRoot/..").Path
+        Mock Remove-TaskWorkspace {}
+    }
+
+    BeforeEach { Reset-MergeQueue }
+
+    It 'succeeds on clean merge' {
+        Mock Invoke-GitWithRetry { 'Merge successful' }
+        Mock Invoke-VerifyCommand { 0 }
+        Mock Invoke-Claude { '{}' }
+
+        Add-MergeQueue -TaskId 'T1'
+        Start-NextMerge
+
+        $counters = @{ mergeRetries = 0 }
+        $result = Invoke-Merge -TaskId 'T1' -WorktreePath '/tmp/wt' -BranchName 'feature/T1' -Root $script:root -Counters $counters
+        $result.Success | Should -BeTrue
+        $result.WorkspaceRemoved | Should -BeTrue
+    }
+
+    It 'calls git merge --abort before resolver dispatch on conflict' {
+        $script:abortCalled = $false
+        Mock Invoke-GitWithRetry {
+            param($Arguments)
+            if ($Arguments[0] -eq 'merge' -and $Arguments[1] -eq '--abort') {
+                $script:abortCalled = $true
+            }
+            if ($Arguments[0] -eq 'merge' -and $Arguments.Count -ge 2 -and $Arguments[1] -ne '--abort') {
+                throw 'CONFLICT'
+            }
+        }
+        Mock Invoke-Claude { '{}' }
+
+        Add-MergeQueue -TaskId 'T1'
+        Start-NextMerge
+
+        $counters = @{ mergeRetries = $Config.MaxMergeRetries }
+        Invoke-Merge -TaskId 'T1' -WorktreePath '/tmp/wt' -BranchName 'feature/T1' -Root $script:root -Counters $counters
+        $script:abortCalled | Should -BeTrue
+    }
+
+    It 'escalates at MaxMergeRetries boundary' {
+        Mock Invoke-GitWithRetry { throw 'CONFLICT' }
+        Mock Invoke-Claude { '{}' }
+
+        Add-MergeQueue -TaskId 'T1'
+        Start-NextMerge
+
+        $counters = @{ mergeRetries = $Config.MaxMergeRetries }
+        $result = Invoke-Merge -TaskId 'T1' -WorktreePath '/tmp/wt' -BranchName 'feature/T1' -Root $script:root -Counters $counters
+        $result.Success | Should -BeFalse
+        $result.Conflict | Should -BeTrue
+    }
+
+    It 'does not consume retry on infrastructure failure during resolver' {
+        $script:mergeAttempt = 0
+        Mock Invoke-GitWithRetry {
+            param($Arguments)
+            if ($Arguments[0] -eq 'merge' -and $Arguments[1] -ne '--abort') {
+                throw 'CONFLICT'
+            }
+        }
+        Mock Invoke-Claude { throw 'exit code 127' }
+
+        Add-MergeQueue -TaskId 'T1'
+        Start-NextMerge
+
+        $counters = @{ mergeRetries = 0 }
+        $result = Invoke-Merge -TaskId 'T1' -WorktreePath '/tmp/wt' -BranchName 'feature/T1' -Root $script:root -Counters $counters
+        $result.Success | Should -BeFalse
+        $counters.mergeRetries | Should -Be 0
+    }
+
+    It 'returns Get-MergeInProgress and Get-MergeQueueCount' {
+        Reset-MergeQueue
+        Get-MergeInProgress | Should -BeNullOrEmpty
+        Get-MergeQueueCount | Should -Be 0
+
+        Add-MergeQueue -TaskId 'T1'
+        Get-MergeQueueCount | Should -Be 1
+
+        Start-NextMerge
+        Get-MergeInProgress | Should -Be 'T1'
+    }
+
+    It 'initializes mergeRetries to 0 when missing' {
+        Mock Invoke-GitWithRetry { 'Merge successful' }
+        Mock Invoke-VerifyCommand { 0 }
+
+        Add-MergeQueue -TaskId 'T1'
+        Start-NextMerge
+
+        $counters = @{}  # No mergeRetries key
+        $result = Invoke-Merge -TaskId 'T1' -WorktreePath '/tmp/wt' -BranchName 'feature/T1' -Root $script:root -Counters $counters
+        $result.Success | Should -BeTrue
+        $counters.mergeRetries | Should -Be 0
+    }
+
+    It 'fails when post-merge verify fails and exhausts retries' {
+        Mock Invoke-GitWithRetry {
+            param($Arguments)
+            if ($Arguments -contains 'reset') { return }
+            return 'Merge successful'
+        }
+        Mock Invoke-VerifyCommand { 1 }  # Always fail verification
+
+        Add-MergeQueue -TaskId 'T1'
+        Start-NextMerge
+
+        $counters = @{ mergeRetries = ($Config.MaxMergeRetries - 1) }
+        $result = Invoke-Merge -TaskId 'T1' -WorktreePath '/tmp/wt' -BranchName 'feature/T1' -Root $script:root -Counters $counters
+        $result.Success | Should -BeFalse
+        $result.Conflict | Should -BeFalse
+    }
+
+    It 'retries after post-merge verify failure then succeeds' {
+        $script:verifyCall = 0
+        Mock Invoke-GitWithRetry {
+            param($Arguments)
+            if ($Arguments -contains 'reset') { return }
+            return 'Merge successful'
+        }
+        Mock Invoke-VerifyCommand {
+            $script:verifyCall++
+            if ($script:verifyCall -eq 1) { return 1 }  # Fail first verify (breaks loop)
+            return 0  # All subsequent pass
+        }
+
+        Add-MergeQueue -TaskId 'T1'
+        Start-NextMerge
+
+        $counters = @{ mergeRetries = 0 }
+        $result = Invoke-Merge -TaskId 'T1' -WorktreePath '/tmp/wt' -BranchName 'feature/T1' -Root $script:root -Counters $counters
+        $result.Success | Should -BeTrue
+        $counters.mergeRetries | Should -BeGreaterThan 0
+    }
+
+    It 'sets AbortedClean to false when merge abort throws' {
+        Mock Invoke-GitWithRetry {
+            param($Arguments)
+            throw 'CONFLICT'  # Both merge and abort throw
+        }
+        Mock Invoke-Claude { '{}' }
+
+        Add-MergeQueue -TaskId 'T1'
+        Start-NextMerge
+
+        $counters = @{ mergeRetries = $Config.MaxMergeRetries }
+        $result = Invoke-Merge -TaskId 'T1' -WorktreePath '/tmp/wt' -BranchName 'feature/T1' -Root $script:root -Counters $counters
+        $result.AbortedClean | Should -BeFalse
+    }
+
+    It 'succeeds after conflict-resolve-retry cycle' {
+        $script:mergeCall = 0
+        Mock Invoke-GitWithRetry {
+            param($Arguments)
+            if ($Arguments[0] -eq 'merge' -and $Arguments[1] -ne '--abort') {
+                $script:mergeCall++
+                if ($script:mergeCall -eq 1) { throw 'CONFLICT' }
+                return 'Merge successful'  # Second attempt succeeds
+            }
+        }
+        Mock Invoke-Claude { '{}' }  # Resolver succeeds
+        Mock Invoke-VerifyCommand { 0 }
+
+        Add-MergeQueue -TaskId 'T1'
+        Start-NextMerge
+
+        $counters = @{ mergeRetries = 0 }
+        $result = Invoke-Merge -TaskId 'T1' -WorktreePath '/tmp/wt' -BranchName 'feature/T1' -Root $script:root -Counters $counters
+        $result.Success | Should -BeTrue
+        $result.Conflict | Should -BeFalse
+        $counters.mergeRetries | Should -Be 1
+    }
+
+    It 'handles verify command throwing exception' {
+        Mock Invoke-GitWithRetry { 'Merge successful' }
+        Mock Invoke-VerifyCommand { throw 'command not found' }
+
+        Add-MergeQueue -TaskId 'T1'
+        Start-NextMerge
+
+        $counters = @{ mergeRetries = $Config.MaxMergeRetries }
+        $result = Invoke-Merge -TaskId 'T1' -WorktreePath '/tmp/wt' -BranchName 'feature/T1' -Root $script:root -Counters $counters
+        $result.Success | Should -BeFalse
+    }
+}
+
+Describe 'Reset-MergeCounters' {
+    It 'resets mergeRetries and restores completed status' {
+        $state = @{ mergeRetries = 3; taskStatus = 'escalated'; taskId = 'T1' }
+        $result = Reset-MergeCounters -State $state
+        $result.mergeRetries | Should -Be 0
+        $result.taskStatus | Should -Be 'completed'
+    }
+}
+
+Describe 'Test-MergeQueueEmpty' {
+    BeforeEach { Reset-MergeQueue }
+
+    It 'returns true when empty' {
+        Test-MergeQueueEmpty | Should -BeTrue
+    }
+
+    It 'returns false when items queued' {
+        Add-MergeQueue -TaskId 'T1'
+        Test-MergeQueueEmpty | Should -BeFalse
+    }
+}
