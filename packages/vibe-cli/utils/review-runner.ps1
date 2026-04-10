@@ -100,10 +100,10 @@
     }
 
     # Report
-    $criticalCount = ($allIssues | Where-Object { $_.severity -eq 'critical' }).Count
-    $highCount = ($allIssues | Where-Object { $_.severity -eq 'high' }).Count
-    $mediumCount = ($allIssues | Where-Object { $_.severity -eq 'medium' }).Count
-    $lowCount = ($allIssues | Where-Object { $_.severity -eq 'low' }).Count
+    $criticalCount = @($allIssues | Where-Object { $_.severity -eq 'critical' }).Count
+    $highCount = @($allIssues | Where-Object { $_.severity -eq 'high' }).Count
+    $mediumCount = @($allIssues | Where-Object { $_.severity -eq 'medium' }).Count
+    $lowCount = @($allIssues | Where-Object { $_.severity -eq 'low' }).Count
 
     Write-Host "  Reviews complete: $criticalCount critical, $highCount high, $mediumCount medium, $lowCount low" -ForegroundColor $(if ($anyFail) { 'Red' } else { 'Green' })
 

@@ -135,6 +135,26 @@ Describe 'Invoke-BddDebate' {
 
         Should -Invoke Invoke-DebateLoop -Times 1
     }
+
+    It 'BuildRevisionPrompt closure includes briefing and artifact content' {
+        $script:capturedRevision = $null
+        Mock Invoke-DebateLoop {
+            $revision = & $BuildRevisionPrompt 'current scenarios' 'missing edge case'
+            $script:capturedRevision = $revision
+            @{ result = 'CONSENSUS_REACHED' }
+        }
+
+        Invoke-BddDebate `
+            -GherkinFile $script:gherkinFile `
+            -Briefing 'test briefing' `
+            -FeatureDir $script:featureDir `
+            -Root $script:tempRoot `
+            -DebateSchema $script:debateSchema
+
+        $script:capturedRevision | Should -Match 'test briefing'
+        $script:capturedRevision | Should -Match 'current scenarios'
+        $script:capturedRevision | Should -Match 'missing edge case'
+    }
 }
 
 Describe 'Invoke-TlaWriter' {
@@ -227,6 +247,56 @@ Describe 'Invoke-TlaDebate' {
             -DebateSchema $script:debateSchema
 
         Should -Invoke Invoke-DebateLoop -Times 1
+    }
+
+    It 'BuildRevisionPrompt closure includes gherkin and spec content' {
+        $script:capturedRevision = $null
+        Mock Invoke-DebateLoop {
+            $revision = & $BuildRevisionPrompt 'current spec' 'invariant missing'
+            $script:capturedRevision = $revision
+            @{ result = 'CONSENSUS_REACHED' }
+        }
+
+        $utilsDir = Join-Path $script:tempRoot 'utils'
+        New-Item -ItemType Directory -Path $utilsDir -Force | Out-Null
+        Set-Content (Join-Path $utilsDir 'tlc-runner.ps1') -Value 'function Invoke-TlcCheck { param([string]$TlaDir, [string]$TlaWriterFile, [string]$FixContext) }'
+
+        Invoke-TlaDebate `
+            -TlaFile $script:tlaFile `
+            -TlaDir $script:tlaDir `
+            -GherkinFile $script:gherkinFile `
+            -FeatureDir $script:featureDir `
+            -Root $script:tempRoot `
+            -DebateSchema $script:debateSchema
+
+        $script:capturedRevision | Should -Match 'Feature: test'
+        $script:capturedRevision | Should -Match 'current spec'
+        $script:capturedRevision | Should -Match 'invariant missing'
+    }
+
+    It 'passes and executes PostRevision scriptblock in Invoke-DebateLoop' {
+        $script:receivedPostRevision = $null
+        Mock Invoke-DebateLoop {
+            $script:receivedPostRevision = $PostRevision
+            # Execute the closure for code coverage — it calls the stub Invoke-TlcCheck
+            if ($PostRevision) { try { & $PostRevision } catch {} }
+            @{ result = 'CONSENSUS_REACHED' }
+        }
+
+        $utilsDir = Join-Path $script:tempRoot 'utils'
+        New-Item -ItemType Directory -Path $utilsDir -Force | Out-Null
+        Set-Content (Join-Path $utilsDir 'tlc-runner.ps1') -Value 'function Invoke-TlcCheck { param([string]$TlaDir, [string]$TlaWriterFile, [string]$FixContext) }'
+
+        Invoke-TlaDebate `
+            -TlaFile $script:tlaFile `
+            -TlaDir $script:tlaDir `
+            -GherkinFile $script:gherkinFile `
+            -FeatureDir $script:featureDir `
+            -Root $script:tempRoot `
+            -DebateSchema $script:debateSchema
+
+        $script:receivedPostRevision | Should -Not -BeNullOrEmpty
+        $script:receivedPostRevision | Should -BeOfType [scriptblock]
     }
 }
 
@@ -336,6 +406,27 @@ Describe 'Invoke-ImplementationDebate' {
 
         Should -Invoke Invoke-DebateLoop -Times 1
     }
+
+    It 'BuildRevisionPrompt closure includes TLA spec and plan content' {
+        $script:capturedRevision = $null
+        Mock Invoke-DebateLoop {
+            $revision = & $BuildRevisionPrompt 'current plan' 'step ordering wrong'
+            $script:capturedRevision = $revision
+            @{ result = 'CONSENSUS_REACHED' }
+        }
+
+        Invoke-ImplementationDebate `
+            -ImplFile $script:implFile `
+            -ImplJson $script:implJson `
+            -TlaFile $script:tlaFile `
+            -FeatureDir $script:featureDir `
+            -Root $script:tempRoot `
+            -DebateSchema $script:debateSchema
+
+        $script:capturedRevision | Should -Match 'MODULE Spec'
+        $script:capturedRevision | Should -Match 'current plan'
+        $script:capturedRevision | Should -Match 'step ordering wrong'
+    }
 }
 
 Describe 'Invoke-GlobalReview' {
@@ -384,9 +475,16 @@ Describe 'Invoke-GlobalReview' {
             }
         }
         Mock Invoke-Claude {}
-        Mock pnpm { $global:LASTEXITCODE = 0 }
+
+        # Override verify commands — [scriptblock]::Create() bypasses Pester mock scope
+        $origLint = $Config.VerifyLint; $origTest = $Config.VerifyTest; $origTsc = $Config.VerifyTsc
+        $Config.VerifyLint = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTsc  = '$global:LASTEXITCODE = 0'
 
         Invoke-GlobalReview -IntegrationBranch 'feature/test' -Root $script:tempRoot
+
+        $Config.VerifyLint = $origLint; $Config.VerifyTest = $origTest; $Config.VerifyTsc = $origTsc
 
         Should -Invoke Invoke-Claude -Times 1
         Should -Invoke Invoke-ReviewRunner -Times 2
@@ -403,14 +501,18 @@ Describe 'Invoke-GlobalReview' {
             }
         }
         Mock Invoke-Claude {}
-        Mock pnpm { $global:LASTEXITCODE = 0 }
 
         $origMax = $Config.MaxGlobalFixRounds
+        $origLint = $Config.VerifyLint; $origTest = $Config.VerifyTest; $origTsc = $Config.VerifyTsc
         $Config.MaxGlobalFixRounds = 2
+        $Config.VerifyLint = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 0'
+        $Config.VerifyTsc  = '$global:LASTEXITCODE = 0'
 
         Invoke-GlobalReview -IntegrationBranch 'feature/test' -Root $script:tempRoot
 
         $Config.MaxGlobalFixRounds = $origMax
+        $Config.VerifyLint = $origLint; $Config.VerifyTest = $origTest; $Config.VerifyTsc = $origTsc
 
         # Should stop after 2 rounds
         Should -Invoke Invoke-ReviewRunner -Times 2
@@ -433,14 +535,18 @@ Describe 'Invoke-GlobalReview' {
             }
         }
         Mock Invoke-Claude {}
-        Mock pnpm { $global:LASTEXITCODE = 1 }
 
         $origMax = $Config.MaxGlobalFixRounds
+        $origLint = $Config.VerifyLint; $origTest = $Config.VerifyTest; $origTsc = $Config.VerifyTsc
         $Config.MaxGlobalFixRounds = 3
+        $Config.VerifyLint = '$global:LASTEXITCODE = 1'
+        $Config.VerifyTest = '$global:LASTEXITCODE = 1'
+        $Config.VerifyTsc  = '$global:LASTEXITCODE = 1'
 
         Invoke-GlobalReview -IntegrationBranch 'feature/test' -Root $script:tempRoot
 
         $Config.MaxGlobalFixRounds = $origMax
+        $Config.VerifyLint = $origLint; $Config.VerifyTest = $origTest; $Config.VerifyTsc = $origTsc
 
         Should -Invoke Invoke-ReviewRunner -Times 3
     }

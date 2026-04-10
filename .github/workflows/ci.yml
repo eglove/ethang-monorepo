@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: read
-  security-events: write
-  actions: read
 
 jobs:
   install:
@@ -101,6 +99,10 @@ jobs:
           . ./tests/pester.config.ps1
 
   codeql:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

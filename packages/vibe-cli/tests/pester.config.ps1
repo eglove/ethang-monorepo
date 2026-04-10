@@ -11,6 +11,6 @@ $config.CodeCoverage.Path = @(
 )
 $config.CodeCoverage.OutputFormat = 'JaCoCo'
 $config.CodeCoverage.OutputPath = "$PSScriptRoot/../coverage.xml"
-$config.CodeCoverage.CoveragePercentTarget = 75
+$config.CodeCoverage.CoveragePercentTarget = 90
 
 Invoke-Pester -Configuration $config

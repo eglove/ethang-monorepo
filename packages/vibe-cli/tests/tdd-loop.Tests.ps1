@@ -168,6 +168,42 @@ Describe 'Invoke-TddLoop' {
         $result.Reason | Should -Be 'green_failed'
     }
 
+    It 'continues after GREEN retry fixes the failing test' {
+        $script:invokeCount = 0
+        Mock Invoke-Claude {
+            $script:invokeCount++
+            if ($script:invokeCount -le 3) {
+                '{"status":"CONTINUE","summary":"cycle work"}'
+            }
+            else {
+                '{"status":"DONE","summary":"all covered"}'
+            }
+        }
+
+        Mock Push-Location {}
+        Mock Pop-Location {}
+        Mock Write-Host {}
+
+        # RED fails (call 1), GREEN fails (call 2), GREEN retry passes (call 3)
+        $script:verifyCount = 0
+        $Config.VerifyTest = "`$script:verifyCount++; if (`$script:verifyCount -le 2) { `$global:LASTEXITCODE = 1 } else { `$global:LASTEXITCODE = 0 }"
+
+        $origRetries = $Config.MaxGreenRetries
+        $Config.MaxGreenRetries = 3
+
+        $result = Invoke-TddLoop `
+            -TestWriterFile $script:testWriterFile `
+            -CodeWriterFile $script:codeWriterFile `
+            -TaskContext 'test task' `
+            -WorktreePath $script:tempDir `
+            -TaskId 'T1'
+
+        $Config.MaxGreenRetries = $origRetries
+
+        $result.Status | Should -Be 'DONE'
+        $script:verifyCount | Should -BeGreaterOrEqual 3
+    }
+
     It 'includes red-skip feedback in prompt after consecutive RED passes' {
         $script:capturedPrompts = @()
         $script:invokeCount = 0
