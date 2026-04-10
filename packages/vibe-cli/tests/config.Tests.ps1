@@ -203,10 +203,11 @@ Describe 'Invoke-VerifyCommand' {
     }
 
     It 'splits and executes valid commands via call operator' {
-        # Mock a real executable to test the split+call pattern
+        # Define stub so Mock works even when pnpm is not installed (CI)
+        function pnpm { $global:LASTEXITCODE = 0 }
         Mock pnpm { $global:LASTEXITCODE = 0 } -Verifiable
         $result = Invoke-VerifyCommand -Command 'pnpm test'
-        # The function should have attempted to call pnpm
-        # (May fail if pnpm not in PATH during tests, but should not throw ArgumentException)
+        $result | Should -Be 0
+        Should -InvokeVerifiable
     }
 }
