@@ -1,7 +1,11 @@
+- https://playwright.dev/docs/api/class-coverage
+- Everything search cli should replace find?
 - Migrate sanity-admin to worker
 - Blog on process
   - Screenshot and notes on everything below
+- Web assembly sync engine?
 - Courses page, search using ?query in /courses, live update on client, use search suggestsion, path match shows entire path, swebok category shows all in category, course just that course, author that author, etc.
 - ./bump.ps1 concurrent on things like wrangler-types, or other scripts
 - eslint, is order # in plugin needed?
 - Remove eslint-ignores (one issue at a time)
+- Use local sqlite for logs instead of .log files the provides opportunity for smarter resume, still want to write messages to console

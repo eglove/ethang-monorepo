@@ -22,7 +22,7 @@ function Write-PipelineLog {
 
 $Config = @{
     # Debate
-    MaxDebateRounds       = 100   # PowerShell debate loop cap (matches moderator internal cap)
+    MaxDebateRounds       = 10   # PowerShell debate loop cap (matches moderator internal cap)
 
     # TDD
     MaxTddCycles          = 10    # RED/GREEN cycles per TDD loop

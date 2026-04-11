@@ -1,0 +1,269 @@
+{
+  "topic": "Cleanup Improvements",
+  "revision": 5,
+  "debateObjectionsResolved": 32,
+  "hardeningItemsResolved": 14,
+  "tiers": [
+    {
+      "tier": 1,
+      "title": "Foundational Types, Utilities, and Parsers",
+      "tasks": [
+        {
+          "id": "T1",
+          "step": 1,
+          "title": "Pipeline Lock with Process Identity and Per-Feature Mutex",
+          "files": ["utils/pipeline-lock.ps1", "tests/pipeline-lock.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T2",
+          "step": 2,
+          "title": "runId Generation",
+          "files": ["utils/config.ps1", "tests/config.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T8",
+          "step": 8,
+          "title": "BDD Gherkin Parser",
+          "files": ["utils/gherkin-parser.ps1", "tests/gherkin-parser.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T9",
+          "step": 9,
+          "title": "TLC Output Parser",
+          "files": ["utils/tlc-parser.ps1", "tests/tlc-parser.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T17",
+          "step": 17,
+          "title": "Claude API Transient Failure Retry",
+          "files": ["utils/invoke-claude.ps1", "tests/invoke-claude.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T23",
+          "step": 23,
+          "title": "Playwright Detection and Fallback",
+          "files": ["utils/playwright-detect.ps1", "tests/playwright-detect.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "title": "Core Infrastructure",
+      "tasks": [
+        {
+          "id": "T3",
+          "step": 3,
+          "title": "Pipeline Log and Idempotency Token System",
+          "files": ["utils/pipeline-state.ps1", "tests/pipeline-state.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T2"]
+        },
+        {
+          "id": "T5",
+          "step": 5,
+          "title": "Always Use Worktrees",
+          "files": ["utils/workspace.ps1", "tests/workspace.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T2"]
+        },
+        {
+          "id": "T14",
+          "step": 14,
+          "title": "300% Coverage Gate",
+          "files": ["utils/coverage-gate.ps1", "tests/coverage-gate.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T8", "T9", "T23"]
+        },
+        {
+          "id": "T21",
+          "step": 21,
+          "title": "Crash Budget Enforcement",
+          "files": ["utils/pipeline-lock.ps1", "utils/abort-cleanup.ps1", "tests/crash-budget.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1"]
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "title": "Task Lifecycle",
+      "tasks": [
+        {
+          "id": "T4",
+          "step": 4,
+          "title": "--resume Flag with Log Parsing",
+          "files": ["vibe.ps1", "tests/vibe.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1", "T2", "T3", "T21"]
+        },
+        {
+          "id": "T6",
+          "step": 6,
+          "title": "Warden Agent Restriction",
+          "files": ["utils/warden-config.ps1", "tests/warden-config.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T5"]
+        },
+        {
+          "id": "T15",
+          "step": 15,
+          "title": "Review Gate Failure Path",
+          "files": ["utils/review-gate.ps1", "tests/review-gate.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T14"]
+        }
+      ]
+    },
+    {
+      "tier": 4,
+      "title": "Orchestration Setup",
+      "tasks": [
+        {
+          "id": "T7",
+          "step": 7,
+          "title": "Dependency Installation in Worktrees",
+          "files": ["utils/workspace.ps1", "tests/workspace.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T5", "T6"]
+        },
+        {
+          "id": "T10",
+          "step": 10,
+          "title": "Fixture Generation Integration into Pipeline Stages",
+          "files": ["stages/3-bdd-debate.ps1", "stages/5-tla-debate.ps1", "vibe.ps1", "tests/stages.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T3", "T4", "T8", "T9"]
+        },
+        {
+          "id": "T22",
+          "step": 22,
+          "title": "Task Failure Cleanup",
+          "files": ["utils/task-cleanup.ps1", "tests/task-cleanup.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T5", "T6"]
+        }
+      ]
+    },
+    {
+      "tier": 5,
+      "title": "Parallel Dispatch and Stage Wiring",
+      "tasks": [
+        {
+          "id": "T11",
+          "step": 11,
+          "title": "Implementation Writer Explicit Paths",
+          "files": ["stages/6-implementation-writer.ps1", "tests/6-implementation-writer.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T10"]
+        },
+        {
+          "id": "T12",
+          "step": 12,
+          "title": "Parallel Task Dispatch (Bug Fix)",
+          "files": ["stages/8-coding.ps1", "utils/job-runner.ps1", "tests/8-coding.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T5", "T6", "T7", "T22", "T23"]
+        }
+      ]
+    },
+    {
+      "tier": 6,
+      "title": "Gates, Merge, and Timeout",
+      "tasks": [
+        {
+          "id": "T13",
+          "step": 13,
+          "title": "Task Timeout Watchdog",
+          "files": ["utils/global-timeout.ps1", "tests/global-timeout.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T12"]
+        },
+        {
+          "id": "T16",
+          "step": 16,
+          "title": "Merge Serialization with Per-Feature Mutex and Rebase-Inside-Mutex",
+          "files": ["utils/merge-queue.ps1", "tests/merge-queue.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T5", "T12", "T15"]
+        }
+      ]
+    },
+    {
+      "tier": 7,
+      "title": "Abort Cleanup",
+      "tasks": [
+        {
+          "id": "T18",
+          "step": 18,
+          "title": "Abort Cleanup Handler",
+          "files": ["vibe.ps1", "utils/abort-cleanup.ps1", "tests/abort-cleanup.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1", "T3", "T5", "T16"]
+        }
+      ]
+    },
+    {
+      "tier": 8,
+      "title": "Pipeline Completion",
+      "tasks": [
+        {
+          "id": "T19",
+          "step": 19,
+          "title": "Pipeline Completion",
+          "files": ["vibe.ps1", "stages/8-coding.ps1", "tests/pipeline-completion.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T12", "T16", "T18"]
+        }
+      ]
+    },
+    {
+      "tier": 9,
+      "title": "End-to-End Validation",
+      "tasks": [
+        {
+          "id": "T20",
+          "step": 20,
+          "title": "End-to-End Integration — Full Pipeline Lifecycle",
+          "files": ["tests/pipeline-e2e.Tests.ps1"],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12", "T13", "T14", "T15", "T16", "T17", "T18", "T19", "T21", "T22", "T23"]
+        }
+      ]
+    }
+  ]
+}

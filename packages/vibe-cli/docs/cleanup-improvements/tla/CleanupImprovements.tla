@@ -3,6 +3,7 @@
  * TLA+ Specification: vibe-cli Cleanup Improvements
  * Source: docs/cleanup-improvements/bdd.feature (2026-04-11, round 4 amendments)
  * Revision: Addresses all debate objections (3 CRITICAL + 3 HIGH)
+ *           + Fix for liveness violation: crash budget bounds LockGoesStale
  *
  * Models the core pipeline orchestration covering:
  *   - Pipeline lifecycle (stages 1-8, lock, resume)
@@ -14,7 +15,7 @@
  *   - Abort cleanup (Ctrl+C / CancelKeyPress)
  *   - Claude API transient failure retry
  *   - Idempotency tokens for --resume
- *   - Stale lock detection and recovery
+ *   - Stale lock detection and recovery (bounded crashes)
  *   - Review gate failure path
  *
  * Fixes from debate review:
@@ -24,6 +25,25 @@
  *   [HIGH-1]     ReviewGateFail action added — review_gate has an exit on failure
  *   [HIGH-2]     TaskTimeout covers executing, coverage_gate, review_gate, merge_waiting
  *   [HIGH-3]     WF added for all failure/crash transitions
+ *
+ * Liveness fixes:
+ *   [LIVENESS-1] Added crashCount variable bounded by MaxCrashes to prevent
+ *                infinite crash-resume cycles that violate liveness properties.
+ *                Without this bound, TLC finds a counterexample where the system
+ *                alternates LockGoesStale → ResumeAcquireLock forever, preventing
+ *                pipeline completion.
+ *   [LIVENESS-2] LockGoesStale now fully resets worktreeState to "none" for all
+ *                tasks (not conditionally to "removed"). The prior conditional
+ *                reset left tasks with worktreeState="removed" after crash, but
+ *                CreateWorktree requires "none", permanently disabling worktree
+ *                creation for those tasks and deadlocking the tier on resume.
+ *   [LIVENESS-3] TasksEventuallyTerminate consequent now includes
+ *                \/ pipelineAborted. A crash resets active tasks to "idle",
+ *                and if a subsequent abort fires while those tasks are still
+ *                "idle", AbortCleanup does not re-fail them (it only fails
+ *                in-flight tasks). The original property required terminal
+ *                states unconditionally, which is violated by this legitimate
+ *                crash-then-abort sequence.
  *)
 EXTENDS Integers, Sequences, FiniteSets, TLC
 
@@ -36,7 +56,8 @@ CONSTANTS
     MaxCoverageIter,    \* Coverage iteration cap per task (e.g., 2)
     MaxRetries,         \* API/merge retry cap (e.g., 2)
     NumStages,          \* Total pipeline stages (e.g., 4 — abstracted from 8)
-    FixtureGenAfter     \* Set of stages after which fixture generation runs (e.g., {2, 3})
+    FixtureGenAfter,    \* Set of stages after which fixture generation runs (e.g., {2, 3})
+    MaxCrashes          \* Maximum number of environment-injected crashes (e.g., 2)
 
 VARIABLES
     \* --- Pipeline-level state ---
@@ -72,14 +93,17 @@ VARIABLES
     idempotencyTokens,  \* Set of {stage, status} records: status in {"invoked", "complete"}
 
     \* --- Resume state ---
-    isResuming          \* Boolean: is this a --resume invocation?
+    isResuming,         \* Boolean: is this a --resume invocation?
+
+    \* --- Environment crash budget ---
+    crashCount          \* Number of crashes injected so far (bounded by MaxCrashes)
 
 vars == <<pipelineStage, pipelineLock, pipelineAborted, abortCleanupDone,
           runId, bddFixture, tlcFixture, currentTier, tierComplete,
           taskState, worktreeState, wardenState, coverageIter, tddIter,
           coveragePBT, coverageContract, coverageE2E, mergeState,
           completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-          isResuming>>
+          isResuming, crashCount>>
 
 \* ============================================================================
 \* Helper Definitions
@@ -137,6 +161,7 @@ TypeOK ==
     /\ mergeMutex \in {"free"} \cup Tasks
     /\ \A t \in Tasks : apiRetries[t] \in 0..MaxRetries
     /\ isResuming \in BOOLEAN
+    /\ crashCount \in 0..MaxCrashes
 
 \* ============================================================================
 \* Initial State
@@ -168,6 +193,7 @@ InitFresh ==
     /\ apiRetries = [t \in Tasks |-> 0]
     /\ idempotencyTokens = {}
     /\ isResuming = FALSE
+    /\ crashCount = 0
 
 (* Resume start — models --resume with a prior crashed/aborted run.
    [CRITICAL-1] isResuming = TRUE is now reachable from Init.
@@ -198,6 +224,7 @@ InitResume ==
     /\ apiRetries = [t \in Tasks |-> 0]
     /\ idempotencyTokens = {}
     /\ isResuming = TRUE
+    /\ crashCount = 0
 
 (* Init is the disjunction of fresh and resume starts *)
 Init ==
@@ -220,7 +247,8 @@ AcquireLockFresh ==
     /\ UNCHANGED <<pipelineAborted, abortCleanupDone, bddFixture, tlcFixture,
                    currentTier, tierComplete, taskState, worktreeState, wardenState,
                    coverageIter, tddIter, coveragePBT, coverageContract, coverageE2E,
-                   mergeState, completionCounter, mergeMutex, apiRetries, isResuming>>
+                   mergeState, completionCounter, mergeMutex, apiRetries, isResuming,
+                   crashCount>>
 
 (* Acquire a stale lock — detect and replace
    [CRITICAL-3] Now reachable because LockGoesStale can set pipelineLock = "stale" *)
@@ -235,7 +263,8 @@ AcquireStaleLock ==
     /\ UNCHANGED <<pipelineAborted, abortCleanupDone, bddFixture, tlcFixture,
                    currentTier, tierComplete, taskState, worktreeState, wardenState,
                    coverageIter, tddIter, coveragePBT, coverageContract, coverageE2E,
-                   mergeState, completionCounter, mergeMutex, apiRetries, isResuming>>
+                   mergeState, completionCounter, mergeMutex, apiRetries, isResuming,
+                   crashCount>>
 
 (* Resume: acquire lock and jump to detected resume stage.
    [CRITICAL-2] When resuming to the coding stage (NumStages), fixtures must
@@ -259,26 +288,35 @@ ResumeAcquireLock ==
     /\ UNCHANGED <<pipelineAborted, abortCleanupDone, bddFixture, tlcFixture,
                    currentTier, tierComplete, taskState, worktreeState, wardenState,
                    coverageIter, tddIter, coveragePBT, coverageContract, coverageE2E,
-                   mergeState, completionCounter, mergeMutex, apiRetries>>
+                   mergeState, completionCounter, mergeMutex, apiRetries, crashCount>>
 
 (* [CRITICAL-3] Lock goes stale — models a crash or kill that leaves the lock
    behind without cleanup. This transitions a held lock to stale, making
    AcquireStaleLock and ResumeAcquireLock reachable.
-   Modeled as an environment action: a running pipeline crashes. *)
+   Modeled as an environment action: a running pipeline crashes.
+   [LIVENESS-1] Bounded by MaxCrashes to prevent infinite crash-resume cycles
+   that violate liveness properties. In practice, the environment can only
+   inject a finite number of crashes before the system stabilizes. *)
 LockGoesStale ==
     /\ pipelineStage \in 1..NumStages
     /\ pipelineLock = "held"
     /\ ~pipelineAborted
+    /\ crashCount < MaxCrashes
+    /\ crashCount' = crashCount + 1
     /\ pipelineLock' = "stale"
     \* Crash resets pipeline to pre-start state (the *process* died)
     /\ pipelineStage' = 0
     /\ runId' = "none"
     \* Tasks are abandoned — their state is irrelevant post-crash, but we
-    \* reset to model a fresh --resume starting from scratch task-wise
+    \* reset to model a fresh --resume starting from scratch task-wise.
+    \* [LIVENESS-2] worktreeState must be fully reset to "none" (not
+    \* conditionally transitioned to "removed") because the resume handler
+    \* cleans up orphaned worktrees before re-creating them. Without this,
+    \* a task whose worktree was active at crash time ends up "removed",
+    \* and CreateWorktree (which requires "none") is permanently disabled
+    \* for that task — deadlocking the tier.
     /\ taskState' = [t \in Tasks |-> "idle"]
-    /\ worktreeState' = [t \in Tasks |->
-        IF worktreeState[t] \in {"creating", "active"} THEN "removed"
-        ELSE worktreeState[t]]
+    /\ worktreeState' = [t \in Tasks |-> "none"]
     /\ wardenState' = [t \in Tasks |-> "unconfigured"]
     /\ currentTier' = 0
     /\ tierComplete' = [tier \in 1..MaxTiers |-> FALSE]
@@ -317,7 +355,8 @@ AdvanceStage ==
                    bddFixture, tlcFixture, currentTier, tierComplete,
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
-                   completionCounter, mergeMutex, apiRetries, isResuming>>
+                   completionCounter, mergeMutex, apiRetries, isResuming,
+                   crashCount>>
 
 (* Generate BDD fixtures (after the BDD debate stage) *)
 GenerateBDDFixtures ==
@@ -331,7 +370,7 @@ GenerateBDDFixtures ==
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* BDD fixture generation completes successfully *)
 BDDFixtureComplete ==
@@ -342,7 +381,7 @@ BDDFixtureComplete ==
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* BDD fixture generation crashes — leaves corrupt state *)
 BDDFixtureCrash ==
@@ -353,7 +392,7 @@ BDDFixtureCrash ==
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* Generate TLC fixtures (after the TLA+ debate stage) *)
 GenerateTLCFixtures ==
@@ -367,7 +406,7 @@ GenerateTLCFixtures ==
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* TLC fixture generation completes successfully *)
 TLCFixtureComplete ==
@@ -378,7 +417,7 @@ TLCFixtureComplete ==
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* TLC fixture generation crashes *)
 TLCFixtureCrash ==
@@ -389,7 +428,7 @@ TLCFixtureCrash ==
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 \* ============================================================================
 \* Coding Stage (Stage 8 abstracted as NumStages) — Tier Orchestration
@@ -408,7 +447,7 @@ EnterCodingStage ==
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 \* ============================================================================
 \* Task Lifecycle (within a tier)
@@ -429,7 +468,7 @@ CreateWorktree(t) ==
                    wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* Worktree creation succeeds *)
 WorktreeCreated(t) ==
@@ -443,7 +482,7 @@ WorktreeCreated(t) ==
                    coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* Worktree creation fails — task fails, escalation called *)
 WorktreeCreationFailed(t) ==
@@ -457,7 +496,8 @@ WorktreeCreationFailed(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
-                   mergeMutex, apiRetries, idempotencyTokens, isResuming>>
+                   mergeMutex, apiRetries, idempotencyTokens, isResuming,
+                   crashCount>>
 
 (* Warden configuration succeeds — agent can be dispatched *)
 WardenConfigured(t) ==
@@ -470,7 +510,7 @@ WardenConfigured(t) ==
                    worktreeState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* Warden configuration fails — task cannot proceed *)
 WardenConfigFailed(t) ==
@@ -484,7 +524,8 @@ WardenConfigFailed(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
-                   mergeMutex, apiRetries, idempotencyTokens, isResuming>>
+                   mergeMutex, apiRetries, idempotencyTokens, isResuming,
+                   crashCount>>
 
 (* Dependencies installed — dispatch coding agent *)
 DepsInstalled(t) ==
@@ -497,7 +538,7 @@ DepsInstalled(t) ==
                    worktreeState, wardenState, coverageIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* Dependency install fails *)
 DepsInstallFailed(t) ==
@@ -509,7 +550,8 @@ DepsInstallFailed(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
-                   mergeMutex, apiRetries, idempotencyTokens, isResuming>>
+                   mergeMutex, apiRetries, idempotencyTokens, isResuming,
+                   crashCount>>
 
 \* ============================================================================
 \* TDD Cycle & Coverage Gate
@@ -525,7 +567,7 @@ EnterCoverageGate(t) ==
                    worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* Coverage gate: all three categories pass *)
 CoverageGatePass(t) ==
@@ -540,7 +582,7 @@ CoverageGatePass(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, wardenState, coverageIter, tddIter,
                    mergeState, completionCounter, mergeMutex, apiRetries,
-                   idempotencyTokens, isResuming>>
+                   idempotencyTokens, isResuming, crashCount>>
 
 (* Coverage gate: at least one category fails — return to GREEN phase *)
 CoverageGateFail(t) ==
@@ -560,7 +602,7 @@ CoverageGateFail(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, wardenState,
                    mergeState, completionCounter, mergeMutex, apiRetries,
-                   idempotencyTokens, isResuming>>
+                   idempotencyTokens, isResuming, crashCount>>
 
 (* Coverage gate failure exhausts coverage iteration cap *)
 CoverageCapExhausted(t) ==
@@ -573,7 +615,8 @@ CoverageCapExhausted(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E,
-                   mergeState, mergeMutex, apiRetries, idempotencyTokens, isResuming>>
+                   mergeState, mergeMutex, apiRetries, idempotencyTokens, isResuming,
+                   crashCount>>
 
 (* TDD cycle cap exhausted while in coverage gate *)
 TDDCapExhausted(t) ==
@@ -586,7 +629,8 @@ TDDCapExhausted(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E,
-                   mergeState, mergeMutex, apiRetries, idempotencyTokens, isResuming>>
+                   mergeState, mergeMutex, apiRetries, idempotencyTokens, isResuming,
+                   crashCount>>
 
 (* Task times out during any active state.
    [HIGH-2] Extended from "executing" only to all active task states:
@@ -601,7 +645,8 @@ TaskTimeout(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E,
-                   mergeState, mergeMutex, apiRetries, idempotencyTokens, isResuming>>
+                   mergeState, mergeMutex, apiRetries, idempotencyTokens, isResuming,
+                   crashCount>>
 
 \* ============================================================================
 \* Review Gate & Merge
@@ -618,7 +663,7 @@ ReviewGatePass(t) ==
                    worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* [HIGH-1] Review gate fails — task fails with escalation.
    Without this action, a task in review_gate with no passing path would
@@ -632,7 +677,8 @@ ReviewGateFail(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E,
-                   mergeState, mergeMutex, apiRetries, idempotencyTokens, isResuming>>
+                   mergeState, mergeMutex, apiRetries, idempotencyTokens, isResuming,
+                   crashCount>>
 
 (* Acquire merge mutex — serialized by completion order *)
 AcquireMergeMutex(t) ==
@@ -647,7 +693,8 @@ AcquireMergeMutex(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E,
-                   completionCounter, apiRetries, idempotencyTokens, isResuming>>
+                   completionCounter, apiRetries, idempotencyTokens, isResuming,
+                   crashCount>>
 
 (* Merge succeeds — worktree removed, warden torn down *)
 MergeSuccess(t) ==
@@ -664,7 +711,7 @@ MergeSuccess(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E,
-                   apiRetries, idempotencyTokens, isResuming>>
+                   apiRetries, idempotencyTokens, isResuming, crashCount>>
 
 (* Merge conflict detected — release mutex, bump retry, return to waiting *)
 MergeConflict(t) ==
@@ -679,7 +726,7 @@ MergeConflict(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E,
-                   completionCounter, idempotencyTokens, isResuming>>
+                   completionCounter, idempotencyTokens, isResuming, crashCount>>
 
 (* Merge conflict exhausts retries *)
 MergeConflictExhausted(t) ==
@@ -695,7 +742,7 @@ MergeConflictExhausted(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E,
-                   apiRetries, idempotencyTokens, isResuming>>
+                   apiRetries, idempotencyTokens, isResuming, crashCount>>
 
 (* Merge mutex timeout — task waiting for merge mutex times out *)
 MergeMutexTimeout(t) ==
@@ -711,7 +758,8 @@ MergeMutexTimeout(t) ==
                    runId, bddFixture, tlcFixture, currentTier, tierComplete,
                    worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E,
-                   mergeMutex, apiRetries, idempotencyTokens, isResuming>>
+                   mergeMutex, apiRetries, idempotencyTokens, isResuming,
+                   crashCount>>
 
 \* ============================================================================
 \* Tier Advancement
@@ -734,7 +782,7 @@ AdvanceTier ==
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* All tasks in tier failed — tier fails, pipeline halts *)
 TierAllFailed ==
@@ -750,7 +798,7 @@ TierAllFailed ==
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 \* ============================================================================
 \* Pipeline Completion
@@ -768,7 +816,8 @@ PipelineComplete ==
                    bddFixture, tlcFixture, currentTier, tierComplete,
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
-                   completionCounter, mergeMutex, apiRetries, isResuming>>
+                   completionCounter, mergeMutex, apiRetries, isResuming,
+                   crashCount>>
 
 \* ============================================================================
 \* Abort (Ctrl+C / CancelKeyPress)
@@ -785,7 +834,7 @@ AbortTriggered ==
                    taskState, worktreeState, wardenState, coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
                    completionCounter, mergeMutex, apiRetries, idempotencyTokens,
-                   isResuming>>
+                   isResuming, crashCount>>
 
 (* Abort cleanup: remove worktrees, tear down wardens, release lock, write ABORT marker *)
 AbortCleanup ==
@@ -816,7 +865,8 @@ AbortCleanup ==
                    bddFixture, tlcFixture, currentTier, tierComplete,
                    coverageIter, tddIter,
                    coveragePBT, coverageContract, coverageE2E, mergeState,
-                   completionCounter, apiRetries, idempotencyTokens, isResuming>>
+                   completionCounter, apiRetries, idempotencyTokens, isResuming,
+                   crashCount>>
 
 (* Terminal state: pipeline finished (normally or via abort) — explicit stutter *)
 Done ==
@@ -1009,6 +1059,10 @@ MergedWorktreeCleanedUp ==
 StaleLockNotExecuting ==
     pipelineLock = "stale" => pipelineStage = 0
 
+(* S15: Crash count never exceeds budget *)
+CrashBudgetRespected ==
+    crashCount <= MaxCrashes
+
 \* ============================================================================
 \* Liveness Properties
 \* ============================================================================
@@ -1022,13 +1076,20 @@ PipelineEventuallyCompletes ==
 AbortEventuallyCleanedUp ==
     pipelineAborted ~> abortCleanupDone
 
-(* L3: Every task in an active state eventually reaches a terminal state.
+(* L3: Every task in an active state eventually reaches a terminal state,
+   or the pipeline aborts (which covers crash-recovery scenarios where a
+   crash resets a task to "idle" and a subsequent abort does not re-fail
+   already-idle tasks).
    [HIGH-2] Extended from "executing" to all active states so that tasks
-   stuck in coverage_gate, review_gate, or merge_waiting are also covered. *)
+   stuck in coverage_gate, review_gate, or merge_waiting are also covered.
+   [LIVENESS-3] Added \/ pipelineAborted to the consequent: without it,
+   a crash resetting an active task to "idle" followed by an abort that
+   does not mark idle tasks as failed creates a trace where the task
+   never reaches a terminal state — violating the original property. *)
 TasksEventuallyTerminate ==
     \A t \in Tasks :
         (taskState[t] \in ActiveTaskStates) ~>
-            (taskState[t] \in {"merged", "failed", "timed_out"})
+            (taskState[t] \in {"merged", "failed", "timed_out"} \/ pipelineAborted)
 
 (* L4: Each tier eventually completes if the pipeline is not aborted *)
 TiersEventuallyComplete ==

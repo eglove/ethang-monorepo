@@ -79,12 +79,14 @@ For each step, assign one code writer and one test writer:
 
 **Code writers:**
 - `typescript-writer` — general TypeScript domain logic, utilities, types, state machines
+- `powershell-writer` — PowerShell scripts, modules, functions, pipelines
 - `hono-writer` — Hono route handlers, middleware, server-side HTTP code
 - `ui-writer` — JSX components, server-rendered or client-rendered UI
-- `trainer-writer` — Claude Code artifacts: SKILL.md, AGENT.md, skill/agent definitions
+- `agent-writer` — Claude Code artifacts: SKILL.md, AGENT.md, skill/agent definitions
 
 **Test writers:**
-- `vitest-writer` — unit tests, integration tests, component tests
+- `vitest-writer` — unit tests, integration tests, component tests (TypeScript/JavaScript)
+- `pester-writer` — unit tests, integration tests for PowerShell (Pester framework)
 - `playwright-writer` — E2E browser tests, full-page acceptance tests
 
 **Pairing rules:**

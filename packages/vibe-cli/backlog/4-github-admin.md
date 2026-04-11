@@ -9,3 +9,5 @@ Issues will be reviewed and approved/denied by the user.
 The agent shouldn't be called directly, instead it should be a standalone powershell
 function/file that can be called. This way if the process is currently running, new requests
 can be queued until it is done.
+
+This feature also completely replaces the concept of user_notes.
