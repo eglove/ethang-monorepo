@@ -3,12 +3,14 @@
 
 function Invoke-CleanupPhase {
     param(
-        [Parameter(Mandatory)][hashtable]$Task,
+        [Parameter(Mandatory)][object]$Task,
         [Parameter(Mandatory)][string]$Root,
         [Parameter(Mandatory)][hashtable]$Counters,
         [string]$WorkspacePath,
         [string]$FeatureDir,
-        [string]$RunId
+        [string]$RunId,
+        [string[]]$TestFiles,
+        [string]$PlanJsonPath
     )
 
     $taskId = $Task.id
@@ -26,7 +28,12 @@ function Invoke-CleanupPhase {
 
         foreach ($cmd in $verifyCommands) {
             try {
-                $exitCode = Invoke-VerifyCommand -Command $cmd -WorkingDirectory $workDir
+                if ($cmd -eq $Config.VerifyTest -and $TestFiles -and $TestFiles.Count -gt 0) {
+                    $exitCode = Invoke-ScopedTestVerify -TestFiles $TestFiles -WorkingDirectory $workDir
+                }
+                else {
+                    $exitCode = Invoke-VerifyCommand -Command $cmd -WorkingDirectory $workDir
+                }
             }
             catch {
                 Write-TaskLog -TaskId $taskId -Phase 'cleanup' -Message "ESCALATED: Infrastructure failure during '$cmd'" -FeatureDir $FeatureDir -RunId $RunId

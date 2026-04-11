@@ -10,7 +10,7 @@ function New-TaskWorkspace {
     )
 
     # Prune stale worktree entries first
-    try { Invoke-GitWithRetry -Arguments @('worktree', 'prune') } catch { }
+    try { $null = Invoke-GitWithRetry -Arguments @('worktree', 'prune') } catch { }
 
     if ($Tasks.Count -le 1) {
         # Single-task tier — no workspace needed
@@ -25,10 +25,10 @@ function New-TaskWorkspace {
         $task = $Tasks[$i]
         $taskId = $task.id
         $branchName = "feature/$FeatureName-$taskId-$truncatedRunId"
-        $worktreePath = Join-Path (Split-Path (Get-Location) -Parent) ".worktrees/$FeatureName-$taskId-$truncatedRunId"
+        $worktreePath = Join-Path (Get-Location) ".worktrees/$FeatureName-$taskId-$truncatedRunId"
 
         try {
-            Invoke-GitWithRetry -Arguments @('worktree', 'add', '-b', $branchName, $worktreePath)
+            $null = Invoke-GitWithRetry -Arguments @('worktree', 'add', '-b', $branchName, $worktreePath)
             $workspaces[$taskId] = $worktreePath
             $null = $created.Add(@{ TaskId = $taskId; Path = $worktreePath; Branch = $branchName })
 
@@ -41,8 +41,8 @@ function New-TaskWorkspace {
             $orphaned = [System.Collections.ArrayList]::new()
             foreach ($prev in $created) {
                 try {
-                    Invoke-GitWithRetry -Arguments @('worktree', 'remove', '--force', $prev.Path)
-                    Invoke-GitWithRetry -Arguments @('branch', '-D', $prev.Branch)
+                    $null = Invoke-GitWithRetry -Arguments @('worktree', 'remove', '--force', $prev.Path)
+                    $null = Invoke-GitWithRetry -Arguments @('branch', '-D', $prev.Branch)
                 }
                 catch {
                     $null = $orphaned.Add($prev.Path)
@@ -69,10 +69,10 @@ function Remove-TaskWorkspace {
         [string]$RunId
     )
 
-    Invoke-GitWithRetry -Arguments @('worktree', 'remove', '--force', $WorktreePath)
+    $null = Invoke-GitWithRetry -Arguments @('worktree', 'remove', '--force', $WorktreePath)
 
     if ($BranchName) {
-        try { Invoke-GitWithRetry -Arguments @('branch', '-D', $BranchName) } catch { }
+        try { $null = Invoke-GitWithRetry -Arguments @('branch', '-D', $BranchName) } catch { }
     }
 
     if ($FeatureDir) {
@@ -108,8 +108,8 @@ function Reset-WorktreeState {
 
     # Try clean reset
     try {
-        Invoke-GitWithRetry -Arguments @('-C', $WorktreePath, 'checkout', '--', '.')
-        Invoke-GitWithRetry -Arguments @('-C', $WorktreePath, 'clean', '-fd')
+        $null = Invoke-GitWithRetry -Arguments @('-C', $WorktreePath, 'checkout', '--', '.')
+        $null = Invoke-GitWithRetry -Arguments @('-C', $WorktreePath, 'clean', '-fd')
         return $true
     }
     catch {
@@ -118,8 +118,8 @@ function Reset-WorktreeState {
         if (Test-Path $indexLock) {
             Remove-Item $indexLock -Force -ErrorAction SilentlyContinue
             try {
-                Invoke-GitWithRetry -Arguments @('-C', $WorktreePath, 'checkout', '--', '.')
-                Invoke-GitWithRetry -Arguments @('-C', $WorktreePath, 'clean', '-fd')
+                $null = Invoke-GitWithRetry -Arguments @('-C', $WorktreePath, 'checkout', '--', '.')
+                $null = Invoke-GitWithRetry -Arguments @('-C', $WorktreePath, 'clean', '-fd')
                 return $true
             }
             catch { }
@@ -132,13 +132,13 @@ function Reset-WorktreeState {
 
         $branchName = & git -C $WorktreePath rev-parse --abbrev-ref HEAD 2>$null
         try {
-            Invoke-GitWithRetry -Arguments @('worktree', 'remove', '--force', $WorktreePath)
+            $null = Invoke-GitWithRetry -Arguments @('worktree', 'remove', '--force', $WorktreePath)
         }
         catch { }
 
         if ($branchName) {
             try {
-                Invoke-GitWithRetry -Arguments @('worktree', 'add', $WorktreePath, $branchName)
+                $null = Invoke-GitWithRetry -Arguments @('worktree', 'add', $WorktreePath, $branchName)
                 return $false  # Recreated
             }
             catch {

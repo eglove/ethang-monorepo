@@ -71,13 +71,11 @@ Describe 'Resolve-PipelineState' {
 
     Context 'Stage 8 resume' {
         BeforeAll {
-            # Create tickets directory with task logs
-            $ticketsDir = Join-Path $script:tempDir 'tickets'
-            New-Item -ItemType Directory -Path $ticketsDir -Force | Out-Null
-            Set-Content (Join-Path $ticketsDir 'T1-config.md') -Value '# T1'
-            Set-Content (Join-Path $ticketsDir 'T1-log.txt') -Value "[2026-04-10] [T1] done | COMPLETED`n[2026-04-10] [T1] done | MERGED"
-            Set-Content (Join-Path $ticketsDir 'T2-workspace.md') -Value '# T2'
-            Set-Content (Join-Path $ticketsDir 'T2-log.txt') -Value "[2026-04-10] [T2] green | running"
+            # Create logs directory with task logs
+            $logsDir = Join-Path $script:tempDir 'logs'
+            New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
+            Set-Content (Join-Path $logsDir 'T1-log.txt') -Value "[2026-04-10] [T1] done | COMPLETED`n[2026-04-10] [T1] done | MERGED"
+            Set-Content (Join-Path $logsDir 'T2-log.txt') -Value "[2026-04-10] [T2] green | running"
 
             # Sync-FallbackLog may not be loaded in this test context, define a stub
             if (-not (Get-Command Sync-FallbackLog -ErrorAction SilentlyContinue)) {
@@ -86,10 +84,9 @@ Describe 'Resolve-PipelineState' {
             Mock Sync-FallbackLog {}
         }
 
-        It 'returns Plan, Tickets, and TlaFile for stage 8' {
+        It 'returns Plan and TlaFile for stage 8' {
             $state = Resolve-PipelineState -FromStage 8 -Dir $script:tempDir
             $state.Plan | Should -Not -BeNullOrEmpty
-            $state.Tickets | Should -Not -BeNullOrEmpty
             $state.TlaFile | Should -Not -BeNullOrEmpty
         }
 
@@ -105,7 +102,7 @@ Describe 'Resolve-PipelineState' {
             $state.MergedTasks | Should -Not -Contain 'T2'
         }
 
-        It 'throws when tickets directory missing' {
+        It 'throws when logs directory missing' {
             $emptyDir = Join-Path ([System.IO.Path]::GetTempPath()) "empty-$(Get-Random)"
             New-Item -ItemType Directory -Path $emptyDir -Force | Out-Null
             Set-Content (Join-Path $emptyDir 'elicitor.md') -Value '# Briefing'
@@ -116,7 +113,7 @@ Describe 'Resolve-PipelineState' {
             Set-Content (Join-Path $emptyDir 'implementation-plan.md') -Value '# Plan'
             Set-Content (Join-Path $emptyDir 'implementation-plan.json') -Value '{}'
 
-            { Resolve-PipelineState -FromStage 8 -Dir $emptyDir } | Should -Throw '*tickets*'
+            { Resolve-PipelineState -FromStage 8 -Dir $emptyDir } | Should -Throw '*logs*'
             Remove-Item $emptyDir -Recurse -Force
         }
 

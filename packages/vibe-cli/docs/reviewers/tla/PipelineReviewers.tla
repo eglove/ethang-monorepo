@@ -2,6 +2,7 @@
 (*
  * TLA+ Specification — Pipeline Reviewers & Resume
  * Source: docs/reviewers/bdd.feature (2026-04-10)
+ * Revised: 2026-04-10 — debate objections addressed
  *
  * Models the review gate lifecycle within the vibe-cli pipeline:
  *   - Pipeline mutual exclusion (lock file)
@@ -14,7 +15,7 @@
  *   - Absorbing terminal states (COMPLETE, HALTED)
  *   - Global pipeline timeout (PipelineTimeoutSeconds)
  *   - Review gate wall-clock cap (ReviewGateTimeout)
- *   - Diff-base staleness after concurrent merges
+ *   - Diff-base staleness after concurrent merges (BDD 575-601)
  *
  * Abstraction choices:
  *   - Individual reviewer agents are modeled as nondeterministic
@@ -25,6 +26,10 @@
  *   - Merge queue and TDD internals (RED/GREEN retry counts) are
  *     abstracted — the spec focuses on counter interactions and
  *     termination guarantees at the review gate level.
+ *   - Diff-base staleness is modeled as a nondeterministic event in
+ *     the merge queue: the diff may or may not be stale, and a stale
+ *     diff with semantic changes forces re-review (counting against
+ *     MaxReviewRounds), while identical diffs proceed to merge.
  *)
 EXTENDS Integers, FiniteSets, TLC
 
@@ -65,8 +70,8 @@ TypeOK ==
                           "finalReviewFix", "COMPLETE", "HALTED"}
     /\ lockHolder \in {NULL} \cup {1}  \* Simplified: 1 = held, NULL = free
     /\ reviewRound \in 0..MaxReviewRounds
-    /\ keepGoingResets \in 0..(MaxKeepGoingResets + 1)
-    /\ tddKeepGoingCount \in 0..(MaxTddKeepGoingPerGate + 1)
+    /\ keepGoingResets \in 0..MaxKeepGoingResets
+    /\ tddKeepGoingCount \in 0..MaxTddKeepGoingPerGate
     /\ verdict \in {NULL, "pass", "fail", "retry"}
     /\ tasksDone \in 0..NumTasks
     /\ gateTimedOut \in BOOLEAN
@@ -175,6 +180,40 @@ HandleRetryPreMerge ==
                    globalTimedOut, reviewGateType>>
 
 -----------------------------------------------------------------------------
+(* Diff-base staleness — BDD scenarios 575-601 *)
+(*                                                                           *)
+(* When a task passes pre-merge review and enters the merge queue, another   *)
+(* task may have merged concurrently, advancing the feature branch HEAD.     *)
+(* If the diff has semantically changed, re-review is required and counts    *)
+(* against MaxReviewRounds. If the diff is identical, merge proceeds.        *)
+(* For single-task tiers (NumTasks=1), staleness cannot occur.               *)
+-----------------------------------------------------------------------------
+
+(* Stale diff with semantic changes — forces re-review *)
+DiffBaseStale ==
+    /\ pipelineState = "mergeQueue"
+    /\ NumTasks > 1                    \* Single-task tiers skip staleness check
+    /\ reviewRound < MaxReviewRounds   \* Re-review counts against round limit
+    /\ reviewRound' = reviewRound + 1
+    /\ pipelineState' = "preMergeReview"
+    /\ verdict' = NULL                 \* Fresh review with updated diff
+    /\ gateTimedOut' = FALSE           \* New review gate, fresh timer
+    /\ reviewGateType' = "preMerge"
+    /\ UNCHANGED <<lockHolder, keepGoingResets, tddKeepGoingCount,
+                   tasksDone, globalTimedOut>>
+
+(* Stale diff at round limit — escalation needed *)
+DiffBaseStaleExhausted ==
+    /\ pipelineState = "mergeQueue"
+    /\ NumTasks > 1
+    /\ reviewRound >= MaxReviewRounds
+    /\ pipelineState' = "HALTED"       \* No rounds left for re-review
+    /\ lockHolder' = NULL
+    /\ UNCHANGED <<reviewRound, keepGoingResets, tddKeepGoingCount,
+                   verdict, tasksDone, gateTimedOut, globalTimedOut,
+                   reviewGateType>>
+
+-----------------------------------------------------------------------------
 (* Review-fix cycle (RED -> GREEN -> CLEANUP abstracted as one step) *)
 -----------------------------------------------------------------------------
 
@@ -205,6 +244,8 @@ TddKeepGoingInFix ==
 TddKeepGoingExhausted ==
     /\ pipelineState = "reviewFix"
     /\ tddKeepGoingCount >= MaxTddKeepGoingPerGate
+    /\ ~gateTimedOut                   \* Guard: prevent race with timeout
+    /\ ~globalTimedOut                 \* Guard: prevent race with global timeout
     /\ reviewRound' = reviewRound + 1
     /\ pipelineState' = "preMergeReview"
     /\ verdict' = "fail"  \* escalated — treated as review failure
@@ -235,8 +276,9 @@ ReviewKeepGoing ==
     /\ reviewRound' = 0
     /\ tddKeepGoingCount' = 0  \* TDD counter resets with review gate reset
     /\ verdict' = NULL
+    /\ gateTimedOut' = FALSE           \* Reset gate timer to prevent deadlock
     /\ UNCHANGED <<pipelineState, lockHolder, tasksDone,
-                   gateTimedOut, globalTimedOut, reviewGateType>>
+                   globalTimedOut, reviewGateType>>
 
 (* Review rounds exhausted AND Keep Going exhausted — forced stop *)
 ReviewForcedStop ==
@@ -250,11 +292,14 @@ ReviewForcedStop ==
                    verdict, tasksDone, gateTimedOut, globalTimedOut,
                    reviewGateType>>
 
-(* Review rounds exhausted — user chooses Stop (before Keep Going exhaustion) *)
+(* Review rounds exhausted — user chooses Stop (only when Keep Going
+   is still available; once keepGoingResets >= MaxKeepGoingResets,
+   ReviewForcedStop handles termination automatically) *)
 ReviewStop ==
     /\ pipelineState \in {"preMergeReview", "finalReview"}
     /\ \/ (verdict = "fail" /\ reviewRound >= MaxReviewRounds)
        \/ (verdict = "retry" /\ reviewRound >= MaxReviewRounds)
+    /\ keepGoingResets < MaxKeepGoingResets   \* Guard: only when Keep Going available
     /\ pipelineState' = "HALTED"
     /\ lockHolder' = NULL
     /\ UNCHANGED <<reviewRound, keepGoingResets, tddKeepGoingCount,
@@ -345,6 +390,8 @@ TddKeepGoingInFinalFix ==
 TddKeepGoingExhaustedFinal ==
     /\ pipelineState = "finalReviewFix"
     /\ tddKeepGoingCount >= MaxTddKeepGoingPerGate
+    /\ ~gateTimedOut                   \* Guard: prevent race with timeout
+    /\ ~globalTimedOut                 \* Guard: prevent race with global timeout
     /\ reviewRound' = reviewRound + 1
     /\ pipelineState' = "finalReview"
     /\ verdict' = "fail"
@@ -433,6 +480,8 @@ Next ==
     \/ ReviewForcedStop
     \/ ReviewStop
     \/ TaskMerged
+    \/ DiffBaseStale
+    \/ DiffBaseStaleExhausted
     \/ EnterFinalReview
     \/ HandlePassFinal
     \/ HandleFailFinal
@@ -474,14 +523,15 @@ LockHeldWhileActive ==
 ReviewRoundBounded ==
     reviewRound <= MaxReviewRounds
 
-(* S5: Keep Going resets never exceed MaxKeepGoingResets + 1
-       (can reach MaxKeepGoingResets, then forced stop fires) *)
+(* S5: Keep Going resets never exceed MaxKeepGoingResets
+       (guards prevent reaching MaxKeepGoingResets + 1) *)
 KeepGoingResetsBounded ==
-    keepGoingResets <= MaxKeepGoingResets + 1
+    keepGoingResets <= MaxKeepGoingResets
 
-(* S6: TDD Keep Going never exceeds MaxTddKeepGoingPerGate + 1 *)
+(* S6: TDD Keep Going never exceeds MaxTddKeepGoingPerGate
+       (guards prevent reaching MaxTddKeepGoingPerGate + 1) *)
 TddKeepGoingBounded ==
-    tddKeepGoingCount <= MaxTddKeepGoingPerGate + 1
+    tddKeepGoingCount <= MaxTddKeepGoingPerGate
 
 (* S7: Tasks done never exceeds total tasks *)
 TaskCountBounded ==
@@ -503,6 +553,13 @@ GlobalTimeoutHalts ==
 
 (* S11: MaxKeepGoingResets=0 means Keep Going is never used *)
 (* This is enforced structurally by the guard keepGoingResets < MaxKeepGoingResets *)
+
+(* S12: Diff staleness re-review only possible with multiple tasks *)
+DiffStalenessRequiresMultipleTasks ==
+    \* If we're back in preMergeReview after being in mergeQueue,
+    \* there must be more than one task. This is enforced structurally
+    \* by the NumTasks > 1 guard on DiffBaseStale.
+    TRUE
 
 (* Composite safety invariant *)
 Safety ==

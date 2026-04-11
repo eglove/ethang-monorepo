@@ -1,0 +1,234 @@
+{
+  "topic": "Pipeline Reviewers & Resume",
+  "sourceArtifacts": {
+    "tlaSpec": "packages/vibe-cli/docs/reviewers/tla/PipelineReviewers.tla",
+    "bddFeature": "packages/vibe-cli/docs/reviewers/bdd.feature"
+  },
+  "tiers": [
+    {
+      "tier": 1,
+      "title": "Domain Constants and Verdict Model",
+      "tasks": [
+        {
+          "id": "T1",
+          "step": 1,
+          "title": "Review gate constants and NumTasks",
+          "files": ["utils/config.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T4",
+          "step": 4,
+          "title": "Review verdict data model",
+          "files": ["utils/review-verdict.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "title": "State Infrastructure",
+      "tasks": [
+        {
+          "id": "T2",
+          "step": 2,
+          "title": "Pipeline state type and initial state",
+          "files": ["utils/pipeline-state.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T1"]
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "title": "Lock and Gate Engine",
+      "tasks": [
+        {
+          "id": "T3",
+          "step": 3,
+          "title": "Pipeline lock manager and StartRunning",
+          "files": ["utils/pipeline-lock.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T2"]
+        },
+        {
+          "id": "T5",
+          "step": 5,
+          "title": "Review gate engine — core loop",
+          "files": ["utils/review-gate.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T2", "T4"]
+        }
+      ]
+    },
+    {
+      "tier": 4,
+      "title": "Verdict Handling, Timeouts, and Terminal States",
+      "tasks": [
+        {
+          "id": "T6",
+          "step": 6,
+          "title": "Verdict handling — pass, fail, retry (pre-merge)",
+          "files": ["utils/review-gate.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T5"]
+        },
+        {
+          "id": "T14",
+          "step": 14,
+          "title": "Review gate timeout",
+          "files": ["utils/review-timeout.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T5", "T1"]
+        },
+        {
+          "id": "T16",
+          "step": 16,
+          "title": "Global pipeline timeout",
+          "files": ["utils/global-timeout.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T2", "T3"]
+        },
+        {
+          "id": "T17",
+          "step": 17,
+          "title": "Terminal state absorption",
+          "files": ["utils/pipeline-state.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T2", "T3"]
+        }
+      ]
+    },
+    {
+      "tier": 5,
+      "title": "Merge Queue, Fix Cycles, and Escalation",
+      "tasks": [
+        {
+          "id": "T7",
+          "step": 7,
+          "title": "Review-fix cycle",
+          "files": ["utils/review-fix.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T5", "T6"]
+        },
+        {
+          "id": "T9",
+          "step": 9,
+          "title": "Review round exhaustion and Keep Going escalation",
+          "files": ["utils/review-gate.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T5", "T6"]
+        },
+        {
+          "id": "T10",
+          "step": 10,
+          "title": "Merge queue and task counting",
+          "files": ["utils/merge-queue.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T6", "T2"]
+        },
+        {
+          "id": "T15",
+          "step": 15,
+          "title": "Gate timeout escalation",
+          "files": ["utils/review-timeout.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T14"]
+        }
+      ]
+    },
+    {
+      "tier": 6,
+      "title": "Staleness, Final Review, and TDD Escalation",
+      "tasks": [
+        {
+          "id": "T8",
+          "step": 8,
+          "title": "TDD Keep Going and exhaustion in fix",
+          "files": ["utils/review-fix.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T7"]
+        },
+        {
+          "id": "T11",
+          "step": 11,
+          "title": "Diff-base staleness detection",
+          "files": ["utils/diff-staleness.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T10"]
+        },
+        {
+          "id": "T12",
+          "step": 12,
+          "title": "Final review gate — verdict handling",
+          "files": ["utils/review-gate.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T5", "T10"]
+        }
+      ]
+    },
+    {
+      "tier": 7,
+      "title": "Final Fix Cycle",
+      "tasks": [
+        {
+          "id": "T13",
+          "step": 13,
+          "title": "Final review-fix cycle with TDD escalation",
+          "files": ["utils/review-fix.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T7", "T8", "T12"]
+        }
+      ]
+    },
+    {
+      "tier": 8,
+      "title": "Pipeline Integration",
+      "tasks": [
+        {
+          "id": "T18",
+          "step": 18,
+          "title": "Pipeline orchestrator integration",
+          "files": ["stages/8-coding.ps1", "utils/task-runner.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T3", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12", "T13", "T14", "T15", "T16", "T17"]
+        }
+      ]
+    },
+    {
+      "tier": 9,
+      "title": "Liveness Verification",
+      "tasks": [
+        {
+          "id": "T19",
+          "step": 19,
+          "title": "Liveness integration tests",
+          "files": ["tests/review-liveness.Tests.ps1"],
+          "codeWriter": "typescript-writer",
+          "testWriter": "vitest-writer",
+          "dependencies": ["T18"]
+        }
+      ]
+    }
+  ]
+}

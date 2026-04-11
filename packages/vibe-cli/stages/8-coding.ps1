@@ -27,11 +27,6 @@ function Invoke-CodingStage {
     $pipelineStatus = 'running'
     $escalationActive = $false
 
-    # Environment variable setup — set once, never mutate
-    if ($Config.UseHeadroom) {
-        $env:ANTHROPIC_BASE_URL = $Config.HeadroomUrl
-    }
-
     Write-TaskLog -TaskId 'PIPELINE' -Phase 'init' -Message "Pipeline starting (RunId: $PipelineRunId)" -FeatureDir $FeatureDir -RunId $PipelineRunId
 
     # ── Step 1: Validate plan ──
@@ -160,24 +155,26 @@ function Invoke-CodingStage {
                 $taskBlock = if ($task.testWriter) {
                     # TDD task: RED -> GREEN -> Cleanup
                     {
-                        param($t, $r, $c, $wp, $fd, $rid)
-                        $redResult = Invoke-RedPhase -Task $t -Root $r -Counters $c -WorkspacePath $wp -FeatureDir $fd -RunId $rid
+                        param($t, $r, $c, $wp, $fd, $rid, $pjp)
+                        $redResult = Invoke-RedPhase -Task $t -Root $r -Counters $c -WorkspacePath $wp -FeatureDir $fd -RunId $rid -PlanJsonPath $pjp
                         if ($redResult.Status -eq 'escalated') { return $redResult }
 
+                        $testFiles = if ($redResult.TestFiles) { $redResult.TestFiles } else { @() }
+
                         if ($redResult.Phase -eq 'green') {
-                            $greenResult = Invoke-GreenPhase -Task $t -Root $r -Counters $c -WorkspacePath $wp -FeatureDir $fd -RunId $rid
+                            $greenResult = Invoke-GreenPhase -Task $t -Root $r -Counters $c -WorkspacePath $wp -FeatureDir $fd -RunId $rid -TestFiles $testFiles -PlanJsonPath $pjp
                             if ($greenResult.Status -eq 'escalated') { return $greenResult }
                         }
 
-                        $cleanupResult = Invoke-CleanupPhase -Task $t -Root $r -Counters $c -WorkspacePath $wp -FeatureDir $fd -RunId $rid
+                        $cleanupResult = Invoke-CleanupPhase -Task $t -Root $r -Counters $c -WorkspacePath $wp -FeatureDir $fd -RunId $rid -TestFiles $testFiles -PlanJsonPath $pjp
                         return $cleanupResult
                     }
                 }
                 else {
                     # Agent-writer task
                     {
-                        param($t, $r, $c, $wp, $fd, $rid)
-                        return Invoke-AgentWriter -Task $t -Root $r -FeatureDir $fd -RunId $rid
+                        param($t, $r, $c, $wp, $fd, $rid, $pjp)
+                        return Invoke-AgentWriter -Task $t -Root $r -FeatureDir $fd -RunId $rid -PlanJsonPath $pjp
                     }
                 }
 
@@ -185,6 +182,7 @@ function Invoke-CodingStage {
                     -ArgumentList @{
                         t = $task; r = $Root; c = $taskCounters[$task.id]
                         wp = $wsPath; fd = $FeatureDir; rid = $PipelineRunId
+                        pjp = $PlanJsonPath
                     }
 
                 if ($jobResult.TimedOut) {

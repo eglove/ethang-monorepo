@@ -15,8 +15,6 @@ $root = $PSScriptRoot
 . "$root/utils/pipeline-state.ps1"
 . "$root/utils/debate-loop.ps1"
 
-Start-HeadroomProxy
-
 # Stages
 . "$root/stages/1-elicitor.ps1"
 . "$root/stages/2-bdd-writer.ps1"

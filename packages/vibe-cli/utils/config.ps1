@@ -20,57 +20,7 @@ function Write-PipelineLog {
     }
 }
 
-function Test-HeadroomPort {
-    param([string]$Host_ = '127.0.0.1', [int]$Port = 8787)
-    try {
-        $tcp = [System.Net.Sockets.TcpClient]::new()
-        $tcp.Connect($Host_, $Port)
-        $tcp.Close()
-        return $true
-    }
-    catch { return $false }
-}
-
-function Start-HeadroomProxy {
-    if (-not $Config.UseHeadroom) { return }
-
-    $uri = [System.Uri]$Config.HeadroomUrl
-    $proxyHost = $uri.Host
-    $proxyPort = $uri.Port
-
-    if (Test-HeadroomPort -Host_ $proxyHost -Port $proxyPort) {
-        Write-PipelineLog "Headroom proxy already running on port $proxyPort" -Color Green
-        return
-    }
-
-    Write-PipelineLog "Starting headroom proxy on port $proxyPort..." -Color Yellow
-    $headroomExe = Get-Command headroom -ErrorAction SilentlyContinue |
-        Select-Object -ExpandProperty Source
-    if (-not $headroomExe) {
-        throw "headroom not found in PATH. Install with: pip install headroom-ai"
-    }
-
-    Start-Process -FilePath $headroomExe -ArgumentList "proxy --port $proxyPort" `
-        -WindowStyle Hidden
-
-    # Wait up to 10s for the port to open
-    $deadline = [datetime]::Now.AddSeconds(10)
-    while ([datetime]::Now -lt $deadline) {
-        if (Test-HeadroomPort -Host_ $proxyHost -Port $proxyPort) {
-            Write-PipelineLog "Headroom proxy ready on port $proxyPort" -Color Green
-            return
-        }
-        Start-Sleep -Milliseconds 500
-    }
-
-    throw "Headroom proxy failed to start on port $proxyPort within 10 seconds"
-}
-
 $Config = @{
-    # Headroom proxy
-    UseHeadroom           = $true
-    HeadroomUrl           = 'http://127.0.0.1:8787'
-
     # Debate
     MaxDebateRounds       = 100   # PowerShell debate loop cap (matches moderator internal cap)
 
@@ -123,6 +73,104 @@ $Config = @{
 
     # Allowlist regex for verify commands — rejects shell metacharacters
     VerifyCommandAllowlistPattern = '^[a-zA-Z0-9_./ -]+(\s+[a-zA-Z0-9_./ -]+)*$'
+
+    # ── Review Gate Constants (T1) ──
+
+    # Max review rounds before escalation (0 = immediate escalation)
+    MaxReviewRounds            = 3
+
+    # Max Keep Going resets per gate (0 = disables Keep Going per S11 invariant)
+    MaxKeepGoingResets         = 3
+
+    # Max TDD Keep Going iterations per gate
+    MaxTddKeepGoingPerGate     = 5
+
+    # Review gate timeout in seconds (30 minutes)
+    ReviewGateTimeoutSeconds   = 1800
+
+    # Number of tasks — derived from tier task list length, must be >= 1
+    NumTasks                   = 1
+}
+
+function Get-PipelineConfig {
+    <#
+    .SYNOPSIS
+        Returns an immutable snapshot of the pipeline config with env var overrides applied.
+    .DESCRIPTION
+        Reads review gate constants from $Config defaults, applies any VIBE_* environment
+        variable overrides, validates NumTasks >= 1, and returns a read-only dictionary.
+    #>
+
+    # Start with a mutable copy of all current config values
+    $snapshot = @{}
+    foreach ($key in $Config.Keys) {
+        $snapshot[$key] = $Config[$key]
+    }
+
+    # Apply environment variable overrides for review gate constants
+    if ($env:VIBE_MAX_REVIEW_ROUNDS) {
+        $snapshot.MaxReviewRounds = [int]$env:VIBE_MAX_REVIEW_ROUNDS
+    }
+    # Handle '0' explicitly since '0' is falsy in PowerShell
+    elseif ($null -ne $env:VIBE_MAX_REVIEW_ROUNDS -and $env:VIBE_MAX_REVIEW_ROUNDS -eq '0') {
+        $snapshot.MaxReviewRounds = 0
+    }
+
+    if ($env:VIBE_MAX_KEEP_GOING_RESETS) {
+        $snapshot.MaxKeepGoingResets = [int]$env:VIBE_MAX_KEEP_GOING_RESETS
+    }
+    elseif ($null -ne $env:VIBE_MAX_KEEP_GOING_RESETS -and $env:VIBE_MAX_KEEP_GOING_RESETS -eq '0') {
+        $snapshot.MaxKeepGoingResets = 0
+    }
+
+    if ($env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE) {
+        $snapshot.MaxTddKeepGoingPerGate = [int]$env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE
+    }
+
+    if ($env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS) {
+        $snapshot.ReviewGateTimeoutSeconds = [int]$env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS
+    }
+
+    if ($env:VIBE_NUM_TASKS) {
+        $snapshot.NumTasks = [int]$env:VIBE_NUM_TASKS
+    }
+
+    # Validate NumTasks >= 1
+    if ($snapshot.NumTasks -lt 1) {
+        throw [System.ArgumentException]::new(
+            "NumTasks must be >= 1, got $($snapshot.NumTasks). " +
+            "Each tier must have at least one task."
+        )
+    }
+
+    # Return as an immutable (read-only) dictionary
+    $dict = [System.Collections.Generic.Dictionary[string,object]]::new()
+    foreach ($key in $snapshot.Keys) {
+        $dict[$key] = $snapshot[$key]
+    }
+    $readOnly = [System.Collections.ObjectModel.ReadOnlyDictionary[string,object]]::new($dict)
+    return $readOnly
+}
+
+function Invoke-ScopedTestVerify {
+    param(
+        [Parameter(Mandatory)][string[]]$TestFiles,
+        [string]$WorkingDirectory
+    )
+
+    if ($WorkingDirectory) { Push-Location $WorkingDirectory }
+    try {
+        $pesterConfig = [PesterConfiguration]::Default
+        $pesterConfig.Run.Path = $TestFiles
+        $pesterConfig.Run.PassThru = $true
+        $pesterConfig.Output.Verbosity = 'None'
+        $result = Invoke-Pester -Configuration $pesterConfig
+        if ($result.FailedCount -gt 0) { return 1 }
+        return 0
+    }
+    finally {
+        if ($WorkingDirectory) { Pop-Location }
+    }
 }
 
 function Test-VerifyCommand {

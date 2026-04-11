@@ -18,12 +18,6 @@ function Invoke-Claude {
 
     $agentName = if ($SystemPromptFile) { Split-Path $SystemPromptFile -Leaf } elseif ($AppendSystemPromptFile) { Split-Path $AppendSystemPromptFile -Leaf } else { 'unknown' }
 
-    # Headroom proxy routing
-    $origBaseUrl = $env:ANTHROPIC_BASE_URL
-    if ($Config.UseHeadroom) {
-        $env:ANTHROPIC_BASE_URL = $Config.HeadroomUrl
-    }
-
     if ($Interactive) {
         if ($Prompt) { $args_ += $Prompt }
         Write-PipelineLog "INVOKE interactive agent=$agentName"
@@ -32,7 +26,6 @@ function Invoke-Claude {
             if ($_ -match '\s') { "`"$_`"" } else { $_ }
         }
         Start-Process -FilePath claude -ArgumentList ($escapedArgs -join ' ') -Wait
-        $env:ANTHROPIC_BASE_URL = $origBaseUrl
         Write-PipelineLog "COMPLETE interactive agent=$agentName"
         return
     }
@@ -117,7 +110,6 @@ function Invoke-Claude {
     $stopwatch.Stop()
     Remove-Item $errFile -ErrorAction SilentlyContinue
     if ($promptFile) { Remove-Item $promptFile -ErrorAction SilentlyContinue }
-    $env:ANTHROPIC_BASE_URL = $origBaseUrl
 
     # Clean up PID registry entry
     if ($TaskId -and (Get-Command Get-ChildPidRegistry -ErrorAction SilentlyContinue)) {

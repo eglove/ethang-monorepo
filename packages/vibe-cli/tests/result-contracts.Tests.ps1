@@ -94,6 +94,27 @@ Describe 'ConvertTo-TaskResult' {
     }
 }
 
+Describe 'ConvertTo-TaskResult — TestFiles passthrough' {
+    It 'preserves TestFiles when provided' {
+        $r = ConvertTo-TaskResult @{
+            TaskId = 'T1'; Phase = 'green'; Status = 'running'
+            Counters = @{}; Escalated = $false
+            TestFiles = @('tests/config.Tests.ps1')
+        }
+        $r.TestFiles | Should -Not -BeNullOrEmpty
+        $r.TestFiles | Should -Contain 'tests/config.Tests.ps1'
+    }
+
+    It 'defaults TestFiles to empty array when omitted' {
+        $r = ConvertTo-TaskResult @{
+            TaskId = 'T1'; Phase = 'green'; Status = 'running'
+            Counters = @{}; Escalated = $false
+        }
+        $r.ContainsKey('TestFiles') | Should -BeTrue
+        $r.TestFiles.Count | Should -Be 0
+    }
+}
+
 Describe 'ConvertTo-EscalationResult' {
     It 'constructs a valid KeepGoing result' {
         $r = ConvertTo-EscalationResult @{

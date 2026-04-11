@@ -30,71 +30,6 @@ Describe 'Write-PipelineLog' {
     }
 }
 
-Describe 'Test-HeadroomPort' {
-    It 'returns false for a port that is not listening' {
-        Test-HeadroomPort -Host_ '127.0.0.1' -Port 19999 | Should -BeFalse
-    }
-
-    It 'returns true for a port that is listening' {
-        $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, 0)
-        $listener.Start()
-        $port = ([System.Net.IPEndPoint]$listener.LocalEndpoint).Port
-        try {
-            Test-HeadroomPort -Host_ '127.0.0.1' -Port $port | Should -BeTrue
-        }
-        finally {
-            $listener.Stop()
-        }
-    }
-}
-
-Describe 'Start-HeadroomProxy' {
-    BeforeAll {
-        Mock Write-PipelineLog {}
-        Mock Write-Host {}
-    }
-
-    It 'does nothing when UseHeadroom is false' {
-        $origUse = $Config.UseHeadroom
-        $Config.UseHeadroom = $false
-        try {
-            Start-HeadroomProxy
-            Should -Not -Invoke Write-PipelineLog
-        }
-        finally {
-            $Config.UseHeadroom = $origUse
-        }
-    }
-
-    It 'skips startup when proxy port is already open' {
-        $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, 0)
-        $listener.Start()
-        $port = ([System.Net.IPEndPoint]$listener.LocalEndpoint).Port
-        $origUrl = $Config.HeadroomUrl
-        $Config.HeadroomUrl = "http://127.0.0.1:$port"
-        try {
-            Start-HeadroomProxy
-            Should -Invoke Write-PipelineLog -ParameterFilter { $Message -match 'already running' }
-        }
-        finally {
-            $listener.Stop()
-            $Config.HeadroomUrl = $origUrl
-        }
-    }
-
-    It 'throws when headroom is not in PATH and port is closed' {
-        Mock Get-Command { $null }
-        $origUrl = $Config.HeadroomUrl
-        $Config.HeadroomUrl = 'http://127.0.0.1:19999'
-        try {
-            { Start-HeadroomProxy } | Should -Throw '*headroom not found*'
-        }
-        finally {
-            $Config.HeadroomUrl = $origUrl
-        }
-    }
-}
-
 Describe 'Config values' {
     It 'has all required design-stage keys' {
         $Config.Keys | Should -Contain 'MaxDebateRounds'
@@ -106,8 +41,6 @@ Describe 'Config values' {
         $Config.Keys | Should -Contain 'VerifyTest'
         $Config.Keys | Should -Contain 'VerifyLint'
         $Config.Keys | Should -Contain 'VerifyTsc'
-        $Config.Keys | Should -Contain 'UseHeadroom'
-        $Config.Keys | Should -Contain 'HeadroomUrl'
     }
 
     It 'does not contain removed MaxGreenRetries key' {
