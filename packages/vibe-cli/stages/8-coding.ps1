@@ -112,6 +112,7 @@ function Invoke-CodingStage {
                 continue
             }
 
+            Write-StatusNote -TaskId 'PIPELINE' -Status "Tier $currentTier" -Detail "$($pendingTasks.Count) task(s)"
             Write-TaskLog -TaskId 'PIPELINE' -Phase 'tier' -Message "Starting tier $currentTier ($($pendingTasks.Count) tasks)" -FeatureDir $FeatureDir -RunId $PipelineRunId
 
             # Create workspaces (multi-task tiers)

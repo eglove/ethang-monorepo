@@ -10,6 +10,8 @@ function Invoke-FinalVerification {
         [string]$RunId
     )
 
+    Write-StatusNote -TaskId 'FINAL' -Status 'Verifying'
+
     if (-not $Counters.ContainsKey('finalCleanPasses')) { $Counters.finalCleanPasses = 0 }
     if (-not $Counters.ContainsKey('finalRemediations')) { $Counters.finalRemediations = 0 }
     $Counters.finalVerifPhase = 'running'

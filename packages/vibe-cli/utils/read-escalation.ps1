@@ -1,4 +1,5 @@
 . "$PSScriptRoot/result-contracts.ps1"
+. "$PSScriptRoot/task-log.ps1"
 
 $script:PhaseSet = @('idle', 'red', 'red_retry', 'green', 'green_retry', 'cleanup', 'cleanup_remed', 'agent_call', 'done')
 $script:ValidSources = @('task', 'merge', 'final', 'workspace')
@@ -58,6 +59,8 @@ function Read-Escalation {
     }
 
     # Display escalation context
+    $reviewLabel = if ($TaskId) { $TaskId } else { $Source }
+    Write-StatusNote -TaskId $reviewLabel -Status 'Review'
     Write-Host "`n========== ESCALATION ==========" -ForegroundColor Red
     Write-Host "Source:  $Source" -ForegroundColor Yellow
     if ($TaskId) { Write-Host "Task:   $TaskId" -ForegroundColor Yellow }

@@ -115,6 +115,21 @@ function Sync-FallbackLog {
     }
 }
 
+function Write-StatusNote {
+    param(
+        [Parameter(Mandatory)][string]$TaskId,
+        [Parameter(Mandatory)][string]$Status,
+        [string]$Detail
+    )
+
+    $banner = ">>> $TaskId $Status"
+    if ($Detail) { $banner += " - $Detail" }
+    $banner += ' <<<'
+
+    Write-Host $banner -ForegroundColor Cyan
+    Write-ThreadSafeLog -Message $banner
+}
+
 function Write-TaskLog {
     param(
         [Parameter(Mandatory)][string]$TaskId,

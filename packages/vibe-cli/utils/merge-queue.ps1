@@ -56,6 +56,7 @@ function Invoke-Merge {
     )
 
     if (-not $Counters.ContainsKey('mergeRetries')) { $Counters.mergeRetries = 0 }
+    Write-StatusNote -TaskId $TaskId -Status 'Merging' -Detail $BranchName
 
     while ($true) {
         Write-TaskLog -TaskId $TaskId -Phase 'done' -Message "Attempting merge of $BranchName (retry $($Counters.mergeRetries)/$($Config.MaxMergeRetries))" -FeatureDir $FeatureDir -RunId $RunId

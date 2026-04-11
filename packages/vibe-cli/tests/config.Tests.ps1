@@ -66,7 +66,7 @@ Describe 'Config values' {
     }
 
     It 'retains existing TDD/cleanup values' {
-        $Config.MaxTddCycles | Should -Be 100
+        $Config.MaxTddCycles | Should -Be 10
         $Config.MaxFixRounds | Should -Be 100
         $Config.CleanupPasses | Should -Be 2
     }

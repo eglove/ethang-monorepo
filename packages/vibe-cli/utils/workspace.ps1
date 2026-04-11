@@ -32,6 +32,15 @@ function New-TaskWorkspace {
             $workspaces[$taskId] = $worktreePath
             $null = $created.Add(@{ TaskId = $taskId; Path = $worktreePath; Branch = $branchName })
 
+            # Install dependencies so verify commands (pnpm test/lint) work in the worktree
+            try {
+                Push-Location $worktreePath
+                $null = & pnpm install --frozen-lockfile 2>$null
+            }
+            finally {
+                Pop-Location
+            }
+
             if ($FeatureDir) {
                 Write-TaskLog -TaskId $taskId -Phase 'idle' -Message "Workspace created: $worktreePath" -FeatureDir $FeatureDir -RunId $RunId
             }

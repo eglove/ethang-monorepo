@@ -618,24 +618,22 @@ All TLA+ states, transitions, and properties are covered by the implementation p
 
 | Task ID | Title | Tier | Code Writer | Test Writer | Dependencies | Rationale |
 |---------|-------|------|-------------|-------------|--------------|-----------|
-| T1 | Review gate constants and NumTasks | 1 | typescript-writer | vitest-writer | None | Config constants with NumTasks derivation |
-| T2 | Pipeline state type and initial state | 2 | typescript-writer | vitest-writer | T1 | State model with type invariant, core data structure |
-| T3 | Pipeline lock manager and StartRunning | 3 | typescript-writer | vitest-writer | T2 | File-based lock with PID tracking, includes StartRunning |
-| T4 | Review verdict data model | 1 | typescript-writer | vitest-writer | None | Verdict enum and parsing, pure domain type |
-| T5 | Review gate engine — core loop | 3 | typescript-writer | vitest-writer | T2, T4 | Core state machine loop with timeout guards |
-| T6 | Verdict handling — pass/fail/retry | 4 | typescript-writer | vitest-writer | T5 | Verdict dispatch with guard conditions |
-| T7 | Review-fix cycle | 5 | typescript-writer | vitest-writer | T5, T6 | TDD fix loop with sticky counter semantics |
-| T8 | TDD Keep Going and exhaustion | 6 | typescript-writer | vitest-writer | T7 | Counter management with sticky exhaustion tests |
-| T9 | Review round exhaustion and escalation | 4 | typescript-writer | vitest-writer | T5, T6 | Escalation with shared keepGoingResets counter |
-| T10 | Merge queue and task counting | 5 | typescript-writer | vitest-writer | T6, T2 | Merge queue extension, task counter |
-| T11 | Diff-base staleness detection | 6 | typescript-writer | vitest-writer | T10 | Git diff comparison with UNCHANGED preservation |
-| T12 | Final review gate — verdict handling | 6 | typescript-writer | vitest-writer | T5, T10 | Symmetric to pre-merge but with COMPLETE terminal |
-| T13 | Final review-fix with TDD escalation | 7 | typescript-writer | vitest-writer | T7, T8, T12 | Reuses fix cycle for final review context |
-| T14 | Review gate timeout | 4 | typescript-writer | vitest-writer | T5, T1 | Timer mechanism with fix-state timeout tests |
-| T15 | Gate timeout escalation | 5 | typescript-writer | vitest-writer | T14 | Escalation with shared counter and fix-state routing |
-| T16 | Global pipeline timeout | 3 | typescript-writer | vitest-writer | T2, T3 | Global timer override, terminal transition |
-| T17 | Terminal state absorption | 3 | typescript-writer | vitest-writer | T2, T3 | Guard function for absorbing states |
-| T18 | Pipeline orchestrator integration | 8 | typescript-writer | vitest-writer | T3-T17 | Full pipeline wiring, stage-8 modifications |
-| T19 | Liveness integration tests | 9 | typescript-writer | vitest-writer | T18 | Randomized E2E verification with boundary configs |
-
-> **Note on agent assignments:** The vibe-cli codebase is PowerShell-based with Pester tests. The agent types listed above follow the standard pipeline assignment schema. When dispatching, the pipeline should map `typescript-writer` -> `powershell-writer` and `vitest-writer` -> `pester-writer` based on the target file extensions (`.ps1` / `.Tests.ps1`).
+| T1 | Review gate constants and NumTasks | 1 | powershell-writer | pester-writer | None | Config constants with NumTasks derivation |
+| T2 | Pipeline state type and initial state | 2 | powershell-writer | pester-writer | T1 | State model with type invariant, core data structure |
+| T3 | Pipeline lock manager and StartRunning | 3 | powershell-writer | pester-writer | T2 | File-based lock with PID tracking, includes StartRunning |
+| T4 | Review verdict data model | 1 | powershell-writer | pester-writer | None | Verdict enum and parsing, pure domain type |
+| T5 | Review gate engine — core loop | 3 | powershell-writer | pester-writer | T2, T4 | Core state machine loop with timeout guards |
+| T6 | Verdict handling — pass/fail/retry | 4 | powershell-writer | pester-writer | T5 | Verdict dispatch with guard conditions |
+| T7 | Review-fix cycle | 5 | powershell-writer | pester-writer | T5, T6 | TDD fix loop with sticky counter semantics |
+| T8 | TDD Keep Going and exhaustion | 6 | powershell-writer | pester-writer | T7 | Counter management with sticky exhaustion tests |
+| T9 | Review round exhaustion and escalation | 4 | powershell-writer | pester-writer | T5, T6 | Escalation with shared keepGoingResets counter |
+| T10 | Merge queue and task counting | 5 | powershell-writer | pester-writer | T6, T2 | Merge queue extension, task counter |
+| T11 | Diff-base staleness detection | 6 | powershell-writer | pester-writer | T10 | Git diff comparison with UNCHANGED preservation |
+| T12 | Final review gate — verdict handling | 6 | powershell-writer | pester-writer | T5, T10 | Symmetric to pre-merge but with COMPLETE terminal |
+| T13 | Final review-fix with TDD escalation | 7 | powershell-writer | pester-writer | T7, T8, T12 | Reuses fix cycle for final review context |
+| T14 | Review gate timeout | 4 | powershell-writer | pester-writer | T5, T1 | Timer mechanism with fix-state timeout tests |
+| T15 | Gate timeout escalation | 5 | powershell-writer | pester-writer | T14 | Escalation with shared counter and fix-state routing |
+| T16 | Global pipeline timeout | 3 | powershell-writer | pester-writer | T2, T3 | Global timer override, terminal transition |
+| T17 | Terminal state absorption | 3 | powershell-writer | pester-writer | T2, T3 | Guard function for absorbing states |
+| T18 | Pipeline orchestrator integration | 8 | powershell-writer | pester-writer | T3-T17 | Full pipeline wiring, stage-8 modifications |
+| T19 | Liveness integration tests | 9 | powershell-writer | pester-writer | T18 | Randomized E2E verification with boundary configs |

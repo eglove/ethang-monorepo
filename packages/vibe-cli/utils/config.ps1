@@ -25,7 +25,7 @@ $Config = @{
     MaxDebateRounds       = 100   # PowerShell debate loop cap (matches moderator internal cap)
 
     # TDD
-    MaxTddCycles          = 100   # RED/GREEN cycles per TDD loop
+    MaxTddCycles          = 10    # RED/GREEN cycles per TDD loop
 
     # Cleanup
     CleanupPasses         = 2     # lint + test + tsc must pass this many times consecutively
@@ -134,12 +134,50 @@ function Get-PipelineConfig {
     if ($env:VIBE_NUM_TASKS) {
         $snapshot.NumTasks = [int]$env:VIBE_NUM_TASKS
     }
+    elseif ($null -ne $env:VIBE_NUM_TASKS -and $env:VIBE_NUM_TASKS -eq '0') {
+        $snapshot.NumTasks = 0
+    }
 
-    # Validate NumTasks >= 1
+    if ($null -ne $env:VIBE_PIPELINE_TIMEOUT_SECONDS -and $env:VIBE_PIPELINE_TIMEOUT_SECONDS -ne '') {
+        $snapshot.PipelineTimeoutSeconds = [int]$env:VIBE_PIPELINE_TIMEOUT_SECONDS
+    }
+
+    # ── Validation ──
+
+    # Fields that must be strictly positive (> 0)
+    $positiveFields = @(
+        'MaxReviewRounds',
+        'ReviewGateTimeoutSeconds',
+        'MaxTddKeepGoingPerGate',
+        'PipelineTimeoutSeconds'
+    )
+    foreach ($field in $positiveFields) {
+        if ($snapshot[$field] -le 0) {
+            throw [System.ArgumentException]::new(
+                "$field must be positive, got $($snapshot[$field])."
+            )
+        }
+    }
+
+    # MaxKeepGoingResets allows 0 (disables Keep Going per TLA S11) but rejects negative
+    if ($snapshot.MaxKeepGoingResets -lt 0) {
+        throw [System.ArgumentException]::new(
+            "MaxKeepGoingResets must be non-negative, got $($snapshot.MaxKeepGoingResets)."
+        )
+    }
+
+    # NumTasks must be >= 1
     if ($snapshot.NumTasks -lt 1) {
         throw [System.ArgumentException]::new(
             "NumTasks must be >= 1, got $($snapshot.NumTasks). " +
             "Each tier must have at least one task."
+        )
+    }
+
+    # Cross-field: pipeline timeout must accommodate at least one full gate timeout
+    if ($snapshot.PipelineTimeoutSeconds -lt $snapshot.ReviewGateTimeoutSeconds) {
+        throw [System.ArgumentException]::new(
+            "PipelineTimeoutSeconds ($($snapshot.PipelineTimeoutSeconds)) must be >= ReviewGateTimeoutSeconds ($($snapshot.ReviewGateTimeoutSeconds))."
         )
     }
 
