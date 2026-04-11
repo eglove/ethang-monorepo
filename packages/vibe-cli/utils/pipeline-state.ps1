@@ -40,21 +40,19 @@ function Resolve-PipelineState {
     # Parse the plan JSON
     $state.Plan = Get-Content $implJson -Raw | ConvertFrom-Json
 
-    # Collect ticket file paths
-    $ticketsDir = "$Dir/tickets"
-    if (-not (Test-Path $ticketsDir)) {
-        throw "Cannot resume at stage $FromStage — missing tickets directory: $ticketsDir"
-    }
-    $state.Tickets = @(Get-ChildItem "$ticketsDir/T*-*.md" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
-
     # Scan task logs for completed/merged tasks (partial-tier resume)
+    $logsDir = "$Dir/logs"
+    if (-not (Test-Path $logsDir)) {
+        throw "Cannot resume at stage $FromStage — missing logs directory: $logsDir"
+    }
+
     $state.CompletedTasks = [System.Collections.Generic.HashSet[string]]::new()
     $state.MergedTasks = [System.Collections.Generic.HashSet[string]]::new()
     $state.DirtyMergeCleanedTasks = [System.Collections.ArrayList]::new()
     $state.UnrecoverableWorktrees = [System.Collections.ArrayList]::new()
     $state.StaleMergeCleared = [System.Collections.ArrayList]::new()
 
-    $taskLogs = Get-ChildItem "$ticketsDir/T*-log.txt" -ErrorAction SilentlyContinue
+    $taskLogs = Get-ChildItem "$logsDir/T*-log.txt" -ErrorAction SilentlyContinue
     foreach ($logFile in $taskLogs) {
         $content = Get-Content $logFile.FullName -Raw -ErrorAction SilentlyContinue
         if (-not $content) { continue }

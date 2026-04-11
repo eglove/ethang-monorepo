@@ -3,12 +3,14 @@
 
 function Invoke-GreenPhase {
     param(
-        [Parameter(Mandatory)][hashtable]$Task,
+        [Parameter(Mandatory)][object]$Task,
         [Parameter(Mandatory)][string]$Root,
         [Parameter(Mandatory)][hashtable]$Counters,
         [string]$WorkspacePath,
         [string]$FeatureDir,
-        [string]$RunId
+        [string]$RunId,
+        [string[]]$TestFiles,
+        [string]$PlanJsonPath
     )
 
     $taskId = $Task.id
@@ -25,7 +27,8 @@ function Invoke-GreenPhase {
             }
         }
 
-        $prompt = "Make the failing tests pass for task $taskId : $($Task.title)`nFiles: $($Task.files -join ', ')`nDo NOT modify test files."
+        $taskJson = $Task | ConvertTo-Json -Depth 10 -Compress
+        $prompt = "Make the failing tests pass for task $taskId`nDo NOT modify test files.`n`nTask JSON:`n$taskJson`n`nFull implementation plan: $PlanJsonPath"
 
         Write-TaskLog -TaskId $taskId -Phase 'green' -Message "Dispatching code writer: $($Task.codeWriter) (attempt $($Counters.greenAttempts + 1))" -FeatureDir $FeatureDir -RunId $RunId
 
@@ -61,9 +64,14 @@ function Invoke-GreenPhase {
             continue
         }
 
-        # Run verify-test
+        # Run verify-test (scoped to task test files when available)
         try {
-            $exitCode = Invoke-VerifyCommand -Command $Config.VerifyTest -WorkingDirectory $workDir
+            if ($TestFiles -and $TestFiles.Count -gt 0) {
+                $exitCode = Invoke-ScopedTestVerify -TestFiles $TestFiles -WorkingDirectory $workDir
+            }
+            else {
+                $exitCode = Invoke-VerifyCommand -Command $Config.VerifyTest -WorkingDirectory $workDir
+            }
         }
         catch {
             Write-TaskLog -TaskId $taskId -Phase 'green' -Message "ESCALATED: Verify command infrastructure failure" -FeatureDir $FeatureDir -RunId $RunId

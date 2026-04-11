@@ -7,7 +7,6 @@ Describe 'vibe.ps1 parameter validation' {
         Mock Write-PipelineLog {}
         Mock Write-Host {}
         Mock Set-Content {}
-        Mock Start-HeadroomProxy {}
     }
 
     It 'throws when Stage > 1 and no Feature provided' {
@@ -124,7 +123,6 @@ Describe 'vibe.ps1 pipeline execution' {
         . "$PSScriptRoot/../stages/7-implementation-debate.ps1"
         Mock Write-PipelineLog {}
         Mock Write-Host {}
-        Mock Start-HeadroomProxy {}
 
         $script:vibeRoot = Resolve-Path "$PSScriptRoot/.."
     }

@@ -124,17 +124,17 @@ Describe 'Write-TaskLog' {
 
     It 'writes to per-task log file when FeatureDir provided' {
         Write-TaskLog -TaskId 'T3' -Phase 'green' -Message 'code written' -FeatureDir $script:testFeatureDir
-        $taskLog = Join-Path $script:testFeatureDir 'tickets/T3-log.txt'
+        $taskLog = Join-Path $script:testFeatureDir 'logs/T3-log.txt'
         $taskLog | Should -Exist
         $content = Get-Content $taskLog -Raw
         $content | Should -Match 'T3.*green.*code written'
     }
 
-    It 'creates tickets directory if absent' {
-        $ticketsDir = Join-Path $script:testFeatureDir 'tickets'
-        $ticketsDir | Should -Not -Exist
+    It 'creates logs directory if absent' {
+        $logsDir = Join-Path $script:testFeatureDir 'logs'
+        $logsDir | Should -Not -Exist
         Write-TaskLog -TaskId 'T1' -Phase 'red' -Message 'start' -FeatureDir $script:testFeatureDir
-        $ticketsDir | Should -Exist
+        $logsDir | Should -Exist
     }
 
     It 'includes RunId when provided' {

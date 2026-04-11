@@ -3,12 +3,13 @@
 
 function Invoke-RedPhase {
     param(
-        [Parameter(Mandatory)][hashtable]$Task,
+        [Parameter(Mandatory)][object]$Task,
         [Parameter(Mandatory)][string]$Root,
         [Parameter(Mandatory)][hashtable]$Counters,
         [string]$WorkspacePath,
         [string]$FeatureDir,
-        [string]$RunId
+        [string]$RunId,
+        [string]$PlanJsonPath
     )
 
     $taskId = $Task.id
@@ -17,7 +18,8 @@ function Invoke-RedPhase {
         $testWriterFile = Join-Path $Root "agents/test-writers/$($Task.testWriter).md"
     }
 
-    $prompt = "Write failing tests for task $taskId : $($Task.title)`nFiles: $($Task.files -join ', ')"
+    $taskJson = $Task | ConvertTo-Json -Depth 10 -Compress
+    $prompt = "Write failing tests for task $taskId`n`nTask JSON:`n$taskJson`n`nFull implementation plan: $PlanJsonPath"
 
     Write-TaskLog -TaskId $taskId -Phase 'red' -Message "Dispatching test writer: $($Task.testWriter)" -FeatureDir $FeatureDir -RunId $RunId
 
@@ -33,6 +35,18 @@ function Invoke-RedPhase {
         }
     }
 
+    # Extract test file paths from agent response
+    $testFiles = @()
+    try {
+        $parsed = $response | ConvertFrom-Json -ErrorAction SilentlyContinue
+        if ($parsed.filesModified) {
+            $testFiles = @($parsed.filesModified |
+                Where-Object { $_.path -match '\.(test|spec|Tests)\.' } |
+                ForEach-Object { $_.path })
+        }
+    }
+    catch { }
+
     # Run verify-test
     $workDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
     try {
@@ -43,6 +57,7 @@ function Invoke-RedPhase {
         return ConvertTo-TaskResult @{
             TaskId = $taskId; Phase = 'red'; Status = 'escalated'
             Counters = $Counters; Escalated = $true; Error = $_.Exception.Message
+            TestFiles = $testFiles
         }
     }
 
@@ -52,6 +67,7 @@ function Invoke-RedPhase {
         return ConvertTo-TaskResult @{
             TaskId = $taskId; Phase = 'green'; Status = 'running'
             Counters = $Counters; Escalated = $false
+            TestFiles = $testFiles
         }
     }
 
@@ -65,6 +81,7 @@ function Invoke-RedPhase {
             return ConvertTo-TaskResult @{
                 TaskId = $taskId; Phase = 'red_retry'; Status = 'escalated'
                 Counters = $Counters; Escalated = $true; Error = 'RED retry exhausted'
+                TestFiles = $testFiles
             }
         }
 
@@ -80,6 +97,7 @@ function Invoke-RedPhase {
             return ConvertTo-TaskResult @{
                 TaskId = $taskId; Phase = 'red_retry'; Status = 'escalated'
                 Counters = $Counters; Escalated = $true; Error = $_.Exception.Message
+                TestFiles = $testFiles
             }
         }
 
@@ -96,6 +114,7 @@ function Invoke-RedPhase {
             return ConvertTo-TaskResult @{
                 TaskId = $taskId; Phase = 'cleanup'; Status = 'running'
                 Counters = $Counters; Escalated = $false
+                TestFiles = $testFiles
             }
         }
 
@@ -109,6 +128,7 @@ function Invoke-RedPhase {
                 return ConvertTo-TaskResult @{
                     TaskId = $taskId; Phase = 'red_retry'; Status = 'escalated'
                     Counters = $Counters; Escalated = $true; Error = $_.Exception.Message
+                    TestFiles = $testFiles
                 }
             }
 
@@ -117,6 +137,7 @@ function Invoke-RedPhase {
                 return ConvertTo-TaskResult @{
                     TaskId = $taskId; Phase = 'green'; Status = 'running'
                     Counters = $Counters; Escalated = $false
+                    TestFiles = $testFiles
                 }
             }
 

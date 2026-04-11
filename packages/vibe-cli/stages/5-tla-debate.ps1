@@ -18,7 +18,7 @@
 
     . "$Root/utils/tlc-runner.ps1"
 
-    $gherkin = Get-Content $GherkinFile -Raw
+    $gherkinPath = (Resolve-Path $GherkinFile).Path
     $tlaWriterFile = "$Root/agents/doc-writers/tla-writer.md"
 
     Invoke-DebateLoop `
@@ -36,11 +36,11 @@
         Invoke-TlcCheck `
             -TlaDir $TlaDir `
             -TlaWriterFile $tlaWriterFile `
-            -FixContext "Original Gherkin scenarios:`n$gherkin"
+            -FixContext "Original Gherkin scenarios are in: $gherkinPath"
     }.GetNewClosure() `
         -StageName "TLA+" `
         -BuildRevisionPrompt {
-        param($current, $objections)
-        "Gherkin scenarios:`n$gherkin`n`nCurrent spec:`n$current`n`nDebate objections:`n- $objections`n`nRevise the specification to address all objections. Save all files to $TlaDir"
+        param($artifactPath, $objections)
+        "Read the Gherkin scenarios from: $gherkinPath`n`nRead the current spec from: $artifactPath`n`nDebate objections:`n- $objections`n`nRevise the specification to address all objections. Save all files to $TlaDir"
     }.GetNewClosure()
 }

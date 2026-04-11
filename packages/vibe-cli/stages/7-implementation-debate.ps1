@@ -16,7 +16,7 @@
         [string]$Root
     )
 
-    $tlaSpec = Get-Content $TlaFile -Raw
+    $tlaPath = (Resolve-Path $TlaFile).Path
 
     Invoke-DebateLoop `
         -DebateModFile "$Root/agents/debate-moderator.md" `
@@ -28,7 +28,7 @@
         -ReferenceFile $TlaFile.FullName `
         -StageName "Implementation" `
         -BuildRevisionPrompt {
-        param($current, $objections)
-        "TLA+ specification:`n$tlaSpec`n`nCurrent plan:`n$current`n`nDebate objections:`n- $objections`n`nRevise the plan to address all objections. Save markdown to $ImplFile and JSON manifest to $ImplJson"
+        param($artifactPath, $objections)
+        "Read the TLA+ specification from: $tlaPath`n`nRead the current plan from: $artifactPath`n`nDebate objections:`n- $objections`n`nRevise the plan to address all objections. Save markdown to $ImplFile and JSON manifest to $ImplJson"
     }.GetNewClosure()
 }

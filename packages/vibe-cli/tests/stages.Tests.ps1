@@ -125,29 +125,27 @@ Describe 'Invoke-BddDebate' {
 
         Invoke-BddDebate `
             -GherkinFile $script:gherkinFile `
-            -Briefing 'test briefing' `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            
+
         Should -Invoke Invoke-DebateLoop -Times 1
     }
 
-    It 'BuildRevisionPrompt closure includes briefing and artifact content' {
+    It 'BuildRevisionPrompt closure includes file paths and objections' {
         $script:capturedRevision = $null
         Mock Invoke-DebateLoop {
-            $revision = & $BuildRevisionPrompt 'current scenarios' 'missing edge case'
+            $revision = & $BuildRevisionPrompt 'C:/fake/artifact.feature' 'missing edge case'
             $script:capturedRevision = $revision
             @{ result = 'CONSENSUS_REACHED' }
         }
 
         Invoke-BddDebate `
             -GherkinFile $script:gherkinFile `
-            -Briefing 'test briefing' `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            
-        $script:capturedRevision | Should -Match 'test briefing'
-        $script:capturedRevision | Should -Match 'current scenarios'
+
+        $script:capturedRevision | Should -Match 'elicitor\.md'
+        $script:capturedRevision | Should -Match 'C:/fake/artifact\.feature'
         $script:capturedRevision | Should -Match 'missing edge case'
     }
 }
@@ -242,10 +240,10 @@ Describe 'Invoke-TlaDebate' {
         Should -Invoke Invoke-DebateLoop -Times 1
     }
 
-    It 'BuildRevisionPrompt closure includes gherkin and spec content' {
+    It 'BuildRevisionPrompt closure includes file paths and objections' {
         $script:capturedRevision = $null
         Mock Invoke-DebateLoop {
-            $revision = & $BuildRevisionPrompt 'current spec' 'invariant missing'
+            $revision = & $BuildRevisionPrompt 'C:/fake/artifact.tla' 'invariant missing'
             $script:capturedRevision = $revision
             @{ result = 'CONSENSUS_REACHED' }
         }
@@ -260,9 +258,9 @@ Describe 'Invoke-TlaDebate' {
             -GherkinFile $script:gherkinFile `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            
-        $script:capturedRevision | Should -Match 'Feature: test'
-        $script:capturedRevision | Should -Match 'current spec'
+
+        $script:capturedRevision | Should -Match 'bdd\.feature'
+        $script:capturedRevision | Should -Match 'C:/fake/artifact\.tla'
         $script:capturedRevision | Should -Match 'invariant missing'
     }
 
@@ -396,10 +394,10 @@ Describe 'Invoke-ImplementationDebate' {
         Should -Invoke Invoke-DebateLoop -Times 1
     }
 
-    It 'BuildRevisionPrompt closure includes TLA spec and plan content' {
+    It 'BuildRevisionPrompt closure includes file paths and objections' {
         $script:capturedRevision = $null
         Mock Invoke-DebateLoop {
-            $revision = & $BuildRevisionPrompt 'current plan' 'step ordering wrong'
+            $revision = & $BuildRevisionPrompt 'C:/fake/artifact.md' 'step ordering wrong'
             $script:capturedRevision = $revision
             @{ result = 'CONSENSUS_REACHED' }
         }
@@ -410,9 +408,9 @@ Describe 'Invoke-ImplementationDebate' {
             -TlaFile $script:tlaFile `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            
-        $script:capturedRevision | Should -Match 'MODULE Spec'
-        $script:capturedRevision | Should -Match 'current plan'
+
+        $script:capturedRevision | Should -Match 'Spec\.tla'
+        $script:capturedRevision | Should -Match 'C:/fake/artifact\.md'
         $script:capturedRevision | Should -Match 'step ordering wrong'
     }
 }

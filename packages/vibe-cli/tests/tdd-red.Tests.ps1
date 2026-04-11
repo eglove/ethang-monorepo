@@ -153,6 +153,62 @@ Describe 'Invoke-RedPhase' {
         $result.Phase | Should -Be 'green'
         $counters.redRetries | Should -Be 2
     }
+
+    It 'accepts PSCustomObject task from ConvertFrom-Json' {
+        # ConvertFrom-Json returns PSCustomObject, not hashtable
+        $jsonTask = '{"id":"T1","title":"Config","testWriter":"pester","codeWriter":"powershell-writer","files":["utils/config.ps1"]}' | ConvertFrom-Json
+        Mock Invoke-Claude { '{"filesModified":[]}' }
+        Mock Invoke-VerifyCommand { 1 }
+
+        $counters = @{ redRetries = 0 }
+        $result = Invoke-RedPhase -Task $jsonTask -Root $script:root -Counters $counters
+        $result.Phase | Should -Be 'green'
+    }
+}
+
+Describe 'Invoke-RedPhase — TestFiles extraction' {
+    BeforeAll {
+        $script:root = (Resolve-Path "$PSScriptRoot/..").Path
+        $script:task = @{ id = 'T1'; title = 'Config'; testWriter = 'pester'; codeWriter = 'powershell-writer'; files = @('utils/config.ps1') }
+    }
+
+    It 'returns TestFiles from agent filesModified response' {
+        Mock Invoke-Claude { '{"filesModified":[{"path":"tests/config-review-gate.Tests.ps1","action":"created"}],"summary":"wrote tests"}' }
+        Mock Invoke-VerifyCommand { 1 }
+
+        $counters = @{ redRetries = 0 }
+        $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.TestFiles | Should -Not -BeNullOrEmpty
+        $result.TestFiles | Should -Contain 'tests/config-review-gate.Tests.ps1'
+    }
+
+    It 'returns empty TestFiles when no test files in response' {
+        Mock Invoke-Claude { '{"filesModified":[{"path":"utils/config.ps1","action":"modified"}],"summary":"no tests"}' }
+        Mock Invoke-VerifyCommand { 1 }
+
+        $counters = @{ redRetries = 0 }
+        $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.TestFiles | Should -BeNullOrEmpty
+    }
+
+    It 'extracts multiple test files from response' {
+        Mock Invoke-Claude { '{"filesModified":[{"path":"tests/a.Tests.ps1","action":"created"},{"path":"tests/b.spec.ts","action":"created"},{"path":"src/code.ps1","action":"modified"}]}' }
+        Mock Invoke-VerifyCommand { 1 }
+
+        $counters = @{ redRetries = 0 }
+        $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.TestFiles.Count | Should -Be 2
+    }
+
+    It 'preserves TestFiles when advancing to cleanup via already_implemented' {
+        Mock Invoke-Claude { '{"verdict":"already_implemented","filesModified":[{"path":"tests/config.Tests.ps1","action":"created"}]}' }
+        Mock Invoke-VerifyCommand { 0 }
+
+        $counters = @{ redRetries = 0 }
+        $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Phase | Should -Be 'cleanup'
+        $result.TestFiles | Should -Contain 'tests/config.Tests.ps1'
+    }
 }
 
 Describe 'Reset-RedCounters' {

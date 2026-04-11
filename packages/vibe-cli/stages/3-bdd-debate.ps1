@@ -4,14 +4,13 @@
         [string]$GherkinFile,
 
         [Parameter(Mandatory)]
-        [string]$Briefing,
-
-        [Parameter(Mandatory)]
         [string]$FeatureDir,
 
         [Parameter(Mandatory)]
         [string]$Root
     )
+
+    $briefingPath = (Resolve-Path "$FeatureDir/elicitor.md").Path
 
     Invoke-DebateLoop `
         -DebateModFile "$Root/agents/debate-moderator.md" `
@@ -22,7 +21,7 @@
         -BriefingFile "$FeatureDir/elicitor.md" `
         -StageName "BDD" `
         -BuildRevisionPrompt {
-        param($current, $objections)
-        "Briefing:`n$Briefing`n`nPrevious scenarios:`n$current`n`nDebate objections:`n- $objections`n`nRevise the scenarios to address all objections. Save to $GherkinFile"
+        param($artifactPath, $objections)
+        "Read the briefing from: $briefingPath`n`nRead the previous scenarios from: $artifactPath`n`nDebate objections:`n- $objections`n`nRevise the scenarios to address all objections. Save to $GherkinFile"
     }.GetNewClosure()
 }

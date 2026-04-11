@@ -3,10 +3,11 @@
 
 function Invoke-AgentWriter {
     param(
-        [Parameter(Mandatory)][hashtable]$Task,
+        [Parameter(Mandatory)][object]$Task,
         [Parameter(Mandatory)][string]$Root,
         [string]$FeatureDir,
-        [string]$RunId
+        [string]$RunId,
+        [string]$PlanJsonPath
     )
 
     $taskId = $Task.id
@@ -14,8 +15,8 @@ function Invoke-AgentWriter {
 
     # Re-dispatch idempotency: check for pre-existing output
     if ($FeatureDir) {
-        $ticketsDir = Join-Path $FeatureDir 'tickets'
-        $logFile = Join-Path $ticketsDir "$taskId-log.txt"
+        $logsDir = Join-Path $FeatureDir 'logs'
+        $logFile = Join-Path $logsDir "$taskId-log.txt"
         if (Test-Path $logFile) {
             $logContent = Get-Content $logFile -Raw -ErrorAction SilentlyContinue
             if ($logContent -match 'COMPLETED') {
@@ -30,7 +31,8 @@ function Invoke-AgentWriter {
 
     # Dispatch single Invoke-Claude call
     $agentFile = Join-Path $Root "agents/code-writers/$($Task.codeWriter).md"
-    $prompt = "Execute task $taskId : $($Task.title)`nFiles: $($Task.files -join ', ')"
+    $taskJson = $Task | ConvertTo-Json -Depth 10 -Compress
+    $prompt = "Execute task $taskId`n`nTask JSON:`n$taskJson`n`nFull implementation plan: $PlanJsonPath"
 
     Write-TaskLog -TaskId $taskId -Phase 'agent_call' -Message "Dispatching agent: $($Task.codeWriter)" -FeatureDir $FeatureDir -RunId $RunId
 

@@ -52,9 +52,9 @@ Describe 'Invoke-AgentWriter' {
 
     It 'skips re-dispatch when already completed' {
         $featDir = Join-Path ([System.IO.Path]::GetTempPath()) "aw-test-$(Get-Random)"
-        $ticketsDir = Join-Path $featDir 'tickets'
-        New-Item -ItemType Directory -Path $ticketsDir -Force | Out-Null
-        Set-Content (Join-Path $ticketsDir 'T4-log.txt') -Value 'COMPLETED'
+        $logsDir = Join-Path $featDir 'logs'
+        New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
+        Set-Content (Join-Path $logsDir 'T4-log.txt') -Value 'COMPLETED'
 
         Mock Invoke-Claude { '{"filesModified":[]}' }
         $result = Invoke-AgentWriter -Task $script:task -Root $script:root -FeatureDir $featDir

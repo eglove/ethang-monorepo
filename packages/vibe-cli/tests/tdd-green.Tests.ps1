@@ -107,6 +107,59 @@ Describe 'Invoke-GreenPhase' {
     }
 }
 
+Describe 'Invoke-GreenPhase — scoped test verification' {
+    BeforeAll {
+        $script:root = (Resolve-Path "$PSScriptRoot/..").Path
+        $script:task = @{ id = 'T1'; title = 'Config'; codeWriter = 'powershell-writer'; testWriter = 'pester'; files = @('utils/config.ps1') }
+    }
+
+    It 'uses Invoke-ScopedTestVerify when TestFiles provided' {
+        Mock Invoke-Claude { '{"filesModified":[{"path":"utils/config.ps1","action":"modified"}]}' }
+        Mock Invoke-ScopedTestVerify { 0 }
+        Mock Invoke-VerifyCommand { throw 'should not be called for tests' }
+
+        $counters = @{ greenAttempts = 0 }
+        $result = Invoke-GreenPhase -Task $script:task -Root $script:root -Counters $counters -TestFiles @('tests/config.Tests.ps1')
+        $result.Phase | Should -Be 'cleanup'
+        Should -Invoke Invoke-ScopedTestVerify -Times 1
+        Should -Not -Invoke Invoke-VerifyCommand
+    }
+
+    It 'falls back to Invoke-VerifyCommand when no TestFiles' {
+        Mock Invoke-Claude { '{"filesModified":[{"path":"utils/config.ps1","action":"modified"}]}' }
+        Mock Invoke-VerifyCommand { 0 }
+
+        $counters = @{ greenAttempts = 0 }
+        $result = Invoke-GreenPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Phase | Should -Be 'cleanup'
+        Should -Invoke Invoke-VerifyCommand -Times 1
+    }
+
+    It 'passes TestFiles array to Invoke-ScopedTestVerify' {
+        Mock Invoke-Claude { '{"filesModified":[]}' }
+        Mock Invoke-ScopedTestVerify { 0 } -ParameterFilter { $TestFiles -contains 'tests/a.Tests.ps1' -and $TestFiles -contains 'tests/b.Tests.ps1' }
+
+        $counters = @{ greenAttempts = 0 }
+        $result = Invoke-GreenPhase -Task $script:task -Root $script:root -Counters $counters -TestFiles @('tests/a.Tests.ps1', 'tests/b.Tests.ps1')
+        $result.Phase | Should -Be 'cleanup'
+    }
+
+    It 'retries with scoped verify on failure' {
+        $script:scopedCallCount = 0
+        Mock Invoke-Claude { '{"filesModified":[]}' }
+        Mock Invoke-ScopedTestVerify {
+            $script:scopedCallCount++
+            if ($script:scopedCallCount -ge 2) { return 0 }
+            return 1
+        }
+
+        $counters = @{ greenAttempts = 0 }
+        $result = Invoke-GreenPhase -Task $script:task -Root $script:root -Counters $counters -TestFiles @('tests/config.Tests.ps1')
+        $result.Phase | Should -Be 'cleanup'
+        $counters.greenAttempts | Should -Be 1
+    }
+}
+
 Describe 'Reset-GreenCounters' {
     It 'resets greenAttempts to 0 and preserves other fields' {
         $state = @{ greenAttempts = 50; redRetries = 2 }

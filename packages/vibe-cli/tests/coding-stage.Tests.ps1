@@ -10,8 +10,8 @@ Describe 'Invoke-CodingStage' {
         $script:root = (Resolve-Path "$PSScriptRoot/..").Path
         $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "coding-test-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
-        $ticketsDir = Join-Path $script:tempDir 'tickets'
-        New-Item -ItemType Directory -Path $ticketsDir -Force | Out-Null
+        $logsDir = Join-Path $script:tempDir 'logs'
+        New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
     }
 
     AfterAll {

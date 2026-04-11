@@ -12,7 +12,7 @@ Describe 'Coding Stage Integration Tests' {
     BeforeAll {
         $script:root = (Resolve-Path "$PSScriptRoot/..").Path
         $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "integ-$(Get-Random)"
-        New-Item -ItemType Directory -Path (Join-Path $script:tempDir 'tickets') -Force | Out-Null
+        New-Item -ItemType Directory -Path (Join-Path $script:tempDir 'logs') -Force | Out-Null
 
         function New-TestPlan {
             param([array]$Tiers)

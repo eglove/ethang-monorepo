@@ -65,56 +65,103 @@ function Invoke-WithTimeout {
         }
     }
 
-    # Wrap script block with ErrorActionPreference + output pollution guard
-    $pidRegistry = Get-ChildPidRegistry
-    $wrappedBlock = {
-        param($UserBlock, $UserArgs, $PidReg, $TId)
+    # Direct invocation with timeout via background watchdog timer.
+    # ThreadJobs run in isolated runspaces where dot-sourced functions
+    # (Invoke-RedPhase, etc.) are unavailable. Instead, invoke the script
+    # block directly in the current scope and use a timer to enforce the
+    # timeout by killing child processes.
+
+    $timedOut = $false
+    $killedPids = @()
+    $deadlineTimer = $null
+
+    try {
+        # Start a watchdog timer that fires once after $timeout seconds
+        $deadlineTimer = [System.Timers.Timer]::new($timeout * 1000)
+        $deadlineTimer.AutoReset = $false
+
+        $timedOutRef = [ref]$false
+        $killedRef = [ref]@()
+        $taskIdCapture = $TaskId
+        $pidReg = $script:ChildPidRegistry
+
+        $null = Register-ObjectEvent -InputObject $deadlineTimer -EventName Elapsed -Action {
+            $timedOutRef = $Event.MessageData.TimedOutRef
+            $timedOutRef.Value = $true
+
+            $childPid = 0
+            $reg = $Event.MessageData.PidRegistry
+            $tid = $Event.MessageData.TaskId
+
+            if ($reg.TryGetValue($tid, [ref]$childPid)) {
+                try {
+                    # Kill child process tree on timeout
+                    $children = @()
+                    try {
+                        $children = Get-CimInstance Win32_Process -Filter "ParentProcessId=$childPid" -ErrorAction SilentlyContinue |
+                            Select-Object -ExpandProperty ProcessId
+                    } catch { }
+                    foreach ($c in $children) {
+                        try { Stop-Process -Id $c -Force -ErrorAction SilentlyContinue } catch { }
+                    }
+                    Stop-Process -Id $childPid -Force -ErrorAction SilentlyContinue
+                } catch { }
+            }
+            else {
+                # Fallback: kill claude processes matching this task
+                try {
+                    $claudeProcs = Get-CimInstance Win32_Process -Filter "Name='claude.exe'" -ErrorAction SilentlyContinue
+                    foreach ($proc in $claudeProcs) {
+                        if ($proc.CommandLine -match [regex]::Escape($tid)) {
+                            try { Stop-Process -Id $proc.ProcessId -Force -ErrorAction SilentlyContinue } catch { }
+                        }
+                    }
+                } catch { }
+            }
+        } -MessageData @{
+            TimedOutRef = $timedOutRef
+            PidRegistry = $pidReg
+            TaskId      = $taskIdCapture
+        }
+
+        $deadlineTimer.Start()
+
+        # Invoke directly — all dot-sourced functions are in scope
         $ErrorActionPreference = 'Stop'
-        $result = & $UserBlock @UserArgs
-        $result
-    }
+        $result = & $ScriptBlock @ArgumentList
 
-    $job = Start-ThreadJob -ScriptBlock $wrappedBlock `
-        -ArgumentList @($ScriptBlock, $ArgumentList, $pidRegistry, $TaskId)
+        $deadlineTimer.Stop()
 
-    $completed = $job | Wait-Job -Timeout $timeout
-
-    if ($completed) {
-        # Job finished within timeout
-        $outputs = @(Receive-Job $job -ErrorAction SilentlyContinue)
-        $jobErrors = $job.ChildJobs | ForEach-Object { $_.Error } | Where-Object { $_ }
-
-        Remove-Job $job -Force -ErrorAction SilentlyContinue
+        if ($timedOutRef.Value) {
+            return @{
+                TimedOut   = $true
+                TaskId     = $TaskId
+                KilledPids = @()
+                Result     = $null
+                Error      = "Task $TaskId timed out after ${timeout}s"
+            }
+        }
 
         # Clean up PID registry entry
         $null = $script:ChildPidRegistry.TryRemove($TaskId, [ref]$null)
 
-        if ($jobErrors -and $jobErrors.Count -gt 0) {
+        if ($null -eq $result) {
             return @{
-                TimedOut   = $false
-                TaskId     = $TaskId
-                Error      = ($jobErrors | ForEach-Object { $_.ToString() }) -join "`n"
-                Result     = $null
+                TimedOut = $false
+                TaskId   = $TaskId
+                Error    = 'Task returned no output'
+                Result   = $null
                 KilledPids = @()
             }
         }
 
         # Output pollution guard: expect exactly one result object
-        if ($outputs.Count -eq 0) {
-            return @{
-                TimedOut   = $false
-                TaskId     = $TaskId
-                Error      = 'Thread job returned no output'
-                Result     = $null
-                KilledPids = @()
-            }
-        }
-
+        $outputs = @($result)
         if ($outputs.Count -gt 1) {
             return @{
                 TimedOut   = $false
                 TaskId     = $TaskId
-                Error      = "Output pollution: thread job returned $($outputs.Count) objects instead of 1"
+                Error      = "Output pollution: task returned $($outputs.Count) objects instead of 1"
                 Result     = $null
                 KilledPids = @()
             }
@@ -128,38 +175,24 @@ function Invoke-WithTimeout {
             KilledPids = @()
         }
     }
-    else {
-        # Timeout — kill process tree
-        $killedPids = @()
-
-        $childPid = 0
-        if ($script:ChildPidRegistry.TryGetValue($TaskId, [ref]$childPid)) {
-            $killedPids = @(Stop-ProcessTree -ProcessId $childPid)
-        }
-        else {
-            # Fallback: enumerate all claude processes, filter by task context
-            try {
-                $claudeProcs = Get-CimInstance Win32_Process -Filter "Name='claude.exe'" -ErrorAction SilentlyContinue
-                foreach ($proc in $claudeProcs) {
-                    if ($proc.CommandLine -match [regex]::Escape($TaskId)) {
-                        $killedPids += @(Stop-ProcessTree -ProcessId $proc.ProcessId)
-                    }
-                }
-            }
-            catch { }
-        }
-
-        Stop-Job $job -ErrorAction SilentlyContinue
-        Remove-Job $job -Force -ErrorAction SilentlyContinue
+    catch {
+        if ($deadlineTimer) { $deadlineTimer.Stop() }
 
         $null = $script:ChildPidRegistry.TryRemove($TaskId, [ref]$null)
 
         return @{
-            TimedOut   = $true
+            TimedOut   = $false
             TaskId     = $TaskId
-            KilledPids = $killedPids
+            Error      = $_.Exception.Message
             Result     = $null
-            Error      = "Task $TaskId timed out after ${timeout}s"
+            KilledPids = @()
         }
+    }
+    finally {
+        if ($deadlineTimer) {
+            $deadlineTimer.Dispose()
+        }
+        Get-EventSubscriber | Where-Object { $_.SourceObject -is [System.Timers.Timer] } |
+            Unregister-Event -ErrorAction SilentlyContinue
     }
 }

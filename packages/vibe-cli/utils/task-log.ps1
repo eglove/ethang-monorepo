@@ -132,12 +132,12 @@ function Write-TaskLog {
     Write-ThreadSafeLog -Message $summary
 
     if ($FeatureDir) {
-        $ticketsDir = Join-Path $FeatureDir 'tickets'
-        if (-not (Test-Path $ticketsDir)) {
-            New-Item -ItemType Directory -Path $ticketsDir -Force | Out-Null
+        $logsDir = Join-Path $FeatureDir 'logs'
+        if (-not (Test-Path $logsDir)) {
+            New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
         }
 
-        $logPath = Join-Path $ticketsDir "$TaskId-log.txt"
+        $logPath = Join-Path $logsDir "$TaskId-log.txt"
         $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
         $entry = "[$ts] [$TaskId] $Phase | $Message"
         if ($RunId) { $entry = "[$ts] [$RunId] [$TaskId] $Phase | $Message" }

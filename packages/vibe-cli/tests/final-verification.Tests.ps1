@@ -98,10 +98,10 @@ Describe 'Invoke-FinalVerification' {
         Mock git { @('utils/config.ps1', 'utils/task-log.ps1') }
 
         $featDir = Join-Path ([System.IO.Path]::GetTempPath()) "fv-attr-$(Get-Random)"
-        $ticketsDir = Join-Path $featDir 'tickets'
-        New-Item -ItemType Directory -Path $ticketsDir -Force | Out-Null
-        Set-Content (Join-Path $ticketsDir 'T1-log.txt') -Value 'modified utils/config.ps1'
-        Set-Content (Join-Path $ticketsDir 'T2-log.txt') -Value 'modified utils/config.ps1 and utils/task-log.ps1'
+        $logsDir = Join-Path $featDir 'logs'
+        New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
+        Set-Content (Join-Path $logsDir 'T1-log.txt') -Value 'modified utils/config.ps1'
+        Set-Content (Join-Path $logsDir 'T2-log.txt') -Value 'modified utils/config.ps1 and utils/task-log.ps1'
 
         $counters = @{ finalCleanPasses = 0; finalRemediations = 0 }
         $result = Invoke-FinalVerification -Root $script:root -Counters $counters -TaskWriters @('powershell-writer') -FeatureDir $featDir

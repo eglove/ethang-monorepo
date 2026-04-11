@@ -12,19 +12,19 @@ function Invoke-TlaWriter {
         [string]$Root
     )
 
-    $gherkin = Get-Content $GherkinFile -Raw
+    $gherkinPath = (Resolve-Path $GherkinFile).Path
     $tlaDir = (Resolve-Path $FeatureDir).Path | Join-Path -ChildPath "tla"
     New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
     $tlaWriterFile = "$Root/agents/doc-writers/tla-writer.md"
 
     Invoke-Claude `
         -SystemPromptFile $tlaWriterFile `
-        -Prompt "Gherkin scenarios:`n$gherkin`n`nWrite the TLA+ specification. Save all files to: $tlaDir" | Out-Null
+        -Prompt "Read the Gherkin scenarios from: $gherkinPath`n`nWrite the TLA+ specification. Save all files to: $tlaDir" | Out-Null
 
     Invoke-TlcCheck `
         -TlaDir $tlaDir `
         -TlaWriterFile $tlaWriterFile `
-        -FixContext "Original Gherkin scenarios:`n$gherkin"
+        -FixContext "Original Gherkin scenarios are in: $gherkinPath"
 
     $tlaFile = Get-ChildItem "$tlaDir/*.tla" | Select-Object -First 1
     return @{

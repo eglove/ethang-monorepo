@@ -15,8 +15,6 @@ $root = $PSScriptRoot
 . "$root/utils/pipeline-state.ps1"
 . "$root/utils/debate-loop.ps1"
 
-Start-HeadroomProxy
-
 # Stages
 . "$root/stages/1-elicitor.ps1"
 . "$root/stages/2-bdd-writer.ps1"
@@ -75,7 +73,7 @@ try {
 
     if ($Stage -le 3) {
         Write-PipelineLog "--- Stage 3: BDD Debate ---" -Color Cyan
-        Invoke-BddDebate -GherkinFile $gherkinFile -Briefing $briefing -FeatureDir $featureDir -Root $root
+        Invoke-BddDebate -GherkinFile $gherkinFile -FeatureDir $featureDir -Root $root
     }
 
     if ($Stage -le 4) {

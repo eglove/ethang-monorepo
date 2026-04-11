@@ -76,8 +76,8 @@ function Invoke-FinalVerification {
                 $changedFiles = & git diff --name-only 2>$null
                 if ($changedFiles -and $FeatureDir) {
                     $taskFileCount = @{}
-                    $ticketsDir = Join-Path $FeatureDir 'tickets'
-                    $taskLogs = Get-ChildItem "$ticketsDir/T*-log.txt" -ErrorAction SilentlyContinue
+                    $logsDir = Join-Path $FeatureDir 'logs'
+                    $taskLogs = Get-ChildItem "$logsDir/T*-log.txt" -ErrorAction SilentlyContinue
                     foreach ($logFile in $taskLogs) {
                         $logContent = Get-Content $logFile.FullName -Raw -ErrorAction SilentlyContinue
                         $taskIdMatch = [regex]::Match($logFile.Name, '^(T\d+)')

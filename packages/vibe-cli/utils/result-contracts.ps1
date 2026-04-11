@@ -28,13 +28,14 @@ function ConvertTo-TaskResult {
     }
 
     return @{
-        TaskId   = $Input_.TaskId
-        Phase    = $Input_.Phase
-        Status   = $Input_.Status
-        Counters = $Input_.Counters
+        TaskId    = $Input_.TaskId
+        Phase     = $Input_.Phase
+        Status    = $Input_.Status
+        Counters  = $Input_.Counters
         Escalated = $Input_.Escalated
-        Error    = if ($Input_.ContainsKey('Error')) { $Input_.Error } else { $null }
-        TimedOut = if ($Input_.ContainsKey('TimedOut')) { $Input_.TimedOut } else { $false }
+        Error     = if ($Input_.ContainsKey('Error')) { $Input_.Error } else { $null }
+        TimedOut  = if ($Input_.ContainsKey('TimedOut')) { $Input_.TimedOut } else { $false }
+        TestFiles = if ($Input_.ContainsKey('TestFiles')) { @($Input_.TestFiles) } else { @() }
     }
 }
 
