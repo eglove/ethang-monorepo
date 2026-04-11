@@ -35,7 +35,7 @@ function Invoke-GreenPhase {
 
         Write-TaskLog -TaskId $taskId -Phase 'green' -Message "Dispatching code writer: $($Task.codeWriter) (attempt $($Counters.greenAttempts + 1))" -FeatureDir $FeatureDir -RunId $RunId
 
-        $addDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
+        $addDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
         try {
             $response = Invoke-Claude -SystemPromptFile $codeWriterFile -Prompt $prompt -TaskId $taskId -AddDir $addDir
         }

@@ -26,8 +26,8 @@ function Invoke-RedPhase {
 
     Write-TaskLog -TaskId $taskId -Phase 'red' -Message "Dispatching test writer: $($Task.testWriter)" -FeatureDir $FeatureDir -RunId $RunId
 
-    # Write tests
-    $addDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
+    # Write tests — use package-level dir so agent paths align with verify commands
+    $addDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
     try {
         $response = Invoke-Claude -SystemPromptFile $testWriterFile -Prompt $prompt -TaskId $taskId -AddDir $addDir
     }

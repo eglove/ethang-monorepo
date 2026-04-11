@@ -90,7 +90,7 @@ function Invoke-CleanupPhase {
 
         $blamePrompt = "Verify command '$failedCommand' failed. Determine blame: is this a 'test' issue or a 'code' issue? Return JSON: { `"blame`": `"test`" | `"code`" }"
 
-        $addDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
+        $addDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
         try {
             $blameResponse = Invoke-Claude -SystemPromptFile $testWriterFile -Prompt $blamePrompt -TaskId $taskId -AddDir $addDir
         }
