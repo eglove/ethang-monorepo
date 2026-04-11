@@ -88,6 +88,12 @@ $Config = @{
     # Review gate timeout in seconds (30 minutes)
     ReviewGateTimeoutSeconds   = 1800
 
+    # Per-reviewer invocation timeout (seconds) — must be <= ReviewGateTimeoutSeconds
+    ReviewerTimeoutSeconds     = 600
+
+    # Moderator (verdict aggregator) timeout (seconds)
+    ReviewModeratorTimeoutSeconds = 300
+
     # Number of tasks — derived from tier task list length, must be >= 1
     NumTasks                   = 1
 }
@@ -131,6 +137,16 @@ function Get-PipelineConfig {
         $snapshot.ReviewGateTimeoutSeconds = [int]$env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS
     }
 
+    $reviewerTimeoutExplicit = $false
+    if ($env:VIBE_REVIEWER_TIMEOUT_SECONDS) {
+        $snapshot.ReviewerTimeoutSeconds = [int]$env:VIBE_REVIEWER_TIMEOUT_SECONDS
+        $reviewerTimeoutExplicit = $true
+    }
+
+    if ($env:VIBE_REVIEW_MODERATOR_TIMEOUT_SECONDS) {
+        $snapshot.ReviewModeratorTimeoutSeconds = [int]$env:VIBE_REVIEW_MODERATOR_TIMEOUT_SECONDS
+    }
+
     if ($env:VIBE_NUM_TASKS) {
         $snapshot.NumTasks = [int]$env:VIBE_NUM_TASKS
     }
@@ -149,7 +165,9 @@ function Get-PipelineConfig {
         'MaxReviewRounds',
         'ReviewGateTimeoutSeconds',
         'MaxTddKeepGoingPerGate',
-        'PipelineTimeoutSeconds'
+        'PipelineTimeoutSeconds',
+        'ReviewerTimeoutSeconds',
+        'ReviewModeratorTimeoutSeconds'
     )
     foreach ($field in $positiveFields) {
         if ($snapshot[$field] -le 0) {
@@ -172,6 +190,17 @@ function Get-PipelineConfig {
             "NumTasks must be >= 1, got $($snapshot.NumTasks). " +
             "Each tier must have at least one task."
         )
+    }
+
+    # Cross-field: gate timeout must accommodate at least one full reviewer invocation
+    if ($snapshot.ReviewGateTimeoutSeconds -lt $snapshot.ReviewerTimeoutSeconds) {
+        if ($reviewerTimeoutExplicit) {
+            throw [System.ArgumentException]::new(
+                "ReviewGateTimeoutSeconds ($($snapshot.ReviewGateTimeoutSeconds)) must be >= ReviewerTimeoutSeconds ($($snapshot.ReviewerTimeoutSeconds))."
+            )
+        }
+        # Auto-clamp default reviewer timeout to fit within the gate timeout
+        $snapshot.ReviewerTimeoutSeconds = $snapshot.ReviewGateTimeoutSeconds
     }
 
     # Cross-field: pipeline timeout must accommodate at least one full gate timeout
@@ -198,7 +227,7 @@ function Invoke-ScopedTestVerify {
 
     if ($WorkingDirectory) { Push-Location $WorkingDirectory }
     try {
-        $pesterConfig = [PesterConfiguration]::Default
+        $pesterConfig = New-PesterConfiguration
         $pesterConfig.Run.Path = $TestFiles
         $pesterConfig.Run.PassThru = $true
         $pesterConfig.Output.Verbosity = 'None'
