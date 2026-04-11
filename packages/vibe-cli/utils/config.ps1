@@ -270,7 +270,7 @@ function Invoke-VerifyCommand {
     }
 
     try {
-        & $exe @cmdArgs
+        $null = & $exe @cmdArgs 2>&1
         $code = $LASTEXITCODE
         if ($null -eq $code) { $code = 0 }
         return $code

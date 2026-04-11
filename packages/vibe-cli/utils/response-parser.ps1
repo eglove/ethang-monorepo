@@ -11,5 +11,11 @@ function ConvertFrom-AgentResponse {
         try { return $Matches[1] | ConvertFrom-Json -ErrorAction Stop } catch { }
     }
 
+    # Extract last inline { ... } JSON object from prose
+    $candidates = [regex]::Matches($Response, '\{[^{}]*\}')
+    for ($i = $candidates.Count - 1; $i -ge 0; $i--) {
+        try { return $candidates[$i].Value | ConvertFrom-Json -ErrorAction Stop } catch { }
+    }
+
     return $null
 }

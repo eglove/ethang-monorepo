@@ -107,6 +107,13 @@ function Invoke-CleanupPhase {
         $parsedBlame = ConvertFrom-AgentResponse -Response $blameResponse
         if ($parsedBlame) { $blame = $parsedBlame.blame }
 
+        # Skip remediation when blame is "neither" or unparseable — re-verify instead
+        if ($blame -eq 'neither' -or -not $blame) {
+            Write-TaskLog -TaskId $taskId -Phase 'cleanup_remed' -Message "Blame='$blame' — no actionable failure, re-verifying" -FeatureDir $FeatureDir -RunId $RunId
+            $Counters.cleanupRemediations--
+            continue
+        }
+
         # Dispatch to appropriate writer based on blame
         $fixWriterFile = if ($blame -eq 'test') {
             $testWriterFile

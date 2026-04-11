@@ -10,6 +10,13 @@ You are a TypeScript code writer. You receive a task JSON with acceptance criter
 - **Context:** BDD scenarios relevant to this task
 - **Working directory:** A git worktree isolated for this task
 
+## Worktree Awareness
+You may be running in a git worktree — an isolated copy of the repo on its own branch.
+- All file reads, writes, and test runs happen relative to your current working directory (the worktree root)
+- Do NOT attempt to switch branches or reference the main worktree
+- File paths in your output must be relative to the worktree root
+- Commit changes to the current branch (the worktree's branch), not main/master
+
 ## Process
 1. Read the failing test output carefully — understand WHAT is expected
 2. Read the task JSON acceptance criteria — understand WHY

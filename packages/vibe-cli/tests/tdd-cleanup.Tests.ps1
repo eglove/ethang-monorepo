@@ -159,6 +159,38 @@ Describe 'Invoke-CleanupPhase' {
         $result.Phase | Should -Be 'cleanup_remed'
     }
 
+    It 'skips fix dispatch when blame is neither' {
+        $script:neitherVerifyIdx = 0
+        Mock Invoke-VerifyCommand {
+            $script:neitherVerifyIdx++
+            if ($script:neitherVerifyIdx -eq 1) { return 1 }  # First call fails
+            return 0  # After skipping remediation, all pass
+        }
+        Mock Invoke-Claude { return '{"blame":"neither"}' }
+
+        $counters = @{ cleanupCleanPasses = 0; cleanupRemediations = 0 }
+        $result = Invoke-CleanupPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Status | Should -Be 'completed'
+        # Invoke-Claude should be called exactly once (blame query only, no fix dispatch)
+        Should -Invoke Invoke-Claude -Times 1 -Exactly
+    }
+
+    It 'skips fix dispatch when blame response is unparseable' {
+        $script:nullBlameVerifyIdx = 0
+        Mock Invoke-VerifyCommand {
+            $script:nullBlameVerifyIdx++
+            if ($script:nullBlameVerifyIdx -eq 1) { return 1 }  # First call fails
+            return 0  # After skipping remediation, all pass
+        }
+        Mock Invoke-Claude { return 'just some prose with no json at all' }
+
+        $counters = @{ cleanupCleanPasses = 0; cleanupRemediations = 0 }
+        $result = Invoke-CleanupPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Status | Should -Be 'completed'
+        # Invoke-Claude should be called exactly once (blame query only, no fix dispatch)
+        Should -Invoke Invoke-Claude -Times 1 -Exactly
+    }
+
     It 'escalates on infrastructure failure during remediation dispatch' {
         $script:cleanVerifyCall2 = 0
         Mock Invoke-VerifyCommand {

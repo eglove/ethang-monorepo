@@ -6,9 +6,6 @@
 . "$PSScriptRoot/../utils/validate-plan.ps1"
 . "$PSScriptRoot/../utils/workspace.ps1"
 . "$PSScriptRoot/../utils/read-escalation.ps1"
-. "$PSScriptRoot/../utils/tdd-red.ps1"
-. "$PSScriptRoot/../utils/tdd-green.ps1"
-. "$PSScriptRoot/../utils/tdd-cleanup.ps1"
 . "$PSScriptRoot/../utils/agent-writer.ps1"
 . "$PSScriptRoot/../utils/merge-queue.ps1"
 . "$PSScriptRoot/../utils/final-verification.ps1"
@@ -19,6 +16,9 @@
 . "$PSScriptRoot/../utils/review-timeout.ps1"
 . "$PSScriptRoot/../utils/global-timeout.ps1"
 . "$PSScriptRoot/../utils/diff-staleness.ps1"
+. "$PSScriptRoot/../utils/tdd-red.ps1"
+. "$PSScriptRoot/../utils/tdd-green.ps1"
+. "$PSScriptRoot/../utils/tdd-cleanup.ps1"
 
 function Invoke-ReviewLoop {
     <#
