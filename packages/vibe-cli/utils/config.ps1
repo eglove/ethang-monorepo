@@ -242,7 +242,9 @@ function Invoke-VerifyCommand {
 
     try {
         & $exe @cmdArgs
-        return $LASTEXITCODE
+        $code = $LASTEXITCODE
+        if ($null -eq $code) { $code = 0 }
+        return $code
     }
     finally {
         if ($WorkingDirectory -and $originalDir) {
