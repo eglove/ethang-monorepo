@@ -1,0 +1,13 @@
+{
+  "spec": "PipelineReviewers",
+  "traceId": "global-timeout-001",
+  "description": "Global timeout fires mid-review -> HALTED",
+  "constants": { "MaxReviewRounds": 3, "MaxKeepGoingResets": 3, "MaxTddKeepGoingPerGate": 5, "NumTasks": 1 },
+  "steps": [
+    { "stepNum": 0, "action": "Init", "state": { "pipelineState": "idle", "lockHolder": null, "reviewRound": 0, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": false, "reviewGateType": "none" } },
+    { "stepNum": 1, "action": "AcquireLock", "state": { "pipelineState": "locked", "lockHolder": 1, "reviewRound": 0, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": false, "reviewGateType": "none" } },
+    { "stepNum": 2, "action": "StartRunning", "state": { "pipelineState": "running", "lockHolder": 1, "reviewRound": 0, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": false, "reviewGateType": "none" } },
+    { "stepNum": 3, "action": "EnterPreMergeReview", "state": { "pipelineState": "preMergeReview", "lockHolder": 1, "reviewRound": 0, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": false, "reviewGateType": "preMerge" } },
+    { "stepNum": 4, "action": "GlobalTimeout", "state": { "pipelineState": "HALTED", "lockHolder": null, "reviewRound": 0, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": true, "reviewGateType": "preMerge" } }
+  ]
+}

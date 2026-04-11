@@ -1,0 +1,15 @@
+{
+  "spec": "PipelineReviewers",
+  "traceId": "escalation-stop-001",
+  "description": "Retry exhaustion -> escalation -> user chooses Stop -> HALTED",
+  "constants": { "MaxReviewRounds": 2, "MaxKeepGoingResets": 3, "MaxTddKeepGoingPerGate": 5, "NumTasks": 1 },
+  "steps": [
+    { "stepNum": 0, "action": "Init", "state": { "pipelineState": "idle", "lockHolder": null, "reviewRound": 0, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": false, "reviewGateType": "none" } },
+    { "stepNum": 1, "action": "AcquireLock", "state": { "pipelineState": "locked", "lockHolder": 1, "reviewRound": 0, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": false, "reviewGateType": "none" } },
+    { "stepNum": 2, "action": "StartRunning", "state": { "pipelineState": "running", "lockHolder": 1, "reviewRound": 0, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": false, "reviewGateType": "none" } },
+    { "stepNum": 3, "action": "EnterPreMergeReview", "state": { "pipelineState": "preMergeReview", "lockHolder": 1, "reviewRound": 0, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": false, "reviewGateType": "preMerge" } },
+    { "stepNum": 4, "action": "HandleRetryPreMerge", "state": { "pipelineState": "preMergeReview", "lockHolder": 1, "reviewRound": 1, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": false, "reviewGateType": "preMerge" } },
+    { "stepNum": 5, "action": "HandleRetryPreMerge", "state": { "pipelineState": "preMergeReview", "lockHolder": 1, "reviewRound": 2, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": false, "reviewGateType": "preMerge" } },
+    { "stepNum": 6, "action": "ReviewStop", "state": { "pipelineState": "HALTED", "lockHolder": null, "reviewRound": 2, "keepGoingResets": 0, "tddKeepGoingCount": 0, "verdict": null, "tasksDone": 0, "gateTimedOut": false, "globalTimedOut": false, "reviewGateType": "preMerge" } }
+  ]
+}

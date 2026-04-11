@@ -1,0 +1,12 @@
+- Use warden or another method to restrict agents to their worktree
+- Remove the idea that if there is only one taks, do not use a worktree. It SHOULD use a worktree
+- Implementation writer needs the path to both the TLA+ and BDD documentation
+- Coding tasks don't seem to be running in parallel
+- 300% Test coverage, seperately tracking 100% coverage for unit, integration, and e2e
+  - This should be core to how the entire process works. We also want to add this to vibe-cli
+  - Unit: Use Property-Based Testing (e.g., Hypothesis). Give it your TLA+ invariants. It will find the edge cases so you don't have to write them.
+  - Integration: Use Contract Testing. If the BDD spec defines the interface, the contract is the test.
+  - E2E: Use Trace-Based Testing. Take the "Error Traces" from TLA+ and play them back against your deployed system to see if it catches the failure.
+  - How does this translate to UI? Playwright?
+- --resume feature from the reviewers feature was never implemented. We want to replace -Stage # -Feature <feature> with a gerneric --resume flag that can resume from logs
+- During the TLA+ writing, traces for E2E tests need to be written to tests/traces/fixtures

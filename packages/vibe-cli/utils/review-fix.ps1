@@ -27,6 +27,95 @@ function Invoke-CleanupPhase {
     throw "Invoke-CleanupPhase: no implementation loaded."
 }
 
+function Invoke-TddKeepGoing {
+    <#
+    .SYNOPSIS
+        TLA+ TddKeepGoingInFix — increments tddKeepGoingCount within a review-fix cycle.
+    .DESCRIPTION
+        When TDD exhausts its cycles within a fix, the user can choose "Keep Going"
+        to retry. This increments tddKeepGoingCount up to MaxTddKeepGoingPerGate.
+        The counter is sticky within a gate — only reset by gate-level events.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [Parameter(Mandatory)]$Config
+    )
+
+    $validFixStates = @('reviewFix', 'finalReviewFix')
+    if ($State.pipelineState -notin $validFixStates) {
+        throw "Invoke-TddKeepGoing requires pipelineState in ($($validFixStates -join ', ')), got '$($State.pipelineState)'."
+    }
+
+    if ($State.tddKeepGoingCount -ge $Config['MaxTddKeepGoingPerGate']) {
+        throw "Invoke-TddKeepGoing: TDD Keep Going exhausted ($($State.tddKeepGoingCount) >= $($Config['MaxTddKeepGoingPerGate']))."
+    }
+
+    $State.tddKeepGoingCount = $State.tddKeepGoingCount + 1
+    Write-PipelineLog "TDD Keep Going: tddKeepGoingCount=$($State.tddKeepGoingCount)"
+
+    # UNCHANGED: pipelineState, lockHolder, reviewRound, keepGoingResets,
+    #            verdict, tasksDone, gateTimedOut, globalTimedOut, reviewGateType
+}
+
+function Invoke-TddKeepGoingExhausted {
+    <#
+    .SYNOPSIS
+        TLA+ TddKeepGoingExhausted — TDD cap reached, escalate back to review gate.
+    .DESCRIPTION
+        When tddKeepGoingCount reaches MaxTddKeepGoingPerGate, the fix cycle
+        cannot continue. State returns to the parent review state with
+        verdict="fail" and reviewRound incremented.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [Parameter(Mandatory)]$Config
+    )
+
+    $validFixStates = @('reviewFix', 'finalReviewFix')
+    if ($State.pipelineState -notin $validFixStates) {
+        throw "Invoke-TddKeepGoingExhausted requires pipelineState in ($($validFixStates -join ', ')), got '$($State.pipelineState)'."
+    }
+
+    $State.pipelineState = if ($State.pipelineState -eq 'reviewFix') { 'preMergeReview' } else { 'finalReview' }
+    $State.verdict       = 'fail'
+    $State.reviewRound   = $State.reviewRound + 1
+
+    Write-PipelineLog "TDD Keep Going exhausted: escalating to $($State.pipelineState) with verdict=fail, round=$($State.reviewRound)"
+
+    # UNCHANGED: lockHolder, keepGoingResets, tddKeepGoingCount,
+    #            tasksDone, gateTimedOut, globalTimedOut, reviewGateType
+}
+
+function Invoke-TddStopInFix {
+    <#
+    .SYNOPSIS
+        TLA+ TddStopInFix — user voluntary stop during a TDD fix cycle.
+    .DESCRIPTION
+        Transitions to HALTED and releases the lock. Works from both
+        reviewFix and finalReviewFix states.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [Parameter(Mandatory)]$Config
+    )
+
+    $validFixStates = @('reviewFix', 'finalReviewFix')
+    if ($State.pipelineState -notin $validFixStates) {
+        throw "Invoke-TddStopInFix requires pipelineState in ($($validFixStates -join ', ')), got '$($State.pipelineState)'."
+    }
+
+    $State.pipelineState = 'HALTED'
+    $State.lockHolder    = $null
+
+    Write-PipelineLog "TDD Stop in fix: pipeline HALTED"
+
+    # UNCHANGED: reviewRound, keepGoingResets, tddKeepGoingCount,
+    #            verdict, tasksDone, gateTimedOut, globalTimedOut, reviewGateType
+}
+
 function Complete-ReviewFix {
     <#
     .SYNOPSIS
@@ -47,9 +136,10 @@ function Complete-ReviewFix {
         [Parameter(Mandatory)]$Config
     )
 
-    # ── Guard: pipelineState must be 'reviewFix' ──
-    if ($State.pipelineState -ne 'reviewFix') {
-        throw "Complete-ReviewFix requires pipelineState 'reviewFix', got '$($State.pipelineState)'."
+    # ── Guard: pipelineState must be 'reviewFix' or 'finalReviewFix' ──
+    $validFixStates = @('reviewFix', 'finalReviewFix')
+    if ($State.pipelineState -notin $validFixStates) {
+        throw "Complete-ReviewFix requires pipelineState in ($($validFixStates -join ', ')), got '$($State.pipelineState)'."
     }
 
     # ── Guard: gate must not have timed out ──
@@ -62,8 +152,8 @@ function Complete-ReviewFix {
         throw "Complete-ReviewFix: global has timed out. Cannot complete review fix."
     }
 
-    # ── State transition ──
-    $State.pipelineState = 'preMergeReview'
+    # ── State transition — route based on current state ──
+    $State.pipelineState = if ($State.pipelineState -eq 'reviewFix') { 'preMergeReview' } else { 'finalReview' }
     $State.reviewRound   = $State.reviewRound + 1
     $State.verdict       = $null
 
@@ -101,9 +191,10 @@ function Invoke-ReviewFixCycle {
         [Parameter(Mandatory)][string]$FeatureDir
     )
 
-    # ── Guard: pipelineState must be 'reviewFix' ──
-    if ($State.pipelineState -ne 'reviewFix') {
-        throw "Invoke-ReviewFixCycle requires pipelineState 'reviewFix', got '$($State.pipelineState)'."
+    # ── Guard: pipelineState must be 'reviewFix' or 'finalReviewFix' ──
+    $validFixStates = @('reviewFix', 'finalReviewFix')
+    if ($State.pipelineState -notin $validFixStates) {
+        throw "Invoke-ReviewFixCycle requires pipelineState in ($($validFixStates -join ', ')), got '$($State.pipelineState)'."
     }
 
     # ── Guard: Blockers must be non-empty ──

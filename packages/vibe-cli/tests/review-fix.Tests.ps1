@@ -117,19 +117,97 @@ Describe 'Complete-ReviewFix' {
         It 'throws when pipelineState is "running"' {
             $script:state.pipelineState = 'running'
             { Complete-ReviewFix -State $script:state -Config $script:cfg } |
-                Should -Throw -ExpectedMessage '*reviewFix*'
+                Should -Throw -ExpectedMessage '*reviewFix*finalReviewFix*'
         }
 
         It 'throws when pipelineState is "preMergeReview"' {
             $script:state.pipelineState = 'preMergeReview'
             { Complete-ReviewFix -State $script:state -Config $script:cfg } |
-                Should -Throw -ExpectedMessage '*reviewFix*'
+                Should -Throw -ExpectedMessage '*reviewFix*finalReviewFix*'
         }
 
         It 'throws when pipelineState is "idle"' {
             $script:state.pipelineState = 'idle'
             { Complete-ReviewFix -State $script:state -Config $script:cfg } |
-                Should -Throw -ExpectedMessage '*reviewFix*'
+                Should -Throw -ExpectedMessage '*reviewFix*finalReviewFix*'
+        }
+    }
+
+    # =========================================================================
+    # FinalReviewFixComplete: finalReviewFix → finalReview (Step 13)
+    # =========================================================================
+
+    Context 'Final review-fix completion — transitions to finalReview' {
+        BeforeEach {
+            $script:state.pipelineState  = 'finalReviewFix'
+            $script:state.reviewGateType = 'final'
+        }
+
+        It 'transitions pipelineState to "finalReview"' {
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            $script:state.pipelineState | Should -BeExactly 'finalReview'
+        }
+
+        It 'increments reviewRound by 1' {
+            $script:state.reviewRound = 1
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            $script:state.reviewRound | Should -BeExactly 2
+        }
+
+        It 'clears verdict to $null' {
+            $script:state.verdict = 'fail'
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            $script:state.verdict | Should -BeNullOrEmpty
+        }
+
+        It 'preserves lockHolder' {
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            $script:state.lockHolder | Should -BeExactly 1
+        }
+
+        It 'preserves keepGoingResets' {
+            $script:state.keepGoingResets = 2
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            $script:state.keepGoingResets | Should -BeExactly 2
+        }
+
+        It 'preserves tddKeepGoingCount (sticky across fix re-entries)' {
+            $script:state.tddKeepGoingCount = 4
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            $script:state.tddKeepGoingCount | Should -BeExactly 4
+        }
+
+        It 'preserves tasksDone' {
+            $script:state.tasksDone = 1
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            $script:state.tasksDone | Should -BeExactly 1
+        }
+
+        It 'preserves gateTimedOut' {
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            $script:state.gateTimedOut | Should -BeExactly $false
+        }
+
+        It 'preserves globalTimedOut' {
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            $script:state.globalTimedOut | Should -BeExactly $false
+        }
+
+        It 'preserves reviewGateType as "final"' {
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            $script:state.reviewGateType | Should -BeExactly 'final'
+        }
+
+        It 'state is TypeOK after final review-fix completion' {
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
+        }
+    }
+
+    Context 'Regression — reviewFix still routes to preMergeReview' {
+        It 'transitions to preMergeReview from reviewFix' {
+            Complete-ReviewFix -State $script:state -Config $script:cfg
+            $script:state.pipelineState | Should -BeExactly 'preMergeReview'
         }
     }
 
@@ -500,7 +578,7 @@ Describe 'Invoke-ReviewFixCycle' {
             { Invoke-ReviewFixCycle -State $script:state -Config $script:cfg `
                 -Task $script:task -Blockers $script:blockers `
                 -Root 'C:\project' -FeatureDir 'C:\project\feature' } |
-                Should -Throw -ExpectedMessage '*reviewFix*'
+                Should -Throw -ExpectedMessage '*reviewFix*finalReviewFix*'
         }
 
         It 'throws when pipelineState is "preMergeReview"' {
@@ -508,7 +586,31 @@ Describe 'Invoke-ReviewFixCycle' {
             { Invoke-ReviewFixCycle -State $script:state -Config $script:cfg `
                 -Task $script:task -Blockers $script:blockers `
                 -Root 'C:\project' -FeatureDir 'C:\project\feature' } |
-                Should -Throw -ExpectedMessage '*reviewFix*'
+                Should -Throw -ExpectedMessage '*reviewFix*finalReviewFix*'
+        }
+    }
+
+    Context 'Accepts finalReviewFix state (Step 13)' {
+        BeforeEach {
+            $script:state.pipelineState  = 'finalReviewFix'
+            $script:state.reviewGateType = 'final'
+
+            Mock Invoke-RedPhase {
+                return @{ Status = 'pass'; TestFiles = @('t.ps1'); Counters = @{ redAttempts = 1 } }
+            }
+            Mock Invoke-GreenPhase {
+                return @{ Status = 'pass'; Counters = @{ greenAttempts = 1 } }
+            }
+            Mock Invoke-CleanupPhase {
+                return @{ Status = 'pass'; Counters = @{ cleanupCleanPasses = 2 } }
+            }
+        }
+
+        It 'completes successfully from finalReviewFix' {
+            $result = Invoke-ReviewFixCycle -State $script:state -Config $script:cfg `
+                -Task $script:task -Blockers $script:blockers `
+                -Root 'C:\project' -FeatureDir 'C:\project\feature'
+            $result.Status | Should -BeExactly 'pass'
         }
     }
 
@@ -531,5 +633,378 @@ Describe 'Invoke-ReviewFixCycle' {
                 -Root 'C:\project' -FeatureDir 'C:\project\feature' } |
                 Should -Throw
         }
+    }
+}
+
+# =============================================================================
+# Invoke-TddKeepGoing — TLA+ TddKeepGoingInFix
+# BDD: "TDD cycles within a fix can be extended via Keep Going"
+#      "tddKeepGoingCount is bounded by MaxTddKeepGoingPerGate"
+# =============================================================================
+
+Describe 'Invoke-TddKeepGoing' {
+    BeforeEach {
+        $script:cfg   = Get-PipelineConfig
+        $script:state = New-PipelineState
+        $script:state.pipelineState    = 'reviewFix'
+        $script:state.lockHolder       = 1
+        $script:state.reviewGateType   = 'preMerge'
+        $script:state.reviewRound      = 1
+        $script:state.keepGoingResets   = 0
+        $script:state.tddKeepGoingCount = 0
+        $script:state.verdict          = $null
+        $script:state.tasksDone        = 0
+        $script:state.gateTimedOut     = $false
+        $script:state.globalTimedOut   = $false
+
+        Mock Write-PipelineLog {}
+    }
+
+    Context 'Increments tddKeepGoingCount (TLA+ TddKeepGoingInFix)' {
+        It 'increments tddKeepGoingCount from 0 to 1' {
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            $script:state.tddKeepGoingCount | Should -BeExactly 1
+        }
+
+        It 'increments tddKeepGoingCount from 3 to 4' {
+            $script:state.tddKeepGoingCount = 3
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            $script:state.tddKeepGoingCount | Should -BeExactly 4
+        }
+
+        It 'allows Keep Going at count < MaxTddKeepGoingPerGate' {
+            $script:state.tddKeepGoingCount = $script:cfg['MaxTddKeepGoingPerGate'] - 1
+            { Invoke-TddKeepGoing -State $script:state -Config $script:cfg } |
+                Should -Not -Throw
+        }
+    }
+
+    Context 'UNCHANGED fields (TLA+ TddKeepGoingInFix)' {
+        It 'preserves pipelineState as reviewFix' {
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            $script:state.pipelineState | Should -BeExactly 'reviewFix'
+        }
+
+        It 'preserves lockHolder' {
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            $script:state.lockHolder | Should -BeExactly 1
+        }
+
+        It 'preserves reviewRound' {
+            $script:state.reviewRound = 2
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            $script:state.reviewRound | Should -BeExactly 2
+        }
+
+        It 'preserves keepGoingResets' {
+            $script:state.keepGoingResets = 1
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            $script:state.keepGoingResets | Should -BeExactly 1
+        }
+
+        It 'preserves verdict' {
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            $script:state.verdict | Should -BeNullOrEmpty
+        }
+
+        It 'preserves tasksDone' {
+            $script:state.tasksDone = 2
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            $script:state.tasksDone | Should -BeExactly 2
+        }
+
+        It 'preserves gateTimedOut' {
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            $script:state.gateTimedOut | Should -BeExactly $false
+        }
+
+        It 'preserves globalTimedOut' {
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            $script:state.globalTimedOut | Should -BeExactly $false
+        }
+
+        It 'preserves reviewGateType' {
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            $script:state.reviewGateType | Should -BeExactly 'preMerge'
+        }
+    }
+
+    Context 'Guard — rejects when count at cap' {
+        It 'throws when tddKeepGoingCount >= MaxTddKeepGoingPerGate' {
+            $script:state.tddKeepGoingCount = $script:cfg['MaxTddKeepGoingPerGate']
+            { Invoke-TddKeepGoing -State $script:state -Config $script:cfg } |
+                Should -Throw -ExpectedMessage '*TDD Keep Going exhausted*'
+        }
+    }
+
+    Context 'Guard — rejects invalid pipelineState' {
+        It 'throws when pipelineState is "running"' {
+            $script:state.pipelineState = 'running'
+            { Invoke-TddKeepGoing -State $script:state -Config $script:cfg } |
+                Should -Throw -ExpectedMessage '*reviewFix*finalReviewFix*'
+        }
+
+        It 'throws when pipelineState is "preMergeReview"' {
+            $script:state.pipelineState = 'preMergeReview'
+            { Invoke-TddKeepGoing -State $script:state -Config $script:cfg } |
+                Should -Throw -ExpectedMessage '*reviewFix*finalReviewFix*'
+        }
+    }
+
+    Context 'TypeOK invariant' {
+        It 'state is TypeOK after Invoke-TddKeepGoing' {
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
+        }
+
+        It 'state is TypeOK at MaxTddKeepGoingPerGate - 1' {
+            $script:state.tddKeepGoingCount = $script:cfg['MaxTddKeepGoingPerGate'] - 2
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+            Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
+        }
+    }
+}
+
+# =============================================================================
+# Invoke-TddKeepGoingExhausted — TLA+ TddKeepGoingExhausted
+# BDD: "TDD cap reached escalates back to review gate with fail verdict"
+# =============================================================================
+
+Describe 'Invoke-TddKeepGoingExhausted' {
+    BeforeEach {
+        $script:cfg   = Get-PipelineConfig
+        $script:state = New-PipelineState
+        $script:state.pipelineState    = 'reviewFix'
+        $script:state.lockHolder       = 1
+        $script:state.reviewGateType   = 'preMerge'
+        $script:state.reviewRound      = 1
+        $script:state.keepGoingResets   = 0
+        $script:state.tddKeepGoingCount = $script:cfg['MaxTddKeepGoingPerGate']
+        $script:state.verdict          = $null
+        $script:state.tasksDone        = 0
+        $script:state.gateTimedOut     = $false
+        $script:state.globalTimedOut   = $false
+
+        Mock Write-PipelineLog {}
+    }
+
+    Context 'Transitions to parent review state with fail verdict' {
+        It 'transitions pipelineState to preMergeReview from reviewFix' {
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            $script:state.pipelineState | Should -BeExactly 'preMergeReview'
+        }
+
+        It 'sets verdict to "fail"' {
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            $script:state.verdict | Should -BeExactly 'fail'
+        }
+
+        It 'increments reviewRound by 1' {
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            $script:state.reviewRound | Should -BeExactly 2
+        }
+
+        It 'transitions to finalReview from finalReviewFix' {
+            $script:state.pipelineState  = 'finalReviewFix'
+            $script:state.reviewGateType = 'final'
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            $script:state.pipelineState | Should -BeExactly 'finalReview'
+        }
+    }
+
+    Context 'UNCHANGED fields (TLA+ TddKeepGoingExhausted)' {
+        It 'preserves lockHolder' {
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            $script:state.lockHolder | Should -BeExactly 1
+        }
+
+        It 'preserves keepGoingResets' {
+            $script:state.keepGoingResets = 2
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            $script:state.keepGoingResets | Should -BeExactly 2
+        }
+
+        It 'preserves tddKeepGoingCount (not reset on exhaustion)' {
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            $script:state.tddKeepGoingCount | Should -BeExactly $script:cfg['MaxTddKeepGoingPerGate']
+        }
+
+        It 'preserves tasksDone' {
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            $script:state.tasksDone | Should -BeExactly 0
+        }
+
+        It 'preserves gateTimedOut' {
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            $script:state.gateTimedOut | Should -BeExactly $false
+        }
+
+        It 'preserves globalTimedOut' {
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            $script:state.globalTimedOut | Should -BeExactly $false
+        }
+
+        It 'preserves reviewGateType' {
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            $script:state.reviewGateType | Should -BeExactly 'preMerge'
+        }
+    }
+
+    Context 'Guard — rejects invalid pipelineState' {
+        It 'throws when pipelineState is "running"' {
+            $script:state.pipelineState = 'running'
+            { Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg } |
+                Should -Throw -ExpectedMessage '*reviewFix*finalReviewFix*'
+        }
+    }
+
+    Context 'TypeOK invariant' {
+        It 'state is TypeOK after TddKeepGoingExhausted' {
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
+            Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
+        }
+    }
+}
+
+# =============================================================================
+# Invoke-TddStopInFix — TLA+ TddStopInFix
+# BDD: "User can voluntarily stop during a TDD fix cycle"
+# =============================================================================
+
+Describe 'Invoke-TddStopInFix' {
+    BeforeEach {
+        $script:cfg   = Get-PipelineConfig
+        $script:state = New-PipelineState
+        $script:state.pipelineState    = 'reviewFix'
+        $script:state.lockHolder       = 1
+        $script:state.reviewGateType   = 'preMerge'
+        $script:state.reviewRound      = 1
+        $script:state.keepGoingResets   = 0
+        $script:state.tddKeepGoingCount = 2
+        $script:state.verdict          = $null
+        $script:state.tasksDone        = 0
+        $script:state.gateTimedOut     = $false
+        $script:state.globalTimedOut   = $false
+
+        Mock Write-PipelineLog {}
+    }
+
+    Context 'Transitions to HALTED (TLA+ TddStopInFix)' {
+        It 'transitions pipelineState to HALTED from reviewFix' {
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            $script:state.pipelineState | Should -BeExactly 'HALTED'
+        }
+
+        It 'releases lockHolder to $null' {
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            $script:state.lockHolder | Should -BeNullOrEmpty
+        }
+
+        It 'transitions to HALTED from finalReviewFix' {
+            $script:state.pipelineState  = 'finalReviewFix'
+            $script:state.reviewGateType = 'final'
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            $script:state.pipelineState | Should -BeExactly 'HALTED'
+        }
+    }
+
+    Context 'UNCHANGED fields (TLA+ TddStopInFix)' {
+        It 'preserves reviewRound' {
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            $script:state.reviewRound | Should -BeExactly 1
+        }
+
+        It 'preserves keepGoingResets' {
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            $script:state.keepGoingResets | Should -BeExactly 0
+        }
+
+        It 'preserves tddKeepGoingCount' {
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            $script:state.tddKeepGoingCount | Should -BeExactly 2
+        }
+
+        It 'preserves verdict' {
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            $script:state.verdict | Should -BeNullOrEmpty
+        }
+
+        It 'preserves tasksDone' {
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            $script:state.tasksDone | Should -BeExactly 0
+        }
+
+        It 'preserves gateTimedOut' {
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            $script:state.gateTimedOut | Should -BeExactly $false
+        }
+
+        It 'preserves globalTimedOut' {
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            $script:state.globalTimedOut | Should -BeExactly $false
+        }
+
+        It 'preserves reviewGateType' {
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            $script:state.reviewGateType | Should -BeExactly 'preMerge'
+        }
+    }
+
+    Context 'Guard — rejects invalid pipelineState' {
+        It 'throws when pipelineState is "running"' {
+            $script:state.pipelineState = 'running'
+            { Invoke-TddStopInFix -State $script:state -Config $script:cfg } |
+                Should -Throw -ExpectedMessage '*reviewFix*finalReviewFix*'
+        }
+    }
+
+    Context 'TypeOK invariant' {
+        It 'state is TypeOK after TddStopInFix (HALTED is valid terminal)' {
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg
+            Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
+        }
+    }
+}
+
+# =============================================================================
+# Sticky tddKeepGoingCount across fix re-entries
+# BDD: "tddKeepGoingCount survives Complete-ReviewFix re-entries within gate"
+# =============================================================================
+
+Describe 'tddKeepGoingCount stickiness across fix re-entries' {
+    BeforeEach {
+        $script:cfg   = Get-PipelineConfig
+        $script:state = New-PipelineState
+        $script:state.pipelineState    = 'reviewFix'
+        $script:state.lockHolder       = 1
+        $script:state.reviewGateType   = 'preMerge'
+        $script:state.reviewRound      = 0
+        $script:state.tddKeepGoingCount = 3
+        $script:state.verdict          = $null
+        $script:state.gateTimedOut     = $false
+        $script:state.globalTimedOut   = $false
+
+        Mock Write-PipelineLog {}
+    }
+
+    It 'Complete-ReviewFix preserves tddKeepGoingCount of 3, then re-enter reviewFix retains it' {
+        # Fix completes -> back to preMergeReview
+        Complete-ReviewFix -State $script:state -Config $script:cfg
+        $script:state.pipelineState | Should -BeExactly 'preMergeReview'
+        $script:state.tddKeepGoingCount | Should -BeExactly 3
+
+        # Simulate another fail verdict -> back to reviewFix
+        $script:state.pipelineState = 'reviewFix'
+        $script:state.tddKeepGoingCount | Should -BeExactly 3
+
+        # Only 2 more Keep Going selections remain (MaxTddKeepGoingPerGate=5)
+        Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+        $script:state.tddKeepGoingCount | Should -BeExactly 4
+        Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+        $script:state.tddKeepGoingCount | Should -BeExactly 5
+
+        # Now exhausted
+        { Invoke-TddKeepGoing -State $script:state -Config $script:cfg } |
+            Should -Throw -ExpectedMessage '*TDD Keep Going exhausted*'
     }
 }

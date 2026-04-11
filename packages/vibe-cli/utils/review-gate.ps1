@@ -38,8 +38,12 @@ function Enter-ReviewGate {
         throw "Enter-ReviewGate requires pipelineState 'running', got '$($State.pipelineState)'."
     }
 
-    if ($State.tasksDone -eq $Config['NumTasks']) {
-        throw "Enter-ReviewGate: all tasks done ($($State.tasksDone) >= $($Config['NumTasks']))."
+    if ($GateType -eq 'preMerge' -and $State.tasksDone -ge $Config['NumTasks']) {
+        throw "Enter-ReviewGate: all tasks done ($($State.tasksDone) >= $($Config['NumTasks'])) — use GateType 'final' for final review."
+    }
+
+    if ($GateType -eq 'final' -and $State.tasksDone -ne $Config['NumTasks']) {
+        throw "Enter-ReviewGate: final review requires all tasks done (tasksDone=$($State.tasksDone), NumTasks=$($Config['NumTasks']))."
     }
 
     # ── State transition ──
@@ -297,6 +301,82 @@ function Invoke-ReviewEscalation {
             $State.lockHolder    = $null
             Write-PipelineLog "Review escalation: user chose Stop — pipeline HALTED"
             return [PSCustomObject]@{ Action = 'stopped' }
+        }
+    }
+}
+
+function Resolve-FinalMergeVerdict {
+    <#
+    .SYNOPSIS
+        TLA+ HandlePassFinal / HandleFailFinal / HandleRetryFinal —
+        routes a final review verdict to the correct state transition.
+    .DESCRIPTION
+        Mirrors Resolve-PreMergeVerdict for the final review gate.
+        Pass → COMPLETE (lock released). Fail → finalReviewFix.
+        Retry → increment reviewRound, stay in finalReview.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [Parameter(Mandatory)]$Config,
+        [Parameter(Mandatory)]$Verdict
+    )
+
+    # ── Guard: pipelineState must be finalReview ──
+    if ($State.pipelineState -ne 'finalReview') {
+        throw "Resolve-FinalMergeVerdict requires pipelineState 'finalReview', got '$($State.pipelineState)'."
+    }
+
+    # ── Guard: verdict value must be pass, fail, or retry ──
+    $validVerdicts = @('pass', 'fail', 'retry')
+    if ($null -eq $Verdict.Verdict -or $Verdict.Verdict -notin $validVerdicts) {
+        throw "Resolve-FinalMergeVerdict: invalid verdict '$($Verdict.Verdict)'. Expected one of: $($validVerdicts -join ', ')."
+    }
+
+    switch ($Verdict.Verdict) {
+        'pass' {
+            # TLA+ HandlePassFinal: transition to COMPLETE, release lock
+            $State.pipelineState  = 'COMPLETE'
+            $State.lockHolder     = $null
+            $State.reviewGateType = 'none'
+            $State.verdict        = $null
+
+            Write-PipelineLog "Final review PASSED — pipeline COMPLETE"
+
+            return [PSCustomObject]@{ Action = 'complete' }
+        }
+
+        'fail' {
+            # ── Round guard ──
+            if ($State.reviewRound -ge $Config['MaxReviewRounds']) {
+                throw "Resolve-FinalMergeVerdict: review round exhausted ($($State.reviewRound) >= $($Config['MaxReviewRounds']))."
+            }
+
+            # TLA+ HandleFailFinal: transition to finalReviewFix
+            $State.pipelineState = 'finalReviewFix'
+            $State.verdict       = $null
+
+            Write-PipelineLog "Final review FAILED at round $($State.reviewRound) — entering finalReviewFix"
+
+            return [PSCustomObject]@{
+                Action   = 'finalReviewFix'
+                Blockers = @($Verdict.Blockers)
+            }
+        }
+
+        'retry' {
+            # ── Round guard ──
+            if ($State.reviewRound -ge $Config['MaxReviewRounds']) {
+                throw "Resolve-FinalMergeVerdict: review round exhausted ($($State.reviewRound) >= $($Config['MaxReviewRounds']))."
+            }
+
+            # TLA+ HandleRetryFinal: increment round, stay in finalReview
+            $State.reviewRound = $State.reviewRound + 1
+            $State.verdict     = $null
+
+            Write-PipelineLog "Final review RETRY — round incremented to $($State.reviewRound)"
+
+            return [PSCustomObject]@{ Action = 'retry' }
         }
     }
 }

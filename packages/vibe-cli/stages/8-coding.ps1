@@ -12,6 +12,175 @@
 . "$PSScriptRoot/../utils/agent-writer.ps1"
 . "$PSScriptRoot/../utils/merge-queue.ps1"
 . "$PSScriptRoot/../utils/final-verification.ps1"
+. "$PSScriptRoot/../utils/pipeline-state.ps1"
+. "$PSScriptRoot/../utils/review-verdict.ps1"
+. "$PSScriptRoot/../utils/review-gate.ps1"
+. "$PSScriptRoot/../utils/review-fix.ps1"
+. "$PSScriptRoot/../utils/review-timeout.ps1"
+. "$PSScriptRoot/../utils/global-timeout.ps1"
+. "$PSScriptRoot/../utils/diff-staleness.ps1"
+
+function Invoke-ReviewLoop {
+    <#
+    .SYNOPSIS
+        Runs the review gate loop for a given gate type (preMerge or final).
+    .DESCRIPTION
+        Enters the review gate, solicits verdicts, handles pass/fail/retry,
+        manages fix cycles, escalation, and timeout. Returns when the gate
+        resolves (pass, halt, or timeout).
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [Parameter(Mandatory)]$Config,
+        [Parameter(Mandatory)][ValidateSet('preMerge', 'final')][string]$GateType,
+        [Parameter(Mandatory)][string]$DiffContent,
+        [Parameter(Mandatory)][string]$Root,
+        [Parameter(Mandatory)][string]$FeatureDir,
+        [Parameter(Mandatory)][string]$PipelineRunId,
+        [Parameter(Mandatory)][datetime]$PipelineStartTime,
+        $Task = $null
+    )
+
+    Enter-ReviewGate -State $State -Config $Config -GateType $GateType
+    $gateStartTime = Get-Date
+
+    Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
+        -Message "Entered $GateType review gate (round 0)" `
+        -FeatureDir $FeatureDir -RunId $PipelineRunId
+
+    # Defense-in-depth iteration cap
+    $maxIterations = ($Config['MaxReviewRounds'] + 1) * ($Config['MaxKeepGoingResets'] + 1) * 2
+    $iteration = 0
+
+    while (-not (Test-PipelineTerminal -State $State)) {
+        $iteration++
+        if ($iteration -gt $maxIterations) {
+            Write-PipelineLog "Review loop iteration cap reached ($maxIterations) — halting"
+            $State.pipelineState = 'HALTED'
+            $State.lockHolder    = $null
+            break
+        }
+
+        # ── Global timeout check ──
+        $globalElapsed = ((Get-Date) - $PipelineStartTime).TotalSeconds
+        $globalFired = Test-GlobalPipelineTimeout -State $State -Config $Config -ElapsedSeconds $globalElapsed
+        if ($globalFired) {
+            Write-TaskLog -TaskId 'PIPELINE' -Phase 'timeout' `
+                -Message "Global timeout fired during $GateType review" `
+                -FeatureDir $FeatureDir -RunId $PipelineRunId
+            break
+        }
+
+        # ── Gate timeout check ──
+        $gateElapsed = ((Get-Date) - $gateStartTime).TotalSeconds
+        $gateFired = Test-ReviewGateTimeout -State $State -Config $Config -ElapsedSeconds $gateElapsed
+        if ($gateFired) {
+            Write-TaskLog -TaskId 'PIPELINE' -Phase 'timeout' `
+                -Message "Gate timeout fired during $GateType review" `
+                -FeatureDir $FeatureDir -RunId $PipelineRunId
+
+            $escResult = Invoke-GateTimeoutEscalation -State $State -Config $Config
+            if ($escResult.Decision -eq 'KeepGoing') {
+                $gateStartTime = Get-Date  # Reset gate timer
+                continue
+            }
+            break  # Stopped or forced stop → HALTED
+        }
+
+        # ── If in a fix state, run the fix cycle ──
+        if ($State.pipelineState -in @('reviewFix', 'finalReviewFix')) {
+            if ($Task -and $script:lastBlockers) {
+                $fixResult = Invoke-ReviewFixCycle -State $State -Config $Config `
+                    -Task $Task -Blockers $script:lastBlockers `
+                    -Root $Root -FeatureDir $FeatureDir
+
+                if ($fixResult.Status -eq 'escalated') {
+                    # TDD escalation — check if TDD Keep Going is available
+                    if ($State.tddKeepGoingCount -lt $Config['MaxTddKeepGoingPerGate']) {
+                        Invoke-TddKeepGoing -State $State -Config $Config
+                        continue  # Retry fix cycle
+                    }
+                    else {
+                        Invoke-TddKeepGoingExhausted -State $State -Config $Config
+                        continue  # Back to review state with verdict=fail
+                    }
+                }
+
+                # Fix cycle passed — complete and return to review state
+                Complete-ReviewFix -State $State -Config $Config
+            }
+            else {
+                # No task/blockers context — escalate back to review state
+                Complete-ReviewFix -State $State -Config $Config
+            }
+            continue
+        }
+
+        # ── Solicit verdict from moderator ──
+        $verdict = Invoke-ReviewGate -State $State -Config $Config -DiffContent $DiffContent
+
+        # ── Route verdict ──
+        $resolveFunc = if ($GateType -eq 'preMerge') { 'Resolve-PreMergeVerdict' } else { 'Resolve-FinalMergeVerdict' }
+
+        try {
+            $result = & $resolveFunc -State $State -Config $Config -Verdict $verdict
+        }
+        catch {
+            # Round exhaustion — trigger escalation
+            if ($_.Exception.Message -match 'exhausted') {
+                $escResult = Invoke-ReviewEscalation -State $State -Config $Config
+                if ($escResult.Action -eq 'resumeReview') {
+                    $gateStartTime = Get-Date  # Reset gate timer on Keep Going
+                    continue
+                }
+                break  # Stopped or forced stop → HALTED
+            }
+            throw  # Unexpected error
+        }
+
+        switch ($result.Action) {
+            'mergeQueue' {
+                Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
+                    -Message "Pre-merge review PASSED — entering merge queue" `
+                    -FeatureDir $FeatureDir -RunId $PipelineRunId
+                return $result  # Caller handles merge
+            }
+
+            'complete' {
+                Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
+                    -Message "Final review PASSED — pipeline COMPLETE" `
+                    -FeatureDir $FeatureDir -RunId $PipelineRunId
+                return $result
+            }
+
+            'reviewFix' {
+                $script:lastBlockers = $result.Blockers
+                Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
+                    -Message "Review FAILED — entering fix cycle with $(@($result.Blockers).Count) blocker(s)" `
+                    -FeatureDir $FeatureDir -RunId $PipelineRunId
+                continue  # Loop will handle reviewFix state
+            }
+
+            'finalReviewFix' {
+                $script:lastBlockers = $result.Blockers
+                Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
+                    -Message "Final review FAILED — entering fix cycle" `
+                    -FeatureDir $FeatureDir -RunId $PipelineRunId
+                continue
+            }
+
+            'retry' {
+                Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
+                    -Message "Review RETRY — round $($State.reviewRound)" `
+                    -FeatureDir $FeatureDir -RunId $PipelineRunId
+                continue  # Loop will solicit new verdict
+            }
+        }
+    }
+
+    return [PSCustomObject]@{ Action = 'halted' }
+}
 
 function Invoke-CodingStage {
     param(
@@ -57,6 +226,37 @@ function Invoke-CodingStage {
         # Parse plan
         $plan = Get-Content $PlanJsonPath -Raw | ConvertFrom-Json
         $numTiers = if ($plan.tiers) { $plan.tiers.Count } else { 0 }
+
+        # ── TLA+ state machine initialization ──
+        # Count total tasks across all tiers for NumTasks
+        $totalTasks = 0
+        if ($plan.tiers) {
+            foreach ($tier in $plan.tiers) {
+                if ($tier.tasks) { $totalTasks += @($tier.tasks).Count }
+            }
+        }
+        $tlaState = $null
+        $tlaCfg   = $null
+        try {
+            if ($totalTasks -gt 0) {
+                $env:VIBE_NUM_TASKS = "$totalTasks"
+            }
+            $tlaCfg = Get-PipelineConfig
+            $tlaState = New-PipelineState
+            $tlaState.pipelineState = 'locked'
+            $tlaState.lockHolder    = 1
+            $tlaState.pipelineState = 'running'
+        }
+        catch {
+            Write-PipelineLog "TLA+ state init skipped: $($_.Exception.Message)"
+        }
+        finally {
+            if ($totalTasks -gt 0) {
+                Remove-Item Env:\VIBE_NUM_TASKS -ErrorAction SilentlyContinue
+            }
+        }
+        $pipelineStartTime = Get-Date
+        $gateStartTime     = $null
 
         # ── Step 2: Zero-tier check ──
         if ($numTiers -eq 0) {
@@ -269,6 +469,37 @@ function Invoke-CodingStage {
                 if ($mergeResult.Success) {
                     $null = $mergedTasks.Add($mergeTaskId)
                     Write-TaskLog -TaskId $mergeTaskId -Phase 'done' -Message 'Merge complete' -FeatureDir $FeatureDir -RunId $PipelineRunId
+
+                    # ── TLA+ TaskMerged + Pre-merge review gate ──
+                    if ($tlaState -and $tlaCfg) {
+                    $tlaState.pipelineState = 'mergeQueue'
+                    Complete-TaskMerge -State $tlaState -Config $tlaCfg
+
+                    if (-not (Test-AllTasksDone -State $tlaState -Config $tlaCfg)) {
+                        try {
+                            # Get diff content for review
+                            $rawDiff = try { & git diff HEAD~1 2>$null } catch { $null }
+                            $diffContent = if ($rawDiff -is [array]) { $rawDiff -join "`n" } elseif ($rawDiff) { [string]$rawDiff } else { $null }
+                            if ([string]::IsNullOrWhiteSpace($diffContent)) { $diffContent = 'No diff available' }
+
+                            # Find the task object for fix cycle context
+                            $mergedTask = $pendingTasks | Where-Object { $_.id -eq $mergeTaskId } | Select-Object -First 1
+
+                            $reviewResult = Invoke-ReviewLoop -State $tlaState -Config $tlaCfg `
+                                -GateType 'preMerge' -DiffContent $diffContent `
+                                -Root $Root -FeatureDir $FeatureDir `
+                                -PipelineRunId $PipelineRunId -PipelineStartTime $pipelineStartTime `
+                                -Task $mergedTask
+
+                            if ($tlaState.pipelineState -eq 'HALTED') {
+                                return @{ PipelineStatus = 'halted'; Reason = 'review_halted'; RunId = $PipelineRunId }
+                            }
+                        }
+                        catch {
+                            Write-PipelineLog "Pre-merge review gate error: $($_.Exception.Message) — continuing to final verification"
+                        }
+                    }
+                    }  # end if ($tlaState -and $tlaCfg)
                 }
                 else {
                     $taskStatuses[$mergeTaskId] = 'escalated'
@@ -297,7 +528,35 @@ function Invoke-CodingStage {
             $currentTier++
         }
 
-        # ── Step 4: Final verification ──
+        # ── Step 4: Final review gate (TLA+ EnterFinalReview) ──
+        if ($tlaState -and $tlaCfg -and $totalTasks -gt 0 -and (Test-AllTasksDone -State $tlaState -Config $tlaCfg)) {
+            try {
+            Write-TaskLog -TaskId 'PIPELINE' -Phase 'final-review' -Message 'Entering final review gate' -FeatureDir $FeatureDir -RunId $PipelineRunId
+
+            $rawDiff = try { & git diff HEAD~1 2>$null } catch { $null }
+            $diffContent = if ($rawDiff -is [array]) { $rawDiff -join "`n" } elseif ($rawDiff) { [string]$rawDiff } else { $null }
+            if ([string]::IsNullOrWhiteSpace($diffContent)) { $diffContent = 'No diff available' }
+
+            $reviewResult = Invoke-ReviewLoop -State $tlaState -Config $tlaCfg `
+                -GateType 'final' -DiffContent $diffContent `
+                -Root $Root -FeatureDir $FeatureDir `
+                -PipelineRunId $PipelineRunId -PipelineStartTime $pipelineStartTime
+
+            if ($tlaState.pipelineState -eq 'COMPLETE') {
+                $pipelineStatus = 'completed'
+                Write-TaskLog -TaskId 'PIPELINE' -Phase 'complete' -Message "Pipeline COMPLETED via final review (RunId: $PipelineRunId)" -FeatureDir $FeatureDir -RunId $PipelineRunId
+                return @{ PipelineStatus = $pipelineStatus; RunId = $PipelineRunId }
+            }
+            elseif ($tlaState.pipelineState -eq 'HALTED') {
+                return @{ PipelineStatus = 'halted'; Reason = 'final_review_halted'; RunId = $PipelineRunId }
+            }
+            }
+            catch {
+                Write-PipelineLog "Final review gate error: $($_.Exception.Message) — continuing to final verification"
+            }
+        }
+
+        # ── Step 5: Final verification (post-review safety net) ──
         Write-TaskLog -TaskId 'PIPELINE' -Phase 'final' -Message 'Starting final verification' -FeatureDir $FeatureDir -RunId $PipelineRunId
 
         $allWriters = @($plan.tiers.tasks | Where-Object { $_.codeWriter } | ForEach-Object { $_.codeWriter } | Select-Object -Unique)

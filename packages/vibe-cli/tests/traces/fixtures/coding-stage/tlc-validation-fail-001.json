@@ -1,0 +1,47 @@
+{
+  "steps": [
+    {
+      "stepNum": 0,
+      "action": "Init",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 0,
+        "escalationActive": false,
+        "taskPhase_T1": "idle",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": false,
+        "taskStatus_T1": "pending",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "idle",
+        "validationStatus": "pending"
+      }
+    },
+    {
+      "stepNum": 1,
+      "action": "ValidationFails",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 0,
+        "escalationActive": false,
+        "taskPhase_T1": "idle",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": false,
+        "taskStatus_T1": "pending",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "halted",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "idle",
+        "validationStatus": "failed"
+      }
+    }
+  ],
+  "traceId": "tlc-validation-fail-001",
+  "spec": "CodingStage",
+  "description": "Plan validation fails -> halted"
+}

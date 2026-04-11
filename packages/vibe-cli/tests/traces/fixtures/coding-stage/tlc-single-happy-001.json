@@ -1,0 +1,267 @@
+{
+  "steps": [
+    {
+      "stepNum": 0,
+      "action": "Init",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 0,
+        "escalationActive": false,
+        "taskPhase_T1": "idle",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": false,
+        "taskStatus_T1": "pending",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "idle",
+        "validationStatus": "pending"
+      }
+    },
+    {
+      "stepNum": 1,
+      "action": "ValidationPasses",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 0,
+        "escalationActive": false,
+        "taskPhase_T1": "idle",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": false,
+        "taskStatus_T1": "pending",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "idle",
+        "validationStatus": "valid"
+      }
+    },
+    {
+      "stepNum": 2,
+      "action": "StartNextTier",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 1,
+        "escalationActive": false,
+        "taskPhase_T1": "red",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": false,
+        "taskStatus_T1": "running",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "idle",
+        "validationStatus": "valid"
+      }
+    },
+    {
+      "stepNum": 3,
+      "action": "RedTestsFail(T1)",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 1,
+        "escalationActive": false,
+        "taskPhase_T1": "green",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": false,
+        "taskStatus_T1": "running",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "idle",
+        "validationStatus": "valid"
+      }
+    },
+    {
+      "stepNum": 4,
+      "action": "GreenTestsPass(T1)",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 1,
+        "escalationActive": false,
+        "taskPhase_T1": "cleanup",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": false,
+        "taskStatus_T1": "running",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "idle",
+        "validationStatus": "valid"
+      }
+    },
+    {
+      "stepNum": 5,
+      "action": "CleanupPass(T1)",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 1,
+        "escalationActive": false,
+        "taskPhase_T1": "cleanup",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": false,
+        "taskStatus_T1": "running",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "idle",
+        "validationStatus": "valid"
+      }
+    },
+    {
+      "stepNum": 6,
+      "action": "CleanupPass(T1)",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 1,
+        "escalationActive": false,
+        "taskPhase_T1": "cleanup",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": false,
+        "taskStatus_T1": "running",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "idle",
+        "validationStatus": "valid"
+      }
+    },
+    {
+      "stepNum": 7,
+      "action": "CleanupComplete(T1)",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 1,
+        "escalationActive": false,
+        "taskPhase_T1": "done",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": false,
+        "taskStatus_T1": "completed",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "idle",
+        "validationStatus": "valid"
+      }
+    },
+    {
+      "stepNum": 8,
+      "action": "SingleTaskTierComplete(T1)",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 1,
+        "escalationActive": false,
+        "taskPhase_T1": "done",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": true,
+        "taskStatus_T1": "completed",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "idle",
+        "validationStatus": "valid"
+      }
+    },
+    {
+      "stepNum": 9,
+      "action": "StartFinalVerification",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 2.0,
+        "escalationActive": false,
+        "taskPhase_T1": "done",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": true,
+        "taskStatus_T1": "completed",
+        "finalCleanPasses": 0,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "running",
+        "validationStatus": "valid"
+      }
+    },
+    {
+      "stepNum": 10,
+      "action": "FinalVerifPass",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 2.0,
+        "escalationActive": false,
+        "taskPhase_T1": "done",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": true,
+        "taskStatus_T1": "completed",
+        "finalCleanPasses": 1,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "running",
+        "validationStatus": "valid"
+      }
+    },
+    {
+      "stepNum": 11,
+      "action": "FinalVerifPass",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 2.0,
+        "escalationActive": false,
+        "taskPhase_T1": "done",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": true,
+        "taskStatus_T1": "completed",
+        "finalCleanPasses": 2,
+        "pipelineStatus": "running",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "running",
+        "validationStatus": "valid"
+      }
+    },
+    {
+      "stepNum": 12,
+      "action": "FinalVerifComplete",
+      "state": {
+        "redRetries_T1": 0,
+        "currentTier": 2.0,
+        "escalationActive": false,
+        "taskPhase_T1": "done",
+        "finalRemediations": 0,
+        "wsCreationFailed": false,
+        "merged_T1": true,
+        "taskStatus_T1": "completed",
+        "finalCleanPasses": 2,
+        "pipelineStatus": "completed",
+        "workspace_T1": false,
+        "greenAttempts_T1": 0,
+        "finalVerifPhase": "completed",
+        "validationStatus": "valid"
+      }
+    }
+  ],
+  "traceId": "tlc-single-happy-001",
+  "spec": "CodingStage",
+  "description": "Single TDD task: validate -> RED -> GREEN -> cleanup(x2) -> final verify -> completed"
+}

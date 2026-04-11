@@ -1,0 +1,348 @@
+# =============================================================================
+# property-runner.ps1 — Property-based testing harness for Pester
+# Executes N trials with seeded RNG, checks invariants at every step.
+# =============================================================================
+
+$ErrorActionPreference = 'Stop'
+
+function Test-AllInvariants {
+    <#
+    .SYNOPSIS
+        Evaluates all invariant scriptblocks against current state and config.
+    .OUTPUTS
+        Name of first failing invariant, or $null if all pass.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        $Config,
+        [Parameter(Mandatory)][hashtable]$Invariants
+    )
+
+    foreach ($name in $Invariants.Keys) {
+        $check = $Invariants[$name]
+        $passed = if ($null -ne $Config) {
+            & $check $State $Config
+        } else {
+            & $check $State
+        }
+        if (-not $passed) {
+            return $name
+        }
+    }
+    return $null
+}
+
+function Format-PropertyFailure {
+    <#
+    .SYNOPSIS
+        Formats a property check failure for Pester diagnostic output.
+    #>
+    param([Parameter(Mandatory)][hashtable]$Result)
+
+    if ($Result.Passed) { return 'All trials passed' }
+
+    $lines = @(
+        "PROPERTY FAILURE"
+        "  Seed:      $($Result.FailingSeed)"
+        "  Invariant: $($Result.Violation)"
+        "  Step:      $($Result.FailingStep)"
+        "  State:"
+    )
+
+    if ($Result.FailingState) {
+        foreach ($key in ($Result.FailingState.Keys | Sort-Object)) {
+            $lines += "    $key = $($Result.FailingState[$key])"
+        }
+    }
+
+    if ($Result.Trace -and $Result.Trace.Count -gt 0) {
+        $traceStr = $Result.Trace -join ' -> '
+        if ($traceStr.Length -gt 500) {
+            $traceStr = $traceStr.Substring(0, 500) + '...'
+        }
+        $lines += "  Trace: $traceStr"
+    }
+
+    return ($lines -join "`n")
+}
+
+function Invoke-PropertyCheck {
+    <#
+    .SYNOPSIS
+        Core PBT runner. Executes $NumTrials random scenarios, checking
+        invariants after every state transition.
+    .PARAMETER NumTrials
+        Number of random test cases to generate.
+    .PARAMETER SeedBase
+        Starting seed (trial i uses seed SeedBase + i).
+    .PARAMETER Setup
+        ScriptBlock: takes [System.Random]$Rng, returns scenario context hashtable.
+    .PARAMETER Driver
+        ScriptBlock: takes scenario context, returns @{ FinalState; Trace; Steps;
+        InvariantViolation (name or $null); FailingStep (int or $null); FailingState }.
+    .PARAMETER Invariants
+        Hashtable of name -> scriptblock. Each takes (State, Config) and returns $true/$false.
+        Passed to the Driver for per-step checking.
+    .OUTPUTS
+        PSCustomObject with Passed, TrialsRun, FailingSeed, Violation, FailingStep,
+        FailingState, Trace.
+    #>
+    param(
+        [int]$NumTrials = 100,
+        [int]$SeedBase = 1,
+        [Parameter(Mandatory)][scriptblock]$Setup,
+        [Parameter(Mandatory)][scriptblock]$Driver,
+        [Parameter(Mandatory)][hashtable]$Invariants
+    )
+
+    for ($i = 0; $i -lt $NumTrials; $i++) {
+        $seed = $SeedBase + $i
+        $rng = New-SeededRng -Seed $seed
+
+        # Setup scenario
+        $ctx = & $Setup $rng
+        $ctx['Invariants'] = $Invariants
+
+        # Drive scenario
+        $driverResult = & $Driver $ctx
+
+        if ($driverResult.InvariantViolation) {
+            return @{
+                Passed       = $false
+                TrialsRun    = $i + 1
+                FailingSeed  = $seed
+                Violation    = $driverResult.InvariantViolation
+                FailingStep  = $driverResult.FailingStep
+                FailingState = $driverResult.FailingState
+                Trace        = $driverResult.Trace
+            }
+        }
+    }
+
+    return @{
+        Passed       = $true
+        TrialsRun    = $NumTrials
+        FailingSeed  = $null
+        Violation    = $null
+        FailingStep  = $null
+        FailingState = $null
+        Trace        = $null
+    }
+}
+
+function Invoke-ReviewerPbtDriver {
+    <#
+    .SYNOPSIS
+        Generalized state machine driver for PipelineReviewers PBT.
+        Extends the pattern from review-liveness.Tests.ps1 with:
+        - Invariant checking at every step
+        - Timeout injection at scheduled steps
+        - Diff staleness injection
+    .PARAMETER Ctx
+        Scenario context from Setup. Expected keys:
+          State, Config, VerdictSeq, EscalationSeq, GateType,
+          TimeoutSchedule (optional), Invariants
+    #>
+    param([Parameter(Mandatory)][hashtable]$Ctx)
+
+    $state        = $Ctx.State
+    $config       = $Ctx.Config
+    $verdictSeq   = $Ctx.VerdictSeq
+    $escalationSeq = if ($Ctx.ContainsKey('EscalationSeq')) { $Ctx.EscalationSeq } else { @('KeepGoing') * 20 }
+    $gateType     = $Ctx.GateType
+    $invariants   = $Ctx.Invariants
+    $timeouts     = if ($Ctx.ContainsKey('TimeoutSchedule')) { $Ctx.TimeoutSchedule } else { @{ GateTimeoutStep = $null; GlobalTimeoutStep = $null } }
+
+    $trace = [System.Collections.ArrayList]::new()
+    $verdictIdx = 0
+    $escalationIdx = 0
+    $maxSteps = ($config['MaxReviewRounds'] + 1) * ($config['MaxKeepGoingResets'] + 1) * ($config['MaxTddKeepGoingPerGate'] + 1) * 4 + 20
+    $step = 0
+
+    # Enter review gate
+    Enter-ReviewGate -State $state -Config $config -GateType $gateType
+    $null = $trace.Add("enter:$gateType")
+
+    # Check invariants after entry
+    $violation = Test-AllInvariants -State $state -Config $config -Invariants $invariants
+    if ($violation) {
+        return @{
+            InvariantViolation = $violation
+            FailingStep        = 0
+            FailingState       = $state.Clone()
+            Trace              = $trace.ToArray()
+            FinalState         = $state.pipelineState
+            Steps              = 0
+        }
+    }
+
+    while (-not (Test-PipelineTerminal -State $state)) {
+        $step++
+        if ($step -gt $maxSteps) {
+            return @{
+                InvariantViolation = "NonTermination(maxSteps=$maxSteps)"
+                FailingStep        = $step
+                FailingState       = $state.Clone()
+                Trace              = $trace.ToArray()
+                FinalState         = $state.pipelineState
+                Steps              = $step
+            }
+        }
+
+        # Inject global timeout if scheduled
+        if ($null -ne $timeouts.GlobalTimeoutStep -and $step -eq $timeouts.GlobalTimeoutStep) {
+            if ($state.pipelineState -notin @('idle', 'COMPLETE', 'HALTED') -and -not $state.globalTimedOut) {
+                $state.globalTimedOut = $true
+                $state.pipelineState = 'HALTED'
+                $state.lockHolder = $null
+                $null = $trace.Add("globalTimeout:HALTED")
+                break
+            }
+        }
+
+        # Inject gate timeout if scheduled
+        if ($null -ne $timeouts.GateTimeoutStep -and $step -eq $timeouts.GateTimeoutStep) {
+            if ($state.pipelineState -in @('preMergeReview', 'reviewFix', 'finalReview', 'finalReviewFix') -and
+                -not $state.gateTimedOut -and -not $state.globalTimedOut) {
+                $state.gateTimedOut = $true
+                $null = $trace.Add("gateTimeout")
+                # Gate timeout leads to escalation — route through stop/keepGoing
+                $escChoice = if ($escalationIdx -lt $escalationSeq.Count) {
+                    $escalationSeq[$escalationIdx++]
+                } else { 'Stop' }
+
+                if ($escChoice -eq 'KeepGoing' -and $state.keepGoingResets -lt $config['MaxKeepGoingResets']) {
+                    $state.gateTimedOut = $false
+                    $state.keepGoingResets++
+                    $state.reviewRound = 0
+                    $state.tddKeepGoingCount = 0
+                    $state.verdict = $null
+                    $state.pipelineState = if ($state.reviewGateType -eq 'preMerge') { 'preMergeReview' } else { 'finalReview' }
+                    $null = $trace.Add("gateTimeout:keepGoing")
+                } else {
+                    $state.pipelineState = 'HALTED'
+                    $state.lockHolder = $null
+                    $null = $trace.Add("gateTimeout:stop")
+                    break
+                }
+
+                $violation = Test-AllInvariants -State $state -Config $config -Invariants $invariants
+                if ($violation) {
+                    return @{
+                        InvariantViolation = $violation
+                        FailingStep        = $step
+                        FailingState       = $state.Clone()
+                        Trace              = $trace.ToArray()
+                        FinalState         = $state.pipelineState
+                        Steps              = $step
+                    }
+                }
+                continue
+            }
+        }
+
+        # Handle fix states
+        if ($state.pipelineState -in @('reviewFix', 'finalReviewFix')) {
+            $null = $trace.Add("fix:$($state.pipelineState)")
+            Complete-ReviewFix -State $state -Config $config
+            $null = $trace.Add("fixComplete:$($state.pipelineState)")
+
+            $violation = Test-AllInvariants -State $state -Config $config -Invariants $invariants
+            if ($violation) {
+                return @{
+                    InvariantViolation = $violation
+                    FailingStep        = $step
+                    FailingState       = $state.Clone()
+                    Trace              = $trace.ToArray()
+                    FinalState         = $state.pipelineState
+                    Steps              = $step
+                }
+            }
+            continue
+        }
+
+        # Reached mergeQueue — exit for pre-merge
+        if ($state.pipelineState -eq 'mergeQueue') {
+            $null = $trace.Add('mergeQueue:exit')
+            break
+        }
+
+        # Get next verdict
+        $verdictStr = if ($verdictIdx -lt $verdictSeq.Count) {
+            $verdictSeq[$verdictIdx++]
+        } else { 'pass' }
+
+        $verdict = [PSCustomObject]@{
+            Verdict           = $verdictStr
+            Blockers          = if ($verdictStr -eq 'fail') {
+                @([PSCustomObject]@{
+                    Reviewer = 'pbt-gen'; Severity = 'high'
+                    Description = "PBT blocker seed"; Files = @('f.ts'); Suggestion = 'Fix'
+                })
+            } else { @() }
+            Notes             = @()
+            SelectedReviewers = @('pbt')
+            ExcludedReviewers = @()
+        }
+
+        $resolveFunc = if ($gateType -eq 'preMerge') { 'Resolve-PreMergeVerdict' } else { 'Resolve-FinalMergeVerdict' }
+
+        try {
+            $result = & $resolveFunc -State $state -Config $config -Verdict $verdict
+            $null = $trace.Add("$($verdictStr):$($result.Action)")
+
+            if ($result.Action -eq 'mergeQueue' -or $result.Action -eq 'complete') {
+                $violation = Test-AllInvariants -State $state -Config $config -Invariants $invariants
+                if ($violation) {
+                    return @{
+                        InvariantViolation = $violation
+                        FailingStep        = $step
+                        FailingState       = $state.Clone()
+                        Trace              = $trace.ToArray()
+                        FinalState         = $state.pipelineState
+                        Steps              = $step
+                    }
+                }
+                break
+            }
+        }
+        catch {
+            if ($_.Exception.Message -match 'exhausted') {
+                $null = $trace.Add("$($verdictStr):exhausted")
+
+                $escChoice = if ($escalationIdx -lt $escalationSeq.Count) {
+                    $escalationSeq[$escalationIdx++]
+                } else { 'Stop' }
+
+                Mock Read-Escalation { return @{ Decision = $escChoice; Source = 'task' } }.GetNewClosure()
+                $escResult = Invoke-ReviewEscalation -State $state -Config $config
+                $null = $trace.Add("esc:$($escResult.Action)")
+            }
+            else {
+                throw
+            }
+        }
+
+        # Check invariants after every step
+        $violation = Test-AllInvariants -State $state -Config $config -Invariants $invariants
+        if ($violation) {
+            return @{
+                InvariantViolation = $violation
+                FailingStep        = $step
+                FailingState       = $state.Clone()
+                Trace              = $trace.ToArray()
+                FinalState         = $state.pipelineState
+                Steps              = $step
+            }
+        }
+    }
+
+    return @{
+        InvariantViolation = $null
+        FailingStep        = $null
+        FailingState       = $null
+        Trace              = $trace.ToArray()
+        FinalState         = $state.pipelineState
+        Steps              = $step
+    }
+}

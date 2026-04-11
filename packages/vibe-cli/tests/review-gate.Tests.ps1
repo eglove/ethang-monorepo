@@ -71,9 +71,15 @@ Describe 'Enter-ReviewGate' {
         }
 
         It 'preserves tasksDone (TLA+ UNCHANGED)' {
-            $script:state.tasksDone = 3
-            Enter-ReviewGate -State $script:state -Config $script:cfg -GateType 'preMerge'
-            $script:state.tasksDone | Should -BeExactly 3
+            # Use env override so tasksDone < NumTasks for preMerge guard
+            $env:VIBE_NUM_TASKS = '5'
+            try {
+                $multiCfg = Get-PipelineConfig
+                $script:state.tasksDone = 3
+                Enter-ReviewGate -State $script:state -Config $multiCfg -GateType 'preMerge'
+                $script:state.tasksDone | Should -BeExactly 3
+            }
+            finally { Remove-Item Env:\VIBE_NUM_TASKS -ErrorAction SilentlyContinue }
         }
 
         It 'preserves globalTimedOut (TLA+ UNCHANGED)' {
@@ -84,11 +90,13 @@ Describe 'Enter-ReviewGate' {
 
     Context 'Final review gate entry' {
         It 'transitions pipelineState to "finalReview" for GateType "final"' {
+            $script:state.tasksDone = $script:cfg['NumTasks']
             Enter-ReviewGate -State $script:state -Config $script:cfg -GateType 'final'
             $script:state.pipelineState | Should -BeExactly 'finalReview'
         }
 
         It 'sets reviewGateType to "final"' {
+            $script:state.tasksDone = $script:cfg['NumTasks']
             Enter-ReviewGate -State $script:state -Config $script:cfg -GateType 'final'
             $script:state.reviewGateType | Should -BeExactly 'final'
         }
