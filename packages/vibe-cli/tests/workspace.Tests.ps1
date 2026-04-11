@@ -14,7 +14,10 @@ Describe 'New-TaskWorkspace' {
         Mock Invoke-GitWithRetry {}
         Mock Push-Location {}
         Mock Pop-Location {}
-        Mock pnpm {}
+
+        # pnpm is an external exe — can't be mocked directly. Override the call
+        # operator by defining a function that shadows the native command.
+        function pnpm { }
     }
 
     It 'returns null for single-task tier' {
