@@ -7,6 +7,11 @@ BeforeAll {
     . "$PSScriptRoot/../utils/pipeline-state.ps1"
     . "$PSScriptRoot/../utils/review-verdict.ps1"
     . "$PSScriptRoot/../utils/review-gate.ps1"
+
+    # Safe fallback — review-gate.ps1 dots read-escalation.ps1 which prompts stdin
+    function Read-Escalation {
+        return @{ Decision = 'KeepGoing'; Source = 'task' }
+    }
 }
 
 # =============================================================================

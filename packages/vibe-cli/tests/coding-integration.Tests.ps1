@@ -6,6 +6,9 @@ BeforeAll {
     Mock Invoke-VerifyCommand {}
     Mock Write-PipelineLog {}
     Mock Write-Host {}
+    Mock Read-Escalation {
+        return @{ Decision = 'Stop'; Source = 'task'; TaskId = $null; Phase = $null; Reason = $null; PreStopSnapshot = $null }
+    }
 }
 
 Describe 'Coding Stage Integration Tests' {
@@ -25,6 +28,17 @@ Describe 'Coding Stage Integration Tests' {
 
     AfterAll {
         Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    BeforeEach {
+        # Default review loop mock: pass through without calling Invoke-Claude.
+        # Pre-merge review returns to running; final review completes.
+        # Tests that need specific review behavior override this.
+        Mock Invoke-ReviewLoop {
+            param($State, $Config, $GateType)
+            if ($GateType -eq 'final') { Set-PipelineComplete -State $State }
+            else { $State.pipelineState = 'running' }
+        }
     }
 
     AfterEach {

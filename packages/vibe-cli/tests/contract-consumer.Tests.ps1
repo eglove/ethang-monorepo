@@ -215,6 +215,9 @@ Describe 'Consumer: State transitions satisfy pre/post contracts' -Tag 'Contract
         . "$PSScriptRoot/../utils/review-verdict.ps1"
         . "$PSScriptRoot/../utils/review-gate.ps1"
         . "$PSScriptRoot/../utils/review-fix.ps1"
+
+        # Re-define AFTER loading review-gate.ps1 (which dots read-escalation.ps1)
+        function Read-Escalation { return @{ Decision = 'KeepGoing'; Source = 'task' } }
     }
 
     It 'Enter-ReviewGate:preMerge satisfies contract' {

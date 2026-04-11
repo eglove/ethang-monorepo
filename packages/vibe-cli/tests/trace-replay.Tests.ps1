@@ -5,14 +5,11 @@
 # =============================================================================
 
 BeforeAll {
-    # Stub side-effect functions
+    # Stub side-effect functions (defined before loading modules)
     function Invoke-Claude { }
     function Write-PipelineLog { }
     function Write-StatusNote { }
     function Write-TaskLog { }
-    function Read-Escalation {
-        return @{ Decision = 'KeepGoing'; Source = 'task' }
-    }
     function Invoke-RedPhase {
         return @{ Status = 'pass'; TestFiles = @('t.ps1'); Counters = @{ redAttempts = 1 } }
     }
@@ -23,12 +20,17 @@ BeforeAll {
         return @{ Status = 'pass'; Counters = @{ cleanupCleanPasses = 2 } }
     }
 
-    # Load production modules
+    # Load production modules (review-gate.ps1 dots read-escalation.ps1)
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/pipeline-state.ps1"
     . "$PSScriptRoot/../utils/review-verdict.ps1"
     . "$PSScriptRoot/../utils/review-gate.ps1"
     . "$PSScriptRoot/../utils/review-fix.ps1"
+
+    # Re-define Read-Escalation AFTER loading review-gate.ps1 (which overwrites it)
+    function Read-Escalation {
+        return @{ Decision = 'KeepGoing'; Source = 'task' }
+    }
 
     # Load trace replay harness
     . "$PSScriptRoot/traces/trace-replay.ps1"

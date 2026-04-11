@@ -314,8 +314,15 @@ function Invoke-ReviewerPbtDriver {
                     $escalationSeq[$escalationIdx++]
                 } else { 'Stop' }
 
-                Mock Read-Escalation { return @{ Decision = $escChoice; Source = 'task' } }.GetNewClosure()
-                $escResult = Invoke-ReviewEscalation -State $state -Config $config
+                $savedEsc = ${function:Read-Escalation}
+                $capturedChoice = $escChoice
+                Set-Item function:Read-Escalation { return @{ Decision = $capturedChoice; Source = 'task' } }.GetNewClosure()
+                try {
+                    $escResult = Invoke-ReviewEscalation -State $state -Config $config
+                }
+                finally {
+                    Set-Item function:Read-Escalation $savedEsc
+                }
                 $null = $trace.Add("esc:$($escResult.Action)")
             }
             else {

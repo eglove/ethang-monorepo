@@ -23,12 +23,17 @@ BeforeAll {
         return @{ Status = 'pass'; Counters = @{ cleanupCleanPasses = 2 } }
     }
 
-    # Load production modules
+    # Load production modules (review-gate.ps1 dots read-escalation.ps1)
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/pipeline-state.ps1"
     . "$PSScriptRoot/../utils/review-verdict.ps1"
     . "$PSScriptRoot/../utils/review-gate.ps1"
     . "$PSScriptRoot/../utils/review-fix.ps1"
+
+    # Re-define Read-Escalation AFTER loading review-gate.ps1 (which overwrites it)
+    function Read-Escalation {
+        return @{ Decision = 'KeepGoing'; Source = 'task' }
+    }
 
     # Load PBT harness
     . "$PSScriptRoot/helpers/property-gen.ps1"

@@ -17,6 +17,11 @@ BeforeAll {
     . "$PSScriptRoot/../utils/review-fix.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
 
+    # Re-define Read-Escalation AFTER loading review-gate.ps1 (which overwrites it)
+    function Read-Escalation {
+        return @{ Decision = 'KeepGoing'; Source = 'task' }
+    }
+
     . "$PSScriptRoot/contracts/contract-engine.ps1"
     . "$PSScriptRoot/contracts/definitions/verdict-contract.ps1"
     . "$PSScriptRoot/contracts/definitions/task-result-contract.ps1"

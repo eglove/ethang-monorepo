@@ -75,16 +75,22 @@ function Invoke-TlaAction {
             Invoke-TddStopInFix -State $State -Config $Config
         }
         'ReviewKeepGoing' {
-            Mock Read-Escalation { return @{ Decision = 'KeepGoing'; Source = 'task' } }
-            $null = Invoke-ReviewEscalation -State $State -Config $Config
+            # Temporarily override Read-Escalation to return KeepGoing
+            $savedEsc = ${function:Read-Escalation}
+            function Read-Escalation { return @{ Decision = 'KeepGoing'; Source = 'task' } }
+            try { $null = Invoke-ReviewEscalation -State $State -Config $Config }
+            finally { Set-Item function:Read-Escalation $savedEsc }
         }
         'ReviewForcedStop' {
-            # Forced stop: keepGoingResets >= MaxKeepGoingResets
+            # Forced stop: keepGoingResets >= MaxKeepGoingResets (no Read-Escalation call)
             $null = Invoke-ReviewEscalation -State $State -Config $Config
         }
         'ReviewStop' {
-            Mock Read-Escalation { return @{ Decision = 'Stop'; Source = 'task' } }
-            $null = Invoke-ReviewEscalation -State $State -Config $Config
+            # Temporarily override Read-Escalation to return Stop
+            $savedEsc = ${function:Read-Escalation}
+            function Read-Escalation { return @{ Decision = 'Stop'; Source = 'task' } }
+            try { $null = Invoke-ReviewEscalation -State $State -Config $Config }
+            finally { Set-Item function:Read-Escalation $savedEsc }
         }
         'TaskMerged' {
             $State.tasksDone++
