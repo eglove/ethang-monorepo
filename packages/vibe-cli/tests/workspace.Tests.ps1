@@ -14,6 +14,7 @@ Describe 'New-TaskWorkspace' {
         Mock Invoke-GitWithRetry {}
         Mock Push-Location {}
         Mock Pop-Location {}
+        Mock pnpm {}
     }
 
     It 'returns null for single-task tier' {
