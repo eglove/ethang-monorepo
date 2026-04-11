@@ -28,7 +28,7 @@ Describe 'Invoke-GreenPhase' {
 
     It 'increments greenAttempts on failure' {
         $script:greenCallCount = 0
-        Mock Invoke-Claude { '{"filesModified":[],"summary":"try"}' }
+        Mock Invoke-Claude { '{"filesModified":[{"path":"utils/config.ps1","action":"modified"}],"summary":"try"}' }
         Mock Invoke-VerifyCommand {
             $script:greenCallCount++
             if ($script:greenCallCount -ge 2) { return 0 }
@@ -79,6 +79,29 @@ Describe 'Invoke-GreenPhase' {
         $counters.greenAttempts | Should -BeGreaterThan 0
     }
 
+    It 'skips to cleanup when code writer reports already_implemented' {
+        Mock Invoke-Claude { '{"verdict":"already_implemented","filesModified":[]}' }
+        Mock Invoke-VerifyCommand { 1 }
+
+        $counters = @{ greenAttempts = 0 }
+        $result = Invoke-GreenPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Phase | Should -Be 'cleanup'
+        $result.Status | Should -Be 'running'
+        $counters.greenAttempts | Should -Be 0
+    }
+
+    It 'skips to cleanup when code writer makes no file changes' {
+        Mock Invoke-Claude { '{"filesModified":[],"summary":"no changes needed"}' }
+        Mock Invoke-VerifyCommand { 1 }
+
+        $counters = @{ greenAttempts = 0 }
+        $result = Invoke-GreenPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Phase | Should -Be 'cleanup'
+        $result.Status | Should -Be 'running'
+        $counters.greenAttempts | Should -Be 0
+        Should -Not -Invoke Invoke-VerifyCommand
+    }
+
     It 'escalates on infrastructure failure without incrementing counter' {
         Mock Invoke-Claude { throw 'command not found' }
         $counters = @{ greenAttempts = 0 }
@@ -88,7 +111,7 @@ Describe 'Invoke-GreenPhase' {
     }
 
     It 'passes WorkspacePath through to verify command' {
-        Mock Invoke-Claude { '{"filesModified":[]}' }
+        Mock Invoke-Claude { '{"filesModified":[{"path":"utils/config.ps1","action":"modified"}]}' }
         Mock Invoke-VerifyCommand { 0 } -ParameterFilter { $WorkingDirectory -eq '/tmp/ws' }
 
         $counters = @{ greenAttempts = 0 }
@@ -97,7 +120,7 @@ Describe 'Invoke-GreenPhase' {
     }
 
     It 'escalates when verify command throws' {
-        Mock Invoke-Claude { '{"filesModified":[]}' }
+        Mock Invoke-Claude { '{"filesModified":[{"path":"utils/config.ps1","action":"modified"}]}' }
         Mock Invoke-VerifyCommand { throw 'verify crashed' }
 
         $counters = @{ greenAttempts = 0 }
@@ -136,7 +159,7 @@ Describe 'Invoke-GreenPhase — scoped test verification' {
     }
 
     It 'passes TestFiles array to Invoke-ScopedTestVerify' {
-        Mock Invoke-Claude { '{"filesModified":[]}' }
+        Mock Invoke-Claude { '{"filesModified":[{"path":"utils/config.ps1","action":"modified"}]}' }
         Mock Invoke-ScopedTestVerify { 0 } -ParameterFilter { $TestFiles -contains 'tests/a.Tests.ps1' -and $TestFiles -contains 'tests/b.Tests.ps1' }
 
         $counters = @{ greenAttempts = 0 }
@@ -146,7 +169,7 @@ Describe 'Invoke-GreenPhase — scoped test verification' {
 
     It 'retries with scoped verify on failure' {
         $script:scopedCallCount = 0
-        Mock Invoke-Claude { '{"filesModified":[]}' }
+        Mock Invoke-Claude { '{"filesModified":[{"path":"utils/config.ps1","action":"modified"}]}' }
         Mock Invoke-ScopedTestVerify {
             $script:scopedCallCount++
             if ($script:scopedCallCount -ge 2) { return 0 }

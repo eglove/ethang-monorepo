@@ -1,0 +1,141 @@
+{
+  "steps": [
+    {
+      "stepNum": 0,
+      "action": "Init",
+      "state": {
+        "lockHolder": null,
+        "tddKeepGoingCount": 0,
+        "tasksDone": 0,
+        "reviewRound": 0,
+        "pipelineState": "idle",
+        "reviewGateType": "none",
+        "gateTimedOut": false,
+        "keepGoingResets": 0,
+        "globalTimedOut": false,
+        "verdict": null
+      }
+    },
+    {
+      "stepNum": 1,
+      "action": "AcquireLock",
+      "state": {
+        "lockHolder": 1,
+        "tddKeepGoingCount": 0,
+        "tasksDone": 0,
+        "reviewRound": 0,
+        "pipelineState": "locked",
+        "reviewGateType": "none",
+        "gateTimedOut": false,
+        "keepGoingResets": 0,
+        "globalTimedOut": false,
+        "verdict": null
+      }
+    },
+    {
+      "stepNum": 2,
+      "action": "StartRunning",
+      "state": {
+        "lockHolder": 1,
+        "tddKeepGoingCount": 0,
+        "tasksDone": 0,
+        "reviewRound": 0,
+        "pipelineState": "running",
+        "reviewGateType": "none",
+        "gateTimedOut": false,
+        "keepGoingResets": 0,
+        "globalTimedOut": false,
+        "verdict": null
+      }
+    },
+    {
+      "stepNum": 3,
+      "action": "EnterPreMergeReview",
+      "state": {
+        "lockHolder": 1,
+        "tddKeepGoingCount": 0,
+        "tasksDone": 0,
+        "reviewRound": 0,
+        "pipelineState": "preMergeReview",
+        "reviewGateType": "preMerge",
+        "gateTimedOut": false,
+        "keepGoingResets": 0,
+        "globalTimedOut": false,
+        "verdict": null
+      }
+    },
+    {
+      "stepNum": 4,
+      "action": "HandleRetryPreMerge",
+      "state": {
+        "lockHolder": 1,
+        "tddKeepGoingCount": 0,
+        "tasksDone": 0,
+        "reviewRound": 1,
+        "pipelineState": "preMergeReview",
+        "reviewGateType": "preMerge",
+        "gateTimedOut": false,
+        "keepGoingResets": 0,
+        "globalTimedOut": false,
+        "verdict": null
+      }
+    },
+    {
+      "stepNum": 5,
+      "action": "ReviewKeepGoing",
+      "state": {
+        "lockHolder": 1,
+        "tddKeepGoingCount": 0,
+        "tasksDone": 0,
+        "reviewRound": 0,
+        "pipelineState": "preMergeReview",
+        "reviewGateType": "preMerge",
+        "gateTimedOut": false,
+        "keepGoingResets": 1,
+        "globalTimedOut": false,
+        "verdict": null
+      }
+    },
+    {
+      "stepNum": 6,
+      "action": "HandleRetryPreMerge",
+      "state": {
+        "lockHolder": 1,
+        "tddKeepGoingCount": 0,
+        "tasksDone": 0,
+        "reviewRound": 1,
+        "pipelineState": "preMergeReview",
+        "reviewGateType": "preMerge",
+        "gateTimedOut": false,
+        "keepGoingResets": 1,
+        "globalTimedOut": false,
+        "verdict": null
+      }
+    },
+    {
+      "stepNum": 7,
+      "action": "ReviewForcedStop",
+      "state": {
+        "lockHolder": null,
+        "tddKeepGoingCount": 0,
+        "tasksDone": 0,
+        "reviewRound": 1,
+        "pipelineState": "HALTED",
+        "reviewGateType": "preMerge",
+        "gateTimedOut": false,
+        "keepGoingResets": 1,
+        "globalTimedOut": false,
+        "verdict": null
+      }
+    }
+  ],
+  "traceId": "tlc-forced-stop-001",
+  "spec": "PipelineReviewers",
+  "constants": {
+    "MaxTddKeepGoingPerGate": 5,
+    "MaxReviewRounds": 1,
+    "MaxKeepGoingResets": 1,
+    "NumTasks": 1
+  },
+  "description": "KeepGoing exhausted -> forced stop -> HALTED"
+}

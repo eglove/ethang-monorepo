@@ -1,5 +1,6 @@
 . "$PSScriptRoot/result-contracts.ps1"
 . "$PSScriptRoot/task-log.ps1"
+. "$PSScriptRoot/response-parser.ps1"
 
 function Invoke-RedPhase {
     param(
@@ -13,6 +14,8 @@ function Invoke-RedPhase {
     )
 
     $taskId = $Task.id
+    Write-StatusNote -TaskId $taskId -Status 'Testing' -Detail "test-writer: $($Task.testWriter)"
+
     $testWriterFile = Join-Path $Root "agents/test-writers/$($Task.testWriter)-writer.md"
     if (-not (Test-Path $testWriterFile)) {
         $testWriterFile = Join-Path $Root "agents/test-writers/$($Task.testWriter).md"
@@ -24,8 +27,9 @@ function Invoke-RedPhase {
     Write-TaskLog -TaskId $taskId -Phase 'red' -Message "Dispatching test writer: $($Task.testWriter)" -FeatureDir $FeatureDir -RunId $RunId
 
     # Write tests
+    $addDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
     try {
-        $response = Invoke-Claude -SystemPromptFile $testWriterFile -Prompt $prompt -TaskId $taskId
+        $response = Invoke-Claude -SystemPromptFile $testWriterFile -Prompt $prompt -TaskId $taskId -AddDir $addDir
     }
     catch {
         Write-TaskLog -TaskId $taskId -Phase 'red' -Message "ESCALATED: Infrastructure failure — $($_.Exception.Message)" -FeatureDir $FeatureDir -RunId $RunId
@@ -35,17 +39,27 @@ function Invoke-RedPhase {
         }
     }
 
-    # Extract test file paths from agent response
+    # Extract test file paths and verdict from agent response
     $testFiles = @()
-    try {
-        $parsed = $response | ConvertFrom-Json -ErrorAction SilentlyContinue
+    $verdict = $null
+    $parsed = ConvertFrom-AgentResponse -Response $response
+    if ($parsed) {
         if ($parsed.filesModified) {
             $testFiles = @($parsed.filesModified |
                 Where-Object { $_.path -match '\.(test|spec|Tests)\.' } |
                 ForEach-Object { $_.path })
         }
+        if ($parsed.verdict -eq 'already_implemented') { $verdict = 'already_implemented' }
     }
-    catch { }
+
+    if ($verdict -eq 'already_implemented') {
+        Write-TaskLog -TaskId $taskId -Phase 'red' -Message 'Already implemented — skipping to cleanup' -FeatureDir $FeatureDir -RunId $RunId
+        return ConvertTo-TaskResult @{
+            TaskId = $taskId; Phase = 'cleanup'; Status = 'running'
+            Counters = $Counters; Escalated = $false
+            TestFiles = $testFiles
+        }
+    }
 
     # Run verify-test
     $workDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
@@ -89,7 +103,7 @@ function Invoke-RedPhase {
         $retryPrompt = "Tests passed unexpectedly. Revise the tests or determine if the feature is already implemented.`nReturn JSON with 'verdict': 'revised' or 'already_implemented'"
 
         try {
-            $verdictResponse = Invoke-Claude -SystemPromptFile $testWriterFile -Prompt $retryPrompt -TaskId $taskId
+            $verdictResponse = Invoke-Claude -SystemPromptFile $testWriterFile -Prompt $retryPrompt -TaskId $taskId -AddDir $addDir
         }
         catch {
             $Counters.redRetries--
@@ -103,11 +117,8 @@ function Invoke-RedPhase {
 
         # Parse verdict
         $verdict = $null
-        try {
-            $parsed = $verdictResponse | ConvertFrom-Json
-            $verdict = $parsed.verdict
-        }
-        catch { }
+        $parsedVerdict = ConvertFrom-AgentResponse -Response $verdictResponse
+        if ($parsedVerdict) { $verdict = $parsedVerdict.verdict }
 
         if ($verdict -eq 'already_implemented') {
             Write-TaskLog -TaskId $taskId -Phase 'red_retry' -Message 'Already implemented — skipping to cleanup' -FeatureDir $FeatureDir -RunId $RunId

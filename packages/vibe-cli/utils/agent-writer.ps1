@@ -11,6 +11,8 @@ function Invoke-AgentWriter {
     )
 
     $taskId = $Task.id
+    Write-StatusNote -TaskId $taskId -Status 'Coding' -Detail "agent: $($Task.codeWriter)"
+
     $counters = @{ }
 
     # Re-dispatch idempotency: check for pre-existing output

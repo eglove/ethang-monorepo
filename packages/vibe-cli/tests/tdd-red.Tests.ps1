@@ -50,6 +50,16 @@ Describe 'Invoke-RedPhase' {
         $result.Phase | Should -Be 'cleanup'
     }
 
+    It 'skips to cleanup on already_implemented even when verify would fail' {
+        Mock Invoke-Claude { '{"verdict":"already_implemented","filesModified":[]}' }
+        Mock Invoke-VerifyCommand { 1 }
+
+        $counters = @{ redRetries = 0 }
+        $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Phase | Should -Be 'cleanup'
+        Should -Not -Invoke Invoke-VerifyCommand
+    }
+
     It 'escalates when redRetries reaches MaxRedRetries' {
         Mock Invoke-Claude { '{"verdict":"revised"}' }
         Mock Invoke-VerifyCommand { 0 }

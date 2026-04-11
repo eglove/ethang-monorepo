@@ -3,6 +3,9 @@ BeforeAll {
 
     Mock Write-PipelineLog {}
     Mock Write-Host {}
+    Mock Read-Escalation {
+        return @{ Decision = 'Stop'; Source = 'task'; TaskId = $null; Phase = $null; Reason = $null; PreStopSnapshot = $null }
+    }
 }
 
 Describe 'Invoke-CodingStage' {

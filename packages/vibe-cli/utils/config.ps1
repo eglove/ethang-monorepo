@@ -25,7 +25,7 @@ $Config = @{
     MaxDebateRounds       = 100   # PowerShell debate loop cap (matches moderator internal cap)
 
     # TDD
-    MaxTddCycles          = 100   # RED/GREEN cycles per TDD loop
+    MaxTddCycles          = 10    # RED/GREEN cycles per TDD loop
 
     # Cleanup
     CleanupPasses         = 2     # lint + test + tsc must pass this many times consecutively
@@ -88,6 +88,12 @@ $Config = @{
     # Review gate timeout in seconds (30 minutes)
     ReviewGateTimeoutSeconds   = 1800
 
+    # Per-reviewer invocation timeout (seconds) — must be <= ReviewGateTimeoutSeconds
+    ReviewerTimeoutSeconds     = 600
+
+    # Moderator (verdict aggregator) timeout (seconds)
+    ReviewModeratorTimeoutSeconds = 300
+
     # Number of tasks — derived from tier task list length, must be >= 1
     NumTasks                   = 1
 }
@@ -131,15 +137,76 @@ function Get-PipelineConfig {
         $snapshot.ReviewGateTimeoutSeconds = [int]$env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS
     }
 
+    $reviewerTimeoutExplicit = $false
+    if ($env:VIBE_REVIEWER_TIMEOUT_SECONDS) {
+        $snapshot.ReviewerTimeoutSeconds = [int]$env:VIBE_REVIEWER_TIMEOUT_SECONDS
+        $reviewerTimeoutExplicit = $true
+    }
+
+    if ($env:VIBE_REVIEW_MODERATOR_TIMEOUT_SECONDS) {
+        $snapshot.ReviewModeratorTimeoutSeconds = [int]$env:VIBE_REVIEW_MODERATOR_TIMEOUT_SECONDS
+    }
+
     if ($env:VIBE_NUM_TASKS) {
         $snapshot.NumTasks = [int]$env:VIBE_NUM_TASKS
     }
+    elseif ($null -ne $env:VIBE_NUM_TASKS -and $env:VIBE_NUM_TASKS -eq '0') {
+        $snapshot.NumTasks = 0
+    }
 
-    # Validate NumTasks >= 1
+    if ($null -ne $env:VIBE_PIPELINE_TIMEOUT_SECONDS -and $env:VIBE_PIPELINE_TIMEOUT_SECONDS -ne '') {
+        $snapshot.PipelineTimeoutSeconds = [int]$env:VIBE_PIPELINE_TIMEOUT_SECONDS
+    }
+
+    # ── Validation ──
+
+    # Fields that must be strictly positive (> 0)
+    $positiveFields = @(
+        'MaxReviewRounds',
+        'ReviewGateTimeoutSeconds',
+        'MaxTddKeepGoingPerGate',
+        'PipelineTimeoutSeconds',
+        'ReviewerTimeoutSeconds',
+        'ReviewModeratorTimeoutSeconds'
+    )
+    foreach ($field in $positiveFields) {
+        if ($snapshot[$field] -le 0) {
+            throw [System.ArgumentException]::new(
+                "$field must be positive, got $($snapshot[$field])."
+            )
+        }
+    }
+
+    # MaxKeepGoingResets allows 0 (disables Keep Going per TLA S11) but rejects negative
+    if ($snapshot.MaxKeepGoingResets -lt 0) {
+        throw [System.ArgumentException]::new(
+            "MaxKeepGoingResets must be non-negative, got $($snapshot.MaxKeepGoingResets)."
+        )
+    }
+
+    # NumTasks must be >= 1
     if ($snapshot.NumTasks -lt 1) {
         throw [System.ArgumentException]::new(
             "NumTasks must be >= 1, got $($snapshot.NumTasks). " +
             "Each tier must have at least one task."
+        )
+    }
+
+    # Cross-field: gate timeout must accommodate at least one full reviewer invocation
+    if ($snapshot.ReviewGateTimeoutSeconds -lt $snapshot.ReviewerTimeoutSeconds) {
+        if ($reviewerTimeoutExplicit) {
+            throw [System.ArgumentException]::new(
+                "ReviewGateTimeoutSeconds ($($snapshot.ReviewGateTimeoutSeconds)) must be >= ReviewerTimeoutSeconds ($($snapshot.ReviewerTimeoutSeconds))."
+            )
+        }
+        # Auto-clamp default reviewer timeout to fit within the gate timeout
+        $snapshot.ReviewerTimeoutSeconds = $snapshot.ReviewGateTimeoutSeconds
+    }
+
+    # Cross-field: pipeline timeout must accommodate at least one full gate timeout
+    if ($snapshot.PipelineTimeoutSeconds -lt $snapshot.ReviewGateTimeoutSeconds) {
+        throw [System.ArgumentException]::new(
+            "PipelineTimeoutSeconds ($($snapshot.PipelineTimeoutSeconds)) must be >= ReviewGateTimeoutSeconds ($($snapshot.ReviewGateTimeoutSeconds))."
         )
     }
 
@@ -160,7 +227,7 @@ function Invoke-ScopedTestVerify {
 
     if ($WorkingDirectory) { Push-Location $WorkingDirectory }
     try {
-        $pesterConfig = [PesterConfiguration]::Default
+        $pesterConfig = New-PesterConfiguration
         $pesterConfig.Run.Path = $TestFiles
         $pesterConfig.Run.PassThru = $true
         $pesterConfig.Output.Verbosity = 'None'
@@ -204,7 +271,9 @@ function Invoke-VerifyCommand {
 
     try {
         & $exe @cmdArgs
-        return $LASTEXITCODE
+        $code = $LASTEXITCODE
+        if ($null -eq $code) { $code = 0 }
+        return $code
     }
     finally {
         if ($WorkingDirectory -and $originalDir) {

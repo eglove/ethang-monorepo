@@ -1,5 +1,6 @@
 . "$PSScriptRoot/result-contracts.ps1"
 . "$PSScriptRoot/task-log.ps1"
+. "$PSScriptRoot/response-parser.ps1"
 
 function Invoke-GreenPhase {
     param(
@@ -14,6 +15,8 @@ function Invoke-GreenPhase {
     )
 
     $taskId = $Task.id
+    Write-StatusNote -TaskId $taskId -Status 'Coding' -Detail "code-writer: $($Task.codeWriter)"
+
     $codeWriterFile = Join-Path $Root "agents/code-writers/$($Task.codeWriter).md"
     $workDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
 
@@ -32,8 +35,9 @@ function Invoke-GreenPhase {
 
         Write-TaskLog -TaskId $taskId -Phase 'green' -Message "Dispatching code writer: $($Task.codeWriter) (attempt $($Counters.greenAttempts + 1))" -FeatureDir $FeatureDir -RunId $RunId
 
+        $addDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
         try {
-            $response = Invoke-Claude -SystemPromptFile $codeWriterFile -Prompt $prompt -TaskId $taskId
+            $response = Invoke-Claude -SystemPromptFile $codeWriterFile -Prompt $prompt -TaskId $taskId -AddDir $addDir
         }
         catch {
             Write-TaskLog -TaskId $taskId -Phase 'green' -Message "ESCALATED: Infrastructure failure — $($_.Exception.Message)" -FeatureDir $FeatureDir -RunId $RunId
@@ -45,23 +49,33 @@ function Invoke-GreenPhase {
 
         # Check if code writer modified test files
         $modifiedTestFiles = $false
-        try {
-            $parsed = $response | ConvertFrom-Json -ErrorAction SilentlyContinue
-            if ($parsed.filesModified) {
-                foreach ($f in $parsed.filesModified) {
-                    if ($f.path -match '\.(test|spec|Tests)\.' ) {
-                        $modifiedTestFiles = $true
-                        break
-                    }
+        $parsed = ConvertFrom-AgentResponse -Response $response
+        if ($parsed.filesModified) {
+            foreach ($f in $parsed.filesModified) {
+                if ($f.path -match '\.(test|spec|Tests)\.' ) {
+                    $modifiedTestFiles = $true
+                    break
                 }
             }
         }
-        catch { }
 
         if ($modifiedTestFiles) {
             Write-TaskLog -TaskId $taskId -Phase 'green' -Message 'Code writer modified test files — rejected, counting as failed attempt' -FeatureDir $FeatureDir -RunId $RunId
             $Counters.greenAttempts++
             continue
+        }
+
+        # Check if code writer reports already implemented or made no changes
+        $codeVerdict = if ($parsed) { $parsed.verdict } else { $null }
+        $hasFileChanges = $parsed -and $parsed.filesModified -and $parsed.filesModified.Count -gt 0
+
+        if ($codeVerdict -eq 'already_implemented' -or -not $hasFileChanges) {
+            $reason = if ($codeVerdict -eq 'already_implemented') { 'already implemented' } else { 'no file changes' }
+            Write-TaskLog -TaskId $taskId -Phase 'green' -Message "Code writer reports $reason — advancing to cleanup" -FeatureDir $FeatureDir -RunId $RunId
+            return ConvertTo-TaskResult @{
+                TaskId = $taskId; Phase = 'cleanup'; Status = 'running'
+                Counters = $Counters; Escalated = $false
+            }
         }
 
         # Run verify-test (scoped to task test files when available)

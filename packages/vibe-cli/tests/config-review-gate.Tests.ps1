@@ -1,175 +1,223 @@
 BeforeAll {
+    # Dot-source config.ps1; mock its transitive dependency so it loads cleanly
+    function Invoke-Claude { }
     . "$PSScriptRoot/../utils/config.ps1"
 }
 
-# =============================================================================
-# T1: Review Gate Constants and NumTasks
-#
-# TLA+ coverage:
-#   Constants: MaxReviewRounds, MaxKeepGoingResets, MaxTddKeepGoingPerGate, NumTasks
-#   Invariant: S11 (MaxKeepGoingResets=0 disables Keep Going — structural)
-# =============================================================================
+# ─────────────────────────────────────────────────────────────────────────────
+# T1 — Review gate constants and NumTasks
+# BDD: Feature "New configuration values control review behavior with load-time validation"
+# TLA: CONSTANTS MaxReviewRounds, MaxKeepGoingResets, MaxTddKeepGoingPerGate, NumTasks
+# ─────────────────────────────────────────────────────────────────────────────
 
-Describe 'Review gate constants — defaults' {
-    It 'exposes MaxReviewRounds with default value 3' {
-        $Config.MaxReviewRounds | Should -Be 3
+Describe 'Review gate default values' {
+    BeforeEach {
+        # Clear all override env vars so defaults surface
+        $env:VIBE_MAX_REVIEW_ROUNDS           = $null
+        $env:VIBE_MAX_KEEP_GOING_RESETS       = $null
+        $env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE = $null
+        $env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS = $null
+        $env:VIBE_NUM_TASKS                   = $null
+        $env:VIBE_PIPELINE_TIMEOUT_SECONDS    = $null
     }
 
-    It 'exposes MaxKeepGoingResets with default value 3' {
-        $Config.MaxKeepGoingResets | Should -Be 3
+    It 'MaxReviewRounds defaults to 3' {
+        $cfg = Get-PipelineConfig
+        $cfg['MaxReviewRounds'] | Should -Be 3
     }
 
-    It 'exposes MaxTddKeepGoingPerGate with default value 5' {
-        $Config.MaxTddKeepGoingPerGate | Should -Be 5
+    It 'MaxKeepGoingResets defaults to 3' {
+        $cfg = Get-PipelineConfig
+        $cfg['MaxKeepGoingResets'] | Should -Be 3
     }
 
-    It 'exposes ReviewGateTimeoutSeconds with default value 1800' {
-        $Config.ReviewGateTimeoutSeconds | Should -Be 1800
+    It 'MaxTddKeepGoingPerGate defaults to 5' {
+        $cfg = Get-PipelineConfig
+        $cfg['MaxTddKeepGoingPerGate'] | Should -Be 5
     }
 
-    It 'retains existing PipelineTimeoutSeconds at 14400' {
-        $Config.PipelineTimeoutSeconds | Should -Be 14400
+    It 'ReviewGateTimeoutSeconds defaults to 1800' {
+        $cfg = Get-PipelineConfig
+        $cfg['ReviewGateTimeoutSeconds'] | Should -Be 1800
+    }
+
+    It 'PipelineTimeoutSeconds defaults to 14400' {
+        $cfg = Get-PipelineConfig
+        $cfg['PipelineTimeoutSeconds'] | Should -Be 14400
+    }
+
+    It 'NumTasks defaults to 1' {
+        $cfg = Get-PipelineConfig
+        $cfg['NumTasks'] | Should -Be 1
     }
 }
 
-Describe 'NumTasks derivation' {
-    It 'exposes NumTasks in the config' {
-        $Config.Keys | Should -Contain 'NumTasks'
+Describe 'Get-PipelineConfig returns immutable snapshot' {
+    BeforeEach {
+        $env:VIBE_MAX_REVIEW_ROUNDS           = $null
+        $env:VIBE_MAX_KEEP_GOING_RESETS       = $null
+        $env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE = $null
+        $env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS = $null
+        $env:VIBE_NUM_TASKS                   = $null
     }
 
-    It 'defaults NumTasks to at least 1' {
-        $Config.NumTasks | Should -BeGreaterOrEqual 1
-    }
-}
-
-Describe 'Get-PipelineConfig returns review gate constants' {
-    It 'returns a hashtable containing MaxReviewRounds' {
-        $result = Get-PipelineConfig
-        $result.MaxReviewRounds | Should -Be 3
+    It 'returns a ReadOnlyDictionary that cannot be mutated' {
+        $cfg = Get-PipelineConfig
+        { $cfg['MaxReviewRounds'] = 999 } | Should -Throw
     }
 
-    It 'returns a hashtable containing MaxKeepGoingResets' {
-        $result = Get-PipelineConfig
-        $result.MaxKeepGoingResets | Should -Be 3
-    }
-
-    It 'returns a hashtable containing MaxTddKeepGoingPerGate' {
-        $result = Get-PipelineConfig
-        $result.MaxTddKeepGoingPerGate | Should -Be 5
-    }
-
-    It 'returns a hashtable containing ReviewGateTimeoutSeconds' {
-        $result = Get-PipelineConfig
-        $result.ReviewGateTimeoutSeconds | Should -Be 1800
-    }
-
-    It 'returns a hashtable containing NumTasks' {
-        $result = Get-PipelineConfig
-        $result.NumTasks | Should -BeGreaterOrEqual 1
+    It 'subsequent calls return independent snapshots' {
+        $cfg1 = Get-PipelineConfig
+        $env:VIBE_NUM_TASKS = '5'
+        $cfg2 = Get-PipelineConfig
+        $cfg1['NumTasks'] | Should -Be 1
+        $cfg2['NumTasks'] | Should -Be 5
     }
 }
 
 Describe 'Environment variable overrides' {
     AfterEach {
-        # Clean up env vars after each test
-        Remove-Item Env:VIBE_MAX_REVIEW_ROUNDS -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_MAX_KEEP_GOING_RESETS -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_NUM_TASKS -ErrorAction SilentlyContinue
+        $env:VIBE_MAX_REVIEW_ROUNDS           = $null
+        $env:VIBE_MAX_KEEP_GOING_RESETS       = $null
+        $env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE = $null
+        $env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS = $null
+        $env:VIBE_NUM_TASKS                   = $null
+        $env:VIBE_PIPELINE_TIMEOUT_SECONDS    = $null
     }
 
-    It 'overrides MaxReviewRounds from VIBE_MAX_REVIEW_ROUNDS' {
+    It 'VIBE_MAX_REVIEW_ROUNDS overrides MaxReviewRounds' {
         $env:VIBE_MAX_REVIEW_ROUNDS = '5'
-        $result = Get-PipelineConfig
-        $result.MaxReviewRounds | Should -Be 5
+        $cfg = Get-PipelineConfig
+        $cfg['MaxReviewRounds'] | Should -Be 5
     }
 
-    It 'overrides MaxKeepGoingResets from VIBE_MAX_KEEP_GOING_RESETS' {
-        $env:VIBE_MAX_KEEP_GOING_RESETS = '7'
-        $result = Get-PipelineConfig
-        $result.MaxKeepGoingResets | Should -Be 7
+    It 'VIBE_MAX_KEEP_GOING_RESETS overrides MaxKeepGoingResets' {
+        $env:VIBE_MAX_KEEP_GOING_RESETS = '2'
+        $cfg = Get-PipelineConfig
+        $cfg['MaxKeepGoingResets'] | Should -Be 2
     }
 
-    It 'overrides MaxTddKeepGoingPerGate from VIBE_MAX_TDD_KEEP_GOING_PER_GATE' {
-        $env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE = '10'
-        $result = Get-PipelineConfig
-        $result.MaxTddKeepGoingPerGate | Should -Be 10
-    }
-
-    It 'overrides ReviewGateTimeoutSeconds from VIBE_REVIEW_GATE_TIMEOUT_SECONDS' {
-        $env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS = '3600'
-        $result = Get-PipelineConfig
-        $result.ReviewGateTimeoutSeconds | Should -Be 3600
-    }
-
-    It 'overrides NumTasks from VIBE_NUM_TASKS' {
-        $env:VIBE_NUM_TASKS = '4'
-        $result = Get-PipelineConfig
-        $result.NumTasks | Should -Be 4
-    }
-}
-
-Describe 'Boundary — zero values' {
-    AfterEach {
-        Remove-Item Env:VIBE_MAX_REVIEW_ROUNDS -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_MAX_KEEP_GOING_RESETS -ErrorAction SilentlyContinue
-    }
-
-    It 'accepts MaxReviewRounds=0 (immediate escalation on first fail/retry)' {
-        $env:VIBE_MAX_REVIEW_ROUNDS = '0'
-        $result = Get-PipelineConfig
-        $result.MaxReviewRounds | Should -Be 0
-    }
-
-    It 'accepts MaxKeepGoingResets=0 to disable Keep Going (S11 invariant)' {
+    It 'VIBE_MAX_KEEP_GOING_RESETS=0 sets MaxKeepGoingResets to 0 (disables Keep Going per TLA S11)' {
         $env:VIBE_MAX_KEEP_GOING_RESETS = '0'
-        $result = Get-PipelineConfig
-        $result.MaxKeepGoingResets | Should -Be 0
+        $cfg = Get-PipelineConfig
+        $cfg['MaxKeepGoingResets'] | Should -Be 0
+    }
+
+    It 'VIBE_MAX_TDD_KEEP_GOING_PER_GATE overrides MaxTddKeepGoingPerGate' {
+        $env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE = '10'
+        $cfg = Get-PipelineConfig
+        $cfg['MaxTddKeepGoingPerGate'] | Should -Be 10
+    }
+
+    It 'VIBE_REVIEW_GATE_TIMEOUT_SECONDS overrides ReviewGateTimeoutSeconds' {
+        $env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS = '3600'
+        # Also bump pipeline timeout to satisfy cross-field constraint
+        $env:VIBE_PIPELINE_TIMEOUT_SECONDS = '7200'
+        $cfg = Get-PipelineConfig
+        $cfg['ReviewGateTimeoutSeconds'] | Should -Be 3600
+    }
+
+    It 'VIBE_NUM_TASKS overrides NumTasks' {
+        $env:VIBE_NUM_TASKS = '4'
+        $cfg = Get-PipelineConfig
+        $cfg['NumTasks'] | Should -Be 4
     }
 }
 
-Describe 'NumTasks validation' {
+Describe 'Config rejects zero or negative values at load time' {
     AfterEach {
-        Remove-Item Env:VIBE_NUM_TASKS -ErrorAction SilentlyContinue
+        $env:VIBE_MAX_REVIEW_ROUNDS           = $null
+        $env:VIBE_MAX_KEEP_GOING_RESETS       = $null
+        $env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE = $null
+        $env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS = $null
+        $env:VIBE_NUM_TASKS                   = $null
+        $env:VIBE_PIPELINE_TIMEOUT_SECONDS    = $null
     }
 
-    It 'accepts NumTasks=1 for single-task tiers' {
-        $env:VIBE_NUM_TASKS = '1'
-        $result = Get-PipelineConfig
-        $result.NumTasks | Should -Be 1
+    It 'throws when MaxReviewRounds is 0' {
+        $env:VIBE_MAX_REVIEW_ROUNDS = '0'
+        { Get-PipelineConfig } | Should -Throw '*MaxReviewRounds*must be*positive*'
     }
 
-    It 'accepts NumTasks=3 for multi-task tiers' {
-        $env:VIBE_NUM_TASKS = '3'
-        $result = Get-PipelineConfig
-        $result.NumTasks | Should -Be 3
+    It 'throws when MaxReviewRounds is negative' {
+        $env:VIBE_MAX_REVIEW_ROUNDS = '-1'
+        { Get-PipelineConfig } | Should -Throw '*MaxReviewRounds*must be*positive*'
     }
 
-    It 'throws a validation error when NumTasks=0' {
+    It 'throws when ReviewGateTimeoutSeconds is 0' {
+        $env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS = '0'
+        { Get-PipelineConfig } | Should -Throw '*ReviewGateTimeoutSeconds*must be*positive*'
+    }
+
+    It 'throws when MaxTddKeepGoingPerGate is 0' {
+        $env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE = '0'
+        { Get-PipelineConfig } | Should -Throw '*MaxTddKeepGoingPerGate*must be*positive*'
+    }
+
+    It 'throws when PipelineTimeoutSeconds is 0' {
+        $env:VIBE_PIPELINE_TIMEOUT_SECONDS = '0'
+        { Get-PipelineConfig } | Should -Throw '*PipelineTimeoutSeconds*must be*positive*'
+    }
+
+    It 'throws when MaxKeepGoingResets is negative' {
+        $env:VIBE_MAX_KEEP_GOING_RESETS = '-1'
+        { Get-PipelineConfig } | Should -Throw '*MaxKeepGoingResets*must be*non-negative*'
+    }
+
+    It 'throws when NumTasks is 0' {
         $env:VIBE_NUM_TASKS = '0'
-        { Get-PipelineConfig } | Should -Throw '*NumTasks*'
+        { Get-PipelineConfig } | Should -Throw '*NumTasks*must be*>= 1*'
     }
 
-    It 'throws a validation error when NumTasks is negative' {
+    It 'throws when NumTasks is negative' {
         $env:VIBE_NUM_TASKS = '-1'
-        { Get-PipelineConfig } | Should -Throw '*NumTasks*'
+        { Get-PipelineConfig } | Should -Throw '*NumTasks*must be*>= 1*'
     }
 }
 
-Describe 'Config immutability after initialization' {
-    It 'throws when attempting to add a new key after initialization' {
-        $result = Get-PipelineConfig
-        { $result.Add('SomeNewKey', 42) } | Should -Throw
+Describe 'Cross-field config validation' {
+    AfterEach {
+        $env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS = $null
+        $env:VIBE_PIPELINE_TIMEOUT_SECONDS    = $null
     }
 
-    It 'throws when attempting to modify an existing key after initialization' {
-        $result = Get-PipelineConfig
-        { $result.MaxReviewRounds = 999 } | Should -Throw
+    It 'throws when PipelineTimeoutSeconds < ReviewGateTimeoutSeconds' {
+        $env:VIBE_PIPELINE_TIMEOUT_SECONDS = '1000'
+        $env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS = '1800'
+        { Get-PipelineConfig } | Should -Throw '*PipelineTimeoutSeconds*1000*must be*ReviewGateTimeout*1800*'
+    }
+}
+
+Describe 'Config boundary-valid values are accepted' {
+    AfterEach {
+        $env:VIBE_MAX_REVIEW_ROUNDS           = $null
+        $env:VIBE_MAX_KEEP_GOING_RESETS       = $null
+        $env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE = $null
+        $env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS = $null
+        $env:VIBE_PIPELINE_TIMEOUT_SECONDS    = $null
     }
 
-    It 'throws when attempting to remove a key after initialization' {
-        $result = Get-PipelineConfig
-        { $result.Remove('MaxReviewRounds') } | Should -Throw
+    It 'accepts MaxReviewRounds=1' {
+        $env:VIBE_MAX_REVIEW_ROUNDS = '1'
+        $cfg = Get-PipelineConfig
+        $cfg['MaxReviewRounds'] | Should -Be 1
+    }
+
+    It 'accepts MaxKeepGoingResets=0 (disables Keep Going)' {
+        $env:VIBE_MAX_KEEP_GOING_RESETS = '0'
+        $cfg = Get-PipelineConfig
+        $cfg['MaxKeepGoingResets'] | Should -Be 0
+    }
+
+    It 'accepts MaxTddKeepGoingPerGate=1' {
+        $env:VIBE_MAX_TDD_KEEP_GOING_PER_GATE = '1'
+        $cfg = Get-PipelineConfig
+        $cfg['MaxTddKeepGoingPerGate'] | Should -Be 1
+    }
+
+    It 'accepts ReviewGateTimeoutSeconds=1' {
+        $env:VIBE_REVIEW_GATE_TIMEOUT_SECONDS = '1'
+        $cfg = Get-PipelineConfig
+        $cfg['ReviewGateTimeoutSeconds'] | Should -Be 1
     }
 }

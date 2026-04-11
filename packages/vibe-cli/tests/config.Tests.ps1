@@ -66,7 +66,7 @@ Describe 'Config values' {
     }
 
     It 'retains existing TDD/cleanup values' {
-        $Config.MaxTddCycles | Should -Be 100
+        $Config.MaxTddCycles | Should -Be 10
         $Config.MaxFixRounds | Should -Be 100
         $Config.CleanupPasses | Should -Be 2
     }
@@ -136,11 +136,18 @@ Describe 'Invoke-VerifyCommand' {
     }
 
     It 'splits and executes valid commands via call operator' {
-        # Define stub so Mock works even when pnpm is not installed (CI)
-        function pnpm { $global:LASTEXITCODE = 0 }
-        Mock pnpm { $global:LASTEXITCODE = 0 } -Verifiable
+        function pnpm { cmd /c "exit 0" }
+        Mock pnpm { cmd /c "exit 0" } -Verifiable
         $result = Invoke-VerifyCommand -Command 'pnpm test'
         $result | Should -Be 0
         Should -InvokeVerifiable
+    }
+
+    It 'returns 0 when LASTEXITCODE is null after execution' {
+        $global:LASTEXITCODE = $null
+        function pnpm {}
+        Mock pnpm {}
+        $result = Invoke-VerifyCommand -Command 'pnpm test'
+        $result | Should -Be 0
     }
 }

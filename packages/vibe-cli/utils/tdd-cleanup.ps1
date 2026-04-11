@@ -1,5 +1,6 @@
 . "$PSScriptRoot/result-contracts.ps1"
 . "$PSScriptRoot/task-log.ps1"
+. "$PSScriptRoot/response-parser.ps1"
 
 function Invoke-CleanupPhase {
     param(
@@ -14,6 +15,8 @@ function Invoke-CleanupPhase {
     )
 
     $taskId = $Task.id
+    Write-StatusNote -TaskId $taskId -Status 'Cleanup'
+
     $workDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
 
     if (-not $Counters.ContainsKey('cleanupCleanPasses')) { $Counters.cleanupCleanPasses = 0 }
@@ -87,8 +90,9 @@ function Invoke-CleanupPhase {
 
         $blamePrompt = "Verify command '$failedCommand' failed. Determine blame: is this a 'test' issue or a 'code' issue? Return JSON: { `"blame`": `"test`" | `"code`" }"
 
+        $addDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
         try {
-            $blameResponse = Invoke-Claude -SystemPromptFile $testWriterFile -Prompt $blamePrompt -TaskId $taskId
+            $blameResponse = Invoke-Claude -SystemPromptFile $testWriterFile -Prompt $blamePrompt -TaskId $taskId -AddDir $addDir
         }
         catch {
             Write-TaskLog -TaskId $taskId -Phase 'cleanup_remed' -Message "ESCALATED: Infrastructure failure during blame" -FeatureDir $FeatureDir -RunId $RunId
@@ -100,11 +104,8 @@ function Invoke-CleanupPhase {
 
         # Parse blame
         $blame = $null
-        try {
-            $parsed = $blameResponse | ConvertFrom-Json -ErrorAction SilentlyContinue
-            $blame = $parsed.blame
-        }
-        catch { }
+        $parsedBlame = ConvertFrom-AgentResponse -Response $blameResponse
+        if ($parsedBlame) { $blame = $parsedBlame.blame }
 
         # Dispatch to appropriate writer based on blame
         $fixWriterFile = if ($blame -eq 'test') {
@@ -120,7 +121,7 @@ function Invoke-CleanupPhase {
         Write-TaskLog -TaskId $taskId -Phase 'cleanup_remed' -Message "Remediation dispatch: blame=$blame, writer=$(Split-Path $fixWriterFile -Leaf)" -FeatureDir $FeatureDir -RunId $RunId
 
         try {
-            Invoke-Claude -SystemPromptFile $fixWriterFile -Prompt $fixPrompt -TaskId $taskId | Out-Null
+            Invoke-Claude -SystemPromptFile $fixWriterFile -Prompt $fixPrompt -TaskId $taskId -AddDir $addDir | Out-Null
         }
         catch {
             Write-TaskLog -TaskId $taskId -Phase 'cleanup_remed' -Message "ESCALATED: Infrastructure failure during remediation" -FeatureDir $FeatureDir -RunId $RunId

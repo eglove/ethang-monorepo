@@ -1,3 +1,156 @@
+function New-PipelineState {
+    <#
+    .SYNOPSIS
+        Creates the TLA+ Init state — a mutable hashtable with all 10 pipeline variables
+        at their initial values.
+    #>
+    return @{
+        pipelineState    = 'idle'
+        lockHolder       = $null
+        reviewRound      = [int]0
+        keepGoingResets   = [int]0
+        tddKeepGoingCount = [int]0
+        verdict          = $null
+        tasksDone        = [int]0
+        gateTimedOut     = $false
+        globalTimedOut   = $false
+        reviewGateType   = 'none'
+    }
+}
+
+function Test-PipelineStateTypeOK {
+    <#
+    .SYNOPSIS
+        TLA+ TypeOK invariant — validates all 10 state fields are within legal ranges.
+    .PARAMETER State
+        The pipeline state hashtable to validate.
+    .PARAMETER Config
+        The pipeline config (read-only dictionary from Get-PipelineConfig).
+    .OUTPUTS
+        [bool] $true if all fields are valid, $false otherwise.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [Parameter(Mandatory)]$Config
+    )
+
+    # Valid enum sets
+    $validPipelineStates = @(
+        'idle', 'locked', 'running', 'preMergeReview',
+        'reviewFix', 'mergeQueue', 'finalReview',
+        'finalReviewFix', 'COMPLETE', 'HALTED'
+    )
+    $validVerdicts = @($null, 'pass', 'fail', 'retry')
+    $validGateTypes = @('none', 'preMerge', 'final')
+
+    # pipelineState ∈ valid set
+    if ($State.pipelineState -notin $validPipelineStates) { return $false }
+
+    # reviewRound ∈ 0..MaxReviewRounds
+    if ($State.reviewRound -lt 0 -or $State.reviewRound -gt $Config['MaxReviewRounds']) { return $false }
+
+    # keepGoingResets ∈ 0..MaxKeepGoingResets
+    if ($State.keepGoingResets -lt 0 -or $State.keepGoingResets -gt $Config['MaxKeepGoingResets']) { return $false }
+
+    # tddKeepGoingCount ∈ 0..MaxTddKeepGoingPerGate
+    if ($State.tddKeepGoingCount -lt 0 -or $State.tddKeepGoingCount -gt $Config['MaxTddKeepGoingPerGate']) { return $false }
+
+    # tasksDone ∈ 0..NumTasks
+    if ($State.tasksDone -lt 0 -or $State.tasksDone -gt $Config['NumTasks']) { return $false }
+
+    # verdict ∈ {$null, 'pass', 'fail', 'retry'}
+    if ($null -ne $State.verdict -and $State.verdict -notin @('pass', 'fail', 'retry')) { return $false }
+
+    # reviewGateType ∈ {'none', 'preMerge', 'final'}
+    if ($State.reviewGateType -notin $validGateTypes) { return $false }
+
+    # gateTimedOut must be boolean
+    if ($State.gateTimedOut -isnot [bool]) { return $false }
+
+    # globalTimedOut must be boolean
+    if ($State.globalTimedOut -isnot [bool]) { return $false }
+
+    return $true
+}
+
+function Test-PipelineTerminal {
+    <#
+    .SYNOPSIS
+        TLA+ Done guard — returns $true if pipeline is in an absorbing terminal state.
+    .PARAMETER State
+        The pipeline state hashtable to check.
+    .OUTPUTS
+        [bool] $true if pipelineState is COMPLETE or HALTED, $false otherwise.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$State
+    )
+
+    return ($State.pipelineState -eq 'COMPLETE' -or $State.pipelineState -eq 'HALTED')
+}
+
+function Assert-PipelineNotTerminal {
+    <#
+    .SYNOPSIS
+        Guard that throws when the pipeline is in an absorbing terminal state.
+        Every transition function must call this before mutating state.
+    .PARAMETER State
+        The pipeline state hashtable to check.
+    .PARAMETER CallerName
+        Optional name of the calling function for diagnostic messages.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [string]$CallerName
+    )
+
+    if (Test-PipelineTerminal -State $State) {
+        $caller = if ($CallerName) { " (called from $CallerName)" } else { '' }
+        throw "Pipeline is in terminal state '$($State.pipelineState)' — no further transitions allowed$caller"
+    }
+}
+
+function Set-PipelineComplete {
+    <#
+    .SYNOPSIS
+        Transitions pipeline to COMPLETE terminal state with lock release.
+        TLA+ TerminalIsAbsorbing: lockHolder = NULL in terminal states.
+    .PARAMETER State
+        The mutable pipeline state hashtable.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$State
+    )
+
+    Assert-PipelineNotTerminal -State $State -CallerName 'Set-PipelineComplete'
+
+    $State.pipelineState  = 'COMPLETE'
+    $State.lockHolder     = $null
+    $State.reviewGateType = 'none'
+}
+
+function Set-PipelineHalted {
+    <#
+    .SYNOPSIS
+        Transitions pipeline to HALTED terminal state with lock release.
+        TLA+ TerminalIsAbsorbing: lockHolder = NULL in terminal states.
+    .PARAMETER State
+        The mutable pipeline state hashtable.
+    .PARAMETER Reason
+        Optional reason string for diagnostic logging.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [string]$Reason
+    )
+
+    Assert-PipelineNotTerminal -State $State -CallerName 'Set-PipelineHalted'
+
+    $State.pipelineState  = 'HALTED'
+    $State.lockHolder     = $null
+    $State.reviewGateType = 'none'
+}
+
 function Resolve-PipelineState {
     param([int]$FromStage, [string]$Dir)
 
