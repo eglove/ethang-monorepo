@@ -166,6 +166,78 @@ function Invoke-Merge {
     }
 }
 
+function Complete-TaskMerge {
+    <#
+    .SYNOPSIS
+        TLA+ TaskMerged transition — increments tasksDone, transitions back to running.
+    .DESCRIPTION
+        Guards: pipeline must not be terminal, pipelineState must be 'mergeQueue',
+        and tasksDone must be < NumTasks (boundary guard).
+        Mutates: tasksDone' = tasksDone + 1, pipelineState' = 'running'.
+        UNCHANGED: lockHolder, reviewRound, keepGoingResets, tddKeepGoingCount,
+                   verdict, gateTimedOut, globalTimedOut, reviewGateType.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [Parameter(Mandatory)]$Config
+    )
+
+    # ── Guard: terminal state absorption ──
+    Assert-PipelineNotTerminal -State $State -CallerName 'Complete-TaskMerge'
+
+    # ── Guard: must be in mergeQueue ──
+    if ($State.pipelineState -ne 'mergeQueue') {
+        throw "Complete-TaskMerge requires pipelineState 'mergeQueue', got '$($State.pipelineState)'."
+    }
+
+    # ── Guard: tasksDone boundary — never exceed NumTasks ──
+    if ($State.tasksDone -eq $Config['NumTasks']) {
+        throw "Complete-TaskMerge: tasksDone ($($State.tasksDone)) already equals NumTasks ($($Config['NumTasks'])) — cannot increment."
+    }
+
+    # ── State transition ──
+    $State.tasksDone     = $State.tasksDone + 1
+    $State.pipelineState = 'running'
+}
+
+function Test-AllTasksDone {
+    <#
+    .SYNOPSIS
+        TLA+ guard: returns $true when tasksDone = NumTasks (all tasks complete).
+    .DESCRIPTION
+        Used to decide between EnterPreMergeReview (tasksDone < NumTasks)
+        and EnterFinalReview (tasksDone = NumTasks).
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [Parameter(Mandatory)]$Config
+    )
+
+    return ($State.tasksDone -eq $Config['NumTasks'])
+}
+
+function Complete-MergeRelease {
+    <#
+    .SYNOPSIS
+        Releases the merge-in-progress lock for a given task, allowing the next
+        queued task to dequeue via Start-NextMerge.
+    .DESCRIPTION
+        Idempotent — if TaskId is not the active merge, this is a no-op.
+        Also removes from MergeTracker so the task can be re-enqueued (retry scenarios).
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$TaskId
+    )
+
+    if ($script:MergeInProgress -eq $TaskId) {
+        $script:MergeInProgress = $null
+        $null = $script:MergeTracker.TryRemove($TaskId, [ref]$null)
+    }
+}
+
 function Reset-MergeCounters {
     param([Parameter(Mandatory)][hashtable]$State)
     $State.mergeRetries = 0

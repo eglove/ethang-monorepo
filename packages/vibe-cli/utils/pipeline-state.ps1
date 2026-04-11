@@ -73,6 +73,84 @@ function Test-PipelineStateTypeOK {
     return $true
 }
 
+function Test-PipelineTerminal {
+    <#
+    .SYNOPSIS
+        TLA+ Done guard — returns $true if pipeline is in an absorbing terminal state.
+    .PARAMETER State
+        The pipeline state hashtable to check.
+    .OUTPUTS
+        [bool] $true if pipelineState is COMPLETE or HALTED, $false otherwise.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$State
+    )
+
+    return ($State.pipelineState -eq 'COMPLETE' -or $State.pipelineState -eq 'HALTED')
+}
+
+function Assert-PipelineNotTerminal {
+    <#
+    .SYNOPSIS
+        Guard that throws when the pipeline is in an absorbing terminal state.
+        Every transition function must call this before mutating state.
+    .PARAMETER State
+        The pipeline state hashtable to check.
+    .PARAMETER CallerName
+        Optional name of the calling function for diagnostic messages.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [string]$CallerName
+    )
+
+    if (Test-PipelineTerminal -State $State) {
+        $caller = if ($CallerName) { " (called from $CallerName)" } else { '' }
+        throw "Pipeline is in terminal state '$($State.pipelineState)' — no further transitions allowed$caller"
+    }
+}
+
+function Set-PipelineComplete {
+    <#
+    .SYNOPSIS
+        Transitions pipeline to COMPLETE terminal state with lock release.
+        TLA+ TerminalIsAbsorbing: lockHolder = NULL in terminal states.
+    .PARAMETER State
+        The mutable pipeline state hashtable.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$State
+    )
+
+    Assert-PipelineNotTerminal -State $State -CallerName 'Set-PipelineComplete'
+
+    $State.pipelineState  = 'COMPLETE'
+    $State.lockHolder     = $null
+    $State.reviewGateType = 'none'
+}
+
+function Set-PipelineHalted {
+    <#
+    .SYNOPSIS
+        Transitions pipeline to HALTED terminal state with lock release.
+        TLA+ TerminalIsAbsorbing: lockHolder = NULL in terminal states.
+    .PARAMETER State
+        The mutable pipeline state hashtable.
+    .PARAMETER Reason
+        Optional reason string for diagnostic logging.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [string]$Reason
+    )
+
+    Assert-PipelineNotTerminal -State $State -CallerName 'Set-PipelineHalted'
+
+    $State.pipelineState  = 'HALTED'
+    $State.lockHolder     = $null
+    $State.reviewGateType = 'none'
+}
+
 function Resolve-PipelineState {
     param([int]$FromStage, [string]$Dir)
 
