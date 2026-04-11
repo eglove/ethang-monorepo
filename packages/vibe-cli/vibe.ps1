@@ -90,7 +90,7 @@ try {
 
     if ($Stage -le 6) {
         Write-PipelineLog "--- Stage 6: Implementation Writer ---" -Color Cyan
-        $implResult = Invoke-ImplementationWriter -TlaFile $tlaFile -FeatureDir $featureDir -Root $root
+        $implResult = Invoke-ImplementationWriter -FeatureDir $featureDir -Root $root
         $implFile = $implResult.ImplFile
         $implJson = $implResult.ImplJson
     }

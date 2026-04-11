@@ -144,7 +144,7 @@ Describe 'Invoke-BddDebate' {
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
 
-        $script:capturedRevision | Should -Match 'elicitor\.md'
+        $script:capturedRevision | Should -Match 'feature directory'
         $script:capturedRevision | Should -Match 'C:/fake/artifact\.feature'
         $script:capturedRevision | Should -Match 'missing edge case'
     }
@@ -319,7 +319,7 @@ Describe 'Invoke-ImplementationWriter' {
         Set-Content (Join-Path $script:featureDir 'implementation-plan.md') -Value '# Plan'
         Set-Content (Join-Path $script:featureDir 'implementation-plan.json') -Value '{}'
 
-        $result = Invoke-ImplementationWriter -TlaFile $script:tlaFile -FeatureDir $script:featureDir -Root $script:tempRoot
+        $result = Invoke-ImplementationWriter -FeatureDir $script:featureDir -Root $script:tempRoot
 
         $result.ImplFile | Should -Match 'implementation-plan\.md'
         $result.ImplJson | Should -Match 'implementation-plan\.json'
@@ -331,7 +331,7 @@ Describe 'Invoke-ImplementationWriter' {
         $emptyDir = Join-Path $script:tempRoot 'docs/empty'
         New-Item -ItemType Directory -Path $emptyDir -Force | Out-Null
 
-        { Invoke-ImplementationWriter -TlaFile $script:tlaFile -FeatureDir $emptyDir -Root $script:tempRoot } |
+        { Invoke-ImplementationWriter -FeatureDir $emptyDir -Root $script:tempRoot } |
             Should -Throw '*did not produce*'
     }
 
@@ -342,7 +342,7 @@ Describe 'Invoke-ImplementationWriter' {
         New-Item -ItemType Directory -Path $partialDir -Force | Out-Null
         Set-Content (Join-Path $partialDir 'implementation-plan.md') -Value '# Plan'
 
-        { Invoke-ImplementationWriter -TlaFile $script:tlaFile -FeatureDir $partialDir -Root $script:tempRoot } |
+        { Invoke-ImplementationWriter -FeatureDir $partialDir -Root $script:tempRoot } |
             Should -Throw '*did not produce*'
     }
 }

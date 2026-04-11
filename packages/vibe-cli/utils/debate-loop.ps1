@@ -20,7 +20,7 @@ function Invoke-DebateLoop {
         [string]$ArtifactFile,
 
         [Parameter(Mandatory)]
-        [string]$BriefingFile,
+        [string]$FeatureDir,
 
         [Parameter(Mandatory)]
         [scriptblock]$BuildRevisionPrompt,
@@ -34,14 +34,14 @@ function Invoke-DebateLoop {
         [string]$StageName = "Debate"
     )
 
-    $briefingPath = (Resolve-Path $BriefingFile).Path
+    $featureDirPath = (Resolve-Path $FeatureDir).Path
     $referencePath = if ($ReferenceFile) { (Resolve-Path $ReferenceFile).Path } else { $null }
     $artifactPath = (Resolve-Path $ArtifactFile).Path
 
     for ($round = 1; $round -le $MaxRounds; $round++) {
         Write-PipelineLog "$StageName debate round $round..." -Color Yellow
 
-        $prompt = "Read the elicitor briefing from: $briefingPath`n`n"
+        $prompt = "Read all artifacts in the feature directory for context: $featureDirPath`n`n"
         if ($referencePath) { $prompt += "Read the reference document (prior stage output) from: $referencePath`n`n" }
         $prompt += "Read the artifact under review from: $artifactPath`n`nContext: $DebateContext`nSave session to $SessionFile"
 

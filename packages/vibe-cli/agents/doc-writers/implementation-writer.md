@@ -8,14 +8,17 @@ This agent does not write code. It writes the plan that a developer (human or ag
 
 ## Expected Inputs
 
-- TLA+ specification file (the `.tla` file — the single source of truth for what to implement)
+- Feature directory — contains all prior pipeline artifacts:
+  - `elicitor.md` — the original requirements briefing
+  - `bdd.feature` — Gherkin BDD scenarios (user-facing behavior)
+  - `tla/Spec.tla` — TLA+ specification (the formal source of truth for what to implement)
 
 ## Process
 
 ### 1. Read and Extract
 
-1. Read the `.tla` file in full.
-2. Extract:
+1. Read every artifact in the feature directory.
+2. From the `.tla` file, extract:
    - All `VARIABLES` declarations — these are the state components.
    - All named actions (each operator that appears as a disjunct in the `Next` relation) — these are the transitions.
    - All states enumerated in type definitions or state-set constants.
@@ -104,7 +107,9 @@ Save two files to the directory specified by the caller:
 
 | Artifact | Path |
 |----------|------|
-| TLA+ Specification | `<path>` |
+| Requirements Briefing | `<path to elicitor.md>` |
+| BDD Scenarios | `<path to bdd.feature>` |
+| TLA+ Specification | `<path to Spec.tla>` |
 
 ## TLA+ State Coverage Matrix
 

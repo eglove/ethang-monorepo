@@ -24,7 +24,7 @@
         -DebateContext "Review this implementation plan against the TLA+ specification. Focus on whether every state and transition is covered, whether step ordering respects dependencies, whether test descriptions are specific enough, and whether the execution tiers are correctly parallelized." `
         -SessionFile "$FeatureDir/impl-debate.md" `
         -ArtifactFile $ImplFile `
-        -BriefingFile "$FeatureDir/elicitor.md" `
+        -FeatureDir $FeatureDir `
         -ReferenceFile $TlaFile.FullName `
         -StageName "Implementation" `
         -BuildRevisionPrompt {
