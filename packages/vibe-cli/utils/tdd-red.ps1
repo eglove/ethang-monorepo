@@ -62,7 +62,7 @@ function Invoke-RedPhase {
     }
 
     # Run verify-test
-    $workDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
+    $workDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
     try {
         $exitCode = Invoke-VerifyCommand -Command $Config.VerifyTest -WorkingDirectory $workDir
     }

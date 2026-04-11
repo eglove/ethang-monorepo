@@ -2,12 +2,14 @@ BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
     . "$PSScriptRoot/../utils/task-log.ps1"
+    . "$PSScriptRoot/../utils/workspace.ps1"
     . "$PSScriptRoot/../utils/tdd-cleanup.ps1"
     . "$PSScriptRoot/helpers/claude-test-double.ps1"
 
     Mock Write-PipelineLog {}
     Mock Write-Host {}
     Mock Write-TaskLog {}
+    Mock Get-PackageWorkDir { $WorktreePath }
 }
 
 Describe 'Invoke-CleanupPhase' {

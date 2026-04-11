@@ -1,6 +1,15 @@
 . "$PSScriptRoot/git-retry.ps1"
 . "$PSScriptRoot/task-log.ps1"
 
+function Get-PackageWorkDir {
+    param([Parameter(Mandatory)][string]$WorktreePath)
+    $gitRoot = (git rev-parse --show-toplevel).Trim() -replace '\\','/'
+    $cwd = (Get-Location).Path -replace '\\','/'
+    $offset = [System.IO.Path]::GetRelativePath($gitRoot, $cwd)
+    if ($offset -eq '.') { return $WorktreePath }
+    return Join-Path $WorktreePath $offset
+}
+
 function New-TaskWorkspace {
     param(
         [Parameter(Mandatory)][array]$Tasks,

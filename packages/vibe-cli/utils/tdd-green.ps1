@@ -18,7 +18,7 @@ function Invoke-GreenPhase {
     Write-StatusNote -TaskId $taskId -Status 'Coding' -Detail "code-writer: $($Task.codeWriter)"
 
     $codeWriterFile = Join-Path $Root "agents/code-writers/$($Task.codeWriter).md"
-    $workDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
+    $workDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
 
     while ($true) {
         # Boundary check BEFORE dispatch

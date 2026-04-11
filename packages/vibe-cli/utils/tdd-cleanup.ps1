@@ -17,7 +17,7 @@ function Invoke-CleanupPhase {
     $taskId = $Task.id
     Write-StatusNote -TaskId $taskId -Status 'Cleanup'
 
-    $workDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
+    $workDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
 
     if (-not $Counters.ContainsKey('cleanupCleanPasses')) { $Counters.cleanupCleanPasses = 0 }
     if (-not $Counters.ContainsKey('cleanupRemediations')) { $Counters.cleanupRemediations = 0 }
