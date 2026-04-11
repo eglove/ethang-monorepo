@@ -12,6 +12,8 @@ BeforeAll {
 Describe 'New-TaskWorkspace' {
     BeforeAll {
         Mock Invoke-GitWithRetry {}
+        Mock Push-Location {}
+        Mock Pop-Location {}
     }
 
     It 'returns null for single-task tier' {
