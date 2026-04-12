@@ -47,8 +47,8 @@ type UserToken = {
 
 const BUTTON_SELECTOR = ".course-completion-button";
 const STATUS_SELECTOR = ".course-status-text";
-const DEFAULT = "bg-default";
-const REVISIT = "bg-amber-400/70";
+const INCOMPLETE = "bg-slate-700";
+const REVISIT = "bg-amber-400";
 const COMPLETE = "bg-sky-300";
 
 // All helpers that are called during the top-level await (init → applyStoredStatuses)
@@ -67,12 +67,12 @@ const setUiState = (
 
   if ("Complete" === courseStatus?.status) {
     button.classList.add(COMPLETE);
-    button.classList.remove(DEFAULT, REVISIT);
+    button.classList.remove(INCOMPLETE, REVISIT);
   } else if ("Revisit" === courseStatus?.status) {
     button.classList.add(REVISIT);
-    button.classList.remove(DEFAULT, COMPLETE);
+    button.classList.remove(INCOMPLETE, COMPLETE);
   } else {
-    button.classList.add(DEFAULT);
+    button.classList.add(INCOMPLETE);
     button.classList.remove(COMPLETE, REVISIT);
   }
 };

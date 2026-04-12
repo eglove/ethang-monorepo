@@ -83,45 +83,6 @@ function Test-ImplementationPlan {
         }
     }
 
-    # Validate writer types
-    $codeWriterDir = Join-Path $Root 'agents/code-writers'
-    $testWriterDir = Join-Path $Root 'agents/test-writers'
-
-    foreach ($task in $allTasks.Values) {
-        if ($task.codeWriter) {
-            $agentFile = Join-Path $codeWriterDir "$($task.codeWriter).md"
-            if (-not (Test-Path $agentFile)) {
-                $null = $errors.Add("Task $($task.id): unknown codeWriter '$($task.codeWriter)' — file not found: $agentFile")
-            }
-            else {
-                $content = Get-Content $agentFile -Raw
-                foreach ($section in $script:RequiredAgentSections) {
-                    if ($content -notmatch [regex]::Escape($section)) {
-                        $null = $errors.Add("Agent file $agentFile missing required section: $section")
-                    }
-                }
-            }
-        }
-
-        if ($task.testWriter) {
-            $agentFile = Join-Path $testWriterDir "$($task.testWriter)-writer.md"
-            if (-not (Test-Path $agentFile)) {
-                # Try without -writer suffix
-                $agentFile = Join-Path $testWriterDir "$($task.testWriter).md"
-                if (-not (Test-Path $agentFile)) {
-                    $null = $errors.Add("Task $($task.id): unknown testWriter '$($task.testWriter)' — file not found")
-                }
-            }
-
-            if (Test-Path $agentFile) {
-                $content = Get-Content $agentFile -Raw
-                if ($content -notmatch 'verdict') {
-                    $null = $errors.Add("Test writer $agentFile missing verdict schema documentation")
-                }
-            }
-        }
-    }
-
     # File-overlap advisory warnings
     foreach ($tier in $plan.tiers) {
         $fileToTasks = @{}

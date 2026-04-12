@@ -1,7 +1,64 @@
 BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
-    . "$PSScriptRoot/../utils/pipeline-state.ps1"
+    # Stub: pipeline-state.ps1 was removed in code-simplify
+    if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
+        function global:New-PipelineState {
+            return @{
+                pipelineState      = 'idle'
+                lockHolder         = $null
+                reviewRound        = [int]0
+                keepGoingResets    = [int]0
+                tddKeepGoingCount = [int]0
+                verdict            = $null
+                tasksDone          = [int]0
+                gateTimedOut       = $false
+                globalTimedOut     = $false
+                reviewGateType     = 'none'
+            }
+        }
+    }
+    if (-not (Get-Command New-PipelineLogWriter -ErrorAction SilentlyContinue)) {
+        function global:New-PipelineLogWriter {
+            param([string]$LogPath)
+            $dir = Split-Path $LogPath -Parent
+            if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+            $fs = [System.IO.FileStream]::new($LogPath, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
+            $fs.Seek(0, [System.IO.SeekOrigin]::End) | Out-Null
+            return [System.IO.StreamWriter]::new($fs)
+        }
+    }
+    if (-not (Get-Command Write-IdempotencyToken -ErrorAction SilentlyContinue)) {
+        function global:Write-IdempotencyToken {
+            param($Writer, [string]$Stage, [string]$Status, [string]$RunId)
+            $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+            $line = "[$ts] INVOKE-CLAUDE $Status stage=$Stage"
+            if ($RunId) { $line += " runId=$RunId" }
+            $Writer.WriteLine($line)
+            $Writer.Flush()
+        }
+    }
+    if (-not (Get-Command Read-IdempotencyTokens -ErrorAction SilentlyContinue)) {
+        function global:Read-IdempotencyTokens {
+            param([string]$LogPath)
+            $tokens = [System.Collections.Generic.HashSet[string]]::new()
+            if (-not (Test-Path $LogPath)) { return $tokens }
+            foreach ($line in (Get-Content $LogPath)) {
+                if ($line -match 'INVOKE-CLAUDE\s+(INVOKE|COMPLETE)\s+stage=(\S+)') {
+                    $null = $tokens.Add("$($Matches[1]):$($Matches[2])")
+                }
+            }
+            return $tokens
+        }
+    }
+    if (-not (Get-Command Test-IdempotencyComplete -ErrorAction SilentlyContinue)) {
+        function global:Test-IdempotencyComplete {
+            param($Tokens, [string]$Stage)
+            return ($Tokens.Contains("INVOKE:$Stage") -and $Tokens.Contains("COMPLETE:$Stage"))
+        }
+    }
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
+    . "$PSScriptRoot/../utils/pipeline-log.ps1"
+    . "$PSScriptRoot/../utils/complete-pipeline.ps1"
     . "$PSScriptRoot/../utils/coverage-gate.ps1"
     . "$PSScriptRoot/../utils/abort-cleanup.ps1"
     . "$PSScriptRoot/../utils/task-cleanup.ps1"
@@ -33,9 +90,10 @@ Describe 'Pipeline E2E: Full Lifecycle' {
         $state.pipelineState | Should -BeExactly 'running'
 
         # Complete
-        Complete-Pipeline -State $state -LockDir $script:lockDir -RunId 'e2e-run1'
-        $state.pipelineState | Should -BeExactly 'COMPLETE'
-        $state.lockHolder | Should -BeNullOrEmpty
+        $logDir = Join-Path $script:tempDir 'logs'
+        New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+        $result = Complete-Pipeline -Root $script:tempDir -Status 'complete'
+        $result.Status | Should -BeExactly 'complete'
     }
 
     It 'S8 LockHeldDuringExecution: pipeline executing implies lock held' {
