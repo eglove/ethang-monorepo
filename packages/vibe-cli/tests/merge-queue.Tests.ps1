@@ -271,7 +271,7 @@ Describe 'Invoke-SerializedMerge' {
 
         # Just verify it accepts the Feature param and doesn't throw
         $mutexName = "Global\vibe-cli-merge-test-$(Get-Random)"
-        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName
+        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath $TestDrive -TargetBranch 'main' -TaskState $task -MutexName $mutexName
         $task.mergeState | Should -BeIn @('merged', 'merging')
     }
 
@@ -292,7 +292,7 @@ Describe 'Invoke-SerializedMerge' {
 
         try {
             Mock git {}
-            $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName -MutexTimeoutMs 100
+            $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath $TestDrive -TargetBranch 'main' -TaskState $task -MutexName $mutexName -MutexTimeoutMs 100
             $result.success | Should -BeFalse
             $result.reason | Should -BeExactly 'MergeMutexTimeout'
             $task.failureReason | Should -BeExactly 'MergeMutexTimeout'
@@ -309,7 +309,7 @@ Describe 'Invoke-SerializedMerge' {
         Mock Pop-Location {}
 
         $mutexName = "Global\vibe-cli-merge-rebase-$(Get-Random)"
-        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName
+        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath $TestDrive -TargetBranch 'main' -TaskState $task -MutexName $mutexName
         $result.reason | Should -BeExactly 'RebaseConflict'
     }
 
@@ -330,7 +330,7 @@ Describe 'Invoke-SerializedMerge' {
         $job | Remove-Job
 
         # Now acquire should get AbandonedMutexException but still succeed
-        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName
+        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath $TestDrive -TargetBranch 'main' -TaskState $task -MutexName $mutexName
         # It should not throw — abandoned mutex is acquired
     }
 
@@ -339,7 +339,7 @@ Describe 'Invoke-SerializedMerge' {
         Mock git { $global:LASTEXITCODE = 0 }
 
         # Call without MutexName — should use default based on Feature
-        $result = Invoke-SerializedMerge -Feature "defaultname-$(Get-Random)" -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task
+        $result = Invoke-SerializedMerge -Feature "defaultname-$(Get-Random)" -WorktreePath $TestDrive -TargetBranch 'main' -TaskState $task
         $task.mergeState | Should -BeIn @('merged', 'merging')
     }
 
@@ -364,7 +364,7 @@ Describe 'Invoke-SerializedMerge' {
         Mock Pop-Location {}
 
         $mutexName = "Global\vibe-cli-merge-conflict-$(Get-Random)"
-        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName
+        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath $TestDrive -TargetBranch 'main' -TaskState $task -MutexName $mutexName
         $result.success | Should -BeFalse
         $result.reason | Should -BeExactly 'MergeConflict'
     }
@@ -375,7 +375,7 @@ Describe 'Invoke-SerializedMerge' {
 
         $mutexName = "Global\vibe-cli-merge-pop-$(Get-Random)"
         # Normal success path exercises the finally block
-        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName
+        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath $TestDrive -TargetBranch 'main' -TaskState $task -MutexName $mutexName
         $result.success | Should -BeTrue
     }
 }
