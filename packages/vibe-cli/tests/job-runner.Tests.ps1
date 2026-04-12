@@ -1,6 +1,10 @@
 BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/task-log.ps1"
+    # Stub Get-CimInstance on non-Windows so Pester can mock it
+    if (-not (Get-Command Get-CimInstance -ErrorAction SilentlyContinue)) {
+        function global:Get-CimInstance { @() }
+    }
     . "$PSScriptRoot/../utils/job-runner.ps1"
 }
 
