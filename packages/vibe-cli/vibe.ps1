@@ -14,6 +14,9 @@ $root = $PSScriptRoot
 . "$root/utils/config.ps1"
 . "$root/utils/pipeline-state.ps1"
 . "$root/utils/debate-loop.ps1"
+. "$root/utils/gherkin-parser.ps1"
+. "$root/utils/tlc-parser.ps1"
+. "$root/utils/fixture-gate.ps1"
 
 # Stages
 . "$root/stages/1-elicitor.ps1"
@@ -74,6 +77,16 @@ try {
     if ($Stage -le 3) {
         Write-PipelineLog "--- Stage 3: BDD Debate ---" -Color Cyan
         Invoke-BddDebate -GherkinFile $gherkinFile -FeatureDir $featureDir -Root $root
+
+        # Generate BDD fixture after debate consensus (T10)
+        if ($gherkinFile -and (Test-Path $gherkinFile)) {
+            Write-PipelineLog "Generating BDD test fixtures..." -Color Yellow
+            $bddFixturePath = Join-Path $featureDir 'tests/fixtures/bdd/fixture.json'
+            $parsedGherkin = ConvertFrom-Gherkin -Path $gherkinFile
+            $parsedGherkin.schemaVersion = 1
+            Export-BddFixture -Fixture $parsedGherkin -OutputPath $bddFixturePath
+            Write-PipelineLog "BDD fixture generated: $bddFixturePath" -Color Green
+        }
     }
 
     if ($Stage -le 4) {
@@ -86,11 +99,36 @@ try {
     if ($Stage -le 5) {
         Write-PipelineLog "--- Stage 5: TLA+ Debate ---" -Color Cyan
         Invoke-TlaDebate -TlaFile $tlaFile -TlaDir $tlaDir -GherkinFile $gherkinFile -FeatureDir $featureDir -Root $root
+
+        # Generate TLC fixture after debate consensus (T10)
+        # Run TLC one final time to capture output for fixture generation
+        Write-PipelineLog "Generating TLC test fixtures..." -Color Yellow
+        $tlcFixturePath = Join-Path $featureDir 'tests/fixtures/tla/fixture.json'
+        $tlaSpecFile = Get-ChildItem "$tlaDir/*.tla" -ErrorAction SilentlyContinue | Select-Object -First 1
+        $tlaCfgFile = Get-ChildItem "$tlaDir/*.cfg" -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($tlaSpecFile -and $tlaCfgFile) {
+            $tlcLines = @()
+            Push-Location $tlaDir
+            java -XX:+UseParallelGC -jar $TlaToolsJar -config $tlaCfgFile.Name -workers auto $tlaSpecFile.Name 2>&1 | ForEach-Object { $tlcLines += "$_" }
+            $tlcExitCode = $LASTEXITCODE
+            Pop-Location
+            $tlcOutput = $tlcLines -join "`n"
+            $parsedTlc = ConvertFrom-TlcOutput -Output $tlcOutput -ExitCode $tlcExitCode
+            $parsedTlc.schemaVersion = 1
+            Export-TlcFixture -Fixture $parsedTlc -OutputPath $tlcFixturePath
+            Write-PipelineLog "TLC fixture generated: $tlcFixturePath (exit=$tlcExitCode)" -Color Green
+        }
+        else {
+            Write-Warning "Cannot generate TLC fixture — missing .tla or .cfg in $tlaDir"
+        }
     }
 
     if ($Stage -le 6) {
         Write-PipelineLog "--- Stage 6: Implementation Writer ---" -Color Cyan
-        $implResult = Invoke-ImplementationWriter -FeatureDir $featureDir -Root $root
+        # Pass BDD and TLA+ spec paths to implementation writer (T11)
+        $bddPath = if ($gherkinFile) { $gherkinFile } else { $null }
+        $tlaPath = if ($tlaFile) { $tlaFile.FullName } else { $null }
+        $implResult = Invoke-ImplementationWriter -FeatureDir $featureDir -Root $root -BddFeaturePath $bddPath -TlaSpecPath $tlaPath
         $implFile = $implResult.ImplFile
         $implJson = $implResult.ImplJson
     }
@@ -101,6 +139,16 @@ try {
     }
 
     if ($Stage -le 8) {
+        # Verify fixture precondition before coding stage (T10: S9 FixturesPrecondition)
+        $fixtureCheck = Test-FixturePrecondition -FeatureDir $featureDir
+        if (-not $fixtureCheck.canProceed) {
+            $missing = @()
+            if (-not $fixtureCheck.bddValid) { $missing += 'BDD' }
+            if (-not $fixtureCheck.tlcValid) { $missing += 'TLC' }
+            throw "Cannot enter coding stage — missing or invalid fixtures: $($missing -join ', '). Run stages 3 and 5 first."
+        }
+        Write-PipelineLog "Fixture precondition OK (BDD + TLC valid)" -Color Green
+
         Write-PipelineLog "--- Stage 8: Coding ---" -Color Cyan
         if (-not $implJson) {
             $implJson = "$featureDir/implementation-plan.json"

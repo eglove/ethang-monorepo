@@ -362,3 +362,55 @@ Describe 'Safety invariant: GlobalTimeoutHalts (S10)' {
         Test-PipelineStateTypeOK -State $state -Config $cfg | Should -BeTrue
     }
 }
+
+# =============================================================================
+# Test-TaskTimeout — per-task watchdog for stuck active states
+# BDD: "Task times out when stuck in an active state beyond 30 minutes"
+# =============================================================================
+
+Describe 'Test-TaskTimeout' {
+    It 'returns false for non-active state' {
+        $task = @{ taskState = 'idle'; stateStartTime = (Get-Date).AddMinutes(-60) }
+        Test-TaskTimeout -TaskState $task | Should -BeFalse
+    }
+
+    It 'returns true for executing state beyond 30 min' {
+        $task = @{ taskState = 'executing'; stateStartTime = (Get-Date).AddSeconds(-1801) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'returns true for coverage_gate state beyond 30 min' {
+        $task = @{ taskState = 'coverage_gate'; stateStartTime = (Get-Date).AddSeconds(-1801) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'returns true for review_gate state beyond 30 min' {
+        $task = @{ taskState = 'review_gate'; stateStartTime = (Get-Date).AddSeconds(-1801) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'returns true for merge_waiting state beyond 30 min' {
+        $task = @{ taskState = 'merge_waiting'; stateStartTime = (Get-Date).AddSeconds(-1801) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'boundary: 29:59 NOT timed out' {
+        $task = @{ taskState = 'executing'; stateStartTime = (Get-Date).AddSeconds(-1799) }
+        Test-TaskTimeout -TaskState $task | Should -BeFalse
+    }
+
+    It 'boundary: 30:00 IS timed out' {
+        $task = @{ taskState = 'executing'; stateStartTime = (Get-Date).AddSeconds(-1800) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'boundary: 30:01 IS timed out' {
+        $task = @{ taskState = 'executing'; stateStartTime = (Get-Date).AddSeconds(-1801) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'returns false when stateStartTime is missing' {
+        $task = @{ taskState = 'executing' }
+        Test-TaskTimeout -TaskState $task | Should -BeFalse
+    }
+}

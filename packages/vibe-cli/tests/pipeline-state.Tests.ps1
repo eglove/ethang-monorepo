@@ -123,3 +123,138 @@ Describe 'Resolve-PipelineState' {
         }
     }
 }
+
+Describe 'New-PipelineLogWriter' {
+    It 'creates a StreamWriter opened with FileShare.Read' {
+        $logPath = Join-Path ([System.IO.Path]::GetTempPath()) "plog-$(Get-Random).log"
+        try {
+            $writer = New-PipelineLogWriter -LogPath $logPath
+            $writer | Should -BeOfType [System.IO.StreamWriter]
+            # Verify concurrent reader can open
+            $reader = [System.IO.File]::Open($logPath, 'Open', 'Read', 'ReadWrite')
+            $reader.Close()
+            $writer.Close()
+        }
+        finally { Remove-Item $logPath -ErrorAction SilentlyContinue }
+    }
+
+    It 'creates directory if missing' {
+        $logPath = Join-Path ([System.IO.Path]::GetTempPath()) "plog-nested-$(Get-Random)/sub/pipeline.log"
+        try {
+            $writer = New-PipelineLogWriter -LogPath $logPath
+            $writer.Close()
+            $logPath | Should -Exist
+        }
+        finally { Remove-Item (Split-Path $logPath -Parent) -Recurse -Force -ErrorAction SilentlyContinue }
+    }
+}
+
+Describe 'Write-PipelineLogEntry' {
+    It 'writes a single line via one WriteLine call' {
+        $logPath = Join-Path ([System.IO.Path]::GetTempPath()) "entry-$(Get-Random).log"
+        try {
+            $writer = New-PipelineLogWriter -LogPath $logPath
+            Write-PipelineLogEntry -Writer $writer -Entry 'test line 1'
+            Write-PipelineLogEntry -Writer $writer -Entry 'test line 2'
+            $writer.Close()
+            $lines = Get-Content $logPath
+            $lines.Count | Should -Be 2
+            $lines[0] | Should -BeExactly 'test line 1'
+        }
+        finally { Remove-Item $logPath -ErrorAction SilentlyContinue }
+    }
+}
+
+Describe 'Write-IdempotencyToken' {
+    It 'writes INVOKE token with stage name' {
+        $logPath = Join-Path ([System.IO.Path]::GetTempPath()) "idem-$(Get-Random).log"
+        try {
+            $writer = New-PipelineLogWriter -LogPath $logPath
+            Write-IdempotencyToken -Writer $writer -Stage 'stage3' -Status 'INVOKE'
+            $writer.Close()
+            $content = Get-Content $logPath -Raw
+            $content | Should -Match 'INVOKE-CLAUDE INVOKE stage=stage3'
+        }
+        finally { Remove-Item $logPath -ErrorAction SilentlyContinue }
+    }
+
+    It 'writes COMPLETE token with runId' {
+        $logPath = Join-Path ([System.IO.Path]::GetTempPath()) "idem-$(Get-Random).log"
+        try {
+            $writer = New-PipelineLogWriter -LogPath $logPath
+            Write-IdempotencyToken -Writer $writer -Stage 'stage3' -Status 'COMPLETE' -RunId '20260411T120000-abcd'
+            $writer.Close()
+            $content = Get-Content $logPath -Raw
+            $content | Should -Match 'runId=20260411T120000-abcd'
+            $content | Should -Match 'INVOKE-CLAUDE COMPLETE stage=stage3'
+        }
+        finally { Remove-Item $logPath -ErrorAction SilentlyContinue }
+    }
+}
+
+Describe 'Read-IdempotencyTokens' {
+    It 'loads INVOKE and COMPLETE tokens from log' {
+        $logPath = Join-Path ([System.IO.Path]::GetTempPath()) "tokens-$(Get-Random).log"
+        try {
+            $lines = @(
+                '[2026-04-11 12:00:00] INVOKE-CLAUDE INVOKE stage=stage1'
+                '[2026-04-11 12:01:00] INVOKE-CLAUDE COMPLETE stage=stage1'
+                '[2026-04-11 12:02:00] INVOKE-CLAUDE INVOKE stage=stage2'
+            )
+            Set-Content $logPath -Value ($lines -join "`n")
+            $tokens = Read-IdempotencyTokens -LogPath $logPath
+            $tokens.Contains('INVOKE:stage1') | Should -BeTrue
+            $tokens.Contains('COMPLETE:stage1') | Should -BeTrue
+            $tokens.Contains('INVOKE:stage2') | Should -BeTrue
+            $tokens.Contains('COMPLETE:stage2') | Should -BeFalse
+        }
+        finally { Remove-Item $logPath -ErrorAction SilentlyContinue }
+    }
+
+    It 'ignores truncated final line without opening bracket' {
+        $logPath = Join-Path ([System.IO.Path]::GetTempPath()) "trunc-$(Get-Random).log"
+        try {
+            # Simulate truncated write: last line has no opening bracket
+            Set-Content $logPath -Value "[2026-04-11 12:00:00] INVOKE-CLAUDE INVOKE stage=s1`nINVOKE-CLAUDE COMPLETE stag"
+            $tokens = Read-IdempotencyTokens -LogPath $logPath
+            $tokens.Contains('INVOKE:s1') | Should -BeTrue
+            $tokens.Count | Should -Be 1  # truncated line ignored
+        }
+        finally { Remove-Item $logPath -ErrorAction SilentlyContinue }
+    }
+
+    It 'returns empty set for missing log file' {
+        $tokens = Read-IdempotencyTokens -LogPath 'C:\nonexistent\log.txt'
+        $tokens.Count | Should -Be 0
+    }
+
+    It 'returns empty set for log with only truncated content' {
+        $logPath = Join-Path ([System.IO.Path]::GetTempPath()) "trunc2-$(Get-Random).log"
+        try {
+            Set-Content $logPath -Value 'partial content no bracket'
+            $tokens = Read-IdempotencyTokens -LogPath $logPath
+            $tokens.Count | Should -Be 0
+        }
+        finally { Remove-Item $logPath -ErrorAction SilentlyContinue }
+    }
+}
+
+Describe 'Test-IdempotencyComplete' {
+    It 'returns true when both INVOKE and COMPLETE exist for stage' {
+        $tokens = [System.Collections.Generic.HashSet[string]]::new()
+        $null = $tokens.Add('INVOKE:stage1')
+        $null = $tokens.Add('COMPLETE:stage1')
+        Test-IdempotencyComplete -Tokens $tokens -Stage 'stage1' | Should -BeTrue
+    }
+
+    It 'returns false when only INVOKE exists' {
+        $tokens = [System.Collections.Generic.HashSet[string]]::new()
+        $null = $tokens.Add('INVOKE:stage1')
+        Test-IdempotencyComplete -Tokens $tokens -Stage 'stage1' | Should -BeFalse
+    }
+
+    It 'returns false for unknown stage' {
+        $tokens = [System.Collections.Generic.HashSet[string]]::new()
+        Test-IdempotencyComplete -Tokens $tokens -Stage 'unknown' | Should -BeFalse
+    }
+}

@@ -1,4 +1,4 @@
-function New-PipelineState {
+﻿function New-PipelineState {
     <#
     .SYNOPSIS
         Creates the TLA+ Init state — a mutable hashtable with all 10 pipeline variables
@@ -149,6 +149,100 @@ function Set-PipelineHalted {
     $State.pipelineState  = 'HALTED'
     $State.lockHolder     = $null
     $State.reviewGateType = 'none'
+}
+
+function New-PipelineLogWriter {
+    param([Parameter(Mandatory)][string]$LogPath)
+    $dir = Split-Path $LogPath -Parent
+    if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+    $stream = [System.IO.FileStream]::new($LogPath, [System.IO.FileMode]::Append, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
+    $writer = [System.IO.StreamWriter]::new($stream)
+    $writer.AutoFlush = $false
+    return $writer
+}
+
+function Write-PipelineLogEntry {
+    param(
+        [Parameter(Mandatory)][System.IO.StreamWriter]$Writer,
+        [Parameter(Mandatory)][string]$Entry
+    )
+    $Writer.WriteLine($Entry)
+    $Writer.Flush()
+    $Writer.BaseStream.Flush()
+}
+
+function Write-IdempotencyToken {
+    param(
+        [Parameter(Mandatory)][System.IO.StreamWriter]$Writer,
+        [Parameter(Mandatory)][string]$Stage,
+        [Parameter(Mandatory)][ValidateSet('INVOKE','COMPLETE')][string]$Status,
+        [string]$RunId
+    )
+    $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+    $prefix = if ($RunId) { "runId=$RunId " } else { '' }
+    Write-PipelineLogEntry -Writer $Writer -Entry "[$ts] ${prefix}INVOKE-CLAUDE $Status stage=$Stage"
+}
+
+function Read-IdempotencyTokens {
+    param([Parameter(Mandatory)][string]$LogPath)
+    $tokens = [System.Collections.Generic.HashSet[string]]::new()
+    if (-not (Test-Path $LogPath)) { return $tokens }
+
+    $lines = Get-Content $LogPath
+    foreach ($line in $lines) {
+        if (-not $line.StartsWith('[')) { continue }
+        if ($line -match 'INVOKE-CLAUDE (INVOKE|COMPLETE) stage=(\S+)') {
+            $null = $tokens.Add("$($Matches[1]):$($Matches[2])")
+        }
+    }
+    return $tokens
+}
+
+function Test-IdempotencyComplete {
+    param(
+        [Parameter(Mandatory)][AllowEmptyCollection()][System.Collections.Generic.HashSet[string]]$Tokens,
+        [Parameter(Mandatory)][string]$Stage
+    )
+    return $Tokens.Contains("INVOKE:$Stage") -and $Tokens.Contains("COMPLETE:$Stage")
+}
+
+function Complete-Pipeline {
+    <#
+    .SYNOPSIS
+        Completes the pipeline: writes log marker, releases lock, updates state to COMPLETE.
+        Idempotent — returns early if already complete.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$State,
+        [Parameter(Mandatory)][string]$LockDir,
+        [System.IO.StreamWriter]$LogWriter,
+        [string]$RunId,
+        [int]$NumStages = 8
+    )
+
+    # Guards
+    if ($State.pipelineState -eq 'COMPLETE') { return @{ alreadyComplete = $true } }
+    if ($null -eq $State.lockHolder) { throw "Cannot complete pipeline — lock not held" }
+    if ($State.pipelineAborted) { throw "Cannot complete pipeline — abort flag set" }
+
+    # Write PIPELINE COMPLETE marker
+    if ($LogWriter) {
+        $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+        $LogWriter.WriteLine("[$ts] PIPELINE COMPLETE runId=$RunId")
+        $LogWriter.Flush()
+        $LogWriter.BaseStream.Flush()
+    }
+
+    # Release lock
+    $lockFile = Join-Path $LockDir 'pipeline.lock'
+    if (Test-Path $lockFile) { Remove-Item $lockFile -Force }
+
+    # Update state
+    $State.pipelineState = 'COMPLETE'
+    $State.lockHolder = $null
+    $State.pipelineStage = $NumStages + 1
+
+    return @{ alreadyComplete = $false; finalStage = $State.pipelineStage }
 }
 
 function Resolve-PipelineState {

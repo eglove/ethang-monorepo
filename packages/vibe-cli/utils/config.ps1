@@ -96,6 +96,9 @@ $Config = @{
 
     # Number of tasks — derived from tier task list length, must be >= 1
     NumTasks                   = 1
+
+    # Crash budget — max crashes before pipeline aborts
+    MaxCrashes                 = 3
 }
 
 function Get-PipelineConfig {
@@ -280,4 +283,19 @@ function Invoke-VerifyCommand {
             Set-Location $originalDir
         }
     }
+}
+
+function New-RunId {
+    $ts = Get-Date -Format 'yyyyMMddTHHmmss'
+    $hex = -join ((1..4) | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
+    return "$ts-$hex"
+}
+
+function Get-RunIdFromLog {
+    param([Parameter(Mandatory)][string]$LogPath)
+    $pattern = 'PIPELINE START runId=(\d{8}T\d{6}-[0-9a-f]{4})(?:\s|$)'
+    if (-not (Test-Path $LogPath)) { throw "Pipeline log not found: $LogPath" }
+    $content = Get-Content $LogPath -Raw
+    if ($content -match $pattern) { return $Matches[1] }
+    throw "No valid runId found in pipeline log"
 }

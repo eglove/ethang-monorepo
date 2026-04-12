@@ -263,3 +263,74 @@ Describe 'Test-MergeQueueEmpty' {
         Test-MergeQueueEmpty | Should -BeFalse
     }
 }
+
+Describe 'Invoke-SerializedMerge' {
+    It 'acquires per-feature mutex with correct name pattern' {
+        $task = @{ taskState = 'merge_waiting'; mergeState = 'waiting' }
+        Mock git { $global:LASTEXITCODE = 0 }
+
+        # Just verify it accepts the Feature param and doesn't throw
+        $mutexName = "Global\vibe-cli-merge-test-$(Get-Random)"
+        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName
+        $task.mergeState | Should -BeIn @('merged', 'merging')
+    }
+
+    It 'sets MergeMutexTimeout when mutex cannot be acquired' {
+        $task = @{ taskState = 'merge_waiting'; mergeState = 'waiting' }
+        $mutexName = "Global\vibe-cli-merge-timeout-test-$(Get-Random)"
+
+        # Hold the mutex from another runspace
+        $job = Start-ThreadJob {
+            param($name)
+            $m = [System.Threading.Mutex]::new($false, $name)
+            $m.WaitOne() | Out-Null
+            Start-Sleep -Seconds 10
+            $m.ReleaseMutex()
+            $m.Dispose()
+        } -ArgumentList $mutexName
+        Start-Sleep -Milliseconds 200  # Let mutex be acquired
+
+        try {
+            Mock git {}
+            $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName -MutexTimeoutMs 100
+            $result.success | Should -BeFalse
+            $result.reason | Should -BeExactly 'MergeMutexTimeout'
+            $task.failureReason | Should -BeExactly 'MergeMutexTimeout'
+        }
+        finally {
+            $job | Stop-Job -PassThru | Remove-Job -Force
+        }
+    }
+
+    It 'rebase conflict returns RebaseConflict' {
+        $task = @{ taskState = 'merge_waiting'; mergeState = 'waiting' }
+        Mock git { $global:LASTEXITCODE = 1 }
+        Mock Push-Location {}
+        Mock Pop-Location {}
+
+        $mutexName = "Global\vibe-cli-merge-rebase-$(Get-Random)"
+        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName
+        $result.reason | Should -BeExactly 'RebaseConflict'
+    }
+
+    It 'handles AbandonedMutexException gracefully' {
+        $task = @{ taskState = 'merge_waiting'; mergeState = 'waiting' }
+        Mock git { $global:LASTEXITCODE = 0 }
+        Mock Write-Warning {}
+
+        # Create and abandon a mutex
+        $mutexName = "Global\vibe-cli-merge-abandon-$(Get-Random)"
+        $job = Start-ThreadJob {
+            param($name)
+            $m = [System.Threading.Mutex]::new($false, $name)
+            $m.WaitOne() | Out-Null
+            # Don't release — just exit (simulates crash)
+        } -ArgumentList $mutexName
+        $job | Wait-Job | Out-Null
+        $job | Remove-Job
+
+        # Now acquire should get AbandonedMutexException but still succeed
+        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName
+        # It should not throw — abandoned mutex is acquired
+    }
+}

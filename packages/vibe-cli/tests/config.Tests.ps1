@@ -94,6 +94,14 @@ Describe 'Config values' {
             $Config[$key] | Should -BeGreaterThan 0 -Because "$key must be positive"
         }
     }
+
+    It 'has MaxCrashes key' {
+        $Config.Keys | Should -Contain 'MaxCrashes'
+    }
+
+    It 'has MaxCrashes equal to 3' {
+        $Config.MaxCrashes | Should -Be 3
+    }
 }
 
 Describe 'Test-VerifyCommand' {
@@ -214,5 +222,55 @@ Describe 'Invoke-VerifyCommand' {
         $result = Invoke-VerifyCommand -Command 'pnpm lint'
         # This is the exact check tdd-cleanup.ps1 uses — must be $false for exit code 0
         ($result -ne 0) | Should -Be $false
+    }
+}
+
+Describe 'New-RunId' {
+    It 'matches format yyyyMMddTHHmmss-4hex' {
+        New-RunId | Should -Match '^\d{8}T\d{6}-[0-9a-f]{4}$'
+    }
+    It 'generates unique values on consecutive calls' {
+        $id1 = New-RunId; $id2 = New-RunId
+        $id1 | Should -Not -Be $id2
+    }
+    It 'timestamp portion reflects current time' {
+        $before = Get-Date -Format 'yyyyMMddTHHmmss'
+        $id = New-RunId
+        $tsPart = $id.Split('-')[0]
+        $tsPart | Should -BeGreaterOrEqual $before
+    }
+}
+
+Describe 'Get-RunIdFromLog' {
+    BeforeEach { $script:testLog = [System.IO.Path]::GetTempFileName() }
+    AfterEach { Remove-Item $script:testLog -ErrorAction SilentlyContinue }
+
+    It 'extracts runId from PIPELINE START line' {
+        Set-Content $script:testLog -Value '[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd version=1'
+        Get-RunIdFromLog -LogPath $script:testLog | Should -BeExactly '20260411T120000-abcd'
+    }
+    It 'throws when log file does not exist' {
+        { Get-RunIdFromLog -LogPath 'C:\nonexistent\log.txt' } | Should -Throw '*not found*'
+    }
+    It 'throws when log has no PIPELINE START line' {
+        Set-Content $script:testLog -Value '[2026-04-11] some other line'
+        { Get-RunIdFromLog -LogPath $script:testLog } | Should -Throw '*No valid runId*'
+    }
+    It 'throws on malformed runId — missing hex suffix' {
+        Set-Content $script:testLog -Value '[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000 version=1'
+        { Get-RunIdFromLog -LogPath $script:testLog } | Should -Throw '*No valid runId*'
+    }
+    It 'throws on truncated runId' {
+        Set-Content $script:testLog -Value '[2026-04-11 12:00:00] PIPELINE START runId=20260411T1 version=1'
+        { Get-RunIdFromLog -LogPath $script:testLog } | Should -Throw '*No valid runId*'
+    }
+    It 'rejects runId with extra characters after valid portion' {
+        Set-Content $script:testLog -Value '[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd-extra version=1'
+        { Get-RunIdFromLog -LogPath $script:testLog } | Should -Throw '*No valid runId*'
+    }
+    It 'extracts runId from multi-line log' {
+        $lines = @('[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-beef version=1', '[2026-04-11 12:01:00] Stage 1 complete')
+        Set-Content $script:testLog -Value ($lines -join "`n")
+        Get-RunIdFromLog -LogPath $script:testLog | Should -BeExactly '20260411T120000-beef'
     }
 }

@@ -131,6 +131,15 @@ Describe 'vibe.ps1 pipeline execution' {
         $featureName = "test-e2e-$(Get-Random)"
         $featureDir = Join-Path $script:vibeRoot "docs/$featureName"
         New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
+        # Create .feature file so BDD fixture generation works (T10)
+        Set-Content (Join-Path $featureDir 'bdd.feature') -Value "Feature: Test`n  Scenario: S`n    Given x"
+        # Create fixture files so stage 8 precondition passes
+        $bddFixDir = Join-Path $featureDir 'tests/fixtures/bdd'
+        $tlcFixDir = Join-Path $featureDir 'tests/fixtures/tla'
+        New-Item -ItemType Directory -Path $bddFixDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $tlcFixDir -Force | Out-Null
+        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path $bddFixDir 'fixture.json')
+        @{ schemaVersion = 1; exitCode = 0 } | ConvertTo-Json | Set-Content (Join-Path $tlcFixDir 'fixture.json')
 
         Mock Invoke-Elicitor {
             @{ FeatureDir = $featureDir; Briefing = 'test briefing' }
@@ -171,6 +180,15 @@ Describe 'vibe.ps1 pipeline execution' {
         New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
         Set-Content (Join-Path $featureDir 'elicitor.md') -Value '# Test briefing'
         Set-Content (Join-Path $featureDir 'bdd.feature') -Value 'Feature: test'
+        # Create fixture files so stage 8 precondition passes (T10)
+        $bddFixDir = Join-Path $featureDir 'tests/fixtures/bdd'
+        $tlcFixDir = Join-Path $featureDir 'tests/fixtures/tla'
+        New-Item -ItemType Directory -Path $bddFixDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $tlcFixDir -Force | Out-Null
+        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path $bddFixDir 'fixture.json')
+        @{ schemaVersion = 1; exitCode = 0 } | ConvertTo-Json | Set-Content (Join-Path $tlcFixDir 'fixture.json')
+        New-Item -ItemType Directory -Path (Join-Path $featureDir 'tla') -Force | Out-Null
+        Set-Content (Join-Path $featureDir 'tla/Spec.tla') -Value '---- MODULE Spec ----'
 
         Mock Invoke-BddDebate {}
         Mock Invoke-TlaWriter {
@@ -207,5 +225,168 @@ Describe 'vibe.ps1 pipeline execution' {
             Should -Throw '*Elicitor exploded*'
 
         Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+Describe 'Resume-Pipeline' {
+    BeforeAll {
+        . "$PSScriptRoot/../utils/config.ps1"
+        . "$PSScriptRoot/../utils/pipeline-state.ps1"
+        . "$PSScriptRoot/../utils/pipeline-lock.ps1"
+        . "$PSScriptRoot/../utils/resume.ps1"
+    }
+
+    BeforeEach {
+        $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "resume-test-$(Get-Random)"
+        $script:lockDir = Join-Path $script:tempDir 'locks'
+        $script:logPath = Join-Path $script:tempDir 'pipeline.log'
+        $script:docsDir = Join-Path $script:tempDir 'docs'
+        New-Item -ItemType Directory -Path $script:lockDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $script:docsDir -Force | Out-Null
+
+        # Create valid lock file within budget
+        @{ pid = $PID; startTime = (Get-Process -Id $PID).StartTime.ToUniversalTime().ToString('o'); crashCount = 0 } |
+            ConvertTo-Json | Set-Content (Join-Path $script:lockDir 'pipeline.lock')
+    }
+
+    AfterEach {
+        Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It 'detects feature name from PIPELINE START line' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.Feature | Should -BeExactly 'cleanup'
+    }
+
+    It 'detects last completed stage' {
+        $log = @(
+            "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+            "[2026-04-11 12:01:00] Stage 1 complete"
+            "[2026-04-11 12:02:00] Stage 2 complete"
+            "[2026-04-11 12:03:00] Stage 3 complete"
+        ) -join "`n"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.LastStage | Should -Be 3
+        $result.ResumeStage | Should -Be 4
+    }
+
+    It 'throws when crash budget is exhausted' {
+        @{ pid = 99999; startTime = '2000-01-01T00:00:00Z'; crashCount = 3 } |
+            ConvertTo-Json | Set-Content (Join-Path $script:lockDir 'pipeline.lock')
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+
+        { Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir -MaxCrashes 3 } |
+            Should -Throw '*Crash budget exhausted*'
+    }
+
+    It 'classifies missing fixtures correctly' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.BddFixtureState | Should -BeExactly 'missing'
+        $result.TlcFixtureState | Should -BeExactly 'missing'
+    }
+
+    It 'classifies valid fixtures correctly' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        # Create valid fixture files
+        $fixtureDir = Join-Path $script:docsDir 'cleanup/tests/fixtures'
+        $bddDir = Join-Path $fixtureDir 'bdd'
+        $tlaDir = Join-Path $fixtureDir 'tla'
+        New-Item -ItemType Directory -Path $bddDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+        Set-Content (Join-Path $bddDir 'fixture.json') -Value '{"valid": true}'
+        Set-Content (Join-Path $tlaDir 'fixture.json') -Value '{"valid": true}'
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.BddFixtureState | Should -BeExactly 'valid'
+        $result.TlcFixtureState | Should -BeExactly 'valid'
+    }
+
+    It 'classifies corrupt fixtures correctly' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        # Create corrupt fixture files
+        $fixtureDir = Join-Path $script:docsDir 'cleanup/tests/fixtures'
+        $bddDir = Join-Path $fixtureDir 'bdd'
+        $tlaDir = Join-Path $fixtureDir 'tla'
+        New-Item -ItemType Directory -Path $bddDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+        Set-Content (Join-Path $bddDir 'fixture.json') -Value 'not valid json {{{{'
+        Set-Content (Join-Path $tlaDir 'fixture.json') -Value 'also broken'
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.BddFixtureState | Should -BeExactly 'corrupt'
+        $result.TlcFixtureState | Should -BeExactly 'corrupt'
+    }
+
+    It 'reuses runId from log' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.RunId | Should -BeExactly '20260411T120000-abcd'
+    }
+
+    It 'throws when log file does not exist' {
+        { Resume-Pipeline -Root $script:tempDir -LogPath 'C:\nonexistent.log' -LockDir $script:lockDir } |
+            Should -Throw
+    }
+
+    It 'throws when feature name cannot be detected' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd no-feature-here"
+        Set-Content $script:logPath -Value $log
+
+        { Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir } |
+            Should -Throw '*Cannot detect feature name*'
+    }
+
+    It 'returns ResumeStage 1 when no stages completed' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.LastStage | Should -Be 0
+        $result.ResumeStage | Should -Be 1
+    }
+
+    It 'loads idempotency tokens from log' {
+        $log = @(
+            "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+            "[2026-04-11 12:01:00] runId=20260411T120000-abcd INVOKE-CLAUDE INVOKE stage=elicitor"
+            "[2026-04-11 12:02:00] runId=20260411T120000-abcd INVOKE-CLAUDE COMPLETE stage=elicitor"
+        ) -join "`n"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.IdempotencyTokens | Should -Not -BeNullOrEmpty
+        $result.IdempotencyTokens.Contains('INVOKE:elicitor') | Should -BeTrue
+        $result.IdempotencyTokens.Contains('COMPLETE:elicitor') | Should -BeTrue
     }
 }

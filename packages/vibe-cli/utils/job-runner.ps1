@@ -1,5 +1,38 @@
-$script:ChildPidRegistry = [System.Collections.Concurrent.ConcurrentDictionary[string,int]]::new()
+﻿$script:ChildPidRegistry = [System.Collections.Concurrent.ConcurrentDictionary[string,int]]::new()
 $script:TaskWallClocks = [System.Collections.Concurrent.ConcurrentDictionary[string,System.Diagnostics.Stopwatch]]::new()
+
+function New-TierCompletionCounter {
+    return [System.Collections.Concurrent.ConcurrentDictionary[string, int]]::new()
+}
+
+function Add-TierCompletion {
+    param(
+        [Parameter(Mandatory)][System.Collections.Concurrent.ConcurrentDictionary[string, int]]$Counter,
+        [Parameter(Mandatory)][string]$TierKey
+    )
+    # Atomic increment via AddOrUpdate
+    $null = $Counter.AddOrUpdate($TierKey, 1, [Func[string, int, int]]{ param($k, $old) $old + 1 })
+    return $Counter[$TierKey]
+}
+
+function Get-TierCompletion {
+    param(
+        [Parameter(Mandatory)][System.Collections.Concurrent.ConcurrentDictionary[string, int]]$Counter,
+        [Parameter(Mandatory)][string]$TierKey
+    )
+    $val = 0
+    $null = $Counter.TryGetValue($TierKey, [ref]$val)
+    return $val
+}
+
+function Test-TierAllSucceeded {
+    param(
+        [Parameter(Mandatory)][int]$CompletedCount,
+        [Parameter(Mandatory)][int]$TotalTasks,
+        [Parameter(Mandatory)][int]$FailedCount
+    )
+    return ($CompletedCount -ge $TotalTasks) -and ($FailedCount -lt $TotalTasks)
+}
 
 function Get-ChildPidRegistry {
     return $script:ChildPidRegistry
