@@ -1,4 +1,4 @@
-﻿function Invoke-Elicitor {
+function Invoke-Elicitor {
     param(
         [Parameter(Mandatory)]
         [string]$Seed,
@@ -16,6 +16,9 @@
         Select-Object -First 1
 
     if (-not $elicitorOutput) { throw "No elicitor output found in $Root/docs/" }
+
+    $featureName = Split-Path $elicitorOutput.DirectoryName -Leaf
+    Write-PipelineLog -Message "STAGE_COMPLETE:1:$featureName" -Root $Root
 
     return @{
         FeatureDir = $elicitorOutput.DirectoryName

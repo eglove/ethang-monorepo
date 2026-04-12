@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "pwsh -NoProfile -Command \"if (-not (Get-Module -ListAvailable PSScriptAnalyzer)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }; Invoke-ScriptAnalyzer -Path . -Recurse -EnableExit -ReportSummary\"",
-    "test": "pwsh -NoProfile -Command \"if (-not (Get-Module -ListAvailable Pester -ErrorAction SilentlyContinue | Where-Object Version -ge '5.0')) { Install-Module Pester -Force -Scope CurrentUser -MinimumVersion 5.0 }; if (-not (Get-Module -ListAvailable PSScriptAnalyzer)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }; Invoke-Pester -Configuration (& ./.pester.ps1)\""
+    "test": "pwsh -NoProfile -Command \"if (-not (Get-Module -ListAvailable Pester -ErrorAction SilentlyContinue | Where-Object Version -ge '5.0')) { Install-Module Pester -Force -Scope CurrentUser -MinimumVersion 5.0 }; if (-not (Get-Module -ListAvailable PSScriptAnalyzer)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }; Invoke-Pester -Configuration (& ./.pester.ps1); & ./utils/ratchet-coverage.ps1\""
   },
   "author": "Ethan Glover",
   "license": "ISC",

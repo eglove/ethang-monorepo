@@ -3,7 +3,7 @@ function Get-FixtureDir {
         [Parameter(Mandatory)][string]$Root,
         [Parameter(Mandatory)][string]$FeatureName
     )
-    return Join-Path $Root "tests/fixtures/$FeatureName"
+    return Join-Path $Root "fixtures/$FeatureName"
 }
 
 function Test-FixturePrecondition {
@@ -13,7 +13,7 @@ function Test-FixturePrecondition {
     )
 
     $fixtureBase = Get-FixtureDir -Root $Root -FeatureName $FeatureName
-    $bddPath = Join-Path $fixtureBase 'bdd/fixture.json'
+    $bddPath = Join-Path $fixtureBase 'bdd.json'
 
     $result = @{ bddValid = $false; canProceed = $false }
 

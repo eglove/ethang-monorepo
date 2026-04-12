@@ -1,219 +1,224 @@
-﻿BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
-    # Stub: pipeline-state.ps1 was removed in code-simplify
-    function global:New-PipelineState {
-        return @{
-            pipelineState      = 'idle'
-            lockHolder         = $null
-            reviewRound        = [int]0
-            keepGoingResets    = [int]0
-            tddKeepGoingCount = [int]0
-            verdict            = $null
-            tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
-            reviewGateType     = 'none'
-        }
-    }
-    function global:New-PipelineLogWriter {
-        param([string]$LogPath)
-        $dir = Split-Path $LogPath -Parent
-        if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-        $fs = [System.IO.FileStream]::new($LogPath, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
-        $fs.Seek(0, [System.IO.SeekOrigin]::End) | Out-Null
-        return [System.IO.StreamWriter]::new($fs)
-    }
-    function global:Write-IdempotencyToken {
-        param($Writer, [string]$Stage, [string]$Status, [string]$RunId)
-        $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-        $line = "[$ts] INVOKE-CLAUDE $Status stage=$Stage"
-        if ($RunId) { $line += " runId=$RunId" }
-        $Writer.WriteLine($line)
-        $Writer.Flush()
-    }
-    function global:Read-IdempotencyToken {
-        param([string]$LogPath)
-        $tokens = [System.Collections.Generic.HashSet[string]]::new()
-        if (-not (Test-Path $LogPath)) { return $tokens }
-        foreach ($line in (Get-Content $LogPath)) {
-            if ($line -match 'INVOKE-CLAUDE\s+(INVOKE|COMPLETE)\s+stage=(\S+)') {
-                $null = $tokens.Add("$($Matches[1]):$($Matches[2])")
-            }
-        }
-        return $tokens
-    }
-    function global:Test-IdempotencyComplete {
-        param($Tokens, [string]$Stage)
-        return ($Tokens.Contains("INVOKE:$Stage") -and $Tokens.Contains("COMPLETE:$Stage"))
-    }
-    . "$PSScriptRoot/../utils/pipeline-lock.ps1"
-    . "$PSScriptRoot/../utils/pipeline-log.ps1"
-    . "$PSScriptRoot/../utils/complete-pipeline.ps1"
-    . "$PSScriptRoot/../utils/coverage-gate.ps1"
-    . "$PSScriptRoot/../utils/abort-cleanup.ps1"
-    . "$PSScriptRoot/../utils/task-cleanup.ps1"
-    . "$PSScriptRoot/../utils/warden-config.ps1"
-    . "$PSScriptRoot/../utils/playwright-detect.ps1"
-    . "$PSScriptRoot/../utils/gherkin-parser.ps1"
-    . "$PSScriptRoot/../utils/tlc-parser.ps1"
-    . "$PSScriptRoot/../utils/job-runner.ps1"
-    . "$PSScriptRoot/../utils/global-timeout.ps1"
-    . "$PSScriptRoot/../utils/review-gate.ps1"
+BeforeAll {
+    $root = Resolve-Path "$PSScriptRoot/.."
+    . "$root/utils/pipeline-log.ps1"
+    . "$root/utils/invoke-claude.ps1"
+    . "$root/utils/invoke-parallel.ps1"
+    . "$root/utils/resolve-pipeline-state.ps1"
+    . "$root/utils/unified-debate-loop.ps1"
+    . "$root/utils/debate-loop.ps1"
+    . "$root/utils/gherkin-parser.ps1"
+    . "$root/utils/fixture-gate.ps1"
+    . "$root/utils/resume.ps1"
+    . "$root/stages/1-elicitor.ps1"
+    . "$root/stages/2-parallel-writers.ps1"
+    . "$root/stages/3-unified-debate.ps1"
+    . "$root/stages/4-post-debate.ps1"
+    . "$root/stages/5-implementation-writer.ps1"
 }
 
-Describe 'Pipeline E2E: Full Lifecycle' {
+Describe 'Pipeline E2E (7-stage)' {
     BeforeEach {
-        $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "e2e-$(Get-Random)"
-        $script:lockDir = Join-Path $script:tempDir 'locks'
-        New-Item -ItemType Directory -Path $script:lockDir -Force | Out-Null
-    }
-    AfterEach { Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue }
+        $testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "e2e-$([guid]::NewGuid().ToString('N').Substring(0,8))"
+        New-Item -ItemType Directory -Path $testRoot -Force | Out-Null
+        $featureDir = Join-Path $testRoot 'docs/e2e-feature'
+        New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
 
-    It 'fresh start: lock acquired -> running -> complete lifecycle' {
-        # Acquire lock
-        $state = Lock-Pipeline -LockDir $script:lockDir -Feature 'e2e-test'
-        $state.pipelineState | Should -BeExactly 'locked'
-        $state.lockHolder | Should -Be 1
-
-        # Start running
-        Start-PipelineRunning -State $state
-        $state.pipelineState | Should -BeExactly 'running'
-
-        # Complete
-        $logDir = Join-Path $script:tempDir 'logs'
-        New-Item -ItemType Directory -Path $logDir -Force | Out-Null
-        $result = Complete-Pipeline -Root $script:tempDir -Status 'complete'
-        $result.Status | Should -BeExactly 'complete'
+        New-Item -ItemType Directory -Path "$testRoot/agents/doc-writers" -Force | Out-Null
+        New-Item -ItemType Directory -Path "$testRoot/agents/experts" -Force | Out-Null
+        Set-Content -Path "$testRoot/agents/doc-writers/elicitor.md" -Value '# Elicitor'
+        Set-Content -Path "$testRoot/agents/doc-writers/bdd-writer.md" -Value '# BDD'
+        Set-Content -Path "$testRoot/agents/doc-writers/tla-writer.md" -Value '# TLA'
+        Set-Content -Path "$testRoot/agents/doc-writers/implementation-writer.md" -Value '# Impl'
+        Set-Content -Path "$testRoot/agents/unified-debate-moderator.md" -Value '# Moderator'
+        Set-Content -Path "$testRoot/agents/debate-moderator.md" -Value '# Debate'
     }
 
-    It 'S8 LockHeldDuringExecution: pipeline executing implies lock held' {
-        $state = Lock-Pipeline -LockDir $script:lockDir -Feature 'e2e-s8'
-        Start-PipelineRunning -State $state
-
-        # Lock must be held while running
-        Test-PipelineLockActive -LockDir $script:lockDir | Should -BeTrue
-        $state.lockHolder | Should -Be 1
+    AfterEach {
+        Remove-Item -Path $testRoot -Recurse -Force -ErrorAction SilentlyContinue
     }
 
-    It 'S15 CrashBudgetRespected: crash budget enforced' {
-        # Fresh lock has crashCount=0
-        Lock-Pipeline -LockDir $script:lockDir -Feature 'e2e-crash'
-        Get-CrashCount -LockDir $script:lockDir | Should -Be 0
+    Context 'Artifact handoff chain' {
+        It 'elicitor output flows into parallel writers' {
+            Set-Content -Path (Join-Path $featureDir 'elicitor.md') -Value '# Test briefing for e2e'
 
-        # Simulate crashes
-        Update-CrashCount -LockDir $script:lockDir -NewCount 3
-        { Test-CrashBudget -LockDir $script:lockDir -MaxCrashes 3 } | Should -Throw '*exhausted*'
-    }
+            Mock Invoke-Parallel {
+                param($Jobs)
+                $bddFile = Join-Path $featureDir 'bdd.feature'
+                Set-Content -Path $bddFile -Value "Feature: E2E Test`n  Scenario: Basic`n    Given setup`n    When action`n    Then result"
+                $tlaDir = Join-Path $featureDir 'tla'
+                New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+                Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE Spec ----'
+                return @{
+                    bdd = @{ Success = $true; Output = $bddFile; Error = $null }
+                    tla = @{ Success = $true; Output = @{ TlaFile = (Get-Item "$tlaDir/Spec.tla"); TlaDir = $tlaDir }; Error = $null }
+                }
+            }
 
-    It 'abort lifecycle: start -> abort -> cleanup' {
-        Lock-Pipeline -LockDir $script:lockDir -Feature 'e2e-abort'
+            $result = Invoke-ParallelWriter -FeatureDir $featureDir -Root $testRoot
 
-        $tasks = @(
-            @{ taskId = 'T1'; worktreeState = 'none'; mergeState = 'waiting' }
-            @{ taskId = 'T2'; worktreeState = 'none'; mergeState = 'none' }
-        )
-
-        $result = Invoke-AbortCleanup -Tasks $tasks -LockDir $script:lockDir -RunId 'abort-run'
-
-        # S11: abort releases lock
-        $result.lockReleased | Should -BeTrue
-        # Post-abort invariant: no waiting/merging
-        $tasks | Where-Object { $_.mergeState -in @('waiting', 'merging') } | Should -BeNullOrEmpty
-    }
-
-    It 'coverage gate: 300% gate enforces three independent categories' {
-        $fullCoverage = @{
-            pbt = @{ covered = 100; total = 100; testFiles = 5 }
-            contract = @{ covered = 50; total = 50; testFiles = 3 }
-            e2e = @{ covered = 20; total = 20; testFiles = 2 }
+            $result.Success | Should -BeTrue
+            (Join-Path $featureDir 'bdd.feature') | Should -Exist
+            (Join-Path $featureDir 'tla/Spec.tla') | Should -Exist
         }
-        $r = Test-CoverageGate -CoverageResults $fullCoverage -TddIter 1 -CoverageIter 0 -MaxTddCycles 10 -MaxCoverageIter 5
-        $r.passed | Should -BeTrue
 
-        # Fail one category
-        $partialCoverage = @{
-            pbt = @{ covered = 99; total = 100; testFiles = 5 }
-            contract = @{ covered = 50; total = 50; testFiles = 3 }
-            e2e = @{ covered = 20; total = 20; testFiles = 2 }
+        It 'parallel writer output flows into unified debate' {
+            Set-Content -Path (Join-Path $featureDir 'elicitor.md') -Value '# Briefing'
+            Set-Content -Path (Join-Path $featureDir 'bdd.feature') -Value "Feature: test`n  Scenario: s1`n    Given g`n    When w`n    Then t"
+            $tlaDir = Join-Path $featureDir 'tla'
+            New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+            Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE Spec ----'
+
+            Mock Invoke-UnifiedDebateLoop {
+                Set-Content -Path (Join-Path $FeatureDir 'unified-debate.md') -Value '# Debate'
+                return @{
+                    Result = 'CONSENSUS_REACHED'; RoundsCompleted = 1
+                    FinalGherkinPath = (Join-Path $FeatureDir 'bdd.feature')
+                    FinalTlaDir = (Join-Path $FeatureDir 'tla')
+                    SessionFile = (Join-Path $FeatureDir 'unified-debate.md')
+                    UnresolvedObjections = @()
+                }
+            }
+
+            $result = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot
+            $result.Success | Should -BeTrue
+            (Join-Path $featureDir 'unified-debate.md') | Should -Exist
         }
-        $r2 = Test-CoverageGate -CoverageResults $partialCoverage -TddIter 1 -CoverageIter 0 -MaxTddCycles 10 -MaxCoverageIter 5
-        $r2.passed | Should -BeFalse
+
+        It 'debate output flows into post-debate (fixture generated)' {
+            Set-Content -Path (Join-Path $featureDir 'elicitor.md') -Value '# Briefing'
+            Set-Content -Path (Join-Path $featureDir 'bdd.feature') -Value "Feature: test`n  Scenario: s1`n    Given g`n    When w`n    Then t"
+            $tlaDir = Join-Path $featureDir 'tla'
+            New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+            Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE Spec ----'
+            Set-Content -Path (Join-Path $featureDir 'unified-debate.md') -Value '# Debate done'
+
+            $result = Invoke-PostDebate -FeatureDir $featureDir -Root $testRoot -TargetRoot $testRoot
+            $result.Success | Should -BeTrue
+            $result.FixturePath | Should -Exist
+        }
     }
 
-    It 'Playwright detection determines E2E strategy' {
-        $projDir = Join-Path $script:tempDir 'project'
-        New-Item -ItemType Directory -Path $projDir -Force | Out-Null
+    Context 'Resume at stage boundaries' {
+        It 'resume at stage 3 validates bdd.feature and .tla exist' {
+            Set-Content -Path (Join-Path $featureDir 'elicitor.md') -Value '# Briefing'
+            Set-Content -Path (Join-Path $featureDir 'bdd.feature') -Value 'Feature: test'
+            $tlaDir = Join-Path $featureDir 'tla'
+            New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+            Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE ----'
 
-        # No package.json = trace-replay
-        Get-PlaywrightStrategy -ProjectPath $projDir | Should -BeExactly 'trace-replay'
+            $state = Resolve-PipelineState -FromStage 3 -Dir $featureDir
+            $state.GherkinFile | Should -Not -BeNullOrEmpty
+            $state.TlaFile | Should -Not -BeNullOrEmpty
+        }
 
-        # With Playwright = playwright
-        @{ devDependencies = @{ '@playwright/test' = '1.0.0' } } | ConvertTo-Json | Set-Content (Join-Path $projDir 'package.json')
-        Get-PlaywrightStrategy -ProjectPath $projDir | Should -BeExactly 'playwright'
+        It 'resume at stage 4 validates unified-debate.md exists' {
+            Set-Content -Path (Join-Path $featureDir 'elicitor.md') -Value '# Briefing'
+            Set-Content -Path (Join-Path $featureDir 'bdd.feature') -Value 'Feature: test'
+            $tlaDir = Join-Path $featureDir 'tla'
+            New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+            Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE ----'
+            Set-Content -Path (Join-Path $featureDir 'unified-debate.md') -Value '# Debate'
+
+            $state = Resolve-PipelineState -FromStage 4 -Dir $featureDir
+            $state.UnifiedDebateFile | Should -Not -BeNullOrEmpty
+        }
+
+        It 'resume at stage 5 validates fixture.json exists' {
+            Set-Content -Path (Join-Path $featureDir 'elicitor.md') -Value '# Briefing'
+            Set-Content -Path (Join-Path $featureDir 'bdd.feature') -Value 'Feature: test'
+            $tlaDir = Join-Path $featureDir 'tla'
+            New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+            Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE ----'
+            Set-Content -Path (Join-Path $featureDir 'unified-debate.md') -Value '# Debate'
+            Set-Content -Path (Join-Path $featureDir 'bdd-fixture.json') -Value '{}'
+
+            $state = Resolve-PipelineState -FromStage 5 -Dir $featureDir
+            $state.FixtureJson | Should -Not -BeNullOrEmpty
+        }
     }
 
-    It 'task failure cleanup: worktree + warden + mergeState reset' {
-        $task = @{ worktreeState = 'none'; wardenState = 'active'; mergeState = 'waiting' }
-        Complete-TaskFailure -TaskState $task -TaskId 'T1'
-        $task.wardenState | Should -BeExactly 'unconfigured'
-        $task.mergeState | Should -BeExactly 'failed'
+    Context 'Inter-stage validation catches missing artifacts' {
+        It 'stage 3 fails if bdd.feature is missing' {
+            Set-Content -Path (Join-Path $featureDir 'elicitor.md') -Value '# Briefing'
+            { Resolve-PipelineState -FromStage 3 -Dir $featureDir } | Should -Throw '*bdd.feature*'
+        }
     }
 
-    It 'idempotency token system: write/read/check cycle' {
-        $logPath = Join-Path $script:tempDir 'idem.log'
-        $writer = New-PipelineLogWriter -LogPath $logPath
+    Context 'Full pipeline markers' {
+        It 'stages produce STAGE_COMPLETE markers' {
+            Set-Content -Path (Join-Path $featureDir 'elicitor.md') -Value '# Briefing'
+            Write-PipelineLog -Message "STAGE_COMPLETE:1:e2e-feature" -Root $testRoot
 
-        Write-IdempotencyToken -Writer $writer -Stage 'stage1' -Status 'INVOKE' -RunId 'run1'
-        Write-IdempotencyToken -Writer $writer -Stage 'stage1' -Status 'COMPLETE' -RunId 'run1'
-        Write-IdempotencyToken -Writer $writer -Stage 'stage2' -Status 'INVOKE' -RunId 'run1'
-        $writer.Close()
+            Mock Invoke-Parallel {
+                $bddFile = Join-Path $featureDir 'bdd.feature'
+                Set-Content -Path $bddFile -Value "Feature: test`n  Scenario: s`n    Given g`n    When w`n    Then t"
+                $tlaDir = Join-Path $featureDir 'tla'
+                New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+                Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE ----'
+                return @{
+                    bdd = @{ Success = $true; Output = $bddFile; Error = $null }
+                    tla = @{ Success = $true; Output = @{ TlaFile = (Get-Item "$tlaDir/Spec.tla"); TlaDir = $tlaDir }; Error = $null }
+                }
+            }
 
-        $tokens = Read-IdempotencyToken -LogPath $logPath
-        Test-IdempotencyComplete -Tokens $tokens -Stage 'stage1' | Should -BeTrue
-        Test-IdempotencyComplete -Tokens $tokens -Stage 'stage2' | Should -BeFalse
+            $s2 = Invoke-ParallelWriter -FeatureDir $featureDir -Root $testRoot
+            $s2.Success | Should -BeTrue
+
+            $logContent = Get-Content (Join-Path $testRoot 'pipeline.log') -Raw
+            $logContent | Should -Match 'STAGE_COMPLETE:1:e2e-feature'
+            $logContent | Should -Match 'STAGE_COMPLETE:2:e2e-feature'
+        }
     }
 
-    It 'review gate failure path works end-to-end' {
-        $task = @{ taskState = 'review_gate'; taskId = 'T1'; tddIter = 2; coverageIter = 1 }
-        $tier = @{ completionCounter = 0 }
-        $result = Invoke-ReviewGateFailure -TaskState $task -TierState $tier
-        $task.taskState | Should -BeExactly 'failed'
-        $tier.completionCounter | Should -Be 1
-        $result.tddIter | Should -Be 2
+    Context 'Consensus revision failure (Amendment 5)' {
+        It 'does not write STAGE_COMPLETE:3 on consensus revision failure' {
+            Set-Content -Path (Join-Path $featureDir 'elicitor.md') -Value '# Briefing'
+            Set-Content -Path (Join-Path $featureDir 'bdd.feature') -Value 'Feature: test'
+            $tlaDir = Join-Path $featureDir 'tla'
+            New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+            Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE ----'
+
+            Mock Invoke-UnifiedDebateLoop {
+                Set-Content -Path (Join-Path $FeatureDir 'unified-debate.md') -Value '# Debate'
+                return @{
+                    Result = 'CONSENSUS_REVISION_FAILED'; RoundsCompleted = 1
+                    FinalGherkinPath = (Join-Path $FeatureDir 'bdd.feature')
+                    FinalTlaDir = (Join-Path $FeatureDir 'tla')
+                    SessionFile = (Join-Path $FeatureDir 'unified-debate.md')
+                    UnresolvedObjections = @(); Error = 'tla consensus revision failed'
+                }
+            }
+
+            $result = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot
+            $result.Success | Should -BeFalse
+            $logPath = Join-Path $testRoot 'pipeline.log'
+            if (Test-Path $logPath) {
+                Get-Content $logPath -Raw | Should -Not -Match 'STAGE_COMPLETE:3'
+            }
+        }
     }
 
-    It 'tier completion counter: concurrent-safe atomic increments' {
-        $counter = New-TierCompletionCounter
-        Add-TierCompletion -Counter $counter -TierKey 'tier1' | Should -Be 1
-        Add-TierCompletion -Counter $counter -TierKey 'tier1' | Should -Be 2
-        Get-TierCompletion -Counter $counter -TierKey 'tier1' | Should -Be 2
-    }
+    Context 'unified-debate.md on max-rounds exit (Amendment 6)' {
+        It 'produces unified-debate.md after max-rounds' {
+            Set-Content -Path (Join-Path $featureDir 'elicitor.md') -Value '# Briefing'
+            Set-Content -Path (Join-Path $featureDir 'bdd.feature') -Value 'Feature: test'
+            $tlaDir = Join-Path $featureDir 'tla'
+            New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+            Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE ----'
 
-    It 'no task reaches escalated state (dead state assertion)' {
-        $validTerminal = @('merged', 'failed', 'timed_out')
-        'escalated' -in $validTerminal | Should -BeFalse
-    }
+            Mock Invoke-UnifiedDebateLoop {
+                Set-Content -Path (Join-Path $FeatureDir 'unified-debate.md') -Value '# Max rounds debate'
+                return @{
+                    Result = 'MAX_ROUNDS_REACHED'; RoundsCompleted = 10
+                    FinalGherkinPath = (Join-Path $FeatureDir 'bdd.feature')
+                    FinalTlaDir = (Join-Path $FeatureDir 'tla')
+                    SessionFile = (Join-Path $FeatureDir 'unified-debate.md')
+                    UnresolvedObjections = @('unresolved 1')
+                }
+            }
 
-    It 'BDD parser + fixture export integration' {
-        # Create a feature file
-        $featureFile = Join-Path $script:tempDir 'test.feature'
-        Set-Content $featureFile -Value "Feature: Test`n  Scenario: Simple`n    Given x"
-
-        $parsed = ConvertFrom-Gherkin -Path $featureFile
-        $parsed.features.Count | Should -Be 1
-
-        # Export fixture
-        $bddFixture = Join-Path $script:tempDir 'tests/fixtures/bdd/fixture.json'
-        $parsed.schemaVersion = 1
-        Export-BddFixture -Fixture $parsed -OutputPath $bddFixture
-        $bddFixture | Should -Exist
-    }
-
-    It 'task timeout watchdog detects stale tasks' {
-        $task = @{ taskState = 'executing'; stateStartTime = (Get-Date).AddMinutes(-31) }
-        Test-TaskTimeout -TaskState $task | Should -BeTrue
-
-        $freshTask = @{ taskState = 'executing'; stateStartTime = (Get-Date).AddMinutes(-5) }
-        Test-TaskTimeout -TaskState $freshTask | Should -BeFalse
+            Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot
+            (Join-Path $featureDir 'unified-debate.md') | Should -Exist
+        }
     }
 }

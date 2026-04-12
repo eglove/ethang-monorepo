@@ -1,24 +1,8 @@
 ﻿. "$PSScriptRoot/invoke-claude.ps1"
+. "$PSScriptRoot/pipeline-log.ps1"
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
-
-$global:PipelineLogFile = "$PSScriptRoot/../pipeline.log"
-
-function Write-PipelineLog {
-    param(
-        [Parameter(ValueFromPipeline)]
-        [string]$Message,
-
-        [string]$Color = 'Gray'
-    )
-    process {
-        $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-        $line = "[$ts] $Message"
-        $line | Add-Content -Path $global:PipelineLogFile
-        Write-Host $line -ForegroundColor $Color
-    }
-}
 
 $Config = @{
     # Debate

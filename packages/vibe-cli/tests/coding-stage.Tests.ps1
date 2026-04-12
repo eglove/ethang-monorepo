@@ -1,6 +1,6 @@
 ﻿BeforeAll {
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
-    . "$PSScriptRoot/../stages/8-coding.ps1"
+    . "$PSScriptRoot/../stages/7-coding.ps1"
 
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
@@ -22,6 +22,14 @@
 }
 
 Describe 'Stage 8 — Pre-Coding Gate' {
+    BeforeAll {
+        Mock Invoke-GlobalDoublePass { @{ Status = 'passed'; Retries = 0; LastError = $null } }
+        Mock Invoke-GlobalReview { @{ Verdict = 'pass'; ReviewRound = 1 } }
+        Mock Invoke-PerWorktreeGate { @{ Status = 'passed' } }
+        Mock Invoke-SequentialMerge { @{ Status = 'merged' } }
+        Mock Invoke-WorktreeCleanup { @{ TierCheckpoint = $CompletedTier } }
+        Mock Complete-Pipeline {}
+    }
     BeforeEach {
         $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "stage8-gate-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
@@ -43,7 +51,11 @@ Describe 'Stage 8 — Pre-Coding Gate' {
     }
 
     It 'clean tree passes gate without prompting' {
-        Mock git { return $null }
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse') { return 'master' }
+            return $null
+        }
         Mock Lock-Pipeline { return @{ pipelineState = 'locked'; lockHolder = 1 } }
         Mock Unlock-Pipeline {}
         Mock Invoke-Claude { return 'mock-result' }
@@ -53,21 +65,34 @@ Describe 'Stage 8 — Pre-Coding Gate' {
         if ($result.Status) { $result.Status | Should -Not -Be 'halted_uncommitted' }
     }
 
-    It 'dirty tree + decline halts with descriptive message' {
-        Mock git { return 'M dirty.ps1' }
+    It 'dirty tree + decline halts and restores previous branch' {
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse') { return 'master' }
+            if ($joined -match 'branch --list') { return $null }
+            if ($joined -match 'checkout') { return $null }
+            if ($joined -match 'branch -D') { return $null }
+            if ($joined -match 'status') { return 'M dirty.ps1' }
+            return $null
+        }
         Mock Read-Host { return 'n' }
         Mock Lock-Pipeline {}
         Mock Unlock-Pipeline {}
 
         $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
         $result.Status | Should -Be 'halted_uncommitted'
-        $result.Message | Should -Match 'uncommitted changes must be committed before Stage 8 can proceed'
+        $result.Message | Should -Match 'uncommitted changes must be committed before Stage 7 can proceed'
+        Should -Invoke git -ParameterFilter { ($args -join ' ') -match 'checkout master' }
+        Should -Invoke git -ParameterFilter { ($args -join ' ') -match 'branch -D feature/my-feature' }
     }
 
-    It 'dirty tree + accept auto-commits and continues' {
+    It 'dirty tree + accept auto-commits on feature branch and continues' {
         $script:commitCalled = $false
         Mock git {
             $joined = $args -join ' '
+            if ($joined -match 'rev-parse') { return 'master' }
+            if ($joined -match 'branch --list') { return $null }
+            if ($joined -match 'checkout') { return $null }
             if ($joined -match 'status') { return 'M dirty.ps1' }
             if ($joined -match 'commit') { $script:commitCalled = $true; return $null }
             return $null
@@ -83,6 +108,14 @@ Describe 'Stage 8 — Pre-Coding Gate' {
 }
 
 Describe 'Stage 8 — Pipeline Lock' {
+    BeforeAll {
+        Mock Invoke-GlobalDoublePass { @{ Status = 'passed'; Retries = 0; LastError = $null } }
+        Mock Invoke-GlobalReview { @{ Verdict = 'pass'; ReviewRound = 1 } }
+        Mock Invoke-PerWorktreeGate { @{ Status = 'passed' } }
+        Mock Invoke-SequentialMerge { @{ Status = 'merged' } }
+        Mock Invoke-WorktreeCleanup { @{ TierCheckpoint = $CompletedTier } }
+        Mock Complete-Pipeline {}
+    }
     BeforeEach {
         $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "stage8-lock-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
@@ -253,6 +286,14 @@ Describe 'Stage 8 — Input Validation' {
 }
 
 Describe 'Stage 8 — Config Snapshot' {
+    BeforeAll {
+        Mock Invoke-GlobalDoublePass { @{ Status = 'passed'; Retries = 0; LastError = $null } }
+        Mock Invoke-GlobalReview { @{ Verdict = 'pass'; ReviewRound = 1 } }
+        Mock Invoke-PerWorktreeGate { @{ Status = 'passed' } }
+        Mock Invoke-SequentialMerge { @{ Status = 'merged' } }
+        Mock Invoke-WorktreeCleanup { @{ TierCheckpoint = $CompletedTier } }
+        Mock Complete-Pipeline {}
+    }
     BeforeEach {
         $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "stage8-snap-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
@@ -303,6 +344,14 @@ Describe 'Stage 8 — Config Snapshot' {
 }
 
 Describe 'Stage 8 — Fixture Coverage' {
+    BeforeAll {
+        Mock Invoke-GlobalDoublePass { @{ Status = 'passed'; Retries = 0; LastError = $null } }
+        Mock Invoke-GlobalReview { @{ Verdict = 'pass'; ReviewRound = 1 } }
+        Mock Invoke-PerWorktreeGate { @{ Status = 'passed' } }
+        Mock Invoke-SequentialMerge { @{ Status = 'merged' } }
+        Mock Invoke-WorktreeCleanup { @{ TierCheckpoint = $CompletedTier } }
+        Mock Complete-Pipeline {}
+    }
     BeforeEach {
         $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "stage8-fixture-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
@@ -434,6 +483,14 @@ Describe 'Stage 8 — Fixture Coverage' {
 }
 
 Describe 'Stage 8 — Claude Dispatch' {
+    BeforeAll {
+        Mock Invoke-GlobalDoublePass { @{ Status = 'passed'; Retries = 0; LastError = $null } }
+        Mock Invoke-GlobalReview { @{ Verdict = 'pass'; ReviewRound = 1 } }
+        Mock Invoke-PerWorktreeGate { @{ Status = 'passed' } }
+        Mock Invoke-SequentialMerge { @{ Status = 'merged' } }
+        Mock Invoke-WorktreeCleanup { @{ TierCheckpoint = $CompletedTier } }
+        Mock Complete-Pipeline {}
+    }
     BeforeEach {
         $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "stage8-dispatch-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
@@ -489,7 +546,9 @@ Describe 'Stage 8 — Claude Dispatch' {
         }
 
         $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
-        $result.WorktreeDetected | Should -BeTrue
+        # Worktree detection triggers per-WT gates (mocked), then merge (mocked)
+        Should -Invoke Invoke-PerWorktreeGate -Times 1
+        Should -Invoke Invoke-SequentialMerge -Times 1
     }
 
     It 'no worktrees — cleanup path' {
@@ -1839,5 +1898,95 @@ Describe 'Stage 8 — Pipeline Completion' {
         $result.Status | Should -Be 'halted'
         ($script:logMessages -join "`n") | Should -Match 'PIPELINE HALTED'
         ($script:logMessages -join "`n") | Should -Not -Match 'PIPELINE COMPLETE'
+    }
+}
+
+Describe 'Stage 8 — Escalation Paths' {
+    BeforeEach {
+        $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "stage8-esc-$(Get-Random)"
+        New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
+
+        $docsDir = Join-Path $script:tempDir "docs/my-feature"
+        New-Item -ItemType Directory -Path $docsDir -Force | Out-Null
+        $plan = @{ tiers = @(@{ tier = 1; tasks = @(@{ id = 'T1'; title = 'A' }) }) }
+        $plan | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $docsDir 'implementation-plan.json')
+
+        $fixtureDir = Join-Path $script:tempDir 'fixtures/my-feature'
+        New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
+        '[]' | Set-Content (Join-Path $fixtureDir 'bdd.json')
+        '[]' | Set-Content (Join-Path $fixtureDir 'tla.json')
+
+        Mock Lock-Pipeline { return @{ pipelineState = 'locked'; lockHolder = 1 } }
+        Mock Unlock-Pipeline {}
+        Mock Invoke-Claude { return 'mock-result' }
+        Mock Write-Host {}
+    }
+
+    AfterEach {
+        Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It 'returns halted_doublepass when GlobalDoublePass escalates' {
+        Mock git { return $null }
+        Mock Complete-Pipeline {}
+        Mock Invoke-GlobalDoublePass { @{ Status = 'escalated'; Retries = 5; LastError = 'test fail' } }
+        Mock Invoke-GlobalReview { @{ Verdict = 'pass'; ReviewRound = 1 } }
+
+        $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
+        $result.Status | Should -Be 'halted_doublepass'
+        $result.DoublePassResult.Retries | Should -Be 5
+    }
+
+    It 'returns halted_review when GlobalReview escalates' {
+        Mock git { return $null }
+        Mock Complete-Pipeline {}
+        Mock Invoke-GlobalDoublePass { @{ Status = 'passed'; Retries = 0; LastError = $null } }
+        Mock Invoke-GlobalReview { @{ Verdict = 'escalated'; ReviewRound = 3 } }
+
+        $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
+        $result.Status | Should -Be 'halted_review'
+        $result.ReviewResult.ReviewRound | Should -Be 3
+    }
+
+    It 'returns halted_gate when PerWorktreeGate escalates' {
+        $wtDir = Join-Path $script:tempDir 'wt-task1'
+        New-Item -ItemType Directory -Path $wtDir -Force | Out-Null
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'worktree list') {
+                return @("$($script:tempDir) abc1234 [feature/my-feature]", "$wtDir def5678 [feature/my-feature-T1]")
+            }
+            return $null
+        }
+        Mock Complete-Pipeline {}
+        Mock Invoke-PerWorktreeGate { @{ Status = 'escalated' } }
+        Mock Invoke-SequentialMerge { @{ Status = 'merged' } }
+        Mock Invoke-WorktreeCleanup {}
+        Mock Invoke-GlobalDoublePass { @{ Status = 'passed'; Retries = 0; LastError = $null } }
+        Mock Invoke-GlobalReview { @{ Verdict = 'pass'; ReviewRound = 1 } }
+
+        $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
+        $result.Status | Should -Be 'halted_gate'
+    }
+
+    It 'returns halted_merge when SequentialMerge escalates' {
+        $wtDir = Join-Path $script:tempDir 'wt-task1'
+        New-Item -ItemType Directory -Path $wtDir -Force | Out-Null
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'worktree list') {
+                return @("$($script:tempDir) abc1234 [feature/my-feature]", "$wtDir def5678 [feature/my-feature-T1]")
+            }
+            return $null
+        }
+        Mock Complete-Pipeline {}
+        Mock Invoke-PerWorktreeGate { @{ Status = 'passed' } }
+        Mock Invoke-SequentialMerge { @{ Status = 'escalated_stop'; MergedBranches = @(); SkippedBranches = @('T1') } }
+        Mock Invoke-WorktreeCleanup {}
+        Mock Invoke-GlobalDoublePass { @{ Status = 'passed'; Retries = 0; LastError = $null } }
+        Mock Invoke-GlobalReview { @{ Verdict = 'pass'; ReviewRound = 1 } }
+
+        $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
+        $result.Status | Should -Be 'halted_merge'
     }
 }

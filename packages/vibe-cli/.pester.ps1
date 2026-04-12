@@ -5,7 +5,7 @@ $config = New-PesterConfiguration
 $config.Run.Path = "$PSScriptRoot/tests"
 $config.Run.Exit = $true
 
-$config.Output.Verbosity = 'Detailed'
+$config.Output.Verbosity = 'Normal'
 $config.Output.StackTraceVerbosity = 'Filtered'
 
 $config.CodeCoverage.Enabled = $true
@@ -16,7 +16,7 @@ $config.CodeCoverage.Path = @(
 )
 $config.CodeCoverage.OutputFormat = 'JaCoCo'
 $config.CodeCoverage.OutputPath = "$PSScriptRoot/coverage.xml"
-$config.CodeCoverage.CoveragePercentTarget = 90
+$config.CodeCoverage.CoveragePercentTarget = 91
 
 $config.TestResult.Enabled = $true
 $config.TestResult.OutputFormat = 'NUnitXml'

@@ -4,25 +4,24 @@
 
 Describe 'Write-PipelineLog' {
     BeforeEach {
-        $script:testLog = [System.IO.Path]::GetTempFileName()
-        $script:origLog = $global:PipelineLogFile
-        $global:PipelineLogFile = $script:testLog
+        $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "plog-test-$(Get-Random)"
+        New-Item -ItemType Directory -Path $script:testRoot -Force | Out-Null
+        $script:testLog = Join-Path $script:testRoot 'pipeline.log'
     }
 
     AfterEach {
-        $global:PipelineLogFile = $script:origLog
-        Remove-Item $script:testLog -ErrorAction SilentlyContinue
+        Remove-Item $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
     }
 
     It 'writes a timestamped line to the log file' {
-        Write-PipelineLog 'test message'
+        Write-PipelineLog 'test message' -Root $script:testRoot
         $content = Get-Content $script:testLog -Raw
         $content | Should -Match '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] test message'
     }
 
     It 'appends multiple lines' {
-        Write-PipelineLog 'first'
-        Write-PipelineLog 'second'
+        Write-PipelineLog 'first' -Root $script:testRoot
+        Write-PipelineLog 'second' -Root $script:testRoot
         $lines = Get-Content $script:testLog
         $lines.Count | Should -Be 2
         $lines[0] | Should -Match 'first'
