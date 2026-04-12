@@ -26,6 +26,22 @@ function Invoke-CodingStage {
     $skipToGlobal = $false
 
     if ($Resume) {
+        # Ensure we're on the feature branch
+        $featureBranch = "feature/$Feature"
+        $currentBranch = (git -C $Root rev-parse --abbrev-ref HEAD 2>$null)?.Trim()
+        if ($currentBranch -ne $featureBranch) {
+            $branchExists = git -C $Root branch --list $featureBranch 2>$null
+            if (-not $branchExists) {
+                Write-PipelineLog -Message "HALTED: resume failed — branch '$featureBranch' does not exist" -Root $Root
+                return @{
+                    Status  = 'halted_no_branch'
+                    Message = "Resume failed: expected branch '$featureBranch' does not exist."
+                }
+            }
+            $null = git -C $Root checkout $featureBranch
+            Write-PipelineLog -Message "Resume: switched to branch $featureBranch" -Root $Root
+        }
+
         # Re-validate inputs (R2-6)
         $planPath = Join-Path $Root "docs/$Feature/implementation-plan.json"
         if (-not (Test-Path $planPath)) {
@@ -131,6 +147,19 @@ function Invoke-CodingStage {
                 }
             }
         }
+
+        # ── Phase 1b: Create Feature Branch ──
+        $featureBranch = "feature/$Feature"
+        $branchExists = git -C $Root branch --list $featureBranch 2>$null
+        if ($branchExists) {
+            Write-PipelineLog -Message "Pipeline halted: branch '$featureBranch' already exists. Use -Resume or delete the branch." -Root $Root
+            return @{
+                Status  = 'halted_branch_exists'
+                Message = "Branch '$featureBranch' already exists. Use -Resume to continue, or delete the branch for a fresh run."
+            }
+        }
+        $null = git -C $Root checkout -b $featureBranch
+        Write-PipelineLog -Message "Created feature branch: $featureBranch" -Root $Root
 
         # ── Phase 2: Pipeline Lock ──
         try {
