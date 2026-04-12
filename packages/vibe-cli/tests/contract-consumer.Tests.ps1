@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # contract-consumer.Tests.ps1 — Consumer-side contract tests
 # Each consumer validates that mock provider output satisfies the contract.
 # Tag: Contract
@@ -28,7 +28,7 @@ Describe 'Consumer: Review Gate expects Verdict contract' -Tag 'Contract' {
             ExcludedReviewers = @()
         }
         $result = Test-Contract -Schema $script:VerdictContract -Data $data
-        $result.Valid | Should -BeTrue -Because (Format-ContractViolations $result 'VerdictContract')
+        $result.Valid | Should -BeTrue -Because (Format-ContractViolation $result 'VerdictContract')
     }
 
     It 'accepts a fail verdict with blockers' {
@@ -40,7 +40,7 @@ Describe 'Consumer: Review Gate expects Verdict contract' -Tag 'Contract' {
             ExcludedReviewers = @()
         }
         $result = Test-Contract -Schema $script:VerdictContract -Data $data
-        $result.Valid | Should -BeTrue -Because (Format-ContractViolations $result 'VerdictContract')
+        $result.Valid | Should -BeTrue -Because (Format-ContractViolation $result 'VerdictContract')
     }
 
     It 'rejects verdict with missing Verdict field' {
@@ -101,7 +101,7 @@ Describe 'Consumer: Orchestrator expects TaskResult contract' -Tag 'Contract' {
             Escalated = $false
         }
         $result = Test-Contract -Schema $script:TaskResultContract -Data $data
-        $result.Valid | Should -BeTrue -Because (Format-ContractViolations $result 'TaskResultContract')
+        $result.Valid | Should -BeTrue -Because (Format-ContractViolation $result 'TaskResultContract')
     }
 
     It 'rejects invalid phase' {
@@ -143,7 +143,7 @@ Describe 'Consumer: Pipeline expects MergeResult contract' -Tag 'Contract' {
             AbortedClean = $false
         }
         $result = Test-Contract -Schema $script:MergeResultContract -Data $data
-        $result.Valid | Should -BeTrue -Because (Format-ContractViolations $result 'MergeResultContract')
+        $result.Valid | Should -BeTrue -Because (Format-ContractViolation $result 'MergeResultContract')
     }
 
     It 'rejects missing Success field' {
@@ -161,7 +161,7 @@ Describe 'Consumer: Escalation handler expects EscalationResult contract' -Tag '
     It 'accepts valid KeepGoing decision' {
         $data = @{ Decision = 'KeepGoing'; Source = 'task' }
         $result = Test-Contract -Schema $script:EscalationResultContract -Data $data
-        $result.Valid | Should -BeTrue -Because (Format-ContractViolations $result 'EscalationResultContract')
+        $result.Valid | Should -BeTrue -Because (Format-ContractViolation $result 'EscalationResultContract')
     }
 
     It 'accepts valid Stop decision with source' {
@@ -188,7 +188,7 @@ Describe 'Consumer: ReviewFixCycle expects ReviewFixInput contract' -Tag 'Contra
             Blockers = @(@{ Reviewer = 'sec'; Severity = 'high'; Description = 'XSS'; Files = @('a.ts'); Suggestion = 'Fix' })
         }
         $result = Test-Contract -Schema $script:ReviewFixInputContract -Data $data
-        $result.Valid | Should -BeTrue -Because (Format-ContractViolations $result 'ReviewFixInputContract')
+        $result.Valid | Should -BeTrue -Because (Format-ContractViolation $result 'ReviewFixInputContract')
     }
 
     It 'rejects empty blockers (BDD cross-field)' {
@@ -211,7 +211,21 @@ Describe 'Consumer: State transitions satisfy pre/post contracts' -Tag 'Contract
         function Read-Escalation { return @{ Decision = 'KeepGoing'; Source = 'task' } }
 
         . "$PSScriptRoot/../utils/config.ps1"
-        . "$PSScriptRoot/../utils/pipeline-state.ps1"
+        # Stub: pipeline-state.ps1 was removed in code-simplify
+        function global:New-PipelineState {
+            return @{
+                pipelineState      = 'idle'
+                lockHolder         = $null
+                reviewRound        = [int]0
+                keepGoingResets    = [int]0
+                tddKeepGoingCount = [int]0
+                verdict            = $null
+                tasksDone          = [int]0
+                gateTimedOut       = $false
+                globalTimedOut     = $false
+                reviewGateType     = 'none'
+            }
+        }
         . "$PSScriptRoot/../utils/review-verdict.ps1"
         . "$PSScriptRoot/../utils/review-gate.ps1"
         . "$PSScriptRoot/../utils/review-fix.ps1"

@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # contract-alignment.Tests.ps1 — Drift detection between
 # utils/result-contracts.ps1 ConvertTo-* functions and contract definitions.
 # Ensures both accept/reject the same inputs.

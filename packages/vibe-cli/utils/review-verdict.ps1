@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # review-verdict.ps1 — Review verdict data model
 # Transforms moderator JSON into normalized PowerShell objects,
 # validates schema, and classifies severity levels.

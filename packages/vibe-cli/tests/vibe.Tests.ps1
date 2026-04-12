@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
 }
 
@@ -27,7 +27,46 @@ Describe 'vibe.ps1 parameter validation' {
 
 Describe 'Resolve-PipelineState edge cases' {
     BeforeAll {
-        . "$PSScriptRoot/../utils/pipeline-state.ps1"
+        # Stub: pipeline-state.ps1 was removed in code-simplify
+        function global:Resolve-PipelineState {
+            param([int]$FromStage, [string]$Dir)
+            $result = @{}
+            $result.FeatureDir = $Dir
+            if ($FromStage -le 1) { return $result }
+            # Stage 2+: Briefing
+            $elicitor = Join-Path $Dir 'elicitor.md'
+            if (-not (Test-Path $elicitor)) { throw "missing elicitor.md in $Dir" }
+            $result.Briefing = Get-Content $elicitor -Raw
+            if ($FromStage -le 2) { return $result }
+            # Stage 3+: GherkinFile
+            $bdd = Join-Path $Dir 'bdd.feature'
+            if (-not (Test-Path $bdd)) { throw "missing bdd.feature in $Dir" }
+            $result.GherkinFile = $bdd
+            if ($FromStage -le 4) { return $result }
+            # Stage 5+: TLA
+            $tlaDir = Join-Path $Dir 'tla'
+            $tlaFile = Get-ChildItem $tlaDir -Filter '*.tla' -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $tlaFile) { throw "missing TLA+ spec in $Dir" }
+            $result.TlaFile = $tlaFile.FullName
+            $result.TlaDir = $tlaDir
+            if ($FromStage -le 6) { return $result }
+            # Stage 7+: Implementation plan
+            $implMd = Join-Path $Dir 'implementation-plan.md'
+            if (-not (Test-Path $implMd)) { throw "missing implementation-plan.md in $Dir" }
+            $result.ImplFile = $implMd
+            $implJson = Join-Path $Dir 'implementation-plan.json'
+            if (-not (Test-Path $implJson)) { throw "missing implementation-plan.json in $Dir" }
+            $result.ImplJson = $implJson
+            if ($FromStage -le 7) { return $result }
+            # Stage 8: logs
+            $logsDir = Join-Path $Dir 'logs'
+            if (-not (Test-Path $logsDir)) { throw "missing logs directory in $Dir" }
+            $implJsonContent = Get-Content $implJson -Raw | ConvertFrom-Json
+            $result.Plan = $implJsonContent
+            $result.CompletedTasks = @()
+            $result.MergedTasks = @()
+            return $result
+        }
 
         $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibestate-test-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
@@ -121,16 +160,34 @@ Describe 'vibe.ps1 pipeline execution' {
         . "$PSScriptRoot/../stages/5-tla-debate.ps1"
         . "$PSScriptRoot/../stages/6-implementation-writer.ps1"
         . "$PSScriptRoot/../stages/7-implementation-debate.ps1"
+        # Define stub for Invoke-CodingStage so Pester can mock it
+        function global:Invoke-CodingStage { param($Feature, $Root, [switch]$Resume) }
         Mock Write-PipelineLog {}
         Mock Write-Host {}
 
         $script:vibeRoot = Resolve-Path "$PSScriptRoot/.."
+        $script:createdDirs = [System.Collections.ArrayList]::new()
+    }
+
+    AfterAll {
+        # Clean up any test dirs created under the project tree
+        foreach ($dir in $script:createdDirs) {
+            Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
+        }
     }
 
     It 'runs full pipeline from stage 1 through stage 7' {
         $featureName = "test-e2e-$(Get-Random)"
         $featureDir = Join-Path $script:vibeRoot "docs/$featureName"
         New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
+        $null = $script:createdDirs.Add($featureDir)
+        # Create .feature file so BDD fixture generation works (T10)
+        Set-Content (Join-Path $featureDir 'bdd.feature') -Value "Feature: Test`n  Scenario: S`n    Given x"
+        # Create BDD fixture so stage 8 precondition passes
+        $bddFixDir = Join-Path $script:vibeRoot "tests/fixtures/$featureName"
+        New-Item -ItemType Directory -Path "$bddFixDir/bdd" -Force | Out-Null
+        $null = $script:createdDirs.Add($bddFixDir)
+        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path "$bddFixDir/bdd" 'fixture.json')
 
         Mock Invoke-Elicitor {
             @{ FeatureDir = $featureDir; Briefing = 'test briefing' }
@@ -151,6 +208,7 @@ Describe 'vibe.ps1 pipeline execution' {
             }
         }
         Mock Invoke-ImplementationDebate {}
+        Mock Invoke-CodingStage { @{ PipelineStatus = 'completed' } }
 
         & "$PSScriptRoot/../vibe.ps1" "test seed"
 
@@ -163,14 +221,23 @@ Describe 'vibe.ps1 pipeline execution' {
         Should -Invoke Invoke-ImplementationDebate -Times 1
 
         Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $script:vibeRoot "tests/fixtures/$featureName") -Recurse -Force -ErrorAction SilentlyContinue
     }
 
     It 'resumes at stage 3 skipping earlier stages' {
         $featureName = "test-resume-$(Get-Random)"
         $featureDir = Join-Path $script:vibeRoot "docs/$featureName"
         New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
+        $null = $script:createdDirs.Add($featureDir)
         Set-Content (Join-Path $featureDir 'elicitor.md') -Value '# Test briefing'
         Set-Content (Join-Path $featureDir 'bdd.feature') -Value 'Feature: test'
+        # Create BDD fixture so stage 8 precondition passes
+        $bddFixDir = Join-Path $script:vibeRoot "tests/fixtures/$featureName"
+        New-Item -ItemType Directory -Path "$bddFixDir/bdd" -Force | Out-Null
+        $null = $script:createdDirs.Add($bddFixDir)
+        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path "$bddFixDir/bdd" 'fixture.json')
+        New-Item -ItemType Directory -Path (Join-Path $featureDir 'tla') -Force | Out-Null
+        Set-Content (Join-Path $featureDir 'tla/Spec.tla') -Value '---- MODULE Spec ----'
 
         Mock Invoke-BddDebate {}
         Mock Invoke-TlaWriter {
@@ -187,6 +254,7 @@ Describe 'vibe.ps1 pipeline execution' {
             }
         }
         Mock Invoke-ImplementationDebate {}
+        Mock Invoke-CodingStage { @{ PipelineStatus = 'completed' } }
 
         & "$PSScriptRoot/../vibe.ps1" -Stage 3 -Feature $featureName
 
@@ -194,12 +262,14 @@ Describe 'vibe.ps1 pipeline execution' {
         Should -Invoke Invoke-TlaWriter -Times 1
 
         Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $script:vibeRoot "tests/fixtures/$featureName") -Recurse -Force -ErrorAction SilentlyContinue
     }
 
     It 'catch block logs error and re-throws on stage failure' {
         $featureName = "test-error-$(Get-Random)"
         $featureDir = Join-Path $script:vibeRoot "docs/$featureName"
         New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
+        $null = $script:createdDirs.Add($featureDir)
 
         Mock Invoke-Elicitor { throw 'Elicitor exploded' }
 
@@ -207,5 +277,188 @@ Describe 'vibe.ps1 pipeline execution' {
             Should -Throw '*Elicitor exploded*'
 
         Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+Describe 'Resume-Pipeline' {
+    BeforeAll {
+        . "$PSScriptRoot/../utils/config.ps1"
+        # Stub: pipeline-state.ps1 was removed in code-simplify
+        function global:New-PipelineState {
+            return @{
+                pipelineState      = 'idle'
+                lockHolder         = $null
+                reviewRound        = [int]0
+                keepGoingResets    = [int]0
+                tddKeepGoingCount = [int]0
+                verdict            = $null
+                tasksDone          = [int]0
+                gateTimedOut       = $false
+                globalTimedOut     = $false
+                reviewGateType     = 'none'
+            }
+        }
+        function global:Read-IdempotencyToken {
+            param([string]$LogPath)
+            $tokens = [System.Collections.Generic.HashSet[string]]::new()
+            if (-not (Test-Path $LogPath)) { return $tokens }
+            foreach ($line in (Get-Content $LogPath)) {
+                if ($line -match 'INVOKE-CLAUDE\s+(INVOKE|COMPLETE)\s+stage=(\S+)') {
+                    $null = $tokens.Add("$($Matches[1]):$($Matches[2])")
+                }
+            }
+            return $tokens
+        }
+        function global:Test-IdempotencyComplete {
+            param($Tokens, [string]$Stage)
+            return ($Tokens.Contains("INVOKE:$Stage") -and $Tokens.Contains("COMPLETE:$Stage"))
+        }
+        . "$PSScriptRoot/../utils/pipeline-lock.ps1"
+        . "$PSScriptRoot/../utils/resume.ps1"
+    }
+
+    BeforeEach {
+        $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "resume-test-$(Get-Random)"
+        $script:lockDir = Join-Path $script:tempDir 'locks'
+        $script:logPath = Join-Path $script:tempDir 'pipeline.log'
+        $script:docsDir = Join-Path $script:tempDir 'docs'
+        New-Item -ItemType Directory -Path $script:lockDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $script:docsDir -Force | Out-Null
+
+        # Create valid lock file within budget
+        @{ pid = $PID; startTime = (Get-Process -Id $PID).StartTime.ToUniversalTime().ToString('o'); crashCount = 0 } |
+            ConvertTo-Json | Set-Content (Join-Path $script:lockDir 'pipeline.lock')
+    }
+
+    AfterEach {
+        Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It 'detects feature name from PIPELINE START line' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.Feature | Should -BeExactly 'cleanup'
+    }
+
+    It 'detects last completed stage' {
+        $log = @(
+            "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+            "[2026-04-11 12:01:00] Stage 1 complete"
+            "[2026-04-11 12:02:00] Stage 2 complete"
+            "[2026-04-11 12:03:00] Stage 3 complete"
+        ) -join "`n"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.LastStage | Should -Be 3
+        $result.ResumeStage | Should -Be 4
+    }
+
+    It 'throws when crash budget is exhausted' {
+        @{ pid = 99999; startTime = '2000-01-01T00:00:00Z'; crashCount = 3 } |
+            ConvertTo-Json | Set-Content (Join-Path $script:lockDir 'pipeline.lock')
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+
+        { Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir -MaxCrashes 3 } |
+            Should -Throw '*Crash budget exhausted*'
+    }
+
+    It 'classifies missing fixtures correctly' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.BddFixtureState | Should -BeExactly 'missing'
+    }
+
+    It 'classifies valid fixtures correctly' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        # Create valid fixture files
+        $fixtureBase = Join-Path $script:tempDir 'tests/fixtures/cleanup'
+        $bddDir = Join-Path $fixtureBase 'bdd'
+        New-Item -ItemType Directory -Path $bddDir -Force | Out-Null
+        Set-Content (Join-Path $bddDir 'fixture.json') -Value '{"valid": true}'
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.BddFixtureState | Should -BeExactly 'valid'
+    }
+
+    It 'classifies corrupt fixtures correctly' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        # Create corrupt fixture file
+        $fixtureBase = Join-Path $script:tempDir 'tests/fixtures/cleanup'
+        $bddDir = Join-Path $fixtureBase 'bdd'
+        New-Item -ItemType Directory -Path $bddDir -Force | Out-Null
+        Set-Content (Join-Path $bddDir 'fixture.json') -Value 'not valid json {{{{'
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.BddFixtureState | Should -BeExactly 'corrupt'
+    }
+
+    It 'reuses runId from log' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.RunId | Should -BeExactly '20260411T120000-abcd'
+    }
+
+    It 'throws when log file does not exist' {
+        { Resume-Pipeline -Root $script:tempDir -LogPath 'C:\nonexistent.log' -LockDir $script:lockDir } |
+            Should -Throw
+    }
+
+    It 'throws when feature name cannot be detected' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd no-feature-here"
+        Set-Content $script:logPath -Value $log
+
+        { Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir } |
+            Should -Throw '*Cannot detect feature name*'
+    }
+
+    It 'returns ResumeStage 1 when no stages completed' {
+        $log = "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.LastStage | Should -Be 0
+        $result.ResumeStage | Should -Be 1
+    }
+
+    It 'loads idempotency tokens from log' {
+        $log = @(
+            "[2026-04-11 12:00:00] PIPELINE START runId=20260411T120000-abcd feature=cleanup version=1"
+            "[2026-04-11 12:01:00] runId=20260411T120000-abcd INVOKE-CLAUDE INVOKE stage=elicitor"
+            "[2026-04-11 12:02:00] runId=20260411T120000-abcd INVOKE-CLAUDE COMPLETE stage=elicitor"
+        ) -join "`n"
+        Set-Content $script:logPath -Value $log
+        Mock git { return '.git' }
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
+
+        $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
+        $result.IdempotencyTokens | Should -Not -BeNullOrEmpty
+        $result.IdempotencyTokens.Contains('INVOKE:elicitor') | Should -BeTrue
+        $result.IdempotencyTokens.Contains('COMPLETE:elicitor') | Should -BeTrue
     }
 }

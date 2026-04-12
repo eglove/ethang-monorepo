@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/debate-loop.ps1"
     . "$PSScriptRoot/../utils/tlc-runner.ps1"
@@ -144,7 +144,7 @@ Describe 'Invoke-BddDebate' {
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
 
-        $script:capturedRevision | Should -Match 'elicitor\.md'
+        $script:capturedRevision | Should -Match 'feature directory'
         $script:capturedRevision | Should -Match 'C:/fake/artifact\.feature'
         $script:capturedRevision | Should -Match 'missing edge case'
     }
@@ -236,7 +236,7 @@ Describe 'Invoke-TlaDebate' {
             -GherkinFile $script:gherkinFile `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            
+
         Should -Invoke Invoke-DebateLoop -Times 1
     }
 
@@ -283,7 +283,7 @@ Describe 'Invoke-TlaDebate' {
             -GherkinFile $script:gherkinFile `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            
+
         $script:receivedPostRevision | Should -Not -BeNullOrEmpty
         $script:receivedPostRevision | Should -BeOfType [scriptblock]
     }
@@ -319,7 +319,7 @@ Describe 'Invoke-ImplementationWriter' {
         Set-Content (Join-Path $script:featureDir 'implementation-plan.md') -Value '# Plan'
         Set-Content (Join-Path $script:featureDir 'implementation-plan.json') -Value '{}'
 
-        $result = Invoke-ImplementationWriter -TlaFile $script:tlaFile -FeatureDir $script:featureDir -Root $script:tempRoot
+        $result = Invoke-ImplementationWriter -FeatureDir $script:featureDir -Root $script:tempRoot
 
         $result.ImplFile | Should -Match 'implementation-plan\.md'
         $result.ImplJson | Should -Match 'implementation-plan\.json'
@@ -331,7 +331,7 @@ Describe 'Invoke-ImplementationWriter' {
         $emptyDir = Join-Path $script:tempRoot 'docs/empty'
         New-Item -ItemType Directory -Path $emptyDir -Force | Out-Null
 
-        { Invoke-ImplementationWriter -TlaFile $script:tlaFile -FeatureDir $emptyDir -Root $script:tempRoot } |
+        { Invoke-ImplementationWriter -FeatureDir $emptyDir -Root $script:tempRoot } |
             Should -Throw '*did not produce*'
     }
 
@@ -342,7 +342,7 @@ Describe 'Invoke-ImplementationWriter' {
         New-Item -ItemType Directory -Path $partialDir -Force | Out-Null
         Set-Content (Join-Path $partialDir 'implementation-plan.md') -Value '# Plan'
 
-        { Invoke-ImplementationWriter -TlaFile $script:tlaFile -FeatureDir $partialDir -Root $script:tempRoot } |
+        { Invoke-ImplementationWriter -FeatureDir $partialDir -Root $script:tempRoot } |
             Should -Throw '*did not produce*'
     }
 }
@@ -390,7 +390,7 @@ Describe 'Invoke-ImplementationDebate' {
             -TlaFile $script:tlaFile `
             -FeatureDir $script:featureDir `
             -Root $script:tempRoot `
-            
+
         Should -Invoke Invoke-DebateLoop -Times 1
     }
 
@@ -412,5 +412,126 @@ Describe 'Invoke-ImplementationDebate' {
         $script:capturedRevision | Should -Match 'Spec\.tla'
         $script:capturedRevision | Should -Match 'C:/fake/artifact\.md'
         $script:capturedRevision | Should -Match 'step ordering wrong'
+    }
+}
+
+Describe 'Test-FixturePrecondition' {
+    BeforeAll { . "$PSScriptRoot/../utils/fixture-gate.ps1" }
+    BeforeEach {
+        $script:root = Join-Path ([System.IO.Path]::GetTempPath()) "fixture-gate-$(Get-Random)"
+        $script:featureName = 'test-feat'
+        $script:bddDir = Join-Path $script:root "tests/fixtures/$($script:featureName)/bdd"
+        New-Item -ItemType Directory -Path $script:bddDir -Force | Out-Null
+    }
+    AfterEach { Remove-Item $script:root -Recurse -Force -ErrorAction SilentlyContinue }
+
+    It 'passes when BDD fixture is valid' {
+        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path $script:bddDir 'fixture.json')
+        $r = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
+        $r.canProceed | Should -BeTrue
+    }
+
+    It 'fails when BDD fixture missing' {
+        $r = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
+        $r.canProceed | Should -BeFalse
+        $r.bddValid | Should -BeFalse
+    }
+
+    It 'fails when BDD fixture is corrupt JSON' {
+        Set-Content (Join-Path $script:bddDir 'fixture.json') -Value '{"corrupt'
+        $r = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
+        $r.canProceed | Should -BeFalse
+    }
+
+    It 'fails when schema version is not 1' {
+        @{ schemaVersion = 2; features = @() } | ConvertTo-Json | Set-Content (Join-Path $script:bddDir 'fixture.json')
+        $r = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
+        $r.bddValid | Should -BeFalse
+    }
+
+    It 'fails when BDD fixture missing (empty root)' {
+        $emptyRoot = Join-Path ([System.IO.Path]::GetTempPath()) "fixture-empty-$(Get-Random)"
+        New-Item -ItemType Directory -Path $emptyRoot -Force | Out-Null
+        try {
+            $r = Test-FixturePrecondition -Root $emptyRoot -FeatureName 'no-feat'
+            $r.canProceed | Should -BeFalse
+        }
+        finally { Remove-Item $emptyRoot -Recurse -Force -ErrorAction SilentlyContinue }
+    }
+}
+
+# =============================================================================
+# T10: Fixture Generation Integration — BDD and TLC fixture wiring
+# =============================================================================
+
+Describe 'BDD Fixture Generation (after stage 3)' {
+    BeforeAll {
+        . "$PSScriptRoot/../utils/gherkin-parser.ps1"
+        . "$PSScriptRoot/../utils/fixture-gate.ps1"
+    }
+
+    BeforeEach {
+        $script:root = Join-Path ([System.IO.Path]::GetTempPath()) "bdd-gen-$(Get-Random)"
+        $script:featureName = 'bdd-test'
+        $script:featureDir = Join-Path $script:root "docs/$($script:featureName)"
+        New-Item -ItemType Directory -Path $script:featureDir -Force | Out-Null
+    }
+    AfterEach { Remove-Item $script:root -Recurse -Force -ErrorAction SilentlyContinue }
+
+    It 'parses .feature file and exports valid BDD fixture JSON' {
+        $featureFile = Join-Path $script:featureDir 'bdd.feature'
+        Set-Content $featureFile -Value "Feature: Auth`n  Scenario: Login`n    Given a user`n    When they log in`n    Then they see home"
+
+        $bddFixturePath = Join-Path (Get-FixtureDir -Root $script:root -FeatureName $script:featureName) 'bdd/fixture.json'
+        $parsed = ConvertFrom-Gherkin -Path $featureFile
+        $parsed.schemaVersion = 1
+        Export-BddFixture -Fixture $parsed -OutputPath $bddFixturePath
+
+        $bddFixturePath | Should -Exist
+        $json = Get-Content $bddFixturePath -Raw | ConvertFrom-Json
+        $json.schemaVersion | Should -Be 1
+        $json.features.Count | Should -Be 1
+    }
+
+    It 'fixture passes precondition check after generation' {
+        $featureFile = Join-Path $script:featureDir 'bdd.feature'
+        Set-Content $featureFile -Value "Feature: Test`n  Scenario: S1`n    Given x"
+
+        # Generate BDD fixture
+        $bddFixturePath = Join-Path (Get-FixtureDir -Root $script:root -FeatureName $script:featureName) 'bdd/fixture.json'
+        $parsed = ConvertFrom-Gherkin -Path $featureFile
+        $parsed.schemaVersion = 1
+        Export-BddFixture -Fixture $parsed -OutputPath $bddFixturePath
+
+        $check = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
+        $check.canProceed | Should -BeTrue
+        $check.bddValid | Should -BeTrue
+    }
+}
+
+Describe 'Fixture Precondition blocks coding stage (stage 8 gate)' {
+    BeforeAll { . "$PSScriptRoot/../utils/fixture-gate.ps1" }
+    It 'missing fixtures cause precondition failure' {
+        $emptyRoot = Join-Path ([System.IO.Path]::GetTempPath()) "gate-$(Get-Random)"
+        New-Item -ItemType Directory -Path $emptyRoot -Force | Out-Null
+        try {
+            $check = Test-FixturePrecondition -Root $emptyRoot -FeatureName 'no-feat'
+            $check.canProceed | Should -BeFalse
+        }
+        finally { Remove-Item $emptyRoot -Recurse -Force -ErrorAction SilentlyContinue }
+    }
+
+    It 'corrupt BDD fixture blocks stage 8' {
+        $root = Join-Path ([System.IO.Path]::GetTempPath()) "gate-corrupt-$(Get-Random)"
+        $featName = 'corrupt-test'
+        $bddDir = Join-Path $root "tests/fixtures/$featName/bdd"
+        New-Item -ItemType Directory -Path $bddDir -Force | Out-Null
+        Set-Content (Join-Path $bddDir 'fixture.json') -Value '{"corrupt'
+        try {
+            $check = Test-FixturePrecondition -Root $root -FeatureName $featName
+            $check.canProceed | Should -BeFalse
+            $check.bddValid | Should -BeFalse
+        }
+        finally { Remove-Item $root -Recurse -Force -ErrorAction SilentlyContinue }
     }
 }

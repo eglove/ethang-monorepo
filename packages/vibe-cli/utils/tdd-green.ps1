@@ -1,4 +1,4 @@
-. "$PSScriptRoot/result-contracts.ps1"
+﻿. "$PSScriptRoot/result-contracts.ps1"
 . "$PSScriptRoot/task-log.ps1"
 . "$PSScriptRoot/response-parser.ps1"
 
@@ -18,7 +18,7 @@ function Invoke-GreenPhase {
     Write-StatusNote -TaskId $taskId -Status 'Coding' -Detail "code-writer: $($Task.codeWriter)"
 
     $codeWriterFile = Join-Path $Root "agents/code-writers/$($Task.codeWriter).md"
-    $workDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
+    $workDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
 
     while ($true) {
         # Boundary check BEFORE dispatch
@@ -35,7 +35,7 @@ function Invoke-GreenPhase {
 
         Write-TaskLog -TaskId $taskId -Phase 'green' -Message "Dispatching code writer: $($Task.codeWriter) (attempt $($Counters.greenAttempts + 1))" -FeatureDir $FeatureDir -RunId $RunId
 
-        $addDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
+        $addDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
         try {
             $response = Invoke-Claude -SystemPromptFile $codeWriterFile -Prompt $prompt -TaskId $taskId -AddDir $addDir
         }
@@ -110,7 +110,7 @@ function Invoke-GreenPhase {
     }
 }
 
-function Reset-GreenCounters {
+function Reset-GreenCounter {
     param([Parameter(Mandatory)][hashtable]$State)
     $State.greenAttempts = 0
     return $State

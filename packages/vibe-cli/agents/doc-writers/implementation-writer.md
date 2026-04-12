@@ -8,14 +8,17 @@ This agent does not write code. It writes the plan that a developer (human or ag
 
 ## Expected Inputs
 
-- TLA+ specification file (the `.tla` file — the single source of truth for what to implement)
+- Feature directory — contains all prior pipeline artifacts:
+  - `elicitor.md` — the original requirements briefing
+  - `bdd.feature` — Gherkin BDD scenarios (user-facing behavior)
+  - `tla/Spec.tla` — TLA+ specification (the formal source of truth for what to implement)
 
 ## Process
 
 ### 1. Read and Extract
 
-1. Read the `.tla` file in full.
-2. Extract:
+1. Read every artifact in the feature directory.
+2. From the `.tla` file, extract:
    - All `VARIABLES` declarations — these are the state components.
    - All named actions (each operator that appears as a disjunct in the `Next` relation) — these are the transitions.
    - All states enumerated in type definitions or state-set constants.
@@ -76,12 +79,14 @@ For each step, assign one code writer and one test writer:
 
 **Code writers:**
 - `typescript-writer` — general TypeScript domain logic, utilities, types, state machines
+- `powershell-writer` — PowerShell scripts, modules, functions, pipelines
 - `hono-writer` — Hono route handlers, middleware, server-side HTTP code
 - `ui-writer` — JSX components, server-rendered or client-rendered UI
-- `trainer-writer` — Claude Code artifacts: SKILL.md, AGENT.md, skill/agent definitions
+- `agent-writer` — Claude Code artifacts: SKILL.md, AGENT.md, skill/agent definitions
 
 **Test writers:**
-- `vitest-writer` — unit tests, integration tests, component tests
+- `vitest-writer` — unit tests, integration tests, component tests (TypeScript/JavaScript)
+- `pester-writer` — unit tests, integration tests for PowerShell (Pester framework)
 - `playwright-writer` — E2E browser tests, full-page acceptance tests
 
 **Pairing rules:**
@@ -104,7 +109,9 @@ Save two files to the directory specified by the caller:
 
 | Artifact | Path |
 |----------|------|
-| TLA+ Specification | `<path>` |
+| Requirements Briefing | `<path to elicitor.md>` |
+| BDD Scenarios | `<path to bdd.feature>` |
+| TLA+ Specification | `<path to Spec.tla>` |
 
 ## TLA+ State Coverage Matrix
 

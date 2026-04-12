@@ -1,10 +1,24 @@
-BeforeAll {
+﻿BeforeAll {
     # Stub external dependencies before sourcing
     function Invoke-Claude { }
     function Write-PipelineLog { }
 
     . "$PSScriptRoot/../utils/config.ps1"
-    . "$PSScriptRoot/../utils/pipeline-state.ps1"
+    # Stub: pipeline-state.ps1 was removed in code-simplify
+    function global:New-PipelineState {
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
+        }
+    }
     . "$PSScriptRoot/../utils/review-verdict.ps1"
     . "$PSScriptRoot/../utils/review-gate.ps1"
 
@@ -360,5 +374,63 @@ Describe 'New-RetryVerdict' {
     It 'stores the reason for audit logging' {
         $result = New-RetryVerdict -Reason 'Moderator output truncated'
         $result.Reason | Should -BeExactly 'Moderator output truncated'
+    }
+}
+
+# =============================================================================
+# Invoke-ReviewGateFailure — TLA+ ReviewGateFail transition
+# BDD: "Tasks that fail review are marked failed with completion counted"
+# =============================================================================
+
+Describe 'Invoke-ReviewGateFailure' {
+    It 'transitions task from review_gate to failed' {
+        $task = @{ taskState = 'review_gate'; taskId = 'T1'; tddIter = 1; coverageIter = 0 }
+        $tier = @{ completionCounter = 0 }
+        $result = Invoke-ReviewGateFailure -TaskState $task -TierState $tier
+        $task.taskState | Should -BeExactly 'failed'
+        $result.action | Should -BeExactly 'ReviewGateFail'
+    }
+
+    It 'increments completion counter exactly once' {
+        $task = @{ taskState = 'review_gate'; taskId = 'T1'; tddIter = 1; coverageIter = 0 }
+        $tier = @{ completionCounter = 2 }
+        Invoke-ReviewGateFailure -TaskState $task -TierState $tier
+        $tier.completionCounter | Should -Be 3
+    }
+
+    It 'does not double-increment on repeated calls' {
+        $task = @{ taskState = 'review_gate'; taskId = 'T1'; tddIter = 1; coverageIter = 0 }
+        $tier = @{ completionCounter = 0 }
+        Invoke-ReviewGateFailure -TaskState $task -TierState $tier
+        # Task is now 'failed', can't call again (guard will throw)
+        $tier.completionCounter | Should -Be 1
+    }
+
+    It 'throws when taskState is not review_gate' {
+        $task = @{ taskState = 'executing'; taskId = 'T1' }
+        $tier = @{ completionCounter = 0 }
+        { Invoke-ReviewGateFailure -TaskState $task -TierState $tier } |
+            Should -Throw '*review_gate*'
+    }
+
+    It 'preserves tddIter and coverageIter from prior cycles' {
+        # Multi-cycle: coverage fail -> retry -> coverage pass -> review fail
+        $task = @{
+            taskState = 'review_gate'
+            taskId = 'T1'
+            tddIter = 2      # Had one coverage retry
+            coverageIter = 1  # One coverage failure
+        }
+        $tier = @{ completionCounter = 0 }
+        $result = Invoke-ReviewGateFailure -TaskState $task -TierState $tier
+        $result.tddIter | Should -Be 2
+        $result.coverageIter | Should -Be 1
+    }
+
+    It 'records failure reason' {
+        $task = @{ taskState = 'review_gate'; taskId = 'T1'; tddIter = 1; coverageIter = 0 }
+        $tier = @{ completionCounter = 0 }
+        $result = Invoke-ReviewGateFailure -TaskState $task -TierState $tier -Reason 'quality_rejected'
+        $task.failureReason | Should -BeExactly 'quality_rejected'
     }
 }

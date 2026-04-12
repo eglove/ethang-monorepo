@@ -1,4 +1,4 @@
-. "$PSScriptRoot/result-contracts.ps1"
+﻿. "$PSScriptRoot/result-contracts.ps1"
 . "$PSScriptRoot/task-log.ps1"
 
 function Invoke-FinalVerification {
@@ -126,7 +126,7 @@ function Invoke-FinalVerification {
     }
 }
 
-function Reset-FinalCounters {
+function Reset-FinalCounter {
     param([Parameter(Mandatory)][hashtable]$State)
     $State.finalRemediations = 0
     $State.finalCleanPasses = 0

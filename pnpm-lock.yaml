@@ -907,6 +907,8 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
+  packages/vibe-cli: {}
+
 packages:
 
   '@acemir/cssom@0.9.31':

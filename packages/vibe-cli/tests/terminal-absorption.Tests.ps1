@@ -1,6 +1,51 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
-    . "$PSScriptRoot/../utils/pipeline-state.ps1"
+    # Stub: pipeline-state.ps1 was removed in code-simplify
+    function global:New-PipelineState {
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
+        }
+    }
+    function global:Test-PipelineStateTypeOK { param($State, $Config) return $true }
+    function global:Test-PipelineTerminal {
+        param($State)
+        if ($null -eq $State) { throw 'State is null' }
+        return $State.pipelineState -in @('COMPLETE','HALTED')
+    }
+    function global:Assert-PipelineNotTerminal {
+        param($State, [string]$CallerName)
+        if ($State.pipelineState -in @('COMPLETE','HALTED')) {
+            $caller = if ($CallerName) { $CallerName } else { 'Assert-PipelineNotTerminal' }
+            throw "$caller cannot proceed: pipeline is in terminal state '$($State.pipelineState)'"
+        }
+    }
+    function global:Set-PipelineComplete {
+        param($State)
+        if ($State.pipelineState -in @('COMPLETE','HALTED')) {
+            throw "Cannot transition to COMPLETE from terminal state '$($State.pipelineState)'"
+        }
+        $State.pipelineState = 'COMPLETE'
+        $State.lockHolder = $null
+        $State.reviewGateType = 'none'
+    }
+    function global:Set-PipelineHalted {
+        param($State, [string]$Reason)
+        if ($State.pipelineState -in @('COMPLETE','HALTED')) {
+            throw "Cannot transition to HALTED from terminal state '$($State.pipelineState)'"
+        }
+        $State.pipelineState = 'HALTED'
+        $State.lockHolder = $null
+        $State.reviewGateType = 'none'
+    }
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
 }
 

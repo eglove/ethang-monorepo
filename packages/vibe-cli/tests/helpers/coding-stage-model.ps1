@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # coding-stage-model.ps1 — Pure CodingStage state machine model
 # Mirrors CodingStage.tla faithfully. No I/O, no side effects.
 # Each action has a guard function + mutation function.
@@ -519,7 +519,7 @@ function Test-TiersSequential {
     return $true
 }
 
-function Test-RetryBounds {
+function Test-RetryBound {
     param([Parameter(Mandatory)][hashtable]$S)
     foreach ($t in $S._Tasks) {
         if ($S.redRetries[$t] -gt $S._MaxRedRetries) { return $false }
@@ -556,7 +556,7 @@ function Test-MergeSerial {
     return $true
 }
 
-function Test-NoOrphanedWorkspaces {
+function Test-NoOrphanedWorkspace {
     param([Parameter(Mandatory)][hashtable]$S)
     if ($S.pipelineStatus -eq 'completed') {
         foreach ($t in $S._Tasks) {

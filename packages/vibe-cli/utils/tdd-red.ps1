@@ -1,4 +1,4 @@
-. "$PSScriptRoot/result-contracts.ps1"
+﻿. "$PSScriptRoot/result-contracts.ps1"
 . "$PSScriptRoot/task-log.ps1"
 . "$PSScriptRoot/response-parser.ps1"
 
@@ -26,8 +26,8 @@ function Invoke-RedPhase {
 
     Write-TaskLog -TaskId $taskId -Phase 'red' -Message "Dispatching test writer: $($Task.testWriter)" -FeatureDir $FeatureDir -RunId $RunId
 
-    # Write tests
-    $addDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
+    # Write tests — use package-level dir so agent paths align with verify commands
+    $addDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
     try {
         $response = Invoke-Claude -SystemPromptFile $testWriterFile -Prompt $prompt -TaskId $taskId -AddDir $addDir
     }
@@ -62,7 +62,7 @@ function Invoke-RedPhase {
     }
 
     # Run verify-test
-    $workDir = if ($WorkspacePath) { $WorkspacePath } else { $null }
+    $workDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
     try {
         $exitCode = Invoke-VerifyCommand -Command $Config.VerifyTest -WorkingDirectory $workDir
     }
@@ -157,7 +157,7 @@ function Invoke-RedPhase {
     }
 }
 
-function Reset-RedCounters {
+function Reset-RedCounter {
     param([Parameter(Mandatory)][hashtable]$State)
     $State.redRetries = 0
     return $State

@@ -62,4 +62,29 @@ More text after the block.
         $result = ConvertFrom-AgentResponse -Response $json
         $result.verdict | Should -Be 'revised'
     }
+
+    It 'extracts inline JSON from prose text' {
+        $response = @"
+`pnpm lint` passed with exit code 0.
+
+{ "blame": "neither", "detail": "no failure detected" }
+"@
+        $result = ConvertFrom-AgentResponse -Response $response
+        $result.blame | Should -Be 'neither'
+    }
+
+    It 'extracts inline JSON on same line as prose' {
+        $response = 'Result: { "verdict": "pass" } done.'
+        $result = ConvertFrom-AgentResponse -Response $response
+        $result.verdict | Should -Be 'pass'
+    }
+
+    It 'picks last inline JSON object when multiple exist' {
+        $response = @"
+{ "x": 1 }
+{ "blame": "test" }
+"@
+        $result = ConvertFrom-AgentResponse -Response $response
+        $result.blame | Should -Be 'test'
+    }
 }

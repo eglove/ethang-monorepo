@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
 }
 
@@ -240,5 +240,136 @@ Describe 'Invoke-Claude streaming path' {
         $result = Invoke-Claude -Prompt 'test'
 
         $result | Should -BeNullOrEmpty
+    }
+}
+
+Describe 'Invoke-Claude PID registration' {
+    BeforeAll {
+        Mock Write-PipelineLog {}
+        Mock Write-Host {}
+    }
+
+    AfterEach {
+        Remove-Item Function:\claude -ErrorAction SilentlyContinue
+    }
+
+    It 'registers PID in ChildPidRegistry when TaskId provided' {
+        function global:claude {
+            '{"type":"result","subtype":"success","result":"pid-ok","total_cost_usd":0.01}'
+        }
+
+        # Ensure Get-ChildPidRegistry is available
+        . "$PSScriptRoot/../utils/job-runner.ps1"
+
+        $result = Invoke-Claude -Prompt 'test' -TaskId 'T-pid'
+
+        $result | Should -Be 'pid-ok'
+        # PID should have been cleaned up after completion (TryRemove)
+    }
+
+    It 'logs text block content from assistant messages' {
+        function global:claude {
+            '{"type":"assistant","message":{"content":[{"type":"text","text":"hello from agent"}]}}'
+            '{"type":"result","subtype":"success","result":"text-ok","total_cost_usd":0.01}'
+        }
+
+        $result = Invoke-Claude -Prompt 'test'
+        $result | Should -Be 'text-ok'
+        Should -Invoke Write-PipelineLog -ParameterFilter { $Message -match 'hello from agent' }
+    }
+
+    It 'logs non-success subtype and error from result events' {
+        function global:claude {
+            '{"type":"result","subtype":"error","error":"something broke","total_cost_usd":0.01}'
+        }
+
+        $result = Invoke-Claude -Prompt 'test'
+        $result | Should -BeNullOrEmpty
+        Should -Invoke Write-PipelineLog -ParameterFilter { $Message -match 'subtype=error' }
+        Should -Invoke Write-PipelineLog -ParameterFilter { $Message -match 'ERROR.*something broke' }
+    }
+}
+
+Describe 'Invoke-ClaudeWithRetry' {
+    BeforeAll {
+        Mock Write-PipelineLog {}
+        Mock Write-Host {}
+    }
+
+    It 'returns result on first success (no retry)' {
+        Mock Invoke-Claude { return '{"ok":true}' }
+        $r = Invoke-ClaudeWithRetry -Prompt 'test'
+        $r | Should -BeExactly '{"ok":true}'
+        Should -Invoke Invoke-Claude -Times 1
+    }
+
+    It 'retries on 500 with backoff' {
+        $script:n = 0
+        Mock Invoke-Claude { $script:n++; if ($script:n -lt 3) { throw "HTTP 500 Error" }; return 'ok' }
+        Mock Start-Sleep {}
+        $r = Invoke-ClaudeWithRetry -Prompt 'test' -BackoffSeconds @(1,2,4)
+        $r | Should -BeExactly 'ok'
+        Should -Invoke Invoke-Claude -Times 3
+        Should -Invoke Start-Sleep -Times 2
+    }
+
+    It 'retries on network timeout' {
+        $script:n = 0
+        Mock Invoke-Claude { $script:n++; if ($script:n -eq 1) { throw "Connection timed out" }; return 'ok' }
+        Mock Start-Sleep {}
+        Invoke-ClaudeWithRetry -Prompt 'test' -BackoffSeconds @(1)
+        Should -Invoke Invoke-Claude -Times 2
+    }
+
+    It 'respects Retry-After on 429' {
+        $script:n = 0
+        Mock Invoke-Claude { $script:n++; if ($script:n -eq 1) { throw "HTTP 429 Too Many Requests Retry-After: 3" }; return 'ok' }
+        Mock Start-Sleep {}
+        Invoke-ClaudeWithRetry -Prompt 'test'
+        Should -Invoke Start-Sleep -Times 1 -ParameterFilter { $Seconds -eq 3 }
+    }
+
+    It 'does NOT retry 400 client error' {
+        Mock Invoke-Claude { throw "HTTP 400 Bad Request" }
+        { Invoke-ClaudeWithRetry -Prompt 'test' } | Should -Throw '*400*'
+        Should -Invoke Invoke-Claude -Times 1
+    }
+
+    It 'caps at MaxAttempts' {
+        Mock Invoke-Claude { throw "HTTP 500 Error" }
+        Mock Start-Sleep {}
+        { Invoke-ClaudeWithRetry -Prompt 'test' -MaxAttempts 3 -BackoffSeconds @(1,1,1) } | Should -Throw
+        Should -Invoke Invoke-Claude -Times 3
+    }
+
+    It 'uses exponential backoff sequence' {
+        $script:n = 0; $script:delays = @()
+        Mock Invoke-Claude { $script:n++; if ($script:n -le 3) { throw "HTTP 500" }; return 'ok' }
+        Mock Start-Sleep { $script:delays += $Seconds }
+        Invoke-ClaudeWithRetry -Prompt 'test' -BackoffSeconds @(5,10,20)
+        $script:delays | Should -Be @(5,10,20)
+    }
+
+    It 'passes all optional params to Invoke-Claude' {
+        Mock Invoke-Claude { return 'ok' }
+
+        Invoke-ClaudeWithRetry `
+            -SystemPromptFile '/tmp/sys.md' `
+            -AppendSystemPromptFile '/tmp/append.md' `
+            -Prompt 'hello' `
+            -JsonSchema '{"type":"object"}' `
+            -AddDir '/tmp/dir' `
+            -Interactive `
+            -TaskId 'T-retry'
+
+        Should -Invoke Invoke-Claude -Times 1 -ParameterFilter {
+            $SystemPromptFile -eq '/tmp/sys.md' -and
+            $AppendSystemPromptFile -eq '/tmp/append.md' -and
+            $Prompt -eq 'hello' -and
+            $JsonSchema -eq '{"type":"object"}' -and
+            $AddDir -eq '/tmp/dir' -and
+            $Interactive -eq $true -and
+            $TaskId -eq 'T-retry'
+        }
     }
 }

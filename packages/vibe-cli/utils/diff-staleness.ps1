@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # diff-staleness.ps1 — Diff-base staleness detection for merge queue
 # TLA+ actions: DiffBaseStale, DiffBaseStaleExhausted
 # Depends on: config.ps1, pipeline-state.ps1

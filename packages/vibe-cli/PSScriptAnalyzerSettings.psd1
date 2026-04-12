@@ -1,4 +1,4 @@
-@{
+﻿@{
     ExcludeRules = @(
         # Write-Host is intentional for CLI progress output
         'PSAvoidUsingWriteHost'
@@ -11,5 +11,15 @@
 
         # Closure params ($Briefing, $TlaDir, $ImplJson) used inside .GetNewClosure() scriptblocks
         'PSReviewUnusedParameter'
+
+        # Internal CLI functions — OutputType annotations and ShouldProcess support not needed
+        'PSUseOutputTypeCorrectly'
+        'PSUseShouldProcessForStateChangingFunctions'
+
+        # Intentional empty catches in cleanup/teardown code throughout the pipeline
+        'PSAvoidUsingEmptyCatchBlock'
+
+        # False positives: Start-ThreadJob scriptblocks use param() + -ArgumentList, not $Using:
+        'PSUseUsingScopeModifierInNewRunspaces'
     )
 }

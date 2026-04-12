@@ -92,4 +92,15 @@ Describe 'Read-Escalation' {
         Mock Read-Host { 'k' }
         { Read-Escalation -Source 'task' -TaskId 'T1' -Phase 'red' } | Should -Not -Throw
     }
+
+    It 'displays Error_ with Write-Host when provided' {
+        Mock Read-Host { 'k' }
+        $writeHostCalls = @()
+        Mock Write-Host { param($Object, $ForegroundColor) $script:writeHostCalls += $Object }
+
+        Read-Escalation -Source 'task' -TaskId 'T1' -Phase 'red' -Error_ 'something went wrong'
+
+        $script:writeHostCalls | Should -Contain 'Error:'
+        $script:writeHostCalls | Should -Contain 'something went wrong'
+    }
 }

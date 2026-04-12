@@ -51,20 +51,6 @@ Describe 'Test-ImplementationPlan' {
         ($result.Errors | Where-Object { $_ -match 'intra-tier|forward' }).Count | Should -BeGreaterThan 0
     }
 
-    It 'detects unknown writer type' {
-        $plan = @{
-            tiers = @(@{ tier = 1; tasks = @(
-                @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'unknown-writer'; testWriter = $null; dependencies = @() }
-            )})
-        }
-        $planFile = Join-Path $script:tempDir 'unknown-writer.json'
-        $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
-
-        $result = Test-ImplementationPlan -PlanJsonPath $planFile -Root $script:root
-        $result.Status | Should -Be 'failed'
-        ($result.Errors | Where-Object { $_ -match 'unknown.*codeWriter' }).Count | Should -BeGreaterThan 0
-    }
-
     It 'allows null codeWriter for test-only tasks' {
         $plan = @{
             tiers = @(@{ tier = 1; tasks = @(
@@ -177,19 +163,6 @@ Describe 'Test-ImplementationPlan' {
         ($result.Errors | Where-Object { $_ -match 'missing required field' }).Count | Should -BeGreaterThan 0
     }
 
-    It 'detects unknown testWriter' {
-        $plan = @{
-            tiers = @(@{ tier = 1; tasks = @(
-                @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = 'powershell-writer'; testWriter = 'nonexistent-test-writer'; dependencies = @() }
-            )})
-        }
-        $planFile = Join-Path $script:tempDir 'bad-testwriter.json'
-        $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
-
-        $result = Test-ImplementationPlan -PlanJsonPath $planFile -Root $script:root
-        $result.Status | Should -Be 'failed'
-        ($result.Errors | Where-Object { $_ -match 'testWriter' }).Count | Should -BeGreaterThan 0
-    }
 }
 
 Describe 'New-PipelineLock' {

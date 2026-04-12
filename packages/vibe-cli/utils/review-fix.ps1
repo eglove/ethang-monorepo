@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # review-fix.ps1 — Review-fix cycle
 # TLA+ action: ReviewFixComplete
 # Depends on: config.ps1, pipeline-state.ps1, review-verdict.ps1

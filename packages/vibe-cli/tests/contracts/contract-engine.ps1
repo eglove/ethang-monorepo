@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # contract-engine.ps1 — PowerShell-native consumer-driven contract testing
 # No third-party dependencies. Validates data shapes against contract schemas.
 # =============================================================================
@@ -158,7 +158,7 @@ function Test-Contract {
     }
 }
 
-function Format-ContractViolations {
+function Format-ContractViolation {
     <#
     .SYNOPSIS
         Formats contract violations for Pester diagnostic output.

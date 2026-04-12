@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # review-gate.ps1 — Review gate engine (core loop)
 # TLA+ actions: EnterPreMergeReview, ReviewVerdict, KeepGoingReview, StopReview
 # Depends on: config.ps1, pipeline-state.ps1, review-verdict.ps1, read-escalation.ps1
@@ -302,6 +302,42 @@ function Invoke-ReviewEscalation {
             Write-PipelineLog "Review escalation: user chose Stop — pipeline HALTED"
             return [PSCustomObject]@{ Action = 'stopped' }
         }
+    }
+}
+
+function Invoke-ReviewGateFailure {
+    <#
+    .SYNOPSIS
+        TLA+ ReviewGateFail — marks task as failed on review rejection.
+        Increments completion counter exactly once.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$TaskState,
+        [Parameter(Mandatory)][hashtable]$TierState,
+        [string]$Reason = 'review_rejected'
+    )
+
+    # Guard: must be in review_gate state
+    if ($TaskState.taskState -ne 'review_gate') {
+        throw "ReviewGateFail requires taskState 'review_gate', got '$($TaskState.taskState)'"
+    }
+
+    # Transition task to failed
+    $TaskState.taskState = 'failed'
+    $TaskState.failureReason = $Reason
+
+    # Increment completion counter (exactly once per task failure)
+    if (-not $TaskState._completionCounted) {
+        $TierState.completionCounter++
+        $TaskState._completionCounted = $true
+    }
+
+    return @{
+        action = 'ReviewGateFail'
+        taskId = $TaskState.taskId
+        reason = $Reason
+        tddIter = $TaskState.tddIter
+        coverageIter = $TaskState.coverageIter
     }
 }
 

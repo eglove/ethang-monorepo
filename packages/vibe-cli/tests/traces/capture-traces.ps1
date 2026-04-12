@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # capture-traces.ps1 — TLC trace generation utility
 # Runs TLC in simulation mode and parses output into JSON trace files.
 # Usage: .\capture-traces.ps1 -SpecDir <path-to-tla-dir> -OutputDir <path>

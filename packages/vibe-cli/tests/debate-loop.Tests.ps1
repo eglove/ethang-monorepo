@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/debate-loop.ps1"
 }
@@ -41,7 +41,7 @@ Describe 'Invoke-DebateLoop' {
             -DebateContext 'test context' `
             -SessionFile $script:sessionFile `
             -ArtifactFile $script:artifactFile `
-            -BriefingFile $script:briefingFile `
+            -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
             -MaxRounds 5
 
@@ -67,7 +67,7 @@ Describe 'Invoke-DebateLoop' {
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
             -ArtifactFile $script:artifactFile `
-            -BriefingFile $script:briefingFile `
+            -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
             -MaxRounds 5
 
@@ -99,7 +99,7 @@ Describe 'Invoke-DebateLoop' {
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
             -ArtifactFile $script:artifactFile `
-            -BriefingFile $script:briefingFile `
+            -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
             -MaxRounds 5
 
@@ -119,7 +119,7 @@ Describe 'Invoke-DebateLoop' {
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
             -ArtifactFile $script:artifactFile `
-            -BriefingFile $script:briefingFile `
+            -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
             -MaxRounds 2
 
@@ -144,7 +144,7 @@ Describe 'Invoke-DebateLoop' {
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
             -ArtifactFile $script:artifactFile `
-            -BriefingFile $script:briefingFile `
+            -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
             -MaxRounds 5
 
@@ -169,7 +169,7 @@ Describe 'Invoke-DebateLoop' {
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
             -ArtifactFile $script:artifactFile `
-            -BriefingFile $script:briefingFile `
+            -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
             -PostRevision { $script:postRevisionCalled = $true } `
             -MaxRounds 5
@@ -196,7 +196,7 @@ Describe 'Invoke-DebateLoop' {
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
             -ArtifactFile $script:artifactFile `
-            -BriefingFile $script:briefingFile `
+            -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
             -PostRevision { $script:postRevisionCount++ } `
             -MaxRounds 5
@@ -222,7 +222,7 @@ Describe 'Invoke-DebateLoop' {
             -DebateContext 'test' `
             -SessionFile $script:sessionFile `
             -ArtifactFile $script:artifactFile `
-            -BriefingFile $script:briefingFile `
+            -FeatureDir $script:tempDir `
             -ReferenceFile $refFile `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
             -MaxRounds 5

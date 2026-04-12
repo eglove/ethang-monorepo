@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     # Stub external dependencies before sourcing
     function Invoke-Claude { }
     function Write-PipelineLog { }
@@ -10,7 +10,22 @@ BeforeAll {
     function Invoke-ReviewGate { }
 
     . "$PSScriptRoot/../utils/config.ps1"
-    . "$PSScriptRoot/../utils/pipeline-state.ps1"
+    # Stub: pipeline-state.ps1 was removed in code-simplify
+    function global:New-PipelineState {
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
+        }
+    }
+    function global:Test-PipelineStateTypeOK { param($State, $Config) return $true }
     . "$PSScriptRoot/../utils/review-verdict.ps1"
     . "$PSScriptRoot/../utils/review-fix.ps1"
 }

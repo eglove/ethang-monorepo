@@ -1,13 +1,15 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
     . "$PSScriptRoot/../utils/task-log.ps1"
+    . "$PSScriptRoot/../utils/workspace.ps1"
     . "$PSScriptRoot/../utils/tdd-green.ps1"
     . "$PSScriptRoot/helpers/claude-test-double.ps1"
 
     Mock Write-PipelineLog {}
     Mock Write-Host {}
     Mock Write-TaskLog {}
+    Mock Get-PackageWorkDir { $WorktreePath }
 }
 
 Describe 'Invoke-GreenPhase' {
@@ -183,10 +185,10 @@ Describe 'Invoke-GreenPhase — scoped test verification' {
     }
 }
 
-Describe 'Reset-GreenCounters' {
+Describe 'Reset-GreenCounter' {
     It 'resets greenAttempts to 0 and preserves other fields' {
         $state = @{ greenAttempts = 50; redRetries = 2 }
-        $result = Reset-GreenCounters -State $state
+        $result = Reset-GreenCounter -State $state
         $result.greenAttempts | Should -Be 0
         $result.redRetries | Should -Be 2
     }

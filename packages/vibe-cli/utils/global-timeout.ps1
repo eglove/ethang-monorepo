@@ -1,4 +1,4 @@
-function Test-GlobalPipelineTimeout {
+﻿function Test-GlobalPipelineTimeout {
     <#
     .SYNOPSIS
         TLA+ GlobalTimeout action — halts the pipeline when cumulative wall-clock
@@ -79,4 +79,37 @@ function Get-PipelineElapsed {
 
     $elapsed = ((Get-Date) - $StartTime).TotalSeconds
     return [double]$elapsed
+}
+
+function Test-TaskTimeout {
+    <#
+    .SYNOPSIS
+        Per-task watchdog — detects when a task has been stuck in an active
+        state beyond the allowed timeout threshold.
+    .DESCRIPTION
+        Active states: executing, coverage_gate, review_gate, merge_waiting.
+        Returns $true when the task has been in one of these states for
+        >= TimeoutSeconds (default 1800 = 30 minutes).
+        Returns $false for non-active states or missing stateStartTime.
+    .PARAMETER TaskState
+        A hashtable representing the task, with at minimum taskState and
+        optionally stateStartTime keys.
+    .PARAMETER TimeoutSeconds
+        Seconds before an active task is considered timed out. Default 1800.
+    .OUTPUTS
+        [bool] $true if the task has timed out, $false otherwise.
+    #>
+    param(
+        [Parameter(Mandatory)][hashtable]$TaskState,
+        [int]$TimeoutSeconds = 1800  # 30 minutes
+    )
+
+    $activeStates = @('executing', 'coverage_gate', 'review_gate', 'merge_waiting')
+
+    if ($TaskState.taskState -notin $activeStates) { return $false }
+
+    if (-not $TaskState.stateStartTime) { return $false }
+
+    $elapsed = ((Get-Date) - $TaskState.stateStartTime).TotalSeconds
+    return $elapsed -ge $TimeoutSeconds
 }

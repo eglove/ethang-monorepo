@@ -1,10 +1,25 @@
-BeforeAll {
+﻿BeforeAll {
     # Stub external dependencies before sourcing
     function Invoke-Claude { }
     function Write-PipelineLog { param([string]$Message, [string]$Color = 'Gray') }
 
     . "$PSScriptRoot/../utils/config.ps1"
-    . "$PSScriptRoot/../utils/pipeline-state.ps1"
+    # Stub: pipeline-state.ps1 was removed in code-simplify
+    function global:New-PipelineState {
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
+        }
+    }
+    function global:Test-PipelineStateTypeOK { param($State, $Config) return $true }
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
     . "$PSScriptRoot/../utils/global-timeout.ps1"
 }
@@ -360,5 +375,57 @@ Describe 'Safety invariant: GlobalTimeoutHalts (S10)' {
         # lockHolder must be NULL for HALTED to pass TypeOK — adjust check
         # TypeOK validates all fields are within legal ranges
         Test-PipelineStateTypeOK -State $state -Config $cfg | Should -BeTrue
+    }
+}
+
+# =============================================================================
+# Test-TaskTimeout — per-task watchdog for stuck active states
+# BDD: "Task times out when stuck in an active state beyond 30 minutes"
+# =============================================================================
+
+Describe 'Test-TaskTimeout' {
+    It 'returns false for non-active state' {
+        $task = @{ taskState = 'idle'; stateStartTime = (Get-Date).AddMinutes(-60) }
+        Test-TaskTimeout -TaskState $task | Should -BeFalse
+    }
+
+    It 'returns true for executing state beyond 30 min' {
+        $task = @{ taskState = 'executing'; stateStartTime = (Get-Date).AddSeconds(-1801) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'returns true for coverage_gate state beyond 30 min' {
+        $task = @{ taskState = 'coverage_gate'; stateStartTime = (Get-Date).AddSeconds(-1801) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'returns true for review_gate state beyond 30 min' {
+        $task = @{ taskState = 'review_gate'; stateStartTime = (Get-Date).AddSeconds(-1801) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'returns true for merge_waiting state beyond 30 min' {
+        $task = @{ taskState = 'merge_waiting'; stateStartTime = (Get-Date).AddSeconds(-1801) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'boundary: 29:59 NOT timed out' {
+        $task = @{ taskState = 'executing'; stateStartTime = (Get-Date).AddSeconds(-1799) }
+        Test-TaskTimeout -TaskState $task | Should -BeFalse
+    }
+
+    It 'boundary: 30:00 IS timed out' {
+        $task = @{ taskState = 'executing'; stateStartTime = (Get-Date).AddSeconds(-1800) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'boundary: 30:01 IS timed out' {
+        $task = @{ taskState = 'executing'; stateStartTime = (Get-Date).AddSeconds(-1801) }
+        Test-TaskTimeout -TaskState $task | Should -BeTrue
+    }
+
+    It 'returns false when stateStartTime is missing' {
+        $task = @{ taskState = 'executing' }
+        Test-TaskTimeout -TaskState $task | Should -BeFalse
     }
 }

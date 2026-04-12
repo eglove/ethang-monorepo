@@ -1,4 +1,4 @@
-function Invoke-Claude {
+﻿function Invoke-Claude {
     param(
         [string]$SystemPromptFile,
         [string]$AppendSystemPromptFile,
@@ -121,4 +121,67 @@ function Invoke-Claude {
     }
 
     if ($resultText) { return $resultText }
+}
+
+function Invoke-ClaudeWithRetry {
+    <#
+    .SYNOPSIS
+        Wraps Invoke-Claude with exponential backoff retry for transient failures.
+        Independent of TLA+ apiRetries (merge-only counter in merge-queue.ps1).
+    #>
+    param(
+        [string]$SystemPromptFile,
+        [string]$AppendSystemPromptFile,
+        [string]$Prompt,
+        [string]$JsonSchema,
+        [string]$AddDir,
+        [switch]$Interactive,
+        [string]$TaskId,
+        [int]$MaxAttempts = 5,
+        [int[]]$BackoffSeconds = @(5, 10, 20, 40, 80)
+    )
+
+    # Build splat for Invoke-Claude (exclude retry-specific params)
+    $claudeParams = @{}
+    if ($SystemPromptFile) { $claudeParams.SystemPromptFile = $SystemPromptFile }
+    if ($AppendSystemPromptFile) { $claudeParams.AppendSystemPromptFile = $AppendSystemPromptFile }
+    if ($Prompt) { $claudeParams.Prompt = $Prompt }
+    if ($JsonSchema) { $claudeParams.JsonSchema = $JsonSchema }
+    if ($AddDir) { $claudeParams.AddDir = $AddDir }
+    if ($Interactive) { $claudeParams.Interactive = $true }
+    if ($TaskId) { $claudeParams.TaskId = $TaskId }
+
+    $attempt = 0
+    while ($true) {
+        $attempt++
+        try {
+            return Invoke-Claude @claudeParams
+        }
+        catch {
+            $errMsg = $_.Exception.Message
+            $statusCode = $null
+
+            if ($errMsg -match '\b(\d{3})\b') { $statusCode = [int]$Matches[1] }
+
+            # 400-level client errors (except 429) NOT retried
+            if ($statusCode -and $statusCode -ge 400 -and $statusCode -lt 500 -and $statusCode -ne 429) {
+                Write-PipelineLog "API client error ($statusCode) — not retrying" -Color Red
+                throw
+            }
+
+            if ($attempt -ge $MaxAttempts) {
+                Write-PipelineLog "API retry exhausted after $MaxAttempts attempts" -Color Red
+                throw
+            }
+
+            # 429 with Retry-After
+            $delay = $BackoffSeconds[[math]::Min($attempt - 1, $BackoffSeconds.Count - 1)]
+            if ($statusCode -eq 429 -and $errMsg -match 'Retry-After:\s*(\d+)') {
+                $delay = [int]$Matches[1]
+            }
+
+            Write-PipelineLog "API attempt $attempt/$MaxAttempts failed, retrying in ${delay}s..." -Color Yellow
+            Start-Sleep -Seconds $delay
+        }
+    }
 }

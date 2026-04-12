@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
     . "$PSScriptRoot/../utils/task-log.ps1"
@@ -20,10 +20,24 @@ Describe 'New-TaskWorkspace' {
         function pnpm { }
     }
 
-    It 'returns null for single-task tier' {
-        $tasks = @(@{ id = 'T1' })
-        $result = New-TaskWorkspace -Tasks $tasks -FeatureName 'test' -RunId 'abc12345'
-        $result | Should -BeNullOrEmpty
+    It 'creates worktree for single-task tier (always-worktree rule)' {
+        $tasks = @(@{ id = 'T1'; files = @('a.ps1') })
+        $result = New-TaskWorkspace -Tasks $tasks -FeatureName 'cleanup' -RunId '20260411T-abcd'
+        $result | Should -Not -BeNullOrEmpty
+        $result.Keys | Should -Contain 'T1'
+    }
+
+    It 'worktree path format is .worktrees/feature-taskId-runId' {
+        $tasks = @(@{ id = 'T1'; files = @('a.ps1') })
+        $result = New-TaskWorkspace -Tasks $tasks -FeatureName 'cleanup' -RunId '20260411T120000-abcd'
+        $result['T1'] | Should -Match '\.worktrees[\\/]cleanup-T1-20260411'
+    }
+
+    It 'throws when worktree path exceeds 248 characters (MAX_PATH)' {
+        $longFeature = 'a' * 200
+        $tasks = @(@{ id = 'T1'; files = @('a.ps1') })
+        { New-TaskWorkspace -Tasks $tasks -FeatureName $longFeature -RunId '20260411T120000-abcd' } |
+            Should -Throw '*MAX_PATH*'
     }
 
     It 'creates worktrees for multi-task tier' {
@@ -103,16 +117,58 @@ Describe 'Remove-TaskWorkspace' {
     }
 }
 
-Describe 'Test-WorkspaceExists' {
+Describe 'Test-WorkspaceExist' {
     It 'returns true for existing path' {
         $dir = Join-Path ([System.IO.Path]::GetTempPath()) "ws-$(Get-Random)"
         New-Item -ItemType Directory -Path $dir -Force | Out-Null
-        Test-WorkspaceExists -WorktreePath $dir | Should -BeTrue
+        Test-WorkspaceExist -WorktreePath $dir | Should -BeTrue
         Remove-Item $dir -Force
     }
 
     It 'returns false for non-existent path' {
-        Test-WorkspaceExists -WorktreePath '/nonexistent/path' | Should -BeFalse
+        Test-WorkspaceExist -WorktreePath '/nonexistent/path' | Should -BeFalse
+    }
+}
+
+Describe 'Install-WorktreeDep' {
+    BeforeEach {
+        $script:wtDir = Join-Path ([System.IO.Path]::GetTempPath()) "deps-$(Get-Random)"
+        New-Item -ItemType Directory -Path $script:wtDir -Force | Out-Null
+    }
+    AfterEach { Remove-Item $script:wtDir -Recurse -Force -ErrorAction SilentlyContinue }
+
+    It 'sets tddIter to 1 on successful install' {
+        Set-Content (Join-Path $script:wtDir 'pnpm-lock.yaml') -Value 'lockfileVersion: 5'
+        $task = @{ tddIter = 0 }
+        Mock pnpm { $global:LASTEXITCODE = 0 }
+        $r = Install-WorktreeDep -WorktreePath $script:wtDir -TaskState $task
+        $task.tddIter | Should -Be 1
+        $r.installed | Should -BeTrue
+    }
+
+    It 'skips install when no pnpm-lock.yaml' {
+        $task = @{ tddIter = 0 }
+        $r = Install-WorktreeDep -WorktreePath $script:wtDir -TaskState $task
+        $r.skipped | Should -BeTrue
+        $task.tddIter | Should -Be 1
+    }
+
+    It 'marks task DepsInstallFailed on error' {
+        Set-Content (Join-Path $script:wtDir 'pnpm-lock.yaml') -Value 'lockfileVersion: 5'
+        $task = @{ tddIter = 0; taskState = 'deps_installing' }
+        Mock pnpm { $global:LASTEXITCODE = 1; throw "install failed" }
+        $r = Install-WorktreeDep -WorktreePath $script:wtDir -TaskState $task
+        $task.taskState | Should -BeExactly 'failed'
+        $task.failureReason | Should -BeExactly 'DepsInstallFailed'
+    }
+
+    It 'with MaxTddCycles=3 and tddIter=1, exactly 2 retries available' {
+        $task = @{ tddIter = 0 }
+        Set-Content (Join-Path $script:wtDir 'pnpm-lock.yaml') -Value 'lockfileVersion: 5'
+        Mock pnpm { $global:LASTEXITCODE = 0 }
+        Install-WorktreeDep -WorktreePath $script:wtDir -TaskState $task
+        $task.tddIter | Should -Be 1
+        ($task.tddIter -lt 3) | Should -BeTrue
     }
 }
 

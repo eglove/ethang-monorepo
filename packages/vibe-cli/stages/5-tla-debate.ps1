@@ -27,7 +27,7 @@
         -DebateContext "Review this TLA+ specification against the BDD scenarios. Focus on whether the spec correctly captures all states, transitions, safety properties, and liveness properties. Identify any scenarios missing from the spec or spec behaviors contradicting the scenarios." `
         -SessionFile "$FeatureDir/tla-debate.md" `
         -ArtifactFile $TlaFile.FullName `
-        -BriefingFile "$FeatureDir/elicitor.md" `
+        -FeatureDir $FeatureDir `
         -ReferenceFile $GherkinFile `
         -PostRevision {
         . "$Root/utils/config.ps1"

@@ -1,4 +1,4 @@
-. "$PSScriptRoot/result-contracts.ps1"
+﻿. "$PSScriptRoot/result-contracts.ps1"
 . "$PSScriptRoot/task-log.ps1"
 . "$PSScriptRoot/git-retry.ps1"
 
@@ -238,7 +238,7 @@ function Complete-MergeRelease {
     }
 }
 
-function Reset-MergeCounters {
+function Reset-MergeCounter {
     param([Parameter(Mandatory)][hashtable]$State)
     $State.mergeRetries = 0
     $State.taskStatus = 'completed'
@@ -247,6 +247,71 @@ function Reset-MergeCounters {
         $null = $script:MergeTracker.TryAdd($State.taskId, $true)
     }
     return $State
+}
+
+function Invoke-SerializedMerge {
+    param(
+        [Parameter(Mandatory)][string]$Feature,
+        [Parameter(Mandatory)][string]$WorktreePath,
+        [Parameter(Mandatory)][string]$TargetBranch,
+        [Parameter(Mandatory)][hashtable]$TaskState,
+        [string]$MutexName,
+        [int]$MutexTimeoutMs = 300000,  # 5 min
+        [int]$RebaseTimeoutMs = 60000,  # 60s
+        [int]$MaxRetries = 3
+    )
+
+    if (-not $MutexName) { $MutexName = "Global\vibe-cli-merge-$Feature" }
+
+    # Acquire merge mutex (serializes merges within feature)
+    # pipeline lock BEFORE merge mutex — never reverse
+    $mutex = [System.Threading.Mutex]::new($false, $MutexName)
+    $acquired = $false
+
+    try {
+        try { $acquired = $mutex.WaitOne($MutexTimeoutMs) }
+        catch [System.Threading.AbandonedMutexException] {
+            Write-Warning "Merge mutex recovered from abandoned state"
+            $acquired = $true
+        }
+
+        if (-not $acquired) {
+            $TaskState.taskState = 'failed'
+            $TaskState.failureReason = 'MergeMutexTimeout'
+            return @{ success = $false; reason = 'MergeMutexTimeout' }
+        }
+
+        # Rebase INSIDE mutex (no TOCTOU gap)
+        $TaskState.mergeState = 'merging'
+
+        try {
+            Push-Location $WorktreePath
+            $rebaseResult = & git rebase $TargetBranch 2>&1
+            if ($LASTEXITCODE -ne 0) {
+                & git rebase --abort 2>$null
+                return @{ success = $false; reason = 'RebaseConflict' }
+            }
+
+            # Merge into target
+            Pop-Location
+            $mergeResult = & git merge --no-ff $WorktreePath 2>&1
+            if ($LASTEXITCODE -ne 0) {
+                & git merge --abort 2>$null
+                return @{ success = $false; reason = 'MergeConflict' }
+            }
+
+            $TaskState.mergeState = 'merged'
+            $TaskState.taskState = 'merged'
+            return @{ success = $true }
+        }
+        finally {
+            if ((Get-Location).Path -ne $WorktreePath) { } else { Pop-Location }
+        }
+    }
+    finally {
+        if ($acquired) { $mutex.ReleaseMutex() }
+        $mutex.Dispose()
+    }
 }
 
 function Reset-MergeQueue {

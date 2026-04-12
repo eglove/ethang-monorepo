@@ -1,5 +1,44 @@
-. "$PSScriptRoot/git-retry.ps1"
+﻿. "$PSScriptRoot/git-retry.ps1"
 . "$PSScriptRoot/task-log.ps1"
+
+function Get-PackageWorkDir {
+    param([Parameter(Mandatory)][string]$WorktreePath)
+    $gitRoot = (git rev-parse --show-toplevel).Trim() -replace '\\','/'
+    $cwd = (Get-Location).Path -replace '\\','/'
+    $offset = [System.IO.Path]::GetRelativePath($gitRoot, $cwd)
+    if ($offset -eq '.') { return $WorktreePath }
+    return Join-Path $WorktreePath $offset
+}
+
+function Install-WorktreeDep {
+    param(
+        [Parameter(Mandatory)][string]$WorktreePath,
+        [Parameter(Mandatory)][hashtable]$TaskState
+    )
+
+    $lockFile = Join-Path $WorktreePath 'pnpm-lock.yaml'
+    if (-not (Test-Path $lockFile)) {
+        # No lock file — skip install, still set tddIter
+        $TaskState.tddIter = 1
+        return @{ installed = $false; skipped = $true }
+    }
+
+    try {
+        Push-Location $WorktreePath
+        $output = & pnpm install --frozen-lockfile 2>&1
+        if ($LASTEXITCODE -ne 0) { throw "pnpm install failed: $output" }
+        $TaskState.tddIter = 1  # Critical: starts at 1, not 0
+        return @{ installed = $true; skipped = $false }
+    }
+    catch {
+        $TaskState.taskState = 'failed'
+        $TaskState.failureReason = 'DepsInstallFailed'
+        return @{ installed = $false; error = $_.Exception.Message }
+    }
+    finally {
+        Pop-Location
+    }
+}
 
 function New-TaskWorkspace {
     param(
@@ -12,11 +51,6 @@ function New-TaskWorkspace {
     # Prune stale worktree entries first
     try { $null = Invoke-GitWithRetry -Arguments @('worktree', 'prune') } catch { }
 
-    if ($Tasks.Count -le 1) {
-        # Single-task tier — no workspace needed
-        return $null
-    }
-
     $workspaces = @{}
     $created = [System.Collections.ArrayList]::new()
     $truncatedRunId = $RunId.Substring(0, [Math]::Min(8, $RunId.Length))
@@ -26,6 +60,10 @@ function New-TaskWorkspace {
         $taskId = $task.id
         $branchName = "feature/$FeatureName-$taskId-$truncatedRunId"
         $worktreePath = Join-Path (Get-Location) ".worktrees/$FeatureName-$taskId-$truncatedRunId"
+
+        if ($worktreePath.Length -gt 248) {
+            throw "Worktree path exceeds Windows MAX_PATH limit (248 chars): $worktreePath"
+        }
 
         try {
             $null = Invoke-GitWithRetry -Arguments @('worktree', 'add', '-b', $branchName, $worktreePath)
@@ -89,7 +127,7 @@ function Remove-TaskWorkspace {
     }
 }
 
-function Test-WorkspaceExists {
+function Test-WorkspaceExist {
     param([Parameter(Mandatory)][string]$WorktreePath)
 
     return (Test-Path $WorktreePath)

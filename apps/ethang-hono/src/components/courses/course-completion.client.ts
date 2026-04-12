@@ -47,8 +47,9 @@ type UserToken = {
 
 const BUTTON_SELECTOR = ".course-completion-button";
 const STATUS_SELECTOR = ".course-status-text";
-const BG_DEFAULT = "bg-default";
-const BG_WARNING = "bg-warning";
+const INCOMPLETE = "bg-slate-700";
+const REVISIT = "bg-amber-400";
+const COMPLETE = "bg-sky-300";
 
 // All helpers that are called during the top-level await (init → applyStoredStatuses)
 // must be declared before the if/else block at the bottom of this module. ES modules
@@ -65,14 +66,14 @@ const setUiState = (
   }
 
   if ("Complete" === courseStatus?.status) {
-    button.classList.add("bg-brand");
-    button.classList.remove(BG_DEFAULT, BG_WARNING);
+    button.classList.add(COMPLETE);
+    button.classList.remove(INCOMPLETE, REVISIT);
   } else if ("Revisit" === courseStatus?.status) {
-    button.classList.add(BG_WARNING);
-    button.classList.remove(BG_DEFAULT, "bg-brand");
+    button.classList.add(REVISIT);
+    button.classList.remove(INCOMPLETE, COMPLETE);
   } else {
-    button.classList.add(BG_DEFAULT);
-    button.classList.remove("bg-brand", BG_WARNING);
+    button.classList.add(INCOMPLETE);
+    button.classList.remove(COMPLETE, REVISIT);
   }
 };
 

@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     # Dot-source config.ps1 to get $Config and Get-PipelineConfig
     . "$PSScriptRoot/../utils/config.ps1"
 }

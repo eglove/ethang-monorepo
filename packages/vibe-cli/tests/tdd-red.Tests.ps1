@@ -1,13 +1,15 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
     . "$PSScriptRoot/../utils/task-log.ps1"
+    . "$PSScriptRoot/../utils/workspace.ps1"
     . "$PSScriptRoot/../utils/tdd-red.ps1"
     . "$PSScriptRoot/helpers/claude-test-double.ps1"
 
     Mock Write-PipelineLog {}
     Mock Write-Host {}
     Mock Write-TaskLog {}
+    Mock Get-PackageWorkDir { $WorktreePath }
 }
 
 Describe 'Invoke-RedPhase' {
@@ -221,10 +223,10 @@ Describe 'Invoke-RedPhase — TestFiles extraction' {
     }
 }
 
-Describe 'Reset-RedCounters' {
+Describe 'Reset-RedCounter' {
     It 'resets redRetries to 0' {
         $state = @{ redRetries = 3; greenAttempts = 5 }
-        $result = Reset-RedCounters -State $state
+        $result = Reset-RedCounter -State $state
         $result.redRetries | Should -Be 0
         $result.greenAttempts | Should -Be 5
     }

@@ -1,596 +1,348 @@
-. "$PSScriptRoot/../utils/config.ps1"
-. "$PSScriptRoot/../utils/task-log.ps1"
-. "$PSScriptRoot/../utils/job-runner.ps1"
-. "$PSScriptRoot/../utils/git-retry.ps1"
-. "$PSScriptRoot/../utils/result-contracts.ps1"
-. "$PSScriptRoot/../utils/validate-plan.ps1"
-. "$PSScriptRoot/../utils/workspace.ps1"
-. "$PSScriptRoot/../utils/read-escalation.ps1"
-. "$PSScriptRoot/../utils/tdd-red.ps1"
-. "$PSScriptRoot/../utils/tdd-green.ps1"
-. "$PSScriptRoot/../utils/tdd-cleanup.ps1"
-. "$PSScriptRoot/../utils/agent-writer.ps1"
-. "$PSScriptRoot/../utils/merge-queue.ps1"
-. "$PSScriptRoot/../utils/final-verification.ps1"
-. "$PSScriptRoot/../utils/pipeline-state.ps1"
-. "$PSScriptRoot/../utils/review-verdict.ps1"
-. "$PSScriptRoot/../utils/review-gate.ps1"
-. "$PSScriptRoot/../utils/review-fix.ps1"
-. "$PSScriptRoot/../utils/review-timeout.ps1"
-. "$PSScriptRoot/../utils/global-timeout.ps1"
-. "$PSScriptRoot/../utils/diff-staleness.ps1"
+﻿# Stage 8 — Coding Stage (thin orchestrator)
+# Each function lives in its own file under utils/.
 
-function Invoke-ReviewLoop {
-    <#
-    .SYNOPSIS
-        Runs the review gate loop for a given gate type (preMerge or final).
-    .DESCRIPTION
-        Enters the review gate, solicits verdicts, handles pass/fail/retry,
-        manages fix cycles, escalation, and timeout. Returns when the gate
-        resolves (pass, halt, or timeout).
-    #>
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)][hashtable]$State,
-        [Parameter(Mandatory)]$Config,
-        [Parameter(Mandatory)][ValidateSet('preMerge', 'final')][string]$GateType,
-        [Parameter(Mandatory)][string]$DiffContent,
-        [Parameter(Mandatory)][string]$Root,
-        [Parameter(Mandatory)][string]$FeatureDir,
-        [Parameter(Mandatory)][string]$PipelineRunId,
-        [Parameter(Mandatory)][datetime]$PipelineStartTime,
-        $Task = $null
-    )
-
-    Enter-ReviewGate -State $State -Config $Config -GateType $GateType
-    $gateStartTime = Get-Date
-
-    Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
-        -Message "Entered $GateType review gate (round 0)" `
-        -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-    # Defense-in-depth iteration cap
-    $maxIterations = ($Config['MaxReviewRounds'] + 1) * ($Config['MaxKeepGoingResets'] + 1) * 2
-    $iteration = 0
-
-    while (-not (Test-PipelineTerminal -State $State)) {
-        $iteration++
-        if ($iteration -gt $maxIterations) {
-            Write-PipelineLog "Review loop iteration cap reached ($maxIterations) — halting"
-            $State.pipelineState = 'HALTED'
-            $State.lockHolder    = $null
-            break
-        }
-
-        # ── Global timeout check ──
-        $globalElapsed = ((Get-Date) - $PipelineStartTime).TotalSeconds
-        $globalFired = Test-GlobalPipelineTimeout -State $State -Config $Config -ElapsedSeconds $globalElapsed
-        if ($globalFired) {
-            Write-TaskLog -TaskId 'PIPELINE' -Phase 'timeout' `
-                -Message "Global timeout fired during $GateType review" `
-                -FeatureDir $FeatureDir -RunId $PipelineRunId
-            break
-        }
-
-        # ── Gate timeout check ──
-        $gateElapsed = ((Get-Date) - $gateStartTime).TotalSeconds
-        $gateFired = Test-ReviewGateTimeout -State $State -Config $Config -ElapsedSeconds $gateElapsed
-        if ($gateFired) {
-            Write-TaskLog -TaskId 'PIPELINE' -Phase 'timeout' `
-                -Message "Gate timeout fired during $GateType review" `
-                -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-            $escResult = Invoke-GateTimeoutEscalation -State $State -Config $Config
-            if ($escResult.Decision -eq 'KeepGoing') {
-                $gateStartTime = Get-Date  # Reset gate timer
-                continue
-            }
-            break  # Stopped or forced stop → HALTED
-        }
-
-        # ── If in a fix state, run the fix cycle ──
-        if ($State.pipelineState -in @('reviewFix', 'finalReviewFix')) {
-            if ($Task -and $script:lastBlockers) {
-                $fixResult = Invoke-ReviewFixCycle -State $State -Config $Config `
-                    -Task $Task -Blockers $script:lastBlockers `
-                    -Root $Root -FeatureDir $FeatureDir
-
-                if ($fixResult.Status -eq 'escalated') {
-                    # TDD escalation — check if TDD Keep Going is available
-                    if ($State.tddKeepGoingCount -lt $Config['MaxTddKeepGoingPerGate']) {
-                        Invoke-TddKeepGoing -State $State -Config $Config
-                        continue  # Retry fix cycle
-                    }
-                    else {
-                        Invoke-TddKeepGoingExhausted -State $State -Config $Config
-                        continue  # Back to review state with verdict=fail
-                    }
-                }
-
-                # Fix cycle passed — complete and return to review state
-                Complete-ReviewFix -State $State -Config $Config
-            }
-            else {
-                # No task/blockers context — escalate back to review state
-                Complete-ReviewFix -State $State -Config $Config
-            }
-            continue
-        }
-
-        # ── Solicit verdict from moderator ──
-        $verdict = Invoke-ReviewGate -State $State -Config $Config -DiffContent $DiffContent
-
-        # ── Route verdict ──
-        $resolveFunc = if ($GateType -eq 'preMerge') { 'Resolve-PreMergeVerdict' } else { 'Resolve-FinalMergeVerdict' }
-
-        try {
-            $result = & $resolveFunc -State $State -Config $Config -Verdict $verdict
-        }
-        catch {
-            # Round exhaustion — trigger escalation
-            if ($_.Exception.Message -match 'exhausted') {
-                $escResult = Invoke-ReviewEscalation -State $State -Config $Config
-                if ($escResult.Action -eq 'resumeReview') {
-                    $gateStartTime = Get-Date  # Reset gate timer on Keep Going
-                    continue
-                }
-                break  # Stopped or forced stop → HALTED
-            }
-            throw  # Unexpected error
-        }
-
-        switch ($result.Action) {
-            'mergeQueue' {
-                Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
-                    -Message "Pre-merge review PASSED — entering merge queue" `
-                    -FeatureDir $FeatureDir -RunId $PipelineRunId
-                return $result  # Caller handles merge
-            }
-
-            'complete' {
-                Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
-                    -Message "Final review PASSED — pipeline COMPLETE" `
-                    -FeatureDir $FeatureDir -RunId $PipelineRunId
-                return $result
-            }
-
-            'reviewFix' {
-                $script:lastBlockers = $result.Blockers
-                Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
-                    -Message "Review FAILED — entering fix cycle with $(@($result.Blockers).Count) blocker(s)" `
-                    -FeatureDir $FeatureDir -RunId $PipelineRunId
-                continue  # Loop will handle reviewFix state
-            }
-
-            'finalReviewFix' {
-                $script:lastBlockers = $result.Blockers
-                Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
-                    -Message "Final review FAILED — entering fix cycle" `
-                    -FeatureDir $FeatureDir -RunId $PipelineRunId
-                continue
-            }
-
-            'retry' {
-                Write-TaskLog -TaskId 'PIPELINE' -Phase 'review' `
-                    -Message "Review RETRY — round $($State.reviewRound)" `
-                    -FeatureDir $FeatureDir -RunId $PipelineRunId
-                continue  # Loop will solicit new verdict
-            }
-        }
-    }
-
-    return [PSCustomObject]@{ Action = 'halted' }
-}
+. "$PSScriptRoot/../utils/pipeline-lock.ps1"
+. "$PSScriptRoot/../utils/pipeline-log.ps1"
+. "$PSScriptRoot/../utils/invoke-claude.ps1"
+. "$PSScriptRoot/../utils/review-loop.ps1"
+. "$PSScriptRoot/../utils/per-worktree-double-pass.ps1"
+. "$PSScriptRoot/../utils/per-worktree-review.ps1"
+. "$PSScriptRoot/../utils/per-worktree-gates.ps1"
+. "$PSScriptRoot/../utils/sequential-merge.ps1"
+. "$PSScriptRoot/../utils/worktree-cleanup.ps1"
+. "$PSScriptRoot/../utils/global-double-pass.ps1"
+. "$PSScriptRoot/../utils/global-review.ps1"
+. "$PSScriptRoot/../utils/complete-pipeline.ps1"
 
 function Invoke-CodingStage {
     param(
-        [Parameter(Mandatory)][string]$PlanJsonPath,
-        [Parameter(Mandatory)][string]$Root,
-        [Parameter(Mandatory)][string]$FeatureDir,
-        [string]$FeatureName = (Split-Path $FeatureDir -Leaf),
-        [hashtable]$ResumeState = $null
+        [Parameter(Mandatory)][string]$Feature,
+        [string]$Root = (Resolve-Path "$PSScriptRoot/..").Path,
+        [switch]$Resume
     )
 
-    $PipelineRunId = [guid]::NewGuid().ToString()
-    $pipelineStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-    $pipelineStatus = 'running'
-    $escalationActive = $false
+    # ── Resume: parse last marker from pipeline.log ──
+    $startTier = 1
+    $skipToGlobal = $false
 
-    Write-TaskLog -TaskId 'PIPELINE' -Phase 'init' -Message "Pipeline starting (RunId: $PipelineRunId)" -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-    # ── Step 1: Validate plan ──
-    $validation = Test-ImplementationPlan -PlanJsonPath $PlanJsonPath -Root $Root -FeatureDir $FeatureDir -PipelineRunId $PipelineRunId
-
-    if ($validation.Status -eq 'failed') {
-        Write-TaskLog -TaskId 'PIPELINE' -Phase 'validation' -Message "HALTED: Validation failed" -Detail ($validation.Errors -join "`n") -FeatureDir $FeatureDir -RunId $PipelineRunId
-        return @{ PipelineStatus = 'halted'; Reason = 'validation_failed'; Errors = $validation.Errors; RunId = $PipelineRunId }
-    }
-
-    if ($validation.Warnings.Count -gt 0) {
-        foreach ($w in $validation.Warnings) {
-            Write-TaskLog -TaskId 'PIPELINE' -Phase 'validation' -Message "WARNING: $w" -FeatureDir $FeatureDir -RunId $PipelineRunId
-        }
-    }
-
-    # Create pipeline lock
-    $lockPath = Join-Path $FeatureDir 'pipeline.lock'
-    try {
-        New-PipelineLock -LockPath $lockPath -PipelineRunId $PipelineRunId
-    }
-    catch {
-        Write-TaskLog -TaskId 'PIPELINE' -Phase 'init' -Message "HALTED: $($_.Exception.Message)" -FeatureDir $FeatureDir -RunId $PipelineRunId
-        return @{ PipelineStatus = 'halted'; Reason = 'lock_failed'; Error = $_.Exception.Message; RunId = $PipelineRunId }
-    }
-
-    try {
-        # Parse plan
-        $plan = Get-Content $PlanJsonPath -Raw | ConvertFrom-Json
-        $numTiers = if ($plan.tiers) { $plan.tiers.Count } else { 0 }
-
-        # ── TLA+ state machine initialization ──
-        # Count total tasks across all tiers for NumTasks
-        $totalTasks = 0
-        if ($plan.tiers) {
-            foreach ($tier in $plan.tiers) {
-                if ($tier.tasks) { $totalTasks += @($tier.tasks).Count }
-            }
-        }
-        $tlaState = $null
-        $tlaCfg   = $null
-        try {
-            if ($totalTasks -gt 0) {
-                $env:VIBE_NUM_TASKS = "$totalTasks"
-            }
-            $tlaCfg = Get-PipelineConfig
-            $tlaState = New-PipelineState
-            $tlaState.pipelineState = 'locked'
-            $tlaState.lockHolder    = 1
-            $tlaState.pipelineState = 'running'
-        }
-        catch {
-            Write-PipelineLog "TLA+ state init skipped: $($_.Exception.Message)"
-        }
-        finally {
-            if ($totalTasks -gt 0) {
-                Remove-Item Env:\VIBE_NUM_TASKS -ErrorAction SilentlyContinue
-            }
-        }
-        $pipelineStartTime = Get-Date
-        $gateStartTime     = $null
-
-        # ── Step 2: Zero-tier check ──
-        if ($numTiers -eq 0) {
-            Write-TaskLog -TaskId 'PIPELINE' -Phase 'complete' -Message 'Zero-tier plan — pipeline completed' -FeatureDir $FeatureDir -RunId $PipelineRunId
-            return @{ PipelineStatus = 'completed'; CurrentTier = 1; RunId = $PipelineRunId }
-        }
-
-        # Resume state
-        if ($ResumeState -and $ResumeState.CompletedTasks) { $completedTasks = $ResumeState.CompletedTasks } else { $completedTasks = [System.Collections.Generic.HashSet[string]]::new() }
-        if ($ResumeState -and $ResumeState.MergedTasks) { $mergedTasks = $ResumeState.MergedTasks } else { $mergedTasks = [System.Collections.Generic.HashSet[string]]::new() }
-
-        $taskStatuses = @{}
-        $taskCounters = @{}
-        $taskWorkspaces = @{}
-
-        # Dispatch table for escalation counter resets
-        $ResetDispatch = @{
-            (Get-ResetDispatchKey 'task' 'red_retry')     = { param($s) Reset-RedCounters $s }
-            (Get-ResetDispatchKey 'task' 'green_retry')   = { param($s) Reset-GreenCounters $s }
-            (Get-ResetDispatchKey 'task' 'cleanup')       = { param($s) Reset-CleanupCounters $s }
-            (Get-ResetDispatchKey 'task' 'cleanup_remed') = { param($s) Reset-CleanupCounters $s }
-            (Get-ResetDispatchKey 'merge' '')              = { param($s) Reset-MergeCounters $s }
-            (Get-ResetDispatchKey 'final' '')              = { param($s) Reset-FinalCounters $s }
-        }
-
-        # ── Step 3: Tier loop ──
-        $currentTier = 1
-
-        while ($currentTier -le $numTiers) {
-            # Pipeline timeout check
-            if ($pipelineStopwatch.Elapsed.TotalSeconds -gt $Config.PipelineTimeoutSeconds) {
-                $pipelineStatus = 'halted'
-                Write-TaskLog -TaskId 'PIPELINE' -Phase 'timeout' -Message "HALTED: Pipeline timeout ($($Config.PipelineTimeoutSeconds)s)" -FeatureDir $FeatureDir -RunId $PipelineRunId
-                return @{ PipelineStatus = 'halted'; Reason = 'timeout'; RunId = $PipelineRunId }
-            }
-
-            # Skip empty tiers (bounded — objections #23, #66)
-            $tierData = $plan.tiers | Where-Object { $_.tier -eq $currentTier }
-            $tierTasks = if ($tierData) { @($tierData.tasks) } else { @() }
-
-            if ($tierTasks.Count -eq 0) {
-                Write-TaskLog -TaskId 'PIPELINE' -Phase 'tier' -Message "Skipping empty tier $currentTier" -FeatureDir $FeatureDir -RunId $PipelineRunId
-                $currentTier++
-                continue
-            }
-
-            # Filter out already-completed tasks (resume support)
-            $pendingTasks = @($tierTasks | Where-Object { $_.id -notin $completedTasks })
-
-            if ($pendingTasks.Count -eq 0) {
-                Write-TaskLog -TaskId 'PIPELINE' -Phase 'tier' -Message "Tier $currentTier — all tasks already completed" -FeatureDir $FeatureDir -RunId $PipelineRunId
-                $currentTier++
-                continue
-            }
-
-            Write-StatusNote -TaskId 'PIPELINE' -Status "Tier $currentTier" -Detail "$($pendingTasks.Count) task(s)"
-            Write-TaskLog -TaskId 'PIPELINE' -Phase 'tier' -Message "Starting tier $currentTier ($($pendingTasks.Count) tasks)" -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-            # Create workspaces (multi-task tiers)
-            $workspaces = $null
-            try {
-                $workspaces = New-TaskWorkspace -Tasks $pendingTasks -FeatureName $FeatureName -RunId $PipelineRunId -FeatureDir $FeatureDir
-            }
-            catch {
-                $escalationActive = $true
-                Write-TaskLog -TaskId 'PIPELINE' -Phase 'workspace' -Message "Workspace creation failed: $($_.Exception.Message)" -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-                $escResult = Read-Escalation -Source 'workspace' -Error_ $_.Exception.Message -TaskStatuses $taskStatuses -FeatureDir $FeatureDir -RunId $PipelineRunId
-                $escalationActive = $false
-
-                if ($escResult.Decision -eq 'Stop') {
-                    return @{ PipelineStatus = 'halted'; Reason = 'workspace_failure'; RunId = $PipelineRunId }
-                }
-                continue  # Retry tier
-            }
-
-            # Initialize task state
-            foreach ($task in $pendingTasks) {
-                $taskStatuses[$task.id] = 'pending'
-                $taskCounters[$task.id] = @{
-                    redRetries = 0; greenAttempts = 0
-                    cleanupRemediations = 0; cleanupCleanPasses = 0
-                }
-                if ($workspaces -and $workspaces.ContainsKey($task.id)) {
-                    $taskWorkspaces[$task.id] = $workspaces[$task.id]
-                }
-            }
-
-            # Dispatch tasks
-            $tierResults = @{}
-            Reset-MergeQueue
-
-            foreach ($task in $pendingTasks) {
-                $taskStatuses[$task.id] = 'running'
-                $wsPath = if ($taskWorkspaces.ContainsKey($task.id)) { $taskWorkspaces[$task.id] } else { $null }
-
-                $taskBlock = if ($task.testWriter) {
-                    # TDD task: RED -> GREEN -> Cleanup
-                    {
-                        param($t, $r, $c, $wp, $fd, $rid, $pjp)
-                        $redResult = Invoke-RedPhase -Task $t -Root $r -Counters $c -WorkspacePath $wp -FeatureDir $fd -RunId $rid -PlanJsonPath $pjp
-                        if ($redResult.Status -eq 'escalated') { return $redResult }
-
-                        $testFiles = if ($redResult.TestFiles) { $redResult.TestFiles } else { @() }
-
-                        if ($redResult.Phase -eq 'green') {
-                            $greenResult = Invoke-GreenPhase -Task $t -Root $r -Counters $c -WorkspacePath $wp -FeatureDir $fd -RunId $rid -TestFiles $testFiles -PlanJsonPath $pjp
-                            if ($greenResult.Status -eq 'escalated') { return $greenResult }
-                        }
-
-                        $cleanupResult = Invoke-CleanupPhase -Task $t -Root $r -Counters $c -WorkspacePath $wp -FeatureDir $fd -RunId $rid -TestFiles $testFiles -PlanJsonPath $pjp
-                        return $cleanupResult
-                    }
-                }
-                else {
-                    # Agent-writer task
-                    {
-                        param($t, $r, $c, $wp, $fd, $rid, $pjp)
-                        return Invoke-AgentWriter -Task $t -Root $r -FeatureDir $fd -RunId $rid -PlanJsonPath $pjp
-                    }
-                }
-
-                $jobResult = Invoke-WithTimeout -TaskId $task.id -WriterType ($task.codeWriter) -ScriptBlock $taskBlock `
-                    -ArgumentList @{
-                        t = $task; r = $Root; c = $taskCounters[$task.id]
-                        wp = $wsPath; fd = $FeatureDir; rid = $PipelineRunId
-                        pjp = $PlanJsonPath
-                    }
-
-                if ($jobResult.TimedOut) {
-                    $taskStatuses[$task.id] = 'escalated'
-                    $tierResults[$task.id] = @{ Escalated = $true; TimedOut = $true; Error = $jobResult.Error }
-                }
-                elseif ($jobResult.Error) {
-                    $taskStatuses[$task.id] = 'escalated'
-                    $tierResults[$task.id] = @{ Escalated = $true; Error = $jobResult.Error }
-                }
-                elseif ($jobResult.Result) {
-                    $result = $jobResult.Result
-                    $taskStatuses[$task.id] = $result.Status
-                    $tierResults[$task.id] = $result
-
-                    if ($result.Status -eq 'completed' -and $wsPath) {
-                        Add-MergeQueue -TaskId $task.id -EscalationActive $escalationActive
-                    }
-                }
-            }
-
-            # Handle escalations
-            $pendingEscalations = [System.Collections.ArrayList]::new()
-            foreach ($tid in $tierResults.Keys) {
-                if ($tierResults[$tid].Escalated) {
-                    $null = $pendingEscalations.Add($tid)
-                }
-            }
-
-            while ($pendingEscalations.Count -gt 0) {
-                $escalationActive = $true
-                $escTaskId = $pendingEscalations[0]
-                $pendingEscalations.RemoveAt(0)
-
-                $escPhase = if ($tierResults[$escTaskId].Phase) { $tierResults[$escTaskId].Phase } else { '' }
-                $escSource = 'task'
-                if ($escPhase -eq 'done') { $escSource = 'merge' }
-
-                $escResult = Read-Escalation -Source $escSource -TaskId $escTaskId -Phase $escPhase `
-                    -Error_ $tierResults[$escTaskId].Error -TaskStatuses $taskStatuses `
-                    -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-                if ($escResult.Decision -eq 'Stop') {
-                    $escalationActive = $false
-                    return @{ PipelineStatus = 'halted'; Reason = 'user_stop'; PreStopSnapshot = $escResult.PreStopSnapshot; RunId = $PipelineRunId }
-                }
-
-                if ($escResult.Decision -eq 'KeepGoing') {
-                    $taskStatuses[$escTaskId] = 'running'
-
-                    # Dispatch to reset function if applicable
-                    $dispatchKey = Get-ResetDispatchKey -Source $escResult.Source -Phase $escPhase
-                    if ($ResetDispatch.ContainsKey($dispatchKey)) {
-                        $resetFn = $ResetDispatch[$dispatchKey]
-                        & $resetFn $taskCounters[$escTaskId]
-                    }
-
-                    # Reset worktree state before re-dispatch
-                    if ($taskWorkspaces.ContainsKey($escTaskId)) {
-                        try { Reset-WorktreeState -WorktreePath $taskWorkspaces[$escTaskId] -TaskId $escTaskId -FeatureDir $FeatureDir -RunId $PipelineRunId } catch { }
-                    }
-                }
-
-                $escalationActive = $false
-            }
-
-            # Merge drain-loop
-            while (-not (Test-MergeQueueEmpty)) {
-                if ($pipelineStopwatch.Elapsed.TotalSeconds -gt $Config.PipelineTimeoutSeconds) {
-                    return @{ PipelineStatus = 'halted'; Reason = 'timeout'; RunId = $PipelineRunId }
-                }
-
-                $mergeTaskId = Start-NextMerge
-                if (-not $mergeTaskId) { break }
-
-                $wsPath = $taskWorkspaces[$mergeTaskId]
-                $branchName = "feature/$FeatureName-$mergeTaskId-$($PipelineRunId.Substring(0, 8))"
-                $mergeCounters = @{ mergeRetries = 0 }
-
-                $mergeResult = Invoke-Merge -TaskId $mergeTaskId -WorktreePath $wsPath -BranchName $branchName `
-                    -Root $Root -Counters $mergeCounters -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-                if ($mergeResult.Success) {
-                    $null = $mergedTasks.Add($mergeTaskId)
-                    Write-TaskLog -TaskId $mergeTaskId -Phase 'done' -Message 'Merge complete' -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-                    # ── TLA+ TaskMerged + Pre-merge review gate ──
-                    if ($tlaState -and $tlaCfg) {
-                    $tlaState.pipelineState = 'mergeQueue'
-                    Complete-TaskMerge -State $tlaState -Config $tlaCfg
-
-                    if (-not (Test-AllTasksDone -State $tlaState -Config $tlaCfg)) {
-                        try {
-                            # Get diff content for review
-                            $rawDiff = try { & git diff HEAD~1 2>$null } catch { $null }
-                            $diffContent = if ($rawDiff -is [array]) { $rawDiff -join "`n" } elseif ($rawDiff) { [string]$rawDiff } else { $null }
-                            if ([string]::IsNullOrWhiteSpace($diffContent)) { $diffContent = 'No diff available' }
-
-                            # Find the task object for fix cycle context
-                            $mergedTask = $pendingTasks | Where-Object { $_.id -eq $mergeTaskId } | Select-Object -First 1
-
-                            $reviewResult = Invoke-ReviewLoop -State $tlaState -Config $tlaCfg `
-                                -GateType 'preMerge' -DiffContent $diffContent `
-                                -Root $Root -FeatureDir $FeatureDir `
-                                -PipelineRunId $PipelineRunId -PipelineStartTime $pipelineStartTime `
-                                -Task $mergedTask
-
-                            if ($tlaState.pipelineState -eq 'HALTED') {
-                                return @{ PipelineStatus = 'halted'; Reason = 'review_halted'; RunId = $PipelineRunId }
-                            }
-                        }
-                        catch {
-                            Write-PipelineLog "Pre-merge review gate error: $($_.Exception.Message) — continuing to final verification"
-                        }
-                    }
-                    }  # end if ($tlaState -and $tlaCfg)
-                }
-                else {
-                    $taskStatuses[$mergeTaskId] = 'escalated'
-                    $escalationActive = $true
-
-                    $escResult = Read-Escalation -Source 'merge' -TaskId $mergeTaskId -Phase 'done' `
-                        -Error_ "Merge failed after $($mergeCounters.mergeRetries) retries" `
-                        -TaskStatuses $taskStatuses -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-                    $escalationActive = $false
-
-                    if ($escResult.Decision -eq 'Stop') {
-                        return @{ PipelineStatus = 'halted'; Reason = 'merge_exhausted'; RunId = $PipelineRunId }
-                    }
-
-                    if ($escResult.Decision -eq 'KeepGoing') {
-                        $taskStatuses[$mergeTaskId] = 'completed'
-                        Reset-MergeCounters @{ mergeRetries = 0; taskStatus = 'completed'; taskId = $mergeTaskId }
-                    }
-                }
-            }
-
-            # Flush fallback log after tier
-            Sync-FallbackLog
-
-            $currentTier++
-        }
-
-        # ── Step 4: Final review gate (TLA+ EnterFinalReview) ──
-        if ($tlaState -and $tlaCfg -and $totalTasks -gt 0 -and (Test-AllTasksDone -State $tlaState -Config $tlaCfg)) {
-            try {
-            Write-TaskLog -TaskId 'PIPELINE' -Phase 'final-review' -Message 'Entering final review gate' -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-            $rawDiff = try { & git diff HEAD~1 2>$null } catch { $null }
-            $diffContent = if ($rawDiff -is [array]) { $rawDiff -join "`n" } elseif ($rawDiff) { [string]$rawDiff } else { $null }
-            if ([string]::IsNullOrWhiteSpace($diffContent)) { $diffContent = 'No diff available' }
-
-            $reviewResult = Invoke-ReviewLoop -State $tlaState -Config $tlaCfg `
-                -GateType 'final' -DiffContent $diffContent `
-                -Root $Root -FeatureDir $FeatureDir `
-                -PipelineRunId $PipelineRunId -PipelineStartTime $pipelineStartTime
-
-            if ($tlaState.pipelineState -eq 'COMPLETE') {
-                $pipelineStatus = 'completed'
-                Write-TaskLog -TaskId 'PIPELINE' -Phase 'complete' -Message "Pipeline COMPLETED via final review (RunId: $PipelineRunId)" -FeatureDir $FeatureDir -RunId $PipelineRunId
-                return @{ PipelineStatus = $pipelineStatus; RunId = $PipelineRunId }
-            }
-            elseif ($tlaState.pipelineState -eq 'HALTED') {
-                return @{ PipelineStatus = 'halted'; Reason = 'final_review_halted'; RunId = $PipelineRunId }
-            }
-            }
-            catch {
-                Write-PipelineLog "Final review gate error: $($_.Exception.Message) — continuing to final verification"
+    if ($Resume) {
+        # Re-validate inputs (R2-6)
+        $planPath = Join-Path $Root "docs/$Feature/implementation-plan.json"
+        if (-not (Test-Path $planPath)) {
+            Write-PipelineLog -Message "HALTED: resume failed — implementation-plan.json not found" -Root $Root
+            return @{
+                Status  = 'halted_validation'
+                Message = "Resume failed: implementation-plan.json not found at $planPath"
             }
         }
 
-        # ── Step 5: Final verification (post-review safety net) ──
-        Write-TaskLog -TaskId 'PIPELINE' -Phase 'final' -Message 'Starting final verification' -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-        $allWriters = @($plan.tiers.tasks | Where-Object { $_.codeWriter } | ForEach-Object { $_.codeWriter } | Select-Object -Unique)
-        $finalCounters = @{ finalCleanPasses = 0; finalRemediations = 0; finalVerifPhase = 'idle' }
-
-        $finalResult = Invoke-FinalVerification -Root $Root -Counters $finalCounters -TaskWriters $allWriters -FeatureDir $FeatureDir -RunId $PipelineRunId
-
-        if ($finalResult.finalVerifPhase -eq 'escalated') {
-            $escalationActive = $true
-            $escResult = Read-Escalation -Source 'final' -Error_ 'Final verification exhausted' -TaskStatuses $taskStatuses -FeatureDir $FeatureDir -RunId $PipelineRunId
-            $escalationActive = $false
-
-            if ($escResult.Decision -eq 'Stop') {
-                return @{ PipelineStatus = 'halted'; Reason = 'final_verification_exhausted'; RunId = $PipelineRunId }
-            }
-
-            if ($escResult.Decision -eq 'KeepGoing') {
-                Reset-FinalCounters $finalCounters
-                $finalResult = Invoke-FinalVerification -Root $Root -Counters $finalCounters -TaskWriters $allWriters -FeatureDir $FeatureDir -RunId $PipelineRunId
+        $bddFixture = Join-Path $Root "fixtures/$Feature/bdd.json"
+        if (-not (Test-Path $bddFixture)) {
+            Write-PipelineLog -Message "HALTED: resume failed — BDD fixture not found" -Root $Root
+            return @{
+                Status  = 'halted_validation'
+                Message = "Resume failed: BDD fixture not found at $bddFixture"
             }
         }
 
-        if ($finalResult.finalVerifPhase -eq 'completed') {
-            $pipelineStatus = 'completed'
-            Write-TaskLog -TaskId 'PIPELINE' -Phase 'complete' -Message "Pipeline COMPLETED (RunId: $PipelineRunId)" -FeatureDir $FeatureDir -RunId $PipelineRunId
+        $tlaFixture = Join-Path $Root "fixtures/$Feature/tla.json"
+        if (-not (Test-Path $tlaFixture)) {
+            Write-PipelineLog -Message "HALTED: resume failed — TLA fixture not found" -Root $Root
+            return @{
+                Status  = 'halted_validation'
+                Message = "Resume failed: TLA fixture not found at $tlaFixture"
+            }
+        }
+
+        $logPath = Join-Path $Root 'pipeline.log'
+        $lastCompletedTier = 0
+
+        if (Test-Path $logPath) {
+            $logContent = Get-Content $logPath -Raw
+            $markerMatches = [regex]::Matches($logContent, '>>> MARKER TIER_(\d+)_COMPLETE')
+            if ($markerMatches.Count -gt 0) {
+                $lastCompletedTier = [int]$markerMatches[$markerMatches.Count - 1].Groups[1].Value
+            }
+        }
+
+        # Read plan to get MaxTiers
+        $planRaw = Get-Content $planPath -Raw
+        $planObj = $planRaw | ConvertFrom-Json
+        $maxTiers = @($planObj.tiers).Count
+
+        if (-not (Test-Path $logPath)) {
+            Write-PipelineLog -Message "WARNING: --resume with no pipeline.log — starting fresh" -Root $Root
+            $startTier = 1
+        }
+        elseif ($lastCompletedTier -eq 0) {
+            Write-PipelineLog -Message "WARNING: --resume with no completed tiers — starting fresh" -Root $Root
+            $startTier = 1
+        }
+        elseif ($lastCompletedTier -ge $maxTiers) {
+            Write-PipelineLog -Message "Resume: all $maxTiers tier(s) complete — jumping to GlobalDoublePass" -Root $Root
+            $skipToGlobal = $true
         }
         else {
-            $pipelineStatus = 'halted'
-            Write-TaskLog -TaskId 'PIPELINE' -Phase 'halted' -Message "Pipeline HALTED — final verification did not complete" -FeatureDir $FeatureDir -RunId $PipelineRunId
+            $startTier = $lastCompletedTier + 1
+            Write-PipelineLog -Message "Resume: last completed tier=$lastCompletedTier — resuming from tier $startTier" -Root $Root
         }
 
-        return @{ PipelineStatus = $pipelineStatus; RunId = $PipelineRunId }
+        # Clean up orphan worktrees (R1-4)
+        $worktreeOutput = git -C $Root worktree list 2>&1
+        $worktreeLines = @($worktreeOutput | Where-Object { $_ -and $_ -notmatch '\(bare\)' })
+        if ($worktreeLines.Count -gt 1) {
+            Write-PipelineLog -Message "Resume: detected $($worktreeLines.Count - 1) orphan worktree(s) — cleaning up" -Root $Root
+            foreach ($wtLine in $worktreeLines) {
+                if ($wtLine -eq $worktreeLines[0]) { continue }
+                $wtPath = ($wtLine -split '\s+')[0]
+                git -C $Root worktree remove $wtPath --force 2>&1 | Out-Null
+            }
+        }
+
+        # Detect already-merged branches (R1-4)
+        $mergedBranches = git -C $Root branch --merged 2>&1
+        $script:AlreadyMergedBranches = @($mergedBranches | ForEach-Object { $_.Trim().TrimStart('* ') } | Where-Object { $_ })
+
+        # Reclaim stale lock
+        try {
+            $lockState = Lock-Pipeline -LockDir $Root -Feature $Feature -Resume
+        }
+        catch {
+            Write-PipelineLog -Message "Resume: reclaiming stale lock" -Root $Root
+            Unlock-Pipeline -LockDir $Root
+            $lockState = Lock-Pipeline -LockDir $Root -Feature $Feature
+        }
+    }
+
+    if (-not $Resume) {
+        # ── Phase 1: Pre-Coding Gate ──
+        $gitStatus = git -C $Root status --porcelain
+        if ($gitStatus) {
+            $response = Read-Host "Uncommitted changes found. Commit now? (y/n)"
+            if ($response -eq 'y') {
+                git -C $Root add -A
+                git -C $Root commit -m "Pre-Stage8 auto-commit"
+            }
+            else {
+                Write-PipelineLog -Message "Pipeline halted: uncommitted changes must be committed before Stage 8 can proceed." -Root $Root
+                return @{
+                    Status  = 'halted_uncommitted'
+                    Message = 'Pipeline halted: uncommitted changes must be committed before Stage 8 can proceed.'
+                }
+            }
+        }
+
+        # ── Phase 2: Pipeline Lock ──
+        try {
+            $lockState = Lock-Pipeline -LockDir $Root -Feature $Feature
+        }
+        catch {
+            Write-PipelineLog -Message "Lock acquisition failed: $($_.Exception.Message)" -Root $Root
+            return @{
+                Status  = 'halted_lock'
+                Message = $_.Exception.Message
+            }
+        }
+    }
+
+    try {
+        # ── Phase 3: Input Validation ──
+
+        $planPath = Join-Path $Root "docs/$Feature/implementation-plan.json"
+        if (-not (Test-Path $planPath)) {
+            Write-PipelineLog -Message "Halted: implementation-plan.json not found at $planPath" -Root $Root
+            return @{
+                Status  = 'halted_validation'
+                Message = "implementation-plan.json not found at $planPath"
+            }
+        }
+
+        $planRaw = Get-Content $planPath -Raw
+        try {
+            $planObj = $planRaw | ConvertFrom-Json
+        }
+        catch {
+            Write-PipelineLog -Message "Halted: implementation-plan.json failed to parse as JSON" -Root $Root
+            return @{
+                Status  = 'halted_validation'
+                Message = "implementation-plan.json is malformed JSON: $($_.Exception.Message)"
+            }
+        }
+
+        if (-not $planObj.tiers -or @($planObj.tiers).Count -eq 0) {
+            Write-PipelineLog -Message "Halted: plan has no tiers" -Root $Root
+            return @{
+                Status  = 'halted_validation'
+                Message = 'implementation-plan.json has empty tiers array'
+            }
+        }
+
+        foreach ($tier in @($planObj.tiers)) {
+            if (-not $tier.tasks -or @($tier.tasks).Count -eq 0) {
+                Write-PipelineLog -Message "Halted: tier $($tier.tier) has zero tasks" -Root $Root
+                return @{
+                    Status  = 'halted_validation'
+                    Message = "Tier $($tier.tier) has zero tasks"
+                }
+            }
+        }
+
+        $bddFixture = Join-Path $Root "fixtures/$Feature/bdd.json"
+        if (-not (Test-Path $bddFixture)) {
+            Write-PipelineLog -Message "Halted: BDD fixture not found at $bddFixture" -Root $Root
+            return @{
+                Status  = 'halted_validation'
+                Message = "BDD fixture not found: $bddFixture"
+            }
+        }
+
+        $tlaFixture = Join-Path $Root "fixtures/$Feature/tla.json"
+        if (-not (Test-Path $tlaFixture)) {
+            Write-PipelineLog -Message "Halted: TLA fixture not found at $tlaFixture" -Root $Root
+            return @{
+                Status  = 'halted_validation'
+                Message = "TLA fixture not found: $tlaFixture"
+            }
+        }
+
+        # ── Phase 4: Config Snapshot ──
+        $PlanSnapshot = $planRaw | ConvertFrom-Json
+
+        Write-PipelineLog -Message "Stage 8 initialized for feature '$Feature' with $(@($PlanSnapshot.tiers).Count) tier(s)" -Root $Root
+
+        # ── Phase 5: Fixture Coverage Check ──
+        $bddFixtureData = Get-Content $bddFixture -Raw | ConvertFrom-Json
+        $tlaFixtureData = Get-Content $tlaFixture -Raw | ConvertFrom-Json
+
+        $bddEntries = if ($null -eq $bddFixtureData) { @() } else { @($bddFixtureData) }
+        $tlaEntries = if ($null -eq $tlaFixtureData) { @() } else { @($tlaFixtureData) }
+
+        $bddIsEmpty = ($bddEntries.Count -eq 0) -or ($bddEntries.Count -eq 1 -and $null -eq $bddEntries[0]) -or ($bddEntries.Count -eq 1 -and $bddEntries[0] -is [System.Management.Automation.PSCustomObject] -and @($bddEntries[0].PSObject.Properties).Count -eq 0)
+        $tlaIsEmpty = ($tlaEntries.Count -eq 0) -or ($tlaEntries.Count -eq 1 -and $null -eq $tlaEntries[0]) -or ($tlaEntries.Count -eq 1 -and $tlaEntries[0] -is [System.Management.Automation.PSCustomObject] -and @($tlaEntries[0].PSObject.Properties).Count -eq 0)
+
+        $uncoveredFixtures = @()
+
+        $testDir = Join-Path $Root 'tests'
+        $testFileContents = @()
+        if (Test-Path $testDir) {
+            $testFiles = Get-ChildItem -Path $testDir -Recurse -File -ErrorAction SilentlyContinue |
+                Where-Object { $_.FullName -notmatch '[/\\]fixtures[/\\]' }
+            foreach ($tf in $testFiles) {
+                $testFileContents += (Get-Content $tf.FullName -Raw -ErrorAction SilentlyContinue)
+            }
+        }
+        $allTestContent = $testFileContents -join "`n"
+
+        if ($bddIsEmpty -and $tlaIsEmpty) {
+            Write-PipelineLog -Message "WARNING: Both BDD and TLA+ fixture files are empty — skipping fixture coverage" -Root $Root
+        }
+        else {
+            if ($bddIsEmpty) {
+                Write-PipelineLog -Message "WARNING: BDD fixture file is empty — skipping BDD coverage check" -Root $Root
+            }
+            else {
+                foreach ($entry in $bddEntries) {
+                    $name = if ($entry.name) { $entry.name } elseif ($entry.title) { $entry.title } else { $entry.ToString() }
+                    if ($allTestContent -notmatch [regex]::Escape($name)) {
+                        $uncoveredFixtures += @{ Type = 'BDD'; Name = $name }
+                    }
+                }
+            }
+
+            if ($tlaIsEmpty) {
+                Write-PipelineLog -Message "WARNING: TLA+ fixture file is empty — skipping TLA+ coverage check" -Root $Root
+            }
+            else {
+                foreach ($entry in $tlaEntries) {
+                    $name = if ($entry.name) { $entry.name } elseif ($entry.title) { $entry.title } else { $entry.ToString() }
+                    if ($allTestContent -notmatch [regex]::Escape($name)) {
+                        $uncoveredFixtures += @{ Type = 'TLA'; Name = $name }
+                    }
+                }
+            }
+        }
+
+        if ($uncoveredFixtures.Count -gt 0) {
+            Write-PipelineLog -Message "Fixture coverage gaps: $($uncoveredFixtures.Count) uncovered fixture(s)" -Root $Root
+        }
+        else {
+            Write-PipelineLog -Message "Fixture coverage: all fixtures covered" -Root $Root
+        }
+
+        Write-PipelineLog -Message ">>> MARKER FIXTURE_COVERAGE_COMPLETE" -Root $Root
+
+        # ── Phase 6: Single Claude Dispatch (all tiers at once) ──
+
+        Write-PipelineLog -Message ">>> MARKER PRE_CODING_GATE" -Root $Root
+
+        $featureDocsPath = Join-Path $Root "docs/$Feature"
+        $MaxTiers = @($PlanSnapshot.tiers).Count
+
+        if ($skipToGlobal) {
+            Write-PipelineLog -Message "Skipping all tiers — resuming at GlobalDoublePass" -Root $Root
+        }
+        else {
+            # Build single prompt with ALL tiers and dispatch Claude once
+            $uncoveredSummary = if ($uncoveredFixtures.Count -gt 0) {
+                ($uncoveredFixtures | ForEach-Object { "$($_.Type): $($_.Name)" }) -join "`n"
+            }
+            else { 'None' }
+
+            $planPath = Join-Path $Root "docs/$Feature/implementation-plan.json"
+
+            $prompt = @"
+## Stage 8 — Implementation
+
+Implement ALL tiers from the implementation plan, dispatching parallel agents per tier in worktrees. Tiers execute sequentially — complete tier N before starting tier N+1.
+
+### Files to Read
+- Implementation plan: $planPath
+- Feature docs directory: $featureDocsPath
+- BDD fixtures: $bddFixture
+- TLA+ fixtures: $tlaFixture
+
+### Uncovered Fixtures
+$uncoveredSummary
+
+### Instructions
+- Read the implementation plan and feature docs before starting
+- For each tier, create worktrees for parallel tasks and implement them
+- Follow TDD: write tests first, then implement
+- Each worktree should contain the completed work for one task
+- Do NOT merge worktrees — the pipeline handles merging after verification gates
+"@
+
+            Write-PipelineLog -Message "Dispatching Claude for all $MaxTiers tier(s)" -Root $Root
+            $claudeResult = Invoke-Claude -Prompt $prompt -AddDir $Root
+
+            # Check for worktrees after Claude completes
+            $worktreeOutput = git -C $Root worktree list
+            $worktreeLines = @($worktreeOutput | Where-Object { $_ -and $_ -notmatch '\(bare\)' })
+            $worktreeDetected = ($worktreeLines.Count -gt 1)
+
+            if ($worktreeDetected) {
+                Write-PipelineLog -Message "Worktrees detected after Claude dispatch — flagging for per-worktree gates" -Root $Root
+            }
+            else {
+                Write-PipelineLog -Message "No worktrees after Claude dispatch — single-task cleanup path" -Root $Root
+            }
+
+            Write-PipelineLog -Message ">>> MARKER TIER_${MaxTiers}_COMPLETE" -Root $Root
+        }
+
+        Write-PipelineLog -Message "All $MaxTiers tier(s) dispatched for feature '$Feature'" -Root $Root
+        Write-PipelineLog -Message ">>> MARKER GLOBAL_DOUBLEPASS_COMPLETE" -Root $Root
+
+        return @{
+            Status             = 'tiers_dispatched'
+            Feature            = $Feature
+            PlanSnapshot       = $PlanSnapshot
+            LockState          = $lockState
+            UncoveredFixtures  = $uncoveredFixtures
+            WorktreeDetected   = $worktreeDetected
+        }
     }
     finally {
-        Remove-PipelineLock -LockPath $lockPath
+        Unlock-Pipeline -LockDir $Root
     }
 }

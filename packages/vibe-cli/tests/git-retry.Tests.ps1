@@ -88,6 +88,48 @@ Describe 'Invoke-GitWithRetry' {
         $result | Should -Contain 'ok'
     }
 
+    It 'changes directory when WorkingDirectory is provided' {
+        Mock git { 'wd-success'; $global:LASTEXITCODE = 0 }
+        Mock Set-Location {}
+        Mock Get-Location { return 'C:\original' }
+
+        $result = Invoke-GitWithRetry -Arguments @('status') -WorkingDirectory 'C:\repo'
+        $result | Should -Match 'wd-success'
+        Should -Invoke Set-Location -Times 2
+    }
+
+    It 'restores directory on failure when WorkingDirectory is provided' {
+        Mock git {
+            $errRecord = [System.Management.Automation.ErrorRecord]::new(
+                [Exception]::new('fatal: not a git repository'),
+                'GitError', 'NotSpecified', $null
+            )
+            $errRecord
+            $global:LASTEXITCODE = 128
+        }
+        Mock Set-Location {}
+        Mock Get-Location { return 'C:\original' }
+
+        { Invoke-GitWithRetry -Arguments @('status') -WorkingDirectory 'C:\repo' } | Should -Throw '*not a git repository*'
+        # Should restore original directory despite the error
+        Should -Invoke Set-Location -ParameterFilter { $Path -eq 'C:\original' }
+    }
+
+    It 'handles exception thrown by git command itself' {
+        # Covers lines 46-48 (catch block)
+        Mock git { throw "Command not found" }
+        { Invoke-GitWithRetry -Arguments @('status') -MaxRetries 0 } | Should -Throw '*Command not found*'
+    }
+
+    It 'falls back to joining output when no ErrorRecord objects found' {
+        # Covers line 38 (if (-not $errOutput) { $errOutput = $output -join "`n" })
+        Mock git {
+            'error: some plain text error'
+            $global:LASTEXITCODE = 1
+        }
+        { Invoke-GitWithRetry -Arguments @('merge', 'branch') } | Should -Throw '*some plain text error*'
+    }
+
     It 'retries on cannot lock ref error' {
         $script:attempt3 = 0
         Mock git {

@@ -22,7 +22,7 @@ function Write-PipelineLog {
 
 $Config = @{
     # Debate
-    MaxDebateRounds       = 100   # PowerShell debate loop cap (matches moderator internal cap)
+    MaxDebateRounds       = 10   # PowerShell debate loop cap (matches moderator internal cap)
 
     # TDD
     MaxTddCycles          = 10    # RED/GREEN cycles per TDD loop
@@ -35,6 +35,7 @@ $Config = @{
 
     # TLC verification
     MaxTlcAttempts        = 100   # TLA+ writer → TLC verify loop cap
+    TlcTimeoutSeconds     = 300   # Per-invocation TLC process timeout (5 minutes)
 
     # Elicitor
     MaxElicitorTurns      = 50    # Hard turn cap for the interview
@@ -96,6 +97,9 @@ $Config = @{
 
     # Number of tasks — derived from tier task list length, must be >= 1
     NumTasks                   = 1
+
+    # Crash budget — max crashes before pipeline aborts
+    MaxCrashes                 = 3
 }
 
 function Get-PipelineConfig {
@@ -158,6 +162,10 @@ function Get-PipelineConfig {
         $snapshot.PipelineTimeoutSeconds = [int]$env:VIBE_PIPELINE_TIMEOUT_SECONDS
     }
 
+    if ($env:VIBE_TLC_TIMEOUT_SECONDS) {
+        $snapshot.TlcTimeoutSeconds = [int]$env:VIBE_TLC_TIMEOUT_SECONDS
+    }
+
     # ── Validation ──
 
     # Fields that must be strictly positive (> 0)
@@ -167,7 +175,8 @@ function Get-PipelineConfig {
         'MaxTddKeepGoingPerGate',
         'PipelineTimeoutSeconds',
         'ReviewerTimeoutSeconds',
-        'ReviewModeratorTimeoutSeconds'
+        'ReviewModeratorTimeoutSeconds',
+        'TlcTimeoutSeconds'
     )
     foreach ($field in $positiveFields) {
         if ($snapshot[$field] -le 0) {
@@ -270,7 +279,7 @@ function Invoke-VerifyCommand {
     }
 
     try {
-        & $exe @cmdArgs
+        $null = & $exe @cmdArgs 2>&1
         $code = $LASTEXITCODE
         if ($null -eq $code) { $code = 0 }
         return $code
@@ -280,4 +289,19 @@ function Invoke-VerifyCommand {
             Set-Location $originalDir
         }
     }
+}
+
+function New-RunId {
+    $ts = Get-Date -Format 'yyyyMMddTHHmmss'
+    $hex = -join ((1..4) | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
+    return "$ts-$hex"
+}
+
+function Get-RunIdFromLog {
+    param([Parameter(Mandatory)][string]$LogPath)
+    $pattern = 'PIPELINE START runId=(\d{8}T\d{6}-[0-9a-f]{4})(?:\s|$)'
+    if (-not (Test-Path $LogPath)) { throw "Pipeline log not found: $LogPath" }
+    $content = Get-Content $LogPath -Raw
+    if ($content -match $pattern) { return $Matches[1] }
+    throw "No valid runId found in pipeline log"
 }

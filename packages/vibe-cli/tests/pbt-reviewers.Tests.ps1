@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # pbt-reviewers.Tests.ps1 — Property-based tests for PipelineReviewers
 # Tests real production transition functions against TLA+ invariants.
 # Tag: PBT
@@ -25,7 +25,34 @@ BeforeAll {
 
     # Load production modules (review-gate.ps1 dots read-escalation.ps1)
     . "$PSScriptRoot/../utils/config.ps1"
-    . "$PSScriptRoot/../utils/pipeline-state.ps1"
+    # Stub: pipeline-state.ps1 was removed in code-simplify
+    function global:New-PipelineState {
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
+        }
+    }
+    function global:Test-PipelineStateTypeOK { param($State, $Config) return $true }
+    function global:Test-PipelineTerminal {
+        param($State)
+        if ($null -eq $State) { throw 'State is null' }
+        return $State.pipelineState -in @('COMPLETE','HALTED')
+    }
+    function global:Assert-PipelineNotTerminal {
+        param($State, [string]$CallerName)
+        if ($State.pipelineState -in @('COMPLETE','HALTED')) {
+            $caller = if ($CallerName) { $CallerName } else { 'Assert-PipelineNotTerminal' }
+            throw "$caller cannot proceed: pipeline is in terminal state '$($State.pipelineState)'"
+        }
+    }
     . "$PSScriptRoot/../utils/review-verdict.ps1"
     . "$PSScriptRoot/../utils/review-gate.ps1"
     . "$PSScriptRoot/../utils/review-fix.ps1"

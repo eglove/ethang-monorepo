@@ -12,8 +12,65 @@ $root = $PSScriptRoot
 
 # Config and shared functions
 . "$root/utils/config.ps1"
-. "$root/utils/pipeline-state.ps1"
+# Stub: pipeline-state.ps1 was removed in code-simplify
+if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
+    function New-PipelineState { # PSScriptAnalyzer suppress — stub only
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
+        param()
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
+        }
+    }
+}
+if (-not (Get-Command Resolve-PipelineState -ErrorAction SilentlyContinue)) {
+    function Resolve-PipelineState {
+        param([int]$FromStage, [string]$Dir)
+        $result = @{}
+        $result.FeatureDir = $Dir
+        if ($FromStage -le 1) { return $result }
+        $elicitor = Join-Path $Dir 'elicitor.md'
+        if (-not (Test-Path $elicitor)) { throw "missing elicitor.md in $Dir" }
+        $result.Briefing = Get-Content $elicitor -Raw
+        if ($FromStage -le 2) { return $result }
+        $bdd = Join-Path $Dir 'bdd.feature'
+        if (-not (Test-Path $bdd)) { throw "missing bdd.feature in $Dir" }
+        $result.GherkinFile = $bdd
+        if ($FromStage -le 4) { return $result }
+        $tlaDir = Join-Path $Dir 'tla'
+        $tlaFile = Get-ChildItem $tlaDir -Filter '*.tla' -ErrorAction SilentlyContinue | Select-Object -First 1
+        if (-not $tlaFile) { throw "missing TLA+ spec in $Dir" }
+        $result.TlaFile = $tlaFile.FullName
+        $result.TlaDir = $tlaDir
+        if ($FromStage -le 6) { return $result }
+        $implMd = Join-Path $Dir 'implementation-plan.md'
+        if (-not (Test-Path $implMd)) { throw "missing implementation-plan.md in $Dir" }
+        $result.ImplFile = $implMd
+        $implJson = Join-Path $Dir 'implementation-plan.json'
+        if (-not (Test-Path $implJson)) { throw "missing implementation-plan.json in $Dir" }
+        $result.ImplJson = $implJson
+        if ($FromStage -le 7) { return $result }
+        $logsDir = Join-Path $Dir 'logs'
+        if (-not (Test-Path $logsDir)) { throw "missing logs directory in $Dir" }
+        $implJsonContent = Get-Content $implJson -Raw | ConvertFrom-Json
+        $result.Plan = $implJsonContent
+        $result.CompletedTasks = @()
+        $result.MergedTasks = @()
+        return $result
+    }
+}
 . "$root/utils/debate-loop.ps1"
+. "$root/utils/gherkin-parser.ps1"
+. "$root/utils/tlc-parser.ps1"
+. "$root/utils/fixture-gate.ps1"
 
 # Stages
 . "$root/stages/1-elicitor.ps1"
@@ -30,6 +87,7 @@ if ($Stage -gt 1) {
     if (-not $Feature) { throw "Resuming at stage $Stage requires -Feature <name> (e.g. -Feature lint-fixer)" }
 
     $featureDir = "$root/docs/$Feature"
+    $featureName = $Feature
     if (-not (Test-Path "$featureDir/elicitor.md")) { throw "Feature directory not found or missing elicitor.md: $featureDir" }
 
     Write-PipelineLog "=== RESUME at stage $Stage feature=$Feature ===" -Color Cyan
@@ -53,6 +111,7 @@ try {
         Write-PipelineLog "--- Stage 1: Elicitor ---" -Color Cyan
         $elicitorResult = Invoke-Elicitor -Seed $Seed -Root $root
         $featureDir = $elicitorResult.FeatureDir
+        $featureName = Split-Path $featureDir -Leaf
         $briefing = $elicitorResult.Briefing
     }
 
@@ -74,6 +133,16 @@ try {
     if ($Stage -le 3) {
         Write-PipelineLog "--- Stage 3: BDD Debate ---" -Color Cyan
         Invoke-BddDebate -GherkinFile $gherkinFile -FeatureDir $featureDir -Root $root
+
+        # Generate BDD fixture after debate consensus (T10)
+        if ($gherkinFile -and (Test-Path $gherkinFile)) {
+            Write-PipelineLog "Generating BDD test fixtures..." -Color Yellow
+            $bddFixturePath = Join-Path (Get-FixtureDir -Root $root -FeatureName $featureName) 'bdd/fixture.json'
+            $parsedGherkin = ConvertFrom-Gherkin -Path $gherkinFile
+            $parsedGherkin.schemaVersion = 1
+            Export-BddFixture -Fixture $parsedGherkin -OutputPath $bddFixturePath
+            Write-PipelineLog "BDD fixture generated: $bddFixturePath" -Color Green
+        }
     }
 
     if ($Stage -le 4) {
@@ -86,11 +155,15 @@ try {
     if ($Stage -le 5) {
         Write-PipelineLog "--- Stage 5: TLA+ Debate ---" -Color Cyan
         Invoke-TlaDebate -TlaFile $tlaFile -TlaDir $tlaDir -GherkinFile $gherkinFile -FeatureDir $featureDir -Root $root
+
     }
 
     if ($Stage -le 6) {
         Write-PipelineLog "--- Stage 6: Implementation Writer ---" -Color Cyan
-        $implResult = Invoke-ImplementationWriter -TlaFile $tlaFile -FeatureDir $featureDir -Root $root
+        # Pass BDD and TLA+ spec paths to implementation writer (T11)
+        $bddPath = if ($gherkinFile) { $gherkinFile } else { $null }
+        $tlaPath = if ($tlaFile) { $tlaFile.FullName } else { $null }
+        $implResult = Invoke-ImplementationWriter -FeatureDir $featureDir -Root $root -BddFeaturePath $bddPath -TlaSpecPath $tlaPath
         $implFile = $implResult.ImplFile
         $implJson = $implResult.ImplJson
     }
@@ -101,11 +174,15 @@ try {
     }
 
     if ($Stage -le 8) {
-        Write-PipelineLog "--- Stage 8: Coding ---" -Color Cyan
-        if (-not $implJson) {
-            $implJson = "$featureDir/implementation-plan.json"
+        # Verify BDD fixture precondition before coding stage
+        $fixtureCheck = Test-FixturePrecondition -Root $root -FeatureName $featureName
+        if (-not $fixtureCheck.canProceed) {
+            throw "Cannot enter coding stage — missing or invalid BDD fixture. Run stage 3 first."
         }
-        $codingResult = Invoke-CodingStage -PlanJsonPath $implJson -Root $root -FeatureDir $featureDir
+        Write-PipelineLog "Fixture precondition OK (BDD valid)" -Color Green
+
+        Write-PipelineLog "--- Stage 8: Coding ---" -Color Cyan
+        $codingResult = Invoke-CodingStage -Feature $featureName -Root $root
         Write-PipelineLog "Stage 8 result: $($codingResult.PipelineStatus)" -Color $(if ($codingResult.PipelineStatus -eq 'completed') { 'Green' } else { 'Red' })
     }
 
