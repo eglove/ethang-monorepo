@@ -107,8 +107,12 @@ Describe 'Stage 8 — Resume' {
         '[]' | Set-Content (Join-Path $fixtureDir 'bdd.json')
         '[]' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
-        # Mock external commands
-        Mock git { '' }
+        # Mock external commands — resume expects to be on the feature branch already
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse.*--abbrev-ref') { return 'feature/test-feature' }
+            return ''
+        }
         Mock Lock-Pipeline { @{ pipelineState = 'locked'; lockHolder = 1 } }
         Mock Unlock-Pipeline {}
         Mock Invoke-Claude {}
@@ -169,6 +173,8 @@ Describe 'Stage 8 — Resume' {
 
     It 'Resume detects and cleans up orphan worktrees' {
         Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse.*--abbrev-ref') { return 'feature/test-feature' }
             if ($args -contains 'worktree' -and $args -contains 'list') {
                 return @(
                     "$script:tempDir  abc1234 [main]"
@@ -204,6 +210,8 @@ Describe 'Stage 8 — Resume' {
 
     It 'Resume skips already-merged branches during merge detection' {
         Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse.*--abbrev-ref') { return 'feature/test-feature' }
             if ($args -contains 'branch' -and $args -contains '--merged') {
                 return @('  main', '* feature-branch', '  already-merged-branch')
             }
@@ -216,6 +224,95 @@ Describe 'Stage 8 — Resume' {
         $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir -Resume
 
         $result.Status | Should -Be 'tiers_dispatched'
+    }
+
+    It 'Resume halts when feature branch does not exist' {
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse.*--abbrev-ref') { return 'main' }
+            if ($joined -match 'branch.*--list') { return '' }
+            return ''
+        }
+
+        $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir -Resume
+
+        $result.Status | Should -Be 'halted_no_branch'
+        $result.Message | Should -Match 'does not exist'
+    }
+
+    It 'Resume checks out feature branch when on a different branch' {
+        $script:checkoutCalled = $false
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse.*--abbrev-ref') { return 'main' }
+            if ($joined -match 'branch.*--list.*feature/test-feature') { return '  feature/test-feature' }
+            if ($joined -match 'checkout\s+feature/test-feature') { $script:checkoutCalled = $true; return '' }
+            return ''
+        }
+
+        $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir -Resume
+
+        $script:checkoutCalled | Should -BeTrue
+        $result.Status | Should -Be 'tiers_dispatched'
+    }
+}
+
+Describe 'Stage 8 — Feature Branch Creation' {
+    BeforeAll {
+        $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "branch-integ-$(Get-Random)"
+    }
+
+    BeforeEach {
+        Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
+        New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
+
+        $featureDir = Join-Path $script:tempDir 'docs/test-feature'
+        New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
+
+        $plan = @{ tiers = @(@{ tier = 1; tasks = @(@{ id = 'T1'; step = 1; title = 'A' }) }) }
+        $plan | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $featureDir 'implementation-plan.json')
+
+        $fixtureDir = Join-Path $script:tempDir 'fixtures/test-feature'
+        New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
+        '[]' | Set-Content (Join-Path $fixtureDir 'bdd.json')
+        '[]' | Set-Content (Join-Path $fixtureDir 'tla.json')
+
+        Mock Lock-Pipeline { @{ pipelineState = 'locked'; lockHolder = 1 } }
+        Mock Unlock-Pipeline {}
+        Mock Invoke-Claude {}
+        Mock Read-Host { 'y' }
+    }
+
+    AfterAll {
+        Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It 'Fresh run creates feature branch before locking' {
+        $script:checkoutBCalled = $false
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'branch.*--list') { return '' }
+            if ($joined -match 'checkout.*-b.*feature/test-feature') { $script:checkoutBCalled = $true; return '' }
+            return ''
+        }
+
+        $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir
+
+        $script:checkoutBCalled | Should -BeTrue
+        $result.Status | Should -Be 'tiers_dispatched'
+    }
+
+    It 'Fresh run halts when feature branch already exists' {
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'branch.*--list') { return '  feature/test-feature' }
+            return ''
+        }
+
+        $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir
+
+        $result.Status | Should -Be 'halted_branch_exists'
+        $result.Message | Should -Match 'already exists'
     }
 }
 
@@ -244,7 +341,11 @@ Describe 'Stage 8 — Crash Recovery' {
         '[]' | Set-Content (Join-Path $fixtureDir 'bdd.json')
         '[]' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
-        Mock git { '' }
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse.*--abbrev-ref') { return 'feature/test-feature' }
+            return ''
+        }
         Mock Lock-Pipeline { @{ pipelineState = 'locked'; lockHolder = 1 } }
         Mock Unlock-Pipeline {}
         Mock Invoke-Claude {}
@@ -327,6 +428,8 @@ Describe 'Stage 8 — Crash Recovery' {
     It 'R1-4: Resume with orphan worktrees cleans them up' {
         $script:worktreeRemoved = $false
         Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse.*--abbrev-ref') { return 'feature/test-feature' }
             if ($args -contains 'worktree' -and $args -contains 'list') {
                 return @(
                     "$script:tempDir  abc1234 [main]"
@@ -411,7 +514,11 @@ Describe 'Stage 8 — End-to-End Integration' {
         }
         $plan | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $script:tempDir 'docs/my-feature/implementation-plan.json')
 
-        Mock git { '' }
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse.*--abbrev-ref') { return 'feature/my-feature' }
+            return ''
+        }
 
         # Simulate a crash after tier 1 by writing a partial log
         $logPath = Join-Path $script:tempDir 'pipeline.log'
