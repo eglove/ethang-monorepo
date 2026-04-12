@@ -1,0 +1,14 @@
+{
+  "name": "@ethang/vibe-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "pwsh -NoProfile -Command \"Invoke-ScriptAnalyzer -Path . -Recurse -Fix -EnableExit -ReportSummary\"",
+    "test": "pwsh -NoProfile -Command \"Invoke-Pester -Configuration (& ./.pester.ps1)\""
+  },
+  "author": "Ethan Glover",
+  "license": "ISC",
+  "packageManager": "pnpm@11.0.0-dev.1005",
+  "type": "module"
+}
