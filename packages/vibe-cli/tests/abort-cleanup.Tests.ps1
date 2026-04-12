@@ -49,8 +49,8 @@ Describe 'Invoke-AbortCleanup' {
     It 'removes active worktrees sequentially' {
         Mock git {}
         $tasks = @(
-            @{ taskId = 'T1'; worktreeState = 'active'; worktreePath = 'C:\fake1'; mergeState = 'none' }
-            @{ taskId = 'T2'; worktreeState = 'active'; worktreePath = 'C:\fake2'; mergeState = 'none' }
+            @{ taskId = 'T1'; worktreeState = 'active'; worktreePath = (Join-Path ([System.IO.Path]::GetTempPath()) 'fake1'); mergeState = 'none' }
+            @{ taskId = 'T2'; worktreeState = 'active'; worktreePath = (Join-Path ([System.IO.Path]::GetTempPath()) 'fake2'); mergeState = 'none' }
         )
         Mock Test-Path { $true }
 
@@ -70,7 +70,7 @@ Describe 'Invoke-AbortCleanup' {
         Mock git { throw "git error" }
         Mock Test-Path { $true }
         $tasks = @(
-            @{ taskId = 'T1'; worktreeState = 'active'; worktreePath = 'C:\fake1'; mergeState = 'none' }
+            @{ taskId = 'T1'; worktreeState = 'active'; worktreePath = (Join-Path ([System.IO.Path]::GetTempPath()) 'fake1'); mergeState = 'none' }
         )
         Mock Write-Warning {}
 
@@ -130,7 +130,7 @@ Describe 'Invoke-AbortCleanup' {
             taskId       = 'T-merge'
             worktreeState = 'none'
             mergeState   = 'merging'
-            worktreePath = 'C:\fakeworktree'
+            worktreePath = (Join-Path ([System.IO.Path]::GetTempPath()) 'fakeworktree')
         })
 
         $result = Invoke-AbortCleanup -Tasks $tasks -LockDir $script:lockDir
@@ -144,7 +144,7 @@ Describe 'Invoke-AbortCleanup' {
             taskId       = 'T-merr'
             worktreeState = 'none'
             mergeState   = 'merging'
-            worktreePath = 'C:\fakeworktree'
+            worktreePath = (Join-Path ([System.IO.Path]::GetTempPath()) 'fakeworktree')
         })
 
         $result = Invoke-AbortCleanup -Tasks $tasks -LockDir $script:lockDir
@@ -153,14 +153,15 @@ Describe 'Invoke-AbortCleanup' {
     }
 
     It 'catches lock release error and records it' {
-        # Lock the file by keeping a FileStream open so Remove-Item throws
+        # Use a non-existent lock dir so Remove-Item throws
         $fakeLockDir = Join-Path ([System.IO.Path]::GetTempPath()) "abort-lock-err-$(Get-Random)"
         New-Item -ItemType Directory -Path $fakeLockDir -Force | Out-Null
         $lockFile = Join-Path $fakeLockDir 'pipeline.lock'
         Set-Content $lockFile -Value '{"pid":1}'
 
-        # Hold an exclusive lock on the file to force Remove-Item to throw
-        $stream = [System.IO.File]::Open($lockFile, [System.IO.FileMode]::Open, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
+        # Mock Remove-Item to simulate a lock release failure
+        Mock Remove-Item { throw "Permission denied" } -ParameterFilter { $Path -like '*pipeline.lock' }
+
         try {
             $tasks = @()
             $result = Invoke-AbortCleanup -Tasks $tasks -LockDir $fakeLockDir
@@ -169,8 +170,6 @@ Describe 'Invoke-AbortCleanup' {
             $result.errors[0] | Should -Match 'Lock release'
         }
         finally {
-            $stream.Close()
-            $stream.Dispose()
             Remove-Item $fakeLockDir -Recurse -Force -ErrorAction SilentlyContinue
         }
     }
