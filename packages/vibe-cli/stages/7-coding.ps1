@@ -1,4 +1,4 @@
-﻿# Stage 8 — Coding Stage (thin orchestrator)
+﻿# Stage 7 — Coding Stage (renumbered from old Stage 8)
 # Each function lives in its own file under utils/.
 
 . "$PSScriptRoot/../utils/pipeline-lock.ps1"
@@ -26,7 +26,6 @@ function Invoke-CodingStage {
     $skipToGlobal = $false
 
     if ($Resume) {
-        # Ensure we're on the feature branch
         $featureBranch = "feature/$Feature"
         $currentBranch = (git -C $Root rev-parse --abbrev-ref HEAD 2>$null)?.Trim()
         if ($currentBranch -ne $featureBranch) {
@@ -42,7 +41,6 @@ function Invoke-CodingStage {
             Write-PipelineLog -Message "Resume: switched to branch $featureBranch" -Root $Root
         }
 
-        # Re-validate inputs (R2-6)
         $planPath = Join-Path $Root "docs/$Feature/implementation-plan.json"
         if (-not (Test-Path $planPath)) {
             Write-PipelineLog -Message "HALTED: resume failed — implementation-plan.json not found" -Root $Root
@@ -81,7 +79,6 @@ function Invoke-CodingStage {
             }
         }
 
-        # Read plan to get MaxTiers
         $planRaw = Get-Content $planPath -Raw
         $planObj = $planRaw | ConvertFrom-Json
         $maxTiers = @($planObj.tiers).Count
@@ -103,7 +100,6 @@ function Invoke-CodingStage {
             Write-PipelineLog -Message "Resume: last completed tier=$lastCompletedTier — resuming from tier $startTier" -Root $Root
         }
 
-        # Clean up orphan worktrees (R1-4)
         $worktreeOutput = git -C $Root worktree list 2>&1
         $worktreeLines = @($worktreeOutput | Where-Object { $_ -and $_ -notmatch '\(bare\)' })
         if ($worktreeLines.Count -gt 1) {
@@ -115,11 +111,9 @@ function Invoke-CodingStage {
             }
         }
 
-        # Detect already-merged branches (R1-4)
         $mergedBranches = git -C $Root branch --merged 2>&1
         $script:AlreadyMergedBranches = @($mergedBranches | ForEach-Object { $_.Trim().TrimStart('* ') } | Where-Object { $_ })
 
-        # Reclaim stale lock
         try {
             $lockState = Lock-Pipeline -LockDir $Root -Feature $Feature -Resume
         }
@@ -131,7 +125,6 @@ function Invoke-CodingStage {
     }
 
     if (-not $Resume) {
-        # ── Phase 1: Create Feature Branch ──
         $previousBranch = git -C $Root rev-parse --abbrev-ref HEAD
         if ($previousBranch) { $previousBranch = $previousBranch.Trim() }
         $featureBranch = "feature/$Feature"
@@ -146,26 +139,24 @@ function Invoke-CodingStage {
         $null = git -C $Root checkout -b $featureBranch
         Write-PipelineLog -Message "Created feature branch: $featureBranch" -Root $Root
 
-        # ── Phase 1b: Pre-Coding Gate ──
         $gitStatus = git -C $Root status --porcelain
         if ($gitStatus) {
             $response = Read-Host "Uncommitted changes found. Commit now? (y/n)"
             if ($response -eq 'y') {
                 git -C $Root add -A
-                git -C $Root commit -m "Pre-Stage8 auto-commit"
+                git -C $Root commit -m "Pre-Stage7 auto-commit"
             }
             else {
                 $null = git -C $Root checkout $previousBranch
                 $null = git -C $Root branch -D $featureBranch
-                Write-PipelineLog -Message "Pipeline halted: uncommitted changes must be committed before Stage 8 can proceed." -Root $Root
+                Write-PipelineLog -Message "Pipeline halted: uncommitted changes must be committed before Stage 7 can proceed." -Root $Root
                 return @{
                     Status  = 'halted_uncommitted'
-                    Message = 'Pipeline halted: uncommitted changes must be committed before Stage 8 can proceed.'
+                    Message = 'Pipeline halted: uncommitted changes must be committed before Stage 7 can proceed.'
                 }
             }
         }
 
-        # ── Phase 2: Pipeline Lock ──
         try {
             $lockState = Lock-Pipeline -LockDir $Root -Feature $Feature
         }
@@ -179,8 +170,6 @@ function Invoke-CodingStage {
     }
 
     try {
-        # ── Phase 3: Input Validation ──
-
         $planPath = Join-Path $Root "docs/$Feature/implementation-plan.json"
         if (-not (Test-Path $planPath)) {
             Write-PipelineLog -Message "Halted: implementation-plan.json not found at $planPath" -Root $Root
@@ -238,12 +227,10 @@ function Invoke-CodingStage {
             }
         }
 
-        # ── Phase 4: Config Snapshot ──
         $PlanSnapshot = $planRaw | ConvertFrom-Json
 
-        Write-PipelineLog -Message "Stage 8 initialized for feature '$Feature' with $(@($PlanSnapshot.tiers).Count) tier(s)" -Root $Root
+        Write-PipelineLog -Message "Stage 7 initialized for feature '$Feature' with $(@($PlanSnapshot.tiers).Count) tier(s)" -Root $Root
 
-        # ── Phase 5: Fixture Coverage Check ──
         $bddFixtureData = Get-Content $bddFixture -Raw | ConvertFrom-Json
         $tlaFixtureData = Get-Content $tlaFixture -Raw | ConvertFrom-Json
 
@@ -270,10 +257,7 @@ function Invoke-CodingStage {
             Write-PipelineLog -Message "WARNING: Both BDD and TLA+ fixture files are empty — skipping fixture coverage" -Root $Root
         }
         else {
-            if ($bddIsEmpty) {
-                Write-PipelineLog -Message "WARNING: BDD fixture file is empty — skipping BDD coverage check" -Root $Root
-            }
-            else {
+            if (-not $bddIsEmpty) {
                 foreach ($entry in $bddEntries) {
                     $name = if ($entry.name) { $entry.name } elseif ($entry.title) { $entry.title } else { $entry.ToString() }
                     if ($allTestContent -notmatch [regex]::Escape($name)) {
@@ -282,10 +266,7 @@ function Invoke-CodingStage {
                 }
             }
 
-            if ($tlaIsEmpty) {
-                Write-PipelineLog -Message "WARNING: TLA+ fixture file is empty — skipping TLA+ coverage check" -Root $Root
-            }
-            else {
+            if (-not $tlaIsEmpty) {
                 foreach ($entry in $tlaEntries) {
                     $name = if ($entry.name) { $entry.name } elseif ($entry.title) { $entry.title } else { $entry.ToString() }
                     if ($allTestContent -notmatch [regex]::Escape($name)) {
@@ -303,19 +284,15 @@ function Invoke-CodingStage {
         }
 
         Write-PipelineLog -Message ">>> MARKER FIXTURE_COVERAGE_COMPLETE" -Root $Root
-
-        # ── Phase 6: Single Claude Dispatch (all tiers at once) ──
-
         Write-PipelineLog -Message ">>> MARKER PRE_CODING_GATE" -Root $Root
 
         $featureDocsPath = Join-Path $Root "docs/$Feature"
         $MaxTiers = @($PlanSnapshot.tiers).Count
 
         if ($skipToGlobal) {
-            Write-PipelineLog -Message "Skipping all tiers — resuming at GlobalDoublePass" -Root $Root
+            Write-PipelineLog -Message "Skipping all tiers — resuming at global verification" -Root $Root
         }
-        else {
-            # Build single prompt with ALL tiers and dispatch Claude once
+        else {  # Normal tier dispatch path
             $uncoveredSummary = if ($uncoveredFixtures.Count -gt 0) {
                 ($uncoveredFixtures | ForEach-Object { "$($_.Type): $($_.Name)" }) -join "`n"
             }
@@ -324,7 +301,7 @@ function Invoke-CodingStage {
             $planPath = Join-Path $Root "docs/$Feature/implementation-plan.json"
 
             $prompt = @"
-## Stage 8 — Implementation
+## Stage 7 — Implementation
 
 Implement ALL tiers from the implementation plan, dispatching parallel agents per tier in worktrees. Tiers execute sequentially — complete tier N before starting tier N+1.
 
@@ -348,23 +325,92 @@ $uncoveredSummary
             Write-PipelineLog -Message "Dispatching Claude for all $MaxTiers tier(s)" -Root $Root
             $claudeResult = Invoke-Claude -Prompt $prompt -AddDir $Root
 
-            # Check for worktrees after Claude completes
             $worktreeOutput = git -C $Root worktree list
             $worktreeLines = @($worktreeOutput | Where-Object { $_ -and $_ -notmatch '\(bare\)' })
             $worktreeDetected = ($worktreeLines.Count -gt 1)
 
             if ($worktreeDetected) {
-                Write-PipelineLog -Message "Worktrees detected after Claude dispatch — flagging for per-worktree gates" -Root $Root
+                Write-PipelineLog -Message "Worktrees detected after Claude dispatch — running per-worktree gates" -Root $Root
+
+                # Parse worktree paths and branches (skip the main worktree — first line)
+                $wtPaths = @()
+                $wtBranches = @()
+                for ($wtIdx = 1; $wtIdx -lt $worktreeLines.Count; $wtIdx++) {
+                    $wtLine = $worktreeLines[$wtIdx]
+                    $wtPath = ($wtLine -split '\s+')[0]
+                    $wtPaths += $wtPath
+                    if ($wtLine -match '\[(.+?)\]') {
+                        $wtBranches += $Matches[1]
+                    }
+                }
+
+                # Per-worktree gates: double-pass + review for each worktree
+                $gateResult = Invoke-PerWorktreeGate -WorktreePaths $wtPaths -FeatureDir $featureDocsPath -Root $Root -Feature $Feature
+                if ($gateResult.Status -eq 'escalated') {
+                    Write-PipelineLog -Message "Per-worktree gate escalated — halting pipeline" -Root $Root
+                    $null = Complete-Pipeline -Root $Root -Status halted
+                    return @{
+                        Status    = 'halted_gate'
+                        Feature   = $Feature
+                        GateResult = $gateResult
+                    }
+                }
+
+                # Sequential merge: merge worktree branches into feature branch
+                $featureBranchName = "feature/$Feature"
+                $mergeResult = Invoke-SequentialMerge -WorktreeBranches $wtBranches -FeatureBranch $featureBranchName -Root $Root -Feature $Feature
+                if ($mergeResult.Status -ne 'merged') {
+                    Write-PipelineLog -Message "SequentialMerge escalated ($($mergeResult.Status)) — halting pipeline" -Root $Root
+                    $null = Complete-Pipeline -Root $Root -Status halted
+                    return @{
+                        Status      = 'halted_merge'
+                        Feature     = $Feature
+                        MergeResult = $mergeResult
+                    }
+                }
+
+                # Worktree cleanup (writes TIER marker internally)
+                $null = Invoke-WorktreeCleanup -WorktreePaths $wtPaths -Root $Root -CompletedTier $MaxTiers
             }
             else {
                 Write-PipelineLog -Message "No worktrees after Claude dispatch — single-task cleanup path" -Root $Root
+                Write-PipelineLog -Message ">>> MARKER TIER_${MaxTiers}_COMPLETE" -Root $Root
             }
-
-            Write-PipelineLog -Message ">>> MARKER TIER_${MaxTiers}_COMPLETE" -Root $Root
         }
 
-        Write-PipelineLog -Message "All $MaxTiers tier(s) dispatched for feature '$Feature'" -Root $Root
+        # ── Global verification ──
+        Write-PipelineLog -Message "All $MaxTiers tier(s) complete — running global double-pass" -Root $Root
+
+        $gdpResult = Invoke-GlobalDoublePass -Root $Root -Feature $Feature
+        if ($gdpResult.Status -eq 'escalated') {
+            Write-PipelineLog -Message "Global double-pass escalated after $($gdpResult.Retries) retries — halting" -Root $Root
+            $null = Complete-Pipeline -Root $Root -Status halted
+            return @{
+                Status          = 'halted_doublepass'
+                Feature         = $Feature
+                DoublePassResult = $gdpResult
+            }
+        }
         Write-PipelineLog -Message ">>> MARKER GLOBAL_DOUBLEPASS_COMPLETE" -Root $Root
+
+        # Global review: full diff against base branch
+        $baseBranch = 'master'
+        Write-PipelineLog -Message "Running global review against $baseBranch" -Root $Root
+
+        $grResult = Invoke-GlobalReview -Root $Root -FeatureDir $featureDocsPath -BaseBranch $baseBranch
+        if ($grResult.Verdict -eq 'escalated') {
+            Write-PipelineLog -Message "Global review escalated after $($grResult.ReviewRound) round(s) — halting" -Root $Root
+            $null = Complete-Pipeline -Root $Root -Status halted
+            return @{
+                Status       = 'halted_review'
+                Feature      = $Feature
+                ReviewResult = $grResult
+            }
+        }
+        Write-PipelineLog -Message ">>> MARKER GLOBAL_REVIEW_COMPLETE" -Root $Root
+
+        $null = Complete-Pipeline -Root $Root -Status complete
+        Write-PipelineLog -Message "STAGE_COMPLETE:7:$Feature" -Root $Root
 
         return @{
             Status             = 'tiers_dispatched'
@@ -372,7 +418,6 @@ $uncoveredSummary
             PlanSnapshot       = $PlanSnapshot
             LockState          = $lockState
             UncoveredFixtures  = $uncoveredFixtures
-            WorktreeDetected   = $worktreeDetected
         }
     }
     finally {

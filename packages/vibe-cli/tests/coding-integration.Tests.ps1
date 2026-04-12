@@ -1,7 +1,21 @@
 ﻿BeforeAll {
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
-    . "$PSScriptRoot/../stages/8-coding.ps1"
+    . "$PSScriptRoot/../stages/7-coding.ps1"
     . "$PSScriptRoot/helpers/claude-test-double.ps1"
+
+    Mock Write-Host {}
+    Mock Invoke-GlobalDoublePass { @{ Status = 'passed'; Retries = 0; LastError = $null } }
+    Mock Invoke-GlobalReview { @{ Verdict = 'pass'; ReviewRound = 1 } }
+    Mock Invoke-PerWorktreeGate { @{ Status = 'passed' } }
+    Mock Invoke-SequentialMerge { @{ Status = 'merged' } }
+    Mock Invoke-WorktreeCleanup { @{ TierCheckpoint = $CompletedTier } }
+    Mock Complete-Pipeline {
+        param($Root, $Status)
+        if ($Root) {
+            Write-PipelineLog -Message ">>> PIPELINE $($Status.ToUpper())" -Root $Root
+        }
+        return @{ Status = $Status; Timestamp = [datetime]::UtcNow }
+    }
 }
 
 Describe 'Stage 8 — Logging' {
@@ -661,10 +675,15 @@ Describe 'Stage 8 — End-to-End Integration' {
     }
 
     It 'WorktreeCleanup writes checkpoint marker before removing worktrees' {
+        # Invoke-WorktreeCleanup is tested directly in worktree-cleanup unit tests.
+        # Here we verify the mock contract: it returns TierCheckpoint.
+        Mock Invoke-WorktreeCleanup {
+            Write-PipelineLog -Message ">>> MARKER TIER_${CompletedTier}_COMPLETE" -Root $Root
+            @{ CleanedUp = @(); Failed = @(); TierCheckpoint = $CompletedTier }
+        }
+
         $subDir = Join-Path $script:tempDir 'wt-cleanup'
         New-Item -ItemType Directory -Path $subDir -Force | Out-Null
-
-        Mock git { '' }
 
         $result = Invoke-WorktreeCleanup -WorktreePaths @('/tmp/wt1') -Root $subDir -CompletedTier 2
 

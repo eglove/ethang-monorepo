@@ -1,62 +1,63 @@
 function Resume-Pipeline {
     param(
         [Parameter(Mandatory)][string]$Root,
-        [Parameter(Mandatory)][string]$LogPath,
-        [Parameter(Mandatory)][string]$LockDir,
-        [int]$MaxCrashes = 3
+        [Parameter(Mandatory)][string]$LogPath
     )
 
-    # 1. Check crash budget
-    $crashCount = Test-CrashBudget -LockDir $LockDir -MaxCrashes $MaxCrashes
-
-    # 2. Extract runId from log
-    $runId = Get-RunIdFromLog -LogPath $LogPath
-
-    # 3. Detect feature name from PIPELINE START line
-    $logContent = Get-Content $LogPath -Raw
-    if ($logContent -match 'PIPELINE START.*feature=(\S+)') {
-        $feature = $Matches[1]
-    }
-    else {
-        throw "Cannot detect feature name from pipeline log"
+    if (-not (Test-Path $LogPath)) {
+        throw "Pipeline log not found: $LogPath"
     }
 
-    # 4. Detect last completed stage
-    $lastStage = 0
-    for ($s = 8; $s -ge 1; $s--) {
-        if ($logContent -match "Stage $s complete") { $lastStage = $s; break }
+    $content = Get-Content $LogPath -Raw
+    if ([string]::IsNullOrWhiteSpace($content)) {
+        throw "Pipeline log is empty: $LogPath"
     }
 
-    # 5. Check fixture states
-    $featureDir = "$Root/docs/$feature"
-    $fixtureBase = Join-Path $Root "fixtures/$feature"
-    $bddFixture = Join-Path $fixtureBase 'bdd.json'
+    # Use the shared pattern from pipeline-log.ps1
+    $pattern = if ($StageCompletePattern) { $StageCompletePattern } else { 'STAGE_COMPLETE:(\d+):(.+)' }
+    $matches_ = [regex]::Matches($content, $pattern)
 
-    $bddState = if (Test-Path $bddFixture) {
-        try { $null = Get-Content $bddFixture -Raw | ConvertFrom-Json; 'valid' } catch { 'corrupt' }
+    if ($matches_.Count -eq 0) {
+        throw "No STAGE_COMPLETE markers found in pipeline log"
     }
-    else { 'missing' }
 
-    # 6. Check for dirty git state
-    $gitState = @{ mergeHead = $false; rebaseHead = $false }
-    try {
-        $gitDir = & git rev-parse --git-dir 2>$null
-        if ($gitDir -and (Test-Path (Join-Path $gitDir 'MERGE_HEAD'))) { $gitState.mergeHead = $true }
-        if ($gitDir -and (Test-Path (Join-Path $gitDir 'REBASE_HEAD'))) { $gitState.rebaseHead = $true }
+    # Check for incompatible old 8-stage format
+    foreach ($m in $matches_) {
+        $stageNum = [int]$m.Groups[1].Value
+        if ($stageNum -gt 7) {
+            throw "Incompatible old 8-stage pipeline format detected (stage $stageNum > 7). Cannot resume."
+        }
     }
-    catch { }
 
-    # 7. Load idempotency tokens
-    $tokens = Read-IdempotencyToken -LogPath $LogPath
+    # Single pass: find most recent feature and build per-feature highest stage
+    $lastFeature = $null
+    $featureStages = @{}
+
+    foreach ($m in $matches_) {
+        $stageNum = [int]$m.Groups[1].Value
+        $featureName = $m.Groups[2].Value.Trim()
+        $lastFeature = $featureName
+        if (-not $featureStages.ContainsKey($featureName) -or $stageNum -gt $featureStages[$featureName]) {
+            $featureStages[$featureName] = $stageNum
+        }
+    }
+
+    $lastStage = $featureStages[$lastFeature]
+
+    # Guard: if all 7 stages are complete, signal completion
+    if ($lastStage -ge 7) {
+        return @{
+            Feature     = $lastFeature
+            LastStage   = $lastStage
+            ResumeStage = $lastStage + 1
+            Completed   = $true
+        }
+    }
 
     return @{
-        RunId              = $runId
-        Feature            = $feature
-        LastStage          = $lastStage
-        ResumeStage        = $lastStage + 1
-        BddFixtureState    = $bddState
-        GitState           = $gitState
-        CrashCount         = $crashCount
-        IdempotencyTokens  = $tokens
+        Feature     = $lastFeature
+        LastStage   = $lastStage
+        ResumeStage = $lastStage + 1
+        Completed   = $false
     }
 }

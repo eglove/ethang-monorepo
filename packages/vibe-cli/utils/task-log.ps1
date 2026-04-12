@@ -37,6 +37,7 @@ function Write-ThreadSafeLog {
         }
 
         if ($acquired) {
+            if (-not $LogFile) { return }
             [System.IO.File]::AppendAllText($LogFile, $line)
         }
         else {
