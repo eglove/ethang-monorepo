@@ -43,7 +43,7 @@ function Stop-ProcessTree {
 
     $killed = @{}
 
-    function Kill-Descendants {
+    function Stop-Descendant {
         param([int]$ParentId)
 
         $children = @()
@@ -54,7 +54,7 @@ function Stop-ProcessTree {
         catch { }
 
         foreach ($childPid in $children) {
-            Kill-Descendants -ParentId $childPid
+            Stop-Descendant -ParentId $childPid
         }
 
         # Kill after recursing into children (leaf-to-root)
@@ -67,7 +67,7 @@ function Stop-ProcessTree {
         }
     }
 
-    Kill-Descendants -ParentId $ProcessId
+    Stop-Descendant -ParentId $ProcessId
     return $killed
 }
 

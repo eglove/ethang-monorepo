@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # review-loop.ps1 — Review dispatch, consolidation, retry cycles, user_notes
 # Depends on: invoke-claude.ps1 (Invoke-Claude)
 # =============================================================================
@@ -39,7 +39,7 @@ function Invoke-ReviewLoop {
         [int]$ModeratorTimeout = 300
     )
 
-    $moderatorPromptFile = Join-Path $Root 'agents' 'review-moderator.md'
+    $moderatorPromptFile = Join-Path -Path $Root -ChildPath 'agents' 'review-moderator.md'
     $round = $CurrentRound
 
     # ── Dispatch review-moderator ──
@@ -107,7 +107,7 @@ function Invoke-ReviewLoop {
     if ($parsed.verdict -eq 'pass') {
         # Pass with notes → append to user_notes.md
         if ($notes.Count -gt 0) {
-            Write-UserNotes -FeatureDir $FeatureDir -Notes $notes
+            Write-UserNote -FeatureDir $FeatureDir -Notes $notes
         }
 
         return @{
@@ -127,7 +127,7 @@ function Invoke-ReviewLoop {
 
             # Write unresolved blockers to user_notes.md
             if ($findings.Count -gt 0) {
-                Write-UserNotes -FeatureDir $FeatureDir -Notes $findings -EscalatedBlocker
+                Write-UserNote -FeatureDir $FeatureDir -Notes $findings -EscalatedBlocker
             }
 
             return @{
@@ -150,7 +150,7 @@ function Invoke-ReviewLoop {
     }
 }
 
-function Write-UserNotes {
+function Write-UserNote {
     <#
     .SYNOPSIS
         Appends review findings to user_notes.md without modifying prior entries.

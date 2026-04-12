@@ -1,4 +1,4 @@
-function Complete-Pipeline {
+﻿function Complete-Pipeline {
     <#
     .SYNOPSIS
         Writes terminal marker (PIPELINE COMPLETE or PIPELINE HALTED), logs lock release, and returns status.

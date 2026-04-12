@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     # Stub external dependencies before sourcing
     function Write-PipelineLog { }
     function Invoke-Claude { }
@@ -12,7 +12,7 @@ BeforeAll {
 
 Describe 'Invoke-ReviewLoop' {
     BeforeEach {
-        $script:featureDir = Join-Path $TestDrive 'docs' 'my-feature'
+        $script:featureDir = Join-Path -Path $TestDrive -ChildPath 'docs' 'my-feature'
         New-Item -Path $script:featureDir -ItemType Directory -Force | Out-Null
         $script:root = $TestDrive
         $script:diff = "diff --git a/file.ts b/file.ts`n+added line"
@@ -170,7 +170,7 @@ Describe 'Invoke-ReviewLoop' {
         }
     }
 
-    Context 'Escalation + Keep Going: Write-UserNotes appends "Unresolved Escalated Blocker"' {
+    Context 'Escalation + Keep Going: Write-UserNote appends "Unresolved Escalated Blocker"' {
         It 'writes escalated blocker notes to user_notes.md on escalation' {
             Mock Invoke-Claude {
                 return (@{
@@ -246,12 +246,12 @@ Describe 'Invoke-ReviewLoop' {
 }
 
 # =============================================================================
-# Write-UserNotes — appends findings to user_notes.md
+# Write-UserNote — appends findings to user_notes.md
 # =============================================================================
 
-Describe 'Write-UserNotes' {
+Describe 'Write-UserNote' {
     BeforeEach {
-        $script:featureDir = Join-Path $TestDrive 'docs' 'write-notes-feature'
+        $script:featureDir = Join-Path -Path $TestDrive -ChildPath 'docs' 'write-notes-feature'
         New-Item -Path $script:featureDir -ItemType Directory -Force | Out-Null
     }
 
@@ -260,7 +260,7 @@ Describe 'Write-UserNotes' {
             $notesPath = Join-Path $script:featureDir 'user_notes.md'
             Test-Path $notesPath | Should -BeFalse
 
-            Write-UserNotes -FeatureDir $script:featureDir -Notes @(
+            Write-UserNote -FeatureDir $script:featureDir -Notes @(
                 @{
                     reviewer    = 'simplicity'
                     severity    = 'medium'
@@ -277,7 +277,7 @@ Describe 'Write-UserNotes' {
         It 'preserves existing content and appends new notes' {
             $notesPath = Join-Path $script:featureDir 'user_notes.md'
 
-            Write-UserNotes -FeatureDir $script:featureDir -Notes @(
+            Write-UserNote -FeatureDir $script:featureDir -Notes @(
                 @{
                     reviewer    = 'first-reviewer'
                     severity    = 'low'
@@ -288,7 +288,7 @@ Describe 'Write-UserNotes' {
 
             $firstContent = Get-Content $notesPath -Raw
 
-            Write-UserNotes -FeatureDir $script:featureDir -Notes @(
+            Write-UserNote -FeatureDir $script:featureDir -Notes @(
                 @{
                     reviewer    = 'second-reviewer'
                     severity    = 'medium'
@@ -309,7 +309,7 @@ Describe 'Write-UserNotes' {
 
     Context 'Escalated blocker format' {
         It 'marks entries as "Unresolved Escalated Blocker" with -EscalatedBlocker' {
-            Write-UserNotes -FeatureDir $script:featureDir -Notes @(
+            Write-UserNote -FeatureDir $script:featureDir -Notes @(
                 @{
                     reviewer    = 'security'
                     severity    = 'high'
@@ -329,7 +329,7 @@ Describe 'Write-UserNotes' {
 
     Context 'Empty notes array is a no-op' {
         It 'does not create file when notes array is empty' {
-            Write-UserNotes -FeatureDir $script:featureDir -Notes @()
+            Write-UserNote -FeatureDir $script:featureDir -Notes @()
 
             $notesPath = Join-Path $script:featureDir 'user_notes.md'
             Test-Path $notesPath | Should -BeFalse
@@ -338,7 +338,7 @@ Describe 'Write-UserNotes' {
 
     Context 'Note format structure' {
         It 'formats each note with ### header, description, and suggestion' {
-            Write-UserNotes -FeatureDir $script:featureDir -Notes @(
+            Write-UserNote -FeatureDir $script:featureDir -Notes @(
                 @{
                     reviewer    = 'perf-checker'
                     severity    = 'medium'

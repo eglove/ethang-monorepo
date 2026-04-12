@@ -1,4 +1,4 @@
-function Test-GlobalPipelineTimeout {
+﻿function Test-GlobalPipelineTimeout {
     <#
     .SYNOPSIS
         TLA+ GlobalTimeout action — halts the pipeline when cumulative wall-clock

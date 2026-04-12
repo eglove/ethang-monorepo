@@ -1,20 +1,18 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
-    if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
-        function global:New-PipelineState {
-            return @{
-                pipelineState      = 'idle'
-                lockHolder         = $null
-                reviewRound        = [int]0
-                keepGoingResets    = [int]0
-                tddKeepGoingCount = [int]0
-                verdict            = $null
-                tasksDone          = [int]0
-                gateTimedOut       = $false
-                globalTimedOut     = $false
-                reviewGateType     = 'none'
-            }
+    function global:New-PipelineState {
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
         }
     }
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
@@ -220,6 +218,23 @@ Describe 'Test-PipelineLockActive' {
 
     It 'returns $false when lock file is empty' {
         Set-Content -Path $script:lockFile -Value ''
+
+        Test-PipelineLockActive -LockDir $script:lockDir | Should -BeFalse
+    }
+
+    It 'handles string startTime via DateTime.Parse (line 87)' {
+        # ConvertFrom-Json may keep ISO 8601 as string rather than DateTime
+        $myStart = (Get-Process -Id $PID).StartTime.ToUniversalTime().ToString('o')
+        # Write raw JSON to ensure startTime stays as string
+        $json = "{`"pid`":$PID,`"startTime`":`"$myStart`"}"
+        Set-Content -Path $script:lockFile -Value $json
+
+        Test-PipelineLockActive -LockDir $script:lockDir | Should -BeTrue
+    }
+
+    It 'returns $false when startTime cannot be parsed (line 95)' {
+        $json = "{`"pid`":$PID,`"startTime`":`"not-a-date`"}"
+        Set-Content -Path $script:lockFile -Value $json
 
         Test-PipelineLockActive -LockDir $script:lockDir | Should -BeFalse
     }
@@ -489,6 +504,39 @@ Describe 'Lock-Pipeline (AcquireLock with process identity and mutex)' {
             # scenario gracefully (no throw propagated to caller)
             $lockContent = Get-Content $script:lockFile -Raw | ConvertFrom-Json
             $lockContent.pid | Should -BeExactly $PID
+        }
+    }
+
+    # =========================================================================
+    # NEW: Abandoned mutex warning (lines 144-145)
+    # =========================================================================
+
+    Context 'Abandoned mutex warning' {
+        It 'logs warning when acquiring abandoned mutex' {
+            $mutexName = "Global\vibe-cli-abandoned-test-$(Get-Random)"
+            $job = Start-ThreadJob {
+                param($name)
+                $m = [System.Threading.Mutex]::new($false, $name)
+                $m.WaitOne() | Out-Null
+                # Exit without releasing — simulates crash
+            } -ArgumentList $mutexName
+            $job | Wait-Job | Out-Null
+            $job | Remove-Job
+
+            Mock Write-Warning {}
+
+            $lockDir2 = Join-Path ([System.IO.Path]::GetTempPath()) "lock-test-abandon-$(Get-Random)"
+            New-Item -ItemType Directory -Path $lockDir2 -Force | Out-Null
+            try {
+                $state = Lock-Pipeline -LockDir $lockDir2 -MutexName $mutexName
+                $state.pipelineState | Should -BeExactly 'locked'
+                Should -Invoke Write-Warning -Times 1 -ParameterFilter {
+                    $Message -match 'abandoned'
+                }
+            }
+            finally {
+                Remove-Item $lockDir2 -Recurse -Force -ErrorAction SilentlyContinue
+            }
         }
     }
 

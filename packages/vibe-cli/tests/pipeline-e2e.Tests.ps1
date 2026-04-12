@@ -1,60 +1,50 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
-    if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
-        function global:New-PipelineState {
-            return @{
-                pipelineState      = 'idle'
-                lockHolder         = $null
-                reviewRound        = [int]0
-                keepGoingResets    = [int]0
-                tddKeepGoingCount = [int]0
-                verdict            = $null
-                tasksDone          = [int]0
-                gateTimedOut       = $false
-                globalTimedOut     = $false
-                reviewGateType     = 'none'
+    function global:New-PipelineState {
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
+        }
+    }
+    function global:New-PipelineLogWriter {
+        param([string]$LogPath)
+        $dir = Split-Path $LogPath -Parent
+        if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+        $fs = [System.IO.FileStream]::new($LogPath, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
+        $fs.Seek(0, [System.IO.SeekOrigin]::End) | Out-Null
+        return [System.IO.StreamWriter]::new($fs)
+    }
+    function global:Write-IdempotencyToken {
+        param($Writer, [string]$Stage, [string]$Status, [string]$RunId)
+        $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+        $line = "[$ts] INVOKE-CLAUDE $Status stage=$Stage"
+        if ($RunId) { $line += " runId=$RunId" }
+        $Writer.WriteLine($line)
+        $Writer.Flush()
+    }
+    function global:Read-IdempotencyToken {
+        param([string]$LogPath)
+        $tokens = [System.Collections.Generic.HashSet[string]]::new()
+        if (-not (Test-Path $LogPath)) { return $tokens }
+        foreach ($line in (Get-Content $LogPath)) {
+            if ($line -match 'INVOKE-CLAUDE\s+(INVOKE|COMPLETE)\s+stage=(\S+)') {
+                $null = $tokens.Add("$($Matches[1]):$($Matches[2])")
             }
         }
+        return $tokens
     }
-    if (-not (Get-Command New-PipelineLogWriter -ErrorAction SilentlyContinue)) {
-        function global:New-PipelineLogWriter {
-            param([string]$LogPath)
-            $dir = Split-Path $LogPath -Parent
-            if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-            $fs = [System.IO.FileStream]::new($LogPath, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
-            $fs.Seek(0, [System.IO.SeekOrigin]::End) | Out-Null
-            return [System.IO.StreamWriter]::new($fs)
-        }
-    }
-    if (-not (Get-Command Write-IdempotencyToken -ErrorAction SilentlyContinue)) {
-        function global:Write-IdempotencyToken {
-            param($Writer, [string]$Stage, [string]$Status, [string]$RunId)
-            $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-            $line = "[$ts] INVOKE-CLAUDE $Status stage=$Stage"
-            if ($RunId) { $line += " runId=$RunId" }
-            $Writer.WriteLine($line)
-            $Writer.Flush()
-        }
-    }
-    if (-not (Get-Command Read-IdempotencyTokens -ErrorAction SilentlyContinue)) {
-        function global:Read-IdempotencyTokens {
-            param([string]$LogPath)
-            $tokens = [System.Collections.Generic.HashSet[string]]::new()
-            if (-not (Test-Path $LogPath)) { return $tokens }
-            foreach ($line in (Get-Content $LogPath)) {
-                if ($line -match 'INVOKE-CLAUDE\s+(INVOKE|COMPLETE)\s+stage=(\S+)') {
-                    $null = $tokens.Add("$($Matches[1]):$($Matches[2])")
-                }
-            }
-            return $tokens
-        }
-    }
-    if (-not (Get-Command Test-IdempotencyComplete -ErrorAction SilentlyContinue)) {
-        function global:Test-IdempotencyComplete {
-            param($Tokens, [string]$Stage)
-            return ($Tokens.Contains("INVOKE:$Stage") -and $Tokens.Contains("COMPLETE:$Stage"))
-        }
+    function global:Test-IdempotencyComplete {
+        param($Tokens, [string]$Stage)
+        return ($Tokens.Contains("INVOKE:$Stage") -and $Tokens.Contains("COMPLETE:$Stage"))
     }
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
     . "$PSScriptRoot/../utils/pipeline-log.ps1"
@@ -178,7 +168,7 @@ Describe 'Pipeline E2E: Full Lifecycle' {
         Write-IdempotencyToken -Writer $writer -Stage 'stage2' -Status 'INVOKE' -RunId 'run1'
         $writer.Close()
 
-        $tokens = Read-IdempotencyTokens -LogPath $logPath
+        $tokens = Read-IdempotencyToken -LogPath $logPath
         Test-IdempotencyComplete -Tokens $tokens -Stage 'stage1' | Should -BeTrue
         Test-IdempotencyComplete -Tokens $tokens -Stage 'stage2' | Should -BeFalse
     }

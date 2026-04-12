@@ -1,4 +1,4 @@
-function Invoke-SequentialMerge {
+﻿function Invoke-SequentialMerge {
     <#
     .SYNOPSIS
         Merges worktree branches into the feature branch in task order (T1, T2, T3...).

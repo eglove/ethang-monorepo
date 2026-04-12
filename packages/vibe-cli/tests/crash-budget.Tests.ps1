@@ -1,20 +1,18 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
-    if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
-        function global:New-PipelineState {
-            return @{
-                pipelineState      = 'idle'
-                lockHolder         = $null
-                reviewRound        = [int]0
-                keepGoingResets    = [int]0
-                tddKeepGoingCount = [int]0
-                verdict            = $null
-                tasksDone          = [int]0
-                gateTimedOut       = $false
-                globalTimedOut     = $false
-                reviewGateType     = 'none'
-            }
+    function global:New-PipelineState {
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
         }
     }
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
@@ -71,6 +69,21 @@ Describe 'Update-CrashCount' {
         $data = Get-Content $script:lockFile -Raw | ConvertFrom-Json
         $data.pid | Should -Be $PID
         $data.crashCount | Should -Be 2
+    }
+
+    It 'logs warning when lock file is corrupt (line 28)' {
+        Set-Content $script:lockFile -Value '{"corrupt'
+        Mock Write-Warning {}
+
+        Update-CrashCount -LockDir $script:lockDir -NewCount 1
+        Should -Invoke Write-Warning -Times 1 -ParameterFilter {
+            $Message -match 'Failed to update crash count'
+        }
+    }
+
+    It 'is a no-op when lock file does not exist' {
+        Remove-Item $script:lockFile -Force
+        { Update-CrashCount -LockDir $script:lockDir -NewCount 1 } | Should -Not -Throw
     }
 }
 

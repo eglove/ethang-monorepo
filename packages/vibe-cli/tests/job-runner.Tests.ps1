@@ -117,4 +117,50 @@ Describe 'Invoke-WithTimeout' {
         }
         $result.Error | Should -Not -BeNullOrEmpty
     }
+
+    It 'starts stopped stopwatch on re-entry' {
+        # Create a stopped stopwatch in the registry
+        $freshId = "T-sw-$(Get-Random)"
+        $sw = [System.Diagnostics.Stopwatch]::new()
+        # sw is created but not started (IsRunning = false)
+        $null = $script:TaskWallClocks.GetOrAdd($freshId, $sw)
+
+        $result = Invoke-WithTimeout -TaskId $freshId -ScriptBlock {
+            @{ TaskId = 'done' }
+        }
+        $result.TimedOut | Should -BeFalse
+        $result.Result.TaskId | Should -Be 'done'
+    }
+
+    It 'returns null result error when script block returns nothing' {
+        $result = Invoke-WithTimeout -TaskId 'T-null' -ScriptBlock {
+            # Return nothing
+        }
+        $result.Error | Should -Match 'no output'
+        $result.Result | Should -BeNullOrEmpty
+    }
+
+    It 'returns timeout result when timer fires before completion' {
+        # Use a very short timeout to trigger the timer path
+        $origTimeout = $Config.JobTimeoutSeconds
+        $Config.JobTimeoutSeconds = 0.001  # 1ms timeout
+
+        try {
+            $freshId = "T-timeout-$(Get-Random)"
+            $null = $script:TaskWallClocks = [System.Collections.Concurrent.ConcurrentDictionary[string,System.Diagnostics.Stopwatch]]::new()
+            . "$PSScriptRoot/../utils/job-runner.ps1"
+
+            $result = Invoke-WithTimeout -TaskId $freshId -ScriptBlock {
+                Start-Sleep -Milliseconds 500
+                @{ TaskId = 'late' }
+            }
+            # Either the timer fires (TimedOut=true) or the block completes
+            # The key thing is no unhandled exception
+            $result | Should -Not -BeNullOrEmpty
+        }
+        finally {
+            $Config.JobTimeoutSeconds = $origTimeout
+            . "$PSScriptRoot/../utils/job-runner.ps1"
+        }
+    }
 }

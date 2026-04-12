@@ -10,7 +10,7 @@ function Get-PackageWorkDir {
     return Join-Path $WorktreePath $offset
 }
 
-function Install-WorktreeDeps {
+function Install-WorktreeDep {
     param(
         [Parameter(Mandatory)][string]$WorktreePath,
         [Parameter(Mandatory)][hashtable]$TaskState
@@ -127,7 +127,7 @@ function Remove-TaskWorkspace {
     }
 }
 
-function Test-WorkspaceExists {
+function Test-WorkspaceExist {
     param([Parameter(Mandatory)][string]$WorktreePath)
 
     return (Test-Path $WorktreePath)

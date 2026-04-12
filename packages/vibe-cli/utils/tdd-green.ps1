@@ -1,4 +1,4 @@
-. "$PSScriptRoot/result-contracts.ps1"
+﻿. "$PSScriptRoot/result-contracts.ps1"
 . "$PSScriptRoot/task-log.ps1"
 . "$PSScriptRoot/response-parser.ps1"
 
@@ -110,7 +110,7 @@ function Invoke-GreenPhase {
     }
 }
 
-function Reset-GreenCounters {
+function Reset-GreenCounter {
     param([Parameter(Mandatory)][hashtable]$State)
     $State.greenAttempts = 0
     return $State

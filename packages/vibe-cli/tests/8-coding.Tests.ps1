@@ -23,10 +23,10 @@ Describe 'Tier Completion Counter (ConcurrentDictionary)' {
         Import-Module ThreadJob -ErrorAction SilentlyContinue
         $jobs = 1..10 | ForEach-Object {
             Start-ThreadJob -ScriptBlock {
-                param($counter)
+                $counter = $using:c
                 # Need to load the function in the runspace
-                $null = $counter.AddOrUpdate('tier1', 1, [Func[string, int, int]]{ param($k, $old) $old + 1 })
-            } -ArgumentList $c
+                $null = $counter.AddOrUpdate('tier1', 1, [Func[string, int, int]]{ param($funcKey, $funcOld) $funcOld + 1 })
+            }
         }
         $jobs | Wait-Job | Out-Null
         $jobs | Remove-Job

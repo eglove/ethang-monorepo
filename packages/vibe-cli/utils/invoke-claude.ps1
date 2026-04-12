@@ -1,4 +1,4 @@
-function Invoke-Claude {
+﻿function Invoke-Claude {
     param(
         [string]$SystemPromptFile,
         [string]$AppendSystemPromptFile,

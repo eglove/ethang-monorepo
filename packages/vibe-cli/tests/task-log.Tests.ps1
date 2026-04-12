@@ -65,6 +65,39 @@ Describe 'Write-ThreadSafeLog' {
         # Restore
         $script:PipelineMutex = $null
     }
+
+    It 'falls back to Console.Error.WriteLine when mutex timeout AND fallback file write fails' {
+        # Mock mutex to return false (timeout)
+        Mock New-PipelineMutex {
+            $mock = [pscustomobject]@{}
+            $mock | Add-Member -MemberType ScriptMethod -Name WaitOne -Value { param($ms) return $false }
+            $mock | Add-Member -MemberType ScriptMethod -Name ReleaseMutex -Value { }
+            return $mock
+        }
+
+        # Point the log file to a non-writable path so the fallback also fails
+        $script:PipelineMutex = $null
+        $script:FallbackLogMaxRetries = 0  # Force skip of all retry attempts
+
+        # Capture stderr
+        $stderrOutput = $null
+        $origErr = [Console]::Error
+        $sw = [System.IO.StringWriter]::new()
+        [Console]::SetError($sw)
+
+        try {
+            Write-ThreadSafeLog -Message 'stderr entry'
+            $stderrOutput = $sw.ToString()
+        }
+        finally {
+            [Console]::SetError($origErr)
+            $sw.Dispose()
+            $script:PipelineMutex = $null
+            $script:FallbackLogMaxRetries = 3
+        }
+
+        $stderrOutput | Should -Match 'stderr entry'
+    }
 }
 
 Describe 'Sync-FallbackLog' {

@@ -78,7 +78,7 @@ function Invoke-AbortCleanup {
     # 5. Release pipeline lock
     try {
         $lockFile = Join-Path $LockDir 'pipeline.lock'
-        if (Test-Path $lockFile) { Remove-Item $lockFile -Force }
+        if (Test-Path $lockFile) { Remove-Item $lockFile -Force -ErrorAction Stop }
         $results.lockReleased = $true
     }
     catch { $results.errors += "Lock release: $_" }

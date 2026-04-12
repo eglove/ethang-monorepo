@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # pbt-coding-stage.Tests.ps1 — Property-based tests for CodingStage model
 # Tests pure state machine model against TLA+ invariants S1-S12.
 # Tag: PBT
@@ -13,10 +13,10 @@ BeforeAll {
     $script:CodingStageInvariants = @{
         'TypeOK'                       = { param($S) Test-CodingStageTypeOK $S }
         'TiersSequential'              = { param($S) Test-TiersSequential $S }
-        'RetryBounds'                  = { param($S) Test-RetryBounds $S }
+        'RetryBounds'                  = { param($S) Test-RetryBound $S }
         'AgentWriterNoTdd'             = { param($S) Test-AgentWriterNoTdd $S }
         'MergeSerial'                  = { param($S) Test-MergeSerial $S }
-        'NoOrphanedWorkspaces'         = { param($S) Test-NoOrphanedWorkspaces $S }
+        'NoOrphanedWorkspaces'         = { param($S) Test-NoOrphanedWorkspace $S }
         'SingleTaskNoWorkspace'        = { param($S) Test-SingleTaskNoWorkspace $S }
         'CompletionRequiresFinalVerif' = { param($S) Test-CompletionRequiresFinalVerif $S }
         'EscalationBlocksProgress'     = { param($S) Test-EscalationBlocksProgress $S }

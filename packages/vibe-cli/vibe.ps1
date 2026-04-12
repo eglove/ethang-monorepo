@@ -14,7 +14,9 @@ $root = $PSScriptRoot
 . "$root/utils/config.ps1"
 # Stub: pipeline-state.ps1 was removed in code-simplify
 if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
-    function New-PipelineState {
+    function New-PipelineState { # PSScriptAnalyzer suppress — stub only
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
+        param()
         return @{
             pipelineState      = 'idle'
             lockHolder         = $null

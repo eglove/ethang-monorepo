@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
 }
 
@@ -28,46 +28,44 @@ Describe 'vibe.ps1 parameter validation' {
 Describe 'Resolve-PipelineState edge cases' {
     BeforeAll {
         # Stub: pipeline-state.ps1 was removed in code-simplify
-        if (-not (Get-Command Resolve-PipelineState -ErrorAction SilentlyContinue)) {
-            function global:Resolve-PipelineState {
-                param([int]$FromStage, [string]$Dir)
-                $result = @{}
-                $result.FeatureDir = $Dir
-                if ($FromStage -le 1) { return $result }
-                # Stage 2+: Briefing
-                $elicitor = Join-Path $Dir 'elicitor.md'
-                if (-not (Test-Path $elicitor)) { throw "missing elicitor.md in $Dir" }
-                $result.Briefing = Get-Content $elicitor -Raw
-                if ($FromStage -le 2) { return $result }
-                # Stage 3+: GherkinFile
-                $bdd = Join-Path $Dir 'bdd.feature'
-                if (-not (Test-Path $bdd)) { throw "missing bdd.feature in $Dir" }
-                $result.GherkinFile = $bdd
-                if ($FromStage -le 4) { return $result }
-                # Stage 5+: TLA
-                $tlaDir = Join-Path $Dir 'tla'
-                $tlaFile = Get-ChildItem $tlaDir -Filter '*.tla' -ErrorAction SilentlyContinue | Select-Object -First 1
-                if (-not $tlaFile) { throw "missing TLA+ spec in $Dir" }
-                $result.TlaFile = $tlaFile.FullName
-                $result.TlaDir = $tlaDir
-                if ($FromStage -le 6) { return $result }
-                # Stage 7+: Implementation plan
-                $implMd = Join-Path $Dir 'implementation-plan.md'
-                if (-not (Test-Path $implMd)) { throw "missing implementation-plan.md in $Dir" }
-                $result.ImplFile = $implMd
-                $implJson = Join-Path $Dir 'implementation-plan.json'
-                if (-not (Test-Path $implJson)) { throw "missing implementation-plan.json in $Dir" }
-                $result.ImplJson = $implJson
-                if ($FromStage -le 7) { return $result }
-                # Stage 8: logs
-                $logsDir = Join-Path $Dir 'logs'
-                if (-not (Test-Path $logsDir)) { throw "missing logs directory in $Dir" }
-                $implJsonContent = Get-Content $implJson -Raw | ConvertFrom-Json
-                $result.Plan = $implJsonContent
-                $result.CompletedTasks = @()
-                $result.MergedTasks = @()
-                return $result
-            }
+        function global:Resolve-PipelineState {
+            param([int]$FromStage, [string]$Dir)
+            $result = @{}
+            $result.FeatureDir = $Dir
+            if ($FromStage -le 1) { return $result }
+            # Stage 2+: Briefing
+            $elicitor = Join-Path $Dir 'elicitor.md'
+            if (-not (Test-Path $elicitor)) { throw "missing elicitor.md in $Dir" }
+            $result.Briefing = Get-Content $elicitor -Raw
+            if ($FromStage -le 2) { return $result }
+            # Stage 3+: GherkinFile
+            $bdd = Join-Path $Dir 'bdd.feature'
+            if (-not (Test-Path $bdd)) { throw "missing bdd.feature in $Dir" }
+            $result.GherkinFile = $bdd
+            if ($FromStage -le 4) { return $result }
+            # Stage 5+: TLA
+            $tlaDir = Join-Path $Dir 'tla'
+            $tlaFile = Get-ChildItem $tlaDir -Filter '*.tla' -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $tlaFile) { throw "missing TLA+ spec in $Dir" }
+            $result.TlaFile = $tlaFile.FullName
+            $result.TlaDir = $tlaDir
+            if ($FromStage -le 6) { return $result }
+            # Stage 7+: Implementation plan
+            $implMd = Join-Path $Dir 'implementation-plan.md'
+            if (-not (Test-Path $implMd)) { throw "missing implementation-plan.md in $Dir" }
+            $result.ImplFile = $implMd
+            $implJson = Join-Path $Dir 'implementation-plan.json'
+            if (-not (Test-Path $implJson)) { throw "missing implementation-plan.json in $Dir" }
+            $result.ImplJson = $implJson
+            if ($FromStage -le 7) { return $result }
+            # Stage 8: logs
+            $logsDir = Join-Path $Dir 'logs'
+            if (-not (Test-Path $logsDir)) { throw "missing logs directory in $Dir" }
+            $implJsonContent = Get-Content $implJson -Raw | ConvertFrom-Json
+            $result.Plan = $implJsonContent
+            $result.CompletedTasks = @()
+            $result.MergedTasks = @()
+            return $result
         }
 
         $script:tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibestate-test-$(Get-Random)"
@@ -163,9 +161,7 @@ Describe 'vibe.ps1 pipeline execution' {
         . "$PSScriptRoot/../stages/6-implementation-writer.ps1"
         . "$PSScriptRoot/../stages/7-implementation-debate.ps1"
         # Define stub for Invoke-CodingStage so Pester can mock it
-        if (-not (Get-Command Invoke-CodingStage -ErrorAction SilentlyContinue)) {
-            function global:Invoke-CodingStage { param($Feature, $Root, [switch]$Resume) }
-        }
+        function global:Invoke-CodingStage { param($Feature, $Root, [switch]$Resume) }
         Mock Write-PipelineLog {}
         Mock Write-Host {}
 
@@ -288,40 +284,34 @@ Describe 'Resume-Pipeline' {
     BeforeAll {
         . "$PSScriptRoot/../utils/config.ps1"
         # Stub: pipeline-state.ps1 was removed in code-simplify
-        if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
-            function global:New-PipelineState {
-                return @{
-                    pipelineState      = 'idle'
-                    lockHolder         = $null
-                    reviewRound        = [int]0
-                    keepGoingResets    = [int]0
-                    tddKeepGoingCount = [int]0
-                    verdict            = $null
-                    tasksDone          = [int]0
-                    gateTimedOut       = $false
-                    globalTimedOut     = $false
-                    reviewGateType     = 'none'
-                }
+        function global:New-PipelineState {
+            return @{
+                pipelineState      = 'idle'
+                lockHolder         = $null
+                reviewRound        = [int]0
+                keepGoingResets    = [int]0
+                tddKeepGoingCount = [int]0
+                verdict            = $null
+                tasksDone          = [int]0
+                gateTimedOut       = $false
+                globalTimedOut     = $false
+                reviewGateType     = 'none'
             }
         }
-        if (-not (Get-Command Read-IdempotencyTokens -ErrorAction SilentlyContinue)) {
-            function global:Read-IdempotencyTokens {
-                param([string]$LogPath)
-                $tokens = [System.Collections.Generic.HashSet[string]]::new()
-                if (-not (Test-Path $LogPath)) { return $tokens }
-                foreach ($line in (Get-Content $LogPath)) {
-                    if ($line -match 'INVOKE-CLAUDE\s+(INVOKE|COMPLETE)\s+stage=(\S+)') {
-                        $null = $tokens.Add("$($Matches[1]):$($Matches[2])")
-                    }
+        function global:Read-IdempotencyToken {
+            param([string]$LogPath)
+            $tokens = [System.Collections.Generic.HashSet[string]]::new()
+            if (-not (Test-Path $LogPath)) { return $tokens }
+            foreach ($line in (Get-Content $LogPath)) {
+                if ($line -match 'INVOKE-CLAUDE\s+(INVOKE|COMPLETE)\s+stage=(\S+)') {
+                    $null = $tokens.Add("$($Matches[1]):$($Matches[2])")
                 }
-                return $tokens
             }
+            return $tokens
         }
-        if (-not (Get-Command Test-IdempotencyComplete -ErrorAction SilentlyContinue)) {
-            function global:Test-IdempotencyComplete {
-                param($Tokens, [string]$Stage)
-                return ($Tokens.Contains("INVOKE:$Stage") -and $Tokens.Contains("COMPLETE:$Stage"))
-            }
+        function global:Test-IdempotencyComplete {
+            param($Tokens, [string]$Stage)
+            return ($Tokens.Contains("INVOKE:$Stage") -and $Tokens.Contains("COMPLETE:$Stage"))
         }
         . "$PSScriptRoot/../utils/pipeline-lock.ps1"
         . "$PSScriptRoot/../utils/resume.ps1"

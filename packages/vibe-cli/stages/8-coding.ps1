@@ -1,4 +1,4 @@
-# Stage 8 — Coding Stage (thin orchestrator)
+﻿# Stage 8 — Coding Stage (thin orchestrator)
 # Each function lives in its own file under utils/.
 
 . "$PSScriptRoot/../utils/pipeline-lock.ps1"

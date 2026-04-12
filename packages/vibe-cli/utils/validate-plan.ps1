@@ -1,4 +1,4 @@
-. "$PSScriptRoot/result-contracts.ps1"
+﻿. "$PSScriptRoot/result-contracts.ps1"
 
 $script:RequiredAgentSections = @('## Role', '## Expected Inputs', '## Output Format')
 

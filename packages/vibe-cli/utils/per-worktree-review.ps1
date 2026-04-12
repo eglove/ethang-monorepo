@@ -1,4 +1,4 @@
-function Invoke-PerWorktreeReview {
+﻿function Invoke-PerWorktreeReview {
     <#
     .SYNOPSIS
         Gets diff from worktree and runs Invoke-ReviewLoop. On fail, dispatches Claude

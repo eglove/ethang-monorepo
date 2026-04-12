@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # review-gate.ps1 — Review gate engine (core loop)
 # TLA+ actions: EnterPreMergeReview, ReviewVerdict, KeepGoingReview, StopReview
 # Depends on: config.ps1, pipeline-state.ps1, review-verdict.ps1, read-escalation.ps1

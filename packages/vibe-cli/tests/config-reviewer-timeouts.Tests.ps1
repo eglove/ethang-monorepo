@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     # Mock transitive dependency so config.ps1 loads cleanly
     function Invoke-Claude { }
     . "$PSScriptRoot/../utils/config.ps1"

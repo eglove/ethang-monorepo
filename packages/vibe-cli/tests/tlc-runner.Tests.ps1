@@ -208,6 +208,38 @@ Describe 'Invoke-TlcProcess ExtraArgs' {
     }
 }
 
+Describe 'Invoke-TlcProcess integration' {
+    BeforeAll {
+        Mock Write-PipelineLog {}
+    }
+
+    It 'configures RedirectStandardError, BeginErrorReadLine, and cleans up event jobs' {
+        # Use a real process that exits quickly to exercise the full code path
+        $tlaDir = Join-Path ([System.IO.Path]::GetTempPath()) "tlc-proc-$(Get-Random)"
+        New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+
+        try {
+            # Override TlaToolsJar to a non-existent jar so java fails fast
+            $origJar = $script:TlaToolsJar
+            $script:TlaToolsJar = Join-Path $tlaDir 'nonexistent.jar'
+
+            # This will start java, which will fail quickly because the jar doesn't exist.
+            # The important thing is it exercises RedirectStandardError=true,
+            # BeginErrorReadLine(), and the finally block with Remove-Job.
+            $result = Invoke-TlcProcess -TlaDir $tlaDir -TlaFileName 'Spec.tla' -CfgFileName 'Spec.cfg' -TimeoutSeconds 10
+
+            # java should exit with non-zero (jar not found)
+            $result.ExitCode | Should -Not -Be 0
+            $result.TimedOut | Should -BeFalse
+            $result.Output | Should -Not -BeNullOrEmpty
+        }
+        finally {
+            $script:TlaToolsJar = $origJar
+            Remove-Item $tlaDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 Describe 'Invoke-TlcSimulation' {
     BeforeAll {
         Mock Write-PipelineLog {}

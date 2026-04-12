@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
 }
 
@@ -222,6 +222,51 @@ Describe 'Invoke-VerifyCommand' {
         $result = Invoke-VerifyCommand -Command 'pnpm lint'
         # This is the exact check tdd-cleanup.ps1 uses — must be $false for exit code 0
         ($result -ne 0) | Should -Be $false
+    }
+}
+
+Describe 'Invoke-ScopedTestVerify' {
+    It 'returns 0 when all tests pass' {
+        Mock Invoke-Pester { return @{ FailedCount = 0 } }
+        Mock New-PesterConfiguration { return [PesterConfiguration]::new() }
+        $result = Invoke-ScopedTestVerify -TestFiles @('fake.Tests.ps1')
+        $result | Should -Be 0
+    }
+
+    It 'returns 1 when tests fail' {
+        Mock Invoke-Pester { return @{ FailedCount = 2 } }
+        Mock New-PesterConfiguration { return [PesterConfiguration]::new() }
+        $result = Invoke-ScopedTestVerify -TestFiles @('fake.Tests.ps1')
+        $result | Should -Be 1
+    }
+
+    It 'uses Push-Location/Pop-Location when WorkingDirectory is specified' {
+        Mock Invoke-Pester { return @{ FailedCount = 0 } }
+        Mock New-PesterConfiguration { return [PesterConfiguration]::new() }
+        Mock Push-Location {}
+        Mock Pop-Location {}
+        $result = Invoke-ScopedTestVerify -TestFiles @('fake.Tests.ps1') -WorkingDirectory 'C:\temp'
+        $result | Should -Be 0
+        Should -Invoke Push-Location -Times 1 -ParameterFilter { $Path -eq 'C:\temp' }
+        Should -Invoke Pop-Location -Times 1
+    }
+}
+
+Describe 'Invoke-VerifyCommand with WorkingDirectory' {
+    BeforeAll {
+        Mock Write-PipelineLog {}
+        Mock Write-Host {}
+    }
+
+    It 'changes directory when WorkingDirectory is provided' {
+        function pnpm { $global:LASTEXITCODE = 0 }
+        Mock pnpm { $global:LASTEXITCODE = 0 }
+        Mock Set-Location {}
+        Mock Get-Location { return 'C:\original' }
+
+        $result = Invoke-VerifyCommand -Command 'pnpm test' -WorkingDirectory 'C:\workdir'
+        $result | Should -Be 0
+        Should -Invoke Set-Location -Times 2
     }
 }
 

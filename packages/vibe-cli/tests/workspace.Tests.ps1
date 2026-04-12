@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
     . "$PSScriptRoot/../utils/task-log.ps1"
@@ -117,20 +117,20 @@ Describe 'Remove-TaskWorkspace' {
     }
 }
 
-Describe 'Test-WorkspaceExists' {
+Describe 'Test-WorkspaceExist' {
     It 'returns true for existing path' {
         $dir = Join-Path ([System.IO.Path]::GetTempPath()) "ws-$(Get-Random)"
         New-Item -ItemType Directory -Path $dir -Force | Out-Null
-        Test-WorkspaceExists -WorktreePath $dir | Should -BeTrue
+        Test-WorkspaceExist -WorktreePath $dir | Should -BeTrue
         Remove-Item $dir -Force
     }
 
     It 'returns false for non-existent path' {
-        Test-WorkspaceExists -WorktreePath '/nonexistent/path' | Should -BeFalse
+        Test-WorkspaceExist -WorktreePath '/nonexistent/path' | Should -BeFalse
     }
 }
 
-Describe 'Install-WorktreeDeps' {
+Describe 'Install-WorktreeDep' {
     BeforeEach {
         $script:wtDir = Join-Path ([System.IO.Path]::GetTempPath()) "deps-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:wtDir -Force | Out-Null
@@ -141,14 +141,14 @@ Describe 'Install-WorktreeDeps' {
         Set-Content (Join-Path $script:wtDir 'pnpm-lock.yaml') -Value 'lockfileVersion: 5'
         $task = @{ tddIter = 0 }
         Mock pnpm { $global:LASTEXITCODE = 0 }
-        $r = Install-WorktreeDeps -WorktreePath $script:wtDir -TaskState $task
+        $r = Install-WorktreeDep -WorktreePath $script:wtDir -TaskState $task
         $task.tddIter | Should -Be 1
         $r.installed | Should -BeTrue
     }
 
     It 'skips install when no pnpm-lock.yaml' {
         $task = @{ tddIter = 0 }
-        $r = Install-WorktreeDeps -WorktreePath $script:wtDir -TaskState $task
+        $r = Install-WorktreeDep -WorktreePath $script:wtDir -TaskState $task
         $r.skipped | Should -BeTrue
         $task.tddIter | Should -Be 1
     }
@@ -157,7 +157,7 @@ Describe 'Install-WorktreeDeps' {
         Set-Content (Join-Path $script:wtDir 'pnpm-lock.yaml') -Value 'lockfileVersion: 5'
         $task = @{ tddIter = 0; taskState = 'deps_installing' }
         Mock pnpm { $global:LASTEXITCODE = 1; throw "install failed" }
-        $r = Install-WorktreeDeps -WorktreePath $script:wtDir -TaskState $task
+        $r = Install-WorktreeDep -WorktreePath $script:wtDir -TaskState $task
         $task.taskState | Should -BeExactly 'failed'
         $task.failureReason | Should -BeExactly 'DepsInstallFailed'
     }
@@ -166,7 +166,7 @@ Describe 'Install-WorktreeDeps' {
         $task = @{ tddIter = 0 }
         Set-Content (Join-Path $script:wtDir 'pnpm-lock.yaml') -Value 'lockfileVersion: 5'
         Mock pnpm { $global:LASTEXITCODE = 0 }
-        Install-WorktreeDeps -WorktreePath $script:wtDir -TaskState $task
+        Install-WorktreeDep -WorktreePath $script:wtDir -TaskState $task
         $task.tddIter | Should -Be 1
         ($task.tddIter -lt 3) | Should -BeTrue
     }

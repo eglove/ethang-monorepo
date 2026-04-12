@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
     . "$PSScriptRoot/../stages/8-coding.ps1"
     . "$PSScriptRoot/helpers/claude-test-double.ps1"

@@ -1,36 +1,30 @@
-BeforeAll {
+﻿BeforeAll {
     # Stub external dependencies before sourcing production modules
     function Invoke-Claude { }
     function Write-PipelineLog { }
 
     . "$PSScriptRoot/../utils/config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
-    if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
-        function global:New-PipelineState {
-            return @{
-                pipelineState      = 'idle'
-                lockHolder         = $null
-                reviewRound        = [int]0
-                keepGoingResets    = [int]0
-                tddKeepGoingCount = [int]0
-                verdict            = $null
-                tasksDone          = [int]0
-                gateTimedOut       = $false
-                globalTimedOut     = $false
-                reviewGateType     = 'none'
-            }
+    function global:New-PipelineState {
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
         }
     }
-    if (-not (Get-Command Test-PipelineStateTypeOK -ErrorAction SilentlyContinue)) {
-        function global:Test-PipelineStateTypeOK { param($State, $Config) return $true }
-    }
-    if (-not (Get-Command Assert-PipelineNotTerminal -ErrorAction SilentlyContinue)) {
-        function global:Assert-PipelineNotTerminal {
-            param($State, [string]$CallerName)
-            if ($State.pipelineState -in @('COMPLETE','HALTED')) {
-                $caller = if ($CallerName) { $CallerName } else { 'Assert-PipelineNotTerminal' }
-                throw "$caller cannot proceed: pipeline is in terminal state '$($State.pipelineState)'"
-            }
+    function global:Test-PipelineStateTypeOK { param($State, $Config) return $true }
+    function global:Assert-PipelineNotTerminal {
+        param($State, [string]$CallerName)
+        if ($State.pipelineState -in @('COMPLETE','HALTED')) {
+            $caller = if ($CallerName) { $CallerName } else { 'Assert-PipelineNotTerminal' }
+            throw "$caller cannot proceed: pipeline is in terminal state '$($State.pipelineState)'"
         }
     }
     . "$PSScriptRoot/../utils/result-contracts.ps1"

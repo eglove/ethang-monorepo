@@ -1,4 +1,4 @@
-. "$PSScriptRoot/result-contracts.ps1"
+﻿. "$PSScriptRoot/result-contracts.ps1"
 . "$PSScriptRoot/task-log.ps1"
 . "$PSScriptRoot/response-parser.ps1"
 
@@ -157,7 +157,7 @@ function Invoke-RedPhase {
     }
 }
 
-function Reset-RedCounters {
+function Reset-RedCounter {
     param([Parameter(Mandatory)][hashtable]$State)
     $State.redRetries = 0
     return $State

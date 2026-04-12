@@ -46,6 +46,17 @@ Describe 'Test-CoverageGate' {
         ($r.failures | Where-Object { $_.category -eq 'pbt' }).reason | Should -BeExactly 'zero_test_files'
     }
 
+    It 'fails on zero total lines for a category' {
+        $coverage = @{
+            pbt = @{ covered = 0; total = 0; testFiles = 5 }
+            contract = @{ covered = 50; total = 50; testFiles = 3 }
+            e2e = @{ covered = 20; total = 20; testFiles = 2 }
+        }
+        $r = Test-CoverageGate -CoverageResults $coverage -TddIter 1 -CoverageIter 0 -MaxTddCycles 10 -MaxCoverageIter 5
+        $r.passed | Should -BeFalse
+        ($r.failures | Where-Object { $_.category -eq 'pbt' }).reason | Should -BeExactly 'zero_total'
+    }
+
     It 'tool crash is not counted against cap' {
         $coverage = @{
             pbt = @{ covered = $null; total = $null; testFiles = 5 }

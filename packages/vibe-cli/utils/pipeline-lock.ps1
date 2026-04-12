@@ -1,4 +1,4 @@
-function Get-CrashCount {
+﻿function Get-CrashCount {
     param([Parameter(Mandatory)][string]$LockDir)
     $lockFile = Join-Path $LockDir 'pipeline.lock'
     if (-not (Test-Path $lockFile)) { return 0 }

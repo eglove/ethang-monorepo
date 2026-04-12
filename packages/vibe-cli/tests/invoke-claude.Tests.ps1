@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
 }
 
@@ -243,6 +243,53 @@ Describe 'Invoke-Claude streaming path' {
     }
 }
 
+Describe 'Invoke-Claude PID registration' {
+    BeforeAll {
+        Mock Write-PipelineLog {}
+        Mock Write-Host {}
+    }
+
+    AfterEach {
+        Remove-Item Function:\claude -ErrorAction SilentlyContinue
+    }
+
+    It 'registers PID in ChildPidRegistry when TaskId provided' {
+        function global:claude {
+            '{"type":"result","subtype":"success","result":"pid-ok","total_cost_usd":0.01}'
+        }
+
+        # Ensure Get-ChildPidRegistry is available
+        . "$PSScriptRoot/../utils/job-runner.ps1"
+
+        $result = Invoke-Claude -Prompt 'test' -TaskId 'T-pid'
+
+        $result | Should -Be 'pid-ok'
+        # PID should have been cleaned up after completion (TryRemove)
+    }
+
+    It 'logs text block content from assistant messages' {
+        function global:claude {
+            '{"type":"assistant","message":{"content":[{"type":"text","text":"hello from agent"}]}}'
+            '{"type":"result","subtype":"success","result":"text-ok","total_cost_usd":0.01}'
+        }
+
+        $result = Invoke-Claude -Prompt 'test'
+        $result | Should -Be 'text-ok'
+        Should -Invoke Write-PipelineLog -ParameterFilter { $Message -match 'hello from agent' }
+    }
+
+    It 'logs non-success subtype and error from result events' {
+        function global:claude {
+            '{"type":"result","subtype":"error","error":"something broke","total_cost_usd":0.01}'
+        }
+
+        $result = Invoke-Claude -Prompt 'test'
+        $result | Should -BeNullOrEmpty
+        Should -Invoke Write-PipelineLog -ParameterFilter { $Message -match 'subtype=error' }
+        Should -Invoke Write-PipelineLog -ParameterFilter { $Message -match 'ERROR.*something broke' }
+    }
+}
+
 Describe 'Invoke-ClaudeWithRetry' {
     BeforeAll {
         Mock Write-PipelineLog {}
@@ -301,5 +348,28 @@ Describe 'Invoke-ClaudeWithRetry' {
         Mock Start-Sleep { $script:delays += $Seconds }
         Invoke-ClaudeWithRetry -Prompt 'test' -BackoffSeconds @(5,10,20)
         $script:delays | Should -Be @(5,10,20)
+    }
+
+    It 'passes all optional params to Invoke-Claude' {
+        Mock Invoke-Claude { return 'ok' }
+
+        Invoke-ClaudeWithRetry `
+            -SystemPromptFile '/tmp/sys.md' `
+            -AppendSystemPromptFile '/tmp/append.md' `
+            -Prompt 'hello' `
+            -JsonSchema '{"type":"object"}' `
+            -AddDir '/tmp/dir' `
+            -Interactive `
+            -TaskId 'T-retry'
+
+        Should -Invoke Invoke-Claude -Times 1 -ParameterFilter {
+            $SystemPromptFile -eq '/tmp/sys.md' -and
+            $AppendSystemPromptFile -eq '/tmp/append.md' -and
+            $Prompt -eq 'hello' -and
+            $JsonSchema -eq '{"type":"object"}' -and
+            $AddDir -eq '/tmp/dir' -and
+            $Interactive -eq $true -and
+            $TaskId -eq 'T-retry'
+        }
     }
 }

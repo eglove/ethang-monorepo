@@ -1,4 +1,4 @@
-. "$PSScriptRoot/result-contracts.ps1"
+﻿. "$PSScriptRoot/result-contracts.ps1"
 . "$PSScriptRoot/task-log.ps1"
 . "$PSScriptRoot/git-retry.ps1"
 
@@ -238,7 +238,7 @@ function Complete-MergeRelease {
     }
 }
 
-function Reset-MergeCounters {
+function Reset-MergeCounter {
     param([Parameter(Mandatory)][hashtable]$State)
     $State.mergeRetries = 0
     $State.taskStatus = 'completed'

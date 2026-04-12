@@ -1,11 +1,11 @@
-# =============================================================================
+﻿# =============================================================================
 # property-runner.ps1 — Property-based testing harness for Pester
 # Executes N trials with seeded RNG, checks invariants at every step.
 # =============================================================================
 
 $ErrorActionPreference = 'Stop'
 
-function Test-AllInvariants {
+function Test-AllInvariant {
     <#
     .SYNOPSIS
         Evaluates all invariant scriptblocks against current state and config.
@@ -164,7 +164,7 @@ function Invoke-ReviewerPbtDriver {
     $null = $trace.Add("enter:$gateType")
 
     # Check invariants after entry
-    $violation = Test-AllInvariants -State $state -Config $config -Invariants $invariants
+    $violation = Test-AllInvariant -State $state -Config $config -Invariants $invariants
     if ($violation) {
         return @{
             InvariantViolation = $violation
@@ -226,7 +226,7 @@ function Invoke-ReviewerPbtDriver {
                     break
                 }
 
-                $violation = Test-AllInvariants -State $state -Config $config -Invariants $invariants
+                $violation = Test-AllInvariant -State $state -Config $config -Invariants $invariants
                 if ($violation) {
                     return @{
                         InvariantViolation = $violation
@@ -247,7 +247,7 @@ function Invoke-ReviewerPbtDriver {
             Complete-ReviewFix -State $state -Config $config
             $null = $trace.Add("fixComplete:$($state.pipelineState)")
 
-            $violation = Test-AllInvariants -State $state -Config $config -Invariants $invariants
+            $violation = Test-AllInvariant -State $state -Config $config -Invariants $invariants
             if ($violation) {
                 return @{
                     InvariantViolation = $violation
@@ -292,7 +292,7 @@ function Invoke-ReviewerPbtDriver {
             $null = $trace.Add("$($verdictStr):$($result.Action)")
 
             if ($result.Action -eq 'mergeQueue' -or $result.Action -eq 'complete') {
-                $violation = Test-AllInvariants -State $state -Config $config -Invariants $invariants
+                $violation = Test-AllInvariant -State $state -Config $config -Invariants $invariants
                 if ($violation) {
                     return @{
                         InvariantViolation = $violation
@@ -331,7 +331,7 @@ function Invoke-ReviewerPbtDriver {
         }
 
         # Check invariants after every step
-        $violation = Test-AllInvariants -State $state -Config $config -Invariants $invariants
+        $violation = Test-AllInvariant -State $state -Config $config -Invariants $invariants
         if ($violation) {
             return @{
                 InvariantViolation = $violation

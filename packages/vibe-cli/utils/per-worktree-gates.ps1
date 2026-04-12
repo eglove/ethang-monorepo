@@ -1,4 +1,4 @@
-function Invoke-PerWorktreeGates {
+﻿function Invoke-PerWorktreeGate {
     <#
     .SYNOPSIS
         Orchestrates per-worktree gates: for each worktree task, run double-pass then review.

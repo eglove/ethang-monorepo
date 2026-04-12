@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # state-transition-contract.ps1 — Pre/post state contracts for transitions
 # Each entry defines the required pipelineState before and after a transition.
 # =============================================================================

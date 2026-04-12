@@ -1,4 +1,4 @@
-$script:PipelineMutex = $null
+﻿$script:PipelineMutex = $null
 $script:FallbackLogRetryMs = 100
 $script:FallbackLogMaxRetries = 3
 $script:MutexTimeoutMs = 5000

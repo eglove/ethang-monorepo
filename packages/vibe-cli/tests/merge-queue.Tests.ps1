@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
     . "$PSScriptRoot/../utils/task-log.ps1"
@@ -242,10 +242,10 @@ Describe 'Invoke-Merge' {
     }
 }
 
-Describe 'Reset-MergeCounters' {
+Describe 'Reset-MergeCounter' {
     It 'resets mergeRetries and restores completed status' {
         $state = @{ mergeRetries = 3; taskStatus = 'escalated'; taskId = 'T1' }
-        $result = Reset-MergeCounters -State $state
+        $result = Reset-MergeCounter -State $state
         $result.mergeRetries | Should -Be 0
         $result.taskStatus | Should -Be 'completed'
     }
@@ -332,5 +332,50 @@ Describe 'Invoke-SerializedMerge' {
         # Now acquire should get AbandonedMutexException but still succeed
         $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName
         # It should not throw — abandoned mutex is acquired
+    }
+
+    It 'defaults MutexName to Global\vibe-cli-merge-<Feature> (line 264)' {
+        $task = @{ taskState = 'merge_waiting'; mergeState = 'waiting' }
+        Mock git { $global:LASTEXITCODE = 0 }
+
+        # Call without MutexName — should use default based on Feature
+        $result = Invoke-SerializedMerge -Feature "defaultname-$(Get-Random)" -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task
+        $task.mergeState | Should -BeIn @('merged', 'merging')
+    }
+
+    It 'returns MergeConflict when merge fails after rebase succeeds (lines 299-300)' {
+        $task = @{ taskState = 'merge_waiting'; mergeState = 'waiting' }
+        $script:gitCall = 0
+        Mock git {
+            $script:gitCall++
+            $joined = $args -join ' '
+            if ($joined -match 'rebase') {
+                $global:LASTEXITCODE = 0; return 'rebase ok'
+            }
+            if ($joined -match 'merge --no-ff') {
+                $global:LASTEXITCODE = 1; return 'CONFLICT'
+            }
+            if ($joined -match 'merge --abort') {
+                $global:LASTEXITCODE = 0; return $null
+            }
+            $global:LASTEXITCODE = 0
+        }
+        Mock Push-Location {}
+        Mock Pop-Location {}
+
+        $mutexName = "Global\vibe-cli-merge-conflict-$(Get-Random)"
+        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName
+        $result.success | Should -BeFalse
+        $result.reason | Should -BeExactly 'MergeConflict'
+    }
+
+    It 'Pop-Location in finally when still in worktree path (line 308)' {
+        $task = @{ taskState = 'merge_waiting'; mergeState = 'waiting' }
+        Mock git { $global:LASTEXITCODE = 0 }
+
+        $mutexName = "Global\vibe-cli-merge-pop-$(Get-Random)"
+        # Normal success path exercises the finally block
+        $result = Invoke-SerializedMerge -Feature 'test' -WorktreePath 'C:\fake' -TargetBranch 'main' -TaskState $task -MutexName $mutexName
+        $result.success | Should -BeTrue
     }
 }

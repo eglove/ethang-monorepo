@@ -1,29 +1,25 @@
-BeforeAll {
+﻿BeforeAll {
     function Invoke-Claude { }
     function Write-PipelineLog { }
     function Read-Escalation { }
 
     . "$PSScriptRoot/../utils/config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
-    if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
-        function global:New-PipelineState {
-            return @{
-                pipelineState      = 'idle'
-                lockHolder         = $null
-                reviewRound        = [int]0
-                keepGoingResets    = [int]0
-                tddKeepGoingCount = [int]0
-                verdict            = $null
-                tasksDone          = [int]0
-                gateTimedOut       = $false
-                globalTimedOut     = $false
-                reviewGateType     = 'none'
-            }
+    function global:New-PipelineState {
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
         }
     }
-    if (-not (Get-Command Test-PipelineStateTypeOK -ErrorAction SilentlyContinue)) {
-        function global:Test-PipelineStateTypeOK { param($State, $Config) return $true }
-    }
+    function global:Test-PipelineStateTypeOK { param($State, $Config) return $true }
     . "$PSScriptRoot/../utils/review-verdict.ps1"
     . "$PSScriptRoot/../utils/review-gate.ps1"
 }

@@ -1,4 +1,4 @@
-function Get-PlaywrightStrategy {
+﻿function Get-PlaywrightStrategy {
     param(
         [Parameter(Mandatory)][string]$ProjectPath
     )

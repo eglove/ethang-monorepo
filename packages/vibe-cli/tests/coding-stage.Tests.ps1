@@ -1,22 +1,20 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
     . "$PSScriptRoot/../stages/8-coding.ps1"
 
     # Stub: pipeline-state.ps1 was removed in code-simplify
-    if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
-        function global:New-PipelineState {
-            return @{
-                pipelineState      = 'idle'
-                lockHolder         = $null
-                reviewRound        = [int]0
-                keepGoingResets    = [int]0
-                tddKeepGoingCount = [int]0
-                verdict            = $null
-                tasksDone          = [int]0
-                gateTimedOut       = $false
-                globalTimedOut     = $false
-                reviewGateType     = 'none'
-            }
+    function global:New-PipelineState {
+        return @{
+            pipelineState      = 'idle'
+            lockHolder         = $null
+            reviewRound        = [int]0
+            keepGoingResets    = [int]0
+            tddKeepGoingCount = [int]0
+            verdict            = $null
+            tasksDone          = [int]0
+            gateTimedOut       = $false
+            globalTimedOut     = $false
+            reviewGateType     = 'none'
         }
     }
 
@@ -407,6 +405,31 @@ Describe 'Stage 8 — Fixture Coverage' {
         $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
         $result.UncoveredFixtures.Count | Should -Be 0
         $result.Status | Should -Be 'tiers_dispatched'
+    }
+
+    It 'uses title fallback when entry has no name property (line 245/257)' {
+        $bddFixture = @(@{ title = 'bdd-title-entry' }) | ConvertTo-Json -Depth 5
+        $bddFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/bdd.json')
+        $tlaFixture = @(@{ title = 'tla-title-entry' }) | ConvertTo-Json -Depth 5
+        $tlaFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/tla.json')
+
+        $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
+        $result.UncoveredFixtures.Count | Should -Be 2
+        $result.UncoveredFixtures[0].Name | Should -Be 'bdd-title-entry'
+        $result.UncoveredFixtures[1].Name | Should -Be 'tla-title-entry'
+    }
+
+    It 'uses ToString fallback when entry has neither name nor title (line 245/257)' {
+        # Use a simple string array which will invoke ToString()
+        $bddFixture = '["bdd-string-entry"]'
+        $bddFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/bdd.json')
+        $tlaFixture = '["tla-string-entry"]'
+        $tlaFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/tla.json')
+
+        $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
+        $result.UncoveredFixtures.Count | Should -Be 2
+        $result.UncoveredFixtures[0].Name | Should -Be 'bdd-string-entry'
+        $result.UncoveredFixtures[1].Name | Should -Be 'tla-string-entry'
     }
 }
 
@@ -802,7 +825,7 @@ Describe 'Stage 8 — Per-Worktree Review' {
     }
 
     It 'KeepGoing mid-tier: advance + reset counters (R2-2)' {
-        # Simulate Invoke-PerWorktreeGates with multiple worktrees where first passes, second passes
+        # Simulate Invoke-PerWorktreeGate with multiple worktrees where first passes, second passes
         Mock git { return 'diff content' }
         Mock Invoke-ReviewLoop {
             return @{ Verdict = 'pass'; Blockers = @(); Notes = @(); Warnings = @(); Round = 1 }
@@ -812,7 +835,7 @@ Describe 'Stage 8 — Per-Worktree Review' {
         $wt2 = Join-Path $script:tempDir 'wt2'
         New-Item -ItemType Directory -Path $wt1, $wt2 -Force | Out-Null
 
-        $result = Invoke-PerWorktreeGates -WorktreePaths @($wt1, $wt2) -FeatureDir $script:featureDir -Root $script:tempDir -Feature 'my-feature'
+        $result = Invoke-PerWorktreeGate -WorktreePaths @($wt1, $wt2) -FeatureDir $script:featureDir -Root $script:tempDir -Feature 'my-feature'
         $result.Status | Should -Be 'all_passed'
         $result.Results.Count | Should -Be 2
         # Each worktree got its own fresh double-pass (4 pnpm calls each = 8 total)
@@ -831,7 +854,7 @@ Describe 'Stage 8 — Per-Worktree Review' {
         $script:logMessages = @()
         Mock Write-Host { $script:logMessages += $Object }
 
-        $result = Invoke-PerWorktreeGates -WorktreePaths @($wt1) -FeatureDir $script:featureDir -Root $script:tempDir -Feature 'my-feature'
+        $result = Invoke-PerWorktreeGate -WorktreePaths @($wt1) -FeatureDir $script:featureDir -Root $script:tempDir -Feature 'my-feature'
         $result.Status | Should -Be 'all_passed'
         ($script:logMessages -join "`n") | Should -Match 'SequentialMerge'
     }

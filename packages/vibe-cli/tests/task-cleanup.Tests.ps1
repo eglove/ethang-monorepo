@@ -48,4 +48,29 @@ Describe 'Complete-TaskFailure' {
         Complete-TaskFailure -TaskState $task -WorktreePath 'C:\fake' -TaskId 'T1'
         $task.wardenState | Should -BeExactly 'unconfigured'
     }
+
+    It 'warns on worktree removal failure and does not change worktreeState' {
+        $task = @{ worktreeState = 'active'; wardenState = 'unconfigured'; mergeState = 'none' }
+        Mock Test-Path { $true }
+        Mock git { throw "worktree removal error" }
+        Mock Write-Warning {}
+
+        Complete-TaskFailure -TaskState $task -WorktreePath 'C:\fake' -TaskId 'T-wt'
+
+        # worktreeState stays 'active' because the catch block doesn't change it
+        $task.worktreeState | Should -BeExactly 'active'
+        Should -Invoke Write-Warning -Times 1 -ParameterFilter { $Message -match 'T-wt' }
+    }
+
+    It 'warns on warden removal failure and does not change wardenState' {
+        $task = @{ worktreeState = 'none'; wardenState = 'active'; mergeState = 'none' }
+        function Remove-WardenScope { param($WorktreePath, $TaskId) throw "warden error" }
+        Mock Write-Warning {}
+
+        Complete-TaskFailure -TaskState $task -WorktreePath 'C:\fake' -TaskId 'T-wd'
+
+        # wardenState stays 'active' because the catch block doesn't change it
+        $task.wardenState | Should -BeExactly 'active'
+        Should -Invoke Write-Warning -Times 1 -ParameterFilter { $Message -match 'T-wd' }
+    }
 }

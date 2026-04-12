@@ -113,10 +113,10 @@ Describe 'Invoke-FinalVerification' {
     }
 }
 
-Describe 'Reset-FinalCounters' {
+Describe 'Reset-FinalCounter' {
     It 'resets both counters AND sets finalVerifPhase to running' {
         $state = @{ finalRemediations = 5; finalCleanPasses = 1; finalVerifPhase = 'escalated' }
-        $result = Reset-FinalCounters -State $state
+        $result = Reset-FinalCounter -State $state
         $result.finalRemediations | Should -Be 0
         $result.finalCleanPasses | Should -Be 0
         $result.finalVerifPhase | Should -Be 'running'

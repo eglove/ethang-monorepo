@@ -1,4 +1,4 @@
-function Invoke-GlobalReview {
+﻿function Invoke-GlobalReview {
     <#
     .SYNOPSIS
         Gets full diff against base branch and runs Invoke-ReviewLoop. On fail, dispatches

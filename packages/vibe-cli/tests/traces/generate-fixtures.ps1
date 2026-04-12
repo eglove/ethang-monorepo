@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # generate-fixtures.ps1 — Generates trace fixture JSON files from the
 # PowerShell state machine models (faithful mirrors of TLA+ specs).
 # Uses seeded random walks + targeted scenario walks.
@@ -23,31 +23,25 @@ function Invoke-CleanupPhase { return @{ Status = 'pass' } }
 
 . "$PSScriptRoot/../../utils/config.ps1"
 # Stub: pipeline-state.ps1 was removed in code-simplify
-if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
-    function global:New-PipelineState {
-        return @{
-            pipelineState      = 'idle'
-            lockHolder         = $null
-            reviewRound        = [int]0
-            keepGoingResets    = [int]0
-            tddKeepGoingCount = [int]0
-            verdict            = $null
-            tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
-            reviewGateType     = 'none'
-        }
+function global:New-PipelineState {
+    return @{
+        pipelineState      = 'idle'
+        lockHolder         = $null
+        reviewRound        = [int]0
+        keepGoingResets    = [int]0
+        tddKeepGoingCount = [int]0
+        verdict            = $null
+        tasksDone          = [int]0
+        gateTimedOut       = $false
+        globalTimedOut     = $false
+        reviewGateType     = 'none'
     }
 }
-if (-not (Get-Command Test-PipelineStateTypeOK -ErrorAction SilentlyContinue)) {
-    function global:Test-PipelineStateTypeOK { param($State, $Config) return $true }
-}
-if (-not (Get-Command Test-PipelineTerminal -ErrorAction SilentlyContinue)) {
-    function global:Test-PipelineTerminal {
-        param($State)
-        if ($null -eq $State) { throw 'State is null' }
-        return $State.pipelineState -in @('COMPLETE','HALTED')
-    }
+function global:Test-PipelineStateTypeOK { param($State, $Config) return $true }
+function global:Test-PipelineTerminal {
+    param($State)
+    if ($null -eq $State) { throw 'State is null' }
+    return $State.pipelineState -in @('COMPLETE','HALTED')
 }
 . "$PSScriptRoot/../../utils/review-verdict.ps1"
 . "$PSScriptRoot/../../utils/review-gate.ps1"
@@ -146,17 +140,17 @@ $constants = @{ MaxReviewRounds = 3; MaxKeepGoingResets = 3; MaxTddKeepGoingPerG
 # Trace: retry-then-pass
 $trace = New-ReviewerTrace -TraceId 'tlc-retry-pass-001' -Description 'Retry once then pass pre-merge -> COMPLETE' -Constants $constants -Scenario {
     param($s, $c, $steps)
-    $s.pipelineState = 'locked'; $s.lockHolder = 1; Add-Step $steps 'AcquireLock' $s
-    $s.pipelineState = 'running'; Add-Step $steps 'StartRunning' $s
-    Enter-ReviewGate -State $s -Config $c -GateType 'preMerge'; Add-Step $steps 'EnterPreMergeReview' $s
+    $s.pipelineState = 'locked'; $s.lockHolder = 1; Add-Step -Steps $steps -Action 'AcquireLock' -State $s
+    $s.pipelineState = 'running'; Add-Step -Steps $steps -Action 'StartRunning' -State $s
+    Enter-ReviewGate -State $s -Config $c -GateType 'preMerge'; Add-Step -Steps $steps -Action 'EnterPreMergeReview' -State $s
     $v = [PSCustomObject]@{ Verdict='retry'; Blockers=@(); Notes=@(); SelectedReviewers=@(); ExcludedReviewers=@() }
-    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v; Add-Step $steps 'HandleRetryPreMerge' $s
+    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v; Add-Step -Steps $steps -Action 'HandleRetryPreMerge' -State $s
     $v2 = [PSCustomObject]@{ Verdict='pass'; Blockers=@(); Notes=@(); SelectedReviewers=@('sec'); ExcludedReviewers=@() }
-    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v2; Add-Step $steps 'HandlePassPreMerge' $s
-    $s.tasksDone++; $s.pipelineState = 'running'; $s.reviewGateType = 'none'; Add-Step $steps 'TaskMerged' $s
-    Enter-ReviewGate -State $s -Config $c -GateType 'final'; Add-Step $steps 'EnterFinalReview' $s
+    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v2; Add-Step -Steps $steps -Action 'HandlePassPreMerge' -State $s
+    $s.tasksDone++; $s.pipelineState = 'running'; $s.reviewGateType = 'none'; Add-Step -Steps $steps -Action 'TaskMerged' -State $s
+    Enter-ReviewGate -State $s -Config $c -GateType 'final'; Add-Step -Steps $steps -Action 'EnterFinalReview' -State $s
     $v3 = [PSCustomObject]@{ Verdict='pass'; Blockers=@(); Notes=@(); SelectedReviewers=@('sec'); ExcludedReviewers=@() }
-    $null = Resolve-FinalMergeVerdict -State $s -Config $c -Verdict $v3; Add-Step $steps 'HandlePassFinal' $s
+    $null = Resolve-FinalMergeVerdict -State $s -Config $c -Verdict $v3; Add-Step -Steps $steps -Action 'HandlePassFinal' -State $s
 }
 $trace | ConvertTo-Json -Depth 10 | Set-Content "$reviewerOutDir/tlc-retry-pass-001.json" -Encoding UTF8
 Write-Host "  Written: tlc-retry-pass-001.json ($($trace.steps.Count) steps)"
@@ -164,23 +158,23 @@ Write-Host "  Written: tlc-retry-pass-001.json ($($trace.steps.Count) steps)"
 # Trace: fail-fix-fail-fix-pass (multiple fix cycles)
 $trace = New-ReviewerTrace -TraceId 'tlc-multi-fix-001' -Description 'Two fail-fix cycles then pass -> COMPLETE' -Constants $constants -Scenario {
     param($s, $c, $steps)
-    $s.pipelineState = 'locked'; $s.lockHolder = 1; Add-Step $steps 'AcquireLock' $s
-    $s.pipelineState = 'running'; Add-Step $steps 'StartRunning' $s
-    Enter-ReviewGate -State $s -Config $c -GateType 'preMerge'; Add-Step $steps 'EnterPreMergeReview' $s
+    $s.pipelineState = 'locked'; $s.lockHolder = 1; Add-Step -Steps $steps -Action 'AcquireLock' -State $s
+    $s.pipelineState = 'running'; Add-Step -Steps $steps -Action 'StartRunning' -State $s
+    Enter-ReviewGate -State $s -Config $c -GateType 'preMerge'; Add-Step -Steps $steps -Action 'EnterPreMergeReview' -State $s
     # Fail 1
     $blocker = [PSCustomObject]@{ Reviewer='sec'; Severity='high'; Description='XSS'; Files=@('a.ts'); Suggestion='Fix' }
     $v = [PSCustomObject]@{ Verdict='fail'; Blockers=@($blocker); Notes=@(); SelectedReviewers=@('sec'); ExcludedReviewers=@() }
-    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v; Add-Step $steps 'HandleFailPreMerge' $s
-    Complete-ReviewFix -State $s -Config $c; Add-Step $steps 'ReviewFixComplete' $s
+    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v; Add-Step -Steps $steps -Action 'HandleFailPreMerge' -State $s
+    Complete-ReviewFix -State $s -Config $c; Add-Step -Steps $steps -Action 'ReviewFixComplete' -State $s
     # Fail 2
-    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v; Add-Step $steps 'HandleFailPreMerge' $s
-    Complete-ReviewFix -State $s -Config $c; Add-Step $steps 'ReviewFixComplete' $s
+    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v; Add-Step -Steps $steps -Action 'HandleFailPreMerge' -State $s
+    Complete-ReviewFix -State $s -Config $c; Add-Step -Steps $steps -Action 'ReviewFixComplete' -State $s
     # Pass
     $v2 = [PSCustomObject]@{ Verdict='pass'; Blockers=@(); Notes=@(); SelectedReviewers=@('sec'); ExcludedReviewers=@() }
-    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v2; Add-Step $steps 'HandlePassPreMerge' $s
-    $s.tasksDone++; $s.pipelineState = 'running'; $s.reviewGateType = 'none'; Add-Step $steps 'TaskMerged' $s
-    Enter-ReviewGate -State $s -Config $c -GateType 'final'; Add-Step $steps 'EnterFinalReview' $s
-    $null = Resolve-FinalMergeVerdict -State $s -Config $c -Verdict $v2; Add-Step $steps 'HandlePassFinal' $s
+    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v2; Add-Step -Steps $steps -Action 'HandlePassPreMerge' -State $s
+    $s.tasksDone++; $s.pipelineState = 'running'; $s.reviewGateType = 'none'; Add-Step -Steps $steps -Action 'TaskMerged' -State $s
+    Enter-ReviewGate -State $s -Config $c -GateType 'final'; Add-Step -Steps $steps -Action 'EnterFinalReview' -State $s
+    $null = Resolve-FinalMergeVerdict -State $s -Config $c -Verdict $v2; Add-Step -Steps $steps -Action 'HandlePassFinal' -State $s
 }
 $trace | ConvertTo-Json -Depth 10 | Set-Content "$reviewerOutDir/tlc-multi-fix-001.json" -Encoding UTF8
 Write-Host "  Written: tlc-multi-fix-001.json ($($trace.steps.Count) steps)"
@@ -189,19 +183,19 @@ Write-Host "  Written: tlc-multi-fix-001.json ($($trace.steps.Count) steps)"
 $smallConst = @{ MaxReviewRounds = 1; MaxKeepGoingResets = 1; MaxTddKeepGoingPerGate = 5; NumTasks = 1 }
 $trace = New-ReviewerTrace -TraceId 'tlc-forced-stop-001' -Description 'KeepGoing exhausted -> forced stop -> HALTED' -Constants $smallConst -Scenario {
     param($s, $c, $steps)
-    $s.pipelineState = 'locked'; $s.lockHolder = 1; Add-Step $steps 'AcquireLock' $s
-    $s.pipelineState = 'running'; Add-Step $steps 'StartRunning' $s
-    Enter-ReviewGate -State $s -Config $c -GateType 'preMerge'; Add-Step $steps 'EnterPreMergeReview' $s
+    $s.pipelineState = 'locked'; $s.lockHolder = 1; Add-Step -Steps $steps -Action 'AcquireLock' -State $s
+    $s.pipelineState = 'running'; Add-Step -Steps $steps -Action 'StartRunning' -State $s
+    Enter-ReviewGate -State $s -Config $c -GateType 'preMerge'; Add-Step -Steps $steps -Action 'EnterPreMergeReview' -State $s
     # Retry to exhaust round
     $vr = [PSCustomObject]@{ Verdict='retry'; Blockers=@(); Notes=@(); SelectedReviewers=@(); ExcludedReviewers=@() }
-    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $vr; Add-Step $steps 'HandleRetryPreMerge' $s
+    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $vr; Add-Step -Steps $steps -Action 'HandleRetryPreMerge' -State $s
     # Escalation: KeepGoing (round reset)
     function Read-Escalation { return @{ Decision = 'KeepGoing'; Source = 'task' } }
-    $null = Invoke-ReviewEscalation -State $s -Config $c; Add-Step $steps 'ReviewKeepGoing' $s
+    $null = Invoke-ReviewEscalation -State $s -Config $c; Add-Step -Steps $steps -Action 'ReviewKeepGoing' -State $s
     # Retry again to re-exhaust
-    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $vr; Add-Step $steps 'HandleRetryPreMerge' $s
+    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $vr; Add-Step -Steps $steps -Action 'HandleRetryPreMerge' -State $s
     # Forced stop (keepGoingResets=1 >= MaxKeepGoingResets=1)
-    $null = Invoke-ReviewEscalation -State $s -Config $c; Add-Step $steps 'ReviewForcedStop' $s
+    $null = Invoke-ReviewEscalation -State $s -Config $c; Add-Step -Steps $steps -Action 'ReviewForcedStop' -State $s
 }
 $trace | ConvertTo-Json -Depth 10 | Set-Content "$reviewerOutDir/tlc-forced-stop-001.json" -Encoding UTF8
 Write-Host "  Written: tlc-forced-stop-001.json ($($trace.steps.Count) steps)"
@@ -209,21 +203,21 @@ Write-Host "  Written: tlc-forced-stop-001.json ($($trace.steps.Count) steps)"
 # Trace: gate timeout -> keepGoing recovery
 $trace = New-ReviewerTrace -TraceId 'tlc-gate-timeout-keepgoing-001' -Description 'Gate timeout fires, KeepGoing resets gate, pass -> COMPLETE' -Constants $constants -Scenario {
     param($s, $c, $steps)
-    $s.pipelineState = 'locked'; $s.lockHolder = 1; Add-Step $steps 'AcquireLock' $s
-    $s.pipelineState = 'running'; Add-Step $steps 'StartRunning' $s
-    Enter-ReviewGate -State $s -Config $c -GateType 'preMerge'; Add-Step $steps 'EnterPreMergeReview' $s
+    $s.pipelineState = 'locked'; $s.lockHolder = 1; Add-Step -Steps $steps -Action 'AcquireLock' -State $s
+    $s.pipelineState = 'running'; Add-Step -Steps $steps -Action 'StartRunning' -State $s
+    Enter-ReviewGate -State $s -Config $c -GateType 'preMerge'; Add-Step -Steps $steps -Action 'EnterPreMergeReview' -State $s
     # Gate timeout fires
-    $s.gateTimedOut = $true; Add-Step $steps 'ReviewGateTimeout' $s
+    $s.gateTimedOut = $true; Add-Step -Steps $steps -Action 'ReviewGateTimeout' -State $s
     # KeepGoing for gate timeout
     $s.gateTimedOut = $false; $s.keepGoingResets++; $s.reviewRound = 0; $s.tddKeepGoingCount = 0; $s.verdict = $null
-    $s.pipelineState = 'preMergeReview'; Add-Step $steps 'GateTimeoutKeepGoing' $s
+    $s.pipelineState = 'preMergeReview'; Add-Step -Steps $steps -Action 'GateTimeoutKeepGoing' -State $s
     # Pass
     $v = [PSCustomObject]@{ Verdict='pass'; Blockers=@(); Notes=@(); SelectedReviewers=@('sec'); ExcludedReviewers=@() }
-    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v; Add-Step $steps 'HandlePassPreMerge' $s
-    $s.tasksDone++; $s.pipelineState = 'running'; $s.reviewGateType = 'none'; Add-Step $steps 'TaskMerged' $s
-    Enter-ReviewGate -State $s -Config $c -GateType 'final'; Add-Step $steps 'EnterFinalReview' $s
+    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v; Add-Step -Steps $steps -Action 'HandlePassPreMerge' -State $s
+    $s.tasksDone++; $s.pipelineState = 'running'; $s.reviewGateType = 'none'; Add-Step -Steps $steps -Action 'TaskMerged' -State $s
+    Enter-ReviewGate -State $s -Config $c -GateType 'final'; Add-Step -Steps $steps -Action 'EnterFinalReview' -State $s
     $v2 = [PSCustomObject]@{ Verdict='pass'; Blockers=@(); Notes=@(); SelectedReviewers=@('sec'); ExcludedReviewers=@() }
-    $null = Resolve-FinalMergeVerdict -State $s -Config $c -Verdict $v2; Add-Step $steps 'HandlePassFinal' $s
+    $null = Resolve-FinalMergeVerdict -State $s -Config $c -Verdict $v2; Add-Step -Steps $steps -Action 'HandlePassFinal' -State $s
 }
 $trace | ConvertTo-Json -Depth 10 | Set-Content "$reviewerOutDir/tlc-gate-timeout-keepgoing-001.json" -Encoding UTF8
 Write-Host "  Written: tlc-gate-timeout-keepgoing-001.json ($($trace.steps.Count) steps)"
@@ -231,21 +225,21 @@ Write-Host "  Written: tlc-gate-timeout-keepgoing-001.json ($($trace.steps.Count
 # Trace: final review fail-fix-pass
 $trace = New-ReviewerTrace -TraceId 'tlc-final-fix-001' -Description 'Final review fails, fix cycle, then pass -> COMPLETE' -Constants $constants -Scenario {
     param($s, $c, $steps)
-    $s.pipelineState = 'locked'; $s.lockHolder = 1; Add-Step $steps 'AcquireLock' $s
-    $s.pipelineState = 'running'; Add-Step $steps 'StartRunning' $s
-    Enter-ReviewGate -State $s -Config $c -GateType 'preMerge'; Add-Step $steps 'EnterPreMergeReview' $s
+    $s.pipelineState = 'locked'; $s.lockHolder = 1; Add-Step -Steps $steps -Action 'AcquireLock' -State $s
+    $s.pipelineState = 'running'; Add-Step -Steps $steps -Action 'StartRunning' -State $s
+    Enter-ReviewGate -State $s -Config $c -GateType 'preMerge'; Add-Step -Steps $steps -Action 'EnterPreMergeReview' -State $s
     $vp = [PSCustomObject]@{ Verdict='pass'; Blockers=@(); Notes=@(); SelectedReviewers=@('sec'); ExcludedReviewers=@() }
-    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $vp; Add-Step $steps 'HandlePassPreMerge' $s
-    $s.tasksDone++; $s.pipelineState = 'running'; $s.reviewGateType = 'none'; Add-Step $steps 'TaskMerged' $s
-    Enter-ReviewGate -State $s -Config $c -GateType 'final'; Add-Step $steps 'EnterFinalReview' $s
+    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $vp; Add-Step -Steps $steps -Action 'HandlePassPreMerge' -State $s
+    $s.tasksDone++; $s.pipelineState = 'running'; $s.reviewGateType = 'none'; Add-Step -Steps $steps -Action 'TaskMerged' -State $s
+    Enter-ReviewGate -State $s -Config $c -GateType 'final'; Add-Step -Steps $steps -Action 'EnterFinalReview' -State $s
     # Fail final
     $blocker = [PSCustomObject]@{ Reviewer='a11y'; Severity='critical'; Description='Missing alt'; Files=@('img.tsx'); Suggestion='Add alt' }
     $vf = [PSCustomObject]@{ Verdict='fail'; Blockers=@($blocker); Notes=@(); SelectedReviewers=@('a11y'); ExcludedReviewers=@() }
-    $null = Resolve-FinalMergeVerdict -State $s -Config $c -Verdict $vf; Add-Step $steps 'HandleFailFinal' $s
+    $null = Resolve-FinalMergeVerdict -State $s -Config $c -Verdict $vf; Add-Step -Steps $steps -Action 'HandleFailFinal' -State $s
     # Fix complete (finalReviewFix -> finalReview)
-    Complete-ReviewFix -State $s -Config $c; Add-Step $steps 'FinalReviewFixComplete' $s
+    Complete-ReviewFix -State $s -Config $c; Add-Step -Steps $steps -Action 'FinalReviewFixComplete' -State $s
     # Pass final
-    $null = Resolve-FinalMergeVerdict -State $s -Config $c -Verdict $vp; Add-Step $steps 'HandlePassFinal' $s
+    $null = Resolve-FinalMergeVerdict -State $s -Config $c -Verdict $vp; Add-Step -Steps $steps -Action 'HandlePassFinal' -State $s
 }
 $trace | ConvertTo-Json -Depth 10 | Set-Content "$reviewerOutDir/tlc-final-fix-001.json" -Encoding UTF8
 Write-Host "  Written: tlc-final-fix-001.json ($($trace.steps.Count) steps)"

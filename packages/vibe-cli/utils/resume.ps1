@@ -47,7 +47,7 @@ function Resume-Pipeline {
     catch { }
 
     # 7. Load idempotency tokens
-    $tokens = Read-IdempotencyTokens -LogPath $LogPath
+    $tokens = Read-IdempotencyToken -LogPath $LogPath
 
     return @{
         RunId              = $runId

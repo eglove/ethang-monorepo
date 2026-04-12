@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     $script:vibeCli = Resolve-Path "$PSScriptRoot/.."
 }
 

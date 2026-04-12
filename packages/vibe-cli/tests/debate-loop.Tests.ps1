@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/../utils/config.ps1"
     . "$PSScriptRoot/../utils/debate-loop.ps1"
 }
