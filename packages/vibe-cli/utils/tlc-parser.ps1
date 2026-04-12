@@ -92,27 +92,6 @@ function ConvertFrom-TlcOutput {
     # Parse deadlock
     $deadlock = $Output -match 'Deadlock reached'
 
-    # Parse coverage statistics
-    $coverageStats = [System.Collections.ArrayList]::new()
-    $inCoverage = $false
-    foreach ($line in $lines) {
-        if ($line -match 'The coverage statistics:') {
-            $inCoverage = $true
-            continue
-        }
-        if ($inCoverage) {
-            if ($line -match '^\s+line\s+(\d+).+?of module (\S+):\s*(\d+)') {
-                $coverageStats.Add(@{
-                    line   = [int]$Matches[1]
-                    module = $Matches[2].TrimEnd(':')
-                    count  = [int]$Matches[3]
-                }) | Out-Null
-            } else {
-                $inCoverage = $false
-            }
-        }
-    }
-
     # Parse state graph
     $stateGraph = @{}
     if ($Output -match '(\d+)\s+states generated,\s*(\d+)\s+distinct states found') {
@@ -127,53 +106,7 @@ function ConvertFrom-TlcOutput {
         exitCode            = $ExitCode
         exitMeaning         = $exitMeaning
         invariantViolations = @($invariantViolations)
-        stateTraces         = @()
         deadlock            = $deadlock
-        coverageStats       = @($coverageStats)
         stateGraph          = $stateGraph
-    }
-}
-
-function Export-TlcFixture {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)]
-        [hashtable]$Fixture,
-
-        [Parameter(Mandatory)]
-        [string]$OutputPath
-    )
-
-    $maxRetries = 3
-    $dir = Split-Path -Parent $OutputPath
-
-    if ($dir -and -not (Test-Path $dir)) {
-        New-Item -ItemType Directory -Path $dir -Force | Out-Null
-    }
-
-    if (-not $Fixture.ContainsKey('schemaVersion')) {
-        $Fixture['schemaVersion'] = 1
-    }
-
-    $json = $Fixture | ConvertTo-Json -Depth 10
-
-    for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
-        try {
-            $tempFile = Join-Path $dir "tmp-$([System.IO.Path]::GetRandomFileName())"
-            [System.IO.File]::WriteAllText($tempFile, $json)
-
-            # fsync
-            $fs = [System.IO.File]::Open($tempFile, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::None)
-            $fs.Flush($true)
-            $fs.Close()
-
-            Move-Item -Path $tempFile -Destination $OutputPath -Force
-            return
-        } catch {
-            if ($attempt -eq $maxRetries) {
-                throw
-            }
-            Start-Sleep -Milliseconds (100 * $attempt)
-        }
     }
 }

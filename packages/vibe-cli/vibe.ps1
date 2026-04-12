@@ -33,6 +33,7 @@ if ($Stage -gt 1) {
     if (-not $Feature) { throw "Resuming at stage $Stage requires -Feature <name> (e.g. -Feature lint-fixer)" }
 
     $featureDir = "$root/docs/$Feature"
+    $featureName = $Feature
     if (-not (Test-Path "$featureDir/elicitor.md")) { throw "Feature directory not found or missing elicitor.md: $featureDir" }
 
     Write-PipelineLog "=== RESUME at stage $Stage feature=$Feature ===" -Color Cyan
@@ -56,6 +57,7 @@ try {
         Write-PipelineLog "--- Stage 1: Elicitor ---" -Color Cyan
         $elicitorResult = Invoke-Elicitor -Seed $Seed -Root $root
         $featureDir = $elicitorResult.FeatureDir
+        $featureName = Split-Path $featureDir -Leaf
         $briefing = $elicitorResult.Briefing
     }
 
@@ -81,7 +83,7 @@ try {
         # Generate BDD fixture after debate consensus (T10)
         if ($gherkinFile -and (Test-Path $gherkinFile)) {
             Write-PipelineLog "Generating BDD test fixtures..." -Color Yellow
-            $bddFixturePath = Join-Path $featureDir 'tests/fixtures/bdd/fixture.json'
+            $bddFixturePath = Join-Path (Get-FixtureDir -Root $root -FeatureName $featureName) 'bdd/fixture.json'
             $parsedGherkin = ConvertFrom-Gherkin -Path $gherkinFile
             $parsedGherkin.schemaVersion = 1
             Export-BddFixture -Fixture $parsedGherkin -OutputPath $bddFixturePath
@@ -100,27 +102,6 @@ try {
         Write-PipelineLog "--- Stage 5: TLA+ Debate ---" -Color Cyan
         Invoke-TlaDebate -TlaFile $tlaFile -TlaDir $tlaDir -GherkinFile $gherkinFile -FeatureDir $featureDir -Root $root
 
-        # Generate TLC fixture after debate consensus (T10)
-        # Run TLC one final time to capture output for fixture generation
-        Write-PipelineLog "Generating TLC test fixtures..." -Color Yellow
-        $tlcFixturePath = Join-Path $featureDir 'tests/fixtures/tla/fixture.json'
-        $tlaSpecFile = Get-ChildItem "$tlaDir/*.tla" -ErrorAction SilentlyContinue | Select-Object -First 1
-        $tlaCfgFile = Get-ChildItem "$tlaDir/*.cfg" -ErrorAction SilentlyContinue | Select-Object -First 1
-        if ($tlaSpecFile -and $tlaCfgFile) {
-            $tlcLines = @()
-            Push-Location $tlaDir
-            java -XX:+UseParallelGC -jar $TlaToolsJar -config $tlaCfgFile.Name -workers auto $tlaSpecFile.Name 2>&1 | ForEach-Object { $tlcLines += "$_" }
-            $tlcExitCode = $LASTEXITCODE
-            Pop-Location
-            $tlcOutput = $tlcLines -join "`n"
-            $parsedTlc = ConvertFrom-TlcOutput -Output $tlcOutput -ExitCode $tlcExitCode
-            $parsedTlc.schemaVersion = 1
-            Export-TlcFixture -Fixture $parsedTlc -OutputPath $tlcFixturePath
-            Write-PipelineLog "TLC fixture generated: $tlcFixturePath (exit=$tlcExitCode)" -Color Green
-        }
-        else {
-            Write-Warning "Cannot generate TLC fixture — missing .tla or .cfg in $tlaDir"
-        }
     }
 
     if ($Stage -le 6) {
@@ -139,15 +120,12 @@ try {
     }
 
     if ($Stage -le 8) {
-        # Verify fixture precondition before coding stage (T10: S9 FixturesPrecondition)
-        $fixtureCheck = Test-FixturePrecondition -FeatureDir $featureDir
+        # Verify BDD fixture precondition before coding stage
+        $fixtureCheck = Test-FixturePrecondition -Root $root -FeatureName $featureName
         if (-not $fixtureCheck.canProceed) {
-            $missing = @()
-            if (-not $fixtureCheck.bddValid) { $missing += 'BDD' }
-            if (-not $fixtureCheck.tlcValid) { $missing += 'TLC' }
-            throw "Cannot enter coding stage — missing or invalid fixtures: $($missing -join ', '). Run stages 3 and 5 first."
+            throw "Cannot enter coding stage — missing or invalid BDD fixture. Run stage 3 first."
         }
-        Write-PipelineLog "Fixture precondition OK (BDD + TLC valid)" -Color Green
+        Write-PipelineLog "Fixture precondition OK (BDD valid)" -Color Green
 
         Write-PipelineLog "--- Stage 8: Coding ---" -Color Cyan
         if (-not $implJson) {

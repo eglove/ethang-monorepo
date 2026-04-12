@@ -1,12 +1,21 @@
+function Get-FixtureDir {
+    param(
+        [Parameter(Mandatory)][string]$Root,
+        [Parameter(Mandatory)][string]$FeatureName
+    )
+    return Join-Path $Root "tests/fixtures/$FeatureName"
+}
+
 function Test-FixturePrecondition {
     param(
-        [Parameter(Mandatory)][string]$FeatureDir
+        [Parameter(Mandatory)][string]$Root,
+        [Parameter(Mandatory)][string]$FeatureName
     )
 
-    $bddPath = Join-Path $FeatureDir 'tests/fixtures/bdd/fixture.json'
-    $tlcPath = Join-Path $FeatureDir 'tests/fixtures/tla/fixture.json'
+    $fixtureBase = Get-FixtureDir -Root $Root -FeatureName $FeatureName
+    $bddPath = Join-Path $fixtureBase 'bdd/fixture.json'
 
-    $result = @{ bddValid = $false; tlcValid = $false; canProceed = $false }
+    $result = @{ bddValid = $false; canProceed = $false }
 
     # Check BDD fixture
     if (Test-Path $bddPath) {
@@ -17,15 +26,6 @@ function Test-FixturePrecondition {
         catch { }
     }
 
-    # Check TLC fixture
-    if (Test-Path $tlcPath) {
-        try {
-            $json = Get-Content $tlcPath -Raw | ConvertFrom-Json
-            if ($json.schemaVersion -eq 1) { $result.tlcValid = $true }
-        }
-        catch { }
-    }
-
-    $result.canProceed = $result.bddValid -and $result.tlcValid
+    $result.canProceed = $result.bddValid
     return $result
 }

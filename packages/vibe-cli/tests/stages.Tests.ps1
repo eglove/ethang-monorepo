@@ -418,57 +418,45 @@ Describe 'Invoke-ImplementationDebate' {
 Describe 'Test-FixturePrecondition' {
     BeforeAll { . "$PSScriptRoot/../utils/fixture-gate.ps1" }
     BeforeEach {
-        $script:featureDir = Join-Path ([System.IO.Path]::GetTempPath()) "fixture-gate-$(Get-Random)"
-        $script:bddDir = Join-Path $script:featureDir 'tests/fixtures/bdd'
-        $script:tlcDir = Join-Path $script:featureDir 'tests/fixtures/tla'
+        $script:root = Join-Path ([System.IO.Path]::GetTempPath()) "fixture-gate-$(Get-Random)"
+        $script:featureName = 'test-feat'
+        $script:bddDir = Join-Path $script:root "tests/fixtures/$($script:featureName)/bdd"
         New-Item -ItemType Directory -Path $script:bddDir -Force | Out-Null
-        New-Item -ItemType Directory -Path $script:tlcDir -Force | Out-Null
     }
-    AfterEach { Remove-Item $script:featureDir -Recurse -Force -ErrorAction SilentlyContinue }
+    AfterEach { Remove-Item $script:root -Recurse -Force -ErrorAction SilentlyContinue }
 
-    It 'passes when both fixtures are valid' {
+    It 'passes when BDD fixture is valid' {
         @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path $script:bddDir 'fixture.json')
-        @{ schemaVersion = 1; exitCode = 0 } | ConvertTo-Json | Set-Content (Join-Path $script:tlcDir 'fixture.json')
-        $r = Test-FixturePrecondition -FeatureDir $script:featureDir
+        $r = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
         $r.canProceed | Should -BeTrue
     }
 
     It 'fails when BDD fixture missing' {
-        @{ schemaVersion = 1; exitCode = 0 } | ConvertTo-Json | Set-Content (Join-Path $script:tlcDir 'fixture.json')
-        $r = Test-FixturePrecondition -FeatureDir $script:featureDir
+        $r = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
         $r.canProceed | Should -BeFalse
         $r.bddValid | Should -BeFalse
     }
 
-    It 'fails when TLC fixture missing' {
-        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path $script:bddDir 'fixture.json')
-        $r = Test-FixturePrecondition -FeatureDir $script:featureDir
-        $r.canProceed | Should -BeFalse
-        $r.tlcValid | Should -BeFalse
-    }
-
     It 'fails when BDD fixture is corrupt JSON' {
         Set-Content (Join-Path $script:bddDir 'fixture.json') -Value '{"corrupt'
-        @{ schemaVersion = 1; exitCode = 0 } | ConvertTo-Json | Set-Content (Join-Path $script:tlcDir 'fixture.json')
-        $r = Test-FixturePrecondition -FeatureDir $script:featureDir
+        $r = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
         $r.canProceed | Should -BeFalse
     }
 
     It 'fails when schema version is not 1' {
         @{ schemaVersion = 2; features = @() } | ConvertTo-Json | Set-Content (Join-Path $script:bddDir 'fixture.json')
-        @{ schemaVersion = 1; exitCode = 0 } | ConvertTo-Json | Set-Content (Join-Path $script:tlcDir 'fixture.json')
-        $r = Test-FixturePrecondition -FeatureDir $script:featureDir
+        $r = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
         $r.bddValid | Should -BeFalse
     }
 
-    It 'fails when both fixtures missing' {
-        $emptyDir = Join-Path ([System.IO.Path]::GetTempPath()) "fixture-empty-$(Get-Random)"
-        New-Item -ItemType Directory -Path $emptyDir -Force | Out-Null
+    It 'fails when BDD fixture missing (empty root)' {
+        $emptyRoot = Join-Path ([System.IO.Path]::GetTempPath()) "fixture-empty-$(Get-Random)"
+        New-Item -ItemType Directory -Path $emptyRoot -Force | Out-Null
         try {
-            $r = Test-FixturePrecondition -FeatureDir $emptyDir
+            $r = Test-FixturePrecondition -Root $emptyRoot -FeatureName 'no-feat'
             $r.canProceed | Should -BeFalse
         }
-        finally { Remove-Item $emptyDir -Recurse -Force -ErrorAction SilentlyContinue }
+        finally { Remove-Item $emptyRoot -Recurse -Force -ErrorAction SilentlyContinue }
     }
 }
 
@@ -483,16 +471,18 @@ Describe 'BDD Fixture Generation (after stage 3)' {
     }
 
     BeforeEach {
-        $script:featureDir = Join-Path ([System.IO.Path]::GetTempPath()) "bdd-gen-$(Get-Random)"
+        $script:root = Join-Path ([System.IO.Path]::GetTempPath()) "bdd-gen-$(Get-Random)"
+        $script:featureName = 'bdd-test'
+        $script:featureDir = Join-Path $script:root "docs/$($script:featureName)"
         New-Item -ItemType Directory -Path $script:featureDir -Force | Out-Null
     }
-    AfterEach { Remove-Item $script:featureDir -Recurse -Force -ErrorAction SilentlyContinue }
+    AfterEach { Remove-Item $script:root -Recurse -Force -ErrorAction SilentlyContinue }
 
     It 'parses .feature file and exports valid BDD fixture JSON' {
         $featureFile = Join-Path $script:featureDir 'bdd.feature'
         Set-Content $featureFile -Value "Feature: Auth`n  Scenario: Login`n    Given a user`n    When they log in`n    Then they see home"
 
-        $bddFixturePath = Join-Path $script:featureDir 'tests/fixtures/bdd/fixture.json'
+        $bddFixturePath = Join-Path (Get-FixtureDir -Root $script:root -FeatureName $script:featureName) 'bdd/fixture.json'
         $parsed = ConvertFrom-Gherkin -Path $featureFile
         $parsed.schemaVersion = 1
         Export-BddFixture -Fixture $parsed -OutputPath $bddFixturePath
@@ -508,92 +498,40 @@ Describe 'BDD Fixture Generation (after stage 3)' {
         Set-Content $featureFile -Value "Feature: Test`n  Scenario: S1`n    Given x"
 
         # Generate BDD fixture
-        $bddFixturePath = Join-Path $script:featureDir 'tests/fixtures/bdd/fixture.json'
+        $bddFixturePath = Join-Path (Get-FixtureDir -Root $script:root -FeatureName $script:featureName) 'bdd/fixture.json'
         $parsed = ConvertFrom-Gherkin -Path $featureFile
         $parsed.schemaVersion = 1
         Export-BddFixture -Fixture $parsed -OutputPath $bddFixturePath
 
-        # Also create a valid TLC fixture
-        $tlcFixturePath = Join-Path $script:featureDir 'tests/fixtures/tla/fixture.json'
-        New-Item -ItemType Directory -Path (Split-Path $tlcFixturePath) -Force | Out-Null
-        @{ schemaVersion = 1; exitCode = 0 } | ConvertTo-Json | Set-Content $tlcFixturePath
-
-        $check = Test-FixturePrecondition -FeatureDir $script:featureDir
+        $check = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
         $check.canProceed | Should -BeTrue
         $check.bddValid | Should -BeTrue
-    }
-}
-
-Describe 'TLC Fixture Generation (after stage 5)' {
-    BeforeAll {
-        . "$PSScriptRoot/../utils/tlc-parser.ps1"
-        . "$PSScriptRoot/../utils/fixture-gate.ps1"
-    }
-
-    BeforeEach {
-        $script:featureDir = Join-Path ([System.IO.Path]::GetTempPath()) "tlc-gen-$(Get-Random)"
-        New-Item -ItemType Directory -Path $script:featureDir -Force | Out-Null
-    }
-    AfterEach { Remove-Item $script:featureDir -Recurse -Force -ErrorAction SilentlyContinue }
-
-    It 'parses TLC output and exports valid fixture JSON' {
-        $tlcOutput = "TLC2 Version 2.18`nModel checking completed. No error has been found.`n1000 states generated, 500 distinct states found, 0 states left on queue.`nThe depth of the complete state graph search is 20."
-        $tlcFixturePath = Join-Path $script:featureDir 'tests/fixtures/tla/fixture.json'
-
-        $parsed = ConvertFrom-TlcOutput -Output $tlcOutput -ExitCode 0
-        $parsed.schemaVersion = 1
-        Export-TlcFixture -Fixture $parsed -OutputPath $tlcFixturePath
-
-        $tlcFixturePath | Should -Exist
-        $json = Get-Content $tlcFixturePath -Raw | ConvertFrom-Json
-        $json.schemaVersion | Should -Be 1
-        $json.exitCode | Should -Be 0
-    }
-
-    It 'fixture passes precondition check after generation' {
-        # Create valid BDD fixture
-        $bddFixturePath = Join-Path $script:featureDir 'tests/fixtures/bdd/fixture.json'
-        New-Item -ItemType Directory -Path (Split-Path $bddFixturePath) -Force | Out-Null
-        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content $bddFixturePath
-
-        # Generate TLC fixture
-        $tlcOutput = "TLC2 Version 2.18`nModel checking completed. No error has been found.`n100 states generated, 50 distinct states found, 0 states left on queue.`nThe depth of the complete state graph search is 10."
-        $tlcFixturePath = Join-Path $script:featureDir 'tests/fixtures/tla/fixture.json'
-        $parsed = ConvertFrom-TlcOutput -Output $tlcOutput -ExitCode 0
-        $parsed.schemaVersion = 1
-        Export-TlcFixture -Fixture $parsed -OutputPath $tlcFixturePath
-
-        $check = Test-FixturePrecondition -FeatureDir $script:featureDir
-        $check.canProceed | Should -BeTrue
-        $check.tlcValid | Should -BeTrue
     }
 }
 
 Describe 'Fixture Precondition blocks coding stage (stage 8 gate)' {
     BeforeAll { . "$PSScriptRoot/../utils/fixture-gate.ps1" }
     It 'missing fixtures cause precondition failure' {
-        $emptyDir = Join-Path ([System.IO.Path]::GetTempPath()) "gate-$(Get-Random)"
-        New-Item -ItemType Directory -Path $emptyDir -Force | Out-Null
+        $emptyRoot = Join-Path ([System.IO.Path]::GetTempPath()) "gate-$(Get-Random)"
+        New-Item -ItemType Directory -Path $emptyRoot -Force | Out-Null
         try {
-            $check = Test-FixturePrecondition -FeatureDir $emptyDir
+            $check = Test-FixturePrecondition -Root $emptyRoot -FeatureName 'no-feat'
             $check.canProceed | Should -BeFalse
         }
-        finally { Remove-Item $emptyDir -Recurse -Force -ErrorAction SilentlyContinue }
+        finally { Remove-Item $emptyRoot -Recurse -Force -ErrorAction SilentlyContinue }
     }
 
     It 'corrupt BDD fixture blocks stage 8' {
-        $dir = Join-Path ([System.IO.Path]::GetTempPath()) "gate-corrupt-$(Get-Random)"
-        $bddDir = Join-Path $dir 'tests/fixtures/bdd'
-        $tlcDir = Join-Path $dir 'tests/fixtures/tla'
+        $root = Join-Path ([System.IO.Path]::GetTempPath()) "gate-corrupt-$(Get-Random)"
+        $featName = 'corrupt-test'
+        $bddDir = Join-Path $root "tests/fixtures/$featName/bdd"
         New-Item -ItemType Directory -Path $bddDir -Force | Out-Null
-        New-Item -ItemType Directory -Path $tlcDir -Force | Out-Null
         Set-Content (Join-Path $bddDir 'fixture.json') -Value '{"corrupt'
-        @{ schemaVersion = 1; exitCode = 0 } | ConvertTo-Json | Set-Content (Join-Path $tlcDir 'fixture.json')
         try {
-            $check = Test-FixturePrecondition -FeatureDir $dir
+            $check = Test-FixturePrecondition -Root $root -FeatureName $featName
             $check.canProceed | Should -BeFalse
             $check.bddValid | Should -BeFalse
         }
-        finally { Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue }
+        finally { Remove-Item $root -Recurse -Force -ErrorAction SilentlyContinue }
     }
 }

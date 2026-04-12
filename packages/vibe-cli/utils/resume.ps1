@@ -29,16 +29,11 @@ function Resume-Pipeline {
 
     # 5. Check fixture states
     $featureDir = "$Root/docs/$feature"
-    $bddFixture = Join-Path $featureDir 'tests/fixtures/bdd/fixture.json'
-    $tlcFixture = Join-Path $featureDir 'tests/fixtures/tla/fixture.json'
+    $fixtureBase = Join-Path $Root "tests/fixtures/$feature"
+    $bddFixture = Join-Path $fixtureBase 'bdd/fixture.json'
 
     $bddState = if (Test-Path $bddFixture) {
         try { $null = Get-Content $bddFixture -Raw | ConvertFrom-Json; 'valid' } catch { 'corrupt' }
-    }
-    else { 'missing' }
-
-    $tlcState = if (Test-Path $tlcFixture) {
-        try { $null = Get-Content $tlcFixture -Raw | ConvertFrom-Json; 'valid' } catch { 'corrupt' }
     }
     else { 'missing' }
 
@@ -60,7 +55,6 @@ function Resume-Pipeline {
         LastStage          = $lastStage
         ResumeStage        = $lastStage + 1
         BddFixtureState    = $bddState
-        TlcFixtureState    = $tlcState
         GitState           = $gitState
         CrashCount         = $crashCount
         IdempotencyTokens  = $tokens

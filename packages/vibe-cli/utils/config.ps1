@@ -35,6 +35,7 @@ $Config = @{
 
     # TLC verification
     MaxTlcAttempts        = 100   # TLA+ writer → TLC verify loop cap
+    TlcTimeoutSeconds     = 300   # Per-invocation TLC process timeout (5 minutes)
 
     # Elicitor
     MaxElicitorTurns      = 50    # Hard turn cap for the interview
@@ -161,6 +162,10 @@ function Get-PipelineConfig {
         $snapshot.PipelineTimeoutSeconds = [int]$env:VIBE_PIPELINE_TIMEOUT_SECONDS
     }
 
+    if ($env:VIBE_TLC_TIMEOUT_SECONDS) {
+        $snapshot.TlcTimeoutSeconds = [int]$env:VIBE_TLC_TIMEOUT_SECONDS
+    }
+
     # ── Validation ──
 
     # Fields that must be strictly positive (> 0)
@@ -170,7 +175,8 @@ function Get-PipelineConfig {
         'MaxTddKeepGoingPerGate',
         'PipelineTimeoutSeconds',
         'ReviewerTimeoutSeconds',
-        'ReviewModeratorTimeoutSeconds'
+        'ReviewModeratorTimeoutSeconds',
+        'TlcTimeoutSeconds'
     )
     foreach ($field in $positiveFields) {
         if ($snapshot[$field] -le 0) {

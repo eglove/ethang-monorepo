@@ -48,8 +48,8 @@ type UserToken = {
 const BUTTON_SELECTOR = ".course-completion-button";
 const STATUS_SELECTOR = ".course-status-text";
 const DEFAULT = "bg-default";
-const REVISIT = "text-amber-400/70";
-const COMPLETE = "text-sky-300";
+const REVISIT = "bg-amber-400/70";
+const COMPLETE = "bg-sky-300";
 
 // All helpers that are called during the top-level await (init → applyStoredStatuses)
 // must be declared before the if/else block at the bottom of this module. ES modules

@@ -40,12 +40,6 @@ Describe 'ConvertFrom-TlcOutput' {
         $r.deadlock | Should -Be $true
     }
 
-    It 'parses coverage statistics' {
-        $out = "TLC2 Version 2.18`nModel checking completed. No error has been found.`nThe coverage statistics:`n  line 10, col 1 to line 15, col 20 of module Spec: 42`n  line 20, col 1 to line 25, col 15 of module Spec: 17`n12345 states generated, 6789 distinct states found, 0 states left on queue.`nThe depth of the complete state graph search is 10."
-        $r = ConvertFrom-TlcOutput -Output $out -ExitCode 0
-        $r.coverageStats.Count | Should -Be 2
-    }
-
     It 'captures exit 13 as liveness violation' {
         $out = "TLC2 Version 2.18`nError: Temporal properties were violated."
         $r = ConvertFrom-TlcOutput -Output $out -ExitCode 13
@@ -66,32 +60,5 @@ Describe 'ConvertFrom-TlcOutput' {
 
     It 'throws on empty output' {
         { ConvertFrom-TlcOutput -Output '' -ExitCode 0 } | Should -Throw '*empty*'
-    }
-}
-
-Describe 'Export-TlcFixture' {
-    BeforeEach { $script:od = Join-Path ([System.IO.Path]::GetTempPath()) "tlc-fix-$(Get-Random)" }
-    AfterEach { Remove-Item $script:od -Recurse -Force -ErrorAction SilentlyContinue }
-
-    It 'includes schemaVersion = 1' {
-        $f = @{ exitCode = 0; schemaVersion = 1 }
-        $p = Join-Path $script:od 'fixture.json'
-        Export-TlcFixture -Fixture $f -OutputPath $p
-        (Get-Content $p -Raw | ConvertFrom-Json).schemaVersion | Should -Be 1
-    }
-
-    It 'creates directory if missing' {
-        $f = @{ exitCode = 0; schemaVersion = 1 }
-        $p = Join-Path $script:od 'deep/fixture.json'
-        Export-TlcFixture -Fixture $f -OutputPath $p
-        $p | Should -Exist
-    }
-
-    It 'writes valid JSON' {
-        $f = @{ exitCode = 0; exitMeaning = 'success'; schemaVersion = 1 }
-        $p = Join-Path $script:od 'fixture.json'
-        New-Item -ItemType Directory -Path $script:od -Force | Out-Null
-        Export-TlcFixture -Fixture $f -OutputPath $p
-        (Get-Content $p -Raw | ConvertFrom-Json).exitMeaning | Should -BeExactly 'success'
     }
 }
