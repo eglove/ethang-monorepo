@@ -29,8 +29,8 @@ function Resume-Pipeline {
 
     # 5. Check fixture states
     $featureDir = "$Root/docs/$feature"
-    $fixtureBase = Join-Path $Root "tests/fixtures/$feature"
-    $bddFixture = Join-Path $fixtureBase 'bdd/fixture.json'
+    $fixtureBase = Join-Path $Root "fixtures/$feature"
+    $bddFixture = Join-Path $fixtureBase 'bdd.json'
 
     $bddState = if (Test-Path $bddFixture) {
         try { $null = Get-Content $bddFixture -Raw | ConvertFrom-Json; 'valid' } catch { 'corrupt' }

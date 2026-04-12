@@ -1,0 +1,243 @@
+{
+  "topic": "Parallel Debates",
+  "revision": 2,
+  "amendments": [
+    "Fix Resume-Pipeline marker format — shared constant $StageCompletePattern",
+    "Assign Stage 1 marker ownership — 1-elicitor.ps1 emits STAGE_COMPLETE:1",
+    "Fix T4 dependency contradiction — T4 moved to Tier 1 with no dependencies",
+    "Decompose Step 10 into 3 sub-steps (Steps 10, 11, 12)",
+    "ConsensusRevision failure recovery — no STAGE_COMPLETE:3, preserve successful revision",
+    "unified-debate.md produced on max-rounds path",
+    "PowerShell job scope isolation — ArgumentList mechanism specified",
+    "Write-PipelineLog backward compatible — -Color accepted as no-op"
+  ],
+  "tiers": [
+    {
+      "tier": 1,
+      "title": "Foundation utilities (no dependencies)",
+      "tasks": [
+        {
+          "id": "T1",
+          "step": 1,
+          "title": "Consolidate Write-PipelineLog + Stage 1 marker",
+          "files": [
+            "utils/pipeline-log.ps1",
+            "utils/config.ps1",
+            "stages/1-elicitor.ps1"
+          ],
+          "testFiles": [
+            "tests/pipeline-log.Tests.ps1",
+            "tests/1-elicitor.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T2",
+          "step": 2,
+          "title": "Invoke-Parallel utility with scope isolation",
+          "files": [
+            "utils/invoke-parallel.ps1"
+          ],
+          "testFiles": [
+            "tests/invoke-parallel.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T3",
+          "step": 3,
+          "title": "Unified debate moderator agent prompt",
+          "files": [
+            "agents/unified-debate-moderator.md"
+          ],
+          "testFiles": [
+            "tests/unified-debate-moderator.Tests.ps1"
+          ],
+          "codeWriter": "agent-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T4",
+          "step": 4,
+          "title": "Resolve-PipelineState for 7-stage validation",
+          "files": [
+            "utils/resolve-pipeline-state.ps1",
+            "vibe.ps1"
+          ],
+          "testFiles": [
+            "tests/resolve-pipeline-state.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "title": "Core domain logic and stage scripts (depends on Tier 1)",
+      "tasks": [
+        {
+          "id": "T5",
+          "step": 5,
+          "title": "Stage 2 — Parallel writers",
+          "files": [
+            "stages/2-parallel-writers.ps1"
+          ],
+          "testFiles": [
+            "tests/2-parallel-writers.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1", "T2", "T4"]
+        },
+        {
+          "id": "T6",
+          "step": 6,
+          "title": "Invoke-UnifiedDebateLoop",
+          "files": [
+            "utils/unified-debate-loop.ps1"
+          ],
+          "testFiles": [
+            "tests/unified-debate-loop.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T2", "T3"]
+        },
+        {
+          "id": "T7",
+          "step": 8,
+          "title": "Stage 4 — Post-debate artifacts",
+          "files": [
+            "stages/4-post-debate.ps1"
+          ],
+          "testFiles": [
+            "tests/4-post-debate.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T4"]
+        },
+        {
+          "id": "T8",
+          "step": 9,
+          "title": "Resume-Pipeline + vibe.ps1 params",
+          "files": [
+            "utils/resume.ps1",
+            "vibe.ps1"
+          ],
+          "testFiles": [
+            "tests/resume.Tests.ps1",
+            "tests/vibe.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1", "T4"]
+        },
+        {
+          "id": "T9",
+          "step": 10,
+          "title": "Renumber downstream stages (create 5-7 files)",
+          "files": [
+            "stages/5-implementation-writer.ps1",
+            "stages/6-implementation-debate.ps1",
+            "stages/7-coding.ps1"
+          ],
+          "testFiles": [
+            "tests/stage-renumbering.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T4"]
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "title": "Stage 3 script (depends on Tier 2 — specifically T6)",
+      "atomicMergeNote": "Tiers 2-3 develop in worktrees; all branches must merge atomically before Tier 4",
+      "tasks": [
+        {
+          "id": "T10",
+          "step": 7,
+          "title": "Stage 3 — Unified debate",
+          "files": [
+            "stages/3-unified-debate.ps1"
+          ],
+          "testFiles": [
+            "tests/3-unified-debate.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T3", "T4", "T6"]
+        }
+      ]
+    },
+    {
+      "tier": 4,
+      "title": "Pipeline wiring (atomic merge of Tiers 2-3 required first)",
+      "tasks": [
+        {
+          "id": "T11",
+          "step": 11,
+          "title": "Rewire vibe.ps1 + inter-stage validation",
+          "files": [
+            "vibe.ps1"
+          ],
+          "testFiles": [
+            "tests/vibe-wiring.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T5", "T7", "T8", "T9", "T10"]
+        }
+      ]
+    },
+    {
+      "tier": 5,
+      "title": "Cleanup and validation (depends on Tier 4)",
+      "tasks": [
+        {
+          "id": "T12",
+          "step": 12,
+          "title": "Delete old stage files",
+          "files": [
+            "stages/2-bdd-writer.ps1",
+            "stages/3-bdd-debate.ps1",
+            "stages/4-tla-writer.ps1",
+            "stages/5-tla-debate.ps1",
+            "stages/6-implementation-writer.ps1",
+            "stages/7-implementation-debate.ps1",
+            "stages/8-coding.ps1"
+          ],
+          "testFiles": [
+            "tests/deleted-stages.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T11"]
+        },
+        {
+          "id": "T13",
+          "step": 13,
+          "title": "E2E integration tests",
+          "files": [
+            "tests/pipeline-e2e.Tests.ps1"
+          ],
+          "testFiles": [
+            "tests/pipeline-e2e.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T11", "T12"]
+        }
+      ]
+    }
+  ]
+}

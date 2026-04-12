@@ -184,10 +184,10 @@ Describe 'vibe.ps1 pipeline execution' {
         # Create .feature file so BDD fixture generation works (T10)
         Set-Content (Join-Path $featureDir 'bdd.feature') -Value "Feature: Test`n  Scenario: S`n    Given x"
         # Create BDD fixture so stage 8 precondition passes
-        $bddFixDir = Join-Path $script:vibeRoot "tests/fixtures/$featureName"
-        New-Item -ItemType Directory -Path "$bddFixDir/bdd" -Force | Out-Null
+        $bddFixDir = Join-Path $script:vibeRoot "fixtures/$featureName"
+        New-Item -ItemType Directory -Path $bddFixDir -Force | Out-Null
         $null = $script:createdDirs.Add($bddFixDir)
-        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path "$bddFixDir/bdd" 'fixture.json')
+        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path $bddFixDir 'bdd.json')
 
         Mock Invoke-Elicitor {
             @{ FeatureDir = $featureDir; Briefing = 'test briefing' }
@@ -221,7 +221,7 @@ Describe 'vibe.ps1 pipeline execution' {
         Should -Invoke Invoke-ImplementationDebate -Times 1
 
         Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
-        Remove-Item (Join-Path $script:vibeRoot "tests/fixtures/$featureName") -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $script:vibeRoot "fixtures/$featureName") -Recurse -Force -ErrorAction SilentlyContinue
     }
 
     It 'resumes at stage 3 skipping earlier stages' {
@@ -232,10 +232,10 @@ Describe 'vibe.ps1 pipeline execution' {
         Set-Content (Join-Path $featureDir 'elicitor.md') -Value '# Test briefing'
         Set-Content (Join-Path $featureDir 'bdd.feature') -Value 'Feature: test'
         # Create BDD fixture so stage 8 precondition passes
-        $bddFixDir = Join-Path $script:vibeRoot "tests/fixtures/$featureName"
-        New-Item -ItemType Directory -Path "$bddFixDir/bdd" -Force | Out-Null
+        $bddFixDir = Join-Path $script:vibeRoot "fixtures/$featureName"
+        New-Item -ItemType Directory -Path $bddFixDir -Force | Out-Null
         $null = $script:createdDirs.Add($bddFixDir)
-        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path "$bddFixDir/bdd" 'fixture.json')
+        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path $bddFixDir 'bdd.json')
         New-Item -ItemType Directory -Path (Join-Path $featureDir 'tla') -Force | Out-Null
         Set-Content (Join-Path $featureDir 'tla/Spec.tla') -Value '---- MODULE Spec ----'
 
@@ -262,7 +262,7 @@ Describe 'vibe.ps1 pipeline execution' {
         Should -Invoke Invoke-TlaWriter -Times 1
 
         Remove-Item $featureDir -Recurse -Force -ErrorAction SilentlyContinue
-        Remove-Item (Join-Path $script:vibeRoot "tests/fixtures/$featureName") -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $script:vibeRoot "fixtures/$featureName") -Recurse -Force -ErrorAction SilentlyContinue
     }
 
     It 'catch block logs error and re-throws on stage failure' {
@@ -387,10 +387,9 @@ Describe 'Resume-Pipeline' {
         Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
 
         # Create valid fixture files
-        $fixtureBase = Join-Path $script:tempDir 'tests/fixtures/cleanup'
-        $bddDir = Join-Path $fixtureBase 'bdd'
-        New-Item -ItemType Directory -Path $bddDir -Force | Out-Null
-        Set-Content (Join-Path $bddDir 'fixture.json') -Value '{"valid": true}'
+        $fixtureBase = Join-Path $script:tempDir 'fixtures/cleanup'
+        New-Item -ItemType Directory -Path $fixtureBase -Force | Out-Null
+        Set-Content (Join-Path $fixtureBase 'bdd.json') -Value '{"valid": true}'
 
         $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
         $result.BddFixtureState | Should -BeExactly 'valid'
@@ -403,10 +402,9 @@ Describe 'Resume-Pipeline' {
         Mock Test-Path { return $false } -ParameterFilter { $Path -match 'MERGE_HEAD|REBASE_HEAD' }
 
         # Create corrupt fixture file
-        $fixtureBase = Join-Path $script:tempDir 'tests/fixtures/cleanup'
-        $bddDir = Join-Path $fixtureBase 'bdd'
-        New-Item -ItemType Directory -Path $bddDir -Force | Out-Null
-        Set-Content (Join-Path $bddDir 'fixture.json') -Value 'not valid json {{{{'
+        $fixtureBase = Join-Path $script:tempDir 'fixtures/cleanup'
+        New-Item -ItemType Directory -Path $fixtureBase -Force | Out-Null
+        Set-Content (Join-Path $fixtureBase 'bdd.json') -Value 'not valid json {{{{'
 
         $result = Resume-Pipeline -Root $script:tempDir -LogPath $script:logPath -LockDir $script:lockDir
         $result.BddFixtureState | Should -BeExactly 'corrupt'

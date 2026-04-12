@@ -626,6 +626,11 @@ Describe 'Stage 8 — End-to-End Integration' {
         $plan | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $script:tempDir 'docs/my-feature/implementation-plan.json')
 
         Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse') { return 'master' }
+            if ($joined -match 'branch --list') { return $null }
+            if ($joined -match 'checkout') { return $null }
+            if ($joined -match 'branch -D') { return $null }
             if ($args -contains 'status' -and $args -contains '--porcelain') {
                 return 'M  dirty-file.txt'
             }

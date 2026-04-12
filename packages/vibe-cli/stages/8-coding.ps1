@@ -131,24 +131,9 @@ function Invoke-CodingStage {
     }
 
     if (-not $Resume) {
-        # ── Phase 1: Pre-Coding Gate ──
-        $gitStatus = git -C $Root status --porcelain
-        if ($gitStatus) {
-            $response = Read-Host "Uncommitted changes found. Commit now? (y/n)"
-            if ($response -eq 'y') {
-                git -C $Root add -A
-                git -C $Root commit -m "Pre-Stage8 auto-commit"
-            }
-            else {
-                Write-PipelineLog -Message "Pipeline halted: uncommitted changes must be committed before Stage 8 can proceed." -Root $Root
-                return @{
-                    Status  = 'halted_uncommitted'
-                    Message = 'Pipeline halted: uncommitted changes must be committed before Stage 8 can proceed.'
-                }
-            }
-        }
-
-        # ── Phase 1b: Create Feature Branch ──
+        # ── Phase 1: Create Feature Branch ──
+        $previousBranch = git -C $Root rev-parse --abbrev-ref HEAD
+        if ($previousBranch) { $previousBranch = $previousBranch.Trim() }
         $featureBranch = "feature/$Feature"
         $branchExists = git -C $Root branch --list $featureBranch 2>$null
         if ($branchExists) {
@@ -160,6 +145,25 @@ function Invoke-CodingStage {
         }
         $null = git -C $Root checkout -b $featureBranch
         Write-PipelineLog -Message "Created feature branch: $featureBranch" -Root $Root
+
+        # ── Phase 1b: Pre-Coding Gate ──
+        $gitStatus = git -C $Root status --porcelain
+        if ($gitStatus) {
+            $response = Read-Host "Uncommitted changes found. Commit now? (y/n)"
+            if ($response -eq 'y') {
+                git -C $Root add -A
+                git -C $Root commit -m "Pre-Stage8 auto-commit"
+            }
+            else {
+                $null = git -C $Root checkout $previousBranch
+                $null = git -C $Root branch -D $featureBranch
+                Write-PipelineLog -Message "Pipeline halted: uncommitted changes must be committed before Stage 8 can proceed." -Root $Root
+                return @{
+                    Status  = 'halted_uncommitted'
+                    Message = 'Pipeline halted: uncommitted changes must be committed before Stage 8 can proceed.'
+                }
+            }
+        }
 
         # ── Phase 2: Pipeline Lock ──
         try {

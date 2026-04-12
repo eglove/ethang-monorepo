@@ -72,6 +72,20 @@ if (-not (Get-Command Resolve-PipelineState -ErrorAction SilentlyContinue)) {
 . "$root/utils/tlc-parser.ps1"
 . "$root/utils/fixture-gate.ps1"
 
+function Resolve-TargetRoot {
+    param(
+        [Parameter(Mandatory)][string]$FeatureDir,
+        [Parameter(Mandatory)][string]$CliRoot
+    )
+    $targetJsonPath = Join-Path $FeatureDir 'target.json'
+    if (Test-Path $targetJsonPath) {
+        $targetConfig = Get-Content $targetJsonPath -Raw | ConvertFrom-Json
+        $monorepoRoot = (Resolve-Path "$CliRoot/../..").Path
+        return (Resolve-Path (Join-Path $monorepoRoot $targetConfig.root)).Path
+    }
+    return $CliRoot
+}
+
 # Stages
 . "$root/stages/1-elicitor.ps1"
 . "$root/stages/2-bdd-writer.ps1"
@@ -115,6 +129,10 @@ try {
         $briefing = $elicitorResult.Briefing
     }
 
+    # Resolve target package root from target.json (falls back to vibe-cli root)
+    $targetRoot = Resolve-TargetRoot -FeatureDir $featureDir -CliRoot $root
+    Write-PipelineLog "Target root: $targetRoot" -Color Cyan
+
     if ($Stage -gt 1) {
         $pState = Resolve-PipelineState -FromStage $Stage -Dir $featureDir
         $briefing = $pState.Briefing
@@ -137,7 +155,7 @@ try {
         # Generate BDD fixture after debate consensus (T10)
         if ($gherkinFile -and (Test-Path $gherkinFile)) {
             Write-PipelineLog "Generating BDD test fixtures..." -Color Yellow
-            $bddFixturePath = Join-Path (Get-FixtureDir -Root $root -FeatureName $featureName) 'bdd/fixture.json'
+            $bddFixturePath = Join-Path (Get-FixtureDir -Root $targetRoot -FeatureName $featureName) 'bdd.json'
             $parsedGherkin = ConvertFrom-Gherkin -Path $gherkinFile
             $parsedGherkin.schemaVersion = 1
             Export-BddFixture -Fixture $parsedGherkin -OutputPath $bddFixturePath
@@ -175,14 +193,14 @@ try {
 
     if ($Stage -le 8) {
         # Verify BDD fixture precondition before coding stage
-        $fixtureCheck = Test-FixturePrecondition -Root $root -FeatureName $featureName
+        $fixtureCheck = Test-FixturePrecondition -Root $targetRoot -FeatureName $featureName
         if (-not $fixtureCheck.canProceed) {
             throw "Cannot enter coding stage — missing or invalid BDD fixture. Run stage 3 first."
         }
         Write-PipelineLog "Fixture precondition OK (BDD valid)" -Color Green
 
         Write-PipelineLog "--- Stage 8: Coding ---" -Color Cyan
-        $codingResult = Invoke-CodingStage -Feature $featureName -Root $root
+        $codingResult = Invoke-CodingStage -Feature $featureName -Root $targetRoot
         Write-PipelineLog "Stage 8 result: $($codingResult.PipelineStatus)" -Color $(if ($codingResult.PipelineStatus -eq 'completed') { 'Green' } else { 'Red' })
     }
 

@@ -43,7 +43,11 @@ Describe 'Stage 8 — Pre-Coding Gate' {
     }
 
     It 'clean tree passes gate without prompting' {
-        Mock git { return $null }
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse') { return 'master' }
+            return $null
+        }
         Mock Lock-Pipeline { return @{ pipelineState = 'locked'; lockHolder = 1 } }
         Mock Unlock-Pipeline {}
         Mock Invoke-Claude { return 'mock-result' }
@@ -53,8 +57,16 @@ Describe 'Stage 8 — Pre-Coding Gate' {
         if ($result.Status) { $result.Status | Should -Not -Be 'halted_uncommitted' }
     }
 
-    It 'dirty tree + decline halts with descriptive message' {
-        Mock git { return 'M dirty.ps1' }
+    It 'dirty tree + decline halts and restores previous branch' {
+        Mock git {
+            $joined = $args -join ' '
+            if ($joined -match 'rev-parse') { return 'master' }
+            if ($joined -match 'branch --list') { return $null }
+            if ($joined -match 'checkout') { return $null }
+            if ($joined -match 'branch -D') { return $null }
+            if ($joined -match 'status') { return 'M dirty.ps1' }
+            return $null
+        }
         Mock Read-Host { return 'n' }
         Mock Lock-Pipeline {}
         Mock Unlock-Pipeline {}
@@ -62,12 +74,17 @@ Describe 'Stage 8 — Pre-Coding Gate' {
         $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
         $result.Status | Should -Be 'halted_uncommitted'
         $result.Message | Should -Match 'uncommitted changes must be committed before Stage 8 can proceed'
+        Should -Invoke git -ParameterFilter { ($args -join ' ') -match 'checkout master' }
+        Should -Invoke git -ParameterFilter { ($args -join ' ') -match 'branch -D feature/my-feature' }
     }
 
-    It 'dirty tree + accept auto-commits and continues' {
+    It 'dirty tree + accept auto-commits on feature branch and continues' {
         $script:commitCalled = $false
         Mock git {
             $joined = $args -join ' '
+            if ($joined -match 'rev-parse') { return 'master' }
+            if ($joined -match 'branch --list') { return $null }
+            if ($joined -match 'checkout') { return $null }
             if ($joined -match 'status') { return 'M dirty.ps1' }
             if ($joined -match 'commit') { $script:commitCalled = $true; return $null }
             return $null

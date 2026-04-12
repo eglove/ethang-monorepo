@@ -420,13 +420,13 @@ Describe 'Test-FixturePrecondition' {
     BeforeEach {
         $script:root = Join-Path ([System.IO.Path]::GetTempPath()) "fixture-gate-$(Get-Random)"
         $script:featureName = 'test-feat'
-        $script:bddDir = Join-Path $script:root "tests/fixtures/$($script:featureName)/bdd"
-        New-Item -ItemType Directory -Path $script:bddDir -Force | Out-Null
+        $script:fixtureDir = Join-Path $script:root "fixtures/$($script:featureName)"
+        New-Item -ItemType Directory -Path $script:fixtureDir -Force | Out-Null
     }
     AfterEach { Remove-Item $script:root -Recurse -Force -ErrorAction SilentlyContinue }
 
     It 'passes when BDD fixture is valid' {
-        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path $script:bddDir 'fixture.json')
+        @{ schemaVersion = 1; features = @() } | ConvertTo-Json | Set-Content (Join-Path $script:fixtureDir 'bdd.json')
         $r = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
         $r.canProceed | Should -BeTrue
     }
@@ -438,13 +438,13 @@ Describe 'Test-FixturePrecondition' {
     }
 
     It 'fails when BDD fixture is corrupt JSON' {
-        Set-Content (Join-Path $script:bddDir 'fixture.json') -Value '{"corrupt'
+        Set-Content (Join-Path $script:fixtureDir 'bdd.json') -Value '{"corrupt'
         $r = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
         $r.canProceed | Should -BeFalse
     }
 
     It 'fails when schema version is not 1' {
-        @{ schemaVersion = 2; features = @() } | ConvertTo-Json | Set-Content (Join-Path $script:bddDir 'fixture.json')
+        @{ schemaVersion = 2; features = @() } | ConvertTo-Json | Set-Content (Join-Path $script:fixtureDir 'bdd.json')
         $r = Test-FixturePrecondition -Root $script:root -FeatureName $script:featureName
         $r.bddValid | Should -BeFalse
     }
@@ -482,7 +482,7 @@ Describe 'BDD Fixture Generation (after stage 3)' {
         $featureFile = Join-Path $script:featureDir 'bdd.feature'
         Set-Content $featureFile -Value "Feature: Auth`n  Scenario: Login`n    Given a user`n    When they log in`n    Then they see home"
 
-        $bddFixturePath = Join-Path (Get-FixtureDir -Root $script:root -FeatureName $script:featureName) 'bdd/fixture.json'
+        $bddFixturePath = Join-Path (Get-FixtureDir -Root $script:root -FeatureName $script:featureName) 'bdd.json'
         $parsed = ConvertFrom-Gherkin -Path $featureFile
         $parsed.schemaVersion = 1
         Export-BddFixture -Fixture $parsed -OutputPath $bddFixturePath
@@ -498,7 +498,7 @@ Describe 'BDD Fixture Generation (after stage 3)' {
         Set-Content $featureFile -Value "Feature: Test`n  Scenario: S1`n    Given x"
 
         # Generate BDD fixture
-        $bddFixturePath = Join-Path (Get-FixtureDir -Root $script:root -FeatureName $script:featureName) 'bdd/fixture.json'
+        $bddFixturePath = Join-Path (Get-FixtureDir -Root $script:root -FeatureName $script:featureName) 'bdd.json'
         $parsed = ConvertFrom-Gherkin -Path $featureFile
         $parsed.schemaVersion = 1
         Export-BddFixture -Fixture $parsed -OutputPath $bddFixturePath
@@ -524,9 +524,9 @@ Describe 'Fixture Precondition blocks coding stage (stage 8 gate)' {
     It 'corrupt BDD fixture blocks stage 8' {
         $root = Join-Path ([System.IO.Path]::GetTempPath()) "gate-corrupt-$(Get-Random)"
         $featName = 'corrupt-test'
-        $bddDir = Join-Path $root "tests/fixtures/$featName/bdd"
-        New-Item -ItemType Directory -Path $bddDir -Force | Out-Null
-        Set-Content (Join-Path $bddDir 'fixture.json') -Value '{"corrupt'
+        $fixtDir = Join-Path $root "fixtures/$featName"
+        New-Item -ItemType Directory -Path $fixtDir -Force | Out-Null
+        Set-Content (Join-Path $fixtDir 'bdd.json') -Value '{"corrupt'
         try {
             $check = Test-FixturePrecondition -Root $root -FeatureName $featName
             $check.canProceed | Should -BeFalse
