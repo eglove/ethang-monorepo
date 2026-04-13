@@ -1,4 +1,4 @@
-function Invoke-Parallel {
+﻿function Invoke-Parallel {
     param(
         [Parameter(Mandatory)]
         [hashtable]$Jobs

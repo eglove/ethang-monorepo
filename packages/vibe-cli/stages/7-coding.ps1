@@ -371,6 +371,20 @@ $uncoveredSummary
                 $null = Invoke-WorktreeCleanup -WorktreePaths $wtPaths -Root $Root -CompletedTier $MaxTiers
             }
             else {
+                # No worktrees — verify Claude actually produced work on the feature branch
+                $baseBranch = 'master'
+                $diffStat = git -C $Root diff --stat "$baseBranch...HEAD" 2>$null
+
+                if (-not $claudeResult -and -not $diffStat) {
+                    Write-PipelineLog -Message "No worktrees AND no code changes after Claude dispatch — halting pipeline" -Root $Root
+                    $null = Complete-Pipeline -Root $Root -Status halted
+                    return @{
+                        Status  = 'halted_no_work'
+                        Feature = $Feature
+                        Message = 'Claude dispatch produced no worktrees and no code changes. Check warden config or Claude logs.'
+                    }
+                }
+
                 Write-PipelineLog -Message "No worktrees after Claude dispatch — single-task cleanup path" -Root $Root
                 Write-PipelineLog -Message ">>> MARKER TIER_${MaxTiers}_COMPLETE" -Root $Root
             }

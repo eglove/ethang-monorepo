@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     # Load test config to get $Config and Get-PipelineConfig
     . "$PSScriptRoot/helpers/test-config.ps1"
 }

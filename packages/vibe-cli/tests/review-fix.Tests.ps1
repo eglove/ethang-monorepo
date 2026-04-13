@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     # Stub external dependencies before sourcing
     function Invoke-Claude { }
     function Write-PipelineLog { }

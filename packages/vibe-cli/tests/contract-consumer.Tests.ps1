@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # contract-consumer.Tests.ps1 — Consumer-side contract tests
 # Each consumer validates that mock provider output satisfies the contract.
 # Tag: Contract

@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # contract-provider.Tests.ps1 — Provider-side contract tests
 # Each provider's output is validated against the contract it must satisfy.
 # Tag: Contract

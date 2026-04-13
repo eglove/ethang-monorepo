@@ -11,7 +11,7 @@ $root = $PSScriptRoot
 # ── Double Ctrl+C force close ──
 $script:_ctrlCTime = [datetime]::MinValue
 $script:_ctrlCHandler = [ConsoleCancelEventHandler]{
-    param($sender, $e)
+    param($_sender, $e)
     $now = [datetime]::UtcNow
     if (($now - $script:_ctrlCTime).TotalSeconds -le 5) {
         # Second press within 5s — let it kill the process

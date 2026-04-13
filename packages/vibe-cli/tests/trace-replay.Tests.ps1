@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # trace-replay.Tests.ps1 — TLA+ trace replay tests for PipelineReviewers
 # Replays pre-generated traces against real PowerShell transition functions.
 # Tag: Trace

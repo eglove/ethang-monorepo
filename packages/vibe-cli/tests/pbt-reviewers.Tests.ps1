@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # pbt-reviewers.Tests.ps1 — Property-based tests for PipelineReviewers
 # Tests real production transition functions against TLA+ invariants.
 # Tag: PBT

@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     function Invoke-Claude { }
     function Write-PipelineLog { }
     function Read-Escalation { }
