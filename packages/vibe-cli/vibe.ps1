@@ -39,7 +39,6 @@ Import-Module "$root/state/state-repository.psd1" -Force
 . "$root/utils/unified-debate-loop.ps1"
 . "$root/utils/debate-loop.ps1"
 . "$root/utils/gherkin-parser.ps1"
-. "$root/utils/tlc-parser.ps1"
 . "$root/utils/fixture-gate.ps1"
 . "$root/utils/resume.ps1"
 . "$root/utils/resolve-target-root.ps1"

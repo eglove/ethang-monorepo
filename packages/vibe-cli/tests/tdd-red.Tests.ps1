@@ -145,6 +145,21 @@ Describe 'Invoke-RedPhase' {
         $counters.redRetries | Should -Be 2
     }
 
+    It 'skips to cleanup when already_implemented returned during retry loop' {
+        $script:redClaudeCallAI = 0
+        Mock Invoke-Claude {
+            $script:redClaudeCallAI++
+            if ($script:redClaudeCallAI -eq 1) { return '{"filesModified":[{"path":"tests/a.Tests.ps1","action":"created"}]}' }
+            return '{"verdict":"already_implemented","filesModified":[]}'
+        }
+        Mock Invoke-VerifyCommand { 0 }  # Tests pass = triggers retry
+
+        $counters = @{ redRetries = 0 }
+        $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Phase | Should -Be 'cleanup'
+        $result.Status | Should -Be 'running'
+    }
+
     It 'accepts PSCustomObject task from ConvertFrom-Json' {
         # ConvertFrom-Json returns PSCustomObject, not hashtable
         $jsonTask = '{"id":"T1","title":"Config","testWriter":"pester","codeWriter":"powershell-writer","files":["utils/config.ps1"]}' | ConvertFrom-Json

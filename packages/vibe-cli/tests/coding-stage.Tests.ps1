@@ -1,4 +1,5 @@
 ﻿BeforeAll {
+    Import-Module (Join-Path $PSScriptRoot '../state/state-repository.psd1') -Force
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
     . "$PSScriptRoot/../stages/7-coding.ps1"
 
@@ -41,7 +42,6 @@ Describe 'Stage 8 — Pre-Coding Gate' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/my-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '{}' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '{}' | Set-Content (Join-Path $fixtureDir 'tla.json')
     }
 
     AfterEach {
@@ -126,7 +126,6 @@ Describe 'Stage 8 — Pipeline Lock' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/my-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '{}' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '{}' | Set-Content (Join-Path $fixtureDir 'tla.json')
     }
 
     AfterEach {
@@ -202,7 +201,6 @@ Describe 'Stage 8 — Input Validation' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/my-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '{}' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '{}' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         $result = Invoke-CodingStage -Feature 'no-plan' -Root $script:tempDir
         $result.Status | Should -Be 'halted_validation'
@@ -217,7 +215,6 @@ Describe 'Stage 8 — Input Validation' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/my-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '{}' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '{}' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         $result = Invoke-CodingStage -Feature 'bad-json' -Root $script:tempDir
         $result.Status | Should -Be 'halted_validation'
@@ -232,7 +229,6 @@ Describe 'Stage 8 — Input Validation' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/my-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '{}' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '{}' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         $result = Invoke-CodingStage -Feature 'empty-tiers' -Root $script:tempDir
         $result.Status | Should -Be 'halted_validation'
@@ -247,7 +243,6 @@ Describe 'Stage 8 — Input Validation' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/my-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '{}' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '{}' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         $result = Invoke-CodingStage -Feature 'no-tasks' -Root $script:tempDir
         $result.Status | Should -Be 'halted_validation'
@@ -261,26 +256,12 @@ Describe 'Stage 8 — Input Validation' {
 
         $fixtureDir = Join-Path $script:tempDir 'fixtures/no-bdd'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
-        '{}' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         $result = Invoke-CodingStage -Feature 'no-bdd' -Root $script:tempDir
         $result.Status | Should -Be 'halted_validation'
         $result.Message | Should -Match 'bdd'
     }
 
-    It 'halts when TLA fixture not found' {
-        $docsDir = Join-Path $script:tempDir "docs/no-tla"
-        New-Item -ItemType Directory -Path $docsDir -Force | Out-Null
-        @{ tiers = @(@{ tier = 1; tasks = @(@{ id = 'T1'; title = 'A' }) }) } | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $docsDir 'implementation-plan.json')
-
-        $fixtureDir = Join-Path $script:tempDir 'fixtures/no-tla'
-        New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
-        '{}' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-
-        $result = Invoke-CodingStage -Feature 'no-tla' -Root $script:tempDir
-        $result.Status | Should -Be 'halted_validation'
-        $result.Message | Should -Match 'tla'
-    }
 }
 
 Describe 'Stage 8 — Config Snapshot' {
@@ -304,7 +285,6 @@ Describe 'Stage 8 — Config Snapshot' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/my-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '{}' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '{}' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         Mock git { return $null }
         Mock Lock-Pipeline { return @{ pipelineState = 'locked'; lockHolder = 1 } }
@@ -364,7 +344,6 @@ Describe 'Stage 8 — Fixture Coverage' {
 
         # Default: empty fixtures
         '[]' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '[]' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         Mock git { return $null }
         Mock Lock-Pipeline { return @{ pipelineState = 'locked'; lockHolder = 1 } }
@@ -380,13 +359,11 @@ Describe 'Stage 8 — Fixture Coverage' {
         # Create fixtures with entries
         $bddFixture = @(@{ name = 'login-scenario' }) | ConvertTo-Json -Depth 5
         $bddFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/bdd.json')
-        $tlaFixture = @(@{ name = 'state-invariant' }) | ConvertTo-Json -Depth 5
-        $tlaFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/tla.json')
 
         # Create test files that contain the fixture names
         $testsDir = Join-Path $script:tempDir 'tests'
         New-Item -ItemType Directory -Path $testsDir -Force | Out-Null
-        'test login-scenario and state-invariant' | Set-Content (Join-Path $testsDir 'my.test.ps1')
+        'test login-scenario' | Set-Content (Join-Path $testsDir 'my.test.ps1')
 
         $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
         $result.UncoveredFixtures.Count | Should -Be 0
@@ -395,7 +372,6 @@ Describe 'Stage 8 — Fixture Coverage' {
     It 'missing BDD fixtures — uncovered list collected' {
         $bddFixture = @(@{ name = 'missing-scenario' }) | ConvertTo-Json -Depth 5
         $bddFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/bdd.json')
-        '[]' | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/tla.json')
 
         $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
         $result.UncoveredFixtures.Count | Should -Be 1
@@ -403,80 +379,30 @@ Describe 'Stage 8 — Fixture Coverage' {
         $result.UncoveredFixtures[0].Name | Should -Be 'missing-scenario'
     }
 
-    It 'missing TLA+ fixtures — uncovered list collected' {
+    It 'empty BDD fixture file — skip with warning' {
         '[]' | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/bdd.json')
-        $tlaFixture = @(@{ name = 'missing-invariant' }) | ConvertTo-Json -Depth 5
-        $tlaFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/tla.json')
+
+        $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
+        $result.UncoveredFixtures.Count | Should -Be 0
+        $result.Status | Should -Be 'tiers_dispatched'
+    }
+
+    It 'uses title fallback when entry has no name property' {
+        $bddFixture = @(@{ title = 'bdd-title-entry' }) | ConvertTo-Json -Depth 5
+        $bddFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/bdd.json')
 
         $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
         $result.UncoveredFixtures.Count | Should -Be 1
-        $result.UncoveredFixtures[0].Type | Should -Be 'TLA'
-        $result.UncoveredFixtures[0].Name | Should -Be 'missing-invariant'
-    }
-
-    It 'empty BDD fixture file — skip with warning' {
-        '[]' | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/bdd.json')
-        $tlaFixture = @(@{ name = 'tla-entry' }) | ConvertTo-Json -Depth 5
-        $tlaFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/tla.json')
-
-        # Create test file covering TLA entry
-        $testsDir = Join-Path $script:tempDir 'tests'
-        New-Item -ItemType Directory -Path $testsDir -Force | Out-Null
-        'test tla-entry here' | Set-Content (Join-Path $testsDir 'my.test.ps1')
-
-        $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
-        # BDD was skipped, TLA covered — no gaps
-        $result.UncoveredFixtures.Count | Should -Be 0
-        $result.Status | Should -Be 'tiers_dispatched'
-    }
-
-    It 'empty TLA+ fixture file — skip with warning' {
-        $bddFixture = @(@{ name = 'bdd-entry' }) | ConvertTo-Json -Depth 5
-        $bddFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/bdd.json')
-        '[]' | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/tla.json')
-
-        # Create test file covering BDD entry
-        $testsDir = Join-Path $script:tempDir 'tests'
-        New-Item -ItemType Directory -Path $testsDir -Force | Out-Null
-        'test bdd-entry here' | Set-Content (Join-Path $testsDir 'my.test.ps1')
-
-        $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
-        $result.UncoveredFixtures.Count | Should -Be 0
-        $result.Status | Should -Be 'tiers_dispatched'
-    }
-
-    It 'both empty — skip both with warnings' {
-        '[]' | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/bdd.json')
-        '[]' | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/tla.json')
-
-        $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
-        $result.UncoveredFixtures.Count | Should -Be 0
-        $result.Status | Should -Be 'tiers_dispatched'
-    }
-
-    It 'uses title fallback when entry has no name property (line 245/257)' {
-        $bddFixture = @(@{ title = 'bdd-title-entry' }) | ConvertTo-Json -Depth 5
-        $bddFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/bdd.json')
-        $tlaFixture = @(@{ title = 'tla-title-entry' }) | ConvertTo-Json -Depth 5
-        $tlaFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/tla.json')
-
-        $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
-        $result.UncoveredFixtures.Count | Should -Be 2
         $result.UncoveredFixtures[0].Name | Should -Be 'bdd-title-entry'
-        $result.UncoveredFixtures[1].Name | Should -Be 'tla-title-entry'
     }
 
-    It 'uses ToString fallback when entry has neither name nor title (line 245/257)' {
-        # Use a simple string array which will invoke ToString()
+    It 'uses ToString fallback when entry has neither name nor title' {
         $bddFixture = '["bdd-string-entry"]'
         $bddFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/bdd.json')
-        $tlaFixture = '["tla-string-entry"]'
-        $tlaFixture | Set-Content (Join-Path $script:tempDir 'fixtures/my-feature/tla.json')
 
         $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir
-        $result.UncoveredFixtures.Count | Should -Be 2
+        $result.UncoveredFixtures.Count | Should -Be 1
         $result.UncoveredFixtures[0].Name | Should -Be 'bdd-string-entry'
-        $result.UncoveredFixtures[1].Name | Should -Be 'tla-string-entry'
     }
 }
 
@@ -499,7 +425,6 @@ Describe 'Stage 8 — Claude Dispatch' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/my-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '[]' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '[]' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         Mock Lock-Pipeline { return @{ pipelineState = 'locked'; lockHolder = 1 } }
         Mock Unlock-Pipeline {}
@@ -1840,7 +1765,6 @@ Describe 'Stage 8 — Escalation Paths' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/my-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '[]' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '[]' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         Mock Lock-Pipeline { return @{ pipelineState = 'locked'; lockHolder = 1 } }
         Mock Unlock-Pipeline {}

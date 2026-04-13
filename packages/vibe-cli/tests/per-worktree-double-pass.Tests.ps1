@@ -85,6 +85,17 @@ Describe 'Invoke-PerWorktreeDoublePass' {
         }
     }
 
+    Context 'Fallthrough escalation with MaxDoublePassRetries=0 (lines 115-118 exact)' {
+        It 'returns escalated immediately when MaxDoublePassRetries is 0' {
+            Mock pnpm { $global:LASTEXITCODE = 0; return 'ok' }
+
+            $result = Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat' -MaxDoublePassRetries 0
+            $result.Status | Should -BeExactly 'escalated'
+            $result.Retries | Should -Be 0
+            $result.LastError | Should -BeNullOrEmpty
+        }
+    }
+
     Context 'Fix prompt dispatches Claude on non-final failures' {
         It 'calls Invoke-Claude with test fix prompt' {
             $script:pnpmCall = 0

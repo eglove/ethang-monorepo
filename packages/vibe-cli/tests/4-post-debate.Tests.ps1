@@ -82,4 +82,23 @@ Feature: Test Feature
         $result.Success | Should -BeFalse
         $result.Error | Should -Match 'unified-debate'
     }
+
+    It 'returns failure when bdd.feature missing but Resolve-PipelineState passes' {
+        Mock Resolve-PipelineState {}
+        Remove-Item (Join-Path $featureDir 'bdd.feature')
+
+        $result = Invoke-PostDebate -FeatureDir $featureDir -Root $testRoot -TargetRoot $testRoot
+
+        $result.Success | Should -BeFalse
+        $result.Error | Should -Match 'bdd\.feature not found'
+    }
+
+    It 'returns failure when Export-BddFixture throws' {
+        Mock Export-BddFixture { throw 'disk full' }
+
+        $result = Invoke-PostDebate -FeatureDir $featureDir -Root $testRoot -TargetRoot $testRoot
+
+        $result.Success | Should -BeFalse
+        $result.Error | Should -Match 'disk full'
+    }
 }

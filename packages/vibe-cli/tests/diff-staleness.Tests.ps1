@@ -198,6 +198,22 @@ Describe 'Resolve-DiffStaleness' {
         }
     }
 
+    Context 'DB sync — Update-PipelineState called with FeatureName (L64-65)' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState, $ReviewRound, $Verdict, $ReviewGateType) }
+        }
+
+        AfterAll {
+            Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue
+        }
+
+        It 'calls Update-PipelineState when FeatureName is provided' {
+            Mock Update-PipelineState {}
+            Resolve-DiffStaleness -State $script:state -Config $script:cfg -FeatureName 'my-feature'
+            Should -Invoke Update-PipelineState -Times 1 -Scope It
+        }
+    }
+
     Context 'TypeOK invariant' {
         It 'state is TypeOK after DiffBaseStale transition' {
             Resolve-DiffStaleness -State $script:state -Config $script:cfg

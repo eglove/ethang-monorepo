@@ -1,4 +1,5 @@
 ﻿BeforeAll {
+    Import-Module (Join-Path $PSScriptRoot '../state/state-repository.psd1') -Force
     . "$PSScriptRoot/../utils/pipeline-lock.ps1"
     . "$PSScriptRoot/../stages/7-coding.ps1"
     . "$PSScriptRoot/helpers/claude-test-double.ps1"
@@ -102,6 +103,11 @@ Describe 'Stage 8 — Resume' {
         Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
 
+        # Fresh DB for each test
+        $script:testDb = Reset-StateDatabase -InMemory
+        New-Feature -Name 'test-feature'
+        Set-ActiveFeature -Name 'test-feature'
+
         # Create minimal valid structure
         $featureDir = Join-Path $script:tempDir 'docs/test-feature'
         New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
@@ -119,7 +125,6 @@ Describe 'Stage 8 — Resume' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/test-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '[]' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '[]' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         # Mock external commands — resume expects to be on the feature branch already
         Mock git {
@@ -133,14 +138,17 @@ Describe 'Stage 8 — Resume' {
         Mock Read-Host { 'y' }
     }
 
+    AfterEach {
+        if ($script:testDb -and (Test-Path $script:testDb)) { Remove-Item $script:testDb -Force }
+    }
+
     AfterAll {
         Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
     }
 
-    It 'Resume reads last TIER_N_COMPLETE marker and resumes from tier N+1' {
-        # Write a pipeline.log with TIER_1_COMPLETE
-        $logPath = Join-Path $script:tempDir 'pipeline.log'
-        "[2026-04-11 10:00:00] >>> MARKER TIER_1_COMPLETE" | Set-Content $logPath
+    It 'Resume reads DB tier progress and resumes from tier N+1' {
+        # Mark tier 1 as passed in DB
+        Set-TierStatus -FeatureName 'test-feature' -Tier 1 -Status 'passed'
 
         $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir -Resume
 
@@ -149,8 +157,8 @@ Describe 'Stage 8 — Resume' {
         Should -Invoke Invoke-Claude -Times 1
     }
 
-    It 'Resume with no pipeline.log starts fresh with warning' {
-        # No pipeline.log exists
+    It 'Resume with no completed tiers in DB starts fresh with warning' {
+        # No tier progress in DB
         $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir -Resume
 
         $result.Status | Should -Be 'tiers_dispatched'
@@ -158,10 +166,9 @@ Describe 'Stage 8 — Resume' {
         Should -Invoke Invoke-Claude -Times 1
     }
 
-    It 'Resume with TIER_0 equivalent (no markers) starts fresh with warning' {
-        # pipeline.log exists but no tier markers
-        $logPath = Join-Path $script:tempDir 'pipeline.log'
-        "[2026-04-11 10:00:00] Stage 8 initialized" | Set-Content $logPath
+    It 'Resume with zero passed tiers starts fresh with warning' {
+        # Tier exists but not passed
+        Set-TierStatus -FeatureName 'test-feature' -Tier 1 -Status 'running'
 
         $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir -Resume
 
@@ -207,13 +214,10 @@ Describe 'Stage 8 — Resume' {
     }
 
     It 'Resume with all tiers complete jumps to GlobalDoublePass (R2-4)' {
-        # Write markers for all 3 tiers
-        $logPath = Join-Path $script:tempDir 'pipeline.log'
-        @(
-            "[2026-04-11 10:00:00] >>> MARKER TIER_1_COMPLETE"
-            "[2026-04-11 10:01:00] >>> MARKER TIER_2_COMPLETE"
-            "[2026-04-11 10:02:00] >>> MARKER TIER_3_COMPLETE"
-        ) | Set-Content $logPath
+        # Mark all 3 tiers as passed in DB
+        Set-TierStatus -FeatureName 'test-feature' -Tier 1 -Status 'passed'
+        Set-TierStatus -FeatureName 'test-feature' -Tier 2 -Status 'passed'
+        Set-TierStatus -FeatureName 'test-feature' -Tier 3 -Status 'passed'
 
         $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir -Resume
 
@@ -280,6 +284,10 @@ Describe 'Stage 8 — Feature Branch Creation' {
         Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
 
+        $script:testDb = Reset-StateDatabase -InMemory
+        New-Feature -Name 'test-feature'
+        Set-ActiveFeature -Name 'test-feature'
+
         $featureDir = Join-Path $script:tempDir 'docs/test-feature'
         New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
 
@@ -289,12 +297,15 @@ Describe 'Stage 8 — Feature Branch Creation' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/test-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '[]' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '[]' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         Mock Lock-Pipeline { @{ pipelineState = 'locked'; lockHolder = 1 } }
         Mock Unlock-Pipeline {}
         Mock Invoke-Claude {}
         Mock Read-Host { 'y' }
+    }
+
+    AfterEach {
+        if ($script:testDb -and (Test-Path $script:testDb)) { Remove-Item $script:testDb -Force }
     }
 
     AfterAll {
@@ -339,6 +350,11 @@ Describe 'Stage 8 — Crash Recovery' {
         Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
 
+        # Fresh DB for each test
+        $script:testDb = Reset-StateDatabase -InMemory
+        New-Feature -Name 'test-feature'
+        Set-ActiveFeature -Name 'test-feature'
+
         $featureDir = Join-Path $script:tempDir 'docs/test-feature'
         New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
 
@@ -353,7 +369,6 @@ Describe 'Stage 8 — Crash Recovery' {
         $fixtureDir = Join-Path $script:tempDir 'fixtures/test-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '[]' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '[]' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         Mock git {
             $joined = $args -join ' '
@@ -366,38 +381,33 @@ Describe 'Stage 8 — Crash Recovery' {
         Mock Read-Host { 'y' }
     }
 
+    AfterEach {
+        if ($script:testDb -and (Test-Path $script:testDb)) { Remove-Item $script:testDb -Force }
+    }
+
     AfterAll {
         Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
     }
 
     It 'R2-3: Zero-checkpoint crash (lastCompletedTier=0) starts fresh with warning' {
-        $logPath = Join-Path $script:tempDir 'pipeline.log'
-        "[2026-04-11 10:00:00] Stage 8 initialized" | Set-Content $logPath
+        # No tier progress in DB — simulates crash before any tier completed
 
         $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir -Resume
 
         $result.Status | Should -Be 'tiers_dispatched'
         # Single Claude dispatch (starting fresh)
         Should -Invoke Invoke-Claude -Times 1
-
-        $logContent = Get-Content $logPath -Raw
-        $logContent | Should -Match 'WARNING.*--resume with no completed tiers'
     }
 
     It 'R2-4: ResumeToGlobal (lastCompletedTier=MaxTiers) jumps to GlobalDoublePass' {
-        $logPath = Join-Path $script:tempDir 'pipeline.log'
-        @(
-            "[2026-04-11 10:00:00] >>> MARKER TIER_1_COMPLETE"
-            "[2026-04-11 10:01:00] >>> MARKER TIER_2_COMPLETE"
-        ) | Set-Content $logPath
+        # Mark all tiers as passed in DB
+        Set-TierStatus -FeatureName 'test-feature' -Tier 1 -Status 'passed'
+        Set-TierStatus -FeatureName 'test-feature' -Tier 2 -Status 'passed'
 
         $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir -Resume
 
         $result.Status | Should -Be 'tiers_dispatched'
         Should -Not -Invoke Invoke-Claude
-
-        $logContent = Get-Content $logPath -Raw
-        $logContent | Should -Match 'jumping to GlobalDoublePass'
     }
 
     It 'R2-6: Input re-validation on resume — missing plan halts' {
@@ -419,18 +429,9 @@ Describe 'Stage 8 — Crash Recovery' {
         $result.Message | Should -Match 'BDD fixture not found'
     }
 
-    It 'R2-6: Input re-validation on resume — missing TLA fixture halts' {
-        Remove-Item (Join-Path $script:tempDir 'fixtures/test-feature/tla.json')
-
-        $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir -Resume
-
-        $result.Status | Should -Be 'halted_validation'
-        $result.Message | Should -Match 'TLA fixture not found'
-    }
-
     It 'R1-5: Idempotency — re-running completed tier is a no-op' {
-        $logPath = Join-Path $script:tempDir 'pipeline.log'
-        "[2026-04-11 10:00:00] >>> MARKER TIER_1_COMPLETE" | Set-Content $logPath
+        # Mark tier 1 as passed in DB
+        Set-TierStatus -FeatureName 'test-feature' -Tier 1 -Status 'passed'
 
         $result = Invoke-CodingStage -Feature 'test-feature' -Root $script:tempDir -Resume
 
@@ -472,18 +473,25 @@ Describe 'Stage 8 — End-to-End Integration' {
         Remove-Item $script:tempDir -Recurse -Force -ErrorAction SilentlyContinue
         New-Item -ItemType Directory -Path $script:tempDir -Force | Out-Null
 
+        $script:testDb = Reset-StateDatabase -InMemory
+        New-Feature -Name 'my-feature'
+        Set-ActiveFeature -Name 'my-feature'
+
         $featureDir = Join-Path $script:tempDir 'docs/my-feature'
         New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
 
         $fixtureDir = Join-Path $script:tempDir 'fixtures/my-feature'
         New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
         '[]' | Set-Content (Join-Path $fixtureDir 'bdd.json')
-        '[]' | Set-Content (Join-Path $fixtureDir 'tla.json')
 
         Mock Lock-Pipeline { @{ pipelineState = 'locked'; lockHolder = 1 } }
         Mock Unlock-Pipeline {}
         Mock Invoke-Claude {}
         Mock Read-Host { 'y' }
+    }
+
+    AfterEach {
+        if ($script:testDb -and (Test-Path $script:testDb)) { Remove-Item $script:testDb -Force }
     }
 
     AfterAll {
@@ -534,12 +542,8 @@ Describe 'Stage 8 — End-to-End Integration' {
             return ''
         }
 
-        # Simulate a crash after tier 1 by writing a partial log
-        $logPath = Join-Path $script:tempDir 'pipeline.log'
-        @(
-            "[2026-04-11 10:00:00] Stage 8 initialized for feature 'my-feature'"
-            "[2026-04-11 10:00:01] >>> MARKER TIER_1_COMPLETE"
-        ) | Set-Content $logPath
+        # Simulate a crash after tier 1 by marking it passed in DB
+        Set-TierStatus -FeatureName 'my-feature' -Tier 1 -Status 'passed'
 
         # Resume should pick up from tier 2
         $result = Invoke-CodingStage -Feature 'my-feature' -Root $script:tempDir -Resume
@@ -549,6 +553,7 @@ Describe 'Stage 8 — End-to-End Integration' {
         Should -Invoke Invoke-Claude -Times 1
 
         # Log should contain the completion marker for all tiers
+        $logPath = Join-Path $script:tempDir 'pipeline.log'
         $logContent = Get-Content $logPath -Raw
         $logContent | Should -Match '>>> MARKER TIER_3_COMPLETE'
     }

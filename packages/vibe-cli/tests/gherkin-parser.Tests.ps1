@@ -220,6 +220,58 @@ Describe 'ConvertFrom-Gherkin scenario outline examples processing' {
         $outline.examples[0]['z'] | Should -BeExactly ''
     }
 
+    It 'warns when Examples has headers but no data rows and next keyword triggers in-loop flush' {
+        # Covers L112 (Write-Warning + $currentScenario.name) via in-loop flush, not EOF flush
+        $lines = @(
+            'Feature: EmptyExamplesFlush'
+            '  Scenario Outline: No rows'
+            '    Given value <v>'
+            '    Examples:'
+            '      | v |'
+            '  Scenario: After outline'
+            '    Given something'
+        )
+        Set-Content $script:tf -Value ($lines -join "`n")
+        Mock Write-Warning {}
+        $r = ConvertFrom-Gherkin -Path $script:tf
+        Should -Invoke Write-Warning -Times 1 -ParameterFilter { $Message -match 'No rows' }
+        $r.features[0].scenarios.Count | Should -Be 2
+    }
+
+    It 'handles examples short row via in-loop flush when followed by keyword' {
+        # Covers L117 (else '' default) inside the in-loop examples flush path
+        $lines = @(
+            'Feature: ShortExamplesFlush'
+            '  Scenario Outline: Short'
+            '    Given value <a>'
+            '    Examples:'
+            '      | a | b | c |'
+            '      | 1 | 2 |'
+            '  Scenario: Next'
+            '    Given other'
+        )
+        Set-Content $script:tf -Value ($lines -join "`n")
+        $r = ConvertFrom-Gherkin -Path $script:tf
+        $outline = $r.features[0].scenarios[0]
+        $outline.examples[0]['c'] | Should -BeExactly ''
+    }
+
+    It 'fills empty data table cells via in-loop flush when step follows' {
+        # Covers L97 (else '' default) inside the in-loop data table flush path
+        $lines = @(
+            'Feature: ShortDataTableFlush'
+            '  Scenario: Short row flush'
+            '    Given data:'
+            '      | x | y | z |'
+            '      | 1 |'
+            '    When something happens'
+        )
+        Set-Content $script:tf -Value ($lines -join "`n")
+        $r = ConvertFrom-Gherkin -Path $script:tf
+        $step = $r.features[0].scenarios[0].steps[0]
+        $step.dataTable[0]['z'] | Should -BeExactly ''
+    }
+
     It 'flushes remaining examples table at end of file with data' {
         # Covers lines 234-248 (flush remaining examples at EOF)
         $lines = @(

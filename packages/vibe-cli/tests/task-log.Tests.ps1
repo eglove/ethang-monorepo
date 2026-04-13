@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/task-log.ps1"
 }
@@ -64,6 +64,73 @@ Describe 'Write-ThreadSafeLog' {
 
         # Restore
         $script:PipelineMutex = $null
+    }
+
+    It 'returns early without error when LogFile is null (L40)' {
+        $origLog = $global:PipelineLogFile
+        $global:PipelineLogFile = $null
+        try {
+            { Write-ThreadSafeLog -Message 'should not fail' } | Should -Not -Throw
+        }
+        finally {
+            $global:PipelineLogFile = $origLog
+        }
+    }
+
+    It 'handles AbandonedMutexException in Write-ThreadSafeLog (L29-36)' {
+        # Create a real abandoned mutex by acquiring in a thread job then letting it die
+        $mutexName = "Global\vibe-cli-tslog-abandon-$(Get-Random)"
+        $job = Start-ThreadJob {
+            param($name)
+            $m = [System.Threading.Mutex]::new($false, $name)
+            $m.WaitOne() | Out-Null
+            # Don't release — just exit (simulates crash)
+        } -ArgumentList $mutexName
+        $job | Wait-Job | Out-Null
+        $job | Remove-Job
+
+        # Now use that abandoned mutex
+        $script:PipelineMutex = [System.Threading.Mutex]::new($false, $mutexName)
+
+        Write-ThreadSafeLog -Message 'abandoned mutex entry'
+
+        $content = Get-Content $script:testLog -Raw
+        $content | Should -Match 'abandoned mutex entry'
+
+        # Also check that fallback file was created with warning
+        $fallback = [System.IO.Path]::ChangeExtension($script:testLog, '.fallback.log')
+        $fallback | Should -Exist
+        $fbContent = Get-Content $fallback -Raw
+        $fbContent | Should -Match 'Acquired abandoned mutex'
+
+        # Restore
+        $script:PipelineMutex = $null
+    }
+
+    It 'retries fallback log write on IOException (L47-54)' {
+        $script:ioFailCount = 0
+        Mock New-PipelineMutex {
+            $mock = [pscustomobject]@{}
+            $mock | Add-Member -MemberType ScriptMethod -Name WaitOne -Value { param($ms) return $false }
+            $mock | Add-Member -MemberType ScriptMethod -Name ReleaseMutex -Value { }
+            return $mock
+        }
+
+        # Save original and reduce retries
+        $script:PipelineMutex = $null
+        $origRetryMs = $script:FallbackLogRetryMs
+        $script:FallbackLogRetryMs = 1
+
+        Write-ThreadSafeLog -Message 'retry entry'
+
+        $fallback = [System.IO.Path]::ChangeExtension($script:testLog, '.fallback.log')
+        $fallback | Should -Exist
+        $content = Get-Content $fallback -Raw
+        $content | Should -Match 'retry entry'
+
+        # Restore
+        $script:PipelineMutex = $null
+        $script:FallbackLogRetryMs = $origRetryMs
     }
 
     It 'falls back to Console.Error.WriteLine when mutex timeout AND fallback file write fails' {
@@ -132,6 +199,30 @@ Describe 'Sync-FallbackLog' {
     It 'is a no-op when fallback file does not exist' {
         { Sync-FallbackLog -LogFile $script:testLog } | Should -Not -Throw
     }
+
+    It 'handles AbandonedMutexException during sync (L98-101)' {
+        [System.IO.File]::WriteAllText($script:fallbackLog, "[2026-04-10] abandoned sync entry`n")
+
+        # Create a real abandoned mutex
+        $mutexName = "Global\vibe-cli-sync-abandon-$(Get-Random)"
+        $job = Start-ThreadJob {
+            param($name)
+            $m = [System.Threading.Mutex]::new($false, $name)
+            $m.WaitOne() | Out-Null
+            # Don't release — simulates crash
+        } -ArgumentList $mutexName
+        $job | Wait-Job | Out-Null
+        $job | Remove-Job
+
+        $script:PipelineMutex = [System.Threading.Mutex]::new($false, $mutexName)
+        Sync-FallbackLog -LogFile $script:testLog
+
+        $content = Get-Content $script:testLog -Raw
+        $content | Should -Match 'abandoned sync entry'
+
+        # Restore
+        $script:PipelineMutex = $null
+    }
 }
 
 Describe 'Write-TaskLog' {
@@ -178,5 +269,18 @@ Describe 'Write-TaskLog' {
 
     It 'throws when TaskId is empty' {
         { Write-TaskLog -TaskId '' -Phase 'red' -Message 'msg' } | Should -Throw
+    }
+
+    It 'throws ArgumentException with message when TaskId is $null' {
+        { Write-TaskLog -TaskId $null -Phase 'red' -Message 'msg' } | Should -Throw '*TaskId*'
+    }
+
+    It 'includes RunId AND Detail in per-task log entry' {
+        Write-TaskLog -TaskId 'T5' -Phase 'green' -Message 'code gen' -Detail 'extra context' -FeatureDir $script:testFeatureDir -RunId 'run-42'
+        $taskLog = Join-Path $script:testFeatureDir 'logs/T5-log.txt'
+        $content = Get-Content $taskLog -Raw
+        $content | Should -Match 'run-42'
+        $content | Should -Match '\[T5\]'
+        $content | Should -Match 'extra context'
     }
 }

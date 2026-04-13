@@ -1,43 +1,4 @@
-﻿function Get-CrashCount {
-    param([Parameter(Mandatory)][string]$LockDir)
-    $lockFile = Join-Path $LockDir 'pipeline.lock'
-    if (-not (Test-Path $lockFile)) { return 0 }
-    try {
-        $data = Get-Content $lockFile -Raw | ConvertFrom-Json
-        if ($null -ne $data.crashCount) { return [int]$data.crashCount }
-        return 0
-    }
-    catch { return 0 }
-}
-
-function Update-CrashCount {
-    param(
-        [Parameter(Mandatory)][string]$LockDir,
-        [Parameter(Mandatory)][int]$NewCount
-    )
-    $lockFile = Join-Path $LockDir 'pipeline.lock'
-    if (-not (Test-Path $lockFile)) { return }
-    try {
-        $data = Get-Content $lockFile -Raw | ConvertFrom-Json
-        $data | Add-Member -NotePropertyName crashCount -NotePropertyValue $NewCount -Force
-        $tempFile = "$lockFile.tmp"
-        $data | ConvertTo-Json | Set-Content $tempFile
-        Move-Item $tempFile $lockFile -Force
-    }
-    catch {
-        Write-Warning "Failed to update crash count: $_"
-    }
-}
-
-function Test-CrashBudget {
-    param(
-        [Parameter(Mandatory)][string]$LockDir,
-        [int]$MaxCrashes = 3
-    )
-    return Get-CrashCount -LockDir $LockDir
-}
-
-function Test-PipelineLockActive {
+﻿function Test-PipelineLockActive {
     <#
     .SYNOPSIS
         Checks whether the pipeline lock is currently held by a running process.
@@ -229,6 +190,11 @@ function Lock-Pipeline {
         }
     }
 
+    # Sync to DB if state module is loaded and DB is open
+    if ($Feature -ne 'default' -and (Get-Command Update-PipelineState -ErrorAction SilentlyContinue)) {
+        try { Update-PipelineState -FeatureName $Feature -PipelineState 'locked' -LockHolder $PID } catch { }
+    }
+
     # Return initial state with lock acquired
     $state = New-PipelineState
     $state.pipelineState = 'locked'
@@ -242,9 +208,12 @@ function Start-PipelineRunning {
         TLA+ StartRunning: locked → running, lockHolder unchanged.
     .PARAMETER State
         The mutable pipeline state hashtable. Must have pipelineState = 'locked'.
+    .PARAMETER FeatureName
+        Optional feature name to sync state to DB.
     #>
     param(
-        [Parameter(Mandatory)][hashtable]$State
+        [Parameter(Mandatory)][hashtable]$State,
+        [string]$FeatureName
     )
 
     if ($State.pipelineState -ne 'locked') {
@@ -256,6 +225,10 @@ function Start-PipelineRunning {
     }
 
     $State.pipelineState = 'running'
+
+    if ($FeatureName -and (Get-Command Update-PipelineState -ErrorAction SilentlyContinue)) {
+        try { Update-PipelineState -FeatureName $FeatureName -PipelineState 'running' } catch { }
+    }
 }
 
 function Unlock-Pipeline {

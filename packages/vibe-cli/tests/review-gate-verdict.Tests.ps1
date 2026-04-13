@@ -402,4 +402,35 @@ Describe 'Resolve-PreMergeVerdict' {
             Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
         }
     }
+
+    Context 'DB sync via Update-PipelineState' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState, $ReviewGateType, $Verdict, $ReviewRound) }
+        }
+        AfterAll { Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue }
+
+        It 'syncs pass verdict to DB' {
+            Mock Update-PipelineState {}
+            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:passVerdict -FeatureName 'feat-1'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-1' -and $PipelineState -eq 'mergeQueue'
+            }
+        }
+
+        It 'syncs fail verdict to DB' {
+            Mock Update-PipelineState {}
+            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:failVerdict -FeatureName 'feat-1'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-1' -and $PipelineState -eq 'reviewFix'
+            }
+        }
+
+        It 'syncs retry verdict to DB' {
+            Mock Update-PipelineState {}
+            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict -FeatureName 'feat-1'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-1'
+            }
+        }
+    }
 }

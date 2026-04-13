@@ -195,6 +195,45 @@ Describe 'Complete-ReviewFix' {
         }
     }
 
+    Context 'DB sync via Update-PipelineState' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState, $ReviewRound, $Verdict, $TddKeepGoingCount, $LockHolder, $FeatureStatus, $KeepGoingResets, $ReviewGateType) }
+        }
+        AfterAll { Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue }
+
+        It 'calls Update-PipelineState when FeatureName is provided' {
+            Mock Update-PipelineState {}
+            Complete-ReviewFix -State $script:state -Config $script:cfg -FeatureName 'my-feature'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'my-feature' -and $PipelineState -eq 'preMergeReview'
+            }
+        }
+
+        It 'syncs Invoke-TddKeepGoing to DB' {
+            Mock Update-PipelineState {}
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg -FeatureName 'feat-x'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-x' -and $TddKeepGoingCount -eq 1
+            }
+        }
+
+        It 'syncs Invoke-TddKeepGoingExhausted to DB' {
+            Mock Update-PipelineState {}
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg -FeatureName 'feat-x'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-x' -and $Verdict -eq 'fail'
+            }
+        }
+
+        It 'syncs Invoke-TddStopInFix to DB' {
+            Mock Update-PipelineState {}
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg -FeatureName 'feat-x'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-x' -and $PipelineState -eq 'HALTED'
+            }
+        }
+    }
+
     Context 'Regression — reviewFix still routes to preMergeReview' {
         It 'transitions to preMergeReview from reviewFix' {
             Complete-ReviewFix -State $script:state -Config $script:cfg
@@ -938,5 +977,33 @@ Describe 'tddKeepGoingCount stickiness across fix re-entries' {
         $script:state.tddKeepGoingCount | Should -BeExactly 5
         Invoke-TddKeepGoing -State $script:state -Config $script:cfg
         $script:state.tddKeepGoingCount | Should -BeExactly 6
+    }
+}
+
+# =============================================================================
+# Stub function throw tests — sourcing review-fix.ps1 fresh without overrides
+# Covers L17, L22, L27 (3 missed commands)
+# =============================================================================
+
+Describe 'Stub function throws without implementation loaded' {
+    BeforeAll {
+        # Source review-fix.ps1 fresh to get the stub implementations
+        # without the stubs defined in the outer BeforeAll
+        . "$PSScriptRoot/../utils/review-fix.ps1"
+    }
+
+    It 'Invoke-RedPhase throws when no implementation loaded' {
+        { Invoke-RedPhase -State @{} -Config @{} -Task @{} -Blockers @() -Counters @{} -Root 'C:\fake' -FeatureDir 'C:\fake' } |
+            Should -Throw '*no implementation loaded*'
+    }
+
+    It 'Invoke-GreenPhase throws when no implementation loaded' {
+        { Invoke-GreenPhase -State @{} -Config @{} -Task @{} -Blockers @() -TestFiles @() -Counters @{} -Root 'C:\fake' -FeatureDir 'C:\fake' } |
+            Should -Throw '*no implementation loaded*'
+    }
+
+    It 'Invoke-CleanupPhase throws when no implementation loaded' {
+        { Invoke-CleanupPhase -State @{} -Config @{} -Task @{} -Counters @{} -Root 'C:\fake' -FeatureDir 'C:\fake' } |
+            Should -Throw '*no implementation loaded*'
     }
 }

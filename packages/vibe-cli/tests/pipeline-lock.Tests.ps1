@@ -86,6 +86,24 @@ Describe 'Start-PipelineRunning (StartRunning)' {
                 Should -Throw '*must be "locked"*'
         }
     }
+
+    Context 'DB sync via Update-PipelineState' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState) }
+        }
+        AfterAll { Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue }
+
+        It 'calls Update-PipelineState when FeatureName is provided' {
+            Mock Update-PipelineState {}
+            $state = New-PipelineState
+            $state.pipelineState = 'locked'
+            $state.lockHolder = 1
+            Start-PipelineRunning -State $state -FeatureName 'auth-flow'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'auth-flow' -and $PipelineState -eq 'running'
+            }
+        }
+    }
 }
 
 # =============================================================================

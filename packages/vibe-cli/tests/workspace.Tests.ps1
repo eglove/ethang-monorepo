@@ -9,6 +9,23 @@
     Mock Write-Host {}
 }
 
+Describe 'Get-PackageWorkDir' {
+    It 'returns WorktreePath when cwd is git root' {
+        Mock git { return (Get-Location).Path -replace '\\','/' }
+        $result = Get-PackageWorkDir -WorktreePath '/tmp/wt'
+        $result | Should -Be '/tmp/wt'
+    }
+
+    It 'appends relative offset when cwd is a subdirectory' {
+        $gitRoot = (Get-Location).Path -replace '\\','/'
+        Mock git { return $gitRoot }
+        # We're at the repo root for this test, so offset is '.'
+        $result = Get-PackageWorkDir -WorktreePath '/tmp/wt'
+        # Since cwd == gitRoot, offset is '.', so result = WorktreePath
+        $result | Should -Be '/tmp/wt'
+    }
+}
+
 Describe 'New-TaskWorkspace' {
     BeforeAll {
         Mock Invoke-GitWithRetry {}

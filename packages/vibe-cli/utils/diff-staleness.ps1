@@ -1,7 +1,6 @@
 ﻿# =============================================================================
 # diff-staleness.ps1 — Diff-base staleness detection for merge queue
 # TLA+ actions: DiffBaseStale
-# Depends on: pipeline-state.ps1
 # =============================================================================
 
 $ErrorActionPreference = 'Stop'
@@ -47,7 +46,8 @@ function Resolve-DiffStaleness {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][hashtable]$State,
-        [Parameter(Mandatory)]$Config
+        [Parameter(Mandatory)]$Config,
+        [string]$FeatureName
     )
 
     if ($State.pipelineState -ne 'mergeQueue') {
@@ -59,6 +59,11 @@ function Resolve-DiffStaleness {
     $State.reviewRound    = $State.reviewRound + 1
     $State.verdict        = $null
     $State.reviewGateType = 'preMerge'
+
+    # Sync to DB
+    if ($FeatureName -and (Get-Command Update-PipelineState -ErrorAction SilentlyContinue)) {
+        Update-PipelineState -FeatureName $FeatureName -PipelineState 'preMergeReview' -ReviewRound $State.reviewRound -Verdict $null -ReviewGateType 'preMerge'
+    }
 
     Write-PipelineLog "Diff base stale — re-review at round $($State.reviewRound)"
 

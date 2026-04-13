@@ -1,6 +1,12 @@
 ﻿# Stage 7 — Coding Stage (renumbered from old Stage 8)
 # Each function lives in its own file under utils/.
 
+function _SyncDb {
+    param([scriptblock]$Block)
+    try { & $Block }
+    catch { Write-Warning "DB sync: $_" }
+}
+
 . "$PSScriptRoot/../utils/pipeline-lock.ps1"
 . "$PSScriptRoot/../utils/pipeline-log.ps1"
 . "$PSScriptRoot/../utils/invoke-claude.ps1"
@@ -21,7 +27,7 @@ function Invoke-CodingStage {
         [switch]$Resume
     )
 
-    # ── Resume: parse last marker from pipeline.log ──
+    # ── Resume: DB-based tier progress ──
     $startTier = 1
     $skipToGlobal = $false
 
@@ -60,23 +66,13 @@ function Invoke-CodingStage {
             }
         }
 
-        $tlaFixture = Join-Path $Root "fixtures/$Feature/tla.json"
-        if (-not (Test-Path $tlaFixture)) {
-            Write-PipelineLog -Message "HALTED: resume failed — TLA fixture not found" -Root $Root
-            return @{
-                Status  = 'halted_validation'
-                Message = "Resume failed: TLA fixture not found at $tlaFixture"
-            }
-        }
-
-        $logPath = Join-Path $Root 'pipeline.log'
+        # DB-based tier progress (replaces log marker parsing)
+        $tierProgress = Get-AllTierProgress -FeatureName $Feature
         $lastCompletedTier = 0
-
-        if (Test-Path $logPath) {
-            $logContent = Get-Content $logPath -Raw
-            $markerMatches = [regex]::Matches($logContent, '>>> MARKER TIER_(\d+)_COMPLETE')
-            if ($markerMatches.Count -gt 0) {
-                $lastCompletedTier = [int]$markerMatches[$markerMatches.Count - 1].Groups[1].Value
+        if ($tierProgress) {
+            $passedTiers = @($tierProgress | Where-Object { $_.status -eq 'passed' })
+            if ($passedTiers.Count -gt 0) {
+                $lastCompletedTier = ($passedTiers | Measure-Object -Property tier -Maximum).Maximum
             }
         }
 
@@ -84,12 +80,8 @@ function Invoke-CodingStage {
         $planObj = $planRaw | ConvertFrom-Json
         $maxTiers = @($planObj.tiers).Count
 
-        if (-not (Test-Path $logPath)) {
-            Write-PipelineLog -Message "WARNING: --resume with no pipeline.log — starting fresh" -Root $Root
-            $startTier = 1
-        }
-        elseif ($lastCompletedTier -eq 0) {
-            Write-PipelineLog -Message "WARNING: --resume with no completed tiers — starting fresh" -Root $Root
+        if ($lastCompletedTier -eq 0) {
+            Write-PipelineLog -Message "WARNING: --resume with no completed tiers in DB — starting fresh" -Root $Root
             $startTier = 1
         }
         elseif ($lastCompletedTier -ge $maxTiers) {
@@ -112,11 +104,23 @@ function Invoke-CodingStage {
             }
         }
 
+        # Verify DB lock exists (acquired by vibe.ps1 at Stage 1)
+        try {
+            $dbLock = Get-PipelineLockState -FeatureName $Feature
+            if (-not $dbLock) {
+                Write-PipelineLog -Message "Resume: re-acquiring DB lock" -Root $Root
+                Lock-PipelineState -FeatureName $Feature -ProcessId $PID
+            }
+        } catch {
+            Write-PipelineLog -Message "DB lock check skipped: $_" -Root $Root
+        }
+
+        # File-based lock for cross-process mutex safety
         try {
             $lockState = Lock-Pipeline -LockDir $Root -Feature $Feature -Resume
         }
         catch {
-            Write-PipelineLog -Message "Resume: reclaiming stale lock" -Root $Root
+            Write-PipelineLog -Message "Resume: reclaiming stale file lock" -Root $Root
             Unlock-Pipeline -LockDir $Root
             $lockState = Lock-Pipeline -LockDir $Root -Feature $Feature
         }
@@ -155,6 +159,18 @@ function Invoke-CodingStage {
             }
         }
 
+        # Verify DB lock exists (acquired by vibe.ps1 at Stage 1)
+        try {
+            $dbLock = Get-PipelineLockState -FeatureName $Feature
+            if (-not $dbLock) {
+                Write-PipelineLog -Message "Acquiring DB lock for Stage 7" -Root $Root
+                Lock-PipelineState -FeatureName $Feature -ProcessId $PID
+            }
+        } catch {
+            Write-PipelineLog -Message "DB lock check skipped: $_" -Root $Root
+        }
+
+        # File-based lock for cross-process mutex safety
         try {
             $lockState = Lock-Pipeline -LockDir $Root -Feature $Feature
         }
@@ -166,6 +182,9 @@ function Invoke-CodingStage {
             }
         }
     }
+
+    # Set pipeline state to running for Stage 7
+    _SyncDb { Update-PipelineState -FeatureName $Feature -PipelineState 'coding' }
 
     try {
         $planPath = Join-Path $Root "docs/$Feature/implementation-plan.json"
@@ -216,27 +235,15 @@ function Invoke-CodingStage {
             }
         }
 
-        $tlaFixture = Join-Path $Root "fixtures/$Feature/tla.json"
-        if (-not (Test-Path $tlaFixture)) {
-            Write-PipelineLog -Message "Halted: TLA fixture not found at $tlaFixture" -Root $Root
-            return @{
-                Status  = 'halted_validation'
-                Message = "TLA fixture not found: $tlaFixture"
-            }
-        }
-
         $PlanSnapshot = $planRaw | ConvertFrom-Json
 
         Write-PipelineLog -Message "Stage 7 initialized for feature '$Feature' with $(@($PlanSnapshot.tiers).Count) tier(s)" -Root $Root
 
         $bddFixtureData = Get-Content $bddFixture -Raw | ConvertFrom-Json
-        $tlaFixtureData = Get-Content $tlaFixture -Raw | ConvertFrom-Json
 
         $bddEntries = if ($null -eq $bddFixtureData) { @() } else { @($bddFixtureData) }
-        $tlaEntries = if ($null -eq $tlaFixtureData) { @() } else { @($tlaFixtureData) }
 
         $bddIsEmpty = ($bddEntries.Count -eq 0) -or ($bddEntries.Count -eq 1 -and $null -eq $bddEntries[0]) -or ($bddEntries.Count -eq 1 -and $bddEntries[0] -is [System.Management.Automation.PSCustomObject] -and @($bddEntries[0].PSObject.Properties).Count -eq 0)
-        $tlaIsEmpty = ($tlaEntries.Count -eq 0) -or ($tlaEntries.Count -eq 1 -and $null -eq $tlaEntries[0]) -or ($tlaEntries.Count -eq 1 -and $tlaEntries[0] -is [System.Management.Automation.PSCustomObject] -and @($tlaEntries[0].PSObject.Properties).Count -eq 0)
 
         $uncoveredFixtures = @()
 
@@ -251,25 +258,14 @@ function Invoke-CodingStage {
         }
         $allTestContent = $testFileContents -join "`n"
 
-        if ($bddIsEmpty -and $tlaIsEmpty) {
-            Write-PipelineLog -Message "WARNING: Both BDD and TLA+ fixture files are empty — skipping fixture coverage" -Root $Root
+        if ($bddIsEmpty) {
+            Write-PipelineLog -Message "WARNING: BDD fixture is empty — skipping fixture coverage" -Root $Root
         }
         else {
-            if (-not $bddIsEmpty) {
-                foreach ($entry in $bddEntries) {
-                    $name = if ($entry.name) { $entry.name } elseif ($entry.title) { $entry.title } else { $entry.ToString() }
-                    if ($allTestContent -notmatch [regex]::Escape($name)) {
-                        $uncoveredFixtures += @{ Type = 'BDD'; Name = $name }
-                    }
-                }
-            }
-
-            if (-not $tlaIsEmpty) {
-                foreach ($entry in $tlaEntries) {
-                    $name = if ($entry.name) { $entry.name } elseif ($entry.title) { $entry.title } else { $entry.ToString() }
-                    if ($allTestContent -notmatch [regex]::Escape($name)) {
-                        $uncoveredFixtures += @{ Type = 'TLA'; Name = $name }
-                    }
+            foreach ($entry in $bddEntries) {
+                $name = if ($entry.name) { $entry.name } elseif ($entry.title) { $entry.title } else { $entry.ToString() }
+                if ($allTestContent -notmatch [regex]::Escape($name)) {
+                    $uncoveredFixtures += @{ Type = 'BDD'; Name = $name }
                 }
             }
         }
@@ -307,7 +303,6 @@ Implement ALL tiers from the implementation plan, dispatching parallel agents pe
 - Implementation plan: $planPath
 - Feature docs directory: $featureDocsPath
 - BDD fixtures: $bddFixture
-- TLA+ fixtures: $tlaFixture
 
 ### Uncovered Fixtures
 $uncoveredSummary
@@ -344,8 +339,10 @@ $uncoveredSummary
 
                 # Per-worktree gates: double-pass + review for each worktree
                 $gateResult = Invoke-PerWorktreeGate -WorktreePaths $wtPaths -FeatureDir $featureDocsPath -Root $Root -Feature $Feature
+                _SyncDb { Set-GateResult -FeatureName $Feature -GateType 'perWorktree' -Status $gateResult.Status }
                 if ($gateResult.Status -eq 'escalated') {
                     Write-PipelineLog -Message "Per-worktree gate escalated — halting pipeline" -Root $Root
+                    _SyncDb { Update-PipelineState -FeatureName $Feature -PipelineState 'halted' -FeatureStatus 'halted' }
                     $null = Complete-Pipeline -Root $Root -Status halted
                     return @{
                         Status    = 'halted_gate'
@@ -357,8 +354,10 @@ $uncoveredSummary
                 # Sequential merge: merge worktree branches into feature branch
                 $featureBranchName = "feature/$Feature"
                 $mergeResult = Invoke-SequentialMerge -WorktreeBranches $wtBranches -FeatureBranch $featureBranchName -Root $Root -Feature $Feature
+                _SyncDb { Set-MergeResult -FeatureName $Feature -TaskId 'sequential-merge' -Status $mergeResult.Status }
                 if ($mergeResult.Status -ne 'merged') {
                     Write-PipelineLog -Message "SequentialMerge escalated ($($mergeResult.Status)) — halting pipeline" -Root $Root
+                    _SyncDb { Update-PipelineState -FeatureName $Feature -PipelineState 'halted' -FeatureStatus 'halted' }
                     $null = Complete-Pipeline -Root $Root -Status halted
                     return @{
                         Status      = 'halted_merge'
@@ -374,14 +373,22 @@ $uncoveredSummary
                 Write-PipelineLog -Message "No worktrees after Claude dispatch — single-task cleanup path" -Root $Root
                 Write-PipelineLog -Message ">>> MARKER TIER_${MaxTiers}_COMPLETE" -Root $Root
             }
+
+            # Record all tiers as passed in DB
+            for ($tierIdx = 1; $tierIdx -le $MaxTiers; $tierIdx++) {
+                _SyncDb { Set-TierStatus -FeatureName $Feature -Tier $tierIdx -Status 'passed' }
+            }
         }
 
         # ── Global verification ──
+        _SyncDb { Update-PipelineState -FeatureName $Feature -PipelineState 'globalVerification' }
         Write-PipelineLog -Message "All $MaxTiers tier(s) complete — running global double-pass" -Root $Root
 
         $gdpResult = Invoke-GlobalDoublePass -Root $Root -Feature $Feature
+        _SyncDb { Set-GateResult -FeatureName $Feature -GateType 'globalDoublePass' -Status $gdpResult.Status }
         if ($gdpResult.Status -eq 'escalated') {
             Write-PipelineLog -Message "Global double-pass escalated after $($gdpResult.Retries) retries — halting" -Root $Root
+            _SyncDb { Update-PipelineState -FeatureName $Feature -PipelineState 'halted' -FeatureStatus 'halted' }
             $null = Complete-Pipeline -Root $Root -Status halted
             return @{
                 Status          = 'halted_doublepass'
@@ -396,8 +403,10 @@ $uncoveredSummary
         Write-PipelineLog -Message "Running global review against $baseBranch" -Root $Root
 
         $grResult = Invoke-GlobalReview -Root $Root -FeatureDir $featureDocsPath -BaseBranch $baseBranch
+        _SyncDb { Set-GateResult -FeatureName $Feature -GateType 'globalReview' -Status $grResult.Verdict }
         if ($grResult.Verdict -eq 'escalated') {
             Write-PipelineLog -Message "Global review escalated after $($grResult.ReviewRound) round(s) — halting" -Root $Root
+            _SyncDb { Update-PipelineState -FeatureName $Feature -PipelineState 'halted' -FeatureStatus 'halted' }
             $null = Complete-Pipeline -Root $Root -Status halted
             return @{
                 Status       = 'halted_review'
@@ -407,6 +416,7 @@ $uncoveredSummary
         }
         Write-PipelineLog -Message ">>> MARKER GLOBAL_REVIEW_COMPLETE" -Root $Root
 
+        _SyncDb { Update-PipelineState -FeatureName $Feature -PipelineState 'complete' -FeatureStatus 'complete' }
         $null = Complete-Pipeline -Root $Root -Status complete
         Write-PipelineLog -Message "STAGE_COMPLETE:7:$Feature" -Root $Root
 

@@ -125,6 +125,17 @@ Describe 'Invoke-GlobalDoublePass' {
         }
     }
 
+    Context 'Fallthrough escalation with MaxDoublePassRetries=0 (lines 111-114 exact)' {
+        It 'returns escalated immediately when MaxDoublePassRetries is 0' {
+            Mock pnpm { $global:LASTEXITCODE = 0; return 'ok' }
+
+            $result = Invoke-GlobalDoublePass -Root 'C:\fake' -Feature 'feat' -MaxDoublePassRetries 0
+            $result.Status | Should -BeExactly 'escalated'
+            $result.Retries | Should -Be 0
+            $result.LastError | Should -BeNullOrEmpty
+        }
+    }
+
     Context 'Test failure escalation at max retries' {
         It 'returns escalated with LastError when test fails at MaxDoublePassRetries' {
             Mock pnpm { $global:LASTEXITCODE = 1; return 'persistent test failure' }

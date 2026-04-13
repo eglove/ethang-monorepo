@@ -383,4 +383,42 @@ Describe 'Resolve-FinalMergeVerdict' {
             Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
         }
     }
+
+    Context 'DB sync via Update-PipelineState' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState, $LockHolder, $ReviewGateType, $Verdict, $FeatureStatus, $ReviewRound) }
+        }
+        AfterAll { Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue }
+
+        It 'syncs pass to DB with COMPLETE and feature status' {
+            Mock Update-PipelineState {}
+            $v = [PSCustomObject]@{ Verdict='pass'; Blockers=@(); Notes=@(); SelectedReviewers=@(); ExcludedReviewers=@() }
+            Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $v -FeatureName 'feat-2'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-2' -and $PipelineState -eq 'COMPLETE'
+            }
+        }
+
+        It 'syncs fail to DB with finalReviewFix' {
+            Mock Update-PipelineState {}
+            $v = [PSCustomObject]@{
+                Verdict='fail'
+                Blockers=@(@{ Reviewer='r'; Severity='high'; Description='d'; Files=@('f'); Suggestion='s' })
+                Notes=@(); SelectedReviewers=@(); ExcludedReviewers=@()
+            }
+            Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $v -FeatureName 'feat-2'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-2' -and $PipelineState -eq 'finalReviewFix'
+            }
+        }
+
+        It 'syncs retry to DB with incremented round' {
+            Mock Update-PipelineState {}
+            $v = [PSCustomObject]@{ Verdict='retry'; Blockers=@(); Notes=@(); SelectedReviewers=@(); ExcludedReviewers=@() }
+            Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $v -FeatureName 'feat-2'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-2' -and $ReviewRound -eq 1
+            }
+        }
+    }
 }

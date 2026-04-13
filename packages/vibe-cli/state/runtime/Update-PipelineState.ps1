@@ -31,8 +31,12 @@ function Update-PipelineState {
         $params['ps'] = $PipelineState
     }
     if ($PSBoundParameters.ContainsKey('LockHolder')) {
-        $sets += "lock_holder = @lh"
-        $params['lh'] = $LockHolder
+        if ($LockHolder -eq 0) {
+            $sets += "lock_holder = NULL"
+        } else {
+            $sets += "lock_holder = @lh"
+            $params['lh'] = $LockHolder
+        }
     }
     if ($ReviewRound -ge 0) {
         $sets += "review_round = @rr"
@@ -47,8 +51,12 @@ function Update-PipelineState {
         $params['tkgc'] = $TddKeepGoingCount
     }
     if ($PSBoundParameters.ContainsKey('Verdict')) {
-        $sets += "verdict = @v"
-        $params['v'] = $Verdict
+        if ($null -eq $Verdict -or $Verdict -eq '') {
+            $sets += "verdict = NULL"
+        } else {
+            $sets += "verdict = @v"
+            $params['v'] = $Verdict
+        }
     }
     if ($TasksDone -ge 0) {
         $sets += "tasks_done = @td"

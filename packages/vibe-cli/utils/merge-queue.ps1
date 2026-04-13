@@ -163,7 +163,8 @@ function Complete-TaskMerge {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][hashtable]$State,
-        [Parameter(Mandatory)]$Config
+        [Parameter(Mandatory)]$Config,
+        [string]$FeatureName
     )
 
     # ── Guard: terminal state absorption ──
@@ -182,6 +183,11 @@ function Complete-TaskMerge {
     # ── State transition ──
     $State.tasksDone     = $State.tasksDone + 1
     $State.pipelineState = 'running'
+
+    # Sync to DB
+    if ($FeatureName -and (Get-Command Update-PipelineState -ErrorAction SilentlyContinue)) {
+        Update-PipelineState -FeatureName $FeatureName -TasksDone $State.tasksDone -PipelineState 'running'
+    }
 }
 
 function Test-AllTasksDone {

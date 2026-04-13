@@ -180,6 +180,41 @@ Describe 'Invoke-ReviewLoop' {
         }
     }
 
+    Context 'Warnings array parsed from response (L98-101)' {
+        It 'returns warnings array when present in response' {
+            Mock Invoke-Claude {
+                return (@{
+                    verdict  = 'pass'
+                    findings = @()
+                    notes    = @()
+                    warnings = @('watch out for flaky test', 'slow query detected')
+                } | ConvertTo-Json -Depth 5 -Compress)
+            }
+
+            $result = Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root
+
+            $result.Verdict | Should -BeExactly 'pass'
+            $result.Warnings | Should -HaveCount 2
+            $result.Warnings[0] | Should -BeExactly 'watch out for flaky test'
+        }
+
+        It 'returns fail verdict with warnings (L126-128)' {
+            Mock Invoke-Claude {
+                return (@{
+                    verdict  = 'fail'
+                    findings = @(@{ reviewer = 'bug'; severity = 'high'; description = 'bug'; suggestion = 'fix' })
+                    notes    = @()
+                    warnings = @('review took long')
+                } | ConvertTo-Json -Depth 5 -Compress)
+            }
+
+            $result = Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root
+
+            $result.Verdict | Should -BeExactly 'fail'
+            $result.Warnings | Should -HaveCount 1
+        }
+    }
+
     Context 'Compound timeout: moderator timeout produces pass with warning + note' {
         It 'returns pass with warning when moderator returns empty on all rounds' {
             Mock Invoke-Claude { return $null }
@@ -271,6 +306,33 @@ Describe 'Write-UserNote' {
             $content | Should -Match 'security'
             $content | Should -Match 'Critical unresolved issue'
             $content | Should -Match '\*\*Suggestion:\*\* Needs manual review'
+        }
+    }
+
+    Context 'Write-UserNote defaults for missing fields (L159-162)' {
+        It 'uses "unknown" for missing reviewer and severity, empty for description and suggestion' {
+            Write-UserNote -FeatureDir $script:featureDir -Notes @(
+                @{}
+            )
+
+            $notesPath = Join-Path $script:featureDir 'user_notes.md'
+            $content = Get-Content $notesPath -Raw
+            $content | Should -Match '### unknown \(unknown\)'
+        }
+
+        It 'omits suggestion line when suggestion is empty' {
+            Write-UserNote -FeatureDir $script:featureDir -Notes @(
+                @{
+                    reviewer    = 'test-rev'
+                    severity    = 'low'
+                    description = 'Some desc'
+                }
+            )
+
+            $notesPath = Join-Path $script:featureDir 'user_notes.md'
+            $content = Get-Content $notesPath -Raw
+            $content | Should -Match 'test-rev'
+            $content | Should -Not -Match '\*\*Suggestion:\*\*'
         }
     }
 

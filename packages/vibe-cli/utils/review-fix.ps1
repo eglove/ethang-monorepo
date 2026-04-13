@@ -1,7 +1,7 @@
 ﻿# =============================================================================
 # review-fix.ps1 — Review-fix cycle
 # TLA+ action: ReviewFixComplete
-# Depends on: pipeline-state.ps1, review-verdict.ps1
+# Depends on: review-verdict.ps1
 # =============================================================================
 
 $ErrorActionPreference = 'Stop'
@@ -31,15 +31,12 @@ function Invoke-TddKeepGoing {
     <#
     .SYNOPSIS
         TLA+ TddKeepGoingInFix — increments tddKeepGoingCount within a review-fix cycle.
-    .DESCRIPTION
-        When TDD exhausts its cycles within a fix, the user can choose "Keep Going"
-        to retry. This increments tddKeepGoingCount up to MaxTddKeepGoingPerGate.
-        The counter is sticky within a gate — only reset by gate-level events.
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][hashtable]$State,
-        [Parameter(Mandatory)]$Config
+        [Parameter(Mandatory)]$Config,
+        [string]$FeatureName
     )
 
     $validFixStates = @('reviewFix', 'finalReviewFix')
@@ -48,25 +45,24 @@ function Invoke-TddKeepGoing {
     }
 
     $State.tddKeepGoingCount = $State.tddKeepGoingCount + 1
-    Write-PipelineLog "TDD Keep Going: tddKeepGoingCount=$($State.tddKeepGoingCount)"
 
-    # UNCHANGED: pipelineState, lockHolder, reviewRound, keepGoingResets,
-    #            verdict, tasksDone, reviewGateType
+    if ($FeatureName -and (Get-Command Update-PipelineState -ErrorAction SilentlyContinue)) {
+        Update-PipelineState -FeatureName $FeatureName -TddKeepGoingCount $State.tddKeepGoingCount
+    }
+
+    Write-PipelineLog "TDD Keep Going: tddKeepGoingCount=$($State.tddKeepGoingCount)"
 }
 
 function Invoke-TddKeepGoingExhausted {
     <#
     .SYNOPSIS
         TLA+ TddKeepGoingExhausted — TDD cap reached, escalate back to review gate.
-    .DESCRIPTION
-        When tddKeepGoingCount reaches MaxTddKeepGoingPerGate, the fix cycle
-        cannot continue. State returns to the parent review state with
-        verdict="fail" and reviewRound incremented.
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][hashtable]$State,
-        [Parameter(Mandatory)]$Config
+        [Parameter(Mandatory)]$Config,
+        [string]$FeatureName
     )
 
     $validFixStates = @('reviewFix', 'finalReviewFix')
@@ -78,24 +74,23 @@ function Invoke-TddKeepGoingExhausted {
     $State.verdict       = 'fail'
     $State.reviewRound   = $State.reviewRound + 1
 
-    Write-PipelineLog "TDD Keep Going exhausted: escalating to $($State.pipelineState) with verdict=fail, round=$($State.reviewRound)"
+    if ($FeatureName -and (Get-Command Update-PipelineState -ErrorAction SilentlyContinue)) {
+        Update-PipelineState -FeatureName $FeatureName -PipelineState $State.pipelineState -Verdict 'fail' -ReviewRound $State.reviewRound
+    }
 
-    # UNCHANGED: lockHolder, keepGoingResets, tddKeepGoingCount,
-    #            tasksDone, reviewGateType
+    Write-PipelineLog "TDD Keep Going exhausted: escalating to $($State.pipelineState) with verdict=fail, round=$($State.reviewRound)"
 }
 
 function Invoke-TddStopInFix {
     <#
     .SYNOPSIS
         TLA+ TddStopInFix — user voluntary stop during a TDD fix cycle.
-    .DESCRIPTION
-        Transitions to HALTED and releases the lock. Works from both
-        reviewFix and finalReviewFix states.
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][hashtable]$State,
-        [Parameter(Mandatory)]$Config
+        [Parameter(Mandatory)]$Config,
+        [string]$FeatureName
     )
 
     $validFixStates = @('reviewFix', 'finalReviewFix')
@@ -106,45 +101,38 @@ function Invoke-TddStopInFix {
     $State.pipelineState = 'HALTED'
     $State.lockHolder    = $null
 
-    Write-PipelineLog "TDD Stop in fix: pipeline HALTED"
+    if ($FeatureName -and (Get-Command Update-PipelineState -ErrorAction SilentlyContinue)) {
+        Update-PipelineState -FeatureName $FeatureName -PipelineState 'HALTED' -LockHolder 0 -FeatureStatus 'halted'
+    }
 
-    # UNCHANGED: reviewRound, keepGoingResets, tddKeepGoingCount,
-    #            verdict, tasksDone, reviewGateType
+    Write-PipelineLog "TDD Stop in fix: pipeline HALTED"
 }
 
 function Complete-ReviewFix {
     <#
     .SYNOPSIS
         TLA+ ReviewFixComplete — transitions pipeline from reviewFix back to
-        preMergeReview after a successful fix cycle.
-    .DESCRIPTION
-        Validates guard conditions (pipelineState must be 'reviewFix', neither
-        gate nor global timeout), then increments reviewRound, clears verdict,
-        and transitions to 'preMergeReview'. Preserves all UNCHANGED fields.
-    .PARAMETER State
-        Mutable pipeline state hashtable from New-PipelineState.
-    .PARAMETER Config
-        Read-only config dictionary from Get-PipelineConfig.
+        preMergeReview (or finalReview) after a successful fix cycle.
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][hashtable]$State,
-        [Parameter(Mandatory)]$Config
+        [Parameter(Mandatory)]$Config,
+        [string]$FeatureName
     )
 
-    # ── Guard: pipelineState must be 'reviewFix' or 'finalReviewFix' ──
     $validFixStates = @('reviewFix', 'finalReviewFix')
     if ($State.pipelineState -notin $validFixStates) {
         throw "Complete-ReviewFix requires pipelineState in ($($validFixStates -join ', ')), got '$($State.pipelineState)'."
     }
 
-    # ── State transition — route based on current state ──
     $State.pipelineState = if ($State.pipelineState -eq 'reviewFix') { 'preMergeReview' } else { 'finalReview' }
     $State.reviewRound   = $State.reviewRound + 1
     $State.verdict       = $null
 
-    # lockHolder, keepGoingResets, tddKeepGoingCount, tasksDone,
-    # reviewGateType are UNCHANGED
+    if ($FeatureName -and (Get-Command Update-PipelineState -ErrorAction SilentlyContinue)) {
+        Update-PipelineState -FeatureName $FeatureName -PipelineState $State.pipelineState -ReviewRound $State.reviewRound -Verdict $null
+    }
 }
 
 function Invoke-ReviewFixCycle {

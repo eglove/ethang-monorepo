@@ -283,4 +283,34 @@ Describe 'Invoke-ReviewEscalation — mixed round scenario' {
         Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict
         $script:state.reviewRound | Should -BeExactly 1
     }
+
+    Context 'DB sync via Update-PipelineState' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState, $ReviewRound, $KeepGoingResets, $Verdict, $TddKeepGoingCount, $LockHolder, $FeatureStatus) }
+        }
+        AfterAll { Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue }
+
+        It 'syncs KeepGoing to DB when FeatureName provided' {
+            Mock Read-Escalation { return @{ Decision = 'KeepGoing' } }
+            Mock Update-PipelineState {}
+            $script:state.pipelineState = 'preMergeReview'
+            $script:state.reviewRound = 3
+
+            Invoke-ReviewEscalation -State $script:state -Config $script:cfg -FeatureName 'feat-3'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-3' -and $ReviewRound -eq 0
+            }
+        }
+
+        It 'syncs Stop to DB when FeatureName provided' {
+            Mock Read-Escalation { return @{ Decision = 'Stop' } }
+            Mock Update-PipelineState {}
+            $script:state.pipelineState = 'preMergeReview'
+
+            Invoke-ReviewEscalation -State $script:state -Config $script:cfg -FeatureName 'feat-3'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-3' -and $PipelineState -eq 'HALTED'
+            }
+        }
+    }
 }

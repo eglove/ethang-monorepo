@@ -130,6 +130,25 @@ Describe 'Complete-TaskMerge' {
 
         { Complete-TaskMerge -State $script:state -Config $script:cfg } | Should -Throw -ExpectedMessage '*mergeQueue*'
     }
+
+    Context 'DB sync — Update-PipelineState called with FeatureName (L188-189)' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $TasksDone, $PipelineState) }
+        }
+
+        AfterAll {
+            Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue
+        }
+
+        It 'calls Update-PipelineState when FeatureName is provided' {
+            $s = New-PipelineState
+            $s.pipelineState = 'mergeQueue'
+            $s.lockHolder = 1
+            Mock Update-PipelineState {}
+            Complete-TaskMerge -State $s -Config (Get-PipelineConfig) -FeatureName 'my-feature'
+            Should -Invoke Update-PipelineState -Times 1 -Scope It
+        }
+    }
 }
 
 # =============================================================================

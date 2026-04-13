@@ -47,6 +47,20 @@ Describe 'Pipeline Runtime State' {
         $ps.review_round | Should -Be 2
     }
 
+    It 'clears verdict to NULL' {
+        Update-PipelineState -FeatureName 'auth-flow' -Verdict 'fail'
+        Update-PipelineState -FeatureName 'auth-flow' -Verdict $null
+        $ps = Get-PipelineState -FeatureName 'auth-flow'
+        $ps.verdict | Should -BeNullOrEmpty
+    }
+
+    It 'clears lock_holder to NULL when 0' {
+        Update-PipelineState -FeatureName 'auth-flow' -LockHolder 12345
+        Update-PipelineState -FeatureName 'auth-flow' -LockHolder 0
+        $ps = Get-PipelineState -FeatureName 'auth-flow'
+        $ps.lock_holder | Should -BeNullOrEmpty
+    }
+
     It 'syncs feature status' {
         Update-PipelineState -FeatureName 'auth-flow' -PipelineState 'halted' -FeatureStatus 'halted'
         $f = Get-Feature -Name 'auth-flow'

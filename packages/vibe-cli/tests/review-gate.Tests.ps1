@@ -109,6 +109,21 @@ Describe 'Enter-ReviewGate' {
         }
     }
 
+    Context 'DB sync via Update-PipelineState' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState, $ReviewGateType, $ReviewRound, $KeepGoingResets, $TddKeepGoingCount, $Verdict) }
+        }
+        AfterAll { Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue }
+
+        It 'calls Update-PipelineState when FeatureName is provided' {
+            Mock Update-PipelineState {}
+            Enter-ReviewGate -State $script:state -Config $script:cfg -GateType 'preMerge' -FeatureName 'auth-flow'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'auth-flow' -and $PipelineState -eq 'preMergeReview'
+            }
+        }
+    }
+
     Context 'Guard conditions — invalid pre-states' {
         It 'throws when pipelineState is not "running"' {
             $script:state.pipelineState = 'idle'
