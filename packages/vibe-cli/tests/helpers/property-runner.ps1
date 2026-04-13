@@ -136,12 +136,10 @@ function Invoke-ReviewerPbtDriver {
         Generalized state machine driver for PipelineReviewers PBT.
         Extends the pattern from review-liveness.Tests.ps1 with:
         - Invariant checking at every step
-        - Timeout injection at scheduled steps
         - Diff staleness injection
     .PARAMETER Ctx
         Scenario context from Setup. Expected keys:
-          State, Config, VerdictSeq, EscalationSeq, GateType,
-          TimeoutSchedule (optional), Invariants
+          State, Config, VerdictSeq, EscalationSeq, GateType, Invariants
     #>
     param([Parameter(Mandatory)][hashtable]$Ctx)
 
@@ -151,12 +149,11 @@ function Invoke-ReviewerPbtDriver {
     $escalationSeq = if ($Ctx.ContainsKey('EscalationSeq')) { $Ctx.EscalationSeq } else { @('KeepGoing') * 20 }
     $gateType     = $Ctx.GateType
     $invariants   = $Ctx.Invariants
-    $timeouts     = if ($Ctx.ContainsKey('TimeoutSchedule')) { $Ctx.TimeoutSchedule } else { @{ GateTimeoutStep = $null; GlobalTimeoutStep = $null } }
 
     $trace = [System.Collections.ArrayList]::new()
     $verdictIdx = 0
     $escalationIdx = 0
-    $maxSteps = ($config['MaxReviewRounds'] + 1) * ($config['MaxKeepGoingResets'] + 1) * ($config['MaxTddKeepGoingPerGate'] + 1) * 4 + 20
+    $maxSteps = 500  # generous upper bound since retry limits have been removed
     $step = 0
 
     # Enter review gate
@@ -186,58 +183,6 @@ function Invoke-ReviewerPbtDriver {
                 Trace              = $trace.ToArray()
                 FinalState         = $state.pipelineState
                 Steps              = $step
-            }
-        }
-
-        # Inject global timeout if scheduled
-        if ($null -ne $timeouts.GlobalTimeoutStep -and $step -eq $timeouts.GlobalTimeoutStep) {
-            if ($state.pipelineState -notin @('idle', 'COMPLETE', 'HALTED') -and -not $state.globalTimedOut) {
-                $state.globalTimedOut = $true
-                $state.pipelineState = 'HALTED'
-                $state.lockHolder = $null
-                $null = $trace.Add("globalTimeout:HALTED")
-                break
-            }
-        }
-
-        # Inject gate timeout if scheduled
-        if ($null -ne $timeouts.GateTimeoutStep -and $step -eq $timeouts.GateTimeoutStep) {
-            if ($state.pipelineState -in @('preMergeReview', 'reviewFix', 'finalReview', 'finalReviewFix') -and
-                -not $state.gateTimedOut -and -not $state.globalTimedOut) {
-                $state.gateTimedOut = $true
-                $null = $trace.Add("gateTimeout")
-                # Gate timeout leads to escalation — route through stop/keepGoing
-                $escChoice = if ($escalationIdx -lt $escalationSeq.Count) {
-                    $escalationSeq[$escalationIdx++]
-                } else { 'Stop' }
-
-                if ($escChoice -eq 'KeepGoing' -and $state.keepGoingResets -lt $config['MaxKeepGoingResets']) {
-                    $state.gateTimedOut = $false
-                    $state.keepGoingResets++
-                    $state.reviewRound = 0
-                    $state.tddKeepGoingCount = 0
-                    $state.verdict = $null
-                    $state.pipelineState = if ($state.reviewGateType -eq 'preMerge') { 'preMergeReview' } else { 'finalReview' }
-                    $null = $trace.Add("gateTimeout:keepGoing")
-                } else {
-                    $state.pipelineState = 'HALTED'
-                    $state.lockHolder = $null
-                    $null = $trace.Add("gateTimeout:stop")
-                    break
-                }
-
-                $violation = Test-AllInvariant -State $state -Config $config -Invariants $invariants
-                if ($violation) {
-                    return @{
-                        InvariantViolation = $violation
-                        FailingStep        = $step
-                        FailingState       = $state.Clone()
-                        Trace              = $trace.ToArray()
-                        FinalState         = $state.pipelineState
-                        Steps              = $step
-                    }
-                }
-                continue
             }
         }
 

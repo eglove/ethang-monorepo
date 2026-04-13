@@ -1,4 +1,4 @@
-﻿# =============================================================================
+# =============================================================================
 # trace-replay.Tests.ps1 — TLA+ trace replay tests for PipelineReviewers
 # Replays pre-generated traces against real PowerShell transition functions.
 # Tag: Trace
@@ -21,7 +21,7 @@ BeforeAll {
     }
 
     # Load production modules (review-gate.ps1 dots read-escalation.ps1)
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -32,8 +32,6 @@ BeforeAll {
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -84,12 +82,6 @@ Describe 'TLA+ Trace Replay — PipelineReviewers' -Tag 'Trace' {
             $result.Passed | Should -BeTrue -Because $detail
     }
 
-    It 'replays trace: global-timeout-001' {
-        $result = Invoke-TraceReplay -TraceFile "$PSScriptRoot/traces/fixtures/reviewers/global-timeout-001.json" -StopOnFirstMismatch
-        $detail = ($result.Mismatches | ForEach-Object { "Step $($_.StepNum)($($_.Action)):$($_.Field) exp=$($_.Expected) act=$($_.Actual)" }) -join '; '
-            $result.Passed | Should -BeTrue -Because $detail
-    }
-
     It 'replays trace: tlc-retry-pass-001' {
         $result = Invoke-TraceReplay -TraceFile "$PSScriptRoot/traces/fixtures/reviewers/tlc-retry-pass-001.json" -StopOnFirstMismatch
         $detail = ($result.Mismatches | ForEach-Object { "Step $($_.StepNum)($($_.Action)):$($_.Field) exp=$($_.Expected) act=$($_.Actual)" }) -join '; '
@@ -98,18 +90,6 @@ Describe 'TLA+ Trace Replay — PipelineReviewers' -Tag 'Trace' {
 
     It 'replays trace: tlc-multi-fix-001' {
         $result = Invoke-TraceReplay -TraceFile "$PSScriptRoot/traces/fixtures/reviewers/tlc-multi-fix-001.json" -StopOnFirstMismatch
-        $detail = ($result.Mismatches | ForEach-Object { "Step $($_.StepNum)($($_.Action)):$($_.Field) exp=$($_.Expected) act=$($_.Actual)" }) -join '; '
-            $result.Passed | Should -BeTrue -Because $detail
-    }
-
-    It 'replays trace: tlc-forced-stop-001' {
-        $result = Invoke-TraceReplay -TraceFile "$PSScriptRoot/traces/fixtures/reviewers/tlc-forced-stop-001.json" -StopOnFirstMismatch
-        $detail = ($result.Mismatches | ForEach-Object { "Step $($_.StepNum)($($_.Action)):$($_.Field) exp=$($_.Expected) act=$($_.Actual)" }) -join '; '
-            $result.Passed | Should -BeTrue -Because $detail
-    }
-
-    It 'replays trace: tlc-gate-timeout-keepgoing-001' {
-        $result = Invoke-TraceReplay -TraceFile "$PSScriptRoot/traces/fixtures/reviewers/tlc-gate-timeout-keepgoing-001.json" -StopOnFirstMismatch
         $detail = ($result.Mismatches | ForEach-Object { "Step $($_.StepNum)($($_.Action)):$($_.Field) exp=$($_.Expected) act=$($_.Actual)" }) -join '; '
             $result.Passed | Should -BeTrue -Because $detail
     }
@@ -153,15 +133,4 @@ Describe 'TLA+ Trace Terminal States' -Tag 'Trace' {
         }
     }
 
-    It 'global-timeout traces have globalTimedOut=true' {
-        $traceDir = "$PSScriptRoot/traces/fixtures/reviewers"
-        $timeoutTraces = Get-ChildItem "$traceDir/global-timeout-*.json" -ErrorAction SilentlyContinue
-        foreach ($f in $timeoutTraces) {
-            $trace = Get-Content $f.FullName -Raw | ConvertFrom-Json -AsHashtable
-            $lastStep = $trace.steps[-1]
-            $lastStep.state.globalTimedOut | Should -BeTrue `
-                -Because "trace $($f.BaseName) should have globalTimedOut=true"
-            $lastStep.state.pipelineState | Should -BeExactly 'HALTED'
-        }
-    }
 }

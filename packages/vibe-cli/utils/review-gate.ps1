@@ -1,7 +1,7 @@
 ﻿# =============================================================================
 # review-gate.ps1 — Review gate engine (core loop)
 # TLA+ actions: EnterPreMergeReview, ReviewVerdict, KeepGoingReview, StopReview
-# Depends on: config.ps1, pipeline-state.ps1, review-verdict.ps1, read-escalation.ps1
+# Depends on: pipeline-state.ps1, review-verdict.ps1, read-escalation.ps1
 # =============================================================================
 
 $ErrorActionPreference = 'Stop'
@@ -14,8 +14,8 @@ function Enter-ReviewGate {
         TLA+ EnterPreMergeReview / EnterFinalReview — transitions pipeline into a review gate.
     .DESCRIPTION
         Validates guard conditions, transitions pipelineState, sets reviewGateType,
-        and resets all review-specific counters. Preserves lockHolder, tasksDone,
-        and globalTimedOut (TLA+ UNCHANGED).
+        and resets all review-specific counters. Preserves lockHolder, tasksDone
+        (TLA+ UNCHANGED).
     .PARAMETER State
         Mutable pipeline state hashtable from New-PipelineState.
     .PARAMETER Config
@@ -54,9 +54,8 @@ function Enter-ReviewGate {
     $State.keepGoingResets   = 0
     $State.tddKeepGoingCount = 0
     $State.verdict          = $null
-    $State.gateTimedOut     = $false
 
-    # lockHolder, tasksDone, globalTimedOut are UNCHANGED
+    # lockHolder, tasksDone are UNCHANGED
 }
 
 function Invoke-ReviewGate {
@@ -95,14 +94,6 @@ function Invoke-ReviewGate {
 
     if ($null -ne $State.verdict) {
         throw "Invoke-ReviewGate: verdict already set to '$($State.verdict)'. Clear before re-invoking."
-    }
-
-    if ($State.gateTimedOut) {
-        throw "Invoke-ReviewGate: gate has timed out. Cannot invoke review."
-    }
-
-    if ($State.globalTimedOut) {
-        throw "Invoke-ReviewGate: global timeout reached. Cannot invoke review."
     }
 
     # ── Call moderator via Invoke-Claude ──
@@ -183,11 +174,6 @@ function Resolve-PreMergeVerdict {
         }
 
         'fail' {
-            # ── Round guard: fail is only permitted when reviewRound < MaxReviewRounds ──
-            if ($State.reviewRound -ge $Config['MaxReviewRounds']) {
-                throw "Resolve-PreMergeVerdict: review round exhausted ($($State.reviewRound) >= $($Config['MaxReviewRounds']))."
-            }
-
             # TLA+ HandleFailPreMerge: transition to reviewFix, keep gate type
             $State.pipelineState = 'reviewFix'
             $State.verdict       = $null
@@ -199,11 +185,6 @@ function Resolve-PreMergeVerdict {
         }
 
         'retry' {
-            # ── Round guard: retry is only permitted when reviewRound < MaxReviewRounds ──
-            if ($State.reviewRound -ge $Config['MaxReviewRounds']) {
-                throw "Resolve-PreMergeVerdict: review round exhausted ($($State.reviewRound) >= $($Config['MaxReviewRounds']))."
-            }
-
             # TLA+ HandleRetryPreMerge: increment round, stay in preMergeReview
             $State.reviewRound = $State.reviewRound + 1
             $State.verdict     = $null
@@ -265,19 +246,6 @@ function Invoke-ReviewEscalation {
     $validReviewStates = @('preMergeReview', 'finalReview')
     if ($State.pipelineState -notin $validReviewStates) {
         throw "Invoke-ReviewEscalation requires pipelineState in a review state ($($validReviewStates -join ', ')), got '$($State.pipelineState)'."
-    }
-
-    # ── Guard: reviewRound must be at exhaustion ──
-    if ($State.reviewRound -lt $Config['MaxReviewRounds']) {
-        throw "Invoke-ReviewEscalation: review rounds not yet exhausted ($($State.reviewRound) < $($Config['MaxReviewRounds']))."
-    }
-
-    # ── Forced stop: Keep Going itself is exhausted ──
-    if ($State.keepGoingResets -ge $Config['MaxKeepGoingResets']) {
-        Write-PipelineLog "Keep Going exhausted ($($State.keepGoingResets) >= $($Config['MaxKeepGoingResets'])) — forced stop"
-        $State.pipelineState = 'HALTED'
-        $State.lockHolder    = $null
-        return [PSCustomObject]@{ Action = 'forcedStop' }
     }
 
     # ── Prompt user via Read-Escalation ──
@@ -383,11 +351,6 @@ function Resolve-FinalMergeVerdict {
         }
 
         'fail' {
-            # ── Round guard ──
-            if ($State.reviewRound -ge $Config['MaxReviewRounds']) {
-                throw "Resolve-FinalMergeVerdict: review round exhausted ($($State.reviewRound) >= $($Config['MaxReviewRounds']))."
-            }
-
             # TLA+ HandleFailFinal: transition to finalReviewFix
             $State.pipelineState = 'finalReviewFix'
             $State.verdict       = $null
@@ -401,11 +364,6 @@ function Resolve-FinalMergeVerdict {
         }
 
         'retry' {
-            # ── Round guard ──
-            if ($State.reviewRound -ge $Config['MaxReviewRounds']) {
-                throw "Resolve-FinalMergeVerdict: review round exhausted ($($State.reviewRound) >= $($Config['MaxReviewRounds']))."
-            }
-
             # TLA+ HandleRetryFinal: increment round, stay in finalReview
             $State.reviewRound = $State.reviewRound + 1
             $State.verdict     = $null

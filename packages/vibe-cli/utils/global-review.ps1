@@ -5,19 +5,18 @@
         Claude to fix, resets global double-pass counters (per TLA+ GlobalReviewFail), re-runs
         global double-pass, and re-reviews.
     .OUTPUTS
-        Hashtable: @{ Verdict = 'pass'|'escalated'; ReviewRound = [int]; Blockers = @() }
+        Hashtable: @{ Verdict = 'pass'; ReviewRound = [int]; Blockers = @() }
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Root,
         [Parameter(Mandatory)][string]$FeatureDir,
-        [Parameter(Mandatory)][string]$BaseBranch,
-        [int]$MaxReviewRounds = 3
+        [Parameter(Mandatory)][string]$BaseBranch
     )
 
     $glReviewRounds = 0
 
-    while ($glReviewRounds -lt $MaxReviewRounds) {
+    while ($true) {
         $glReviewRounds++
 
         $diffContent = git -C $Root diff "$BaseBranch...HEAD" 2>&1 | Out-String
@@ -25,21 +24,13 @@
             $diffContent = '(no diff available)'
         }
 
-        $reviewResult = Invoke-ReviewLoop -DiffContent $diffContent -FeatureDir $FeatureDir -Root $Root -MaxReviewRounds 1 -CurrentRound 1
+        $reviewResult = Invoke-ReviewLoop -DiffContent $diffContent -FeatureDir $FeatureDir -Root $Root -CurrentRound 1
 
         if ($reviewResult.Verdict -eq 'pass') {
             return @{
                 Verdict     = 'pass'
                 ReviewRound = $glReviewRounds
                 Blockers    = @()
-            }
-        }
-
-        if ($glReviewRounds -ge $MaxReviewRounds) {
-            return @{
-                Verdict     = 'escalated'
-                ReviewRound = $glReviewRounds
-                Blockers    = @($reviewResult.Blockers)
             }
         }
 
@@ -50,7 +41,7 @@
         }) -join "`n"
 
         $fixPrompt = @"
-## Global Review Failure — Fix Required (round $glReviewRounds/$MaxReviewRounds)
+## Global Review Failure — Fix Required (round $glReviewRounds)
 
 Root: $Root
 
@@ -71,11 +62,5 @@ Fix the review blockers using TDD approach: write failing test, make it pass, re
                 Blockers    = @($dpResult.LastError)
             }
         }
-    }
-
-    return @{
-        Verdict     = 'escalated'
-        ReviewRound = $glReviewRounds
-        Blockers    = @()
     }
 }

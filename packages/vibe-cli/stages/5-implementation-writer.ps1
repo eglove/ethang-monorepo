@@ -18,31 +18,23 @@ function Invoke-ImplementationWriterStage {
         return @{ Success = $false; Error = "$_" }
     }
 
-    # Read the unified debate (replaces separate debate files from the old pipeline)
     $unifiedDebatePath = Join-Path $absDir 'unified-debate.md'
-    $unifiedDebate = if (Test-Path $unifiedDebatePath) { Get-Content $unifiedDebatePath -Raw } else { '' }
+    $elicitorPath = Join-Path $absDir 'elicitor.md'
 
     $implFile = Join-Path $absDir 'implementation-plan.md'
     $implJson = Join-Path $absDir 'implementation-plan.json'
 
-    # Read spec files
-    $briefing = Get-Content (Join-Path $absDir 'elicitor.md') -Raw
-    $bddContent = if ($BddFeaturePath -and (Test-Path $BddFeaturePath)) { Get-Content $BddFeaturePath -Raw } else { $null }
-    $tlaContent = if ($TlaSpecPath -and (Test-Path $TlaSpecPath)) { Get-Content $TlaSpecPath -Raw } else { $null }
+    $contextFiles = @("- Elicitor briefing: $elicitorPath")
+    if (Test-Path $unifiedDebatePath) { $contextFiles += "- Unified debate: $unifiedDebatePath" }
+    if ($BddFeaturePath -and (Test-Path $BddFeaturePath)) { $contextFiles += "- BDD scenarios: $BddFeaturePath" }
+    if ($TlaSpecPath -and (Test-Path $TlaSpecPath)) { $contextFiles += "- TLA+ spec: $TlaSpecPath" }
+    $fileList = $contextFiles -join "`n"
 
     $prompt = @"
-Briefing: $briefing
-
 Read all artifacts in the feature directory: $absDir
 
-Unified Debate Summary:
-$unifiedDebate
-
-BDD Feature ($BddFeaturePath):
-$bddContent
-
-TLA+ Spec ($TlaSpecPath):
-$tlaContent
+Read these files for context:
+$fileList
 
 Save the markdown plan to: $implFile
 Save the JSON manifest to: $implJson

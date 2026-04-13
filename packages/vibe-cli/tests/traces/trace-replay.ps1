@@ -33,11 +33,7 @@ function Invoke-TraceReplay {
             $envKey = "VIBE_$($key -creplace '([A-Z])', '_$1' -replace '^_', '' -replace '__', '_')".ToUpper()
             # Direct mapping for known keys
             switch ($key) {
-                'MaxReviewRounds'       { $envKey = 'VIBE_MAX_REVIEW_ROUNDS' }
-                'MaxKeepGoingResets'    { $envKey = 'VIBE_MAX_KEEP_GOING_RESETS' }
-                'MaxTddKeepGoingPerGate' { $envKey = 'VIBE_MAX_TDD_KEEP_GOING_PER_GATE' }
                 'NumTasks'              { $envKey = 'VIBE_NUM_TASKS' }
-                'PipelineTimeoutSeconds' { $envKey = 'VIBE_PIPELINE_TIMEOUT_SECONDS' }
             }
             $savedEnv[$envKey] = [System.Environment]::GetEnvironmentVariable($envKey)
             [System.Environment]::SetEnvironmentVariable($envKey, $trace.constants[$key].ToString())

@@ -21,15 +21,6 @@ function Invoke-GreenPhase {
     $workDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
 
     while ($true) {
-        # Boundary check BEFORE dispatch
-        if ($Counters.greenAttempts -ge $Config.MaxTddCycles) {
-            Write-TaskLog -TaskId $taskId -Phase 'green_retry' -Message "ESCALATED: GREEN attempts exhausted ($($Counters.greenAttempts)/$($Config.MaxTddCycles))" -FeatureDir $FeatureDir -RunId $RunId
-            return ConvertTo-TaskResult @{
-                TaskId = $taskId; Phase = 'green_retry'; Status = 'escalated'
-                Counters = $Counters; Escalated = $true; Error = 'GREEN attempts exhausted'
-            }
-        }
-
         $taskJson = $Task | ConvertTo-Json -Depth 10 -Compress
         $prompt = "Make the failing tests pass for task $taskId`nDo NOT modify test files.`n`nTask JSON:`n$taskJson`n`nFull implementation plan: $PlanJsonPath"
 
@@ -84,7 +75,7 @@ function Invoke-GreenPhase {
                 $exitCode = Invoke-ScopedTestVerify -TestFiles $TestFiles -WorkingDirectory $workDir
             }
             else {
-                $exitCode = Invoke-VerifyCommand -Command $Config.VerifyTest -WorkingDirectory $workDir
+                $exitCode = Invoke-VerifyCommand -Command 'pnpm test' -WorkingDirectory $workDir
             }
         }
         catch {
@@ -106,7 +97,7 @@ function Invoke-GreenPhase {
 
         # Tests fail — increment counter (fencepost: increment on failure, not on retry)
         $Counters.greenAttempts++
-        Write-TaskLog -TaskId $taskId -Phase 'green_retry' -Message "Tests still fail — attempt $($Counters.greenAttempts)/$($Config.MaxTddCycles)" -FeatureDir $FeatureDir -RunId $RunId
+        Write-TaskLog -TaskId $taskId -Phase 'green_retry' -Message "Tests still fail — attempt $($Counters.greenAttempts)" -FeatureDir $FeatureDir -RunId $RunId
     }
 }
 

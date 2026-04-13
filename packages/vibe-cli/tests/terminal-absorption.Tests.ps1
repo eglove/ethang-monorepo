@@ -1,5 +1,5 @@
-﻿BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+BeforeAll {
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -10,8 +10,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -335,15 +333,6 @@ Describe 'Set-PipelineComplete' {
             $script:state.tasksDone | Should -Be 5
         }
 
-        It 'does not change gateTimedOut' {
-            Set-PipelineComplete -State $script:state
-            $script:state.gateTimedOut | Should -BeFalse
-        }
-
-        It 'does not change globalTimedOut' {
-            Set-PipelineComplete -State $script:state
-            $script:state.globalTimedOut | Should -BeFalse
-        }
     }
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -505,17 +494,6 @@ Describe 'Set-PipelineHalted' {
             $script:state.tasksDone | Should -Be 5
         }
 
-        It 'does not change gateTimedOut' {
-            $script:state.gateTimedOut = $true
-            Set-PipelineHalted -State $script:state
-            $script:state.gateTimedOut | Should -BeTrue
-        }
-
-        It 'does not change globalTimedOut' {
-            $script:state.globalTimedOut = $true
-            Set-PipelineHalted -State $script:state
-            $script:state.globalTimedOut | Should -BeTrue
-        }
     }
 
     # ─────────────────────────────────────────────────────────────────────────

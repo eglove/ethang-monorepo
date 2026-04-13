@@ -27,7 +27,8 @@ function Invoke-CodingStage {
 
     if ($Resume) {
         $featureBranch = "feature/$Feature"
-        $currentBranch = (git -C $Root rev-parse --abbrev-ref HEAD 2>$null)?.Trim()
+        $currentBranch = (git -C $Root rev-parse --abbrev-ref HEAD 2>$null)
+        if ($currentBranch) { $currentBranch = $currentBranch.Trim() }
         if ($currentBranch -ne $featureBranch) {
             $branchExists = git -C $Root branch --list $featureBranch 2>$null
             if (-not $branchExists) {
@@ -110,9 +111,6 @@ function Invoke-CodingStage {
                 git -C $Root worktree remove $wtPath --force 2>&1 | Out-Null
             }
         }
-
-        $mergedBranches = git -C $Root branch --merged 2>&1
-        $script:AlreadyMergedBranches = @($mergedBranches | ForEach-Object { $_.Trim().TrimStart('* ') } | Where-Object { $_ })
 
         try {
             $lockState = Lock-Pipeline -LockDir $Root -Feature $Feature -Resume

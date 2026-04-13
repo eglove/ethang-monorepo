@@ -135,30 +135,7 @@ Describe 'Invoke-ReviewLoop' {
         }
     }
 
-    Context 'Round count tracking — escalates at MaxReviewRounds' {
-        It 'escalates when CurrentRound reaches MaxReviewRounds on fail' {
-            Mock Invoke-Claude {
-                return (@{
-                    verdict  = 'fail'
-                    findings = @(
-                        @{
-                            reviewer    = 'security'
-                            severity    = 'high'
-                            description = 'Persistent issue'
-                            suggestion  = 'Fix it'
-                        }
-                    )
-                    notes    = @()
-                    warnings = @()
-                } | ConvertTo-Json -Depth 5 -Compress)
-            }
-
-            $result = Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root -MaxReviewRounds 3 -CurrentRound 3
-
-            $result.Verdict | Should -BeExactly 'escalated'
-            $result.Round | Should -BeExactly 3
-        }
-
+    Context 'Round number tracking' {
         It 'returns round number in result' {
             Mock Invoke-Claude {
                 return '{"verdict":"pass","findings":[],"notes":[],"warnings":[]}'
@@ -167,36 +144,6 @@ Describe 'Invoke-ReviewLoop' {
             $result = Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root
 
             $result.Round | Should -BeExactly 1
-        }
-    }
-
-    Context 'Escalation + Keep Going: Write-UserNote appends "Unresolved Escalated Blocker"' {
-        It 'writes escalated blocker notes to user_notes.md on escalation' {
-            Mock Invoke-Claude {
-                return (@{
-                    verdict  = 'fail'
-                    findings = @(
-                        @{
-                            reviewer    = 'security'
-                            severity    = 'high'
-                            description = 'Unresolved issue'
-                            suggestion  = 'Needs manual review'
-                        }
-                    )
-                    notes    = @()
-                    warnings = @()
-                } | ConvertTo-Json -Depth 5 -Compress)
-            }
-
-            $result = Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root -MaxReviewRounds 1 -CurrentRound 1
-
-            $result.Verdict | Should -BeExactly 'escalated'
-
-            $notesPath = Join-Path $script:featureDir 'user_notes.md'
-            Test-Path $notesPath | Should -BeTrue
-            $content = Get-Content $notesPath -Raw
-            $content | Should -Match 'Unresolved Escalated Blocker'
-            $content | Should -Match 'security'
         }
     }
 

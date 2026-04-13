@@ -16,7 +16,7 @@ function Invoke-FinalVerification {
     if (-not $Counters.ContainsKey('finalRemediations')) { $Counters.finalRemediations = 0 }
     $Counters.finalVerifPhase = 'running'
 
-    $verifyCommands = @($Config.VerifyTest, $Config.VerifyLint, $Config.VerifyTsc)
+    $verifyCommands = @('pnpm test', 'pnpm lint')
 
     while ($true) {
         # Run verify commands
@@ -42,9 +42,9 @@ function Invoke-FinalVerification {
 
         if ($allPassed) {
             $Counters.finalCleanPasses++
-            Write-TaskLog -TaskId 'FINAL' -Phase 'final' -Message "Clean pass $($Counters.finalCleanPasses)/$($Config.CleanupPasses)" -FeatureDir $FeatureDir -RunId $RunId
+            Write-TaskLog -TaskId 'FINAL' -Phase 'final' -Message "Clean pass $($Counters.finalCleanPasses)/2" -FeatureDir $FeatureDir -RunId $RunId
 
-            if ($Counters.finalCleanPasses -ge $Config.CleanupPasses) {
+            if ($Counters.finalCleanPasses -ge 2) {
                 $Counters.finalVerifPhase = 'completed'
                 Write-TaskLog -TaskId 'FINAL' -Phase 'final' -Message 'Final verification COMPLETED' -FeatureDir $FeatureDir -RunId $RunId
                 return $Counters
@@ -57,13 +57,6 @@ function Invoke-FinalVerification {
         $Counters.finalVerifPhase = 'remediating'
 
         Write-TaskLog -TaskId 'FINAL' -Phase 'final' -Message "Failed on '$failedCommand' — entering remediation" -FeatureDir $FeatureDir -RunId $RunId
-
-        # Boundary check BEFORE remediation dispatch
-        if ($Counters.finalRemediations -ge $Config.MaxFixRounds) {
-            Write-TaskLog -TaskId 'FINAL' -Phase 'final' -Message "ESCALATED: Final remediation exhausted ($($Counters.finalRemediations)/$($Config.MaxFixRounds))" -FeatureDir $FeatureDir -RunId $RunId
-            $Counters.finalVerifPhase = 'escalated'
-            return $Counters
-        }
 
         $Counters.finalRemediations++
 

@@ -1,7 +1,7 @@
 ﻿# =============================================================================
 # diff-staleness.ps1 — Diff-base staleness detection for merge queue
-# TLA+ actions: DiffBaseStale, DiffBaseStaleExhausted
-# Depends on: config.ps1, pipeline-state.ps1
+# TLA+ actions: DiffBaseStale
+# Depends on: pipeline-state.ps1
 # =============================================================================
 
 $ErrorActionPreference = 'Stop'
@@ -39,11 +39,9 @@ function Test-DiffStaleness {
 function Resolve-DiffStaleness {
     <#
     .SYNOPSIS
-        TLA+ DiffBaseStale / DiffBaseStaleExhausted — handles stale diff in merge queue.
+        TLA+ DiffBaseStale — handles stale diff in merge queue.
     .DESCRIPTION
-        When the diff is stale:
-        - If reviewRound < MaxReviewRounds: re-review (DiffBaseStale)
-        - If reviewRound >= MaxReviewRounds: halt (DiffBaseStaleExhausted)
+        When the diff is stale, always re-review (DiffBaseStale).
         Preserves keepGoingResets and tddKeepGoingCount (not reset on staleness).
     #>
     [CmdletBinding()]
@@ -56,27 +54,15 @@ function Resolve-DiffStaleness {
         throw "Resolve-DiffStaleness requires pipelineState 'mergeQueue', got '$($State.pipelineState)'."
     }
 
-    if ($State.reviewRound -ge $Config['MaxReviewRounds']) {
-        # DiffBaseStaleExhausted: rounds exhausted, halt
-        $State.pipelineState = 'HALTED'
-        $State.lockHolder    = $null
-
-        Write-PipelineLog "Diff staleness exhausted (round $($State.reviewRound) >= max $($Config['MaxReviewRounds'])) — HALTED"
-
-        return [PSCustomObject]@{ Action = 'haltedStaleness' }
-    }
-
     # DiffBaseStale: re-review with incremented round
     $State.pipelineState  = 'preMergeReview'
     $State.reviewRound    = $State.reviewRound + 1
     $State.verdict        = $null
-    $State.gateTimedOut   = $false
     $State.reviewGateType = 'preMerge'
 
     Write-PipelineLog "Diff base stale — re-review at round $($State.reviewRound)"
 
-    # UNCHANGED: lockHolder, keepGoingResets, tddKeepGoingCount,
-    #            tasksDone, globalTimedOut
+    # UNCHANGED: lockHolder, keepGoingResets, tddKeepGoingCount, tasksDone
 
     return [PSCustomObject]@{ Action = 'reReview' }
 }

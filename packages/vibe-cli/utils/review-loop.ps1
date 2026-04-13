@@ -14,10 +14,9 @@ function Invoke-ReviewLoop {
     .DESCRIPTION
         Calls the review-moderator agent with a diff. Parses the JSON response and
         returns a normalized verdict hashtable. On pass with notes, appends to
-        user_notes.md. On fail, returns blockers. On repeated fails up to
-        MaxReviewRounds, returns escalated and writes unresolved blockers to user_notes.md.
+        user_notes.md. On fail, returns blockers for the caller to handle retry.
     .OUTPUTS
-        Hashtable: @{ Verdict = 'pass'|'fail'|'escalated'; Blockers = @(...); Notes = @(...); Warnings = @(...); Round = [int] }
+        Hashtable: @{ Verdict = 'pass'|'fail'; Blockers = @(...); Notes = @(...); Warnings = @(...); Round = [int] }
     #>
     [CmdletBinding()]
     param(
@@ -29,8 +28,6 @@ function Invoke-ReviewLoop {
 
         [Parameter(Mandatory)]
         [string]$Root,
-
-        [int]$MaxReviewRounds = 3,
 
         [int]$CurrentRound = 1,
 
@@ -121,24 +118,6 @@ function Invoke-ReviewLoop {
 
     # ── Verdict: fail ──
     if ($parsed.verdict -eq 'fail') {
-        # Check if rounds exhausted → escalate
-        if ($round -ge $MaxReviewRounds) {
-            Write-PipelineLog "Review rounds exhausted ($MaxReviewRounds) — escalating"
-
-            # Write unresolved blockers to user_notes.md
-            if ($findings.Count -gt 0) {
-                Write-UserNote -FeatureDir $FeatureDir -Notes $findings -EscalatedBlocker
-            }
-
-            return @{
-                Verdict  = 'escalated'
-                Blockers = $findings
-                Notes    = @()
-                Warnings = @()
-                Round    = $round
-            }
-        }
-
         # Return fail with blocker details — caller manages retry cycle
         return @{
             Verdict  = 'fail'

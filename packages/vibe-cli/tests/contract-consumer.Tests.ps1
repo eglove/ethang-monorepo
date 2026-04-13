@@ -1,4 +1,4 @@
-﻿# =============================================================================
+# =============================================================================
 # contract-consumer.Tests.ps1 — Consumer-side contract tests
 # Each consumer validates that mock provider output satisfies the contract.
 # Tag: Contract
@@ -210,7 +210,7 @@ Describe 'Consumer: State transitions satisfy pre/post contracts' -Tag 'Contract
         function Write-TaskLog { }
         function Read-Escalation { return @{ Decision = 'KeepGoing'; Source = 'task' } }
 
-        . "$PSScriptRoot/../utils/config.ps1"
+        . "$PSScriptRoot/helpers/test-config.ps1"
         # Stub: pipeline-state.ps1 was removed in code-simplify
         function global:New-PipelineState {
             return @{
@@ -221,8 +221,6 @@ Describe 'Consumer: State transitions satisfy pre/post contracts' -Tag 'Contract
                 tddKeepGoingCount = [int]0
                 verdict            = $null
                 tasksDone          = [int]0
-                gateTimedOut       = $false
-                globalTimedOut     = $false
                 reviewGateType     = 'none'
             }
         }

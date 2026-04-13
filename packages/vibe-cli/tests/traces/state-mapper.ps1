@@ -26,8 +26,6 @@ function ConvertFrom-TlaReviewerState {
         tddKeepGoingCount = [int]$TlaState.tddKeepGoingCount
         verdict           = $verdictVal
         tasksDone         = [int]$TlaState.tasksDone
-        gateTimedOut      = [bool]$TlaState.gateTimedOut
-        globalTimedOut    = [bool]$TlaState.globalTimedOut
         reviewGateType    = [string]$TlaState.reviewGateType
     }
 }
@@ -46,8 +44,7 @@ function Compare-PipelineState {
 
     $mismatches = [System.Collections.ArrayList]::new()
     $fields = @('pipelineState', 'lockHolder', 'reviewRound', 'keepGoingResets',
-                'tddKeepGoingCount', 'verdict', 'tasksDone', 'gateTimedOut',
-                'globalTimedOut', 'reviewGateType')
+                'tddKeepGoingCount', 'verdict', 'tasksDone', 'reviewGateType')
 
     foreach ($field in $fields) {
         $act = $Actual[$field]

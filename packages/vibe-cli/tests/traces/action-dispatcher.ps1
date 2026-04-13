@@ -122,26 +122,6 @@ function Invoke-TlaAction {
             }
             $null = Resolve-FinalMergeVerdict -State $State -Config $Config -Verdict $verdict
         }
-        'ReviewGateTimeout' {
-            $State.gateTimedOut = $true
-        }
-        'GateTimeoutKeepGoing' {
-            $State.gateTimedOut = $false
-            $State.keepGoingResets++
-            $State.reviewRound = 0
-            $State.tddKeepGoingCount = 0
-            $State.verdict = $null
-            $State.pipelineState = if ($State.reviewGateType -eq 'preMerge') { 'preMergeReview' } else { 'finalReview' }
-        }
-        'GateTimeoutStop' {
-            $State.pipelineState = 'HALTED'
-            $State.lockHolder = $null
-        }
-        'GlobalTimeout' {
-            $State.globalTimedOut = $true
-            $State.pipelineState = 'HALTED'
-            $State.lockHolder = $null
-        }
         'DiffBaseStale' {
             # Re-review: increment round, stay in preMergeReview
             $State.reviewRound++

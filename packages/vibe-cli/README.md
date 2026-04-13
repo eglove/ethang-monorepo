@@ -57,20 +57,6 @@ If the pipeline fails or you want to re-run from a specific stage, use `-Stage` 
 
 **Stages 3/5/7 — Debates**: A debate moderator assembles expert panels to review the artifact against the elicitor briefing. On consensus, objections are applied as a final revision by the writer. On partial consensus, the writer revises and the debate continues.
 
-## Configuration
-
-All loop caps and thresholds are in `utils/config.ps1`:
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `MaxDebateRounds` | 100 | Debate loop cap per stage |
-| `MaxTddCycles` | 20 | RED/GREEN cycles per task |
-| `MaxGreenRetries` | 20 | Code fix attempts when GREEN fails |
-| `CleanupPasses` | 2 | Consecutive clean lint/test/tsc passes required |
-| `MaxFixRounds` | 20 | TDD + cleanup + review retry cap per task |
-| `MaxTlcAttempts` | 100 | TLA+ writer + TLC verify loop cap |
-| `MaxElicitorTurns` | 50 | Interview question cap |
-
 ## Directory structure
 
 ```

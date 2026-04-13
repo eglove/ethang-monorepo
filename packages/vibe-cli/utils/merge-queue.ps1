@@ -59,7 +59,7 @@ function Invoke-Merge {
     Write-StatusNote -TaskId $TaskId -Status 'Merging' -Detail $BranchName
 
     while ($true) {
-        Write-TaskLog -TaskId $TaskId -Phase 'done' -Message "Attempting merge of $BranchName (retry $($Counters.mergeRetries)/$($Config.MaxMergeRetries))" -FeatureDir $FeatureDir -RunId $RunId
+        Write-TaskLog -TaskId $TaskId -Phase 'done' -Message "Attempting merge of $BranchName (retry $($Counters.mergeRetries))" -FeatureDir $FeatureDir -RunId $RunId
 
         # Attempt merge
         $mergeOutput = $null
@@ -75,7 +75,7 @@ function Invoke-Merge {
         if ($mergeExitCode -eq 0 -and $mergeOutput -notmatch 'CONFLICT') {
             # Merge succeeded — run post-merge verification
             $verifyPassed = $true
-            foreach ($cmd in @($Config.VerifyTest, $Config.VerifyLint, $Config.VerifyTsc)) {
+            foreach ($cmd in @('pnpm test', 'pnpm lint')) {
                 try {
                     $exitCode = Invoke-VerifyCommand -Command $cmd
                     if ($exitCode -ne 0) {
@@ -109,15 +109,7 @@ function Invoke-Merge {
 
             # Post-merge verify failed — consume a merge retry
             $Counters.mergeRetries++
-            Write-TaskLog -TaskId $TaskId -Phase 'done' -Message "Post-merge verification failed (retry $($Counters.mergeRetries)/$($Config.MaxMergeRetries))" -FeatureDir $FeatureDir -RunId $RunId
-
-            if ($Counters.mergeRetries -ge $Config.MaxMergeRetries) {
-                $script:MergeInProgress = $null
-                return ConvertTo-MergeResult @{
-                    TaskId = $TaskId; Success = $false; Conflict = $false
-                    RetryCount = $Counters.mergeRetries; AbortedClean = $true; WorkspaceRemoved = $false
-                }
-            }
+            Write-TaskLog -TaskId $TaskId -Phase 'done' -Message "Post-merge verification failed (retry $($Counters.mergeRetries))" -FeatureDir $FeatureDir -RunId $RunId
 
             # Revert merge for retry
             try { Invoke-GitWithRetry -Arguments @('reset', '--hard', 'HEAD~1') } catch { }
@@ -134,15 +126,6 @@ function Invoke-Merge {
         }
         catch {
             $abortedClean = $false
-        }
-
-        # Boundary check BEFORE dispatching resolver
-        if ($Counters.mergeRetries -ge $Config.MaxMergeRetries) {
-            $script:MergeInProgress = $null
-            return ConvertTo-MergeResult @{
-                TaskId = $TaskId; Success = $false; Conflict = $true
-                RetryCount = $Counters.mergeRetries; AbortedClean = $abortedClean; WorkspaceRemoved = $false
-            }
         }
 
         $Counters.mergeRetries++
@@ -175,7 +158,7 @@ function Complete-TaskMerge {
         and tasksDone must be < NumTasks (boundary guard).
         Mutates: tasksDone' = tasksDone + 1, pipelineState' = 'running'.
         UNCHANGED: lockHolder, reviewRound, keepGoingResets, tddKeepGoingCount,
-                   verdict, gateTimedOut, globalTimedOut, reviewGateType.
+                   verdict, reviewGateType.
     #>
     [CmdletBinding()]
     param(

@@ -12,8 +12,7 @@
         [Parameter(Mandatory)][string]$FeatureDir,
         [Parameter(Mandatory)][string]$Root,
         [Parameter(Mandatory)][string]$Feature,
-        [int]$MaxDoublePassRetries = 5,
-        [int]$MaxReviewRounds = 3
+        [int]$MaxDoublePassRetries = 5
     )
 
     $results = @()
@@ -41,7 +40,7 @@
 
         Write-PipelineLog -Message "Per-worktree gate: review for $wtPath" -Root $Root
 
-        $reviewResult = Invoke-PerWorktreeReview -WorktreePath $wtPath -FeatureDir $FeatureDir -Root $Root -MaxReviewRounds $MaxReviewRounds
+        $reviewResult = Invoke-PerWorktreeReview -WorktreePath $wtPath -FeatureDir $FeatureDir -Root $Root
 
         if ($reviewResult.Verdict -eq 'escalated') {
             $results += @{

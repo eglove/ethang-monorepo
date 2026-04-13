@@ -12,8 +12,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -871,18 +869,6 @@ Describe 'Stage 8 — Per-Worktree Review' {
         Should -Invoke pnpm -Times 4 -Exactly
     }
 
-    It 'MaxReviewRounds=3 triggers escalation' {
-        Mock git { return 'diff content' }
-        Mock Invoke-ReviewLoop {
-            return @{ Verdict = 'fail'; Blockers = @(@{ description = 'persistent blocker' }); Notes = @(); Warnings = @(); Round = 1 }
-        }
-
-        $result = Invoke-PerWorktreeReview -WorktreePath $script:tempDir -FeatureDir $script:featureDir -Root $script:tempDir -MaxReviewRounds 3
-        $result.Verdict | Should -Be 'escalated'
-        $result.ReviewRound | Should -Be 3
-        $result.Blockers.Count | Should -BeGreaterThan 0
-    }
-
     It 'KeepGoing mid-tier: advance + reset counters (R2-2)' {
         # Simulate Invoke-PerWorktreeGate with multiple worktrees where first passes, second passes
         Mock git { return 'diff content' }
@@ -916,18 +902,6 @@ Describe 'Stage 8 — Per-Worktree Review' {
         $result = Invoke-PerWorktreeGate -WorktreePaths @($wt1) -FeatureDir $script:featureDir -Root $script:tempDir -Feature 'my-feature'
         $result.Status | Should -Be 'all_passed'
         ($script:logMessages -join "`n") | Should -Match 'SequentialMerge'
-    }
-
-    It 'wtReviewRounds never exceeds MaxReviewRounds (S4)' {
-        Mock git { return 'diff content' }
-        Mock Invoke-ReviewLoop {
-            return @{ Verdict = 'fail'; Blockers = @(@{ description = 'blocker' }); Notes = @(); Warnings = @(); Round = 1 }
-        }
-
-        $max = 2
-        $result = Invoke-PerWorktreeReview -WorktreePath $script:tempDir -FeatureDir $script:featureDir -Root $script:tempDir -MaxReviewRounds $max
-        $result.Verdict | Should -Be 'escalated'
-        $result.ReviewRound | Should -BeLessOrEqual $max
     }
 
     It 'lock held during PerWT_DoublePass (S2)' {
@@ -1770,54 +1744,6 @@ Describe 'Stage 8 — Global Review' {
         $result.Verdict | Should -Be 'pass'
         # pnpm was called during the global double-pass (4 calls for 2 consec passes)
         Should -Invoke pnpm -Times 4 -Exactly
-    }
-
-    It 'MaxReviewRounds=3 escalates' {
-        Mock git { return 'diff content' }
-        Mock Invoke-ReviewLoop {
-            return @{ Verdict = 'fail'; Blockers = @(@{ description = 'persistent blocker' }); Notes = @(); Warnings = @(); Round = 1 }
-        }
-
-        $result = Invoke-GlobalReview -Root $script:tempDir -FeatureDir $script:featureDir -BaseBranch 'master' -MaxReviewRounds 3
-        $result.Verdict | Should -Be 'escalated'
-        $result.ReviewRound | Should -Be 3
-        $result.Blockers.Count | Should -BeGreaterThan 0
-    }
-
-    It 'Keep Going at global level logs issues and completes' {
-        Mock git { return 'diff content' }
-        Mock Invoke-ReviewLoop {
-            return @{ Verdict = 'fail'; Blockers = @(@{ description = 'issue' }); Notes = @(); Warnings = @(); Round = 1 }
-        }
-
-        # Escalation after MaxReviewRounds — caller decides Keep Going
-        $result = Invoke-GlobalReview -Root $script:tempDir -FeatureDir $script:featureDir -BaseBranch 'master' -MaxReviewRounds 1
-        $result.Verdict | Should -Be 'escalated'
-        # Caller would use Read-Escalation to decide Keep Going and proceed to Complete-Pipeline
-        $result.Blockers.Count | Should -BeGreaterThan 0
-    }
-
-    It 'Stop halts and releases lock' {
-        Mock git { return 'diff content' }
-        Mock Invoke-ReviewLoop {
-            return @{ Verdict = 'fail'; Blockers = @(@{ description = 'critical' }); Notes = @(); Warnings = @(); Round = 1 }
-        }
-
-        $result = Invoke-GlobalReview -Root $script:tempDir -FeatureDir $script:featureDir -BaseBranch 'master' -MaxReviewRounds 1
-        $result.Verdict | Should -Be 'escalated'
-        # Lock management is at the caller level — function returns for caller to handle
-    }
-
-    It 'glReviewRounds never exceeds MaxReviewRounds (S4)' {
-        Mock git { return 'diff content' }
-        Mock Invoke-ReviewLoop {
-            return @{ Verdict = 'fail'; Blockers = @(@{ description = 'blocker' }); Notes = @(); Warnings = @(); Round = 1 }
-        }
-
-        $max = 2
-        $result = Invoke-GlobalReview -Root $script:tempDir -FeatureDir $script:featureDir -BaseBranch 'master' -MaxReviewRounds $max
-        $result.Verdict | Should -Be 'escalated'
-        $result.ReviewRound | Should -BeLessOrEqual $max
     }
 
     It 'lock held during GlobalReview (S2)' {

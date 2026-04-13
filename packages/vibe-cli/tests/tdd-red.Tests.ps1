@@ -1,5 +1,5 @@
-﻿BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+BeforeAll {
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
     . "$PSScriptRoot/../utils/task-log.ps1"
     . "$PSScriptRoot/../utils/workspace.ps1"
@@ -60,27 +60,6 @@ Describe 'Invoke-RedPhase' {
         $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
         $result.Phase | Should -Be 'cleanup'
         Should -Not -Invoke Invoke-VerifyCommand
-    }
-
-    It 'escalates when redRetries reaches MaxRedRetries' {
-        Mock Invoke-Claude { '{"verdict":"revised"}' }
-        Mock Invoke-VerifyCommand { 0 }
-
-        $counters = @{ redRetries = $Config.MaxRedRetries }
-        $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
-        $result.Status | Should -Be 'escalated'
-        $result.Phase | Should -Be 'red_retry'
-    }
-
-    It 'does not call Invoke-Claude when already at max retries (boundary check)' {
-        Mock Invoke-Claude { '{"verdict":"revised"}' }
-        Mock Invoke-VerifyCommand { 0 }
-
-        $counters = @{ redRetries = $Config.MaxRedRetries }
-        Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
-
-        # Invoke-Claude should be called once for initial test writing, but NOT for retry
-        Should -Invoke Invoke-Claude -Times 1
     }
 
     It 'escalates on infrastructure failure without consuming retry' {

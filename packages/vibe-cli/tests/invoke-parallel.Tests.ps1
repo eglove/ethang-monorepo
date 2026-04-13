@@ -62,20 +62,6 @@ Describe 'Invoke-Parallel' {
         $results['my-custom-name'].Output | Should -Be 42
     }
 
-    It 'terminates jobs exceeding timeout with error' {
-        $jobs = @{
-            slow = @{ Script = { Start-Sleep -Seconds 30; "done" }; Args = @() }
-            fast = @{ Script = { "instant" }; Args = @() }
-        }
-
-        $results = Invoke-Parallel -Jobs $jobs -TimeoutSeconds 2
-
-        $results['slow'].Success | Should -BeFalse
-        $results['slow'].Error | Should -Match 'timed out'
-        $results['fast'].Success | Should -BeTrue
-        $results['fast'].Output | Should -Be "instant"
-    }
-
     It 'does not terminate passing job when sibling fails (failure isolation)' {
         $jobs = @{
             failing = @{ Script = { throw "fail fast" }; Args = @() }
@@ -137,18 +123,4 @@ Describe 'Invoke-Parallel' {
         $results['complex'].Output.Count | Should -Be 3
     }
 
-    It 'gives each job the full timeout budget, not leftover from previous jobs (#2)' {
-        # If job1 takes 3s of a 5s budget, job2 should still get the full 5s, not just 2s
-        $jobs = @{
-            slow  = @{ Script = { Start-Sleep -Seconds 3; "slow done" }; Args = @() }
-            fast  = @{ Script = { Start-Sleep -Seconds 1; "fast done" }; Args = @() }
-        }
-
-        $results = Invoke-Parallel -Jobs $jobs -TimeoutSeconds 5
-
-        $results['slow'].Success | Should -BeTrue
-        $results['slow'].Output | Should -Be "slow done"
-        $results['fast'].Success | Should -BeTrue
-        $results['fast'].Output | Should -Be "fast done"
-    }
 }

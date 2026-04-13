@@ -1,5 +1,5 @@
-﻿BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+BeforeAll {
+    . "$PSScriptRoot/helpers/test-config.ps1"
 }
 
 Describe 'Invoke-Claude argument building' {

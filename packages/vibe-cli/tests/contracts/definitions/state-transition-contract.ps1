@@ -8,11 +8,11 @@
 $script:StateTransitionContracts = @{
     'Enter-ReviewGate:preMerge' = @{
         Pre  = @{ pipelineState = 'running' }
-        Post = @{ pipelineState = 'preMergeReview'; reviewGateType = 'preMerge'; reviewRound = 0; keepGoingResets = 0; tddKeepGoingCount = 0; gateTimedOut = $false }
+        Post = @{ pipelineState = 'preMergeReview'; reviewGateType = 'preMerge'; reviewRound = 0; keepGoingResets = 0; tddKeepGoingCount = 0 }
     }
     'Enter-ReviewGate:final' = @{
         Pre  = @{ pipelineState = 'running' }
-        Post = @{ pipelineState = 'finalReview'; reviewGateType = 'final'; reviewRound = 0; keepGoingResets = 0; tddKeepGoingCount = 0; gateTimedOut = $false }
+        Post = @{ pipelineState = 'finalReview'; reviewGateType = 'final'; reviewRound = 0; keepGoingResets = 0; tddKeepGoingCount = 0 }
     }
     'Resolve-PreMergeVerdict:pass' = @{
         Pre  = @{ pipelineState = 'preMergeReview' }

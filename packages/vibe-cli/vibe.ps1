@@ -8,8 +8,28 @@
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 
+# ── Double Ctrl+C force close ──
+$script:_ctrlCTime = [datetime]::MinValue
+$script:_ctrlCHandler = [ConsoleCancelEventHandler]{
+    param($sender, $e)
+    $now = [datetime]::UtcNow
+    if (($now - $script:_ctrlCTime).TotalSeconds -le 5) {
+        # Second press within 5s — let it kill the process
+        return
+    }
+    $e.Cancel = $true
+    $script:_ctrlCTime = $now
+    Write-Host "`nCtrl+C received — press again within 5s to force quit" -ForegroundColor Yellow
+}
+[Console]::add_CancelKeyPress($script:_ctrlCHandler)
+
+# UTF-8 encoding
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 # Utilities
-. "$root/utils/config.ps1"
+. "$root/utils/invoke-claude.ps1"
+. "$root/utils/invoke-verify.ps1"
 . "$root/utils/pipeline-log.ps1"
 . "$root/utils/resolve-pipeline-state.ps1"
 . "$root/utils/invoke-parallel.ps1"
@@ -34,8 +54,6 @@ if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -82,10 +100,8 @@ if ($Resume) {
 
     # Resolve state from prior stages
     $pState = Resolve-PipelineState -FromStage $startStage -Dir $featureDir
-    $briefing = $pState.Briefing
     $gherkinFile = $pState.GherkinFile
     $tlaFile = $pState.TlaFile
-    $tlaDir = $pState.TlaDir
     $implFile = $pState.ImplFile
     $implJson = $pState.ImplJson
 }
@@ -105,7 +121,6 @@ try {
         $elicitorResult = Invoke-Elicitor -Seed $Seed -Root $root
         $featureDir = $elicitorResult.FeatureDir
         $featureName = Split-Path $featureDir -Leaf
-        $briefing = $elicitorResult.Briefing
     }
 
     # Resolve target package root
@@ -122,7 +137,6 @@ try {
         }
         $gherkinFile = $writerResult.GherkinFile
         $tlaFile = $writerResult.TlaFile
-        $tlaDir = $writerResult.TlaDir
     }
 
     # Stage 3: Unified Debate
@@ -207,4 +221,7 @@ catch {
     Write-PipelineLog -Message "ERROR: $_" -Root $root
     Write-PipelineLog -Message "  at: $($_.InvocationInfo.PositionMessage)" -Root $root
     throw
+}
+finally {
+    [Console]::remove_CancelKeyPress($script:_ctrlCHandler)
 }

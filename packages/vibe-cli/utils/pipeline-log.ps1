@@ -1,23 +1,28 @@
 ﻿$StageCompletePattern = 'STAGE_COMPLETE:(\d+):(.+)'
 
-$script:_colorDeprecationWarned = $false
+function New-RunId {
+    $ts = Get-Date -Format 'yyyyMMddTHHmmss'
+    $hex = -join ((1..4) | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
+    return "$ts-$hex"
+}
+
+function Get-RunIdFromLog {
+    param([Parameter(Mandatory)][string]$LogPath)
+    $pattern = 'PIPELINE START runId=(\d{8}T\d{6}-[0-9a-f]{4})(?:\s|$)'
+    if (-not (Test-Path $LogPath)) { throw "Pipeline log not found: $LogPath" }
+    $content = Get-Content $LogPath -Raw
+    if ($content -match $pattern) { return $Matches[1] }
+    throw "No valid runId found in pipeline log"
+}
 
 function Write-PipelineLog {
     param(
         [Parameter(Mandatory, ValueFromPipeline)]
         [string]$Message,
 
-        [string]$Root,
-
-        # Backward-compatible no-op — accepted but ignored
-        [string]$Color
+        [string]$Root
     )
     process {
-        if ($Color -and -not $script:_colorDeprecationWarned) {
-            $script:_colorDeprecationWarned = $true
-            Write-Host "[DEPRECATION] Write-PipelineLog -Color is deprecated and ignored. Remove -Color from callers." -ForegroundColor Yellow
-        }
-
         $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
         $line = "[$ts] $Message"
         Write-Host $line

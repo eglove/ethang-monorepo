@@ -1,9 +1,9 @@
-﻿BeforeAll {
+BeforeAll {
     # Stub external dependencies before sourcing
     function Invoke-Claude { }
     function Write-PipelineLog { }
 
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -14,8 +14,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -78,12 +76,6 @@ Describe 'Enter-ReviewGate' {
             $script:state.verdict | Should -BeNullOrEmpty
         }
 
-        It 'resets gateTimedOut to $false' {
-            $script:state.gateTimedOut = $true
-            Enter-ReviewGate -State $script:state -Config $script:cfg -GateType 'preMerge'
-            $script:state.gateTimedOut | Should -BeExactly $false
-        }
-
         It 'preserves lockHolder (TLA+ UNCHANGED)' {
             Enter-ReviewGate -State $script:state -Config $script:cfg -GateType 'preMerge'
             $script:state.lockHolder | Should -BeExactly 1
@@ -101,10 +93,6 @@ Describe 'Enter-ReviewGate' {
             finally { Remove-Item Env:\VIBE_NUM_TASKS -ErrorAction SilentlyContinue }
         }
 
-        It 'preserves globalTimedOut (TLA+ UNCHANGED)' {
-            Enter-ReviewGate -State $script:state -Config $script:cfg -GateType 'preMerge'
-            $script:state.globalTimedOut | Should -BeExactly $false
-        }
     }
 
     Context 'Final review gate entry' {
@@ -293,17 +281,6 @@ Describe 'Invoke-ReviewGate' {
                 Should -Throw
         }
 
-        It 'throws when gateTimedOut is true' {
-            $script:state.gateTimedOut = $true
-            { Invoke-ReviewGate -State $script:state -Config $script:cfg -DiffContent 'diff' } |
-                Should -Throw
-        }
-
-        It 'throws when globalTimedOut is true' {
-            $script:state.globalTimedOut = $true
-            { Invoke-ReviewGate -State $script:state -Config $script:cfg -DiffContent 'diff' } |
-                Should -Throw
-        }
     }
 
     Context 'Invoke-Claude is called with the diff content' {

@@ -1,9 +1,7 @@
 function Invoke-Parallel {
     param(
         [Parameter(Mandatory)]
-        [hashtable]$Jobs,
-
-        [int]$TimeoutSeconds = 600
+        [hashtable]$Jobs
     )
 
     $results = @{}
@@ -30,32 +28,43 @@ function Invoke-Parallel {
         $jobHandles[$name] = $jobHandle
     }
 
-    # Wait for all jobs concurrently with a single shared deadline
+    # Poll jobs with short waits, streaming Write-Host output to console in real time
     $allJobs = @($jobHandles.Values)
-    $null = Wait-Job -Job $allJobs -Timeout $TimeoutSeconds -ErrorAction SilentlyContinue
+    $infoSeen = @{}
+    foreach ($name in $jobHandles.Keys) { $infoSeen[$name] = 0 }
+    $stillRunning = $true
+
+    while ($stillRunning) {
+        # Short blocking wait — returns early when any job finishes
+        $null = Wait-Job -Job $allJobs -Timeout 2 -ErrorAction SilentlyContinue
+
+        $stillRunning = $false
+        foreach ($name in @($jobHandles.Keys)) {
+            $job = $jobHandles[$name]
+            if ($job.State -eq 'Running') { $stillRunning = $true }
+
+            # Stream new Write-Host lines from the Information stream
+            for ($i = $infoSeen[$name]; $i -lt $job.Information.Count; $i++) {
+                $record = $job.Information[$i]
+                if ($null -ne $record -and $null -ne $record.MessageData) {
+                    Write-Host $record.MessageData
+                }
+            }
+            $infoSeen[$name] = $job.Information.Count
+        }
+    }
 
     foreach ($name in @($jobHandles.Keys)) {
         $job = $jobHandles[$name]
-
-        if ($job.State -eq 'Running') {
-            $job | Stop-Job -ErrorAction SilentlyContinue
-            $results[$name] = @{
-                Success = $false
-                Output  = $null
-                Error   = "Job '$name' timed out after $TimeoutSeconds seconds"
-            }
+        $jobResult = $job | Receive-Job -ErrorAction SilentlyContinue
+        if ($jobResult -and $jobResult -is [hashtable] -and $jobResult.ContainsKey('Success')) {
+            $results[$name] = $jobResult
         }
         else {
-            $jobResult = $job | Receive-Job -ErrorAction SilentlyContinue
-            if ($jobResult -and $jobResult -is [hashtable] -and $jobResult.ContainsKey('Success')) {
-                $results[$name] = $jobResult
-            }
-            else {
-                $results[$name] = @{
-                    Success = $true
-                    Output  = $jobResult
-                    Error   = $null
-                }
+            $results[$name] = @{
+                Success = $true
+                Output  = $jobResult
+                Error   = $null
             }
         }
 

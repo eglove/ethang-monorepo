@@ -78,10 +78,10 @@
             foreach ($block in $evt.message.content) {
                 $elapsed = $stopwatch.Elapsed.ToString('mm\:ss')
                 if ($block.type -eq 'tool_use' -and $block.name) {
-                    Write-PipelineLog "  [$elapsed] $($block.name)..." -Color DarkCyan
+                    Write-PipelineLog "  [$elapsed] $($block.name)..."
                 }
                 if ($block.type -eq 'text' -and $block.text) {
-                    Write-PipelineLog "  [$elapsed] $($block.text)" -Color DarkGray
+                    Write-PipelineLog "  [$elapsed] $($block.text)"
                 }
             }
         }
@@ -89,7 +89,7 @@
         if ($evt.type -eq 'result') {
             $elapsed = $stopwatch.Elapsed.ToString('mm\:ss')
             $cost = if ($evt.total_cost_usd) { " (`$$([math]::Round($evt.total_cost_usd, 4)))" } else { "" }
-            Write-PipelineLog "  [$elapsed] Done$cost" -Color DarkGreen
+            Write-PipelineLog "  [$elapsed] Done$cost"
             Write-PipelineLog "COMPLETE agent=$agentName elapsed=$elapsed cost=$($evt.total_cost_usd)"
 
             if ($evt.subtype -eq 'success') {
@@ -101,8 +101,8 @@
                 }
             }
             else {
-                Write-PipelineLog "  [$elapsed] agent=$agentName subtype=$($evt.subtype)" -Color Yellow
-                if ($evt.error) { Write-PipelineLog "ERROR agent=$agentName $($evt.error)" -Color Red }
+                Write-PipelineLog "  [$elapsed] agent=$agentName subtype=$($evt.subtype)"
+                if ($evt.error) { Write-PipelineLog "ERROR agent=$agentName $($evt.error)" }
             }
         }
     }
@@ -165,12 +165,12 @@ function Invoke-ClaudeWithRetry {
 
             # 400-level client errors (except 429) NOT retried
             if ($statusCode -and $statusCode -ge 400 -and $statusCode -lt 500 -and $statusCode -ne 429) {
-                Write-PipelineLog "API client error ($statusCode) — not retrying" -Color Red
+                Write-PipelineLog "API client error ($statusCode) — not retrying"
                 throw
             }
 
             if ($attempt -ge $MaxAttempts) {
-                Write-PipelineLog "API retry exhausted after $MaxAttempts attempts" -Color Red
+                Write-PipelineLog "API retry exhausted after $MaxAttempts attempts"
                 throw
             }
 
@@ -180,7 +180,7 @@ function Invoke-ClaudeWithRetry {
                 $delay = [int]$Matches[1]
             }
 
-            Write-PipelineLog "API attempt $attempt/$MaxAttempts failed, retrying in ${delay}s..." -Color Yellow
+            Write-PipelineLog "API attempt $attempt/$MaxAttempts failed, retrying in ${delay}s..."
             Start-Sleep -Seconds $delay
         }
     }

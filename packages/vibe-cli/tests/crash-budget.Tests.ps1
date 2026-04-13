@@ -1,5 +1,5 @@
-﻿BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+BeforeAll {
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -10,8 +10,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -97,19 +95,14 @@ Describe 'Test-CrashBudget' {
         Remove-Item $script:lockDir -Recurse -Force -ErrorAction SilentlyContinue
     }
 
-    It 'returns count when within budget' {
+    It 'returns count regardless of value' {
         @{ pid = $PID; startTime = (Get-Date).ToString('o'); crashCount = 1 } | ConvertTo-Json | Set-Content $script:lockFile
         Test-CrashBudget -LockDir $script:lockDir -MaxCrashes 3 | Should -Be 1
     }
 
-    It 'throws when crash count >= MaxCrashes' {
-        @{ pid = $PID; startTime = (Get-Date).ToString('o'); crashCount = 3 } | ConvertTo-Json | Set-Content $script:lockFile
-        { Test-CrashBudget -LockDir $script:lockDir -MaxCrashes 3 } | Should -Throw '*Crash budget exhausted*'
-    }
-
-    It 'defaults MaxCrashes to 3' {
-        @{ pid = $PID; startTime = (Get-Date).ToString('o'); crashCount = 3 } | ConvertTo-Json | Set-Content $script:lockFile
-        { Test-CrashBudget -LockDir $script:lockDir } | Should -Throw '*Crash budget exhausted*'
+    It 'returns high crash count without throwing' {
+        @{ pid = $PID; startTime = (Get-Date).ToString('o'); crashCount = 10 } | ConvertTo-Json | Set-Content $script:lockFile
+        Test-CrashBudget -LockDir $script:lockDir -MaxCrashes 3 | Should -Be 10
     }
 
     It 'allows count of 0 (fresh start)' {
@@ -125,9 +118,9 @@ Describe 'Test-CrashBudget' {
         # Second crash
         Update-CrashCount -LockDir $script:lockDir -NewCount 2
         Test-CrashBudget -LockDir $script:lockDir | Should -Be 2
-        # Third crash — budget exhausted
+        # Third crash — no longer throws, just returns count
         Update-CrashCount -LockDir $script:lockDir -NewCount 3
-        { Test-CrashBudget -LockDir $script:lockDir } | Should -Throw '*exhausted*'
+        Test-CrashBudget -LockDir $script:lockDir | Should -Be 3
     }
 
     It 'fresh start resets to 0' {

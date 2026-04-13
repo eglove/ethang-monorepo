@@ -1,5 +1,5 @@
-﻿BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+BeforeAll {
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -10,8 +10,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -50,8 +48,6 @@ Describe 'Start-PipelineRunning (StartRunning)' {
         $state.tddKeepGoingCount = 0
         $state.verdict = $null
         $state.tasksDone = 0
-        $state.gateTimedOut = $false
-        $state.globalTimedOut = $false
         $state.reviewGateType = 'none'
 
         Start-PipelineRunning -State $state
@@ -61,8 +57,6 @@ Describe 'Start-PipelineRunning (StartRunning)' {
         $state.tddKeepGoingCount | Should -BeExactly 0
         $state.verdict | Should -BeNullOrEmpty
         $state.tasksDone | Should -BeExactly 0
-        $state.gateTimedOut | Should -BeExactly $false
-        $state.globalTimedOut | Should -BeExactly $false
         $state.reviewGateType | Should -BeExactly 'none'
     }
 

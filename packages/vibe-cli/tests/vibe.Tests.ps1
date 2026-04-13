@@ -1,5 +1,5 @@
 BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
 }
 
 Describe 'vibe.ps1 parameter validation' {

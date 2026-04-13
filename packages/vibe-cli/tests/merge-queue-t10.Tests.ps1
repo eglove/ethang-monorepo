@@ -1,9 +1,9 @@
-﻿BeforeAll {
+BeforeAll {
     # Stub external dependencies before sourcing production modules
     function Invoke-Claude { }
     function Write-PipelineLog { }
 
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -14,8 +14,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -98,18 +96,6 @@ Describe 'Complete-TaskMerge' {
         Complete-TaskMerge -State $script:state -Config $script:cfg
 
         $script:state.verdict | Should -BeNullOrEmpty
-    }
-
-    It 'preserves gateTimedOut (UNCHANGED)' {
-        Complete-TaskMerge -State $script:state -Config $script:cfg
-
-        $script:state.gateTimedOut | Should -BeFalse
-    }
-
-    It 'preserves globalTimedOut (UNCHANGED)' {
-        Complete-TaskMerge -State $script:state -Config $script:cfg
-
-        $script:state.globalTimedOut | Should -BeFalse
     }
 
     It 'increments tasksDone from 2 to 3 on third merge' {

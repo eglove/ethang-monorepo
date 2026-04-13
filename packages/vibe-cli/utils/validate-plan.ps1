@@ -1,7 +1,5 @@
 ﻿. "$PSScriptRoot/result-contracts.ps1"
 
-$script:RequiredAgentSections = @('## Role', '## Expected Inputs', '## Output Format')
-
 function Test-ImplementationPlan {
     param(
         [Parameter(Mandatory)][string]$PlanJsonPath,
@@ -154,7 +152,7 @@ function New-PipelineLock {
             }
 
             # Stale lock — clean up and retry
-            Write-PipelineLog "Cleaning up stale lock file (PID $lockPid no longer running)" -Color Yellow
+            Write-PipelineLog "Cleaning up stale lock file (PID $lockPid no longer running)"
             [System.IO.File]::Delete($LockPath)
             return New-PipelineLock -LockPath $LockPath -PipelineRunId $PipelineRunId
         }

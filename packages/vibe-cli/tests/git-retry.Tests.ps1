@@ -1,5 +1,5 @@
 BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/git-retry.ps1"
 }
 

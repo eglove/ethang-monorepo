@@ -1,10 +1,10 @@
-﻿BeforeAll {
+BeforeAll {
     function Invoke-Claude { }
     function Write-PipelineLog { }
     function Write-StatusNote { }
     function Write-TaskLog { }
 
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -15,8 +15,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -121,15 +119,13 @@ Describe 'Resolve-DiffStaleness' {
         $script:state.tddKeepGoingCount = 2
         $script:state.verdict          = $null
         $script:state.tasksDone        = 1
-        $script:state.gateTimedOut     = $false
-        $script:state.globalTimedOut   = $false
 
         $script:cfg = Get-PipelineConfig
 
         Mock Write-PipelineLog {}
     }
 
-    Context 'DiffBaseStale — re-review when round < MaxReviewRounds' {
+    Context 'DiffBaseStale — re-review (no round limit)' {
         It 'transitions pipelineState to preMergeReview' {
             Resolve-DiffStaleness -State $script:state -Config $script:cfg
             $script:state.pipelineState | Should -BeExactly 'preMergeReview'
@@ -144,12 +140,6 @@ Describe 'Resolve-DiffStaleness' {
             $script:state.verdict = 'pass'
             Resolve-DiffStaleness -State $script:state -Config $script:cfg
             $script:state.verdict | Should -BeNullOrEmpty
-        }
-
-        It 'resets gateTimedOut to $false' {
-            $script:state.gateTimedOut = $true
-            Resolve-DiffStaleness -State $script:state -Config $script:cfg
-            $script:state.gateTimedOut | Should -BeExactly $false
         }
 
         It 'sets reviewGateType to preMerge' {
@@ -184,29 +174,19 @@ Describe 'Resolve-DiffStaleness' {
             $script:state.tasksDone | Should -BeExactly 1
         }
 
-        It 'preserves globalTimedOut' {
-            Resolve-DiffStaleness -State $script:state -Config $script:cfg
-            $script:state.globalTimedOut | Should -BeExactly $false
-        }
     }
 
-    Context 'DiffBaseStaleExhausted — HALTED when round >= MaxReviewRounds' {
-        It 'transitions pipelineState to HALTED' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds']
+    Context 'DiffBaseStale at high reviewRound still re-reviews (no exhaustion)' {
+        It 'transitions pipelineState to preMergeReview at high round' {
+            $script:state.reviewRound = 10
             Resolve-DiffStaleness -State $script:state -Config $script:cfg
-            $script:state.pipelineState | Should -BeExactly 'HALTED'
+            $script:state.pipelineState | Should -BeExactly 'preMergeReview'
         }
 
-        It 'releases lockHolder to $null' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds']
+        It 'increments reviewRound at high round' {
+            $script:state.reviewRound = 10
             Resolve-DiffStaleness -State $script:state -Config $script:cfg
-            $script:state.lockHolder | Should -BeNullOrEmpty
-        }
-
-        It 'returns action "haltedStaleness"' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds']
-            $result = Resolve-DiffStaleness -State $script:state -Config $script:cfg
-            $result.Action | Should -BeExactly 'haltedStaleness'
+            $script:state.reviewRound | Should -BeExactly 11
         }
     }
 
@@ -224,8 +204,8 @@ Describe 'Resolve-DiffStaleness' {
             Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
         }
 
-        It 'state is TypeOK after DiffBaseStaleExhausted transition' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds']
+        It 'state is TypeOK after DiffBaseStale transition at high round' {
+            $script:state.reviewRound = 10
             Resolve-DiffStaleness -State $script:state -Config $script:cfg
             Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
         }

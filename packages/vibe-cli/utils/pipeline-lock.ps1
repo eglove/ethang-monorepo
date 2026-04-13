@@ -34,11 +34,7 @@ function Test-CrashBudget {
         [Parameter(Mandatory)][string]$LockDir,
         [int]$MaxCrashes = 3
     )
-    $count = Get-CrashCount -LockDir $LockDir
-    if ($count -ge $MaxCrashes) {
-        throw "Crash budget exhausted ($count >= $MaxCrashes). Manual intervention required."
-    }
-    return $count
+    return Get-CrashCount -LockDir $LockDir
 }
 
 function Test-PipelineLockActive {

@@ -28,13 +28,8 @@ Describe 'Write-PipelineLog' {
         # No assertion on file — just verifying it doesn't throw
     }
 
-    It 'accepts -Color parameter without error (backward compatibility)' {
-        { Write-PipelineLog -Message "test" -Root $testRoot -Color 'Red' } | Should -Not -Throw
-
-        $logPath = Join-Path $testRoot 'pipeline.log'
-        $logPath | Should -Exist
-        $content = Get-Content $logPath -Raw
-        $content | Should -Match 'test'
+    It 'rejects unknown parameters like -Color' {
+        { Write-PipelineLog -Message "test" -Root $testRoot -Color 'Red' } | Should -Throw
     }
 
     It 'produces intact lines under concurrent writes from parallel runspaces' {
@@ -95,17 +90,5 @@ Describe 'StageCompletePattern' {
     It 'does not match malformed markers' {
         'STAGE_COMPLETE:abc:feat' -match $StageCompletePattern | Should -BeFalse
         'STAGE_COMPLETE::feat' -match $StageCompletePattern | Should -BeFalse
-    }
-}
-
-Describe 'config.ps1 does not define Write-PipelineLog' {
-    It 'has no Write-PipelineLog function in config.ps1' {
-        $configContent = Get-Content "$PSScriptRoot/../utils/config.ps1" -Raw
-        $configContent | Should -Not -Match 'function\s+Write-PipelineLog'
-    }
-
-    It 'has no global PipelineLogFile variable in config.ps1' {
-        $configContent = Get-Content "$PSScriptRoot/../utils/config.ps1" -Raw
-        $configContent | Should -Not -Match '\$global:PipelineLogFile'
     }
 }

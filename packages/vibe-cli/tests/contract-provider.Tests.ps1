@@ -1,4 +1,4 @@
-﻿# =============================================================================
+# =============================================================================
 # contract-provider.Tests.ps1 — Provider-side contract tests
 # Each provider's output is validated against the contract it must satisfy.
 # Tag: Contract
@@ -10,7 +10,7 @@ BeforeAll {
     function Write-StatusNote { }
     function Write-TaskLog { }
 
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -21,8 +21,6 @@ BeforeAll {
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }

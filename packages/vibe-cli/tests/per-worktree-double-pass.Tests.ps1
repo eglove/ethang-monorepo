@@ -1,5 +1,5 @@
 BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/pipeline-log.ps1"
     . "$PSScriptRoot/../utils/invoke-claude.ps1"
     . "$PSScriptRoot/../utils/per-worktree-double-pass.ps1"
