@@ -1,6 +1,6 @@
 Describe 'Tier Completion Counter (ConcurrentDictionary)' {
     BeforeAll {
-        . "$PSScriptRoot/../utils/config.ps1"
+        . "$PSScriptRoot/helpers/test-config.ps1"
         . "$PSScriptRoot/../utils/job-runner.ps1"
     }
 

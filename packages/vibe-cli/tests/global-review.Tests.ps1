@@ -1,5 +1,5 @@
 BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/pipeline-log.ps1"
     . "$PSScriptRoot/../utils/invoke-claude.ps1"
     . "$PSScriptRoot/../utils/global-double-pass.ps1"
@@ -40,12 +40,17 @@ Describe 'Invoke-GlobalReview' {
     Context 'Diff line formatting with blockers (line 49)' {
         It 'formats string blockers using $_ fallback' {
             Mock git { return 'some diff' }
+            $script:strBlockerCall = 0
             Mock Invoke-ReviewLoop {
-                return @{ Verdict = 'fail'; Blockers = @('simple string blocker') }
+                $script:strBlockerCall++
+                if ($script:strBlockerCall -eq 1) {
+                    return @{ Verdict = 'fail'; Blockers = @('simple string blocker') }
+                }
+                return @{ Verdict = 'pass'; Blockers = @() }
             }
             Mock Invoke-GlobalDoublePass { return @{ Status = 'passed'; Retries = 0; LastError = $null } }
 
-            $result = Invoke-GlobalReview -Root 'C:\fake' -FeatureDir 'C:\fake\docs\feat' -BaseBranch 'main' -MaxReviewRounds 2
+            $result = Invoke-GlobalReview -Root 'C:\fake' -FeatureDir 'C:\fake\docs\feat' -BaseBranch 'main'
             # Should have called Invoke-Claude for fix
             Should -Invoke Invoke-Claude -Times 1 -Scope It
         }
@@ -62,42 +67,20 @@ Describe 'Invoke-GlobalReview' {
             }
             Mock Invoke-GlobalDoublePass { return @{ Status = 'passed'; Retries = 0; LastError = $null } }
 
-            $result = Invoke-GlobalReview -Root 'C:\fake' -FeatureDir 'C:\fake\docs\feat' -BaseBranch 'main' -MaxReviewRounds 3
+            $result = Invoke-GlobalReview -Root 'C:\fake' -FeatureDir 'C:\fake\docs\feat' -BaseBranch 'main'
             Should -Invoke Invoke-Claude -Times 1 -Scope It
         }
     }
 
-    Context 'Escalated returns from double-pass and review (lines 68-79)' {
+    Context 'Escalated returns from double-pass' {
         It 'returns escalated when double-pass escalates after review fix' {
             Mock git { return 'some diff' }
             Mock Invoke-ReviewLoop { return @{ Verdict = 'fail'; Blockers = @('blocker1') } }
             Mock Invoke-GlobalDoublePass { return @{ Status = 'escalated'; Retries = 5; LastError = 'dp failure' } }
 
-            $result = Invoke-GlobalReview -Root 'C:\fake' -FeatureDir 'C:\fake\docs\feat' -BaseBranch 'main' -MaxReviewRounds 3
+            $result = Invoke-GlobalReview -Root 'C:\fake' -FeatureDir 'C:\fake\docs\feat' -BaseBranch 'main'
             $result.Verdict | Should -BeExactly 'escalated'
             $result.Blockers | Should -Contain 'dp failure'
-        }
-
-        It 'returns escalated when review fails at MaxReviewRounds' {
-            Mock git { return 'diff' }
-            Mock Invoke-ReviewLoop { return @{ Verdict = 'fail'; Blockers = @('persistent blocker') } }
-
-            $result = Invoke-GlobalReview -Root 'C:\fake' -FeatureDir 'C:\fake\docs\feat' -BaseBranch 'main' -MaxReviewRounds 1
-            $result.Verdict | Should -BeExactly 'escalated'
-            $result.ReviewRound | Should -Be 1
-        }
-
-        It 'returns escalated fallthrough when loop exhausts without pass (lines 76-80)' {
-            Mock git { return 'diff content' }
-            $script:reviewCall = 0
-            Mock Invoke-ReviewLoop {
-                $script:reviewCall++
-                return @{ Verdict = 'fail'; Blockers = @('blocker') }
-            }
-            Mock Invoke-GlobalDoublePass { return @{ Status = 'passed'; Retries = 0; LastError = $null } }
-
-            $result = Invoke-GlobalReview -Root 'C:\fake' -FeatureDir 'C:\fake\docs\feat' -BaseBranch 'main' -MaxReviewRounds 2
-            $result.Verdict | Should -BeExactly 'escalated'
         }
     }
 }

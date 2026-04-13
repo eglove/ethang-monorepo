@@ -1,0 +1,333 @@
+{
+  "topic": "SQLite State Repository",
+  "tiers": [
+    {
+      "tier": 1,
+      "title": "Foundation",
+      "tasks": [
+        {
+          "id": "T1",
+          "step": 1,
+          "title": "SQL Schema, Module Manifest, and Test Helpers",
+          "files": [
+            "state/schema.sql",
+            "state/state-repository.psd1",
+            "state/state-repository.psm1",
+            "state/test-helpers/Reset-StateDatabase.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "title": "Database Lifecycle",
+      "tasks": [
+        {
+          "id": "T2",
+          "step": 2,
+          "title": "Connection — Open/Close Database",
+          "files": [
+            "state/connection/Open-StateDatabase.ps1",
+            "state/connection/Close-StateDatabase.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1"]
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "title": "Core Domain Entities",
+      "tasks": [
+        {
+          "id": "T3",
+          "step": 3,
+          "title": "Features — New/Get/GetAll",
+          "files": [
+            "state/features/New-Feature.ps1",
+            "state/features/Get-Feature.ps1",
+            "state/features/Get-AllFeatures.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T2"]
+        }
+      ]
+    },
+    {
+      "tier": 4,
+      "title": "Session and Basic CRUD",
+      "tasks": [
+        {
+          "id": "T4",
+          "step": 4,
+          "title": "Session — Set/Get/Clear ActiveFeature",
+          "files": [
+            "state/session/Set-ActiveFeature.ps1",
+            "state/session/Get-ActiveFeature.ps1",
+            "state/session/Clear-ActiveFeature.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T3"]
+        },
+        {
+          "id": "T5",
+          "step": 5,
+          "title": "Stage Progress — Set/Get",
+          "files": [
+            "state/progress/Set-StageComplete.ps1",
+            "state/progress/Get-LastCompletedStage.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T3"]
+        },
+        {
+          "id": "T6",
+          "step": 6,
+          "title": "Artifacts — Register/Get",
+          "files": [
+            "state/artifacts/Register-Artifact.ps1",
+            "state/artifacts/Get-Artifacts.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T3"]
+        },
+        {
+          "id": "T7",
+          "step": 8,
+          "title": "Pipeline State — Update/Get",
+          "files": [
+            "state/runtime/Update-PipelineState.ps1",
+            "state/runtime/Get-PipelineState.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T3"]
+        },
+        {
+          "id": "T8",
+          "step": 9,
+          "title": "Stage Outputs — Set/Get",
+          "files": [
+            "state/outputs/Set-StageOutput.ps1",
+            "state/outputs/Get-StageOutput.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T3"]
+        }
+      ]
+    },
+    {
+      "tier": 5,
+      "title": "Locking and Debate",
+      "tasks": [
+        {
+          "id": "T9",
+          "step": 7,
+          "title": "Pipeline Lock — Lock/Unlock/Get/AddCrash",
+          "files": [
+            "state/lock/Lock-PipelineState.ps1",
+            "state/lock/Unlock-PipelineState.ps1",
+            "state/lock/Get-PipelineLockState.ps1",
+            "state/lock/Add-CrashCount.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T4"]
+        },
+        {
+          "id": "T10",
+          "step": 10,
+          "title": "Debate State — Update/Get/GetHistory",
+          "files": [
+            "state/debate/Update-DebateState.ps1",
+            "state/debate/Get-DebateState.ps1",
+            "state/debate/Get-DebateHistory.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T7"]
+        }
+      ]
+    },
+    {
+      "tier": 6,
+      "title": "Stage 7 Domain — Tier Progress",
+      "tasks": [
+        {
+          "id": "T11",
+          "step": 11,
+          "title": "Tier Progress — Set/Get/GetAll",
+          "files": [
+            "state/tiers/Set-TierStatus.ps1",
+            "state/tiers/Get-TierProgress.ps1",
+            "state/tiers/Get-AllTierProgress.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T7"]
+        }
+      ]
+    },
+    {
+      "tier": 7,
+      "title": "Task and Merge Layer",
+      "tasks": [
+        {
+          "id": "T12",
+          "step": 12,
+          "title": "Task Results — Set/Get/GetTier",
+          "files": [
+            "state/tasks/Set-TaskResult.ps1",
+            "state/tasks/Get-TaskResult.ps1",
+            "state/tasks/Get-TierTaskResults.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T11"]
+        },
+        {
+          "id": "T13",
+          "step": 13,
+          "title": "Merge Results — Set/Get",
+          "files": [
+            "state/merges/Set-MergeResult.ps1",
+            "state/merges/Get-MergeResults.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T12"]
+        }
+      ]
+    },
+    {
+      "tier": 8,
+      "title": "Gate Layer",
+      "tasks": [
+        {
+          "id": "T14",
+          "step": 14,
+          "title": "Gate Results — Set/Get/GetAll",
+          "files": [
+            "state/gates/Set-GateResult.ps1",
+            "state/gates/Get-GateResult.ps1",
+            "state/gates/Get-GateResults.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T13"]
+        }
+      ]
+    },
+    {
+      "tier": 9,
+      "title": "Cross-Aggregate Composite Actions",
+      "tasks": [
+        {
+          "id": "T15",
+          "step": 15,
+          "title": "ForceUnlock — Full Cleanup",
+          "files": [
+            "state/lock/Unlock-PipelineState.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T9", "T10", "T11", "T13"]
+        },
+        {
+          "id": "T16",
+          "step": 16,
+          "title": "HaltPipeline — Halt Cascade",
+          "files": [
+            "state/runtime/Update-PipelineState.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T7", "T10", "T11", "T13"]
+        },
+        {
+          "id": "T17",
+          "step": 17,
+          "title": "Crash Recovery — ProcessCrash",
+          "files": [
+            "state/lock/Unlock-PipelineState.ps1",
+            "state/runtime/Update-PipelineState.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T9", "T7", "T11", "T12", "T13"]
+        },
+        {
+          "id": "T18",
+          "step": 18,
+          "title": "Pipeline Completion",
+          "files": [
+            "state/runtime/Update-PipelineState.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T5", "T7"]
+        }
+      ]
+    },
+    {
+      "tier": 10,
+      "title": "Integration and Wiring",
+      "tasks": [
+        {
+          "id": "T19",
+          "step": 19,
+          "title": "Cross-Aggregate Integration Tests and Invalid-Transition Matrix",
+          "files": [
+            "tests/state/halt-cascades.Tests.ps1",
+            "tests/state/invalid-transitions.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T14", "T16"]
+        },
+        {
+          "id": "T20",
+          "step": 20,
+          "title": "Module Loading and Gitignore",
+          "files": [
+            "packages/vibe-cli/.gitignore",
+            "tests/state/module-loading.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12", "T13", "T14", "T15", "T16", "T17", "T18"]
+        }
+      ]
+    },
+    {
+      "tier": 11,
+      "title": "Production Wiring",
+      "tasks": [
+        {
+          "id": "T21",
+          "step": 21,
+          "title": "Integration Wiring — vibe.ps1 and Stage Files",
+          "files": [
+            "vibe.ps1",
+            "stages/*.ps1",
+            "utils/pipeline-lock.ps1",
+            "utils/resolve-pipeline-state.ps1",
+            "utils/resume.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T19", "T20"]
+        }
+      ]
+    }
+  ]
+}

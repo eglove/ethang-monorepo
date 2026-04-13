@@ -1,5 +1,5 @@
-BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+﻿BeforeAll {
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
     . "$PSScriptRoot/../utils/validate-plan.ps1"
 }
@@ -149,6 +149,28 @@ Describe 'Test-ImplementationPlan' {
         ($result.Errors | Where-Object { $_ -match "missing 'id'" }).Count | Should -BeGreaterThan 0
     }
 
+    It 'detects orphaned workspace matching task ID (L113)' {
+        $plan = @{
+            tiers = @(@{ tier = 1; tasks = @(
+                @{ id = 'T1'; step = 1; title = 'A'; files = @('a.ps1'); codeWriter = $null; testWriter = $null; dependencies = @() }
+            )})
+        }
+        $planFile = Join-Path $script:tempDir 'orphan-wt.json'
+        $plan | ConvertTo-Json -Depth 5 | Set-Content $planFile
+
+        # Mock git worktree list to return a branch matching the task ID
+        Mock git {
+            return @(
+                "worktree /tmp/wt1"
+                "branch refs/heads/feature/my-feat-T1-impl"
+            )
+        }
+
+        $result = Test-ImplementationPlan -PlanJsonPath $planFile -Root $script:root
+        $result.Status | Should -Be 'failed'
+        ($result.Errors | Where-Object { $_ -match 'Orphaned workspace' }).Count | Should -BeGreaterThan 0
+    }
+
     It 'detects task missing required fields' {
         $plan = @{
             tiers = @(@{ tier = 1; tasks = @(
@@ -194,6 +216,19 @@ Describe 'New-PipelineLock' {
         { New-PipelineLock -LockPath $lockPath -PipelineRunId 'run-second' } |
             Should -Throw '*already active*'
 
+        Remove-Item $lockPath
+    }
+
+    It 'handles lock file with malformed content (no PID/ProcessName match) — defaults (L145-146, L150)' {
+        $lockPath = Join-Path $script:lockDir 'test-defaults.lock'
+        # Write a lock with content that does NOT match the PID/ProcessName/RunId patterns
+        Set-Content $lockPath -Value 'garbled content no fields'
+
+        # Since lockPid=0 and lockProcess='', Get-Process -Id 0 will fail,
+        # so it should be treated as stale and overwritten
+        New-PipelineLock -LockPath $lockPath -PipelineRunId 'run-after-garbled'
+        $content = Get-Content $lockPath -Raw
+        $content | Should -Match 'RunId=run-after-garbled'
         Remove-Item $lockPath
     }
 

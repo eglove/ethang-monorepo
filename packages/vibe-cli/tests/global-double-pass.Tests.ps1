@@ -1,5 +1,5 @@
 BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/pipeline-log.ps1"
     . "$PSScriptRoot/../utils/invoke-claude.ps1"
     . "$PSScriptRoot/../utils/global-double-pass.ps1"
@@ -122,6 +122,17 @@ Describe 'Invoke-GlobalDoublePass' {
 
             $result = Invoke-GlobalDoublePass -Root 'C:\fake' -Feature 'feat' -MaxDoublePassRetries 1
             $result.Status | Should -BeExactly 'escalated'
+        }
+    }
+
+    Context 'Fallthrough escalation with MaxDoublePassRetries=0 (lines 111-114 exact)' {
+        It 'returns escalated immediately when MaxDoublePassRetries is 0' {
+            Mock pnpm { $global:LASTEXITCODE = 0; return 'ok' }
+
+            $result = Invoke-GlobalDoublePass -Root 'C:\fake' -Feature 'feat' -MaxDoublePassRetries 0
+            $result.Status | Should -BeExactly 'escalated'
+            $result.Retries | Should -Be 0
+            $result.LastError | Should -BeNullOrEmpty
         }
     }
 

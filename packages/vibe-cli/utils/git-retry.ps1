@@ -62,7 +62,7 @@ function Invoke-GitWithRetry {
 
         if ($attempt -lt $MaxRetries) {
             $delay = $backoffSeconds[$attempt]
-            Write-PipelineLog "Git file-lock error (attempt $($attempt + 1)/$MaxRetries), retrying in ${delay}s..." -Color Yellow
+            Write-PipelineLog "Git file-lock error (attempt $($attempt + 1)/$MaxRetries), retrying in ${delay}s..."
             Start-Sleep -Seconds $delay
         }
     }

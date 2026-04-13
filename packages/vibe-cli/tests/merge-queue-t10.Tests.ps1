@@ -3,7 +3,7 @@
     function Invoke-Claude { }
     function Write-PipelineLog { }
 
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -14,8 +14,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -100,18 +98,6 @@ Describe 'Complete-TaskMerge' {
         $script:state.verdict | Should -BeNullOrEmpty
     }
 
-    It 'preserves gateTimedOut (UNCHANGED)' {
-        Complete-TaskMerge -State $script:state -Config $script:cfg
-
-        $script:state.gateTimedOut | Should -BeFalse
-    }
-
-    It 'preserves globalTimedOut (UNCHANGED)' {
-        Complete-TaskMerge -State $script:state -Config $script:cfg
-
-        $script:state.globalTimedOut | Should -BeFalse
-    }
-
     It 'increments tasksDone from 2 to 3 on third merge' {
         $script:state.tasksDone = 2
         Complete-TaskMerge -State $script:state -Config $script:cfg
@@ -143,6 +129,25 @@ Describe 'Complete-TaskMerge' {
         $script:state.pipelineState = 'running'
 
         { Complete-TaskMerge -State $script:state -Config $script:cfg } | Should -Throw -ExpectedMessage '*mergeQueue*'
+    }
+
+    Context 'DB sync — Update-PipelineState called with FeatureName (L188-189)' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $TasksDone, $PipelineState) }
+        }
+
+        AfterAll {
+            Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue
+        }
+
+        It 'calls Update-PipelineState when FeatureName is provided' {
+            $s = New-PipelineState
+            $s.pipelineState = 'mergeQueue'
+            $s.lockHolder = 1
+            Mock Update-PipelineState {}
+            Complete-TaskMerge -State $s -Config (Get-PipelineConfig) -FeatureName 'my-feature'
+            Should -Invoke Update-PipelineState -Times 1 -Scope It
+        }
     }
 }
 

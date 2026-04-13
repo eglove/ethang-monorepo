@@ -6,7 +6,7 @@
     function Write-StatusNote { }
     function ConvertTo-EscalationResult { param($Props) return $Props }
 
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -17,8 +17,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -28,22 +26,20 @@
 }
 
 # =============================================================================
-# Invoke-ReviewEscalation — TLA+ review round exhaustion + Keep Going escalation
-# BDD: "Review rounds exhaust after MaxReviewRounds cycles"
-#      "Keep Going on review escalation resets review round counter"
+# Invoke-ReviewEscalation — Keep Going and Stop escalation choices
+# BDD: "Keep Going on review escalation resets review round counter"
 #      "Stop on review escalation halts pipeline with pre-stop snapshot"
-#      "MaxKeepGoingResets prevents infinite Keep Going loops"
 # =============================================================================
 
 Describe 'Invoke-ReviewEscalation' {
     BeforeEach {
         $script:cfg   = Get-PipelineConfig
         $script:state = New-PipelineState
-        # Pre-condition: pipeline in preMergeReview at round exhaustion
+        # Pre-condition: pipeline in preMergeReview
         $script:state.pipelineState  = 'preMergeReview'
         $script:state.lockHolder     = 1
         $script:state.reviewGateType = 'preMerge'
-        $script:state.reviewRound    = $script:cfg['MaxReviewRounds']
+        $script:state.reviewRound    = 3
         $script:state.keepGoingResets = 0
         $script:state.verdict        = $null
 
@@ -51,18 +47,17 @@ Describe 'Invoke-ReviewEscalation' {
     }
 
     # =========================================================================
-    # BDD: "Review rounds exhaust after MaxReviewRounds cycles"
-    #      "Read-Escalation is called with review exhaustion context"
+    # BDD: "Read-Escalation is called"
     # =========================================================================
 
-    Context 'Exhaustion detection — calls Read-Escalation when rounds exhausted' {
-        It 'calls Read-Escalation when reviewRound >= MaxReviewRounds' {
+    Context 'Calls Read-Escalation' {
+        It 'calls Read-Escalation' {
             Mock Read-Escalation { return @{ Decision = 'Stop' } }
             Invoke-ReviewEscalation -State $script:state -Config $script:cfg
             Should -Invoke Read-Escalation -Times 1 -Exactly
         }
 
-        It 'passes review exhaustion context to Read-Escalation' {
+        It 'passes review context to Read-Escalation' {
             Mock Read-Escalation { return @{ Decision = 'Stop' } } -ParameterFilter {
                 $Source -eq 'task'
             }
@@ -78,7 +73,7 @@ Describe 'Invoke-ReviewEscalation' {
     #      "the review-fix cycle resumes from a fresh review"
     # =========================================================================
 
-    Context 'Keep Going — resets review round counter (TLA+ KeepGoingReview)' {
+    Context 'Keep Going — resets review round counter' {
         BeforeEach {
             Mock Read-Escalation { return @{ Decision = 'KeepGoing' } }
         }
@@ -132,7 +127,7 @@ Describe 'Invoke-ReviewEscalation' {
     # BDD: "Stop on review escalation halts pipeline with pre-stop snapshot"
     # =========================================================================
 
-    Context 'Stop — halts pipeline (TLA+ StopReview)' {
+    Context 'Stop — halts pipeline' {
         BeforeEach {
             Mock Read-Escalation { return @{ Decision = 'Stop' } }
         }
@@ -154,11 +149,10 @@ Describe 'Invoke-ReviewEscalation' {
     }
 
     # =========================================================================
-    # BDD: "Keep Going fencepost — 2nd/3rd reset is permitted"
-    #      "Keep Going increments the meta-counter"
+    # BDD: "Keep Going increments the meta-counter"
     # =========================================================================
 
-    Context 'Keep Going fencepost — keepGoingResets accumulation' {
+    Context 'Keep Going — keepGoingResets accumulation' {
         BeforeEach {
             Mock Read-Escalation { return @{ Decision = 'KeepGoing' } }
         }
@@ -177,48 +171,11 @@ Describe 'Invoke-ReviewEscalation' {
             $script:state.reviewRound | Should -BeExactly 0
         }
 
-        It 'allows Keep Going when keepGoingResets is MaxKeepGoingResets - 1 (last permitted)' {
-            $script:state.keepGoingResets = $script:cfg['MaxKeepGoingResets'] - 1
+        It 'allows Keep Going when keepGoingResets is high (no limit)' {
+            $script:state.keepGoingResets = 10
             Invoke-ReviewEscalation -State $script:state -Config $script:cfg
-            $script:state.keepGoingResets | Should -BeExactly $script:cfg['MaxKeepGoingResets']
+            $script:state.keepGoingResets | Should -BeExactly 11
             $script:state.reviewRound | Should -BeExactly 0
-        }
-    }
-
-    # =========================================================================
-    # BDD: "Keep Going exhausts MaxKeepGoingResets — forced stop"
-    #      '"Keep Going" is no longer offered as an option'
-    #      "the only option is Stop"
-    # =========================================================================
-
-    Context 'Keep Going exhaustion — forced stop at MaxKeepGoingResets' {
-        It 'forces halt when keepGoingResets >= MaxKeepGoingResets (no escalation prompt)' {
-            $script:state.keepGoingResets = $script:cfg['MaxKeepGoingResets']
-            # Read-Escalation should NOT be called — forced stop
-            Mock Read-Escalation { throw 'Should not be called' }
-            Invoke-ReviewEscalation -State $script:state -Config $script:cfg
-            $script:state.pipelineState | Should -BeExactly 'HALTED'
-        }
-
-        It 'does not call Read-Escalation when Keep Going is exhausted' {
-            $script:state.keepGoingResets = $script:cfg['MaxKeepGoingResets']
-            Mock Read-Escalation { return @{ Decision = 'KeepGoing' } }
-            Invoke-ReviewEscalation -State $script:state -Config $script:cfg
-            Should -Invoke Read-Escalation -Times 0 -Exactly
-        }
-
-        It 'returns action indicating forced stop with exhaustion context' {
-            $script:state.keepGoingResets = $script:cfg['MaxKeepGoingResets']
-            Mock Read-Escalation { return @{ Decision = 'KeepGoing' } }
-            $result = Invoke-ReviewEscalation -State $script:state -Config $script:cfg
-            $result.Action | Should -BeExactly 'forcedStop'
-        }
-
-        It 'releases lockHolder on forced stop' {
-            $script:state.keepGoingResets = $script:cfg['MaxKeepGoingResets']
-            Mock Read-Escalation { return @{ Decision = 'KeepGoing' } }
-            Invoke-ReviewEscalation -State $script:state -Config $script:cfg
-            $script:state.lockHolder | Should -BeNullOrEmpty
         }
     }
 
@@ -230,10 +187,10 @@ Describe 'Invoke-ReviewEscalation' {
         BeforeEach {
             $script:state.pipelineState  = 'finalReview'
             $script:state.reviewGateType = 'final'
-            $script:state.reviewRound    = $script:cfg['MaxReviewRounds']
+            $script:state.reviewRound    = 3
         }
 
-        It 'calls Read-Escalation for finalReview exhaustion' {
+        It 'calls Read-Escalation for finalReview' {
             Mock Read-Escalation { return @{ Decision = 'Stop' } }
             Invoke-ReviewEscalation -State $script:state -Config $script:cfg
             Should -Invoke Read-Escalation -Times 1 -Exactly
@@ -252,35 +209,18 @@ Describe 'Invoke-ReviewEscalation' {
     # =========================================================================
 
     Context 'Guard conditions — rejects invalid pre-states' {
-        It 'throws a guard error (not CommandNotFoundException) when pipelineState is not a review state' {
+        It 'throws a guard error when pipelineState is not a review state' {
             $script:state.pipelineState = 'running'
             $threw = $false
             try {
                 Invoke-ReviewEscalation -State $script:state -Config $script:cfg
             }
             catch [System.Management.Automation.CommandNotFoundException] {
-                # Wrong exception — function doesn't exist yet
                 throw "Invoke-ReviewEscalation is not defined"
             }
             catch {
                 $threw = $true
                 $_.Exception.Message | Should -Match 'review'
-            }
-            $threw | Should -BeTrue
-        }
-
-        It 'throws a guard error (not CommandNotFoundException) when reviewRound < MaxReviewRounds' {
-            $script:state.reviewRound = 0
-            $threw = $false
-            try {
-                Invoke-ReviewEscalation -State $script:state -Config $script:cfg
-            }
-            catch [System.Management.Automation.CommandNotFoundException] {
-                throw "Invoke-ReviewEscalation is not defined"
-            }
-            catch {
-                $threw = $true
-                $_.Exception.Message | Should -Match 'exhaust|not yet'
             }
             $threw | Should -BeTrue
         }
@@ -302,22 +242,15 @@ Describe 'Invoke-ReviewEscalation' {
             Invoke-ReviewEscalation -State $script:state -Config $script:cfg
             Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
         }
-
-        It 'state is TypeOK after forced stop (Keep Going exhausted)' {
-            $script:state.keepGoingResets = $script:cfg['MaxKeepGoingResets']
-            Mock Read-Escalation { return @{ Decision = 'KeepGoing' } }
-            Invoke-ReviewEscalation -State $script:state -Config $script:cfg
-            Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
-        }
     }
 }
 
 # =============================================================================
 # Mixed scenario — BDD: "Mixed retry-review and fix-cycle rounds share the
-# same counter" leading to exhaustion
+# same counter" leading to escalation
 # =============================================================================
 
-Describe 'Invoke-ReviewEscalation — mixed round exhaustion scenario' {
+Describe 'Invoke-ReviewEscalation — mixed round scenario' {
     BeforeEach {
         $script:cfg   = Get-PipelineConfig
         $script:state = New-PipelineState
@@ -337,26 +270,11 @@ Describe 'Invoke-ReviewEscalation — mixed round exhaustion scenario' {
         Mock Write-PipelineLog {}
     }
 
-    It 'escalates after MaxReviewRounds mixed retry+fail rounds reach the cap' {
-        Mock Read-Escalation { return @{ Decision = 'Stop' } }
-
-        # Simulate 3 retry rounds reaching MaxReviewRounds
-        for ($i = 0; $i -lt $script:cfg['MaxReviewRounds']; $i++) {
-            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict
-            $script:state.verdict = $null
-        }
-
-        # Now reviewRound == MaxReviewRounds, escalation should fire
-        $script:state.reviewRound | Should -BeExactly $script:cfg['MaxReviewRounds']
-        Invoke-ReviewEscalation -State $script:state -Config $script:cfg
-        Should -Invoke Read-Escalation -Times 1 -Exactly
-    }
-
-    It 'Keep Going after exhaustion allows further review rounds' {
+    It 'Keep Going after escalation allows further review rounds' {
         Mock Read-Escalation { return @{ Decision = 'KeepGoing' } }
 
-        # Drive to exhaustion
-        $script:state.reviewRound = $script:cfg['MaxReviewRounds']
+        # Drive reviewRound to 3
+        $script:state.reviewRound = 3
 
         Invoke-ReviewEscalation -State $script:state -Config $script:cfg
 
@@ -364,5 +282,35 @@ Describe 'Invoke-ReviewEscalation — mixed round exhaustion scenario' {
         $script:state.reviewRound | Should -BeExactly 0
         Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict
         $script:state.reviewRound | Should -BeExactly 1
+    }
+
+    Context 'DB sync via Update-PipelineState' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState, $ReviewRound, $KeepGoingResets, $Verdict, $TddKeepGoingCount, $LockHolder, $FeatureStatus) }
+        }
+        AfterAll { Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue }
+
+        It 'syncs KeepGoing to DB when FeatureName provided' {
+            Mock Read-Escalation { return @{ Decision = 'KeepGoing' } }
+            Mock Update-PipelineState {}
+            $script:state.pipelineState = 'preMergeReview'
+            $script:state.reviewRound = 3
+
+            Invoke-ReviewEscalation -State $script:state -Config $script:cfg -FeatureName 'feat-3'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-3' -and $ReviewRound -eq 0
+            }
+        }
+
+        It 'syncs Stop to DB when FeatureName provided' {
+            Mock Read-Escalation { return @{ Decision = 'Stop' } }
+            Mock Update-PipelineState {}
+            $script:state.pipelineState = 'preMergeReview'
+
+            Invoke-ReviewEscalation -State $script:state -Config $script:cfg -FeatureName 'feat-3'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-3' -and $PipelineState -eq 'HALTED'
+            }
+        }
     }
 }

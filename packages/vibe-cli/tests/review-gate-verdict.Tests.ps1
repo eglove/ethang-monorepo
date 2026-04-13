@@ -3,7 +3,7 @@
     function Invoke-Claude { }
     function Write-PipelineLog { }
 
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -14,8 +14,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -134,16 +132,6 @@ Describe 'Resolve-PreMergeVerdict' {
             $script:state.tasksDone | Should -BeExactly 3
         }
 
-        It 'preserves gateTimedOut (TLA+ UNCHANGED)' {
-            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:passVerdict
-            $script:state.gateTimedOut | Should -BeExactly $false
-        }
-
-        It 'preserves globalTimedOut (TLA+ UNCHANGED)' {
-            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:passVerdict
-            $script:state.globalTimedOut | Should -BeExactly $false
-        }
-
         It 'returns a result indicating pass was handled' {
             $result = Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:passVerdict
             $result.Action | Should -BeExactly 'mergeQueue'
@@ -259,16 +247,6 @@ Describe 'Resolve-PreMergeVerdict' {
             $script:state.tasksDone | Should -BeExactly 0
         }
 
-        It 'preserves gateTimedOut (TLA+ UNCHANGED)' {
-            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict
-            $script:state.gateTimedOut | Should -BeExactly $false
-        }
-
-        It 'preserves globalTimedOut (TLA+ UNCHANGED)' {
-            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict
-            $script:state.globalTimedOut | Should -BeExactly $false
-        }
-
         It 'returns a result indicating retry (no fix cycle)' {
             $result = Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict
             $result.Action | Should -BeExactly 'retry'
@@ -286,49 +264,49 @@ Describe 'Resolve-PreMergeVerdict' {
     #      "Review round fencepost — 3rd cycle is the last"
     # =========================================================================
 
-    Context 'Fencepost — fail at reviewRound < MaxReviewRounds is permitted' {
+    Context 'Fail at any reviewRound is permitted (no round guard)' {
         It 'allows fail when reviewRound is 0 (first review)' {
             $script:state.reviewRound = 0
             Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:failVerdict
             $script:state.pipelineState | Should -BeExactly 'reviewFix'
         }
 
-        It 'allows fail when reviewRound is MaxReviewRounds - 1' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds'] - 1
+        It 'allows fail when reviewRound is 2' {
+            $script:state.reviewRound = 2
             Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:failVerdict
             $script:state.pipelineState | Should -BeExactly 'reviewFix'
         }
 
-        It 'throws with exhaustion message when fail verdict at reviewRound >= MaxReviewRounds' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds']
-            { Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:failVerdict } |
-                Should -Throw -ExpectedMessage '*review*round*exhaust*'
+        It 'allows fail when reviewRound is 10 (high round)' {
+            $script:state.reviewRound = 10
+            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:failVerdict
+            $script:state.pipelineState | Should -BeExactly 'reviewFix'
         }
     }
 
-    Context 'Fencepost — retry at reviewRound < MaxReviewRounds is permitted' {
+    Context 'Retry at any reviewRound is permitted (no round guard)' {
         It 'allows retry when reviewRound is 0 and increments to 1' {
             $script:state.reviewRound = 0
             Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict
             $script:state.reviewRound | Should -BeExactly 1
         }
 
-        It 'allows retry when reviewRound is MaxReviewRounds - 1' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds'] - 1
+        It 'allows retry when reviewRound is 2 and increments to 3' {
+            $script:state.reviewRound = 2
             Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict
-            $script:state.reviewRound | Should -BeExactly $script:cfg['MaxReviewRounds']
+            $script:state.reviewRound | Should -BeExactly 3
         }
 
-        It 'throws with exhaustion message when retry verdict at reviewRound >= MaxReviewRounds' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds']
-            { Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict } |
-                Should -Throw -ExpectedMessage '*review*round*exhaust*'
+        It 'allows retry when reviewRound is 10 (high round)' {
+            $script:state.reviewRound = 10
+            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict
+            $script:state.reviewRound | Should -BeExactly 11
         }
     }
 
-    Context 'Pass verdict has no round guard — passes at any reviewRound' {
-        It 'allows pass when reviewRound equals MaxReviewRounds' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds']
+    Context 'Pass verdict passes at any reviewRound' {
+        It 'allows pass when reviewRound is 10 (high round)' {
+            $script:state.reviewRound = 10
             Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:passVerdict
             $script:state.pipelineState | Should -BeExactly 'mergeQueue'
         }
@@ -422,6 +400,37 @@ Describe 'Resolve-PreMergeVerdict' {
         It 'state is TypeOK after retry verdict' {
             Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict
             Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
+        }
+    }
+
+    Context 'DB sync via Update-PipelineState' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState, $ReviewGateType, $Verdict, $ReviewRound) }
+        }
+        AfterAll { Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue }
+
+        It 'syncs pass verdict to DB' {
+            Mock Update-PipelineState {}
+            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:passVerdict -FeatureName 'feat-1'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-1' -and $PipelineState -eq 'mergeQueue'
+            }
+        }
+
+        It 'syncs fail verdict to DB' {
+            Mock Update-PipelineState {}
+            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:failVerdict -FeatureName 'feat-1'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-1' -and $PipelineState -eq 'reviewFix'
+            }
+        }
+
+        It 'syncs retry verdict to DB' {
+            Mock Update-PipelineState {}
+            Resolve-PreMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:retryVerdict -FeatureName 'feat-1'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-1'
+            }
         }
     }
 }

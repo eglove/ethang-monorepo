@@ -64,7 +64,7 @@ function Invoke-RedPhase {
     # Run verify-test
     $workDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
     try {
-        $exitCode = Invoke-VerifyCommand -Command $Config.VerifyTest -WorkingDirectory $workDir
+        $exitCode = Invoke-VerifyCommand -Command 'pnpm test' -WorkingDirectory $workDir
     }
     catch {
         Write-TaskLog -TaskId $taskId -Phase 'red' -Message "ESCALATED: Verify command infrastructure failure" -FeatureDir $FeatureDir -RunId $RunId
@@ -89,16 +89,6 @@ function Invoke-RedPhase {
     Write-TaskLog -TaskId $taskId -Phase 'red_retry' -Message 'Tests passed unexpectedly — entering RED retry' -FeatureDir $FeatureDir -RunId $RunId
 
     while ($true) {
-        # Boundary check BEFORE dispatch
-        if ($Counters.redRetries -ge $Config.MaxRedRetries) {
-            Write-TaskLog -TaskId $taskId -Phase 'red_retry' -Message "ESCALATED: RED retry exhausted ($($Counters.redRetries)/$($Config.MaxRedRetries))" -FeatureDir $FeatureDir -RunId $RunId
-            return ConvertTo-TaskResult @{
-                TaskId = $taskId; Phase = 'red_retry'; Status = 'escalated'
-                Counters = $Counters; Escalated = $true; Error = 'RED retry exhausted'
-                TestFiles = $testFiles
-            }
-        }
-
         $Counters.redRetries++
         $retryPrompt = "Tests passed unexpectedly. Revise the tests or determine if the feature is already implemented.`nReturn JSON with 'verdict': 'revised' or 'already_implemented'"
 
@@ -132,7 +122,7 @@ function Invoke-RedPhase {
         if ($verdict -eq 'revised' -or -not $verdict) {
             # Re-run tests
             try {
-                $exitCode = Invoke-VerifyCommand -Command $Config.VerifyTest -WorkingDirectory $workDir
+                $exitCode = Invoke-VerifyCommand -Command 'pnpm test' -WorkingDirectory $workDir
             }
             catch {
                 Write-TaskLog -TaskId $taskId -Phase 'red_retry' -Message "ESCALATED: Verify infrastructure failure" -FeatureDir $FeatureDir -RunId $RunId
@@ -152,7 +142,7 @@ function Invoke-RedPhase {
                 }
             }
 
-            Write-TaskLog -TaskId $taskId -Phase 'red_retry' -Message "Tests still pass — retry $($Counters.redRetries)/$($Config.MaxRedRetries)" -FeatureDir $FeatureDir -RunId $RunId
+            Write-TaskLog -TaskId $taskId -Phase 'red_retry' -Message "Tests still pass — retry $($Counters.redRetries)" -FeatureDir $FeatureDir -RunId $RunId
         }
     }
 }

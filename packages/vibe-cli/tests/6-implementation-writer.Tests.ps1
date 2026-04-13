@@ -1,5 +1,5 @@
 BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/pipeline-log.ps1"
     . "$PSScriptRoot/../utils/resolve-pipeline-state.ps1"
     . "$PSScriptRoot/../stages/5-implementation-writer.ps1"

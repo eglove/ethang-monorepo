@@ -17,7 +17,7 @@
         return @{ Status = 'pass'; Counters = @{ cleanupCleanPasses = 2 } }
     }
 
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -28,8 +28,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -89,7 +87,7 @@
         Enter-ReviewGate -State $State -Config $Config -GateType $GateType
         $trace = @("enter:$GateType")
         $verdictIdx = 0
-        $maxSteps = ($Config['MaxReviewRounds'] + 1) * ($Config['MaxKeepGoingResets'] + 1) * ($Config['MaxTddKeepGoingPerGate'] + 1) * 4
+        $maxSteps = 500  # generous upper bound since retry limits have been removed
         $step = 0
 
         while (-not (Test-PipelineTerminal -State $State)) {
@@ -211,18 +209,18 @@ Describe 'L1 — EventuallyTerminates' {
         }
     }
 
-    It 'terminates when escalation always returns Stop' {
+    It 'continues through fails until verdicts exhaust then auto-passes' {
         $state = New-PipelineState
         $state.pipelineState = 'running'
         $state.lockHolder    = 1
 
-        # All fails → exhaust rounds → Stop
+        # All fails — with no retry limits, when verdicts run out the driver forces pass
         $seq = @('fail', 'fail', 'fail', 'fail', 'fail')
 
         $result = Invoke-StateMachineDriver -State $state -Config $script:cfg `
             -GateType 'preMerge' -VerdictSequence $seq -EscalationChoice 'Stop'
 
-        $result.FinalState | Should -BeExactly 'HALTED'
+        $result.FinalState | Should -BeExactly 'mergeQueue'
     }
 }
 
@@ -249,40 +247,17 @@ Describe 'L2 — ReviewGateResolves' {
         $result.Steps | Should -BeLessOrEqual 5
     }
 
-    It 'pre-merge review halts after max rounds exhausted with Stop' {
+    It 'pre-merge review resolves to mergeQueue on pass after retries' {
         $state = New-PipelineState
         $state.pipelineState = 'running'
         $state.lockHolder    = 1
 
-        $maxRetries = $script:cfg['MaxReviewRounds']
-        $seq = @('retry') * ($maxRetries + 1)  # One more than allowed
+        $seq = @('retry', 'retry', 'retry', 'pass')
 
         $result = Invoke-StateMachineDriver -State $state -Config $script:cfg `
             -GateType 'preMerge' -VerdictSequence $seq -EscalationChoice 'Stop'
 
-        $result.FinalState | Should -BeExactly 'HALTED'
-    }
-
-    It 'review gate resolves within bounded steps with MaxReviewRounds=1, MaxKeepGoingResets=0' {
-        $env:VIBE_MAX_REVIEW_ROUNDS = '1'
-        $env:VIBE_MAX_KEEP_GOING_RESETS = '0'
-        try {
-            $minCfg = Get-PipelineConfig
-            $state = New-PipelineState
-            $state.pipelineState = 'running'
-            $state.lockHolder    = 1
-
-            $seq = @('fail', 'fail')  # First fail → fix → re-review, second → exhaustion → forced stop
-
-            $result = Invoke-StateMachineDriver -State $state -Config $minCfg `
-                -GateType 'preMerge' -VerdictSequence $seq -EscalationChoice 'KeepGoing'
-
-            $result.FinalState | Should -BeExactly 'HALTED'
-        }
-        finally {
-            Remove-Item Env:\VIBE_MAX_REVIEW_ROUNDS -ErrorAction SilentlyContinue
-            Remove-Item Env:\VIBE_MAX_KEEP_GOING_RESETS -ErrorAction SilentlyContinue
-        }
+        $result.FinalState | Should -BeExactly 'mergeQueue'
     }
 }
 
@@ -307,21 +282,6 @@ Describe 'L2b — FinalReviewResolves' {
             -GateType 'final' -VerdictSequence @('pass')
 
         $result.FinalState | Should -BeExactly 'COMPLETE'
-    }
-
-    It 'final review halts on exhaustion with Stop' {
-        $state = New-PipelineState
-        $state.pipelineState = 'running'
-        $state.lockHolder    = 1
-        $state.tasksDone     = $script:cfg['NumTasks']
-
-        $maxRetries = $script:cfg['MaxReviewRounds']
-        $seq = @('retry') * ($maxRetries + 1)
-
-        $result = Invoke-StateMachineDriver -State $state -Config $script:cfg `
-            -GateType 'final' -VerdictSequence $seq -EscalationChoice 'Stop'
-
-        $result.FinalState | Should -BeExactly 'HALTED'
     }
 
     It 'final review with fail-then-pass completes' {
@@ -371,7 +331,7 @@ Describe 'L3 — AllTasksResolve' {
         $result.FinalState | Should -BeExactly 'COMPLETE'
     }
 
-    It 'all-fail with Stop yields HALTED' {
+    It 'all-fail exhausts verdict sequence then auto-passes to mergeQueue' {
         $state = New-PipelineState
         $state.pipelineState = 'running'
         $state.lockHolder    = 1
@@ -381,7 +341,7 @@ Describe 'L3 — AllTasksResolve' {
         $result = Invoke-StateMachineDriver -State $state -Config $script:cfg `
             -GateType 'preMerge' -VerdictSequence $seq -EscalationChoice 'Stop'
 
-        $result.FinalState | Should -BeExactly 'HALTED'
+        $result.FinalState | Should -BeExactly 'mergeQueue'
     }
 
     It 'every terminal state has lockHolder=$null (invariant S2)' {
@@ -413,7 +373,7 @@ Describe 'Liveness with boundary configs' {
         Mock Write-TaskLog {}
     }
 
-    It 'terminates with full counters (MaxReviewRounds=3, MaxKeepGoingResets=3, MaxTddKeepGoingPerGate=5)' {
+    It 'terminates with default config and long mixed sequence' {
         $cfg = Get-PipelineConfig
         $state = New-PipelineState
         $state.pipelineState = 'running'

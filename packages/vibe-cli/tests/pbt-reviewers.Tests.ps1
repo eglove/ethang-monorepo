@@ -24,7 +24,7 @@ BeforeAll {
     }
 
     # Load production modules (review-gate.ps1 dots read-escalation.ps1)
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -35,8 +35,6 @@ BeforeAll {
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -80,18 +78,6 @@ BeforeAll {
             param($S, $C)
             ($S.pipelineState -in @('idle', 'COMPLETE', 'HALTED')) -or ($S.lockHolder -eq 1)
         }
-        'ReviewRoundBounded' = {
-            param($S, $C)
-            $S.reviewRound -le $C['MaxReviewRounds']
-        }
-        'KeepGoingResetsBounded' = {
-            param($S, $C)
-            $S.keepGoingResets -le $C['MaxKeepGoingResets']
-        }
-        'TddKeepGoingBounded' = {
-            param($S, $C)
-            $S.tddKeepGoingCount -le $C['MaxTddKeepGoingPerGate']
-        }
         'TaskCountBounded' = {
             param($S, $C)
             $S.tasksDone -le $C['NumTasks']
@@ -100,10 +86,6 @@ BeforeAll {
             param($S, $C)
             -not ($S.pipelineState -in @('finalReview', 'finalReviewFix')) -or
             ($S.tasksDone -eq $C['NumTasks'])
-        }
-        'GlobalTimeoutHalts' = {
-            param($S, $C)
-            -not $S.globalTimedOut -or ($S.pipelineState -eq 'HALTED')
         }
     }
 }
@@ -118,7 +100,7 @@ Describe 'PBT Safety — Pre-merge gate with random verdicts' -Tag 'PBT' {
         Mock Write-TaskLog {}
     }
 
-    It 'all 9 invariants hold across 100 random pre-merge trials' {
+    It 'all 6 invariants hold across 100 random pre-merge trials' {
         $result = Invoke-PropertyCheck -NumTrials 100 -SeedBase 1 `
             -Setup {
                 param($Rng)
@@ -151,7 +133,7 @@ Describe 'PBT Safety — Final review gate with random verdicts' -Tag 'PBT' {
         Mock Write-TaskLog {}
     }
 
-    It 'all 9 invariants hold across 100 random final review trials' {
+    It 'all 6 invariants hold across 100 random final review trials' {
         $result = Invoke-PropertyCheck -NumTrials 100 -SeedBase 200 `
             -Setup {
                 param($Rng)
@@ -166,65 +148,6 @@ Describe 'PBT Safety — Final review gate with random verdicts' -Tag 'PBT' {
                     VerdictSeq   = New-RandomVerdictSequence -Rng $Rng -Length 30
                     EscalationSeq = New-RandomEscalationSequence -Rng $Rng -Length 20
                     GateType     = 'final'
-                }
-            } `
-            -Driver { param($Ctx) Invoke-ReviewerPbtDriver -Ctx $Ctx } `
-            -Invariants $script:ReviewerInvariants
-
-        $result.Passed | Should -BeTrue -Because (Format-PropertyFailure $result)
-    }
-}
-
-# =============================================================================
-# Safety Properties — Timeout injection
-# =============================================================================
-
-Describe 'PBT Safety — Nondeterministic timeout injection' -Tag 'PBT' {
-    BeforeEach {
-        Mock Write-PipelineLog {}
-        Mock Write-TaskLog {}
-    }
-
-    It 'invariants hold with gate timeout injection (50 trials)' {
-        $result = Invoke-PropertyCheck -NumTrials 50 -SeedBase 400 `
-            -Setup {
-                param($Rng)
-                $cfg = New-RandomPipelineConfig -Rng $Rng
-                $state = New-PipelineState
-                $state.pipelineState = 'running'
-                $state.lockHolder = 1
-                @{
-                    State           = $state
-                    Config          = $cfg
-                    VerdictSeq      = New-RandomVerdictSequence -Rng $Rng -Length 30
-                    EscalationSeq   = New-RandomEscalationSequence -Rng $Rng -Length 20
-                    GateType        = 'preMerge'
-                    TimeoutSchedule = New-RandomTimeoutSchedule -Rng $Rng -MaxSteps 30 `
-                        -GateTimeoutProbability 0.5 -GlobalTimeoutProbability 0.0
-                }
-            } `
-            -Driver { param($Ctx) Invoke-ReviewerPbtDriver -Ctx $Ctx } `
-            -Invariants $script:ReviewerInvariants
-
-        $result.Passed | Should -BeTrue -Because (Format-PropertyFailure $result)
-    }
-
-    It 'invariants hold with global timeout injection (50 trials)' {
-        $result = Invoke-PropertyCheck -NumTrials 50 -SeedBase 500 `
-            -Setup {
-                param($Rng)
-                $cfg = New-RandomPipelineConfig -Rng $Rng
-                $state = New-PipelineState
-                $state.pipelineState = 'running'
-                $state.lockHolder = 1
-                @{
-                    State           = $state
-                    Config          = $cfg
-                    VerdictSeq      = New-RandomVerdictSequence -Rng $Rng -Length 30
-                    EscalationSeq   = New-RandomEscalationSequence -Rng $Rng -Length 20
-                    GateType        = 'preMerge'
-                    TimeoutSchedule = New-RandomTimeoutSchedule -Rng $Rng -MaxSteps 20 `
-                        -GateTimeoutProbability 0.0 -GlobalTimeoutProbability 0.5
                 }
             } `
             -Driver { param($Ctx) Invoke-ReviewerPbtDriver -Ctx $Ctx } `

@@ -10,9 +10,7 @@
         "reviewRound": 0,
         "pipelineState": "idle",
         "reviewGateType": "none",
-        "gateTimedOut": false,
         "keepGoingResets": 0,
-        "globalTimedOut": false,
         "verdict": null
       }
     },
@@ -26,9 +24,7 @@
         "reviewRound": 0,
         "pipelineState": "locked",
         "reviewGateType": "none",
-        "gateTimedOut": false,
         "keepGoingResets": 0,
-        "globalTimedOut": false,
         "verdict": null
       }
     },
@@ -42,9 +38,7 @@
         "reviewRound": 0,
         "pipelineState": "running",
         "reviewGateType": "none",
-        "gateTimedOut": false,
         "keepGoingResets": 0,
-        "globalTimedOut": false,
         "verdict": null
       }
     },
@@ -58,9 +52,7 @@
         "reviewRound": 0,
         "pipelineState": "preMergeReview",
         "reviewGateType": "preMerge",
-        "gateTimedOut": false,
         "keepGoingResets": 0,
-        "globalTimedOut": false,
         "verdict": null
       }
     },
@@ -74,9 +66,7 @@
         "reviewRound": 1,
         "pipelineState": "preMergeReview",
         "reviewGateType": "preMerge",
-        "gateTimedOut": false,
         "keepGoingResets": 0,
-        "globalTimedOut": false,
         "verdict": null
       }
     },
@@ -90,9 +80,7 @@
         "reviewRound": 0,
         "pipelineState": "preMergeReview",
         "reviewGateType": "preMerge",
-        "gateTimedOut": false,
         "keepGoingResets": 1,
-        "globalTimedOut": false,
         "verdict": null
       }
     },
@@ -106,9 +94,7 @@
         "reviewRound": 1,
         "pipelineState": "preMergeReview",
         "reviewGateType": "preMerge",
-        "gateTimedOut": false,
         "keepGoingResets": 1,
-        "globalTimedOut": false,
         "verdict": null
       }
     },
@@ -122,9 +108,7 @@
         "reviewRound": 1,
         "pipelineState": "HALTED",
         "reviewGateType": "preMerge",
-        "gateTimedOut": false,
         "keepGoingResets": 1,
-        "globalTimedOut": false,
         "verdict": null
       }
     }

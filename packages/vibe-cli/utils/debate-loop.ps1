@@ -29,8 +29,6 @@ function Invoke-DebateLoop {
 
         [scriptblock]$PostRevision,
 
-        [int]$MaxRounds = $Config.MaxDebateRounds,
-
         [string]$StageName = "Debate"
     )
 
@@ -38,8 +36,8 @@ function Invoke-DebateLoop {
     $referencePath = if ($ReferenceFile) { (Resolve-Path $ReferenceFile).Path } else { $null }
     $artifactPath = (Resolve-Path $ArtifactFile).Path
 
-    for ($round = 1; $round -le $MaxRounds; $round++) {
-        Write-PipelineLog "$StageName debate round $round..." -Color Yellow
+    for ($round = 1; ; $round++) {
+        Write-PipelineLog "$StageName debate round $round..."
 
         $prompt = "Read all artifacts in the feature directory for context: $featureDirPath`n`n"
         if ($referencePath) { $prompt += "Read the reference document (prior stage output) from: $referencePath`n`n" }
@@ -53,47 +51,41 @@ function Invoke-DebateLoop {
                 ConvertFrom-Json
         }
         catch {
-            Write-PipelineLog "$StageName round=$round ERROR: invalid JSON from debate moderator: $_" -Color Yellow
+            Write-PipelineLog "$StageName round=$round ERROR: invalid JSON from debate moderator: $_"
             continue
         }
 
         Write-PipelineLog "$StageName round=$round result=$($debate.result) experts=$($debate.experts -join ',') objections=$($debate.objections.Count)"
 
         if ($debate.result -eq 'CONSENSUS_REACHED') {
-            Write-PipelineLog "$StageName consensus reached." -Color Green
-            Write-PipelineLog "Recommendation: $($debate.recommendation)" -Color Green
+            Write-PipelineLog "$StageName consensus reached."
+            Write-PipelineLog "Recommendation: $($debate.recommendation)"
 
             # Apply the consensus recommendation as a final revision
             if ($debate.recommendation) {
-                Write-PipelineLog "Applying consensus recommendation to $ArtifactFile ..." -Color Cyan
+                Write-PipelineLog "Applying consensus recommendation to $ArtifactFile ..."
                 $revisionPrompt = & $BuildRevisionPrompt $artifactPath $debate.recommendation
                 Invoke-Claude -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
                 if ($PostRevision) {
-                    Write-PipelineLog "Running post-revision check..." -Color Yellow
+                    Write-PipelineLog "Running post-revision check..."
                     & $PostRevision
                 }
-                Write-PipelineLog "Revision complete." -Color Green
+                Write-PipelineLog "Revision complete."
             }
             else {
-                Write-PipelineLog "No recommendation to apply." -Color Yellow
+                Write-PipelineLog "No recommendation to apply."
             }
 
-            return $debate
-        }
-
-        if ($round -ge $MaxRounds) {
-            Write-PipelineLog "$StageName partial consensus after $MaxRounds rounds." -Color Yellow
-            Write-PipelineLog "Unresolved: $($debate.objections -join '; ')" -Color Yellow
             return $debate
         }
 
         $objectionList = $debate.objections -join "`n- "
-        Write-PipelineLog "Revising ($($debate.objections.Count) objections)..." -Color Yellow
+        Write-PipelineLog "Revising ($($debate.objections.Count) objections)..."
 
         $revisionPrompt = & $BuildRevisionPrompt $artifactPath $objectionList
         Invoke-Claude -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
         if ($PostRevision) {
-            Write-PipelineLog "Running post-revision check..." -Color Yellow
+            Write-PipelineLog "Running post-revision check..."
             & $PostRevision
         }
     }

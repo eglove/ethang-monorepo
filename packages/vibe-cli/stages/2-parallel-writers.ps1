@@ -15,8 +15,6 @@
         throw "Elicitor briefing not found: $briefingPath"
     }
 
-    $briefing = Get-Content $briefingPath -Raw
-
     Write-PipelineLog -Message "Stage 2: dispatching BDD and TLA+ writers in parallel" -Root $Root
 
     $jobs = @{
@@ -24,7 +22,7 @@
             Script = {
                 $rootArg = $args[0]
                 $featureDirArg = $args[1]
-                $briefingArg = $args[2]
+                $briefingPathArg = $args[2]
 
                 . "$rootArg/utils/pipeline-log.ps1"
                 . "$rootArg/utils/invoke-claude.ps1"
@@ -33,18 +31,18 @@
 
                 Invoke-Claude `
                     -SystemPromptFile "$rootArg/agents/doc-writers/bdd-writer.md" `
-                    -Prompt "Briefing:`n$briefingArg`nSave to: $outputFile" | Out-Null
+                    -Prompt "Read the elicitor briefing from: $briefingPathArg`nSave to: $outputFile" | Out-Null
 
                 if (-not (Test-Path $outputFile)) { throw "BDD writer did not produce $outputFile" }
                 return $outputFile
             }
-            Args = @($Root, $absFeatureDir, $briefing)
+            Args = @($Root, $absFeatureDir, $briefingPath)
         }
         tla = @{
             Script = {
                 $rootArg = $args[0]
                 $featureDirArg = $args[1]
-                $briefingArg = $args[2]
+                $briefingPathArg = $args[2]
 
                 . "$rootArg/utils/pipeline-log.ps1"
                 . "$rootArg/utils/invoke-claude.ps1"
@@ -55,17 +53,17 @@
 
                 Invoke-Claude `
                     -SystemPromptFile "$rootArg/agents/doc-writers/tla-writer.md" `
-                    -Prompt "Read the elicitor briefing:`n$briefingArg`n`nWrite the TLA+ specification. Save all files to: $tlaDir" | Out-Null
+                    -Prompt "Read the elicitor briefing from: $briefingPathArg`n`nWrite the TLA+ specification. Save all files to: $tlaDir" | Out-Null
 
                 Invoke-TlcCheck `
                     -TlaDir $tlaDir `
                     -TlaWriterFile "$rootArg/agents/doc-writers/tla-writer.md" `
-                    -FixContext "Original briefing elicitor content provided inline"
+                    -FixContext "Elicitor briefing: $briefingPathArg"
 
                 $tlaFile = Get-ChildItem "$tlaDir/*.tla" | Select-Object -First 1
                 return @{ TlaFile = $tlaFile; TlaDir = $tlaDir }
             }
-            Args = @($Root, $absFeatureDir, $briefing)
+            Args = @($Root, $absFeatureDir, $briefingPath)
         }
     }
 

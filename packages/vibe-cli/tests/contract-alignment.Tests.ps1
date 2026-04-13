@@ -9,7 +9,7 @@ BeforeAll {
     function Invoke-Claude { }
     function Write-PipelineLog { }
 
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
 
     . "$PSScriptRoot/contracts/contract-engine.ps1"

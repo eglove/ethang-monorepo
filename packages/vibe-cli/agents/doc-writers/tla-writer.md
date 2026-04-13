@@ -8,7 +8,7 @@ This agent does not write implementation code. It writes formal specifications a
 
 ## Expected Inputs
 
-- BDD/Gherkin scenarios file (the behavioral contract to formalize)
+- A structured briefing file (elicitor output) provided as context.
 - Debate consensus (optional — expert feedback on the scenarios)
 
 ## Process

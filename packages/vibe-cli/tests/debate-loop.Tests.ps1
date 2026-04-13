@@ -1,5 +1,5 @@
 ﻿BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/debate-loop.ps1"
 }
 
@@ -43,7 +43,6 @@ Describe 'Invoke-DebateLoop' {
             -ArtifactFile $script:artifactFile `
             -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
-            -MaxRounds 5
 
         $result.result | Should -Be 'CONSENSUS_REACHED'
         # Writer should NOT be called — empty recommendation
@@ -69,7 +68,6 @@ Describe 'Invoke-DebateLoop' {
             -ArtifactFile $script:artifactFile `
             -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
-            -MaxRounds 5
 
         $result.result | Should -Be 'CONSENSUS_REACHED'
         # Moderator + writer = 2 calls
@@ -101,29 +99,10 @@ Describe 'Invoke-DebateLoop' {
             -ArtifactFile $script:artifactFile `
             -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
-            -MaxRounds 5
 
         $result.result | Should -Be 'CONSENSUS_REACHED'
         # Round 1 moderator + writer + Round 2 moderator = 3
         Should -Invoke Invoke-Claude -Times 3 -Exactly
-    }
-
-    It 'stops at MaxRounds with PARTIAL_CONSENSUS' {
-        Mock Invoke-Claude {
-            '{"result":"PARTIAL_CONSENSUS","rounds":1,"experts":["a"],"recommendation":"","objections":["unresolved"],"sessionFile":"s.md"}'
-        }
-
-        $result = Invoke-DebateLoop `
-            -DebateModFile $script:modFile `
-            -WriterFile $script:writerFile `
-            -DebateContext 'test' `
-            -SessionFile $script:sessionFile `
-            -ArtifactFile $script:artifactFile `
-            -FeatureDir $script:tempDir `
-            -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
-            -MaxRounds 2
-
-        $result.result | Should -Be 'PARTIAL_CONSENSUS'
     }
 
     It 'retries on invalid JSON from moderator' {
@@ -146,7 +125,6 @@ Describe 'Invoke-DebateLoop' {
             -ArtifactFile $script:artifactFile `
             -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
-            -MaxRounds 5
 
         $result.result | Should -Be 'CONSENSUS_REACHED'
         # First call returned junk, second succeeded
@@ -172,7 +150,6 @@ Describe 'Invoke-DebateLoop' {
             -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
             -PostRevision { $script:postRevisionCalled = $true } `
-            -MaxRounds 5
 
         $script:postRevisionCalled | Should -BeTrue
     }
@@ -199,7 +176,6 @@ Describe 'Invoke-DebateLoop' {
             -FeatureDir $script:tempDir `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
             -PostRevision { $script:postRevisionCount++ } `
-            -MaxRounds 5
 
         # Called once for the objection revision
         $script:postRevisionCount | Should -Be 1
@@ -225,7 +201,6 @@ Describe 'Invoke-DebateLoop' {
             -FeatureDir $script:tempDir `
             -ReferenceFile $refFile `
             -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
-            -MaxRounds 5
 
         $script:capturedPrompt | Should -Match 'Reference document'
         $script:capturedPrompt | Should -Match 'ref\.feature'

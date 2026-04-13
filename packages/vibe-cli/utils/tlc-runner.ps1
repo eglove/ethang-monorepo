@@ -5,7 +5,7 @@ function Invoke-TlcProcess {
     .SYNOPSIS
         Runs TLC with a timeout, returning output and status.
     .OUTPUTS
-        Hashtable with keys: Output (string), ExitCode (int), TimedOut (bool)
+        Hashtable with keys: Output (string), ExitCode (int)
     #>
     param(
         [Parameter(Mandatory)]
@@ -17,9 +17,7 @@ function Invoke-TlcProcess {
         [Parameter(Mandatory)]
         [string]$CfgFileName,
 
-        [string]$ExtraArgs = '',
-
-        [int]$TimeoutSeconds = $Config.TlcTimeoutSeconds
+        [string]$ExtraArgs = ''
     )
 
     $psi = [System.Diagnostics.ProcessStartInfo]::new()
@@ -36,44 +34,23 @@ function Invoke-TlcProcess {
     $proc = [System.Diagnostics.Process]::new()
     $proc.StartInfo = $psi
 
-    $stdoutBuilder = [System.Text.StringBuilder]::new()
-    $stderrBuilder = [System.Text.StringBuilder]::new()
-
-    # Use events for async output capture to avoid deadlocks
-    $stdoutEvent = Register-ObjectEvent -InputObject $proc -EventName OutputDataReceived -Action {
-        if ($null -ne $EventArgs.Data) {
-            $Event.MessageData.AppendLine($EventArgs.Data) | Out-Null
-        }
-    } -MessageData $stdoutBuilder
-
-    $stderrEvent = Register-ObjectEvent -InputObject $proc -EventName ErrorDataReceived -Action {
-        if ($null -ne $EventArgs.Data) {
-            $Event.MessageData.AppendLine($EventArgs.Data) | Out-Null
-        }
-    } -MessageData $stderrBuilder
-
     try {
         $proc.Start() | Out-Null
-        $proc.BeginOutputReadLine()
-        $proc.BeginErrorReadLine()
 
-        $timeoutMs = $TimeoutSeconds * 1000
-        $exited = $proc.WaitForExit($timeoutMs)
-        $timedOut = -not $exited
+        # Read both streams concurrently via async tasks to avoid deadlocks.
+        # ReadToEndAsync runs on the thread pool with no PowerShell runspace needed,
+        # unlike Register-ObjectEvent (whose event pump is blocked by WaitForExit)
+        # or add_OutputDataReceived (which crashes without a runspace).
+        $stdoutTask = $proc.StandardOutput.ReadToEndAsync()
+        $stderrTask = $proc.StandardError.ReadToEndAsync()
 
-        if ($timedOut) {
-            Write-PipelineLog "TLC timed out after ${TimeoutSeconds}s — killing process" -Color Yellow
-            try { $proc.Kill() } catch { }
-        }
-
-        # Parameterless WaitForExit ensures async output handlers have drained
         $proc.WaitForExit()
 
-        $exitCode = if ($timedOut) { -1 } else { $proc.ExitCode }
+        $exitCode = $proc.ExitCode
+        $output = $stdoutTask.GetAwaiter().GetResult()
+        $errOutput = $stderrTask.GetAwaiter().GetResult()
 
         # Combine stdout + stderr (TLC writes some output to stderr)
-        $output = $stdoutBuilder.ToString()
-        $errOutput = $stderrBuilder.ToString()
         if ($errOutput) {
             $output = ($output + "`n" + $errOutput).Trim()
         }
@@ -81,21 +58,16 @@ function Invoke-TlcProcess {
         # Log each line
         foreach ($line in ($output -split "`n")) {
             if ($line.Trim()) {
-                Write-PipelineLog "  $line" -Color DarkGray
+                Write-PipelineLog "  $line"
             }
         }
 
         return @{
             Output   = $output
             ExitCode = $exitCode
-            TimedOut  = $timedOut
         }
     }
     finally {
-        Unregister-Event -SourceIdentifier $stdoutEvent.Name -ErrorAction SilentlyContinue
-        Unregister-Event -SourceIdentifier $stderrEvent.Name -ErrorAction SilentlyContinue
-        Remove-Job -Id $stdoutEvent.Id -Force -ErrorAction SilentlyContinue
-        Remove-Job -Id $stderrEvent.Id -Force -ErrorAction SilentlyContinue
         $proc.Dispose()
     }
 }
@@ -108,48 +80,31 @@ function Invoke-TlcCheck {
         [Parameter(Mandatory)]
         [string]$TlaWriterFile,
 
-        [string]$FixContext,
-
-        [int]$MaxAttempts = $Config.MaxTlcAttempts,
-
-        [int]$TimeoutSeconds = $Config.TlcTimeoutSeconds
+        [string]$FixContext
     )
 
-    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+    for ($attempt = 1; ; $attempt++) {
         $tlaFile = Get-ChildItem "$TlaDir/*.tla" -ErrorAction SilentlyContinue | Select-Object -First 1
         $cfgFile = Get-ChildItem "$TlaDir/*.cfg" -ErrorAction SilentlyContinue | Select-Object -First 1
 
         if (-not $tlaFile) { throw "No .tla file found in $TlaDir" }
         if (-not $cfgFile) { throw "No .cfg file found in $TlaDir" }
 
-        Write-PipelineLog "TLC check (attempt $attempt/$MaxAttempts)..." -Color Yellow
+        Write-PipelineLog "TLC check (attempt $attempt)..."
 
-        $result = Invoke-TlcProcess -TlaDir $TlaDir -TlaFileName $tlaFile.Name -CfgFileName $cfgFile.Name -TimeoutSeconds $TimeoutSeconds
+        $result = Invoke-TlcProcess -TlaDir $TlaDir -TlaFileName $tlaFile.Name -CfgFileName $cfgFile.Name
         $tlcText = $result.Output
         $tlcExitCode = $result.ExitCode
 
-        if (-not $result.TimedOut -and $tlcExitCode -eq 0 -and $tlcText -notmatch 'Error:|violated|TLC threw') {
-            Write-PipelineLog "TLC passed attempt=$attempt" -Color Green
+        if ($tlcExitCode -eq 0 -and $tlcText -notmatch 'Error:|violated|TLC threw') {
+            Write-PipelineLog "TLC passed attempt=$attempt"
             return
         }
 
-        if ($result.TimedOut) {
-            Write-PipelineLog "TLC timed out attempt=$attempt" -Color Yellow
-        } else {
-            Write-PipelineLog "TLC failed attempt=$attempt exitCode=$tlcExitCode" -Color Yellow
-        }
+        Write-PipelineLog "TLC failed attempt=$attempt exitCode=$tlcExitCode"
 
-        if ($attempt -ge $MaxAttempts) {
-            $reason = if ($result.TimedOut) { "timed out" } else { "failed" }
-            Write-PipelineLog "ERROR: TLC verification $reason after $MaxAttempts attempts" -Color Red
-            throw "TLA+ specification $reason TLC verification after $MaxAttempts attempts"
-        }
-
-        Write-PipelineLog "TLC failed — sending errors back to writer..." -Color Yellow
+        Write-PipelineLog "TLC failed — sending errors back to writer..."
         $fixPrompt = "The TLA+ specification in $TlaDir failed TLC verification.`n`nTLC output:`n$tlcText"
-        if ($result.TimedOut) {
-            $fixPrompt += "`n`nNOTE: TLC timed out after ${TimeoutSeconds}s. The state space may be too large. Consider reducing model constants, adding symmetry sets, or tightening type invariants to constrain exploration."
-        }
         if ($FixContext) { $fixPrompt += "`n`n$FixContext" }
         $fixPrompt += "`n`nFix the specification and config. Save all files to: $TlaDir"
 
@@ -176,13 +131,11 @@ function Invoke-TlcSimulation {
 
         [int]$NumTraces = 5,
 
-        [int]$Depth = 50,
-
-        [int]$TimeoutSeconds = $Config.TlcTimeoutSeconds
+        [int]$Depth = 50
     )
 
     $result = Invoke-TlcProcess -TlaDir $TlaDir -TlaFileName $TlaFileName -CfgFileName $CfgFileName `
-        -ExtraArgs "-simulate `"num=$NumTraces`" -depth $Depth" -TimeoutSeconds $TimeoutSeconds
+        -ExtraArgs "-simulate `"num=$NumTraces`" -depth $Depth"
 
     if (-not $result.Output) { return , @() }
 

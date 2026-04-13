@@ -9,7 +9,7 @@
     function Invoke-CleanupPhase { }
     function Invoke-ReviewGate { }
 
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -20,8 +20,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -46,8 +44,6 @@ Describe 'Complete-ReviewFix' {
         $script:state.reviewGateType   = 'preMerge'
         $script:state.reviewRound      = 0
         $script:state.verdict          = $null
-        $script:state.gateTimedOut     = $false
-        $script:state.globalTimedOut   = $false
 
         Mock Write-PipelineLog {}
     }
@@ -106,16 +102,6 @@ Describe 'Complete-ReviewFix' {
             $script:state.tasksDone = 2
             Complete-ReviewFix -State $script:state -Config $script:cfg
             $script:state.tasksDone | Should -BeExactly 2
-        }
-
-        It 'preserves gateTimedOut as $false' {
-            Complete-ReviewFix -State $script:state -Config $script:cfg
-            $script:state.gateTimedOut | Should -BeExactly $false
-        }
-
-        It 'preserves globalTimedOut as $false' {
-            Complete-ReviewFix -State $script:state -Config $script:cfg
-            $script:state.globalTimedOut | Should -BeExactly $false
         }
 
         It 'preserves reviewGateType' {
@@ -198,16 +184,6 @@ Describe 'Complete-ReviewFix' {
             $script:state.tasksDone | Should -BeExactly 1
         }
 
-        It 'preserves gateTimedOut' {
-            Complete-ReviewFix -State $script:state -Config $script:cfg
-            $script:state.gateTimedOut | Should -BeExactly $false
-        }
-
-        It 'preserves globalTimedOut' {
-            Complete-ReviewFix -State $script:state -Config $script:cfg
-            $script:state.globalTimedOut | Should -BeExactly $false
-        }
-
         It 'preserves reviewGateType as "final"' {
             Complete-ReviewFix -State $script:state -Config $script:cfg
             $script:state.reviewGateType | Should -BeExactly 'final'
@@ -219,26 +195,49 @@ Describe 'Complete-ReviewFix' {
         }
     }
 
+    Context 'DB sync via Update-PipelineState' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState, $ReviewRound, $Verdict, $TddKeepGoingCount, $LockHolder, $FeatureStatus, $KeepGoingResets, $ReviewGateType) }
+        }
+        AfterAll { Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue }
+
+        It 'calls Update-PipelineState when FeatureName is provided' {
+            Mock Update-PipelineState {}
+            Complete-ReviewFix -State $script:state -Config $script:cfg -FeatureName 'my-feature'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'my-feature' -and $PipelineState -eq 'preMergeReview'
+            }
+        }
+
+        It 'syncs Invoke-TddKeepGoing to DB' {
+            Mock Update-PipelineState {}
+            Invoke-TddKeepGoing -State $script:state -Config $script:cfg -FeatureName 'feat-x'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-x' -and $TddKeepGoingCount -eq 1
+            }
+        }
+
+        It 'syncs Invoke-TddKeepGoingExhausted to DB' {
+            Mock Update-PipelineState {}
+            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg -FeatureName 'feat-x'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-x' -and $Verdict -eq 'fail'
+            }
+        }
+
+        It 'syncs Invoke-TddStopInFix to DB' {
+            Mock Update-PipelineState {}
+            Invoke-TddStopInFix -State $script:state -Config $script:cfg -FeatureName 'feat-x'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-x' -and $PipelineState -eq 'HALTED'
+            }
+        }
+    }
+
     Context 'Regression — reviewFix still routes to preMergeReview' {
         It 'transitions to preMergeReview from reviewFix' {
             Complete-ReviewFix -State $script:state -Config $script:cfg
             $script:state.pipelineState | Should -BeExactly 'preMergeReview'
-        }
-    }
-
-    Context 'Guard — rejects when gate timed out (TLA+ ~gateTimedOut)' {
-        It 'throws when gateTimedOut is $true' {
-            $script:state.gateTimedOut = $true
-            { Complete-ReviewFix -State $script:state -Config $script:cfg } |
-                Should -Throw -ExpectedMessage '*timed out*'
-        }
-    }
-
-    Context 'Guard — rejects when global timed out (TLA+ ~globalTimedOut)' {
-        It 'throws when globalTimedOut is $true' {
-            $script:state.globalTimedOut = $true
-            { Complete-ReviewFix -State $script:state -Config $script:cfg } |
-                Should -Throw -ExpectedMessage '*timed out*'
         }
     }
 
@@ -252,8 +251,8 @@ Describe 'Complete-ReviewFix' {
             Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
         }
 
-        It 'state is TypeOK when reviewRound was at MaxReviewRounds - 1' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds'] - 1
+        It 'state is TypeOK when reviewRound was at 2' {
+            $script:state.reviewRound = 2
             Complete-ReviewFix -State $script:state -Config $script:cfg
             Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
         }
@@ -654,7 +653,6 @@ Describe 'Invoke-ReviewFixCycle' {
 # =============================================================================
 # Invoke-TddKeepGoing — TLA+ TddKeepGoingInFix
 # BDD: "TDD cycles within a fix can be extended via Keep Going"
-#      "tddKeepGoingCount is bounded by MaxTddKeepGoingPerGate"
 # =============================================================================
 
 Describe 'Invoke-TddKeepGoing' {
@@ -669,8 +667,6 @@ Describe 'Invoke-TddKeepGoing' {
         $script:state.tddKeepGoingCount = 0
         $script:state.verdict          = $null
         $script:state.tasksDone        = 0
-        $script:state.gateTimedOut     = $false
-        $script:state.globalTimedOut   = $false
 
         Mock Write-PipelineLog {}
     }
@@ -687,8 +683,14 @@ Describe 'Invoke-TddKeepGoing' {
             $script:state.tddKeepGoingCount | Should -BeExactly 4
         }
 
-        It 'allows Keep Going at count < MaxTddKeepGoingPerGate' {
-            $script:state.tddKeepGoingCount = $script:cfg['MaxTddKeepGoingPerGate'] - 1
+        It 'allows Keep Going at count 4' {
+            $script:state.tddKeepGoingCount = 4
+            { Invoke-TddKeepGoing -State $script:state -Config $script:cfg } |
+                Should -Not -Throw
+        }
+
+        It 'allows Keep Going at high count (no limit)' {
+            $script:state.tddKeepGoingCount = 100
             { Invoke-TddKeepGoing -State $script:state -Config $script:cfg } |
                 Should -Not -Throw
         }
@@ -728,27 +730,9 @@ Describe 'Invoke-TddKeepGoing' {
             $script:state.tasksDone | Should -BeExactly 2
         }
 
-        It 'preserves gateTimedOut' {
-            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
-            $script:state.gateTimedOut | Should -BeExactly $false
-        }
-
-        It 'preserves globalTimedOut' {
-            Invoke-TddKeepGoing -State $script:state -Config $script:cfg
-            $script:state.globalTimedOut | Should -BeExactly $false
-        }
-
         It 'preserves reviewGateType' {
             Invoke-TddKeepGoing -State $script:state -Config $script:cfg
             $script:state.reviewGateType | Should -BeExactly 'preMerge'
-        }
-    }
-
-    Context 'Guard — rejects when count at cap' {
-        It 'throws when tddKeepGoingCount >= MaxTddKeepGoingPerGate' {
-            $script:state.tddKeepGoingCount = $script:cfg['MaxTddKeepGoingPerGate']
-            { Invoke-TddKeepGoing -State $script:state -Config $script:cfg } |
-                Should -Throw -ExpectedMessage '*TDD Keep Going exhausted*'
         }
     }
 
@@ -772,8 +756,8 @@ Describe 'Invoke-TddKeepGoing' {
             Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
         }
 
-        It 'state is TypeOK at MaxTddKeepGoingPerGate - 1' {
-            $script:state.tddKeepGoingCount = $script:cfg['MaxTddKeepGoingPerGate'] - 2
+        It 'state is TypeOK at tddKeepGoingCount 3' {
+            $script:state.tddKeepGoingCount = 3
             Invoke-TddKeepGoing -State $script:state -Config $script:cfg
             Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
         }
@@ -794,11 +778,9 @@ Describe 'Invoke-TddKeepGoingExhausted' {
         $script:state.reviewGateType   = 'preMerge'
         $script:state.reviewRound      = 1
         $script:state.keepGoingResets   = 0
-        $script:state.tddKeepGoingCount = $script:cfg['MaxTddKeepGoingPerGate']
+        $script:state.tddKeepGoingCount = 5
         $script:state.verdict          = $null
         $script:state.tasksDone        = 0
-        $script:state.gateTimedOut     = $false
-        $script:state.globalTimedOut   = $false
 
         Mock Write-PipelineLog {}
     }
@@ -841,22 +823,12 @@ Describe 'Invoke-TddKeepGoingExhausted' {
 
         It 'preserves tddKeepGoingCount (not reset on exhaustion)' {
             Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
-            $script:state.tddKeepGoingCount | Should -BeExactly $script:cfg['MaxTddKeepGoingPerGate']
+            $script:state.tddKeepGoingCount | Should -BeExactly 5
         }
 
         It 'preserves tasksDone' {
             Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
             $script:state.tasksDone | Should -BeExactly 0
-        }
-
-        It 'preserves gateTimedOut' {
-            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
-            $script:state.gateTimedOut | Should -BeExactly $false
-        }
-
-        It 'preserves globalTimedOut' {
-            Invoke-TddKeepGoingExhausted -State $script:state -Config $script:cfg
-            $script:state.globalTimedOut | Should -BeExactly $false
         }
 
         It 'preserves reviewGateType' {
@@ -898,8 +870,6 @@ Describe 'Invoke-TddStopInFix' {
         $script:state.tddKeepGoingCount = 2
         $script:state.verdict          = $null
         $script:state.tasksDone        = 0
-        $script:state.gateTimedOut     = $false
-        $script:state.globalTimedOut   = $false
 
         Mock Write-PipelineLog {}
     }
@@ -949,16 +919,6 @@ Describe 'Invoke-TddStopInFix' {
             $script:state.tasksDone | Should -BeExactly 0
         }
 
-        It 'preserves gateTimedOut' {
-            Invoke-TddStopInFix -State $script:state -Config $script:cfg
-            $script:state.gateTimedOut | Should -BeExactly $false
-        }
-
-        It 'preserves globalTimedOut' {
-            Invoke-TddStopInFix -State $script:state -Config $script:cfg
-            $script:state.globalTimedOut | Should -BeExactly $false
-        }
-
         It 'preserves reviewGateType' {
             Invoke-TddStopInFix -State $script:state -Config $script:cfg
             $script:state.reviewGateType | Should -BeExactly 'preMerge'
@@ -996,8 +956,6 @@ Describe 'tddKeepGoingCount stickiness across fix re-entries' {
         $script:state.reviewRound      = 0
         $script:state.tddKeepGoingCount = 3
         $script:state.verdict          = $null
-        $script:state.gateTimedOut     = $false
-        $script:state.globalTimedOut   = $false
 
         Mock Write-PipelineLog {}
     }
@@ -1012,14 +970,40 @@ Describe 'tddKeepGoingCount stickiness across fix re-entries' {
         $script:state.pipelineState = 'reviewFix'
         $script:state.tddKeepGoingCount | Should -BeExactly 3
 
-        # Only 2 more Keep Going selections remain (MaxTddKeepGoingPerGate=5)
+        # Continue Keep Going selections (no limit)
         Invoke-TddKeepGoing -State $script:state -Config $script:cfg
         $script:state.tddKeepGoingCount | Should -BeExactly 4
         Invoke-TddKeepGoing -State $script:state -Config $script:cfg
         $script:state.tddKeepGoingCount | Should -BeExactly 5
+        Invoke-TddKeepGoing -State $script:state -Config $script:cfg
+        $script:state.tddKeepGoingCount | Should -BeExactly 6
+    }
+}
 
-        # Now exhausted
-        { Invoke-TddKeepGoing -State $script:state -Config $script:cfg } |
-            Should -Throw -ExpectedMessage '*TDD Keep Going exhausted*'
+# =============================================================================
+# Stub function throw tests — sourcing review-fix.ps1 fresh without overrides
+# Covers L17, L22, L27 (3 missed commands)
+# =============================================================================
+
+Describe 'Stub function throws without implementation loaded' {
+    BeforeAll {
+        # Source review-fix.ps1 fresh to get the stub implementations
+        # without the stubs defined in the outer BeforeAll
+        . "$PSScriptRoot/../utils/review-fix.ps1"
+    }
+
+    It 'Invoke-RedPhase throws when no implementation loaded' {
+        { Invoke-RedPhase -State @{} -Config @{} -Task @{} -Blockers @() -Counters @{} -Root 'C:\fake' -FeatureDir 'C:\fake' } |
+            Should -Throw '*no implementation loaded*'
+    }
+
+    It 'Invoke-GreenPhase throws when no implementation loaded' {
+        { Invoke-GreenPhase -State @{} -Config @{} -Task @{} -Blockers @() -TestFiles @() -Counters @{} -Root 'C:\fake' -FeatureDir 'C:\fake' } |
+            Should -Throw '*no implementation loaded*'
+    }
+
+    It 'Invoke-CleanupPhase throws when no implementation loaded' {
+        { Invoke-CleanupPhase -State @{} -Config @{} -Task @{} -Counters @{} -Root 'C:\fake' -FeatureDir 'C:\fake' } |
+            Should -Throw '*no implementation loaded*'
     }
 }

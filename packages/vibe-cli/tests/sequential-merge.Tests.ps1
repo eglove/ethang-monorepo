@@ -1,5 +1,5 @@
 ﻿BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/pipeline-log.ps1"
     . "$PSScriptRoot/../utils/sequential-merge.ps1"
 }
@@ -54,6 +54,26 @@ Describe 'Invoke-SequentialMerge' {
 
             $result.Status | Should -Be 'escalated_keepgoing'
             $result.SkippedBranches | Should -Contain 'branch-1'
+        }
+    }
+
+    Context 'conflict with null Claude response — falls back to empty string' {
+        It 'treats null Claude result as empty string (L58)' {
+            Mock git {
+                $joined = $args -join ' '
+                if ($joined -match 'rev-parse HEAD') { return 'abc123' }
+                if ($joined -match 'merge ') { $global:LASTEXITCODE = 1; return 'CONFLICT (content): Merge conflict' }
+                if ($joined -match 'diff --name-only') { return 'file.ps1' }
+                if ($joined -match 'merge --abort') { return $null }
+                if ($joined -match 'reset --hard') { return $null }
+                return $null
+            }
+            Mock Invoke-Claude { return $null }
+            Mock Read-Host { return 's' }
+
+            $result = Invoke-SequentialMerge -WorktreeBranches @('branch-1') -FeatureBranch 'feature/test' -Root $script:testRoot -Feature 'test'
+
+            $result.Status | Should -Be 'escalated_stop'
         }
     }
 

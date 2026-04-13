@@ -135,4 +135,13 @@ Describe 'Invoke-UnifiedDebateStage (Stage 3)' {
         $loopContent = Get-Content "$root/utils/unified-debate-loop.ps1" -Raw
         $loopContent | Should -Match 'unified-debate-moderator\.md'
     }
+
+    It 'returns Success=$false with error when Resolve-PipelineState throws (L14-15)' {
+        Mock Resolve-PipelineState { throw 'missing elicitor.md in C:\fake' }
+
+        $result = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot
+
+        $result.Success | Should -BeFalse
+        $result.Error | Should -Match 'missing elicitor'
+    }
 }

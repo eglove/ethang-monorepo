@@ -1,5 +1,5 @@
 ﻿BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
     . "$PSScriptRoot/../utils/task-log.ps1"
     . "$PSScriptRoot/../utils/workspace.ps1"
@@ -60,27 +60,6 @@ Describe 'Invoke-RedPhase' {
         $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
         $result.Phase | Should -Be 'cleanup'
         Should -Not -Invoke Invoke-VerifyCommand
-    }
-
-    It 'escalates when redRetries reaches MaxRedRetries' {
-        Mock Invoke-Claude { '{"verdict":"revised"}' }
-        Mock Invoke-VerifyCommand { 0 }
-
-        $counters = @{ redRetries = $Config.MaxRedRetries }
-        $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
-        $result.Status | Should -Be 'escalated'
-        $result.Phase | Should -Be 'red_retry'
-    }
-
-    It 'does not call Invoke-Claude when already at max retries (boundary check)' {
-        Mock Invoke-Claude { '{"verdict":"revised"}' }
-        Mock Invoke-VerifyCommand { 0 }
-
-        $counters = @{ redRetries = $Config.MaxRedRetries }
-        Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
-
-        # Invoke-Claude should be called once for initial test writing, but NOT for retry
-        Should -Invoke Invoke-Claude -Times 1
     }
 
     It 'escalates on infrastructure failure without consuming retry' {
@@ -164,6 +143,21 @@ Describe 'Invoke-RedPhase' {
         $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
         $result.Phase | Should -Be 'green'
         $counters.redRetries | Should -Be 2
+    }
+
+    It 'skips to cleanup when already_implemented returned during retry loop' {
+        $script:redClaudeCallAI = 0
+        Mock Invoke-Claude {
+            $script:redClaudeCallAI++
+            if ($script:redClaudeCallAI -eq 1) { return '{"filesModified":[{"path":"tests/a.Tests.ps1","action":"created"}]}' }
+            return '{"verdict":"already_implemented","filesModified":[]}'
+        }
+        Mock Invoke-VerifyCommand { 0 }  # Tests pass = triggers retry
+
+        $counters = @{ redRetries = 0 }
+        $result = Invoke-RedPhase -Task $script:task -Root $script:root -Counters $counters
+        $result.Phase | Should -Be 'cleanup'
+        $result.Status | Should -Be 'running'
     }
 
     It 'accepts PSCustomObject task from ConvertFrom-Json' {

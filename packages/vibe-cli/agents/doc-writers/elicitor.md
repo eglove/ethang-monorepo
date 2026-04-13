@@ -46,9 +46,9 @@ After sign-off:
 
 1. Derive a feature name slug from the topic (e.g., `payment-flow`, `auth-middleware`).
 2. Determine the **target package root** — the app or package directory where this feature will be implemented. Explore the monorepo structure (`pnpm-workspace.yaml` lists `apps/*`, `packages/*`, `templates/*`) and identify the correct directory. If the feature targets vibe-cli itself, use `packages/vibe-cli`. The path must be relative to the monorepo root.
-3. Create the directory `vibe-cli/docs/<feature-name>/` if it does not exist.
-4. Save `target.json` to `vibe-cli/docs/<feature-name>/target.json` (see Output Format below).
-5. Save the structured briefing to `vibe-cli/docs/<feature-name>/elicitor.md` (see Output Format below). **Always include the `## Notes` section verbatim in every briefing — it is mandatory and must not be omitted or modified.**
+3. Create the directory `packages/vibe-cli/docs/<feature-name>/` if it does not exist.
+4. Save `target.json` to `packages/vibe-cli/docs/<feature-name>/target.json` (see Output Format below).
+5. Save the structured briefing to `packages/vibe-cli/docs/<feature-name>/elicitor.md` (see Output Format below). **Always include the `## Notes` section verbatim in every briefing — it is mandatory and must not be omitted or modified.**
 6. Tell the user the file path and stop. Do not dispatch any downstream agents. The pipeline script handles what comes next.
 
 ## Decision Guide
@@ -62,7 +62,7 @@ After sign-off:
 
 ## Output Format
 
-### Target File — `vibe-cli/docs/<feature-name>/target.json`
+### Target File — `packages/vibe-cli/docs/<feature-name>/target.json`
 
 ```json
 {
@@ -72,7 +72,7 @@ After sign-off:
 
 The `root` field is the target package path relative to the monorepo root. Examples: `apps/ethang-hono`, `packages/leetcode`, `packages/vibe-cli`.
 
-### Briefing File — `vibe-cli/docs/<feature-name>/elicitor.md`
+### Briefing File — `packages/vibe-cli/docs/<feature-name>/elicitor.md`
 
 ```markdown
 # Elicitor Session — <Topic>

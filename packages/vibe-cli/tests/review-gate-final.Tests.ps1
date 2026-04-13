@@ -3,7 +3,7 @@
     function Write-PipelineLog { }
     function Read-Escalation { }
 
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -14,8 +14,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -73,11 +71,6 @@ Describe 'Enter-ReviewGate — final gate entry' {
             $script:state.verdict | Should -BeNullOrEmpty
         }
 
-        It 'resets gateTimedOut to $false' {
-            $script:state.gateTimedOut = $true
-            Enter-ReviewGate -State $script:state -Config $script:cfg -GateType 'final'
-            $script:state.gateTimedOut | Should -BeExactly $false
-        }
     }
 
     Context 'UNCHANGED fields' {
@@ -91,10 +84,6 @@ Describe 'Enter-ReviewGate — final gate entry' {
             $script:state.tasksDone | Should -BeExactly $script:cfg['NumTasks']
         }
 
-        It 'preserves globalTimedOut' {
-            Enter-ReviewGate -State $script:state -Config $script:cfg -GateType 'final'
-            $script:state.globalTimedOut | Should -BeExactly $false
-        }
     }
 
     Context 'Guard — final gate requires tasksDone = NumTasks (invariant S8)' {
@@ -138,8 +127,6 @@ Describe 'Resolve-FinalMergeVerdict' {
         $script:state.tddKeepGoingCount = 0
         $script:state.verdict          = $null
         $script:state.tasksDone        = $script:cfg['NumTasks']
-        $script:state.gateTimedOut     = $false
-        $script:state.globalTimedOut   = $false
 
         Mock Write-PipelineLog {}
     }
@@ -184,8 +171,8 @@ Describe 'Resolve-FinalMergeVerdict' {
             $result.Action | Should -BeExactly 'complete'
         }
 
-        It 'pass has no round guard — succeeds at reviewRound = MaxReviewRounds' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds']
+        It 'pass has no round guard — succeeds at any reviewRound' {
+            $script:state.reviewRound = 10
             { Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:passVerdict } |
                 Should -Not -Throw
         }
@@ -222,15 +209,6 @@ Describe 'Resolve-FinalMergeVerdict' {
             $script:state.tasksDone | Should -BeExactly $script:cfg['NumTasks']
         }
 
-        It 'preserves gateTimedOut' {
-            Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:passVerdict
-            $script:state.gateTimedOut | Should -BeExactly $false
-        }
-
-        It 'preserves globalTimedOut' {
-            Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $script:passVerdict
-            $script:state.globalTimedOut | Should -BeExactly $false
-        }
     }
 
     # =========================================================================
@@ -317,32 +295,12 @@ Describe 'Resolve-FinalMergeVerdict' {
     }
 
     # =========================================================================
-    # Fencepost: round exhaustion
+    # No round guard — fail and retry work at any round
     # =========================================================================
 
-    Context 'Fencepost — fail at round = MaxReviewRounds throws exhaustion' {
-        It 'throws when reviewRound >= MaxReviewRounds on fail' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds']
-            $failVerdict = [PSCustomObject]@{
-                Verdict = 'fail'; Blockers = @(); Notes = @()
-                SelectedReviewers = @(); ExcludedReviewers = @()
-            }
-            { Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $failVerdict } |
-                Should -Throw -ExpectedMessage '*exhausted*'
-        }
-
-        It 'throws when reviewRound >= MaxReviewRounds on retry' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds']
-            $retryVerdict = [PSCustomObject]@{
-                Verdict = 'retry'; Blockers = @(); Notes = @()
-                SelectedReviewers = @(); ExcludedReviewers = @()
-            }
-            { Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $retryVerdict } |
-                Should -Throw -ExpectedMessage '*exhausted*'
-        }
-
-        It 'allows fail at reviewRound = MaxReviewRounds - 1' {
-            $script:state.reviewRound = $script:cfg['MaxReviewRounds'] - 1
+    Context 'Fail and retry at any reviewRound (no round guard)' {
+        It 'allows fail at high reviewRound' {
+            $script:state.reviewRound = 10
             $failVerdict = [PSCustomObject]@{
                 Verdict = 'fail'; Blockers = @(@{
                     Reviewer='r'; Severity='high'; Description='d'; Files=@('f'); Suggestion='s'
@@ -350,6 +308,16 @@ Describe 'Resolve-FinalMergeVerdict' {
                 Notes = @(); SelectedReviewers = @(); ExcludedReviewers = @()
             }
             { Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $failVerdict } |
+                Should -Not -Throw
+        }
+
+        It 'allows retry at high reviewRound' {
+            $script:state.reviewRound = 10
+            $retryVerdict = [PSCustomObject]@{
+                Verdict = 'retry'; Blockers = @(); Notes = @()
+                SelectedReviewers = @(); ExcludedReviewers = @()
+            }
+            { Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $retryVerdict } |
                 Should -Not -Throw
         }
     }
@@ -413,6 +381,44 @@ Describe 'Resolve-FinalMergeVerdict' {
             $v = [PSCustomObject]@{ Verdict='retry'; Blockers=@(); Notes=@(); SelectedReviewers=@(); ExcludedReviewers=@() }
             Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $v
             Test-PipelineStateTypeOK -State $script:state -Config $script:cfg | Should -BeTrue
+        }
+    }
+
+    Context 'DB sync via Update-PipelineState' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState, $LockHolder, $ReviewGateType, $Verdict, $FeatureStatus, $ReviewRound) }
+        }
+        AfterAll { Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue }
+
+        It 'syncs pass to DB with COMPLETE and feature status' {
+            Mock Update-PipelineState {}
+            $v = [PSCustomObject]@{ Verdict='pass'; Blockers=@(); Notes=@(); SelectedReviewers=@(); ExcludedReviewers=@() }
+            Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $v -FeatureName 'feat-2'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-2' -and $PipelineState -eq 'COMPLETE'
+            }
+        }
+
+        It 'syncs fail to DB with finalReviewFix' {
+            Mock Update-PipelineState {}
+            $v = [PSCustomObject]@{
+                Verdict='fail'
+                Blockers=@(@{ Reviewer='r'; Severity='high'; Description='d'; Files=@('f'); Suggestion='s' })
+                Notes=@(); SelectedReviewers=@(); ExcludedReviewers=@()
+            }
+            Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $v -FeatureName 'feat-2'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-2' -and $PipelineState -eq 'finalReviewFix'
+            }
+        }
+
+        It 'syncs retry to DB with incremented round' {
+            Mock Update-PipelineState {}
+            $v = [PSCustomObject]@{ Verdict='retry'; Blockers=@(); Notes=@(); SelectedReviewers=@(); ExcludedReviewers=@() }
+            Resolve-FinalMergeVerdict -State $script:state -Config $script:cfg -Verdict $v -FeatureName 'feat-2'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'feat-2' -and $ReviewRound -eq 1
+            }
         }
     }
 }

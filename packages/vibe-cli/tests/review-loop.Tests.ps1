@@ -135,30 +135,7 @@ Describe 'Invoke-ReviewLoop' {
         }
     }
 
-    Context 'Round count tracking — escalates at MaxReviewRounds' {
-        It 'escalates when CurrentRound reaches MaxReviewRounds on fail' {
-            Mock Invoke-Claude {
-                return (@{
-                    verdict  = 'fail'
-                    findings = @(
-                        @{
-                            reviewer    = 'security'
-                            severity    = 'high'
-                            description = 'Persistent issue'
-                            suggestion  = 'Fix it'
-                        }
-                    )
-                    notes    = @()
-                    warnings = @()
-                } | ConvertTo-Json -Depth 5 -Compress)
-            }
-
-            $result = Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root -MaxReviewRounds 3 -CurrentRound 3
-
-            $result.Verdict | Should -BeExactly 'escalated'
-            $result.Round | Should -BeExactly 3
-        }
-
+    Context 'Round number tracking' {
         It 'returns round number in result' {
             Mock Invoke-Claude {
                 return '{"verdict":"pass","findings":[],"notes":[],"warnings":[]}'
@@ -167,36 +144,6 @@ Describe 'Invoke-ReviewLoop' {
             $result = Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root
 
             $result.Round | Should -BeExactly 1
-        }
-    }
-
-    Context 'Escalation + Keep Going: Write-UserNote appends "Unresolved Escalated Blocker"' {
-        It 'writes escalated blocker notes to user_notes.md on escalation' {
-            Mock Invoke-Claude {
-                return (@{
-                    verdict  = 'fail'
-                    findings = @(
-                        @{
-                            reviewer    = 'security'
-                            severity    = 'high'
-                            description = 'Unresolved issue'
-                            suggestion  = 'Needs manual review'
-                        }
-                    )
-                    notes    = @()
-                    warnings = @()
-                } | ConvertTo-Json -Depth 5 -Compress)
-            }
-
-            $result = Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root -MaxReviewRounds 1 -CurrentRound 1
-
-            $result.Verdict | Should -BeExactly 'escalated'
-
-            $notesPath = Join-Path $script:featureDir 'user_notes.md'
-            Test-Path $notesPath | Should -BeTrue
-            $content = Get-Content $notesPath -Raw
-            $content | Should -Match 'Unresolved Escalated Blocker'
-            $content | Should -Match 'security'
         }
     }
 
@@ -229,6 +176,41 @@ Describe 'Invoke-ReviewLoop' {
             $result = Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root
 
             $result.Verdict | Should -BeExactly 'pass'
+            $result.Warnings | Should -HaveCount 1
+        }
+    }
+
+    Context 'Warnings array parsed from response (L98-101)' {
+        It 'returns warnings array when present in response' {
+            Mock Invoke-Claude {
+                return (@{
+                    verdict  = 'pass'
+                    findings = @()
+                    notes    = @()
+                    warnings = @('watch out for flaky test', 'slow query detected')
+                } | ConvertTo-Json -Depth 5 -Compress)
+            }
+
+            $result = Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root
+
+            $result.Verdict | Should -BeExactly 'pass'
+            $result.Warnings | Should -HaveCount 2
+            $result.Warnings[0] | Should -BeExactly 'watch out for flaky test'
+        }
+
+        It 'returns fail verdict with warnings (L126-128)' {
+            Mock Invoke-Claude {
+                return (@{
+                    verdict  = 'fail'
+                    findings = @(@{ reviewer = 'bug'; severity = 'high'; description = 'bug'; suggestion = 'fix' })
+                    notes    = @()
+                    warnings = @('review took long')
+                } | ConvertTo-Json -Depth 5 -Compress)
+            }
+
+            $result = Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root
+
+            $result.Verdict | Should -BeExactly 'fail'
             $result.Warnings | Should -HaveCount 1
         }
     }
@@ -324,6 +306,33 @@ Describe 'Write-UserNote' {
             $content | Should -Match 'security'
             $content | Should -Match 'Critical unresolved issue'
             $content | Should -Match '\*\*Suggestion:\*\* Needs manual review'
+        }
+    }
+
+    Context 'Write-UserNote defaults for missing fields (L159-162)' {
+        It 'uses "unknown" for missing reviewer and severity, empty for description and suggestion' {
+            Write-UserNote -FeatureDir $script:featureDir -Notes @(
+                @{}
+            )
+
+            $notesPath = Join-Path $script:featureDir 'user_notes.md'
+            $content = Get-Content $notesPath -Raw
+            $content | Should -Match '### unknown \(unknown\)'
+        }
+
+        It 'omits suggestion line when suggestion is empty' {
+            Write-UserNote -FeatureDir $script:featureDir -Notes @(
+                @{
+                    reviewer    = 'test-rev'
+                    severity    = 'low'
+                    description = 'Some desc'
+                }
+            )
+
+            $notesPath = Join-Path $script:featureDir 'user_notes.md'
+            $content = Get-Content $notesPath -Raw
+            $content | Should -Match 'test-rev'
+            $content | Should -Not -Match '\*\*Suggestion:\*\*'
         }
     }
 

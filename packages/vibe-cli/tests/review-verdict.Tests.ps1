@@ -431,3 +431,68 @@ Describe 'Test-BlockerSeverity' {
         Test-BlockerSeverity -Severity 'info' | Should -Be $false
     }
 }
+
+# =============================================================================
+# Notes schema validation — notes with missing required fields (L112-115)
+# =============================================================================
+
+Describe 'Test-ReviewVerdict — notes with missing fields' {
+    It 'rejects note missing "reviewer" field' {
+        $json = @{
+            selectedReviewers = @('security')
+            excludedReviewers = @()
+            verdict  = 'pass'
+            blockers = @()
+            notes    = @(
+                @{
+                    severity    = 'low'
+                    description = 'Minor issue'
+                    files       = @('a.ts')
+                    suggestion  = 'Fix it'
+                }
+            )
+        }
+        $result = Test-ReviewVerdict -ModeratorResponse $json
+        $result | Should -Be $false
+    }
+
+    It 'rejects note missing "description" field' {
+        $json = @{
+            selectedReviewers = @('security')
+            excludedReviewers = @()
+            verdict  = 'pass'
+            blockers = @()
+            notes    = @(
+                @{
+                    reviewer  = 'simplicity'
+                    severity  = 'low'
+                    files     = @('a.ts')
+                    suggestion = 'Fix it'
+                }
+            )
+        }
+        $result = Test-ReviewVerdict -ModeratorResponse $json
+        $result | Should -Be $false
+    }
+}
+
+# =============================================================================
+# Get-VerdictSummary — singular note label (L140)
+# =============================================================================
+
+Describe 'Get-VerdictSummary — singular labels' {
+    It 'returns "1 note" for exactly 1 note' {
+        $verdict = @{
+            Verdict  = 'pass'
+            Blockers = @()
+            Notes    = @(
+                @{ Reviewer = 'simplicity'; Severity = 'low'; Description = 'Note'; Files = @('a.ts'); Suggestion = 'fix' }
+            )
+            SelectedReviewers = @('simplicity')
+            ExcludedReviewers = @()
+        }
+        $summary = Get-VerdictSummary -Verdict $verdict
+        $summary | Should -Match '1 note'
+        $summary | Should -Not -Match '1 notes'
+    }
+}

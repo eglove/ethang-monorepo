@@ -1,5 +1,5 @@
 ﻿BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     # Stub: pipeline-state.ps1 was removed in code-simplify
     function global:New-PipelineState {
         return @{
@@ -10,8 +10,6 @@
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -50,8 +48,6 @@ Describe 'Start-PipelineRunning (StartRunning)' {
         $state.tddKeepGoingCount = 0
         $state.verdict = $null
         $state.tasksDone = 0
-        $state.gateTimedOut = $false
-        $state.globalTimedOut = $false
         $state.reviewGateType = 'none'
 
         Start-PipelineRunning -State $state
@@ -61,8 +57,6 @@ Describe 'Start-PipelineRunning (StartRunning)' {
         $state.tddKeepGoingCount | Should -BeExactly 0
         $state.verdict | Should -BeNullOrEmpty
         $state.tasksDone | Should -BeExactly 0
-        $state.gateTimedOut | Should -BeExactly $false
-        $state.globalTimedOut | Should -BeExactly $false
         $state.reviewGateType | Should -BeExactly 'none'
     }
 
@@ -90,6 +84,24 @@ Describe 'Start-PipelineRunning (StartRunning)' {
 
             { Start-PipelineRunning -State $state } |
                 Should -Throw '*must be "locked"*'
+        }
+    }
+
+    Context 'DB sync via Update-PipelineState' {
+        BeforeAll {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState) }
+        }
+        AfterAll { Remove-Item Function:\Update-PipelineState -ErrorAction SilentlyContinue }
+
+        It 'calls Update-PipelineState when FeatureName is provided' {
+            Mock Update-PipelineState {}
+            $state = New-PipelineState
+            $state.pipelineState = 'locked'
+            $state.lockHolder = 1
+            Start-PipelineRunning -State $state -FeatureName 'auth-flow'
+            Should -Invoke Update-PipelineState -Times 1 -ParameterFilter {
+                $FeatureName -eq 'auth-flow' -and $PipelineState -eq 'running'
+            }
         }
     }
 }

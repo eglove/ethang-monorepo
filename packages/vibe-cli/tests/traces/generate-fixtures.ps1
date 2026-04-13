@@ -21,7 +21,7 @@ function Invoke-RedPhase { return @{ Status = 'pass'; TestFiles = @('t.ps1') } }
 function Invoke-GreenPhase { return @{ Status = 'pass' } }
 function Invoke-CleanupPhase { return @{ Status = 'pass' } }
 
-. "$PSScriptRoot/../../utils/config.ps1"
+. "$PSScriptRoot/../helpers/test-config.ps1"
 # Stub: pipeline-state.ps1 was removed in code-simplify
 function global:New-PipelineState {
     return @{
@@ -32,8 +32,6 @@ function global:New-PipelineState {
         tddKeepGoingCount = [int]0
         verdict            = $null
         tasksDone          = [int]0
-        gateTimedOut       = $false
-        globalTimedOut     = $false
         reviewGateType     = 'none'
     }
 }
@@ -64,8 +62,6 @@ function Get-ReviewerSnapshot([hashtable]$State) {
         tddKeepGoingCount = $State.tddKeepGoingCount
         verdict           = $State.verdict
         tasksDone         = $State.tasksDone
-        gateTimedOut      = $State.gateTimedOut
-        globalTimedOut    = $State.globalTimedOut
         reviewGateType    = $State.reviewGateType
     }
 }
@@ -87,9 +83,6 @@ function New-ReviewerTrace {
     $saved = @{}
     foreach ($k in $Constants.Keys) {
         $envKey = switch ($k) {
-            'MaxReviewRounds'       { 'VIBE_MAX_REVIEW_ROUNDS' }
-            'MaxKeepGoingResets'    { 'VIBE_MAX_KEEP_GOING_RESETS' }
-            'MaxTddKeepGoingPerGate' { 'VIBE_MAX_TDD_KEEP_GOING_PER_GATE' }
             'NumTasks'              { 'VIBE_NUM_TASKS' }
         }
         if ($envKey) {
@@ -199,28 +192,6 @@ $trace = New-ReviewerTrace -TraceId 'tlc-forced-stop-001' -Description 'KeepGoin
 }
 $trace | ConvertTo-Json -Depth 10 | Set-Content "$reviewerOutDir/tlc-forced-stop-001.json" -Encoding UTF8
 Write-Host "  Written: tlc-forced-stop-001.json ($($trace.steps.Count) steps)"
-
-# Trace: gate timeout -> keepGoing recovery
-$trace = New-ReviewerTrace -TraceId 'tlc-gate-timeout-keepgoing-001' -Description 'Gate timeout fires, KeepGoing resets gate, pass -> COMPLETE' -Constants $constants -Scenario {
-    param($s, $c, $steps)
-    $s.pipelineState = 'locked'; $s.lockHolder = 1; Add-Step -Steps $steps -Action 'AcquireLock' -State $s
-    $s.pipelineState = 'running'; Add-Step -Steps $steps -Action 'StartRunning' -State $s
-    Enter-ReviewGate -State $s -Config $c -GateType 'preMerge'; Add-Step -Steps $steps -Action 'EnterPreMergeReview' -State $s
-    # Gate timeout fires
-    $s.gateTimedOut = $true; Add-Step -Steps $steps -Action 'ReviewGateTimeout' -State $s
-    # KeepGoing for gate timeout
-    $s.gateTimedOut = $false; $s.keepGoingResets++; $s.reviewRound = 0; $s.tddKeepGoingCount = 0; $s.verdict = $null
-    $s.pipelineState = 'preMergeReview'; Add-Step -Steps $steps -Action 'GateTimeoutKeepGoing' -State $s
-    # Pass
-    $v = [PSCustomObject]@{ Verdict='pass'; Blockers=@(); Notes=@(); SelectedReviewers=@('sec'); ExcludedReviewers=@() }
-    $null = Resolve-PreMergeVerdict -State $s -Config $c -Verdict $v; Add-Step -Steps $steps -Action 'HandlePassPreMerge' -State $s
-    $s.tasksDone++; $s.pipelineState = 'running'; $s.reviewGateType = 'none'; Add-Step -Steps $steps -Action 'TaskMerged' -State $s
-    Enter-ReviewGate -State $s -Config $c -GateType 'final'; Add-Step -Steps $steps -Action 'EnterFinalReview' -State $s
-    $v2 = [PSCustomObject]@{ Verdict='pass'; Blockers=@(); Notes=@(); SelectedReviewers=@('sec'); ExcludedReviewers=@() }
-    $null = Resolve-FinalMergeVerdict -State $s -Config $c -Verdict $v2; Add-Step -Steps $steps -Action 'HandlePassFinal' -State $s
-}
-$trace | ConvertTo-Json -Depth 10 | Set-Content "$reviewerOutDir/tlc-gate-timeout-keepgoing-001.json" -Encoding UTF8
-Write-Host "  Written: tlc-gate-timeout-keepgoing-001.json ($($trace.steps.Count) steps)"
 
 # Trace: final review fail-fix-pass
 $trace = New-ReviewerTrace -TraceId 'tlc-final-fix-001' -Description 'Final review fails, fix cycle, then pass -> COMPLETE' -Constants $constants -Scenario {

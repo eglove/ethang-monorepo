@@ -1,5 +1,5 @@
 ﻿BeforeAll {
-    . "$PSScriptRoot/../utils/config.ps1"
+    . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/result-contracts.ps1"
     . "$PSScriptRoot/../utils/task-log.ps1"
     . "$PSScriptRoot/../utils/workspace.ps1"
@@ -40,25 +40,6 @@ Describe 'Invoke-GreenPhase' {
         $counters = @{ greenAttempts = 0 }
         $result = Invoke-GreenPhase -Task $script:task -Root $script:root -Counters $counters
         $counters.greenAttempts | Should -BeGreaterThan 0
-    }
-
-    It 'escalates at MaxTddCycles boundary' {
-        Mock Invoke-Claude { '{"filesModified":[]}' }
-        Mock Invoke-VerifyCommand { 1 }
-
-        $counters = @{ greenAttempts = $Config.MaxTddCycles }
-        $result = Invoke-GreenPhase -Task $script:task -Root $script:root -Counters $counters
-        $result.Status | Should -Be 'escalated'
-        $result.Phase | Should -Be 'green_retry'
-    }
-
-    It 'does not call Invoke-Claude when already at max (boundary)' {
-        Mock Invoke-Claude { '{"filesModified":[]}' }
-        Mock Invoke-VerifyCommand { 1 }
-
-        $counters = @{ greenAttempts = $Config.MaxTddCycles }
-        Invoke-GreenPhase -Task $script:task -Root $script:root -Counters $counters
-        Should -Not -Invoke Invoke-Claude
     }
 
     It 'rejects test file modifications and counts as attempt' {

@@ -8,15 +8,37 @@
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 
+# ── Double Ctrl+C force close ──
+$script:_ctrlCTime = [datetime]::MinValue
+$script:_ctrlCHandler = [ConsoleCancelEventHandler]{
+    param($_sender, $e)
+    $now = [datetime]::UtcNow
+    if (($now - $script:_ctrlCTime).TotalSeconds -le 5) {
+        # Second press within 5s — let it kill the process
+        return
+    }
+    $e.Cancel = $true
+    $script:_ctrlCTime = $now
+    Write-Host "`nCtrl+C received — press again within 5s to force quit" -ForegroundColor Yellow
+}
+[Console]::add_CancelKeyPress($script:_ctrlCHandler)
+
+# UTF-8 encoding
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
+# State repository module
+Import-Module "$root/state/state-repository.psd1" -Force
+
 # Utilities
-. "$root/utils/config.ps1"
+. "$root/utils/invoke-claude.ps1"
+. "$root/utils/invoke-verify.ps1"
 . "$root/utils/pipeline-log.ps1"
 . "$root/utils/resolve-pipeline-state.ps1"
 . "$root/utils/invoke-parallel.ps1"
 . "$root/utils/unified-debate-loop.ps1"
 . "$root/utils/debate-loop.ps1"
 . "$root/utils/gherkin-parser.ps1"
-. "$root/utils/tlc-parser.ps1"
 . "$root/utils/fixture-gate.ps1"
 . "$root/utils/resume.ps1"
 . "$root/utils/resolve-target-root.ps1"
@@ -34,8 +56,6 @@ if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
             tddKeepGoingCount = [int]0
             verdict            = $null
             tasksDone          = [int]0
-            gateTimedOut       = $false
-            globalTimedOut     = $false
             reviewGateType     = 'none'
         }
     }
@@ -61,17 +81,44 @@ if (-not $Seed -and -not $Resume) {
 # --- Resume mode ---
 $startStage = 1
 if ($Resume) {
-    $logPath = Join-Path $root 'pipeline.log'
-    $resumeState = Resume-Pipeline -Root $root -LogPath $logPath
-
-    if ($resumeState.Completed) {
-        Write-PipelineLog -Message "Pipeline already complete for feature '$($resumeState.Feature)'. Nothing to resume." -Root $root
-        return
+    # Try DB-based resume first
+    $dbPath = Join-Path $root 'vibe-state.db'
+    $dbResumed = $false
+    if (Test-Path $dbPath) {
+        try {
+            Open-StateDatabase -Path $dbPath
+            $activeFeature = Get-ActiveFeature
+            if ($activeFeature) {
+                $featureName = $activeFeature
+                $lastStage = Get-LastCompletedStage -FeatureName $featureName
+                if ($null -ne $lastStage -and $lastStage -ge 7) {
+                    Write-PipelineLog -Message "Pipeline already complete for feature '$featureName'. Nothing to resume." -Root $root
+                    return
+                }
+                $startStage = if ($null -ne $lastStage) { $lastStage + 1 } else { 1 }
+                $featureDir = "$root/docs/$featureName"
+                $dbResumed = $true
+                Write-PipelineLog -Message "=== DB RESUME at stage $startStage feature=$featureName ===" -Root $root
+            }
+        } catch {
+            Write-PipelineLog -Message "DB resume failed, falling back to log: $_" -Root $root
+        }
     }
 
-    $featureName = $resumeState.Feature
-    $featureDir = "$root/docs/$featureName"
-    $startStage = $resumeState.ResumeStage
+    # Fallback to log-based resume
+    if (-not $dbResumed) {
+        $logPath = Join-Path $root 'pipeline.log'
+        $resumeState = Resume-Pipeline -Root $root -LogPath $logPath
+
+        if ($resumeState.Completed) {
+            Write-PipelineLog -Message "Pipeline already complete for feature '$($resumeState.Feature)'. Nothing to resume." -Root $root
+            return
+        }
+
+        $featureName = $resumeState.Feature
+        $featureDir = "$root/docs/$featureName"
+        $startStage = $resumeState.ResumeStage
+    }
 
     if (-not (Test-Path "$featureDir/elicitor.md")) {
         throw "Feature directory not found or missing elicitor.md: $featureDir"
@@ -82,12 +129,18 @@ if ($Resume) {
 
     # Resolve state from prior stages
     $pState = Resolve-PipelineState -FromStage $startStage -Dir $featureDir
-    $briefing = $pState.Briefing
     $gherkinFile = $pState.GherkinFile
     $tlaFile = $pState.TlaFile
-    $tlaDir = $pState.TlaDir
     $implFile = $pState.ImplFile
     $implJson = $pState.ImplJson
+
+    # Ensure DB state is set up for resumed runs
+    if ($dbResumed) {
+        $lockState = Get-PipelineLockState -FeatureName $featureName
+        if (-not $lockState) {
+            Lock-PipelineState -FeatureName $featureName -ProcessId $PID
+        }
+    }
 }
 
 # --- Fresh run ---
@@ -95,6 +148,9 @@ if (-not $Resume) {
     Set-Content -Path (Join-Path $root 'pipeline.log') -Value ""
     Write-PipelineLog -Message "=== PIPELINE START seed=`"$Seed`" ===" -Root $root
 }
+
+# --- Initialize state database ---
+Open-StateDatabase -Path (Join-Path $root 'vibe-state.db')
 
 # --- Run pipeline ---
 try {
@@ -105,7 +161,15 @@ try {
         $elicitorResult = Invoke-Elicitor -Seed $Seed -Root $root
         $featureDir = $elicitorResult.FeatureDir
         $featureName = Split-Path $featureDir -Leaf
-        $briefing = $elicitorResult.Briefing
+
+        # Register feature in state DB
+        if (-not (Get-Feature -Name $featureName)) {
+            New-Feature -Name $featureName
+        }
+        Set-ActiveFeature -Name $featureName
+        Lock-PipelineState -FeatureName $featureName -ProcessId $PID
+        Set-StageComplete -FeatureName $featureName -Stage 1
+        Register-Artifact -FeatureName $featureName -Stage 1 -ArtifactType 'elicitor' -FilePath (Join-Path $featureDir 'elicitor.md')
     }
 
     # Resolve target package root
@@ -122,7 +186,7 @@ try {
         }
         $gherkinFile = $writerResult.GherkinFile
         $tlaFile = $writerResult.TlaFile
-        $tlaDir = $writerResult.TlaDir
+        if ($featureName) { Set-StageComplete -FeatureName $featureName -Stage 2 }
     }
 
     # Stage 3: Unified Debate
@@ -132,6 +196,7 @@ try {
         if (-not $debateResult.Success) {
             throw "Stage 3 failed: $($debateResult.Error)"
         }
+        if ($featureName) { Set-StageComplete -FeatureName $featureName -Stage 3 }
     }
 
     # Stage 4: Post-Debate Artifacts
@@ -141,6 +206,7 @@ try {
         if (-not $postDebateResult.Success) {
             throw "Stage 4 failed: $($postDebateResult.Error)"
         }
+        if ($featureName) { Set-StageComplete -FeatureName $featureName -Stage 4 }
     }
 
     # Stage 5: Implementation Writer
@@ -160,6 +226,7 @@ try {
         }
         $implFile = $implResult.ImplFile
         $implJson = $implResult.ImplJson
+        if ($featureName) { Set-StageComplete -FeatureName $featureName -Stage 5 }
     }
 
     # Stage 6: Implementation Debate
@@ -178,6 +245,7 @@ try {
         if (-not $debateStageResult.Success) {
             throw "Stage 6 failed: $($debateStageResult.Error)"
         }
+        if ($featureName) { Set-StageComplete -FeatureName $featureName -Stage 6 }
     }
 
     # Stage 7: Coding
@@ -198,6 +266,12 @@ try {
         }
     }
 
+    # Stage 7 complete
+    if ($featureName) {
+        Set-StageComplete -FeatureName $featureName -Stage 7
+        Update-PipelineState -FeatureName $featureName -PipelineState 'complete' -FeatureStatus 'complete'
+    }
+
     # Done
     Write-PipelineLog -Message "=== PIPELINE COMPLETE ===" -Root $root
     Write-PipelineLog -Message "Feature dir: $featureDir" -Root $root
@@ -207,4 +281,20 @@ catch {
     Write-PipelineLog -Message "ERROR: $_" -Root $root
     Write-PipelineLog -Message "  at: $($_.InvocationInfo.PositionMessage)" -Root $root
     throw
+}
+finally {
+    # Clean up: unlock and close DB if needed
+    try {
+        if ($featureName) {
+            $lockState = Get-PipelineLockState -FeatureName $featureName -ErrorAction SilentlyContinue
+            if ($lockState) {
+                $featureState = Get-Feature -Name $featureName -ErrorAction SilentlyContinue
+                if ($featureState -and $featureState.status -in @('complete', 'halted')) {
+                    Unlock-PipelineState -FeatureName $featureName
+                    Clear-ActiveFeature
+                }
+            }
+        }
+    } catch { }
+    [Console]::remove_CancelKeyPress($script:_ctrlCHandler)
 }
