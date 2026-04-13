@@ -1,7 +1,7 @@
 # Claude Warden - Project Configuration
 # Allows PowerShell and Pester test execution alongside standard dev tools
 
-defaultDecision: ask
+defaultDecision: allow
 askOnSubshell: true
 notifyOnAsk: true
 notifyOnDeny: true
