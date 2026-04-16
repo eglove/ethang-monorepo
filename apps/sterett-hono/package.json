@@ -9,7 +9,7 @@
     "@sanity/image-url": "^2.1.1",
     "@tailwindcss/cli": "^4.2.2",
     "calendar-link": "^2.11.0",
-    "hono": "^4.12.10",
+    "hono": "^4.12.14",
     "lodash": "^4.18.1",
     "luxon": "^3.7.2",
     "tailwind-merge": "^3.5.0",
