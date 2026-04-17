@@ -907,7 +907,27 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
-  packages/vibe-cli: {}
+  packages/vibe-cli:
+    dependencies:
+      data-structure-typed:
+        specifier: ^1.53.8
+        version: 1.54.3
+    devDependencies:
+      '@types/node':
+        specifier: ^25.5.2
+        version: 25.5.2
+      '@vitest/coverage-v8':
+        specifier: ^4.1.2
+        version: 4.1.2(vitest@4.1.2)
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.2
+      vite:
+        specifier: ^8.0.5
+        version: 8.0.7(@types/node@25.5.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vitest:
+        specifier: ^4.1.2
+        version: 4.1.2(@types/node@25.5.2)(@vitest/ui@4.1.2)(happy-dom@20.8.9)(jsdom@29.0.1(@noble/hashes@2.0.1))(vite@8.0.7(@types/node@25.5.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
 
 packages:
 
@@ -5956,6 +5976,9 @@ packages:
 
   damerau-levenshtein@1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
+
+  data-structure-typed@1.54.3:
+    resolution: {integrity: sha512-hAJ+2cbsfAWMHNP3lupdM9Fji3nqu2jQECWlJ9Hcy7g/Iwu90Xj0YwN3qfTlae86fnMZniv3nVWoeuEhTpMWng==}
 
   data-urls@5.0.0:
     resolution: {integrity: sha512-ZYP5VBHshaDAiVZxjbRVcFJpc+4xGgT0bK3vzy1HLN8jTO975HEbuYzZJcHoQEY5K1a0z8YayJkyVETa08eNTg==}
@@ -16133,6 +16156,8 @@ snapshots:
   custom-media-element@1.4.6: {}
 
   damerau-levenshtein@1.0.8: {}
+
+  data-structure-typed@1.54.3: {}
 
   data-urls@5.0.0:
     dependencies:
