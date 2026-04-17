@@ -10,5 +10,15 @@
   "author": "Ethan Glover",
   "license": "ISC",
   "packageManager": "pnpm@11.0.0-dev.1005",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "data-structure-typed": "^1.53.8"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "@vitest/coverage-v8": "^4.1.2",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.5",
+    "vitest": "^4.1.2"
+  }
 }
