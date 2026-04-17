@@ -110,6 +110,85 @@ Describe 'Invoke-TlcCheck' {
         Remove-Item $tlaDir -Recurse -Force
     }
 
+    It 'runs all .cfg files when multiple exist' {
+        $tlaDir = Join-Path $script:tempDir 'multi-cfg'
+        New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+        Set-Content (Join-Path $tlaDir 'Spec.tla')   -Value '---- MODULE Spec ----'
+        Set-Content (Join-Path $tlaDir 'Spec.cfg')   -Value 'SPECIFICATION Spec'
+        Set-Content (Join-Path $tlaDir 'Spec_B.cfg') -Value 'SPECIFICATION Spec'
+
+        $script:invokedCfgs = [System.Collections.ArrayList]::new()
+        Mock Invoke-TlcProcess {
+            param($TlaDir, $TlaFileName, $CfgFileName)
+            $null = $script:invokedCfgs.Add($CfgFileName)
+            return @{ Output = 'No error'; ExitCode = 0 }
+        }
+
+        { Invoke-TlcCheck -TlaDir $tlaDir -TlaWriterFile $script:writerFile } | Should -Not -Throw
+
+        $script:invokedCfgs | Should -Contain 'Spec.cfg'
+        $script:invokedCfgs | Should -Contain 'Spec_B.cfg'
+
+        Remove-Item $tlaDir -Recurse -Force
+    }
+
+    It 'retries when any cfg fails even if others pass' {
+        $tlaDir = Join-Path $script:tempDir 'multi-cfg-partial-fail'
+        New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+        Set-Content (Join-Path $tlaDir 'Spec.tla')   -Value '---- MODULE Spec ----'
+        Set-Content (Join-Path $tlaDir 'Spec.cfg')   -Value 'SPECIFICATION Spec'
+        Set-Content (Join-Path $tlaDir 'Spec_B.cfg') -Value 'SPECIFICATION Spec'
+
+        $script:tlcCallCount = 0
+        Mock Invoke-TlcProcess {
+            param($TlaDir, $TlaFileName, $CfgFileName)
+            $script:tlcCallCount++
+            # First attempt: Spec_B.cfg fails; second attempt: all pass
+            if ($script:tlcCallCount -le 2 -and $CfgFileName -eq 'Spec_B.cfg') {
+                return @{ Output = 'Error: invariant violated'; ExitCode = 1 }
+            }
+            return @{ Output = 'No error'; ExitCode = 0 }
+        }
+        Mock Invoke-Claude {}
+
+        { Invoke-TlcCheck -TlaDir $tlaDir -TlaWriterFile $script:writerFile } | Should -Not -Throw
+
+        Should -Invoke Invoke-Claude -Times 1 -Exactly
+
+        Remove-Item $tlaDir -Recurse -Force
+    }
+
+    It 'includes all failing cfg names in the fix prompt' {
+        $tlaDir = Join-Path $script:tempDir 'multi-cfg-fix-prompt'
+        New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+        Set-Content (Join-Path $tlaDir 'Spec.tla')   -Value '---- MODULE Spec ----'
+        Set-Content (Join-Path $tlaDir 'Spec.cfg')   -Value 'SPECIFICATION Spec'
+        Set-Content (Join-Path $tlaDir 'Spec_B.cfg') -Value 'SPECIFICATION Spec'
+
+        $script:tlcCallCount = 0
+        Mock Invoke-TlcProcess {
+            param($TlaDir, $TlaFileName, $CfgFileName)
+            $script:tlcCallCount++
+            if ($script:tlcCallCount -le 2) {
+                return @{ Output = 'Error: violated'; ExitCode = 1 }
+            }
+            return @{ Output = 'No error'; ExitCode = 0 }
+        }
+
+        $script:capturedPrompt = $null
+        Mock Invoke-Claude {
+            param($SystemPromptFile, $Prompt)
+            $script:capturedPrompt = $Prompt
+        }
+
+        Invoke-TlcCheck -TlaDir $tlaDir -TlaWriterFile $script:writerFile
+
+        $script:capturedPrompt | Should -Match 'Spec\.cfg'
+        $script:capturedPrompt | Should -Match 'Spec_B\.cfg'
+
+        Remove-Item $tlaDir -Recurse -Force
+    }
+
 }
 
 Describe 'Invoke-TlcProcess ExtraArgs' {
