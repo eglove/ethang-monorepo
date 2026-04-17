@@ -1,6 +1,24 @@
-{
+﻿{
   "hooks": {
     "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -NonInteractive -File .claude/hooks/es-hook.ps1"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -NonInteractive -File .claude/hooks/rg-hook.ps1"
+          }
+        ]
+      },
       {
         "matcher": "Glob|Grep",
         "hooks": [
