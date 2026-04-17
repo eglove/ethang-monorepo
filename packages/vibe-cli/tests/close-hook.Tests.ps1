@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/close-hook.ps1"
 }
@@ -132,6 +132,109 @@ Describe 'Invoke-CloseHook — halted pipeline (Test 5)' {
         $result.agentsCompleted | Should -Be 2
         $result.markdownState   | Should -Be 'current'
         $result.graphState      | Should -Be 'warn'
+    }
+}
+
+Describe 'Import-GraphState — default state when no file exists (Test 7)' {
+    AfterEach { $env:VIBE_CLI_GRAPH_STATE = $null }
+
+    It 'returns zero defaults when env var points to non-existent file' {
+        $noFile = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), [System.IO.Path]::GetRandomFileName())
+        $env:VIBE_CLI_GRAPH_STATE = $noFile
+        $state = Import-GraphState
+        $state.agentsCompleted | Should -Be 0
+        $state.markdownState   | Should -Be 'none'
+        $state.graphState      | Should -Be 'collecting'
+    }
+}
+
+Describe 'Import-GraphState — reads state from existing file (Test 8)' {
+    AfterEach { $env:VIBE_CLI_GRAPH_STATE = $null }
+
+    It 'returns persisted values when state file exists' {
+        $tempFile = [System.IO.Path]::GetTempFileName()
+        try {
+            $env:VIBE_CLI_GRAPH_STATE = $tempFile
+            @{ agentsCompleted = 4; markdownState = 'current'; graphState = 'done' } |
+                ConvertTo-Json | Set-Content $tempFile -Encoding UTF8
+            $state = Import-GraphState
+            $state.agentsCompleted | Should -Be 4
+            $state.markdownState   | Should -Be 'current'
+            $state.graphState      | Should -Be 'done'
+        } finally {
+            Remove-Item $tempFile -ErrorAction SilentlyContinue
+        }
+    }
+}
+
+Describe 'Save-GraphState — persists state (Test 9)' {
+    AfterEach { $env:VIBE_CLI_GRAPH_STATE = $null }
+
+    It 'writes state JSON to the env-var path' {
+        $tempFile = [System.IO.Path]::GetTempFileName()
+        try {
+            $env:VIBE_CLI_GRAPH_STATE = $tempFile
+            $state = @{ agentsCompleted = 6; markdownState = 'stale'; graphState = 'done' }
+            Save-GraphState -State $state
+            $json = Get-Content $tempFile -Raw | ConvertFrom-Json
+            $json.agentsCompleted | Should -Be 6
+            $json.markdownState   | Should -Be 'stale'
+        } finally {
+            Remove-Item $tempFile -ErrorAction SilentlyContinue
+        }
+    }
+}
+
+Describe 'Invoke-CloseHook — real tsx success path (Test 10)' {
+    AfterEach { $env:VIBE_CLI_GRAPH_STATE = $null }
+
+    It 'executes the tsx process path and marks markdown current on success' {
+        $tempFile = [System.IO.Path]::GetTempFileName()
+        try {
+            $env:VIBE_CLI_GRAPH_STATE = $tempFile
+            @{ agentsCompleted = 0; markdownState = 'none'; graphState = 'collecting' } |
+                ConvertTo-Json | Set-Content $tempFile -Encoding UTF8
+
+            $mockProc = [PSCustomObject]@{ ExitCode = 0 }
+            $mockProc | Add-Member -MemberType ScriptMethod -Name 'WaitForExit' -Value { param($ms) return $true }
+            $mockProc | Add-Member -MemberType ScriptMethod -Name 'Kill' -Value {}
+
+            Mock Start-Process { return $mockProc }
+
+            $result = Invoke-CloseHook -AgentIndex 0 -MaxAgents 1 -PipelineState 'running'
+
+            $result.agentsCompleted | Should -Be 1
+            $result.markdownState   | Should -Be 'current'
+        } finally {
+            Remove-Item $tempFile -ErrorAction SilentlyContinue
+        }
+    }
+}
+
+Describe 'Invoke-CloseHook — real tsx timeout kill path (Test 11)' {
+    AfterEach { $env:VIBE_CLI_GRAPH_STATE = $null }
+
+    It 'emits WARN and marks markdown stale when tsx process times out' {
+        $tempFile = [System.IO.Path]::GetTempFileName()
+        try {
+            $env:VIBE_CLI_GRAPH_STATE = $tempFile
+            @{ agentsCompleted = 0; markdownState = 'none'; graphState = 'collecting' } |
+                ConvertTo-Json | Set-Content $tempFile -Encoding UTF8
+
+            $mockProc = [PSCustomObject]@{ ExitCode = 1 }
+            $mockProc | Add-Member -MemberType ScriptMethod -Name 'WaitForExit' -Value { param($ms) return $false }
+            $mockProc | Add-Member -MemberType ScriptMethod -Name 'Kill' -Value {}
+
+            Mock Start-Process { return $mockProc }
+
+            $result = Invoke-CloseHook -AgentIndex 2 -MaxAgents 1 -PipelineState 'running' -TimeoutSeconds 1
+
+            $result.warnEmitted   | Should -Be $true
+            $result.markdownState | Should -Be 'stale'
+            $result.warnMessage   | Should -Match 'WARN.*closeHookTimeout.*agent=2'
+        } finally {
+            Remove-Item $tempFile -ErrorAction SilentlyContinue
+        }
     }
 }
 
