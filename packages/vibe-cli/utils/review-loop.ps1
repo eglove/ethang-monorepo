@@ -40,7 +40,7 @@ function Invoke-ReviewLoop {
     $round = $CurrentRound
 
     # ── Dispatch review-moderator ──
-    $rawResponse = Invoke-Claude -SystemPromptFile $moderatorPromptFile -Prompt $DiffContent
+    $rawResponse = Invoke-Claude -Role moderator -SystemPromptFile $moderatorPromptFile -Prompt $DiffContent
 
     # ── Handle null/empty response (timeout) ──
     if ([string]::IsNullOrWhiteSpace($rawResponse)) {

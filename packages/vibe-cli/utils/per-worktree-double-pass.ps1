@@ -55,7 +55,7 @@ $testOutput
 
 Fix the failing tests in the worktree.
 "@
-            Invoke-Claude -Prompt $fixPrompt -AddDir $WorktreePath
+            Invoke-Claude -Role 'code-writer' -Prompt $fixPrompt -AddDir $WorktreePath
             continue
         }
 
@@ -95,7 +95,7 @@ $lintOutput
 
 Fix the lint errors in the worktree.
 "@
-            Invoke-Claude -Prompt $fixPrompt -AddDir $WorktreePath
+            Invoke-Claude -Role 'code-writer' -Prompt $fixPrompt -AddDir $WorktreePath
             continue
         }
 

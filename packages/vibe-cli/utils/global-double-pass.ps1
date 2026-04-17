@@ -53,7 +53,7 @@ $testOutput
 
 Fix the failing tests on the feature branch.
 "@
-            Invoke-Claude -Prompt $fixPrompt -AddDir $Root
+            Invoke-Claude -Role 'code-writer' -Prompt $fixPrompt -AddDir $Root
             continue
         }
 
@@ -92,7 +92,7 @@ $lintOutput
 
 Fix the lint errors on the feature branch.
 "@
-            Invoke-Claude -Prompt $fixPrompt -AddDir $Root
+            Invoke-Claude -Role 'code-writer' -Prompt $fixPrompt -AddDir $Root
             continue
         }
 

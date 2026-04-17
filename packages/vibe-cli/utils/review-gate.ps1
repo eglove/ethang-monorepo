@@ -103,7 +103,7 @@ function Invoke-ReviewGate {
 
     # ── Call moderator via Invoke-Claude ──
 
-    $rawResponse = Invoke-Claude -DiffContent $DiffContent
+    $rawResponse = Invoke-Claude -Role moderator -Prompt $DiffContent
 
     # ── Parse and validate response ──
 

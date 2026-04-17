@@ -45,6 +45,7 @@ function Invoke-DebateLoop {
 
         try {
             $debate = Invoke-Claude `
+                -Role moderator `
                 -SystemPromptFile $DebateModFile `
                 -JsonSchema $DebateSchema `
                 -Prompt $prompt |
@@ -65,7 +66,7 @@ function Invoke-DebateLoop {
             if ($debate.recommendation) {
                 Write-PipelineLog "Applying consensus recommendation to $ArtifactFile ..."
                 $revisionPrompt = & $BuildRevisionPrompt $artifactPath $debate.recommendation
-                Invoke-Claude -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
+                Invoke-Claude -Role expert -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
                 if ($PostRevision) {
                     Write-PipelineLog "Running post-revision check..."
                     & $PostRevision
@@ -83,7 +84,7 @@ function Invoke-DebateLoop {
         Write-PipelineLog "Revising ($($debate.objections.Count) objections)..."
 
         $revisionPrompt = & $BuildRevisionPrompt $artifactPath $objectionList
-        Invoke-Claude -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
+        Invoke-Claude -Role expert -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
         if ($PostRevision) {
             Write-PipelineLog "Running post-revision check..."
             & $PostRevision

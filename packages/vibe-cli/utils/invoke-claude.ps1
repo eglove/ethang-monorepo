@@ -1,5 +1,7 @@
 ﻿function Invoke-Claude {
     param(
+        [string]$Role,
+        [string]$Model,
         [string]$SystemPromptFile,
         [string]$AppendSystemPromptFile,
         [string]$Prompt,
@@ -9,7 +11,37 @@
         [string]$TaskId
     )
 
+    # Early validation of Role and Model
+    $validRoles = @('elicitor', 'doc-writer', 'expert', 'moderator', 'reviewer', 'code-writer')
+    $validModels = @('opus', 'sonnet', 'haiku')
+
+    if (-not $Role -or $Role -notin $validRoles) {
+        [Console]::Error.WriteLine("[ROUTING-HALT:INVALID-ROLE $Role]")
+        throw "Invalid role: '$Role'. Valid roles: $($validRoles -join ', ')"
+    }
+
+    if ($Model -and $Model -notin $validModels) {
+        [Console]::Error.WriteLine("[ROUTING-HALT:INVALID-MODEL $Model]")
+        throw "Invalid model: '$Model'. Valid models: $($validModels -join ', ')"
+    }
+
     $args_ = @('--strict-mcp-config', '--dangerously-skip-permissions')
+
+    # Load model mapping and resolve final model
+    $mappingPath = Join-Path $PSScriptRoot '../config/model-routing.psd1'
+    if (-not (Test-Path $mappingPath)) {
+        [Console]::Error.WriteLine("[ROUTING-HALT:MISSING-MAPPING $Role]")
+        throw "Model routing config not found: $mappingPath"
+    }
+    $mapping = Import-PowerShellDataFile $mappingPath
+
+    if (-not $mapping.ContainsKey($Role)) {
+        [Console]::Error.WriteLine("[ROUTING-HALT:MISSING-MAPPING $Role]")
+        throw "No mapping entry for role: $Role"
+    }
+
+    $resolvedModel = if ($Model) { $Model } else { $mapping[$Role] }
+    $args_ += '--model', $resolvedModel
 
     if ($SystemPromptFile) { $args_ += '--system-prompt-file', $SystemPromptFile }
     if ($AppendSystemPromptFile) { $args_ += '--append-system-prompt-file', $AppendSystemPromptFile }
@@ -130,6 +162,8 @@ function Invoke-ClaudeWithRetry {
         Independent of TLA+ apiRetries (merge-only counter in merge-queue.ps1).
     #>
     param(
+        [string]$Role,
+        [string]$Model,
         [string]$SystemPromptFile,
         [string]$AppendSystemPromptFile,
         [string]$Prompt,
@@ -143,6 +177,8 @@ function Invoke-ClaudeWithRetry {
 
     # Build splat for Invoke-Claude (exclude retry-specific params)
     $claudeParams = @{}
+    if ($Role) { $claudeParams.Role = $Role }
+    if ($Model) { $claudeParams.Model = $Model }
     if ($SystemPromptFile) { $claudeParams.SystemPromptFile = $SystemPromptFile }
     if ($AppendSystemPromptFile) { $claudeParams.AppendSystemPromptFile = $AppendSystemPromptFile }
     if ($Prompt) { $claudeParams.Prompt = $Prompt }
