@@ -15,6 +15,7 @@ Describe 'Invoke-Claude argument building' {
         }
 
         Invoke-Claude -Interactive `
+            -Role expert `
             -AppendSystemPromptFile '/tmp/agent.md' `
             -Prompt 'hello world'
 
@@ -31,6 +32,7 @@ Describe 'Invoke-Claude argument building' {
         }
 
         Invoke-Claude -Interactive `
+            -Role expert `
             -SystemPromptFile '/tmp/my agent.md' `
             -Prompt 'do something'
 
@@ -38,7 +40,7 @@ Describe 'Invoke-Claude argument building' {
     }
 
     It 'uses Start-Process in interactive mode' {
-        Invoke-Claude -Interactive -Prompt 'hello'
+        Invoke-Claude -Interactive -Role expert -Prompt 'hello'
         Should -Invoke Start-Process -Times 1
     }
 }
@@ -169,7 +171,7 @@ Describe 'Invoke-Claude streaming path' {
             '{"type":"result","subtype":"success","result":"stream-ok","total_cost_usd":0.01}'
         }
 
-        $result = Invoke-Claude -Prompt 'test'
+        $result = Invoke-Claude -Role expert -Prompt 'test'
 
         $result | Should -Be 'stream-ok'
     }
@@ -179,7 +181,7 @@ Describe 'Invoke-Claude streaming path' {
             '{"type":"result","subtype":"success","result":"","structured_output":{"key":"val"},"total_cost_usd":0.05}'
         }
 
-        $result = Invoke-Claude -SystemPromptFile '/tmp/agent.md'
+        $result = Invoke-Claude -Role expert -SystemPromptFile '/tmp/agent.md'
         $parsed = $result | ConvertFrom-Json
 
         $parsed.key | Should -Be 'val'
@@ -190,7 +192,7 @@ Describe 'Invoke-Claude streaming path' {
             '{"type":"result","subtype":"success","result":"no-cost"}'
         }
 
-        $result = Invoke-Claude -Prompt 'test'
+        $result = Invoke-Claude -Role expert -Prompt 'test'
 
         $result | Should -Be 'no-cost'
     }
@@ -202,7 +204,7 @@ Describe 'Invoke-Claude streaming path' {
             '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}'
         }
 
-        Invoke-Claude -Prompt 'test' -JsonSchema '{"type":"object"}'
+        Invoke-Claude -Role expert -Prompt 'test' -JsonSchema '{"type":"object"}'
 
         $script:capturedArgs | Should -Contain '--json-schema'
     }
@@ -214,7 +216,7 @@ Describe 'Invoke-Claude streaming path' {
             '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}'
         }
 
-        Invoke-Claude -Prompt 'test' -AddDir '/tmp/workdir'
+        Invoke-Claude -Role expert -Prompt 'test' -AddDir '/tmp/workdir'
 
         $script:capturedArgs | Should -Contain '--add-dir'
     }
@@ -226,7 +228,7 @@ Describe 'Invoke-Claude streaming path' {
             '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}'
         }
 
-        Invoke-Claude -Prompt 'test' -SystemPromptFile '/tmp/agent.md'
+        Invoke-Claude -Role expert -Prompt 'test' -SystemPromptFile '/tmp/agent.md'
 
         $script:capturedArgs | Should -Contain '--system-prompt-file'
     }
@@ -237,7 +239,7 @@ Describe 'Invoke-Claude streaming path' {
             '{"type":"assistant","message":{"content":[]}}'
         }
 
-        $result = Invoke-Claude -Prompt 'test'
+        $result = Invoke-Claude -Role expert -Prompt 'test'
 
         $result | Should -BeNullOrEmpty
     }
@@ -261,7 +263,7 @@ Describe 'Invoke-Claude PID registration' {
         # Ensure Get-ChildPidRegistry is available
         . "$PSScriptRoot/../utils/job-runner.ps1"
 
-        $result = Invoke-Claude -Prompt 'test' -TaskId 'T-pid'
+        $result = Invoke-Claude -Role expert -Prompt 'test' -TaskId 'T-pid'
 
         $result | Should -Be 'pid-ok'
         # PID should have been cleaned up after completion (TryRemove)
@@ -273,7 +275,7 @@ Describe 'Invoke-Claude PID registration' {
             '{"type":"result","subtype":"success","result":"text-ok","total_cost_usd":0.01}'
         }
 
-        $result = Invoke-Claude -Prompt 'test'
+        $result = Invoke-Claude -Role expert -Prompt 'test'
         $result | Should -Be 'text-ok'
         Should -Invoke Write-PipelineLog -ParameterFilter { $Message -match 'hello from agent' }
     }
@@ -283,7 +285,7 @@ Describe 'Invoke-Claude PID registration' {
             '{"type":"result","subtype":"error","error":"something broke","total_cost_usd":0.01}'
         }
 
-        $result = Invoke-Claude -Prompt 'test'
+        $result = Invoke-Claude -Role expert -Prompt 'test'
         $result | Should -BeNullOrEmpty
         Should -Invoke Write-PipelineLog -ParameterFilter { $Message -match 'subtype=error' }
         Should -Invoke Write-PipelineLog -ParameterFilter { $Message -match 'ERROR.*something broke' }
@@ -371,5 +373,244 @@ Describe 'Invoke-ClaudeWithRetry' {
             $Interactive -eq $true -and
             $TaskId -eq 'T-retry'
         }
+    }
+}
+
+Describe 'Model routing via $Role parameter' {
+    BeforeAll {
+        Mock Write-PipelineLog {}
+        Mock Write-Host {}
+    }
+
+    AfterEach {
+        Remove-Item Function:\claude -ErrorAction SilentlyContinue
+    }
+
+    # Test 1: -Role elicitor maps to opus
+    It 'passes --model opus for elicitor role' {
+        $script:capturedArgs = $null
+        function global:claude {
+            $script:capturedArgs = $args
+            '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}'
+        }
+
+        Invoke-Claude -Role elicitor -Prompt 'test'
+
+        $script:capturedArgs | Should -Contain '--model'
+        $modelIdx = [array]::IndexOf($script:capturedArgs, '--model')
+        $script:capturedArgs[$modelIdx + 1] | Should -Be 'opus'
+    }
+
+    # Test 2: -Role reviewer maps to haiku
+    It 'passes --model haiku for reviewer role' {
+        $script:capturedArgs = $null
+        function global:claude {
+            $script:capturedArgs = $args
+            '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}'
+        }
+
+        Invoke-Claude -Role reviewer -Prompt 'test'
+
+        $modelIdx = [array]::IndexOf($script:capturedArgs, '--model')
+        $script:capturedArgs[$modelIdx + 1] | Should -Be 'haiku'
+    }
+
+    # Test 3: -Role expert -Model haiku overrides mapping
+    It 'passes --model haiku when expert role is overridden with -Model haiku' {
+        $script:capturedArgs = $null
+        function global:claude {
+            $script:capturedArgs = $args
+            '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}'
+        }
+
+        Invoke-Claude -Role expert -Model haiku -Prompt 'test'
+
+        $modelIdx = [array]::IndexOf($script:capturedArgs, '--model')
+        $script:capturedArgs[$modelIdx + 1] | Should -Be 'haiku'
+    }
+
+    # Test 4: -Role expert -Model opus overrides mapping
+    It 'passes --model opus when expert role is overridden with -Model opus' {
+        $script:capturedArgs = $null
+        function global:claude {
+            $script:capturedArgs = $args
+            '{"type":"result","subtype":"success","result":"ok","total_cost_usd":0.01}'
+        }
+
+        Invoke-Claude -Role expert -Model opus -Prompt 'test'
+
+        $modelIdx = [array]::IndexOf($script:capturedArgs, '--model')
+        $script:capturedArgs[$modelIdx + 1] | Should -Be 'opus'
+    }
+
+    # Test 5: Invalid role throws before any claude invocation
+    It 'throws and halts before claude invocation for invalid role' {
+        $script:claudeInvoked = $false
+        function global:claude {
+            $script:claudeInvoked = $true
+            '{"type":"result","subtype":"success","result":"ok"}'
+        }
+
+        { Invoke-Claude -Role 'oracle' -Prompt 'test' } | Should -Throw
+
+        $script:claudeInvoked | Should -BeFalse
+    }
+
+    # Test 6: Missing mapping file halts with ROUTING-HALT:MISSING-MAPPING
+    It 'halts with ROUTING-HALT:MISSING-MAPPING when .psd1 file is missing' {
+        $script:claudeInvoked = $false
+        function global:claude {
+            $script:claudeInvoked = $true
+            '{"type":"result","subtype":"success","result":"ok"}'
+        }
+
+        # Mock Test-Path to simulate missing mapping file
+        Mock Test-Path { return $false } -ParameterFilter { $Path -match 'model-routing\.psd1' }
+
+        $errOutput = [System.Text.StringBuilder]::new()
+        $origErr = [Console]::Error
+        $writer = [System.IO.StringWriter]::new($errOutput)
+        [Console]::SetError($writer)
+
+        try {
+            try { Invoke-Claude -Role elicitor -Prompt 'test' } catch { }
+        }
+        finally {
+            [Console]::SetError($origErr)
+            $writer.Flush()
+        }
+
+        $captured = $errOutput.ToString()
+        $captured | Should -Match '\[ROUTING-HALT:MISSING-MAPPING'
+        $script:claudeInvoked | Should -BeFalse
+    }
+
+    # Test 7: Invalid model throws before invocation
+    It 'throws and halts before claude invocation for invalid model' {
+        $script:claudeInvoked = $false
+        function global:claude {
+            $script:claudeInvoked = $true
+            '{"type":"result","subtype":"success","result":"ok"}'
+        }
+
+        { Invoke-Claude -Role expert -Model 'gpt-4' -Prompt 'test' } | Should -Throw
+
+        $script:claudeInvoked | Should -BeFalse
+    }
+
+    # Test 8: Every valid role resolves to a model in {opus,sonnet,haiku}
+    It 'resolves every valid role to a known model' {
+        $validRoles = @('elicitor', 'doc-writer', 'expert', 'moderator', 'reviewer', 'code-writer')
+        $validModels = @('opus', 'sonnet', 'haiku')
+
+        $mappingPath = "$PSScriptRoot/../config/model-routing.psd1"
+        $mapping = Import-PowerShellDataFile $mappingPath
+
+        foreach ($role in $validRoles) {
+            $mapping.ContainsKey($role) | Should -BeTrue -Because "role '$role' must have a mapping entry"
+            $mapping[$role] | Should -BeIn $validModels -Because "role '$role' must map to opus, sonnet, or haiku"
+        }
+    }
+
+    # Test 9: Integration — routing progresses validating→resolving→invoking→done
+    It 'routing completes the full validate→resolve→invoke sequence' {
+        $script:capturedArgs = $null
+        function global:claude {
+            $script:capturedArgs = $args
+            '{"type":"result","subtype":"success","result":"integration-ok","total_cost_usd":0.02}'
+        }
+
+        $result = Invoke-Claude -Role moderator -Prompt 'integration test'
+
+        # Validating: role was accepted (no throw)
+        # Resolving: --model was set
+        $script:capturedArgs | Should -Contain '--model'
+        # Invoking: claude was called, result returned
+        $result | Should -Be 'integration-ok'
+    }
+}
+
+Describe 'Model routing halt signals' {
+    BeforeAll {
+        Mock Write-PipelineLog {}
+        Mock Write-Host {}
+    }
+
+    AfterEach {
+        Remove-Item Function:\claude -ErrorAction SilentlyContinue
+    }
+
+    # Test 10: Invalid role emits ROUTING-HALT:INVALID-ROLE in stderr
+    It 'emits [ROUTING-HALT:INVALID-ROLE oracle] to stderr for invalid role and does not emit MISSING-MAPPING' {
+        $script:claudeInvoked = $false
+        function global:claude {
+            $script:claudeInvoked = $true
+            '{"type":"result","subtype":"success","result":"ok"}'
+        }
+
+        $errOutput = [System.Text.StringBuilder]::new()
+        $origErr = [Console]::Error
+        $writer = [System.IO.StringWriter]::new($errOutput)
+        [Console]::SetError($writer)
+
+        try {
+            try { Invoke-Claude -Role 'oracle' -Prompt 'test' } catch { }
+        }
+        finally {
+            [Console]::SetError($origErr)
+            $writer.Flush()
+        }
+
+        $captured = $errOutput.ToString()
+        $captured | Should -Match '\[ROUTING-HALT:INVALID-ROLE oracle\]'
+        $captured | Should -Not -Match '\[ROUTING-HALT:MISSING-MAPPING\]'
+        $script:claudeInvoked | Should -BeFalse
+    }
+
+    # Test 11: Missing mapping for valid role emits ROUTING-HALT:MISSING-MAPPING, not INVALID-ROLE
+    It 'emits [ROUTING-HALT:MISSING-MAPPING elicitor] when mapping entry is absent and does not emit INVALID-ROLE' {
+        $script:claudeInvoked = $false
+        function global:claude {
+            $script:claudeInvoked = $true
+            '{"type":"result","subtype":"success","result":"ok"}'
+        }
+
+        # Use a temp mapping file without the elicitor entry
+        $tempMapping = [System.IO.Path]::GetTempFileName() + '.psd1'
+        Set-Content $tempMapping '@{ "expert" = "sonnet"; "moderator" = "sonnet"; "reviewer" = "haiku"; "doc-writer" = "sonnet"; "code-writer" = "sonnet" }'
+
+        # We need to mock Import-PowerShellDataFile to return an incomplete mapping
+        # and Test-Path to return $true for the mapping path
+        Mock Test-Path { return $true } -ParameterFilter { $Path -match 'model-routing\.psd1' }
+        Mock Import-PowerShellDataFile {
+            return @{
+                'expert'      = 'sonnet'
+                'moderator'   = 'sonnet'
+                'reviewer'    = 'haiku'
+                'doc-writer'  = 'sonnet'
+                'code-writer' = 'sonnet'
+                # elicitor is intentionally absent
+            }
+        } -ParameterFilter { $Path -match 'model-routing\.psd1' }
+
+        $errOutput = [System.Text.StringBuilder]::new()
+        $origErr = [Console]::Error
+        $writer = [System.IO.StringWriter]::new($errOutput)
+        [Console]::SetError($writer)
+
+        try {
+            try { Invoke-Claude -Role elicitor -Prompt 'test' } catch { }
+        }
+        finally {
+            [Console]::SetError($origErr)
+            $writer.Flush()
+        }
+
+        Remove-Item $tempMapping -ErrorAction SilentlyContinue
+
+        $captured = $errOutput.ToString()
+        $captured | Should -Match '\[ROUTING-HALT:MISSING-MAPPING elicitor\]'
+        $captured | Should -Not -Match '\[ROUTING-HALT:INVALID-ROLE\]'
+        $script:claudeInvoked | Should -BeFalse
     }
 }

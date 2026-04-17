@@ -54,7 +54,7 @@ $conflictFiles
 Resolve the merge conflicts. If you cannot resolve them, respond with exactly: UNRESOLVABLE
 "@
 
-        $claudeResult = Invoke-Claude -Prompt $conflictPrompt -AddDir $Root
+        $claudeResult = Invoke-Claude -Role 'code-writer' -Prompt $conflictPrompt -AddDir $Root
         $claudeResultStr = if ($claudeResult) { "$claudeResult" } else { '' }
 
         # Check for unresolvable signal
@@ -140,7 +140,7 @@ $testOutput
 
 Fix the failing tests after merge conflict resolution.
 "@
-                Invoke-Claude -Prompt $fixPrompt -AddDir $Root
+                Invoke-Claude -Role 'code-writer' -Prompt $fixPrompt -AddDir $Root
                 continue
             }
 
@@ -175,7 +175,7 @@ $lintOutput
 
 Fix the lint errors after merge conflict resolution.
 "@
-                Invoke-Claude -Prompt $fixPrompt -AddDir $Root
+                Invoke-Claude -Role 'code-writer' -Prompt $fixPrompt -AddDir $Root
                 continue
             }
 

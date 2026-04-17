@@ -107,7 +107,7 @@ function Invoke-FinalVerification {
         $fixPrompt = "Fix the '$failedCommand' failure in final verification."
 
         try {
-            Invoke-Claude -SystemPromptFile $writerFile -Prompt $fixPrompt -TaskId 'FINAL' | Out-Null
+            Invoke-Claude -Role 'code-writer' -SystemPromptFile $writerFile -Prompt $fixPrompt -TaskId 'FINAL' | Out-Null
         }
         catch {
             Write-TaskLog -TaskId 'FINAL' -Phase 'final' -Message "ESCALATED: Infrastructure failure during remediation" -FeatureDir $FeatureDir -RunId $RunId

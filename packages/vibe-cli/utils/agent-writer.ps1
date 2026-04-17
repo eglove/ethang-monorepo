@@ -39,7 +39,7 @@ function Invoke-AgentWriter {
     Write-TaskLog -TaskId $taskId -Phase 'agent_call' -Message "Dispatching agent: $($Task.codeWriter)" -FeatureDir $FeatureDir -RunId $RunId
 
     try {
-        $response = Invoke-Claude -SystemPromptFile $agentFile -Prompt $prompt -TaskId $taskId
+        $response = Invoke-Claude -Role 'code-writer' -SystemPromptFile $agentFile -Prompt $prompt -TaskId $taskId
     }
     catch {
         Write-TaskLog -TaskId $taskId -Phase 'agent_call' -Message "ESCALATED: Infrastructure failure — $($_.Exception.Message)" -FeatureDir $FeatureDir -RunId $RunId

@@ -117,7 +117,7 @@ function Invoke-TlcCheck {
         if ($FixContext) { $fixPrompt += "`n`n$FixContext" }
         $fixPrompt += "`n`nFix the specification and all configs. Save all files to: $TlaDir"
 
-        Invoke-Claude -SystemPromptFile $TlaWriterFile -Prompt $fixPrompt | Out-Null
+        Invoke-Claude -Role 'doc-writer' -SystemPromptFile $TlaWriterFile -Prompt $fixPrompt | Out-Null
     }
 }
 

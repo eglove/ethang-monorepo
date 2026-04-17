@@ -30,6 +30,7 @@
                 $outputFile = Join-Path $featureDirArg 'bdd.feature'
 
                 Invoke-Claude `
+                    -Role 'doc-writer' `
                     -SystemPromptFile "$rootArg/agents/doc-writers/bdd-writer.md" `
                     -Prompt "Read the elicitor briefing from: $briefingPathArg`nSave to: $outputFile" | Out-Null
 
@@ -52,6 +53,7 @@
                 New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
 
                 Invoke-Claude `
+                    -Role 'doc-writer' `
                     -SystemPromptFile "$rootArg/agents/doc-writers/tla-writer.md" `
                     -Prompt "Read the elicitor briefing from: $briefingPathArg`n`nWrite the TLA+ specification. Save all files to: $tlaDir" | Out-Null
 

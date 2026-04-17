@@ -29,7 +29,7 @@ function Invoke-RedPhase {
     # Write tests — use package-level dir so agent paths align with verify commands
     $addDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
     try {
-        $response = Invoke-Claude -SystemPromptFile $testWriterFile -Prompt $prompt -TaskId $taskId -AddDir $addDir
+        $response = Invoke-Claude -Role reviewer -SystemPromptFile $testWriterFile -Prompt $prompt -TaskId $taskId -AddDir $addDir
     }
     catch {
         Write-TaskLog -TaskId $taskId -Phase 'red' -Message "ESCALATED: Infrastructure failure — $($_.Exception.Message)" -FeatureDir $FeatureDir -RunId $RunId
@@ -93,7 +93,7 @@ function Invoke-RedPhase {
         $retryPrompt = "Tests passed unexpectedly. Revise the tests or determine if the feature is already implemented.`nReturn JSON with 'verdict': 'revised' or 'already_implemented'"
 
         try {
-            $verdictResponse = Invoke-Claude -SystemPromptFile $testWriterFile -Prompt $retryPrompt -TaskId $taskId -AddDir $addDir
+            $verdictResponse = Invoke-Claude -Role reviewer -SystemPromptFile $testWriterFile -Prompt $retryPrompt -TaskId $taskId -AddDir $addDir
         }
         catch {
             $Counters.redRetries--

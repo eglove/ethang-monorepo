@@ -28,7 +28,7 @@ function Invoke-GreenPhase {
 
         $addDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
         try {
-            $response = Invoke-Claude -SystemPromptFile $codeWriterFile -Prompt $prompt -TaskId $taskId -AddDir $addDir
+            $response = Invoke-Claude -Role 'code-writer' -SystemPromptFile $codeWriterFile -Prompt $prompt -TaskId $taskId -AddDir $addDir
         }
         catch {
             Write-TaskLog -TaskId $taskId -Phase 'green' -Message "ESCALATED: Infrastructure failure — $($_.Exception.Message)" -FeatureDir $FeatureDir -RunId $RunId

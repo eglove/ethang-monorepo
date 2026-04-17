@@ -135,7 +135,7 @@ function Invoke-Merge {
         $conflictPrompt = "Resolve merge conflict for task $TaskId merging $BranchName"
 
         try {
-            Invoke-Claude -SystemPromptFile $resolverFile -Prompt $conflictPrompt -TaskId $TaskId | Out-Null
+            Invoke-Claude -Role 'code-writer' -SystemPromptFile $resolverFile -Prompt $conflictPrompt -TaskId $TaskId | Out-Null
         }
         catch {
             # Infrastructure failure during resolver — escalate without consuming retry

@@ -35,6 +35,7 @@ function Invoke-UnifiedDebateLoop {
 
         try {
             $debate = Invoke-Claude `
+                -Role moderator `
                 -SystemPromptFile $debateModFile `
                 -JsonSchema $UnifiedDebateSchema `
                 -Prompt $prompt |
@@ -80,7 +81,7 @@ function Invoke-UnifiedDebateLoop {
                         . "$r/utils/pipeline-log.ps1"
                         . "$r/utils/invoke-claude.ps1"
                         $prompt = "Read all artifacts in: $fd`nRead current scenarios from: $gf`nConsensus recommendation: $rec`nApply the recommendation. Save to $gf"
-                        Invoke-Claude -SystemPromptFile "$r/agents/doc-writers/bdd-writer.md" -Prompt $prompt | Out-Null
+                        Invoke-Claude -Role 'doc-writer' -SystemPromptFile "$r/agents/doc-writers/bdd-writer.md" -Prompt $prompt | Out-Null
                     }
                     Args = @($Root, $absGherkin, $debate.recommendation.bdd, $absFeatureDir)
                 }
@@ -90,7 +91,7 @@ function Invoke-UnifiedDebateLoop {
                         . "$r/utils/pipeline-log.ps1"
                         . "$r/utils/invoke-claude.ps1"
                         $prompt = "Read all artifacts in: $fd`nRead current spec from: $td`nConsensus recommendation: $rec`nApply the recommendation. Save all files to $td"
-                        Invoke-Claude -SystemPromptFile "$r/agents/doc-writers/tla-writer.md" -Prompt $prompt | Out-Null
+                        Invoke-Claude -Role 'doc-writer' -SystemPromptFile "$r/agents/doc-writers/tla-writer.md" -Prompt $prompt | Out-Null
                     }
                     Args = @($Root, $absTlaDir, $debate.recommendation.tla, $absFeatureDir)
                 }
@@ -157,7 +158,7 @@ function Invoke-UnifiedDebateLoop {
                     . "$r/utils/pipeline-log.ps1"
                     . "$r/utils/invoke-claude.ps1"
                     $prompt = "Read all artifacts in: $fd`nRead current scenarios from: $gf`nDebate objections:`n- $objs`nRevise the scenarios. Save to $gf"
-                    Invoke-Claude -SystemPromptFile "$r/agents/doc-writers/bdd-writer.md" -Prompt $prompt | Out-Null
+                    Invoke-Claude -Role 'doc-writer' -SystemPromptFile "$r/agents/doc-writers/bdd-writer.md" -Prompt $prompt | Out-Null
                 }
                 Args = @($Root, $absGherkin, $objList, $absFeatureDir)
             }
@@ -173,7 +174,7 @@ function Invoke-UnifiedDebateLoop {
                     . "$r/utils/tlc-runner.ps1"
                     $tlaFile = Get-ChildItem "$td/*.tla" | Select-Object -First 1
                     $prompt = "Read all artifacts in: $fd`nRead current spec from: $($tlaFile.FullName)`nDebate objections:`n- $objs`nRevise the specification. Save all files to $td"
-                    Invoke-Claude -SystemPromptFile "$r/agents/doc-writers/tla-writer.md" -Prompt $prompt | Out-Null
+                    Invoke-Claude -Role 'doc-writer' -SystemPromptFile "$r/agents/doc-writers/tla-writer.md" -Prompt $prompt | Out-Null
                     Invoke-TlcCheck -TlaDir $td -TlaWriterFile "$r/agents/doc-writers/tla-writer.md" -FixContext "Debate revision"
                 }
                 Args = @($Root, $absTlaDir, $objList, $absFeatureDir)

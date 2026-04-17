@@ -316,7 +316,7 @@ $uncoveredSummary
 "@
 
             Write-PipelineLog -Message "Dispatching Claude for all $MaxTiers tier(s)" -Root $Root
-            $claudeResult = Invoke-Claude -Prompt $prompt -AddDir $Root
+            $claudeResult = Invoke-Claude -Role 'code-writer' -Prompt $prompt -AddDir $Root
 
             $worktreeOutput = git -C $Root worktree list
             $worktreeLines = @($worktreeOutput | Where-Object { $_ -and $_ -notmatch '\(bare\)' })
