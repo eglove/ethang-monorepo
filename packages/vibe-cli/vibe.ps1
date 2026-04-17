@@ -32,6 +32,7 @@ Import-Module "$root/state/state-repository.psd1" -Force
 
 # Utilities
 . "$root/utils/invoke-claude.ps1"
+. "$root/utils/close-hook.ps1"
 . "$root/utils/invoke-verify.ps1"
 . "$root/utils/pipeline-log.ps1"
 . "$root/utils/resolve-pipeline-state.ps1"
