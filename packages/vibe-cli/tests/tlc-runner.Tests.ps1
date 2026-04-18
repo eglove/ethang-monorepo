@@ -282,6 +282,41 @@ Describe 'Invoke-TlcSimulation' {
         $traces.Count | Should -Be 0
     }
 
+    It 'saves a final trace when output has no trailing blank line' {
+        $simOutput = @(
+            "TLC2 Version 2.18"
+            "State 1: <Init>"
+            "/\ counter = 0"
+            "State 2: <Step>"
+            "/\ counter = 1"
+        ) -join "`n"
+
+        Mock Invoke-TlcProcess {
+            return @{ Output = $simOutput; ExitCode = 0 }
+        }
+
+        $traces = Invoke-TlcSimulation -TlaDir 'C:\fake' -TlaFileName 'Spec.tla' -CfgFileName 'Spec.cfg'
+        $traces.Count | Should -BeGreaterOrEqual 1
+        $traces[-1].steps[-1].variables.counter | Should -Be 1
+    }
+
+    It 'falls back to first token when action lacks angle brackets' {
+        $simOutput = @(
+            "TLC2 Version 2.18"
+            "State 1: Plain extra text"
+            "/\ counter = 0"
+            ""
+        ) -join "`n"
+
+        Mock Invoke-TlcProcess {
+            return @{ Output = $simOutput; ExitCode = 0 }
+        }
+
+        $traces = Invoke-TlcSimulation -TlaDir 'C:\fake' -TlaFileName 'Spec.tla' -CfgFileName 'Spec.cfg'
+        $traces.Count | Should -BeGreaterOrEqual 1
+        $traces[-1].steps[0].action | Should -BeExactly 'Plain'
+    }
+
     It 'parses TLA+ value types correctly' {
         $simOutput = @(
             "TLC2 Version 2.18"

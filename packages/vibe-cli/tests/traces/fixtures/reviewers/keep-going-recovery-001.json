@@ -1,153 +1,153 @@
 {
-  "spec": "PipelineReviewers",
-  "traceId": "keep-going-recovery-001",
-  "description": "Retry exhaustion -> KeepGoing -> pass -> merge -> final pass -> COMPLETE",
   "constants": {
-    "MaxReviewRounds": 1,
     "MaxKeepGoingResets": 3,
+    "MaxReviewRounds": 1,
     "MaxTddKeepGoingPerGate": 5,
     "NumTasks": 1
   },
+  "description": "Retry exhaustion -> KeepGoing -> pass -> merge -> final pass -> COMPLETE",
+  "spec": "PipelineReviewers",
   "steps": [
     {
-      "stepNum": 0,
       "action": "Init",
       "state": {
-        "pipelineState": "idle",
-        "lockHolder": null,
-        "reviewRound": 0,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": null,
+        "pipelineState": "idle",
+        "reviewGateType": "none",
+        "reviewRound": 0,
         "tasksDone": 0,
-        "reviewGateType": "none"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 0
     },
     {
-      "stepNum": 1,
       "action": "AcquireLock",
       "state": {
-        "pipelineState": "locked",
-        "lockHolder": 1,
-        "reviewRound": 0,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": 1,
+        "pipelineState": "locked",
+        "reviewGateType": "none",
+        "reviewRound": 0,
         "tasksDone": 0,
-        "reviewGateType": "none"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 1
     },
     {
-      "stepNum": 2,
       "action": "StartRunning",
       "state": {
-        "pipelineState": "running",
-        "lockHolder": 1,
-        "reviewRound": 0,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": 1,
+        "pipelineState": "running",
+        "reviewGateType": "none",
+        "reviewRound": 0,
         "tasksDone": 0,
-        "reviewGateType": "none"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 2
     },
     {
-      "stepNum": 3,
       "action": "EnterPreMergeReview",
       "state": {
-        "pipelineState": "preMergeReview",
-        "lockHolder": 1,
-        "reviewRound": 0,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": 1,
+        "pipelineState": "preMergeReview",
+        "reviewGateType": "preMerge",
+        "reviewRound": 0,
         "tasksDone": 0,
-        "reviewGateType": "preMerge"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 3
     },
     {
-      "stepNum": 4,
       "action": "HandleRetryPreMerge",
       "state": {
-        "pipelineState": "preMergeReview",
-        "lockHolder": 1,
-        "reviewRound": 1,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": 1,
+        "pipelineState": "preMergeReview",
+        "reviewGateType": "preMerge",
+        "reviewRound": 1,
         "tasksDone": 0,
-        "reviewGateType": "preMerge"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 4
     },
     {
-      "stepNum": 5,
       "action": "ReviewKeepGoing",
       "state": {
-        "pipelineState": "preMergeReview",
-        "lockHolder": 1,
-        "reviewRound": 0,
         "keepGoingResets": 1,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": 1,
+        "pipelineState": "preMergeReview",
+        "reviewGateType": "preMerge",
+        "reviewRound": 0,
         "tasksDone": 0,
-        "reviewGateType": "preMerge"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 5
     },
     {
-      "stepNum": 6,
       "action": "HandlePassPreMerge",
       "state": {
-        "pipelineState": "mergeQueue",
-        "lockHolder": 1,
-        "reviewRound": 0,
         "keepGoingResets": 1,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": 1,
+        "pipelineState": "mergeQueue",
+        "reviewGateType": "none",
+        "reviewRound": 0,
         "tasksDone": 0,
-        "reviewGateType": "none"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 6
     },
     {
-      "stepNum": 7,
       "action": "TaskMerged",
       "state": {
-        "pipelineState": "running",
-        "lockHolder": 1,
-        "reviewRound": 0,
         "keepGoingResets": 1,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": 1,
+        "pipelineState": "running",
+        "reviewGateType": "none",
+        "reviewRound": 0,
         "tasksDone": 1,
-        "reviewGateType": "none"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 7
     },
     {
-      "stepNum": 8,
       "action": "EnterFinalReview",
       "state": {
-        "pipelineState": "finalReview",
-        "lockHolder": 1,
-        "reviewRound": 0,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": 1,
+        "pipelineState": "finalReview",
+        "reviewGateType": "final",
+        "reviewRound": 0,
         "tasksDone": 1,
-        "reviewGateType": "final"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 8
     },
     {
-      "stepNum": 9,
       "action": "HandlePassFinal",
       "state": {
-        "pipelineState": "COMPLETE",
-        "lockHolder": null,
-        "reviewRound": 0,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": null,
+        "pipelineState": "COMPLETE",
+        "reviewGateType": "none",
+        "reviewRound": 0,
         "tasksDone": 1,
-        "reviewGateType": "none"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 9
     }
-  ]
+  ],
+  "traceId": "keep-going-recovery-001"
 }

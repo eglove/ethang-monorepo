@@ -1,4 +1,4 @@
-- https://playwright.dev/docs/api/class-coverage
+- <https://playwright.dev/docs/api/class-coverage>
 - Everything search cli should replace find?
 - Powershell configuration management to PC backup script
 - Migrate sanity-admin to worker

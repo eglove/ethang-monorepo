@@ -19,7 +19,7 @@ Acts as a hook to replace grep and similar commands to search contents of a file
 
 ## Knowledge Graph (directed graph generation)
 
-use data-structure-typed https://github.com/zrwusa/data-structure-typed to build
+use data-structure-typed <https://github.com/zrwusa/data-structure-typed> to build
 a directed graph with typescript that can then generate a markdown index of
 files in the codebase, this will replace the current CLAUDE.md and replace
 grpahify

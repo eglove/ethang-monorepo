@@ -1,46 +1,42 @@
 {
-  "topic": "Coding Stage Orchestrator",
   "tiers": [
     {
-      "tier": 1,
-      "title": "Foundation (constants, logging, job runner, git retry, test doubles, contracts, agent prompts)",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": [],
+          "files": ["utils/config.ps1"],
           "id": "T1",
           "step": 1,
-          "title": "Configuration Constants",
-          "files": ["utils/config.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": []
+          "title": "Configuration Constants"
         },
         {
-          "id": "T2",
-          "step": 2,
-          "title": "Thread-Safe Logging, Job Runner, Git Retry, Claude Test Double",
+          "codeWriter": "powershell-writer",
+          "dependencies": [],
           "files": [
             "utils/task-log.ps1",
             "utils/job-runner.ps1",
             "utils/git-retry.ps1",
             "tests/helpers/claude-test-double.ps1"
           ],
-          "codeWriter": "powershell-writer",
+          "id": "T2",
+          "step": 2,
           "testWriter": "pester-writer",
-          "dependencies": []
+          "title": "Thread-Safe Logging, Job Runner, Git Retry, Claude Test Double"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": [],
+          "files": ["utils/result-contracts.ps1"],
           "id": "T3",
           "step": 3,
-          "title": "Result Contracts",
-          "files": ["utils/result-contracts.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": []
+          "title": "Result Contracts"
         },
         {
-          "id": "T4",
-          "step": 4,
-          "title": "Agent Prompt Files",
+          "codeWriter": "agent-writer",
+          "dependencies": [],
           "files": [
             "agents/code-writers/typescript-writer.md",
             "agents/code-writers/hono-writer.md",
@@ -52,143 +48,158 @@
             "agents/test-writers/playwright-writer.md",
             "agents/test-writers/pester-writer.md"
           ],
-          "codeWriter": "agent-writer",
+          "id": "T4",
+          "step": 4,
           "testWriter": null,
-          "dependencies": []
+          "title": "Agent Prompt Files"
         }
-      ]
+      ],
+      "tier": 1,
+      "title": "Foundation (constants, logging, job runner, git retry, test doubles, contracts, agent prompts)"
     },
     {
-      "tier": 2,
-      "title": "Core Utilities (validation, workspace, escalation, state resolution)",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1", "T3"],
+          "files": ["utils/validate-plan.ps1"],
           "id": "T5",
           "step": 5,
-          "title": "Plan Validation",
-          "files": ["utils/validate-plan.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T1", "T3"]
+          "title": "Plan Validation"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1", "T2"],
+          "files": ["utils/workspace.ps1"],
           "id": "T6",
           "step": 6,
-          "title": "Workspace Management",
-          "files": ["utils/workspace.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T1", "T2"]
+          "title": "Workspace Management"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1", "T2", "T3"],
+          "files": ["utils/read-escalation.ps1"],
           "id": "T7",
           "step": 7,
-          "title": "Escalation Handling",
-          "files": ["utils/read-escalation.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T1", "T2", "T3"]
+          "title": "Escalation Handling"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1", "T2"],
+          "files": ["utils/pipeline-state.ps1"],
           "id": "T14",
           "step": 14,
-          "title": "Pipeline State Resolution Update",
-          "files": ["utils/pipeline-state.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T1", "T2"]
+          "title": "Pipeline State Resolution Update"
         }
-      ]
+      ],
+      "tier": 2,
+      "title": "Core Utilities (validation, workspace, escalation, state resolution)"
     },
     {
-      "tier": 3,
-      "title": "Phase Functions (TDD cycle, agent-writer, merge, final verification)",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1", "T2", "T3", "T4"],
+          "files": ["utils/tdd-red.ps1"],
           "id": "T8",
           "step": 8,
-          "title": "TDD RED Phase",
-          "files": ["utils/tdd-red.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T1", "T2", "T3", "T4"]
+          "title": "TDD RED Phase"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1", "T2", "T3", "T4"],
+          "files": ["utils/tdd-green.ps1"],
           "id": "T9",
           "step": 9,
-          "title": "TDD GREEN Phase",
-          "files": ["utils/tdd-green.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T1", "T2", "T3", "T4"]
+          "title": "TDD GREEN Phase"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1", "T2", "T3", "T4"],
+          "files": ["utils/tdd-cleanup.ps1"],
           "id": "T10",
           "step": 10,
-          "title": "TDD Cleanup Phase",
-          "files": ["utils/tdd-cleanup.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T1", "T2", "T3", "T4"]
+          "title": "TDD Cleanup Phase"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1", "T2", "T3", "T4"],
+          "files": ["utils/agent-writer.ps1"],
           "id": "T11",
           "step": 11,
-          "title": "Agent-Writer Dispatch",
-          "files": ["utils/agent-writer.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T1", "T2", "T3", "T4"]
+          "title": "Agent-Writer Dispatch"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1", "T2", "T3", "T6", "T7"],
+          "files": ["utils/merge-queue.ps1"],
           "id": "T12",
           "step": 12,
-          "title": "Merge Queue",
-          "files": ["utils/merge-queue.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T1", "T2", "T3", "T6", "T7"]
+          "title": "Merge Queue"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1", "T2", "T3", "T7"],
+          "files": ["utils/final-verification.ps1"],
           "id": "T13",
           "step": 13,
-          "title": "Final Verification",
-          "files": ["utils/final-verification.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T1", "T2", "T3", "T7"]
+          "title": "Final Verification"
         }
-      ]
+      ],
+      "tier": 3,
+      "title": "Phase Functions (TDD cycle, agent-writer, merge, final verification)"
     },
     {
-      "tier": 4,
-      "title": "Orchestration (main entry point)",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": [
+            "T5",
+            "T6",
+            "T7",
+            "T8",
+            "T9",
+            "T10",
+            "T11",
+            "T12",
+            "T13",
+            "T14"
+          ],
+          "files": ["stages/8-coding.ps1"],
           "id": "T15",
           "step": 15,
-          "title": "Tier Orchestrator and Main Entry Point",
-          "files": ["stages/8-coding.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12", "T13", "T14"]
+          "title": "Tier Orchestrator and Main Entry Point"
         }
-      ]
+      ],
+      "tier": 4,
+      "title": "Orchestration (main entry point)"
     },
     {
-      "tier": 5,
-      "title": "Validation (integration test)",
       "tasks": [
         {
+          "codeWriter": null,
+          "dependencies": ["T15", "T14"],
+          "files": ["tests/coding-integration.Tests.ps1"],
           "id": "T16",
           "step": 16,
-          "title": "Integration Test -- Full Pipeline Lifecycle",
-          "files": ["tests/coding-integration.Tests.ps1"],
-          "codeWriter": null,
           "testWriter": "pester-writer",
-          "dependencies": ["T15", "T14"]
+          "title": "Integration Test -- Full Pipeline Lifecycle"
         }
-      ]
+      ],
+      "tier": 5,
+      "title": "Validation (integration test)"
     }
-  ]
+  ],
+  "topic": "Coding Stage Orchestrator"
 }

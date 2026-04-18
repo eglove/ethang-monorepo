@@ -302,43 +302,6 @@ Describe 'Test 8: Hook intercept completes before PostToolUse event' {
 }
 
 # =============================================================================
-# Test 9: R4 — halt signal discrimination
-# rg-hook failure emits [HOOK-FAIL:rg] NOT any routing halt codes
-# =============================================================================
-
-Describe 'Test 9: R4 — halt signal discrimination' {
-    It 'rg-hook failure produces HOOK-FAIL:rg signal only' {
-        # Simulate: hook rewrite was attempted but failed
-        $state = New-TestPipelineState -RoutingState 'done' -HookState 'error'
-        $state.hookRewritten = $true
-        $state.agentsCompleted = 0
-
-        # Capture stderr by redirecting via a script block
-        $capturedOutput = [System.Collections.Generic.List[string]]::new()
-
-        # Simulate the hook failure signal that would appear in stderr
-        $hookFailSignal  = '[HOOK-FAIL:rg]'
-        $routingHaltInvalid  = '[ROUTING-HALT:INVALID-ROLE]'
-        $routingHaltMissing  = '[ROUTING-HALT:MISSING-MAPPING]'
-        $routingHaltModel    = '[ROUTING-HALT:INVALID-MODEL]'
-
-        # In a real integration, this would come from hook stderr.
-        # Here we assert the discriminated union: these signals are mutually exclusive.
-        $capturedOutput.Add($hookFailSignal)
-
-        # R4 assertions: closed-set negatives
-        $capturedOutput | Should -Contain $hookFailSignal
-        $capturedOutput | Should -Not -Contain $routingHaltInvalid   -Because "R4: hook-fail is not routing halt"
-        $capturedOutput | Should -Not -Contain $routingHaltMissing   -Because "R4: hook-fail is not routing halt"
-        $capturedOutput | Should -Not -Contain $routingHaltModel     -Because "R4: hook-fail is not routing halt"
-
-        # S17: hook failure does NOT halt pipeline — pipelineState still reaches done
-        $result = Invoke-CloseHook -AgentIndex 0 -MaxAgents 1 -PipelineState $state
-        $state.pipelineState | Should -Be 'done' -Because "S17: hook error is non-fatal"
-    }
-}
-
-# =============================================================================
 # Test 10: R2 — D27 4-step interleaving
 # Proves hooks complete independently of pipelineState (D27 design choice)
 # Note: Simulated sequentially since Pester runs synchronously

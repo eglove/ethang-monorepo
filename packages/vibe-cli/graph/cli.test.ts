@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import trim from "lodash/trim.js";
 import {
   existsSync,
   mkdtempSync,
@@ -6,31 +6,32 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
+import path from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { runCli, getDiscoveriesPath } from "./cli.js";
+import { getDiscoveriesPath, runCli } from "./cli.js";
 import { DedupStateMachine } from "./dedup.js";
 import { replayDiscoveries } from "./index.js";
 
 describe("graph/cli", () => {
-  let tmpDir: string;
+  let temporaryDirectory: string;
   let discoveriesPath: string;
-  const originalEnv = process.env.VIBE_CLI_GRAPH_DISCOVERIES;
+  const originalEnvironment = process.env["VIBE_CLI_GRAPH_DISCOVERIES"];
 
   beforeEach(() => {
-    tmpDir = mkdtempSync(join(tmpdir(), "vibe-cli-graph-"));
-    discoveriesPath = join(tmpDir, "discoveries.jsonl");
-    process.env.VIBE_CLI_GRAPH_DISCOVERIES = discoveriesPath;
+    temporaryDirectory = mkdtempSync(path.join(tmpdir(), "vibe-cli-graph-"));
+    discoveriesPath = path.join(temporaryDirectory, "discoveries.jsonl");
+    process.env["VIBE_CLI_GRAPH_DISCOVERIES"] = discoveriesPath;
   });
 
   afterEach(() => {
-    if (originalEnv === undefined) {
-      delete process.env.VIBE_CLI_GRAPH_DISCOVERIES;
+    if (originalEnvironment === undefined) {
+      delete process.env["VIBE_CLI_GRAPH_DISCOVERIES"];
     } else {
-      process.env.VIBE_CLI_GRAPH_DISCOVERIES = originalEnv;
+      process.env["VIBE_CLI_GRAPH_DISCOVERIES"] = originalEnvironment;
     }
-    rmSync(tmpDir, { force: true, recursive: true });
+    rmSync(temporaryDirectory, { force: true, recursive: true });
   });
 
   it("resolves the env-override discoveries path", () => {
@@ -41,7 +42,7 @@ describe("graph/cli", () => {
     const result = runCli(["add-node", "pkg/a.ts", "file"]);
     expect(result.code).toBe(0);
     const content = readFileSync(discoveriesPath, "utf8");
-    expect(JSON.parse(content.trim())).toEqual({
+    expect(JSON.parse(trim(content))).toEqual({
       kind: "node",
       path: "pkg/a.ts",
       type: "file",
@@ -52,9 +53,9 @@ describe("graph/cli", () => {
     const result = runCli(["add-edge", "pkg/a.ts", "pkg/b.ts", "imports"]);
     expect(result.code).toBe(0);
     const content = readFileSync(discoveriesPath, "utf8");
-    expect(JSON.parse(content.trim())).toEqual({
-      kind: "edge",
+    expect(JSON.parse(trim(content))).toEqual({
       from: "pkg/a.ts",
+      kind: "edge",
       to: "pkg/b.ts",
       type: "imports",
     });

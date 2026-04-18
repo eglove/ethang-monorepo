@@ -395,6 +395,41 @@ Describe 'Lock-Pipeline (AcquireLock with process identity and mutex)' {
         }
     }
 
+    Context 'Process identity edge cases' {
+        It 'treats lock with no startTime (legacy format) as active when pid is alive' {
+            $lockData = @{ pid = $PID } | ConvertTo-Json
+            Set-Content -Path $script:lockFile -Value $lockData
+
+            { Lock-Pipeline -LockDir $script:lockDir -MutexName 'Global\vibe-cli-legacy-test' } |
+                Should -Throw '*already running*'
+        }
+
+        It 'parses startTime given as a non-ISO string without crashing' {
+            # Write a lock file with startTime formatted so ConvertFrom-Json leaves it as
+            # a plain string (not an auto-converted DateTime) — this forces the parse branch.
+            $lockData = "{`"pid`":$PID,`"startTime`":`"01/02/2000 12:34:56`"}"
+            Set-Content -Path $script:lockFile -Value $lockData
+
+            { Lock-Pipeline -LockDir $script:lockDir -MutexName 'Global\vibe-cli-strtime-test' } |
+                Should -Not -Throw
+        }
+    }
+
+    Context 'State DB sync (Feature override)' {
+        It 'invokes Update-PipelineState for non-default features when available' {
+            function global:Update-PipelineState { param($FeatureName, $PipelineState, $LockHolder) }
+            Mock -CommandName Update-PipelineState -MockWith {} -Verifiable
+
+            try {
+                Lock-Pipeline -LockDir $script:lockDir -Feature 'feat-xyz' -MutexName 'Global\vibe-cli-feat-xyz-test'
+                Should -Invoke Update-PipelineState -ParameterFilter { $FeatureName -eq 'feat-xyz' }
+            }
+            finally {
+                Remove-Item Function:Update-PipelineState -ErrorAction SilentlyContinue
+            }
+        }
+    }
+
     # =========================================================================
     # NEW: Mutex timeout (BDD line 489-495)
     # =========================================================================

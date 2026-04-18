@@ -1,30 +1,47 @@
 {
-  "topic": "Token Saving",
+  "recommendedImprovements": [
+    "Rec1",
+    "Rec2",
+    "Rec3",
+    "Rec4",
+    "Rec5",
+    "Rec6",
+    "Rec7",
+    "Rec8",
+    "Rec9"
+  ],
+  "requiredChanges": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R5",
+    "R6",
+    "R7",
+    "R8",
+    "R9",
+    "R10"
+  ],
   "revision": "Round-3",
-  "requiredChanges": ["R1","R2","R3","R4","R5","R6","R7","R8","R9","R10"],
-  "recommendedImprovements": ["Rec1","Rec2","Rec3","Rec4","Rec5","Rec6","Rec7","Rec8","Rec9"],
   "tiers": [
     {
-      "tier": 1,
-      "title": "Foundation — no dependencies",
       "tasks": [
         {
-          "id": "T1",
-          "step": 1,
-          "title": "Model routing config data file",
+          "codeWriter": "powershell-writer",
+          "dependencies": [],
           "files": [
             "packages/vibe-cli/config/model-routing.psd1",
             "packages/vibe-cli/tests/model-routing.Tests.ps1"
           ],
-          "codeWriter": "powershell-writer",
+          "id": "T1",
+          "notes": "Rec9: test 6 adds malformed .psd1 ParseException assertion",
+          "step": 1,
           "testWriter": "pester-writer",
-          "dependencies": [],
-          "notes": "Rec9: test 6 adds malformed .psd1 ParseException assertion"
+          "title": "Model routing config data file"
         },
         {
-          "id": "T2",
-          "step": 2,
-          "title": "TypeScript graph base wrapper",
+          "codeWriter": "typescript-writer",
+          "dependencies": [],
           "files": [
             "packages/vibe-cli/graph/types.ts",
             "packages/vibe-cli/graph/graph.ts",
@@ -32,172 +49,174 @@
             "packages/vibe-cli/package.json",
             "packages/vibe-cli/graph/graph.test.ts"
           ],
-          "codeWriter": "typescript-writer",
+          "id": "T2",
+          "notes": "R5: test 4 now specifies GraphBuildError type and message format 'NoGhostEdges: endpoint <path> not in graph'",
+          "step": 2,
           "testWriter": "vitest-writer",
-          "dependencies": [],
-          "notes": "R5: test 4 now specifies GraphBuildError type and message format 'NoGhostEdges: endpoint <path> not in graph'"
+          "title": "TypeScript graph base wrapper"
         },
         {
-          "id": "T3",
-          "step": 3,
-          "title": "es-hook.ps1 (file-search rewriter)",
+          "codeWriter": "powershell-writer",
+          "dependencies": [],
           "files": [
             ".claude/hooks/es-hook.ps1",
             "packages/vibe-cli/tests/es-hook.Tests.ps1"
           ],
-          "codeWriter": "powershell-writer",
+          "id": "T3",
+          "notes": "R3: test 10 specifies Mock Invoke-EsHookRewrite { } with InModuleScope and Should -Invoke verification; Rec6: test 7 labeled [INTEGRATION - D3 ASSUME]",
+          "step": 3,
           "testWriter": "pester-writer",
-          "dependencies": [],
-          "notes": "R3: test 10 specifies Mock Invoke-EsHookRewrite { } with InModuleScope and Should -Invoke verification; Rec6: test 7 labeled [INTEGRATION - D3 ASSUME]"
+          "title": "es-hook.ps1 (file-search rewriter)"
         },
         {
-          "id": "T4",
-          "step": 4,
-          "title": "rg-hook.ps1 (text-search rewriter)",
+          "codeWriter": "powershell-writer",
+          "dependencies": [],
           "files": [
             ".claude/hooks/rg-hook.ps1",
             "packages/vibe-cli/tests/rg-hook.Tests.ps1"
           ],
-          "codeWriter": "powershell-writer",
+          "id": "T4",
+          "notes": "R3: test 10 specifies Mock Invoke-RgHookRewrite { } with InModuleScope and Should -Invoke verification; Rec6: test 7 labeled [INTEGRATION - D3 ASSUME]",
+          "step": 4,
           "testWriter": "pester-writer",
-          "dependencies": [],
-          "notes": "R3: test 10 specifies Mock Invoke-RgHookRewrite { } with InModuleScope and Should -Invoke verification; Rec6: test 7 labeled [INTEGRATION - D3 ASSUME]"
+          "title": "rg-hook.ps1 (text-search rewriter)"
         }
-      ]
+      ],
+      "tier": 1,
+      "title": "Foundation — no dependencies"
     },
     {
-      "tier": 2,
-      "title": "Core logic — depends on Tier 1",
       "tasks": [
         {
-          "id": "T5",
-          "step": 5,
-          "title": "Invoke-Claude with $Role/$Model parameters",
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1"],
           "files": [
             "packages/vibe-cli/utils/invoke-claude.ps1",
             "packages/vibe-cli/tests/invoke-claude.Tests.ps1"
           ],
-          "codeWriter": "powershell-writer",
+          "id": "T5",
+          "notes": "Halt signal format now includes [ROUTING-HALT:INVALID-MODEL <model>] as 4th code (R4 closed-set prep)",
+          "step": 5,
           "testWriter": "pester-writer",
-          "dependencies": ["T1"],
-          "notes": "Halt signal format now includes [ROUTING-HALT:INVALID-MODEL <model>] as 4th code (R4 closed-set prep)"
+          "title": "Invoke-Claude with $Role/$Model parameters"
         },
         {
-          "id": "T6",
-          "step": 6,
-          "title": "Graph dedup and retry state machine",
+          "codeWriter": "typescript-writer",
+          "dependencies": ["T2"],
           "files": [
             "packages/vibe-cli/graph/dedup.ts",
             "packages/vibe-cli/graph/dedup.test.ts"
           ],
-          "codeWriter": "typescript-writer",
+          "id": "T6",
+          "notes": "R1: test 11 for graphState='force_dedup' direct transient assertion; R6: tests 7-10 have fail-first injection descriptions; R10: test 3 asserts retryCount=0 per BDD per-cycle observable; Rec8: [WARN: force_dedup path=<path>] format",
+          "step": 6,
           "testWriter": "vitest-writer",
-          "dependencies": ["T2"],
-          "notes": "R1: test 11 for graphState='force_dedup' direct transient assertion; R6: tests 7-10 have fail-first injection descriptions; R10: test 3 asserts retryCount=0 per BDD per-cycle observable; Rec8: [WARN: force_dedup path=<path>] format"
+          "title": "Graph dedup and retry state machine"
         },
         {
-          "id": "T9",
-          "step": 9,
-          "title": "Agent system prompt instructions",
-          "files": [
-            "packages/vibe-cli/agents/graph-instructions.md"
-          ],
           "codeWriter": "agent-writer",
-          "testWriter": "pester-writer",
           "dependencies": ["T2"],
-          "notes": "Rec3: tests labeled content-existence (not behavioral); Rec7: pre-condition note — all 6 role files must exist before T9 dispatches"
+          "files": ["packages/vibe-cli/agents/graph-instructions.md"],
+          "id": "T9",
+          "notes": "Rec3: tests labeled content-existence (not behavioral); Rec7: pre-condition note — all 6 role files must exist before T9 dispatches",
+          "step": 9,
+          "testWriter": "pester-writer",
+          "title": "Agent system prompt instructions"
         }
-      ]
+      ],
+      "tier": 2,
+      "title": "Core logic — depends on Tier 1"
     },
     {
-      "tier": 3,
-      "title": "Integration wiring — depends on Tier 2",
       "tasks": [
         {
-          "id": "T7",
-          "step": 7,
-          "title": "Hook registration in .claude/settings.json",
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T3", "T4"],
           "files": [
             ".claude/settings.json",
             "packages/vibe-cli/tests/hook-registration.Tests.ps1"
           ],
-          "codeWriter": "powershell-writer",
+          "id": "T7",
+          "notes": "No Round-3 changes",
+          "step": 7,
           "testWriter": "pester-writer",
-          "dependencies": ["T3", "T4"],
-          "notes": "No Round-3 changes"
+          "title": "Hook registration in .claude/settings.json"
         },
         {
-          "id": "T8",
-          "step": 8,
-          "title": "Graph write engine (markdown writer + lifecycle)",
+          "codeWriter": "typescript-writer",
+          "dependencies": ["T6"],
           "files": [
             "packages/vibe-cli/graph/markdown.ts",
             "packages/vibe-cli/graph/index.ts",
             "packages/vibe-cli/graph/markdown.test.ts"
           ],
-          "codeWriter": "typescript-writer",
+          "id": "T8",
+          "notes": "R7: test 12 for .tmp-write-success/rename-fail distinct D26 path (mock fs.rename throws EACCES); Rec1: test 7 expanded; Rec2: test 11 Given/When/Then",
+          "step": 8,
           "testWriter": "vitest-writer",
-          "dependencies": ["T6"],
-          "notes": "R7: test 12 for .tmp-write-success/rename-fail distinct D26 path (mock fs.rename throws EACCES); Rec1: test 7 expanded; Rec2: test 11 Given/When/Then"
+          "title": "Graph write engine (markdown writer + lifecycle)"
         }
-      ]
+      ],
+      "tier": 3,
+      "title": "Integration wiring — depends on Tier 2"
     },
     {
-      "tier": 4,
-      "title": "Close hook — depends on Tier 3",
       "tasks": [
         {
-          "id": "T10",
-          "step": 10,
-          "title": "Close hook PowerShell script",
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T8"],
           "files": [
             "packages/vibe-cli/utils/close-hook.ps1",
             "packages/vibe-cli/tests/close-hook.Tests.ps1"
           ],
-          "codeWriter": "powershell-writer",
+          "id": "T10",
+          "notes": "Rec8: [WARN: closeHookTimeout agent=<n>] format standardized in test 4",
+          "step": 10,
           "testWriter": "pester-writer",
-          "dependencies": ["T8"],
-          "notes": "Rec8: [WARN: closeHookTimeout agent=<n>] format standardized in test 4"
+          "title": "Close hook PowerShell script"
         }
-      ]
+      ],
+      "tier": 4,
+      "title": "Close hook — depends on Tier 3"
     },
     {
-      "tier": 5,
-      "title": "Pipeline wiring — depends on Tier 4",
       "tasks": [
         {
-          "id": "T11",
-          "step": 11,
-          "title": "Pipeline wiring — integrate all subsystems",
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T5", "T10"],
           "files": [
             "packages/vibe-cli/vibe.ps1",
             "packages/vibe-cli/tests/pipeline-wiring.Tests.ps1"
           ],
-          "codeWriter": "powershell-writer",
+          "id": "T11",
+          "notes": "R2: test 10 added for D27 canonical 4-step hook-completion-after-halt interleaving; R4: test 9 names all 3 ROUTING-HALT codes in closed-set negative assertion; Rec4: test 7 'throughout' replaced with 3 named checkpoints",
+          "step": 11,
           "testWriter": "pester-writer",
-          "dependencies": ["T5", "T10"],
-          "notes": "R2: test 10 added for D27 canonical 4-step hook-completion-after-halt interleaving; R4: test 9 names all 3 ROUTING-HALT codes in closed-set negative assertion; Rec4: test 7 'throughout' replaced with 3 named checkpoints"
+          "title": "Pipeline wiring — integrate all subsystems"
         }
-      ]
+      ],
+      "tier": 5,
+      "title": "Pipeline wiring — depends on Tier 4"
     },
     {
-      "tier": 6,
-      "title": "E2E completeness — depends on all",
       "tasks": [
         {
-          "id": "T12",
-          "step": 12,
-          "title": "E2E integration tests and completeness verification",
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T5", "T7", "T11"],
           "files": [
             "packages/vibe-cli/tests/pipeline-e2e.Tests.ps1",
             "packages/vibe-cli/graph/integration.test.ts"
           ],
-          "codeWriter": "powershell-writer",
+          "id": "T12",
+          "notes": "R8: Pester test 9 asserts Test-Path before content inspection (twice); R9: Vitest test 1 asserts 3rd op succeeds before 4th disabled; Rec5: Pester test 6 uses Mock Get-Date { $script:TestClock++ }; Rec8: [WARN: force_dedup path=A'] in Pester test 8",
+          "step": 12,
           "testWriter": "pester-writer",
-          "dependencies": ["T5", "T7", "T11"],
-          "notes": "R8: Pester test 9 asserts Test-Path before content inspection (twice); R9: Vitest test 1 asserts 3rd op succeeds before 4th disabled; Rec5: Pester test 6 uses Mock Get-Date { $script:TestClock++ }; Rec8: [WARN: force_dedup path=A'] in Pester test 8"
+          "title": "E2E integration tests and completeness verification"
         }
-      ]
+      ],
+      "tier": 6,
+      "title": "E2E completeness — depends on all"
     }
-  ]
+  ],
+  "topic": "Token Saving"
 }

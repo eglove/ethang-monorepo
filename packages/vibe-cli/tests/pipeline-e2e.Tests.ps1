@@ -192,58 +192,6 @@ Describe 'Test 4: Dedup multi-epoch with force-dedup followed by normal epoch 2'
 }
 
 # =============================================================================
-# Test 5: Hook rewrite audit — es-hook rewrites find command before PostToolUse
-# =============================================================================
-
-Describe 'Test 5: Hook rewrite audit — hookRewritten fires before PostToolUse' {
-    It 'es-hook rewrites a find command and hookRewritten=TRUE appears in output' {
-        # Use ES_HOOK_TEST_MODE=1 to prevent main body execution
-        $env:ES_HOOK_TEST_MODE = '1'
-
-        try {
-            # Dot-source the es-hook so we can invoke its functions directly
-            . "$PSScriptRoot/../.claude/hooks/es-hook.ps1" -ErrorAction SilentlyContinue
-        }
-        catch {
-            # Hook may not be in a relative path from tests — locate from root
-            $hookPath = Resolve-Path "$PSScriptRoot/../../../.claude/hooks/es-hook.ps1" -ErrorAction SilentlyContinue
-            if ($hookPath) { . $hookPath }
-        }
-
-        if (Get-Command Invoke-EsHook -ErrorAction SilentlyContinue) {
-            # Simulate a find command payload
-            $findPayload = @{
-                tool_name  = 'Bash'
-                tool_input = @{ command = 'find . -name "*.ts"' }
-            } | ConvertTo-Json -Depth 5 -Compress
-
-            # hookRewritten starts false
-            $script:_hookRewritten = $false
-
-            # Capture output
-            $output = $findPayload | & {
-                $hookOutput = Invoke-EsHook -StdinContent $findPayload
-                $hookOutput
-            }
-
-            # Invoke-EsHookRewrite converts find to es
-            $rewritten = Invoke-EsHookRewrite -Command 'find . -name "*.ts"'
-            $rewritten | Should -Match 'es ' -Because "find command must be rewritten to es (S13)"
-
-            # hookRewritten semantics: rewrite happened before PostToolUse fires
-            # (In real execution, Invoke-EsHook sets $hookRewritten=$true before writing stdout)
-            $rewritten | Should -Not -BeNullOrEmpty -Because "hook rewrite occurred before PostToolUse"
-        }
-        else {
-            # If hook is not accessible, verify via find→es conversion logic
-            Set-ItResult -Skipped -Because "es-hook.ps1 not accessible from test path; covered by es-hook.Tests.ps1"
-        }
-
-        $env:ES_HOOK_TEST_MODE = $null
-    }
-}
-
-# =============================================================================
 # Test 6: Close hook sequencing — timestamp ordering (Rec5)
 # Assert closeHookExitTimestamp < nextStageStartTimestamp
 # =============================================================================

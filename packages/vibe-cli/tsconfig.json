@@ -1,11 +1,3 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "noEmit": true,
-    "allowImportingTsExtensions": true
-  },
-  "include": ["graph/**/*.ts"]
+  "extends": ["../tsconfig/tsconfig.base.json"]
 }

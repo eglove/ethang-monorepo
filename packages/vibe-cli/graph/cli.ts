@@ -14,102 +14,153 @@
  * state machine, writes CLAUDE.md, and clears the log on success.
  */
 
-import { existsSync, mkdirSync, appendFileSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import endsWith from "lodash/endsWith.js";
+import includes from "lodash/includes.js";
+import { appendFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
 
-import type { EdgeType, NodeType } from './types.js';
+import type { EdgeType, NodeType } from "./types.js";
 
-const NODE_TYPES: readonly NodeType[] = ['app', 'package', 'component', 'function', 'file'] as const;
+const NODE_TYPES: readonly NodeType[] = [
+  "app",
+  "package",
+  "component",
+  "function",
+  "file",
+] as const;
 const EDGE_TYPES: readonly EdgeType[] = [
-  'calls',
-  'imports',
-  'exports',
-  'depends_on',
-  'contains',
-  'tested_by',
-  'test_for',
+  "calls",
+  "imports",
+  "exports",
+  "depends_on",
+  "contains",
+  "tested_by",
+  "test_for",
 ] as const;
 
-export interface AddNodeRecord {
-  kind: 'node';
-  path: string;
-  type: NodeType;
-}
-
-export interface AddEdgeRecord {
-  kind: 'edge';
+export type AddEdgeRecord = {
   from: string;
+  kind: "edge";
   to: string;
   type: EdgeType;
-}
+};
 
-export type DiscoveryRecord = AddNodeRecord | AddEdgeRecord;
+export type AddNodeRecord = {
+  kind: "node";
+  path: string;
+  type: NodeType;
+};
+
+export type DiscoveryRecord = AddEdgeRecord | AddNodeRecord;
+
+export function appendRecord(
+  record: DiscoveryRecord,
+  filePath: string = getDiscoveriesPath(),
+): void {
+  const directory = path.dirname(filePath);
+  if (!existsSync(directory)) mkdirSync(directory, { recursive: true });
+  appendFileSync(filePath, `${JSON.stringify(record)}\n`, "utf8");
+}
 
 export function getDiscoveriesPath(): string {
-  if (process.env.VIBE_CLI_GRAPH_DISCOVERIES) {
-    return process.env.VIBE_CLI_GRAPH_DISCOVERIES;
+  const override = process.env["VIBE_CLI_GRAPH_DISCOVERIES"];
+  if (override !== undefined && "" !== override) {
+    return override;
   }
-  const here = dirname(fileURLToPath(import.meta.url));
-  return resolve(here, 'discoveries.jsonl');
+  const here = import.meta.dirname;
+  return path.resolve(here, "discoveries.jsonl");
 }
 
-export function appendRecord(record: DiscoveryRecord, path: string = getDiscoveriesPath()): void {
-  const dir = dirname(path);
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  appendFileSync(path, JSON.stringify(record) + '\n', 'utf8');
+export function resetDiscoveries(
+  filePath: string = getDiscoveriesPath(),
+): void {
+  const directory = path.dirname(filePath);
+  if (!existsSync(directory)) mkdirSync(directory, { recursive: true });
+  writeFileSync(filePath, "", "utf8");
 }
 
-export function resetDiscoveries(path: string = getDiscoveriesPath()): void {
-  const dir = dirname(path);
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  writeFileSync(path, '', 'utf8');
-}
-
-export function runCli(argv: readonly string[]): { code: number; message?: string } {
+export function runCli(argv: readonly string[]): {
+  code: number;
+  message?: string;
+} {
   const [cmd, ...rest] = argv;
 
-  if (cmd === 'add-node') {
-    const [path, type] = rest;
-    if (!path || !type) {
-      return { code: 2, message: 'usage: add-node <path> <type>' };
-    }
-    if (!NODE_TYPES.includes(type as NodeType)) {
-      return { code: 2, message: `invalid node type '${type}' (expected: ${NODE_TYPES.join(', ')})` };
-    }
-    appendRecord({ kind: 'node', path, type: type as NodeType });
-    return { code: 0 };
-  }
+  if ("add-node" === cmd) return handleAddNode(rest);
+  if ("add-edge" === cmd) return handleAddEdge(rest);
 
-  if (cmd === 'add-edge') {
-    const [from, to, type] = rest;
-    if (!from || !to || !type) {
-      return { code: 2, message: 'usage: add-edge <from> <to> <type>' };
-    }
-    if (!EDGE_TYPES.includes(type as EdgeType)) {
-      return { code: 2, message: `invalid edge type '${type}' (expected: ${EDGE_TYPES.join(', ')})` };
-    }
-    appendRecord({ kind: 'edge', from, to, type: type as EdgeType });
-    return { code: 0 };
-  }
-
-  if (cmd === 'reset') {
+  if ("reset" === cmd) {
     resetDiscoveries();
     return { code: 0 };
   }
 
   return {
     code: 2,
-    message: 'usage: tsx graph/cli.ts <add-node|add-edge|reset> ...',
+    message: "usage: tsx graph/cli.ts <add-node|add-edge|reset> ...",
   };
 }
 
-const scriptArg = process.argv[1];
-if (scriptArg && (scriptArg.endsWith('cli.ts') || scriptArg.endsWith('cli.js'))) {
-  const { code, message } = runCli(process.argv.slice(2));
-  if (message) {
-    const stream = code === 0 ? process.stdout : process.stderr;
-    stream.write(message + '\n');
+function handleAddEdge(rest: readonly string[]): {
+  code: number;
+  message?: string;
+} {
+  const [from, to, type] = rest;
+  if (!isPresent(from) || !isPresent(to) || !isPresent(type)) {
+    return { code: 2, message: "usage: add-edge <from> <to> <type>" };
   }
-  process.exit(code);
+  if (!isEdgeType(type)) {
+    return {
+      code: 2,
+      message: `invalid edge type '${type}' (expected: ${EDGE_TYPES.join(", ")})`,
+    };
+  }
+  appendRecord({ from, kind: "edge", to, type });
+  return { code: 0 };
 }
+
+function handleAddNode(rest: readonly string[]): {
+  code: number;
+  message?: string;
+} {
+  const [nodePath, type] = rest;
+  if (!isPresent(nodePath) || !isPresent(type)) {
+    return { code: 2, message: "usage: add-node <path> <type>" };
+  }
+  if (!isNodeType(type)) {
+    return {
+      code: 2,
+      message: `invalid node type '${type}' (expected: ${NODE_TYPES.join(", ")})`,
+    };
+  }
+  appendRecord({ kind: "node", path: nodePath, type });
+  return { code: 0 };
+}
+
+function isEdgeType(value: string): value is EdgeType {
+  return includes(EDGE_TYPES, value);
+}
+
+function isNodeType(value: string): value is NodeType {
+  return includes(NODE_TYPES, value);
+}
+
+function isPresent(value: string | undefined): value is string {
+  return value !== undefined && "" !== value;
+}
+
+function runAsScript(): void {
+  const [scriptArgument] = [process.argv[1]];
+  if (
+    scriptArgument !== undefined &&
+    "" !== scriptArgument &&
+    (endsWith(scriptArgument, "cli.ts") || endsWith(scriptArgument, "cli.js"))
+  ) {
+    const { code, message } = runCli(process.argv.slice(2));
+    if (message !== undefined && "" !== message) {
+      const stream = 0 === code ? process.stdout : process.stderr;
+      stream.write(`${message}\n`);
+    }
+    process.exit(code);
+  }
+}
+
+runAsScript();

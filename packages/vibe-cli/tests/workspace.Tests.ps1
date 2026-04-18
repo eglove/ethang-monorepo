@@ -24,6 +24,15 @@ Describe 'Get-PackageWorkDir' {
         # Since cwd == gitRoot, offset is '.', so result = WorktreePath
         $result | Should -Be '/tmp/wt'
     }
+
+    It 'appends the relative offset when cwd is nested under git root' {
+        # Pretend the git root is one level above the current working directory
+        $parentRoot = (Split-Path (Get-Location).Path -Parent) -replace '\\','/'
+        Mock git { return $parentRoot }
+        $leaf = Split-Path (Get-Location).Path -Leaf
+        $result = Get-PackageWorkDir -WorktreePath '/tmp/wt'
+        $result | Should -BeLike "*$leaf*"
+    }
 }
 
 Describe 'New-TaskWorkspace' {
@@ -82,6 +91,19 @@ Describe 'New-TaskWorkspace' {
         }
     }
 
+    It 'writes a workspace-created TaskLog when FeatureDir is provided' {
+        Mock Write-TaskLog {} -Verifiable
+        $tasks = @(@{ id = 'T1' })
+        $featDir = Join-Path ([System.IO.Path]::GetTempPath()) "feat-ws-$(Get-Random)"
+        New-Item -ItemType Directory -Path $featDir -Force | Out-Null
+        try {
+            New-TaskWorkspace -Tasks $tasks -FeatureName 'feat' -RunId 'abc12345' -FeatureDir $featDir
+            Should -Invoke Write-TaskLog -ParameterFilter { $Message -match 'Workspace created' }
+        } finally {
+            Remove-Item $featDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
     It 'rolls back on creation failure' {
         $script:callCount = 0
         Mock Invoke-GitWithRetry {
@@ -132,6 +154,18 @@ Describe 'Remove-TaskWorkspace' {
         Should -Invoke Invoke-GitWithRetry -ParameterFilter { $Arguments -contains 'remove' }
         Should -Invoke Invoke-GitWithRetry -ParameterFilter { $Arguments -contains '-D' }
     }
+
+    It 'writes a workspace-removed TaskLog when FeatureDir is provided' {
+        Mock Write-TaskLog {} -Verifiable
+        $featDir = Join-Path ([System.IO.Path]::GetTempPath()) "feat-rm-$(Get-Random)"
+        New-Item -ItemType Directory -Path $featDir -Force | Out-Null
+        try {
+            Remove-TaskWorkspace -TaskId 'T1' -WorktreePath '/tmp/wt' -BranchName 'feature/test-T1' -FeatureDir $featDir -RunId 'run1'
+            Should -Invoke Write-TaskLog -ParameterFilter { $Message -match 'Workspace removed' }
+        } finally {
+            Remove-Item $featDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
 }
 
 Describe 'Test-WorkspaceExist' {
@@ -177,6 +211,16 @@ Describe 'Install-WorktreeDep' {
         $r = Install-WorktreeDep -WorktreePath $script:wtDir -TaskState $task
         $task.taskState | Should -BeExactly 'failed'
         $task.failureReason | Should -BeExactly 'DepsInstallFailed'
+    }
+
+    It 'marks task DepsInstallFailed when pnpm exits non-zero without throwing' {
+        Set-Content (Join-Path $script:wtDir 'pnpm-lock.yaml') -Value 'lockfileVersion: 5'
+        $task = @{ tddIter = 0; taskState = 'deps_installing' }
+        Mock pnpm { $global:LASTEXITCODE = 1; return 'install failed' }
+        $r = Install-WorktreeDep -WorktreePath $script:wtDir -TaskState $task
+        $task.taskState | Should -BeExactly 'failed'
+        $task.failureReason | Should -BeExactly 'DepsInstallFailed'
+        $r.installed | Should -BeFalse
     }
 
     It 'with MaxTddCycles=3 and tddIter=1, exactly 2 retries available' {
@@ -276,6 +320,27 @@ Describe 'Reset-WorktreeState' {
         { Reset-WorktreeState -WorktreePath $dir -TaskId 'T1' } | Should -Throw '*Failed to recreate*'
 
         Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    It 'logs a recreating message when recreating a corrupted worktree with FeatureDir' {
+        Mock Write-TaskLog {} -Verifiable
+        $dir = Join-Path ([System.IO.Path]::GetTempPath()) "reset-recreate-log-$(Get-Random)"
+        $featDir = Join-Path ([System.IO.Path]::GetTempPath()) "feat-recreate-$(Get-Random)"
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+        New-Item -ItemType Directory -Path $featDir -Force | Out-Null
+
+        Mock Invoke-GitWithRetry {
+            if ($Arguments -contains 'checkout' -or $Arguments -contains 'clean') { throw 'corrupted' }
+        }
+        Mock git { 'main' }
+
+        $result = Reset-WorktreeState -WorktreePath $dir -TaskId 'T1' -FeatureDir $featDir -RunId 'run1'
+        $result | Should -BeFalse
+
+        Should -Invoke Write-TaskLog -ParameterFilter { $Message -match 'recreating' }
+
+        Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item $featDir -Recurse -Force -ErrorAction SilentlyContinue
     }
 
     It 'logs warning when dirty files exist' {

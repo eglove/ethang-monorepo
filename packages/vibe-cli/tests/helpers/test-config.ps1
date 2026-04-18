@@ -8,7 +8,7 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
-# Tests mock Invoke-Claude — don't let the real post-agent close hook fire and
+# Tests mock Invoke-Claude -- don't let the real post-agent close hook fire and
 # spawn `tsx packages/vibe-cli/graph/index.ts` for every test call.
 $env:VIBE_CLI_SKIP_CLOSE_HOOK = '1'
 

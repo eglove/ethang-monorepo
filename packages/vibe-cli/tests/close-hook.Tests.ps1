@@ -238,6 +238,36 @@ Describe 'Invoke-CloseHook — real tsx timeout kill path (Test 11)' {
     }
 }
 
+Describe 'Import-GraphState — default path when env var is unset' {
+    AfterEach { Remove-Item Env:VIBE_CLI_GRAPH_STATE -ErrorAction SilentlyContinue }
+
+    It 'falls back to state/graph-state.json under the script root' {
+        Remove-Item Env:VIBE_CLI_GRAPH_STATE -ErrorAction SilentlyContinue
+        $state = Import-GraphState
+        $state.agentsCompleted | Should -BeOfType [int]
+        $state.markdownState   | Should -Not -BeNullOrEmpty
+        $state.graphState      | Should -Not -BeNullOrEmpty
+    }
+}
+
+Describe 'Save-GraphState — default path and directory creation' {
+    AfterEach { Remove-Item Env:VIBE_CLI_GRAPH_STATE -ErrorAction SilentlyContinue }
+
+    It 'creates missing parent directories when writing state' {
+        $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "gs-$(Get-Random)"
+        $target = Join-Path $tempRoot 'nested/deep/graph-state.json'
+        $env:VIBE_CLI_GRAPH_STATE = $target
+        try {
+            Save-GraphState -State @{ agentsCompleted = 1; markdownState = 'current'; graphState = 'done' }
+            Test-Path $target | Should -BeTrue
+            $restored = Get-Content $target -Raw | ConvertFrom-Json
+            $restored.agentsCompleted | Should -Be 1
+        } finally {
+            Remove-Item $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 Describe 'Invoke-CloseHook — two consecutive close hooks (Test 6, integration)' {
     It 'agentsCompleted reaches 2 and graphState becomes done after both hooks complete (S25, L1)' {
         $state = @{

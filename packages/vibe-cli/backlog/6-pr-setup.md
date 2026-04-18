@@ -8,4 +8,4 @@ squash the branch commits with a conventional commit, push,
 and create a pr using the gh cli.
 
 Conventional commits specification:
-https://www.conventionalcommits.org/en/v1.0.0/#specification
+<https://www.conventionalcommits.org/en/v1.0.0/#specification>

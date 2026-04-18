@@ -1,31 +1,25 @@
 {
-  "topic": "Code Simplify (Stage 8 Rewrite)",
   "tiers": [
     {
-      "tier": 1,
-      "title": "Cleanup, Agent Definitions, and Entry Point",
       "tasks": [
         {
-          "id": "T1",
-          "step": 1,
-          "title": "Delete dead Stage 8 code",
+          "codeWriter": "powershell-writer",
+          "dependencies": [],
           "files": [
             "agents/code-writers/",
             "agents/test-writers/",
             "utils/pipeline-state.ps1",
             "utils/tdd-cleanup.ps1"
           ],
-          "testFiles": [
-            "tests/dead-code-deletion.Tests.ps1"
-          ],
-          "codeWriter": "powershell-writer",
+          "id": "T1",
+          "step": 1,
+          "testFiles": ["tests/dead-code-deletion.Tests.ps1"],
           "testWriter": "pester-writer",
-          "dependencies": []
+          "title": "Delete dead Stage 8 code"
         },
         {
-          "id": "T2",
-          "step": 2,
-          "title": "Create 8 reviewer agent definitions",
+          "codeWriter": "agent-writer",
+          "dependencies": [],
           "files": [
             "agents/reviewers/a11y.md",
             "agents/reviewers/ai-agent.md",
@@ -36,152 +30,123 @@
             "agents/reviewers/test.md",
             "agents/reviewers/type-design.md"
           ],
-          "testFiles": [
-            "tests/reviewer-agents.Tests.ps1"
-          ],
-          "codeWriter": "agent-writer",
+          "id": "T2",
+          "step": 2,
+          "testFiles": ["tests/reviewer-agents.Tests.ps1"],
           "testWriter": "pester-writer",
-          "dependencies": []
+          "title": "Create 8 reviewer agent definitions"
         },
         {
+          "codeWriter": "agent-writer",
+          "dependencies": [],
+          "files": ["agents/review-moderator.md"],
           "id": "T3",
           "step": 3,
-          "title": "Create review-moderator agent",
-          "files": [
-            "agents/review-moderator.md"
-          ],
-          "testFiles": [
-            "tests/review-moderator-agent.Tests.ps1"
-          ],
-          "codeWriter": "agent-writer",
+          "testFiles": ["tests/review-moderator-agent.Tests.ps1"],
           "testWriter": "pester-writer",
-          "dependencies": []
+          "title": "Create review-moderator agent"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": [],
+          "files": ["stages/8-coding.ps1", "tests/coding-stage.Tests.ps1"],
           "id": "T5",
           "step": 5,
-          "title": "Rewrite 8-coding.ps1 — lock, pre-coding gate, input validation, config snapshot",
-          "files": [
-            "stages/8-coding.ps1",
-            "tests/coding-stage.Tests.ps1"
-          ],
-          "testFiles": [
-            "tests/coding-stage.Tests.ps1"
-          ],
-          "codeWriter": "powershell-writer",
+          "testFiles": ["tests/coding-stage.Tests.ps1"],
           "testWriter": "pester-writer",
-          "dependencies": []
+          "title": "Rewrite 8-coding.ps1 — lock, pre-coding gate, input validation, config snapshot"
         }
-      ]
+      ],
+      "tier": 1,
+      "title": "Cleanup, Agent Definitions, and Entry Point"
     },
     {
-      "tier": 2,
-      "title": "Utility and Dispatch",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T2", "T3"],
+          "files": ["utils/review-loop.ps1"],
           "id": "T4",
           "step": 4,
-          "title": "Create review-loop utility",
-          "files": [
-            "utils/review-loop.ps1"
-          ],
-          "testFiles": [
-            "tests/review-loop.Tests.ps1"
-          ],
-          "codeWriter": "powershell-writer",
+          "testFiles": ["tests/review-loop.Tests.ps1"],
           "testWriter": "pester-writer",
-          "dependencies": ["T2", "T3"]
+          "title": "Create review-loop utility"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T5"],
+          "files": ["stages/8-coding.ps1"],
           "id": "T6",
           "step": 6,
-          "title": "8-coding.ps1 — fixture coverage and Claude dispatch",
-          "files": [
-            "stages/8-coding.ps1"
-          ],
-          "testFiles": [
-            "tests/coding-stage.Tests.ps1"
-          ],
-          "codeWriter": "powershell-writer",
+          "testFiles": ["tests/coding-stage.Tests.ps1"],
           "testWriter": "pester-writer",
-          "dependencies": ["T5"]
+          "title": "8-coding.ps1 — fixture coverage and Claude dispatch"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T5", "T4"],
+          "files": ["stages/8-coding.ps1"],
           "id": "T7",
           "step": 7,
-          "title": "8-coding.ps1 — per-worktree double-pass and review",
-          "files": [
-            "stages/8-coding.ps1"
-          ],
-          "testFiles": [
-            "tests/coding-stage.Tests.ps1"
-          ],
-          "codeWriter": "powershell-writer",
+          "testFiles": ["tests/coding-stage.Tests.ps1"],
           "testWriter": "pester-writer",
-          "dependencies": ["T5", "T4"]
+          "title": "8-coding.ps1 — per-worktree double-pass and review"
         }
-      ]
+      ],
+      "tier": 2,
+      "title": "Utility and Dispatch"
     },
     {
-      "tier": 3,
-      "title": "Merge Logic with Rollback",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T7"],
+          "files": ["stages/8-coding.ps1"],
           "id": "T8",
           "step": 8,
-          "title": "8-coding.ps1 — sequential merge, conflict resolution, rollback",
-          "files": [
-            "stages/8-coding.ps1"
-          ],
-          "testFiles": [
-            "tests/coding-stage.Tests.ps1"
-          ],
-          "codeWriter": "powershell-writer",
+          "testFiles": ["tests/coding-stage.Tests.ps1"],
           "testWriter": "pester-writer",
-          "dependencies": ["T7"]
+          "title": "8-coding.ps1 — sequential merge, conflict resolution, rollback"
         }
-      ]
+      ],
+      "tier": 3,
+      "title": "Merge Logic with Rollback"
     },
     {
-      "tier": 4,
-      "title": "Global Gates and Completion",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T8"],
+          "files": ["stages/8-coding.ps1"],
           "id": "T9",
           "step": 9,
-          "title": "8-coding.ps1 — global double-pass, global review, completion",
-          "files": [
-            "stages/8-coding.ps1"
-          ],
-          "testFiles": [
-            "tests/coding-stage.Tests.ps1"
-          ],
-          "codeWriter": "powershell-writer",
+          "testFiles": ["tests/coding-stage.Tests.ps1"],
           "testWriter": "pester-writer",
-          "dependencies": ["T8"]
+          "title": "8-coding.ps1 — global double-pass, global review, completion"
         }
-      ]
+      ],
+      "tier": 4,
+      "title": "Global Gates and Completion"
     },
     {
-      "tier": 5,
-      "title": "Logging, Resume, and Integration Tests",
       "tasks": [
         {
-          "id": "T10",
-          "step": 10,
-          "title": "8-coding.ps1 — logging, resume markers, crash recovery, integration tests",
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T9"],
           "files": [
             "stages/8-coding.ps1",
             "tests/coding-integration.Tests.ps1"
           ],
-          "testFiles": [
-            "tests/coding-integration.Tests.ps1"
-          ],
-          "codeWriter": "powershell-writer",
+          "id": "T10",
+          "step": 10,
+          "testFiles": ["tests/coding-integration.Tests.ps1"],
           "testWriter": "pester-writer",
-          "dependencies": ["T9"]
+          "title": "8-coding.ps1 — logging, resume markers, crash recovery, integration tests"
         }
-      ]
+      ],
+      "tier": 5,
+      "title": "Logging, Resume, and Integration Tests"
     }
-  ]
+  ],
+  "topic": "Code Simplify (Stage 8 Rewrite)"
 }
