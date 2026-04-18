@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS event_log (
+    evt_id INTEGER PRIMARY KEY, "from" TEXT NOT NULL, "to" TEXT NOT NULL,
+    in_reply_to INTEGER, group_id TEXT, type TEXT NOT NULL, payload TEXT,
+    status TEXT NOT NULL DEFAULT 'routed'
+);
+CREATE TRIGGER IF NOT EXISTS trg_event_log_no_illegal_update
+BEFORE UPDATE ON event_log FOR EACH ROW BEGIN
+    SELECT CASE WHEN NOT (OLD.status='routed' AND NEW.status IN ('committed','delivery_failed'))
+    THEN RAISE(ABORT,'illegal status transition') END;
+END;
+CREATE TRIGGER IF NOT EXISTS trg_event_log_no_delete
+BEFORE DELETE ON event_log FOR EACH ROW BEGIN
+    SELECT RAISE(ABORT, 'event_log is append-only');
+END;
+CREATE INDEX IF NOT EXISTS idx_event_log_to_evtid ON event_log("to", evt_id);
+CREATE INDEX IF NOT EXISTS idx_event_log_type_evtid ON event_log(type, evt_id);
+CREATE INDEX IF NOT EXISTS idx_event_log_from_evtid ON event_log("from", evt_id);
+CREATE INDEX IF NOT EXISTS idx_event_log_status ON event_log(status);
