@@ -24,8 +24,18 @@ function Invoke-CodingStage {
     param(
         [Parameter(Mandatory)][string]$Feature,
         [string]$Root = (Resolve-Path "$PSScriptRoot/..").Path,
-        [switch]$Resume
+        [switch]$Resume,
+        [string]$DbPath,
+        [scriptblock]$DbExecutor    # injectable for tests
     )
+
+    # ── Bus setup ──
+    $busEnabled = (Get-Command Test-BusFeatureEnabled -ErrorAction SilentlyContinue) -and
+                  (Test-BusFeatureEnabled -StageName 'Stage7') -and
+                  ($DbPath -ne '')
+    $dbExec = if ($DbExecutor) { $DbExecutor } else { { param($q, $p) Invoke-SqliteQuery -DataSource $DbPath -Query $q -SqlParameters $p } }
+
+    if ($busEnabled) { Send-StageStarted -StageNum 7 -FeatureName $Feature -DbExecutor $dbExec }
 
     # ── Resume: DB-based tier progress ──
     $startTier = 1
@@ -278,7 +288,10 @@ function Invoke-CodingStage {
         }
 
         Write-PipelineLog -Message ">>> MARKER FIXTURE_COVERAGE_COMPLETE" -Root $Root
+        if ($busEnabled) { Send-BusEvent -Event @{ Type = 'verify'; Payload = @{ gate = 'fixture_coverage' } } -DbExecutor $dbExec }
+
         Write-PipelineLog -Message ">>> MARKER PRE_CODING_GATE" -Root $Root
+        if ($busEnabled) { Send-BusEvent -Event @{ Type = 'verify'; Payload = @{ gate = 'pre_coding' } } -DbExecutor $dbExec }
 
         $featureDocsPath = Join-Path $Root "docs/$Feature"
         $MaxTiers = @($PlanSnapshot.tiers).Count
@@ -350,6 +363,7 @@ $uncoveredSummary
                         GateResult = $gateResult
                     }
                 }
+                if ($busEnabled) { Send-BusEvent -Event @{ Type = 'verify'; Payload = @{ gate = 'per_worktree' } } -DbExecutor $dbExec }
 
                 # Sequential merge: merge worktree branches into feature branch
                 $featureBranchName = "feature/$Feature"
@@ -365,6 +379,7 @@ $uncoveredSummary
                         MergeResult = $mergeResult
                     }
                 }
+                if ($busEnabled) { Send-BusEvent -Event @{ Type = 'checkpoint'; Payload = @{ phase = 'post_merge' } } -DbExecutor $dbExec }
 
                 # Worktree cleanup (writes TIER marker internally)
                 $null = Invoke-WorktreeCleanup -WorktreePaths $wtPaths -Root $Root -CompletedTier $MaxTiers
@@ -397,6 +412,7 @@ $uncoveredSummary
             }
         }
         Write-PipelineLog -Message ">>> MARKER GLOBAL_DOUBLEPASS_COMPLETE" -Root $Root
+        if ($busEnabled) { Send-BusEvent -Event @{ Type = 'verify'; Payload = @{ gate = 'global_doublepass' } } -DbExecutor $dbExec }
 
         # Global review: full diff against base branch
         $baseBranch = 'master'
@@ -415,6 +431,7 @@ $uncoveredSummary
             }
         }
         Write-PipelineLog -Message ">>> MARKER GLOBAL_REVIEW_COMPLETE" -Root $Root
+        if ($busEnabled) { Send-BusEvent -Event @{ Type = 'verify'; Payload = @{ gate = 'global_review' } } -DbExecutor $dbExec }
 
         _SyncDb { Update-PipelineState -FeatureName $Feature -PipelineState 'complete' -FeatureStatus 'complete' }
         $null = Complete-Pipeline -Root $Root -Status complete
@@ -429,6 +446,7 @@ $uncoveredSummary
         }
     }
     finally {
+        if ($busEnabled) { Send-StageCompleted -StageNum 7 -FeatureName $Feature -DbExecutor $dbExec }
         Unlock-Pipeline -LockDir $Root
     }
 }
