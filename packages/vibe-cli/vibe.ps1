@@ -63,7 +63,8 @@ if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
 }
 
 # Bus infrastructure (when any stage flag enabled)
-if ($env:VIBE_BUS_ALL_STAGES -eq '1' -or $env:VIBE_BUS_STAGE2 -eq '1' -or $env:VIBE_BUS_STAGE3 -eq '1') {
+if ($env:VIBE_BUS_ALL_STAGES -eq '1' -or $env:VIBE_BUS_STAGE2 -eq '1' -or
+    $env:VIBE_BUS_STAGE3 -eq '1' -or $env:VIBE_BUS_STAGE4 -eq '1') {
     . "$root/bus/router/send-bus-event.ps1"
     . "$root/bus/router/agent-lifecycle.ps1"
     . "$root/bus/router/wait-bus-group.ps1"
@@ -221,7 +222,7 @@ try {
     # Stage 4: Post-Debate Artifacts
     if ($startStage -le 4) {
         Write-PipelineLog -Message "--- Stage 4: Post-Debate Artifacts ---" -Root $root
-        $postDebateResult = Invoke-PostDebate -FeatureDir $featureDir -Root $root -TargetRoot $targetRoot
+        $postDebateResult = Invoke-PostDebate -FeatureDir $featureDir -Root $root -TargetRoot $targetRoot -DbPath $busDbPath
         if (-not $postDebateResult.Success) {
             throw "Stage 4 failed: $($postDebateResult.Error)"
         }
