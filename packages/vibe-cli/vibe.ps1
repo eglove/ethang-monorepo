@@ -62,6 +62,17 @@ if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
     }
 }
 
+# Bus infrastructure (when any stage flag enabled)
+if ($env:VIBE_BUS_ALL_STAGES -eq '1' -or $env:VIBE_BUS_STAGE2 -eq '1') {
+    . "$root/bus/router/send-bus-event.ps1"
+    . "$root/bus/router/agent-lifecycle.ps1"
+    . "$root/bus/router/wait-bus-group.ps1"
+    . "$root/bus/schema/open-bus-database.ps1"
+    . "$root/bus/infra/stage-feature-flag.ps1"
+    . "$root/bus/domain/stage.ps1"
+    $busDbPath = Join-Path $root 'vibe-bus.db'
+}
+
 # Stages
 . "$root/stages/1-elicitor.ps1"
 . "$root/stages/2-parallel-writers.ps1"
@@ -182,7 +193,7 @@ try {
     # Stage 2: Parallel Writers
     if ($startStage -le 2) {
         Write-PipelineLog -Message "--- Stage 2: Parallel Writers ---" -Root $root
-        $writerResult = Invoke-ParallelWriter -FeatureDir $featureDir -Root $root
+        $writerResult = Invoke-ParallelWriter -FeatureDir $featureDir -Root $root -DbPath $busDbPath
         if (-not $writerResult.Success) {
             throw "Stage 2 failed: $($writerResult.Error)"
         }
