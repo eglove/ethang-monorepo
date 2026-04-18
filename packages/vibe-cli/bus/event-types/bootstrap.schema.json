@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["role", "feature_name", "ground_truth"],
+  "properties": {
+    "role":            { "type": "string" },
+    "feature_name":    { "type": "string" },
+    "ground_truth":    { "type": "string" },
+    "checkpoint_json": { "type": ["string", "null"] }
+  }
+}

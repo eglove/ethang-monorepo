@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["verdict"],
+  "properties": {
+    "verdict":  { "type": "string", "enum": ["approve", "request_changes"] },
+    "feedback": { "type": "string" }
+  }
+}
