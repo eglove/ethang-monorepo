@@ -64,7 +64,8 @@ if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
 
 # Bus infrastructure (when any stage flag enabled)
 if ($env:VIBE_BUS_ALL_STAGES -eq '1' -or $env:VIBE_BUS_STAGE2 -eq '1' -or
-    $env:VIBE_BUS_STAGE3 -eq '1' -or $env:VIBE_BUS_STAGE4 -eq '1') {
+    $env:VIBE_BUS_STAGE3 -eq '1' -or $env:VIBE_BUS_STAGE4 -eq '1' -or
+    $env:VIBE_BUS_STAGE6 -eq '1') {
     . "$root/bus/router/send-bus-event.ps1"
     . "$root/bus/router/agent-lifecycle.ps1"
     . "$root/bus/router/wait-bus-group.ps1"
@@ -267,7 +268,7 @@ try {
         }
         if (-not $implFile) { $implFile = Join-Path $featureDir 'implementation-plan.md' }
         if (-not $implJson) { $implJson = Join-Path $featureDir 'implementation-plan.json' }
-        $debateStageResult = Invoke-ImplementationDebateStage -ImplFile $implFile -ImplJson $implJson -TlaFile $tlaFileForDebate -FeatureDir $featureDir -Root $root
+        $debateStageResult = Invoke-ImplementationDebateStage -ImplFile $implFile -ImplJson $implJson -TlaFile $tlaFileForDebate -FeatureDir $featureDir -Root $root -DbPath $busDbPath
         if (-not $debateStageResult.Success) {
             throw "Stage 6 failed: $($debateStageResult.Error)"
         }

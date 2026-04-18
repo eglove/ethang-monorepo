@@ -24,3 +24,11 @@
 3. `stage_completed` (sent by Invoke-PostDebate, role: pipeline)
 
 Note: Stage 4 is synchronous — no agents are dispatched. Bus events provide observability only.
+
+## Stage 6 — Implementation Debate
+
+1. `stage_started` (sent by Invoke-ImplementationDebateStage, role: pipeline)
+2. `agent_started` (impl-debate-mod agent, sent by Start-BusAgent)
+3. `consensus_candidate` (moderator → bus, when consensus reached)
+4. `consensus_ratify` or `consensus_fail` (bus → moderator, outcome)
+5. `stage_completed` (sent by Invoke-ImplementationDebateStage, role: pipeline)
