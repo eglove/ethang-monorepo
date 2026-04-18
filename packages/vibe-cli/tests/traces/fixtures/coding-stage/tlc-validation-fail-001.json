@@ -1,47 +1,47 @@
 {
+  "description": "Plan validation fails -> halted",
+  "spec": "CodingStage",
   "steps": [
     {
-      "stepNum": 0,
       "action": "Init",
       "state": {
-        "redRetries_T1": 0,
         "currentTier": 0,
         "escalationActive": false,
-        "taskPhase_T1": "idle",
-        "finalRemediations": 0,
-        "wsCreationFailed": false,
-        "merged_T1": false,
-        "taskStatus_T1": "pending",
         "finalCleanPasses": 0,
+        "finalRemediations": 0,
+        "merged_T1": false,
         "pipelineStatus": "running",
-        "workspace_T1": false,
         "greenAttempts_T1": 0,
+        "redRetries_T1": 0,
         "finalVerifPhase": "idle",
-        "validationStatus": "pending"
-      }
+        "taskPhase_T1": "idle",
+        "taskStatus_T1": "pending",
+        "validationStatus": "pending",
+        "wsCreationFailed": false,
+        "workspace_T1": false
+      },
+      "stepNum": 0
     },
     {
-      "stepNum": 1,
       "action": "ValidationFails",
       "state": {
-        "redRetries_T1": 0,
         "currentTier": 0,
         "escalationActive": false,
-        "taskPhase_T1": "idle",
-        "finalRemediations": 0,
-        "wsCreationFailed": false,
-        "merged_T1": false,
-        "taskStatus_T1": "pending",
         "finalCleanPasses": 0,
+        "finalRemediations": 0,
+        "merged_T1": false,
         "pipelineStatus": "halted",
-        "workspace_T1": false,
         "greenAttempts_T1": 0,
+        "redRetries_T1": 0,
         "finalVerifPhase": "idle",
-        "validationStatus": "failed"
-      }
+        "taskPhase_T1": "idle",
+        "taskStatus_T1": "pending",
+        "validationStatus": "failed",
+        "wsCreationFailed": false,
+        "workspace_T1": false
+      },
+      "stepNum": 1
     }
   ],
-  "traceId": "tlc-validation-fail-001",
-  "spec": "CodingStage",
-  "description": "Plan validation fails -> halted"
+  "traceId": "tlc-validation-fail-001"
 }

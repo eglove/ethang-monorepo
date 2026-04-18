@@ -8,8 +8,24 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
+# Tests mock Invoke-Claude -- don't let the real post-agent close hook fire and
+# spawn `tsx packages/vibe-cli/graph/index.ts` for every test call.
+$env:VIBE_CLI_SKIP_CLOSE_HOOK = '1'
+
 $Config = @{
     NumTasks = 1
+}
+
+function Invoke-EsHookRewrite {
+    param(
+        [string]$Command,
+        [hashtable]$Context = $null
+    )
+    return @{
+        RewrittenCommand = $null
+        Success          = $false
+        Suspended        = $false
+    }
 }
 
 function Get-PipelineConfig {

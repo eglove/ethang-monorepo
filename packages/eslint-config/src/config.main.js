@@ -24,7 +24,7 @@ export default defineConfig(
     files: ["**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}"],
     languageOptions,
     settings: {
-      react: { version: "19.2.4" },
+      react: { version: "19.2.5" },
     },
     plugins: {
       compat: compat,
@@ -1049,6 +1049,11 @@ export default defineConfig(
               "PKCE",
               "startuml",
               "enduml",
+              "dedup",
+              "Dedup",
+              "dedups",
+              "behaviour",
+              "jsonl",
             ],
           },
         },
@@ -1059,8 +1064,9 @@ export default defineConfig(
     files: ["**/*.md"],
     languageOptions,
     settings: {
-      react: { version: "19.2.4" },
+      react: { version: "19.2.5" },
     },
+    language: "markdown/gfm",
     plugins: {
       markdown: markdown,
     },
@@ -1092,7 +1098,7 @@ export default defineConfig(
     files: ["**/*.css"],
     languageOptions,
     settings: {
-      react: { version: "19.2.4" },
+      react: { version: "19.2.5" },
     },
     language: "css/css",
     plugins: {
@@ -1125,7 +1131,7 @@ export default defineConfig(
     files: ["**/*.json"],
     languageOptions,
     settings: {
-      react: { version: "19.2.4" },
+      react: { version: "19.2.5" },
     },
     language: "json/json",
     plugins: {
@@ -1144,7 +1150,7 @@ export default defineConfig(
     files: ["**/*.jsonc"],
     languageOptions,
     settings: {
-      react: { version: "19.2.4" },
+      react: { version: "19.2.5" },
     },
     language: "json/jsonc",
     plugins: {
@@ -1163,7 +1169,7 @@ export default defineConfig(
     files: ["**/*.json5"],
     languageOptions,
     settings: {
-      react: { version: "19.2.4" },
+      react: { version: "19.2.5" },
     },
     language: "json/json5",
     plugins: {

@@ -22,77 +22,35 @@ Describe 'Invoke-PerWorktreeDoublePass' {
     }
 
     Context 'Test catch block (lines 29-30)' {
-        It 'catches test command exception and treats as failure' {
-            Mock pnpm { throw 'pnpm not found' }
+        It 'catches test command exception, calls Claude to fix, then passes' {
+            $script:callCount = 0
+            Mock pnpm {
+                $script:callCount++
+                if ($script:callCount -eq 1) { throw 'pnpm not found' }
+                $global:LASTEXITCODE = 0; return 'ok'
+            }
 
-            $result = Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat' -MaxDoublePassRetries 1
-            $result.Status | Should -BeExactly 'escalated'
-            $result.LastError | Should -Match 'pnpm not found'
+            $result = Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat'
+            $result.Status | Should -BeExactly 'passed'
+            Should -Invoke Invoke-Claude -Times 1 -Scope It
         }
     }
 
     Context 'Lint catch block (lines 69-70)' {
-        It 'catches lint command exception and treats as failure' {
+        It 'catches lint command exception, calls Claude to fix, then passes' {
             $script:pnpmCall = 0
             Mock pnpm {
                 $script:pnpmCall++
                 if ($script:pnpmCall % 2 -eq 1) {
                     $global:LASTEXITCODE = 0; return 'tests pass'
-                } else {
-                    throw 'lint crashed'
                 }
+                if ($script:pnpmCall -eq 2) { throw 'lint crashed' }
+                $global:LASTEXITCODE = 0; return 'ok'
             }
 
-            $result = Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat' -MaxDoublePassRetries 2
-            $result.Status | Should -BeExactly 'escalated'
-            $result.LastError | Should -Match 'lint crashed'
-        }
-    }
-
-    Context 'Lint failure escalation at max retries (lines 80-83)' {
-        It 'returns escalated with LastError when lint fails at max retries' {
-            $script:pnpmCall = 0
-            Mock pnpm {
-                $script:pnpmCall++
-                if ($script:pnpmCall % 2 -eq 1) {
-                    $global:LASTEXITCODE = 0; return 'ok'
-                } else {
-                    $global:LASTEXITCODE = 1; return 'lint error output'
-                }
-            }
-
-            $result = Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat' -MaxDoublePassRetries 2
-            $result.Status | Should -BeExactly 'escalated'
-            $result.Retries | Should -Be 2
-            $result.LastError | Should -Match 'lint error'
-        }
-    }
-
-    Context 'Fallthrough escalation (lines 115-118)' {
-        It 'returns escalated when loop exits without 2 consecutive passes' {
-            $script:pnpmCall = 0
-            Mock pnpm {
-                $script:pnpmCall++
-                if ($script:pnpmCall % 2 -eq 1) {
-                    $global:LASTEXITCODE = 0; return 'ok'
-                } else {
-                    $global:LASTEXITCODE = 1; return 'lint fail'
-                }
-            }
-
-            $result = Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat' -MaxDoublePassRetries 1
-            $result.Status | Should -BeExactly 'escalated'
-        }
-    }
-
-    Context 'Fallthrough escalation with MaxDoublePassRetries=0 (lines 115-118 exact)' {
-        It 'returns escalated immediately when MaxDoublePassRetries is 0' {
-            Mock pnpm { $global:LASTEXITCODE = 0; return 'ok' }
-
-            $result = Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat' -MaxDoublePassRetries 0
-            $result.Status | Should -BeExactly 'escalated'
-            $result.Retries | Should -Be 0
-            $result.LastError | Should -BeNullOrEmpty
+            $result = Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat'
+            $result.Status | Should -BeExactly 'passed'
+            Should -Invoke Invoke-Claude -Times 1 -Scope It
         }
     }
 
@@ -107,7 +65,7 @@ Describe 'Invoke-PerWorktreeDoublePass' {
                 $global:LASTEXITCODE = 0; return 'ok'
             }
 
-            Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat' -MaxDoublePassRetries 3
+            Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat'
             Should -Invoke Invoke-Claude -Times 1 -Scope It
         }
 
@@ -124,7 +82,7 @@ Describe 'Invoke-PerWorktreeDoublePass' {
                 $global:LASTEXITCODE = 0; return 'ok'
             }
 
-            Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat' -MaxDoublePassRetries 3
+            Invoke-PerWorktreeDoublePass -WorktreePath 'C:\wt' -Root 'C:\fake' -Feature 'feat'
             Should -Invoke Invoke-Claude -Times 1 -Scope It
         }
     }

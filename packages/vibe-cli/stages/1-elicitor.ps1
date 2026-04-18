@@ -8,6 +8,7 @@ function Invoke-Elicitor {
     )
 
     Invoke-Claude -Interactive `
+        -Role elicitor `
         -AppendSystemPromptFile "$Root/agents/doc-writers/elicitor.md" `
         -Prompt "Interview me about: $Seed"
 

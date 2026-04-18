@@ -16,6 +16,7 @@ export const markdownRules = genRules(ruleNames, customRules, "markdown");
 export const markdownPlugin = new Plugin({
   files: "**/*.md",
   importString: 'import markdown from "@eslint/markdown";',
+  language: "markdown/gfm",
   name: "@eslint/markdown",
   order: 0,
   pluginName: "markdown",

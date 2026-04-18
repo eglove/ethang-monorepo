@@ -84,31 +84,40 @@ function Invoke-TlcCheck {
     )
 
     for ($attempt = 1; ; $attempt++) {
-        $tlaFile = Get-ChildItem "$TlaDir/*.tla" -ErrorAction SilentlyContinue | Select-Object -First 1
-        $cfgFile = Get-ChildItem "$TlaDir/*.cfg" -ErrorAction SilentlyContinue | Select-Object -First 1
+        $tlaFile  = Get-ChildItem "$TlaDir/*.tla" -ErrorAction SilentlyContinue | Select-Object -First 1
+        $cfgFiles = Get-ChildItem "$TlaDir/*.cfg" -ErrorAction SilentlyContinue
 
-        if (-not $tlaFile) { throw "No .tla file found in $TlaDir" }
-        if (-not $cfgFile) { throw "No .cfg file found in $TlaDir" }
+        if (-not $tlaFile)  { throw "No .tla file found in $TlaDir" }
+        if (-not $cfgFiles) { throw "No .cfg file found in $TlaDir" }
 
-        Write-PipelineLog "TLC check (attempt $attempt)..."
+        Write-PipelineLog "TLC check (attempt $attempt, $(@($cfgFiles).Count) config(s))..."
 
-        $result = Invoke-TlcProcess -TlaDir $TlaDir -TlaFileName $tlaFile.Name -CfgFileName $cfgFile.Name
-        $tlcText = $result.Output
-        $tlcExitCode = $result.ExitCode
+        $allPassed   = $true
+        $failedParts = [System.Collections.ArrayList]::new()
 
-        if ($tlcExitCode -eq 0 -and $tlcText -notmatch 'Error:|violated|TLC threw') {
+        foreach ($cfgFile in @($cfgFiles)) {
+            $result     = Invoke-TlcProcess -TlaDir $TlaDir -TlaFileName $tlaFile.Name -CfgFileName $cfgFile.Name
+            $tlcText    = $result.Output
+            $tlcExitCode = $result.ExitCode
+
+            if ($tlcExitCode -ne 0 -or $tlcText -match 'Error:|violated|TLC threw') {
+                Write-PipelineLog "TLC failed config=$($cfgFile.Name) attempt=$attempt exitCode=$tlcExitCode"
+                $allPassed = $false
+                $null = $failedParts.Add("--- $($cfgFile.Name) ---`n$tlcText")
+            }
+        }
+
+        if ($allPassed) {
             Write-PipelineLog "TLC passed attempt=$attempt"
             return
         }
 
-        Write-PipelineLog "TLC failed attempt=$attempt exitCode=$tlcExitCode"
-
         Write-PipelineLog "TLC failed — sending errors back to writer..."
-        $fixPrompt = "The TLA+ specification in $TlaDir failed TLC verification.`n`nTLC output:`n$tlcText"
+        $fixPrompt = "The TLA+ specification in $TlaDir failed TLC verification.`n`nTLC output:`n$($failedParts -join "`n`n")"
         if ($FixContext) { $fixPrompt += "`n`n$FixContext" }
-        $fixPrompt += "`n`nFix the specification and config. Save all files to: $TlaDir"
+        $fixPrompt += "`n`nFix the specification and all configs. Save all files to: $TlaDir"
 
-        Invoke-Claude -SystemPromptFile $TlaWriterFile -Prompt $fixPrompt | Out-Null
+        Invoke-Claude -Role 'doc-writer' -SystemPromptFile $TlaWriterFile -Prompt $fixPrompt | Out-Null
     }
 }
 

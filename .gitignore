@@ -6,7 +6,6 @@
 .remember
 .sonarcloud.properties
 docs/tla-specs/**/states
-**/graphify-out
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,jetbrains+all,visualstudiocode,storybookjs
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,react,jetbrains+all,visualstudiocode,storybookjs
@@ -284,3 +283,7 @@ storybook-static/
 state.json
 state.tmp.json
 state.lock
+
+# Token-saving graph ephemeral state
+packages/vibe-cli/graph/discoveries.jsonl
+packages/vibe-cli/state/graph-state.json

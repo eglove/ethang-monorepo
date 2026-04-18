@@ -11,8 +11,7 @@
         [Parameter(Mandatory)][string[]]$WorktreePaths,
         [Parameter(Mandatory)][string]$FeatureDir,
         [Parameter(Mandatory)][string]$Root,
-        [Parameter(Mandatory)][string]$Feature,
-        [int]$MaxDoublePassRetries = 5
+        [Parameter(Mandatory)][string]$Feature
     )
 
     $results = @()
@@ -23,7 +22,8 @@
 
         Write-PipelineLog -Message "Per-worktree gate: double-pass for $wtPath" -Root $Root
 
-        $dpResult = Invoke-PerWorktreeDoublePass -WorktreePath $wtPath -Root $Root -Feature $Feature -MaxDoublePassRetries $MaxDoublePassRetries
+        $dpResult = Invoke-PerWorktreeDoublePass -WorktreePath $wtPath -Root $Root -Feature $Feature
+        try { Set-TaskResult -FeatureName $Feature -TaskId (Split-Path $wtPath -Leaf) -Tier ($i + 1) -Phase 'double-pass' -Status $dpResult.Status } catch { }
 
         if ($dpResult.Status -eq 'escalated') {
             $results += @{
@@ -41,6 +41,7 @@
         Write-PipelineLog -Message "Per-worktree gate: review for $wtPath" -Root $Root
 
         $reviewResult = Invoke-PerWorktreeReview -WorktreePath $wtPath -FeatureDir $FeatureDir -Root $Root
+        try { Set-TaskResult -FeatureName $Feature -TaskId (Split-Path $wtPath -Leaf) -Tier ($i + 1) -Phase 'review' -Status $reviewResult.Verdict } catch { }
 
         if ($reviewResult.Verdict -eq 'escalated') {
             $results += @{

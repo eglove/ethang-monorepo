@@ -687,29 +687,6 @@ Describe 'Stage 8 — Per-Worktree Double-Pass' {
         $result.Retries | Should -BeGreaterOrEqual 1
     }
 
-    It 'MaxDoublePassRetries=5 triggers escalation' {
-        Mock pnpm {
-            $global:LASTEXITCODE = 1
-            return 'persistent-failure'
-        }
-
-        $result = Invoke-PerWorktreeDoublePass -WorktreePath $script:tempDir -Root $script:tempDir -Feature 'my-feature' -MaxDoublePassRetries 5
-        $result.Status | Should -Be 'escalated'
-        $result.Retries | Should -Be 5
-        $result.LastError | Should -Not -BeNullOrEmpty
-    }
-
-    It 'wtDoublePassRetries never exceeds MaxDoublePassRetries (S3)' {
-        Mock pnpm {
-            $global:LASTEXITCODE = 1
-            return 'failure'
-        }
-
-        $max = 3
-        $result = Invoke-PerWorktreeDoublePass -WorktreePath $script:tempDir -Root $script:tempDir -Feature 'my-feature' -MaxDoublePassRetries $max
-        $result.Status | Should -Be 'escalated'
-        $result.Retries | Should -BeLessOrEqual $max
-    }
 
     It 'wtConsecPasses never exceeds 2 (S6)' {
         # All passes succeed — should return after exactly 2 consecutive passes, not more
@@ -786,8 +763,8 @@ Describe 'Stage 8 — Per-Worktree Review' {
             return @{ Verdict = 'pass'; Blockers = @(); Notes = @(); Warnings = @(); Round = 1 }
         }
 
-        # Double-pass will be called with fresh MaxDoublePassRetries=5 (default)
-        # If counters were not reset, it would fail. Mock pnpm to always pass.
+        # Double-pass will be called with fresh counters after review fail.
+        # Mock pnpm to always pass.
         $result = Invoke-PerWorktreeReview -WorktreePath $script:tempDir -FeatureDir $script:featureDir -Root $script:tempDir
         $result.Verdict | Should -Be 'pass'
         # pnpm was called during the double-pass (4 calls for 2 consec passes)
@@ -996,37 +973,6 @@ Describe 'Stage 8 — Sequential Merge' {
         Should -Invoke Invoke-Claude -Times 2
     }
 
-    It 'MaxDoublePassRetries after conflict escalates to user' {
-        $script:conflictResolved = $false
-        Mock git {
-            $joined = $args -join ' '
-            if ($joined -match 'rev-parse HEAD') { return 'abc123' }
-            if ($joined -match 'merge .+ --no-ff') {
-                $global:LASTEXITCODE = 1
-                return 'CONFLICT'
-            }
-            if ($joined -match 'diff --name-only --diff-filter=U') {
-                if ($script:conflictResolved) { return '' }
-                $script:conflictResolved = $true
-                return 'file.ps1'
-            }
-            if ($joined -match 'reset --hard') { return $null }
-            return $null
-        }
-        Mock Invoke-Claude {
-            $script:conflictResolved = $true
-            return 'resolved'
-        }
-        Mock pnpm {
-            $global:LASTEXITCODE = 1
-            return 'persistent-failure'
-        }
-        Mock Read-Host { return 's' }
-
-        $result = Invoke-SequentialMerge -WorktreeBranches @('T1-branch') -FeatureBranch 'feature/test' -Root $script:tempDir -Feature 'my-feature' -MaxDoublePassRetries 3
-        $result.Status | Should -Be 'escalated_stop'
-        Should -Invoke Read-Host -Times 1
-    }
 
     It 'Keep Going after conflict continues merge sequence' {
         $script:mergeCallCount = 0
@@ -1192,39 +1138,6 @@ Describe 'Stage 8 — Sequential Merge' {
         $result.MergedBranches | Should -Contain 'T2-branch'
     }
 
-    It 'mergeDoublePassRetries never exceeds max (S3)' {
-        $script:conflictResolved = $false
-        Mock git {
-            $joined = $args -join ' '
-            if ($joined -match 'rev-parse HEAD') { return 'abc123' }
-            if ($joined -match 'merge .+ --no-ff') {
-                $global:LASTEXITCODE = 1
-                return 'CONFLICT'
-            }
-            if ($joined -match 'diff --name-only --diff-filter=U') {
-                if ($script:conflictResolved) { return '' }
-                $script:conflictResolved = $true
-                return 'file.ps1'
-            }
-            if ($joined -match 'reset --hard') { return $null }
-            return $null
-        }
-        Mock Invoke-Claude {
-            $script:conflictResolved = $true
-            return 'resolved'
-        }
-        Mock pnpm {
-            $global:LASTEXITCODE = 1
-            return 'failure'
-        }
-        Mock Read-Host { return 's' }
-
-        $max = 3
-        $result = Invoke-SequentialMerge -WorktreeBranches @('T1-branch') -FeatureBranch 'feature/test' -Root $script:tempDir -Feature 'my-feature' -MaxDoublePassRetries $max
-        $result.Status | Should -Be 'escalated_stop'
-        # pnpm was called exactly $max times (one test failure per retry)
-        Should -Invoke pnpm -Times $max -Exactly
-    }
 
     It 'mergeConsecPasses never exceeds 2 (S6)' {
         $script:conflictResolved = $false
@@ -1510,61 +1423,6 @@ Describe 'Stage 8 — Global Double-Pass' {
         $result.Status | Should -Be 'passed'
         $result.Retries | Should -BeGreaterOrEqual 1
         Should -Invoke Invoke-Claude -Times 1 -Exactly
-    }
-
-    It 'MaxDoublePassRetries=5 escalates' {
-        Mock pnpm {
-            $global:LASTEXITCODE = 1
-            return 'persistent-failure'
-        }
-
-        $result = Invoke-GlobalDoublePass -Root $script:tempDir -Feature 'my-feature' -MaxDoublePassRetries 5
-        $result.Status | Should -Be 'escalated'
-        $result.Retries | Should -Be 5
-        $result.LastError | Should -Not -BeNullOrEmpty
-    }
-
-    It 'Keep Going after escalation logs and proceeds to global review' {
-        # Simulate: global double-pass escalates, caller reads escalation as Keep Going
-        Mock pnpm {
-            $global:LASTEXITCODE = 1
-            return 'persistent-failure'
-        }
-
-        $result = Invoke-GlobalDoublePass -Root $script:tempDir -Feature 'my-feature' -MaxDoublePassRetries 2
-        $result.Status | Should -Be 'escalated'
-        # Caller would check result.Status and call Read-Escalation -> KeepGoing
-        # The function itself returns 'escalated' so caller can decide
-        $result.LastError | Should -Not -BeNullOrEmpty
-    }
-
-    It 'Stop after escalation halts and releases lock' {
-        # Simulate: global double-pass escalates, caller reads escalation as Stop
-        Mock pnpm {
-            $global:LASTEXITCODE = 1
-            return 'persistent-failure'
-        }
-
-        $result = Invoke-GlobalDoublePass -Root $script:tempDir -Feature 'my-feature' -MaxDoublePassRetries 2
-        $result.Status | Should -Be 'escalated'
-        # Lock management is at the caller level (Invoke-CodingStage finally block)
-        # Verify function does not call Lock/Unlock itself
-        Mock Lock-Pipeline {}
-        Mock Unlock-Pipeline {}
-        Should -Invoke Lock-Pipeline -Times 0
-        Should -Invoke Unlock-Pipeline -Times 0
-    }
-
-    It 'glDoublePassRetries never exceeds max (S3)' {
-        Mock pnpm {
-            $global:LASTEXITCODE = 1
-            return 'failure'
-        }
-
-        $max = 3
-        $result = Invoke-GlobalDoublePass -Root $script:tempDir -Feature 'my-feature' -MaxDoublePassRetries $max
-        $result.Status | Should -Be 'escalated'
-        $result.Retries | Should -BeLessOrEqual $max
     }
 
     It 'glConsecPasses never exceeds 2 (S6)' {

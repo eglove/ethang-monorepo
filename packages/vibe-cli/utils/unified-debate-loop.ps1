@@ -20,6 +20,7 @@ function Invoke-UnifiedDebateLoop {
     $bddWriterFile = "$Root/agents/doc-writers/bdd-writer.md"
     $tlaWriterFile = "$Root/agents/doc-writers/tla-writer.md"
 
+    $_featureName = Split-Path $FeatureDir -Leaf
     $debateHistory = [System.Collections.ArrayList]::new()
     $consecutiveFailures = 0
     $maxConsecutiveFailures = 3
@@ -35,6 +36,7 @@ function Invoke-UnifiedDebateLoop {
 
         try {
             $debate = Invoke-Claude `
+                -Role moderator `
                 -SystemPromptFile $debateModFile `
                 -JsonSchema $UnifiedDebateSchema `
                 -Prompt $prompt |
@@ -69,6 +71,9 @@ function Invoke-UnifiedDebateLoop {
 
         Write-PipelineLog -Message "Unified debate round=$round result=$($debate.result) objections=$($debate.objections.Count)" -Root $Root
 
+        $_dbStatus = if ($debate.result -eq 'CONSENSUS_REACHED') { 'reached' } elseif ($round -ge $MaxRounds) { 'failed' } else { 'pending' }
+        try { Update-DebateState -FeatureName $_featureName -Stage 3 -Round $round -ConsensusStatus $_dbStatus -MaxDebateRound $MaxRounds } catch { }
+
         # ── CONSENSUS_REACHED: dispatch per-writer final recommendations ──
         if ($debate.result -eq 'CONSENSUS_REACHED') {
             Write-PipelineLog -Message "Unified debate: consensus reached at round $round" -Root $Root
@@ -80,7 +85,7 @@ function Invoke-UnifiedDebateLoop {
                         . "$r/utils/pipeline-log.ps1"
                         . "$r/utils/invoke-claude.ps1"
                         $prompt = "Read all artifacts in: $fd`nRead current scenarios from: $gf`nConsensus recommendation: $rec`nApply the recommendation. Save to $gf"
-                        Invoke-Claude -SystemPromptFile "$r/agents/doc-writers/bdd-writer.md" -Prompt $prompt | Out-Null
+                        Invoke-Claude -Role 'doc-writer' -SystemPromptFile "$r/agents/doc-writers/bdd-writer.md" -Prompt $prompt | Out-Null
                     }
                     Args = @($Root, $absGherkin, $debate.recommendation.bdd, $absFeatureDir)
                 }
@@ -90,7 +95,7 @@ function Invoke-UnifiedDebateLoop {
                         . "$r/utils/pipeline-log.ps1"
                         . "$r/utils/invoke-claude.ps1"
                         $prompt = "Read all artifacts in: $fd`nRead current spec from: $td`nConsensus recommendation: $rec`nApply the recommendation. Save all files to $td"
-                        Invoke-Claude -SystemPromptFile "$r/agents/doc-writers/tla-writer.md" -Prompt $prompt | Out-Null
+                        Invoke-Claude -Role 'doc-writer' -SystemPromptFile "$r/agents/doc-writers/tla-writer.md" -Prompt $prompt | Out-Null
                     }
                     Args = @($Root, $absTlaDir, $debate.recommendation.tla, $absFeatureDir)
                 }
@@ -157,7 +162,7 @@ function Invoke-UnifiedDebateLoop {
                     . "$r/utils/pipeline-log.ps1"
                     . "$r/utils/invoke-claude.ps1"
                     $prompt = "Read all artifacts in: $fd`nRead current scenarios from: $gf`nDebate objections:`n- $objs`nRevise the scenarios. Save to $gf"
-                    Invoke-Claude -SystemPromptFile "$r/agents/doc-writers/bdd-writer.md" -Prompt $prompt | Out-Null
+                    Invoke-Claude -Role 'doc-writer' -SystemPromptFile "$r/agents/doc-writers/bdd-writer.md" -Prompt $prompt | Out-Null
                 }
                 Args = @($Root, $absGherkin, $objList, $absFeatureDir)
             }
@@ -173,7 +178,7 @@ function Invoke-UnifiedDebateLoop {
                     . "$r/utils/tlc-runner.ps1"
                     $tlaFile = Get-ChildItem "$td/*.tla" | Select-Object -First 1
                     $prompt = "Read all artifacts in: $fd`nRead current spec from: $($tlaFile.FullName)`nDebate objections:`n- $objs`nRevise the specification. Save all files to $td"
-                    Invoke-Claude -SystemPromptFile "$r/agents/doc-writers/tla-writer.md" -Prompt $prompt | Out-Null
+                    Invoke-Claude -Role 'doc-writer' -SystemPromptFile "$r/agents/doc-writers/tla-writer.md" -Prompt $prompt | Out-Null
                     Invoke-TlcCheck -TlaDir $td -TlaWriterFile "$r/agents/doc-writers/tla-writer.md" -FixContext "Debate revision"
                 }
                 Args = @($Root, $absTlaDir, $objList, $absFeatureDir)

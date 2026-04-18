@@ -8,7 +8,7 @@ export default defineConfig(globalIgnores(ignores), {
   files: ["**/*.{jsx,tsx}"],
   languageOptions,
   settings: {
-    react: { version: "19.2.4" },
+    react: { version: "19.2.5" },
   },
   plugins: {
     react: react,

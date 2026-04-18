@@ -50,17 +50,9 @@ $blockerSummary
 
 Fix the review blockers using TDD approach: write failing test, make it pass, refactor.
 "@
-        Invoke-Claude -Prompt $fixPrompt -AddDir $Root
+        Invoke-Claude -Role reviewer -Prompt $fixPrompt -AddDir $Root
 
         # Re-run global double-pass with RESET counters (per TLA+ GlobalReviewFail: R2-1)
-        $dpResult = Invoke-GlobalDoublePass -Root $Root -Feature (Split-Path $FeatureDir -Leaf) -MaxDoublePassRetries 5
-
-        if ($dpResult.Status -eq 'escalated') {
-            return @{
-                Verdict     = 'escalated'
-                ReviewRound = $glReviewRounds
-                Blockers    = @($dpResult.LastError)
-            }
-        }
+        Invoke-GlobalDoublePass -Root $Root -Feature (Split-Path $FeatureDir -Leaf) | Out-Null
     }
 }

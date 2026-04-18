@@ -1,14 +1,37 @@
 {
-  "name": "@ethang/vibe-cli",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "lint": "pwsh -NoProfile -Command \"if (-not (Get-Module -ListAvailable PSScriptAnalyzer)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }; Invoke-ScriptAnalyzer -Path . -Recurse -EnableExit -ReportSummary\"",
-    "test": "pwsh -NoProfile -Command \"if (-not (Get-Module -ListAvailable Pester -ErrorAction SilentlyContinue | Where-Object Version -ge '5.0')) { Install-Module Pester -Force -Scope CurrentUser -MinimumVersion 5.0 }; if (-not (Get-Module -ListAvailable PSScriptAnalyzer)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }; Invoke-Pester -Configuration (& ./.pester.ps1); & ./utils/ratchet-coverage.ps1\""
-  },
   "author": "Ethan Glover",
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "data-structure-typed": "^1.53.8",
+    "lodash": "^4.18.1"
+  },
+  "description": "",
+  "devDependencies": {
+    "@ethang/eslint-config": "^25.14.2",
+    "@types/lodash": "^4.17.24",
+    "@types/node": "^25.5.2",
+    "@vitest/coverage-v8": "^4.1.2",
+    "browserslist-config-baseline": "^0.5.0",
+    "eslint": "^10.2.0",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.5",
+    "vitest": "^4.1.2"
+  },
+  "engines": {
+    "node": ">=24"
+  },
   "license": "ISC",
+  "main": "index.js",
+  "name": "@ethang/vibe-cli",
   "packageManager": "pnpm@11.0.0-dev.1005",
-  "type": "module"
+  "scripts": {
+    "lint": "eslint . --fix && pnpm tsc --noEmit && pwsh -NoProfile -Command \"if (-not (Get-Module -ListAvailable PSScriptAnalyzer)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }; Invoke-ScriptAnalyzer -Path . -Recurse -EnableExit -ReportSummary\"",
+    "test": "vitest run --coverage && pwsh -NoProfile -Command \"if (-not (Get-Module -ListAvailable Pester -ErrorAction SilentlyContinue | Where-Object Version -ge '5.0')) { Install-Module Pester -Force -Scope CurrentUser -MinimumVersion 5.0 }; if (-not (Get-Module -ListAvailable PSScriptAnalyzer)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }; if (-not (Get-Module -ListAvailable PSSQLite)) { Install-Module PSSQLite -Force -Scope CurrentUser }; Invoke-Pester -Configuration (& ./.pester.ps1); & ./utils/ratchet-coverage.ps1\""
+  },
+  "type": "module",
+  "version": "1.0.0"
 }

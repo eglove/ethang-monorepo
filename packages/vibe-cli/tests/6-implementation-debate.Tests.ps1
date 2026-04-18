@@ -4,6 +4,9 @@ BeforeAll {
     . "$PSScriptRoot/../utils/resolve-pipeline-state.ps1"
     . "$PSScriptRoot/../utils/debate-loop.ps1"
     . "$PSScriptRoot/../stages/6-implementation-debate.ps1"
+
+    function Update-DebateState { [CmdletBinding()] param([string]$FeatureName, [int]$Stage, [int]$Round, [string]$ConsensusStatus, [int]$MaxDebateRound = 10) }
+    Mock Update-DebateState {}
 }
 
 Describe 'Invoke-ImplementationDebateStage (Stage 6)' {
@@ -85,5 +88,15 @@ Describe 'Invoke-ImplementationDebateStage (Stage 6)' {
 
         $result.Success | Should -BeTrue
         Should -Invoke Invoke-DebateLoop -Times 1
+    }
+
+    It 'returns Success=$false when TlaFile is missing' {
+        $implFile = Join-Path $featureDir 'implementation-plan.md'
+        $implJson = Join-Path $featureDir 'implementation-plan.json'
+
+        $result = Invoke-ImplementationDebateStage -ImplFile $implFile -ImplJson $implJson -FeatureDir $featureDir -Root $testRoot
+
+        $result.Success | Should -BeFalse
+        $result.Error | Should -Match 'TlaFile is required'
     }
 }

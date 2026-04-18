@@ -68,15 +68,4 @@ Describe 'Invoke-PerWorktreeReview' {
         }
     }
 
-    Context 'Escalated returns (lines 71-82)' {
-        It 'returns escalated when double-pass escalates after review fix' {
-            Mock git { return 'diff' }
-            Mock Invoke-ReviewLoop { return @{ Verdict = 'fail'; Blockers = @('blocker') } }
-            Mock Invoke-PerWorktreeDoublePass { return @{ Status = 'escalated'; Retries = 5; LastError = 'dp fail' } }
-
-            $result = Invoke-PerWorktreeReview -WorktreePath 'C:\wt' -FeatureDir 'C:\fake\docs\feat' -Root 'C:\fake'
-            $result.Verdict | Should -BeExactly 'escalated'
-            $result.Blockers | Should -Contain 'dp fail'
-        }
-    }
 }

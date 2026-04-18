@@ -1,234 +1,249 @@
 {
-  "topic": "Pipeline Reviewers & Resume",
   "sourceArtifacts": {
-    "tlaSpec": "packages/vibe-cli/docs/reviewers/tla/PipelineReviewers.tla",
-    "bddFeature": "packages/vibe-cli/docs/reviewers/bdd.feature"
+    "bddFeature": "packages/vibe-cli/docs/reviewers/bdd.feature",
+    "tlaSpec": "packages/vibe-cli/docs/reviewers/tla/PipelineReviewers.tla"
   },
   "tiers": [
     {
-      "tier": 1,
-      "title": "Domain Constants and Verdict Model",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": [],
+          "files": ["utils/config.ps1"],
           "id": "T1",
           "step": 1,
-          "title": "Review gate constants and NumTasks",
-          "files": ["utils/config.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": []
+          "title": "Review gate constants and NumTasks"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": [],
+          "files": ["utils/review-verdict.ps1"],
           "id": "T4",
           "step": 4,
-          "title": "Review verdict data model",
-          "files": ["utils/review-verdict.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": []
+          "title": "Review verdict data model"
         }
-      ]
+      ],
+      "tier": 1,
+      "title": "Domain Constants and Verdict Model"
     },
     {
-      "tier": 2,
-      "title": "State Infrastructure",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T1"],
+          "files": ["utils/pipeline-state.ps1"],
           "id": "T2",
           "step": 2,
-          "title": "Pipeline state type and initial state",
-          "files": ["utils/pipeline-state.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T1"]
+          "title": "Pipeline state type and initial state"
         }
-      ]
+      ],
+      "tier": 2,
+      "title": "State Infrastructure"
     },
     {
-      "tier": 3,
-      "title": "Lock and Gate Engine",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T2"],
+          "files": ["utils/pipeline-lock.ps1"],
           "id": "T3",
           "step": 3,
-          "title": "Pipeline lock manager and StartRunning",
-          "files": ["utils/pipeline-lock.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T2"]
+          "title": "Pipeline lock manager and StartRunning"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T2", "T4"],
+          "files": ["utils/review-gate.ps1"],
           "id": "T5",
           "step": 5,
-          "title": "Review gate engine — core loop",
-          "files": ["utils/review-gate.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T2", "T4"]
+          "title": "Review gate engine — core loop"
         }
-      ]
+      ],
+      "tier": 3,
+      "title": "Lock and Gate Engine"
     },
     {
-      "tier": 4,
-      "title": "Verdict Handling, Timeouts, and Terminal States",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T5"],
+          "files": ["utils/review-gate.ps1"],
           "id": "T6",
           "step": 6,
-          "title": "Verdict handling — pass, fail, retry (pre-merge)",
-          "files": ["utils/review-gate.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T5"]
+          "title": "Verdict handling — pass, fail, retry (pre-merge)"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T5", "T1"],
+          "files": ["utils/review-timeout.ps1"],
           "id": "T14",
           "step": 14,
-          "title": "Review gate timeout",
-          "files": ["utils/review-timeout.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T5", "T1"]
+          "title": "Review gate timeout"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T2", "T3"],
+          "files": ["utils/global-timeout.ps1"],
           "id": "T16",
           "step": 16,
-          "title": "Global pipeline timeout",
-          "files": ["utils/global-timeout.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T2", "T3"]
+          "title": "Global pipeline timeout"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T2", "T3"],
+          "files": ["utils/pipeline-state.ps1"],
           "id": "T17",
           "step": 17,
-          "title": "Terminal state absorption",
-          "files": ["utils/pipeline-state.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T2", "T3"]
+          "title": "Terminal state absorption"
         }
-      ]
+      ],
+      "tier": 4,
+      "title": "Verdict Handling, Timeouts, and Terminal States"
     },
     {
-      "tier": 5,
-      "title": "Merge Queue, Fix Cycles, and Escalation",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T5", "T6"],
+          "files": ["utils/review-fix.ps1"],
           "id": "T7",
           "step": 7,
-          "title": "Review-fix cycle",
-          "files": ["utils/review-fix.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T5", "T6"]
+          "title": "Review-fix cycle"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T5", "T6"],
+          "files": ["utils/review-gate.ps1"],
           "id": "T9",
           "step": 9,
-          "title": "Review round exhaustion and Keep Going escalation",
-          "files": ["utils/review-gate.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T5", "T6"]
+          "title": "Review round exhaustion and Keep Going escalation"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T6", "T2"],
+          "files": ["utils/merge-queue.ps1"],
           "id": "T10",
           "step": 10,
-          "title": "Merge queue and task counting",
-          "files": ["utils/merge-queue.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T6", "T2"]
+          "title": "Merge queue and task counting"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T14"],
+          "files": ["utils/review-timeout.ps1"],
           "id": "T15",
           "step": 15,
-          "title": "Gate timeout escalation",
-          "files": ["utils/review-timeout.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T14"]
+          "title": "Gate timeout escalation"
         }
-      ]
+      ],
+      "tier": 5,
+      "title": "Merge Queue, Fix Cycles, and Escalation"
     },
     {
-      "tier": 6,
-      "title": "Staleness, Final Review, and TDD Escalation",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T7"],
+          "files": ["utils/review-fix.ps1"],
           "id": "T8",
           "step": 8,
-          "title": "TDD Keep Going and exhaustion in fix",
-          "files": ["utils/review-fix.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T7"]
+          "title": "TDD Keep Going and exhaustion in fix"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T10"],
+          "files": ["utils/diff-staleness.ps1"],
           "id": "T11",
           "step": 11,
-          "title": "Diff-base staleness detection",
-          "files": ["utils/diff-staleness.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T10"]
+          "title": "Diff-base staleness detection"
         },
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T5", "T10"],
+          "files": ["utils/review-gate.ps1"],
           "id": "T12",
           "step": 12,
-          "title": "Final review gate — verdict handling",
-          "files": ["utils/review-gate.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T5", "T10"]
+          "title": "Final review gate — verdict handling"
         }
-      ]
+      ],
+      "tier": 6,
+      "title": "Staleness, Final Review, and TDD Escalation"
     },
     {
-      "tier": 7,
-      "title": "Final Fix Cycle",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T7", "T8", "T12"],
+          "files": ["utils/review-fix.ps1"],
           "id": "T13",
           "step": 13,
-          "title": "Final review-fix cycle with TDD escalation",
-          "files": ["utils/review-fix.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T7", "T8", "T12"]
+          "title": "Final review-fix cycle with TDD escalation"
         }
-      ]
+      ],
+      "tier": 7,
+      "title": "Final Fix Cycle"
     },
     {
-      "tier": 8,
-      "title": "Pipeline Integration",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": [
+            "T3",
+            "T5",
+            "T6",
+            "T7",
+            "T8",
+            "T9",
+            "T10",
+            "T11",
+            "T12",
+            "T13",
+            "T14",
+            "T15",
+            "T16",
+            "T17"
+          ],
+          "files": ["stages/8-coding.ps1", "utils/task-runner.ps1"],
           "id": "T18",
           "step": 18,
-          "title": "Pipeline orchestrator integration",
-          "files": ["stages/8-coding.ps1", "utils/task-runner.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T3", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12", "T13", "T14", "T15", "T16", "T17"]
+          "title": "Pipeline orchestrator integration"
         }
-      ]
+      ],
+      "tier": 8,
+      "title": "Pipeline Integration"
     },
     {
-      "tier": 9,
-      "title": "Liveness Verification",
       "tasks": [
         {
+          "codeWriter": "powershell-writer",
+          "dependencies": ["T18"],
+          "files": ["tests/review-liveness.Tests.ps1"],
           "id": "T19",
           "step": 19,
-          "title": "Liveness integration tests",
-          "files": ["tests/review-liveness.Tests.ps1"],
-          "codeWriter": "powershell-writer",
           "testWriter": "pester-writer",
-          "dependencies": ["T18"]
+          "title": "Liveness integration tests"
         }
-      ]
+      ],
+      "tier": 9,
+      "title": "Liveness Verification"
     }
-  ]
+  ],
+  "topic": "Pipeline Reviewers & Resume"
 }

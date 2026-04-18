@@ -1,6 +1,9 @@
 ﻿BeforeAll {
     . "$PSScriptRoot/helpers/test-config.ps1"
     . "$PSScriptRoot/../utils/debate-loop.ps1"
+
+    function Update-DebateState { [CmdletBinding()] param([string]$FeatureName, [int]$Stage, [int]$Round, [string]$ConsensusStatus, [int]$MaxDebateRound = 10) }
+    Mock Update-DebateState {}
 }
 
 Describe 'Invoke-DebateLoop' {
@@ -179,6 +182,24 @@ Describe 'Invoke-DebateLoop' {
 
         # Called once for the objection revision
         $script:postRevisionCount | Should -Be 1
+    }
+
+    It 'continues when Update-DebateState throws' {
+        Mock Invoke-Claude {
+            '{"result":"CONSENSUS_REACHED","rounds":1,"experts":["a"],"recommendation":"","objections":[],"sessionFile":"s.md"}'
+        }
+        Mock Update-DebateState { throw 'db unavailable' }
+
+        $result = Invoke-DebateLoop `
+            -DebateModFile $script:modFile `
+            -WriterFile $script:writerFile `
+            -DebateContext 'test' `
+            -SessionFile $script:sessionFile `
+            -ArtifactFile $script:artifactFile `
+            -FeatureDir $script:tempDir `
+            -BuildRevisionPrompt { param($c, $o) "revise: $o" } `
+
+        $result.result | Should -Be 'CONSENSUS_REACHED'
     }
 
     It 'includes reference document path in prompt when ReferenceFile provided' {

@@ -91,3 +91,44 @@ Endorsements:
 - vs. expert-ddd: Bounded contexts make independent deployability easier in theory, but shared databases that span bounded contexts make it harder in practice. The infrastructure must match the model.
 - vs. expert-tla: Formal verification of individual components does not prove that the deployment sequence is safe. A component that is formally correct can still fail when deployed against an older version of a dependency.
 - vs. expert-performance: Performance optimizations that require schema changes, data migrations, or cache warming create deployment complexity. "We just need to backfill the index" is a deployment plan, not a code change.
+---
+<!-- graph-instructions appended -->
+# Knowledge Graph Instructions
+
+When you discover files, packages, components, or functions in the codebase, record them using the graph API.
+
+## Adding Nodes
+
+Call `.addNode(fullPath, nodeType)` where:
+- `fullPath` must be a full path with directory separators (e.g., `packages/vibe-cli/graph/graph.ts`)
+- **INVALID**: bare filenames without directory separators (e.g., `graph.ts`) are rejected
+- **INVALID**: rg output tokens with colons (e.g., `src/foo.ts:42:keyword`) are rejected
+- `nodeType` must be one of: `app`, `package`, `component`, `function`, `file`
+
+## Adding Edges
+
+Call `.addEdge(fromPath, toPath, edgeType)` where:
+- `fromPath` and `toPath` must already be added as nodes (no ghost edges)
+- Add endpoint nodes BEFORE adding edges between them
+- `edgeType` must be one of: `calls`, `imports`, `exports`, `depends_on`, `contains`, `tested_by`, `test_for`
+
+## Handling Duplicates
+
+If you receive a duplicate error for a node or edge you tried to add:
+- The error message will contain the duplicate path
+- Submit a DIFFERENT full path as your substitute
+- Do NOT submit the same path again
+- If you cannot find a valid substitute, skip this entry
+
+## Examples
+
+```typescript
+// Add a file node
+.addNode('packages/vibe-cli/vibe.ps1', 'file')
+
+// Add a package node
+.addNode('packages/vibe-cli', 'package')
+
+// Add an edge (both nodes must exist first)
+.addEdge('packages/vibe-cli/vibe.ps1', 'packages/vibe-cli', 'contains')
+```

@@ -1,111 +1,111 @@
 {
-  "spec": "PipelineReviewers",
-  "traceId": "escalation-stop-001",
-  "description": "Retry exhaustion -> escalation -> user chooses Stop -> HALTED",
   "constants": {
-    "MaxReviewRounds": 2,
     "MaxKeepGoingResets": 3,
+    "MaxReviewRounds": 2,
     "MaxTddKeepGoingPerGate": 5,
     "NumTasks": 1
   },
+  "description": "Retry exhaustion -> escalation -> user chooses Stop -> HALTED",
+  "spec": "PipelineReviewers",
   "steps": [
     {
-      "stepNum": 0,
       "action": "Init",
       "state": {
-        "pipelineState": "idle",
-        "lockHolder": null,
-        "reviewRound": 0,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": null,
+        "pipelineState": "idle",
+        "reviewGateType": "none",
+        "reviewRound": 0,
         "tasksDone": 0,
-        "reviewGateType": "none"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 0
     },
     {
-      "stepNum": 1,
       "action": "AcquireLock",
       "state": {
-        "pipelineState": "locked",
-        "lockHolder": 1,
-        "reviewRound": 0,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": 1,
+        "pipelineState": "locked",
+        "reviewGateType": "none",
+        "reviewRound": 0,
         "tasksDone": 0,
-        "reviewGateType": "none"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 1
     },
     {
-      "stepNum": 2,
       "action": "StartRunning",
       "state": {
-        "pipelineState": "running",
-        "lockHolder": 1,
-        "reviewRound": 0,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": 1,
+        "pipelineState": "running",
+        "reviewGateType": "none",
+        "reviewRound": 0,
         "tasksDone": 0,
-        "reviewGateType": "none"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 2
     },
     {
-      "stepNum": 3,
       "action": "EnterPreMergeReview",
       "state": {
-        "pipelineState": "preMergeReview",
+        "keepGoingResets": 0,
         "lockHolder": 1,
+        "pipelineState": "preMergeReview",
+        "reviewGateType": "preMerge",
         "reviewRound": 0,
-        "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
         "tasksDone": 0,
-        "reviewGateType": "preMerge"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 3
     },
     {
-      "stepNum": 4,
       "action": "HandleRetryPreMerge",
       "state": {
-        "pipelineState": "preMergeReview",
+        "keepGoingResets": 0,
         "lockHolder": 1,
+        "pipelineState": "preMergeReview",
+        "reviewGateType": "preMerge",
         "reviewRound": 1,
-        "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
         "tasksDone": 0,
-        "reviewGateType": "preMerge"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 4
     },
     {
-      "stepNum": 5,
       "action": "HandleRetryPreMerge",
       "state": {
-        "pipelineState": "preMergeReview",
-        "lockHolder": 1,
-        "reviewRound": 2,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": 1,
+        "pipelineState": "preMergeReview",
+        "reviewGateType": "preMerge",
+        "reviewRound": 2,
         "tasksDone": 0,
-        "reviewGateType": "preMerge"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 5
     },
     {
-      "stepNum": 6,
       "action": "ReviewStop",
       "state": {
-        "pipelineState": "HALTED",
-        "lockHolder": null,
-        "reviewRound": 2,
         "keepGoingResets": 0,
-        "tddKeepGoingCount": 0,
-        "verdict": null,
+        "lockHolder": null,
+        "pipelineState": "HALTED",
+        "reviewGateType": "preMerge",
+        "reviewRound": 2,
         "tasksDone": 0,
-        "reviewGateType": "preMerge"
-      }
+        "tddKeepGoingCount": 0,
+        "verdict": null
+      },
+      "stepNum": 6
     }
-  ]
+  ],
+  "traceId": "escalation-stop-001"
 }

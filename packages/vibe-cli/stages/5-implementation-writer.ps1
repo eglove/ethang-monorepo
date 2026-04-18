@@ -43,6 +43,7 @@ Save the JSON manifest to: $implJson
     Write-PipelineLog -Message "Stage 5: implementation writer" -Root $Root
 
     Invoke-Claude `
+        -Role 'code-writer' `
         -SystemPromptFile "$Root/agents/doc-writers/implementation-writer.md" `
         -Prompt $prompt | Out-Null
 

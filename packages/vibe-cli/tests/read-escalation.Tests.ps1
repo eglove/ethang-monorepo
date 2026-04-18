@@ -93,6 +93,20 @@ Describe 'Read-Escalation' {
         { Read-Escalation -Source 'task' -TaskId 'T1' -Phase 'red' } | Should -Not -Throw
     }
 
+    It 'uses Source as the review label when TaskId is not provided' {
+        Mock Read-Host { 'k' }
+        Mock Write-StatusNote {} -Verifiable
+        Read-Escalation -Source 'workspace' -Phase 'idle'
+        Should -Invoke Write-StatusNote -ParameterFilter { $TaskId -eq 'workspace' }
+    }
+
+    It 'returns Stop with $null snapshot when TaskStatuses is not provided' {
+        Mock Read-Host { 's' }
+        $result = Read-Escalation -Source 'merge' -Phase 'idle'
+        $result.Decision | Should -Be 'Stop'
+        $result.PreStopSnapshot | Should -BeNullOrEmpty
+    }
+
     It 'displays Error_ with Write-Host when provided' {
         Mock Read-Host { 'k' }
         $writeHostCalls = @()

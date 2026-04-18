@@ -4,21 +4,19 @@ function Invoke-PerWorktreeDoublePass {
         Runs pnpm test + pnpm lint in a worktree, requiring two consecutive passes.
         On failure: sends error to Claude for fix, resets consecutive counter, retries.
     .OUTPUTS
-        Hashtable: @{ Status = 'passed'|'escalated'; Retries = [int]; LastError = $null|string }
+        Hashtable: @{ Status = 'passed'; Retries = [int]; LastError = $null|string }
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$WorktreePath,
         [Parameter(Mandatory)][string]$Root,
-        [int]$MaxDoublePassRetries = 5,
         [Parameter(Mandatory)][string]$Feature
     )
 
     $wtConsecPasses = 0
     $wtDoublePassRetries = 0
-    $lastError = $null
 
-    while ($wtDoublePassRetries -lt $MaxDoublePassRetries) {
+    while ($true) {
         # Run test
         $testOutput = $null
         try {
@@ -31,21 +29,12 @@ function Invoke-PerWorktreeDoublePass {
         }
 
         if ($testExitCode -ne 0) {
-            $lastError = $testOutput
             $wtConsecPasses = 0
             $wtDoublePassRetries++
-            Write-PipelineLog -Message "Double-pass: test failed (retry $wtDoublePassRetries/$MaxDoublePassRetries)" -Root $Root
-
-            if ($wtDoublePassRetries -ge $MaxDoublePassRetries) {
-                return @{
-                    Status    = 'escalated'
-                    Retries   = $wtDoublePassRetries
-                    LastError = $lastError
-                }
-            }
+            Write-PipelineLog -Message "Double-pass: test failed (retry $wtDoublePassRetries)" -Root $Root
 
             $fixPrompt = @"
-## Double-Pass Test Failure (attempt $wtDoublePassRetries/$MaxDoublePassRetries)
+## Double-Pass Test Failure (attempt $wtDoublePassRetries)
 
 Worktree: $WorktreePath
 Feature: $Feature
@@ -55,7 +44,7 @@ $testOutput
 
 Fix the failing tests in the worktree.
 "@
-            Invoke-Claude -Prompt $fixPrompt -AddDir $WorktreePath
+            Invoke-Claude -Role 'code-writer' -Prompt $fixPrompt -AddDir $WorktreePath
             continue
         }
 
@@ -71,21 +60,12 @@ Fix the failing tests in the worktree.
         }
 
         if ($lintExitCode -ne 0) {
-            $lastError = $lintOutput
             $wtConsecPasses = 0
             $wtDoublePassRetries++
-            Write-PipelineLog -Message "Double-pass: lint failed (retry $wtDoublePassRetries/$MaxDoublePassRetries)" -Root $Root
-
-            if ($wtDoublePassRetries -ge $MaxDoublePassRetries) {
-                return @{
-                    Status    = 'escalated'
-                    Retries   = $wtDoublePassRetries
-                    LastError = $lastError
-                }
-            }
+            Write-PipelineLog -Message "Double-pass: lint failed (retry $wtDoublePassRetries)" -Root $Root
 
             $fixPrompt = @"
-## Double-Pass Lint Failure (attempt $wtDoublePassRetries/$MaxDoublePassRetries)
+## Double-Pass Lint Failure (attempt $wtDoublePassRetries)
 
 Worktree: $WorktreePath
 Feature: $Feature
@@ -95,7 +75,7 @@ $lintOutput
 
 Fix the lint errors in the worktree.
 "@
-            Invoke-Claude -Prompt $fixPrompt -AddDir $WorktreePath
+            Invoke-Claude -Role 'code-writer' -Prompt $fixPrompt -AddDir $WorktreePath
             continue
         }
 
@@ -110,11 +90,5 @@ Fix the lint errors in the worktree.
                 LastError = $null
             }
         }
-    }
-
-    return @{
-        Status    = 'escalated'
-        Retries   = $wtDoublePassRetries
-        LastError = $lastError
     }
 }

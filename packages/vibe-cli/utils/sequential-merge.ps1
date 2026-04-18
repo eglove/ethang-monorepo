@@ -3,7 +3,7 @@
     .SYNOPSIS
         Merges worktree branches into the feature branch in task order (T1, T2, T3...).
         On merge conflict, dispatches Claude to resolve and runs a double-pass on the feature branch.
-        On unresolvable conflict or MaxDoublePassRetries, escalates to user.
+        On unresolvable conflict, escalates to user.
     .OUTPUTS
         Hashtable: @{ Status = 'merged'|'escalated_stop'|'escalated_keepgoing'; MergedBranches = @(); SkippedBranches = @(); Checkpoint = string }
     #>
@@ -12,8 +12,7 @@
         [Parameter(Mandatory)][array]$WorktreeBranches,
         [Parameter(Mandatory)][string]$FeatureBranch,
         [Parameter(Mandatory)][string]$Root,
-        [Parameter(Mandatory)][string]$Feature,
-        [int]$MaxDoublePassRetries = 5
+        [Parameter(Mandatory)][string]$Feature
     )
 
     $checkpoint = git -C $Root rev-parse HEAD
@@ -54,7 +53,7 @@ $conflictFiles
 Resolve the merge conflicts. If you cannot resolve them, respond with exactly: UNRESOLVABLE
 "@
 
-        $claudeResult = Invoke-Claude -Prompt $conflictPrompt -AddDir $Root
+        $claudeResult = Invoke-Claude -Role 'code-writer' -Prompt $conflictPrompt -AddDir $Root
         $claudeResultStr = if ($claudeResult) { "$claudeResult" } else { '' }
 
         # Check for unresolvable signal
@@ -106,9 +105,8 @@ Resolve the merge conflicts. If you cannot resolve them, respond with exactly: U
         # Run MergeConflictDP (double-pass on feature branch after conflict resolution)
         $mergeConsecPasses = 0
         $mergeDoublePassRetries = 0
-        $dpEscalated = $false
 
-        while ($mergeDoublePassRetries -lt $MaxDoublePassRetries) {
+        while ($true) {
             $testOutput = $null
             try {
                 $testOutput = & pnpm test 2>&1 | Out-String
@@ -122,15 +120,10 @@ Resolve the merge conflicts. If you cannot resolve them, respond with exactly: U
             if ($testExitCode -ne 0) {
                 $mergeConsecPasses = 0
                 $mergeDoublePassRetries++
-                Write-PipelineLog -Message "MergeConflictDP: test failed (retry $mergeDoublePassRetries/$MaxDoublePassRetries)" -Root $Root
-
-                if ($mergeDoublePassRetries -ge $MaxDoublePassRetries) {
-                    $dpEscalated = $true
-                    break
-                }
+                Write-PipelineLog -Message "MergeConflictDP: test failed (retry $mergeDoublePassRetries)" -Root $Root
 
                 $fixPrompt = @"
-## MergeConflictDP Test Failure (attempt $mergeDoublePassRetries/$MaxDoublePassRetries)
+## MergeConflictDP Test Failure (attempt $mergeDoublePassRetries)
 
 Feature: $Feature
 Branch merged: $branch
@@ -140,7 +133,7 @@ $testOutput
 
 Fix the failing tests after merge conflict resolution.
 "@
-                Invoke-Claude -Prompt $fixPrompt -AddDir $Root
+                Invoke-Claude -Role 'code-writer' -Prompt $fixPrompt -AddDir $Root
                 continue
             }
 
@@ -157,15 +150,10 @@ Fix the failing tests after merge conflict resolution.
             if ($lintExitCode -ne 0) {
                 $mergeConsecPasses = 0
                 $mergeDoublePassRetries++
-                Write-PipelineLog -Message "MergeConflictDP: lint failed (retry $mergeDoublePassRetries/$MaxDoublePassRetries)" -Root $Root
-
-                if ($mergeDoublePassRetries -ge $MaxDoublePassRetries) {
-                    $dpEscalated = $true
-                    break
-                }
+                Write-PipelineLog -Message "MergeConflictDP: lint failed (retry $mergeDoublePassRetries)" -Root $Root
 
                 $fixPrompt = @"
-## MergeConflictDP Lint Failure (attempt $mergeDoublePassRetries/$MaxDoublePassRetries)
+## MergeConflictDP Lint Failure (attempt $mergeDoublePassRetries)
 
 Feature: $Feature
 Branch merged: $branch
@@ -175,7 +163,7 @@ $lintOutput
 
 Fix the lint errors after merge conflict resolution.
 "@
-                Invoke-Claude -Prompt $fixPrompt -AddDir $Root
+                Invoke-Claude -Role 'code-writer' -Prompt $fixPrompt -AddDir $Root
                 continue
             }
 
@@ -184,26 +172,6 @@ Fix the lint errors after merge conflict resolution.
 
             if ($mergeConsecPasses -ge 2) {
                 break
-            }
-        }
-
-        if ($dpEscalated) {
-            Write-PipelineLog -Message "MergeConflictDP: escalating after $mergeDoublePassRetries retries for $branch" -Root $Root
-
-            $escalationChoice = Read-Host "Double-pass failed after merge of $branch ($mergeDoublePassRetries retries). Keep Going (k) or Stop (s)?"
-
-            if ($escalationChoice -match '^[kK]') {
-                $skippedBranches += $branch
-                continue
-            }
-            else {
-                git -C $Root reset --hard $checkpoint
-                return @{
-                    Status          = 'escalated_stop'
-                    MergedBranches  = $mergedBranches
-                    SkippedBranches = $skippedBranches
-                    Checkpoint      = $checkpoint
-                }
             }
         }
 

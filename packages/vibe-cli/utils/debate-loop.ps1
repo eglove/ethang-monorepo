@@ -35,6 +35,7 @@ function Invoke-DebateLoop {
     $featureDirPath = (Resolve-Path $FeatureDir).Path
     $referencePath = if ($ReferenceFile) { (Resolve-Path $ReferenceFile).Path } else { $null }
     $artifactPath = (Resolve-Path $ArtifactFile).Path
+    $_featureName = Split-Path $FeatureDir -Leaf
 
     for ($round = 1; ; $round++) {
         Write-PipelineLog "$StageName debate round $round..."
@@ -45,6 +46,7 @@ function Invoke-DebateLoop {
 
         try {
             $debate = Invoke-Claude `
+                -Role moderator `
                 -SystemPromptFile $DebateModFile `
                 -JsonSchema $DebateSchema `
                 -Prompt $prompt |
@@ -57,6 +59,9 @@ function Invoke-DebateLoop {
 
         Write-PipelineLog "$StageName round=$round result=$($debate.result) experts=$($debate.experts -join ',') objections=$($debate.objections.Count)"
 
+        $_dbStatus = if ($debate.result -eq 'CONSENSUS_REACHED') { 'reached' } else { 'pending' }
+        try { Update-DebateState -FeatureName $_featureName -Stage 6 -Round $round -ConsensusStatus $_dbStatus } catch { }
+
         if ($debate.result -eq 'CONSENSUS_REACHED') {
             Write-PipelineLog "$StageName consensus reached."
             Write-PipelineLog "Recommendation: $($debate.recommendation)"
@@ -65,7 +70,7 @@ function Invoke-DebateLoop {
             if ($debate.recommendation) {
                 Write-PipelineLog "Applying consensus recommendation to $ArtifactFile ..."
                 $revisionPrompt = & $BuildRevisionPrompt $artifactPath $debate.recommendation
-                Invoke-Claude -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
+                Invoke-Claude -Role expert -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
                 if ($PostRevision) {
                     Write-PipelineLog "Running post-revision check..."
                     & $PostRevision
@@ -83,7 +88,7 @@ function Invoke-DebateLoop {
         Write-PipelineLog "Revising ($($debate.objections.Count) objections)..."
 
         $revisionPrompt = & $BuildRevisionPrompt $artifactPath $objectionList
-        Invoke-Claude -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
+        Invoke-Claude -Role expert -SystemPromptFile $WriterFile -Prompt $revisionPrompt | Out-Null
         if ($PostRevision) {
             Write-PipelineLog "Running post-revision check..."
             & $PostRevision

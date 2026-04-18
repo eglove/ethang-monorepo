@@ -6,6 +6,9 @@ BeforeAll {
     . "$root/utils/resolve-pipeline-state.ps1"
     . "$root/utils/unified-debate-loop.ps1"
     . "$root/stages/3-unified-debate.ps1"
+
+    function Update-DebateState { [CmdletBinding()] param([string]$FeatureName, [int]$Stage, [int]$Round, [string]$ConsensusStatus, [int]$MaxDebateRound = 10) }
+    Mock Update-DebateState {}
 }
 
 Describe 'Invoke-UnifiedDebateStage (Stage 3)' {
