@@ -63,7 +63,7 @@ if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
 }
 
 # Bus infrastructure (when any stage flag enabled)
-if ($env:VIBE_BUS_ALL_STAGES -eq '1' -or $env:VIBE_BUS_STAGE2 -eq '1') {
+if ($env:VIBE_BUS_ALL_STAGES -eq '1' -or $env:VIBE_BUS_STAGE2 -eq '1' -or $env:VIBE_BUS_STAGE3 -eq '1') {
     . "$root/bus/router/send-bus-event.ps1"
     . "$root/bus/router/agent-lifecycle.ps1"
     . "$root/bus/router/wait-bus-group.ps1"
@@ -208,7 +208,7 @@ try {
     # Stage 3: Unified Debate
     if ($startStage -le 3) {
         Write-PipelineLog -Message "--- Stage 3: Unified Debate ---" -Root $root
-        $debateResult = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $root
+        $debateResult = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $root -DbPath $busDbPath
         if (-not $debateResult.Success) {
             throw "Stage 3 failed: $($debateResult.Error)"
         }

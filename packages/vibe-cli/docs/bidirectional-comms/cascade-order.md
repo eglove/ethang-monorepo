@@ -8,3 +8,11 @@
 4. `verify` (bdd-writer → bus, on file output)
 5. `verify` (tla-writer → bus, on file output)
 6. `stage_completed` (sent by Invoke-ParallelWriter, role: pipeline)
+
+## Stage 3 — Unified Debate
+
+1. `stage_started` (sent by Invoke-UnifiedDebateStage, role: pipeline)
+2. `agent_started` (unified-moderator agent, sent by Start-BusAgent)
+3. `verify` (moderator → bus, per debate round)
+4. `consensus_candidate` (moderator → bus, when CONSENSUS_REACHED)
+5. `stage_completed` (sent by Invoke-UnifiedDebateStage, role: pipeline)
