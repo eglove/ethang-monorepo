@@ -2,16 +2,17 @@ BeforeAll {
     $root = Resolve-Path "$PSScriptRoot/.."
     . "$root/utils/pipeline-log.ps1"
     . "$root/utils/invoke-claude.ps1"
-    . "$root/utils/invoke-parallel.ps1"
     . "$root/utils/resolve-pipeline-state.ps1"
-    . "$root/utils/unified-debate-loop.ps1"
+    . "$root/bus/router/send-bus-event.ps1"
+    . "$root/bus/router/agent-lifecycle.ps1"
+    . "$root/bus/router/wait-bus-group.ps1"
+    . "$root/bus/schema/open-bus-database.ps1"
+    . "$root/bus/infra/stage-feature-flag.ps1"
+    . "$root/bus/domain/stage.ps1"
     . "$root/stages/3-unified-debate.ps1"
-
-    function Update-DebateState { [CmdletBinding()] param([string]$FeatureName, [int]$Stage, [int]$Round, [string]$ConsensusStatus, [int]$MaxDebateRound = 10) }
-    Mock Update-DebateState {}
 }
 
-Describe 'Invoke-UnifiedDebateStage (Stage 3)' {
+Describe 'Invoke-UnifiedDebateStage (Stage 3 — bus path)' {
     BeforeEach {
         $testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "s3-test-$([guid]::NewGuid().ToString('N').Substring(0,8))"
         New-Item -ItemType Directory -Path $testRoot -Force | Out-Null
@@ -27,124 +28,89 @@ Describe 'Invoke-UnifiedDebateStage (Stage 3)' {
         New-Item -ItemType Directory -Path "$testRoot/agents/doc-writers" -Force | Out-Null
         Set-Content -Path "$testRoot/agents/doc-writers/bdd-writer.md" -Value '# BDD'
         Set-Content -Path "$testRoot/agents/doc-writers/tla-writer.md" -Value '# TLA'
+
+        Mock Open-BusDatabase { }
+        Mock New-BusGroup { return @{ GroupId = $GroupId } }
+        Mock Send-BusGroupEvent { }
+        Mock Wait-BusGroup { return @{ Status = 'completed' } }
+        Mock Start-BusAgent { }
+        Mock Send-BusEvent { }
     }
 
     AfterEach {
         Remove-Item -Path $testRoot -Recurse -Force -ErrorAction SilentlyContinue
     }
 
-    It 'calls Invoke-UnifiedDebateLoop (not Invoke-DebateLoop)' {
-        Mock Invoke-UnifiedDebateLoop {
-            Set-Content -Path (Join-Path $FeatureDir 'unified-debate.md') -Value '# Debate'
-            return @{
-                Result = 'CONSENSUS_REACHED'
-                RoundsCompleted = 1
-                FinalGherkinPath = (Join-Path $FeatureDir 'bdd.feature')
-                FinalTlaDir = (Join-Path $FeatureDir 'tla')
-                SessionFile = (Join-Path $FeatureDir 'unified-debate.md')
-                UnresolvedObjections = @()
-            }
-        }
+    It 'calls Start-BusAgent with unified-moderator agent id' {
+        $dbPath = Join-Path $testRoot 'vibe-bus.db'
+        Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot -DbPath $dbPath
 
-        $result = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot
+        Should -Invoke Start-BusAgent -ParameterFilter { $AgentId -match 'unified-moderator' } -Times 1
+    }
 
-        Should -Invoke Invoke-UnifiedDebateLoop -Times 1
+    It 'writes STAGE_COMPLETE:3 on bus dispatch' {
+        $dbPath = Join-Path $testRoot 'vibe-bus.db'
+        Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot -DbPath $dbPath
+
+        $logPath = Join-Path $testRoot 'pipeline.log'
+        $content = Get-Content $logPath -Raw
+        $content | Should -Match 'STAGE_COMPLETE:3:test-feature'
+    }
+
+    It 'returns Success=$true on bus dispatch' {
+        $dbPath = Join-Path $testRoot 'vibe-bus.db'
+        $result = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot -DbPath $dbPath
+
         $result.Success | Should -BeTrue
     }
 
-    It 'writes STAGE_COMPLETE:3 on consensus success' {
-        Mock Invoke-UnifiedDebateLoop {
-            Set-Content -Path (Join-Path $FeatureDir 'unified-debate.md') -Value '# Debate'
-            return @{
-                Result = 'CONSENSUS_REACHED'
-                RoundsCompleted = 1
-                FinalGherkinPath = (Join-Path $FeatureDir 'bdd.feature')
-                FinalTlaDir = (Join-Path $FeatureDir 'tla')
-                SessionFile = (Join-Path $FeatureDir 'unified-debate.md')
-                UnresolvedObjections = @()
-            }
-        }
+    It 'returns result with Success and Result keys' {
+        $dbPath = Join-Path $testRoot 'vibe-bus.db'
+        $result = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot -DbPath $dbPath
 
-        Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot
-
-        $logPath = Join-Path $testRoot 'pipeline.log'
-        $content = Get-Content $logPath -Raw
-        $content | Should -Match 'STAGE_COMPLETE:3:test-feature'
+        $result.ContainsKey('Success') | Should -BeTrue
+        $result.ContainsKey('Result')  | Should -BeTrue
     }
 
-    It 'writes STAGE_COMPLETE:3 on max-rounds exit' {
-        Mock Invoke-UnifiedDebateLoop {
-            Set-Content -Path (Join-Path $FeatureDir 'unified-debate.md') -Value '# Debate'
-            return @{
-                Result = 'MAX_ROUNDS_REACHED'
-                RoundsCompleted = 10
-                FinalGherkinPath = (Join-Path $FeatureDir 'bdd.feature')
-                FinalTlaDir = (Join-Path $FeatureDir 'tla')
-                SessionFile = (Join-Path $FeatureDir 'unified-debate.md')
-                UnresolvedObjections = @('objection 1')
-            }
-        }
+    It 'calls New-BusGroup with ExpectedCount=1' {
+        $dbPath = Join-Path $testRoot 'vibe-bus.db'
+        Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot -DbPath $dbPath
 
-        Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot
-
-        $logPath = Join-Path $testRoot 'pipeline.log'
-        $content = Get-Content $logPath -Raw
-        $content | Should -Match 'STAGE_COMPLETE:3:test-feature'
+        Should -Invoke New-BusGroup -ParameterFilter { $ExpectedCount -eq 1 } -Times 1
     }
 
-    It 'does NOT write STAGE_COMPLETE:3 on consensus revision failure (Amendment 5)' {
-        Mock Invoke-UnifiedDebateLoop {
-            Set-Content -Path (Join-Path $FeatureDir 'unified-debate.md') -Value '# Debate'
-            return @{
-                Result = 'CONSENSUS_REVISION_FAILED'
-                RoundsCompleted = 1
-                FinalGherkinPath = (Join-Path $FeatureDir 'bdd.feature')
-                FinalTlaDir = (Join-Path $FeatureDir 'tla')
-                SessionFile = (Join-Path $FeatureDir 'unified-debate.md')
-                UnresolvedObjections = @()
-                Error = 'tla consensus revision failed'
-            }
-        }
+    It 'calls Wait-BusGroup once' {
+        $dbPath = Join-Path $testRoot 'vibe-bus.db'
+        Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot -DbPath $dbPath
 
-        $result = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot
-
-        $result.Success | Should -BeFalse
-        $logPath = Join-Path $testRoot 'pipeline.log'
-        if (Test-Path $logPath) {
-            $content = Get-Content $logPath -Raw
-            $content | Should -Not -Match 'STAGE_COMPLETE:3'
-        }
+        Should -Invoke Wait-BusGroup -Times 1
     }
 
-    It 'produces unified-debate.md on all exit paths' {
-        Mock Invoke-UnifiedDebateLoop {
-            Set-Content -Path (Join-Path $FeatureDir 'unified-debate.md') -Value '# Debate session'
-            return @{
-                Result = 'CONSENSUS_REACHED'
-                RoundsCompleted = 1
-                FinalGherkinPath = (Join-Path $FeatureDir 'bdd.feature')
-                FinalTlaDir = (Join-Path $FeatureDir 'tla')
-                SessionFile = (Join-Path $FeatureDir 'unified-debate.md')
-                UnresolvedObjections = @()
-            }
+    It 'emits stage_started event' {
+        $script:_s3Captured = [System.Collections.Generic.List[hashtable]]::new()
+        Mock Send-BusEvent {
+            param([hashtable]$Event, [scriptblock]$DbExecutor)
+            $script:_s3Captured.Add($Event)
         }
 
-        Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot
+        $dbPath = Join-Path $testRoot 'vibe-bus.db'
+        Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot -DbPath $dbPath
 
-        (Join-Path $featureDir 'unified-debate.md') | Should -Exist
+        $started = $script:_s3Captured | Where-Object { $_.EventType -eq 'stage_started' }
+        $started | Should -Not -BeNullOrEmpty
     }
 
-    It 'delegates to unified-debate-loop which references unified-debate-moderator.md' {
-        $loopContent = Get-Content "$root/utils/unified-debate-loop.ps1" -Raw
-        $loopContent | Should -Match 'unified-debate-moderator\.md'
-    }
+    It 'emits stage_completed event' {
+        $script:_s3CapturedC = [System.Collections.Generic.List[hashtable]]::new()
+        Mock Send-BusEvent {
+            param([hashtable]$Event, [scriptblock]$DbExecutor)
+            $script:_s3CapturedC.Add($Event)
+        }
 
-    It 'returns Success=$false with error when Resolve-PipelineState throws (L14-15)' {
-        Mock Resolve-PipelineState { throw 'missing elicitor.md in C:\fake' }
+        $dbPath = Join-Path $testRoot 'vibe-bus.db'
+        Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot -DbPath $dbPath
 
-        $result = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $testRoot
-
-        $result.Success | Should -BeFalse
-        $result.Error | Should -Match 'missing elicitor'
+        $completed = $script:_s3CapturedC | Where-Object { $_.EventType -eq 'stage_completed' }
+        $completed | Should -Not -BeNullOrEmpty
     }
 }

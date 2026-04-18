@@ -17,22 +17,6 @@ BeforeAll {
     . "$root/utils/pipeline-log.ps1"
     . "$root/utils/resolve-pipeline-state.ps1"
 
-    # debate-loop stub — will be overridden by Mock in individual tests
-    function Invoke-DebateLoop {
-        param(
-            [string]$DebateModFile,
-            [string]$WriterFile,
-            [string]$DebateContext,
-            [string]$SessionFile,
-            [string]$ArtifactFile,
-            [string]$FeatureDir,
-            [scriptblock]$BuildRevisionPrompt,
-            [string]$ReferenceFile,
-            [string]$StageName
-        )
-        return @{ Result = 'CONSENSUS_REACHED'; RoundsCompleted = 1 }
-    }
-
     # Stage under test
     . "$root/stages/6-implementation-debate.ps1"
 }
@@ -91,45 +75,6 @@ Describe 'T3: Test-BusFeatureEnabled Stage6 returns true when VIBE_BUS_ALL_STAGE
     It 'returns true when VIBE_BUS_ALL_STAGES=1' {
         $result = Test-BusFeatureEnabled -StageName 'Stage6'
         $result | Should -BeTrue
-    }
-}
-
-# ---------------------------------------------------------------------------
-# T4: Invoke-ImplementationDebateStage uses legacy path when flag disabled
-# ---------------------------------------------------------------------------
-Describe 'T4: Invoke-ImplementationDebateStage uses legacy path when flag disabled' {
-    BeforeEach {
-        Remove-Item Env:VIBE_BUS_STAGE6     -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-
-        $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "s6-t4-$([guid]::NewGuid().ToString('N').Substring(0,8))"
-        New-Item -ItemType Directory -Path $script:testRoot -Force | Out-Null
-        $script:featureDir = Join-Path $script:testRoot 'docs/test-feature'
-        New-Item -ItemType Directory -Path $script:featureDir -Force | Out-Null
-        $script:implFile = Join-Path $script:featureDir 'implementation-plan.md'
-        $script:implJson = Join-Path $script:featureDir 'implementation-plan.json'
-        $script:tlaFile  = Join-Path $script:featureDir 'spec.tla'
-        Set-Content -Path $script:tlaFile -Value '---- MODULE Spec ----'
-    }
-
-    AfterEach {
-        Remove-Item Env:VIBE_BUS_STAGE6     -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-        Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-    It 'calls Invoke-DebateLoop (legacy) when bus flag disabled' {
-        Mock Resolve-PipelineState { return @{} }
-        Mock Invoke-DebateLoop { return @{ Result = 'CONSENSUS_REACHED'; RoundsCompleted = 1 } }
-
-        Invoke-ImplementationDebateStage `
-            -ImplFile $script:implFile `
-            -ImplJson $script:implJson `
-            -TlaFile $script:tlaFile `
-            -FeatureDir $script:featureDir `
-            -Root $script:testRoot
-
-        Should -Invoke Invoke-DebateLoop -Times 1
     }
 }
 
@@ -410,87 +355,6 @@ Describe 'T10: Bus path returns Success=true' {
             -DbPath $dbPath
 
         $result.Success | Should -BeTrue
-    }
-}
-
-# ---------------------------------------------------------------------------
-# T11: Legacy path calls Invoke-DebateLoop (not Start-BusAgent)
-# ---------------------------------------------------------------------------
-Describe 'T11: Legacy path calls Invoke-DebateLoop not Start-BusAgent' {
-    BeforeEach {
-        Remove-Item Env:VIBE_BUS_STAGE6     -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-
-        $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "s6-t11-$([guid]::NewGuid().ToString('N').Substring(0,8))"
-        New-Item -ItemType Directory -Path $script:testRoot -Force | Out-Null
-        $script:featureDir = Join-Path $script:testRoot 'docs/test-feature'
-        New-Item -ItemType Directory -Path $script:featureDir -Force | Out-Null
-        $script:implFile = Join-Path $script:featureDir 'implementation-plan.md'
-        $script:implJson = Join-Path $script:featureDir 'implementation-plan.json'
-        $script:tlaFile  = Join-Path $script:featureDir 'spec.tla'
-        Set-Content -Path $script:tlaFile -Value '---- MODULE Spec ----'
-    }
-
-    AfterEach {
-        Remove-Item Env:VIBE_BUS_STAGE6     -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-        Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-    It 'does not call Start-BusAgent on legacy path' {
-        Mock Resolve-PipelineState { return @{} }
-        Mock Invoke-DebateLoop { return @{ Result = 'CONSENSUS_REACHED'; RoundsCompleted = 1 } }
-        Mock Start-BusAgent { }
-
-        Invoke-ImplementationDebateStage `
-            -ImplFile $script:implFile `
-            -ImplJson $script:implJson `
-            -TlaFile $script:tlaFile `
-            -FeatureDir $script:featureDir `
-            -Root $script:testRoot
-
-        Should -Invoke Start-BusAgent -Times 0
-        Should -Invoke Invoke-DebateLoop -Times 1
-    }
-}
-
-# ---------------------------------------------------------------------------
-# T12: Legacy path is used when flag on but DbPath not provided
-# ---------------------------------------------------------------------------
-Describe 'T12: Legacy path used when flag on but DbPath not provided' {
-    BeforeEach {
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-        $env:VIBE_BUS_STAGE6 = '1'
-
-        $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "s6-t12-$([guid]::NewGuid().ToString('N').Substring(0,8))"
-        New-Item -ItemType Directory -Path $script:testRoot -Force | Out-Null
-        $script:featureDir = Join-Path $script:testRoot 'docs/test-feature'
-        New-Item -ItemType Directory -Path $script:featureDir -Force | Out-Null
-        $script:implFile = Join-Path $script:featureDir 'implementation-plan.md'
-        $script:implJson = Join-Path $script:featureDir 'implementation-plan.json'
-        $script:tlaFile  = Join-Path $script:featureDir 'spec.tla'
-        Set-Content -Path $script:tlaFile -Value '---- MODULE Spec ----'
-    }
-
-    AfterEach {
-        Remove-Item Env:VIBE_BUS_STAGE6     -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-        Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-    It 'calls Invoke-DebateLoop (legacy) when DbPath not provided' {
-        Mock Resolve-PipelineState { return @{} }
-        Mock Invoke-DebateLoop { return @{ Result = 'CONSENSUS_REACHED'; RoundsCompleted = 1 } }
-
-        # No -DbPath parameter
-        Invoke-ImplementationDebateStage `
-            -ImplFile $script:implFile `
-            -ImplJson $script:implJson `
-            -TlaFile $script:tlaFile `
-            -FeatureDir $script:featureDir `
-            -Root $script:testRoot
-
-        Should -Invoke Invoke-DebateLoop -Times 1
     }
 }
 

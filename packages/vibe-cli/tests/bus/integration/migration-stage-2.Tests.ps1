@@ -15,7 +15,6 @@ BeforeAll {
 
     # Utilities needed by stage 2
     . "$root/utils/pipeline-log.ps1"
-    . "$root/utils/invoke-parallel.ps1"
 
     # Stage under test
     . "$root/stages/2-parallel-writers.ps1"
@@ -92,48 +91,6 @@ Describe 'T4: Test-BusFeatureEnabled is case-insensitive for stage name' {
     }
 }
 
-Describe 'T5: Invoke-ParallelWriter uses legacy path when flag disabled' {
-    BeforeEach {
-        Remove-Item Env:VIBE_BUS_STAGE2    -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-
-        $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "s2-t5-$([guid]::NewGuid().ToString('N').Substring(0,8))"
-        New-Item -ItemType Directory -Path $script:testRoot -Force | Out-Null
-        $script:featureDir = Join-Path $script:testRoot 'docs/test-feature'
-        New-Item -ItemType Directory -Path $script:featureDir -Force | Out-Null
-        Set-Content -Path (Join-Path $script:featureDir 'elicitor.md') -Value '# Briefing'
-        New-Item -ItemType Directory -Path "$script:testRoot/agents/doc-writers" -Force | Out-Null
-        Set-Content -Path "$script:testRoot/agents/doc-writers/bdd-writer.md" -Value '# BDD'
-        Set-Content -Path "$script:testRoot/agents/doc-writers/tla-writer.md" -Value '# TLA'
-    }
-
-    AfterEach {
-        Remove-Item Env:VIBE_BUS_STAGE2    -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-        Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-    It 'calls Invoke-Parallel (legacy) when bus flag is disabled' {
-        Mock Invoke-Parallel {
-            param($Jobs)
-            $bddFile = Join-Path $script:featureDir 'bdd.feature'
-            Set-Content -Path $bddFile -Value 'Feature: test'
-            $tlaDir = Join-Path $script:featureDir 'tla'
-            New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
-            $tlaPath = Join-Path $tlaDir 'Spec.tla'
-            Set-Content -Path $tlaPath -Value '---- MODULE Spec ----'
-            return @{
-                bdd = @{ Success = $true; Output = $bddFile; Error = $null }
-                tla = @{ Success = $true; Output = @{ TlaFile = $tlaPath; TlaDir = $tlaDir }; Error = $null }
-            }
-        }
-
-        Invoke-ParallelWriter -FeatureDir $script:featureDir -Root $script:testRoot
-
-        Should -Invoke Invoke-Parallel -Times 1
-    }
-}
-
 Describe 'T6: Invoke-ParallelWriter uses bus path when VIBE_BUS_STAGE2=1' {
     BeforeEach {
         Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
@@ -168,8 +125,7 @@ Describe 'T6: Invoke-ParallelWriter uses bus path when VIBE_BUS_STAGE2=1' {
         Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
     }
 
-    It 'does NOT call Invoke-Parallel (legacy) when bus flag is enabled' {
-        Mock Invoke-Parallel { throw "Legacy path should not be called in bus mode" }
+    It 'calls Start-BusAgent for bus writers when bus flag is enabled' {
         Mock Open-BusDatabase { }
         Mock New-BusGroup { return @{ GroupId = $GroupId } }
         Mock Send-BusGroupEvent { }
@@ -187,7 +143,7 @@ Describe 'T6: Invoke-ParallelWriter uses bus path when VIBE_BUS_STAGE2=1' {
 
         Invoke-ParallelWriter -FeatureDir $script:featureDir -Root $script:testRoot -DbPath $dbPath
 
-        Should -Invoke Invoke-Parallel -Times 0
+        Should -Invoke Start-BusAgent -Times 2
     }
 }
 

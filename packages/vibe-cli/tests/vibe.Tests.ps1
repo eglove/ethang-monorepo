@@ -43,15 +43,3 @@ Describe 'vibe.ps1 bus initialization' {
     }
 }
 
-Describe 'debate-loop.ps1 debateSchema' {
-    It 'has valid JSON debate schema' {
-        $content = Get-Content "$PSScriptRoot/../utils/debate-loop.ps1" -Raw
-        $schemaMatch = [regex]::Match($content, "(?s)\`$DebateSchema = @'`n(.+?)`n'@")
-        $schemaMatch.Success | Should -BeTrue
-
-        $schema = $schemaMatch.Groups[1].Value | ConvertFrom-Json
-        $schema.type | Should -Be 'object'
-        $schema.properties.result | Should -Not -BeNullOrEmpty
-        $schema.required | Should -Contain 'result'
-    }
-}

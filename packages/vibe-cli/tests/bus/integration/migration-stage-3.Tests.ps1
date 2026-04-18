@@ -17,18 +17,6 @@ BeforeAll {
     . "$root/utils/pipeline-log.ps1"
     . "$root/utils/resolve-pipeline-state.ps1"
 
-    # unified-debate-loop stub — will be overridden by Mock in individual tests
-    function Invoke-UnifiedDebateLoop {
-        param(
-            [string]$GherkinFile,
-            [string]$TlaDir,
-            [string]$FeatureDir,
-            [string]$Root,
-            [int]$MaxRounds = 10
-        )
-        return @{ Result = 'CONSENSUS_REACHED'; RoundsCompleted = 1 }
-    }
-
     # Stage under test
     . "$root/stages/3-unified-debate.ps1"
 }
@@ -91,48 +79,6 @@ Describe 'T3: Test-BusFeatureEnabled Stage3 returns true when VIBE_BUS_ALL_STAGE
 }
 
 # ---------------------------------------------------------------------------
-# T4: Invoke-UnifiedDebateStage uses legacy path when flag disabled
-# ---------------------------------------------------------------------------
-Describe 'T4: Invoke-UnifiedDebateStage uses legacy path when flag disabled' {
-    BeforeEach {
-        Remove-Item Env:VIBE_BUS_STAGE3    -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-
-        $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "s3-t4-$([guid]::NewGuid().ToString('N').Substring(0,8))"
-        New-Item -ItemType Directory -Path $script:testRoot -Force | Out-Null
-        $script:featureDir = Join-Path $script:testRoot 'docs/test-feature'
-        New-Item -ItemType Directory -Path $script:featureDir -Force | Out-Null
-        Set-Content -Path (Join-Path $script:featureDir 'elicitor.md') -Value '# Briefing'
-        Set-Content -Path (Join-Path $script:featureDir 'bdd.feature') -Value 'Feature: test'
-        $tlaDir = Join-Path $script:featureDir 'tla'
-        New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
-        Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE Spec ----'
-    }
-
-    AfterEach {
-        Remove-Item Env:VIBE_BUS_STAGE3    -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-        Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-    It 'calls Invoke-UnifiedDebateLoop (legacy) when bus flag disabled' {
-        Mock Invoke-UnifiedDebateLoop {
-            param($GherkinFile, $TlaDir, $FeatureDir, $Root)
-            return @{ Result = 'CONSENSUS_REACHED'; RoundsCompleted = 1 }
-        }
-        Mock Resolve-PipelineState {
-            $gherkin = Join-Path $script:featureDir 'bdd.feature'
-            $tlaD    = Join-Path $script:featureDir 'tla'
-            return @{ GherkinFile = $gherkin; TlaDir = $tlaD }
-        }
-
-        Invoke-UnifiedDebateStage -FeatureDir $script:featureDir -Root $script:testRoot
-
-        Should -Invoke Invoke-UnifiedDebateLoop -Times 1
-    }
-}
-
-# ---------------------------------------------------------------------------
 # T5: Invoke-UnifiedDebateStage uses bus path when VIBE_BUS_STAGE3=1 and DbPath provided
 # ---------------------------------------------------------------------------
 Describe 'T5: Invoke-UnifiedDebateStage uses bus path when VIBE_BUS_STAGE3=1 and DbPath provided' {
@@ -157,8 +103,7 @@ Describe 'T5: Invoke-UnifiedDebateStage uses bus path when VIBE_BUS_STAGE3=1 and
         Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
     }
 
-    It 'does NOT call Invoke-UnifiedDebateLoop when bus flag enabled with DbPath' {
-        Mock Invoke-UnifiedDebateLoop { throw "Legacy path should not be called in bus mode" }
+    It 'calls Start-BusAgent for moderator when bus flag enabled with DbPath' {
         Mock Open-BusDatabase { }
         Mock New-BusGroup { return @{ GroupId = $GroupId } }
         Mock Send-BusGroupEvent { }
@@ -169,7 +114,7 @@ Describe 'T5: Invoke-UnifiedDebateStage uses bus path when VIBE_BUS_STAGE3=1 and
         $dbPath = Join-Path $script:testRoot 'vibe-bus.db'
         Invoke-UnifiedDebateStage -FeatureDir $script:featureDir -Root $script:testRoot -DbPath $dbPath
 
-        Should -Invoke Invoke-UnifiedDebateLoop -Times 0
+        Should -Invoke Start-BusAgent -ParameterFilter { $AgentId -match 'unified-moderator' } -Times 1
     }
 }
 
@@ -461,49 +406,6 @@ Describe 'T12: Bus path returns same top-level shape as legacy path' {
 
         $result.ContainsKey('Success') | Should -BeTrue
         $result.ContainsKey('Result')  | Should -BeTrue
-    }
-}
-
-# ---------------------------------------------------------------------------
-# T13: Legacy path is invoked when flag on but DbPath not provided (graceful fallback)
-# ---------------------------------------------------------------------------
-Describe 'T13: Legacy path used when flag on but DbPath not provided' {
-    BeforeEach {
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-        $env:VIBE_BUS_STAGE3 = '1'
-
-        $script:testRoot = Join-Path ([System.IO.Path]::GetTempPath()) "s3-t13-$([guid]::NewGuid().ToString('N').Substring(0,8))"
-        New-Item -ItemType Directory -Path $script:testRoot -Force | Out-Null
-        $script:featureDir = Join-Path $script:testRoot 'docs/test-feature'
-        New-Item -ItemType Directory -Path $script:featureDir -Force | Out-Null
-        Set-Content -Path (Join-Path $script:featureDir 'elicitor.md') -Value '# Briefing'
-        Set-Content -Path (Join-Path $script:featureDir 'bdd.feature') -Value 'Feature: test'
-        $tlaDir = Join-Path $script:featureDir 'tla'
-        New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
-        Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE Spec ----'
-    }
-
-    AfterEach {
-        Remove-Item Env:VIBE_BUS_STAGE3    -ErrorAction SilentlyContinue
-        Remove-Item Env:VIBE_BUS_ALL_STAGES -ErrorAction SilentlyContinue
-        Remove-Item -Path $script:testRoot -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-    It 'falls back to Invoke-UnifiedDebateLoop when DbPath not provided' {
-        Mock Invoke-UnifiedDebateLoop {
-            param($GherkinFile, $TlaDir, $FeatureDir, $Root)
-            return @{ Result = 'CONSENSUS_REACHED'; RoundsCompleted = 1 }
-        }
-        Mock Resolve-PipelineState {
-            $gherkin = Join-Path $script:featureDir 'bdd.feature'
-            $tlaD    = Join-Path $script:featureDir 'tla'
-            return @{ GherkinFile = $gherkin; TlaDir = $tlaD }
-        }
-
-        # No -DbPath parameter
-        Invoke-UnifiedDebateStage -FeatureDir $script:featureDir -Root $script:testRoot
-
-        Should -Invoke Invoke-UnifiedDebateLoop -Times 1
     }
 }
 

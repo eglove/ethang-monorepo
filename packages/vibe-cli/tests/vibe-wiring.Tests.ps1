@@ -32,14 +32,6 @@ Describe 'vibe.ps1 wiring (7-stage pipeline)' {
         $vibeContent | Should -Match 'resolve-pipeline-state\.ps1'
     }
 
-    It 'dot-sources unified-debate-loop.ps1' {
-        $vibeContent | Should -Match 'unified-debate-loop\.ps1'
-    }
-
-    It 'dot-sources invoke-parallel.ps1' {
-        $vibeContent | Should -Match 'invoke-parallel\.ps1'
-    }
-
     It 'runs stages in sequential order 1 through 7' {
         $vibeContent | Should -Match 'Stage 1'
         $vibeContent | Should -Match 'Stage 2'
