@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     T11 — Pipeline wiring integration tests.
     Verifies all subsystems are correctly wired into the pipeline.

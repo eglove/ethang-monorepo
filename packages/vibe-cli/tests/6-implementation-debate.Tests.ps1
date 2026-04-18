@@ -4,6 +4,9 @@ BeforeAll {
     . "$PSScriptRoot/../utils/resolve-pipeline-state.ps1"
     . "$PSScriptRoot/../utils/debate-loop.ps1"
     . "$PSScriptRoot/../stages/6-implementation-debate.ps1"
+
+    function Update-DebateState { [CmdletBinding()] param([string]$FeatureName, [int]$Stage, [int]$Round, [string]$ConsensusStatus, [int]$MaxDebateRound = 10) }
+    Mock Update-DebateState {}
 }
 
 Describe 'Invoke-ImplementationDebateStage (Stage 6)' {

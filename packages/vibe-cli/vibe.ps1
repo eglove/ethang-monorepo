@@ -170,6 +170,7 @@ try {
         Set-ActiveFeature -Name $featureName
         Lock-PipelineState -FeatureName $featureName -ProcessId $PID
         Set-StageComplete -FeatureName $featureName -Stage 1
+        try { Set-StageOutput -FeatureName $featureName -Stage 1 -OutputType 'elicitor' -JsonData ($elicitorResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
         Register-Artifact -FeatureName $featureName -Stage 1 -ArtifactType 'elicitor' -FilePath (Join-Path $featureDir 'elicitor.md')
     }
 
@@ -187,7 +188,10 @@ try {
         }
         $gherkinFile = $writerResult.GherkinFile
         $tlaFile = $writerResult.TlaFile
-        if ($featureName) { Set-StageComplete -FeatureName $featureName -Stage 2 }
+        if ($featureName) {
+            Set-StageComplete -FeatureName $featureName -Stage 2
+            try { Set-StageOutput -FeatureName $featureName -Stage 2 -OutputType 'parallel-writers' -JsonData ($writerResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
+        }
     }
 
     # Stage 3: Unified Debate
@@ -197,7 +201,10 @@ try {
         if (-not $debateResult.Success) {
             throw "Stage 3 failed: $($debateResult.Error)"
         }
-        if ($featureName) { Set-StageComplete -FeatureName $featureName -Stage 3 }
+        if ($featureName) {
+            Set-StageComplete -FeatureName $featureName -Stage 3
+            try { Set-StageOutput -FeatureName $featureName -Stage 3 -OutputType 'unified-debate' -JsonData ($debateResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
+        }
     }
 
     # Stage 4: Post-Debate Artifacts
@@ -207,7 +214,10 @@ try {
         if (-not $postDebateResult.Success) {
             throw "Stage 4 failed: $($postDebateResult.Error)"
         }
-        if ($featureName) { Set-StageComplete -FeatureName $featureName -Stage 4 }
+        if ($featureName) {
+            Set-StageComplete -FeatureName $featureName -Stage 4
+            try { Set-StageOutput -FeatureName $featureName -Stage 4 -OutputType 'post-debate' -JsonData ($postDebateResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
+        }
     }
 
     # Stage 5: Implementation Writer
@@ -227,7 +237,10 @@ try {
         }
         $implFile = $implResult.ImplFile
         $implJson = $implResult.ImplJson
-        if ($featureName) { Set-StageComplete -FeatureName $featureName -Stage 5 }
+        if ($featureName) {
+            Set-StageComplete -FeatureName $featureName -Stage 5
+            try { Set-StageOutput -FeatureName $featureName -Stage 5 -OutputType 'implementation-writer' -JsonData ($implResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
+        }
     }
 
     # Stage 6: Implementation Debate
@@ -246,7 +259,10 @@ try {
         if (-not $debateStageResult.Success) {
             throw "Stage 6 failed: $($debateStageResult.Error)"
         }
-        if ($featureName) { Set-StageComplete -FeatureName $featureName -Stage 6 }
+        if ($featureName) {
+            Set-StageComplete -FeatureName $featureName -Stage 6
+            try { Set-StageOutput -FeatureName $featureName -Stage 6 -OutputType 'implementation-debate' -JsonData ($debateStageResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
+        }
     }
 
     # Stage 7: Coding
@@ -296,6 +312,7 @@ finally {
                 }
             }
         }
+        Close-StateDatabase -ErrorAction SilentlyContinue
     } catch { }
     [Console]::remove_CancelKeyPress($script:_ctrlCHandler)
 }

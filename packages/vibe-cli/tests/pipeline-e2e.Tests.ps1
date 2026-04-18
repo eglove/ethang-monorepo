@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     T12 — Multi-subsystem E2E and integration tests.
 

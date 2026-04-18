@@ -4,20 +4,19 @@ function Invoke-GlobalDoublePass {
         Runs pnpm test + pnpm lint on the feature branch, requiring two consecutive passes.
         Same pattern as per-worktree double-pass but executed at the repo root.
     .OUTPUTS
-        Hashtable: @{ Status = 'passed'|'escalated'; Retries = [int]; LastError = $null|string }
+        Hashtable: @{ Status = 'passed'; Retries = [int]; LastError = $null|string }
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Root,
-        [Parameter(Mandatory)][string]$Feature,
-        [int]$MaxDoublePassRetries = 5
+        [Parameter(Mandatory)][string]$Feature
     )
 
     $glConsecPasses = 0
     $glDoublePassRetries = 0
     $lastError = $null
 
-    while ($glDoublePassRetries -lt $MaxDoublePassRetries) {
+    while ($true) {
         $testOutput = $null
         try {
             $testOutput = & pnpm test 2>&1 | Out-String
@@ -32,18 +31,10 @@ function Invoke-GlobalDoublePass {
             $lastError = $testOutput
             $glConsecPasses = 0
             $glDoublePassRetries++
-            Write-PipelineLog -Message "GlobalDoublePass: test failed (retry $glDoublePassRetries/$MaxDoublePassRetries)" -Root $Root
-
-            if ($glDoublePassRetries -ge $MaxDoublePassRetries) {
-                return @{
-                    Status    = 'escalated'
-                    Retries   = $glDoublePassRetries
-                    LastError = $lastError
-                }
-            }
+            Write-PipelineLog -Message "GlobalDoublePass: test failed (retry $glDoublePassRetries)" -Root $Root
 
             $fixPrompt = @"
-## Global Double-Pass Test Failure (attempt $glDoublePassRetries/$MaxDoublePassRetries)
+## Global Double-Pass Test Failure (attempt $glDoublePassRetries)
 
 Root: $Root
 Feature: $Feature
@@ -71,18 +62,10 @@ Fix the failing tests on the feature branch.
             $lastError = $lintOutput
             $glConsecPasses = 0
             $glDoublePassRetries++
-            Write-PipelineLog -Message "GlobalDoublePass: lint failed (retry $glDoublePassRetries/$MaxDoublePassRetries)" -Root $Root
-
-            if ($glDoublePassRetries -ge $MaxDoublePassRetries) {
-                return @{
-                    Status    = 'escalated'
-                    Retries   = $glDoublePassRetries
-                    LastError = $lastError
-                }
-            }
+            Write-PipelineLog -Message "GlobalDoublePass: lint failed (retry $glDoublePassRetries)" -Root $Root
 
             $fixPrompt = @"
-## Global Double-Pass Lint Failure (attempt $glDoublePassRetries/$MaxDoublePassRetries)
+## Global Double-Pass Lint Failure (attempt $glDoublePassRetries)
 
 Root: $Root
 Feature: $Feature
@@ -106,11 +89,5 @@ Fix the lint errors on the feature branch.
                 LastError = $null
             }
         }
-    }
-
-    return @{
-        Status    = 'escalated'
-        Retries   = $glDoublePassRetries
-        LastError = $lastError
     }
 }

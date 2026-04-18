@@ -72,15 +72,4 @@ Describe 'Invoke-GlobalReview' {
         }
     }
 
-    Context 'Escalated returns from double-pass' {
-        It 'returns escalated when double-pass escalates after review fix' {
-            Mock git { return 'some diff' }
-            Mock Invoke-ReviewLoop { return @{ Verdict = 'fail'; Blockers = @('blocker1') } }
-            Mock Invoke-GlobalDoublePass { return @{ Status = 'escalated'; Retries = 5; LastError = 'dp failure' } }
-
-            $result = Invoke-GlobalReview -Root 'C:\fake' -FeatureDir 'C:\fake\docs\feat' -BaseBranch 'main'
-            $result.Verdict | Should -BeExactly 'escalated'
-            $result.Blockers | Should -Contain 'dp failure'
-        }
-    }
 }

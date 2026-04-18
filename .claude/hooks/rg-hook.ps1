@@ -1,10 +1,33 @@
-# rg-hook.ps1 — PreToolUse hook: rewrites grep/egrep/fgrep/Select-String/sls to rg
-# Hook state machine: idle -> intercepting -> rewriting -> done | error
-# S12: Get-Content/gc/cat are plain reads — never intercepted
-# S14: hookKind="rg" only for matched grep-surface commands
-# S15: hookKind cleared to "none" at done terminal (success)
-# S28: hookKind preserved as "rg" at error terminal (attribution)
-# D28: sequential evaluation — es-hook runs before this; "es" tokens are NOT matched
+#Requires -Version 7.0
+<#
+.SYNOPSIS
+    PreToolUse hook that rewrites grep/egrep/fgrep/Select-String/sls to rg.
+
+.DESCRIPTION
+    Reads a Claude Code tool-call JSON payload from stdin. When the command
+    first token (or a piped segment) matches a grep-surface token, emits
+    a PreToolUse hookSpecificOutput with permissionDecision="allow" and
+    updatedInput.command set to the rg equivalent. Claude Code then runs
+    the rewritten command.
+
+    Passthrough: when no rewrite applies, the hook exits 0 with empty
+    stdout (Claude Code proceeds with the original command).
+
+    Non-intercept rules:
+      - Get-Content / gc / cat are plain reads — never intercepted (S12).
+      - es-domain commands (es/find/ls/dir/Get-ChildItem/gci) belong to
+        es-hook (D28 sequential evaluation).
+
+    TLA+ state machine:
+        hookState: idle -> intercepting -> rewriting -> done | error
+        hookKind:  "rg" only for matched grep-surface commands (S14)
+        hookRewritten: TRUE after successful rewrite
+
+.OUTPUTS
+    On rewrite: JSON with hookSpecificOutput/updatedInput on stdout.
+    On passthrough: empty stdout (proceed with original command).
+    On error: stderr + exit 1.
+#>
 
 #region Fault injection (for Test 11 D11 crash testing)
 if ($env:RG_HOOK_FAULT_INJECT -eq '1') {
@@ -29,15 +52,13 @@ function Invoke-RgHookRewrite {
 
     foreach ($token in $script:GrepTokens) {
         if ($trimmed -match "^$([regex]::Escape($token))(\s|$|;|\|)") {
-            $rewritten = $Command -replace "^(\s*)$([regex]::Escape($token))(\s|$)", '$1rg$2'
-            return $rewritten
+            return $Command -replace "^(\s*)$([regex]::Escape($token))(\s|$)", '$1rg$2'
         }
     }
 
     foreach ($token in $script:GrepTokens) {
         if ($Command -match "\|\s*$([regex]::Escape($token))(\s|$|;|\|)") {
-            $rewritten = $Command -replace "\|\s*$([regex]::Escape($token))(\s|$)", "| rg`$1"
-            return $rewritten
+            return $Command -replace "\|\s*$([regex]::Escape($token))(\s|$)", "| rg`$1"
         }
     }
 
@@ -47,9 +68,7 @@ function Invoke-RgHookRewrite {
 function Get-SurfaceToken {
     param([string]$Command)
     $trimmed = $Command.TrimStart()
-    if ($trimmed -match '^(\S+)') {
-        return $Matches[1]
-    }
+    if ($trimmed -match '^(\S+)') { return $Matches[1] }
     return ''
 }
 
@@ -63,6 +82,22 @@ function Test-IsGrepCommand {
         if ($Command -match "\|\s*$([regex]::Escape($token))(\s|$|;|\|)") { return $true }
     }
     return $false
+}
+
+function Write-RewriteResponse {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RewrittenCommand
+    )
+
+    $response = @{
+        hookSpecificOutput = @{
+            hookEventName      = 'PreToolUse'
+            permissionDecision = 'allow'
+            updatedInput       = @{ command = $RewrittenCommand }
+        }
+    }
+    Write-Output ($response | ConvertTo-Json -Depth 10 -Compress)
 }
 
 #region Main hook body
@@ -82,36 +117,36 @@ try {
 
     $hookState = 'intercepting'
 
-    $command = $payload.tool_input.command
+    $command = $null
+    $hasToolInput = $null -ne ($payload | Select-Object -ExpandProperty tool_input -ErrorAction SilentlyContinue)
+    if ($hasToolInput) {
+        $command = $payload.tool_input | Select-Object -ExpandProperty command -ErrorAction SilentlyContinue
+    }
 
     if ([string]::IsNullOrWhiteSpace($command)) {
+        # Passthrough: nothing to rewrite
         $hookState = 'done'
         $hookKind = 'none'
-        Write-Output ($payload | ConvertTo-Json -Depth 10 -Compress)
         exit 0
     }
 
-    $isGrepCommand = Test-IsGrepCommand -Command $command
-
-    if ($isGrepCommand) {
+    if (Test-IsGrepCommand -Command $command) {
         $hookKind = 'rg'
         $hookState = 'rewriting'
 
         $rewrittenCommand = Invoke-RgHookRewrite -Command $command
         $hookRewritten = $true
 
-        $payload.tool_input.command = $rewrittenCommand
+        Write-RewriteResponse -RewrittenCommand $rewrittenCommand
 
         $hookState = 'done'
-        $hookKind = 'none'  # S15: done terminal clears hookKind
-
-        Write-Output ($payload | ConvertTo-Json -Depth 10 -Compress)
+        $hookKind = 'none'  # S15
         exit 0
     }
     else {
+        # Passthrough: not our domain
         $hookState = 'done'
         $hookKind = 'none'
-        Write-Output ($payload | ConvertTo-Json -Depth 10 -Compress)
         exit 0
     }
 }

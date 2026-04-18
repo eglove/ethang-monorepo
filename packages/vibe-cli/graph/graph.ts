@@ -12,47 +12,73 @@ export class GraphBuildError extends Error {
 function isValidNodePath(path: string): boolean {
   const hasSeparator = path.includes('/') || path.includes('\\');
   if (!hasSeparator) return false;
-  // Reject rg output tokens: path with colon (e.g. "src/foo.ts:42:keyword")
   if (path.includes(':')) return false;
   return true;
 }
 
 export class VibeGraph {
   private readonly graph: DirectedGraph<GraphNode, GraphEdge>;
-  private readonly nodes: Map<string, GraphNode>;
 
   constructor() {
     this.graph = new DirectedGraph<GraphNode, GraphEdge>();
-    this.nodes = new Map<string, GraphNode>();
   }
 
-  addNode(path: string, type: NodeType): void {
+  addNode(path: string, type: NodeType): { added: boolean } {
     if (!isValidNodePath(path)) {
       throw new GraphBuildError('invalid node identity');
     }
-
-    const node: GraphNode = { path, type };
-    this.nodes.set(path, node);
-    this.graph.addVertex(path, node);
+    const added = this.graph.addVertex(path, { path, type });
+    return { added };
   }
 
-  addEdge(from: string, to: string, type: EdgeType): void {
-    if (!this.nodes.has(from)) {
+  addEdge(from: string, to: string, type: EdgeType): { added: boolean } {
+    if (!this.graph.hasVertex(from)) {
       throw new GraphBuildError(`NoGhostEdges: endpoint '${from}' not in graph`);
     }
-    if (!this.nodes.has(to)) {
+    if (!this.graph.hasVertex(to)) {
       throw new GraphBuildError(`NoGhostEdges: endpoint '${to}' not in graph`);
     }
+    const added = this.graph.addEdge(from, to, 1, { from, to, type });
+    return { added };
+  }
 
-    const edge: GraphEdge = { from, to, type };
-    this.graph.addEdge(from, to, edge);
+  hasNode(path: string): boolean {
+    return this.graph.hasVertex(path);
+  }
+
+  hasEdge(from: string, to: string): boolean {
+    return this.graph.hasEdge(from, to);
+  }
+
+  getNode(path: string): GraphNode | undefined {
+    return this.graph.getVertex(path)?.value;
+  }
+
+  getNodes(): GraphNode[] {
+    const out: GraphNode[] = [];
+    for (const vertex of this.graph.vertexMap.values()) {
+      if (vertex.value) out.push(vertex.value);
+    }
+    return out;
+  }
+
+  getEdges(): GraphEdge[] {
+    const out: GraphEdge[] = [];
+    for (const e of this.graph.edgeSet()) {
+      if (e.value) out.push(e.value);
+    }
+    return out;
   }
 
   nodeCount(): number {
-    return this.nodes.size;
+    return this.graph.vertexMap.size;
   }
 
   edgeCount(): number {
     return this.graph.edgeSet().length;
+  }
+
+  clear(): void {
+    this.graph.clear();
   }
 }

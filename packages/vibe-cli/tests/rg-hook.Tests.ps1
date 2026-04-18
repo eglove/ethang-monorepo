@@ -1,11 +1,11 @@
-#Requires -Modules Pester
+﻿#Requires -Modules Pester
 
 BeforeAll {
     . "$PSScriptRoot/helpers/test-config.ps1"
 
     # Resolve hook paths — Join-Path handles Windows path separators correctly
-    $script:HookPath       = Join-Path $PSScriptRoot '..' '..' '..' '.claude' 'hooks' 'rg-hook.ps1'
-    $script:ModulePath     = Join-Path $PSScriptRoot '..' '..' '..' '.claude' 'hooks' 'rg-hook-module.psm1'
+    $script:HookPath       = Join-Path -Path $PSScriptRoot -ChildPath '..' -AdditionalChildPath '..', '..', '.claude', 'hooks', 'rg-hook.ps1'
+    $script:ModulePath     = Join-Path -Path $PSScriptRoot -ChildPath '..' -AdditionalChildPath '..', '..', '.claude', 'hooks', 'rg-hook-module.psm1'
     $script:HookPath       = [System.IO.Path]::GetFullPath($script:HookPath)
     $script:ModulePath     = [System.IO.Path]::GetFullPath($script:ModulePath)
 
@@ -31,12 +31,24 @@ BeforeAll {
         }
     }
 
-    # Helper: returns the tool_input.command from the hook's JSON output
+    # Helper: returns the effective command after the hook runs.
+    # - On rewrite, Claude Code reads hookSpecificOutput.updatedInput.command.
+    # - On passthrough (empty stdout), Claude Code runs the original command.
     function Get-RewrittenCommand {
         param([string]$JsonPayload)
         $output = Invoke-Hook -JsonPayload $JsonPayload
+
+        if ([string]::IsNullOrWhiteSpace($output)) {
+            # Passthrough — extract the original command from the payload
+            $inputParsed = $JsonPayload | ConvertFrom-Json -ErrorAction SilentlyContinue
+            return $inputParsed.tool_input.command
+        }
+
         $parsed = $output | ConvertFrom-Json -ErrorAction SilentlyContinue
-        return $parsed.tool_input.command
+        if ($parsed.hookSpecificOutput -and $parsed.hookSpecificOutput.updatedInput) {
+            return $parsed.hookSpecificOutput.updatedInput.command
+        }
+        return $null
     }
 
     # Helper: run hook with error capture; returns hashtable with ExitCode, Stdout, Stderr
@@ -155,19 +167,18 @@ Describe 'rg-hook — Test 5: S14 RgHookOnlyForGrep — hookKind' {
     It 'hookKind is rg for grep command (rewrite produces rg)' {
         $out    = Invoke-Hook '{"tool_name":"Bash","tool_input":{"command":"grep pattern file.txt"}}'
         $parsed = $out | ConvertFrom-Json
-        $parsed.tool_input.command | Should -Match '^rg\b'
+        $parsed.hookSpecificOutput.updatedInput.command | Should -Match '^rg\b'
     }
 
     It 'hookKind is rg for egrep command (rewrite produces rg)' {
         $out    = Invoke-Hook '{"tool_name":"Bash","tool_input":{"command":"egrep pattern file.txt"}}'
         $parsed = $out | ConvertFrom-Json
-        $parsed.tool_input.command | Should -Match '^rg\b'
+        $parsed.hookSpecificOutput.updatedInput.command | Should -Match '^rg\b'
     }
 
-    It 'non-grep command does not trigger rg hook (hookKind stays none — passthrough)' {
+    It 'non-grep command does not trigger rg hook (passthrough — empty stdout)' {
         $out    = Invoke-Hook '{"tool_name":"Bash","tool_input":{"command":"ls -la"}}'
-        $parsed = $out | ConvertFrom-Json
-        $parsed.tool_input.command | Should -Be 'ls -la'
+        $out | Should -BeNullOrEmpty -Because 'passthrough: empty stdout means "proceed with original"'
     }
 }
 
@@ -206,9 +217,9 @@ Describe 'rg-hook — Test 7: D3 pipeline integration (find|grep -> es|rg)' {
     It 'es command prefix preserved; grep in pipe portion rewritten to rg (no double-rewrite)' {
         $out    = Invoke-Hook '{"tool_name":"Bash","tool_input":{"command":"es . -name *.ts | grep keyword"}}'
         $parsed = $out | ConvertFrom-Json
-        $parsed.tool_input.command | Should -Match '^es\b'
-        $parsed.tool_input.command | Should -Match '\brg\b'
-        $parsed.tool_input.command | Should -Not -Match '\bgrep\b'
+        $parsed.hookSpecificOutput.updatedInput.command | Should -Match '^es\b'
+        $parsed.hookSpecificOutput.updatedInput.command | Should -Match '\brg\b'
+        $parsed.hookSpecificOutput.updatedInput.command | Should -Not -Match '\bgrep\b'
     }
 }
 
@@ -221,7 +232,7 @@ Describe 'rg-hook — Test 8: S15 hookKind cleared to none at done terminal' {
         # S15: done terminal — exit 0
         $result.ExitCode | Should -Be 0
         $parsed = $result.Stdout | ConvertFrom-Json
-        $parsed.tool_input.command | Should -Match '^rg\b'
+        $parsed.hookSpecificOutput.updatedInput.command | Should -Match '^rg\b'
     }
 }
 

@@ -20,6 +20,7 @@ function Invoke-UnifiedDebateLoop {
     $bddWriterFile = "$Root/agents/doc-writers/bdd-writer.md"
     $tlaWriterFile = "$Root/agents/doc-writers/tla-writer.md"
 
+    $_featureName = Split-Path $FeatureDir -Leaf
     $debateHistory = [System.Collections.ArrayList]::new()
     $consecutiveFailures = 0
     $maxConsecutiveFailures = 3
@@ -69,6 +70,9 @@ function Invoke-UnifiedDebateLoop {
         })
 
         Write-PipelineLog -Message "Unified debate round=$round result=$($debate.result) objections=$($debate.objections.Count)" -Root $Root
+
+        $_dbStatus = if ($debate.result -eq 'CONSENSUS_REACHED') { 'reached' } elseif ($round -ge $MaxRounds) { 'failed' } else { 'pending' }
+        try { Update-DebateState -FeatureName $_featureName -Stage 3 -Round $round -ConsensusStatus $_dbStatus -MaxDebateRound $MaxRounds } catch { }
 
         # ── CONSENSUS_REACHED: dispatch per-writer final recommendations ──
         if ($debate.result -eq 'CONSENSUS_REACHED') {

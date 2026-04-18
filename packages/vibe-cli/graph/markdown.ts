@@ -1,4 +1,5 @@
 import type { DedupStateMachine } from './dedup.js';
+import type { EdgeType, NodeType } from './types.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -19,38 +20,45 @@ export interface InjectableFS {
 }
 
 // ---------------------------------------------------------------------------
-// Markdown generation
+// Markdown generation — reads from the underlying VibeGraph (DirectedGraph).
+// Groups nodes by NodeType and edges by EdgeType; emits a section only when
+// at least one entry of that type exists.
+//
+// Format:
+//   ## file
+//   pkg/a.ts, pkg/b.ts
+//
+//   ## imports
+//   pkg/a.ts -> pkg/b.ts
 // ---------------------------------------------------------------------------
 
-/**
- * Generates the dense machine-readable markdown from the state machine's
- * collected nodes and edges.
- *
- * Format:
- *   ## file
- *   pkg/a.ts, pkg/b.ts
- *
- *   ## imports
- *   pkg/a.ts -> pkg/b.ts
- */
 function generateMarkdown(machine: DedupStateMachine): string {
-  const lines: string[] = [];
+  const nodes = machine.graph.getNodes();
+  const edges = machine.graph.getEdges();
 
-  // Nodes section
-  if (machine.graphNodes.size > 0) {
-    lines.push('## file');
-    lines.push([...machine.graphNodes].join(', '));
+  const nodesByType = new Map<NodeType, string[]>();
+  for (const n of nodes) {
+    const bucket = nodesByType.get(n.type) ?? [];
+    bucket.push(n.path);
+    nodesByType.set(n.type, bucket);
   }
 
-  // Edges section
-  if (machine.graphEdges.size > 0) {
-    if (lines.length > 0) lines.push('');
-    lines.push('## imports');
-    const edgeLines = [...machine.graphEdges].map((e) => e.replace('→', ' -> '));
-    lines.push(edgeLines.join(', '));
+  const edgesByType = new Map<EdgeType, string[]>();
+  for (const e of edges) {
+    const bucket = edgesByType.get(e.type) ?? [];
+    bucket.push(`${e.from} -> ${e.to}`);
+    edgesByType.set(e.type, bucket);
   }
 
-  return lines.join('\n') + '\n';
+  const sections: string[] = [];
+  for (const [type, paths] of nodesByType) {
+    sections.push(`## ${type}\n${paths.join(', ')}`);
+  }
+  for (const [type, pairs] of edgesByType) {
+    sections.push(`## ${type}\n${pairs.join(', ')}`);
+  }
+
+  return sections.length === 0 ? '\n' : sections.join('\n\n') + '\n';
 }
 
 // ---------------------------------------------------------------------------
@@ -72,7 +80,7 @@ function createDefaultFS(): InjectableFS {
       try {
         await unlink(path);
       } catch {
-        // Ignore errors — temp file may not exist
+        // tmp may not exist — ignore
       }
     },
   };
@@ -97,7 +105,6 @@ export async function writeGraph(
   options: WriteOptions,
   fs?: InjectableFS,
 ): Promise<void> {
-  // Handle halt case (S33)
   if (options.pipelineHalted) {
     machine.haltCleanup();
     return;
@@ -109,25 +116,20 @@ export async function writeGraph(
 
   const content = generateMarkdown(machine);
 
-  // Step 1: Write to temp file
   try {
     await fsImpl.writeFile(tmpPath, content);
   } catch (_err) {
-    // Temp write failed — call writeFail, tmp may not exist
     machine.writeFail(maxAgents);
     return;
   }
 
-  // Step 2: Atomic rename tmp → final
   try {
     await fsImpl.rename(tmpPath, outputPath);
   } catch (_err) {
-    // Rename failed — D26 distinct failure path
-    // tmp EXISTS, CLAUDE.md is intact — do NOT unlink tmp
+    // D26: tmp EXISTS, CLAUDE.md intact — do NOT unlink tmp
     machine.writeFail(maxAgents);
     return;
   }
 
-  // Step 3: Success
   machine.writeMarkdown(maxAgents);
 }

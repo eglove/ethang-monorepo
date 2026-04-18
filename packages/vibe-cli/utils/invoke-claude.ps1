@@ -8,7 +8,8 @@
         [string]$JsonSchema,
         [string]$AddDir,
         [switch]$Interactive,
-        [string]$TaskId
+        [string]$TaskId,
+        [switch]$SkipCloseHook
     )
 
     # Early validation of Role and Model
@@ -150,6 +151,25 @@
 
     if (-not $resultText) {
         Write-PipelineLog "NULL-RESULT agent=$agentName"
+    }
+
+    # Per-agent close hook — regenerates root CLAUDE.md from the knowledge graph.
+    # Skipped when -SkipCloseHook is set or VIBE_CLI_SKIP_CLOSE_HOOK is truthy
+    # (tests set this to avoid spawning tsx for every mocked Invoke-Claude).
+    if (-not $SkipCloseHook -and -not $env:VIBE_CLI_SKIP_CLOSE_HOOK) {
+        try {
+            $claudeMd = if ($env:VIBE_CLI_CLAUDE_MD) {
+                $env:VIBE_CLI_CLAUDE_MD
+            } else {
+                (Resolve-Path (Join-Path $PSScriptRoot '../../../CLAUDE.md') -ErrorAction SilentlyContinue).Path
+            }
+            if ($claudeMd -and (Get-Command Invoke-CloseHook -ErrorAction SilentlyContinue)) {
+                $null = Invoke-CloseHook -OutputPath $claudeMd
+            }
+        }
+        catch {
+            Write-PipelineLog "close-hook failed for agent=$agentName err=$_"
+        }
     }
 
     if ($resultText) { return $resultText }

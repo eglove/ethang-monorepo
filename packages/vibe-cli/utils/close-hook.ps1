@@ -1,4 +1,4 @@
-# close-hook.ps1
+﻿# close-hook.ps1
 # Per-agent close hook — fires after each Invoke-Claude returns.
 # Triggers the graph write cycle via tsx packages/vibe-cli/graph/index.ts.
 
@@ -8,14 +8,47 @@ function Invoke-CloseHook {
         [string]$OutputPath = 'CLAUDE.md',
         [int]$MaxAgents = 1,
         [int]$TimeoutSeconds = 30,
-        [string]$PipelineState = 'running',
-        [scriptblock]$TsxRunner = $null,   # injected for tests
-        [hashtable]$InitialState = $null,  # injected for tests
-        [switch]$SimulateTimeout           # forces timeout path in tests
+        [object]$PipelineState = 'running',  # string (legacy) or hashtable (pipeline mode)
+        [scriptblock]$TsxRunner = $null,     # injected for tests
+        [hashtable]$InitialState = $null,    # injected for tests (legacy)
+        [switch]$SimulateTimeout             # forces timeout path in tests
     )
 
+    # -----------------------------------------------------------------------
+    # Pipeline mode: caller passes full state hashtable — mutate in place,
+    # return a result object {Success, Skipped} (no tsx invocation).
+    # -----------------------------------------------------------------------
+    if ($PipelineState -is [hashtable]) {
+        $state = $PipelineState
+
+        # Halted is absorbing (S22/S23/S26)
+        if ($state.pipelineState -eq 'halted') {
+            return @{ Skipped = $true; Success = $false }
+        }
+
+        # Advance in-progress hook state to done (D27)
+        if ($state.hookState -eq 'intercepting' -or $state.hookState -eq 'rewriting') {
+            $state.hookState    = 'done'
+            $state.hookRewritten = $true
+        }
+
+        # agentsCompleted incremented AFTER all hook actions (S32)
+        $state.agentsCompleted++
+
+        # Pipeline completion check (S25, S8)
+        if ($state.routingState -eq 'done' -and $state.agentsCompleted -ge $MaxAgents) {
+            $state.pipelineState = 'done'
+        }
+
+        return @{ Skipped = $false; Success = $true }
+    }
+
+    # -----------------------------------------------------------------------
+    # Legacy mode: string PipelineState + Import-GraphState / InitialState
+    # -----------------------------------------------------------------------
+
     # Load or clone state
-    $state = if ($InitialState) { $InitialState.Clone() } else { Load-GraphState }
+    $state = if ($InitialState) { $InitialState.Clone() } else { Import-GraphState }
 
     # GraphHaltCleanup: halted pipeline — set warn, leave counts/markdownState untouched
     if ($PipelineState -eq 'halted') {
@@ -91,11 +124,12 @@ function Invoke-CloseHook {
     return $state
 }
 
+
 # ---------------------------------------------------------------------------
 # State persistence helpers (used when no InitialState is injected)
 # ---------------------------------------------------------------------------
 
-function Load-GraphState {
+function Import-GraphState {
     $path = if ($env:VIBE_CLI_GRAPH_STATE) {
         $env:VIBE_CLI_GRAPH_STATE
     }

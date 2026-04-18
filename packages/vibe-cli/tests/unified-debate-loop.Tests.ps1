@@ -4,6 +4,9 @@
     . "$root/utils/invoke-claude.ps1"
     . "$root/utils/invoke-parallel.ps1"
     . "$root/utils/unified-debate-loop.ps1"
+
+    function Update-DebateState { [CmdletBinding()] param([string]$FeatureName, [int]$Stage, [int]$Round, [string]$ConsensusStatus, [int]$MaxDebateRound = 10) }
+    Mock Update-DebateState {}
 }
 
 Describe 'Invoke-UnifiedDebateLoop' {
@@ -280,6 +283,30 @@ Describe 'Invoke-UnifiedDebateLoop' {
 
             $script:capturedRevisionJobs.Keys | Should -Contain 'bdd'
             $script:capturedRevisionJobs.Keys | Should -Not -Contain 'tla'
+        }
+    }
+
+    Context 'Update-DebateState failure is silently swallowed' {
+        It 'returns CONSENSUS_REACHED even when Update-DebateState throws' {
+            Mock Invoke-Claude {
+                return '{"result":"CONSENSUS_REACHED","objections":[],"experts":["a"],"recommendation":{"bdd":"ok","tla":"ok"},"sessionFile":"unified-debate.md"}'
+            }
+            Mock Invoke-Parallel {
+                param($Jobs)
+                $result = @{}
+                foreach ($key in $Jobs.Keys) { $result[$key] = @{ Success = $true; Output = $null; Error = $null } }
+                return $result
+            }
+            Mock Update-DebateState { throw 'db unavailable' }
+
+            $result = Invoke-UnifiedDebateLoop `
+                -GherkinFile (Join-Path $featureDir 'bdd.feature') `
+                -TlaDir $tlaDir `
+                -FeatureDir $featureDir `
+                -Root $testRoot `
+                -MaxRounds 3
+
+            $result.Result | Should -Be 'CONSENSUS_REACHED'
         }
     }
 

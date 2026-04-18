@@ -1,4 +1,4 @@
-#Requires -Version 7.0
+﻿#Requires -Version 7.0
 <#
 .SYNOPSIS
     Pester 5 tests for es-hook.ps1 (PreToolUse hook).
@@ -69,8 +69,9 @@ Describe 'es-hook: Test 1 — Basic find rewrite' {
         $output = Invoke-Hook -JsonPayload $payload
         $output | Should -Not -BeNullOrEmpty
         $parsed = $output | ConvertFrom-Json
-        $parsed.tool_input.command | Should -Match '^es\b'
-        $parsed.tool_input.command | Should -Not -Match '^find\b'
+        $parsed.hookSpecificOutput.permissionDecision | Should -Be 'allow'
+        $parsed.hookSpecificOutput.updatedInput.command | Should -Match '^es\b'
+        $parsed.hookSpecificOutput.updatedInput.command | Should -Not -Match '^find\b'
     }
 }
 
@@ -95,7 +96,7 @@ Describe 'es-hook: Test 2 — All 5 surface tokens rewritten' {
         $output = Invoke-Hook -JsonPayload $payload
         $output | Should -Not -BeNullOrEmpty
         $parsed = $output | ConvertFrom-Json
-        $parsed.tool_input.command | Should -Match '^es\b'
+        $parsed.hookSpecificOutput.updatedInput.command | Should -Match '^es\b'
     }
 }
 
@@ -104,12 +105,11 @@ Describe 'es-hook: Test 2 — All 5 surface tokens rewritten' {
 # ---------------------------------------------------------------------------
 Describe 'es-hook: Test 3 — S12 PlainReadNeverIntercepted' {
     It 'does NOT rewrite Get-Content (plain file read)' {
+        # Passthrough contract: empty stdout means "proceed with the original command"
         $payload = '{"tool_name":"Bash","tool_input":{"command":"Get-Content ./foo.ps1"}}'
-        $output = Invoke-Hook -JsonPayload $payload
-        $output | Should -Not -BeNullOrEmpty
-        $parsed = $output | ConvertFrom-Json
-        $parsed.tool_input.command | Should -Match '^Get-Content\b'
-        $parsed.tool_input.command | Should -Not -Match '^es\b'
+        $result = Invoke-HookProcess -JsonPayload $payload
+        $result.Stdout | Should -BeNullOrEmpty -Because 'Get-Content is a plain read — hook must pass through'
+        $result.ExitCode | Should -Be 0
     }
 }
 
@@ -118,12 +118,11 @@ Describe 'es-hook: Test 3 — S12 PlainReadNeverIntercepted' {
 # ---------------------------------------------------------------------------
 Describe 'es-hook: Test 4 — grep commands NOT intercepted (rg-hook domain)' {
     It 'does NOT rewrite grep command' {
+        # Passthrough contract: empty stdout — rg-hook is the owner
         $payload = '{"tool_name":"Bash","tool_input":{"command":"grep foo bar"}}'
-        $output = Invoke-Hook -JsonPayload $payload
-        $output | Should -Not -BeNullOrEmpty
-        $parsed = $output | ConvertFrom-Json
-        $parsed.tool_input.command | Should -Match '^grep\b'
-        $parsed.tool_input.command | Should -Not -Match '^es\b'
+        $result = Invoke-HookProcess -JsonPayload $payload
+        $result.Stdout | Should -BeNullOrEmpty -Because 'grep is rg-hook domain — es-hook must pass through'
+        $result.ExitCode | Should -Be 0
     }
 }
 
@@ -201,11 +200,11 @@ Describe 'es-hook: Test 7 — D3 ASSUME: independent sequential rewrites' {
         $parsed2 = $out2 | ConvertFrom-Json
 
         # Both rewritten to es
-        $parsed1.tool_input.command | Should -Match '^es\b'
-        $parsed2.tool_input.command | Should -Match '^es\b'
+        $parsed1.hookSpecificOutput.updatedInput.command | Should -Match '^es\b'
+        $parsed2.hookSpecificOutput.updatedInput.command | Should -Match '^es\b'
 
         # Results are independent (different patterns / paths)
-        $parsed1.tool_input.command | Should -Not -Be $parsed2.tool_input.command
+        $parsed1.hookSpecificOutput.updatedInput.command | Should -Not -Be $parsed2.hookSpecificOutput.updatedInput.command
     }
 }
 
@@ -221,7 +220,7 @@ Describe 'es-hook: Test 8 — S15 DoneTerminalClearsKind (hookKind="none" at don
         $parsed = $output | ConvertFrom-Json
 
         $parsed | Should -Not -BeNullOrEmpty
-        $parsed.tool_input.command | Should -Match '^es\b'
+        $parsed.hookSpecificOutput.updatedInput.command | Should -Match '^es\b'
         # No hookKind="es" leakage in the output payload
         $output | Should -Not -Match '"hookKind"\s*:\s*"es"'
     }

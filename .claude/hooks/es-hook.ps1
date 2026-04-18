@@ -4,11 +4,19 @@
     PreToolUse hook that rewrites find/ls/dir/Get-ChildItem/gci commands to use the Everything CLI (es).
 
 .DESCRIPTION
-    Reads a Claude Code tool-call JSON payload from stdin.
-    If the command first token matches any of: find, ls, dir, Get-ChildItem, gci
-    -- rewrites it to use `es` with equivalent arguments.
-    Does NOT intercept Get-Content (S12 PlainReadNeverIntercepted).
-    Does NOT intercept grep-type commands (rg-hook domain).
+    Reads a Claude Code tool-call JSON payload from stdin. If the command
+    first token matches any of: find, ls, dir, Get-ChildItem, gci — emits
+    a PreToolUse hookSpecificOutput with permissionDecision="allow" and
+    updatedInput.command set to the `es` equivalent. Claude Code then runs
+    the rewritten command, so the agent actually gets `es` output instead
+    of the native search command output.
+
+    Passthrough: when the command is not a search, the hook exits 0 with
+    empty stdout, which means "proceed unchanged" to Claude Code.
+
+    Non-intercept rules:
+      - Get-Content / gc / cat / type are never intercepted (S12).
+      - grep-type commands belong to rg-hook (this hook leaves them alone).
 
     TLA+ state machine:
         hookState: idle -> intercepting -> rewriting -> done | error
@@ -17,19 +25,17 @@
         hookCommand: NULL after success (S36)
 
 .OUTPUTS
-    Modified JSON payload on stdout. Exits 0 on success, non-zero on failure.
+    On rewrite: JSON with hookSpecificOutput/updatedInput on stdout.
+    On passthrough: empty stdout (proceed with original command).
+    On error: stderr + exit 1.
 #>
 
 $ErrorActionPreference = 'Stop'
 
-# Surface tokens that this hook owns (S13 EsHookOnlyForFind)
+# Surface tokens this hook owns (S13 EsHookOnlyForFind)
 $script:EsSurfaceTokens = @('find', 'ls', 'dir', 'Get-ChildItem', 'gci')
 
 function Convert-ToEsCommand {
-    <#
-    .SYNOPSIS
-        Converts a specific find/ls/dir/gci invocation into an `es` invocation.
-    #>
     param(
         [string]$Token,
         [string]$Rest
@@ -41,38 +47,26 @@ function Convert-ToEsCommand {
                 $pattern = $Matches[1].Trim()
                 $restTokens = $Rest -split '\s+', 2
                 $searchPath = $restTokens[0]
-                if ($searchPath -match '^-' -or $searchPath -eq '') {
+                if ($searchPath -match '^-' -or $searchPath -eq '' -or $searchPath -eq '.') {
                     return "es $pattern"
                 }
-                elseif ($searchPath -eq '.') {
-                    return "es $pattern"
-                }
-                else {
-                    return "es -path `"$searchPath`" $pattern"
-                }
+                return "es -path `"$searchPath`" $pattern"
             }
             elseif ($Rest -match '-type\s+f\s+(.+)') {
-                $remaining = $Matches[1].Trim()
-                return "es $remaining"
+                return "es $($Matches[1].Trim())"
             }
             else {
                 return ("es $Rest").TrimEnd()
             }
         }
         { $_ -in @('ls', 'dir') } {
-            if ([string]::IsNullOrWhiteSpace($Rest)) {
-                return 'es'
-            }
+            if ([string]::IsNullOrWhiteSpace($Rest)) { return 'es' }
             $cleanRest = ($Rest -replace '\s*-[lAaRrth1]+\s*', ' ').Trim()
-            if ([string]::IsNullOrWhiteSpace($cleanRest)) {
-                return 'es'
-            }
+            if ([string]::IsNullOrWhiteSpace($cleanRest)) { return 'es' }
             return "es -path `"$cleanRest`""
         }
         { $_ -in @('Get-ChildItem', 'gci') } {
-            if ([string]::IsNullOrWhiteSpace($Rest)) {
-                return 'es'
-            }
+            if ([string]::IsNullOrWhiteSpace($Rest)) { return 'es' }
             $esPattern = ''
             $esPath = ''
             if ($Rest -match '-Filter\s+[''"]?([^''"]+)[''"]?') {
@@ -103,7 +97,7 @@ function Invoke-EsHookRewrite {
     <#
     .SYNOPSIS
         Rewrites a find/ls/dir/Get-ChildItem/gci command to use `es`.
-        This function is separated for Pester mocking support.
+        Separated for Pester mocking support.
     .PARAMETER Command
         The original command string.
     .OUTPUTS
@@ -114,7 +108,6 @@ function Invoke-EsHookRewrite {
         [string]$Command
     )
 
-    # Tokenize: split on whitespace
     $tokens = $Command -split '\s+', 2
 
     if ($tokens.Count -eq 0 -or [string]::IsNullOrWhiteSpace($tokens[0])) {
@@ -123,42 +116,52 @@ function Invoke-EsHookRewrite {
 
     $firstToken = $tokens[0].Trim()
 
-    # S12: Never intercept Get-Content or aliases
-    if ($firstToken -in @('Get-Content', 'gc', 'cat', 'type')) {
-        return $null
-    }
+    # S12: plain reads never intercepted
+    if ($firstToken -in @('Get-Content', 'gc', 'cat', 'type')) { return $null }
 
     # grep-type commands belong to rg-hook
-    if ($firstToken -in @('grep', 'rg', 'Select-String', 'sls')) {
+    if ($firstToken -in @('grep', 'rg', 'egrep', 'fgrep', 'Select-String', 'sls')) {
         return $null
     }
 
-    # Check if first token is one of our surface tokens
-    if ($firstToken -notin $script:EsSurfaceTokens) {
-        return $null
-    }
+    if ($firstToken -notin $script:EsSurfaceTokens) { return $null }
 
-    # Build the es equivalent
     $rest = if ($tokens.Count -gt 1) { $tokens[1] } else { '' }
-
     return Convert-ToEsCommand -Token $firstToken -Rest $rest
+}
+
+function Write-RewriteResponse {
+    <#
+    .SYNOPSIS
+        Emits the Claude Code PreToolUse hookSpecificOutput payload that
+        swaps the native command for the `es` rewrite.
+    #>
+    param(
+        [Parameter(Mandatory)]
+        [string]$RewrittenCommand
+    )
+
+    $response = @{
+        hookSpecificOutput = @{
+            hookEventName      = 'PreToolUse'
+            permissionDecision = 'allow'
+            updatedInput       = @{ command = $RewrittenCommand }
+        }
+    }
+    Write-Output ($response | ConvertTo-Json -Depth 10 -Compress)
 }
 
 function Invoke-EsHook {
     <#
     .SYNOPSIS
-        Main hook entry point. Reads stdin JSON, rewrites if needed, outputs JSON.
-    .PARAMETER StdinContent
-        Stdin content (required — passed in from script scope where $input is available).
-    .OUTPUTS
-        Modified JSON to stdout.
+        Main hook entry point. Reads stdin JSON, emits hookSpecificOutput on rewrite.
     #>
     param(
         [Parameter(Mandatory)]
+        [AllowEmptyString()]
         [string]$StdinContent
     )
 
-    # TLA+ state tracking
     $hookState     = 'idle'
     $hookKind      = 'none'
     $hookRewritten = $false
@@ -166,7 +169,7 @@ function Invoke-EsHook {
 
     try {
         if ([string]::IsNullOrWhiteSpace($StdinContent)) {
-            # Empty payload — nothing to intercept, pass through silently
+            # Empty payload — passthrough (no stdout, original command runs)
             $hookState = 'done'
             $hookKind  = 'none'
             return
@@ -174,10 +177,8 @@ function Invoke-EsHook {
 
         $hookState = 'intercepting'
 
-        # Parse JSON — throws on invalid JSON (S3 NoHookFallback: will be caught below)
         $payload = $StdinContent | ConvertFrom-Json -ErrorAction Stop
 
-        # Safely extract command field without StrictMode issues
         $command = $null
         $hasToolInput = $null -ne ($payload | Select-Object -ExpandProperty tool_input -ErrorAction SilentlyContinue)
         if ($hasToolInput) {
@@ -185,8 +186,7 @@ function Invoke-EsHook {
         }
 
         if ($null -eq $command -or $command -eq '') {
-            # No command field -- pass through unchanged
-            Write-Output $StdinContent
+            # No command field — passthrough
             $hookState = 'done'
             $hookKind  = 'none'
             return
@@ -194,45 +194,38 @@ function Invoke-EsHook {
 
         $hookCommand = $command
         $hookState   = 'rewriting'
-        $hookKind    = 'es'   # S13: EsHookOnlyForFind -- set when intercepting a candidate
+        $hookKind    = 'es'
 
         $rewritten = Invoke-EsHookRewrite -Command $command
 
         if ($null -ne $rewritten) {
-            # Rewrite succeeded
             $hookRewritten = $true
-            $payload.tool_input.command = $rewritten
-            $hookCommand = $null   # S36: clear after success
+            $hookCommand = $null   # S36
 
-            $outJson = $payload | ConvertTo-Json -Depth 10 -Compress
-            Write-Output $outJson
+            Write-RewriteResponse -RewrittenCommand $rewritten
 
-            $hookState = 'done'
-            $hookKind  = 'none'  # S15: done terminal CLEARS hookKind
-        }
-        else {
-            # No rewrite -- pass through unchanged
-            Write-Output $StdinContent
             $hookState = 'done'
             $hookKind  = 'none'  # S15
         }
+        else {
+            # No rewrite — passthrough
+            $hookState = 'done'
+            $hookKind  = 'none'
+        }
     }
     catch {
-        # S3 NoHookFallback: crash exits non-zero with no stdout
-        # S28 HookErrorPreservesKind: hookKind stays "es" (not cleared)
+        # S3 NoHookFallback: crash exits non-zero, no stdout
+        # S28: hookKind stays "es" at error
         $hookState = 'error'
         [Console]::Error.WriteLine("es-hook error: $_")
         exit 1
     }
 }
 
-# Run main hook body only when executed as a script (not dot-sourced in tests)
-# IMPORTANT: $input must be consumed at script scope — PowerShell places piped data there,
-# not in [Console]::In when invoked via `pwsh -File`.
+# Main body only runs when executed as a script (not dot-sourced in tests)
 if ($env:ES_HOOK_TEST_MODE -ne '1') {
     $script:_hookInput = @($input) -join "`n"
     if ([string]::IsNullOrWhiteSpace($script:_hookInput)) {
-        # Fallback for non-piped invocation (e.g., stdin via terminal)
         $script:_hookInput = [Console]::In.ReadToEnd()
     }
     Invoke-EsHook -StdinContent $script:_hookInput

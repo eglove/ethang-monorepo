@@ -1,12 +1,15 @@
 function Invoke-ClaudeTestDouble {
     param(
+        [string]$Role,
+        [string]$Model,
         [string]$SystemPromptFile,
         [string]$AppendSystemPromptFile,
         [string]$Prompt,
         [string]$JsonSchema,
         [string]$AddDir,
         [switch]$Interactive,
-        [string]$TaskId
+        [string]$TaskId,
+        [switch]$SkipCloseHook
     )
 
     return @{

@@ -10,6 +10,8 @@ BeforeAll {
     Mock Write-PipelineLog {}
     Mock Write-Host {}
     Mock Invoke-Claude {}
+    function Set-TaskResult { [CmdletBinding()] param([string]$FeatureName, [string]$TaskId, [int]$Tier, [string]$Phase, [string]$Status, [string]$CountersJson, [int]$Escalated = 0, [string]$ErrorMessage, [string]$TestFilesJson) }
+    Mock Set-TaskResult {}
 }
 
 Describe 'Invoke-PerWorktreeGate' {
@@ -79,6 +81,17 @@ Describe 'Invoke-PerWorktreeGate' {
             $result = Invoke-PerWorktreeGate -WorktreePaths @('C:\wt1') -FeatureDir 'C:\docs\feat' -Root 'C:\fake' -Feature 'feat'
             $result.Status | Should -BeExactly 'all_passed'
             $result.Results.Count | Should -Be 1
+        }
+    }
+
+    Context 'Set-TaskResult failure is silently swallowed' {
+        It 'returns all_passed even when Set-TaskResult throws' {
+            Mock Invoke-PerWorktreeDoublePass { return @{ Status = 'passed'; Retries = 0; LastError = $null } }
+            Mock Invoke-PerWorktreeReview { return @{ Verdict = 'pass'; ReviewRound = 1; Blockers = @() } }
+            Mock Set-TaskResult { throw 'db unavailable' }
+
+            $result = Invoke-PerWorktreeGate -WorktreePaths @('C:\wt1') -FeatureDir 'C:\docs\feat' -Root 'C:\fake' -Feature 'feat'
+            $result.Status | Should -BeExactly 'all_passed'
         }
     }
 }
