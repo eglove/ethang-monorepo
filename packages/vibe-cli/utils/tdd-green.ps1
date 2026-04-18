@@ -21,7 +21,7 @@ function Invoke-GreenPhase {
     $workDir = if ($WorkspacePath) { Get-PackageWorkDir $WorkspacePath } else { $null }
 
     while ($true) {
-        $taskJson = $Task | ConvertTo-Json -Depth 10 -Compress
+        $taskJson = $Task | ConvertTo-Json -Depth 20 -Compress
         $prompt = "Make the failing tests pass for task $taskId`nDo NOT modify test files.`n`nTask JSON:`n$taskJson`n`nFull implementation plan: $PlanJsonPath"
 
         Write-TaskLog -TaskId $taskId -Phase 'green' -Message "Dispatching code writer: $($Task.codeWriter) (attempt $($Counters.greenAttempts + 1))" -FeatureDir $FeatureDir -RunId $RunId

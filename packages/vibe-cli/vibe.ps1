@@ -170,7 +170,7 @@ try {
         Set-ActiveFeature -Name $featureName
         Lock-PipelineState -FeatureName $featureName -ProcessId $PID
         Set-StageComplete -FeatureName $featureName -Stage 1
-        try { Set-StageOutput -FeatureName $featureName -Stage 1 -OutputType 'elicitor' -JsonData ($elicitorResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
+        try { Set-StageOutput -FeatureName $featureName -Stage 1 -OutputType 'elicitor' -JsonData ($elicitorResult | ConvertTo-Json -Depth 20 -Compress) } catch { }
         Register-Artifact -FeatureName $featureName -Stage 1 -ArtifactType 'elicitor' -FilePath (Join-Path $featureDir 'elicitor.md')
     }
 
@@ -190,7 +190,7 @@ try {
         $tlaFile = $writerResult.TlaFile
         if ($featureName) {
             Set-StageComplete -FeatureName $featureName -Stage 2
-            try { Set-StageOutput -FeatureName $featureName -Stage 2 -OutputType 'parallel-writers' -JsonData ($writerResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
+            try { Set-StageOutput -FeatureName $featureName -Stage 2 -OutputType 'parallel-writers' -JsonData ($writerResult | ConvertTo-Json -Depth 20 -Compress) } catch { }
         }
     }
 
@@ -203,7 +203,7 @@ try {
         }
         if ($featureName) {
             Set-StageComplete -FeatureName $featureName -Stage 3
-            try { Set-StageOutput -FeatureName $featureName -Stage 3 -OutputType 'unified-debate' -JsonData ($debateResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
+            try { Set-StageOutput -FeatureName $featureName -Stage 3 -OutputType 'unified-debate' -JsonData ($debateResult | ConvertTo-Json -Depth 20 -Compress) } catch { }
         }
     }
 
@@ -216,7 +216,7 @@ try {
         }
         if ($featureName) {
             Set-StageComplete -FeatureName $featureName -Stage 4
-            try { Set-StageOutput -FeatureName $featureName -Stage 4 -OutputType 'post-debate' -JsonData ($postDebateResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
+            try { Set-StageOutput -FeatureName $featureName -Stage 4 -OutputType 'post-debate' -JsonData ($postDebateResult | ConvertTo-Json -Depth 20 -Compress) } catch { }
         }
     }
 
@@ -239,7 +239,7 @@ try {
         $implJson = $implResult.ImplJson
         if ($featureName) {
             Set-StageComplete -FeatureName $featureName -Stage 5
-            try { Set-StageOutput -FeatureName $featureName -Stage 5 -OutputType 'implementation-writer' -JsonData ($implResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
+            try { Set-StageOutput -FeatureName $featureName -Stage 5 -OutputType 'implementation-writer' -JsonData ($implResult | ConvertTo-Json -Depth 20 -Compress) } catch { }
         }
     }
 
@@ -261,7 +261,7 @@ try {
         }
         if ($featureName) {
             Set-StageComplete -FeatureName $featureName -Stage 6
-            try { Set-StageOutput -FeatureName $featureName -Stage 6 -OutputType 'implementation-debate' -JsonData ($debateStageResult | ConvertTo-Json -Depth 10 -Compress) } catch { }
+            try { Set-StageOutput -FeatureName $featureName -Stage 6 -OutputType 'implementation-debate' -JsonData ($debateStageResult | ConvertTo-Json -Depth 20 -Compress) } catch { }
         }
     }
 

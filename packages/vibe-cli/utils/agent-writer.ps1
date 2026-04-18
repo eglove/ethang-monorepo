@@ -33,7 +33,7 @@ function Invoke-AgentWriter {
 
     # Dispatch single Invoke-Claude call
     $agentFile = Join-Path $Root "agents/code-writers/$($Task.codeWriter).md"
-    $taskJson = $Task | ConvertTo-Json -Depth 10 -Compress
+    $taskJson = $Task | ConvertTo-Json -Depth 20 -Compress
     $prompt = "Execute task $taskId`n`nTask JSON:`n$taskJson`n`nFull implementation plan: $PlanJsonPath"
 
     Write-TaskLog -TaskId $taskId -Phase 'agent_call' -Message "Dispatching agent: $($Task.codeWriter)" -FeatureDir $FeatureDir -RunId $RunId

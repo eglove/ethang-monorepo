@@ -134,7 +134,7 @@ INVARIANT TypeOK
 "@
             return @{
                 bdd = @{ Success = $true; Output = $bddFile; Error = $null }
-                tla = @{ Success = $true; Output = @{ TlaFile = (Get-Item "$tlaDir/TestSpec.tla"); TlaDir = $tlaDir }; Error = $null }
+                tla = @{ Success = $true; Output = @{ TlaFile = (Join-Path $tlaDir 'TestSpec.tla'); TlaDir = $tlaDir }; Error = $null }
             }
         }
 

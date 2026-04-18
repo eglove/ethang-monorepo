@@ -34,7 +34,7 @@ Describe 'Invoke-ParallelWriter (Stage 2)' {
             Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE Spec ----'
             return @{
                 bdd = @{ Success = $true; Output = $bddFile; Error = $null }
-                tla = @{ Success = $true; Output = @{ TlaFile = (Get-Item "$tlaDir/Spec.tla"); TlaDir = $tlaDir }; Error = $null }
+                tla = @{ Success = $true; Output = @{ TlaFile = (Join-Path $tlaDir 'Spec.tla'); TlaDir = $tlaDir }; Error = $null }
             }
         }
 
@@ -53,7 +53,7 @@ Describe 'Invoke-ParallelWriter (Stage 2)' {
             Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE Spec ----'
             return @{
                 bdd = @{ Success = $true; Output = $bddFile; Error = $null }
-                tla = @{ Success = $true; Output = @{ TlaFile = (Get-Item "$tlaDir/Spec.tla"); TlaDir = $tlaDir }; Error = $null }
+                tla = @{ Success = $true; Output = @{ TlaFile = (Join-Path $tlaDir 'Spec.tla'); TlaDir = $tlaDir }; Error = $null }
             }
         }
 
@@ -72,7 +72,7 @@ Describe 'Invoke-ParallelWriter (Stage 2)' {
             Set-Content -Path (Join-Path $tlaDir 'Spec.tla') -Value '---- MODULE Spec ----'
             return @{
                 bdd = @{ Success = $false; Output = $null; Error = "BDD writer crashed" }
-                tla = @{ Success = $true; Output = @{ TlaFile = (Get-Item "$tlaDir/Spec.tla"); TlaDir = $tlaDir }; Error = $null }
+                tla = @{ Success = $true; Output = @{ TlaFile = (Join-Path $tlaDir 'Spec.tla'); TlaDir = $tlaDir }; Error = $null }
             }
         }
 
@@ -103,6 +103,28 @@ Describe 'Invoke-ParallelWriter (Stage 2)' {
         Remove-Item (Join-Path $featureDir 'elicitor.md') -ErrorAction SilentlyContinue
 
         { Invoke-ParallelWriter -FeatureDir $featureDir -Root $testRoot } | Should -Throw '*Elicitor briefing not found*'
+    }
+
+    It 'returns TlaFile as a string path (regression: ConvertTo-Json hang)' {
+        Mock Invoke-Parallel {
+            $bddFile = Join-Path $featureDir 'bdd.feature'
+            Set-Content -Path $bddFile -Value 'Feature: test'
+            $tlaDir = Join-Path $featureDir 'tla'
+            New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+            $tlaPath = Join-Path $tlaDir 'Spec.tla'
+            Set-Content -Path $tlaPath -Value '---- MODULE Spec ----'
+            return @{
+                bdd = @{ Success = $true; Output = $bddFile; Error = $null }
+                tla = @{ Success = $true; Output = @{ TlaFile = $tlaPath; TlaDir = $tlaDir }; Error = $null }
+            }
+        }
+
+        $result = Invoke-ParallelWriter -FeatureDir $featureDir -Root $testRoot
+
+        $result.TlaFile | Should -BeOfType ([string])
+        $warnings = $null
+        $null = $result | ConvertTo-Json -Depth 10 -Compress -WarningVariable warnings -WarningAction SilentlyContinue
+        $warnings | Should -BeNullOrEmpty
     }
 
     It 'does not write STAGE_COMPLETE:2 marker on failure' {

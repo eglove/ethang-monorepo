@@ -1,0 +1,775 @@
+{
+  "topic": "Bidirectional Agent Communication Bus",
+  "tiers": [
+    {
+      "tier": 1,
+      "title": "Foundation — glossary, schema tables, allocator, event types, roles, doubles, logging, WorkingTreeCoordinator",
+      "tasks": [
+        {
+          "id": "T1",
+          "step": 1,
+          "title": "Bounded Context Glossary + PowerShell Naming Conventions + Context Map",
+          "files": [
+            "packages/vibe-cli/bus/bounded-context-glossary.psd1",
+            "packages/vibe-cli/bus/event-types/event-context-map.psd1",
+            "packages/vibe-cli/bus/bounded-context-contracts.psd1",
+            "packages/vibe-cli/bus/bounded-context-map.md",
+            "packages/vibe-cli/tools/check-tla-name-leaks.ps1",
+            "packages/vibe-cli/tools/check-bdd-tags.ps1",
+            "packages/vibe-cli/tools/none-reason-tokens.psd1",
+            "packages/vibe-cli/tests/bus/unit/bounded-context.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T1b",
+          "step": "1b",
+          "title": "TLA+ Action → Aggregate Cascade Map",
+          "files": [
+            "packages/vibe-cli/docs/bidirectional-comms/tla-action-aggregate-cascade.md"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T2",
+          "step": 2,
+          "title": "event_log Table + Append-Only Trigger + Query Indices + Compaction",
+          "files": [
+            "packages/vibe-cli/bus/schema/event-log.sql",
+            "packages/vibe-cli/tests/bus/integration/event-log-schema.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T3",
+          "step": 3,
+          "title": "agent_sessions Table + Alive Identity Index",
+          "files": [
+            "packages/vibe-cli/bus/schema/agent-sessions.sql",
+            "packages/vibe-cli/tests/bus/integration/agent-sessions-schema.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T4",
+          "step": 4,
+          "title": "Schema Migration Runner + Deployment Story + Safety + Schema-Hash + Aggregate Ownership + BDD Scenario",
+          "files": [
+            "packages/vibe-cli/bus/schema/migration.ps1",
+            "packages/vibe-cli/bus/schema/migration-down.ps1",
+            "packages/vibe-cli/bus/schema/generate-schema-hash.ps1",
+            "packages/vibe-cli/bus/schema/settings.sql",
+            "packages/vibe-cli/bus/schema/bus-lifecycle-state.sql",
+            "packages/vibe-cli/bus/schema/consensus-state.sql",
+            "packages/vibe-cli/bus/schema/rollback-state.sql",
+            "packages/vibe-cli/bus/schema/schema-hash-history.json",
+            "packages/vibe-cli/bus/schema/aggregate-table-ownership.psd1",
+            "packages/vibe-cli/vibe.ps1",
+            "packages/vibe-cli/docs/bidirectional-comms/migration-playbook.md",
+            "packages/vibe-cli/docs/bidirectional-comms/bdd.feature",
+            "packages/vibe-cli/tests/bus/integration/migration.Tests.ps1",
+            "packages/vibe-cli/bus/infra/feature-flag-sunset-manifest.psd1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T5",
+          "step": 5,
+          "title": "Open-BusDatabase Infrastructure (WAL PRAGMA + Long-Path + Timestamps)",
+          "files": [
+            "packages/vibe-cli/bus/schema/open-bus-database.ps1",
+            "packages/vibe-cli/bus/schema/long-path-check.ps1",
+            "packages/vibe-cli/tests/bus/unit/open-bus-database.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T6",
+          "step": 6,
+          "title": "evt_id Allocator",
+          "files": [
+            "packages/vibe-cli/bus/infra/evt-id-allocator.ps1",
+            "packages/vibe-cli/tests/bus/unit/evt-id-allocator.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T7",
+          "step": 7,
+          "title": "EventTypes Enum + Bounded Context Subsets + JSON Schemas",
+          "files": [
+            "packages/vibe-cli/bus/event-types/event-types.psd1",
+            "packages/vibe-cli/bus/event-types/bootstrap.schema.json",
+            "packages/vibe-cli/bus/event-types/ground_truth.schema.json",
+            "packages/vibe-cli/bus/event-types/done.schema.json",
+            "packages/vibe-cli/bus/event-types/objection.schema.json",
+            "packages/vibe-cli/bus/event-types/objection_response.schema.json",
+            "packages/vibe-cli/bus/event-types/consensus_candidate.schema.json",
+            "packages/vibe-cli/bus/event-types/consensus_ratified.schema.json",
+            "packages/vibe-cli/bus/event-types/consensus_failed.schema.json",
+            "packages/vibe-cli/bus/event-types/verify.schema.json",
+            "packages/vibe-cli/bus/event-types/verify_result.schema.json",
+            "packages/vibe-cli/bus/event-types/review_requested.schema.json",
+            "packages/vibe-cli/bus/event-types/review_verdict.schema.json",
+            "packages/vibe-cli/bus/event-types/checkpoint.schema.json",
+            "packages/vibe-cli/bus/event-types/checkpoint_response.schema.json",
+            "packages/vibe-cli/bus/event-types/protocol_error.schema.json",
+            "packages/vibe-cli/bus/event-types/protocol_error_ack.schema.json",
+            "packages/vibe-cli/bus/event-types/schema-validator.ps1",
+            "packages/vibe-cli/tests/bus/unit/event-types.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T8",
+          "step": 8,
+          "title": "Agent Role Definitions + System Prompt Templates",
+          "files": [
+            "packages/vibe-cli/bus/agents/agent-schema-version.psd1",
+            "packages/vibe-cli/bus/agents/tla-writer.ps1",
+            "packages/vibe-cli/bus/agents/bdd-writer.ps1",
+            "packages/vibe-cli/bus/agents/debate-moderator.ps1",
+            "packages/vibe-cli/bus/agents/review-moderator.ps1",
+            "packages/vibe-cli/bus/agents/coding-worker.ps1",
+            "packages/vibe-cli/bus/agents/reviewer.ps1",
+            "packages/vibe-cli/bus/agents/prompt-generator.ps1",
+            "packages/vibe-cli/tests/bus/unit/agent-roles.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T9",
+          "step": 9,
+          "title": "Test Doubles (claude, git, tlc, tests)",
+          "files": [
+            "packages/vibe-cli/tests/helpers/claude-test-double.ps1",
+            "packages/vibe-cli/tests/helpers/git-test-double.ps1",
+            "packages/vibe-cli/tests/helpers/tlc-test-double.ps1",
+            "packages/vibe-cli/tests/helpers/tests-test-double.ps1",
+            "packages/vibe-cli/tests/bus/unit/test-doubles.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T10",
+          "step": 10,
+          "title": "Write-PipelineLog Mutex + Log Infrastructure",
+          "files": [
+            "packages/vibe-cli/bus/router/pipeline-log.ps1",
+            "packages/vibe-cli/tests/bus/unit/pipeline-log.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": []
+        },
+        {
+          "id": "T37",
+          "step": 37,
+          "title": "WorkingTreeCoordinator — lock-free git abstraction layer + AtomicFileReplace",
+          "files": [
+            "packages/vibe-cli/bus/infra/working-tree-coordinator.ps1",
+            "packages/vibe-cli/bus/infra/atomic-file-replace.ps1",
+            "packages/vibe-cli/tests/bus/unit/working-tree-coordinator.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T9"]
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "title": "Aggregates + value objects — AgentSession, ConsensusRound, Envelope, Routing Rules, BusLifecycle + BDD audit (T38) + BusLocationPolicy (T38b)",
+      "tasks": [
+        {
+          "id": "T38",
+          "step": 38,
+          "title": "BDD Feature Audit, Named-Tag Refactor (@tla-action-<ActionName>), Observable-Behavior Refactor + Invariant-18/21/22 Scenarios + ObservablePostConditions Then-clause alignment (Bijection Complete)",
+          "files": [
+            "packages/vibe-cli/docs/bidirectional-comms/bdd.feature",
+            "packages/vibe-cli/tools/check-bdd-tags.ps1",
+            "packages/vibe-cli/tools/check-tla-leaks-in-bdd.ps1",
+            "packages/vibe-cli/tests/bus/unit/bdd-audit.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1","T4","T25","T28","T29"]
+        },
+        {
+          "id": "T38b",
+          "step": "38b",
+          "title": "BusLocationPolicy Value Object — encapsulates VIBE_BUS_DB_PATH guard, exposes connection-handle factory, prevents transaction-inside-git boundary leak",
+          "files": [
+            "packages/vibe-cli/bus/domain/bus-location-policy.ps1",
+            "packages/vibe-cli/tests/bus/unit/bus-location-policy.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1","T4","T5"]
+        },
+        {
+          "id": "T11",
+          "step": 11,
+          "title": "AgentSession Aggregate Root",
+          "files": [
+            "packages/vibe-cli/bus/domain/agent-session.ps1",
+            "packages/vibe-cli/tests/bus/unit/agent-session-aggregate.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1","T3","T5"]
+        },
+        {
+          "id": "T12",
+          "step": 12,
+          "title": "ConsensusRound Aggregate",
+          "files": [
+            "packages/vibe-cli/bus/domain/consensus-round.ps1",
+            "packages/vibe-cli/tests/bus/unit/consensus-round-aggregate.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1","T2","T5"]
+        },
+        {
+          "id": "T13",
+          "step": 13,
+          "title": "Envelope Value Object",
+          "files": [
+            "packages/vibe-cli/bus/router/envelope.ps1",
+            "packages/vibe-cli/tests/bus/unit/envelope.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T6","T7"]
+        },
+        {
+          "id": "T14",
+          "step": 14,
+          "title": "Routing Rules + ACL Resolver",
+          "files": [
+            "packages/vibe-cli/bus/router/routing-rules.psd1",
+            "packages/vibe-cli/bus/router/routing-rules.ps1",
+            "packages/vibe-cli/tests/bus/unit/routing-rules.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T7","T8"]
+        },
+        {
+          "id": "T36",
+          "step": 36,
+          "title": "BusLifecycle Aggregate — encapsulates busStatus, haltReason, failureCategory, pipeline_lock",
+          "files": [
+            "packages/vibe-cli/bus/domain/bus-lifecycle.ps1",
+            "packages/vibe-cli/tests/bus/unit/bus-lifecycle.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1","T4","T5"]
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "title": "Core router with atomic AppendEvent transaction",
+      "tasks": [
+        {
+          "id": "T15",
+          "step": 15,
+          "title": "Core Router + Atomic AppendEvent (BEGIN IMMEDIATE)",
+          "files": [
+            "packages/vibe-cli/bus/router/router.ps1",
+            "packages/vibe-cli/tests/bus/unit/router.Tests.ps1",
+            "packages/vibe-cli/tests/bus/integration/router-core.Tests.ps1",
+            "packages/vibe-cli/tests/bus/performance-baselines.json",
+            "packages/vibe-cli/tests/bus/performance-baselines-absolute.json"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T2","T3","T4","T5","T6","T10","T13","T14"]
+        }
+      ]
+    },
+    {
+      "tier": 4,
+      "title": "Agent lifecycle start + handler adapter",
+      "tasks": [
+        {
+          "id": "T16",
+          "step": 16,
+          "title": "Start-BusAgent + Stdout Backpressure Queue + Crash Wiring + Interlocked Queue Counter + Halt-Once Engine Handler",
+          "files": [
+            "packages/vibe-cli/bus/router/agent-lifecycle.ps1",
+            "packages/vibe-cli/tests/bus/integration/start-bus-agent.Tests.ps1",
+            "packages/vibe-cli/tests/bus/unit/stderr-backpressure.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T4","T9","T11","T15"]
+        },
+        {
+          "id": "T17",
+          "step": 17,
+          "title": "Handler Adapter Service Interface + Implementations + ProtocolError Split",
+          "files": [
+            "packages/vibe-cli/bus/router/handler-adapter.ps1",
+            "packages/vibe-cli/bus/domain/handler-adapter-service.ps1",
+            "packages/vibe-cli/bus/handlers/tlc-handler.ps1",
+            "packages/vibe-cli/bus/handlers/tests-handler.ps1",
+            "packages/vibe-cli/bus/handlers/git-handler.ps1",
+            "packages/vibe-cli/tests/bus/integration/handler-adapter.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T7","T15"]
+        }
+      ]
+    },
+    {
+      "tier": 5,
+      "title": "Agent lifecycle stop + Send-BusEvent + ground truth",
+      "tasks": [
+        {
+          "id": "T18",
+          "step": 18,
+          "title": "Stop-BusAgent + Stop-AllBusAgents",
+          "files": [
+            "packages/vibe-cli/bus/router/agent-lifecycle.ps1",
+            "packages/vibe-cli/tests/bus/integration/stop-bus-agent.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T3","T16"]
+        },
+        {
+          "id": "T19",
+          "step": 19,
+          "title": "Send-BusEvent + Ground Truth Injection + Respawn Inv9 Path",
+          "files": [
+            "packages/vibe-cli/bus/router/send-bus-event.ps1",
+            "packages/vibe-cli/bus/router/ground-truth.ps1",
+            "packages/vibe-cli/tests/bus/integration/send-bus-event.Tests.ps1",
+            "packages/vibe-cli/tests/bus/unit/ground-truth.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T11","T14","T15"]
+        }
+      ]
+    },
+    {
+      "tier": 6,
+      "title": "Protocol error, fan-out group, commit serializer",
+      "tasks": [
+        {
+          "id": "T20",
+          "step": 20,
+          "title": "Protocol Error Recovery + DomainProtocolError Type",
+          "files": [
+            "packages/vibe-cli/bus/router/protocol-error.ps1",
+            "packages/vibe-cli/bus/domain/protocol-error-types.ps1",
+            "packages/vibe-cli/tests/bus/integration/protocol-error.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T19"]
+        },
+        {
+          "id": "T21",
+          "step": 21,
+          "title": "Wait-BusGroup (Fan-Out / Fan-In)",
+          "files": [
+            "packages/vibe-cli/bus/router/wait-bus-group.ps1",
+            "packages/vibe-cli/tests/bus/integration/wait-bus-group.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T19"]
+        },
+        {
+          "id": "T22",
+          "step": 22,
+          "title": "Commit Serializer Aggregate + WriteSession Entity + CrashCoordinationDomainService + Telemetry",
+          "files": [
+            "packages/vibe-cli/bus/router/commit-serializer.ps1",
+            "packages/vibe-cli/bus/domain/write-session.ps1",
+            "packages/vibe-cli/bus/domain/crash-coordination-service.ps1",
+            "packages/vibe-cli/tests/bus/integration/commit-serializer.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T17","T19","T37"]
+        }
+      ]
+    },
+    {
+      "tier": 7,
+      "title": "Consensus machinery + checkpoint / session renewal",
+      "tasks": [
+        {
+          "id": "T23",
+          "step": 23,
+          "title": "Consensus Machinery (orchestration over ConsensusRound aggregate)",
+          "files": [
+            "packages/vibe-cli/bus/router/consensus.ps1",
+            "packages/vibe-cli/tests/bus/integration/consensus.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T12","T19","T20"]
+        },
+        {
+          "id": "T24",
+          "step": 24,
+          "title": "Checkpoint / Session Renewal + Context-Overrun Pre-Check",
+          "files": [
+            "packages/vibe-cli/bus/router/checkpoint.ps1",
+            "packages/vibe-cli/tests/bus/integration/checkpoint.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T19","T20","T22"]
+        }
+      ]
+    },
+    {
+      "tier": 8,
+      "title": "Halt conditions, heartbeat, status, resume, rollback",
+      "tasks": [
+        {
+          "id": "T25",
+          "step": 25,
+          "title": "Halt Conditions + Halt-Once Guard + SIGINT Drain + 13 Halt Tests + 13 Negative Branches + BDD",
+          "files": [
+            "packages/vibe-cli/bus/router/halt.ps1",
+            "packages/vibe-cli/tests/bus/unit/halt.Tests.ps1",
+            "packages/vibe-cli/tests/bus/integration/halt.Tests.ps1",
+            "packages/vibe-cli/docs/bidirectional-comms/bdd.feature"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T21","T22","T23","T36"]
+        },
+        {
+          "id": "T26",
+          "step": 26,
+          "title": "Heartbeat Banner + Crash Distinguisher",
+          "files": [
+            "packages/vibe-cli/bus/router/heartbeat.ps1",
+            "packages/vibe-cli/tests/bus/unit/heartbeat.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T10","T19","T25"]
+        },
+        {
+          "id": "T27",
+          "step": 27,
+          "title": "Get-BusStatus + -Status Flag",
+          "files": [
+            "packages/vibe-cli/bus/router/get-bus-status.ps1",
+            "packages/vibe-cli/vibe.ps1",
+            "packages/vibe-cli/tests/bus/integration/get-bus-status.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T2","T19","T25"]
+        },
+        {
+          "id": "T28",
+          "step": 28,
+          "title": "-Resume Recovery + BDD Schema-Version Scenario",
+          "files": [
+            "packages/vibe-cli/bus/router/resume.ps1",
+            "packages/vibe-cli/tests/bus/integration/resume.Tests.ps1",
+            "packages/vibe-cli/tests/bus/e2e/resume-e2e.Tests.ps1",
+            "packages/vibe-cli/docs/bidirectional-comms/bdd.feature"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T2","T16","T24","T25"]
+        },
+        {
+          "id": "T29",
+          "step": 29,
+          "title": "/Rollback Subsystem + RollbackCoordinator + Snapshot Hash + BDD Scenario",
+          "files": [
+            "packages/vibe-cli/bus/router/rollback.ps1",
+            "packages/vibe-cli/bus/domain/rollback-coordinator.ps1",
+            "packages/vibe-cli/tests/bus/integration/rollback.Tests.ps1",
+            "packages/vibe-cli/docs/bidirectional-comms/bdd.feature"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T19","T22","T23","T25","T37"]
+        }
+      ]
+    },
+    {
+      "tier": 9,
+      "title": "Stage migration — T30a-f sequential per-stage commits (T38 moved to Tier 2)",
+      "tasks": [
+        {
+          "id": "T30a",
+          "step": "30a",
+          "title": "Migrate Stage 2 to Bus",
+          "files": [
+            "packages/vibe-cli/stages/2-parallel-writers.ps1",
+            "packages/vibe-cli/bus/feature-flags.psd1",
+            "packages/vibe-cli/bus/infra/stage-feature-flag.ps1",
+            "packages/vibe-cli/bus/domain/stage.ps1",
+            "packages/vibe-cli/vibe.ps1",
+            "packages/vibe-cli/docs/bidirectional-comms/cascade-order.md",
+            "packages/vibe-cli/tests/bus/integration/migration-stage-2.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T18","T21","T28","T29"]
+        },
+        {
+          "id": "T30b",
+          "step": "30b",
+          "title": "Migrate Stage 3 to Bus",
+          "files": [
+            "packages/vibe-cli/stages/3-unified-debate.ps1",
+            "packages/vibe-cli/tests/bus/integration/migration-stage-3.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T30a"]
+        },
+        {
+          "id": "T30c",
+          "step": "30c",
+          "title": "Migrate Stage 4 to Bus",
+          "files": [
+            "packages/vibe-cli/stages/4-post-debate.ps1",
+            "packages/vibe-cli/tests/bus/integration/migration-stage-4.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T30b"]
+        },
+        {
+          "id": "T30d",
+          "step": "30d",
+          "title": "Migrate Stage 5 to Bus",
+          "files": [
+            "packages/vibe-cli/stages/5-implementation-writer.ps1",
+            "packages/vibe-cli/tests/bus/integration/migration-stage-5.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T30c"]
+        },
+        {
+          "id": "T30e",
+          "step": "30e",
+          "title": "Migrate Stage 6 to Bus",
+          "files": [
+            "packages/vibe-cli/stages/6-implementation-debate.ps1",
+            "packages/vibe-cli/tests/bus/integration/migration-stage-6.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T30d"]
+        },
+        {
+          "id": "T30f",
+          "step": "30f",
+          "title": "Migrate Stage 7 to Bus",
+          "files": [
+            "packages/vibe-cli/stages/7-coding.ps1",
+            "packages/vibe-cli/tests/bus/integration/migration-stage-7.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T30e"]
+        }
+      ]
+    },
+    {
+      "tier": "9b",
+      "title": "Post-migration cleanup (sequential on T30) + rollback rehearsal",
+      "tasks": [
+        {
+          "id": "T31",
+          "step": 31,
+          "title": "Delete Obsolete Utilities",
+          "files": [
+            "packages/vibe-cli/utils/invoke-parallel.ps1",
+            "packages/vibe-cli/utils/unified-debate-loop.ps1",
+            "packages/vibe-cli/utils/debate-loop.ps1",
+            "packages/vibe-cli/utils/invoke-verify.ps1",
+            "packages/vibe-cli/utils/job-runner.ps1",
+            "packages/vibe-cli/tests/bus/integration/deleted-utils.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T30f"]
+        },
+        {
+          "id": "T31b",
+          "step": "31b",
+          "title": "Rollback Rehearsal — automated 'vibe rehearse-rollback' against snapshot fixtures, runnable quarterly via CI schedule",
+          "files": [
+            "packages/vibe-cli/bus/ops/rollback-rehearsal.ps1",
+            "packages/vibe-cli/tests/bus/integration/rollback-rehearsal.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T29","T31"]
+        }
+      ]
+    },
+    {
+      "tier": 10,
+      "title": "CI gates + YAML (29 jobs), property/trace/refinement tests, contract tests — Sub-phase A: {T34 || T32 || T33a-@contract-independent} concurrent; Sub-phase B: {T33b-@contract-dependent} after T34 only",
+      "tasks": [
+        {
+          "id": "T32",
+          "step": 32,
+          "title": "CI Gates + TLC + YAML (29 jobs) + Red-Green Order + Named BDD Tags + Gate Executability + No-String-Literal-Assertions + Postcondition Lint + Round 6/7/8/9 Gates",
+          "files": [
+            "packages/vibe-cli/tools/check-invoke-claude-migration.ps1",
+            "packages/vibe-cli/tools/check-red-commit-order.ps1",
+            "packages/vibe-cli/tools/run-tlc.ps1",
+            "packages/vibe-cli/tools/check-tla-version.ps1",
+            "packages/vibe-cli/tools/check-perf-baselines.ps1",
+            "packages/vibe-cli/tools/cascade-order-check.ps1",
+            "packages/vibe-cli/tools/naming-convention-check.ps1",
+            "packages/vibe-cli/tools/test-fail-assertion.ps1",
+            "packages/vibe-cli/tools/check-tla-symbol-parity.ps1",
+            "packages/vibe-cli/tools/check-bdd-action-tags.ps1",
+            "packages/vibe-cli/tools/check-bdd-postconditions.ps1",
+            "packages/vibe-cli/tools/check-gate-executability.ps1",
+            "packages/vibe-cli/tools/no-string-literal-assertions.ps1",
+            "packages/vibe-cli/tools/send-canary-rollback-alert.ps1",
+            "packages/vibe-cli/tools/emit-gate-proof.ps1",
+            "packages/vibe-cli/tools/gate-ledger.ps1",
+            "packages/vibe-cli/tools/ratchet-perf-baselines.ps1",
+            "packages/vibe-cli/.github/workflows/vibe-cli.yml",
+            "packages/vibe-cli/tla-spec-version.txt",
+            "packages/vibe-cli/bus/schema/stage-soak-log.txt",
+            "packages/vibe-cli/bus/schema/schema.hash",
+            "packages/vibe-cli/bus/schema/soak-thresholds.psd1",
+            "packages/vibe-cli/docs/bidirectional-comms/migration-playbook.md",
+            "packages/vibe-cli/docs/bidirectional-comms/canary-rollback-criteria.md",
+            "packages/vibe-cli/docs/bidirectional-comms/canary-escalation-procedures.md",
+            "packages/vibe-cli/docs/bidirectional-comms/transaction-boundaries.md",
+            "packages/vibe-cli/docs/gate-ledger.jsonl",
+            "packages/vibe-cli/docs/perf-ratchet-log.json",
+            "packages/vibe-cli/docs/tdd-exit-codes.md",
+            "packages/vibe-cli/tests/bus/unit/ci-gates.Tests.ps1",
+            "packages/vibe-cli/tests/bus/mutation/tier2-mutation.Tests.ps1",
+            "packages/vibe-cli/tests/fixtures/provenance-manifest.json",
+            "packages/vibe-cli/bus/infra/stage-observability-targets.psd1",
+            "packages/vibe-cli/bus/infra/feature-flag-sunset-manifest.psd1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T1","T30f","T38"]
+        },
+        {
+          "id": "T33a",
+          "step": "33a",
+          "title": "Property Tests + Trace Validator + Perf Baselines (contract-independent)",
+          "tags": ["@contract-independent"],
+          "files": [
+            "packages/vibe-cli/tests/bus/performance-baselines.json",
+            "packages/vibe-cli/tests/bus/performance-baselines-absolute.json",
+            "packages/vibe-cli/tests/bus/properties/router-properties.Tests.ps1",
+            "packages/vibe-cli/tests/bus/properties/event-sequence-generator.ps1",
+            "packages/vibe-cli/tests/bus/mutation-operators.md",
+            "packages/vibe-cli/tests/bus/mutation-operators.md.sha256",
+            "packages/vibe-cli/docs/bidirectional-comms/fairness-obligation-matrix.md",
+            "packages/vibe-cli/docs/bidirectional-comms/stuttering-equivalence.md",
+            "packages/vibe-cli/docs/bidirectional-comms/refinement-mapping.md",
+            "packages/vibe-cli/docs/bidirectional-comms/liveness-slo-mapping.md",
+            "packages/vibe-cli/bus/infra/tla-trace-function-map.psd1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T28","T29","T36","T37"]
+        },
+        {
+          "id": "T33b",
+          "step": "33b",
+          "title": "Telemetry + Contract Snapshot Validation (contract-dependent)",
+          "tags": ["@contract-dependent"],
+          "files": [
+            "packages/vibe-cli/tests/bus/traces/bus-trace-replay.Tests.ps1",
+            "packages/vibe-cli/tools/check-no-telemetry-in-transaction.ps1",
+            "packages/vibe-cli/docs/bidirectional-comms/cross-aggregate-projection-contract.md",
+            "packages/vibe-cli/docs/bidirectional-comms/telemetry-sink.md",
+            "packages/vibe-cli/docs/bidirectional-comms/observability-dashboard.yaml",
+            "packages/vibe-cli/bus/infra/bus-read-projection.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T33a","T34"]
+        },
+        {
+          "id": "T34",
+          "step": 34,
+          "title": "Test Double Contract Tests (snapshot-based, bidirectional verification)",
+          "files": [
+            "packages/vibe-cli/tests/contracts/claude-contract.Tests.ps1",
+            "packages/vibe-cli/tests/contracts/git-contract.Tests.ps1",
+            "packages/vibe-cli/tests/contracts/contract-runner.ps1",
+            "packages/vibe-cli/tests/contracts/snapshots/claude-output.snapshot.json",
+            "packages/vibe-cli/tests/contracts/snapshots/git-output.snapshot.json",
+            "packages/vibe-cli/tests/contracts/README.md"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": ["T9","T30"]
+        }
+      ]
+    },
+    {
+      "tier": 11,
+      "title": "Final completeness review — full e2e against real SQLite",
+      "tasks": [
+        {
+          "id": "T35",
+          "step": 35,
+          "title": "Final Completeness Review + Full E2E Test Suite",
+          "files": [
+            "packages/vibe-cli/tests/bus/e2e/bus-e2e.Tests.ps1"
+          ],
+          "codeWriter": "powershell-writer",
+          "testWriter": "pester-writer",
+          "dependencies": [
+            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T10",
+            "T11","T12","T13","T14","T15","T16","T17","T18","T19","T20",
+            "T21","T22","T23","T24","T25","T26","T27","T28","T29",
+            "T30a","T30b","T30c","T30d","T30e","T30f",
+            "T31","T31b","T32","T33a","T33b","T34","T36","T37","T38","T38b"
+          ]
+        }
+      ]
+    }
+  ]
+}

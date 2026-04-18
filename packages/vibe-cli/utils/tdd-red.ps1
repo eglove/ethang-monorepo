@@ -21,7 +21,7 @@ function Invoke-RedPhase {
         $testWriterFile = Join-Path $Root "agents/test-writers/$($Task.testWriter).md"
     }
 
-    $taskJson = $Task | ConvertTo-Json -Depth 10 -Compress
+    $taskJson = $Task | ConvertTo-Json -Depth 20 -Compress
     $prompt = "Write failing tests for task $taskId`n`nTask JSON:`n$taskJson`n`nFull implementation plan: $PlanJsonPath"
 
     Write-TaskLog -TaskId $taskId -Phase 'red' -Message "Dispatching test writer: $($Task.testWriter)" -FeatureDir $FeatureDir -RunId $RunId

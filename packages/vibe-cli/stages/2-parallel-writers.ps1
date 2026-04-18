@@ -63,7 +63,7 @@
                     -FixContext "Elicitor briefing: $briefingPathArg"
 
                 $tlaFile = Get-ChildItem "$tlaDir/*.tla" | Select-Object -First 1
-                return @{ TlaFile = $tlaFile; TlaDir = $tlaDir }
+                return @{ TlaFile = $tlaFile.FullName; TlaDir = $tlaDir }
             }
             Args = @($Root, $absFeatureDir, $briefingPath)
         }

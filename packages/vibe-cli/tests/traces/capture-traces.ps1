@@ -136,7 +136,7 @@ for ($i = 0; $i -lt $traces.Count; $i++) {
     $filename = "sim-$($terminal)-$($i + 1).json"
     $filepath = Join-Path $OutputDir $filename
 
-    $trace | ConvertTo-Json -Depth 10 | Set-Content -Path $filepath -Encoding UTF8
+    $trace | ConvertTo-Json -Depth 20 | Set-Content -Path $filepath -Encoding UTF8
     Write-Host "  Saved: $filename ($($trace.steps.Count) steps, terminal=$terminal)"
 }
 
