@@ -32,3 +32,16 @@ Note: Stage 4 is synchronous — no agents are dispatched. Bus events provide ob
 3. `consensus_candidate` (moderator → bus, when consensus reached)
 4. `consensus_ratify` or `consensus_fail` (bus → moderator, outcome)
 5. `stage_completed` (sent by Invoke-ImplementationDebateStage, role: pipeline)
+
+## Stage 7 — Coding Stage
+1. `stage_started` (sent by Invoke-CodingStage, role: pipeline)
+2. `verify` (gate: fixture_coverage — after fixture coverage check)
+3. `verify` (gate: pre_coding — before tier dispatch)
+4. `verify` (gate: per_worktree — after per-worktree gates pass)
+5. `checkpoint` (phase: post_merge — after sequential merge)
+6. `verify` (gate: global_doublepass — after global double-pass)
+7. `verify` (gate: global_review — after global review)
+8. `stage_completed` (sent by Invoke-CodingStage, role: pipeline)
+
+Note: Stage 7 is the host stage for the bus. Bus events wrap existing milestone
+markers — the underlying orchestration (git, worktrees, gates) is unchanged.

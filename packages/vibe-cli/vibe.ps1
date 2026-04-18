@@ -65,7 +65,7 @@ if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
 # Bus infrastructure (when any stage flag enabled)
 if ($env:VIBE_BUS_ALL_STAGES -eq '1' -or $env:VIBE_BUS_STAGE2 -eq '1' -or
     $env:VIBE_BUS_STAGE3 -eq '1' -or $env:VIBE_BUS_STAGE4 -eq '1' -or
-    $env:VIBE_BUS_STAGE6 -eq '1') {
+    $env:VIBE_BUS_STAGE6 -eq '1' -or $env:VIBE_BUS_STAGE7 -eq '1') {
     . "$root/bus/router/send-bus-event.ps1"
     . "$root/bus/router/agent-lifecycle.ps1"
     . "$root/bus/router/wait-bus-group.ps1"
@@ -288,7 +288,7 @@ try {
         Write-PipelineLog -Message "Fixture precondition OK" -Root $root
 
         Write-PipelineLog -Message "--- Stage 7: Coding ---" -Root $root
-        $codingResult = Invoke-CodingStage -Feature $featureName -Root $targetRoot
+        $codingResult = Invoke-CodingStage -Feature $featureName -Root $targetRoot -DbPath $busDbPath
         Write-PipelineLog -Message "Stage 7 result: $($codingResult.Status)" -Root $root
 
         if ($codingResult.Status -match '^halted_') {
