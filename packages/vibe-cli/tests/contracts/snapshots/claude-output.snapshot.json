@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "contractName": "claude-invoke",
+  "recordedAt": "2026-04-18",
+  "outputs": [
+    {
+      "scenario": "doc-writer-role",
+      "input": { "Role": "doc-writer", "Prompt": "test prompt" },
+      "output": { "ExitCode": 0, "Content": "MOCK_DOC_WRITER_OUTPUT" }
+    },
+    {
+      "scenario": "code-writer-role",
+      "input": { "Role": "code-writer", "Prompt": "test prompt" },
+      "output": { "ExitCode": 0, "Content": "MOCK_CODE_WRITER_OUTPUT" }
+    },
+    {
+      "scenario": "moderator-role",
+      "input": { "Role": "moderator", "Prompt": "test prompt" },
+      "output": { "ExitCode": 0, "Content": "MOCK_MODERATOR_OUTPUT" }
+    }
+  ]
+}
