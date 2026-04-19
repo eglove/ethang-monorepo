@@ -133,7 +133,7 @@ Describe 'WriteSession Entity' {
 
         try {
             # Clean up the job
-            Stop-Job $job -Timeout 5 -ErrorAction SilentlyContinue
+            Stop-Job $job -ErrorAction SilentlyContinue
             Remove-Job $job -Force -ErrorAction SilentlyContinue
         } finally {
             # Clean up the signal file

@@ -292,7 +292,9 @@ Describe 'Invoke-AtomicFileReplace' {
         $cmd.Parameters.ContainsKey('BaseDelayMs') | Should -BeTrue
     }
 
-    It 'throws after MaxAttempts exhausted with IOException' {
+    It 'throws after MaxAttempts exhausted with IOException' -Skip:(-not $IsWindows) {
+        # FileShare.None is enforced only on Windows; POSIX treats it as advisory,
+        # so File.Replace succeeds on Linux/macOS regardless of the held FileStream.
         $src = Join-Path $script:TempDir 'source.tmp'
         $dst = Join-Path $script:TempDir 'locked-destination.txt'
         Set-Content -Path $src -Value 'content'
@@ -315,7 +317,7 @@ Describe 'Invoke-AtomicFileReplace' {
         }
     }
 
-    It 'emits [WARN] on each retry before exhaustion' {
+    It 'emits [WARN] on each retry before exhaustion' -Skip:(-not $IsWindows) {
         $src = Join-Path $script:TempDir 'source-warn.tmp'
         $dst = Join-Path $script:TempDir 'locked-warn.txt'
         Set-Content -Path $src -Value 'content'
