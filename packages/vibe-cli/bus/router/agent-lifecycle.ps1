@@ -23,56 +23,76 @@ public static class QueueDepthStore {
 $script:_ActiveAgents = [System.Collections.Concurrent.ConcurrentDictionary[string, hashtable]]::new()
 
 function Reset-AgentLifecycleState {
-    <#
-    .SYNOPSIS
-    Test helper: clears all active agents and resets module state.
-    #>
     $script:_ActiveAgents.Clear()
 }
 
 function Get-BackpressureQueueDepth {
-    <#
-    .SYNOPSIS
-    Returns current queue depth counter via Interlocked.Read (non-blocking).
-    #>
     return [QueueDepthStore]::Read()
 }
 
 function Start-BusAgent {
-    <#
-    .SYNOPSIS
-    Spawns an agent subprocess, creates session row, wires backpressure queue and crash handler.
-    #>
+    [CmdletBinding(DefaultParameterSetName = 'Connection')]
     param(
+        [Parameter(ParameterSetName = 'Connection')]
         $Connection = $null,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'Connection')]
         [string]$AgentName,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'Connection')]
+        [Parameter(Mandatory, ParameterSetName = 'DbPath')]
         [string]$Role,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'Connection')]
         [string]$SystemPrompt,
 
+        [Parameter(ParameterSetName = 'Connection')]
         [string]$Worktree = $null,
 
+        [Parameter(ParameterSetName = 'Connection')]
         [int]$QueueCapacity = 1000,
 
+        [Parameter(ParameterSetName = 'Connection')]
         [int64]$SpawnEpoch = 0,
 
+        [Parameter(ParameterSetName = 'Connection')]
+        [Parameter(ParameterSetName = 'DbPath')]
         [scriptblock]$LaunchAgent = $null,
 
-        [scriptblock]$GetUtcNow = $null
+        [Parameter(ParameterSetName = 'Connection')]
+        [scriptblock]$GetUtcNow = $null,
+
+        [Parameter(Mandatory, ParameterSetName = 'DbPath')]
+        [string]$AgentId,
+
+        [Parameter(ParameterSetName = 'DbPath')]
+        [string]$DbPath
     )
 
-    # 1. Create BlockingCollection with specified capacity
-    $queue = [System.Collections.Concurrent.BlockingCollection[string]]::new($QueueCapacity)
+    if ($PSCmdlet.ParameterSetName -eq 'DbPath') {
+        $resolvedDb = if ($DbPath) { $DbPath } elseif ($script:_BusDbPath) { $script:_BusDbPath } else { $null }
+        $sessionId  = "session-$AgentId-$([guid]::NewGuid().ToString('N').Substring(0,8))"
+        $ts         = [datetime]::UtcNow.ToString('o')
 
-    # 2. Create session (status = 'spawning')
+        if ($resolvedDb) {
+            Invoke-SqliteQuery -DataSource $resolvedDb -Query @"
+INSERT OR REPLACE INTO agent_sessions (session_id, agent_id, role, status, started_at, ground_truth_delivered)
+VALUES (@sid, @aid, @role, 'active', @sa, 0)
+"@ -SqlParameters @{ sid = $sessionId; aid = $AgentId; role = $Role; sa = $ts } | Out-Null
+        }
+
+        $evt = @{ EventType = 'agent_started'; AgentId = $AgentId; Role = $Role; From = 'pipeline'; To = 'bus' }
+        Send-BusEvent -Event $evt -DbPath $resolvedDb | Out-Null
+
+        if ($LaunchAgent) { & $LaunchAgent -AgentId $AgentId -Role $Role }
+
+        return @{ SessionId = $sessionId; AgentId = $AgentId; Role = $Role; Status = 'active' }
+    }
+
+    # Connection (production) flow
+    $queue = [System.Collections.Concurrent.BlockingCollection[string]]::new($QueueCapacity)
     $sessionId = New-AgentSession -Connection $Connection -AgentName $AgentName -Role $Role -Worktree $Worktree -ProcessId 0
 
-    # 3. Compute spawn epoch if not provided
     if ($SpawnEpoch -eq 0) {
         if ($null -ne $GetUtcNow) {
             $SpawnEpoch = & $GetUtcNow
@@ -81,7 +101,6 @@ function Start-BusAgent {
         }
     }
 
-    # 4. Launch agent subprocess
     $processId = 0
     $processObj = $null
     if ($null -ne $LaunchAgent) {
@@ -92,7 +111,6 @@ function Start-BusAgent {
         }
     }
 
-    # Update session pid if we have one
     if ($processId -ne 0 -and $null -ne $Connection) {
         try {
             $updateSql = "UPDATE agent_sessions SET pid=@pid WHERE session_id=@session_id"
@@ -105,10 +123,8 @@ function Start-BusAgent {
         }
     }
 
-    # 5. Transition session to 'alive'
     Set-AgentSessionAlive -Connection $Connection -SessionId $sessionId -SpawnEpoch $SpawnEpoch
 
-    # 6. Register crash watcher if we have a real Process object
     if ($null -ne $processObj -and $processObj -is [System.Diagnostics.Process]) {
         try {
             $processObj.EnableRaisingEvents = $true
@@ -123,7 +139,6 @@ function Start-BusAgent {
         }
     }
 
-    # 7. Store agent entry in _ActiveAgents
     $agentEntry = @{
         Queue     = $queue
         SessionId = $sessionId
@@ -132,7 +147,6 @@ function Start-BusAgent {
     }
     $script:_ActiveAgents[$AgentName] = $agentEntry
 
-    # 8. Return result
     return @{
         SessionId  = $sessionId
         AgentName  = $AgentName
@@ -141,12 +155,61 @@ function Start-BusAgent {
     }
 }
 
+function Stop-BusAgent {
+    param(
+        [string]$AgentId,
+        [scriptblock]$DbExecutor,
+        [string]$DbPath
+    )
+
+    $resolvedDb = if ($DbPath) { $DbPath } elseif ($script:_BusDbPath) { $script:_BusDbPath } else { $null }
+    $ts         = [datetime]::UtcNow.ToString('o')
+
+    if ($resolvedDb) {
+        Invoke-SqliteQuery -DataSource $resolvedDb -Query @"
+UPDATE agent_sessions SET status='ended', ended_at=@ea WHERE agent_id=@aid AND status='active'
+"@ -SqlParameters @{ ea = $ts; aid = $AgentId } | Out-Null
+    }
+}
+
+function Stop-AllBusAgents {
+    param(
+        [scriptblock]$DbExecutor,
+        [string]$DbPath
+    )
+
+    $resolvedDb = if ($DbPath) { $DbPath } elseif ($script:_BusDbPath) { $script:_BusDbPath } else { $null }
+    $ts         = [datetime]::UtcNow.ToString('o')
+
+    if ($resolvedDb) {
+        Invoke-SqliteQuery -DataSource $resolvedDb -Query @"
+UPDATE agent_sessions SET status='ended', ended_at=@ea WHERE status='active'
+"@ -SqlParameters @{ ea = $ts } | Out-Null
+    }
+}
+
+function Invoke-EmitHeartbeat {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
+    param(
+        [string]$AgentId,
+        [scriptblock]$DbExecutor,
+        [string]$DbPath
+    )
+
+    $resolvedDb = if ($DbPath) { $DbPath } elseif ($script:_BusDbPath) { $script:_BusDbPath } else { $null }
+    $ts         = [datetime]::UtcNow.ToString('o')
+
+    if ($resolvedDb) {
+        $key = "heartbeat_$AgentId"
+        Invoke-SqliteQuery -DataSource $resolvedDb -Query @"
+INSERT OR REPLACE INTO rollback_state (key, value) VALUES (@k, @v)
+"@ -SqlParameters @{ k = $key; v = $ts } | Out-Null
+    }
+
+    return @{ AgentId = $AgentId; LastTickAt = $ts }
+}
+
 function Invoke-EnqueueAgentMessage {
-    <#
-    .SYNOPSIS
-    Enqueues a message to the named agent's backpressure queue.
-    Returns $true on success, $false if queue is full (triggers halt).
-    #>
     param(
         [string]$AgentName,
         [string]$Message
@@ -159,13 +222,10 @@ function Invoke-EnqueueAgentMessage {
 
     $queue = $agentEntry.Queue
 
-    # Increment BEFORE attempting to add
     [QueueDepthStore]::Increment() | Out-Null
 
-    # Non-blocking add
     $added = $queue.TryAdd($Message, 0)
     if (-not $added) {
-        # Rollback increment
         [QueueDepthStore]::Decrement() | Out-Null
         Write-PipelineLog -Severity 'ALARM' -Message "Queue full for agent $AgentName"
         Invoke-BusHalt -HaltReason 'mechanical_error' -FailureCategory 'queue_full'
@@ -176,11 +236,6 @@ function Invoke-EnqueueAgentMessage {
 }
 
 function Invoke-DequeueAgentMessage {
-    <#
-    .SYNOPSIS
-    Dequeues a message from the named agent's backpressure queue.
-    Returns the message string, or $null on timeout.
-    #>
     param(
         [string]$AgentName,
         [int]$TimeoutMs = 5000
@@ -204,10 +259,6 @@ function Invoke-DequeueAgentMessage {
 }
 
 function Stop-MessageDispatch {
-    <#
-    .SYNOPSIS
-    Drains pending messages for an agent and clears the BlockingCollection.
-    #>
     param([string]$AgentName)
 
     $agentEntry = $null

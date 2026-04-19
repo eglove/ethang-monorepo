@@ -25,6 +25,14 @@
 
 Note: Stage 4 is synchronous — no agents are dispatched. Bus events provide observability only.
 
+## Stage 5 — Implementation Writer
+
+1. `stage_started` (sent by Invoke-ImplementationWriter, role: pipeline)
+2. `verify` (sent by Invoke-ImplementationWriter after document generation, artifact: implementation-plan)
+3. `stage_completed` (sent by Invoke-ImplementationWriter, role: pipeline)
+
+Note: Stage 5 is synchronous — one agent produces the implementation plan document. Bus events provide observability only.
+
 ## Stage 6 — Implementation Debate
 
 1. `stage_started` (sent by Invoke-ImplementationDebateStage, role: pipeline)

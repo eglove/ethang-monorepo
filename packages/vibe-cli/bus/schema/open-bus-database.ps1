@@ -1,3 +1,5 @@
+Import-Module PSSQLite -ErrorAction SilentlyContinue
+
 # Minimal local logging stub (Write-PipelineLog may not exist in all contexts)
 function Write-BusLog {
     param(
@@ -27,21 +29,20 @@ function Open-BusDatabase {
 
     Import-Module PSSQLite -ErrorAction SilentlyContinue
 
-    # 1. Set the canonical clock override if provided
     if ($null -ne $GetUtcNow) {
         $script:GetUtcNow = $GetUtcNow
     }
 
-    # 2. Validate path length (step 1 of the spec)
     $checkedPath = Invoke-LongPathCheck -Path $Path
-
-    # 3. Normalize path via GetFullPath (expand 8.3 aliases)
     $normalizedPath = [System.IO.Path]::GetFullPath($checkedPath)
 
-    # 4. Open SQLite connection via PSSQLite
+    $parentDir = Split-Path $normalizedPath -Parent
+    if ($parentDir -and -not (Test-Path $parentDir)) {
+        New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
+    }
+
     $conn = New-SQLiteConnection -DataSource $normalizedPath
 
-    # 5. Assert WAL mode
     $walResult = Invoke-SqliteQuery -SQLiteConnection $conn -Query 'PRAGMA journal_mode=WAL'
     $walMode = if ($walResult -is [PSCustomObject]) { $walResult.journal_mode } else { $walResult }
     if ($walMode -ne 'wal') {
@@ -49,10 +50,8 @@ function Open-BusDatabase {
         throw '[ALARM] WAL mode assertion failed'
     }
 
-    # 6. Disable auto-checkpointing
     Invoke-SqliteQuery -SQLiteConnection $conn -Query 'PRAGMA wal_autocheckpoint=0' | Out-Null
 
-    # 7. Check WAL file size
     $walFilePath = "$normalizedPath-wal"
     if (Test-Path $walFilePath) {
         $walFile = Get-Item $walFilePath
@@ -66,7 +65,6 @@ function Open-BusDatabase {
         }
     }
 
-    # 8. Validate schema hash
     $dbDir = [System.IO.Path]::GetDirectoryName($normalizedPath)
     $hashDir = if ($env:VIBE_BUS_DB_PATH) {
         [System.IO.Path]::GetDirectoryName([System.IO.Path]::GetFullPath($env:VIBE_BUS_DB_PATH))
@@ -87,7 +85,20 @@ function Open-BusDatabase {
         }
     }
 
+    # Make the path discoverable to PSSQLite-based helpers (Send-BusEvent -DbPath etc.)
+    $script:_BusDbPath = $normalizedPath
+
     return $conn
+}
+
+# ---------------------------------------------------------------------------
+# Public: Close-BusDatabase
+# Clears the module-level DB path used by PSSQLite-based helpers. The ADO.NET
+# $conn returned by Open-BusDatabase is owned by the caller and disposed there.
+# ---------------------------------------------------------------------------
+
+function Close-BusDatabase {
+    $script:_BusDbPath = $null
 }
 
 # ---------------------------------------------------------------------------
@@ -101,12 +112,10 @@ function Invoke-BusWalCheckpoint {
 
     $script:WalCheckpointCallCount++
 
-    # Circuit open: no-op except for half-open probe every 60th call
     if ($script:WalCheckpointCircuitOpen) {
         if (($script:WalCheckpointCallCount % 60) -ne 0) {
             return
         }
-        # Half-open probe: try once
         try {
             Invoke-SqliteQuery -SQLiteConnection $Connection -Query 'PRAGMA wal_checkpoint(TRUNCATE)' | Out-Null
             $script:WalCheckpointCircuitOpen = $false
@@ -119,7 +128,6 @@ function Invoke-BusWalCheckpoint {
         return
     }
 
-    # Normal path: attempt checkpoint
     try {
         Invoke-SqliteQuery -SQLiteConnection $Connection -Query 'PRAGMA wal_checkpoint(TRUNCATE)' | Out-Null
         $script:WalCheckpointConsecutiveFailures = 0
