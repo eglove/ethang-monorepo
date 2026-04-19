@@ -16,41 +16,6 @@ $script:WalCheckpointCircuitOpen = $false
 $script:WalCheckpointCallCount = 0
 
 # ---------------------------------------------------------------------------
-# Internal helpers — thin wrappers so unit tests can mock them
-# ---------------------------------------------------------------------------
-
-function Open-SQLiteConnection {
-    param([Parameter(Mandatory)][string]$DataSource)
-    # Uses System.Data.SQLite if available, otherwise raises
-    $connStr = "Data Source=$DataSource;Version=3;"
-    $conn = [System.Data.SQLite.SQLiteConnection]::new($connStr)
-    $conn.Open()
-    return $conn
-}
-
-function Invoke-SQLiteQuery {
-    param(
-        [Parameter(Mandatory)]$Connection,
-        [Parameter(Mandatory)][string]$Query
-    )
-    $cmd = $Connection.CreateCommand()
-    $cmd.CommandText = $Query
-    $reader = $cmd.ExecuteReader()
-    $results = @()
-    while ($reader.Read()) {
-        $row = [ordered]@{}
-        for ($i = 0; $i -lt $reader.FieldCount; $i++) {
-            $row[$reader.GetName($i)] = $reader.GetValue($i)
-        }
-        $results += [PSCustomObject]$row
-    }
-    $reader.Close()
-    $cmd.Dispose()
-    if ($results.Count -eq 1) { return $results[0] }
-    return $results
-}
-
-# ---------------------------------------------------------------------------
 # Public: Open-BusDatabase
 # ---------------------------------------------------------------------------
 
@@ -59,6 +24,8 @@ function Open-BusDatabase {
         [Parameter(Mandatory)][string]$Path,
         [scriptblock]$GetUtcNow = $null
     )
+
+    Import-Module PSSQLite -ErrorAction SilentlyContinue
 
     # 1. Set the canonical clock override if provided
     if ($null -ne $GetUtcNow) {
@@ -71,11 +38,11 @@ function Open-BusDatabase {
     # 3. Normalize path via GetFullPath (expand 8.3 aliases)
     $normalizedPath = [System.IO.Path]::GetFullPath($checkedPath)
 
-    # 4. Open SQLite connection
-    $conn = Open-SQLiteConnection -DataSource $normalizedPath
+    # 4. Open SQLite connection via PSSQLite
+    $conn = New-SQLiteConnection -DataSource $normalizedPath
 
     # 5. Assert WAL mode
-    $walResult = Invoke-SQLiteQuery -Connection $conn -Query 'PRAGMA journal_mode=WAL'
+    $walResult = Invoke-SqliteQuery -SQLiteConnection $conn -Query 'PRAGMA journal_mode=WAL'
     $walMode = if ($walResult -is [PSCustomObject]) { $walResult.journal_mode } else { $walResult }
     if ($walMode -ne 'wal') {
         Write-BusLog -Severity 'ALARM' -Message 'WAL mode assertion failed'
@@ -83,7 +50,7 @@ function Open-BusDatabase {
     }
 
     # 6. Disable auto-checkpointing
-    Invoke-SQLiteQuery -Connection $conn -Query 'PRAGMA wal_autocheckpoint=0' | Out-Null
+    Invoke-SqliteQuery -SQLiteConnection $conn -Query 'PRAGMA wal_autocheckpoint=0' | Out-Null
 
     # 7. Check WAL file size
     $walFilePath = "$normalizedPath-wal"
@@ -141,7 +108,7 @@ function Invoke-BusWalCheckpoint {
         }
         # Half-open probe: try once
         try {
-            Invoke-SQLiteQuery -Connection $Connection -Query 'PRAGMA wal_checkpoint(TRUNCATE)' | Out-Null
+            Invoke-SqliteQuery -SQLiteConnection $Connection -Query 'PRAGMA wal_checkpoint(TRUNCATE)' | Out-Null
             $script:WalCheckpointCircuitOpen = $false
             $script:WalCheckpointConsecutiveFailures = 0
             Write-BusLog -Severity 'INFO' -Message 'WAL checkpoint circuit closed.'
@@ -154,17 +121,13 @@ function Invoke-BusWalCheckpoint {
 
     # Normal path: attempt checkpoint
     try {
-        Invoke-SQLiteQuery -Connection $Connection -Query 'PRAGMA wal_checkpoint(TRUNCATE)' | Out-Null
+        Invoke-SqliteQuery -SQLiteConnection $Connection -Query 'PRAGMA wal_checkpoint(TRUNCATE)' | Out-Null
         $script:WalCheckpointConsecutiveFailures = 0
     }
     catch {
         $errMsg = $_.Exception.Message
         if ($errMsg -match 'SQLITE_FULL') {
             $script:WalCheckpointConsecutiveFailures++
-
-            if ($script:WalCheckpointConsecutiveFailures -eq 1) {
-                # Attempt 2 is first retry — [WARN]
-            }
 
             if ($script:WalCheckpointConsecutiveFailures -ge 3) {
                 if (-not $script:WalCheckpointCircuitOpen) {
