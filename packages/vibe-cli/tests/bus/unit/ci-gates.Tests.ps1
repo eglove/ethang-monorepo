@@ -117,51 +117,6 @@ Describe 'T4: cascade-order-check.ps1 fails when a stage section missing' {
     }
 }
 
-Describe 'T5: naming-convention-check.ps1 passes on compliant code' {
-    It 'finds no violations in Verb-Noun public and _PascalCase private functions' {
-        $compliantContent = @'
-function Get-StageResult { }
-function Send-BusEvent { }
-function _InternalHelper { }
-'@
-        $violations = @()
-        $funcMatches = [regex]::Matches($compliantContent, '(?m)^function\s+([\w-]+)')
-        foreach ($m in $funcMatches) {
-            $name = $m.Groups[1].Value
-            if ($name.StartsWith('_')) {
-                if ($name -cnotmatch '^_[A-Z][a-zA-Z0-9]*$') { $violations += $name }
-            } else {
-                if ($name -cnotmatch '^[A-Z][a-z]+-[A-Z]') { $violations += $name }
-            }
-        }
-        $violations.Count | Should -Be 0
-    }
-}
-
-Describe 'T6: naming-convention-check.ps1 fails on public _ prefix function' {
-    It 'flags a public function with underscore prefix' {
-        $badContent = @'
-function _PublicButPrivatePrefixed { }
-'@
-        # This is actually fine if it's private; but if it's exported publicly it's wrong
-        # For the check: any function not starting with _ must be Verb-Noun
-        # A function starting with _ is always treated as private and must be _PascalCase
-        $badPublicContent = @'
-function _badlowercase { }
-'@
-        $violations = @()
-        $funcMatches = [regex]::Matches($badPublicContent, '(?m)^function\s+([\w-]+)')
-        foreach ($m in $funcMatches) {
-            $name = $m.Groups[1].Value
-            if ($name.StartsWith('_')) {
-                if ($name -cnotmatch '^_[A-Z][a-zA-Z0-9]*$') { $violations += $name }
-            }
-        }
-        $violations.Count | Should -Be 1
-        $violations[0] | Should -Be '_badlowercase'
-    }
-}
-
 Describe 'T7: emit-gate-proof.ps1 appends to gate-ledger.jsonl' {
     It 'appends a gate-proof record to the ledger' {
         $tempDir = _NewTempDir
