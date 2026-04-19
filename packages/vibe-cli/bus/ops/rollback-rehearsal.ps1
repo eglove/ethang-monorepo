@@ -136,6 +136,13 @@ function _Take-RehearsalSnapshot {
         [scriptblock]$GetUtcNow = $null
     )
 
+    # Strip any stray null bytes before passing to Test-Path / New-Item. On Linux CI,
+    # some callers produce strings with a trailing NUL that .NET's Path validation
+    # rejects with "Null character in path" — trim them here so the snapshot dir is
+    # actually usable.
+    $DbPath = $DbPath -replace "`0", ''
+    $SnapshotDir = $SnapshotDir -replace "`0", ''
+
     if (-not (Test-Path $SnapshotDir)) {
         New-Item -ItemType Directory -Path $SnapshotDir -Force | Out-Null
     }

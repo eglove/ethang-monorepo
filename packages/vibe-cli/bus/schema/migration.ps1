@@ -85,14 +85,11 @@ function Invoke-BusMigration {
         }
         $sql = Get-Content -Path $sqlPath -Raw -Encoding UTF8
 
-        # Split on semicolons to handle multi-statement files (PSSQLite executes one statement at a time)
-        $statements = $sql -split ';\s*(?=\r?\n|$)' | Where-Object { $_.Trim().Length -gt 0 }
-        foreach ($stmt in $statements) {
-            $trimmed = $stmt.Trim()
-            if ($trimmed.Length -gt 0) {
-                Invoke-SqliteQuery -DataSource $DbPath -Query $trimmed | Out-Null
-            }
-        }
+        # Pass the whole SQL file at once. Splitting on ';' (even with a newline
+        # lookahead) breaks CREATE TRIGGER blocks because their BEGIN..END bodies
+        # contain their own semicolons — each fragment becomes partial SQL that
+        # SQLite reports as "incomplete input" / "no transaction is active".
+        Invoke-SqliteQuery -DataSource $DbPath -Query $sql | Out-Null
     }
 
     # Compute and store schema hash
