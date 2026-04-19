@@ -1,4 +1,50 @@
-﻿$TlaToolsJar = "C:\Users\glove\projects\tla-toolbox\tla2tools.jar"
+﻿# Jar resolution: priority is explicit $env:TLC_JAR override → committed repo
+# copy at tools/tla2tools.jar. Missing jar or a nightly server with a newer
+# Last-Modified header triggers an auto-download. Network failure falls through
+# to whatever is on disk; set $env:TLC_OFFLINE=1 to skip the HEAD check.
+$script:_TlaToolsJar = $null
+$script:_TlaNightlyUrl = 'https://nightly.tlapl.us/dist/tla2tools.jar'
+
+function _Get-TlaToolsJar {
+    if ($script:_TlaToolsJar) { return $script:_TlaToolsJar }
+
+    $target = if ($env:TLC_JAR) {
+        $env:TLC_JAR
+    } else {
+        (Join-Path $PSScriptRoot '..' 'tools' 'tla2tools.jar')
+    }
+
+    $exists = Test-Path $target
+    $needDownload = -not $exists
+
+    if ($exists -and -not $env:TLC_OFFLINE) {
+        try {
+            $head = Invoke-WebRequest -Uri $script:_TlaNightlyUrl -Method Head `
+                -UseBasicParsing -TimeoutSec 10
+            $remoteRaw = $head.Headers['Last-Modified']
+            if ($remoteRaw) {
+                $remote = [datetime]::Parse($remoteRaw).ToUniversalTime()
+                $local  = (Get-Item $target).LastWriteTimeUtc
+                if ($remote -gt $local) {
+                    Write-PipelineLog "TLC jar: remote $($remote.ToString('u')) newer than local — refreshing."
+                    $needDownload = $true
+                }
+            }
+        } catch {
+            Write-PipelineLog "TLC jar: version check failed ($($_.Exception.Message)); using cached copy."
+        }
+    }
+
+    if ($needDownload) {
+        $dir = Split-Path $target -Parent
+        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+        Write-PipelineLog "TLC jar: downloading $script:_TlaNightlyUrl → $target"
+        Invoke-WebRequest -Uri $script:_TlaNightlyUrl -OutFile $target -UseBasicParsing
+    }
+
+    $script:_TlaToolsJar = (Resolve-Path $target).Path
+    return $script:_TlaToolsJar
+}
 
 function Invoke-TlcProcess {
     <#
@@ -20,9 +66,10 @@ function Invoke-TlcProcess {
         [string]$ExtraArgs = ''
     )
 
+    $jar = _Get-TlaToolsJar
     $psi = [System.Diagnostics.ProcessStartInfo]::new()
     $psi.FileName = 'java'
-    $baseArgs = "-XX:+UseParallelGC -jar `"$TlaToolsJar`" -config `"$CfgFileName`" -workers auto"
+    $baseArgs = "-XX:+UseParallelGC -jar `"$jar`" -config `"$CfgFileName`" -workers auto"
     if ($ExtraArgs) { $baseArgs += " $ExtraArgs" }
     $psi.Arguments = "$baseArgs `"$TlaFileName`""
     $psi.WorkingDirectory = $TlaDir

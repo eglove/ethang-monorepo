@@ -61,8 +61,10 @@ jobs:
       - run: pnpm build
 
   tlc:
-    # TLA+ model checking. run-tlc.ps1 auto-downloads tla2tools.jar (nightly)
-    # on first use and refreshes when the server's Last-Modified is newer.
+    # TLA+ model checking. Uses packages/vibe-cli/utils/tlc-runner.ps1 —
+    # the same runner the vibe-cli pipeline uses in production. It resolves
+    # tla2tools.jar from the committed packages/vibe-cli/tools/tla2tools.jar,
+    # auto-refreshing if the nightly server has a newer Last-Modified.
     # Auto-discovers every docs/*/tla/*.cfg and pairs it with its .tla spec.
     runs-on: ubuntu-latest
     steps:
@@ -70,6 +72,9 @@ jobs:
       - name: Run TLC on every spec
         shell: pwsh
         run: |
+          function Write-PipelineLog { param([string]$m, [string]$Severity = 'INFO') Write-Output $m }
+          . packages/vibe-cli/utils/tlc-runner.ps1
+
           $cfgs = Get-ChildItem -Path packages/vibe-cli/docs -Filter '*.cfg' -Recurse |
             Where-Object { $_.Directory.Name -eq 'tla' }
           $failures = @()
@@ -80,9 +85,11 @@ jobs:
               $tla = (Get-ChildItem $cfg.Directory.FullName -Filter '*.tla' | Select-Object -First 1).FullName
             }
             Write-Output "::group::TLC $($cfg.Name)"
-            pwsh packages/vibe-cli/tools/run-tlc.ps1 -Spec $tla -Config $cfg.FullName -Timeout 600
+            $r = Invoke-TlcProcess -TlaDir $cfg.Directory.FullName -TlaFileName (Split-Path $tla -Leaf) -CfgFileName $cfg.Name
             Write-Output "::endgroup::"
-            if ($LASTEXITCODE -ne 0) { $failures += $cfg.Name }
+            if ($r.ExitCode -ne 0 -or $r.Output -match 'Error:|violated|TLC threw') {
+              $failures += $cfg.Name
+            }
           }
           if ($failures) {
             Write-Error ("TLC failed for: " + ($failures -join ', '))

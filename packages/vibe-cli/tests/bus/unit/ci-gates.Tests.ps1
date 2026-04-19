@@ -304,11 +304,11 @@ Describe 'T21: stage-observability-targets.psd1 can be imported' {
     }
 }
 
-Describe 'ci.yml defines the TLC matrix' {
-    It 'ci.yml exists and contains run-tlc.ps1 invocation' {
+Describe 'ci.yml wires in TLC model checking' {
+    It 'ci.yml exists and dot-sources utils/tlc-runner.ps1' {
         $yamlPath = Join-Path $Root '..' '..' '.github' 'workflows' 'ci.yml'
         $yamlPath | Should -Exist
-        (Get-Content $yamlPath -Raw) | Should -Match 'run-tlc\.ps1'
+        (Get-Content $yamlPath -Raw) | Should -Match 'utils/tlc-runner\.ps1'
     }
 }
 

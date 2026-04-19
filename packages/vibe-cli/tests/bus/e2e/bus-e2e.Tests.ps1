@@ -453,7 +453,7 @@ Describe 'E2E-FINAL: Bus Infrastructure Completeness Assertions' {
         $wfPath       = Join-Path $worktreeRoot '.github/workflows/ci.yml'
 
         Test-Path $wfPath | Should -BeTrue -Because "ci.yml CI workflow must exist"
-        (Get-Content $wfPath -Raw) | Should -Match 'run-tlc\.ps1' -Because "ci.yml must invoke the TLC runner"
+        (Get-Content $wfPath -Raw) | Should -Match 'utils/tlc-runner\.ps1' -Because "ci.yml must invoke the TLC runner"
     }
 
     It 'E2E-FINAL-T5: bus/ops/rollback-rehearsal.ps1 exists' {
