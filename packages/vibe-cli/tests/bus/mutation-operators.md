@@ -67,19 +67,19 @@ Each operator targets a specific invariant so that surviving mutants indicate co
 
 ## Coverage Matrix
 
-| Operator | P1 | P2 | P3 | P4 | P5 | P8 | P10 | P11 | P13 |
-|---|---|---|---|---|---|---|---|---|---|
-| InvertAclCheck | | | | X | | | | | |
-| SkipHaltLatch | | | | | | | X | | X |
-| DropEvent | | | X | | | X | | | |
-| CorruptEvtId | X | X | | | | | | X | |
-| SwapStatusTransition | | | | | X | | | | |
+| Operator             | P1  | P2  | P3  | P4  | P5  | P8  | P10 | P11 | P13 |
+| -------------------- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| InvertAclCheck       |     |     |     | X   |     |     |     |     |     |
+| SkipHaltLatch        |     |     |     |     |     |     | X   |     | X   |
+| DropEvent            |     |     | X   |     |     | X   |     |     |     |
+| CorruptEvtId         | X   | X   |     |     |     |     |     | X   |     |
+| SwapStatusTransition |     |     |     |     | X   |     |     |     |     |
 
 ## Usage
 
 Run mutation tests with the tier 2 runner:
 
-```powershell
+```powershell example
 Invoke-MutationSuite -Operators @('InvertAclCheck','DropEvent','CorruptEvtId') `
                      -TestSuite "$root/tests/bus/properties/router-properties.Tests.ps1"
 ```

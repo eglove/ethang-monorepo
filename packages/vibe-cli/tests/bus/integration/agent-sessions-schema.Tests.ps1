@@ -27,9 +27,12 @@ Describe 'agent_sessions schema' {
         $script:db = $null
     }
 
-    It 'agent_sessions table has exactly 15 columns' {
+    It 'agent_sessions table has exactly 16 columns' {
+        # 16 columns: session_id, agent_name, role, role_schema_version, status, worktree,
+        # pid, checkpoint_json, spawn_epoch, death_epoch, session_mono_epoch,
+        # checkpointed_at_mono, renew_epoch, ground_truth_delivered, created_at, updated_at.
         $cols = Invoke-SqliteQuery -DataSource $script:db -Query 'PRAGMA table_info(agent_sessions)'
-        $cols.Count | Should -Be 15
+        $cols.Count | Should -Be 16
     }
 
     It 'default status is spawning' {

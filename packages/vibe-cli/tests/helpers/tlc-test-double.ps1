@@ -13,7 +13,7 @@ function global:Clear-TlcTestDouble {
 
 function global:Get-TlcTestDoubleCalls {
     # Use Write-Output -NoEnumerate to prevent PowerShell from unrolling the List<T>
-    Write-Output -NoEnumerate $global:_VibeTlcCalls
+    Write-Output -NoEnumerate -InputObject $global:_VibeTlcCalls
 }
 
 function global:Invoke-TlcTestDouble {
@@ -30,7 +30,11 @@ function global:Invoke-TlcTestDouble {
     })
     if ($global:_VibeTlcResponses.Count -gt 0) {
         $r = $global:_VibeTlcResponses.Dequeue()
-        return @{ ExitCode = $r.ExitCode; Output = $r.Output }
+        return @{
+            ExitCode   = $r.ExitCode
+            Output     = $r.Output
+            Violations = if ($r.ContainsKey('Violations')) { $r.Violations } else { @() }
+        }
     }
     return @{ ExitCode = 0; Output = 'Model checking complete.' }
 }

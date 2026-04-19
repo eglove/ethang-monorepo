@@ -104,17 +104,19 @@ UPDATE agent_sessions
 function Set-AgentSessionCheckpointing {
     param(
         [Parameter(Mandatory)]$Connection,
-        [Parameter(Mandatory)][string]$SessionId
+        [Parameter(Mandatory)][string]$SessionId,
+        [int64]$CheckpointedAtMono = 0
     )
 
     $sql = @"
 UPDATE agent_sessions
-   SET status = 'checkpointing'
+   SET status = 'checkpointing', checkpointed_at_mono = @mono
  WHERE session_id = @session_id
    AND status = 'alive'
 "@
     Invoke-SqliteQuery -SQLiteConnection $Connection -Query $sql -SqlParameters @{
         session_id = $SessionId
+        mono       = $CheckpointedAtMono
     } | Out-Null
 }
 
@@ -125,18 +127,23 @@ function Set-AgentSessionRenewing {
     param(
         [Parameter(Mandatory)]$Connection,
         [Parameter(Mandatory)][string]$SessionId,
-        [Parameter(Mandatory)][string]$CheckpointJson
+        [string]$CheckpointJson = $null,
+        [int64]$RenewEpoch = 0
     )
 
     $sql = @"
 UPDATE agent_sessions
-   SET status = 'renewing', checkpoint_json = @checkpoint_json
+   SET status = 'renewing',
+       checkpoint_json = COALESCE(@checkpoint_json, checkpoint_json),
+       renew_epoch = @renew_epoch
  WHERE session_id = @session_id
    AND status = 'checkpointing'
 "@
+    $cjVal = if ([string]::IsNullOrEmpty($CheckpointJson)) { [DBNull]::Value } else { $CheckpointJson }
     Invoke-SqliteQuery -SQLiteConnection $Connection -Query $sql -SqlParameters @{
         session_id      = $SessionId
-        checkpoint_json = $CheckpointJson
+        checkpoint_json = $cjVal
+        renew_epoch     = $RenewEpoch
     } | Out-Null
 }
 
@@ -151,9 +158,13 @@ function Set-AgentSessionRespawned {
         [int]$NewProcessId = 0
     )
 
+    # Reset ground_truth_delivered on respawn — after renew the agent needs fresh ground truth.
     $sql = @"
 UPDATE agent_sessions
-   SET status = 'alive', spawn_epoch = @new_spawn_epoch, pid = @new_pid
+   SET status = 'alive',
+       spawn_epoch = @new_spawn_epoch,
+       pid = @new_pid,
+       ground_truth_delivered = 0
  WHERE session_id = @session_id
    AND status = 'renewing'
 "@
@@ -203,8 +214,23 @@ function Get-AliveSessions {
 function Get-AgentSession {
     param(
         [Parameter(Mandatory)]$Connection,
-        [Parameter(Mandatory)][string]$AgentName
+        [string]$AgentName = $null,
+        [string]$SessionId = $null
     )
+
+    if (-not [string]::IsNullOrEmpty($SessionId)) {
+        # Lookup by session id — used by checkpoint/renew tests that track a specific session
+        # regardless of current status.
+        $rows = Invoke-SqliteQuery -SQLiteConnection $Connection `
+            -Query "SELECT * FROM agent_sessions WHERE session_id = @sid LIMIT 1" `
+            -SqlParameters @{ sid = $SessionId }
+        if ($null -eq $rows -or @($rows).Count -eq 0) { return $null }
+        return $rows
+    }
+
+    if ([string]::IsNullOrEmpty($AgentName)) {
+        throw "Get-AgentSession requires -AgentName or -SessionId"
+    }
 
     $sql = @"
 SELECT * FROM agent_sessions

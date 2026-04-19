@@ -16,10 +16,33 @@ $script:_HaltLatch = [int]0
 # Helper: open a raw SQLiteConnection for transaction work
 # ---------------------------------------------------------------------------
 function _OpenConn {
-    param([string]$DataSource)
+    param($DataSource)
+    # Accept either an already-open SQLiteConnection (tests pass :memory: conns)
+    # or a file-path string (production usage).
+    # Marks $c._OwnedByBus = $true when we opened it ourselves so _CloseConn closes only our own.
+    if ($DataSource -is [System.Data.SQLite.SQLiteConnection]) {
+        if ($DataSource.State -ne 'Open') { $DataSource.Open() }
+        return $DataSource
+    }
     $c = New-SQLiteConnection -DataSource $DataSource
     if ($c.State -ne 'Open') { $c.Open() }
+    Add-Member -InputObject $c -NotePropertyName '_OwnedByBus' -NotePropertyValue $true -Force
     return $c
+}
+
+function _CloseConn {
+    param([System.Data.SQLite.SQLiteConnection]$Conn)
+    if ($Conn._OwnedByBus) { $Conn.Close() }
+}
+
+# Dispatches Invoke-SqliteQuery to -SQLiteConnection or -DataSource based on type,
+# so callers can pass either a connection object (tests, :memory:) or a path (prod).
+function _InvokeQuery {
+    param($Connection, [string]$Query, [hashtable]$SqlParameters = @{})
+    if ($Connection -is [System.Data.SQLite.SQLiteConnection]) {
+        return Invoke-SqliteQuery -SQLiteConnection $Connection -Query $Query -SqlParameters $SqlParameters
+    }
+    return Invoke-SqliteQuery -DataSource $Connection -Query $Query -SqlParameters $SqlParameters
 }
 
 # ---------------------------------------------------------------------------
@@ -63,8 +86,7 @@ function Get-BusLifecycleState {
     [CmdletBinding()]
     param([Parameter(Mandatory)]$Connection)
 
-    $rows = Invoke-SqliteQuery -DataSource $Connection `
-        -Query "SELECT key, value FROM bus_lifecycle_state"
+    $rows = _InvokeQuery -Connection $Connection -Query "SELECT key, value FROM bus_lifecycle_state"
 
     $map = @{}
     foreach ($r in $rows) { $map[$r.key] = $r.value }
@@ -104,7 +126,7 @@ function Invoke-BusAcquirePipelineLock {
         }
     }
     finally {
-        $conn.Close()
+        _CloseConn -Conn $conn
     }
 }
 
@@ -115,8 +137,7 @@ function Invoke-BusReleasePipelineLock {
     [CmdletBinding()]
     param([Parameter(Mandatory)]$Connection)
 
-    Invoke-SqliteQuery -DataSource $Connection `
-        -Query "UPDATE bus_lifecycle_state SET value='0' WHERE key='pipeline_lock'"
+    _InvokeQuery -Connection $Connection -Query "UPDATE bus_lifecycle_state SET value='0' WHERE key='pipeline_lock'"
 }
 
 # ---------------------------------------------------------------------------
@@ -126,15 +147,12 @@ function Invoke-BusHalt {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]$Connection,
-        [Parameter(Mandatory)]
-        [ValidateSet('feature_complete','user_interrupt','mechanical_error','user_rollback')]
-        [string]$HaltReason,
-        [ValidateSet('sqlite_error','agent_crash','git_commit','mechanical_error',$null)]
+        [Parameter(Mandatory)][string]$HaltReason,
         [string]$FailureCategory = $null,
         [scriptblock]$HaltLatchStore = $null
     )
 
-    # INV-15: mechanical_error requires FailureCategory
+    # INV-15: mechanical_error requires FailureCategory (explicit invariant per TLA+ spec).
     if ($HaltReason -eq 'mechanical_error' -and [string]::IsNullOrEmpty($FailureCategory)) {
         throw 'mechanical_error requires FailureCategory'
     }
@@ -186,7 +204,7 @@ function Invoke-BusHalt {
         }
     }
     finally {
-        $conn.Close()
+        _CloseConn -Conn $conn
     }
 
     # Step 3: release pipeline_lock (INV-13 BusRunningImpliesLockHeld)
@@ -210,7 +228,7 @@ function Invoke-BusResume {
         }
     }
     finally {
-        $conn.Close()
+        _CloseConn -Conn $conn
     }
 }
 
@@ -239,7 +257,7 @@ function Invoke-BusResumed {
         }
     }
     finally {
-        $conn.Close()
+        _CloseConn -Conn $conn
     }
 }
 
@@ -250,8 +268,7 @@ function Invoke-BusHaltIntentRecovery {
     [CmdletBinding()]
     param([Parameter(Mandatory)]$Connection)
 
-    $rows = Invoke-SqliteQuery -DataSource $Connection `
-        -Query "SELECT key, value FROM bus_lifecycle_state WHERE key IN ('halt_intent','busStatus','recovery_owner')"
+    $rows = _InvokeQuery -Connection $Connection -Query "SELECT key, value FROM bus_lifecycle_state WHERE key IN ('halt_intent','busStatus','recovery_owner')"
 
     $map = @{}
     foreach ($r in $rows) { $map[$r.key] = $r.value }
@@ -281,15 +298,12 @@ function Invoke-BusHaltIntentRecovery {
         }
     }
     finally {
-        $conn.Close()
+        _CloseConn -Conn $conn
     }
 
     # Complete the halt
-    Invoke-SqliteQuery -DataSource $Connection `
-        -Query "UPDATE bus_lifecycle_state SET value='halted' WHERE key='busStatus'"
-    Invoke-SqliteQuery -DataSource $Connection `
-        -Query "UPDATE bus_lifecycle_state SET value=@v WHERE key='halt_reason'" `
-        -SqlParameters @{ v = $haltIntent }
+    _InvokeQuery -Connection $Connection -Query "UPDATE bus_lifecycle_state SET value='halted' WHERE key='busStatus'"
+    _InvokeQuery -Connection $Connection -Query "UPDATE bus_lifecycle_state SET value=@v WHERE key='halt_reason'" -SqlParameters @{ v = $haltIntent }
     Invoke-BusReleasePipelineLock -Connection $Connection
 }
 
@@ -300,8 +314,7 @@ function Get-BusReadProjection {
     [CmdletBinding()]
     param([Parameter(Mandatory)]$Connection)
 
-    $rows = Invoke-SqliteQuery -DataSource $Connection `
-        -Query "SELECT key, value FROM bus_lifecycle_state"
+    $rows = _InvokeQuery -Connection $Connection -Query "SELECT key, value FROM bus_lifecycle_state"
 
     $map = @{}
     foreach ($r in $rows) { $map[$r.key] = $r.value }
@@ -314,22 +327,18 @@ function Get-BusReadProjection {
     $roundEpoch        = $null
     $rollbackRequested = $null
 
-    $tables = Invoke-SqliteQuery -DataSource $Connection `
-        -Query "SELECT name FROM sqlite_master WHERE type='table'"
+    $tables = _InvokeQuery -Connection $Connection -Query "SELECT name FROM sqlite_master WHERE type='table'"
     $tableNames = @($tables | ForEach-Object { $_.name })
 
     if ($tableNames -contains 'consensus_state') {
-        $cs = Invoke-SqliteQuery -DataSource $Connection `
-            -Query "SELECT value FROM consensus_state WHERE key='state' LIMIT 1"
+        $cs = _InvokeQuery -Connection $Connection -Query "SELECT value FROM consensus_state WHERE key='state' LIMIT 1"
         if ($cs) { $consensusState = $cs.value }
-        $re = Invoke-SqliteQuery -DataSource $Connection `
-            -Query "SELECT value FROM consensus_state WHERE key='round_epoch' LIMIT 1"
+        $re = _InvokeQuery -Connection $Connection -Query "SELECT value FROM consensus_state WHERE key='round_epoch' LIMIT 1"
         if ($re) { $roundEpoch = $re.value }
     }
 
     if ($tableNames -contains 'rollback_state') {
-        $rb = Invoke-SqliteQuery -DataSource $Connection `
-            -Query "SELECT value FROM rollback_state WHERE key='rollback_requested' LIMIT 1"
+        $rb = _InvokeQuery -Connection $Connection -Query "SELECT value FROM rollback_state WHERE key='rollback_requested' LIMIT 1"
         if ($rb) { $rollbackRequested = $rb.value }
     }
 

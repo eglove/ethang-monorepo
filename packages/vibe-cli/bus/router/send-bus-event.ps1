@@ -74,11 +74,14 @@ VALUES (@id, @f, @t, @et, @pl, 'routed', @ca)
     $appendParams = @{
         Connection  = $Connection
         From        = $From
-        To          = $targetTo
         Type        = $Type
         InReplyTo   = $InReplyTo
         DbExecutor  = $DbExecutor
     }
+    # Skip -To when the resolved target is null/empty; the router allows an
+    # omitted To (stores '' in the schema's NOT NULL column). Passing -To ''
+    # explicitly would trigger the router's "To is required" validation.
+    if (-not [string]::IsNullOrEmpty($targetTo)) { $appendParams['To'] = $targetTo }
     if ($null -ne $Payload) { $appendParams['Payload'] = $Payload }
     if ($null -ne $GroupId) { $appendParams['GroupId'] = $GroupId }
 

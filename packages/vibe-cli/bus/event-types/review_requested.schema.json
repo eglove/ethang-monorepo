@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "required": ["artifact_path"],
   "properties": {
     "artifact_path": { "type": "string" }
-  }
+  },
+  "required": ["artifact_path"],
+  "type": "object"
 }

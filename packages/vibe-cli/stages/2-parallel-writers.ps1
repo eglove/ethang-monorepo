@@ -45,7 +45,10 @@ function _Invoke-ParallelWriterBusPath {
         [scriptblock]$DbExecutor
     )
 
-    # Open bus DB
+    # Open bus DB — auto-provision a per-run temp DB if caller didn't specify one.
+    if ([string]::IsNullOrEmpty($DbPath)) {
+        $DbPath = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-bus-$(New-Guid).db"
+    }
     Open-BusDatabase -Path $DbPath
 
     # Create group for the two agents

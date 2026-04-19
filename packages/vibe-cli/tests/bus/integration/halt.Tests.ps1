@@ -5,9 +5,8 @@ BeforeAll {
     Import-Module PSSQLite -ErrorAction SilentlyContinue
     . "$PSScriptRoot/../../../bus/domain/bus-lifecycle.ps1"
     . "$PSScriptRoot/../../../bus/router/halt.ps1"
-    if (-not (Get-Command Write-PipelineLog -ErrorAction SilentlyContinue)) {
-        function global:Write-PipelineLog { param($Message, $Severity = 'INFO', $Gate = $null, $StructuredData = $null) }
-    }
+    # Force-override any lingering tracker Write-PipelineLog (see note in resume.Tests.ps1).
+    function global:Write-PipelineLog { param($Message, $Severity = 'INFO', $Gate = $null, $StructuredData = $null) }
 }
 
 Describe 'Halt Integration Tests' {
@@ -68,7 +67,11 @@ Describe 'Halt Integration Tests' {
 
     It 'After halt, Invoke-BusResume resets busStatus=running and clears halt_reason' {
         Invoke-HaltOnAgentCrash -Connection $script:Conn -AgentName 'tla-writer'
+        # Invoke-BusResume transitions halted -> resuming; Invoke-BusResumed finishes
+        # resuming -> running and clears halt_reason/failure_category. The two-step
+        # machine exists so a resume can be observed mid-transition by a reader.
         Invoke-BusResume -Connection $script:Conn
+        Invoke-BusResumed -Connection $script:Conn
         $state = Get-BusLifecycleState -Connection $script:Conn
         $state.BusStatus | Should -Be 'running'
         $state.HaltReason | Should -BeNullOrEmpty

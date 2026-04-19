@@ -16,7 +16,7 @@ Contract tests prevent drift by recording the mock's output in a versioned snaps
 
 Only update when real CLI behaviour has genuinely changed and been reviewed:
 
-```powershell
+```powershell example
 Invoke-ContractTest `
     -ContractName 'claude-invoke' `
     -MockInvoker { ... } `
@@ -28,10 +28,10 @@ Update requires a PR with justification: "The real `claude` CLI now returns X in
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| `contract-runner.ps1` | `Invoke-ContractTest`, `Compare-ContractSnapshot`, helpers |
-| `claude-contract.Tests.ps1` | 12 tests verifying the Claude mock |
-| `git-contract.Tests.ps1` | 9 tests verifying the git mock |
-| `snapshots/claude-output.snapshot.json` | Versioned Claude mock output |
-| `snapshots/git-output.snapshot.json` | Versioned git mock output |
+| File                                    | Purpose                                                    |
+| --------------------------------------- | ---------------------------------------------------------- |
+| `contract-runner.ps1`                   | `Invoke-ContractTest`, `Compare-ContractSnapshot`, helpers |
+| `claude-contract.Tests.ps1`             | 12 tests verifying the Claude mock                         |
+| `git-contract.Tests.ps1`                | 9 tests verifying the git mock                             |
+| `snapshots/claude-output.snapshot.json` | Versioned Claude mock output                               |
+| `snapshots/git-output.snapshot.json`    | Versioned git mock output                                  |

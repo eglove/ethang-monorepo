@@ -85,8 +85,11 @@ function Invoke-BusResumeRecovery {
     }
     $m = $aliveSessions.Count
 
-    # Step 5: Transition bus to running
-    Invoke-BusResume -Connection $Connection
+    # Step 5: Transition bus halted -> resuming -> running. Wrap in try so -Force can skip
+    # the precondition check but still drive the state machine when the bus is halted;
+    # if the bus is already running, both calls silently no-op (WHERE-clauses).
+    try { Invoke-BusResume -Connection $Connection } catch { if (-not $Force) { throw } }
+    Invoke-BusResumed -Connection $Connection
 
     # Step 6: Call OnAgentRespawn if provided
     if ($null -ne $OnAgentRespawn) {

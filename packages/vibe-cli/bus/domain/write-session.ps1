@@ -6,6 +6,7 @@ $script:_ActiveSessions = @{}   # sessionId -> WriteSession hashtable
 function Start-WriteSession {
     param(
         [Parameter(Mandatory)][string]$WorktreeLeaf,
+        $Connection = $null,
         [int]$MaxAcquireAttempts = 8,               # OBJ-R6-19: randomized exp backoff
         [int]$InitialBackoffMs = 10,
         [scriptblock]$GetUtcNow = $null
@@ -30,7 +31,9 @@ function Start-WriteSession {
 
     if (-not $acquired) {
         $mutex.Dispose()
-        Invoke-BusHalt -FailureCategory 'sqlite_error'
+        if ($Connection) {
+            Invoke-BusHalt -Connection $Connection -HaltReason 'mechanical_error' -FailureCategory 'sqlite_error'
+        }
         Write-PipelineLog -Severity 'ALARM' -Message "[ALARM] WriteSessionStarvation: Could not acquire $mutexName after $MaxAcquireAttempts attempts"
         throw "WriteSessionStarvation: Could not acquire VibeBus-Commit-$WorktreeLeaf after $MaxAcquireAttempts attempts"
     }

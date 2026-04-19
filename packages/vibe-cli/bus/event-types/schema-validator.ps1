@@ -71,7 +71,7 @@ function Test-BusEventPayload {
             }
 
             # maxLength check (strings only)
-            if ($propSchema.maxLength -ne $null -and $value -is [string]) {
+            if ($null -ne $propSchema.maxLength -and $value -is [string]) {
                 if ($value.Length -gt $propSchema.maxLength) {
                     $errors.Add("Field '$propName': length $($value.Length) exceeds maxLength $($propSchema.maxLength)")
                 }

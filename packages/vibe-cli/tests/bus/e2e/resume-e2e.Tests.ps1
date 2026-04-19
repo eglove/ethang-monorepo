@@ -4,9 +4,8 @@ BeforeAll {
     . "$PSScriptRoot/../../../bus/domain/bus-lifecycle.ps1"
     . "$PSScriptRoot/../../../bus/domain/agent-session.ps1"
     . "$PSScriptRoot/../../../bus/router/resume.ps1"
-    if (-not (Get-Command Write-PipelineLog -ErrorAction SilentlyContinue)) {
-        function global:Write-PipelineLog { param($M,$S='INFO',$G=$null,$D=$null) }
-    }
+    # Force-override any lingering Write-PipelineLog (see note in resume.Tests.ps1).
+    function global:Write-PipelineLog { param($Message,$Severity='INFO',$Gate=$null,$StructuredData=$null) }
 
     function script:New-E2EBusDb {
         $conn = New-SQLiteConnection -DataSource ':memory:'

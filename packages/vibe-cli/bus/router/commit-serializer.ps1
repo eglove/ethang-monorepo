@@ -23,7 +23,7 @@ function Invoke-BusCommit {
         throw "InvCommitOrdering: EvtId $EvtId must be > last committed $script:_LastCommittedEvtId"
     }
 
-    $session = Start-WriteSession -WorktreeLeaf $WorktreeLeaf -GetUtcNow $GetUtcNow
+    $session = Start-WriteSession -WorktreeLeaf $WorktreeLeaf -Connection $Connection -GetUtcNow $GetUtcNow
 
     try {
         # Create coordinator if not provided

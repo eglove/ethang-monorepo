@@ -91,7 +91,8 @@ Describe 'Get-BusStatus integration tests' {
     }
 
     It 'Test 10: After Invoke-BusHalt: BusStatus=halted and HaltReason=mechanical_error' {
-        Invoke-BusHalt -Connection $script:Conn -HaltReason 'mechanical_error'
+        # INV-15: mechanical_error requires FailureCategory; supply one to satisfy the invariant.
+        Invoke-BusHalt -Connection $script:Conn -HaltReason 'mechanical_error' -FailureCategory 'agent_crash'
         $result = Get-BusStatus -Connection $script:Conn
         $result.BusStatus | Should -Be 'halted'
         $result.HaltReason | Should -Be 'mechanical_error'
@@ -124,7 +125,8 @@ Describe 'Get-BusStatus integration tests' {
     }
 
     It 'Test 15: Format-BusStatusReport with halted bus shows halt reason' {
-        Invoke-BusHalt -Connection $script:Conn -HaltReason 'mechanical_error'
+        # INV-15: mechanical_error requires FailureCategory.
+        Invoke-BusHalt -Connection $script:Conn -HaltReason 'mechanical_error' -FailureCategory 'agent_crash'
         $status = Get-BusStatus -Connection $script:Conn
         $report = Format-BusStatusReport -Status $status
         $report | Should -Match 'mechanical_error'

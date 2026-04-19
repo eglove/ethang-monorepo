@@ -15,7 +15,7 @@ function Invoke-ConsensusObjectionReceived {
         [scriptblock]$DbExecutor = $null
     )
     Start-ConsensusRound -Connection $Connection -RoundEpochEvtId $ObjectionEvtId
-    Add-ConsensusObjection -Connection $Connection -EvtId $ObjectionEvtId | Out-Null
+    Add-ConsensusObjection -Connection $Connection -ObjectionEvtId $ObjectionEvtId | Out-Null
     Write-PipelineLog -Severity 'INFO' -Message "Objection $ObjectionEvtId received from $FromAgent"
     return @{ ObjectionEvtId = $ObjectionEvtId; State = 'objecting' }
 }
@@ -28,9 +28,9 @@ function Invoke-ConsensusObjectionResponseReceived {
         [scriptblock]$DbExecutor = $null
     )
     if ($Response -eq 'accepted') {
-        Resolve-ConsensusObjection -Connection $Connection -EvtId $OriginalEvtId | Out-Null
+        Resolve-ConsensusObjection -Connection $Connection -ObjectionEvtId $OriginalEvtId | Out-Null
     } elseif ($Response -eq 'rejected') {
-        Override-ConsensusObjection -Connection $Connection -EvtId $OriginalEvtId | Out-Null
+        Override-ConsensusObjection -Connection $Connection -ObjectionEvtId $OriginalEvtId | Out-Null
     } else {
         Write-PipelineLog -Severity 'WARN' -Message "Unknown objection response: $Response"
         New-ProtocolError -Code 'unknown_event_type' -Message "Unknown objection response: $Response" | Out-Null
@@ -83,7 +83,7 @@ function Invoke-ConsensusReset {
         [Parameter(Mandatory)]$Connection,
         [Parameter(Mandatory)][int64]$NewEpochEvtId
     )
-    Invoke-AdvanceRoundEpoch -Connection $Connection -NewEpochEvtId $NewEpochEvtId
+    Invoke-AdvanceRoundEpoch -Connection $Connection -NewEvtId $NewEpochEvtId
     Write-PipelineLog -Severity 'INFO' -Message "Consensus reset to epoch $NewEpochEvtId"
     return @{ NewEpoch = $NewEpochEvtId; State = 'open' }
 }

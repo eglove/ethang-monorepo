@@ -8,9 +8,8 @@ Describe 'T29 Rollback Subsystem Integration Tests' {
         . "$PSScriptRoot/../../../bus/infra/working-tree-coordinator.ps1"
         . "$PSScriptRoot/../../../bus/domain/rollback-coordinator.ps1"
         . "$PSScriptRoot/../../../bus/router/rollback.ps1"
-        if (-not (Get-Command Write-PipelineLog -ErrorAction SilentlyContinue)) {
-            function global:Write-PipelineLog { param($Message,$Severity='INFO',$Gate=$null,$StructuredData=$null) }
-        }
+        # Force-override — see note in resume.Tests.ps1 about cross-file scope contamination.
+        function global:Write-PipelineLog { param($Message,$Severity='INFO',$Gate=$null,$StructuredData=$null) }
     }
 
     BeforeEach {

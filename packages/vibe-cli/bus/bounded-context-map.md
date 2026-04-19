@@ -9,7 +9,7 @@ Formal DDD context map for the bidirectional communication subsystem.
 Four bounded contexts participate in the event bus. Upstream contexts publish events
 that downstream contexts consume. The relationship direction follows event flow:
 
-```
+```text context-map
 Verification ──────────────────────────────┐
                                            │ verify_result
 ProtocolError ─────────────────────────────┤
@@ -81,6 +81,7 @@ is the shared kernel that ProtocolError must conform to.
 **Relationship:** Consensus (upstream Supplier) → AgentLifecycle (downstream Customer)
 
 Consensus drives agreement outcomes that AgentLifecycle must act on:
+
 - `consensus_ratified` → AgentLifecycle advances the pipeline
 - `consensus_failed` → AgentLifecycle halts or retries
 

@@ -8,7 +8,7 @@ function global:Set-GitTestDoubleResponse {
 
 function global:Get-GitTestDoubleCalls {
     # Use Write-Output -NoEnumerate to prevent PowerShell from unrolling the List<T>
-    Write-Output -NoEnumerate $global:_VibeGitCalls
+    Write-Output -NoEnumerate -InputObject $global:_VibeGitCalls
 }
 
 function global:Clear-GitTestDouble {

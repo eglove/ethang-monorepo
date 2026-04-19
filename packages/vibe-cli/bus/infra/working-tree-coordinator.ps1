@@ -43,16 +43,33 @@ function New-WorkingTreeCoordinator {
         Defaults to Invoke-RealGit.
     #>
     param(
-        [Parameter(Mandatory)][string]$WorktreePath,
+        [string]$WorktreePath,
+        [string]$WorktreeLeaf,
         [scriptblock]$GitInvoker = $null
     )
+
+    # Allow callers to pass a -WorktreeLeaf identifier (used by commit-serializer and tests).
+    # Treat it as a relative path under the current directory; git will no-op if it's not a real repo.
+    if ([string]::IsNullOrEmpty($WorktreePath)) {
+        if (-not [string]::IsNullOrEmpty($WorktreeLeaf)) {
+            $WorktreePath = $WorktreeLeaf
+        } else {
+            throw "New-WorkingTreeCoordinator requires -WorktreePath or -WorktreeLeaf"
+        }
+    }
 
     $path = $WorktreePath  # capture for closure
     $effectiveInvoker = if ($GitInvoker) {
         $GitInvoker
     }
     else {
-        { param($a) Invoke-RealGit -WorktreePath $path -Arguments $a }
+        # GetNewClosure freezes $path at definition time; the body calls git directly
+        # to avoid a closure dependency on Invoke-RealGit's session-state lookup.
+        {
+            param($a)
+            $output = & git -C $path @a 2>&1
+            @{ ExitCode = $LASTEXITCODE; Output = ($output -join "`n") }
+        }.GetNewClosure()
     }
 
     return @{

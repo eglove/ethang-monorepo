@@ -21,3 +21,22 @@ function Resolve-EventTarget {
     }
     throw "EventType '$EventType' not recognized"
 }
+
+function Test-RoutingRules {
+    param(
+        [Parameter(Mandatory)][string]$SenderRole,
+        [Parameter(Mandatory)][string]$EventType,
+        [string]$SenderName = $null,
+        [string]$ExplicitTo = $null,
+        [string]$ActiveModeratorName = $null
+    )
+    if (-not (Test-TypeSenderACL -SenderRole $SenderRole -EventType $EventType)) {
+        return @{ Valid = $false; Reason = 'TypeSenderACL violation' }
+    }
+    try {
+        $target = Resolve-EventTarget -EventType $EventType -ExplicitTo $ExplicitTo -ActiveModeratorName $ActiveModeratorName -SenderName $SenderName
+        return @{ Valid = $true; ResolvedTarget = $target }
+    } catch {
+        return @{ Valid = $false; Reason = $_.Exception.Message }
+    }
+}

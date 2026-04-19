@@ -13,16 +13,18 @@ function global:Clear-TestsTestDouble {
 
 function global:Get-TestsTestDoubleCalls {
     # Use Write-Output -NoEnumerate to prevent PowerShell from unrolling the List<T>
-    Write-Output -NoEnumerate $global:_VibeTestsCalls
+    Write-Output -NoEnumerate -InputObject $global:_VibeTestsCalls
 }
 
 function global:Invoke-TestsTestDouble {
     param(
         [string]$TestPath,
+        [string[]]$Tags,
         [string[]]$ExtraArgs
     )
     $global:_VibeTestsCalls.Add([hashtable]@{
         TestPath  = $TestPath
+        Tags      = $Tags
         ExtraArgs = $ExtraArgs
         Timestamp = [DateTime]::UtcNow
     })

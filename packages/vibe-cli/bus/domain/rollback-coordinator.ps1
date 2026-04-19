@@ -167,7 +167,7 @@ function Invoke-BusRollbackCoordination {
 
     # 4. Advance consensus round epoch (after transaction — per OBJ-R6-17)
     $newEpoch = Get-NextEvtId
-    Invoke-AdvanceRoundEpoch -Connection $Connection -NewEpochEvtId $newEpoch
+    Invoke-AdvanceRoundEpoch -Connection $Connection -NewEvtId $newEpoch
 
     # 5. Halt (idempotent — latch prevents double-halt, but the DB state is already set by our transaction above)
     # We call Invoke-BusHalt to ensure latch is set and any cleanup logic runs

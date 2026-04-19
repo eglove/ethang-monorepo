@@ -22,6 +22,12 @@ $script:WalCheckpointConsecutiveFailures = 0
 $script:WalCheckpointCircuitOpen = $false
 $script:WalCheckpointCallCount = 0
 
+# Thin wrapper around PSSQLite's New-SQLiteConnection — gives tests a mockable seam.
+function Open-SQLiteConnection {
+    param([Parameter(Mandatory)][string]$DataSource)
+    return New-SQLiteConnection -DataSource $DataSource
+}
+
 # ---------------------------------------------------------------------------
 # Public: Open-BusDatabase
 # ---------------------------------------------------------------------------
@@ -46,7 +52,7 @@ function Open-BusDatabase {
         New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
     }
 
-    $conn = New-SQLiteConnection -DataSource $normalizedPath
+    $conn = Open-SQLiteConnection -DataSource $normalizedPath
 
     $walResult = Invoke-SqliteQuery -SQLiteConnection $conn -Query 'PRAGMA journal_mode=WAL'
     $walMode = if ($walResult -is [PSCustomObject]) { $walResult.journal_mode } else { $walResult }

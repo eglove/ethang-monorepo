@@ -85,7 +85,10 @@ function _Invoke-PostDebateBusPath {
     # Resolve the DbExecutor — use injectable if provided, otherwise use DB path
     $dbExec = $DbExecutor
 
-    # Open bus DB (no-op when mocked in tests)
+    # Open bus DB — auto-provision a per-run temp DB if caller didn't specify one.
+    if ([string]::IsNullOrEmpty($DbPath)) {
+        $DbPath = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-bus-$(New-Guid).db"
+    }
     $null = Open-BusDatabase -Path $DbPath
 
     # Emit stage_started

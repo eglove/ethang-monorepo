@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "required": ["content"],
   "properties": {
-    "content": { "type": "string", "maxLength": 8192 }
-  }
+    "content": { "maxLength": 8192, "type": "string" }
+  },
+  "required": ["content"],
+  "type": "object"
 }

@@ -159,35 +159,108 @@ VALUES (@sid, @aid, @role, 'active', @sa, 0)
 }
 
 function Stop-BusAgent {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param(
-        [string]$AgentId,
-        [scriptblock]$DbExecutor,
-        [string]$DbPath
+        $Connection = $null,
+        [string]$AgentName = $null,
+        [switch]$Graceful,
+        [int]$DrainTimeoutMs = 5000,
+        [scriptblock]$KillProcess = $null,
+        [int64]$DeathEpoch = 0,
+        # Legacy params retained for backward compatibility:
+        [string]$AgentId = $null,
+        [scriptblock]$DbExecutor = $null,
+        [string]$DbPath = $null
     )
 
-    $resolvedDb = if ($DbPath) { $DbPath } elseif ($script:_BusDbPath) { $script:_BusDbPath } else { $null }
-    $ts         = [datetime]::UtcNow.ToString('o')
+    # Legacy code path — no AgentName provided: behave as the old DbPath-based no-op.
+    if ([string]::IsNullOrEmpty($AgentName)) {
+        $resolvedDb = if ($DbPath) { $DbPath } elseif ($script:_BusDbPath) { $script:_BusDbPath } else { $null }
+        if ($resolvedDb -and $AgentId) {
+            $ts = [datetime]::UtcNow.ToString('o')
+            Invoke-SqliteQuery -DataSource $resolvedDb -Query "UPDATE agent_sessions SET status='ended' WHERE agent_id=@aid AND status='active'" `
+                -SqlParameters @{ aid = $AgentId } | Out-Null
+        }
+        return
+    }
 
-    if ($resolvedDb) {
-        Invoke-SqliteQuery -DataSource $resolvedDb -Query @"
-UPDATE agent_sessions SET status='ended', ended_at=@ea WHERE agent_id=@aid AND status='active'
-"@ -SqlParameters @{ ea = $ts; aid = $AgentId } | Out-Null
+    $agentEntry = $null
+    if (-not $script:_ActiveAgents.TryGetValue($AgentName, [ref]$agentEntry)) {
+        throw "AgentNotFound: '$AgentName' is not registered in active agents"
+    }
+
+    if ($Graceful) {
+        # Drain this agent's queue until it's empty or the deadline elapses. Use the
+        # BlockingCollection.Count (per-agent) rather than the global QueueDepthStore,
+        # because another agent's messages would keep the global count non-zero and
+        # waste our drain budget.
+        $sw = [System.Diagnostics.Stopwatch]::StartNew()
+        while ($sw.ElapsedMilliseconds -lt $DrainTimeoutMs -and $agentEntry.Queue.Count -gt 0) {
+            $msg = $null
+            if ($agentEntry.Queue.TryTake([ref]$msg, 50)) {
+                [QueueDepthStore]::Decrement() | Out-Null
+            }
+        }
+        $sw.Stop()
+    }
+
+    # CompleteAdding so subsequent TryAdd throws InvalidOperationException.
+    try { $agentEntry.Queue.CompleteAdding() } catch { }
+
+    $epoch = if ($DeathEpoch -gt 0) { $DeathEpoch } else { [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds() }
+
+    if ($null -ne $Connection) {
+        Set-AgentSessionDead -Connection $Connection -SessionId $agentEntry.SessionId -DeathEpoch $epoch
+        # Transition dead -> ended.
+        $cmd = $Connection.CreateCommand()
+        $cmd.CommandText = "UPDATE agent_sessions SET status='ended' WHERE session_id=@sid AND status='dead'"
+        $cmd.Parameters.AddWithValue('@sid', $agentEntry.SessionId) | Out-Null
+        $cmd.ExecuteNonQuery() | Out-Null
+        $cmd.Dispose()
+    }
+
+    if ($null -ne $KillProcess) {
+        & $KillProcess $AgentName
+    }
+
+    $removed = $null
+    [void]$script:_ActiveAgents.TryRemove($AgentName, [ref]$removed)
+
+    return @{
+        AgentName  = $AgentName
+        SessionId  = $agentEntry.SessionId
+        DeathEpoch = $epoch
     }
 }
 
 function Stop-AllBusAgents {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param(
-        [scriptblock]$DbExecutor,
-        [string]$DbPath
+        $Connection = $null,
+        [switch]$Graceful,
+        [int]$DrainTimeoutMs = 5000,
+        [scriptblock]$KillProcess = $null,
+        [scriptblock]$DbExecutor = $null,
+        [string]$DbPath = $null
     )
 
-    $resolvedDb = if ($DbPath) { $DbPath } elseif ($script:_BusDbPath) { $script:_BusDbPath } else { $null }
-    $ts         = [datetime]::UtcNow.ToString('o')
+    # Legacy DbPath path — used by e2e tests that spawn agents via Start-BusAgent's DbPath
+    # branch (writes directly to agent_sessions, no _ActiveAgents registration).
+    if (-not [string]::IsNullOrEmpty($DbPath)) {
+        Invoke-SqliteQuery -DataSource $DbPath -Query "UPDATE agent_sessions SET status='ended' WHERE status='active'" | Out-Null
+        return @{ StoppedCount = 0; Agents = @() }
+    }
 
-    if ($resolvedDb) {
-        Invoke-SqliteQuery -DataSource $resolvedDb -Query @"
-UPDATE agent_sessions SET status='ended', ended_at=@ea WHERE status='active'
-"@ -SqlParameters @{ ea = $ts } | Out-Null
+    # Modern Connection path — iterate in-memory agent registry.
+    $names = @($script:_ActiveAgents.Keys)
+    $stopped = @()
+    foreach ($name in $names) {
+        $res = Stop-BusAgent -Connection $Connection -AgentName $name -Graceful:$Graceful -DrainTimeoutMs $DrainTimeoutMs -KillProcess $KillProcess
+        if ($res) { $stopped += $res.AgentName }
+    }
+    return @{
+        StoppedCount = $stopped.Count
+        Agents       = $stopped
     }
 }
 

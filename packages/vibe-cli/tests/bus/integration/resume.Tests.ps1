@@ -4,9 +4,10 @@ BeforeAll {
     . "$PSScriptRoot/../../../bus/domain/bus-lifecycle.ps1"
     . "$PSScriptRoot/../../../bus/domain/agent-session.ps1"
     . "$PSScriptRoot/../../../bus/router/resume.ps1"
-    if (-not (Get-Command Write-PipelineLog -ErrorAction SilentlyContinue)) {
-        function global:Write-PipelineLog { param($Message,$Severity='INFO',$Gate=$null,$StructuredData=$null) }
-    }
+    # Force-override any Write-PipelineLog left over from earlier test files
+    # (e.g. protocol-error.Tests.ps1 installs a tracker that hits cross-file $script:
+    # scope and fails with "Item has already been added" when reused here).
+    function global:Write-PipelineLog { param($Message,$Severity='INFO',$Gate=$null,$StructuredData=$null) }
 
     function script:New-TestBusDb {
         $conn = New-SQLiteConnection -DataSource ':memory:'

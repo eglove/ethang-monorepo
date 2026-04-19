@@ -3643,3 +3643,26 @@ Feature: Post-deployment observability provides the sole safety net in the absen
     # "bus-merge-queue-contract-check", "vibe-event-id-global-uniqueness", and all performance-test jobs.
     # Post-deploy checks (bus-smoke-test, metrics.json comparator) are a deploy-pipeline gate, not a PR gate.
     # This boundary is intentional: post-deploy checks require a live environment unavailable at PR time.
+
+  @primary @invariant-18 @tla-action-AgentSendsDone
+  Scenario: TypeSenderACL prevents an unauthorized role from sending a restricted event type
+    Given the bus is running with the TypeSenderACL table populated from event-types.psd1
+    And a coding-worker agent attempts to send a "verify" event (which only the tla-writer role is authorized to send)
+    When the router receives the event for dispatch
+    Then the router rejects the send and records an ACL violation in the event-log with status "delivery_failed"
+    And the invariant @invariant-18 holds: no event is routed whose (eventType, senderRole) pair is absent from TypeSenderACL
+
+  @primary @invariant-21
+  Scenario: A stale objection from a previous consensus epoch is discarded when received after the round advances
+    Given a consensus round with consensus epoch = N is currently open
+    And an objection event tagged with consensus epoch = N-1 arrives at the router after the epoch has advanced
+    When the consensus aggregate processes the stale objection
+    Then the objection is discarded and the unresolvedObjections set for epoch N is unchanged
+    And the invariant @invariant-21 holds: ConsensusRoundStartMonotone — no state transition accepts an event whose consensus epoch is less than the current RoundEpoch
+
+  @primary @invariant-22
+  Scenario: NoOrphanedHandlerForDeadAgent is preserved after an agent crash
+    Given an agent-A is registered with status="alive" and has a handler subscribed to its delivery queue
+    When agent-A's process exits abnormally and the router marks its session status="dead"
+    Then the router unsubscribes agent-A's handler from the bus event pump within one tick
+    And the invariant NoOrphanedHandlerForDeadAgent holds: no handler remains registered for an agent whose session status is "dead" or "ended"

@@ -35,8 +35,8 @@ Describe 'Open-BusDatabase path normalization' {
             $script:capturedDataSource = $DataSource
             return [PSCustomObject]@{ DataSource = $DataSource; State = 'Open' }
         }
-        Mock Invoke-SQLiteQuery {
-            param($Connection, $Query)
+        Mock Invoke-SQLiteQuery -RemoveParameterType 'SQLiteConnection' {
+            param($SQLiteConnection, $Query)
             if ($Query -match 'journal_mode') { return [PSCustomObject]@{ journal_mode = 'wal' } }
             return $null
         }
@@ -57,8 +57,8 @@ Describe 'Open-BusDatabase path normalization' {
 
 Describe 'WAL circuit breaker' {
     BeforeAll {
-        Mock Invoke-SQLiteQuery {
-            param($Connection, $Query)
+        Mock Invoke-SQLiteQuery -RemoveParameterType 'SQLiteConnection' {
+            param($SQLiteConnection, $Query)
             if ($Query -match 'wal_checkpoint') {
                 throw 'SQLITE_FULL: database or disk is full'
             }
@@ -140,8 +140,8 @@ Describe 'Open-BusDatabase WAL file size warning' {
             param([string]$DataSource)
             return [PSCustomObject]@{ DataSource = $DataSource; State = 'Open' }
         }
-        Mock Invoke-SQLiteQuery {
-            param($Connection, $Query)
+        Mock Invoke-SQLiteQuery -RemoveParameterType 'SQLiteConnection' {
+            param($SQLiteConnection, $Query)
             if ($Query -match 'journal_mode') { return [PSCustomObject]@{ journal_mode = 'wal' } }
             return $null
         }
@@ -178,8 +178,8 @@ Describe 'Open-BusDatabase calls Invoke-LongPathCheck before opening connection'
             param([string]$DataSource)
             return [PSCustomObject]@{ DataSource = $DataSource; State = 'Open' }
         }
-        Mock Invoke-SQLiteQuery {
-            param($Connection, $Query)
+        Mock Invoke-SQLiteQuery -RemoveParameterType 'SQLiteConnection' {
+            param($SQLiteConnection, $Query)
             if ($Query -match 'journal_mode') { return [PSCustomObject]@{ journal_mode = 'wal' } }
             return $null
         }

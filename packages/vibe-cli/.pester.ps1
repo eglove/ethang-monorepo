@@ -16,7 +16,7 @@ $config.CodeCoverage.Path = @(
 )
 $config.CodeCoverage.OutputFormat = 'JaCoCo'
 $config.CodeCoverage.OutputPath = "$PSScriptRoot/coverage.xml"
-$config.CodeCoverage.CoveragePercentTarget = 91
+$config.CodeCoverage.CoveragePercentTarget = 92
 
 $config.TestResult.Enabled = $true
 $config.TestResult.OutputFormat = 'NUnitXml'

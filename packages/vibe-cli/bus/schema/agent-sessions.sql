@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS agent_sessions (
     spawn_epoch             INTEGER,
     death_epoch             INTEGER,
     session_mono_epoch      INTEGER NOT NULL DEFAULT 0,
-    checkpointed_at         TEXT,
     checkpointed_at_mono    INTEGER,
+    renew_epoch             INTEGER,
     ground_truth_delivered  INTEGER NOT NULL DEFAULT 0,
     created_at              TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
     updated_at              TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))

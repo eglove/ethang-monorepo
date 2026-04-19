@@ -1,16 +1,16 @@
 {
+  "append_event_p999_ms": 100,
+  "append_event_p99_ms": 50,
+  "bus_publish_p99_ms": 5,
+  "git_commit_p99_ms": 500,
+  "git_stash_p99_ms": 2000,
+  "mutex_acquire_p99_ms": 50,
   "stage2_p99_ms": 100,
   "stage3_p99_ms": 200,
   "stage4_p99_ms": 50,
   "stage5_p99_ms": 150,
   "stage6_p99_ms": 200,
   "stage7_p99_ms": 500,
-  "bus_publish_p99_ms": 5,
-  "append_event_p99_ms": 50,
-  "append_event_p999_ms": 100,
-  "git_stash_p99_ms": 2000,
-  "git_commit_p99_ms": 500,
-  "wal_checkpoint_p99_ms": 100,
   "telemetry_emit_overhead_ms": 5,
-  "mutex_acquire_p99_ms": 50
+  "wal_checkpoint_p99_ms": 100
 }

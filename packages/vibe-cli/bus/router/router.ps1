@@ -147,7 +147,9 @@ function Invoke-BusAppendEvent {
         [Parameter(ParameterSetName = 'Connection')]
         [string]$From,
         [Parameter(ParameterSetName = 'Connection')]
-        [string]$To,
+        [AllowNull()]
+        [AllowEmptyString()]
+        $To,
         [Parameter(ParameterSetName = 'Connection')]
         [string]$Type,
         [Parameter(ParameterSetName = 'Connection')]
@@ -198,7 +200,22 @@ function Invoke-BusAppendEvent {
 
     # Connection (production) flow
     if ($env:VIBE_BUS_COMMIT_IN_PROGRESS -eq '1') {
+        Write-PipelineLog -Severity 'ERROR' -Message 'LockHierarchyViolation: AppendEvent called while VIBE_BUS_COMMIT_IN_PROGRESS=1'
         throw 'LockHierarchyViolation: AppendEvent must not be called from pre-commit hooks'
+    }
+    if ([string]::IsNullOrEmpty($From)) { throw "ValidationError: From is required" }
+    # Distinguish explicit empty string (caller error — validation fires) from $null
+    # (upstream unresolved target — allowed; coerced to '' at SQL bind time to satisfy
+    # the "to" NOT NULL column).
+    if ($null -ne $To -and $To -is [string] -and $To.Length -eq 0) {
+        throw "ValidationError: To is required"
+    }
+    if ($Type -notin $script:_RouterValidEventTypes) {
+        throw "ValidationError: unknown event type '$Type'"
+    }
+    if (-not [string]::IsNullOrEmpty($Payload)) {
+        try { $null = $Payload | ConvertFrom-Json -ErrorAction Stop }
+        catch { throw "ValidationError: invalid JSON payload: $($_.Exception.Message)" }
     }
     $evtId = Get-NextEvtId
     if ($null -ne $DbExecutor) {
@@ -211,7 +228,11 @@ function Invoke-BusAppendEvent {
             $cmd.Transaction = $tx
             $cmd.CommandText = 'INSERT INTO event_log ("from","to",in_reply_to,group_id,type,payload,status) VALUES (@from,@to,@inReplyTo,@groupId,@type,@payload,''routed'')'
             $cmd.Parameters.AddWithValue('@from', $From) | Out-Null
-            $cmd.Parameters.AddWithValue('@to', $To) | Out-Null
+            # Coerce null To to empty string so the schema's NOT NULL constraint is satisfied.
+            # T15 exercises this: 'done' with no active moderator resolves to a null target but
+            # must still persist a row.
+            $toVal = if ($null -eq $To) { '' } else { $To }
+            $cmd.Parameters.AddWithValue('@to', $toVal) | Out-Null
             $inReplyToVal = if ($InReplyTo -eq 0) { [DBNull]::Value } else { $InReplyTo }
             $groupIdVal   = if ([string]::IsNullOrEmpty($GroupId)) { [DBNull]::Value } else { $GroupId }
             $payloadVal   = if ([string]::IsNullOrEmpty($Payload)) { [DBNull]::Value } else { $Payload }
@@ -242,6 +263,32 @@ function Invoke-BusAppendEvent {
 # Get-RouterEventCount / Get-RouterEventIds / New-RouterAgentSession
 # Property-test helpers (PSSQLite flow).
 # ---------------------------------------------------------------------------
+function Get-RoutedEventIds {
+    return , $script:_RoutedIds
+}
+
+# Rebuilds in-memory router state from a crash/restart: scans event_log, adds every
+# existing evt_id to _RoutedIds, and re-seeds the allocator to max(evt_id) + 1.
+# Spec: `RouterStartupRecovery` — see docs/bidirectional-comms/refinement-mapping.md.
+function Invoke-RouterStartupRecovery {
+    param([Parameter(Mandatory)]$Connection)
+    $maxId = [int64]0
+    $cmd = $Connection.CreateCommand()
+    $cmd.CommandText = 'SELECT evt_id FROM event_log'
+    $reader = $cmd.ExecuteReader()
+    try {
+        while ($reader.Read()) {
+            $id = [int64]$reader['evt_id']
+            [void]$script:_RoutedIds.Add($id)
+            if ($id -gt $maxId) { $maxId = $id }
+        }
+    } finally {
+        $reader.Dispose()
+        $cmd.Dispose()
+    }
+    Initialize-EvtIdAllocator -StartValue ($maxId + 1)
+}
+
 function Get-RouterEventCount {
     param([Parameter(Mandatory)][string]$DbPath)
     $row = Invoke-SqliteQuery -DataSource $DbPath -Query "SELECT COUNT(*) as cnt FROM event_log"
