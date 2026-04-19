@@ -99,10 +99,10 @@ Describe 'WriteSession Entity' {
     It 'T06: Start-WriteSession throws WriteSessionStarvation when mutex cannot be acquired' {
         # Use a background job to hold the mutex from a different process (cross-process named mutex)
         $mutexName = 'VibeBus-Commit-starvation-t06'
-        
+
         # Create a temporary file to signal when the mutex has been acquired
         $signalFile = Join-Path $TestDrive "mutex_acquired_$([Guid]::NewGuid()).txt"
-        
+
         $job = Start-Job -ScriptBlock {
             param($name, $signalFilePath)
             $m = [System.Threading.Mutex]::new($true, $name)  # request initial ownership
@@ -112,28 +112,28 @@ Describe 'WriteSession Entity' {
             $m.ReleaseMutex()
             $m.Dispose()
         } -ArgumentList $mutexName, $signalFile
-        
+
         # Wait for the signal that the mutex has been acquired
-        $timeout = 10  # seconds
-        $interval = 0.1  # seconds
+        $timeout = 15  # increased timeout to ensure mutex is acquired in CI
+        $interval = 0.2  # slightly longer interval
         $elapsed = 0
         while (-not (Test-Path $signalFile) -and $elapsed -lt $timeout) {
             Start-Sleep -Seconds $interval
             $elapsed += $interval
         }
-        
+
         # Verify the mutex was acquired before proceeding
         if (Test-Path $signalFile) {
-            # Now try to acquire the same mutex - should fail
-            { Start-WriteSession -WorktreeLeaf 'starvation-t06' -MaxAcquireAttempts 2 -InitialBackoffMs 1 } | Should -Throw '*WriteSessionStarvation*'
+            # Increase attempts and backoff to ensure the starvation condition occurs in CI
+            { Start-WriteSession -WorktreeLeaf 'starvation-t06' -MaxAcquireAttempts 3 -InitialBackoffMs 10 } | Should -Throw '*WriteSessionStarvation*'
         } else {
             # If the mutex wasn't acquired in time, fail the test to indicate a problem
             throw "Mutex was not acquired by background job within timeout period"
         }
-        
+
         try {
             # Clean up the job
-            Stop-Job $job -ErrorAction SilentlyContinue
+            Stop-Job $job -Timeout 5 -ErrorAction SilentlyContinue
             Remove-Job $job -Force -ErrorAction SilentlyContinue
         } finally {
             # Clean up the signal file

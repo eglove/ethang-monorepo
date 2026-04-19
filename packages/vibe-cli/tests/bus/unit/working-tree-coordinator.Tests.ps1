@@ -306,8 +306,8 @@ Describe 'Invoke-AtomicFileReplace' {
             [System.IO.FileShare]::None
         )
         try {
-            # Use original parameters to ensure the test is deterministic
-            { Invoke-AtomicFileReplace -TargetPath $dst -SourcePath $src -MaxAttempts 3 -BaseDelayMs 10 } |
+            # Increase attempts and delays to make test more reliable in CI environments
+            { Invoke-AtomicFileReplace -TargetPath $dst -SourcePath $src -MaxAttempts 5 -BaseDelayMs 50 } |
                 Should -Throw '*exhausted*'
         }
         finally {
