@@ -2,9 +2,9 @@ BeforeAll {
     Import-Module PSSQLite -ErrorAction SilentlyContinue
     # Define tracking Write-PipelineLog BEFORE dot-sourcing so protocol-error.ps1 picks it up
     function global:Write-PipelineLog { param($Message,$Severity='INFO',$Gate=$null,$StructuredData=$null); $script:LogCalls += @{Message=$Message;Severity=$Severity} }
-    $busRoot = (Get-Item (Join-Path $PSScriptRoot "..\..\..")).FullName
-    $busInfra = Join-Path $busRoot "bus\infra\evt-id-allocator.ps1"
-    $busProtocolError = Join-Path $busRoot "bus\router\protocol-error.ps1"
+    $busRoot = (Get-Item (Join-Path $PSScriptRoot "../../..")).FullName
+    $busInfra = Join-Path $busRoot "bus/infra/evt-id-allocator.ps1"
+    $busProtocolError = Join-Path $busRoot "bus/router/protocol-error.ps1"
     . $busInfra
     . $busProtocolError
 }
@@ -16,8 +16,8 @@ Describe "Protocol Error Recovery Integration" {
         New-Item -ItemType Directory $script:TestDir | Out-Null
         $script:DbPath = Join-Path $script:TestDir 'vibe-bus.db'
         $script:Conn = New-SQLiteConnection -DataSource $script:DbPath
-        $busRoot2 = (Get-Item (Join-Path $PSScriptRoot "..\..\..")).FullName
-        $sqlPath = Join-Path $busRoot2 "bus\schema\event-log.sql"
+        $busRoot2 = (Get-Item (Join-Path $PSScriptRoot "../../..")).FullName
+        $sqlPath = Join-Path $busRoot2 "bus/schema/event-log.sql"
         $sql = Get-Content $sqlPath -Raw
         Invoke-SqliteQuery -SQLiteConnection $script:Conn -Query $sql
         Initialize-EvtIdAllocator -StartValue 1

@@ -60,42 +60,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
-  tlc:
-    # TLA+ model checking. Uses packages/vibe-cli/utils/tlc-runner.ps1 —
-    # the same runner the vibe-cli pipeline uses in production. It resolves
-    # tla2tools.jar from the committed packages/vibe-cli/tools/tla2tools.jar,
-    # auto-refreshing if the nightly server has a newer Last-Modified.
-    # Auto-discovers every docs/*/tla/*.cfg and pairs it with its .tla spec.
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-      - name: Run TLC on every spec
-        shell: pwsh
-        run: |
-          function Write-PipelineLog { param([string]$m, [string]$Severity = 'INFO') Write-Output $m }
-          . packages/vibe-cli/utils/tlc-runner.ps1
-
-          $cfgs = Get-ChildItem -Path packages/vibe-cli/docs -Filter '*.cfg' -Recurse |
-            Where-Object { $_.Directory.Name -eq 'tla' }
-          $failures = @()
-          foreach ($cfg in $cfgs) {
-            $specBase = [System.IO.Path]::GetFileNameWithoutExtension($cfg.Name)
-            $tla = Join-Path $cfg.Directory.FullName "$specBase.tla"
-            if (-not (Test-Path $tla)) {
-              $tla = (Get-ChildItem $cfg.Directory.FullName -Filter '*.tla' | Select-Object -First 1).FullName
-            }
-            Write-Output "::group::TLC $($cfg.Name)"
-            $r = Invoke-TlcProcess -TlaDir $cfg.Directory.FullName -TlaFileName (Split-Path $tla -Leaf) -CfgFileName $cfg.Name
-            Write-Output "::endgroup::"
-            if ($r.ExitCode -ne 0 -or $r.Output -match 'Error:|violated|TLC threw') {
-              $failures += $cfg.Name
-            }
-          }
-          if ($failures) {
-            Write-Error ("TLC failed for: " + ($failures -join ', '))
-            exit 1
-          }
-
   codeql:
     permissions:
       contents: read

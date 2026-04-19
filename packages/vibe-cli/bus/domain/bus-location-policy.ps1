@@ -25,10 +25,10 @@ function New-BusLocationPolicy {
         $resolvedPath = $DbPath
     }
     elseif (-not [string]::IsNullOrEmpty($WorkspaceRoot)) {
-        $resolvedPath = Join-Path $WorkspaceRoot '.vibe\vibe-bus.db'
+        $resolvedPath = Join-Path $WorkspaceRoot '.vibe/vibe-bus.db'
     }
     else {
-        $resolvedPath = Join-Path (Get-Location).Path '.vibe\vibe-bus.db'
+        $resolvedPath = Join-Path (Get-Location).Path '.vibe/vibe-bus.db'
     }
 
     if ([string]::IsNullOrEmpty($resolvedPath)) {

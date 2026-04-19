@@ -1,8 +1,8 @@
 BeforeAll {
     $script:pkgRoot = Resolve-Path (Join-Path $PSScriptRoot "../../..") | Select-Object -ExpandProperty Path
-    $script:featureFile = Join-Path $script:pkgRoot "docs\bidirectional-comms\bdd.feature"
-    $script:leakChecker = Join-Path $script:pkgRoot "tools\check-tla-leaks-in-bdd.ps1"
-    $script:tagChecker  = Join-Path $script:pkgRoot "tools\check-bdd-tags.ps1"
+    $script:featureFile = Join-Path $script:pkgRoot "docs/bidirectional-comms/bdd.feature"
+    $script:leakChecker = Join-Path $script:pkgRoot "tools/check-tla-leaks-in-bdd.ps1"
+    $script:tagChecker  = Join-Path $script:pkgRoot "tools/check-bdd-tags.ps1"
 }
 
 Describe "BDD Audit — T38" {

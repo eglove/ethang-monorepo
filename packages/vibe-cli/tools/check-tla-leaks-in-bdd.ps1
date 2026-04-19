@@ -7,7 +7,7 @@ param(
 $glossaryPath = $null
 $searchDir = $PSScriptRoot
 for ($i = 0; $i -lt 6; $i++) {
-    $candidate = Join-Path $searchDir "bus\bounded-context-glossary.psd1"
+    $candidate = Join-Path $searchDir "bus/bounded-context-glossary.psd1"
     if (Test-Path $candidate) {
         $glossaryPath = $candidate
         break

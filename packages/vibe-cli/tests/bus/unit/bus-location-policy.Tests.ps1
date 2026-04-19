@@ -22,42 +22,49 @@ Describe 'BusLocationPolicy' {
     }
 
     It 'T2: New-BusLocationPolicy -DbPath uses the provided path' {
-        $policy = New-BusLocationPolicy -DbPath 'C:\test\bus.db'
-        $policy.DbPath | Should -BeExactly 'C:\test\bus.db'
+        $dbPath = Join-Path ([System.IO.Path]::GetTempPath()) 'test/bus.db'
+        $policy = New-BusLocationPolicy -DbPath $dbPath
+        $policy.DbPath | Should -BeExactly $dbPath
     }
 
     It 'T3: New-BusLocationPolicy with VIBE_BUS_DB_PATH set uses env var' {
-        $env:VIBE_BUS_DB_PATH = 'C:\env\bus.db'
+        $envPath = Join-Path ([System.IO.Path]::GetTempPath()) 'env/bus.db'
+        $env:VIBE_BUS_DB_PATH = $envPath
         $policy = New-BusLocationPolicy
-        $policy.DbPath | Should -BeExactly 'C:\env\bus.db'
+        $policy.DbPath | Should -BeExactly $envPath
     }
 
     It 'T4: VIBE_BUS_DB_PATH overrides -DbPath when env var is set' {
-        $env:VIBE_BUS_DB_PATH = 'C:\env\bus.db'
-        $policy = New-BusLocationPolicy -DbPath 'C:\test\bus.db'
-        $policy.DbPath | Should -BeExactly 'C:\env\bus.db'
+        $envPath = Join-Path ([System.IO.Path]::GetTempPath()) 'env/bus.db'
+        $dbPath  = Join-Path ([System.IO.Path]::GetTempPath()) 'test/bus.db'
+        $env:VIBE_BUS_DB_PATH = $envPath
+        $policy = New-BusLocationPolicy -DbPath $dbPath
+        $policy.DbPath | Should -BeExactly $envPath
     }
 
     It 'T5: New-BusLocationPolicy without DbPath or env var defaults to .vibe/vibe-bus.db relative to current location' {
         $currentLocation = (Get-Location).Path
-        $expectedPath = Join-Path $currentLocation '.vibe\vibe-bus.db'
+        $expectedPath = Join-Path $currentLocation '.vibe/vibe-bus.db'
         $policy = New-BusLocationPolicy
         $policy.DbPath | Should -BeExactly $expectedPath
     }
 
     It 'T6: New-BusLocationPolicy -WorkspaceRoot uses workspace path' {
-        $policy = New-BusLocationPolicy -WorkspaceRoot 'C:\project'
-        $policy.DbPath | Should -BeExactly (Join-Path 'C:\project' '.vibe\vibe-bus.db')
+        $workspace = Join-Path ([System.IO.Path]::GetTempPath()) 'project'
+        $policy = New-BusLocationPolicy -WorkspaceRoot $workspace
+        $policy.DbPath | Should -BeExactly (Join-Path $workspace '.vibe/vibe-bus.db')
     }
 
     It 'T7: Get-BusDatabasePath returns the resolved path from policy' {
-        $policy = New-BusLocationPolicy -DbPath 'C:\test\bus.db'
+        $dbPath = Join-Path ([System.IO.Path]::GetTempPath()) 'test/bus.db'
+        $policy = New-BusLocationPolicy -DbPath $dbPath
         $result = Get-BusDatabasePath -Policy $policy
-        $result | Should -BeExactly 'C:\test\bus.db'
+        $result | Should -BeExactly $dbPath
     }
 
     It 'T8: Assert-BusLocationPolicyValid returns $true for a valid policy with non-empty DbPath' {
-        $policy = New-BusLocationPolicy -DbPath 'C:\test\bus.db'
+        $dbPath = Join-Path ([System.IO.Path]::GetTempPath()) 'test/bus.db'
+        $policy = New-BusLocationPolicy -DbPath $dbPath
         $result = Assert-BusLocationPolicyValid -Policy $policy
         $result | Should -BeTrue
     }
@@ -99,10 +106,12 @@ Describe 'BusLocationPolicy' {
     }
 
     It 'T12: After clearing VIBE_BUS_DB_PATH, New-BusLocationPolicy -WorkspaceRoot uses workspace path' {
-        $env:VIBE_BUS_DB_PATH = 'C:\old\path.db'
+        $oldPath = Join-Path ([System.IO.Path]::GetTempPath()) 'old/path.db'
+        $workspace = Join-Path ([System.IO.Path]::GetTempPath()) 'project'
+        $env:VIBE_BUS_DB_PATH = $oldPath
         $env:VIBE_BUS_DB_PATH = $null
-        $policy = New-BusLocationPolicy -WorkspaceRoot 'C:\project'
-        $policy.DbPath | Should -BeExactly (Join-Path 'C:\project' '.vibe\vibe-bus.db')
+        $policy = New-BusLocationPolicy -WorkspaceRoot $workspace
+        $policy.DbPath | Should -BeExactly (Join-Path $workspace '.vibe/vibe-bus.db')
     }
 
     It 'T13: New-BusLocationPolicy creates the .vibe directory if it does not exist (via Open-BusDatabaseFromPolicy)' {
