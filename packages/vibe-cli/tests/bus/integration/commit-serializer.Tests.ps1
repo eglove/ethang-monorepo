@@ -107,9 +107,10 @@ Describe 'WriteSession Entity' {
             $m.Dispose()
         } -ArgumentList $mutexName
         # Give job time to acquire the mutex
-        Start-Sleep -Milliseconds 200
+        Start-Sleep -Milliseconds 500  # Increased sleep to ensure mutex is acquired
         try {
-            { Start-WriteSession -WorktreeLeaf 'starvation-t06' -MaxAcquireAttempts 2 -InitialBackoffMs 1 } | Should -Throw '*WriteSessionStarvation*'
+            # Increase attempts and backoff to account for CI timing differences
+            { Start-WriteSession -WorktreeLeaf 'starvation-t06' -MaxAcquireAttempts 5 -InitialBackoffMs 10 } | Should -Throw '*WriteSessionStarvation*'
         } finally {
             Stop-Job $job -ErrorAction SilentlyContinue
             Remove-Job $job -Force -ErrorAction SilentlyContinue

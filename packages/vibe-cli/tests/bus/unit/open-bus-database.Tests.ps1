@@ -105,7 +105,7 @@ Describe 'WAL circuit breaker' {
 
 Describe 'Invoke-LongPathCheck' {
     It 'returns original path when length <= 240' {
-        $shortPath = 'C:\short\path\to\database.db'
+        $shortPath = Join-Path ([System.IO.Path]::GetTempPath()) 'database.db'
         $result = Invoke-LongPathCheck -Path $shortPath
         $result | Should -Be $shortPath
     }
