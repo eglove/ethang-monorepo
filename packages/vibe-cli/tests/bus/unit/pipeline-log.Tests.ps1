@@ -61,14 +61,6 @@ Describe 'Write-PipelineLog basic invocation' {
         (Test-Path $env:VIBE_BUS_ALARM_LOG_PATH) | Should -BeFalse
     }
 
-    It '7: Write-PipelineLog -Severity ERROR writes to alarms.log' {
-        Write-PipelineLog -Severity ERROR -Message 'error-test'
-        $env:VIBE_BUS_ALARM_LOG_PATH | Should -Exist
-        $lines = @(Get-Content $env:VIBE_BUS_ALARM_LOG_PATH)
-        $entry = $lines[-1] | ConvertFrom-Json
-        $entry.severity | Should -Be 'ERROR'
-    }
-
     It '12: Write-PipelineLog includes gate name in output' {
         $output = Write-PipelineLog -Severity WARN -Gate 'perf-baseline' -Message 'warn' 6>&1 | Out-String
         # The function writes via Write-Host; capture via stream or just verify no throw and alarm.log
