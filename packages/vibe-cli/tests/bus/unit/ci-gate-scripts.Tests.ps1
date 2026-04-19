@@ -1,9 +1,8 @@
 # Real-repo integration tests for CI gate scripts.
 #
 # Each test invokes the script against the actual working copy and asserts
-# exit 0. This replaces the equivalent jobs in .github/workflows/vibe-cli.yml
-# (which did nothing more than the same invocation) so that `pnpm test` runs
-# them as part of the normal CI pipeline via ci.yml.
+# exit 0. These used to be individual jobs in .github/workflows/vibe-cli.yml;
+# they now run as part of `pnpm test` via ci.yml.
 #
 # Scripts whose LOGIC is tested against synthetic fixtures in ci-gates.Tests.ps1
 # are re-invoked here against the real repo so a real-world regression is caught.

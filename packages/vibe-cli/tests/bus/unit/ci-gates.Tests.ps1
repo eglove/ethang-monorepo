@@ -304,11 +304,11 @@ Describe 'T21: stage-observability-targets.psd1 can be imported' {
     }
 }
 
-Describe 'vibe-cli.yml is present and defines the TLC matrix' {
-    It 'vibe-cli.yml exists and contains tlc-model-check' {
-        $yamlPath = Join-Path $Root '..' '..' '.github' 'workflows' 'vibe-cli.yml'
+Describe 'ci.yml defines the TLC matrix' {
+    It 'ci.yml exists and contains run-tlc.ps1 invocation' {
+        $yamlPath = Join-Path $Root '..' '..' '.github' 'workflows' 'ci.yml'
         $yamlPath | Should -Exist
-        (Get-Content $yamlPath -Raw) | Should -Match 'tlc-model-check'
+        (Get-Content $yamlPath -Raw) | Should -Match 'run-tlc\.ps1'
     }
 }
 

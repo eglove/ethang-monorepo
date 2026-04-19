@@ -60,6 +60,38 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
+  tlc:
+    # TLA+ model checking for vibe-cli specs. ubuntu-latest ships a JDK; grab
+    # nightly TLC inline (pattern borrowed from github.com/lemmy/BlockingQueue).
+    name: TLC (${{ matrix.label }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { label: BidirectionalComms,    dir: bidirectional-comms,  spec: BidirectionalComms,  cfg: BidirectionalComms.cfg }
+          - { label: CleanupImprovements,   dir: cleanup-improvements, spec: CleanupImprovements, cfg: CleanupImprovements.cfg }
+          - { label: CodeSimplify,          dir: code-simplify,        spec: CodeSimplify,        cfg: CodeSimplify.cfg }
+          - { label: CodingStage,           dir: coding-stage,         spec: CodingStage,         cfg: CodingStage.cfg }
+          - { label: ParallelDebates,       dir: parallel-debates,     spec: ParallelDebates,     cfg: ParallelDebates.cfg }
+          - { label: PipelineReviewers,     dir: reviewers,            spec: PipelineReviewers,   cfg: PipelineReviewers.cfg }
+          - { label: SqliteState,           dir: sqlite-state,         spec: SqliteState,         cfg: SqliteState.cfg }
+          - { label: TokenSaving,           dir: token-saving,         spec: TokenSaving,         cfg: TokenSaving.cfg }
+          - { label: TokenSaving-MultiAgent, dir: token-saving,         spec: TokenSaving,         cfg: TokenSaving-MultiAgent.cfg }
+    env:
+      TLC_JAR: ${{ github.workspace }}/tla2tools.jar
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - name: Get TLC jar
+        run: wget -q https://nightly.tlapl.us/dist/tla2tools.jar -O "$TLC_JAR"
+      - name: Run TLC on ${{ matrix.label }}
+        shell: pwsh
+        run: |
+          pwsh packages/vibe-cli/tools/run-tlc.ps1 `
+            -Spec   "packages/vibe-cli/docs/${{ matrix.dir }}/tla/${{ matrix.spec }}.tla" `
+            -Config "packages/vibe-cli/docs/${{ matrix.dir }}/tla/${{ matrix.cfg }}" `
+            -Timeout 600
+
   codeql:
     permissions:
       contents: read
