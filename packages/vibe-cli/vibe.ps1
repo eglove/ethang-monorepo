@@ -2,7 +2,16 @@
     [Parameter(Position = 0)]
     [string]$Seed,
 
-    [switch]$Resume
+    [switch]$Resume,
+
+    # Schema / infrastructure subcommands: 'schema-migrate', 'schema-rollback', 'schema-backup', 'reset'
+    [string]$Command = '',
+
+    # Path to the bus SQLite database (used by schema subcommands)
+    [string]$BusDbPath = '',
+
+    # Skip interactive confirmation for schema subcommands
+    [switch]$Force
 )
 
 $ErrorActionPreference = 'Stop'
@@ -26,6 +35,50 @@ $script:_ctrlCHandler = [ConsoleCancelEventHandler]{
 # UTF-8 encoding
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
+
+# ── Schema / infrastructure subcommands (early-exit branch) ──────────────────
+if ($Command -in @('schema-migrate', 'schema-rollback', 'schema-backup', 'reset')) {
+    Import-Module PSSQLite -Force
+    . "$root/bus/schema/migration.ps1"
+
+    $resolvedDbPath = if ($BusDbPath) { $BusDbPath } else { Join-Path $root 'vibe-bus.db' }
+
+    switch ($Command) {
+        'schema-migrate' {
+            $result = Invoke-BusMigration -DbPath $resolvedDbPath -Force:$Force
+            if (-not $result.Success) { exit 1 }
+        }
+        'schema-rollback' {
+            Invoke-BusMigrationDown -DbPath $resolvedDbPath -Force:$Force
+        }
+        'schema-backup' {
+            # Standalone backup: copy the DB to .vibe/backups/<timestamp>/
+            if (-not (Test-Path $resolvedDbPath)) {
+                Write-Error "[ERROR] Database not found: $resolvedDbPath"
+                exit 1
+            }
+            $timestamp  = (Get-Date -Format 'yyyyMMddTHHmmssZ')
+            $backupDir  = Join-Path (Split-Path $resolvedDbPath -Parent) ".vibe/backups/$timestamp"
+            New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
+            Copy-Item -Path $resolvedDbPath -Destination (Join-Path $backupDir 'vibe-bus.db') -Force
+            Write-Host "[INFO] Backup created: $backupDir"
+        }
+        'reset' {
+            if (-not $Force) {
+                $confirm = Read-Host "This will DELETE the bus database at '$resolvedDbPath'. Continue? (yes/no)"
+                if ($confirm -notmatch '^yes$') { Write-Host "[INFO] Reset cancelled."; exit 0 }
+            }
+            if (Test-Path $resolvedDbPath) {
+                Remove-Item $resolvedDbPath -Force
+                Write-Host "[INFO] Database deleted: $resolvedDbPath"
+            } else {
+                Write-Host "[INFO] No database found at: $resolvedDbPath"
+            }
+        }
+    }
+    exit 0
+}
+# ─────────────────────────────────────────────────────────────────────────────
 
 # State repository module
 Import-Module "$root/state/state-repository.psd1" -Force
