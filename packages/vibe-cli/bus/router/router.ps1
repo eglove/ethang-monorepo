@@ -6,36 +6,37 @@ function Invoke-BusAppendEvent {
         [string]$From,
         [string]$To,
         [string]$Type,
-        [string]$Payload=$null,
-        [int64]$InReplyTo=0,
-        [string]$GroupId=$null,
-        [scriptblock]$DbExecutor=$null
+        [string]$Payload = $null,
+        [int64]$InReplyTo = 0,
+        [string]$GroupId = $null,
+        [scriptblock]$DbExecutor = $null
     )
+    if ($env:VIBE_BUS_COMMIT_IN_PROGRESS -eq '1') { throw 'LockHierarchyViolation: AppendEvent must not be called from pre-commit hooks' }
     $evtId = Get-NextEvtId
     if ($null -ne $DbExecutor) {
-        $r = & $DbExecutor $Connection $From $To $InReplyTo $GroupId $Type $Payload
-        if ($null -ne $r) { $evtId = $r }
+        $actualId = & $DbExecutor $Connection $From $To $InReplyTo $GroupId $Type $Payload
+        if ($null -ne $actualId) { $evtId = $actualId }
     } else {
         $tx = $Connection.BeginTransaction([System.Data.IsolationLevel]::Unspecified)
         try {
             $cmd = $Connection.CreateCommand()
             $cmd.Transaction = $tx
-            $cmd.CommandText = 'INSERT INTO event_log ("from","to",in_reply_to,group_id,type,payload,status) VALUES (@f,@t,@ir,@gi,@ty,@p,''routed'')'
-            $cmd.Parameters.AddWithValue('@f', $From) | Out-Null
-            $cmd.Parameters.AddWithValue('@t', $To) | Out-Null
-            $irVal = if ($InReplyTo -eq 0) { [DBNull]::Value } else { $InReplyTo }
-            $cmd.Parameters.AddWithValue('@ir', $irVal) | Out-Null
-            $giVal = if ([string]::IsNullOrEmpty($GroupId)) { [DBNull]::Value } else { $GroupId }
-            $cmd.Parameters.AddWithValue('@gi', $giVal) | Out-Null
-            $cmd.Parameters.AddWithValue('@ty', $Type) | Out-Null
-            $pVal = if ([string]::IsNullOrEmpty($Payload)) { [DBNull]::Value } else { $Payload }
-            $cmd.Parameters.AddWithValue('@p', $pVal) | Out-Null
+            $cmd.CommandText = 'INSERT INTO event_log ("from","to",in_reply_to,group_id,type,payload,status) VALUES (@from,@to,@inReplyTo,@groupId,@type,@payload,''routed'')'
+            $cmd.Parameters.AddWithValue('@from', $From) | Out-Null
+            $cmd.Parameters.AddWithValue('@to', $To) | Out-Null
+            $inReplyToVal = if ($InReplyTo -eq 0) { [DBNull]::Value } else { $InReplyTo }
+            $groupIdVal   = if ([string]::IsNullOrEmpty($GroupId)) { [DBNull]::Value } else { $GroupId }
+            $payloadVal   = if ([string]::IsNullOrEmpty($Payload)) { [DBNull]::Value } else { $Payload }
+            $cmd.Parameters.AddWithValue('@inReplyTo', $inReplyToVal) | Out-Null
+            $cmd.Parameters.AddWithValue('@groupId', $groupIdVal) | Out-Null
+            $cmd.Parameters.AddWithValue('@type', $Type) | Out-Null
+            $cmd.Parameters.AddWithValue('@payload', $payloadVal) | Out-Null
             $cmd.ExecuteNonQuery() | Out-Null
-            $r2 = $Connection.CreateCommand()
-            $r2.Transaction = $tx
-            $r2.CommandText = 'SELECT last_insert_rowid()'
-            $evtId = [int64]$r2.ExecuteScalar()
-            $r2.Dispose()
+            $rowCmd = $Connection.CreateCommand()
+            $rowCmd.Transaction = $tx
+            $rowCmd.CommandText = 'SELECT last_insert_rowid()'
+            $evtId = [int64]$rowCmd.ExecuteScalar()
+            $rowCmd.Dispose()
             $cmd.Dispose()
             $tx.Commit()
         } catch {
@@ -46,6 +47,6 @@ function Invoke-BusAppendEvent {
         }
     }
     [void]$script:_RoutedIds.Add($evtId)
-    return @{ EvtId=$evtId; Status='routed' }
+    return @{ EvtId = $evtId; Status = 'routed' }
 }
 function Reset-RouterState { $script:_RoutedIds.Clear() }

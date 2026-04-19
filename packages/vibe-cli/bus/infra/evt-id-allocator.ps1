@@ -10,7 +10,7 @@ public static class EvtIdAllocatorStore {
 }
 '@
 }
-function Initialize-EvtIdAllocator { param([int64]$StartValue=1); [EvtIdAllocatorStore]::Initialize($StartValue)|Out-Null }
+function Initialize-EvtIdAllocator { param([int64]$StartValue = 1); [EvtIdAllocatorStore]::Initialize($StartValue) | Out-Null }
 function Get-NextEvtId { return [EvtIdAllocatorStore]::Next() }
 function Get-CurrentEvtId { return [EvtIdAllocatorStore]::Current() }
-function Reset-EvtIdAllocator { param([int64]$Value=1); [EvtIdAllocatorStore]::Reset($Value)|Out-Null }
+function Reset-EvtIdAllocator { param([int64]$Value = 1); [EvtIdAllocatorStore]::Reset($Value) | Out-Null }
