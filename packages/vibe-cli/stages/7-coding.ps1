@@ -7,18 +7,18 @@ function _SyncDb {
     catch { Write-Warning "DB sync: $_" }
 }
 
-. "$PSScriptRoot/../utils/pipeline-lock.ps1"
-. "$PSScriptRoot/../utils/pipeline-log.ps1"
-. "$PSScriptRoot/../utils/invoke-claude.ps1"
-. "$PSScriptRoot/../utils/review-loop.ps1"
-. "$PSScriptRoot/../utils/per-worktree-double-pass.ps1"
-. "$PSScriptRoot/../utils/per-worktree-review.ps1"
-. "$PSScriptRoot/../utils/per-worktree-gates.ps1"
-. "$PSScriptRoot/../utils/sequential-merge.ps1"
-. "$PSScriptRoot/../utils/worktree-cleanup.ps1"
-. "$PSScriptRoot/../utils/global-double-pass.ps1"
-. "$PSScriptRoot/../utils/global-review.ps1"
-. "$PSScriptRoot/../utils/complete-pipeline.ps1"
+if (-not (Get-Command Lock-Pipeline -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/pipeline-lock.ps1" }
+if (-not (Get-Command Write-PipelineLog -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/pipeline-log.ps1" }
+if (-not (Get-Command Invoke-Claude -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/invoke-claude.ps1" }
+if (-not (Get-Command Invoke-ReviewLoop -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/review-loop.ps1" }
+if (-not (Get-Command Invoke-PerWorktreeDoublePass -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/per-worktree-double-pass.ps1" }
+if (-not (Get-Command Invoke-PerWorktreeReview -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/per-worktree-review.ps1" }
+if (-not (Get-Command Invoke-PerWorktreeGate -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/per-worktree-gates.ps1" }
+if (-not (Get-Command Invoke-SequentialMerge -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/sequential-merge.ps1" }
+if (-not (Get-Command Invoke-WorktreeCleanup -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/worktree-cleanup.ps1" }
+if (-not (Get-Command Invoke-GlobalDoublePass -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/global-double-pass.ps1" }
+if (-not (Get-Command Invoke-GlobalReview -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/global-review.ps1" }
+if (-not (Get-Command Complete-Pipeline -ErrorAction SilentlyContinue)) { . "$PSScriptRoot/../utils/complete-pipeline.ps1" }
 
 function Invoke-CodingStage {
     param(
