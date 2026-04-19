@@ -61,16 +61,12 @@ jobs:
       - run: pnpm build
 
   tlc:
-    # TLA+ model checking for vibe-cli specs. ubuntu-latest ships a JDK; grab
-    # nightly TLC inline (pattern from github.com/lemmy/BlockingQueue).
+    # TLA+ model checking. run-tlc.ps1 auto-downloads tla2tools.jar (nightly)
+    # on first use and refreshes when the server's Last-Modified is newer.
     # Auto-discovers every docs/*/tla/*.cfg and pairs it with its .tla spec.
     runs-on: ubuntu-latest
-    env:
-      TLC_JAR: ${{ github.workspace }}/tla2tools.jar
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-      - name: Get TLC jar
-        run: wget -q https://nightly.tlapl.us/dist/tla2tools.jar -O "$TLC_JAR"
       - name: Run TLC on every spec
         shell: pwsh
         run: |
