@@ -82,10 +82,12 @@ function Invoke-CloseHook {
         }
     }
     else {
-        # Real tsx invocation with timeout
+        # Real tsx invocation with timeout.
+        # Launch via cmd.exe /c so PATHEXT resolves the npx.cmd shim —
+        # Start-Process -FilePath 'npx' fails because npx is a .ps1 on Windows.
         $proc = Start-Process `
-            -FilePath 'tsx' `
-            -ArgumentList "packages/vibe-cli/graph/index.ts", $OutputPath, $MaxAgents `
+            -FilePath 'cmd.exe' `
+            -ArgumentList '/c', 'npx', 'tsx', 'packages/vibe-cli/graph/index.ts', $OutputPath, $MaxAgents `
             -PassThru `
             -NoNewWindow
 

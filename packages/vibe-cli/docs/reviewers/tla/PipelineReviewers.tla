@@ -1,4 +1,5 @@
 --------------------------- MODULE PipelineReviewers ---------------------------
+(* version: 1.0.0 *)
 (*
  * TLA+ Specification — Pipeline Reviewers & Resume
  * Source: docs/reviewers/bdd.feature (2026-04-10)

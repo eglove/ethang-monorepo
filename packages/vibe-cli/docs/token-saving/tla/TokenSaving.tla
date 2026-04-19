@@ -1,4 +1,5 @@
 --------------------------- MODULE TokenSaving ---------------------------
+(* version: 1.0.0 *)
 (*
  * Token Saving — TLA+ Specification (Revision 19)
  *

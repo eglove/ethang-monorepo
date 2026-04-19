@@ -30,6 +30,20 @@ Describe 'Invoke-ReviewLoop' {
 
             Should -Invoke Invoke-Claude -Times 1
         }
+
+        It 'passes -JsonSchema to Invoke-Claude' {
+            $script:capturedSchema = $null
+            Mock Invoke-Claude {
+                $script:capturedSchema = $JsonSchema
+                return '{"verdict":"pass","findings":[],"notes":[],"warnings":[]}'
+            }
+
+            Invoke-ReviewLoop -DiffContent $script:diff -FeatureDir $script:featureDir -Root $script:root
+
+            $script:capturedSchema | Should -Not -BeNullOrEmpty
+            $script:capturedSchema | Should -Match '"verdict"'
+            $script:capturedSchema | Should -Match '"enum":\["pass","fail"\]'
+        }
     }
 
     Context 'Verdict "pass" with 0 findings' {

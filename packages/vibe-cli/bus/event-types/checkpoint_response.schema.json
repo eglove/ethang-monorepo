@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "open_items": { "items": { "type": "string" }, "type": "array" },
+    "summary": { "maxLength": 4096, "type": "string" }
+  },
+  "required": ["summary"],
+  "type": "object"
+}

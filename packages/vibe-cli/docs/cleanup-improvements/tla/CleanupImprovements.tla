@@ -1,4 +1,5 @@
 --------------------------- MODULE CleanupImprovements ---------------------------
+(* version: 1.0.0 *)
 (*
  * TLA+ Specification: vibe-cli Cleanup Improvements
  * Source: docs/cleanup-improvements/bdd.feature (2026-04-11, round 4 amendments)

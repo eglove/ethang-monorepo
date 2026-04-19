@@ -48,7 +48,7 @@ After sign-off:
 2. Determine the **target package root** — the app or package directory where this feature will be implemented. Explore the monorepo structure (`pnpm-workspace.yaml` lists `apps/*`, `packages/*`, `templates/*`) and identify the correct directory. If the feature targets vibe-cli itself, use `packages/vibe-cli`. The path must be relative to the monorepo root.
 3. Create the directory `packages/vibe-cli/docs/<feature-name>/` if it does not exist.
 4. Save `target.json` to `packages/vibe-cli/docs/<feature-name>/target.json` (see Output Format below).
-5. Save the structured briefing to `packages/vibe-cli/docs/<feature-name>/elicitor.md` (see Output Format below). **Always include the `## Notes` section verbatim in every briefing — it is mandatory and must not be omitted or modified.**
+5. Save the structured briefing to `packages/vibe-cli/docs/<feature-name>/elicitor.md` (see Output Format below). **Always include the `## Notes`, `## Conversation Summary`, and `# User Seed` sections in every briefing — all three are mandatory. Reproduce the seed verbatim in the `# User Seed` section; do not reword, summarize, or "correct" it. The `# User Seed` H1 heading signals that everything above it is authoritative when it conflicts with the seed.**
 6. Tell the user the file path and stop. Do not dispatch any downstream agents. The pipeline script handles what comes next.
 
 ## Decision Guide
@@ -125,6 +125,16 @@ The `root` field is the target package path relative to the monorepo root. Examp
 
 ## Open Questions
 <any unresolved items, if INCOMPLETE>
+
+## Conversation Summary
+
+<5–12 bullets capturing material decisions made during the interview, each as "decision — rationale". Call out explicitly where a decision departs from the seed and why. Do not restate the body sections; focus on the reasoning trail.>
+
+---
+
+# User Seed (Everything Above Supersedes the Below)
+
+<the seed exactly as the user passed it to `./vibe.ps1`, verbatim — no rewording, no cleanup, preserve original markdown/code blocks/diagrams>
 ```
 
 ## Out of Scope

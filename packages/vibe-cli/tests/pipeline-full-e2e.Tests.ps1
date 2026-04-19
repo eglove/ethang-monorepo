@@ -4,15 +4,18 @@
     . "$root/utils/pipeline-log.ps1"
     . "$root/utils/invoke-claude.ps1"
     . "$root/utils/invoke-verify.ps1"
-    . "$root/utils/invoke-parallel.ps1"
     . "$root/utils/resolve-pipeline-state.ps1"
-    . "$root/utils/unified-debate-loop.ps1"
-    . "$root/utils/debate-loop.ps1"
     . "$root/utils/gherkin-parser.ps1"
     . "$root/utils/fixture-gate.ps1"
     . "$root/utils/resume.ps1"
     . "$root/utils/resolve-target-root.ps1"
     . "$root/utils/pipeline-lock.ps1"
+    . "$root/bus/router/send-bus-event.ps1"
+    . "$root/bus/router/agent-lifecycle.ps1"
+    . "$root/bus/router/wait-bus-group.ps1"
+    . "$root/bus/schema/open-bus-database.ps1"
+    . "$root/bus/infra/stage-feature-flag.ps1"
+    . "$root/bus/domain/stage.ps1"
     . "$root/stages/1-elicitor.ps1"
     . "$root/stages/2-parallel-writers.ps1"
     . "$root/stages/3-unified-debate.ps1"
@@ -66,6 +69,14 @@ Describe 'Full Pipeline E2E (Stages 1-7)' {
 
         # ── Mocks ──
 
+        # Bus infrastructure mocks (stages 2, 3, 6 now use bus path)
+        Mock Open-BusDatabase { }
+        Mock New-BusGroup { return @{ GroupId = $GroupId } }
+        Mock Send-BusGroupEvent { }
+        Mock Wait-BusGroup { return @{ Status = 'completed' } }
+        Mock Start-BusAgent { }
+        Mock Send-BusEvent { }
+
         # Stage 1: Invoke-Claude -Interactive creates elicitor.md
         Mock Invoke-Claude {
             $featureDir = Join-Path $script:testRoot 'docs/test-feature'
@@ -76,12 +87,13 @@ Build a counter that tracks items and reports completion status.
 "@
         }
 
-        # Stage 2: Invoke-Parallel creates BDD + TLA files
-        Mock Invoke-Parallel {
-            param($Jobs)
+        # Stage 2 (bus): Start-BusAgent side-effect creates BDD + TLA files for bdd/tla agent ids
+        Mock Start-BusAgent {
+            param([string]$AgentId, [string]$Role, [scriptblock]$LaunchAgent, [scriptblock]$DbExecutor)
             $featureDir = Join-Path $script:testRoot 'docs/test-feature'
-            $bddFile = Join-Path $featureDir 'bdd.feature'
-            Set-Content -Path $bddFile -Value @"
+            if ($AgentId -match '^bdd-') {
+                $bddFile = Join-Path $featureDir 'bdd.feature'
+                Set-Content -Path $bddFile -Value @"
 Feature: Item Counter
   Scenario: Item added successfully
     Given an empty collection
@@ -93,9 +105,11 @@ Feature: Item Counter
     When complete is called
     Then the status is done
 "@
-            $tlaDir = Join-Path $featureDir 'tla'
-            New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
-            Set-Content -Path (Join-Path $tlaDir 'TestSpec.tla') -Value @"
+            }
+            if ($AgentId -match '^tla-') {
+                $tlaDir = Join-Path $featureDir 'tla'
+                New-Item -ItemType Directory -Path $tlaDir -Force | Out-Null
+                Set-Content -Path (Join-Path $tlaDir 'TestSpec.tla') -Value @"
 ---- MODULE TestSpec ----
 EXTENDS Naturals
 
@@ -127,27 +141,21 @@ TypeOK ==
 Spec == Init /\ [][AddItem \/ Complete]_vars
 ====
 "@
-            Set-Content -Path (Join-Path $tlaDir 'TestSpec.cfg') -Value @"
+                Set-Content -Path (Join-Path $tlaDir 'TestSpec.cfg') -Value @"
 SPECIFICATION Spec
 CONSTANTS MaxItems = 3
 INVARIANT TypeOK
 "@
-            return @{
-                bdd = @{ Success = $true; Output = $bddFile; Error = $null }
-                tla = @{ Success = $true; Output = @{ TlaFile = (Get-Item "$tlaDir/TestSpec.tla"); TlaDir = $tlaDir }; Error = $null }
             }
-        }
-
-        # Stage 3: Unified debate → consensus
-        Mock Invoke-UnifiedDebateLoop {
-            Set-Content -Path (Join-Path $FeatureDir 'unified-debate.md') -Value '# Unified Debate Session — consensus reached at round 1'
-            return @{
-                Result              = 'CONSENSUS_REACHED'
-                RoundsCompleted     = 1
-                FinalGherkinPath    = (Join-Path $FeatureDir 'bdd.feature')
-                FinalTlaDir         = (Join-Path $FeatureDir 'tla')
-                SessionFile         = (Join-Path $FeatureDir 'unified-debate.md')
-                UnresolvedObjections = @()
+            # Stage 3 (bus): unified-moderator creates unified-debate.md
+            if ($AgentId -match 'unified-moderator') {
+                $unifiedDebate = Join-Path $featureDir 'unified-debate.md'
+                Set-Content -Path $unifiedDebate -Value '# Unified Debate Session — consensus reached at round 1'
+            }
+            # Stage 6 (bus): impl-debate-mod creates impl-debate.md
+            if ($AgentId -match 'impl-debate-mod') {
+                $implDebate = Join-Path $featureDir 'impl-debate.md'
+                Set-Content -Path $implDebate -Value '# Implementation Debate — all objections addressed'
             }
         }
 
@@ -157,11 +165,6 @@ INVARIANT TypeOK
         # handle it in order. The simplest: just override to create plan files when they don't exist.
         # Actually, Stage 5 calls Invoke-Claude with -SystemPromptFile, Stage 1 with -Interactive.
         # Let's use the single mock and conditionally create files based on what exists.
-
-        # Stage 6: Debate loop → creates impl-debate.md
-        Mock Invoke-DebateLoop {
-            Set-Content -Path $SessionFile -Value '# Implementation Debate — all objections addressed'
-        }
 
         # Stage 7 mocks
         Mock git { '' }

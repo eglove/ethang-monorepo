@@ -1,4 +1,5 @@
 --------------------------- MODULE SqliteState ---------------------------
+(* version: 1.0.0 *)
 (**************************************************************************)
 (* TLA+ specification for vibe-cli SQLite State Repository                *)
 (*                                                                        *)

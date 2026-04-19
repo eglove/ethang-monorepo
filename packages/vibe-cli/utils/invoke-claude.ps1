@@ -127,7 +127,7 @@
 
             if ($evt.subtype -eq 'success') {
                 if ($evt.structured_output) {
-                    $resultText = $evt.structured_output | ConvertTo-Json -Depth 10 -Compress
+                    $resultText = $evt.structured_output | ConvertTo-Json -Depth 20 -Compress
                 }
                 elseif ($evt.result) {
                     $resultText = $evt.result

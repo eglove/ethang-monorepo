@@ -1,0 +1,22 @@
+{
+  "contractName": "git-invoke",
+  "outputs": [
+    {
+      "input": { "Command": "stash" },
+      "output": { "ExitCode": 0, "Output": "Saved working directory" },
+      "scenario": "git-stash"
+    },
+    {
+      "input": { "Command": "stash pop" },
+      "output": { "ExitCode": 0, "Output": "Changes restored" },
+      "scenario": "git-stash-pop"
+    },
+    {
+      "input": { "Command": "commit", "Message": "test" },
+      "output": { "ExitCode": 0, "Output": "[feature/test abc1234]" },
+      "scenario": "git-commit"
+    }
+  ],
+  "recordedAt": "2026-04-18",
+  "version": 1
+}
