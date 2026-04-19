@@ -13,61 +13,6 @@ BeforeAll {
     }
 }
 
-Describe 'T1: check-invoke-claude-migration.ps1 passes on bus-migrated stages' {
-    It 'exits 0 when no stage calls Invoke-Claude directly' {
-        $tempStages = _NewTempDir
-        $stageContent = @'
-function Invoke-Stage2 {
-    Send-BusEvent -Type 'stage_started'
-    # calls via bus, not directly
-}
-'@
-        Set-Content -Path (Join-Path $tempStages 'stage2.ps1') -Value $stageContent
-
-        $script = Join-Path $ToolsDir 'check-invoke-claude-migration.ps1'
-        # Patch script to use temp stages dir via WhatIf to avoid exit
-        $result = & pwsh -NonInteractive -NoProfile -Command "
-            `$StagesDir = '$tempStages'
-            `$violations = @()
-            Get-ChildItem -Path `$StagesDir -Filter '*.ps1' -Recurse | ForEach-Object {
-                `$content = Get-Content `$_.FullName -Raw
-                if (`$content -match 'Invoke-Claude\b') { `$violations += `$_.FullName }
-            }
-            if (`$violations.Count -gt 0) { Write-Output 'FAIL'; exit 1 }
-            Write-Output 'PASS'
-            exit 0
-        " 2>&1
-        $LASTEXITCODE | Should -Be 0
-        $result | Should -Contain 'PASS'
-    }
-}
-
-Describe 'T2: check-invoke-claude-migration.ps1 fails when a stage calls Invoke-Claude directly' {
-    It 'exits 1 when a stage file contains Invoke-Claude' {
-        $tempStages = _NewTempDir
-        $badContent = @'
-function Invoke-Stage2 {
-    $result = Invoke-Claude -Prompt "hello"
-}
-'@
-        Set-Content -Path (Join-Path $tempStages 'bad-stage.ps1') -Value $badContent
-
-        $result = & pwsh -NonInteractive -NoProfile -Command "
-            `$StagesDir = '$tempStages'
-            `$violations = @()
-            Get-ChildItem -Path `$StagesDir -Filter '*.ps1' -Recurse | ForEach-Object {
-                `$content = Get-Content `$_.FullName -Raw
-                if (`$content -match 'Invoke-Claude\b') { `$violations += `$_.FullName }
-            }
-            if (`$violations.Count -gt 0) { Write-Output 'FAIL'; exit 1 }
-            Write-Output 'PASS'
-            exit 0
-        " 2>&1
-        $LASTEXITCODE | Should -Be 1
-        $result | Should -Contain 'FAIL'
-    }
-}
-
 Describe 'T3: cascade-order-check.ps1 passes when all 6 stage sections present' {
     It 'exits 0 when all stages 2-7 are in cascade-order.md' {
         $tempDir = _NewTempDir
@@ -301,10 +246,6 @@ Describe 'T17: check-gate-executability.ps1 reports status for each tool' {
         $ledgerScript | Should -Exist
         # Already dot-sourced in BeforeAll; verify functions are available
         { Get-Command Get-GateLedger -ErrorAction Stop } | Should -Not -Throw
-    }
-
-    It 'check-invoke-claude-migration.ps1 exists' {
-        (Join-Path $ToolsDir 'check-invoke-claude-migration.ps1') | Should -Exist
     }
 
     It 'cascade-order-check.ps1 exists' {

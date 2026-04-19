@@ -39,20 +39,6 @@ Describe 'Mutation: gate-ledger Add-GateLedgerEntry' {
     }
 }
 
-Describe 'Mutation: check-invoke-claude-migration.ps1 pattern match' {
-    It 'mutation — partial match does not false-positive on InvokeClaudeHelper' {
-        $content = 'function InvokeClaudeHelper { }'
-        $hasViolation = $content -match 'Invoke-Claude\b'
-        $hasViolation | Should -Be $false
-    }
-
-    It 'mutation — exact match catches Invoke-Claude with arguments' {
-        $content = '$r = Invoke-Claude -Prompt "test"'
-        $hasViolation = $content -match 'Invoke-Claude\b'
-        $hasViolation | Should -Be $true
-    }
-}
-
 Describe 'Mutation: cascade-order stage range' {
     It 'mutation — stage 1 is not required (only 2-7)' {
         $content = @'

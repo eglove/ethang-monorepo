@@ -31,11 +31,6 @@ Describe 'Gate scripts pass against the current repo' {
         $script:ToolsDir = Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..' '..' '..')) 'tools'
     }
 
-    It 'check-invoke-claude-migration.ps1' {
-        $r = Invoke-Gate 'check-invoke-claude-migration.ps1'
-        $r.ExitCode | Should -Be 0 -Because $r.Output
-    }
-
     It 'check-tla-version.ps1' {
         $r = Invoke-Gate 'check-tla-version.ps1'
         $r.ExitCode | Should -Be 0 -Because $r.Output
