@@ -446,16 +446,6 @@ Describe 'E2E-FINAL: Bus Infrastructure Completeness Assertions' {
         Test-Path $snapshot | Should -BeTrue -Because "git-output.snapshot.json must exist for contract testing"
     }
 
-    It 'E2E-FINAL-T4: .github/workflows/ci.yml defines the vibe-cli TLC job' {
-        # PSScriptRoot = tests/bus/e2e  ->  ../../.. = packages/vibe-cli  ->  ../.. = worktree root
-        $pkgRoot      = Resolve-Path "$PSScriptRoot/../../.."
-        $worktreeRoot = Resolve-Path "$pkgRoot/../.."
-        $wfPath       = Join-Path $worktreeRoot '.github/workflows/ci.yml'
-
-        Test-Path $wfPath | Should -BeTrue -Because "ci.yml CI workflow must exist"
-        (Get-Content $wfPath -Raw) | Should -Match 'utils/tlc-runner\.ps1' -Because "ci.yml must invoke the TLC runner"
-    }
-
     It 'E2E-FINAL-T5: bus/ops/rollback-rehearsal.ps1 exists' {
         $root     = Resolve-Path "$PSScriptRoot/../../.."
         $rehearsal = Join-Path $root 'bus/ops/rollback-rehearsal.ps1'

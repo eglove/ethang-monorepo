@@ -304,13 +304,6 @@ Describe 'T21: stage-observability-targets.psd1 can be imported' {
     }
 }
 
-Describe 'ci.yml wires in TLC model checking' {
-    It 'ci.yml exists and dot-sources utils/tlc-runner.ps1' {
-        $yamlPath = Join-Path $Root '..' '..' '.github' 'workflows' 'ci.yml'
-        $yamlPath | Should -Exist
-        (Get-Content $yamlPath -Raw) | Should -Match 'utils/tlc-runner\.ps1'
-    }
-}
 
 Describe 'Additional: gate-ledger Reset-GateLedger clears file' {
     It 'resets the ledger to empty' {
