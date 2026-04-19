@@ -7,20 +7,19 @@ on:
   pull_request:
     paths:
       - 'packages/vibe-cli/**'
-  schedule:
-    - cron: '0 0 1 */3 *'  # quarterly for rollback rehearsal
 
 defaults:
   run:
     shell: pwsh
     working-directory: packages/vibe-cli
 
-# Most vibe-cli gates now run as Pester tests via `pnpm test` in
-# .github/workflows/ci.yml — see tests/bus/unit/ci-gate-scripts.Tests.ps1.
-# This workflow only owns work that `pnpm test` can't do cleanly:
-#   - TLA+ TLC model checking (needs parallelism + a JVM + the jar download)
-#   - A quarterly rollback-rehearsal cron
-#   - Post-run gate-proof emission
+# Pester tests, code coverage, lint, and gate-script integration checks all
+# run via `pnpm test` + `pnpm lint` in .github/workflows/ci.yml — including
+# tests/bus/integration/rollback-rehearsal.Tests.ps1.
+#
+# This workflow exists solely for TLA+ TLC model checking, which needs a JVM,
+# the tla2tools.jar download, and per-spec parallelism that doesn't fit
+# cleanly inside `pnpm test`.
 
 jobs:
   tlc-model-check:
@@ -62,30 +61,3 @@ jobs:
             -Spec   "docs/${{ matrix.dir }}/tla/${{ matrix.spec }}.tla" `
             -Config "docs/${{ matrix.dir }}/tla/${{ matrix.cfg }}" `
             -Timeout 600
-
-  rollback-rehearsal:
-    name: Rollback Rehearsal (quarterly)
-    runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Pester
-        run: Install-Module -Name Pester -Force -Scope CurrentUser
-      - name: Run rollback rehearsal tests
-        run: |
-          $config = New-PesterConfiguration
-          $config.Run.Path = 'tests/bus/integration/rollback-rehearsal.Tests.ps1'
-          $config.Output.Verbosity = 'Detailed'
-          Invoke-Pester -Configuration $config
-
-  emit-gate-proof:
-    name: Emit Gate Proof
-    runs-on: ubuntu-latest
-    if: always()
-    needs: tlc-model-check
-    steps:
-      - uses: actions/checkout@v4
-      - name: Emit gate proof record
-        run: |
-          $status = if ('${{ needs.tlc-model-check.result }}' -eq 'success') { 'pass' } else { 'fail' }
-          pwsh tools/emit-gate-proof.ps1 -GateName 'tlc-suite' -Status $status -ToolVersion '1.0.0'
