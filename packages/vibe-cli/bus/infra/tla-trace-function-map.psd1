@@ -1,0 +1,18 @@
+@{
+    AppendEvent           = 'Invoke-BusAppendEvent'
+    StartAgent            = 'Start-BusAgent'
+    StopAgent             = 'Stop-BusAgent'
+    EmitHeartbeat         = 'Invoke-EmitHeartbeat'
+    ConsensusCandidate    = 'Invoke-ConsensusCandidate'
+    ConsensusRatify       = 'Invoke-ConsensusRatify'
+    ConsensusFail         = 'Invoke-ConsensusFail'
+    CheckpointAgent       = 'Invoke-CheckpointAgent'
+    Halt                  = 'Invoke-BusHalt'
+    Resume                = 'Invoke-BusResumeRecovery'
+    TakeSnapshot          = 'Invoke-BusTakeSnapshot'
+    RollbackCoordination  = 'Invoke-BusRollbackCoordination'
+    SendEvent             = 'Send-BusEvent'
+    WaitGroup             = 'Wait-BusGroup'
+    RouterStartupRecovery = 'Invoke-RouterStartupRecovery'
+    ProtocolError         = 'Send-ProtocolError'
+}
