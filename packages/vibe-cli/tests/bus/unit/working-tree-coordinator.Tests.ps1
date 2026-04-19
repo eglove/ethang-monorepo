@@ -306,8 +306,8 @@ Describe 'Invoke-AtomicFileReplace' {
             [System.IO.FileShare]::None
         )
         try {
-            # Increase attempts and delays to account for CI timing differences
-            { Invoke-AtomicFileReplace -TargetPath $dst -SourcePath $src -MaxAttempts 5 -BaseDelayMs 20 } |
+            # Use original parameters to ensure the test is deterministic
+            { Invoke-AtomicFileReplace -TargetPath $dst -SourcePath $src -MaxAttempts 3 -BaseDelayMs 10 } |
                 Should -Throw '*exhausted*'
         }
         finally {
@@ -321,6 +321,7 @@ Describe 'Invoke-AtomicFileReplace' {
         Set-Content -Path $src -Value 'content'
         Set-Content -Path $dst -Value 'old'
 
+        # We know the function emits warnings to host stream, so just ensure it behaves correctly
         $stream = [System.IO.FileStream]::new(
             $dst,
             [System.IO.FileMode]::Open,
@@ -328,7 +329,8 @@ Describe 'Invoke-AtomicFileReplace' {
             [System.IO.FileShare]::None
         )
         try {
-            # The function should throw an exception after max attempts when the file is locked
+            # The important part is that it eventually throws after retries
+            # Warnings are side effects that we observed in the logs but may not be easily captured in all environments
             { Invoke-AtomicFileReplace -TargetPath $dst -SourcePath $src -MaxAttempts 3 -BaseDelayMs 10 } |
                 Should -Throw '*exhausted*'
         }
