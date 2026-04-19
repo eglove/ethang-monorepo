@@ -62,35 +62,36 @@ jobs:
 
   tlc:
     # TLA+ model checking for vibe-cli specs. ubuntu-latest ships a JDK; grab
-    # nightly TLC inline (pattern borrowed from github.com/lemmy/BlockingQueue).
-    name: TLC (${{ matrix.label }})
+    # nightly TLC inline (pattern from github.com/lemmy/BlockingQueue).
+    # Auto-discovers every docs/*/tla/*.cfg and pairs it with its .tla spec.
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { label: BidirectionalComms,    dir: bidirectional-comms,  spec: BidirectionalComms,  cfg: BidirectionalComms.cfg }
-          - { label: CleanupImprovements,   dir: cleanup-improvements, spec: CleanupImprovements, cfg: CleanupImprovements.cfg }
-          - { label: CodeSimplify,          dir: code-simplify,        spec: CodeSimplify,        cfg: CodeSimplify.cfg }
-          - { label: CodingStage,           dir: coding-stage,         spec: CodingStage,         cfg: CodingStage.cfg }
-          - { label: ParallelDebates,       dir: parallel-debates,     spec: ParallelDebates,     cfg: ParallelDebates.cfg }
-          - { label: PipelineReviewers,     dir: reviewers,            spec: PipelineReviewers,   cfg: PipelineReviewers.cfg }
-          - { label: SqliteState,           dir: sqlite-state,         spec: SqliteState,         cfg: SqliteState.cfg }
-          - { label: TokenSaving,           dir: token-saving,         spec: TokenSaving,         cfg: TokenSaving.cfg }
-          - { label: TokenSaving-MultiAgent, dir: token-saving,         spec: TokenSaving,         cfg: TokenSaving-MultiAgent.cfg }
     env:
       TLC_JAR: ${{ github.workspace }}/tla2tools.jar
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
       - name: Get TLC jar
         run: wget -q https://nightly.tlapl.us/dist/tla2tools.jar -O "$TLC_JAR"
-      - name: Run TLC on ${{ matrix.label }}
+      - name: Run TLC on every spec
         shell: pwsh
         run: |
-          pwsh packages/vibe-cli/tools/run-tlc.ps1 `
-            -Spec   "packages/vibe-cli/docs/${{ matrix.dir }}/tla/${{ matrix.spec }}.tla" `
-            -Config "packages/vibe-cli/docs/${{ matrix.dir }}/tla/${{ matrix.cfg }}" `
-            -Timeout 600
+          $cfgs = Get-ChildItem -Path packages/vibe-cli/docs -Filter '*.cfg' -Recurse |
+            Where-Object { $_.Directory.Name -eq 'tla' }
+          $failures = @()
+          foreach ($cfg in $cfgs) {
+            $specBase = [System.IO.Path]::GetFileNameWithoutExtension($cfg.Name)
+            $tla = Join-Path $cfg.Directory.FullName "$specBase.tla"
+            if (-not (Test-Path $tla)) {
+              $tla = (Get-ChildItem $cfg.Directory.FullName -Filter '*.tla' | Select-Object -First 1).FullName
+            }
+            Write-Output "::group::TLC $($cfg.Name)"
+            pwsh packages/vibe-cli/tools/run-tlc.ps1 -Spec $tla -Config $cfg.FullName -Timeout 600
+            Write-Output "::endgroup::"
+            if ($LASTEXITCODE -ne 0) { $failures += $cfg.Name }
+          }
+          if ($failures) {
+            Write-Error ("TLC failed for: " + ($failures -join ', '))
+            exit 1
+          }
 
   codeql:
     permissions:
