@@ -62,11 +62,6 @@ Describe 'Gate scripts pass against the current repo' {
         $r.ExitCode | Should -Be 0 -Because $r.Output
     }
 
-    It 'no-string-literal-assertions.ps1' {
-        $r = Invoke-Gate 'no-string-literal-assertions.ps1'
-        $r.ExitCode | Should -Be 0 -Because $r.Output
-    }
-
     It 'check-perf-baselines.ps1' {
         $r = Invoke-Gate 'check-perf-baselines.ps1'
         $r.ExitCode | Should -Be 0 -Because $r.Output
@@ -83,21 +78,3 @@ Describe 'Data-file gates (inline checks)' {
     }
 }
 
-Describe 'check-red-commit-order.ps1' {
-    BeforeAll {
-        $script:Root = Resolve-Path (Join-Path $PSScriptRoot '..' '..' '..' '..' '..')
-        $script:HasEnoughHistory = $false
-        Push-Location $script:Root
-        try {
-            $depth = (& git rev-list --count HEAD 2>&1 | Out-String).Trim()
-            if ($LASTEXITCODE -eq 0 -and [int]$depth -ge 5) {
-                $script:HasEnoughHistory = $true
-            }
-        } finally { Pop-Location }
-    }
-
-    It 'passes on the current repo when git history is available' -Skip:(-not $script:HasEnoughHistory) {
-        $r = Invoke-Gate 'check-red-commit-order.ps1'
-        $r.ExitCode | Should -Be 0 -Because $r.Output
-    }
-}

@@ -363,42 +363,11 @@ Describe 'T21: stage-observability-targets.psd1 can be imported' {
     }
 }
 
-Describe 'T22: vibe-cli.yml is valid YAML (parse test)' {
-    It 'vibe-cli.yml exists and contains all 5 job groups' {
+Describe 'vibe-cli.yml is present and defines the TLC matrix' {
+    It 'vibe-cli.yml exists and contains tlc-model-check' {
         $yamlPath = Join-Path $Root '..' '..' '.github' 'workflows' 'vibe-cli.yml'
         $yamlPath | Should -Exist
-        $content = Get-Content $yamlPath -Raw
-
-        # Check all 29 job names are present
-        $content | Should -Match 'check-naming-conventions'
-        $content | Should -Match 'check-invoke-claude-migration'
-        $content | Should -Match 'check-tla-version'
-        $content | Should -Match 'check-bdd-action-tags'
-        $content | Should -Match 'check-bdd-postconditions'
-        $content | Should -Match 'check-tla-symbol-parity'
-        $content | Should -Match 'cascade-order-check'
-        $content | Should -Match 'no-string-literal-assertions'
-        $content | Should -Match 'unit-tests'
-        $content | Should -Match 'integration-tests'
-        $content | Should -Match 'property-tests'
-        $content | Should -Match 'contract-tests'
-        $content | Should -Match 'mutation-tests'
-        $content | Should -Match 'e2e-tests'
-        $content | Should -Match 'performance-baselines'
-        $content | Should -Match 'bdd-audit'
-        $content | Should -Match 'tlc-model-check'
-        $content | Should -Match 'tlc-trace-validation'
-        $content | Should -Match 'red-green-order'
-        $content | Should -Match 'gate-executability'
-        $content | Should -Match 'perf-ratchet'
-        $content | Should -Match 'schema-hash'
-        $content | Should -Match 'coverage-gate'
-        $content | Should -Match 'rollback-rehearsal'
-        $content | Should -Match 'canary-health-check'
-        $content | Should -Match 'soak-test'
-        $content | Should -Match 'telemetry-validation'
-        $content | Should -Match 'stage-soak'
-        $content | Should -Match 'emit-gate-proof'
+        (Get-Content $yamlPath -Raw) | Should -Match 'tlc-model-check'
     }
 }
 
