@@ -7,6 +7,10 @@ $ErrorActionPreference = 'Stop'
 
 . "$PSScriptRoot/invoke-claude.ps1"
 
+$ReviewModeratorSchema = @'
+{"type":"object","properties":{"verdict":{"type":"string","enum":["pass","fail"]},"findings":{"type":"array","items":{"type":"object","properties":{"reviewer":{"type":"string"},"severity":{"type":"string","enum":["critical","high","medium","low"]},"message":{"type":"string"},"description":{"type":"string"},"suggestion":{"type":"string"}},"required":["reviewer","severity"]}},"notes":{"type":"array","items":{"type":"object","properties":{"reviewer":{"type":"string"},"severity":{"type":"string","enum":["critical","high","medium","low"]},"message":{"type":"string"},"description":{"type":"string"},"suggestion":{"type":"string"}},"required":["reviewer","severity"]}},"warnings":{"type":"array","items":{"type":"string"}}},"required":["verdict","findings","notes","warnings"]}
+'@
+
 function Invoke-ReviewLoop {
     <#
     .SYNOPSIS
@@ -40,7 +44,7 @@ function Invoke-ReviewLoop {
     $round = $CurrentRound
 
     # ── Dispatch review-moderator ──
-    $rawResponse = Invoke-Claude -Role moderator -SystemPromptFile $moderatorPromptFile -Prompt $DiffContent
+    $rawResponse = Invoke-Claude -Role moderator -SystemPromptFile $moderatorPromptFile -JsonSchema $ReviewModeratorSchema -Prompt $DiffContent
 
     # ── Handle null/empty response (timeout) ──
     if ([string]::IsNullOrWhiteSpace($rawResponse)) {

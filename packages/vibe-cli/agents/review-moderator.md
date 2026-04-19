@@ -71,7 +71,7 @@ After collecting all valid reviewer responses:
 
 ## Output
 
-Return a single JSON object to stdout:
+The caller enforces a JSON schema via `--json-schema`. Return a JSON object matching this shape:
 
 ```json
 {
