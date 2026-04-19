@@ -1,5 +1,10 @@
 Import-Module PSSQLite -ErrorAction SilentlyContinue
 
+# Dependencies — dot-sourced so E2E and other callers don't need to chain them.
+if (-not (Get-Command 'Invoke-LongPathCheck' -ErrorAction SilentlyContinue)) {
+    . "$PSScriptRoot/long-path-check.ps1"
+}
+
 # Minimal local logging stub (Write-PipelineLog may not exist in all contexts)
 function Write-BusLog {
     param(

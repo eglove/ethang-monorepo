@@ -25,7 +25,9 @@ function Send-BusEvent {
         [Parameter(ParameterSetName = 'Connection')][int64]$InReplyTo    = 0,
         [Parameter(ParameterSetName = 'Connection')][string]$GroupId     = $null,
         [Parameter(ParameterSetName = 'Connection')][string]$ActiveModeratorName = $null,
-        [Parameter(ParameterSetName = 'Connection')][scriptblock]$DbExecutor = $null,
+        [Parameter(ParameterSetName = 'Connection')]
+        [Parameter(ParameterSetName = 'DbPath')]
+        [scriptblock]$DbExecutor = $null,
 
         [Parameter(Mandatory, ParameterSetName = 'DbPath')]
         [hashtable]$Event,

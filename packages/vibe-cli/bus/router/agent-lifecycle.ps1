@@ -66,7 +66,10 @@ function Start-BusAgent {
         [string]$AgentId,
 
         [Parameter(ParameterSetName = 'DbPath')]
-        [string]$DbPath
+        [string]$DbPath,
+
+        [Parameter(ParameterSetName = 'DbPath')]
+        [scriptblock]$DbExecutor = $null
     )
 
     if ($PSCmdlet.ParameterSetName -eq 'DbPath') {
