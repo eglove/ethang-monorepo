@@ -17,14 +17,10 @@ BeforeAll {
     function New-TestDb {
         $tempPath = [System.IO.Path]::GetTempFileName() + '.db'
         $conn = New-SQLiteConnection -DataSource $tempPath
-        $schemaSql = Get-Content $script:SqlFile -Raw
-        # Split on semicolons to run multiple statements
-        foreach ($stmt in ($schemaSql -split ';')) {
-            $s = $stmt.Trim()
-            if ($s -ne '') {
-                Invoke-SqliteQuery -SQLiteConnection $conn -Query $s | Out-Null
-            }
-        }
+        # Pass the whole schema at once. Splitting on ';' breaks the CREATE TRIGGER
+        # block because the trigger body contains its own semicolons — each fragment
+        # would then be partial SQL ("incomplete input") or a stray END.
+        Invoke-SqliteQuery -SQLiteConnection $conn -Query (Get-Content $script:SqlFile -Raw) | Out-Null
         return @{ Conn = $conn; Path = $tempPath }
     }
 }
