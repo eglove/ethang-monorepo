@@ -156,7 +156,7 @@ Describe 'BusTestDatabase helpers' {
     BeforeAll {
         function New-BusTestDatabase {
             $guid = [System.Guid]::NewGuid().ToString()
-            $dir  = Join-Path $env:TEMP "vibe-test-$guid"
+            $dir  = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-test-$guid"
             $null = New-Item -ItemType Directory -Path $dir -Force
             return @{ Path = (Join-Path $dir 'vibe-bus.db'); Dir = $dir }
         }
@@ -170,7 +170,7 @@ Describe 'BusTestDatabase helpers' {
         $db = New-BusTestDatabase
         try {
             $db.Path | Should -Match 'vibe-bus\.db$'
-            $db.Dir  | Should -Match ([regex]::Escape($env:TEMP))
+            $db.Dir  | Should -Match ([regex]::Escape(([System.IO.Path]::GetTempPath())))
             Test-Path $db.Dir | Should -BeTrue
         } finally {
             Remove-BusTestDatabase $db

@@ -26,7 +26,7 @@ BeforeAll {
     $script:SnapshotDir = Join-Path $PSScriptRoot 'snapshots'
 
     # Temp dir for isolated snapshot writes during test execution
-    $script:TempDir = Join-Path $env:TEMP "ct-claude-$([guid]::NewGuid().ToString('N').Substring(0,8))"
+    $script:TempDir = Join-Path ([System.IO.Path]::GetTempPath()) "ct-claude-$([guid]::NewGuid().ToString('N').Substring(0,8))"
     New-Item -ItemType Directory -Path $script:TempDir -Force | Out-Null
 }
 

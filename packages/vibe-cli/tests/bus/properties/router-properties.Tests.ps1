@@ -13,7 +13,7 @@ BeforeAll {
     # Helper: create a fresh temp SQLite DB
     # ---------------------------------------------------------------------------
     function script:New-PropTestDb {
-        $path = Join-Path $env:TEMP "prop-$([guid]::NewGuid().ToString('N').Substring(0,8)).db"
+        $path = Join-Path ([System.IO.Path]::GetTempPath()) "prop-$([guid]::NewGuid().ToString('N').Substring(0,8)).db"
         Initialize-RouterDatabase -DbPath $path
         return $path
     }

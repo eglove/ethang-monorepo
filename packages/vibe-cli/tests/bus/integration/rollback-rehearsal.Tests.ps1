@@ -4,11 +4,11 @@ BeforeAll {
     . "$root/bus/ops/rollback-rehearsal.ps1"
 
     function script:New-TestDbPath {
-        return Join-Path $env:TEMP "rehearsal-$([guid]::NewGuid().ToString('N').Substring(0,8)).db"
+        return Join-Path ([System.IO.Path]::GetTempPath()) "rehearsal-$([guid]::NewGuid().ToString('N').Substring(0,8)).db"
     }
 
     function script:New-TestSnapshotDir {
-        $dir = Join-Path $env:TEMP "rehearsal-snapshots-$([guid]::NewGuid().ToString('N').Substring(0,8))"
+        $dir = Join-Path ([System.IO.Path]::GetTempPath()) "rehearsal-snapshots-$([guid]::NewGuid().ToString('N').Substring(0,8))"
         New-Item -ItemType Directory -Path $dir -Force | Out-Null
         return $dir
     }
@@ -369,14 +369,14 @@ Describe 'T16: Invoke-RollbackRehearsal returns Success=false when rollback fail
         }
         # Can't easily inject failure mid-execution. Instead, use a bad snapshot dir that
         # causes _Take-RehearsalSnapshot to fail (path with null byte which is invalid on Windows)
-        $badSnapDir = Join-Path $env:TEMP "NOPE`0INVALID"
+        $badSnapDir = Join-Path ([System.IO.Path]::GetTempPath()) "NOPE`0INVALID"
         $result = Invoke-RollbackRehearsal -DbPath $script:dbPath -SnapshotDir $badSnapDir -Quiet
         $result.Success | Should -BeFalse
     }
 
     It 'result contains Error key when failure occurs' {
         New-RehearsalDatabase -DbPath $script:dbPath
-        $badSnapDir = Join-Path $env:TEMP "NOPE`0INVALID"
+        $badSnapDir = Join-Path ([System.IO.Path]::GetTempPath()) "NOPE`0INVALID"
         $result = Invoke-RollbackRehearsal -DbPath $script:dbPath -SnapshotDir $badSnapDir -Quiet
         $result.ContainsKey('Error') | Should -BeTrue
     }

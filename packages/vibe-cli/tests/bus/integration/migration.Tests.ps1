@@ -14,7 +14,7 @@ Describe 'Bus Schema Migration' {
 
     BeforeEach {
         $guid   = [System.Guid]::NewGuid().ToString()
-        $tmpDir = Join-Path $env:TEMP "vibe-migration-test-$guid"
+        $tmpDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-migration-test-$guid"
         New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null
         $script:DbPath = Join-Path $tmpDir 'vibe-bus.db'
     }

@@ -12,7 +12,7 @@ BeforeAll {
     }
 
     function global:_MakeDb {
-        $testDir = Join-Path $env:TEMP "vibe-test-$(New-Guid)"
+        $testDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-test-$(New-Guid)"
         New-Item -ItemType Directory $testDir | Out-Null
         $dbPath = Join-Path $testDir 'vibe-bus.db'
         $conn = New-SQLiteConnection -DataSource $dbPath

@@ -23,7 +23,7 @@ Describe 'Invoke-BusAppendEvent — integration tests (real SQLite)' {
     }
 
     BeforeEach {
-        $script:TestDir = Join-Path $env:TEMP "vibe-test-$(New-Guid)"
+        $script:TestDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-test-$(New-Guid)"
         New-Item -ItemType Directory -Path $script:TestDir | Out-Null
         $script:DbPath = Join-Path $script:TestDir 'vibe-bus.db'
 

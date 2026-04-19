@@ -44,7 +44,7 @@ BeforeAll {
     # Self-contained — no external schema files.
     # ----------------------------------------------------------------
     function script:New-E2ETestDatabase {
-        $path = Join-Path $env:TEMP "bus-e2e-$([guid]::NewGuid().ToString('N')).db"
+        $path = Join-Path ([System.IO.Path]::GetTempPath()) "bus-e2e-$([guid]::NewGuid().ToString('N')).db"
 
         Invoke-SqliteQuery -DataSource $path -Query "CREATE TABLE IF NOT EXISTS bus_lifecycle_state (key TEXT PRIMARY KEY, value TEXT)" | Out-Null
         Invoke-SqliteQuery -DataSource $path -Query "CREATE TABLE IF NOT EXISTS event_log (id INTEGER PRIMARY KEY AUTOINCREMENT, evt_id INTEGER UNIQUE, [from] TEXT, [to] TEXT, event_type TEXT, payload TEXT, status TEXT DEFAULT 'routed', created_at TEXT DEFAULT (datetime('now')))" | Out-Null
@@ -91,7 +91,7 @@ Describe 'E2E-S1: Stage 2 Bus Migration — Happy Path' {
         $script:dbPath = script:New-E2ETestDatabase
 
         # Setup temp feature dir with elicitor.md briefing
-        $script:featureDir = Join-Path $env:TEMP "e2e-feature-$([guid]::NewGuid().ToString('N').Substring(0,8))"
+        $script:featureDir = Join-Path ([System.IO.Path]::GetTempPath()) "e2e-feature-$([guid]::NewGuid().ToString('N').Substring(0,8))"
         New-Item -ItemType Directory -Path $script:featureDir -Force | Out-Null
         Set-Content -Path (Join-Path $script:featureDir 'elicitor.md') -Value "# Test Feature Briefing`n" -Encoding UTF8
 
@@ -303,8 +303,8 @@ Describe 'E2E-S4: Halt-Once Guard' {
 Describe 'E2E-S5: Rollback Rehearsal Integration' {
     BeforeEach {
         script:Reset-BusCounters
-        $script:dbPath      = Join-Path $env:TEMP "bus-e2e-rehearsal-$([guid]::NewGuid().ToString('N')).db"
-        $script:snapshotDir = Join-Path $env:TEMP "bus-e2e-snapshots-$([guid]::NewGuid().ToString('N').Substring(0,8))"
+        $script:dbPath      = Join-Path ([System.IO.Path]::GetTempPath()) "bus-e2e-rehearsal-$([guid]::NewGuid().ToString('N')).db"
+        $script:snapshotDir = Join-Path ([System.IO.Path]::GetTempPath()) "bus-e2e-snapshots-$([guid]::NewGuid().ToString('N').Substring(0,8))"
         New-Item -ItemType Directory -Path $script:snapshotDir -Force | Out-Null
     }
 

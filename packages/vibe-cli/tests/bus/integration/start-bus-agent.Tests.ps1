@@ -23,7 +23,7 @@ BeforeAll {
 Describe 'Start-BusAgent Integration Tests' {
 
     BeforeEach {
-        $script:TestDir = Join-Path $env:TEMP "vibe-test-$(New-Guid)"
+        $script:TestDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-test-$(New-Guid)"
         New-Item -ItemType Directory -Path $script:TestDir -Force | Out-Null
         $script:DbPath = Join-Path $script:TestDir 'vibe-bus.db'
         $script:Conn = New-SQLiteConnection -DataSource $script:DbPath

@@ -15,7 +15,7 @@ BeforeAll {
 
 Describe 'New-BusGroup' {
     BeforeEach {
-        $script:TestDir = Join-Path $env:TEMP "vibe-test-$(New-Guid)"
+        $script:TestDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-test-$(New-Guid)"
         New-Item -ItemType Directory $script:TestDir | Out-Null
         $script:DbPath = Join-Path $script:TestDir 'vibe-bus.db'
         $script:Conn = New-SQLiteConnection -DataSource $script:DbPath
@@ -62,7 +62,7 @@ Describe 'New-BusGroup' {
 
 Describe 'Send-BusGroupEvent' {
     BeforeEach {
-        $script:TestDir = Join-Path $env:TEMP "vibe-test-$(New-Guid)"
+        $script:TestDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-test-$(New-Guid)"
         New-Item -ItemType Directory $script:TestDir | Out-Null
         $script:DbPath = Join-Path $script:TestDir 'vibe-bus.db'
         $script:Conn = New-SQLiteConnection -DataSource $script:DbPath
@@ -120,7 +120,7 @@ Describe 'Send-BusGroupEvent' {
 
 Describe 'Wait-BusGroup' {
     BeforeEach {
-        $script:TestDir = Join-Path $env:TEMP "vibe-test-$(New-Guid)"
+        $script:TestDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-test-$(New-Guid)"
         New-Item -ItemType Directory $script:TestDir | Out-Null
         $script:DbPath = Join-Path $script:TestDir 'vibe-bus.db'
         $script:Conn = New-SQLiteConnection -DataSource $script:DbPath
@@ -223,7 +223,7 @@ Describe 'Wait-BusGroup' {
 
 Describe 'Get-BusGroupStatus' {
     BeforeEach {
-        $script:TestDir = Join-Path $env:TEMP "vibe-test-$(New-Guid)"
+        $script:TestDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-test-$(New-Guid)"
         New-Item -ItemType Directory $script:TestDir | Out-Null
         $script:DbPath = Join-Path $script:TestDir 'vibe-bus.db'
         $script:Conn = New-SQLiteConnection -DataSource $script:DbPath
@@ -257,7 +257,7 @@ Describe 'Get-BusGroupStatus' {
 
 Describe 'Reset-BusGroupState' {
     BeforeEach {
-        $script:TestDir = Join-Path $env:TEMP "vibe-test-$(New-Guid)"
+        $script:TestDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-test-$(New-Guid)"
         New-Item -ItemType Directory $script:TestDir | Out-Null
         $script:DbPath = Join-Path $script:TestDir 'vibe-bus.db'
         $script:Conn = New-SQLiteConnection -DataSource $script:DbPath
@@ -287,7 +287,7 @@ Describe 'Reset-BusGroupState' {
 
 Describe 'Complete flow' {
     BeforeEach {
-        $script:TestDir = Join-Path $env:TEMP "vibe-test-$(New-Guid)"
+        $script:TestDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-test-$(New-Guid)"
         New-Item -ItemType Directory $script:TestDir | Out-Null
         $script:DbPath = Join-Path $script:TestDir 'vibe-bus.db'
         $script:Conn = New-SQLiteConnection -DataSource $script:DbPath

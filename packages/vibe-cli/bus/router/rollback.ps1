@@ -18,7 +18,7 @@ function Invoke-BusRollback {
 
     # 1. Default snapshot dir
     if (-not $SnapshotDir) {
-        $SnapshotDir = Join-Path $env:TEMP 'vibe-snapshots'
+        $SnapshotDir = Join-Path ([System.IO.Path]::GetTempPath()) 'vibe-snapshots'
     }
 
     # 2. Ensure snapshot dir exists

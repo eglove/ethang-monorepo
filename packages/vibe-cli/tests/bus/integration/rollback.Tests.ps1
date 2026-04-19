@@ -13,7 +13,7 @@ Describe 'T29 Rollback Subsystem Integration Tests' {
     }
 
     BeforeEach {
-        $script:TestDir = Join-Path $env:TEMP "vibe-test-$(New-Guid)"
+        $script:TestDir = Join-Path ([System.IO.Path]::GetTempPath()) "vibe-test-$(New-Guid)"
         New-Item -ItemType Directory $script:TestDir | Out-Null
         $script:SnapshotDir = Join-Path $script:TestDir 'snapshots'
         New-Item -ItemType Directory $script:SnapshotDir | Out-Null
@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS event_log (
 
     It 'T24: Invoke-BusRollback uses default TEMP snapshot dir when SnapshotDir not specified' {
         Reset-BusLifecycleLatch
-        $defaultSnapDir = Join-Path $env:TEMP 'vibe-snapshots'
+        $defaultSnapDir = Join-Path ([System.IO.Path]::GetTempPath()) 'vibe-snapshots'
         try {
             $result = Invoke-BusRollback -Connection $script:Conn -WorktreeLeaf 'main'
             $result.Rolled | Should -BeTrue

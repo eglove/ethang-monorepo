@@ -28,7 +28,7 @@ BeforeAll {
     }
 
     $script:SnapshotDir = Join-Path $PSScriptRoot 'snapshots'
-    $script:TempDir = Join-Path $env:TEMP "ct-git-$([guid]::NewGuid().ToString('N').Substring(0,8))"
+    $script:TempDir = Join-Path ([System.IO.Path]::GetTempPath()) "ct-git-$([guid]::NewGuid().ToString('N').Substring(0,8))"
     New-Item -ItemType Directory -Path $script:TempDir -Force | Out-Null
 }
 
