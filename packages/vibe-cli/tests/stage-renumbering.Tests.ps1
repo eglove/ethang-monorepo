@@ -22,10 +22,11 @@ Describe 'Stage renumbering (5-7)' {
         $content | Should -Not -Match 'tla-debate\.md'
     }
 
-    It 'stage 6 uses Invoke-DebateLoop (not Invoke-UnifiedDebateLoop)' {
+    It 'stage 6 uses bus path (not Invoke-DebateLoop or Invoke-UnifiedDebateLoop)' {
         $content = Get-Content "$root/stages/6-implementation-debate.ps1" -Raw
-        $content | Should -Match 'Invoke-DebateLoop'
-        $content | Should -Not -Match 'Invoke-UnifiedDebateLoop'
+        $content | Should -Not -Match '\bInvoke-DebateLoop\b'
+        $content | Should -Not -Match '\bInvoke-UnifiedDebateLoop\b'
+        $content | Should -Match '_Invoke-ImplementationDebateBusPath'
     }
 
     It 'stage 5 writes STAGE_COMPLETE:5 marker' {

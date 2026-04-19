@@ -89,9 +89,6 @@ Import-Module "$root/state/state-repository.psd1" -Force
 . "$root/utils/invoke-verify.ps1"
 . "$root/utils/pipeline-log.ps1"
 . "$root/utils/resolve-pipeline-state.ps1"
-. "$root/utils/invoke-parallel.ps1"
-. "$root/utils/unified-debate-loop.ps1"
-. "$root/utils/debate-loop.ps1"
 . "$root/utils/gherkin-parser.ps1"
 . "$root/utils/fixture-gate.ps1"
 . "$root/utils/resume.ps1"
@@ -113,6 +110,19 @@ if (-not (Get-Command New-PipelineState -ErrorAction SilentlyContinue)) {
             reviewGateType     = 'none'
         }
     }
+}
+
+# Bus infrastructure (when any stage flag enabled)
+if ($env:VIBE_BUS_ALL_STAGES -eq '1' -or $env:VIBE_BUS_STAGE2 -eq '1' -or
+    $env:VIBE_BUS_STAGE3 -eq '1' -or $env:VIBE_BUS_STAGE4 -eq '1' -or
+    $env:VIBE_BUS_STAGE6 -eq '1' -or $env:VIBE_BUS_STAGE7 -eq '1') {
+    . "$root/bus/router/send-bus-event.ps1"
+    . "$root/bus/router/agent-lifecycle.ps1"
+    . "$root/bus/router/wait-bus-group.ps1"
+    . "$root/bus/schema/open-bus-database.ps1"
+    . "$root/bus/infra/stage-feature-flag.ps1"
+    . "$root/bus/domain/stage.ps1"
+    $busDbPath = Join-Path $root 'vibe-bus.db'
 }
 
 # Stages
@@ -235,7 +245,7 @@ try {
     # Stage 2: Parallel Writers
     if ($startStage -le 2) {
         Write-PipelineLog -Message "--- Stage 2: Parallel Writers ---" -Root $root
-        $writerResult = Invoke-ParallelWriter -FeatureDir $featureDir -Root $root
+        $writerResult = Invoke-ParallelWriter -FeatureDir $featureDir -Root $root -DbPath $busDbPath
         if (-not $writerResult.Success) {
             throw "Stage 2 failed: $($writerResult.Error)"
         }
@@ -250,7 +260,7 @@ try {
     # Stage 3: Unified Debate
     if ($startStage -le 3) {
         Write-PipelineLog -Message "--- Stage 3: Unified Debate ---" -Root $root
-        $debateResult = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $root
+        $debateResult = Invoke-UnifiedDebateStage -FeatureDir $featureDir -Root $root -DbPath $busDbPath
         if (-not $debateResult.Success) {
             throw "Stage 3 failed: $($debateResult.Error)"
         }
@@ -263,7 +273,7 @@ try {
     # Stage 4: Post-Debate Artifacts
     if ($startStage -le 4) {
         Write-PipelineLog -Message "--- Stage 4: Post-Debate Artifacts ---" -Root $root
-        $postDebateResult = Invoke-PostDebate -FeatureDir $featureDir -Root $root -TargetRoot $targetRoot
+        $postDebateResult = Invoke-PostDebate -FeatureDir $featureDir -Root $root -TargetRoot $targetRoot -DbPath $busDbPath
         if (-not $postDebateResult.Success) {
             throw "Stage 4 failed: $($postDebateResult.Error)"
         }
@@ -308,7 +318,7 @@ try {
         }
         if (-not $implFile) { $implFile = Join-Path $featureDir 'implementation-plan.md' }
         if (-not $implJson) { $implJson = Join-Path $featureDir 'implementation-plan.json' }
-        $debateStageResult = Invoke-ImplementationDebateStage -ImplFile $implFile -ImplJson $implJson -TlaFile $tlaFileForDebate -FeatureDir $featureDir -Root $root
+        $debateStageResult = Invoke-ImplementationDebateStage -ImplFile $implFile -ImplJson $implJson -TlaFile $tlaFileForDebate -FeatureDir $featureDir -Root $root -DbPath $busDbPath
         if (-not $debateStageResult.Success) {
             throw "Stage 6 failed: $($debateStageResult.Error)"
         }
@@ -328,7 +338,7 @@ try {
         Write-PipelineLog -Message "Fixture precondition OK" -Root $root
 
         Write-PipelineLog -Message "--- Stage 7: Coding ---" -Root $root
-        $codingResult = Invoke-CodingStage -Feature $featureName -Root $targetRoot
+        $codingResult = Invoke-CodingStage -Feature $featureName -Root $targetRoot -DbPath $busDbPath
         Write-PipelineLog -Message "Stage 7 result: $($codingResult.Status)" -Root $root
 
         if ($codingResult.Status -match '^halted_') {
