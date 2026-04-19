@@ -74,3 +74,37 @@ Monitor error rates before promoting to the next phase.
 
 Always verify with `vibe schema-migrate` (idempotent check) after rollback
 to confirm the settled schema hash matches the expected baseline.
+
+---
+
+# Bidirectional Comms Feature-Flag Migration
+
+## Feature Flag Enable Order
+
+Enable flags in stage order to avoid dependency violations:
+
+1. `VIBE_STAGE_2_BIDIR` — enables Stage 2 (Parallel Writers) bus integration
+2. `VIBE_STAGE_3_BIDIR` — enables Stage 3 (Unified Debate) bus integration
+3. `VIBE_STAGE_4_BIDIR` — enables Stage 4 (Post-Debate) bus integration
+4. `VIBE_STAGE_5_BIDIR` — enables Stage 5 (Impl Writer) bus integration
+5. `VIBE_STAGE_6_BIDIR` — enables Stage 6 (Implementation Debate) bus integration
+6. `VIBE_STAGE_7_BIDIR` — enables Stage 7 (Coding Stage) bus integration
+
+Each flag requires the previous stage flag to be active before enabling.
+
+## Flag Rollback Procedure
+
+1. Identify the failing stage from `docs/gate-ledger.jsonl`
+2. Disable the flag for that stage and all subsequent stages
+3. Verify pipeline resumes with the pre-bus code path
+4. File an incident report documenting the failure metrics
+5. Re-enable after root cause is resolved
+
+## Canary Stability Criteria
+
+A canary deployment is considered stable when:
+
+- Error rate remains below 1% for 30 minutes
+- P99 latency stays within 20% of baselines
+- No `consensus_fail` events triggered by bus errors
+- All gate scripts return 0 in the canary environment

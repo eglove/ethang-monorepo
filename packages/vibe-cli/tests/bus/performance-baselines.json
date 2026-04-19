@@ -1,0 +1,10 @@
+{
+  "stage2_p99_ms": 100,
+  "stage3_p99_ms": 200,
+  "stage4_p99_ms": 50,
+  "stage5_p99_ms": 150,
+  "stage6_p99_ms": 200,
+  "stage7_p99_ms": 500,
+  "bus_publish_p99_ms": 5,
+  "git_stash_p99_ms": 1000
+}
