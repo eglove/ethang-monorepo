@@ -1,4 +1,5 @@
 --------------------------- MODULE BidirectionalComms ---------------------------
+(* version: 1.0.0 *)
 \* TLA+ specification for the vibe-cli bidirectional agent communication bus.
 \*
 \* v12 — absorbs 4 LOW debate objections from the sixth unified-debate session (2026-04-18).

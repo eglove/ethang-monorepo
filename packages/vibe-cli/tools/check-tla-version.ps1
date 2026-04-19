@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Verifies TLA+ version in tla-spec-version.txt matches spec files.
+    Verifies every `(* version: X *)` comment in docs/*/tla/*.tla matches tla-spec-version.txt.
 .PARAMETER WhatIf
     Reports what would happen without failing.
 #>
@@ -20,21 +20,23 @@ if (-not (Test-Path $VersionFile)) {
 $recordedVersion = (Get-Content $VersionFile -Raw).Trim()
 Write-Output "Recorded TLA+ version: $recordedVersion"
 
-$TlaDir = Join-Path $Root 'bus' 'tla'
-if (-not (Test-Path $TlaDir)) {
-    Write-Output "FAIL: TLA+ directory not found: $TlaDir"
+$DocsRoot = Join-Path $Root 'docs'
+if (-not (Test-Path $DocsRoot)) {
+    Write-Output "FAIL: docs/ directory not found: $DocsRoot"
     if (-not $WhatIf) { exit 1 }
     exit 0
 }
 
-$specFiles = Get-ChildItem -Path $TlaDir -Filter '*.tla'
+$specFiles = Get-ChildItem -Path $DocsRoot -Filter '*.tla' -Recurse
 if ($specFiles.Count -eq 0) {
-    Write-Output "WARN: No .tla files found. Version check skipped."
+    Write-Output "WARN: No .tla files found under $DocsRoot. Version check skipped."
     exit 0
 }
 
-$versionPattern = 'MODULE\s+\S+\s+\(\*\s*version:\s*([\d.]+)\s*\*\)'
+# Version comment on its own line: (* version: 1.0.0 *)
+$versionPattern = '(?m)^\s*\(\*\s*version:\s*([\d.]+)\s*\*\)'
 $mismatches = @()
+$missing    = @()
 
 foreach ($spec in $specFiles) {
     $content = Get-Content $spec.FullName -Raw
@@ -43,14 +45,26 @@ foreach ($spec in $specFiles) {
         if ($specVersion -ne $recordedVersion) {
             $mismatches += "$($spec.Name): spec version $specVersion != recorded $recordedVersion"
         }
+    } else {
+        $missing += $spec.Name
     }
 }
 
+$failures = @()
+if ($missing.Count -gt 0) {
+    $failures += "Specs missing (* version: X *) comment:"
+    $missing | ForEach-Object { $failures += "  - $_" }
+}
 if ($mismatches.Count -gt 0) {
-    Write-Output "FAIL: TLA+ version mismatches:"
-    $mismatches | ForEach-Object { Write-Output "  - $_" }
+    $failures += "Version mismatches:"
+    $mismatches | ForEach-Object { $failures += "  - $_" }
+}
+
+if ($failures.Count -gt 0) {
+    Write-Output "FAIL: TLA+ version check:"
+    $failures | ForEach-Object { Write-Output $_ }
     if (-not $WhatIf) { exit 1 }
 } else {
-    Write-Output "PASS: TLA+ version check passed (version: $recordedVersion)."
+    Write-Output "PASS: TLA+ version check passed ($($specFiles.Count) specs at version $recordedVersion)."
     exit 0
 }

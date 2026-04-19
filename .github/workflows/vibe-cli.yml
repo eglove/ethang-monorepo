@@ -82,16 +82,51 @@ jobs:
       - name: Verify no string literals in Should -Be assertions
         run: pwsh tools/no-string-literal-assertions.ps1
 
-# ─── Group 2: TLA+ model checking (1 job) ────────────────────────────────────
+# ─── Group 2: TLA+ model checking (9-way matrix) ─────────────────────────────
+# Each of the 9 spec+config pairs runs in parallel. First run downloads
+# tla2tools.jar v1.8.0 and caches it via actions/cache for subsequent runs.
+# ubuntu-latest ships with OpenJDK 21 pre-installed (TLC needs Java 11+).
 
   tlc-model-check:
-    name: TLC Model Check
+    name: TLC (${{ matrix.label }})
     runs-on: ubuntu-latest
     needs: check-tla-version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { label: BidirectionalComms,    dir: bidirectional-comms,  spec: BidirectionalComms,  cfg: BidirectionalComms.cfg }
+          - { label: CleanupImprovements,   dir: cleanup-improvements, spec: CleanupImprovements, cfg: CleanupImprovements.cfg }
+          - { label: CodeSimplify,          dir: code-simplify,        spec: CodeSimplify,        cfg: CodeSimplify.cfg }
+          - { label: CodingStage,           dir: coding-stage,         spec: CodingStage,         cfg: CodingStage.cfg }
+          - { label: ParallelDebates,       dir: parallel-debates,     spec: ParallelDebates,     cfg: ParallelDebates.cfg }
+          - { label: PipelineReviewers,     dir: reviewers,            spec: PipelineReviewers,   cfg: PipelineReviewers.cfg }
+          - { label: SqliteState,           dir: sqlite-state,         spec: SqliteState,         cfg: SqliteState.cfg }
+          - { label: TokenSaving,           dir: token-saving,         spec: TokenSaving,         cfg: TokenSaving.cfg }
+          - { label: TokenSaving-MultiAgent, dir: token-saving,         spec: TokenSaving,         cfg: TokenSaving-MultiAgent.cfg }
+    env:
+      TLC_JAR: /home/runner/.cache/tlaplus/tla2tools.jar
     steps:
       - uses: actions/checkout@v4
-      - name: Run TLC model checker
-        run: pwsh tools/run-tlc.ps1 -SpecDir bus/tla -Timeout 300
+      - name: Cache TLC jar
+        id: cache-tlc
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/tlaplus
+          key: tla2tools-v1.8.0
+      - name: Download TLC jar
+        if: steps.cache-tlc.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p ~/.cache/tlaplus
+          curl -fL https://github.com/tlaplus/tlaplus/releases/download/v1.8.0/tla2tools.jar \
+            -o ~/.cache/tlaplus/tla2tools.jar
+      - name: Run TLC on ${{ matrix.label }}
+        run: |
+          pwsh tools/run-tlc.ps1 `
+            -Spec   "docs/${{ matrix.dir }}/tla/${{ matrix.spec }}.tla" `
+            -Config "docs/${{ matrix.dir }}/tla/${{ matrix.cfg }}" `
+            -Timeout 600
 
 # ─── Group 3: Gates (4 jobs) ─────────────────────────────────────────────────
 

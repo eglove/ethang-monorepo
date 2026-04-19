@@ -1,4 +1,5 @@
 --------------------------- MODULE ParallelDebates ---------------------------
+(* version: 1.0.0 *)
 (*
  * Formal specification for the vibe-cli parallel-debates pipeline.
  *

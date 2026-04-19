@@ -1,4 +1,5 @@
 --------------------------- MODULE CodeSimplify ---------------------------
+(* version: 1.0.0 *)
 (***************************************************************************)
 (* TLA+ specification for vibe-cli Stage 8 "Code Simplify" pipeline.       *)
 (* Derived from docs/code-simplify/bdd.feature (2026-04-11).               *)

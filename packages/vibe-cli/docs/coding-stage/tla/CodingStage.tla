@@ -1,4 +1,5 @@
 --------------------------- MODULE CodingStage ---------------------------
+(* version: 1.0.0 *)
 (*
  * TLA+ Specification for Stage 8 -- Coding Stage Orchestrator
  *
