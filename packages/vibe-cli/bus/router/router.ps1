@@ -1,5 +1,6 @@
 . "$PSScriptRoot/../infra/evt-id-allocator.ps1"
 $script:_RoutedIds = [System.Collections.Generic.HashSet[int64]]::new()
+
 function Invoke-BusAppendEvent {
     param(
         $Connection,
@@ -49,4 +50,5 @@ function Invoke-BusAppendEvent {
     [void]$script:_RoutedIds.Add($evtId)
     return @{ EvtId = $evtId; Status = 'routed' }
 }
+
 function Reset-RouterState { $script:_RoutedIds.Clear() }
