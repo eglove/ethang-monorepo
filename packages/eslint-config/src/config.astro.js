@@ -53,6 +53,7 @@ export default defineConfig(globalIgnores(ignores), {
     "astro/no-deprecated-astro-resolve": "error",
     "astro/no-deprecated-getentrybyslug": "error",
     "astro/no-exports-from-components": "error",
+    "astro/no-prerender-export-outside-pages": "error",
     "astro/no-set-html-directive": "off",
     "astro/no-set-text-directive": "error",
     "astro/no-unsafe-inline-scripts": "error",

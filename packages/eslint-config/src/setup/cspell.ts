@@ -122,6 +122,7 @@ const customRules: CustomRules = [
             "dedups",
             "behaviour",
             "jsonl",
+            "viewbox",
           ],
         },
       },
