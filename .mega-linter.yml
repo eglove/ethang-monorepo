@@ -1,0 +1,13 @@
+# MegaLinter Configuration
+# Documentation: https://megalinter.io/latest/configuration/
+
+# Disable linters already covered by the local pnpm lint (ESLint + TSC)
+DISABLE_LINTERS:
+  - JAVASCRIPT_ES
+  - JAVASCRIPT_STANDARD
+  - JAVASCRIPT_PRETTIER
+  - JSX_ESLINT
+  - TSX_ESLINT
+  - TYPESCRIPT_ES
+  - TYPESCRIPT_STANDARD
+  - TYPESCRIPT_PRETTIER
