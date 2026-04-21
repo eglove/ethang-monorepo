@@ -12,9 +12,9 @@ jobs:
   install:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v6.0.2
-      - uses: pnpm/action-setup@71c9247f7855889587f9300782527f6646b60ee2  # v6.0.2
-      - uses: actions/setup-node@32258af2e70bc99b10f097abc4c0359791ce4e89  # v6.4.0
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: 'pnpm'
@@ -24,9 +24,9 @@ jobs:
     needs: install
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v6.0.2
-      - uses: pnpm/action-setup@71c9247f7855889587f9300782527f6646b60ee2  # v6.0.2
-      - uses: actions/setup-node@32258af2e70bc99b10f097abc4c0359791ce4e89  # v6.4.0
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: 'pnpm'
@@ -38,9 +38,9 @@ jobs:
     needs: install
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v6.0.2
-      - uses: pnpm/action-setup@71c9247f7855889587f9300782527f6646b60ee2  # v6.0.2
-      - uses: actions/setup-node@32258af2e70bc99b10f097abc4c0359791ce4e89  # v6.4.0
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: 'pnpm'
@@ -51,9 +51,9 @@ jobs:
     needs: install
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v6.0.2
-      - uses: pnpm/action-setup@71c9247f7855889587f9300782527f6646b60ee2  # v6.0.2
-      - uses: actions/setup-node@32258af2e70bc99b10f097abc4c0359791ce4e89  # v6.4.0
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: 'pnpm'
@@ -71,28 +71,28 @@ jobs:
       matrix:
         language: [javascript-typescript, actions]
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v6.0.2
-      - uses: github/codeql-action/init@95e58e946119040e558f9475dfb139c8d77482e4  # v4.35.2
+      - uses: actions/checkout@v6
+      - uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
-      - uses: github/codeql-action/analyze@95e58e946119040e558f9475dfb139c8d77482e4  # v4.35.2
+      - uses: github/codeql-action/analyze@v4
         with:
           category: /language:${{ matrix.language }}
 
   sonar:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v6.0.2
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@71c9247f7855889587f9300782527f6646b60ee2  # v6.0.2
-      - uses: actions/setup-node@32258af2e70bc99b10f097abc4c0359791ce4e89  # v6.4.0
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
-      - uses: SonarSource/sonarqube-scan-action@299e4b70689614f530a9e440062ca3d225669d76  # v7.1.0
+      - uses: SonarSource/sonarqube-scan-action@v7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -105,12 +105,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout Code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v6.0.2
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
       - name: MegaLinter
-        uses: oxsecurity/megalinter@ff177bfabd9088ff3ccaa7bc68f8ca3fd075ba5c # v9.0.0
+        uses: oxsecurity/megalinter@v9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
