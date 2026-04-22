@@ -29,6 +29,7 @@
     "node": ">=24"
   },
   "name": "auth",
+  "version": "1.0.0",
   "scripts": {
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "deploy": "pnpm run cf-typegen && wrangler deploy --minify",

@@ -1,4 +1,4 @@
-Write-Host "Updating Windows..."
+Write-Output "Updating Windows..."
 Update-Module PSWindowsUpdate
 Get-WindowsUpdate -MicrosoftUpdate -AcceptAll -Install
 #docker system prune -af
@@ -7,7 +7,7 @@ Get-WindowsUpdate -MicrosoftUpdate -AcceptAll -Install
 winget upgrade --unknown --all --accept-package-agreements --accept-source-agreements --silent
 
 # MixTex
-Write-Host "Updating MiKTeK..."
+Write-Output "Updating MiKTeK..."
 miktex packages update-package-database
 miktex packages update
 

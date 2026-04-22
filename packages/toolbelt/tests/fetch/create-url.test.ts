@@ -83,7 +83,7 @@ describe("url builder", () => {
   it("should return error if path variables are found but schema is not", () => {
     const url = createUrl("todos", {
       pathVariables: { id: "2" },
-      urlBase: "http://example.com",
+      urlBase: "https://example.com",
     });
 
     expect(isError(url)).toBe(true);
@@ -139,14 +139,14 @@ describe("url builder", () => {
         dashboardId: z.string().optional(),
         userId: z.string(),
       }),
-      urlBase: "http://example.com",
+      urlBase: "https://example.com",
     });
 
     expect(isError(url)).toBe(false);
     expect(url).toBeInstanceOf(URL);
 
     if (url instanceof URL) {
-      expect(url.toString()).toBe("http://example.com/user/3/dashboard/");
+      expect(url.toString()).toBe("https://example.com/user/3/dashboard/");
     }
   });
 });

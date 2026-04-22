@@ -35,6 +35,7 @@
     "node": ">=24"
   },
   "name": "sterett-hono",
+  "version": "1.0.0",
   "scripts": {
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "deploy": "pnpm tw && bun scripts/stamp-sw.ts && wrangler deploy --minify",

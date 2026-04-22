@@ -22,7 +22,7 @@ describe("createJsonResponse", () => {
   it("should merge custom headers provided in responseInit", async () => {
     const data = { error: "Bad Request" };
     const customHeaders = {
-      "Access-Control-Allow-Origin": "http://example.com",
+      "Access-Control-Allow-Origin": "https://example.com",
       "X-Custom-Header": "Test",
     };
     const response = createJsonResponse(data, "BAD_REQUEST", {
@@ -34,7 +34,7 @@ describe("createJsonResponse", () => {
     expect(response.headers.get("Content-Type")).toBe("application/json");
     expect(response.headers.get("X-Custom-Header")).toBe("Test");
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
-      "http://example.com",
+      "https://example.com",
     );
   });
 

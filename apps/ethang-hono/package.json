@@ -45,6 +45,7 @@
     "node": ">=24"
   },
   "name": "ethang-hono",
+  "version": "1.0.0",
   "scripts": {
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "deploy": "bun ./build.ts && bun scripts/stamp-sw.ts && wrangler deploy --minify",
