@@ -12,7 +12,7 @@ export default defineConfig({
         branches: 99.35,
         functions: 100,
         lines: 100,
-        statements: 99.62,
+        statements: 99.63,
       },
     },
     environment: "node",
