@@ -23,7 +23,7 @@ describe("portableText", () => {
       },
     ];
 
-    const html = await renderPortableText(content as never);
+    const html = await renderPortableText(content);
 
     expect(html).toContain("Hello world");
   });
@@ -46,7 +46,7 @@ describe("portableText", () => {
       },
     ];
 
-    const html = await renderPortableText(content as never);
+    const html = await renderPortableText(content);
 
     expect(html).toContain("First");
     expect(html).toContain("Second");
@@ -66,7 +66,7 @@ describe("portableText", () => {
       },
     ];
 
-    const html = await renderPortableText(content as never);
+    const html = await renderPortableText(content);
 
     expect(html).toContain('alt="A scenic lake"');
     expect(html).toContain("https://example.com/lake.jpg");
@@ -81,7 +81,7 @@ describe("portableText", () => {
       },
     ];
 
-    const html = await renderPortableText(content as never);
+    const html = await renderPortableText(content);
 
     expect(html).toContain("prose");
   });

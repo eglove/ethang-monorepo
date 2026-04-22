@@ -6,22 +6,22 @@
   "dependencies": {
     "@total-typescript/ts-reset": "^0.6.1",
     "lodash": "^4.18.1",
-    "uuid": "^13.0.0",
+    "uuid": "^14.0.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.14.2",
+    "@ethang/eslint-config": "^25.15.1",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.6.0",
-    "@vitest/coverage-v8": "^4.1.4",
-    "@vitest/ui": "^4.1.4",
+    "@vitest/coverage-v8": "^4.1.5",
+    "@vitest/ui": "^4.1.5",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.2.1",
     "happy-dom": "^20.9.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.8",
-    "vitest": "^4.1.4",
+    "vite": "^8.0.9",
+    "vitest": "^4.1.5",
     "vitest-fetch-mock": "^0.4.5"
   },
   "engines": {

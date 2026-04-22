@@ -226,7 +226,7 @@ describe(renderDescriptionHtml, () => {
       style: "normal",
     };
 
-    const html = renderDescriptionHtml(block as never);
+    const html = renderDescriptionHtml(block);
 
     expect(html).toContain("Hello world");
     expect(html).toContain("<p>");
@@ -250,7 +250,7 @@ describe(renderDescriptionHtml, () => {
       },
     ];
 
-    const html = renderDescriptionHtml(blocks as never);
+    const html = renderDescriptionHtml(blocks);
 
     expect(html).toContain("First");
     expect(html).toContain("Second");

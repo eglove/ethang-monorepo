@@ -2,7 +2,7 @@ import eslint from "@eslint/js";
 import keys from "lodash/keys.js";
 
 import { Plugin } from "../build/plugin.ts";
-import { type CustomRules, genRules } from "./gen-rules.ts";
+import { genRules } from "./gen-rules.ts";
 
 const ruleNames = keys(eslint.configs.all.rules);
 const customRules = [
@@ -250,8 +250,8 @@ const customRules = [
 
 export const eslintRules = genRules(
   ruleNames,
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  customRules as unknown as CustomRules,
+
+  customRules,
 );
 
 export const eslintPlugin = new Plugin({

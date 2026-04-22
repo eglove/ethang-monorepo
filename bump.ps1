@@ -43,7 +43,7 @@ if ($updateType -ne "none")
 
     # Update version, build, and publish
     Write-Host "Updating version to $updateType..."
-    npm2 version $updateType
+    npm version $updateType
 
     Write-Host "Building package..."
     pnpm build

@@ -186,7 +186,7 @@ const renderNonBlockType = (block: Block, context: RenderContext): Child => {
 
 export const PortableText = async ({ children }: PortableTextProperties) => {
   const allMarkDefs = flatMap(children, (block) => {
-    return (block.markDefs ?? []) as MarkDefinition[];
+    return block.markDefs ?? [];
   });
 
   const renderChildren = (

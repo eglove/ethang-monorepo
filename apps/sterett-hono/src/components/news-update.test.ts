@@ -34,9 +34,7 @@ describe("newsUpdate", () => {
       markDefs: [],
       style: "normal",
     };
-    const html = await renderNewsUpdate(
-      makeUpdate({ description: description as never }),
-    );
+    const html = await renderNewsUpdate(makeUpdate({ description }));
 
     expect(html).toContain("Important update");
   });
