@@ -4,13 +4,14 @@
 
 # Disable linters already covered by the local pnpm lint (ESLint + TSC)
 DISABLE_LINTERS:
-  - JAVASCRIPT_ESLINT
+  - JAVASCRIPT_ES
+  - JAVASCRIPT_STANDARD
   - JAVASCRIPT_PRETTIER
-  - TYPESCRIPT_ESLINT
-  - TYPESCRIPT_PRETTIER
-  - TYPESCRIPT_TSC
   - JSX_ESLINT
   - TSX_ESLINT
+  - TYPESCRIPT_ES
+  - TYPESCRIPT_STANDARD
+  - TYPESCRIPT_PRETTIER
 
 # Disable noisy or redundant linters
 DISABLE:
@@ -26,6 +27,5 @@ EXCLUDED_DIRECTORIES:
   - .wrangler
   - dist
 
-# Specifically ignore pnpm-lock.yaml for all linters (especially yamllint)
-FILTER_FILES_EXCLUDE:
-  - pnpm-lock.yaml
+# Specifically ignore pnpm-lock.yaml and .d.ts files for all linters
+FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts)

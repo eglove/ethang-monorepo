@@ -89,6 +89,7 @@ $packages = Get-ChildItem -Path (Join-Path $scriptDir "packages") -Directory | S
 # Function to update wrangler types
 function Update-WranglerType
 {
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [string]$prefix,
         [array]$directories
