@@ -5,7 +5,7 @@ import { attemptAsync } from "../../src/functional/attempt-async.js";
 
 describe("attemptAsync", () => {
   it("should return result with successful response", async () => {
-    const request = new Request("http://example.com", {
+    const request = new Request("https://example.com", {
       body: JSON.stringify({ name: "John" }),
       method: "POST",
     });
@@ -31,7 +31,7 @@ describe("attemptAsync", () => {
   });
 
   it("should return error with unsuccessful response", async () => {
-    const request = new Request("http://example.com", {
+    const request = new Request("https://example.com", {
       body: "",
       method: "POST",
     });

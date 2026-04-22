@@ -3,15 +3,11 @@ import lodash from "eslint-plugin-lodash";
 import keys from "lodash/keys.js";
 
 import { Plugin } from "../build/plugin.ts";
-import {
-  type EsLintRules,
-  genRules,
-  getNonDeprecatedRules,
-} from "./gen-rules.ts";
+import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 
 const ruleNames = keys(
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@typescript-eslint/no-unsafe-member-access
-  getNonDeprecatedRules(lodash.rules as unknown as EsLintRules),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  getNonDeprecatedRules(lodash.rules as unknown),
 );
 const customRules = [
   {

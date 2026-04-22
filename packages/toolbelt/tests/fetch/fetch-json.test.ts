@@ -11,7 +11,7 @@ describe(fetchJson, () => {
     );
 
     const result = await fetchJson(
-      "http://example.com",
+      "https://example.com",
       z.object({ name: z.string() }),
     );
 
@@ -26,7 +26,7 @@ describe(fetchJson, () => {
     );
 
     const result = await fetchJson(
-      "http://example.com",
+      "https://example.com",
       z.object({ name: z.string() }),
     );
 

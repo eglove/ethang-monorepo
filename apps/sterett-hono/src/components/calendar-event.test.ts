@@ -105,9 +105,7 @@ describe("calendarEvent", () => {
       markDefs: [],
       style: "normal",
     };
-    const html = await renderCalendarEvent(
-      makeEvent({ description: description as never }),
-    );
+    const html = await renderCalendarEvent(makeEvent({ description }));
 
     vi.useRealTimers();
 

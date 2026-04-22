@@ -2,16 +2,9 @@ import perfectionist from "eslint-plugin-perfectionist";
 import keys from "lodash/keys.js";
 
 import { Plugin } from "../build/plugin.ts";
-import {
-  type EsLintRules,
-  genRules,
-  getNonDeprecatedRules,
-} from "./gen-rules.ts";
+import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 
-const ruleNames = keys(
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  getNonDeprecatedRules(perfectionist.rules as unknown as EsLintRules),
-);
+const ruleNames = keys(getNonDeprecatedRules(perfectionist.rules));
 const customRules = [
   {
     name: "sort-jsx-props",

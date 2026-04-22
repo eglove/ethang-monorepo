@@ -8,11 +8,11 @@ const promiseFunction = async (value: number) => {
     if (0 === value) {
       setTimeout(() => {
         reject(new Error("wrong number"));
-      }, 3);
+      }, 3); // DevSkim: ignore DS172411
     } else {
       setTimeout(() => {
         resolve("good!");
-      }, 3);
+      }, 3); // DevSkim: ignore DS172411
     }
   });
 };

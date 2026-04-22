@@ -4,7 +4,7 @@ import { appendSearchParameters } from "../../src/url/append-search-parameters.t
 
 describe(appendSearchParameters, () => {
   it("appends all parameters to the url", () => {
-    const url = new URL("http://example.com");
+    const url = new URL("https://example.com");
     const params = new URLSearchParams({ a: "1", b: "2" });
 
     appendSearchParameters(url, params);
@@ -14,7 +14,7 @@ describe(appendSearchParameters, () => {
   });
 
   it("does nothing when parameters is nil", () => {
-    const url = new URL("http://example.com");
+    const url = new URL("https://example.com");
 
     // @ts-expect-error testing nil guard
     appendSearchParameters(url, null);

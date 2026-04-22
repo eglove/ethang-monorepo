@@ -5,7 +5,7 @@ import { z, ZodError } from "zod";
 
 import { parseFetchJson } from "../../src/fetch/json.ts";
 
-const testUrl = "http://example.com";
+const testUrl = "https://example.com";
 
 describe("fetch json", () => {
   it("should parse request body correctly", async () => {

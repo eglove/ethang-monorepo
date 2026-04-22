@@ -6,12 +6,12 @@
     "tsup": "^8.5.1"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.14.2",
+    "@ethang/eslint-config": "^25.15.1",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.6.0",
     "eslint": "^10.2.1",
-    "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.8"
+    "typescript-eslint": "^8.59.0",
+    "vite": "^8.0.9"
   },
   "license": "ISC",
   "name": "@ethang/project-builder",

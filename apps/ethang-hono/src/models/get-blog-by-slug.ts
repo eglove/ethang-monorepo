@@ -10,7 +10,7 @@ export type Asset = {
   mimeType: string;
   originalFilename: string;
   path: string;
-  sha1hash: string;
+  sha1hash: string; // DevSkim: ignore DS126858
   size: number;
   uploadId: string;
   url: string;
@@ -28,7 +28,7 @@ export type Asset2 = {
   mimeType: string;
   originalFilename: string;
   path: string;
-  sha1hash: string;
+  sha1hash: string; // DevSkim: ignore DS126858
   size: number;
   uploadId: string;
   url: string;

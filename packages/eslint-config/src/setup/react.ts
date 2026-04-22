@@ -3,20 +3,12 @@ import reactHooks from "eslint-plugin-react-hooks";
 import keys from "lodash/keys.js";
 
 import { Plugin } from "../build/plugin.ts";
-import {
-  type EsLintRules,
-  genRules,
-  getNonDeprecatedRules,
-} from "./gen-rules.ts";
+import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 
-const reactRuleNames = keys(
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  getNonDeprecatedRules(react.rules as unknown as EsLintRules),
-);
+const reactRuleNames = keys(getNonDeprecatedRules(react.rules));
 const reactGen = genRules(reactRuleNames, [], "react");
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-const reactHookRuleNames = keys(reactHooks.rules as unknown as EsLintRules);
+const reactHookRuleNames = keys(reactHooks.rules);
 const customHookRules = [
   {
     name: "exhaustive-deps",

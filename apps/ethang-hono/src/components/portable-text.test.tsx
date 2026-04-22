@@ -311,7 +311,7 @@ describe(`${PortableText.name} - edge cases`, () => {
 
   it("renders nothing for unrecognized block types", async () => {
     const html = await renderPortableText([
-      { _key: "u1", _type: "unknown-type" } as unknown as Body[number],
+      { _key: "u1", _type: "unknown-type" },
     ]);
 
     expect(html).toBeDefined();
@@ -334,31 +334,27 @@ describe(`${PortableText.name} - edge cases`, () => {
 
   it("renders nothing for image block without asset url", async () => {
     const html = await renderPortableText([
-      { _key: "img3", _type: IMAGE_TYPE } as unknown as Body[number],
+      { _key: "img3", _type: IMAGE_TYPE },
     ]);
 
     expect(html).not.toContain("<img");
   });
 
   it("renders nothing for code block without code property", async () => {
-    const html = await renderPortableText([
-      { _key: "c3", _type: CODE_TYPE } as unknown as Body[number],
-    ]);
+    const html = await renderPortableText([{ _key: "c3", _type: CODE_TYPE }]);
 
     expect(html).not.toContain("<code");
   });
 
   it("renders nothing for video block without videoId", async () => {
-    const html = await renderPortableText([
-      { _key: "v3", _type: VIDEO_TYPE } as unknown as Body[number],
-    ]);
+    const html = await renderPortableText([{ _key: "v3", _type: VIDEO_TYPE }]);
 
     expect(html).not.toContain("iframe");
   });
 
   it("renders nothing for quote block without quote property", async () => {
     const html = await renderPortableText([
-      { _key: "q2", _type: "quote" as const } as unknown as Body[number],
+      { _key: "q2", _type: "quote" as const },
     ]);
 
     expect(html).not.toContain(BLOCKQUOTE_STYLE);

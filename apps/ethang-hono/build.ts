@@ -5,6 +5,7 @@ import replace from "lodash/replace.js";
 import { writeFileSync } from "node:fs";
 import { type Options, build as tsup } from "tsup";
 
+import { buildServiceWorker } from "../../packages/service-worker/src/build.ts";
 import { buildScriptManifest } from "./src/utilities/build-script-manifest.ts";
 
 const CLIENT_GLOB = "src/**/!(loader).client.ts";
@@ -88,3 +89,5 @@ await tsup({
   ...sharedConfig,
   entry: { loader: LOADER_ENTRY },
 });
+
+await buildServiceWorker("./public/sw.js");
