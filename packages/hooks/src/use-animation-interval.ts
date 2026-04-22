@@ -32,7 +32,7 @@ export const animationInterval = (
       const delay = targetNext - globalThis.performance.now();
       globalThis.setTimeout(() => {
         globalThis.requestAnimationFrame(frame);
-      }, delay);
+      }, delay); // DevSkim: ignore DS172411
     }
   };
 

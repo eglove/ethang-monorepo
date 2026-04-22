@@ -4,6 +4,7 @@
     "current node"
   ],
   "dependencies": {
+    "@ethang/service-worker": "workspace:*",
     "@portabletext/to-html": "^5.0.2",
     "@sanity/client": "^7.21.0",
     "@sanity/image-url": "^2.1.1",
@@ -16,6 +17,7 @@
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
+    "tsx": "^4.21.0",
     "@axe-core/playwright": "^4.11.2",
     "@ethang/eslint-config": "^25.15.1",
     "@faker-js/faker": "^10.4.0",
@@ -37,7 +39,7 @@
   "name": "sterett-hono",
   "scripts": {
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
-    "deploy": "pnpm tw && bun scripts/stamp-sw.ts && wrangler deploy --minify",
+    "deploy": "bun build.ts && pnpm tw && wrangler deploy --minify",
     "dev": "wrangler dev",
     "lint": "eslint . --fix --cache && pnpm tsc --noEmit",
     "test": "pnpm test:vitest",

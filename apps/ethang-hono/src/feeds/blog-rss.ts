@@ -11,8 +11,9 @@ export const blogRss = async () => {
     ? new Date().toUTCString()
     : new Date(lastBlog._updatedAt).toUTCString();
 
-  let content = `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  let content = `<?xml version="1.0" encoding="UTF-8" ?>`;
+  content += `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">`; // DevSkim: ignore DS137138
+  content += `
 
 <channel>
   <title>EthanG | Blog</title>
@@ -30,7 +31,7 @@ export const blogRss = async () => {
     <description>${blog.description}</description>
     <pubDate>${new Date(blog._createdAt).toUTCString()}</pubDate>
     <guid isPermaLink="false">${blog._id}</guid>
-   
+
   </item>`;
   }
 

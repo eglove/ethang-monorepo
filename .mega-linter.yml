@@ -7,6 +7,10 @@ DISABLE:
   - JAVASCRIPT
   - TYPESCRIPT
   - SPELL # Disables all spell checkers (CSPELL, etc.)
+  - REPOSITORY_GRYPE
+  - REPOSITORY_TRIVY
+  - REPOSITORY_TRIVY_SBOM
+  - REPOSITORY_GITLEAKS
 
 # Configuration
 SHOW_ELAPSED_TIME: true

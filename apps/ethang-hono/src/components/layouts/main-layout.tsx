@@ -138,8 +138,12 @@ if ('serviceWorker' in navigator) {
     });
   });
   navigator.serviceWorker.addEventListener('message', function (event) {
-    if (event.data && event.data.type === 'CONTENT_UPDATED') {
-      var updatedUrl = new URL(event.data.url);
+    if (
+      event.data &&
+      event.data.meta === 'workbox-broadcast-update' &&
+      event.data.type === 'CACHE_UPDATED'
+    ) {
+      var updatedUrl = new URL(event.data.payload.updatedURL);
       if (updatedUrl.pathname === location.pathname) {
         location.reload();
       }

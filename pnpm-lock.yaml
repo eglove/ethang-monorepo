@@ -352,6 +352,9 @@ importers:
 
   apps/sterett-hono:
     dependencies:
+      '@ethang/service-worker':
+        specifier: workspace:*
+        version: link:../../packages/service-worker
       '@portabletext/to-html':
         specifier: ^5.0.2
         version: 5.0.2
@@ -419,6 +422,9 @@ importers:
       eslint:
         specifier: ^10.2.1
         version: 10.2.1(jiti@2.6.1)
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
       vitest:
         specifier: ^4.1.5
         version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.9(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
@@ -796,6 +802,34 @@ importers:
       vite:
         specifier: ^8.0.9
         version: 8.0.9(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+
+  packages/service-worker:
+    dependencies:
+      esbuild:
+        specifier: ^0.25.0
+        version: 0.25.12
+      workbox-broadcast-update:
+        specifier: ^7.3.0
+        version: 7.4.0
+      workbox-core:
+        specifier: ^7.3.0
+        version: 7.4.0
+      workbox-routing:
+        specifier: ^7.3.0
+        version: 7.4.0
+      workbox-strategies:
+        specifier: ^7.3.0
+        version: 7.4.0
+    devDependencies:
+      '@types/serviceworker':
+        specifier: ^0.0.39
+        version: 0.0.39
+      tsx:
+        specifier: ^4.19.3
+        version: 4.21.0
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
 
   packages/store:
     dependencies:
@@ -4903,6 +4937,9 @@ packages:
 
   '@types/react@19.2.14':
     resolution: {integrity: sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==}
+
+  '@types/serviceworker@0.0.39':
+    resolution: {integrity: sha512-IPGio0o7dUA3rAioDzHhi1DZV44Llbit+opl7N0VdJj0GWwL+FoNWNIm5EPa4VTLtuxLeTqvcxtyFMgGLs7lYQ==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -9560,6 +9597,11 @@ packages:
       eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
       typescript: '>=4.8.4 <6.1.0'
 
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   typescript@6.0.3:
     resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
@@ -10010,6 +10052,18 @@ packages:
 
   wordwrap@1.0.0:
     resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
+
+  workbox-broadcast-update@7.4.0:
+    resolution: {integrity: sha512-+eZQwoktlvo62cI0b+QBr40v5XjighxPq3Fzo9AWMiAosmpG5gxRHgTbGGhaJv/q/MFVxwFNGh/UwHZ/8K88lA==}
+
+  workbox-core@7.4.0:
+    resolution: {integrity: sha512-6BMfd8tYEnN4baG4emG9U0hdXM4gGuDU3ectXuVHnj71vwxTFI7WOpQJC4siTOlVtGqCUtj0ZQNsrvi6kZZTAQ==}
+
+  workbox-routing@7.4.0:
+    resolution: {integrity: sha512-C/ooj5uBWYAhAqwmU8HYQJdOjjDKBp9MzTQ+otpMmd+q0eF59K+NuXUek34wbL0RFrIXe/KKT+tUWcZcBqxbHQ==}
+
+  workbox-strategies@7.4.0:
+    resolution: {integrity: sha512-T4hVqIi5A4mHi92+5EppMX3cLaVywDp8nsyUgJhOZxcfSV/eQofcOA6/EMo5rnTNmNTpw0rUgjAI6LaVullPpg==}
 
   workerd@1.20260421.1:
     resolution: {integrity: sha512-zTYD+xFR4d7TUCxsyl7FTPth9a8CDgk8pM7xUWbJxo0SGUx+2e5C7Q5LrramBZwmuAErtzXmOjlQ15PtkPAhZA==}
@@ -13054,7 +13108,7 @@ snapshots:
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   '@npmcli/git@7.0.2':
     dependencies:
@@ -13064,7 +13118,7 @@ snapshots:
       lru-cache: 11.3.5
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       which: 6.0.1
 
   '@npmcli/installed-package-contents@4.0.0':
@@ -13081,7 +13135,7 @@ snapshots:
       hosted-git-info: 9.0.2
       json-parse-even-better-errors: 5.0.0
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       spdx-expression-parse: 4.0.0
 
   '@npmcli/promise-spawn@9.0.1':
@@ -14595,6 +14649,8 @@ snapshots:
   '@types/react@19.2.14':
     dependencies:
       csstype: 3.2.3
+
+  '@types/serviceworker@0.0.39': {}
 
   '@types/trusted-types@2.0.7':
     optional: true
@@ -18335,7 +18391,7 @@ snapshots:
       graceful-fs: 4.2.11
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       tar: 7.5.13
       tinyglobby: 0.2.16
       undici: 6.25.0
@@ -18373,7 +18429,7 @@ snapshots:
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   npm-normalize-package-bin@5.0.0: {}
 
@@ -18381,7 +18437,7 @@ snapshots:
     dependencies:
       hosted-git-info: 9.0.2
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       validate-npm-package-name: 7.0.2
 
   npm-packlist@10.0.4:
@@ -18394,7 +18450,7 @@ snapshots:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.2
-      semver: 7.7.3
+      semver: 7.7.4
 
   npm-registry-fetch@19.1.1:
     dependencies:
@@ -19712,7 +19768,7 @@ snapshots:
       '@testing-library/user-event': 14.6.1(@testing-library/dom@10.4.1)
       '@vitest/expect': 3.2.4
       '@vitest/spy': 3.2.4
-      esbuild: 0.27.7
+      esbuild: 0.25.12
       open: 10.2.0
       recast: 0.23.11
       semver: 7.7.4
@@ -20188,6 +20244,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  typescript@5.9.3: {}
+
   typescript@6.0.3: {}
 
   uc.micro@2.1.0: {}
@@ -20578,6 +20636,20 @@ snapshots:
   word-wrap@1.2.5: {}
 
   wordwrap@1.0.0: {}
+
+  workbox-broadcast-update@7.4.0:
+    dependencies:
+      workbox-core: 7.4.0
+
+  workbox-core@7.4.0: {}
+
+  workbox-routing@7.4.0:
+    dependencies:
+      workbox-core: 7.4.0
+
+  workbox-strategies@7.4.0:
+    dependencies:
+      workbox-core: 7.4.0
 
   workerd@1.20260421.1:
     optionalDependencies:
