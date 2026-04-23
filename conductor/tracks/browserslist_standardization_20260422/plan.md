@@ -1,10 +1,7 @@
 # Implementation Plan: Standardize browserslist and node engines across workspaces
 
 ## Phase 1: Audit and Update All Workspaces
-- [ ] Task: Audit and update all `package.json` files
-    - [ ] Create a script to iterate through all workspaces in `apps/` and `packages/`.
-    - [ ] For each `package.json`, add or update the `browserslist` and `engines` configurations.
-    - [ ] Add `browserslist-config-baseline` to `devDependencies` if it's missing.
+- [x] Task: Audit and update all `package.json` files f20a62d
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Audit and Update All Workspaces' (Protocol in workflow.md)
 
 ## Phase 2: Install and Verify
