@@ -1,5 +1,9 @@
 {
   "author": "",
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
   "dependencies": {
     "@ethang/toolbelt": "^4.4.11",
     "lodash": "^4.18.1"

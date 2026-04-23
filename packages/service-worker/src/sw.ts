@@ -1,5 +1,4 @@
 /* eslint-disable lodash/prefer-lodash-method */
-/* eslint-disable compat/compat */
 import { BroadcastUpdatePlugin } from "workbox-broadcast-update";
 import { clientsClaim } from "workbox-core";
 import { registerRoute } from "workbox-routing";

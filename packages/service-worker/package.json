@@ -1,5 +1,9 @@
 {
   "author": "Ethan Glover",
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
   "dependencies": {
     "esbuild": "^0.28.0",
     "workbox-broadcast-update": "^7.3.0",
