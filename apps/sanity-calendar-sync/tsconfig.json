@@ -1,5 +1,10 @@
 {
   "exclude": ["test"],
   "extends": ["../../packages/tsconfig/tsconfig.base.json"],
-  "include": ["worker-configuration.d.ts", "src/**/*.ts"]
+  "include": [
+    "worker-configuration.d.ts",
+    "src/**/*.ts",
+    "eslint.config.ts",
+    "vitest.config.mts"
+  ]
 }

@@ -1,9 +1,9 @@
 {
-  "extends": "../../packages/tsconfig/tsconfig.base.json",
   "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
     "lib": ["ESNext", "WebWorker"],
-    "noEmit": true,
-    "exactOptionalPropertyTypes": false
+    "noEmit": true
   },
-  "include": ["src/**/*"]
+  "extends": "../../packages/tsconfig/tsconfig.base.json",
+  "include": ["src/**/*", "eslint.config.js"]
 }

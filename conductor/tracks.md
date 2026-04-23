@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Standardize ESLint configurations across the monorepo**
+- [~] **Track: Standardize ESLint configurations across the monorepo**
   *Link: [./tracks/eslint_standardization_20260422/](./tracks/eslint_standardization_20260422/)*

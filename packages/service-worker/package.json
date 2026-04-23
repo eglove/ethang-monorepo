@@ -1,19 +1,5 @@
 {
-  "name": "@ethang/service-worker",
-  "version": "1.0.0",
-  "description": "Shared Workbox-based service worker for Ethang monorepo",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
   "author": "Ethan Glover",
-  "license": "ISC",
-  "type": "module",
-  "exports": {
-    "./build": "./src/build.ts"
-  },
-  "scripts": {
-    "build": "tsx src/build.ts"
-  },
   "dependencies": {
     "esbuild": "^0.28.0",
     "workbox-broadcast-update": "^7.3.0",
@@ -21,9 +7,24 @@
     "workbox-routing": "^7.3.0",
     "workbox-strategies": "^7.3.0"
   },
+  "description": "Shared Workbox-based service worker for Ethang monorepo",
   "devDependencies": {
     "@types/serviceworker": "^0.0.195",
     "tsx": "^4.19.3",
     "typescript": "^6.0.3"
-  }
+  },
+  "exports": {
+    "./build": "./src/build.ts"
+  },
+  "license": "ISC",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "name": "@ethang/service-worker",
+  "scripts": {
+    "build": "tsx src/build.ts",
+    "lint": "eslint . --fix --cache && pnpm tsc --noEmit"
+  },
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "version": "1.0.0"
 }

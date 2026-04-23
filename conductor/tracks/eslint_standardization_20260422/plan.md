@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Audit and Update Shared ESLint Package' (Protocol in workflow.md) a7c74f5
 
 ## Phase 2: Update Applications and Packages
-- [ ] Task: Update `eslint.config.*` in all apps
+- [~] Task: Update `eslint.config.*` in all apps
     - [ ] Replace custom configurations with `@ethang/eslint-config` in `apps/auth`, `apps/ethang-admin`, `apps/ethang-hono`, etc.
     - [ ] Run linting and fix minor auto-fixable issues
 - [ ] Task: Update `eslint.config.*` in all packages
