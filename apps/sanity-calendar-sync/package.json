@@ -11,10 +11,18 @@
     "@cloudflare/vitest-pool-workers": "^0.14.9",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",
+    "browserslist-config-baseline": "^0.5.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.9",
     "vitest": "~4.1.5",
     "wrangler": "^4.84.1"
+  },
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "engines": {
+    "node": ">=24"
   },
   "name": "sanity-calendar-sync",
   "private": true,

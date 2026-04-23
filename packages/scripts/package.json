@@ -10,9 +10,14 @@
     "@ethang/eslint-config": "^25.15.2",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.6.0",
+    "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.2.1",
     "vite": "^8.0.9"
   },
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
   "engines": {
     "node": ">=24"
   },

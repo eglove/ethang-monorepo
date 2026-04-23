@@ -1,8 +1,8 @@
 {
   "author": "Ethan Glover",
   "browserslist": [
-    "extends browserslist-config-baseline",
-    "current node"
+    "current node",
+    "extends browserslist-config-baseline"
   ],
   "dependencies": {
     "@angular-eslint/eslint-plugin": "^21.3.1",

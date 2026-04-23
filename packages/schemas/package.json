@@ -20,6 +20,14 @@
   "devDependencies": {
     "@ethang/eslint-config": "^25.15.2",
     "@ethang/project-builder": "^3.0.2",
+    "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.2.1"
+  },
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "engines": {
+    "node": ">=24"
   }
 }
