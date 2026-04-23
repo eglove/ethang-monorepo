@@ -1,9 +1,11 @@
 export default {
-  async fetch(request, env) {
-    const response = await env.ASSETS.fetch(request);
+  async fetch(request, environment) {
+    const response = await environment.ASSETS.fetch(request);
 
-    if (response.status === 404) {
-      return env.ASSETS.fetch(new Request(new URL("/", request.url), request));
+    if (404 === response.status) {
+      return environment.ASSETS.fetch(
+        new Request(new URL("/", request.url), request),
+      );
     }
 
     return response;

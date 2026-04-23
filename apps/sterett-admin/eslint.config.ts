@@ -3,6 +3,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig(
   globalIgnores([
+    "**/*.d.ts",
     ".sanity",
     "dist",
     "node_modules",
