@@ -1,7 +1,6 @@
 {
   "author": "Ethan Glover",
   "browserslist": [
-    "current node",
     "extends browserslist-config-baseline"
   ],
   "dependencies": {
