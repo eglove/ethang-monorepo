@@ -9,7 +9,7 @@
 
 ## Backend & API
 - **Hono:** A small, simple, and ultrafast web framework used for backend services (`ethang-hono`, `sterett-hono`).
-- **Cloudflare Workers:** The deployment target for Hono services and backend applications via Wrangler.
+- **Cloudflare Workers:** The deployment target for all applications, including Hono services and frontend SPAs like Sanity Studio, via Wrangler.
 
 ## Database & Data Management
 - **Drizzle ORM:** A headless TypeScript ORM used for database interactions.
