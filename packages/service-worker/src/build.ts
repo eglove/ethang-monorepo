@@ -1,14 +1,14 @@
-import * as esbuild from "esbuild";
+import { build } from "esbuild";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 
-const __dirname = import.meta.dirname;
+const directoryName = import.meta.dirname;
 
 export const buildServiceWorker = async (outfile: string) => {
   const swVersion = randomUUID().slice(0, 8);
-  const swPath = path.resolve(__dirname, "sw.ts");
+  const swPath = path.resolve(directoryName, "sw.ts");
 
-  await esbuild.build({
+  await build({
     bundle: true,
     define: {
       "process.env.SW_VERSION": JSON.stringify(swVersion),
@@ -22,5 +22,6 @@ export const buildServiceWorker = async (outfile: string) => {
     conditions: ["worker", "browser"],
   });
 
+  // eslint-disable-next-line no-console
   console.info(`Service worker built to ${outfile} with version ${swVersion}`);
 };

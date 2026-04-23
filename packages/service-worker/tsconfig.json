@@ -2,7 +2,8 @@
   "compilerOptions": {
     "exactOptionalPropertyTypes": false,
     "lib": ["ESNext", "WebWorker"],
-    "noEmit": true
+    "noEmit": true,
+    "types": ["node", "serviceworker"]
   },
   "extends": "../../packages/tsconfig/tsconfig.base.json"
 }

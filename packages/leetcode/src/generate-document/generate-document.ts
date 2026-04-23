@@ -4,14 +4,14 @@ import startsWith from "lodash/startsWith.js";
 
 export const generateDocument = (characters: string, document: string) => {
   const charactersSorted = join(
-    split(characters, "").sort((a, b) => {
+    split(characters, "").toSorted((a, b) => {
       return a.localeCompare(b);
     }),
     "",
   );
 
   const documentSorted = join(
-    split(document, "").sort((a, b) => {
+    split(document, "").toSorted((a, b) => {
       return a.localeCompare(b);
     }),
     "",

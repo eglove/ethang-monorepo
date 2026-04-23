@@ -10,6 +10,7 @@ const initializeColumns = (points: [number, number][]) => {
   for (const point of points) {
     const [x, y] = point;
 
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     if (!columns[x]) {
       columns[x] = [];
     }
@@ -35,9 +36,11 @@ export const minimumAreaRectangle = (points: [number, number][]) => {
   )(columns);
 
   for (const sortedColumn of sortedColumns) {
-    const yValuesInCurrentColumn = get(columns, [sortedColumn]).sort((a, b) => {
-      return a - b;
-    });
+    const yValuesInCurrentColumn = get(columns, [sortedColumn]).toSorted(
+      (a, b) => {
+        return a - b;
+      },
+    );
 
     for (
       let currentIndex = 0;

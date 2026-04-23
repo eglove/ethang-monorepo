@@ -16,7 +16,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Update Applications and Packages' (Protocol in workflow.md) 87f0e69
 
 ## Phase 3: Resolve Remaining Linting Errors
-- [ ] Task: Manually fix linting errors that require logic changes
+- [~] Task: Manually fix linting errors that require logic changes
     - [ ] Review and fix errors in `apps/`
     - [ ] Review and fix errors in `packages/`
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Resolve Remaining Linting Errors' (Protocol in workflow.md)

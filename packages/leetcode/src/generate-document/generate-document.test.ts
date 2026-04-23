@@ -13,6 +13,7 @@ describe("generateDocument", () => {
   it("should work with map version", () => {
     expect(
       generateDocumentMap(
+        // eslint-disable-next-line cspell/spellchecker
         "Bste!hetsi ogEAxpelrt x ",
         "AlgoExpert is the Best!",
       ),
