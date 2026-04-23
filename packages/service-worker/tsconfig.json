@@ -4,6 +4,5 @@
     "lib": ["ESNext", "WebWorker"],
     "noEmit": true
   },
-  "extends": "../../packages/tsconfig/tsconfig.base.json",
-  "include": ["src/**/*", "eslint.config.js"]
+  "extends": "../../packages/tsconfig/tsconfig.base.json"
 }

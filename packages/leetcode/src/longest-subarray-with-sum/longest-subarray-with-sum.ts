@@ -1,9 +1,6 @@
 import get from "lodash/get.js";
 
-export const longestSubarrayWithSum = (
-  array: number[],
-  targetSum: number,
-) => {
+export const longestSubarrayWithSum = (array: number[], targetSum: number) => {
   let indices: [] | [number, number] = [];
 
   let currentSum = 0;
@@ -20,10 +17,8 @@ export const longestSubarrayWithSum = (
 
     if (
       currentSum === targetSum &&
-      (
-        0 === indices.length ||
-        get(indices, [1]) - get(indices, [0]) < endingIndex - startingIndex
-      )
+      (0 === indices.length ||
+        get(indices, [1]) - get(indices, [0]) < endingIndex - startingIndex)
     ) {
       indices = [startingIndex, endingIndex];
     }

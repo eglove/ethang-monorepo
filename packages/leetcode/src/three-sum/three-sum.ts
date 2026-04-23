@@ -1,10 +1,6 @@
 import get from "lodash/get.js";
 
-const incrementLeft = (
-  left: number,
-  right: number,
-  sorted: number[],
-) => {
+const incrementLeft = (left: number, right: number, sorted: number[]) => {
   let leftCopy = left;
 
   while (leftCopy < right && sorted[leftCopy] === sorted[leftCopy + 1]) {
@@ -14,11 +10,7 @@ const incrementLeft = (
   return leftCopy;
 };
 
-const incrementRight = (
-  left: number,
-  right: number,
-  sorted: number[],
-) => {
+const incrementRight = (left: number, right: number, sorted: number[]) => {
   let rightCopy = right;
 
   while (left < rightCopy && sorted[rightCopy] === sorted[rightCopy - 1]) {
@@ -44,9 +36,7 @@ export const threeSum = (numbers: number[]) => {
     let right = sorted.length - 1;
 
     while (left < right) {
-      const sum = get(sorted, index) +
-        get(sorted, left) +
-        get(sorted, right);
+      const sum = get(sorted, index) + get(sorted, left) + get(sorted, right);
 
       if (0 === sum) {
         result.push([sorted[index], sorted[left], sorted[right]]);

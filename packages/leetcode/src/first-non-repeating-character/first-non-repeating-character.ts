@@ -1,17 +1,18 @@
 import split from "lodash/split.js";
 
-export const firstNonRepeatingCharacter = (
-  string: string,
-) => {
-  const found = new Map<string, {
-    count: number;
-    index: number;
-  }>([]);
+export const firstNonRepeatingCharacter = (string: string) => {
+  const found = new Map<
+    string,
+    {
+      count: number;
+      index: number;
+    }
+  >();
 
   for (const [index, character] of split(string, "").entries()) {
     if (found.has(character)) {
       found.set(character, {
-      // @ts-expect-error checked above
+        // @ts-expect-error checked above
         count: found.get(character).count + 1,
         index,
       });

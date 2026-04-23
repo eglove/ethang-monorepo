@@ -3,10 +3,7 @@ import get from "lodash/get.js";
 import set from "lodash/set.js";
 import values from "lodash/values.js";
 
-const greatestCommonDivisor = (
-  number1: number,
-  number2: number,
-) => {
+const greatestCommonDivisor = (number1: number, number2: number) => {
   let a = number1;
   let b = number2;
 
@@ -59,9 +56,7 @@ const createHashTableKeyForRational = (
   return `${numerator}:${denominator}`;
 };
 
-export const lineThroughPoints = (
-  points: [number, number][],
-) => {
+export const lineThroughPoints = (points: [number, number][]) => {
   let maxNumbersOfPointsOnLine = 1;
 
   for (let index = 0; index < points.length; index += 1) {

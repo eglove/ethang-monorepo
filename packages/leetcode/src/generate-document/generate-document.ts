@@ -2,28 +2,28 @@ import join from "lodash/join.js";
 import split from "lodash/split.js";
 import startsWith from "lodash/startsWith.js";
 
-export const generateDocument = (
-  characters: string,
-  document: string,
-) => {
-  const charactersSorted = join(split(characters, "")
-    .sort((a, b) => {
+export const generateDocument = (characters: string, document: string) => {
+  const charactersSorted = join(
+    split(characters, "").sort((a, b) => {
       return a.localeCompare(b);
-    }), "");
+    }),
+    "",
+  );
 
-  const documentSorted = join(split(document, "")
-    .sort((a, b) => {
+  const documentSorted = join(
+    split(document, "").sort((a, b) => {
       return a.localeCompare(b);
-    }), "");
+    }),
+    "",
+  );
 
-  return startsWith(charactersSorted, documentSorted) ||
-    startsWith(documentSorted, charactersSorted);
+  return (
+    startsWith(charactersSorted, documentSorted) ||
+    startsWith(documentSorted, charactersSorted)
+  );
 };
 
-export const generateDocumentMap = (
-  characters: string,
-  document: string,
-) => {
+export const generateDocumentMap = (characters: string, document: string) => {
   const characterCounts = new Map<string, number>();
 
   for (const character of characters) {

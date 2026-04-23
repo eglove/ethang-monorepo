@@ -1,9 +1,7 @@
 import get from "lodash/get.js";
 
 // eslint-disable-next-line cspell/spellchecker
-export const kadanesAlgorithm = (
-  array: number[],
-) => {
+export const kadanesAlgorithm = (array: number[]) => {
   let maxEndingHere = get(array, [0]);
   let maxSoFar = get(array, [0]);
 

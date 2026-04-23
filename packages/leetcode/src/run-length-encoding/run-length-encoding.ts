@@ -1,6 +1,4 @@
-export const runLengthEncoding = (
-  string: string,
-) => {
+export const runLengthEncoding = (string: string) => {
   const encodedStringCharacters: string[] = [];
   let currentRunLength = 1;
 
