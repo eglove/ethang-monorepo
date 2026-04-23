@@ -273,6 +273,9 @@ importers:
       '@types/luxon':
         specifier: ^3.7.1
         version: 3.7.1
+      browserslist-config-baseline:
+        specifier: ^0.5.0
+        version: 0.5.0
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -337,6 +340,9 @@ importers:
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
+      browserslist-config-baseline:
+        specifier: ^0.5.0
+        version: 0.5.0
       eslint:
         specifier: ^10.2.1
         version: 10.2.1(jiti@2.6.1)
@@ -681,6 +687,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.1.5
         version: 4.1.5(vitest@4.1.5)
+      browserslist-config-baseline:
+        specifier: ^0.5.0
+        version: 0.5.0
       eslint:
         specifier: ^10.2.1
         version: 10.2.1(jiti@2.6.1)
@@ -746,6 +755,9 @@ importers:
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0
+      browserslist-config-baseline:
+        specifier: ^0.5.0
+        version: 0.5.0
       eslint:
         specifier: ^10.2.1
         version: 10.2.1(jiti@2.6.1)
@@ -771,6 +783,9 @@ importers:
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.10)(tsx@4.21.0)(typescript@6.0.3)(yaml@2.8.3)
+      browserslist-config-baseline:
+        specifier: ^0.5.0
+        version: 0.5.0
       eslint:
         specifier: ^10.2.1
         version: 10.2.1(jiti@2.6.1)
@@ -796,6 +811,9 @@ importers:
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0
+      browserslist-config-baseline:
+        specifier: ^0.5.0
+        version: 0.5.0
       eslint:
         specifier: ^10.2.1
         version: 10.2.1(jiti@2.6.1)
@@ -824,6 +842,9 @@ importers:
       '@types/serviceworker':
         specifier: ^0.0.195
         version: 0.0.195
+      browserslist-config-baseline:
+        specifier: ^0.5.0
+        version: 0.5.0
       tsx:
         specifier: ^4.19.3
         version: 4.21.0
@@ -940,6 +961,9 @@ importers:
       '@tsconfig/vite-react':
         specifier: ^7.0.2
         version: 7.0.2
+      browserslist-config-baseline:
+        specifier: ^0.5.0
+        version: 0.5.0
 
 packages:
 
