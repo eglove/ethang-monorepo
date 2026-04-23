@@ -1,5 +1,9 @@
 {
   "author": "Ethan Glover <hello@ethang.email>",
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
   "dependencies": {
     "@sanity/cli": "^6.4.0",
     "@sanity/code-input": "^7.1.0",
@@ -26,10 +30,6 @@
     "typescript-eslint": "^8.59.0",
     "vite": "^8.0.9"
   },
-  "browserslist": [
-    "extends browserslist-config-baseline",
-    "current node"
-  ],
   "engines": {
     "node": ">=24"
   },

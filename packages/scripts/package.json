@@ -1,5 +1,9 @@
 {
   "author": "",
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
   "dependencies": {
     "@ethang/toolbelt": "^4.4.11",
     "lodash": "^4.18.1",
@@ -14,10 +18,6 @@
     "eslint": "^10.2.1",
     "vite": "^8.0.9"
   },
-  "browserslist": [
-    "extends browserslist-config-baseline",
-    "current node"
-  ],
   "engines": {
     "node": ">=24"
   },

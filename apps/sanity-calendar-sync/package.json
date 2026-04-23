@@ -1,4 +1,8 @@
 {
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
   "dependencies": {
     "@portabletext/react": "^6.0.3",
     "@portabletext/types": "^4.0.2",
@@ -17,10 +21,6 @@
     "vitest": "~4.1.5",
     "wrangler": "^4.84.1"
   },
-  "browserslist": [
-    "extends browserslist-config-baseline",
-    "current node"
-  ],
   "engines": {
     "node": ">=24"
   },

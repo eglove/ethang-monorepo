@@ -6,7 +6,7 @@
 
 ## Phase 2: Install and Verify
 - [x] Task: Run `pnpm install` 08a60c9
-- [ ] Task: Verify changes
+- [~] Task: Verify changes
     - [ ] Manually inspect a few `package.json` files to confirm the changes have been applied correctly.
     - [ ] Run `pnpm -r lint` and `pnpm -r test` to ensure no regressions were introduced.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Install and Verify' (Protocol in workflow.md)
