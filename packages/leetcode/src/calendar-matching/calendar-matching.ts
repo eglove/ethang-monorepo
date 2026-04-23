@@ -3,8 +3,8 @@ import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import split from "lodash/split.js";
 
-type CalendarList<T,> = CalendarPeriod<T>[];
-type CalendarPeriod<T,> = [T, T];
+type CalendarList<T> = CalendarPeriod<T>[];
+type CalendarPeriod<T> = [T, T];
 
 const timeToMinutes = (time: string) => {
   const [hours, minutes] = map(split(time, ":"), Number);
@@ -96,9 +96,8 @@ const minutesToTime = (minutes: number) => {
   const hours = Math.floor(minutes / 60);
   const minutesLeft = minutes % 60;
   const hoursString = hours.toString();
-  const minutesString = 10 > minutesLeft
-    ? `0${minutesLeft.toString()}`
-    : minutesLeft.toString();
+  const minutesString =
+    10 > minutesLeft ? `0${minutesLeft.toString()}` : minutesLeft.toString();
 
   return `${hoursString}:${minutesString}`;
 };
@@ -110,7 +109,7 @@ const getMatchingAvailabilities = (
   const matchingAvailabilities: CalendarList<number> = [];
 
   for (let index = 1; index < calendar.length; index += 1) {
-    const [,start] = get(calendar, [index - 1]);
+    const [, start] = get(calendar, [index - 1]);
     const [end] = get(calendar, [index]);
     const availabilityDuration = end - start;
     if (availabilityDuration >= meetingDuration) {

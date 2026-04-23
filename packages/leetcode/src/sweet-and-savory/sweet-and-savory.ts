@@ -1,10 +1,7 @@
 import filter from "lodash/filter.js";
 import get from "lodash/get.js";
 
-const getDishes = (
-  dishes: number[],
-  type: "savory" | "sweet",
-) => {
+const getDishes = (dishes: number[], type: "savory" | "sweet") => {
   return filter(dishes, (dish) => {
     if ("sweet" === type) {
       return 0 > dish;
@@ -16,10 +13,7 @@ const getDishes = (
   });
 };
 
-export const sweetAndSavory = (
-  dishes: number[],
-  target: number,
-) => {
+export const sweetAndSavory = (dishes: number[], target: number) => {
   const sweet = getDishes(dishes, "sweet");
   const savory = getDishes(dishes, "savory");
   let bestPair: [number, number] = [0, 0];

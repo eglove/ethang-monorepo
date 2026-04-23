@@ -34,4 +34,3 @@ export const countPrefixSuffixPairs = (words: string[]) => {
 
   return count;
 };
-

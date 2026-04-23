@@ -1,6 +1,7 @@
 {
   "author": "Ethan Glover",
   "browserslist": [
+    "current node",
     "extends browserslist-config-baseline"
   ],
   "dependencies": {
@@ -10,7 +11,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.15.1",
+    "@ethang/eslint-config": "^25.15.2",
     "@ethang/project-builder": "^3.0.2",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
@@ -19,8 +20,9 @@
     "typescript-eslint": "^8.59.0",
     "vite": "^8.0.9"
   },
-  "license": "ISC",
-  "name": "@ethang/fetch",
+  "engines": {
+    "node": ">=24"
+  },
   "publishConfig": {
     "access": "public"
   },

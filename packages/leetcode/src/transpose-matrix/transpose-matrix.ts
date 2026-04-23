@@ -2,9 +2,7 @@ import get from "lodash/get.js";
 
 // Time: O(w*h)
 // Space: O(w*h)
-export const transposeMatrix = (
-  matrix: number[][],
-) => {
+export const transposeMatrix = (matrix: number[][]) => {
   const transposedMatrix: number[][] = [];
 
   for (let index = 0; index < get(matrix, [0]).length; index += 1) {
@@ -19,4 +17,3 @@ export const transposeMatrix = (
 
   return transposedMatrix;
 };
-

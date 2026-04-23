@@ -1,3 +1,4 @@
+/* eslint-disable lodash/prefer-lodash-method */
 import { BroadcastUpdatePlugin } from "workbox-broadcast-update";
 import { clientsClaim } from "workbox-core";
 import { registerRoute } from "workbox-routing";
@@ -9,6 +10,7 @@ const SW_VERSION = process.env["SW_VERSION"] ?? "v1";
 const ASSETS_CACHE = `assets-${SW_VERSION}`;
 const HTML_CACHE = `html-${SW_VERSION}`;
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 self.skipWaiting();
 clientsClaim();
 
@@ -27,6 +29,7 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// eslint-disable-next-line cspell/spellchecker
 // Route 1: HTML Navigations
 registerRoute(
   ({ request }) => "navigate" === request.mode,
@@ -50,8 +53,20 @@ registerRoute(
 
 // Custom: Pre-cache Links
 self.addEventListener("message", (event) => {
-  if ("PRECACHE_LINKS" === event.data?.type) {
-    const { urls } = event.data;
+  const data = event.data as unknown;
+  // eslint-disable-next-line lodash/prefer-lodash-typecheck
+  const isObject = null !== data && "object" === typeof data;
+
+  if (!isObject) {
+    return;
+  }
+
+  const isPrecache = "type" in data && "PRECACHE_LINKS" === data.type;
+  const hasUrls = "urls" in data && Array.isArray(data.urls);
+
+  if (isPrecache && hasUrls) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    const urls = data.urls as string[];
     event.waitUntil(
       caches.open(HTML_CACHE).then(async (cache) => {
         return cache.addAll(urls);

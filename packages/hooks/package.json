@@ -11,7 +11,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.15.1",
+    "@ethang/eslint-config": "^25.15.2",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.6.0",
@@ -21,7 +21,7 @@
     "vite": "^8.0.9"
   },
   "engines": {
-    "node": ">22.0"
+    "node": ">=24"
   },
   "license": "ISC",
   "name": "@ethang/hooks",

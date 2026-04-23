@@ -2,7 +2,7 @@ import type { PortableTextBlock } from "@portabletext/types";
 
 import { toPlainText } from "@portabletext/react";
 import { createClient } from "@sanity/client";
-import isNil from "lodash/isNil";
+import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import { DateTime } from "luxon";
 import { generateIcsCalendar, type IcsEvent } from "ts-ics";

@@ -1,5 +1,3 @@
 {
-  "exclude": ["test"],
-  "extends": ["../../packages/tsconfig/tsconfig.base.json"],
-  "include": ["worker-configuration.d.ts", "src/**/*.ts"]
+  "extends": ["../../packages/tsconfig/tsconfig.base.json"]
 }
