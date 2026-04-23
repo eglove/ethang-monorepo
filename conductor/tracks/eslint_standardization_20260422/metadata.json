@@ -1,8 +1,0 @@
-{
-  "track_id": "eslint_standardization_20260422",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-04-22T00:00:00Z",
-  "updated_at": "2026-04-22T00:00:00Z",
-  "description": "Standardize ESLint configurations across the monorepo"
-}
