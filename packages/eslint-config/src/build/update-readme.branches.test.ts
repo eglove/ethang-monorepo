@@ -49,7 +49,7 @@ describe("updateReadme — mainConfig undefined branches", () => {
       writeFileSync as unknown as { mock: { calls: string[][] } }
     ).mock.calls[0]?.[1];
 
-    expect(content).toContain("# Relentless. Unapologetic.");
+    expect(content).toContain("# Relentless Unapologetic");
     expect(content).toContain("0 rules.");
   });
 });
