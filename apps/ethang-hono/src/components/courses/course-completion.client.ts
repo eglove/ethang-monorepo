@@ -180,7 +180,9 @@ const showAuthenticatedUi = () => {
 };
 
 const applyStoredStatuses = async (userId: string) => {
-  const response = await fetch(`/api/course-tracking/${userId}`);
+  const response = await fetch(
+    `/api/course-tracking?userId=${encodeURIComponent(userId)}`,
+  );
 
   if (!response.ok) return;
 
@@ -248,10 +250,13 @@ const init = async () => {
         button.classList.remove("cursor-pointer");
         button.classList.add("animate-spin", "cursor-progress");
 
-        fetch(`/api/course-tracking/${userData.sub}/${courseId}`, {
-          body: JSON.stringify({}),
-          method: "PUT",
-        })
+        fetch(
+          `/api/course-tracking/${encodeURIComponent(courseId)}?userId=${encodeURIComponent(userData.sub)}`,
+          {
+            body: JSON.stringify({}),
+            method: "PUT",
+          },
+        )
           .then(async (response) => {
             if (response.ok) {
               const data = await response.json<{
