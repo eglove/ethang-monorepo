@@ -130,9 +130,13 @@ app.get("/blogRss.xml", async (c) => {
   return c.text(content, 200, { "Content-Type": "text/xml" });
 });
 
-app.get("/api/course-tracking/:userId/:courseId", async (context) => {
-  const userId = context.req.param("userId");
+app.get("/api/course-tracking/:courseId", async (context) => {
+  const userId = context.req.query("userId");
   const courseId = context.req.param("courseId");
+
+  if (isNil(userId)) {
+    return context.json({ data: null, status: 400 });
+  }
 
   const courseTracking = new CourseTracking(getDatabase(context));
   const courseStatus = await courseTracking.getCourseTrackingByUserIdCourseId(
@@ -143,8 +147,12 @@ app.get("/api/course-tracking/:userId/:courseId", async (context) => {
   return context.json({ data: courseStatus, status: 200 });
 });
 
-app.get("/api/course-tracking/:userId", async (context) => {
-  const userId = context.req.param("userId");
+app.get("/api/course-tracking", async (context) => {
+  const userId = context.req.query("userId");
+
+  if (isNil(userId)) {
+    return context.json({ data: null, status: 400 });
+  }
 
   const courseTracking = new CourseTracking(getDatabase(context));
   const courseStatuses = await courseTracking.getCourseTrackingByUserId(userId);
@@ -152,9 +160,13 @@ app.get("/api/course-tracking/:userId", async (context) => {
   return context.json({ data: courseStatuses, status: 200 });
 });
 
-app.put("/api/course-tracking/:userId/:courseId", async (context) => {
-  const userId = context.req.param("userId");
+app.put("/api/course-tracking/:courseId", async (context) => {
+  const userId = context.req.query("userId");
   const courseId = context.req.param("courseId");
+
+  if (isNil(userId)) {
+    return context.json({ data: null, status: 400 });
+  }
 
   const courseTracking = new CourseTracking(getDatabase(context));
   const courseStatus = await courseTracking.getCourseTrackingByUserIdCourseId(

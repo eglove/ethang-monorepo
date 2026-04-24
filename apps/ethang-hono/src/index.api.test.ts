@@ -37,7 +37,8 @@ import { app } from "./index.tsx";
 import { COURSE_TRACKING_STATUS } from "./utilities/constants.ts";
 
 const COURSE_EXAMPLE_URL = "https://course.example.com";
-const TRACKING_API_URL = "https://ethang.dev/api/course-tracking/user1/course1";
+const TRACKING_API_URL =
+  "https://ethang.dev/api/course-tracking/course1?userId=user1";
 
 const makeMockDatabase = () => {
   const mockFindFirst = vi.fn();
@@ -195,6 +196,19 @@ describe("app — API", () => {
 
       expect(json["status"]).toBe(200);
     });
+
+    it("returns 400 when userId is missing on PUT", async () => {
+      const response = await app.request(
+        "https://ethang.dev/api/course-tracking/course1",
+        { method: "PUT" },
+      );
+
+      expect(response.status).toBe(200);
+
+      const json = await response.json<Record<string, unknown>>();
+
+      expect(json["status"]).toBe(400);
+    });
   });
 
   describe("gET /api/course-tracking/:userId", () => {
@@ -213,12 +227,24 @@ describe("app — API", () => {
       mockDatabase._findMany.mockResolvedValue(trackings);
 
       const response = await app.request(
-        "https://ethang.dev/api/course-tracking/user1",
+        "https://ethang.dev/api/course-tracking?userId=user1",
       );
       const json = await response.json<Record<string, unknown>>();
 
       expect(response.status).toBe(200);
       expect(json["data"]).toStrictEqual(trackings);
+    });
+
+    it("returns 400 when userId is missing on GET", async () => {
+      const response = await app.request(
+        "https://ethang.dev/api/course-tracking",
+      );
+
+      expect(response.status).toBe(200);
+
+      const json = await response.json<Record<string, unknown>>();
+
+      expect(json["status"]).toBe(400);
     });
   });
 
@@ -259,6 +285,18 @@ describe("app — API", () => {
 
       expect(response.status).toBe(200);
       expect(json["data"]).toBeUndefined();
+    });
+
+    it("returns 400 when userId is missing on GET by courseId", async () => {
+      const response = await app.request(
+        "https://ethang.dev/api/course-tracking/course1",
+      );
+
+      expect(response.status).toBe(200);
+
+      const json = await response.json<Record<string, unknown>>();
+
+      expect(json["status"]).toBe(400);
     });
   });
 });
