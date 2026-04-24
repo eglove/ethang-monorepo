@@ -4,9 +4,7 @@ packages:
   - templates/*
 allowBuilds:
   '@parcel/watcher': true
-  '@prisma/engines': set this to true or false
   bun: true
   esbuild: true
-  prisma: set this to true or false
   sharp: true
   workerd: true
