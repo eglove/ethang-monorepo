@@ -19,7 +19,7 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
   };
 });
 
-import { renderTrusteeCard } from "../test-utils/render.tsx";
+import { renderTrusteeCard } from "../test-utilities/render.tsx";
 
 const makeTrustee = (overrides: Partial<TrusteeRecord> = {}): TrusteeRecord =>
   ({

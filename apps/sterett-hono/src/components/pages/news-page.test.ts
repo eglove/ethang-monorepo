@@ -14,7 +14,7 @@ import type {
 } from "../../sanity/get-news-and-events.ts";
 
 import { sterettSanityClient } from "../../clients/sanity-client.ts";
-import { renderNewsPage } from "../../test-utils/render.tsx";
+import { renderNewsPage } from "../../test-utilities/render.tsx";
 
 const BOARD_MEETING = "Board Meeting";
 const NEWS_UPDATE = "News Update";

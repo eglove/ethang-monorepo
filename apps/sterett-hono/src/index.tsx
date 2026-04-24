@@ -1,3 +1,4 @@
+import { lastModifiedMiddleware } from "@ethang/hono-middleware/src/last-modified.ts";
 import { Hono } from "hono";
 import { validator } from "hono/validator";
 import includes from "lodash/includes.js";
@@ -13,7 +14,6 @@ import { FilesPage } from "./components/pages/files-page.tsx";
 import { HomePage } from "./components/pages/home-page.tsx";
 import { NewsPage } from "./components/pages/news-page.tsx";
 import { TrusteesPage } from "./components/pages/trustees-page.tsx";
-import { lastModifiedMiddleware } from "./middleware/last-modified.ts";
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { NewsUpdateReturn } from "../sanity/get-news-and-events.ts";
 
-import { renderNewsUpdate } from "../test-utils/render.tsx";
+import { renderNewsUpdate } from "../test-utilities/render.tsx";
 
 const TITLE = "Road Closure Notice";
 

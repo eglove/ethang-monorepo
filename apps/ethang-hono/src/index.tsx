@@ -1,3 +1,4 @@
+import { lastModifiedMiddleware } from "@ethang/hono-middleware/src/last-modified.ts";
 import { Hono } from "hono";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
@@ -15,7 +16,6 @@ import { ScrollContainers } from "./components/routes/tips/scroll-containers.tsx
 import { ScrollbarGutter } from "./components/routes/tips/scrollbar-gutter.tsx";
 import { getDatabase } from "./db/database.ts";
 import { blogRss } from "./feeds/blog-rss.ts";
-import { lastModifiedMiddleware } from "./middleware/last-modified.ts";
 import { BlogModel } from "./models/blog-model.ts";
 import { CourseTracking } from "./models/course-tracking.ts";
 import { sitemap } from "./sitemap.ts";

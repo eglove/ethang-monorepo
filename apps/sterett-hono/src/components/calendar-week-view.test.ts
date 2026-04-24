@@ -12,7 +12,7 @@ vi.mock(import("../clients/sanity-client.ts"), () => ({
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 
-import { renderCalendarWeekView } from "../test-utils/render.tsx";
+import { renderCalendarWeekView } from "../test-utilities/render.tsx";
 import { getWeekDays } from "../utils/calendar.ts";
 
 const DATE_JUNE_15 = "2024-06-15";

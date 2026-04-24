@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { FileRecord } from "../sanity/get-files.ts";
 
-import { renderFileTable } from "../test-utils/render.tsx";
+import { renderFileTable } from "../test-utilities/render.tsx";
 
 const makeFile = (overrides: Partial<FileRecord> = {}): FileRecord =>
   ({

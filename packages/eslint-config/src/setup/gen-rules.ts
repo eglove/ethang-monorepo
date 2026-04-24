@@ -3,6 +3,7 @@ import type { Linter, Rule } from "eslint";
 import get from "lodash/get.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
+import map from "lodash/map.js";
 
 export type EsLintRules = Record<string, Rule.RuleModule>;
 
@@ -83,4 +84,10 @@ export const genRules = (
       return a.localeCompare(b);
     }),
   ) as Linter.RulesRecord;
+};
+
+export const createOffRules = (ruleNames: string[]) => {
+  return map(ruleNames, (name) => {
+    return { name, rule: "off" };
+  });
 };

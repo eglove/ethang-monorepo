@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { CalendarEventReturn } from "../sanity/get-news-and-events.ts";
 
-import { renderCalendarEvent } from "../test-utils/render.tsx";
+import { renderCalendarEvent } from "../test-utilities/render.tsx";
 
 const NOW = new Date("2024-06-15T12:00:00.000Z");
 
