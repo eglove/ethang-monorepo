@@ -1,7 +1,10 @@
 import find from "lodash/find.js";
+import isArray from "lodash/isArray.js";
 import isNil from "lodash/isNil.js";
+import isObject from "lodash/isObject.js";
 import split from "lodash/split.js";
 import startsWith from "lodash/startsWith.js";
+import { z } from "zod";
 
 const AUTH_COOKIE_NAME = "ethang-auth-token";
 
@@ -29,21 +32,23 @@ const deleteCookie = async (name: string): Promise<void> => {
   document.cookie = `${name}=; Max-Age=0; path=/`;
 };
 
-type CourseStatus = {
-  courseUrl: string;
-  id: string;
-  status: string;
-  userId: string;
-};
+const courseStatusSchema = z.object({
+  courseUrl: z.string(),
+  id: z.string(),
+  status: z.string(),
+  userId: z.string(),
+});
 
-type UserToken = {
-  email: string;
-  exp: number;
-  iat: number;
-  role?: string;
-  sub: string;
-  username: string;
-};
+type CourseStatus = z.infer<typeof courseStatusSchema>;
+
+const userTokenSchema = z.object({
+  email: z.string(),
+  exp: z.number(),
+  iat: z.number(),
+  role: z.string().optional(),
+  sub: z.string(),
+  username: z.string(),
+});
 
 const BUTTON_SELECTOR = ".course-completion-button";
 const STATUS_SELECTOR = ".course-status-text";
@@ -186,10 +191,18 @@ const applyStoredStatuses = async (userId: string) => {
 
   if (!response.ok) return;
 
-  const { data: trackings } = await response.json<{
-    data: CourseStatus[];
-    status: number;
-  }>();
+  const json = await response.json();
+
+  let trackingsData: unknown = [];
+  if (isObject(json) && "data" in json && isArray(json.data)) {
+    trackingsData = json.data;
+  }
+
+  const trackingsResult = z.array(courseStatusSchema).safeParse(trackingsData);
+
+  if (!trackingsResult.success) return;
+
+  const trackings = trackingsResult.data;
 
   for (const button of document.querySelectorAll<HTMLButtonElement>(
     BUTTON_SELECTOR,
@@ -204,6 +217,50 @@ const applyStoredStatuses = async (userId: string) => {
   }
 
   setPercentages();
+};
+
+const handleButtonClick = (
+  button: HTMLButtonElement,
+  courseId: string,
+  userId: string,
+  statusElement: HTMLDivElement | null | undefined,
+) => {
+  button.disabled = true;
+  button.classList.remove("cursor-pointer");
+  button.classList.add("animate-spin", "cursor-progress");
+
+  fetch(
+    `/api/course-tracking/${encodeURIComponent(courseId)}?userId=${encodeURIComponent(userId)}`,
+    {
+      body: JSON.stringify({}),
+      method: "PUT",
+    },
+  )
+    .then(async (response) => {
+      if (!response.ok) {
+        return;
+      }
+
+      const data = await response.json();
+
+      let courseStatusData: unknown;
+      if (isObject(data) && "data" in data) {
+        courseStatusData = data.data;
+      }
+
+      const courseStatusResult = courseStatusSchema.safeParse(courseStatusData);
+
+      if (courseStatusResult.success) {
+        setUiState(statusElement, button, courseStatusResult.data);
+      }
+    })
+    .finally(() => {
+      button.disabled = false;
+      button.classList.remove("animate-spin", "cursor-progress");
+      button.classList.add("cursor-pointer");
+      setPercentages();
+    })
+    .catch(globalThis.console.error);
 };
 
 const init = async () => {
@@ -228,7 +285,14 @@ const init = async () => {
     return;
   }
 
-  const userData = await verification.json<UserToken>();
+  const json = await verification.json();
+  const userDataResult = userTokenSchema.safeParse(json);
+
+  if (!userDataResult.success) {
+    return;
+  }
+
+  const userData = userDataResult.data;
 
   // Authenticated — ensure auth-dependent UI is visible (the SW may have
   // served a cached unauthenticated page) and populate button states from
@@ -246,33 +310,7 @@ const init = async () => {
         button.parentElement?.querySelector<HTMLDivElement>(STATUS_SELECTOR);
 
       button.addEventListener("click", () => {
-        button.disabled = true;
-        button.classList.remove("cursor-pointer");
-        button.classList.add("animate-spin", "cursor-progress");
-
-        fetch(
-          `/api/course-tracking/${encodeURIComponent(courseId)}?userId=${encodeURIComponent(userData.sub)}`,
-          {
-            body: JSON.stringify({}),
-            method: "PUT",
-          },
-        )
-          .then(async (response) => {
-            if (response.ok) {
-              const data = await response.json<{
-                data: CourseStatus;
-                status: number;
-              }>();
-              setUiState(statusElement, button, data.data);
-            }
-          })
-          .finally(() => {
-            button.disabled = false;
-            button.classList.remove("animate-spin", "cursor-progress");
-            button.classList.add("cursor-pointer");
-            setPercentages();
-          })
-          .catch(globalThis.console.error);
+        handleButtonClick(button, courseId, userData.sub, statusElement);
       });
     }
   }
