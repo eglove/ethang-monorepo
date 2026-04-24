@@ -20,14 +20,23 @@ const buildImportList = (output: OutputConfig): string[] => {
     'import { defineConfig, globalIgnores } from "eslint/config";',
   ];
 
+  const constantsImports: string[] = [];
+
   if (!isNil(output.includeIgnores) || !isNil(output.includeLanguageOptions)) {
-    rawImports.push(
-      'import { ignores, languageOptions } from "./constants.js";',
-    );
+    constantsImports.push("ignores", "languageOptions");
   }
 
   if (some(output.plugins, (p) => !isNil(p.includeAngularLanguageOptions))) {
-    rawImports.push('import { angularLanguageOptions } from "./constants.js";');
+    constantsImports.push("angularLanguageOptions");
+  }
+
+  if (0 < constantsImports.length) {
+    const sortedConstants = uniq(constantsImports).toSorted((a, b) => {
+      return a.localeCompare(b);
+    });
+    rawImports.push(
+      `import { ${sortedConstants.join(", ")} } from "./constants.js";`,
+    );
   }
 
   for (const plugin of output.plugins) {

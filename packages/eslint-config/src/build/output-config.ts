@@ -41,17 +41,17 @@ export type OutputConfigOptions = {
 };
 
 export class OutputConfig {
-  public readonly extraConfigEntries?: string[];
-  public readonly extraImports?: string[];
+  public readonly extraConfigEntries: string[] | undefined;
+  public readonly extraImports: string[] | undefined;
   public readonly fileName: string;
-  public readonly functionParameters?: string;
-  public readonly globalIgnores?: string[];
-  public readonly includeIgnores?: boolean;
-  public readonly includeLanguageOptions?: boolean;
-  public readonly includeReactVersion?: boolean;
+  public readonly functionParameters: string | undefined;
+  public readonly globalIgnores: string[] | undefined;
+  public readonly includeIgnores: boolean | undefined;
+  public readonly includeLanguageOptions: boolean | undefined;
+  public readonly includeReactVersion: boolean | undefined;
   public readonly plugins: Plugin[];
-  public readonly readmeImport?: string;
-  public readonly readmeLabel?: string;
+  public readonly readmeImport: string | undefined;
+  public readonly readmeLabel: string | undefined;
 
   public get pluginsByFiles(): Record<string, Plugin[]> {
     return groupBy(this.plugins, (plugin) => plugin.files);
