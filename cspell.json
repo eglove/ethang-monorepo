@@ -106,6 +106,15 @@
     "dedups",
     "behaviour",
     "jsonl",
-    "viewbox"
+    "viewbox",
+    "nonconstructor",
+    "nonoctal",
+    "opensearchservice",
+    "httponly",
+    "mischeck",
+    "unthrown",
+    "setstate",
+    "activedescendant",
+    "proptypes"
   ]
 }

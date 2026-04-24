@@ -1,4 +1,4 @@
-# Relentless. Unapologetic.
+# Relentless Unapologetic
 
 [View Config](https://eslint-config-ethang.pages.dev/rules)
 
@@ -22,7 +22,7 @@
 - 2 rules from [@tanstack/eslint-plugin-router](https://tanstack.com/router/latest/docs/eslint/eslint-plugin-router)
 - 1 rule from [eslint-plugin-compat](https://github.com/amilajack/eslint-plugin-compat)
 
-# Add Even More!
+## Add Even More
 
 - 60 rules for **HTML**
   - `import htmlConfig from "@ethang/eslint-config/config.html.js";`
@@ -54,7 +54,7 @@
   - `import playwright from "eslint-plugin-playwright";`
   - 55 rules from [eslint-plugin-playwright](https://github.com/mskelton/eslint-plugin-playwright)
 
-# Install
+## Install
 
 ```powershell
 pnpm i -D eslint @ethang/eslint-config
@@ -62,7 +62,7 @@ pnpm i -D eslint @ethang/eslint-config
 
 **Requires TypesScript and tsconfig.json at root directory.**
 
-# Config
+## Config
 
 In **eslint.config.ts**
 
