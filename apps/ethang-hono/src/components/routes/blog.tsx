@@ -163,7 +163,7 @@ export const Blog = async ({ page = 1 }: { page?: number }) => {
               <P className="text-xs italic not-first:mt-1.5">
                 Updated: {formattedDateTime(blog._updatedAt)}
               </P>
-              <HR />
+              <Hr />
             </div>
           );
         })}

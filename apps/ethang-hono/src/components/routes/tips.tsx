@@ -37,7 +37,7 @@ export const Tips = async () => {
                   {tip.title}
                 </Link>
               </H2>
-              <HR />
+              <Hr />
             </li>
           );
         })}

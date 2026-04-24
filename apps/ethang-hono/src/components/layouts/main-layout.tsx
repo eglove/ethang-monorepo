@@ -18,10 +18,10 @@ export type MainLayoutProperties = PropsWithChildren<{
   nextUrl?: string;
   pathname?: string;
   prevUrl?: string;
-  publishedAt?: string | undefined;
+  publishedAt?: string;
   textAlternate?: string;
   title?: string;
-  updatedAt?: string | undefined;
+  updatedAt?: string;
 }>;
 
 const LinkTags = async (properties: { properties: MainLayoutProperties }) => {

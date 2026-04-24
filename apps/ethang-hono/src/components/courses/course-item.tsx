@@ -12,14 +12,12 @@ export const CourseItem = async (properties: CourseItemProperties) => {
   const course = coursePathData.getCourse(properties.courseId);
 
   if (isNil(course)) {
-    return <Fragment />;
+    return null;
   }
 
   return (
-    <Fragment>
-      <Link href={course.url} className="underline underline-offset-2">
-        <span>{course.name}</span>
-      </Link>
-    </Fragment>
+    <Link href={course.url} className="underline underline-offset-2">
+      <span>{course.name}</span>
+    </Link>
   );
 };
