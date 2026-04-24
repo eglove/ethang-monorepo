@@ -102,7 +102,7 @@ jobs:
     name: MegaLinter
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
     steps:
       - name: Checkout Code
@@ -115,3 +115,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+          APPLY_FIXES_EVENT: all
+          APPLY_FIXES_MODE: commit
+          PARALLEL: true
