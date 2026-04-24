@@ -6,7 +6,6 @@
 DISABLE:
   - JAVASCRIPT
   - TYPESCRIPT
-  - SPELL # Disables all spell checkers (CSPELL, etc.)
   - GRYPE
   - TRIVY
   - TRIVY_SBOM

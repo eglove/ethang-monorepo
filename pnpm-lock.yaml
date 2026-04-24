@@ -452,9 +452,6 @@ importers:
       '@angular-eslint/template-parser':
         specifier: ^21.3.1
         version: 21.3.1(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3)
-      '@cspell/eslint-plugin':
-        specifier: ^10.0.0
-        version: 10.0.0(eslint@10.2.1(jiti@2.6.1))
       '@eslint-react/eslint-plugin':
         specifier: ^4.2.1
         version: 4.2.3(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3)
@@ -13363,7 +13360,7 @@ snapshots:
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   '@npmcli/git@7.0.2':
     dependencies:
@@ -13373,7 +13370,7 @@ snapshots:
       lru-cache: 11.3.5
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       which: 6.0.1
 
   '@npmcli/installed-package-contents@4.0.0':
@@ -13390,7 +13387,7 @@ snapshots:
       hosted-git-info: 9.0.2
       json-parse-even-better-errors: 5.0.0
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       spdx-expression-parse: 4.0.0
 
   '@npmcli/promise-spawn@9.0.1':
@@ -18681,7 +18678,7 @@ snapshots:
       graceful-fs: 4.2.11
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       tar: 7.5.13
       tinyglobby: 0.2.16
       undici: 6.25.0
@@ -18719,7 +18716,7 @@ snapshots:
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   npm-normalize-package-bin@5.0.0: {}
 
@@ -18727,7 +18724,7 @@ snapshots:
     dependencies:
       hosted-git-info: 9.0.2
       proc-log: 6.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       validate-npm-package-name: 7.0.2
 
   npm-packlist@10.0.4:
@@ -18740,7 +18737,7 @@ snapshots:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.2
-      semver: 7.7.3
+      semver: 7.7.4
 
   npm-registry-fetch@19.1.1:
     dependencies:
