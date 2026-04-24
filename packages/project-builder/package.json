@@ -21,6 +21,7 @@
   "engines": {
     "node": ">=24"
   },
+  "name": "@ethang/project-builder",
   "scripts": {
     "build": "bun build.ts",
     "lint": "eslint . --fix --cache && pnpm tsc --noEmit"

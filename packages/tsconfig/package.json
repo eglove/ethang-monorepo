@@ -1,4 +1,5 @@
 {
+  "name": "@ethang/tsconfig",
   "author": "Ethan Glover",
   "devDependencies": {
     "@tsconfig/node-lts": "^24.0.0",
