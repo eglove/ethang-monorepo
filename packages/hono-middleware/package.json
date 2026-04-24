@@ -16,7 +16,7 @@
   "name": "@ethang/hono-middleware",
   "scripts": {
     "lint": "eslint . --fix --cache && pnpm tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run --coverage"
   },
   "type": "module",
   "version": "1.0.0"
