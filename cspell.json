@@ -115,6 +115,8 @@
     "unthrown",
     "setstate",
     "activedescendant",
-    "proptypes"
+    "proptypes",
+    "sonarqube",
+    "DEVSKIM"
   ]
 }
