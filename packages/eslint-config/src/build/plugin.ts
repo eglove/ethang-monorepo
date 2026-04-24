@@ -5,18 +5,18 @@ import isArray from "lodash/isArray.js";
 import values from "lodash/values.js";
 
 export type PluginOptions = {
-  auxiliaryImport?: string;
-  extraOptions?: string;
-  extraRules?: Record<string, string>;
+  auxiliaryImport?: string | undefined;
+  extraOptions?: string | undefined;
+  extraRules?: Record<string, string> | undefined;
   files: string;
-  importString?: string;
-  includeAngularLanguageOptions?: boolean;
-  language?: string;
+  importString?: string | undefined;
+  includeAngularLanguageOptions?: boolean | undefined;
+  language?: string | undefined;
   name: string;
-  order?: number;
-  pluginName?: string;
-  pluginValue?: string;
-  processor?: string;
+  order?: number | undefined;
+  pluginName?: string | undefined;
+  pluginValue?: string | undefined;
+  processor?: string | undefined;
   rules: Linter.RulesRecord;
   url: string;
 };

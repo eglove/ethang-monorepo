@@ -15,7 +15,7 @@ const makeContext = (
   url: string,
   options: {
     acceptLanguage?: string;
-    timezone?: string | undefined;
+    timezone?: string;
   } = {},
 ) => ({
   req: {
@@ -109,9 +109,7 @@ describe("globalStore — setup() request parsing", () => {
 
   it("falls back to UTC when cf.timezone is not present", async () => {
     const store = makeStore();
-    const context = makeContext(EXAMPLE_URL, {
-      timezone: undefined,
-    });
+    const context = makeContext(EXAMPLE_URL);
 
     await store.setup(context as never);
 

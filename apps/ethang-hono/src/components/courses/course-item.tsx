@@ -16,10 +16,8 @@ export const CourseItem = async (properties: CourseItemProperties) => {
   }
 
   return (
-    <Fragment>
-      <Link href={course.url} className="underline underline-offset-2">
-        <span>{course.name}</span>
-      </Link>
-    </Fragment>
+    <Link href={course.url} className="underline underline-offset-2">
+      <span>{course.name}</span>
+    </Link>
   );
 };

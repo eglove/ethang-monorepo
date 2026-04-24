@@ -117,6 +117,12 @@
     "activedescendant",
     "proptypes",
     "sonarqube",
-    "DEVSKIM"
+    "DEVSKIM",
+    "luxon",
+    "unstub",
+    "hono",
+    "eglove",
+    "vitest",
+    "multicriteria"
   ]
 }

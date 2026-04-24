@@ -117,7 +117,7 @@ describe(lastModifiedMiddleware, () => {
 
   it("calls next before processing the response", async () => {
     let nextCalled = false;
-    const trackingNext = vi.fn().mockImplementation(() => {
+    const trackingNext: () => Promise<void> = vi.fn().mockImplementation(() => {
       nextCalled = true;
     });
     const html = `<html><head><meta name="last-modified" content="2024-01-01T00:00:00Z"></head></html>`;

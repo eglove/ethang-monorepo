@@ -38,7 +38,6 @@ export const useDimensions = ({
     });
   };
 
-  // @ts-expect-error it's fine
   useLayoutEffect(() => {
     if (!element) {
       return;
@@ -54,16 +53,18 @@ export const useDimensions = ({
 
     measure();
 
-    if (liveMeasure) {
-      globalThis.addEventListener("resize", measure);
-      globalThis.addEventListener("scroll", measure);
-
-      return (): void => {
-        globalThis.removeEventListener("resize", measure);
-        globalThis.removeEventListener("scroll", measure);
-        controller.abort();
-      };
+    if (!liveMeasure) {
+      return;
     }
+
+    globalThis.addEventListener("resize", measure);
+    globalThis.addEventListener("scroll", measure);
+
+    return (): void => {
+      globalThis.removeEventListener("resize", measure);
+      globalThis.removeEventListener("scroll", measure);
+      controller.abort();
+    };
   }, [element, liveMeasure, ...effectDeps]);
 
   return {
