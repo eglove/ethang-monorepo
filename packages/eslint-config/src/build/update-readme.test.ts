@@ -18,7 +18,7 @@ describe("update-readme", () => {
     const content = call?.[1];
 
     expect(path).toContain("README.md");
-    expect(content).toContain("# Relentless. Unapologetic.");
+    expect(content).toContain("# Relentless Unapologetic");
     expect(content).toContain("config.vitest.js");
   });
 

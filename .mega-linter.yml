@@ -6,13 +6,16 @@
 DISABLE:
   - JAVASCRIPT
   - TYPESCRIPT
-  - SPELL # Disables all spell checkers (CSPELL, etc.)
-  - GRYPE
-  - TRIVY
-  - TRIVY_SBOM
-  - GITLEAKS
+
+DISABLE_LINTERS:
+  - SPELL_LYCHEE
+  - REPOSITORY_GRYPE
+  - REPOSITORY_DEVSKIM
+  - REPOSITORY_TRIVY
+  - REPOSITORY_GITLEAKS
 
 # Configuration
+PARALLEL: true
 SHOW_ELAPSED_TIME: true
 VALIDATE_ALL_CODEBASE: true # Validate all sources
 

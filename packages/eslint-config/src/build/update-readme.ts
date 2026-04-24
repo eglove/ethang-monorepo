@@ -10,7 +10,7 @@ import { outputConfigs } from "./output-config.ts";
 
 export const updateReadme = () => {
   const md = new MarkdownGenerator();
-  md.header(1, "Relentless. Unapologetic.", 2);
+  md.header(1, "Relentless Unapologetic", 2);
   md.link("View Config", "https://eslint-config-ethang.pages.dev/rules", 2);
   md.alert("CAUTION", "Prettier is already included for styling!", 2);
 
@@ -42,7 +42,7 @@ export const updateReadme = () => {
 
   md.unorderedList(ruleDocumentation);
   md.newLine();
-  md.header(1, "Add Even More!", 2);
+  md.header(2, "Add Even More", 2);
 
   const featuredOutputs = filter(outputConfigs, (c) => {
     return !isNil(c.readmeLabel);
@@ -68,10 +68,10 @@ export const updateReadme = () => {
 
   md.unorderedList(listItems);
   md.newLine();
-  md.header(1, "Install", 2);
+  md.header(2, "Install", 2);
   md.codeBlock("pnpm i -D eslint @ethang/eslint-config", "powershell", 2);
   md.bold("Requires TypesScript and tsconfig.json at root directory.", 2);
-  md.header(1, "Config", 2);
+  md.header(2, "Config", 2);
   md.text("In **eslint.config.ts**", 2);
   md.codeBlock(
     `import config from "@ethang/eslint-config/config.main.js";
