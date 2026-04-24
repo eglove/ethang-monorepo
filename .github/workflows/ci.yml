@@ -117,4 +117,3 @@ jobs:
           VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
           APPLY_FIXES_EVENT: all
           APPLY_FIXES_MODE: commit
-          PARALLEL: true
