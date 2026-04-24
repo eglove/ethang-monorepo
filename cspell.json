@@ -123,6 +123,8 @@
     "hono",
     "eglove",
     "vitest",
-    "multicriteria"
+    "multicriteria",
+    "dotenvx",
+    "portabletext"
   ]
 }
