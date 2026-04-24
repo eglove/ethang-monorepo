@@ -287,3 +287,6 @@ state.lock
 # Token-saving graph ephemeral state
 packages/vibe-cli/graph/discoveries.jsonl
 packages/vibe-cli/state/graph-state.json
+
+.gemini/
+gha-creds-*.json

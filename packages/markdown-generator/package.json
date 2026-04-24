@@ -1,4 +1,5 @@
 {
+  "name": "@ethang/markdown-generator",
   "author": "Ethan Glover",
   "browserslist": [
     "current node",
