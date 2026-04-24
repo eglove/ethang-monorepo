@@ -27,31 +27,31 @@ import { unicornPlugin } from "../setup/unicorn.ts";
 import { vitestPlugin } from "../setup/vitest.ts";
 
 export type OutputConfigOptions = {
-  extraConfigEntries?: string[] | undefined;
-  extraImports?: string[] | undefined;
+  extraConfigEntries?: string[];
+  extraImports?: string[];
   fileName: string;
-  functionParameters?: string | undefined;
-  globalIgnores?: string[] | undefined;
-  includeIgnores?: boolean | undefined;
-  includeLanguageOptions?: boolean | undefined;
-  includeReactVersion?: boolean | undefined;
+  functionParameters?: string;
+  globalIgnores?: string[];
+  includeIgnores?: boolean;
+  includeLanguageOptions?: boolean;
+  includeReactVersion?: boolean;
   plugins: Plugin[];
-  readmeImport?: string | undefined;
-  readmeLabel?: string | undefined;
+  readmeImport?: string;
+  readmeLabel?: string;
 };
 
 export class OutputConfig {
-  public readonly extraConfigEntries?: string[] | undefined;
-  public readonly extraImports?: string[] | undefined;
+  public readonly extraConfigEntries?: string[];
+  public readonly extraImports?: string[];
   public readonly fileName: string;
-  public readonly functionParameters?: string | undefined;
-  public readonly globalIgnores?: string[] | undefined;
-  public readonly includeIgnores?: boolean | undefined;
-  public readonly includeLanguageOptions?: boolean | undefined;
-  public readonly includeReactVersion?: boolean | undefined;
+  public readonly functionParameters?: string;
+  public readonly globalIgnores?: string[];
+  public readonly includeIgnores?: boolean;
+  public readonly includeLanguageOptions?: boolean;
+  public readonly includeReactVersion?: boolean;
   public readonly plugins: Plugin[];
-  public readonly readmeImport?: string | undefined;
-  public readonly readmeLabel?: string | undefined;
+  public readonly readmeImport?: string;
+  public readonly readmeLabel?: string;
 
   public get pluginsByFiles(): Record<string, Plugin[]> {
     return groupBy(this.plugins, (plugin) => plugin.files);
