@@ -179,12 +179,18 @@ export const formatDayHeading = (dateString: string): string =>
 export const formatWeekHeading = (dateString: string): string => {
   const days = getWeekDays(dateString);
   const { 0: firstDay, 6: lastDay } = days;
-  if (isNil(firstDay) || isNil(lastDay)) return "";
-  const start = DateTime.fromISO(firstDay, { zone: CHICAGO }).toLocaleString(
+  if (isNil(firstDay) || isNil(lastDay) || "" === firstDay || "" === lastDay) {
+    return "";
+  }
+  const startDt = DateTime.fromISO(firstDay, { zone: CHICAGO });
+  const endDt = DateTime.fromISO(lastDay, { zone: CHICAGO });
+  if (!startDt.isValid || !endDt.isValid) return "";
+
+  const start = startDt.toLocaleString(
     { day: "numeric", month: "short" },
     { locale: LOCALE },
   );
-  const end = DateTime.fromISO(lastDay, { zone: CHICAGO }).toLocaleString(
+  const end = endDt.toLocaleString(
     { day: "numeric", month: "short", year: "numeric" },
     { locale: LOCALE },
   );

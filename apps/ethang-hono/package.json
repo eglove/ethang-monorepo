@@ -4,6 +4,7 @@
     "current node"
   ],
   "dependencies": {
+    "@ethang/hono-middleware": "workspace:*",
     "@ethang/markdown-generator": "^1.2.0",
     "@ethang/store": "^3.0.0",
     "@ethang/toolbelt": "^4.4.11",

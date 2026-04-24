@@ -1,6 +1,5 @@
+import { lastModifiedMiddleware } from "@ethang/hono-middleware/src/last-modified.ts";
 import { describe, expect, it, vi } from "vitest";
-
-import { lastModifiedMiddleware } from "./last-modified.ts";
 
 const noop: () => Promise<void> = vi.fn().mockResolvedValue(undefined);
 

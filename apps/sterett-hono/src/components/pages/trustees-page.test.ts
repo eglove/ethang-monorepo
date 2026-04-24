@@ -22,7 +22,7 @@ vi.mock(import("../../sanity/get-trustees.ts"), () => ({
 import { describe, expect, it, vi } from "vitest";
 
 import { getTrustees } from "../../sanity/get-trustees.ts";
-import { renderTrusteesPage } from "../../test-utils/render.tsx";
+import { renderTrusteesPage } from "../../test-utilities/render.tsx";
 
 const makeTrustee = (id: string, name: string) => ({
   _id: id,

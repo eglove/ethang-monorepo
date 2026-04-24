@@ -37,13 +37,11 @@ const needsEllipsis = (pages: PageEntry[], pageNumber: number) => {
   if (0 === pages.length) return false;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- pages.length > 0 guarantees at(-1) returns a value
   const lastEntry = pages.at(-1)!;
-  if ("..." === lastEntry) return false;
-  return 1 < pageNumber - lastEntry;
+
+  return 1 < pageNumber - Number(lastEntry);
 };
 
 const generatePageNumbers = (current: number, max: number): PageEntry[] => {
-  if (2 > max) return [];
-
   const pages: PageEntry[] = [];
   const range = 2;
 

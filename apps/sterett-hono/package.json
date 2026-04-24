@@ -4,6 +4,7 @@
     "current node"
   ],
   "dependencies": {
+    "@ethang/hono-middleware": "workspace:*",
     "@ethang/service-worker": "workspace:*",
     "@portabletext/to-html": "^5.0.2",
     "@sanity/client": "^7.21.0",

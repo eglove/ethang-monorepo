@@ -207,6 +207,16 @@ describe(buildCalendarWeeks, () => {
     expect(leadingCells[0]?.month).toBe(12);
     expect(leadingCells[0]?.year).toBe(2023);
   });
+
+  it("returns empty array if daysInMonth is missing", () => {
+    // This is hard to trigger with valid inputs but let's try invalid ones if possible
+    // buildCalendarWeeks uses DateTime.fromObject which should return valid dates for these.
+    // But we can check a known month that might have issues if any?
+    // Actually Luxon might return NaN for invalid dates.
+    const weeks = buildCalendarWeeks(2024, 13);
+
+    expect(weeks).toStrictEqual([]);
+  });
 });
 
 // ─── renderDescriptionHtml ───────────────────────────────────────────────────
@@ -215,6 +225,11 @@ describe(renderDescriptionHtml, () => {
   it("returns empty string for undefined", () => {
     // @ts-expect-error for test
     expect(renderDescriptionHtml()).toBe("");
+  });
+
+  it("returns empty string for null", () => {
+    // @ts-expect-error for test
+    expect(renderDescriptionHtml(null)).toBe("");
   });
 
   it("returns HTML for a single PortableText block", () => {
@@ -371,6 +386,10 @@ describe(formatWeekHeading, () => {
 
     expect(result).toContain("–");
   });
+
+  it("returns empty string for invalid date", () => {
+    expect(formatWeekHeading("invalid")).toBe("");
+  });
 });
 
 // ─── toPlainText ─────────────────────────────────────────────────────────────
@@ -416,6 +435,22 @@ describe(toPlainText, () => {
 
   it("skips non-block types", () => {
     const block = { _key: "img1", _type: "image" };
+
+    expect(toPlainText(block as never)).toBe("");
+  });
+
+  it("handles blocks with missing children", () => {
+    const block = { _key: "b1", _type: "block" };
+
+    expect(toPlainText(block as never)).toBe("");
+  });
+
+  it("handles children without text", () => {
+    const block = {
+      _key: "b1",
+      _type: "block",
+      children: [{ _key: "s1", _type: "span" }],
+    };
 
     expect(toPlainText(block as never)).toBe("");
   });

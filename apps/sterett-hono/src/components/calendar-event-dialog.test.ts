@@ -12,7 +12,7 @@ vi.mock(import("../clients/sanity-client.ts"), () => ({
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 
-import { renderCalendarEventDialog } from "../test-utils/render.tsx";
+import { renderCalendarEventDialog } from "../test-utilities/render.tsx";
 
 const makeEvent = (
   overrides: Partial<CalendarEventRecord> = {},

@@ -1,7 +1,6 @@
+import { lastModifiedMiddleware } from "@ethang/hono-middleware/src/last-modified.ts";
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
-
-import { lastModifiedMiddleware } from "./last-modified.ts";
 
 const VALID_ISO = "2024-06-01T12:00:00Z";
 const VALID_HTTP = new Date(VALID_ISO).toUTCString();

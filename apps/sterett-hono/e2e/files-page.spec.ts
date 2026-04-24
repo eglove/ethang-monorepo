@@ -1,25 +1,14 @@
 import { expect, test } from "./fixtures.ts";
+import { assertHeading, assertTitleAndNavigation } from "./test-utilities.ts";
 
 test.describe("files Page", () => {
-  test("renders title and navigation", async ({ page }) => {
-    await page.goto("/files");
-
-    await expect
-      .soft(page)
-      .toHaveTitle("Sterett Creek Village Trustee | Files");
-    await expect.soft(page.getByRole("navigation")).toBeVisible();
-  });
-
-  test("renders heading", async ({ page }) => {
-    await page.goto("/files");
-
-    await expect
-      .soft(page.getByRole("heading", { name: "Files" }))
-      .toBeVisible();
-  });
-
-  test("renders file category tables", async ({ page }) => {
-    await page.goto("/files");
+  test("renders all page elements", async ({ page }) => {
+    await assertTitleAndNavigation(
+      page,
+      "/files",
+      "Sterett Creek Village Trustee | Files",
+    );
+    await assertHeading(page, "Files");
 
     await expect
       .soft(page.getByRole("heading", { name: "Covenants" }))

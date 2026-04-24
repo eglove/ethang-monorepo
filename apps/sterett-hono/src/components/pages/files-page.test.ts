@@ -13,7 +13,7 @@ vi.mock(import("../../sanity/get-files.ts"), () => ({
 import { describe, expect, it, vi } from "vitest";
 
 import { getFiles } from "../../sanity/get-files.ts";
-import { renderFilesPage } from "../../test-utils/render.tsx";
+import { renderFilesPage } from "../../test-utilities/render.tsx";
 
 const EMPTY_FILES = { covenants: [], general: [], meetingMinutes: [] };
 
@@ -48,5 +48,36 @@ describe("filesPage", () => {
 
     expect(html).toContain("Covenants");
     expect(html).toContain("Main Covenant");
+  });
+
+  it("sorts updatedAt correctly with multiple files", async () => {
+    vi.clearAllMocks();
+    vi.mocked(getFiles).mockResolvedValue({
+      covenants: [
+        {
+          _id: "c1",
+          _updatedAt: "2024-06-15T00:00:00Z",
+          category: "Covenant",
+          date: "2024-06-15",
+          file: { asset: { url: "https://example.com/covenant.pdf" } },
+          title: "Covenant 1",
+        },
+        {
+          _id: "c2",
+          _updatedAt: "2024-06-16T00:00:00Z",
+          category: "Covenant",
+          date: "2024-06-16",
+          file: { asset: { url: "https://example.com/covenant2.pdf" } },
+          title: "Covenant 2",
+        },
+      ],
+      general: [],
+      meetingMinutes: [],
+    });
+
+    const html = await renderFilesPage();
+
+    expect(html).toContain("Covenant 1");
+    expect(html).toContain("Covenant 2");
   });
 });

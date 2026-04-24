@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { renderPortableText } from "../test-utils/render.tsx";
+import { renderPortableText } from "../test-utilities/render.tsx";
 
 describe("portableText", () => {
   it("renders a prose div when content is undefined", async () => {

@@ -223,6 +223,47 @@ describe(getNewsAndEvents, () => {
     expect(result[1]?._id).toBe("evt-1");
   });
 
+  it("sorts correctly with different combinations of events and updates", async () => {
+    vi.clearAllMocks();
+    const mockEvent1 = {
+      _id: "evt-1",
+      startsAt: "2024-06-15T13:00:00Z",
+    };
+    const mockEvent2 = {
+      _id: "evt-2",
+      startsAt: "2024-06-13T10:00:00Z",
+    };
+    const mockUpdate1 = {
+      _id: "upd-1",
+      date: "2024-06-14",
+    };
+    const mockUpdate2 = {
+      _id: "upd-2",
+      date: "2024-06-16",
+    };
+
+    // @ts-expect-error for test
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([
+      mockEvent1,
+      mockEvent2,
+    ]);
+    // @ts-expect-error for test
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([
+      mockUpdate1,
+      mockUpdate2,
+    ]);
+
+    const result = await getNewsAndEvents();
+
+    // eslint-disable-next-line lodash/prefer-lodash-method
+    expect(result.map((r) => r._id)).toStrictEqual([
+      "evt-2",
+      "upd-1",
+      "evt-1",
+      "upd-2",
+    ]);
+  });
+
   it("calls fetch twice (once for events, once for updates)", async () => {
     vi.clearAllMocks();
     // @ts-expect-error for test

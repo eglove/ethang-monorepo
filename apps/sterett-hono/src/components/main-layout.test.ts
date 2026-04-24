@@ -10,7 +10,7 @@ vi.mock(import("../clients/sanity-client.ts"), () => ({
   } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
 }));
 
-import { renderMainLayout } from "../test-utils/render.tsx";
+import { renderMainLayout } from "../test-utilities/render.tsx";
 
 describe("mainLayout", () => {
   it("renders the page title in a title tag", async () => {

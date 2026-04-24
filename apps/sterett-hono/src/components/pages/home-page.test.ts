@@ -15,7 +15,7 @@ vi.mock(import("../../sanity/get-page.ts"), () => ({
 import { describe, expect, it, vi } from "vitest";
 
 import { getPage } from "../../sanity/get-page.ts";
-import { renderHomePage } from "../../test-utils/render.tsx";
+import { renderHomePage } from "../../test-utilities/render.tsx";
 
 describe("homePage", () => {
   it("renders the page title in a title tag", async () => {
