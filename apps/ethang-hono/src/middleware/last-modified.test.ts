@@ -18,10 +18,7 @@ describe(lastModifiedMiddleware, () => {
     const html = `<html><head><meta name="last-modified" content="${isoDate}"></head></html>`;
     const context = makeContext(html);
 
-    await lastModifiedMiddleware(
-      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
-    );
+    await lastModifiedMiddleware(context as any, noop);
 
     const lastModified = context.res.headers.get("Last-Modified");
 
@@ -33,10 +30,7 @@ describe(lastModifiedMiddleware, () => {
     const context = makeContext(html);
     const originalResponse = context.res;
 
-    await lastModifiedMiddleware(
-      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
-    );
+    await lastModifiedMiddleware(context as any, noop);
 
     expect(context.res).toBe(originalResponse);
   });
@@ -45,10 +39,7 @@ describe(lastModifiedMiddleware, () => {
     const context = makeContext('{"key":"value"}', "application/json");
     const originalResponse = context.res;
 
-    await lastModifiedMiddleware(
-      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
-    );
+    await lastModifiedMiddleware(context as any, noop);
 
     expect(context.res).toBe(originalResponse);
   });
@@ -61,10 +52,7 @@ describe(lastModifiedMiddleware, () => {
     };
     const originalResponse = context.res;
 
-    await lastModifiedMiddleware(
-      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
-    );
+    await lastModifiedMiddleware(context as any, noop);
 
     expect(context.res).toBe(originalResponse);
   });
@@ -74,10 +62,7 @@ describe(lastModifiedMiddleware, () => {
     const context = makeContext(html);
     const originalResponse = context.res;
 
-    await lastModifiedMiddleware(
-      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
-    );
+    await lastModifiedMiddleware(context as any, noop);
 
     expect(context.res).toBe(originalResponse);
   });
@@ -87,10 +72,7 @@ describe(lastModifiedMiddleware, () => {
     const context = makeContext(html);
     const originalResponse = context.res;
 
-    await lastModifiedMiddleware(
-      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
-    );
+    await lastModifiedMiddleware(context as any, noop);
 
     expect(context.res).toBe(originalResponse);
   });
@@ -106,10 +88,7 @@ describe(lastModifiedMiddleware, () => {
       }),
     };
 
-    await lastModifiedMiddleware(
-      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
-    );
+    await lastModifiedMiddleware(context as any, noop);
 
     expect(context.res.status).toBe(201);
     expect(context.res.statusText).toBe("Created");
@@ -123,10 +102,7 @@ describe(lastModifiedMiddleware, () => {
     const html = `<html><head><meta name="last-modified" content="2024-01-01T00:00:00Z"></head></html>`;
     const context = makeContext(html);
 
-    await lastModifiedMiddleware(
-      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      trackingNext,
-    );
+    await lastModifiedMiddleware(context as any, trackingNext);
 
     expect(nextCalled).toBe(true);
   });
@@ -145,10 +121,7 @@ describe(lastModifiedMiddleware, () => {
     };
     const originalResponse = context.res;
 
-    await lastModifiedMiddleware(
-      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
-    );
+    await lastModifiedMiddleware(context as any, noop);
 
     expect(context.res).toBe(originalResponse);
   });
@@ -158,10 +131,7 @@ describe(lastModifiedMiddleware, () => {
     const html = `<html><head><META NAME="Last-Modified" CONTENT="${isoDate}"></head></html>`;
     const context = makeContext(html);
 
-    await lastModifiedMiddleware(
-      context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
-    );
+    await lastModifiedMiddleware(context as any, noop);
 
     expect(context.res.headers.get("Last-Modified")).toBe(
       new Date(isoDate).toUTCString(),

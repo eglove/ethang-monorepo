@@ -15,7 +15,7 @@ const makeContext = (
   url: string,
   options: {
     acceptLanguage?: string;
-    timezone?: string | undefined;
+    timezone?: string;
   } = {},
 ) => ({
   req: {
