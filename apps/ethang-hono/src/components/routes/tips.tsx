@@ -5,7 +5,7 @@ import { DEPLOY_TIME } from "../../utilities/deploy-info.ts";
 import { MainLayout } from "../layouts/main-layout.tsx";
 import { H1 } from "../typography/h1.tsx";
 import { H2 } from "../typography/h2.tsx";
-import { HR } from "../typography/hr.tsx";
+import { Hr } from "../typography/hr.tsx";
 import { Link } from "../typography/link.tsx";
 import { List } from "../typography/list.tsx";
 

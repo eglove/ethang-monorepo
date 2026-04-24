@@ -6,7 +6,7 @@ import { Blockquote } from "./blockquote.tsx";
 import { H1 } from "./h1.tsx";
 import { H2 } from "./h2.tsx";
 import { H3 } from "./h3.tsx";
-import { HR } from "./hr.tsx";
+import { Hr } from "./hr.tsx";
 import { InlineCode } from "./inline-code.tsx";
 import { Link } from "./link.tsx";
 import { List } from "./list.tsx";
@@ -54,9 +54,9 @@ describe(H3, () => {
   });
 });
 
-describe(HR, () => {
+describe(Hr, () => {
   it("renders a self-closing hr element", async () => {
-    const html = String(await HR());
+    const html = String(await Hr());
 
     expect(html).toContain("hr");
   });

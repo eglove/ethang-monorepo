@@ -12,7 +12,7 @@ export const CourseItem = async (properties: CourseItemProperties) => {
   const course = coursePathData.getCourse(properties.courseId);
 
   if (isNil(course)) {
-    return null;
+    return <Fragment />;
   }
 
   return (

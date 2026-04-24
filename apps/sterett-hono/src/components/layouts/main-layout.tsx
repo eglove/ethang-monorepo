@@ -10,7 +10,7 @@ type MainLayoutProperties = {
   description?: string;
   prefetch?: string[];
   title?: string;
-  updatedAt?: string;
+  updatedAt?: string | undefined;
 };
 
 export const MainLayout = async ({

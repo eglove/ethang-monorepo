@@ -8,7 +8,7 @@ import { globalStore } from "../../stores/global-store-properties.ts";
 import { BlogLayout } from "../layouts/blog-layout.tsx";
 import { H1 } from "../typography/h1.tsx";
 import { H2 } from "../typography/h2.tsx";
-import { HR } from "../typography/hr.tsx";
+import { Hr } from "../typography/hr.tsx";
 import { Link } from "../typography/link.tsx";
 import { P } from "../typography/p.tsx";
 

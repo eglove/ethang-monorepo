@@ -27,31 +27,31 @@ import { unicornPlugin } from "../setup/unicorn.ts";
 import { vitestPlugin } from "../setup/vitest.ts";
 
 export type OutputConfigOptions = {
-  extraConfigEntries?: string[];
-  extraImports?: string[];
+  extraConfigEntries?: string[] | undefined;
+  extraImports?: string[] | undefined;
   fileName: string;
-  functionParameters?: string;
-  globalIgnores?: string[];
-  includeIgnores?: boolean;
-  includeLanguageOptions?: boolean;
-  includeReactVersion?: boolean;
+  functionParameters?: string | undefined;
+  globalIgnores?: string[] | undefined;
+  includeIgnores?: boolean | undefined;
+  includeLanguageOptions?: boolean | undefined;
+  includeReactVersion?: boolean | undefined;
   plugins: Plugin[];
-  readmeImport?: string;
-  readmeLabel?: string;
+  readmeImport?: string | undefined;
+  readmeLabel?: string | undefined;
 };
 
 export class OutputConfig {
-  public readonly extraConfigEntries: string[] | undefined;
-  public readonly extraImports: string[] | undefined;
+  public readonly extraConfigEntries?: string[] | undefined;
+  public readonly extraImports?: string[] | undefined;
   public readonly fileName: string;
-  public readonly functionParameters: string | undefined;
-  public readonly globalIgnores: string[] | undefined;
-  public readonly includeIgnores: boolean | undefined;
-  public readonly includeLanguageOptions: boolean | undefined;
-  public readonly includeReactVersion: boolean | undefined;
+  public readonly functionParameters?: string | undefined;
+  public readonly globalIgnores?: string[] | undefined;
+  public readonly includeIgnores?: boolean | undefined;
+  public readonly includeLanguageOptions?: boolean | undefined;
+  public readonly includeReactVersion?: boolean | undefined;
   public readonly plugins: Plugin[];
-  public readonly readmeImport: string | undefined;
-  public readonly readmeLabel: string | undefined;
+  public readonly readmeImport?: string | undefined;
+  public readonly readmeLabel?: string | undefined;
 
   public get pluginsByFiles(): Record<string, Plugin[]> {
     return groupBy(this.plugins, (plugin) => plugin.files);
