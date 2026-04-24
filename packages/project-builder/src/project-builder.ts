@@ -24,12 +24,15 @@ export const projectBuilder = async (basePath: string, options?: Options) => {
     basePath,
     clean: [config.outDir],
     compilerOptions: {
+      allowImportingTsExtensions: true,
       allowSyntheticDefaultImports: true,
       declaration: true,
       emitDeclarationOnly: true,
-      moduleResolution: "node",
+      // @ts-expect-error allowed
+      moduleResolution: "bundler",
       outDir: config.outDir,
       target: "esnext",
+      types: ["node"],
     },
     exclude: ["**/*.test.ts"],
     include: config.entry,

@@ -1,4 +1,5 @@
 import entries from "lodash/entries.js";
+import first from "lodash/first.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
@@ -98,9 +99,9 @@ export const useForm = <StateType extends Record<string, unknown>>(
         value = Number.parseFloat(replace(value, ",", ""));
       }
 
-      if ("file" === type) {
-        // @ts-expect-error is of type file
-        [value] = files;
+      const file = first(files);
+      if (!isNil(file)) {
+        value = file;
       }
 
       setFormState((_formState) => {

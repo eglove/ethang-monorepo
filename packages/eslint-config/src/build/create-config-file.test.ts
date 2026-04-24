@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { createConfigFile } from "./create-config-file.ts";
 import { OutputConfig } from "./output-config.ts";
-import { Plugin, type PluginOptions } from "./plugin.ts";
+import { Plugin } from "./plugin.ts";
 
 vi.mock(import("node:fs"));
 vi.mock(import("./get-react-version.ts"), () => ({
@@ -350,7 +350,7 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
       plugins: [
         makePlugin({
           importString: undefined,
-        } as unknown as Partial<PluginOptions>),
+        }),
       ],
     });
 
@@ -369,7 +369,7 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
         makePlugin({
           pluginName: undefined,
           pluginValue: undefined,
-        } as unknown as Partial<PluginOptions>),
+        }),
       ],
     });
 

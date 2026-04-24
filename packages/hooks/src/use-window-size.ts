@@ -14,22 +14,23 @@ export const useWindowSize = (
     width: isBrowser ? globalThis.innerWidth : initialWidth,
   });
 
-  // @ts-expect-error doesn't return
   useEffect(() => {
-    if (isBrowser) {
-      const handler = (): void => {
-        setState({
-          height: globalThis.innerHeight,
-          width: globalThis.innerWidth,
-        });
-      };
-
-      globalThis.addEventListener("resize", handler);
-
-      return (): void => {
-        globalThis.removeEventListener("resize", handler);
-      };
+    if (!isBrowser) {
+      return;
     }
+
+    const handler = (): void => {
+      setState({
+        height: globalThis.innerHeight,
+        width: globalThis.innerWidth,
+      });
+    };
+
+    globalThis.addEventListener("resize", handler);
+
+    return (): void => {
+      globalThis.removeEventListener("resize", handler);
+    };
   }, []);
 
   return state;
