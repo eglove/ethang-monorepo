@@ -509,7 +509,7 @@ describe("BaseStore", () => {
 
     it("should not process queue when destroyed", () => {
       const subscriber = vi.fn();
-      // @ts-expect-errorf for test
+      // @ts-expect-error for test
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const testStore = new BaseStore({ count: 0 });
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access

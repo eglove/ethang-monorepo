@@ -14,6 +14,7 @@ export default defineConfig({
     "development" === get(import.meta, ["env", "NODE_ENV"])
       ? developmentPlugins
       : productionPlugins,
+  // cspell:disable-next-line
   projectId: "540gjnt8",
   schema: {
     types: schema,

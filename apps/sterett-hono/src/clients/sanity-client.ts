@@ -6,6 +6,7 @@ export const NO_DRAFTS = "!(_id in path('drafts.**'))";
 export const sterettSanityClient = createClient({
   apiVersion: "1",
   dataset: "production",
+  // cspell:disable-next-line
   projectId: "540gjnt8",
   useCdn: true,
 });
