@@ -88,7 +88,6 @@ export class CoursePathStore {
           _id,
           _updatedAt
         },
-      
         "learningPaths": *[_type == "learningPath"] | order(orderRank) {
           _id,
           name,

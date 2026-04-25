@@ -64,6 +64,6 @@ $finalExport = "RP!2!Retail!$routeName!$currentMapId!1.00,1.00,0.00,0.80!1!$coor
 
 $finalExport | Set-Clipboard
 
-Write-Host "--- ROUTEPLANNER EXPORT ---" -ForegroundColor Cyan
-Write-Host $finalExport
-Write-Host "`nSuccess! String copied to clipboard using Set-Clipboard." -ForegroundColor Green
+Write-Information "--- ROUTEPLANNER EXPORT ---"
+Write-Output $finalExport
+Write-Information "`nSuccess! String copied to clipboard using Set-Clipboard."

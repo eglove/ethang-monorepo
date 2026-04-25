@@ -307,5 +307,4 @@ legend right
   MaxReviewRevisions: 3
   MinReviewQuorum: ceil(2n/3)
 endlegend
-
 @enduml

@@ -14,6 +14,7 @@ DISABLE_LINTERS:
   - REPOSITORY_DEVSKIM
   - REPOSITORY_TRIVY
   - REPOSITORY_GITLEAKS
+  - SQL_TSQLLINT
 
 # Configuration
 PARALLEL: true
@@ -21,4 +22,4 @@ SHOW_ELAPSED_TIME: true
 VALIDATE_ALL_CODEBASE: true # Validate all sources
 IGNORE_GITIGNORED_FILES: true
 
-FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts|apps/ethang-hono/public/scripts/.*|.*-megalinter_file_names_cspell\.txt)
+FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts|apps/ethang-hono/public/scripts/.*|.*-megalinter_file_names_cspell\.txt|.*\.idea.*)
