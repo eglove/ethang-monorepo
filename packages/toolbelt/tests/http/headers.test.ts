@@ -6,6 +6,10 @@ import { getAcceptLanguage } from "../../src/http/headers.ts";
 describe("headers", () => {
   it.each([
     [
+      new Headers({ "accept-language": "en-US" }),
+      [{ country: "US", language: "en", name: "en-US", quality: 1 }],
+    ],
+    [
       "en-US,en;q=0.9",
       [
         {

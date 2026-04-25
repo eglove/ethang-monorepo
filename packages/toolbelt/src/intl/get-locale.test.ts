@@ -18,6 +18,24 @@ describe(getLocale, () => {
       expect(result).toBeNull();
     });
 
+    it("should returns null for -", () => {
+      const result = getLocale([ACCEPT_LANGUAGE], "-");
+
+      expect(result).toBe(null);
+    });
+
+    it("should return language if no country specified", () => {
+      const result = getLocale([ACCEPT_LANGUAGE], "language-");
+
+      expect(result).toBe("language");
+    });
+
+    it("should return null if no language specified", () => {
+      const result = getLocale([ACCEPT_LANGUAGE], "-country");
+
+      expect(result).toBe(null);
+    });
+
     describe("falls through to the next source when accept-language source is absent", () => {
       beforeEach(() => {
         vi.stubGlobal("navigator", { language: "fr-FR" });

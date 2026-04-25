@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import { describe, expect, it, vi } from "vitest";
 
 import { BaseStore, type StorePatch } from "../src/index.js";
@@ -36,7 +37,25 @@ class ConcreteStore extends BaseStore<typeof initialState> {
   }
 }
 
+class DestroyingStore extends BaseStore<typeof initialState> {
+  public constructor() {
+    super(initialState);
+  }
+
+  // eslint-disable-next-line sonar/no-identical-functions
+  public increment() {
+    this.update((draft) => {
+      draft.count += 1;
+    });
+  }
+
+  protected override onPropertyChange() {
+    this.destroy();
+  }
+}
+
 const store = new ConcreteStore();
+const destroyingStore = new DestroyingStore();
 
 describe("onUpdate", () => {
   it("should run side effects when count updates", () => {
@@ -49,5 +68,16 @@ describe("onUpdate", () => {
     expect(store.state.count).toBe(2);
     expect(store.state.person.name.firstName).toBe("Jane");
     expect(mockFunction).toHaveBeenCalledTimes(1);
+  });
+
+  it("should not fire patches after destroy", () => {
+    const onPropertyChangeSpy = vi.spyOn(
+      destroyingStore,
+      // @ts-expect-error for test
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      "onPropertyChange" as keyof BaseStore<object>,
+    );
+    destroyingStore.increment();
+    expect(onPropertyChangeSpy).toHaveBeenCalledTimes(1);
   });
 });

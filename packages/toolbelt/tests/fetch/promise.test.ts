@@ -51,4 +51,16 @@ describe("promiseAllSettled", () => {
 
     expect(all).toBeLessThan(sequential);
   });
+
+  it("should handle sparse arrays", async () => {
+    const promises = {
+      a: Promise.resolve(1),
+      b: Promise.resolve(2),
+    };
+    // @ts-expect-error for test
+    promises[2] = Promise.resolve(3);
+
+    const results = await promiseAllSettled(promises);
+    expect(results).toEqual({ "2": 3, a: 1, b: 2 });
+  });
 });

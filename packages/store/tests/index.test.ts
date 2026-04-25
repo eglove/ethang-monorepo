@@ -1,4 +1,7 @@
-/* eslint-disable lodash/prefer-noop,@typescript-eslint/no-empty-function,@typescript-eslint/strict-void-return,lodash/prefer-lodash-method,@typescript-eslint/no-unsafe-type-assertion */
+/* eslint-disable @typescript-eslint/strict-void-return */
+// eslint-disable-next-line max-classes-per-file
+import constant from "lodash/constant.js";
+import find from "lodash/find.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { BaseStore } from "../src/index.js";
@@ -24,6 +27,10 @@ class ConcreteStore extends BaseStore<TestState> {
 
   public constructor(initialState: TestState) {
     super(initialState);
+  }
+
+  public forceUpdate(updater: (draft: TestState) => void, shouldNotify = true) {
+    this.update(updater, shouldNotify);
   }
 
   public getPublicCleanupSignal() {
@@ -183,9 +190,9 @@ describe("BaseStore", () => {
     });
 
     it("should abort the signal when the last subscriber unsubscribes", () => {
-      const unsubscribe1 = store.subscribe(() => {});
+      const unsubscribe1 = store.subscribe(constant({}));
 
-      const unsubscribe2 = store.subscribe(() => {});
+      const unsubscribe2 = store.subscribe(constant({}));
 
       // AbortController is recreated when the first subscriber is added,
       // so we need to get a reference to the signal *after* the first subscribe.
@@ -201,13 +208,13 @@ describe("BaseStore", () => {
     });
 
     it("should create a new AbortController when a subscriber is added after a cleanup", () => {
-      const unsubscribe1 = store.subscribe(() => {});
+      const unsubscribe1 = store.subscribe(constant({}));
       const initialSignal = store.publicCleanupSignal;
       unsubscribe1();
 
       expect(initialSignal.aborted).toBe(true);
 
-      const unsubscribe2 = store.subscribe(() => {});
+      const unsubscribe2 = store.subscribe(constant({}));
       const newSignal = store.publicCleanupSignal;
 
       expect(newSignal).not.toBe(initialSignal);
@@ -218,8 +225,8 @@ describe("BaseStore", () => {
     });
 
     it("should not abort the signal if there are still active subscribers", () => {
-      const unsubscribe1 = store.subscribe(() => {});
-      const unsubscribe2 = store.subscribe(() => {});
+      const unsubscribe1 = store.subscribe(constant({}));
+      const unsubscribe2 = store.subscribe(constant({}));
 
       const initialSignal = store.publicCleanupSignal;
 
@@ -233,16 +240,16 @@ describe("BaseStore", () => {
 
   describe("onFirstSubscriber", () => {
     it("should call onFirstSubscriber when the first subscriber is added", () => {
-      const unsubscribe = store.subscribe(() => {});
+      const unsubscribe = store.subscribe(constant({}));
       expect(store.onFirstSubscriberMock).toHaveBeenCalledTimes(1);
       unsubscribe();
     });
 
     it("should NOT call onFirstSubscriber for subsequent subscribers if already active", () => {
-      const unsubscribe1 = store.subscribe(() => {});
+      const unsubscribe1 = store.subscribe(constant({}));
       expect(store.onFirstSubscriberMock).toHaveBeenCalledTimes(1);
 
-      const unsubscribe2 = store.subscribe(() => {});
+      const unsubscribe2 = store.subscribe(constant({}));
       expect(store.onFirstSubscriberMock).toHaveBeenCalledTimes(1); // Still 1 call
 
       unsubscribe1();
@@ -250,19 +257,19 @@ describe("BaseStore", () => {
     });
 
     it("should call onFirstSubscriber again if all subscribers leave and then a new one joins", () => {
-      const unsubscribe1 = store.subscribe(() => {});
+      const unsubscribe1 = store.subscribe(constant({}));
       expect(store.onFirstSubscriberMock).toHaveBeenCalledTimes(1);
 
       unsubscribe1(); // All subscribers leave, _controller should abort
 
-      const unsubscribe2 = store.subscribe(() => {});
+      const unsubscribe2 = store.subscribe(constant({}));
       expect(store.onFirstSubscriberMock).toHaveBeenCalledTimes(2); // Called again
       unsubscribe2();
     });
 
     it("should create a new AbortController when the first subscriber is added", () => {
       const initialSignal = store.getPublicCleanupSignal();
-      const unsubscribe1 = store.subscribe(() => {});
+      const unsubscribe1 = store.subscribe(constant({}));
       const afterFirstSubscriberSignal = store.getPublicCleanupSignal();
 
       expect(afterFirstSubscriberSignal).not.toBe(initialSignal); // A new controller was made
@@ -271,7 +278,7 @@ describe("BaseStore", () => {
       unsubscribe1();
       expect(afterFirstSubscriberSignal.aborted).toBe(true); // Should be aborted after unsubscribe
 
-      const unsubscribe2 = store.subscribe(() => {});
+      const unsubscribe2 = store.subscribe(constant({}));
       const afterSecondSubscriberSignal = store.getPublicCleanupSignal();
       expect(afterSecondSubscriberSignal).not.toBe(afterFirstSubscriberSignal); // A new controller again
       expect(afterSecondSubscriberSignal.aborted).toBe(false);
@@ -280,11 +287,11 @@ describe("BaseStore", () => {
     });
 
     it("cleanupSignal should be aborted when the last subscriber unsubscribes", () => {
-      const unsubscribe1 = store.subscribe(() => {});
+      const unsubscribe1 = store.subscribe(constant({}));
       const signal = store.getPublicCleanupSignal();
       expect(signal.aborted).toBe(false);
 
-      const unsubscribe2 = store.subscribe(() => {});
+      const unsubscribe2 = store.subscribe(constant({}));
       expect(signal.aborted).toBe(false); // Still false as subscribers exist
 
       unsubscribe1();
@@ -386,7 +393,7 @@ describe("BaseStore", () => {
     });
 
     it("should abort cleanupSignal", () => {
-      const unsubscribe = store.subscribe(() => {});
+      const unsubscribe = store.subscribe(constant({}));
       const signal = store.publicCleanupSignal;
       expect(signal.aborted).toBe(false);
 
@@ -400,7 +407,7 @@ describe("BaseStore", () => {
       store.destroy();
       const result = store.subscribe(vi.fn());
       expect(typeof result).toBe("function");
-      // Calling the returned noop should not throw
+      // Calling the returned constant({ should not throw
       result();
     });
 
@@ -445,6 +452,84 @@ describe("BaseStore", () => {
       expect(callback1).toHaveBeenCalledTimes(1);
       expect(callback2).not.toHaveBeenCalled();
     });
+
+    it("should not process queue after destroy", () => {
+      const subscriber = vi.fn();
+      store.subscribe(subscriber);
+
+      store.forceUpdate((draft) => {
+        draft.count = 1;
+      });
+
+      store.destroy();
+
+      store.forceUpdate((draft) => {
+        draft.count = 2;
+      });
+
+      expect(subscriber).toHaveBeenCalledTimes(1);
+    });
+
+    it("should not process queue with destroyed store", () => {
+      store.subscribe(() => {
+        store.destroy();
+      });
+
+      store.increment();
+
+      expect(store.state.count).toBe(1);
+    });
+
+    it("should stop firing patches after destroy", () => {
+      let patchCount = 0;
+      class TestStore extends BaseStore<typeof initialState> {
+        public constructor() {
+          super(initialState);
+        }
+        public forceUpdate(
+          updater: (draft: typeof initialState) => void,
+          shouldNotify = true,
+        ) {
+          this.update(updater, shouldNotify);
+        }
+
+        protected override onPropertyChange(): void {
+          patchCount += 1;
+          this.destroy();
+        }
+      }
+
+      const testStore = new TestStore();
+      testStore.forceUpdate((draft) => {
+        draft.count = 1;
+      });
+
+      expect(patchCount).toBe(1);
+    });
+
+    it("should not process queue when destroyed", () => {
+      const subscriber = vi.fn();
+      // @ts-expect-errorf for test
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const testStore = new BaseStore({ count: 0 });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      testStore.subscribe(subscriber);
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      testStore.update((draft: { count: number }) => {
+        draft.count = 1;
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      testStore.destroy();
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      testStore.update((draft: { count: number }) => {
+        draft.count = 2;
+      });
+
+      expect(subscriber).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("reentrant update", () => {
@@ -470,35 +555,6 @@ describe("BaseStore", () => {
       expect(subscriber).toHaveBeenCalledTimes(2);
     });
 
-    it("should surface depth overflow error via queueMicrotask", () => {
-      const captured: (() => void)[] = [];
-      const queueMicrotaskSpy = vi
-        .spyOn(globalThis, "queueMicrotask")
-        .mockImplementation((callback: () => void) => {
-          captured.push(callback);
-        });
-
-      // Subscribe a callback that always triggers another update (infinite loop)
-      store.subscribe(() => {
-        store.increment();
-      });
-
-      store.increment();
-
-      // Find the overflow error callback
-      const overflowCallback = captured.find((callback) => {
-        try {
-          callback();
-          return false;
-        } catch (error) {
-          return (error as Error).message.includes("reentrant depth overflow");
-        }
-      });
-      expect(overflowCallback).toBeDefined();
-
-      queueMicrotaskSpy.mockRestore();
-    });
-
     it("should catch throwing subscriber and still notify other subscribers", () => {
       const captured: (() => void)[] = [];
       const queueMicrotaskSpy = vi
@@ -522,15 +578,43 @@ describe("BaseStore", () => {
       expect(normalSubscriber).toHaveBeenCalledTimes(1);
 
       // Error surfaced via queueMicrotask
-      const errorCallback = captured.find((callback) => {
+      const errorCallback = find(captured, (callback) => {
         try {
           callback();
           return false;
         } catch (error) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           return "subscriber error" === (error as Error).message;
         }
       });
       expect(errorCallback).toBeDefined();
+
+      queueMicrotaskSpy.mockRestore();
+    });
+
+    it("throws an error when reentrant depth is exceeded", () => {
+      let error: Error | undefined;
+      const queueMicrotaskSpy = vi
+        .spyOn(globalThis, "queueMicrotask")
+        .mockImplementation((callback) => {
+          try {
+            callback();
+          } catch (_error) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+            error = _error as Error;
+          }
+        });
+
+      store.subscribe(() => {
+        store.increment();
+      });
+
+      store.increment();
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error?.message).toContain(
+        "BaseStore: reentrant depth overflow (100). Possible infinite loop in subscriber or onPropertyChange.",
+      );
 
       queueMicrotaskSpy.mockRestore();
     });
@@ -617,7 +701,7 @@ describe("BaseStore", () => {
     });
 
     it("should not abort cleanupSignal", () => {
-      const unsubscribe = store.subscribe(() => {});
+      const unsubscribe = store.subscribe(constant({}));
       const signal = store.publicCleanupSignal;
 
       store.reset();

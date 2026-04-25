@@ -28,8 +28,8 @@ export default {
     });
 
     const eventQuery = `
-			*[_type == "calendarEvent"
-			&& !(_id in path('drafts.**'))] | order(startsAt asc){_id, title, startsAt, endsAt, description}`;
+            *[_type == "calendarEvent"
+            && !(_id in path('drafts.**'))] | order(startsAt asc){_id, title, startsAt, endsAt, description}`;
 
     const data = await client.fetch<CalendarEventReturn[]>(eventQuery);
 

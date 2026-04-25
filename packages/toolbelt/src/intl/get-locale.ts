@@ -1,5 +1,6 @@
 import attempt from "lodash/attempt.js";
 import get from "lodash/get.js";
+import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 
@@ -66,8 +67,8 @@ const getFromAcceptLanguage = (source: Readonly<Headers> | string) => {
   let language = get(value, [0, "language"]);
   const country = get(value, [0, "country"]);
 
-  if (!isNil(language)) {
-    if (!isNil(country)) {
+  if (!isEmpty(language)) {
+    if (!isEmpty(country)) {
       language += `-${country}`;
     }
 

@@ -149,4 +149,17 @@ describe("url builder", () => {
       expect(url.toString()).toBe("https://example.com/user/3/dashboard/");
     }
   });
+
+  it("should return error from createSearchParameters", () => {
+    const url = createUrl("todos", {
+      searchParams: { filter: "done" },
+      searchParamsSchema: z.object({
+        filter: z.number(),
+      }),
+      urlBase: typicode,
+    });
+
+    expect(isError(url)).toBe(true);
+    expect(url).toBeInstanceOf(ZodError);
+  });
 });

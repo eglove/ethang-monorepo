@@ -61,4 +61,20 @@ describe("create search parameters", () => {
 
     expect(result).toBeInstanceOf(ZodError);
   });
+
+  it("should ignore inherited properties", () => {
+    const parent = { a: "parent" };
+    const child = Object.create(parent);
+    child.b = "child";
+
+    const result = createSearchParameters(
+      child,
+      z.object({ a: z.string().optional(), b: z.string() }),
+    );
+
+    const expected = new URLSearchParams();
+    expected.append("b", "child");
+
+    expect(result?.toString()).toBe(expected.toString());
+  });
 });

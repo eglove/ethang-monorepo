@@ -35,6 +35,7 @@ const recursiveSort = <T extends object>(object: T): T => {
 
 export const sortJson = (filePath: string) => {
   const fileContent = readFileSync(filePath, "utf8");
+  // @ts-expect-error allow
   const jsonObject = parseJson(fileContent, z.unknown());
 
   if (isError(jsonObject)) {
@@ -42,7 +43,6 @@ export const sortJson = (filePath: string) => {
     return;
   }
 
-  // @ts-expect-error assume object
   const sortedJson = recursiveSort(jsonObject);
 
   writeFileSync(filePath, JSON.stringify(sortedJson, null, 2), "utf8");
