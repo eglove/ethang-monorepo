@@ -16,26 +16,22 @@ $updateTypeOptions = @(
 )
 
 $updateType = $null
-while ($null -eq $updateType)
-{
+while ($null -eq $updateType) {
     Write-Output "Choose Semver update type:"
     for ($i = 0; $i -lt $updateTypeOptions.Count; $i++) {
         Write-Output "$( $i + 1 ). $( $updateTypeOptions[$i].Name )"
     }
     $selection = Read-Host "Enter number (1-4)"
 
-    if ($selection -match "^[1-4]$")
-    {
+    if ($selection -match "^[1-4]$") {
         $updateType = $updateTypeOptions[[int]$selection - 1].Value
     }
-    else
-    {
+    else {
         Write-Output "Invalid selection. Please try again."
     }
 }
 
-if ($updateType -ne "none")
-{
+if ($updateType -ne "none") {
     # Get current version from npm registry
     Write-Output "Fetching current version from npm registry..."
     $response = Invoke-RestMethod -Uri "https://registry.npmjs.org/@ethang/eslint-config"
@@ -57,20 +53,17 @@ if ($updateType -ne "none")
     $registryUpdated = $false
     $attempts = 1
     Write-Output "Waiting for registry to update..."
-    while (-not $registryUpdated)
-    {
+    while (-not $registryUpdated) {
         Write-Output "Attempt $attempts..."
         $attempts++
 
         $response = Invoke-RestMethod -Uri "https://registry.npmjs.org/@ethang/eslint-config"
         $latestVersion = $response."dist-tags".latest
 
-        if ($latestVersion -ne $currentVersion)
-        {
+        if ($latestVersion -ne $currentVersion) {
             $registryUpdated = $true
         }
-        else
-        {
+        else {
             Start-Sleep -Seconds 5
         }
     }
@@ -87,23 +80,19 @@ $apps = Get-ChildItem -Path (Join-Path $scriptDir "apps") -Directory | Select-Ob
 $packages = Get-ChildItem -Path (Join-Path $scriptDir "packages") -Directory | Select-Object -ExpandProperty Name
 
 # Function to update wrangler types
-function Update-WranglerType
-{
+function Update-WranglerType {
     [CmdletBinding(SupportsShouldProcess)]
     param (
         [string]$prefix,
         [array]$directories
     )
 
-    foreach ($directory in $directories)
-    {
+    foreach ($directory in $directories) {
         $dirPath = Join-Path $scriptDir "$prefix\$directory"
-        if (Test-Path $dirPath)
-        {
+        if (Test-Path $dirPath) {
             Set-Location $dirPath
 
-            if (Test-Path "wrangler.jsonc")
-            {
+            if (Test-Path "wrangler.jsonc") {
                 $wranglerJson = Get-Content -Path "wrangler.jsonc" -Raw | ConvertFrom-Json | Sort-Object
                 $wranglerJson."compatibility_date" = Get-Date -Format "yyyy-MM-dd"
                 $wranglerJson | ConvertTo-Json -Depth 100 | Set-Content -Path "wrangler.jsonc"

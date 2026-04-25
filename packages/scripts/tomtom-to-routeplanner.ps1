@@ -12,8 +12,7 @@ $currentMapId = $mapId
 $regex = '/way\s+(?:#(?<id>\d+)\s+)?(?<x>[\d.]+)\s+(?<y>[\d.]+)'
 
 $coordObjects = Get-Content $inputFile | ForEach-Object {
-    if ($_ -match $regex)
-    {
+    if ($_ -match $regex) {
         if ($Matches.id) {
             $currentMapId = $Matches.id
         }
