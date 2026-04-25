@@ -5,7 +5,7 @@
     "current node"
   ],
   "dependencies": {
-    "@ethang/toolbelt": "^4.4.11",
+    "@ethang/toolbelt": "^4.5.0",
     "lodash": "^4.18.1",
     "zod": "^4.3.6"
   },

@@ -385,7 +385,7 @@ describe(CoursesContainer, () => {
 
     expect(html).toContain("No URL Path");
     // path name should be in a span, not wrapped in a path-level anchor
-    expect(html).toContain("text-amber-400/70");
+    expect(html).toContain("text-amber-400");
   });
 
   it("renders path without URL and colon-split name as two spans (hasSecondPart=true)", async () => {

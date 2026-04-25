@@ -22,5 +22,8 @@ export default defineConfig(
         tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      "vitest/no-import-node-test": "off",
+    },
   },
 );

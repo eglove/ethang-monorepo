@@ -62,26 +62,26 @@ export const CoursesContainer = async () => {
                   class="underline underline-offset-2"
                 >
                   <span
-                    class={hasSecondPart ? "text-sky-300" : "text-amber-400/70"}
+                    class={hasSecondPart ? "text-sky-300" : "text-amber-400"}
                   >
                     {firstPart}
                   </span>
                   {hasSecondPart ? ":" : ""}
                   {hasSecondPart && (
-                    <span class="text-amber-400/70">{secondPart}</span>
+                    <span class="text-amber-400">{secondPart}</span>
                   )}
                 </a>
               )}
               {isNil(path.url) && (
                 <>
                   <span
-                    class={hasSecondPart ? "text-sky-300" : "text-amber-400/70"}
+                    class={hasSecondPart ? "text-sky-300" : "text-amber-400"}
                   >
                     {firstPart}
                   </span>
                   {hasSecondPart ? ":" : ""}
                   {hasSecondPart && (
-                    <span class="text-amber-400/70">{secondPart}</span>
+                    <span class="text-amber-400">{secondPart}</span>
                   )}
                 </>
               )}{" "}

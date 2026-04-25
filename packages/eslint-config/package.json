@@ -15,7 +15,7 @@
     "@eslint/json": "^1.2.0",
     "@eslint/markdown": "^8.0.1",
     "@html-eslint/eslint-plugin": "^0.59.0",
-    "@tanstack/eslint-plugin-query": "^5.100.4",
+    "@tanstack/eslint-plugin-query": "^5.100.5",
     "@tanstack/eslint-plugin-router": "^1.161.6",
     "@typescript-eslint/parser": "^8.59.0",
     "@vitest/eslint-plugin": "^1.6.16",
@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@ethang/markdown-generator": "^1.2.0",
-    "@ethang/toolbelt": "^4.4.11",
+    "@ethang/toolbelt": "^4.5.0",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.24",

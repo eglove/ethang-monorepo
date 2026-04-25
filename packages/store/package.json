@@ -5,6 +5,7 @@
     "extends browserslist-config-baseline"
   ],
   "dependencies": {
+    "@ethang/toolbelt": "4.5.0",
     "immer": "^11.1.4",
     "lodash": "^4.18.1",
     "use-sync-external-store": "^1.6.0"
