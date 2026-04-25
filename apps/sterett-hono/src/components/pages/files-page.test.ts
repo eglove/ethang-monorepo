@@ -1,10 +1,4 @@
-vi.mock(import("../../clients/sanity-client.ts"), () => ({
-  NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
-  sterettSanityClient: {
-    fetch: vi.fn(),
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  } as unknown as (typeof import("../../clients/sanity-client.ts"))["sterettSanityClient"],
-}));
+import "../../test-utilities/mocks/sanity-client.ts";
 
 vi.mock(import("../../sanity/get-files.ts"), () => ({
   getFiles: vi.fn(),
@@ -16,6 +10,24 @@ import { getFiles } from "../../sanity/get-files.ts";
 import { renderFilesPage } from "../../test-utilities/render.tsx";
 
 const EMPTY_FILES = { covenants: [], general: [], meetingMinutes: [] };
+
+const COVENANT_1 = {
+  _id: "c1",
+  _updatedAt: "2024-06-15T00:00:00Z",
+  category: "Covenant",
+  date: "2024-06-15",
+  file: { asset: { url: "https://example.com/covenant.pdf" } },
+  title: "Covenant 1",
+};
+
+const COVENANT_2 = {
+  _id: "c2",
+  _updatedAt: "2024-06-16T00:00:00Z",
+  category: "Covenant",
+  date: "2024-06-16",
+  file: { asset: { url: "https://example.com/covenant2.pdf" } },
+  title: "Covenant 2",
+};
 
 describe("filesPage", () => {
   it("renders the page title", async () => {
@@ -30,16 +42,7 @@ describe("filesPage", () => {
   it("renders file table sections", async () => {
     vi.clearAllMocks();
     vi.mocked(getFiles).mockResolvedValue({
-      covenants: [
-        {
-          _id: "c1",
-          _updatedAt: "2024-06-15T00:00:00Z",
-          category: "Covenant",
-          date: "2024-06-15",
-          file: { asset: { url: "https://example.com/covenant.pdf" } },
-          title: "Main Covenant",
-        },
-      ],
+      covenants: [{ ...COVENANT_1, title: "Main Covenant" }],
       general: [],
       meetingMinutes: [],
     });
@@ -53,24 +56,7 @@ describe("filesPage", () => {
   it("sorts updatedAt correctly with multiple files", async () => {
     vi.clearAllMocks();
     vi.mocked(getFiles).mockResolvedValue({
-      covenants: [
-        {
-          _id: "c1",
-          _updatedAt: "2024-06-15T00:00:00Z",
-          category: "Covenant",
-          date: "2024-06-15",
-          file: { asset: { url: "https://example.com/covenant.pdf" } },
-          title: "Covenant 1",
-        },
-        {
-          _id: "c2",
-          _updatedAt: "2024-06-16T00:00:00Z",
-          category: "Covenant",
-          date: "2024-06-16",
-          file: { asset: { url: "https://example.com/covenant2.pdf" } },
-          title: "Covenant 2",
-        },
-      ],
+      covenants: [COVENANT_1, COVENANT_2],
       general: [],
       meetingMinutes: [],
     });

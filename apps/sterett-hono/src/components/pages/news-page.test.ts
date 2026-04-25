@@ -1,10 +1,4 @@
-vi.mock(import("../../clients/sanity-client.ts"), () => ({
-  NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
-  sterettSanityClient: {
-    fetch: vi.fn(),
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  } as unknown as (typeof import("../../clients/sanity-client.ts"))["sterettSanityClient"],
-}));
+import "../../test-utilities/mocks/sanity-client.ts";
 
 import { describe, expect, it, vi } from "vitest";
 

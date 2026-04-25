@@ -1,11 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-vi.mock(import("../../clients/sanity-client.ts"), () => ({
-  NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
-  sterettSanityClient: {
-    fetch: vi.fn(),
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  } as unknown as (typeof import("../../clients/sanity-client.ts"))["sterettSanityClient"],
-}));
+import "../../test-utilities/mocks/sanity-client.ts";
 
 import { describe, expect, it, vi } from "vitest";
 
@@ -33,39 +27,27 @@ describe("calendarPage", () => {
     expect(html).toContain(CALENDAR_TITLE);
   });
 
-  it("renders the month, week, and day view tabs", async () => {
-    // @ts-expect-error for test
-    vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([]);
-    // @ts-expect-error for test
-    vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce(undefined);
+  it.each([{ view: "month" as const }, { view: "week" as const }])(
+    "renders the calendar page for $view view",
+    async ({ view }) => {
+      // @ts-expect-error for test
+      vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([]);
+      // @ts-expect-error for test
+      vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce(undefined);
 
-    const html = await renderCalendarPage({
-      date: DATE,
-      month: 6,
-      view: "month",
-      year: 2024,
-    });
+      const html = await renderCalendarPage({
+        date: DATE,
+        month: 6,
+        view,
+        year: 2024,
+      });
 
-    expect(html).toContain("Month");
-    expect(html).toContain("Week");
-    expect(html).toContain("Day");
-  });
-
-  it("renders the calendar page title in week view", async () => {
-    // @ts-expect-error for test
-    vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([]);
-    // @ts-expect-error for test
-    vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce(undefined);
-
-    const html = await renderCalendarPage({
-      date: DATE,
-      month: 6,
-      view: "week",
-      year: 2024,
-    });
-
-    expect(html).toContain(CALENDAR_TITLE);
-  });
+      expect(html).toContain(CALENDAR_TITLE);
+      expect(html).toContain("Month");
+      expect(html).toContain("Week");
+      expect(html).toContain("Day");
+    },
+  );
 
   it("renders the day view with events", async () => {
     const mockEvent = {
