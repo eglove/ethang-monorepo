@@ -2,7 +2,11 @@ import constant from "lodash/constant.js";
 import isError from "lodash/isError.js";
 import { describe, expect, it } from "vitest";
 
-import { deleteCookieValue, getCookieValue, setCookieValue } from "../../src/http/cookie.ts";
+import {
+  deleteCookieValue,
+  getCookieValue,
+  setCookieValue,
+} from "../../src/http/cookie.ts";
 
 describe("get cookie", () => {
   it("should get cookie from string", () => {

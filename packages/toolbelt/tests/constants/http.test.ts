@@ -12,4 +12,3 @@ describe("http_status", () => {
     expect(HTTP_STATUS[key]).toBe(value);
   });
 });
-

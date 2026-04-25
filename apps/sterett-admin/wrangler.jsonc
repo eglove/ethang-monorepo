@@ -2,18 +2,18 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "assets": {
     "binding": "ASSETS",
-    "directory": "./dist"
+    "directory": "./dist",
   },
   "compatibility_date": "2026-04-25",
   "main": "src/index.ts",
   "name": "sterett-admin",
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "routes": [
     {
       "custom_domain": true,
-      "pattern": "admin.sterettcreekvillagetrustee.com"
-    }
-  ]
+      "pattern": "admin.sterettcreekvillagetrustee.com",
+    },
+  ],
 }

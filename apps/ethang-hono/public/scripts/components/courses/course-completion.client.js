@@ -1,1 +1,412 @@
-import{a as x,b as C}from"../../chunk-W6HEGWYG.js";import{a as m}from"../../chunk-BX6SCDO2.js";import{a as g,b as y,c as Ge,d as Ke,e as w}from"../../chunk-VIVCC4WW.js";import{b as Te}from"../../chunk-A276L2TD.js";import"../../chunk-BFLARVXY.js";import{a as Ae}from"../../chunk-LFCSMEPO.js";import{a,c as q}from"../../chunk-5TBO732O.js";var S=a((Ct,I)=>{"use strict";var Fe=g(),Le=y(),Ue=/\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,Re=/^\w*$/;function $e(e,r){if(Fe(e))return!1;var t=typeof e;return t=="number"||t=="symbol"||t=="boolean"||e==null||Le(e)?!0:Re.test(e)||!Ue.test(e)||r!=null&&e in Object(r)}I.exports=$e});var p=a((mt,z)=>{"use strict";var Xe=x(),Ze=Xe(Object,"create");z.exports=Ze});var P=a((gt,O)=>{"use strict";var D=p();function Ye(){this.__data__=D?D(null):{},this.size=0}O.exports=Ye});var M=a((yt,b)=>{"use strict";function je(e){var r=this.has(e)&&delete this.__data__[e];return this.size-=r?1:0,r}b.exports=je});var H=a((wt,E)=>{"use strict";var Be=p(),Je="__lodash_hash_undefined__",Qe=Object.prototype,Ve=Qe.hasOwnProperty;function We(e){var r=this.__data__;if(Be){var t=r[e];return t===Je?void 0:t}return Ve.call(r,e)?r[e]:void 0}E.exports=We});var T=a((It,N)=>{"use strict";var ke=p(),er=Object.prototype,rr=er.hasOwnProperty;function tr(e){var r=this.__data__;return ke?r[e]!==void 0:rr.call(r,e)}N.exports=tr});var G=a((St,A)=>{"use strict";var ar=p(),ir="__lodash_hash_undefined__";function sr(e,r){var t=this.__data__;return this.size+=this.has(e)?0:1,t[e]=ar&&r===void 0?ir:r,this}A.exports=sr});var F=a((zt,K)=>{"use strict";var nr=P(),or=M(),ur=H(),hr=T(),pr=G();function n(e){var r=-1,t=e==null?0:e.length;for(this.clear();++r<t;){var i=e[r];this.set(i[0],i[1])}}n.prototype.clear=nr;n.prototype.delete=or;n.prototype.get=ur;n.prototype.has=hr;n.prototype.set=pr;K.exports=n});var U=a((Dt,L)=>{"use strict";function cr(){this.__data__=[],this.size=0}L.exports=cr});var c=a((Ot,R)=>{"use strict";var lr=Ge();function fr(e,r){for(var t=e.length;t--;)if(lr(e[t][0],r))return t;return-1}R.exports=fr});var X=a((Pt,$)=>{"use strict";var dr=c(),_r=Array.prototype,vr=_r.splice;function qr(e){var r=this.__data__,t=dr(r,e);if(t<0)return!1;var i=r.length-1;return t==i?r.pop():vr.call(r,t,1),--this.size,!0}$.exports=qr});var Y=a((bt,Z)=>{"use strict";var xr=c();function Cr(e){var r=this.__data__,t=xr(r,e);return t<0?void 0:r[t][1]}Z.exports=Cr});var B=a((Mt,j)=>{"use strict";var mr=c();function gr(e){return mr(this.__data__,e)>-1}j.exports=gr});var Q=a((Et,J)=>{"use strict";var yr=c();function wr(e,r){var t=this.__data__,i=yr(t,e);return i<0?(++this.size,t.push([e,r])):t[i][1]=r,this}J.exports=wr});var W=a((Ht,V)=>{"use strict";var Ir=U(),Sr=X(),zr=Y(),Dr=B(),Or=Q();function o(e){var r=-1,t=e==null?0:e.length;for(this.clear();++r<t;){var i=e[r];this.set(i[0],i[1])}}o.prototype.clear=Ir;o.prototype.delete=Sr;o.prototype.get=zr;o.prototype.has=Dr;o.prototype.set=Or;V.exports=o});var ee=a((Nt,k)=>{"use strict";var Pr=x(),br=Te(),Mr=Pr(br,"Map");k.exports=Mr});var ae=a((Tt,te)=>{"use strict";var re=F(),Er=W(),Hr=ee();function Nr(){this.size=0,this.__data__={hash:new re,map:new(Hr||Er),string:new re}}te.exports=Nr});var se=a((At,ie)=>{"use strict";function Tr(e){var r=typeof e;return r=="string"||r=="number"||r=="symbol"||r=="boolean"?e!=="__proto__":e===null}ie.exports=Tr});var l=a((Gt,ne)=>{"use strict";var Ar=se();function Gr(e,r){var t=e.__data__;return Ar(r)?t[typeof r=="string"?"string":"hash"]:t.map}ne.exports=Gr});var ue=a((Kt,oe)=>{"use strict";var Kr=l();function Fr(e){var r=Kr(this,e).delete(e);return this.size-=r?1:0,r}oe.exports=Fr});var pe=a((Ft,he)=>{"use strict";var Lr=l();function Ur(e){return Lr(this,e).get(e)}he.exports=Ur});var le=a((Lt,ce)=>{"use strict";var Rr=l();function $r(e){return Rr(this,e).has(e)}ce.exports=$r});var de=a((Ut,fe)=>{"use strict";var Xr=l();function Zr(e,r){var t=Xr(this,e),i=t.size;return t.set(e,r),this.size+=t.size==i?0:1,this}fe.exports=Zr});var ve=a((Rt,_e)=>{"use strict";var Yr=ae(),jr=ue(),Br=pe(),Jr=le(),Qr=de();function u(e){var r=-1,t=e==null?0:e.length;for(this.clear();++r<t;){var i=e[r];this.set(i[0],i[1])}}u.prototype.clear=Yr;u.prototype.delete=jr;u.prototype.get=Br;u.prototype.has=Jr;u.prototype.set=Qr;_e.exports=u});var Ce=a(($t,xe)=>{"use strict";var qe=ve(),Vr="Expected a function";function d(e,r){if(typeof e!="function"||r!=null&&typeof r!="function")throw new TypeError(Vr);var t=function(){var i=arguments,h=r?r.apply(this,i):i[0],s=t.cache;if(s.has(h))return s.get(h);var v=e.apply(this,i);return t.cache=s.set(h,v)||s,v};return t.cache=new(d.Cache||qe),t}d.Cache=qe;xe.exports=d});var ge=a((Xt,me)=>{"use strict";var Wr=Ce(),kr=500;function et(e){var r=Wr(e,function(i){return t.size===kr&&t.clear(),i}),t=r.cache;return r}me.exports=et});var we=a((Zt,ye)=>{"use strict";var rt=ge(),tt=/[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g,at=/\\(\\)?/g,it=rt(function(e){var r=[];return e.charCodeAt(0)===46&&r.push(""),e.replace(tt,function(t,i,h,s){r.push(h?s.replace(at,"$1"):i||t)}),r});ye.exports=it});var Se=a((Yt,Ie)=>{"use strict";var st=g(),nt=S(),ot=we(),ut=Ke();function ht(e,r){return st(e)?e:nt(e,r)?[e]:ot(ut(e))}Ie.exports=ht});var De=a((jt,ze)=>{"use strict";var pt=y(),ct=1/0;function lt(e){if(typeof e=="string"||pt(e))return e;var r=e+"";return r=="0"&&1/e==-ct?"-0":r}ze.exports=lt});var Pe=a((Bt,Oe)=>{"use strict";var ft=Se(),dt=De();function _t(e,r){r=ft(r,e);for(var t=0,i=r.length;e!=null&&t<i;)e=e[dt(r[t++])];return t&&t==i?e:void 0}Oe.exports=_t});var Me=a((Jt,be)=>{"use strict";var vt=Pe();function qt(e,r,t){var i=e==null?void 0:vt(e,r);return i===void 0?t:i}be.exports=qt});var He=q(Me(),1),Ne=q(Ae(),1);var f=new C,_=new w,xt=new m(f,_),Ee=async()=>{xt.init();let e=await _.verifyToken();if((0,Ne.default)(e)){f.setAuthenticated(null);return}f.setAuthenticated(e);let r=await _.fetchStoredStatuses(e);r&&f.setStatuses(r)};typeof document<"u"&&(0,He.default)(globalThis,["SKIP_INIT"])!==!0&&(document.readyState==="loading"?document.addEventListener("DOMContentLoaded",()=>{Ee().catch(globalThis.console.error)}):await Ee());export{Ee as init,_ as service,f as store,xt as ui};
+import { a as x, b as C } from "../../chunk-W6HEGWYG.js";
+import { a as m } from "../../chunk-BX6SCDO2.js";
+import {
+  a as g,
+  b as y,
+  c as Ge,
+  d as Ke,
+  e as w,
+} from "../../chunk-VIVCC4WW.js";
+import { b as Te } from "../../chunk-A276L2TD.js";
+import "../../chunk-BFLARVXY.js";
+import { a as Ae } from "../../chunk-LFCSMEPO.js";
+import { a, c as q } from "../../chunk-5TBO732O.js";
+var S = a((Ct, I) => {
+  "use strict";
+  var Fe = g(),
+    Le = y(),
+    Ue = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
+    Re = /^\w*$/;
+  function $e(e, r) {
+    if (Fe(e)) return !1;
+    var t = typeof e;
+    return t == "number" ||
+      t == "symbol" ||
+      t == "boolean" ||
+      e == null ||
+      Le(e)
+      ? !0
+      : Re.test(e) || !Ue.test(e) || (r != null && e in Object(r));
+  }
+  I.exports = $e;
+});
+var p = a((mt, z) => {
+  "use strict";
+  var Xe = x(),
+    Ze = Xe(Object, "create");
+  z.exports = Ze;
+});
+var P = a((gt, O) => {
+  "use strict";
+  var D = p();
+  function Ye() {
+    ((this.__data__ = D ? D(null) : {}), (this.size = 0));
+  }
+  O.exports = Ye;
+});
+var M = a((yt, b) => {
+  "use strict";
+  function je(e) {
+    var r = this.has(e) && delete this.__data__[e];
+    return ((this.size -= r ? 1 : 0), r);
+  }
+  b.exports = je;
+});
+var H = a((wt, E) => {
+  "use strict";
+  var Be = p(),
+    Je = "__lodash_hash_undefined__",
+    Qe = Object.prototype,
+    Ve = Qe.hasOwnProperty;
+  function We(e) {
+    var r = this.__data__;
+    if (Be) {
+      var t = r[e];
+      return t === Je ? void 0 : t;
+    }
+    return Ve.call(r, e) ? r[e] : void 0;
+  }
+  E.exports = We;
+});
+var T = a((It, N) => {
+  "use strict";
+  var ke = p(),
+    er = Object.prototype,
+    rr = er.hasOwnProperty;
+  function tr(e) {
+    var r = this.__data__;
+    return ke ? r[e] !== void 0 : rr.call(r, e);
+  }
+  N.exports = tr;
+});
+var G = a((St, A) => {
+  "use strict";
+  var ar = p(),
+    ir = "__lodash_hash_undefined__";
+  function sr(e, r) {
+    var t = this.__data__;
+    return (
+      (this.size += this.has(e) ? 0 : 1),
+      (t[e] = ar && r === void 0 ? ir : r),
+      this
+    );
+  }
+  A.exports = sr;
+});
+var F = a((zt, K) => {
+  "use strict";
+  var nr = P(),
+    or = M(),
+    ur = H(),
+    hr = T(),
+    pr = G();
+  function n(e) {
+    var r = -1,
+      t = e == null ? 0 : e.length;
+    for (this.clear(); ++r < t; ) {
+      var i = e[r];
+      this.set(i[0], i[1]);
+    }
+  }
+  n.prototype.clear = nr;
+  n.prototype.delete = or;
+  n.prototype.get = ur;
+  n.prototype.has = hr;
+  n.prototype.set = pr;
+  K.exports = n;
+});
+var U = a((Dt, L) => {
+  "use strict";
+  function cr() {
+    ((this.__data__ = []), (this.size = 0));
+  }
+  L.exports = cr;
+});
+var c = a((Ot, R) => {
+  "use strict";
+  var lr = Ge();
+  function fr(e, r) {
+    for (var t = e.length; t--; ) if (lr(e[t][0], r)) return t;
+    return -1;
+  }
+  R.exports = fr;
+});
+var X = a((Pt, $) => {
+  "use strict";
+  var dr = c(),
+    _r = Array.prototype,
+    vr = _r.splice;
+  function qr(e) {
+    var r = this.__data__,
+      t = dr(r, e);
+    if (t < 0) return !1;
+    var i = r.length - 1;
+    return (t == i ? r.pop() : vr.call(r, t, 1), --this.size, !0);
+  }
+  $.exports = qr;
+});
+var Y = a((bt, Z) => {
+  "use strict";
+  var xr = c();
+  function Cr(e) {
+    var r = this.__data__,
+      t = xr(r, e);
+    return t < 0 ? void 0 : r[t][1];
+  }
+  Z.exports = Cr;
+});
+var B = a((Mt, j) => {
+  "use strict";
+  var mr = c();
+  function gr(e) {
+    return mr(this.__data__, e) > -1;
+  }
+  j.exports = gr;
+});
+var Q = a((Et, J) => {
+  "use strict";
+  var yr = c();
+  function wr(e, r) {
+    var t = this.__data__,
+      i = yr(t, e);
+    return (i < 0 ? (++this.size, t.push([e, r])) : (t[i][1] = r), this);
+  }
+  J.exports = wr;
+});
+var W = a((Ht, V) => {
+  "use strict";
+  var Ir = U(),
+    Sr = X(),
+    zr = Y(),
+    Dr = B(),
+    Or = Q();
+  function o(e) {
+    var r = -1,
+      t = e == null ? 0 : e.length;
+    for (this.clear(); ++r < t; ) {
+      var i = e[r];
+      this.set(i[0], i[1]);
+    }
+  }
+  o.prototype.clear = Ir;
+  o.prototype.delete = Sr;
+  o.prototype.get = zr;
+  o.prototype.has = Dr;
+  o.prototype.set = Or;
+  V.exports = o;
+});
+var ee = a((Nt, k) => {
+  "use strict";
+  var Pr = x(),
+    br = Te(),
+    Mr = Pr(br, "Map");
+  k.exports = Mr;
+});
+var ae = a((Tt, te) => {
+  "use strict";
+  var re = F(),
+    Er = W(),
+    Hr = ee();
+  function Nr() {
+    ((this.size = 0),
+      (this.__data__ = {
+        hash: new re(),
+        map: new (Hr || Er)(),
+        string: new re(),
+      }));
+  }
+  te.exports = Nr;
+});
+var se = a((At, ie) => {
+  "use strict";
+  function Tr(e) {
+    var r = typeof e;
+    return r == "string" || r == "number" || r == "symbol" || r == "boolean"
+      ? e !== "__proto__"
+      : e === null;
+  }
+  ie.exports = Tr;
+});
+var l = a((Gt, ne) => {
+  "use strict";
+  var Ar = se();
+  function Gr(e, r) {
+    var t = e.__data__;
+    return Ar(r) ? t[typeof r == "string" ? "string" : "hash"] : t.map;
+  }
+  ne.exports = Gr;
+});
+var ue = a((Kt, oe) => {
+  "use strict";
+  var Kr = l();
+  function Fr(e) {
+    var r = Kr(this, e).delete(e);
+    return ((this.size -= r ? 1 : 0), r);
+  }
+  oe.exports = Fr;
+});
+var pe = a((Ft, he) => {
+  "use strict";
+  var Lr = l();
+  function Ur(e) {
+    return Lr(this, e).get(e);
+  }
+  he.exports = Ur;
+});
+var le = a((Lt, ce) => {
+  "use strict";
+  var Rr = l();
+  function $r(e) {
+    return Rr(this, e).has(e);
+  }
+  ce.exports = $r;
+});
+var de = a((Ut, fe) => {
+  "use strict";
+  var Xr = l();
+  function Zr(e, r) {
+    var t = Xr(this, e),
+      i = t.size;
+    return (t.set(e, r), (this.size += t.size == i ? 0 : 1), this);
+  }
+  fe.exports = Zr;
+});
+var ve = a((Rt, _e) => {
+  "use strict";
+  var Yr = ae(),
+    jr = ue(),
+    Br = pe(),
+    Jr = le(),
+    Qr = de();
+  function u(e) {
+    var r = -1,
+      t = e == null ? 0 : e.length;
+    for (this.clear(); ++r < t; ) {
+      var i = e[r];
+      this.set(i[0], i[1]);
+    }
+  }
+  u.prototype.clear = Yr;
+  u.prototype.delete = jr;
+  u.prototype.get = Br;
+  u.prototype.has = Jr;
+  u.prototype.set = Qr;
+  _e.exports = u;
+});
+var Ce = a(($t, xe) => {
+  "use strict";
+  var qe = ve(),
+    Vr = "Expected a function";
+  function d(e, r) {
+    if (typeof e != "function" || (r != null && typeof r != "function"))
+      throw new TypeError(Vr);
+    var t = function () {
+      var i = arguments,
+        h = r ? r.apply(this, i) : i[0],
+        s = t.cache;
+      if (s.has(h)) return s.get(h);
+      var v = e.apply(this, i);
+      return ((t.cache = s.set(h, v) || s), v);
+    };
+    return ((t.cache = new (d.Cache || qe)()), t);
+  }
+  d.Cache = qe;
+  xe.exports = d;
+});
+var ge = a((Xt, me) => {
+  "use strict";
+  var Wr = Ce(),
+    kr = 500;
+  function et(e) {
+    var r = Wr(e, function (i) {
+        return (t.size === kr && t.clear(), i);
+      }),
+      t = r.cache;
+    return r;
+  }
+  me.exports = et;
+});
+var we = a((Zt, ye) => {
+  "use strict";
+  var rt = ge(),
+    tt =
+      /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g,
+    at = /\\(\\)?/g,
+    it = rt(function (e) {
+      var r = [];
+      return (
+        e.charCodeAt(0) === 46 && r.push(""),
+        e.replace(tt, function (t, i, h, s) {
+          r.push(h ? s.replace(at, "$1") : i || t);
+        }),
+        r
+      );
+    });
+  ye.exports = it;
+});
+var Se = a((Yt, Ie) => {
+  "use strict";
+  var st = g(),
+    nt = S(),
+    ot = we(),
+    ut = Ke();
+  function ht(e, r) {
+    return st(e) ? e : nt(e, r) ? [e] : ot(ut(e));
+  }
+  Ie.exports = ht;
+});
+var De = a((jt, ze) => {
+  "use strict";
+  var pt = y(),
+    ct = 1 / 0;
+  function lt(e) {
+    if (typeof e == "string" || pt(e)) return e;
+    var r = e + "";
+    return r == "0" && 1 / e == -ct ? "-0" : r;
+  }
+  ze.exports = lt;
+});
+var Pe = a((Bt, Oe) => {
+  "use strict";
+  var ft = Se(),
+    dt = De();
+  function _t(e, r) {
+    r = ft(r, e);
+    for (var t = 0, i = r.length; e != null && t < i; ) e = e[dt(r[t++])];
+    return t && t == i ? e : void 0;
+  }
+  Oe.exports = _t;
+});
+var Me = a((Jt, be) => {
+  "use strict";
+  var vt = Pe();
+  function qt(e, r, t) {
+    var i = e == null ? void 0 : vt(e, r);
+    return i === void 0 ? t : i;
+  }
+  be.exports = qt;
+});
+var He = q(Me(), 1),
+  Ne = q(Ae(), 1);
+var f = new C(),
+  _ = new w(),
+  xt = new m(f, _),
+  Ee = async () => {
+    xt.init();
+    let e = await _.verifyToken();
+    if ((0, Ne.default)(e)) {
+      f.setAuthenticated(null);
+      return;
+    }
+    f.setAuthenticated(e);
+    let r = await _.fetchStoredStatuses(e);
+    r && f.setStatuses(r);
+  };
+typeof document < "u" &&
+  (0, He.default)(globalThis, ["SKIP_INIT"]) !== !0 &&
+  (document.readyState === "loading"
+    ? document.addEventListener("DOMContentLoaded", () => {
+        Ee().catch(globalThis.console.error);
+      })
+    : await Ee());
+export { Ee as init, _ as service, f as store, xt as ui };

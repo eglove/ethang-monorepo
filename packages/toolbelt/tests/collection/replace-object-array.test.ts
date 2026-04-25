@@ -23,9 +23,13 @@ describe("replaceObjectArray", () => {
       },
     ];
 
-    const result = replaceObjectArray(collection, (item) => {
-      return 1 === item.id;
-    }, { age: 26 });
+    const result = replaceObjectArray(
+      collection,
+      (item) => {
+        return 1 === item.id;
+      },
+      { age: 26 },
+    );
 
     expect(result).toEqual([
       {
@@ -85,9 +89,13 @@ describe("replaceObjectArray", () => {
       },
     ];
 
-    const result = replaceObjectArray(collection, (item) => {
-      return 3 === item.id;
-    }, { age: 35 });
+    const result = replaceObjectArray(
+      collection,
+      (item) => {
+        return 3 === item.id;
+      },
+      { age: 35 },
+    );
 
     expect(result).toEqual([
       {
@@ -117,9 +125,13 @@ describe("replaceObjectArray", () => {
       },
     ];
 
-    const result = replaceObjectArray(collection, (item) => {
-      return 2 === item.id;
-    }, { name: "Bobby" });
+    const result = replaceObjectArray(
+      collection,
+      (item) => {
+        return 2 === item.id;
+      },
+      { name: "Bobby" },
+    );
 
     expect(result).not.toBe(collection);
     expect(result).toEqual([
@@ -150,9 +162,13 @@ describe("replaceObjectArray", () => {
       },
     ];
 
-    const result = replaceObjectArray(collection, (item) => {
-      return 1 === item.id;
-    }, { nickname: "Ally" } as Partial<TestObject>);
+    const result = replaceObjectArray(
+      collection,
+      (item) => {
+        return 1 === item.id;
+      },
+      { nickname: "Ally" } as Partial<TestObject>,
+    );
 
     expect(result).toEqual([
       {

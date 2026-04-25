@@ -3,15 +3,8 @@
     "allowImportingTsExtensions": true,
     "allowJs": true,
     "noUncheckedIndexedAccess": true,
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
-    "types": [
-      "node",
-      "vite/client"
-    ]
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "types": ["node", "vite/client"]
   },
   "extends": [
     "@tsconfig/node-lts/tsconfig.json",
