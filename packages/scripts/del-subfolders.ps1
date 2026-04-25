@@ -13,5 +13,5 @@ if (-not $Directory -or -not (Test-Path $Directory)) {
 }
 else {
     Get-ChildItem -Filter $directory -Recurse -Force | Remove-Item -Recurse -Force
-    Write-Host "Cleanup of $Directory complete." -ForegroundColor Green
+    Write-Information "Cleanup of $Directory complete."
 }

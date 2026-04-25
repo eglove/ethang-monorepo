@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,300;0,400;0,500;1,300&display=swap");
 
 @import "tailwindcss";
 
 @theme {
   /* Typography */
-  --font-heading: 'Space Grotesk', system-ui, sans-serif;
-  --font-sans:    'Inter', system-ui, sans-serif;
+  --font-heading: "Space Grotesk", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
 
   /* Slate — depth stack */
   --color-slate-950: #010102;
@@ -28,19 +28,19 @@
 
   /* Radius */
   --radius-base: 0.5rem;
-  --radius-sm:   0.25rem;
+  --radius-sm: 0.25rem;
 }
 
 @layer base {
   html {
-    background:
-      radial-gradient(ellipse 100% 100% at 50% 50%,
-        var(--color-slate-950) 0%,
-        #060a14 40%,
-        #080c18 65%,
-        #04060e 85%,
-        var(--color-slate-950) 100%
-      );
+    background: radial-gradient(
+      ellipse 100% 100% at 50% 50%,
+      var(--color-slate-950) 0%,
+      #060a14 40%,
+      #080c18 65%,
+      #04060e 85%,
+      var(--color-slate-950) 100%
+    );
     background-attachment: fixed;
     min-height: 100vh;
   }

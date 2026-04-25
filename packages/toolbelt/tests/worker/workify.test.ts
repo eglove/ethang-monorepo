@@ -32,8 +32,15 @@ describe(workify, () => {
 
   it("resolves with the value posted by the worker", async () => {
     const { worker } = makeWorkerMock();
-    vi.stubGlobal("Worker", vi.fn().mockImplementation(function () { return worker; }));
-    vi.stubGlobal("URL", { createObjectURL: vi.fn().mockReturnValue("blob:x") });
+    vi.stubGlobal(
+      "Worker",
+      vi.fn().mockImplementation(function () {
+        return worker;
+      }),
+    );
+    vi.stubGlobal("URL", {
+      createObjectURL: vi.fn().mockReturnValue("blob:x"),
+    });
 
     const fn = workify(() => "pong");
     const result = await fn();
@@ -43,8 +50,15 @@ describe(workify, () => {
 
   it("terminates the worker when the AbortSignal fires", () => {
     const { terminate, worker } = makeWorkerMock();
-    vi.stubGlobal("Worker", vi.fn().mockImplementation(function () { return worker; }));
-    vi.stubGlobal("URL", { createObjectURL: vi.fn().mockReturnValue("blob:x") });
+    vi.stubGlobal(
+      "Worker",
+      vi.fn().mockImplementation(function () {
+        return worker;
+      }),
+    );
+    vi.stubGlobal("URL", {
+      createObjectURL: vi.fn().mockReturnValue("blob:x"),
+    });
 
     const controller = new AbortController();
     workify(() => 0, controller.signal);

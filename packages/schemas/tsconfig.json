@@ -1,10 +1,6 @@
 {
-  "extends": [
-    "../tsconfig/tsconfig.base.json"
-  ],
+  "extends": ["../tsconfig/tsconfig.base.json"],
   "compilerOptions": {
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   }
 }

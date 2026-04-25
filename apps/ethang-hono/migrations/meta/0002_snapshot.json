@@ -49,7 +49,7 @@
     "schemas": {},
     "tables": {},
     "columns": {
-      "\"courseTracking\".\"courseId\"": "\"courseTracking\".\"courseUrl\""
+      "courseTracking.courseId": "courseTracking.courseUrl"
     }
   },
   "internal": {

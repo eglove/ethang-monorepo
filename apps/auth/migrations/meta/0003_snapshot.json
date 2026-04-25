@@ -68,16 +68,12 @@
       "indexes": {
         "User_email_unique": {
           "name": "User_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         },
         "User_username_unique": {
           "name": "User_username_unique",
-          "columns": [
-            "username"
-          ],
+          "columns": ["username"],
           "isUnique": true
         }
       },

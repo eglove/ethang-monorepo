@@ -45,9 +45,7 @@ describe("getSubbedNumber", () => {
       },
       ["$0.0001"],
     ],
-  ])("should work", (
-    input, expected,
-  ) => {
+  ])("should work", (input, expected) => {
     // @ts-expect-error for test
     const value = getSubbedNumber(input);
 

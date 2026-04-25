@@ -7,9 +7,9 @@ $templateOptions = @(
 $template = $null
 while ($null -eq $template)
 {
-    Write-Host "Chooose template:"
+    Write-Information "Choose template:"
     for ($i = 0; $i -lt $templateOptions.Count; $i++) {
-        Write-Host "$( $i + 1 ). $( $templateOptions[$i].Name )"
+        Write-Information "$( $i + 1 ). $( $templateOptions[$i].Name )"
     }
 
     $selection = Read-Host "Enter number (1-4)"
@@ -20,7 +20,7 @@ while ($null -eq $template)
     }
     else
     {
-        Write-Host "Invalid selection."
+        Write-Information "Invalid selection."
     }
 }
 
@@ -43,5 +43,5 @@ if ($template -eq "react-vite")
     )
 
     Copy-Item -Path ($sourcePath + "*") -Destination $directory -Recurse -Exclude $excludeItems -Container -Force
-    Write-Host "Done"
+    Write-Information "Done"
 }
