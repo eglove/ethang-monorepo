@@ -7,7 +7,7 @@ $templateOptions = @(
 $template = $null
 while ($null -eq $template)
 {
-    Write-Information "Chooose template:"
+    Write-Information "Choose template:"
     for ($i = 0; $i -lt $templateOptions.Count; $i++) {
         Write-Information "$( $i + 1 ). $( $templateOptions[$i].Name )"
     }

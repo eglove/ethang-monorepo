@@ -1,3 +1,5 @@
+# PSScriptAnalyzerDisable PSUseDeclaredVarsMoreThanAssignments
+
 param (
     [string]$routeName = "Route",
     [string]$mapId = "0"

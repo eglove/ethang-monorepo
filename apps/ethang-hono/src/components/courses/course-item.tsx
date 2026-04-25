@@ -1,4 +1,5 @@
-import { Fragment } from "hono/jsx";
+import type { HtmlEscapedString } from "hono/utils/html";
+
 import isNil from "lodash/isNil.js";
 
 import { coursePathData } from "../../stores/course-path-store.ts";
@@ -12,7 +13,8 @@ export const CourseItem = async (properties: CourseItemProperties) => {
   const course = coursePathData.getCourse(properties.courseId);
 
   if (isNil(course)) {
-    return <Fragment />;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    return "" as HtmlEscapedString;
   }
 
   return (
