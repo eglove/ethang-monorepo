@@ -1,4 +1,3 @@
-// eslint-disable-next-line cspell/spellchecker
 export const workify = <T>(callback: () => T, signal?: AbortSignal) => {
   const code = callback.toString();
   const blob = new Blob(

@@ -3,7 +3,11 @@
 
 export type ScriptId =
   | "components/code"
+  | "components/courses/course-completion-store"
+  | "components/courses/course-completion-types"
+  | "components/courses/course-completion-ui"
   | "components/courses/course-completion"
+  | "components/courses/course-tracking-service"
   | "components/navigation/navigation"
   | "components/routes/sign-in"
   | "components/routes/tips/scrollbar-gutter";

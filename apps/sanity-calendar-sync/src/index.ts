@@ -23,14 +23,14 @@ export default {
     const client = createClient({
       apiVersion: "1",
       dataset: "production",
-      // eslint-disable-next-line cspell/spellchecker
+      // cspell:disable-next-line
       projectId: "540gjnt8",
       useCdn: true,
     });
 
     const eventQuery = `
-			*[_type == "calendarEvent"
-			&& !(_id in path('drafts.**'))] | order(startsAt asc){_id, title, startsAt, endsAt, description}`;
+            *[_type == "calendarEvent"
+            && !(_id in path('drafts.**'))] | order(startsAt asc){_id, title, startsAt, endsAt, description}`;
 
     const data = await client.fetch<CalendarEventReturn[]>(eventQuery);
 
@@ -58,7 +58,6 @@ export default {
     const calendar = generateIcsCalendar({
       events,
       name: "Sterett Creek Village Trustee",
-      // eslint-disable-next-line cspell/spellchecker
       prodId: "sterettcreekvillagetrustee.com",
       version: "2.0",
     });

@@ -4,7 +4,7 @@ import { commonCharacters } from "./common-characters.js";
 
 describe("commonCharacters", () => {
   it("should work", () => {
-    // eslint-disable-next-line cspell/spellchecker
+    // cspell:disable-next-line
     expect(commonCharacters(["abc", "bcd", "cbaccd"])).toStrictEqual([
       "b",
       "c",

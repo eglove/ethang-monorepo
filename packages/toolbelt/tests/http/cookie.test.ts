@@ -2,7 +2,7 @@ import constant from "lodash/constant.js";
 import isError from "lodash/isError.js";
 import { describe, expect, it } from "vitest";
 
-import { getCookieValue, setCookieValue } from "../../src/http/cookie.ts";
+import { deleteCookieValue, getCookieValue, setCookieValue } from "../../src/http/cookie.ts";
 
 describe("get cookie", () => {
   it("should get cookie from string", () => {
@@ -13,6 +13,16 @@ describe("get cookie", () => {
 
     expect(isError(value)).toBe(false);
     expect(value).toBe("123");
+  });
+
+  it("should get cookie with equals sign in value", () => {
+    // @ts-expect-error allow for test
+    globalThis.document = { cookie: "token=abc=123; Secure;" };
+
+    const value = getCookieValue("token", globalThis.document.cookie);
+
+    expect(isError(value)).toBe(false);
+    expect(value).toBe("abc=123");
   });
 
   it("should get cookies from headers", () => {
@@ -61,6 +71,31 @@ describe("get cookie", () => {
 
     expect(mockResponse.headers.get("Set-Cookie")).toBe(
       `${cookieName}=${cookieValue}; Expires=${expires.toUTCString()}; HttpOnly; Path=${config.Path}`,
+    );
+  });
+
+  it("should delete cookie", () => {
+    const cookieName = "test-cookie";
+    const mockResponse = new Response();
+
+    deleteCookieValue(cookieName, mockResponse);
+
+    expect(mockResponse.headers.get("Set-Cookie")).toBe(
+      `${cookieName}=; Expires=${new Date(0).toUTCString()}; Max-Age=0`,
+    );
+  });
+
+  it("should delete cookie with config", () => {
+    const cookieName = "test-cookie";
+    const mockResponse = new Response();
+
+    deleteCookieValue(cookieName, mockResponse, {
+      Path: "/",
+      SameSite: "Lax",
+    });
+
+    expect(mockResponse.headers.get("Set-Cookie")).toBe(
+      `${cookieName}=; Path=/; SameSite=Lax; Expires=${new Date(0).toUTCString()}; Max-Age=0`,
     );
   });
 

@@ -25,11 +25,12 @@ describe(Tree, () => {
   });
 
   it("skips null values when building the tree", () => {
-    const tree = new Tree([1, 2, null] as unknown as number[]);
+    const tree = new Tree([1, 2, null, 4] as unknown as number[]);
 
     expect(tree.root.value).toBe(1);
     expect(tree.root.left?.value).toBe(2);
     expect(tree.root.right).toBeNull();
+    expect(tree.root.left?.left?.value).toBe(4);
   });
 
   it("handles a single-element array", () => {
@@ -38,5 +39,23 @@ describe(Tree, () => {
     expect(tree.root.value).toBe(7);
     expect(tree.root.left).toBeNull();
     expect(tree.root.right).toBeNull();
+  });
+
+  it("handles unreachable nodes", () => {
+    const tree = new Tree([1, null, null, 2] as unknown as number[]);
+
+    expect(tree.root.value).toBe(1);
+    expect(tree.root.left).toBeNull();
+    expect(tree.root.right).toBeNull();
+  });
+
+  it("handles tree with only left children", () => {
+    const tree = new Tree([1, 2, null, 3, null, 4] as unknown as number[]);
+    expect(tree.root.value).toBe(1);
+    expect(tree.root.left?.value).toBe(2);
+    expect(tree.root.right).toBeNull();
+    expect(tree.root.left?.left?.value).toBe(3);
+    expect(tree.root.left?.right).toBeNull();
+    expect(tree.root.left?.left?.left?.value).toBe(4);
   });
 });

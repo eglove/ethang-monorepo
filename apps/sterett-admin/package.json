@@ -21,7 +21,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.15.3",
+    "@ethang/eslint-config": "^25.15.4",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.24",
     "browserslist-config-baseline": "^0.5.0",
@@ -29,7 +29,7 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.0",
     "vite": "^8.0.10",
-    "wrangler": "^4.84.1"
+    "wrangler": "^4.85.0"
   },
   "engines": {
     "node": ">=24"

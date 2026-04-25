@@ -6,6 +6,14 @@ export const scriptManifest: Record<ScriptId, string> = {
   "components/code": "/scripts/components/code.client.js",
   "components/courses/course-completion":
     "/scripts/components/courses/course-completion.client.js",
+  "components/courses/course-completion-store":
+    "/scripts/components/courses/course-completion-store.client.js",
+  "components/courses/course-completion-types":
+    "/scripts/components/courses/course-completion-types.client.js",
+  "components/courses/course-completion-ui":
+    "/scripts/components/courses/course-completion-ui.client.js",
+  "components/courses/course-tracking-service":
+    "/scripts/components/courses/course-tracking-service.client.js",
   "components/navigation/navigation":
     "/scripts/components/navigation/navigation.client.js",
   "components/routes/sign-in": "/scripts/components/routes/sign-in.client.js",

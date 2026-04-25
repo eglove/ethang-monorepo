@@ -108,7 +108,6 @@ describe("waitFor", () => {
 
   it("should return error when provided AbortSignal aborts while waiting", async () => {
     const store = createStore();
-    store.subscribe(() => {});
     const controller = new AbortController();
 
     const promise = store.waitFor(
@@ -214,6 +213,18 @@ describe("waitFor", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.error.message).toBe("delayed predicate error");
+    }
+  });
+
+  it("should return error when combinedSignal is already aborted due to no subscribers", async () => {
+    const store = createStore();
+    const unsubscribe = store.subscribe(() => {});
+    unsubscribe(); // Abort the internal _controller.signal
+
+    const result = await store.waitFor((state) => 5 === state.count);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.message).toBe("Aborted");
     }
   });
 });

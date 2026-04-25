@@ -4,7 +4,7 @@ import { isPalindrome } from "./is-palindrome.js";
 
 describe("isPalindrome", () => {
   it("should work", () => {
-    // eslint-disable-next-line cspell/spellchecker
+    // cspell:disable-next-line
     expect(isPalindrome("abcdcba")).toBe(true);
   });
 });

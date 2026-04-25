@@ -29,9 +29,9 @@ export class Tree<T> {
 
         if (!isNil(value)) {
           current.left = new TreeNode(value, null, null);
-          index += 1;
           queue.push(current.left);
         }
+        index += 1;
       }
 
       if (index < values.length) {
@@ -39,9 +39,9 @@ export class Tree<T> {
 
         if (!isNil(value)) {
           current.right = new TreeNode(value, null, null);
-          index += 1;
           queue.push(current.right);
         }
+        index += 1;
       }
     }
 

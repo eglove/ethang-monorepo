@@ -5,13 +5,13 @@
     "current node"
   ],
   "dependencies": {
-    "@ethang/toolbelt": "^4.4.11",
+    "@ethang/toolbelt": "^4.5.0",
     "lodash": "^4.18.1",
     "zod": "^4.3.6"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.15.3",
+    "@ethang/eslint-config": "^25.15.4",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.6.0",
     "browserslist-config-baseline": "^0.5.0",

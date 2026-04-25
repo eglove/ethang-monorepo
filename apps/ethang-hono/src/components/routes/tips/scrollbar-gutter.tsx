@@ -1,4 +1,3 @@
-// eslint-disable-next-line cspell/spellchecker
 /* eslint-disable a11y/no-noninteractive-tabindex */
 import { DEPLOY_TIME } from "../../../utilities/deploy-info.ts";
 import { Button } from "../../button/button.tsx";

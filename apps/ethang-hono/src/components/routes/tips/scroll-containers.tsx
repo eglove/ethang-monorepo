@@ -1,4 +1,3 @@
-// eslint-disable-next-line cspell/spellchecker
 /* eslint-disable a11y/no-noninteractive-tabindex */
 import times from "lodash/times.js";
 

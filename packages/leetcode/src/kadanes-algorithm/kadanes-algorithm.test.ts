@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import { kadanesAlgorithm } from "./kadanes-algorithm.js";
 
-// eslint-disable-next-line cspell/spellchecker
 describe("kadanesAlgorithm", () => {
   it("should work", () => {
     expect(

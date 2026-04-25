@@ -29,7 +29,6 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// eslint-disable-next-line cspell/spellchecker
 // Route 1: HTML Navigations
 registerRoute(
   ({ request }) => "navigate" === request.mode,

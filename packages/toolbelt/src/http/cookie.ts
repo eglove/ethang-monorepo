@@ -26,10 +26,18 @@ export const getCookieValue = <T extends string>(
 
   const cookieArray = split(cookies, ";");
   for (const cookie of cookieArray) {
-    const [name, value] = split(cookie, "=");
+    const equalsIndex = cookie.indexOf("=");
+    if (-1 === equalsIndex) {
+      if (trim(cookie) === trim(cookieName)) {
+        return "";
+      }
+    } else {
+      const name = cookie.slice(0, Math.max(0, equalsIndex));
+      const value = cookie.slice(Math.max(0, equalsIndex + 1));
 
-    if (trim(name) === trim(cookieName)) {
-      return trim(value);
+      if (trim(name) === trim(cookieName)) {
+        return trim(value);
+      }
     }
   }
 
@@ -44,7 +52,7 @@ type SetCookieValueProperties<T extends string> = {
     "Max-Age"?: number;
     Partitioned?: boolean;
     Path?: string;
-    SameSite?: "Lax" | "None" | "Secure" | "Strict";
+    SameSite?: "Lax" | "None" | "Strict";
     Secure?: boolean;
   };
   cookieName: T;
@@ -78,4 +86,21 @@ export const setCookieValue = <T extends string>({
   }
 
   response.headers.append("Set-Cookie", cookieString);
+};
+
+export const deleteCookieValue = <T extends string>(
+  cookieName: T,
+  response: Response,
+  config?: Omit<SetCookieValueProperties<T>["config"], "Expires" | "Max-Age">,
+): void => {
+  setCookieValue({
+    config: {
+      ...config,
+      Expires: new Date(0),
+      "Max-Age": 0,
+    },
+    cookieName,
+    cookieValue: "",
+    response,
+  });
 };

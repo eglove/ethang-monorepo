@@ -1,6 +1,7 @@
 {
   "version": "0.2",
   "language": "en",
+  "useGitignore": true,
   "words": [
     "tauri",
     "Applynetic",
@@ -125,6 +126,12 @@
     "vitest",
     "multicriteria",
     "dotenvx",
-    "portabletext"
+    "portabletext",
+    "kadanes",
+    "workify",
+    "noninteractive",
+    "sterettcreekvillagetrustee",
+    "workerd",
+    "Navigations"
   ]
 }
