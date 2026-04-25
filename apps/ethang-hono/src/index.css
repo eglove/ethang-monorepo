@@ -34,15 +34,15 @@
 @layer base {
   html {
     background:
-    radial-gradient(ellipse 100% 100% at 50% 50%,
-      var(--color-slate-950) 0%,
-      #060a14 40%,
-      #080c18 65%,
-      #04060e 85%,
-      var(--color-slate-950) 100%
-    );
-  background-attachment: fixed;
-  min-height: 100vh;
+      radial-gradient(ellipse 100% 100% at 50% 50%,
+        var(--color-slate-950) 0%,
+        #060a14 40%,
+        #080c18 65%,
+        #04060e 85%,
+        var(--color-slate-950) 100%
+      );
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 }
 
@@ -51,23 +51,28 @@
 @utility bg-brand {
   background-color: color-mix(in srgb, var(--color-sky-300) 10%, transparent);
 }
+
 @utility bg-warning {
   background-color: color-mix(in srgb, var(--color-amber-400) 10%, transparent);
 }
+
 @utility bg-default {
   background-color: var(--color-slate-700);
 }
+
 /* Ensure code blocks have readable color before highlight.js client-side script
    processes them — without this, text defaults to black on our dark background. */
 pre > code:not(.hljs) {
   color: var(--color-slate-200);
 }
+
 /* Raise Night Owl comment contrast to meet WCAG AA 4.5:1 on #011627 background.
    !important required — highlight.js injects its theme via a runtime <style> tag which
    has higher cascade priority than an external stylesheet. */
 .hljs-comment {
   color: #93b5bf !important;
 }
+
 /* Prevent horizontal scrolling on code blocks — wrapping is more accessible than
    requiring a pointing device to scroll, and removes the scrollable-region axe violation.
    !important required for the same reason as .hljs-comment above. */

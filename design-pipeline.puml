@@ -1,6 +1,7 @@
 @startuml
 title Design Pipeline SDK — Architecture & Stage Flow
-note "SDK rewrite as of: 2026-04-03\npackages/design-pipeline" as N1
+note "SDK rewrite as of: 2026-04-03
+packages/design-pipeline" as N1
 
 skinparam state {
   BackgroundColor<<stage>> #E8F4FD
@@ -26,7 +27,8 @@ package "SKILL.md (thin wrapper)" as Skill {
   component "runPipeline()" as entry
 }
 
-package "TypeScript SDK\npackages/design-pipeline" as SDK <<sdk>> {
+package "TypeScript SDK
+packages/design-pipeline" as SDK <<sdk>> {
 
   package "Engine" {
     component "Orchestrator" as orch
@@ -45,11 +47,13 @@ package "TypeScript SDK\npackages/design-pipeline" as SDK <<sdk>> {
   }
 
   package "Zod Schemas" as schemas {
-    component "Stage boundary\nvalidation" as zod
+    component "Stage boundary
+validation" as zod
   }
 
   package "In-Memory State" as state {
-    component "RunRecord\n(instance-scoped)" as run
+    component "RunRecord
+(instance-scoped)" as run
   }
 }
 
@@ -63,7 +67,8 @@ package "Adapters (implementations)" as Adapters <<adapter>> {
   component "ChildProcessGitAdapter" as a_git
 }
 
-package "Agent Prompts\nsrc/prompts/" as Prompts <<agent>> {
+package "Agent Prompts
+src/prompts/" as Prompts <<agent>> {
   component "questioner" as ap_q
   component "debate-moderator" as ap_dm
   component "tla-writer" as ap_tla
@@ -79,7 +84,8 @@ entry --> orch : calls
 
 orch --> trans : state transitions
 orch --> retry : retries + compensation
-orch --> zod : validates every\nstage boundary
+orch --> zod : validates every
+stage boundary
 
 orch --> sc_q
 orch --> sc_dm
@@ -102,15 +108,23 @@ sc_fj ..> p_claude : executePrompt
 p_claude <|.. a_claude : implements
 p_git <|.. a_git : implements
 
-sc_q --> ap_q : template literal\nprompt
-sc_dm --> ap_dm : template literal\nprompt
-sc_tla --> ap_tla : template literal\nprompt
-sc_er --> ap_er : template literal\nprompt
-sc_ip --> ap_ip : template literal\nprompt
-sc_pp --> ap_pp : template literal\nprompt
-sc_fj --> ap_fj : template literal\nprompt
+sc_q --> ap_q : template literal
+prompt
+sc_dm --> ap_dm : template literal
+prompt
+sc_tla --> ap_tla : template literal
+prompt
+sc_er --> ap_er : template literal
+prompt
+sc_ip --> ap_ip : template literal
+prompt
+sc_pp --> ap_pp : template literal
+prompt
+sc_fj --> ap_fj : template literal
+prompt
 
-orch --> run : reads/writes\nin-memory state
+orch --> run : reads/writes
+in-memory state
 
 ' ═══════════════════════════════════════════════
 ' 7-STAGE PIPELINE FLOW
@@ -119,49 +133,62 @@ orch --> run : reads/writes\nin-memory state
 [*] --> STAGE_1_QUESTIONER
 
 state "Stage 1: Questioner" as STAGE_1_QUESTIONER <<stage>> {
-  state "Streaming user interview\n(SDK streams input)" as S1
+  state "Streaming user interview
+(SDK streams input)" as S1
 }
 
 state "Stage 2: Design Debate" as STAGE_2_DESIGN_DEBATE <<stage>> {
-  state "SDK dispatches experts\nvia debate-moderator coordinator" as S2
+  state "SDK dispatches experts
+via debate-moderator coordinator" as S2
 }
 
 state "Stage 3: TLA+ Writer" as STAGE_3_TLA_WRITER <<stage>> {
-  state "SDK calls tla-writer agent\nZod validates TlaResult" as S3
+  state "SDK calls tla-writer agent
+Zod validates TlaResult" as S3
 }
 
 state "Stage 4: Expert Review" as STAGE_4_EXPERT_REVIEW <<stage>> {
-  state "SDK calls expert-review agent\nZod validates TlaReviewSynthesis" as S4
+  state "SDK calls expert-review agent
+Zod validates TlaReviewSynthesis" as S4
 }
 
 state "Stage 5: Implementation Planning" as STAGE_5_IMPLEMENTATION <<stage>> {
-  state "SDK calls implementation-planning\nStreaming confirmation gate\nZod validates ImplementationPlan" as S5
+  state "SDK calls implementation-planning
+Streaming confirmation gate
+Zod validates ImplementationPlan" as S5
 }
 
-STAGE_1_QUESTIONER --> STAGE_2_DESIGN_DEBATE : BriefingResult\n(Zod validated)
+STAGE_1_QUESTIONER --> STAGE_2_DESIGN_DEBATE : BriefingResult
+(Zod validated)
 STAGE_1_QUESTIONER --> HALTED : user abandons
 
-STAGE_2_DESIGN_DEBATE --> STAGE_3_TLA_WRITER : DebateSynthesis\n(Zod validated)
+STAGE_2_DESIGN_DEBATE --> STAGE_3_TLA_WRITER : DebateSynthesis
+(Zod validated)
 STAGE_2_DESIGN_DEBATE --> HALTED : stalemate
 
-STAGE_3_TLA_WRITER --> STAGE_4_EXPERT_REVIEW : TlaResult\n(Zod validated)
+STAGE_3_TLA_WRITER --> STAGE_4_EXPERT_REVIEW : TlaResult
+(Zod validated)
 STAGE_3_TLA_WRITER --> STAGE_3_TLA_WRITER : retry (compensation)
 
-STAGE_4_EXPERT_REVIEW --> STAGE_5_IMPLEMENTATION : TlaReviewSynthesis\n(Zod validated)
+STAGE_4_EXPERT_REVIEW --> STAGE_5_IMPLEMENTATION : TlaReviewSynthesis
+(Zod validated)
 STAGE_4_EXPERT_REVIEW --> STAGE_3_TLA_WRITER : back to tla-writer
 
-STAGE_5_IMPLEMENTATION --> STAGE_6 : ImplementationPlan\n(Zod validated)
+STAGE_5_IMPLEMENTATION --> STAGE_6 : ImplementationPlan
+(Zod validated)
 
 ' ─── Stage 6: Pair Programming ───
 
 state "Stage 6: Pair Programming" as STAGE_6 {
 
   state "Confirmation Gate" as STAGE_6_CONFIRMATION_GATE <<gate>> {
-    state "User reviews plan via\nstreaming input" as S6gate
+    state "User reviews plan via
+streaming input" as S6gate
   }
 
   state "Tier Executing" as STAGE_6_TIER_EXECUTING <<stage>> {
-    state "SDK routes messages\nsynchronously per pair" as S6exec
+    state "SDK routes messages
+synchronously per pair" as S6exec
   }
 
   state "Tier Merging" as STAGE_6_TIER_MERGING <<stage>> {
@@ -169,22 +196,28 @@ state "Stage 6: Pair Programming" as STAGE_6 {
   }
 
   state "Reviewing" as STAGE_6_REVIEWING <<review>> {
-    state "SDK dispatches 9 reviewer\nagents in parallel" as S6review
+    state "SDK dispatches 9 reviewer
+agents in parallel" as S6review
   }
 
   state "Review Passed" as STAGE_6_REVIEW_PASSED <<review>>
   state "Review Failed" as STAGE_6_REVIEW_FAILED <<review>>
 
   state "Revising" as STAGE_6_REVISING <<review>> {
-    state "Pair revises via\nroutePairMessage" as S6revise
+    state "Pair revises via
+routePairMessage" as S6revise
   }
 
   state "Inter-Tier Verification" as STAGE_6_INTER_TIER_VERIFICATION <<stage>> {
     state "Full test + tsc + lint" as S6verify
   }
 
-  state "Global Review\n(Double-Pass)" as STAGE_6_GLOBAL_REVIEW <<gate>> {
-    state "test -> fix -> lint -> fix -> tsc -> fix\n2 consecutive clean passes required\nper-step retry cap: 1\nMaxGlobalFixes: 3" as S6global
+  state "Global Review
+(Double-Pass)" as STAGE_6_GLOBAL_REVIEW <<gate>> {
+    state "test -> fix -> lint -> fix -> tsc -> fix
+2 consecutive clean passes required
+per-step retry cap: 1
+MaxGlobalFixes: 3" as S6global
   }
 
   state "Fix Session" as STAGE_6_FIX_SESSION <<stage>> {
@@ -195,13 +228,16 @@ state "Stage 6: Pair Programming" as STAGE_6 {
   STAGE_6_CONFIRMATION_GATE --> STAGE_6_TIER_EXECUTING : UserConfirms
 
   ' Tier execution -> merging
-  STAGE_6_TIER_EXECUTING --> STAGE_6_TIER_MERGING : all sessions done\n(BeginTierMerging)
+  STAGE_6_TIER_EXECUTING --> STAGE_6_TIER_MERGING : all sessions done
+(BeginTierMerging)
 
   ' Merging -> reviewer gate
-  STAGE_6_TIER_MERGING --> STAGE_6_REVIEWING : all merges done\n(BeginReviewing)
+  STAGE_6_TIER_MERGING --> STAGE_6_REVIEWING : all merges done
+(BeginReviewing)
 
   ' Reviewer gate
-  STAGE_6_REVIEWING --> STAGE_6_REVIEW_PASSED : quorum passed\n(ceil(2n/3) reviewers)
+  STAGE_6_REVIEWING --> STAGE_6_REVIEW_PASSED : quorum passed
+(ceil(2n/3) reviewers)
   STAGE_6_REVIEWING --> STAGE_6_REVIEW_FAILED : reviewer failed
 
   ' Review outcomes
@@ -212,11 +248,14 @@ state "Stage 6: Pair Programming" as STAGE_6 {
   STAGE_6_REVISING --> STAGE_6_REVIEWING : ResubmitForReview
 
   ' Inter-tier verification
-  STAGE_6_INTER_TIER_VERIFICATION --> STAGE_6_TIER_EXECUTING : passes,\nmore tiers remain
-  STAGE_6_INTER_TIER_VERIFICATION --> STAGE_6_GLOBAL_REVIEW : passes,\nlast tier
+  STAGE_6_INTER_TIER_VERIFICATION --> STAGE_6_TIER_EXECUTING : passes,
+more tiers remain
+  STAGE_6_INTER_TIER_VERIFICATION --> STAGE_6_GLOBAL_REVIEW : passes,
+last tier
 
   ' Global review double-pass
-  STAGE_6_GLOBAL_REVIEW --> STAGE_6_FIX_SESSION : fails, under cap\n(GlobalReviewFails)
+  STAGE_6_GLOBAL_REVIEW --> STAGE_6_FIX_SESSION : fails, under cap
+(GlobalReviewFails)
 
   ' Fix session loop
   STAGE_6_FIX_SESSION --> STAGE_6_GLOBAL_REVIEW : FixSessionComplete
@@ -255,13 +294,17 @@ STAGE_6_CONFIRMATION_GATE --> HALTED : user rejects plan
 STAGE_6_TIER_EXECUTING --> HALTED : TierAllFailed
 STAGE_6_TIER_MERGING --> HALTED : MergeConflictEscalates
 STAGE_6_INTER_TIER_VERIFICATION --> HALTED : VerificationFails
-STAGE_6_GLOBAL_REVIEW --> STAGE_7 : GlobalReviewPasses\n(2 clean passes)
-STAGE_6_GLOBAL_REVIEW --> HALTED : GlobalReviewExhausted\n(fixCount >= 3)
-STAGE_6_REVISING --> HALTED : ReviewRevisionsExhausted\n(MaxReviewRevisions reached)
+STAGE_6_GLOBAL_REVIEW --> STAGE_7 : GlobalReviewPasses
+(2 clean passes)
+STAGE_6_GLOBAL_REVIEW --> HALTED : GlobalReviewExhausted
+(fixCount >= 3)
+STAGE_6_REVISING --> HALTED : ReviewRevisionsExhausted
+(MaxReviewRevisions reached)
 
 ' ─── Stage 7 -> Terminal ───
 
-STAGE_7 --> COMPLETE : atomic commit\n(via GitAdapter)
+STAGE_7 --> COMPLETE : atomic commit
+(via GitAdapter)
 
 COMPLETE --> [*]
 HALTED --> [*]
