@@ -39,7 +39,6 @@ export default defineConfig({
     visionTool(),
     codeInput(),
   ],
-  // eslint-disable-next-line cspell/spellchecker
   projectId: "3rkvshhk",
   schema: {
     types: schemaTypes,

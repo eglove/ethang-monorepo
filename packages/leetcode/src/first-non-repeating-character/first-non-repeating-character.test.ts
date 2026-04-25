@@ -1,4 +1,3 @@
-/* eslint-disable cspell/spellchecker */
 import { describe, expect, it } from "vitest";
 
 import { firstNonRepeatingCharacter } from "./first-non-repeating-character.js";

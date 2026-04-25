@@ -23,7 +23,6 @@ export default {
     const client = createClient({
       apiVersion: "1",
       dataset: "production",
-      // eslint-disable-next-line cspell/spellchecker
       projectId: "540gjnt8",
       useCdn: true,
     });
@@ -58,7 +57,6 @@ export default {
     const calendar = generateIcsCalendar({
       events,
       name: "Sterett Creek Village Trustee",
-      // eslint-disable-next-line cspell/spellchecker
       prodId: "sterettcreekvillagetrustee.com",
       version: "2.0",
     });

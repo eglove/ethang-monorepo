@@ -14,7 +14,6 @@ export default defineConfig({
     "development" === get(import.meta, ["env", "NODE_ENV"])
       ? developmentPlugins
       : productionPlugins,
-  // eslint-disable-next-line cspell/spellchecker
   projectId: "540gjnt8",
   schema: {
     types: schema,

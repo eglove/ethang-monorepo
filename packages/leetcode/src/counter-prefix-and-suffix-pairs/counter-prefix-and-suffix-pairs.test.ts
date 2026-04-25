@@ -1,4 +1,3 @@
-/* eslint-disable cspell/spellchecker */
 import { describe, expect, it } from "vitest";
 
 import { countPrefixSuffixPairs } from "./counter-prefix-and-suffix-pairs.ts";
