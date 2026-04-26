@@ -1,0 +1,26 @@
+---
+# MegaLinter Configuration
+# Documentation: https://megalinter.io/latest/configuration/
+
+# Disable redundant linters
+DISABLE:
+  - JAVASCRIPT
+  - TYPESCRIPT
+
+DISABLE_LINTERS:
+  - CSS_STYLELINT
+  - EDITORCONFIG_EDITORCONFIG_CHECKER
+  - SPELL_LYCHEE
+  - REPOSITORY_GRYPE
+  - REPOSITORY_DEVSKIM
+  - REPOSITORY_TRIVY
+  - REPOSITORY_GITLEAKS
+  - SQL_TSQLLINT
+
+# Configuration
+PARALLEL: true
+SHOW_ELAPSED_TIME: true
+VALIDATE_ALL_CODEBASE: true # Validate all sources
+IGNORE_GITIGNORED_FILES: true
+
+FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts|apps/ethang-hono/public/scripts/.*|.*-megalinter_file_names_cspell\.txt|.*\.idea.*|.*/migrations/meta/_journal.json)
