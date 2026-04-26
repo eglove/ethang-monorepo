@@ -15,30 +15,38 @@ const MOBILE_BROWSERS = [
 export default defineConfig({
   fullyParallel: true,
   projects: [
-    ...map(DESKTOP_BROWSERS, (b) => ({
-      ...b,
-      grepInvert: /@mobile/u,
-      name: `mouse-${b.name}`,
-      testMatch: "**/mouse/**/*.spec.ts",
-    })),
-    ...map(MOBILE_BROWSERS, (b) => ({
-      ...b,
-      grepInvert: /@desktop/u,
-      name: `mouse-${b.name}`,
-      testMatch: "**/mouse/**/*.spec.ts",
-    })),
-    ...map(DESKTOP_BROWSERS, (b) => ({
-      ...b,
-      grepInvert: /@mobile/u,
-      name: `keyboard-${b.name}`,
-      testMatch: "**/keyboard/**/*.spec.ts",
-    })),
-    ...map(MOBILE_BROWSERS, (b) => ({
-      ...b,
-      grepInvert: /@desktop/u,
-      name: `keyboard-${b.name}`,
-      testMatch: "**/keyboard/**/*.spec.ts",
-    })),
+    ...map(DESKTOP_BROWSERS, (b) => {
+      return {
+        ...b,
+        grepInvert: /@mobile/u,
+        name: `mouse-${b.name}`,
+        testMatch: "**/mouse/**/*.spec.ts",
+      };
+    }),
+    ...map(MOBILE_BROWSERS, (b) => {
+      return {
+        ...b,
+        grepInvert: /@desktop/u,
+        name: `mouse-${b.name}`,
+        testMatch: "**/mouse/**/*.spec.ts",
+      };
+    }),
+    ...map(DESKTOP_BROWSERS, (b) => {
+      return {
+        ...b,
+        grepInvert: /@mobile/u,
+        name: `keyboard-${b.name}`,
+        testMatch: "**/keyboard/**/*.spec.ts",
+      };
+    }),
+    ...map(MOBILE_BROWSERS, (b) => {
+      return {
+        ...b,
+        grepInvert: /@desktop/u,
+        name: `keyboard-${b.name}`,
+        testMatch: "**/keyboard/**/*.spec.ts",
+      };
+    }),
   ],
   reporter: [["html"], ["list"]],
   testDir: "./e2e",

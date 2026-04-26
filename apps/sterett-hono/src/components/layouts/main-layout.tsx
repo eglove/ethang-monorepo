@@ -31,9 +31,9 @@ export const MainLayout = async ({
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
         {!isNil(updatedAt) && <meta content={updatedAt} name="last-modified" />}
-        {map(prefetch, async (href) => (
+        {map(prefetch, async (href) => {return (
           <link key={href} href={href} rel="prefetch" />
-        ))}
+        )})}
         <link rel="icon" sizes="any" href="/favicon.ico" />
         <link
           rel="icon"

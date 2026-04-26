@@ -5,7 +5,7 @@ export const newsType = defineType({
     defineField({
       name: "title",
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
     defineField({
       name: "youtubeVideoId",
@@ -14,17 +14,17 @@ export const newsType = defineType({
     defineField({
       name: "url",
       type: "url",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
     defineField({
       name: "published",
       type: "date",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
     defineField({
       name: "quote",
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
   ],
   name: "news",

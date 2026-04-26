@@ -1,14 +1,14 @@
 import { faker } from "@faker-js/faker";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("../models/blog-model.ts"), () => ({
+vi.mock(import("../models/blog-model.ts"), () => {return {
   BlogModel: vi.fn(),
-}));
+}});
 
 import { BlogModel } from "../models/blog-model.ts";
 import { blogRss } from "./blog-rss.ts";
 
-const makeBlog = (overrides = {}) => ({
+const makeBlog = (overrides = {}) => {return {
   _createdAt: faker.date.past().toISOString(),
   _id: faker.string.uuid(),
   _updatedAt: faker.date.recent().toISOString(),
@@ -16,7 +16,7 @@ const makeBlog = (overrides = {}) => ({
   slug: { current: faker.lorem.slug() },
   title: faker.lorem.words(3),
   ...overrides,
-});
+}};
 
 const mockBlogModelWith = (getAllBlogs: ReturnType<typeof vi.fn>) => {
   vi.mocked(BlogModel).mockImplementation(

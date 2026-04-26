@@ -1,17 +1,17 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("@ethang/toolbelt/http/cookie.js"), () => ({
+vi.mock(import("@ethang/toolbelt/http/cookie.js"), () => {return {
   getCookieValue: vi.fn().mockReturnValue(new Error("no cookie")),
-}));
-vi.mock(import("./models/blog-model.ts"), () => ({
+}});
+vi.mock(import("./models/blog-model.ts"), () => {return {
   BlogModel: vi.fn(),
-}));
-vi.mock(import("./clients/sanity.ts"), (() => ({
+}});
+vi.mock(import("./clients/sanity.ts"), (() => {return {
   sanityClient: { fetch: vi.fn() },
-})) as never);
-vi.mock(import("./db/database.ts"), () => ({
+}}) as never);
+vi.mock(import("./db/database.ts"), () => {return {
   getDatabase: vi.fn(),
-}));
+}});
 vi.mock(import("./stores/course-path-store.ts"), () => {
   const mockStore = {
     courseTrackings: [],

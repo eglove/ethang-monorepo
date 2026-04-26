@@ -39,7 +39,7 @@ const STYLE_RENDERERS: Record<
   string,
   (block: Block, context: RenderContext) => Child
 > = {
-  blockquote: (block, context): Child => (
+  blockquote: (block, context): Child => {return (
     // @ts-expect-error ignore
     <Blockquote
       author={block.author}
@@ -48,16 +48,16 @@ const STYLE_RENDERERS: Record<
     >
       {context.renderChildren(block.children)}
     </Blockquote>
-  ),
-  h2: (block, context): Child => (
+  )},
+  h2: (block, context): Child => {return (
     <H2>{context.renderChildren(block.children)}</H2>
-  ),
-  h3: (block, context): Child => (
+  )},
+  h3: (block, context): Child => {return (
     <H3 className="mt-4">{context.renderChildren(block.children)}</H3>
-  ),
-  normal: (block, context): Child => (
+  )},
+  normal: (block, context): Child => {return (
     <P>{context.renderChildren(block.children)}</P>
-  ),
+  )},
 };
 
 const renderImageBlock = (block: Block): Child => {
@@ -241,5 +241,5 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
 
   flushList();
 
-  return <>{filter(nodes, (value) => !isNil(value))}</>;
+  return <>{filter(nodes, (value) => {return !isNil(value)})}</>;
 };

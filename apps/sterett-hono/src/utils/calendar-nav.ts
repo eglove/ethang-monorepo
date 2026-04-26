@@ -105,6 +105,6 @@ export const buildPrefetchUrls = (
       "week" === view ? null : tabWeekHref,
       "day" === view ? null : tabDayHref,
     ],
-    (value): value is string => !isNil(value),
+    (value): value is string => {return !isNil(value)},
   );
 };

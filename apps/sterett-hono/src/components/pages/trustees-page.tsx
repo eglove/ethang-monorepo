@@ -6,8 +6,8 @@ import { TrusteeCard } from "../trustee-card.tsx";
 
 export const TrusteesPage = async () => {
   const trustees = await getTrustees();
-  const updatedAt = map(trustees, (t) => t._updatedAt)
-    .toSorted((a, b) => a.localeCompare(b))
+  const updatedAt = map(trustees, (t) => {return t._updatedAt})
+    .toSorted((a, b) => {return a.localeCompare(b)})
     .at(-1);
 
   return (
@@ -18,9 +18,9 @@ export const TrusteesPage = async () => {
     >
       <h1 class="mb-6 text-2xl font-bold tracking-wide">Trustees</h1>
       <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {map(trustees, async (trustee) => (
+        {map(trustees, async (trustee) => {return (
           <TrusteeCard key={trustee._id} trustee={trustee} />
-        ))}
+        )})}
       </div>
     </MainLayout>
   );

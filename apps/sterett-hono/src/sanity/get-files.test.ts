@@ -2,25 +2,25 @@
 import every from "lodash/every.js";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("../clients/sanity-client.ts"), () => ({
+vi.mock(import("../clients/sanity-client.ts"), () => {return {
   NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
   sterettSanityClient: {
     fetch: vi.fn(),
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
-}));
+}});
 
 import { sterettSanityClient } from "../clients/sanity-client.ts";
 import { getFiles } from "./get-files.ts";
 
-const makeFile = (id: string, category: string) => ({
+const makeFile = (id: string, category: string) => {return {
   _id: id,
   _updatedAt: "2024-01-01T00:00:00Z",
   category,
   date: "2024-01-01",
   file: { asset: { url: `https://example.com/${id}.pdf` } },
   title: `File ${id}`,
-});
+}};
 
 describe(getFiles, () => {
   it("splits covenant and general files into separate buckets", async () => {
@@ -71,7 +71,7 @@ describe(getFiles, () => {
 
     const result = await getFiles();
 
-    expect(every(result.covenants, (f) => "Covenant" === f.category)).toBe(
+    expect(every(result.covenants, (f) => {return "Covenant" === f.category})).toBe(
       true,
     );
     expect(result.general).toHaveLength(0);
@@ -91,7 +91,7 @@ describe(getFiles, () => {
 
     const result = await getFiles();
 
-    expect(every(result.general, (f) => "General" === f.category)).toBe(true);
+    expect(every(result.general, (f) => {return "General" === f.category})).toBe(true);
     expect(result.covenants).toHaveLength(0);
   });
 });

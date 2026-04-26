@@ -13,20 +13,20 @@ import { CoursesContainer, swebokFocusMap } from "./courses-container.tsx";
 
 const renderJsx = async (jsx: JSX.Element): Promise<string> => {
   const testApp = new Hono();
-  testApp.get("/", async (c) => c.html(jsx));
+  testApp.get("/", async (c) => {return c.html(jsx)});
   const response = await testApp.request("/");
   return response.text();
 };
 
-const makeCourse = (overrides = {}) => ({
+const makeCourse = (overrides = {}) => {return {
   _id: faker.string.uuid(),
   author: faker.person.fullName(),
   name: faker.lorem.words(2),
   url: faker.internet.url(),
   ...overrides,
-});
+}};
 
-const makeLearningPath = (courses = [makeCourse()], overrides = {}) => ({
+const makeLearningPath = (courses = [makeCourse()], overrides = {}) => {return {
   _id: faker.string.uuid(),
   courseCount: courses.length,
   courses,
@@ -34,15 +34,15 @@ const makeLearningPath = (courses = [makeCourse()], overrides = {}) => ({
   swebokFocus: "testing",
   url: faker.internet.url(),
   ...overrides,
-});
+}};
 
-const makeTracking = (overrides = {}) => ({
+const makeTracking = (overrides = {}) => {return {
   courseUrl: faker.internet.url(),
   id: faker.string.uuid(),
   status: COURSE_TRACKING_STATUS.COMPLETE,
   userId: faker.string.uuid(),
   ...overrides,
-});
+}};
 
 const resetCoursePathData = () => {
   coursePathData.learningPaths = undefined;
@@ -296,7 +296,7 @@ describe(CourseProgressBar, () => {
     resetCoursePathData();
     coursePathData.totalCourseCount = 100;
     coursePathData.courseTrackings = Array.from({ length: 95 }, () =>
-      makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
+      {return makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE })},
     );
     // incomplete = 5% < minToShow(7), so the ternary returns ""
     const html = String(await CourseProgressBar());

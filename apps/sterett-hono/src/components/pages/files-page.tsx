@@ -8,9 +8,9 @@ export const FilesPage = async () => {
   const { covenants, general, meetingMinutes } = await getFiles();
   const updatedAt = map(
     [...covenants, ...general, ...meetingMinutes],
-    (f) => f._updatedAt,
+    (f) => {return f._updatedAt},
   )
-    .toSorted((a, b) => a.localeCompare(b))
+    .toSorted((a, b) => {return a.localeCompare(b)})
     .at(-1);
 
   return (

@@ -15,6 +15,7 @@ import { lodashPlugin } from "../setup/lodash.ts";
 import { markdownPlugin } from "../setup/markdown.ts";
 import { perfectionistPlugin } from "../setup/perfectionist.ts";
 import { playwrightPlugin } from "../setup/playwright.ts";
+import { prettierPlugin } from "../setup/prettier.ts";
 import { reactHooksPlugin, reactPlugin } from "../setup/react.ts";
 import { solidPlugin } from "../setup/solid.ts";
 import { sonarPlugin } from "../setup/sonar.ts";
@@ -54,11 +55,15 @@ export class OutputConfig {
   public readonly readmeLabel?: string | undefined;
 
   public get pluginsByFiles(): Record<string, Plugin[]> {
-    return groupBy(this.plugins, (plugin) => plugin.files);
+    return groupBy(this.plugins, (plugin) => {
+      return plugin.files;
+    });
   }
 
   public get ruleCount(): number {
-    return sumBy(this.plugins, (plugin) => plugin.ruleCount);
+    return sumBy(this.plugins, (plugin) => {
+      return plugin.ruleCount;
+    });
   }
 
   public constructor(options: OutputConfigOptions) {
@@ -78,14 +83,8 @@ export class OutputConfig {
 
 export const outputConfigs: OutputConfig[] = [
   new OutputConfig({
-    extraConfigEntries: [
-      "eslintConfigPrettier",
-      "eslintPluginPrettierRecommended",
-    ],
-    extraImports: [
-      'import eslintConfigPrettier from "eslint-config-prettier";',
-      'import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";',
-    ],
+    extraConfigEntries: [],
+    extraImports: [],
     fileName: "config.main.js",
     includeIgnores: true,
     includeLanguageOptions: true,
@@ -106,6 +105,7 @@ export const outputConfigs: OutputConfig[] = [
       jsonPlugin,
       jsoncPlugin,
       json5Plugin,
+      prettierPlugin,
     ] as const,
   }),
   new OutputConfig({

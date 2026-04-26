@@ -9,7 +9,7 @@ export const wowTaskType = defineType({
     defineField({
       name: "title",
       type: "string",
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => {return Rule.required()},
     }),
     defineField({
       name: "taskType",
@@ -22,7 +22,7 @@ export const wowTaskType = defineType({
       },
       title: "Task Type",
       type: "string",
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => {return Rule.required()},
     }),
     defineField({
       description: "e.g. Until reputation is tentative",

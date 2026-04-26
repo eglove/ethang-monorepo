@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "assets": {
     "binding": "ASSETS",
-    "directory": "./public",
+    "directory": "./public"
   },
   "compatibility_date": "2026-04-25",
   "compatibility_flags": ["nodejs_compat"],
@@ -11,25 +11,25 @@
       "binding": "ethang_hono",
       "database_id": "b5d9ada0-cf96-4b56-97bf-a99134949b30",
       "database_name": "ethang-hono",
-      "remote": true,
-    },
+      "remote": true
+    }
   ],
   "main": "src/index.tsx",
   "name": "ethang-hono",
   "observability": {
-    "enabled": true,
+    "enabled": true
   },
   "placement": {
-    "mode": "smart",
+    "mode": "smart"
   },
   "routes": [
     {
       "custom_domain": true,
-      "pattern": "ethang.dev",
+      "pattern": "ethang.dev"
     },
     {
       "custom_domain": true,
-      "pattern": "www.ethang.dev",
-    },
-  ],
+      "pattern": "www.ethang.dev"
+    }
+  ]
 }

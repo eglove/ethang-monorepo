@@ -5,7 +5,7 @@
 > [!CAUTION]
 > Prettier is already included for styling!
 
-- 796 rules.
+- 797 rules.
 - 241 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
 - 143 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
 - 139 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
@@ -21,6 +21,7 @@
 - 6 rules from [@eslint/json](https://github.com/eslint/json)
 - 2 rules from [@tanstack/eslint-plugin-router](https://tanstack.com/router/latest/docs/eslint/eslint-plugin-router)
 - 1 rule from [eslint-plugin-compat](https://github.com/amilajack/eslint-plugin-compat)
+- 1 rule from [prettier](https://github.com/prettier/eslint-plugin-prettier)
 
 ## Add Even More
 

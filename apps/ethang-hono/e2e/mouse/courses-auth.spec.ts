@@ -19,15 +19,15 @@ const HIDDEN_BUTTON = ".course-completion-button.hidden";
 const COMPLETE_PROGRESS = "#complete-progress";
 
 const mockPutTracking = async (page: Page, tracking: Tracking) =>
-  page.route(
+  {return page.route(
     new RegExp(`/api/course-tracking/${MOCK_USER_ID}/`, "u"),
     async (route) =>
-      route.fulfill({
+      {return route.fulfill({
         body: JSON.stringify({ data: tracking, status: 200 }),
         contentType: "application/json",
         status: 200,
-      }),
-  );
+      })},
+  )};
 
 test.describe("courses page — unauthenticated", () => {
   test("hides completion buttons and progress bar", async ({ axePage }) => {

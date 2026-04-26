@@ -5,13 +5,13 @@ import type { TrusteeRecord } from "../sanity/get-trustees.ts";
 // @ts-expect-error mock
 vi.mock(import("../clients/sanity-client.ts"), () => {
   // eslint-disable-next-line lodash/prefer-constant,unicorn/consistent-function-scoping
-  const mockUrl = () => "https://example.com/mock-128x128.webp";
-  const mockFormat = () => ({ url: mockUrl });
-  const mockWidth = () => ({ format: mockFormat });
-  const mockHeight = () => ({ width: mockWidth });
+  const mockUrl = () => {return "https://example.com/mock-128x128.webp"};
+  const mockFormat = () => {return { url: mockUrl }};
+  const mockWidth = () => {return { format: mockFormat }};
+  const mockHeight = () => {return { width: mockWidth }};
   return {
     NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
-    sanityImage: { image: () => ({ height: mockHeight }) },
+    sanityImage: { image: () => {return { height: mockHeight }} },
     sterettSanityClient: {
       fetch: vi.fn(),
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -22,7 +22,7 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
 import { renderTrusteeCard } from "../test-utilities/render.tsx";
 
 const makeTrustee = (overrides: Partial<TrusteeRecord> = {}): TrusteeRecord =>
-  ({
+  {return {
     _id: "t1",
     duties: "Secretary",
     image: {
@@ -34,7 +34,7 @@ const makeTrustee = (overrides: Partial<TrusteeRecord> = {}): TrusteeRecord =>
     name: "Jane Smith",
     phoneNumber: "555-123-4567",
     ...overrides,
-  }) as TrusteeRecord;
+  } as TrusteeRecord};
 
 describe("trusteeCard", () => {
   it("renders the trustee name", async () => {

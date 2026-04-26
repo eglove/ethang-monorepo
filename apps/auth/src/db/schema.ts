@@ -6,7 +6,7 @@ export const user = sqliteTable("User", {
   email: text("email").unique().notNull(),
   id: text("id")
     .primaryKey()
-    .$defaultFn(() => v7()),
+    .$defaultFn(() => {return v7()}),
   lastLoggedIn: text("lastLoggedIn"),
   password: text("password").notNull(),
   role: text("role"),

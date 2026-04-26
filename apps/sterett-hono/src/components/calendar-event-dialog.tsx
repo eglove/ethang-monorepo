@@ -67,7 +67,7 @@ export const CalendarEventDialog = async ({
         <div class="flex flex-col gap-2 border-t border-white/10 pt-3">
           <p class="text-xs font-medium text-white/50">Add to my Calendar</p>
           <div class="flex flex-wrap gap-2">
-            {map(CAL_SERVICES, async (service) => (
+            {map(CAL_SERVICES, async (service) => {return (
               <a
                 target="_blank"
                 key={service.key}
@@ -77,7 +77,7 @@ export const CalendarEventDialog = async ({
               >
                 {service.label}
               </a>
-            ))}
+            )})}
           </div>
         </div>
       </div>

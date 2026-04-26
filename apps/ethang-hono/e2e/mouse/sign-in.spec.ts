@@ -51,7 +51,7 @@ test.describe("sign in", () => {
       await axePage.waitForURL("**/courses");
 
       const cookies = await axePage.context().cookies();
-      const authCookie = find(cookies, (c) => "ethang-auth-token" === c.name);
+      const authCookie = find(cookies, (c) => {return "ethang-auth-token" === c.name});
       expect.soft(authCookie?.value).toBe(MOCK_SESSION_TOKEN);
     });
 

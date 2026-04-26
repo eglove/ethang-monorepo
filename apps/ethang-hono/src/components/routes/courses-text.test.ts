@@ -4,15 +4,15 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 import { coursePathData } from "../../stores/course-path-store.ts";
 import { coursesText } from "./courses-text.ts";
 
-const makeCourse = (overrides = {}) => ({
+const makeCourse = (overrides = {}) => {return {
   _id: faker.string.uuid(),
   author: faker.person.fullName(),
   name: faker.lorem.words(2),
   url: faker.internet.url(),
   ...overrides,
-});
+}};
 
-const makeLearningPath = (courses = [makeCourse()], overrides = {}) => ({
+const makeLearningPath = (courses = [makeCourse()], overrides = {}) => {return {
   _id: faker.string.uuid(),
   courseCount: courses.length,
   courses,
@@ -20,7 +20,7 @@ const makeLearningPath = (courses = [makeCourse()], overrides = {}) => ({
   swebokFocus: faker.lorem.word(),
   url: faker.internet.url(),
   ...overrides,
-});
+}};
 
 describe(coursesText, () => {
   it("includes the main header", () => {

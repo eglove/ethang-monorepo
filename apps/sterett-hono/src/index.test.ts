@@ -1,27 +1,27 @@
 // @ts-expect-error ignore for now
-vi.mock(import("./components/pages/calendar-page.tsx"), () => ({
+vi.mock(import("./components/pages/calendar-page.tsx"), () => {return {
   CalendarPage: vi.fn(constant("")),
-}));
+}});
 
 // @ts-expect-error ignore for now
-vi.mock(import("./components/pages/files-page.tsx"), () => ({
+vi.mock(import("./components/pages/files-page.tsx"), () => {return {
   FilesPage: vi.fn(constant("")),
-}));
+}});
 
 // @ts-expect-error ignore for now
-vi.mock(import("./components/pages/home-page.tsx"), () => ({
+vi.mock(import("./components/pages/home-page.tsx"), () => {return {
   HomePage: vi.fn(constant("")),
-}));
+}});
 
 // @ts-expect-error ignore for now
-vi.mock(import("./components/pages/news-page.tsx"), () => ({
+vi.mock(import("./components/pages/news-page.tsx"), () => {return {
   NewsPage: vi.fn(constant("")),
-}));
+}});
 
 // @ts-expect-error ignore for now
-vi.mock(import("./components/pages/trustees-page.tsx"), () => ({
+vi.mock(import("./components/pages/trustees-page.tsx"), () => {return {
   TrusteesPage: vi.fn(constant("")),
-}));
+}});
 
 import constant from "lodash/constant.js";
 import { describe, expect, it, vi } from "vitest";

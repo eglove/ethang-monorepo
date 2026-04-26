@@ -2,13 +2,13 @@
 import split from "lodash/split.js";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("../clients/sanity-client.ts"), () => ({
+vi.mock(import("../clients/sanity-client.ts"), () => {return {
   NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
   sterettSanityClient: {
     fetch: vi.fn(),
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
-}));
+}});
 
 import { sterettSanityClient } from "../clients/sanity-client.ts";
 import {
@@ -256,7 +256,7 @@ describe(getNewsAndEvents, () => {
     const result = await getNewsAndEvents();
 
     // eslint-disable-next-line lodash/prefer-lodash-method
-    expect(result.map((r) => r._id)).toStrictEqual([
+    expect(result.map((r) => {return r._id})).toStrictEqual([
       "evt-2",
       "upd-1",
       "evt-1",

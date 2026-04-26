@@ -2,15 +2,15 @@ import { faker } from "@faker-js/faker";
 import { Hono } from "hono";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("../clients/sanity.ts"), (() => ({
+vi.mock(import("../clients/sanity.ts"), (() => {return {
   sanityClient: { fetch: vi.fn() },
-})) as never);
-vi.mock(import("../db/database.ts"), () => ({
+}}) as never);
+vi.mock(import("../db/database.ts"), () => {return {
   getDatabase: vi.fn().mockReturnValue({}),
-}));
-vi.mock(import("../models/course-tracking.ts"), () => ({
+}});
+vi.mock(import("../models/course-tracking.ts"), () => {return {
   CourseTracking: vi.fn(),
-}));
+}});
 
 import { sanityClient } from "../clients/sanity.ts";
 import { CourseTracking } from "../models/course-tracking.ts";
@@ -30,15 +30,15 @@ const makeContext = async (courseStore: CoursePathStore) => {
   await testApp.request("/");
 };
 
-const makeCourse = (overrides = {}) => ({
+const makeCourse = (overrides = {}) => {return {
   _id: faker.string.uuid(),
   author: faker.person.fullName(),
   name: faker.lorem.words(2),
   url: faker.internet.url(),
   ...overrides,
-});
+}};
 
-const makeLearningPath = (courses = [makeCourse()], overrides = {}) => ({
+const makeLearningPath = (courses = [makeCourse()], overrides = {}) => {return {
   _id: faker.string.uuid(),
   courseCount: courses.length,
   courses,
@@ -46,15 +46,15 @@ const makeLearningPath = (courses = [makeCourse()], overrides = {}) => ({
   swebokFocus: faker.lorem.word(),
   url: faker.internet.url(),
   ...overrides,
-});
+}};
 
-const makeCourseTracking = (overrides = {}) => ({
+const makeCourseTracking = (overrides = {}) => {return {
   courseUrl: faker.internet.url(),
   id: faker.string.uuid(),
   status: COURSE_TRACKING_STATUS.COMPLETE,
   userId: faker.string.uuid(),
   ...overrides,
-});
+}};
 
 const mockCourseTrackingWith = (
   getCourseTrackingByUserId: ReturnType<typeof vi.fn>,

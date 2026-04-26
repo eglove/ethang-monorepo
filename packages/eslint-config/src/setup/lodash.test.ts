@@ -24,6 +24,10 @@ describe("lodash setup", () => {
   it("should prefix rules with lodash/", () => {
     const ruleKeys = keys(lodashRules);
 
-    expect(every(ruleKeys, (key) => startsWith(key, "lodash/"))).toBe(true);
+    expect(
+      every(ruleKeys, (key) => {
+        return startsWith(key, "lodash/");
+      }),
+    ).toBe(true);
   });
 });

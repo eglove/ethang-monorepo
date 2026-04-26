@@ -1,14 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 
 // @ts-expect-error mock
-vi.mock(import("../clients/sanity-client.ts"), () => ({
+vi.mock(import("../clients/sanity-client.ts"), () => {return {
   NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
-  sanityImage: { image: () => ({}) },
+  sanityImage: { image: () => {return {}} },
   sterettSanityClient: {
     fetch: vi.fn(),
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
-}));
+}});
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 
@@ -18,14 +18,14 @@ import { getWeekDays } from "../utils/calendar.ts";
 const DATE_JUNE_15 = "2024-06-15";
 const DATE_JUNE_01 = "2024-06-01";
 
-const makeEvent = (id: string, title: string): CalendarEventRecord => ({
+const makeEvent = (id: string, title: string): CalendarEventRecord => {return {
   _id: id,
   _updatedAt: "2024-06-15T12:00:00Z",
   description: [],
   endsAt: "2024-06-15T15:00:00.000Z",
   startsAt: "2024-06-15T13:00:00.000Z",
   title,
-});
+}};
 
 describe("weekView", () => {
   it("renders day headers Sun through Sat", async () => {

@@ -2,16 +2,16 @@ import { faker } from "@faker-js/faker";
 import get from "lodash/get.js";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("../clients/sanity.ts"), (() => ({
+vi.mock(import("../clients/sanity.ts"), (() => {return {
   sanityClient: {
     fetch: vi.fn(),
   },
-})) as never);
+}}) as never);
 
 import { sanityClient } from "../clients/sanity.ts";
 import { BlogModel } from "./blog-model.ts";
 
-const makeBlog = () => ({
+const makeBlog = () => {return {
   _createdAt: faker.date.past().toISOString(),
   _id: faker.string.uuid(),
   _updatedAt: faker.date.recent().toISOString(),
@@ -20,7 +20,7 @@ const makeBlog = () => ({
   description: faker.lorem.sentence(),
   slug: { current: faker.lorem.slug() },
   title: faker.lorem.words(3),
-});
+}};
 
 describe(BlogModel, () => {
   describe("getAllBlogs", () => {
@@ -134,7 +134,7 @@ describe(BlogModel, () => {
     it("returns posts, total, and maxPages for page 1 with 25 total", async () => {
       vi.clearAllMocks();
       vi.mocked(sanityClient).fetch.mockResolvedValue([
-        { posts: Array.from({ length: 10 }, () => makeBlog()) },
+        { posts: Array.from({ length: 10 }, () => {return makeBlog()}) },
         { total: 25 },
       ] as never);
 
@@ -149,7 +149,7 @@ describe(BlogModel, () => {
     it("returns correct slice parameters for page 2", async () => {
       vi.clearAllMocks();
       vi.mocked(sanityClient).fetch.mockResolvedValue([
-        { posts: Array.from({ length: 10 }, () => makeBlog()) },
+        { posts: Array.from({ length: 10 }, () => {return makeBlog()}) },
         { total: 25 },
       ] as never);
 
@@ -167,7 +167,7 @@ describe(BlogModel, () => {
     it("returns correct slice parameters for page 3", async () => {
       vi.clearAllMocks();
       vi.mocked(sanityClient).fetch.mockResolvedValue([
-        { posts: Array.from({ length: 5 }, () => makeBlog()) },
+        { posts: Array.from({ length: 5 }, () => {return makeBlog()}) },
         { total: 25 },
       ] as never);
 
@@ -215,7 +215,7 @@ describe(BlogModel, () => {
     it("returns maxPages=1 for 5 total posts with pageSize=10", async () => {
       vi.clearAllMocks();
       vi.mocked(sanityClient).fetch.mockResolvedValue([
-        { posts: Array.from({ length: 5 }, () => makeBlog()) },
+        { posts: Array.from({ length: 5 }, () => {return makeBlog()}) },
         { total: 5 },
       ] as never);
 

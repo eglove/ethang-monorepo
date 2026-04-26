@@ -5,7 +5,7 @@ export const projectType = defineType({
     defineField({
       name: "title",
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
     defineField({
       name: "publicUrl",
@@ -14,7 +14,7 @@ export const projectType = defineType({
     defineField({
       name: "githubUrl",
       type: "url",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
     defineField({
       name: "techs",
@@ -30,7 +30,7 @@ export const projectType = defineType({
       name: "description",
       of: [{ type: "block" }],
       type: "array",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
   ],
   name: "project",

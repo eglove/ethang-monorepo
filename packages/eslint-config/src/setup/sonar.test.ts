@@ -11,7 +11,9 @@ describe("sonar rules", () => {
   });
 
   it("should turn off S rules", () => {
-    const sRules = filter(keys(sonarRules), (key) => /^sonar\/S\d+/u.test(key));
+    const sRules = filter(keys(sonarRules), (key) => {
+      return /^sonar\/S\d+/u.test(key);
+    });
 
     for (const key of sRules) {
       expect(sonarRules[key]).toBe("off");

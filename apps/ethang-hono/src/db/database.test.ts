@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("drizzle-orm/d1"), () => ({
+vi.mock(import("drizzle-orm/d1"), () => {return {
   drizzle: vi.fn().mockReturnValue({}),
-}));
+}});
 
 import { drizzle } from "drizzle-orm/d1";
 

@@ -6,7 +6,7 @@ export const blogType = defineType({
       name: "title",
       title: "Title",
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
     defineField({
       name: "slug",
@@ -16,7 +16,7 @@ export const blogType = defineType({
       },
       title: "Slug",
       type: "slug",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
     defineField({
       name: "description",
@@ -33,7 +33,7 @@ export const blogType = defineType({
       name: "author",
       title: "Author",
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
     defineField({
       fields: [
@@ -41,7 +41,7 @@ export const blogType = defineType({
           name: "alt",
           title: "Image Description",
           type: "string",
-          validation: (Rule) => Rule.required(),
+          validation: (Rule) => {return Rule.required()},
         }),
       ],
       name: "featuredImage",

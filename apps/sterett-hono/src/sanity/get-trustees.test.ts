@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("../clients/sanity-client.ts"), () => ({
+vi.mock(import("../clients/sanity-client.ts"), () => {return {
   NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
   sterettSanityClient: {
     fetch: vi.fn(),
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
-}));
+}});
 
 import { sterettSanityClient } from "../clients/sanity-client.ts";
 import { getTrustees } from "./get-trustees.ts";

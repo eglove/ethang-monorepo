@@ -147,7 +147,7 @@ export abstract class BaseStore<State extends object> {
       return { error: new Error("Signal already aborted"), ok: false };
     }
 
-    const immediateResult = attempt(() => predicate(this._state));
+    const immediateResult = attempt(() => {return predicate(this._state)});
     if (isError(immediateResult)) {
       return { error: immediateResult, ok: false };
     }
@@ -313,7 +313,7 @@ export abstract class BaseStore<State extends object> {
       combinedSignal.addEventListener("abort", onAbort, { once: true });
 
       reference.unsubscribe = this.subscribe((subscriberState) => {
-        const result = attempt(() => predicate(subscriberState));
+        const result = attempt(() => {return predicate(subscriberState)});
         if (isError(result)) {
           cleanup();
           resolve({ error: result, ok: false });

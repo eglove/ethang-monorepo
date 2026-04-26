@@ -1,14 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 
 // @ts-expect-error mock
-vi.mock(import("../clients/sanity-client.ts"), () => ({
+vi.mock(import("../clients/sanity-client.ts"), () => {return {
   NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
-  sanityImage: { image: () => ({}) },
+  sanityImage: { image: () => {return {}} },
   sterettSanityClient: {
     fetch: vi.fn(),
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
-}));
+}});
 
 import { renderMainLayout } from "../test-utilities/render.tsx";
 

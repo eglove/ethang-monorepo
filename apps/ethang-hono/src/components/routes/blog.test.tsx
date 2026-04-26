@@ -3,9 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 import { app } from "../../index.tsx";
 import { BlogModel } from "../../models/blog-model.ts";
 
-vi.mock(import("../../models/blog-model.ts"), () => ({
+vi.mock(import("../../models/blog-model.ts"), () => {return {
   BlogModel: vi.fn(),
-}));
+}});
 
 const mockBlogModel = (maxPages: number) => {
   vi.mocked(BlogModel).mockImplementation(

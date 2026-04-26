@@ -14,7 +14,7 @@ export const DayView = async ({
       {0 === events.length && (
         <p class="text-sm text-white/60">No events scheduled.</p>
       )}
-      {map(events, async (event) => (
+      {map(events, async (event) => {return (
         <div
           key={event._id}
           class="rounded-lg border border-white/10 bg-white/5 p-4"
@@ -37,7 +37,7 @@ export const DayView = async ({
             </button>
           </div>
         </div>
-      ))}
+      )})}
     </div>
   );
 };

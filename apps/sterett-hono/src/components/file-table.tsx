@@ -15,7 +15,7 @@ export const FileTable = async ({ files, title }: FileTableProperties) => {
         <p class="text-sm text-white/50">No files available.</p>
       ) : (
         <ul class="flex flex-col gap-2">
-          {map(files, async (file) => (
+          {map(files, async (file) => {return (
             <li
               key={file._id}
               class="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm"
@@ -34,7 +34,7 @@ export const FileTable = async ({ files, title }: FileTableProperties) => {
                 })}
               </span>
             </li>
-          ))}
+          )})}
         </ul>
       )}
     </div>

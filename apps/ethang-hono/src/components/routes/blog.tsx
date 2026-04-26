@@ -92,12 +92,12 @@ const computeNextUrl = (page: number, maxPages: number): string | undefined => {
 };
 
 const computeTitle = (page: number): string =>
-  1 === page ? "Blog" : `Blog - Page ${page}`;
+  {return 1 === page ? "Blog" : `Blog - Page ${page}`};
 
 const computeCanonicalUrl = (page: number): string =>
-  1 === page
+  {return 1 === page
     ? "https://ethang.dev/blog"
-    : `https://ethang.dev/blog/page/${page}`;
+    : `https://ethang.dev/blog/page/${page}`};
 
 export const Blog = async ({ page = 1 }: { page?: number }) => {
   const { pathname } = globalStore;
@@ -173,7 +173,7 @@ export const Blog = async ({ page = 1 }: { page?: number }) => {
           class="mt-6 flex items-center justify-center gap-1"
         >
           {map(generatePageNumbers(page, maxPages), async (p) =>
-            renderPageLink(p, page),
+            {return renderPageLink(p, page)},
           )}
         </nav>
       )}

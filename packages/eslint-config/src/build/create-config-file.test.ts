@@ -7,9 +7,11 @@ import { OutputConfig } from "./output-config.ts";
 import { Plugin } from "./plugin.ts";
 
 vi.mock(import("node:fs"));
-vi.mock(import("./get-react-version.ts"), () => ({
-  getLatestReact: vi.fn().mockResolvedValue({ version: "19.0.0" }),
-}));
+vi.mock(import("./get-react-version.ts"), () => {
+  return {
+    getLatestReact: vi.fn().mockResolvedValue({ version: "19.0.0" }),
+  };
+});
 
 const TEST_FILE_NAME = "config.test.js";
 const TEST_PLUGIN_IMPORT = 'import testPlugin from "test-plugin";';

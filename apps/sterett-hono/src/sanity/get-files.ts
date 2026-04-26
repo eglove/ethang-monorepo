@@ -27,8 +27,8 @@ export const getFiles = async (): Promise<FilesResult> => {
   ]);
 
   return {
-    covenants: filter(generalCovenant, (f) => "Covenant" === f.category),
-    general: filter(generalCovenant, (f) => "General" === f.category),
+    covenants: filter(generalCovenant, (f) => {return "Covenant" === f.category}),
+    general: filter(generalCovenant, (f) => {return "General" === f.category}),
     meetingMinutes,
   };
 };

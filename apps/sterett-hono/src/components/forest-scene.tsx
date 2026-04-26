@@ -20,12 +20,12 @@ const COUNT = 22; // covers 1440px
 
 const backPaths = Array.from({ length: COUNT }, (_, index) =>
   // @ts-expect-error it's ok
-  tree(34 + index * SPACING, 173, BACK_HEIGHTS[index % BACK_HEIGHTS.length]),
+  {return tree(34 + index * SPACING, 173, BACK_HEIGHTS[index % BACK_HEIGHTS.length])},
 ).join(" ");
 
 const frontPaths = Array.from({ length: COUNT }, (_, index) =>
   // @ts-expect-error it's ok
-  tree(index * SPACING, 178, FRONT_HEIGHTS[index % FRONT_HEIGHTS.length]),
+  {return tree(index * SPACING, 178, FRONT_HEIGHTS[index % FRONT_HEIGHTS.length])},
 ).join(" ");
 
 const forestSvg = `

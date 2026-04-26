@@ -50,7 +50,7 @@ export const PortableText = async ({ content }: PortableTextProperties) => {
       map(
         filter(
           blocks,
-          (block): block is SanityImageBlock => "image" === block._type,
+          (block): block is SanityImageBlock => {return "image" === block._type},
         ),
         async (block) => {
           imageHtmlMap.set(block._key, await buildImageHtml(block));
@@ -68,7 +68,7 @@ export const PortableText = async ({ content }: PortableTextProperties) => {
             types: {
               // toHTML handlers must be synchronous and return HTML strings
               image: ({ value }: { value: { _key: string } }) =>
-                imageHtmlMap.get(value._key) ?? "",
+                {return imageHtmlMap.get(value._key) ?? ""},
             },
           },
         }),

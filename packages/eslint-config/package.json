@@ -21,7 +21,6 @@
     "@vitest/eslint-plugin": "^1.6.16",
     "angular-eslint": "21.3.1",
     "eslint": "^10.2.1",
-    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^1.7.0",
     "eslint-plugin-compat": "^7.0.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -66,10 +65,10 @@
   },
   "scripts": {
     "build": "pnpm lint",
-    "lint": "bun build.ts && eslint . --fix --cache && prettier src --write --cache && pnpm tsc --noEmit",
+    "lint": "bun build.ts && eslint . --fix --cache && prettier src --write --cache --ignore-path .foo && pnpm tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage"
   },
   "type": "module",
-  "version": "25.15.4"
+  "version": "25.15.5"
 }

@@ -41,7 +41,7 @@ export class CoursePathStore {
 
   public getCourse(courseId: string) {
     return find(
-      flatMap(this.learningPaths, (_path) => _path.courses),
+      flatMap(this.learningPaths, (_path) => {return _path.courses}),
       ["_id", courseId],
     );
   }

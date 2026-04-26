@@ -7,18 +7,18 @@ export const courseType = defineType({
     defineField({
       name: "name",
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
     defineField({
       name: "author",
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {return rule.required()},
     }),
     defineField({
       name: "url",
       title: "URL",
       type: "url",
-      validation: (rule) => isUrlUnique(rule, true, "course"),
+      validation: (rule) => {return isUrlUnique(rule, true, "course")},
     }),
   ],
   name: "course",

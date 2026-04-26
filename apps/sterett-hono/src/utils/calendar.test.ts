@@ -63,12 +63,12 @@ const makeEvent = (
   startsAt: string,
   endsAt: string,
 ): CalendarEventRecord =>
-  ({
+  {return {
     _id: id,
     endsAt,
     startsAt,
     title: id,
-  }) as CalendarEventRecord;
+  } as CalendarEventRecord};
 
 describe(buildEventsByDate, () => {
   it("returns an empty map for no events", () => {
@@ -156,11 +156,11 @@ describe(buildCalendarWeeks, () => {
   it("marks only current-month cells as current: true", () => {
     const weeks = buildCalendarWeeks(2024, 6);
     const cells = weeks.flat();
-    const currentCells = filter(cells, (c) => c.current);
-    const otherCells = filter(cells, (c) => !c.current);
+    const currentCells = filter(cells, (c) => {return c.current});
+    const otherCells = filter(cells, (c) => {return !c.current});
 
     expect(currentCells).toHaveLength(30); // June has 30 days
-    expect(every(otherCells, (c) => 6 !== c.month)).toBe(true);
+    expect(every(otherCells, (c) => {return 6 !== c.month})).toBe(true);
   });
 
   it("handles a month starting on Sunday (no leading cells from prior month)", () => {
@@ -177,14 +177,14 @@ describe(buildCalendarWeeks, () => {
 
   it("handles February in a leap year (29 days)", () => {
     const weeks = buildCalendarWeeks(2024, 2);
-    const currentCells = filter(weeks.flat(), (c) => c.current);
+    const currentCells = filter(weeks.flat(), (c) => {return c.current});
 
     expect(currentCells).toHaveLength(29);
   });
 
   it("handles February in a non-leap year (28 days)", () => {
     const weeks = buildCalendarWeeks(2025, 2);
-    const currentCells = filter(weeks.flat(), (c) => c.current);
+    const currentCells = filter(weeks.flat(), (c) => {return c.current});
 
     expect(currentCells).toHaveLength(28);
   });
@@ -193,7 +193,7 @@ describe(buildCalendarWeeks, () => {
     // December 2024 ends mid-week — trailing cells should be January 2025
     const weeks = buildCalendarWeeks(2024, 12);
     const lastWeek = weeks.at(-1);
-    const trailingCells = filter(lastWeek, (c) => !c.current);
+    const trailingCells = filter(lastWeek, (c) => {return !c.current});
 
     expect(trailingCells[0]?.month).toBe(1);
     expect(trailingCells[0]?.year).toBe(2025);
@@ -202,7 +202,7 @@ describe(buildCalendarWeeks, () => {
   it("wraps correctly from January — leading cells should be December of prior year", () => {
     // January 2024 starts on Monday — leading cell is from December 2023
     const weeks = buildCalendarWeeks(2024, 1);
-    const leadingCells = filter(weeks[0], (c) => !c.current);
+    const leadingCells = filter(weeks[0], (c) => {return !c.current});
 
     expect(leadingCells[0]?.month).toBe(12);
     expect(leadingCells[0]?.year).toBe(2023);

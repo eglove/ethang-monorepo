@@ -26,10 +26,10 @@ const isCalendarView = (v: string): v is CalendarView => {
 };
 
 const lastQuery = (value: string | string[] | undefined): string | undefined =>
-  isArray(value) ? last(value) : value;
+  {return isArray(value) ? last(value) : value};
 
-app.get("/", async (c) => c.html(<HomePage />));
-app.get("/news", async (c) => c.html(<NewsPage />));
+app.get("/", async (c) => {return c.html(<HomePage />)});
+app.get("/news", async (c) => {return c.html(<NewsPage />)});
 
 app.post("/news-preview", async (c) => {
   if ("true" !== c.env.ENABLE_TEST_ROUTES) {
@@ -38,7 +38,7 @@ app.post("/news-preview", async (c) => {
   const items = await c.req.json<NewsAndEvents>();
   return c.html(<NewsPage items={items} />);
 });
-app.get("/files", async (c) => c.html(<FilesPage />));
+app.get("/files", async (c) => {return c.html(<FilesPage />)});
 app.get(
   "/calendar",
   validator("query", (value) => {
@@ -62,9 +62,9 @@ app.get(
     }
   },
 );
-app.get("/trustees", async (c) => c.html(<TrusteesPage />));
+app.get("/trustees", async (c) => {return c.html(<TrusteesPage />)});
 app.get("/admin", (c) =>
-  c.redirect("https://admin.sterettcreekvillagetrustee.com", 301),
+  {return c.redirect("https://admin.sterettcreekvillagetrustee.com", 301)},
 );
 
 app.get("/sitemap.xml", (c) => {
@@ -79,12 +79,12 @@ app.get("/sitemap.xml", (c) => {
 
   const urls = map(
     pages,
-    ({ changefreq, path, priority }) => `
+    ({ changefreq, path, priority }) => {return `
   <url>
     <loc>${base}${path}</loc>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
-  </url>`,
+  </url>`},
   ).join("");
 
   c.header("Content-Type", "application/xml; charset=utf-8");

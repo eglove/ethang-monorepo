@@ -43,7 +43,7 @@ export const blockContentType = defineType({
           name: "alt",
           title: "Image Description",
           type: "string",
-          validation: (Rule) => Rule.required(),
+          validation: (Rule) => {return Rule.required()},
         }),
         defineField({
           name: "caption",
