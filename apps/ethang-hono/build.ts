@@ -62,7 +62,7 @@ const entryMap = reduce(
     accumulator[key] = entry;
     return accumulator;
   },
-  {} as Record<string, string>,
+  {} as Record<string, string>
 );
 
 const sharedConfig: Options = {
@@ -74,21 +74,21 @@ const sharedConfig: Options = {
   outDir: "public/scripts",
   platform: "browser",
   sourcemap: false,
-  target: "esnext",
+  target: "esnext"
 };
 
 if (0 < entries.length) {
   await tsup({
     ...sharedConfig,
     entry: entryMap,
-    injectStyle: true,
+    injectStyle: true
   });
 }
 
 // Build the loader separately so it outputs as loader.js (not loader.client.js)
 await tsup({
   ...sharedConfig,
-  entry: { loader: LOADER_ENTRY },
+  entry: { loader: LOADER_ENTRY }
 });
 
 await buildServiceWorker("./public/sw.js");

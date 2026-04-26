@@ -93,7 +93,9 @@ export const CoursesContainer = async () => {
 
             <CourseList
               courses={path.courses}
-              getCount={() => {return counter.getCount()}}
+              getCount={() => {
+                return counter.getCount();
+              }}
             />
           </li>
         );

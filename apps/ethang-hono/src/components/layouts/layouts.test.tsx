@@ -8,7 +8,9 @@ const renderMain = async (
   properties: MainLayoutProperties,
 ): Promise<string> => {
   const testApp = new Hono();
-  testApp.get("/", async (c) => {return c.html(<MainLayout {...properties} />)});
+  testApp.get("/", async (c) => {
+    return c.html(<MainLayout {...properties} />);
+  });
   const response = await testApp.request("/");
   return response.text();
 };
@@ -140,9 +142,9 @@ describe(MainLayout, () => {
 describe(BlogLayout, () => {
   it("delegates to MainLayout with isBlog=true", async () => {
     const testApp = new Hono();
-    testApp.get("/", async (c) =>
-      {return c.html(<BlogLayout title="My Post">Blog content</BlogLayout>)},
-    );
+    testApp.get("/", async (c) => {
+      return c.html(<BlogLayout title="My Post">Blog content</BlogLayout>);
+    });
     const response = await testApp.request("/");
     const html = await response.text();
 

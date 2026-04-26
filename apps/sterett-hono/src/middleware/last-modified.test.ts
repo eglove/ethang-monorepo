@@ -6,17 +6,21 @@ const VALID_ISO = "2024-06-01T12:00:00Z";
 const VALID_HTTP = new Date(VALID_ISO).toUTCString();
 const LAST_MODIFIED_HEADER = "last-modified";
 
-const metaTag = (content: string) =>
-  {return `<meta content="${content}" name="last-modified">`};
+const metaTag = (content: string) => {
+  return `<meta content="${content}" name="last-modified">`;
+};
 
-const htmlWith = (meta: string) =>
-  {return `<html><head>${meta}</head><body>Hello</body></html>`};
+const htmlWith = (meta: string) => {
+  return `<html><head>${meta}</head><body>Hello</body></html>`;
+};
 
 describe(lastModifiedMiddleware, () => {
   it("sets Last-Modified header from a valid meta tag", async () => {
     const app = new Hono();
     app.use(lastModifiedMiddleware);
-    app.get("/", (c) => {return c.html(htmlWith(metaTag(VALID_ISO)))});
+    app.get("/", (c) => {
+      return c.html(htmlWith(metaTag(VALID_ISO)));
+    });
 
     const response = await app.request("/");
 
@@ -26,7 +30,9 @@ describe(lastModifiedMiddleware, () => {
   it("does not set Last-Modified for a non-HTML response", async () => {
     const app = new Hono();
     app.use(lastModifiedMiddleware);
-    app.get("/", (c) => {return c.json({ key: "value" })});
+    app.get("/", (c) => {
+      return c.json({ key: "value" });
+    });
 
     const response = await app.request("/");
 
@@ -36,9 +42,9 @@ describe(lastModifiedMiddleware, () => {
   it("does not set Last-Modified when the meta tag is absent", async () => {
     const app = new Hono();
     app.use(lastModifiedMiddleware);
-    app.get("/", (c) =>
-      {return c.html("<html><head><title>No meta</title></head></html>")},
-    );
+    app.get("/", (c) => {
+      return c.html("<html><head><title>No meta</title></head></html>");
+    });
 
     const response = await app.request("/");
 
@@ -48,7 +54,9 @@ describe(lastModifiedMiddleware, () => {
   it("does not set Last-Modified when the meta tag has no content attribute", async () => {
     const app = new Hono();
     app.use(lastModifiedMiddleware);
-    app.get("/", (c) => {return c.html(htmlWith('<meta name="last-modified">'))});
+    app.get("/", (c) => {
+      return c.html(htmlWith('<meta name="last-modified">'));
+    });
 
     const response = await app.request("/");
 
@@ -58,7 +66,9 @@ describe(lastModifiedMiddleware, () => {
   it("does not set Last-Modified when the content attribute is not a valid date", async () => {
     const app = new Hono();
     app.use(lastModifiedMiddleware);
-    app.get("/", (c) => {return c.html(htmlWith(metaTag("not-a-date")))});
+    app.get("/", (c) => {
+      return c.html(htmlWith(metaTag("not-a-date")));
+    });
 
     const response = await app.request("/");
 
@@ -69,7 +79,9 @@ describe(lastModifiedMiddleware, () => {
     const originalHtml = htmlWith(metaTag(VALID_ISO));
     const app = new Hono();
     app.use(lastModifiedMiddleware);
-    app.get("/", (c) => {return c.html(originalHtml)});
+    app.get("/", (c) => {
+      return c.html(originalHtml);
+    });
 
     const response = await app.request("/");
 

@@ -1,8 +1,10 @@
 import "../../test-utilities/mocks/sanity-client.ts";
 
-vi.mock(import("../../sanity/get-files.ts"), () => {return {
-  getFiles: vi.fn(),
-}});
+vi.mock(import("../../sanity/get-files.ts"), () => {
+  return {
+    getFiles: vi.fn(),
+  };
+});
 
 import { describe, expect, it, vi } from "vitest";
 

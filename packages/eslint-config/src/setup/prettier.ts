@@ -13,6 +13,7 @@ const customRules = [
       "error",
       {
         endOfLine: "lf",
+        trailingComma: "none",
       },
     ],
   },

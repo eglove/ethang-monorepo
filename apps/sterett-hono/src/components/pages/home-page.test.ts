@@ -1,16 +1,24 @@
 // @ts-expect-error mock
-vi.mock(import("../../clients/sanity-client.ts"), () => {return {
-  NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
-  sanityImage: { image: () => {return {}} },
-  sterettSanityClient: {
-    fetch: vi.fn(),
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  } as unknown as (typeof import("../../clients/sanity-client.ts"))["sterettSanityClient"],
-}});
+vi.mock(import("../../clients/sanity-client.ts"), () => {
+  return {
+    NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
+    sanityImage: {
+      image: () => {
+        return {};
+      },
+    },
+    sterettSanityClient: {
+      fetch: vi.fn(),
+      // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    } as unknown as (typeof import("../../clients/sanity-client.ts"))["sterettSanityClient"],
+  };
+});
 
-vi.mock(import("../../sanity/get-page.ts"), () => {return {
-  getPage: vi.fn(),
-}});
+vi.mock(import("../../sanity/get-page.ts"), () => {
+  return {
+    getPage: vi.fn(),
+  };
+});
 
 import { describe, expect, it, vi } from "vitest";
 

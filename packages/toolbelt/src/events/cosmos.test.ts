@@ -44,7 +44,11 @@ describe(Cosmos, () => {
       });
 
       expect(results.length).toBeGreaterThanOrEqual(1);
-      expect(every(results, (r) => {return r.listener === listener})).toBe(true);
+      expect(
+        every(results, (r) => {
+          return r.listener === listener;
+        }),
+      ).toBe(true);
     });
 
     it("priority 3 — matches by listener + eventName + options", () => {
@@ -69,7 +73,11 @@ describe(Cosmos, () => {
       });
 
       expect(results.length).toBeGreaterThanOrEqual(1);
-      expect(every(results, (r) => {return r.eventTarget === targetB})).toBe(true);
+      expect(
+        every(results, (r) => {
+          return r.eventTarget === targetB;
+        }),
+      ).toBe(true);
     });
 
     it("priority 5 — matches by eventName alone", () => {
@@ -87,7 +95,11 @@ describe(Cosmos, () => {
       const results = cosmos.getEventListeners({ eventTarget: dedicated });
 
       expect(results.length).toBeGreaterThanOrEqual(1);
-      expect(every(results, (r) => {return r.eventTarget === dedicated})).toBe(true);
+      expect(
+        every(results, (r) => {
+          return r.eventTarget === dedicated;
+        }),
+      ).toBe(true);
     });
 
     it("priority 6 — empty filters return all listeners", () => {

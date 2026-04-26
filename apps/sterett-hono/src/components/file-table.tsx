@@ -15,26 +15,28 @@ export const FileTable = async ({ files, title }: FileTableProperties) => {
         <p class="text-sm text-white/50">No files available.</p>
       ) : (
         <ul class="flex flex-col gap-2">
-          {map(files, async (file) => {return (
-            <li
-              key={file._id}
-              class="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm"
-            >
-              <a
-                target="_blank"
-                rel="noreferrer"
-                href={file.file.asset.url}
-                class="text-white/90 underline-offset-2 hover:underline"
+          {map(files, async (file) => {
+            return (
+              <li
+                key={file._id}
+                class="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm"
               >
-                {file.title}
-              </a>
-              <span class="shrink-0 text-white/60">
-                {new Date(file.date).toLocaleDateString("en-US", {
-                  dateStyle: "medium",
-                })}
-              </span>
-            </li>
-          )})}
+                <a
+                  target="_blank"
+                  rel="noreferrer"
+                  href={file.file.asset.url}
+                  class="text-white/90 underline-offset-2 hover:underline"
+                >
+                  {file.title}
+                </a>
+                <span class="shrink-0 text-white/60">
+                  {new Date(file.date).toLocaleDateString("en-US", {
+                    dateStyle: "medium",
+                  })}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

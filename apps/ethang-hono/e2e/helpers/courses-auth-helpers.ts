@@ -16,9 +16,9 @@ export type Tracking = {
   userId: string;
 };
 
-export const mockVerifyOk = async (page: Page) =>
-  {return page.context().route(AUTH_VERIFY_URL, async (route) =>
-    {return route.fulfill({
+export const mockVerifyOk = async (page: Page) => {
+  return page.context().route(AUTH_VERIFY_URL, async (route) => {
+    return route.fulfill({
       body: JSON.stringify({
         email: "test@example.com",
         exp: 9_999_999_999,
@@ -28,11 +28,12 @@ export const mockVerifyOk = async (page: Page) =>
       }),
       contentType: "application/json",
       status: 200,
-    })},
-  )};
+    });
+  });
+};
 
-export const mockTrackingApi = async (page: Page, trackings: Tracking[]) =>
-  {return page
+export const mockTrackingApi = async (page: Page, trackings: Tracking[]) => {
+  return page
     .context()
     .route(`**/api/course-tracking/${MOCK_USER_ID}`, async (route) => {
       // Only intercept GET requests — PUT requests (course status updates) are
@@ -48,34 +49,38 @@ export const mockTrackingApi = async (page: Page, trackings: Tracking[]) =>
         contentType: "application/json",
         status: 200,
       });
-    })};
+    });
+};
 
-export const setAuthCookie = async (page: Page) =>
-  {return page.context().addCookies([
+export const setAuthCookie = async (page: Page) => {
+  return page.context().addCookies([
     {
       domain: "localhost",
       name: "ethang-auth-token",
       path: "/",
       value: "mock-token-value",
     },
-  ])};
+  ]);
+};
 
 export const mockSignInSuccess = async (
   page: Page,
   token = MOCK_SESSION_TOKEN,
-) =>
-  {return page.context().route(AUTH_SIGN_UP_URL, async (route) =>
-    {return route.fulfill({
+) => {
+  return page.context().route(AUTH_SIGN_UP_URL, async (route) => {
+    return route.fulfill({
       body: JSON.stringify({ sessionToken: token }),
       contentType: CONTENT_TYPE_JSON,
       status: 200,
-    })},
-  )};
+    });
+  });
+};
 
-export const mockSignInError = async (page: Page) =>
-  {return page
-    .context()
-    .route(AUTH_SIGN_UP_URL, async (route) => {return route.fulfill({ status: 401 })})};
+export const mockSignInError = async (page: Page) => {
+  return page.context().route(AUTH_SIGN_UP_URL, async (route) => {
+    return route.fulfill({ status: 401 });
+  });
+};
 
 export const mockCourseStatusUpdate = async (
   page: Page,
@@ -83,20 +88,23 @@ export const mockCourseStatusUpdate = async (
 ) =>
   // Use page.route() (not context.route()) so WebKit honours the mock even
   // when it is registered after the page has already navigated.
-  {return page.route(
-    new RegExp(`/api/course-tracking/${MOCK_USER_ID}/`, "u"),
-    async (route) =>
-      {return route.fulfill({
-        body: JSON.stringify({
-          data: {
-            courseUrl: MOCK_TRACKED_URL,
-            id,
-            status,
-            userId: MOCK_USER_ID,
-          },
+  {
+    return page.route(
+      new RegExp(`/api/course-tracking/${MOCK_USER_ID}/`, "u"),
+      async (route) => {
+        return route.fulfill({
+          body: JSON.stringify({
+            data: {
+              courseUrl: MOCK_TRACKED_URL,
+              id,
+              status,
+              userId: MOCK_USER_ID,
+            },
+            status: 200,
+          }),
+          contentType: CONTENT_TYPE_JSON,
           status: 200,
-        }),
-        contentType: CONTENT_TYPE_JSON,
-        status: 200,
-      })},
-  )};
+        });
+      },
+    );
+  };

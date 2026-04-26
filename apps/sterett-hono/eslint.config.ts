@@ -18,7 +18,7 @@ export default defineConfig(
     "public/index.css",
     "playwright-report",
     "coverage",
-    "test-results",
+    "test-results"
   ]),
   ...config,
   ...htmlConfig,
@@ -29,12 +29,12 @@ export default defineConfig(
     languageOptions: {
       parserOptions: {
         project: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
+        tsconfigRootDir: import.meta.dirname
+      }
     },
     rules: {
       "css/no-invalid-properties": "off",
-      "css/use-layers": "off",
-    },
-  },
+      "css/use-layers": "off"
+    }
+  }
 );

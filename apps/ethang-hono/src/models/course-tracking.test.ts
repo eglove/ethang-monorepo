@@ -5,11 +5,13 @@ import { sanityClient } from "../clients/sanity.ts";
 import { CourseTracking } from "./course-tracking.ts";
 
 // @ts-expect-error it's fine
-vi.mock(import("../clients/sanity.ts"), () => {return {
-  sanityClient: {
-    fetch: vi.fn(),
-  },
-}});
+vi.mock(import("../clients/sanity.ts"), () => {
+  return {
+    sanityClient: {
+      fetch: vi.fn(),
+    },
+  };
+});
 
 type MockDatabase = {
   insert: ReturnType<typeof vi.fn>;

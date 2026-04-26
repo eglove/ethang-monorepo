@@ -34,7 +34,6 @@
     "eslint-plugin-storybook": "^10.3.5",
     "eslint-plugin-tailwindcss": "^4.0.0-beta.0",
     "eslint-plugin-unicorn": "^64.0.0",
-    "prettier": "^3.8.3",
     "typescript-eslint": "^8.59.0"
   },
   "devDependencies": {
@@ -65,10 +64,10 @@
   },
   "scripts": {
     "build": "pnpm lint",
-    "lint": "bun build.ts && eslint . --fix --cache && prettier src --write --cache --ignore-path .foo && pnpm tsc --noEmit",
+    "lint": "bun build.ts && eslint . --fix --cache && pnpm tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage"
   },
   "type": "module",
-  "version": "25.15.5"
+  "version": "25.15.7"
 }

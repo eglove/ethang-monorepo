@@ -8,28 +8,28 @@ import { deskStructure } from "./desk-structure.js";
 
 const widgets = [
   updateWidget({ layout: { width: "medium" } }),
-  projectUsersWidget({ layout: { width: "medium" } }),
+  projectUsersWidget({ layout: { width: "medium" } })
 ];
 
 export const developmentPlugins = [
   structureTool({
-    structure: deskStructure,
+    structure: deskStructure
   }),
   dashboardTool({
     title: "Updates",
-    widgets,
+    widgets
   }),
   visionTool(),
-  codeInput(),
+  codeInput()
 ];
 
 export const productionPlugins = [
   structureTool({
-    structure: deskStructure,
+    structure: deskStructure
   }),
   dashboardTool({
     title: "Updates",
-    widgets,
+    widgets
   }),
-  codeInput(),
+  codeInput()
 ];

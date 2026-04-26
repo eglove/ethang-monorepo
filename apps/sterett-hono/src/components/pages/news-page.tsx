@@ -16,8 +16,12 @@ export const NewsPage = async ({
   items: providedItems,
 }: NewsPageProperties = {}) => {
   const items = providedItems ?? (await getNewsAndEvents());
-  const updatedAt = map(items, (index) => {return index._updatedAt})
-    .toSorted((a, b) => {return a.localeCompare(b)})
+  const updatedAt = map(items, (index) => {
+    return index._updatedAt;
+  })
+    .toSorted((a, b) => {
+      return a.localeCompare(b);
+    })
     .at(-1);
 
   return (
@@ -31,13 +35,13 @@ export const NewsPage = async ({
         <p class="text-white/60">No upcoming news or events.</p>
       ) : (
         <div class="flex flex-col gap-4">
-          {map(items, async (item) =>
-            {return "startsAt" in item ? (
+          {map(items, async (item) => {
+            return "startsAt" in item ? (
               <CalendarEvent data={item} key={item._id} />
             ) : (
               <NewsUpdate data={item} key={item._id} />
-            )},
-          )}
+            );
+          })}
         </div>
       )}
     </MainLayout>

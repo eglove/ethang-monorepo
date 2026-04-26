@@ -9,7 +9,7 @@ export default defineConfig(
     "generated",
     "wrangler.jsonc",
     "tsconfig.json",
-    "migrations",
+    "migrations"
   ]),
   ...config,
   {
@@ -18,9 +18,9 @@ export default defineConfig(
         project: true,
         // @ts-expect-error import meta
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        tsconfigRootDir: import.meta.dirname,
-      },
+        tsconfigRootDir: import.meta.dirname
+      }
     },
-    rules: {},
-  },
+    rules: {}
+  }
 );

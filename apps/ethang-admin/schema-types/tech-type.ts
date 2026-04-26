@@ -5,7 +5,9 @@ export const techType = defineType({
     defineField({
       name: "name",
       type: "string",
-      validation: (rule) => {return rule.required()},
+      validation: (rule) => {
+        return rule.required();
+      },
     }),
   ],
   name: "tech",

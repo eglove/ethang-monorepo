@@ -29,21 +29,25 @@ const renderPortableText = async (blocks: Body): Promise<string> => {
   return response.text();
 };
 
-const makeChild = (text: string, marks: string[] = []) => {return {
-  _key: "key-1",
-  _type: "span",
-  marks,
-  text,
-}};
+const makeChild = (text: string, marks: string[] = []) => {
+  return {
+    _key: "key-1",
+    _type: "span",
+    marks,
+    text,
+  };
+};
 
-const makeBlock = (style: string, text: string, overrides = {}) => {return {
-  _key: BLOCK_KEY,
-  _type: BLOCK_TYPE,
-  children: [makeChild(text)],
-  markDefs: [],
-  style,
-  ...overrides,
-}};
+const makeBlock = (style: string, text: string, overrides = {}) => {
+  return {
+    _key: BLOCK_KEY,
+    _type: BLOCK_TYPE,
+    children: [makeChild(text)],
+    markDefs: [],
+    style,
+    ...overrides,
+  };
+};
 
 describe(`${PortableText.name} - block styles`, () => {
   it("renders nothing for empty body", async () => {

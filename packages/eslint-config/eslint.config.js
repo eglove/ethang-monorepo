@@ -17,7 +17,7 @@ export default defineConfig(
     "src/config.tailwind.js",
     "src/config.vitest.js",
     "**/*.d.ts",
-    "docs/**",
+    "docs/**"
   ]),
   ...config,
   ...vitestConfig,
@@ -25,8 +25,8 @@ export default defineConfig(
     languageOptions: {
       parserOptions: {
         project: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
+        tsconfigRootDir: import.meta.dirname
+      }
+    }
+  }
 );

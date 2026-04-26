@@ -16,7 +16,9 @@ describe(CourseTrackingService, () => {
       "fetch",
       vi.fn().mockResolvedValue({
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => {return mockData},
+        json: async () => {
+          return mockData;
+        },
         ok: true,
       }),
     );
@@ -56,7 +58,9 @@ describe(CourseTrackingService, () => {
       "fetch",
       vi.fn().mockResolvedValue({
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => {return mockData},
+        json: async () => {
+          return mockData;
+        },
         ok: true,
       }),
     );
@@ -82,7 +86,9 @@ describe(CourseTrackingService, () => {
       "fetch",
       vi.fn().mockResolvedValue({
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => {return mockUser},
+        json: async () => {
+          return mockUser;
+        },
         ok: true,
       }),
     );

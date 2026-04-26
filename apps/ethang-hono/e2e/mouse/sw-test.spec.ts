@@ -16,12 +16,12 @@ test.describe("sw", () => {
     });
 
     await page.goto("http://localhost:8787");
-    await page.evaluate(async () =>
-      {return fetch("/api/course-tracking/test-user/abc123", {
+    await page.evaluate(async () => {
+      return fetch("/api/course-tracking/test-user/abc123", {
         body: JSON.stringify({}),
         method: "PUT",
-      })},
-    );
+      });
+    });
     await page.waitForLoadState("load");
 
     expect.soft(routeHit).toBe(true);

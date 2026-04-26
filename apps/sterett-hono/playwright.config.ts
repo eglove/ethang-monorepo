@@ -8,39 +8,39 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Chrome"] }
     },
     {
       name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
+      use: { ...devices["Desktop Firefox"] }
     },
     {
       name: "webkit",
-      use: { ...devices["Desktop Safari"] },
+      use: { ...devices["Desktop Safari"] }
     },
     {
       name: "Mobile Chrome",
-      use: { ...devices["Pixel 5"] },
+      use: { ...devices["Pixel 5"] }
     },
     {
       name: "Mobile Safari",
-      use: { ...devices["iPhone 12"] },
+      use: { ...devices["iPhone 12"] }
     },
     {
       name: "Microsoft Edge",
-      use: { ...devices["Desktop Edge"], channel: "msedge" },
+      use: { ...devices["Desktop Edge"], channel: "msedge" }
     },
     {
       name: "Google Chrome",
-      use: { ...devices["Desktop Chrome"], channel: "chrome" },
-    },
+      use: { ...devices["Desktop Chrome"], channel: "chrome" }
+    }
   ],
   reporter: [["html", { open: "never" }]],
   retries: isNil(process.env["CI"]) ? 0 : 2,
   testDir: "./e2e",
   testMatch: "**/*.spec.ts",
   use: {
-    baseURL: "http://localhost:8787",
+    baseURL: "http://localhost:8787"
   },
-  workers: isNil(process.env["CI"]) ? undefined : 1,
+  workers: isNil(process.env["CI"]) ? undefined : 1
 });

@@ -10,10 +10,10 @@ export default defineConfig({
         autoUpdate: true,
         branches: 91.92,
         functions: 100,
-        lines: 99.75,
-        statements: 99.31,
-      },
+        lines: 99.76,
+        statements: 99.31
+      }
     },
-    include: ["src/**/*.test.ts"],
-  },
+    include: ["src/**/*.test.ts"]
+  }
 });
