@@ -15,7 +15,7 @@ await updateRules();
 updateReadme();
 await projectBuilder(import.meta.dirname, {
   entry: [...configFiles, "src/constants.js"],
-  outDir: "dist",
+  outDir: "dist"
 });
 copyFileSync("src/README.md", "dist/README.md");
 

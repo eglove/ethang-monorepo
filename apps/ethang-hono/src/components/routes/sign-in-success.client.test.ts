@@ -21,7 +21,9 @@ describe("sign-in.client.ts success no cookieStore", () => {
     `;
 
     vi.mocked(fetch).mockResolvedValue({
-      json: () => ({ sessionToken: "test-token" }),
+      json: () => {
+        return { sessionToken: "test-token" };
+      },
       ok: true,
     } as unknown as Response);
 

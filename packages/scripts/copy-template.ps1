@@ -5,8 +5,7 @@ $templateOptions = @(
 )
 
 $template = $null
-while ($null -eq $template)
-{
+while ($null -eq $template) {
     Write-Information "Choose template:"
     for ($i = 0; $i -lt $templateOptions.Count; $i++) {
         Write-Information "$( $i + 1 ). $( $templateOptions[$i].Name )"
@@ -14,21 +13,17 @@ while ($null -eq $template)
 
     $selection = Read-Host "Enter number (1-4)"
 
-    if ($selection -match "^[1-4]$")
-    {
+    if ($selection -match "^[1-4]$") {
         $template = $templateOptions[[int]$selection - 1].Value
     }
-    else
-    {
+    else {
         Write-Information "Invalid selection."
     }
 }
 
 
-if ($template -eq "react-vite")
-{
-    if (-not (Test-Path -Path $directory))
-    {
+if ($template -eq "react-vite") {
+    if (-not (Test-Path -Path $directory)) {
         New-Item -ItemType Directory -Path $directory | Out-Null
     }
 

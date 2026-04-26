@@ -77,7 +77,9 @@ describe(NavigationLink, () => {
 describe(Navigation, () => {
   it("renders a nav element", async () => {
     const testApp = new Hono();
-    testApp.get("/", async (c) => c.html(<Navigation />));
+    testApp.get("/", async (c) => {
+      return c.html(<Navigation />);
+    });
     const response = await testApp.request("/");
     const html = await response.text();
 
@@ -87,7 +89,9 @@ describe(Navigation, () => {
 
   it("includes navigation links for main routes", async () => {
     const testApp = new Hono();
-    testApp.get("/", async (c) => c.html(<Navigation />));
+    testApp.get("/", async (c) => {
+      return c.html(<Navigation />);
+    });
     const response = await testApp.request("/");
     const html = await response.text();
 
@@ -99,7 +103,9 @@ describe(Navigation, () => {
 
   it("renders the hamburger button and nav link list", async () => {
     const testApp = new Hono();
-    testApp.get("/", async (c) => c.html(<Navigation />));
+    testApp.get("/", async (c) => {
+      return c.html(<Navigation />);
+    });
     const response = await testApp.request("/");
     const html = await response.text();
 

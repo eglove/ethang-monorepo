@@ -20,7 +20,9 @@ const recursiveSort = <T extends object>(object: T): T => {
 
   if (isObject(object)) {
     return reduce(
-      keys(object).toSorted((a, b) => a.localeCompare(b)),
+      keys(object).toSorted((a, b) => {
+        return a.localeCompare(b);
+      }),
       (sorted, key) => {
         set(sorted, key, recursiveSort(get(object, [key])));
         return sorted;

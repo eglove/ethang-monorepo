@@ -84,7 +84,9 @@ describe("course-completion.client setPercentages tests", () => {
         <button class="course-completion-button" data-course-url="url-4"></button>
         <div class="course-status-text">Unknown</div>
       </div>
-      ${Array.from({ length: 96 }, (_, index) => `<div><button class="course-completion-button" data-course-url="url-${index + 5}"></button><div class="course-status-text">Complete</div></div>`).join("")}
+      ${Array.from({ length: 96 }, (_, index) => {
+        return `<div><button class="course-completion-button" data-course-url="url-${index + 5}"></button><div class="course-status-text">Complete</div></div>`;
+      }).join("")}
     `;
 
     // Set initial store state so we don't default to "Incomplete"

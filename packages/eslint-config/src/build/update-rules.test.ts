@@ -4,9 +4,11 @@ import { createConfigFile } from "./create-config-file.ts";
 import { outputConfigs } from "./output-config.ts";
 import { updateRules } from "./update-rules.ts";
 
-vi.mock(import("./create-config-file.ts"), () => ({
-  createConfigFile: vi.fn(),
-}));
+vi.mock(import("./create-config-file.ts"), () => {
+  return {
+    createConfigFile: vi.fn(),
+  };
+});
 
 describe("update-rules", () => {
   it("should call createConfigFile for each config", async () => {

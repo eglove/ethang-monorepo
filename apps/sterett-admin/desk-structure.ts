@@ -11,13 +11,13 @@ export const deskStructure: StructureResolver = (S, context) => {
         context,
         S,
         title: "Trustees Order",
-        type: "trustee",
+        type: "trustee"
       }),
       orderableDocumentListDeskItem({
         context,
         S,
         title: "Navigation Order",
-        type: "navigation",
-      }),
+        type: "navigation"
+      })
     ]);
 };

@@ -28,11 +28,12 @@ import { MainLayout } from "../layouts/main-layout.tsx";
 
 const CHICAGO = "America/Chicago";
 
-const tabClass = (active: boolean) =>
-  twMerge(
+const tabClass = (active: boolean) => {
+  return twMerge(
     "px-4 py-1.5 text-sm rounded-md text-white/60 hover:text-white hover:bg-white/10 transition-colors",
     active && "bg-white/20 text-white font-medium",
   );
+};
 
 export const CalendarPage = async ({
   date,
@@ -53,8 +54,12 @@ export const CalendarPage = async ({
   );
   const events = await getCalendarEvents(rangeStart, rangeEndExclusive);
   const updatedAt =
-    map(events, (event) => event._updatedAt)
-      .toSorted((a, b) => a.localeCompare(b))
+    map(events, (event) => {
+      return event._updatedAt;
+    })
+      .toSorted((a, b) => {
+        return a.localeCompare(b);
+      })
       .at(-1) ?? (await getLatestCalendarEventUpdatedAt());
 
   const eventsByDate = buildEventsByDate(events);
@@ -178,9 +183,9 @@ export const CalendarPage = async ({
 
       {"day" === view && <DayView events={eventsByDate.get(date) ?? []} />}
 
-      {map(events, async (event) => (
-        <CalendarEventDialog event={event} key={event._id} />
-      ))}
+      {map(events, async (event) => {
+        return <CalendarEventDialog event={event} key={event._id} />;
+      })}
     </MainLayout>
   );
 };

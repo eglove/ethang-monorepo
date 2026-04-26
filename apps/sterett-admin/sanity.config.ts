@@ -3,7 +3,7 @@ import { defineConfig } from "sanity";
 
 import {
   developmentPlugins,
-  productionPlugins,
+  productionPlugins
 } from "./sanity-config-utilities.ts";
 import schema from "./schemas/schema.ts";
 
@@ -17,7 +17,7 @@ export default defineConfig({
   // cspell:disable-next-line
   projectId: "540gjnt8",
   schema: {
-    types: schema,
+    types: schema
   },
-  title: "Sterett Creek Village Trustee Admin",
+  title: "Sterett Creek Village Trustee Admin"
 });

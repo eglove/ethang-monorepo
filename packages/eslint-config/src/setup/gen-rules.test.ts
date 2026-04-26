@@ -76,18 +76,18 @@ describe("gen-rules", () => {
       const ruleNames = ["rule1"];
       const customRules = [{ name: "non-existent", rule: "error" }];
 
-      expect(() => genRules(ruleNames, customRules)).toThrow(
-        "non-existent in (unknown prefix) does not exist.",
-      );
+      expect(() => {
+        return genRules(ruleNames, customRules);
+      }).toThrow("non-existent in (unknown prefix) does not exist.");
     });
 
     it("should throw error if custom rule does not exist in ruleNames", () => {
       const ruleNames = ["rule1"];
       const customRules = [{ name: "non-existent", rule: "error" }];
 
-      expect(() => genRules(ruleNames, customRules, "p")).toThrow(
-        "non-existent in p does not exist.",
-      );
+      expect(() => {
+        return genRules(ruleNames, customRules, "p");
+      }).toThrow("non-existent in p does not exist.");
     });
 
     it("should return sorted rules", () => {

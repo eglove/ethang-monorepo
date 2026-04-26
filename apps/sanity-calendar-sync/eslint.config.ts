@@ -7,16 +7,16 @@ export default defineConfig(
     "dist",
     ".wrangler",
     "wrangler.jsonc",
-    "**/*.d.ts",
+    "**/*.d.ts"
   ]),
   ...config,
   {
     languageOptions: {
       parserOptions: {
         project: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
+        tsconfigRootDir: import.meta.dirname
+      }
     },
-    rules: {},
-  },
+    rules: {}
+  }
 );

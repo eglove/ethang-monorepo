@@ -1,9 +1,11 @@
 import noop from "lodash/noop.js";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("@ethang/toolbelt/http/cookie.js"), () => ({
-  getCookieValue: vi.fn(),
-}));
+vi.mock(import("@ethang/toolbelt/http/cookie.js"), () => {
+  return {
+    getCookieValue: vi.fn(),
+  };
+});
 
 import { getCookieValue } from "@ethang/toolbelt/http/cookie.js";
 
@@ -17,19 +19,22 @@ const makeContext = (
     acceptLanguage?: string;
     timezone?: string;
   } = {},
-) => ({
-  req: {
-    header: (name: string) => {
-      if ("Accept-Language" === name) return options.acceptLanguage ?? null;
-      return null;
+) => {
+  return {
+    req: {
+      header: (name: string) => {
+        if ("Accept-Language" === name) return options.acceptLanguage ?? null;
+        return null;
+      },
+      raw: {
+        cf:
+          options.timezone === undefined ? {} : { timezone: options.timezone },
+        headers: new Headers(),
+      },
+      url,
     },
-    raw: {
-      cf: options.timezone === undefined ? {} : { timezone: options.timezone },
-      headers: new Headers(),
-    },
-    url,
-  },
-});
+  };
+};
 
 const makeStore = () => {
   vi.clearAllMocks();
@@ -158,7 +163,9 @@ describe("globalStore — setup() auth", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
-        json: () => ({ sub: "user-abc" }),
+        json: () => {
+          return { sub: "user-abc" };
+        },
         ok: true,
       }),
     );
@@ -179,7 +186,9 @@ describe("globalStore — setup() auth", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
-        json: () => ({ sub: "user-abc" }),
+        json: () => {
+          return { sub: "user-abc" };
+        },
         ok: false,
       }),
     );
@@ -197,7 +206,9 @@ describe("globalStore — setup() auth", () => {
     vi.unstubAllGlobals();
     vi.mocked(getCookieValue).mockReturnValue("my-secret-token");
     const mockFetch = vi.fn().mockResolvedValue({
-      json: () => ({ sub: "user-1" }),
+      json: () => {
+        return { sub: "user-1" };
+      },
       ok: true,
     });
     vi.stubGlobal("fetch", mockFetch);
@@ -237,7 +248,9 @@ describe("globalStore — setup() auth", () => {
     vi.unstubAllGlobals();
     vi.mocked(getCookieValue).mockReturnValue(null as unknown as string);
     const mockFetch = vi.fn().mockResolvedValue({
-      json: () => ({ sub: "user-1" }),
+      json: () => {
+        return { sub: "user-1" };
+      },
       ok: true,
     });
     vi.stubGlobal("fetch", mockFetch);

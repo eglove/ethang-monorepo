@@ -3,10 +3,13 @@ import isNil from "lodash/isNil.js";
 import isPlainObject from "lodash/isPlainObject.js";
 import isString from "lodash/isString.js";
 
-const isHtmlElementNode = (node: Node): node is HTMLElement => isElement(node);
+const isHtmlElementNode = (node: Node): node is HTMLElement => {
+  return isElement(node);
+};
 
-const isManifestRecord = (value: unknown): value is Record<string, string> =>
-  isPlainObject(value);
+const isManifestRecord = (value: unknown): value is Record<string, string> => {
+  return isPlainObject(value);
+};
 
 const parseManifest = (): Record<string, string> => {
   const text = document.querySelector("#script-manifest")?.textContent ?? "{}";

@@ -19,7 +19,7 @@ export default defineConfig(
     "coverage",
     "docs",
     "playwright-report",
-    "test-results",
+    "test-results"
   ]),
   ...config,
   ...htmlConfig,
@@ -30,11 +30,11 @@ export default defineConfig(
     languageOptions: {
       parserOptions: {
         project: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
+        tsconfigRootDir: import.meta.dirname
+      }
     },
     rules: {
-      "vitest/no-import-node-test": "off",
-    },
-  },
+      "vitest/no-import-node-test": "off"
+    }
+  }
 );

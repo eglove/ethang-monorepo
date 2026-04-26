@@ -6,5 +6,5 @@ export const routes = {
   scrollbarGutter: "/tips/scrollbar-gutter",
   scrollContainers: "/tips/scroll-containers",
   signIn: "/sign-in",
-  tips: "/tips",
+  tips: "/tips"
 };

@@ -5,7 +5,7 @@ import { defineConfig } from "sanity";
 import {
   type StructureBuilder,
   type StructureResolverContext,
-  structureTool,
+  structureTool
 } from "sanity/structure";
 
 import { schemaTypes } from "./schema-types/index.ts";
@@ -24,25 +24,25 @@ export default defineConfig({
               context,
               S,
               title: "Learning Paths",
-              type: "learningPath",
+              type: "learningPath"
             }),
             ...S.documentTypeListItems(),
             orderableDocumentListDeskItem({
               context,
               S,
               title: "WoW Tasks",
-              type: "wowTask",
-            }),
+              type: "wowTask"
+            })
           ]);
-      },
+      }
     }),
     visionTool(),
-    codeInput(),
+    codeInput()
   ],
   // cspell:disable-next-line
   projectId: "3rkvshhk",
   schema: {
-    types: schemaTypes,
+    types: schemaTypes
   },
-  title: "ethang-admin",
+  title: "ethang-admin"
 });

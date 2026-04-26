@@ -20,16 +20,18 @@ export type CalendarCell = {
   year: number;
 };
 
-export const formatDateTime = (iso: string) =>
-  DateTime.fromISO(iso)
+export const formatDateTime = (iso: string) => {
+  return DateTime.fromISO(iso)
     .setZone(CHICAGO)
     .toLocaleString(
       { dateStyle: "medium", timeStyle: "short" },
       { locale: LOCALE },
     );
+};
 
-export const toDateKey = (year: number, month: number, day: number) =>
-  `${year}-${padStart(String(month), 2, "0")}-${padStart(String(day), 2, "0")}`;
+export const toDateKey = (year: number, month: number, day: number) => {
+  return `${year}-${padStart(String(month), 2, "0")}-${padStart(String(day), 2, "0")}`;
+};
 
 const addToDateMap = (
   dateMap: Map<string, CalendarEventRecord[]>,
@@ -165,16 +167,18 @@ export const getWeekDays = (dateString: string): string[] => {
   });
 };
 
-export const formatTimeOnly = (iso: string): string =>
-  DateTime.fromISO(iso)
+export const formatTimeOnly = (iso: string): string => {
+  return DateTime.fromISO(iso)
     .setZone(CHICAGO)
     .toLocaleString({ hour: "numeric", minute: "2-digit" }, { locale: LOCALE });
+};
 
-export const formatDayHeading = (dateString: string): string =>
-  DateTime.fromISO(dateString, { zone: CHICAGO }).toLocaleString(
+export const formatDayHeading = (dateString: string): string => {
+  return DateTime.fromISO(dateString, { zone: CHICAGO }).toLocaleString(
     { day: "numeric", month: "long", weekday: "long", year: "numeric" },
     { locale: LOCALE },
   );
+};
 
 export const formatWeekHeading = (dateString: string): string => {
   const days = getWeekDays(dateString);
@@ -203,10 +207,13 @@ export const toPlainText = (
   if (!description) return "";
   const blocks = isArray(description) ? description : [description];
   return map(
-    filter(blocks, (b) => "block" === b._type),
-    (b) =>
-      map(b.children, (child) =>
-        "text" in child && isString(child.text) ? child.text : "",
-      ).join(""),
+    filter(blocks, (b) => {
+      return "block" === b._type;
+    }),
+    (b) => {
+      return map(b.children, (child) => {
+        return "text" in child && isString(child.text) ? child.text : "";
+      }).join("");
+    },
   ).join("\n");
 };

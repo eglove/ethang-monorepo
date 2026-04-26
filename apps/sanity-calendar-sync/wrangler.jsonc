@@ -4,9 +4,9 @@
   "main": "src/index.ts",
   "name": "sanity-calendar-sync",
   "observability": {
-    "enabled": true,
+    "enabled": true
   },
   "placement": {
-    "mode": "smart",
-  },
+    "mode": "smart"
+  }
 }

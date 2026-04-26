@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("../clients/sanity-client.ts"), () => ({
-  NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
-  sterettSanityClient: {
-    fetch: vi.fn(),
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
-}));
+vi.mock(import("../clients/sanity-client.ts"), () => {
+  return {
+    NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
+    sterettSanityClient: {
+      fetch: vi.fn(),
+      // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
+  };
+});
 
 import { sterettSanityClient } from "../clients/sanity-client.ts";
 import {
@@ -19,14 +21,16 @@ const RANGE_START = "2024-06-01";
 const RANGE_END = "2024-06-30";
 const LATEST_UPDATED_AT = "2024-06-15T00:00:00Z";
 
-const makeEvent = (id: string) => ({
-  _id: id,
-  _updatedAt: "2024-06-01T00:00:00Z",
-  description: null,
-  endsAt: "2024-06-15T15:00:00Z",
-  startsAt: "2024-06-15T13:00:00Z",
-  title: `Event ${id}`,
-});
+const makeEvent = (id: string) => {
+  return {
+    _id: id,
+    _updatedAt: "2024-06-01T00:00:00Z",
+    description: null,
+    endsAt: "2024-06-15T15:00:00Z",
+    startsAt: "2024-06-15T13:00:00Z",
+    title: `Event ${id}`,
+  };
+};
 
 describe(getLatestCalendarEventUpdatedAt, () => {
   it("queries ordered by _updatedAt descending", async () => {

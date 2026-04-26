@@ -11,13 +11,17 @@ export const learningPathType = defineType({
     defineField({
       name: "name",
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {
+        return rule.required();
+      },
     }),
     defineField({
       name: "url",
       title: "URL",
       type: "url",
-      validation: (rule) => isUrlUnique(rule, false, "learningPath"),
+      validation: (rule) => {
+        return isUrlUnique(rule, false, "learningPath");
+      },
     }),
     defineField({
       name: "swebokFocus",
@@ -54,7 +58,9 @@ export const learningPathType = defineType({
         ],
       },
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {
+        return rule.required();
+      },
     }),
     defineField({
       name: "courses",

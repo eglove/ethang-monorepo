@@ -1,5 +1,5 @@
 param (
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [Alias("d")]
     [string]$Directory
 )

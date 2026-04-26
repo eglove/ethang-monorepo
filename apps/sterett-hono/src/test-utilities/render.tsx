@@ -26,30 +26,40 @@ import { TrusteesPage } from "../components/pages/trustees-page.tsx";
 import { PortableText } from "../components/portable-text.tsx";
 import { TrusteeCard } from "../components/trustee-card.tsx";
 
-// eslint-disable-next-line unicorn/no-await-expression-member
-const html = async (app: Hono) => (await app.request("/")).text();
+const html = async (app: Hono) => {
+  const response = await app.request("/");
+  return response.text();
+};
 
 export const renderFileTable = async (files: FileRecord[], title: string) => {
   const app = new Hono();
-  app.get("/", async (c) => c.html(<FileTable files={files} title={title} />));
+  app.get("/", async (c) => {
+    return c.html(<FileTable files={files} title={title} />);
+  });
   return html(app);
 };
 
 export const renderCalendarEvent = async (data: CalendarEventReturn) => {
   const app = new Hono();
-  app.get("/", async (c) => c.html(<CalendarEvent data={data} />));
+  app.get("/", async (c) => {
+    return c.html(<CalendarEvent data={data} />);
+  });
   return html(app);
 };
 
 export const renderNewsUpdate = async (data: NewsUpdateReturn) => {
   const app = new Hono();
-  app.get("/", async (c) => c.html(<NewsUpdate data={data} />));
+  app.get("/", async (c) => {
+    return c.html(<NewsUpdate data={data} />);
+  });
   return html(app);
 };
 
 export const renderTrusteeCard = async (trustee: TrusteeRecord) => {
   const app = new Hono();
-  app.get("/", async (c) => c.html(<TrusteeCard trustee={trustee} />));
+  app.get("/", async (c) => {
+    return c.html(<TrusteeCard trustee={trustee} />);
+  });
   return html(app);
 };
 
@@ -61,8 +71,8 @@ export const renderMainLayout = async (properties: {
   updatedAt?: string;
 }) => {
   const app = new Hono();
-  app.get("/", async (c) =>
-    c.html(
+  app.get("/", async (c) => {
+    return c.html(
       // @ts-expect-error for testing
       <MainLayout
         title={properties.title}
@@ -72,20 +82,24 @@ export const renderMainLayout = async (properties: {
       >
         {properties.children}
       </MainLayout>,
-    ),
-  );
+    );
+  });
   return html(app);
 };
 
 export const renderCalendarDayView = async (events: CalendarEventRecord[]) => {
   const app = new Hono();
-  app.get("/", async (c) => c.html(<DayView events={events} />));
+  app.get("/", async (c) => {
+    return c.html(<DayView events={events} />);
+  });
   return html(app);
 };
 
 export const renderCalendarEventDialog = async (event: CalendarEventRecord) => {
   const app = new Hono();
-  app.get("/", async (c) => c.html(<CalendarEventDialog event={event} />));
+  app.get("/", async (c) => {
+    return c.html(<CalendarEventDialog event={event} />);
+  });
   return html(app);
 };
 
@@ -95,11 +109,11 @@ export const renderCalendarMonthView = async (
   today: string,
 ) => {
   const app = new Hono();
-  app.get("/", async (c) =>
-    c.html(
+  app.get("/", async (c) => {
+    return c.html(
       <MonthView today={today} weeks={weeks} eventsByDate={eventsByDate} />,
-    ),
-  );
+    );
+  });
   return html(app);
 };
 
@@ -109,15 +123,15 @@ export const renderCalendarWeekView = async (
   today: string,
 ) => {
   const app = new Hono();
-  app.get("/", async (c) =>
-    c.html(
+  app.get("/", async (c) => {
+    return c.html(
       <WeekView
         today={today}
         weekDays={weekDays}
         eventsByDate={eventsByDate}
       />,
-    ),
-  );
+    );
+  });
   return html(app);
 };
 
@@ -125,35 +139,43 @@ export const renderPortableText = async (
   content: Parameters<typeof PortableText>[0]["content"],
 ) => {
   const app = new Hono();
-  app.get("/", async (c) => c.html(<PortableText content={content} />));
+  app.get("/", async (c) => {
+    return c.html(<PortableText content={content} />);
+  });
   return html(app);
 };
 
 export const renderHomePage = async () => {
   const app = new Hono();
-  app.get("/", async (c) => c.html(<HomePage />));
+  app.get("/", async (c) => {
+    return c.html(<HomePage />);
+  });
   return html(app);
 };
 
 export const renderFilesPage = async () => {
   const app = new Hono();
-  app.get("/", async (c) => c.html(<FilesPage />));
+  app.get("/", async (c) => {
+    return c.html(<FilesPage />);
+  });
   return html(app);
 };
 
 export const renderTrusteesPage = async () => {
   const app = new Hono();
-  app.get("/", async (c) => c.html(<TrusteesPage />));
+  app.get("/", async (c) => {
+    return c.html(<TrusteesPage />);
+  });
   return html(app);
 };
 
 export const renderNewsPage = async (items?: NewsAndEvents) => {
   const app = new Hono();
-  app.get("/", async (c) =>
-    items === undefined
+  app.get("/", async (c) => {
+    return items === undefined
       ? c.html(<NewsPage />)
-      : c.html(<NewsPage items={items} />),
-  );
+      : c.html(<NewsPage items={items} />);
+  });
   return html(app);
 };
 
@@ -164,6 +186,8 @@ export const renderCalendarPage = async (properties: {
   year: number;
 }) => {
   const app = new Hono();
-  app.get("/", async (c) => c.html(<CalendarPage {...properties} />));
+  app.get("/", async (c) => {
+    return c.html(<CalendarPage {...properties} />);
+  });
   return html(app);
 };

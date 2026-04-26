@@ -26,7 +26,11 @@ const buildImportList = (output: OutputConfig): string[] => {
     constantsImports.push("ignores", "languageOptions");
   }
 
-  if (some(output.plugins, (p) => !isNil(p.includeAngularLanguageOptions))) {
+  if (
+    some(output.plugins, (p) => {
+      return !isNil(p.includeAngularLanguageOptions);
+    })
+  ) {
     constantsImports.push("angularLanguageOptions");
   }
 
@@ -77,7 +81,9 @@ const buildConfigBlockOptionals = (
     optionals += "\nlanguageOptions: angularLanguageOptions,";
   }
 
-  const processorPlugin = find(sorted, (p) => !isNil(p.processor));
+  const processorPlugin = find(sorted, (p) => {
+    return !isNil(p.processor);
+  });
 
   if (!isNil(processorPlugin)) {
     optionals += `\nprocessor: ${processorPlugin.processor},`;
@@ -124,15 +130,21 @@ const buildConfigBlock = (
 
   const optionals = buildConfigBlockOptionals(sorted, output, reactSettings);
 
-  const languagePlugin = find(sorted, (p) => !isNil(p.language));
+  const languagePlugin = find(sorted, (p) => {
+    return !isNil(p.language);
+  });
 
   const languageString = isNil(languagePlugin)
     ? ""
     : `language: "${languagePlugin.language}",`;
 
   const extraOptions = map(
-    filter(sorted, (p) => !isNil(p.extraOptions)),
-    (p) => p.extraOptions,
+    filter(sorted, (p) => {
+      return !isNil(p.extraOptions);
+    }),
+    (p) => {
+      return p.extraOptions;
+    },
   ).join("\n");
 
   return `{
@@ -158,7 +170,9 @@ const buildConfigEntries = (
   }
 
   if (!isNil(output.globalIgnores) && 0 < output.globalIgnores.length) {
-    const ignoreList = map(output.globalIgnores, (g) => `"${g}"`).join(", ");
+    const ignoreList = map(output.globalIgnores, (g) => {
+      return `"${g}"`;
+    }).join(", ");
     configEntries.push(`globalIgnores([${ignoreList}])`);
   }
 

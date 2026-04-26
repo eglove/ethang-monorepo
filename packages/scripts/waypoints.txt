@@ -1,7 +1,0 @@
-/way #2405 35.62 81.08 2 Tremora (Cave)
-/way #2405 47.05 80.63 3 Bane of the Vilebloods
-/way #2405 37.88 71.78 4 Lotus Darkblossom
-/way #2405 48.81 53.17 5 Ravengerus
-/way #2405 34.05 82.06 8 Territorial Voidscythe
-/way #2405 39.49 64.64 10 Aeonelle Blackstar (Cave)
-/way #2405 55.72 79.45 11 Queen o' War (Click Crown of the Lost Queen)

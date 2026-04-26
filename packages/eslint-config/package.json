@@ -21,7 +21,6 @@
     "@vitest/eslint-plugin": "^1.6.16",
     "angular-eslint": "21.3.1",
     "eslint": "^10.2.1",
-    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^1.7.0",
     "eslint-plugin-compat": "^7.0.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -35,7 +34,6 @@
     "eslint-plugin-storybook": "^10.3.5",
     "eslint-plugin-tailwindcss": "^4.0.0-beta.0",
     "eslint-plugin-unicorn": "^64.0.0",
-    "prettier": "^3.8.3",
     "typescript-eslint": "^8.59.0"
   },
   "devDependencies": {
@@ -65,11 +63,11 @@
     "url": "git+https://github.com/eglove/ethang-monorepo.git#master"
   },
   "scripts": {
-    "build": "bun build.ts && pnpm lint",
-    "lint": "eslint . --fix --cache && prettier src --write --cache && pnpm tsc --noEmit",
+    "build": "pnpm lint",
+    "lint": "bun build.ts && eslint . --fix --cache && pnpm tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage"
   },
   "type": "module",
-  "version": "25.15.4"
+  "version": "25.15.7"
 }

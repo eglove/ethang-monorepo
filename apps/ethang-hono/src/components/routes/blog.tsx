@@ -91,13 +91,15 @@ const computeNextUrl = (page: number, maxPages: number): string | undefined => {
   return `https://ethang.dev/blog/page/${page + 1}`;
 };
 
-const computeTitle = (page: number): string =>
-  1 === page ? "Blog" : `Blog - Page ${page}`;
+const computeTitle = (page: number): string => {
+  return 1 === page ? "Blog" : `Blog - Page ${page}`;
+};
 
-const computeCanonicalUrl = (page: number): string =>
-  1 === page
+const computeCanonicalUrl = (page: number): string => {
+  return 1 === page
     ? "https://ethang.dev/blog"
     : `https://ethang.dev/blog/page/${page}`;
+};
 
 export const Blog = async ({ page = 1 }: { page?: number }) => {
   const { pathname } = globalStore;
@@ -172,9 +174,9 @@ export const Blog = async ({ page = 1 }: { page?: number }) => {
           aria-label="Pagination"
           class="mt-6 flex items-center justify-center gap-1"
         >
-          {map(generatePageNumbers(page, maxPages), async (p) =>
-            renderPageLink(p, page),
-          )}
+          {map(generatePageNumbers(page, maxPages), async (p) => {
+            return renderPageLink(p, page);
+          })}
         </nav>
       )}
 

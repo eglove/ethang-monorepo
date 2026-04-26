@@ -22,8 +22,12 @@ self.addEventListener("activate", (event) => {
     caches.keys().then(async (cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((cacheName) => !ALL_CACHES.has(cacheName))
-          .map(async (cacheName) => caches.delete(cacheName)),
+          .filter((cacheName) => {
+            return !ALL_CACHES.has(cacheName);
+          })
+          .map(async (cacheName) => {
+            return caches.delete(cacheName);
+          }),
       );
     }),
   );
@@ -31,7 +35,9 @@ self.addEventListener("activate", (event) => {
 
 // Route 1: HTML Navigations
 registerRoute(
-  ({ request }) => "navigate" === request.mode,
+  ({ request }) => {
+    return "navigate" === request.mode;
+  },
   new StaleWhileRevalidate({
     cacheName: HTML_CACHE,
     plugins: [
@@ -44,7 +50,9 @@ registerRoute(
 
 // Route 2: GET Assets
 registerRoute(
-  ({ request }) => "GET" === request.method && "navigate" !== request.mode,
+  ({ request }) => {
+    return "GET" === request.method && "navigate" !== request.mode;
+  },
   new StaleWhileRevalidate({
     cacheName: ASSETS_CACHE,
   }),

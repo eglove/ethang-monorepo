@@ -11,8 +11,12 @@ export const useStore = <State extends object, Selection>(
     (listener) => {
       return store.subscribe(listener);
     },
-    () => store.state,
-    () => store.state,
+    () => {
+      return store.state;
+    },
+    () => {
+      return store.state;
+    },
     selector,
     isEqual,
   );

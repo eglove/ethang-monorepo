@@ -6,9 +6,11 @@ import { describe, expect, it, vi } from "vitest";
 
 import { globalStore } from "../../stores/global-store-properties.ts";
 
-vi.mock(import("../../models/blog-model.ts"), () => ({
-  BlogModel: vi.fn(),
-}));
+vi.mock(import("../../models/blog-model.ts"), () => {
+  return {
+    BlogModel: vi.fn(),
+  };
+});
 
 import { BlogModel } from "../../models/blog-model.ts";
 
@@ -24,7 +26,9 @@ import { ScrollbarGutter } from "./tips/scrollbar-gutter.tsx";
 
 const render = async (component: JSX.Element): Promise<string> => {
   const testApp = new Hono();
-  testApp.get("/", async (c) => c.html(component));
+  testApp.get("/", async (c) => {
+    return c.html(component);
+  });
   const response = await testApp.request("/");
   return response.text();
 };
@@ -41,15 +45,17 @@ const BLOG_CATEGORY = { _id: "cat-1", title: "Blog" };
 const BLOG_CREATED = "2024-01-01T00:00:00Z";
 const BLOG_UPDATED = "2024-02-01T00:00:00Z";
 
-const makeBlogPost = (index: number) => ({
-  _createdAt: BLOG_CREATED,
-  _id: `blog-${index}`,
-  _updatedAt: BLOG_UPDATED,
-  blogCategory: BLOG_CATEGORY,
-  description: `Post ${index}`,
-  slug: { current: `post-${index}` },
-  title: `Post ${index}`,
-});
+const makeBlogPost = (index: number) => {
+  return {
+    _createdAt: BLOG_CREATED,
+    _id: `blog-${index}`,
+    _updatedAt: BLOG_UPDATED,
+    blogCategory: BLOG_CATEGORY,
+    description: `Post ${index}`,
+    slug: { current: `post-${index}` },
+    title: `Post ${index}`,
+  };
+};
 
 describe(Home, () => {
   it(RENDERS_FULL_HTML, async () => {
@@ -218,7 +224,9 @@ describe(Blog, () => {
     mockBlogModelWith(
       vi.fn().mockResolvedValue({
         maxPages: 5,
-        posts: Array.from({ length: 10 }, (_, index) => makeBlogPost(index)),
+        posts: Array.from({ length: 10 }, (_, index) => {
+          return makeBlogPost(index);
+        }),
         total: 50,
       }),
     );
@@ -235,7 +243,9 @@ describe(Blog, () => {
     mockBlogModelWith(
       vi.fn().mockResolvedValue({
         maxPages: 10,
-        posts: Array.from({ length: 10 }, (_, index) => makeBlogPost(index)),
+        posts: Array.from({ length: 10 }, (_, index) => {
+          return makeBlogPost(index);
+        }),
         total: 100,
       }),
     );
@@ -250,7 +260,9 @@ describe(Blog, () => {
     mockBlogModelWith(
       vi.fn().mockResolvedValue({
         maxPages: 5,
-        posts: Array.from({ length: 10 }, (_, index) => makeBlogPost(index)),
+        posts: Array.from({ length: 10 }, (_, index) => {
+          return makeBlogPost(index);
+        }),
         total: 50,
       }),
     );

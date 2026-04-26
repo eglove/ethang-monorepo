@@ -6,7 +6,9 @@ export const blogCategoryType = defineType({
       name: "title",
       title: "Title",
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => {
+        return rule.required();
+      },
     }),
   ],
   name: "blogCategory",

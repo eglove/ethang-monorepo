@@ -2,26 +2,26 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "assets": {
     "binding": "ASSETS",
-    "directory": "./public",
+    "directory": "./public"
   },
   "compatibility_date": "2026-04-25",
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/index.tsx",
   "name": "sterett-hono",
   "observability": {
-    "enabled": true,
+    "enabled": true
   },
   "placement": {
-    "mode": "smart",
+    "mode": "smart"
   },
   "routes": [
     {
       "custom_domain": true,
-      "pattern": "sterettcreekvillagetrustee.com",
+      "pattern": "sterettcreekvillagetrustee.com"
     },
     {
       "custom_domain": true,
-      "pattern": "www.sterettcreekvillagetrustee.com",
-    },
-  ],
+      "pattern": "www.sterettcreekvillagetrustee.com"
+    }
+  ]
 }

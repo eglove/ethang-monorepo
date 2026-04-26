@@ -20,18 +20,20 @@ export const MonthView = async ({
   return (
     <>
       <div class="grid grid-cols-7 border-b border-white/10">
-        {map(DAY_HEADERS, async (d) => (
-          <div
-            key={d}
-            class="py-2 text-center text-xs font-medium text-white/50"
-          >
-            {d}
-          </div>
-        ))}
+        {map(DAY_HEADERS, async (d) => {
+          return (
+            <div
+              key={d}
+              class="py-2 text-center text-xs font-medium text-white/50"
+            >
+              {d}
+            </div>
+          );
+        })}
       </div>
       <div class="grid grid-cols-7">
-        {map(weeks, (week) =>
-          map(week, async (cell) => {
+        {map(weeks, (week) => {
+          return map(week, async (cell) => {
             const key = toDateKey(cell.year, cell.month, cell.day);
             const cellEvents = eventsByDate.get(key) ?? [];
             const isToday = key === today;
@@ -55,15 +57,17 @@ export const MonthView = async ({
                   {cell.day}
                 </span>
                 <div class="mt-1 flex flex-col gap-0.5">
-                  {map(slice(cellEvents, 0, 3), async (event) => (
-                    <button
-                      key={event._id}
-                      onclick={`document.getElementById('cal-${event._id}').showModal()`}
-                      class="w-full cursor-pointer truncate rounded bg-sky-600/60 px-1 py-0.5 text-left text-xs text-white transition-colors hover:bg-sky-500/80"
-                    >
-                      {event.title}
-                    </button>
-                  ))}
+                  {map(slice(cellEvents, 0, 3), async (event) => {
+                    return (
+                      <button
+                        key={event._id}
+                        onclick={`document.getElementById('cal-${event._id}').showModal()`}
+                        class="w-full cursor-pointer truncate rounded bg-sky-600/60 px-1 py-0.5 text-left text-xs text-white transition-colors hover:bg-sky-500/80"
+                      >
+                        {event.title}
+                      </button>
+                    );
+                  })}
                   {3 < cellEvents.length && (
                     <span class="text-xs text-white/60">
                       +{cellEvents.length - 3} more
@@ -72,8 +76,8 @@ export const MonthView = async ({
                 </div>
               </div>
             );
-          }),
-        )}
+          });
+        })}
       </div>
     </>
   );
