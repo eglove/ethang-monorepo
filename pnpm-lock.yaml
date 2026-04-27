@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0
@@ -45,8 +45,8 @@ importers:
         specifier: ^4.12.15
         version: 4.12.15
       jose:
-        specifier: ^6.2.2
-        version: 6.2.2
+        specifier: ^6.2.3
+        version: 6.2.3
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
@@ -58,8 +58,8 @@ importers:
         specifier: ^1.63.0
         version: 1.63.0
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
@@ -110,8 +110,8 @@ importers:
         version: 6.4.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@sanity/eslint-config-studio':
         specifier: ^6.0.0
         version: 6.0.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3)
@@ -195,8 +195,8 @@ importers:
         specifier: ^4.11.2
         version: 4.11.2(playwright-core@1.59.1)
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@faker-js/faker':
         specifier: ^10.4.0
         version: 10.4.0
@@ -234,8 +234,8 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       jsdom:
-        specifier: ^29.0.2
-        version: 29.0.2(@noble/hashes@2.0.1)
+        specifier: ^29.1.0
+        version: 29.1.0(@noble/hashes@2.0.1)
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -247,7 +247,7 @@ importers:
         version: 4.21.0
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       wrangler:
         specifier: ^4.85.0
         version: 4.85.0
@@ -293,7 +293,7 @@ importers:
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
       vitest:
         specifier: ~4.1.5
-        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       wrangler:
         specifier: ^4.85.0
         version: 4.85.0
@@ -341,8 +341,8 @@ importers:
         version: 6.4.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@sanity/eslint-config-studio':
         specifier: ^6.0.0
         version: 6.0.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3)
@@ -411,8 +411,8 @@ importers:
         specifier: ^4.11.2
         version: 4.11.2(playwright-core@1.59.1)
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@faker-js/faker':
         specifier: ^10.4.0
         version: 10.4.0
@@ -448,7 +448,7 @@ importers:
         version: 4.21.0
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       wrangler:
         specifier: ^4.85.0
         version: 4.85.0
@@ -568,8 +568,8 @@ importers:
         specifier: ^4.1.5
         version: 4.1.5(vitest@4.1.5)
       baseline-browser-mapping:
-        specifier: ^2.10.22
-        version: 2.10.22
+        specifier: ^2.10.23
+        version: 2.10.23
       browserslist-config-baseline:
         specifier: ^0.5.0
         version: 0.5.0
@@ -587,7 +587,7 @@ importers:
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -621,7 +621,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
 
   packages/hooks:
     dependencies:
@@ -639,8 +639,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.10)(tsx@4.21.0)(typescript@6.0.3)(yaml@2.8.3)
@@ -673,8 +673,8 @@ importers:
         version: 4.18.1
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
@@ -698,7 +698,7 @@ importers:
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
 
   packages/markdown-generator:
     dependencies:
@@ -707,8 +707,8 @@ importers:
         version: 4.18.1
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.10)(tsx@4.21.0)(typescript@6.0.3)(yaml@2.8.3)
@@ -729,7 +729,7 @@ importers:
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
 
   packages/project-builder:
     dependencies:
@@ -744,8 +744,8 @@ importers:
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.10)(tsx@4.21.0)(typescript@6.0.3)(yaml@2.8.3)
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
@@ -768,15 +768,15 @@ importers:
   packages/schemas:
     dependencies:
       jose:
-        specifier: ^6.2.2
-        version: 6.2.2
+        specifier: ^6.2.3
+        version: 6.2.3
       zod:
         specifier: ^4.3.6
         version: 4.3.6
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.10)(tsx@4.21.0)(typescript@6.0.3)(yaml@2.8.3)
@@ -800,8 +800,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
@@ -865,8 +865,8 @@ importers:
         version: 1.6.0(react@19.2.5)
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.10)(tsx@4.21.0)(typescript@6.0.3)(yaml@2.8.3)
@@ -889,8 +889,8 @@ importers:
         specifier: ^10.2.1
         version: 10.2.1(jiti@2.6.1)
       jsdom:
-        specifier: ^29.0.2
-        version: 29.0.2(@noble/hashes@2.0.1)
+        specifier: ^29.1.0
+        version: 29.1.0(@noble/hashes@2.0.1)
       type-fest:
         specifier: ^5.6.0
         version: 5.6.0
@@ -899,7 +899,7 @@ importers:
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
 
   packages/toolbelt:
     dependencies:
@@ -917,8 +917,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@ethang/eslint-config':
-        specifier: ^25.15.7
-        version: 25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
+        specifier: ^25.15.8
+        version: 25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)
       '@ethang/project-builder':
         specifier: ^3.0.2
         version: 3.0.2(jiti@2.6.1)(postcss@8.5.10)(tsx@4.21.0)(typescript@6.0.3)(yaml@2.8.3)
@@ -951,7 +951,7 @@ importers:
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vitest-fetch-mock:
         specifier: ^0.4.5
         version: 0.4.5(vitest@4.1.5)
@@ -2915,8 +2915,8 @@ packages:
     resolution: {integrity: sha512-rZAP3aVgB9ds9KOeUSL+zZ21hPmo8dh6fnIFwRQj5EAZl9gzR7wxYbYXYysAM8CTqGmUGyp2S4kUdV17MnGuWQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@ethang/eslint-config@25.15.7':
-    resolution: {integrity: sha512-JN0s/6ogKbXK93lkxccRcxTXRfNqmAfP/oiiu0ITvOKITMxB0QO+DBNLf9iwbdBT6MLn/GARF5eS5klfaBS76A==}
+  '@ethang/eslint-config@25.15.8':
+    resolution: {integrity: sha512-s1IkAv+ZhLceipKziwXduRrI8+hqIMTMIP+SjxFUfh8kEvr3MIvya2P9643jCGvn3QKVuplRkh2zMAn/vsBfdg==}
     engines: {node: '>=24'}
 
   '@ethang/markdown-generator@1.2.0':
@@ -5420,8 +5420,8 @@ packages:
   bare-url@2.4.1:
     resolution: {integrity: sha512-fZapLWNB25gS+etK27NV9KgBNXgo2yeYHuj+OyPblQd6GYAE3JVy6aKxszMV5jhGGFwraXQKA5fldvf3lMyEqw==}
 
-  baseline-browser-mapping@2.10.22:
-    resolution: {integrity: sha512-6qruVrb5rse6WylFkU0FhBKKGuecWseqdpQfhkawn6ztyk2QlfwSRjsDxMCLJrkfmfN21qvhl9ABgaMeRkuwww==}
+  baseline-browser-mapping@2.10.23:
+    resolution: {integrity: sha512-xwVXGqevyKPsiuQdLj+dZMVjidjJV508TBqexND5HrF89cGdCYCJFB3qhcxRHSeMctdCfbR1jrxBajhDy7o29g==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -7323,8 +7323,8 @@ packages:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
 
-  jose@6.2.2:
-    resolution: {integrity: sha512-d7kPDd34KO/YnzaDOlikGpOurfF0ByC2sEV4cANCtdqLlTfBlw2p14O/5d/zv40gJPbIQxfES3nSx1/oYNyuZQ==}
+  jose@6.2.3:
+    resolution: {integrity: sha512-YYVDInQKFJfR/xa3ojUTl8c2KoTwiL1R5Wg9YCydwH0x0B9grbzlg5HC7mMjCtUJjbQ/YnGEZIhI5tCgfTb4Hw==}
 
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
@@ -7362,8 +7362,8 @@ packages:
       canvas:
         optional: true
 
-  jsdom@29.0.2:
-    resolution: {integrity: sha512-9VnGEBosc/ZpwyOsJBCQ/3I5p7Q5ngOY14a9bf5btenAORmZfDse1ZEheMiWcJ3h81+Fv7HmJFdS0szo/waF2w==}
+  jsdom@29.1.0:
+    resolution: {integrity: sha512-YNUc7fB9QuvSSQWfrH0xF+TyABkxUwx8sswgIDaCrw4Hol8BghdZDkITtZheRJeMtzWlnTfsM3bBBusRvpO1wg==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24.0.0}
     peerDependencies:
       canvas: ^3.0.0
@@ -9125,8 +9125,8 @@ packages:
     resolution: {integrity: sha512-tsaTIkKW9b4N+AEj+SVA+WhJzV7/zMhcSu78mLKWSk7cXMOSHsBKFWUs0fWwq8QyK3MgJBQRX6Gbi4kYbdvGkQ==}
     engines: {node: '>=18'}
 
-  string-width@8.2.0:
-    resolution: {integrity: sha512-6hJPQ8N0V0P3SNmP6h2J99RLuzrWz2gvT7VnK5tKvrNqJoyS9W4/Fb8mo31UiPvy00z7DQXkP2hnKBVav76thw==}
+  string-width@8.2.1:
+    resolution: {integrity: sha512-IIaP0g3iy9Cyy18w3M9YcaDudujEAVHKt3a3QJg1+sr/oX96TbaGUubG0hJyCjCBThFH+tFpcIyoUHUn1ogaLA==}
     engines: {node: '>=20'}
 
   string.prototype.includes@2.0.1:
@@ -11270,7 +11270,7 @@ snapshots:
       cjs-module-lexer: 1.4.3
       esbuild: 0.27.3
       miniflare: 4.20260424.0
-      vitest: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       wrangler: 4.85.0
       zod: 3.25.76
     transitivePeerDependencies:
@@ -12134,7 +12134,7 @@ snapshots:
       '@eslint/core': 1.2.1
       levn: 0.4.1
 
-  '@ethang/eslint-config@25.15.7(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)':
+  '@ethang/eslint-config@25.15.8(@angular/cli@21.1.4(@types/node@25.6.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.2.1(jiti@2.6.1)))(jiti@2.6.1)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tailwindcss@4.2.4)(typescript@6.0.3)(vitest@4.1.5)':
     dependencies:
       '@angular-eslint/eslint-plugin': 21.3.1(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3)
       '@angular-eslint/eslint-plugin-template': 21.3.1(@angular-eslint/template-parser@21.3.1(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/types@8.59.0)(@typescript-eslint/utils@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3)
@@ -12785,7 +12785,7 @@ snapshots:
       express: 5.2.1
       express-rate-limit: 8.4.1(express@5.2.1)
       hono: 4.12.15
-      jose: 6.2.2
+      jose: 6.2.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
       raw-body: 3.0.2
@@ -13424,7 +13424,7 @@ snapshots:
       get-it: 8.7.2
       get-tsconfig: 4.14.0
       import-meta-resolve: 4.2.0
-      jsdom: 29.0.2(@noble/hashes@2.0.1)
+      jsdom: 29.1.0(@noble/hashes@2.0.1)
       json-lexer: 1.2.0
       log-symbols: 7.0.1
       ora: 9.3.0
@@ -14612,7 +14612,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.1.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
 
   '@vitest/eslint-plugin@1.6.16(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3)(vitest@4.1.5)':
     dependencies:
@@ -14622,7 +14622,7 @@ snapshots:
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3)
       typescript: 6.0.3
-      vitest: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
     transitivePeerDependencies:
       - supports-color
 
@@ -14694,7 +14694,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vitest: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
 
   '@vitest/utils@3.2.4':
     dependencies:
@@ -15055,7 +15055,7 @@ snapshots:
     dependencies:
       bare-path: 3.0.0
 
-  baseline-browser-mapping@2.10.22: {}
+  baseline-browser-mapping@2.10.23: {}
 
   bcryptjs@3.0.3: {}
 
@@ -15125,11 +15125,11 @@ snapshots:
 
   browserslist-config-baseline@0.5.0:
     dependencies:
-      baseline-browser-mapping: 2.10.22
+      baseline-browser-mapping: 2.10.23
 
   browserslist@4.28.2:
     dependencies:
-      baseline-browser-mapping: 2.10.22
+      baseline-browser-mapping: 2.10.23
       caniuse-lite: 1.0.30001788
       electron-to-chromium: 1.5.340
       node-releases: 2.0.37
@@ -15318,7 +15318,7 @@ snapshots:
   cli-truncate@5.2.0:
     dependencies:
       slice-ansi: 8.0.0
-      string-width: 8.2.0
+      string-width: 8.2.1
 
   cli-width@4.1.0: {}
 
@@ -17233,7 +17233,7 @@ snapshots:
 
   jiti@2.6.1: {}
 
-  jose@6.2.2: {}
+  jose@6.2.3: {}
 
   joycon@3.1.1: {}
 
@@ -17304,7 +17304,7 @@ snapshots:
       - '@noble/hashes'
       - supports-color
 
-  jsdom@29.0.2(@noble/hashes@2.0.1):
+  jsdom@29.1.0(@noble/hashes@2.0.1):
     dependencies:
       '@asamuzakjp/css-color': 5.1.11
       '@asamuzakjp/dom-selector': 7.1.1
@@ -18333,7 +18333,7 @@ snapshots:
       is-unicode-supported: 2.1.0
       log-symbols: 7.0.1
       stdin-discarder: 0.2.2
-      string-width: 8.2.0
+      string-width: 8.2.1
       strip-ansi: 7.2.0
 
   ora@9.3.0:
@@ -18345,7 +18345,7 @@ snapshots:
       is-unicode-supported: 2.1.0
       log-symbols: 7.0.1
       stdin-discarder: 0.3.1
-      string-width: 8.2.0
+      string-width: 8.2.1
 
   own-keys@1.0.1:
     dependencies:
@@ -19553,7 +19553,7 @@ snapshots:
       get-east-asian-width: 1.5.0
       strip-ansi: 7.2.0
 
-  string-width@8.2.0:
+  string-width@8.2.1:
     dependencies:
       get-east-asian-width: 1.5.0
       strip-ansi: 7.2.0
@@ -20236,9 +20236,9 @@ snapshots:
 
   vitest-fetch-mock@0.4.5(vitest@4.1.5):
     dependencies:
-      vitest: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
 
-  vitest@4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)):
+  vitest@4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       '@vitest/expect': 4.1.5
       '@vitest/mocker': 4.1.5(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
@@ -20265,11 +20265,11 @@ snapshots:
       '@vitest/coverage-v8': 4.1.5(vitest@4.1.5)
       '@vitest/ui': 4.1.5(vitest@4.1.5)
       happy-dom: 20.9.0
-      jsdom: 29.0.2(@noble/hashes@2.0.1)
+      jsdom: 29.1.0(@noble/hashes@2.0.1)
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)):
+  vitest@4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       '@vitest/expect': 4.1.5
       '@vitest/mocker': 4.1.5(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
@@ -20296,7 +20296,7 @@ snapshots:
       '@vitest/coverage-v8': 4.1.5(vitest@4.1.5)
       '@vitest/ui': 4.1.5(vitest@4.1.5)
       happy-dom: 20.9.0
-      jsdom: 29.0.2(@noble/hashes@2.0.1)
+      jsdom: 29.1.0(@noble/hashes@2.0.1)
     transitivePeerDependencies:
       - msw
 
