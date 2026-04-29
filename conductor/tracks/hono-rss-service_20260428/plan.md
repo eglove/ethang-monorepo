@@ -11,7 +11,7 @@
     - [ ] Write schema for `user_subscriptions` (user_id, feed_id, category).
     - [ ] Write schema for `user_article_interactions` (user_id, article_id, is_read, is_saved).
     - [ ] Generate and apply initial database migrations.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Project Setup & Database Schema' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Project Setup & Database Schema' (Protocol in workflow.md)
 
 ## Phase 2: Authentication & Core Utilities
 - [ ] Task: Implement Authentication Middleware
@@ -48,4 +48,4 @@
     - [ ] Write failing tests for cron handler triggering fetch and database updates.
     - [ ] Implement the Cloudflare Worker Cron handler.
     - [ ] Refactor and verify coverage.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Background Fetching (Cron)' (Protocol in workflow.md)
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: Background Fetching (Cron)' (Protocol in workflow.md)otocol in workflow.md)
