@@ -29,7 +29,7 @@
     - [ ] Write failing tests for Feed CRUD endpoints (`GET /feeds`, `POST /feeds`, `PUT /feeds/:id`, `DELETE /feeds/:id`).
     - [ ] Implement Feed endpoints integrating with `@ethang/store`.
     - [ ] Refactor and verify coverage.
-- [ ] Task: Subscriptions API
+- [x] Task: Subscriptions API c3e3339
     - [ ] Write failing tests for Subscription endpoints (subscribe, unsubscribe, update category).
     - [ ] Implement Subscription endpoints.
     - [ ] Refactor and verify coverage.
