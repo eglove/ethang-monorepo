@@ -33,7 +33,7 @@
     - [ ] Write failing tests for Subscription endpoints (subscribe, unsubscribe, update category).
     - [ ] Implement Subscription endpoints.
     - [ ] Refactor and verify coverage.
-- [ ] Task: Articles Interaction API
+- [x] Task: Articles Interaction API b84db7e
     - [ ] Write failing tests for marking articles as read/unread and saved/starred.
     - [ ] Implement Article Interaction endpoints.
     - [ ] Refactor and verify coverage.
