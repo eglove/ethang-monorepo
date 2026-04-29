@@ -24,7 +24,7 @@
     - [ ] Refactor and verify coverage.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Authentication & Core Utilities' (Protocol in workflow.md)
 
-## Phase 3: RESTful API Endpoints
+## Phase 3: RESTful API Endpoints [checkpoint: 6f02f24]
 - [x] Task: Feeds API f9ca79e
     - [ ] Write failing tests for Feed CRUD endpoints (`GET /feeds`, `POST /feeds`, `PUT /feeds/:id`, `DELETE /feeds/:id`).
     - [ ] Implement Feed endpoints integrating with `@ethang/store`.
