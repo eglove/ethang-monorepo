@@ -18,7 +18,7 @@
     - [ ] Write failing test for authentication middleware ensuring it validates tokens from `auth.ethang.dev`.
     - [ ] Implement middleware logic to extract and verify the user.
     - [ ] Refactor and verify coverage.
-- [ ] Task: Integrate `@ethang/store` for Business Logic
+- [x] Task: Integrate `@ethang/store` for Business Logic d68cdbe
     - [ ] Write failing tests for `@ethang/store` classes handling Feed management, utilizing OOP and atomic updates.
     - [ ] Implement Core State Classes (e.g., `FeedStore`, `SubscriptionStore`).
     - [ ] Refactor and verify coverage.
