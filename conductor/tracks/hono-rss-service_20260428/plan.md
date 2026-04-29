@@ -5,7 +5,7 @@
     - [ ] Create `apps/rss-hono` directory and initialize Hono project.
     - [ ] Configure `wrangler.jsonc` for D1 database and Cron Triggers.
     - [ ] Set up Drizzle ORM and configure `drizzle.config.ts`.
-- [ ] Task: Define Database Schema
+- [x] Task: Define Database Schema 4c89347
     - [ ] Write schema for `feeds` (id, url, name, description, icon).
     - [ ] Write schema for `articles` (id, feed_id, title, url, content, published_at).
     - [ ] Write schema for `user_subscriptions` (user_id, feed_id, category).
