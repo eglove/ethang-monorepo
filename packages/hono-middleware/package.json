@@ -1,4 +1,8 @@
 {
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
   "dependencies": {
     "hono": "^4.12.15",
     "lodash": "^4.18.1"
@@ -8,9 +12,13 @@
     "@ethang/project-builder": "workspace:*",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.6.0",
+    "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.2.1",
     "typescript": "^6.0.3",
     "vitest": "^4.1.5"
+  },
+  "engines": {
+    "node": ">=24"
   },
   "license": "MIT",
   "name": "@ethang/hono-middleware",
