@@ -1,0 +1,244 @@
+{
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  },
+  "dialect": "sqlite",
+  "enums": {},
+  "id": "6ac1b21e-93ad-4c7d-8d40-b693da67a1ba",
+  "internal": {
+    "indexes": {}
+  },
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "articles": {
+      "columns": {
+        "content": {
+          "autoincrement": false,
+          "name": "content",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "feed_id": {
+          "autoincrement": false,
+          "name": "feed_id",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "id": {
+          "autoincrement": false,
+          "name": "id",
+          "notNull": true,
+          "primaryKey": true,
+          "type": "text"
+        },
+        "published_at": {
+          "autoincrement": false,
+          "name": "published_at",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "title": {
+          "autoincrement": false,
+          "name": "title",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "url": {
+          "autoincrement": false,
+          "name": "url",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        }
+      },
+      "checkConstraints": {},
+      "compositePrimaryKeys": {},
+      "foreignKeys": {
+        "articles_feed_id_feeds_id_fk": {
+          "name": "articles_feed_id_feeds_id_fk",
+          "columnsFrom": [
+            "feed_id"
+          ],
+          "tableFrom": "articles",
+          "columnsTo": [
+            "id"
+          ],
+          "tableTo": "feeds",
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "indexes": {
+        "articles_url_unique": {
+          "columns": [
+            "url"
+          ],
+          "isUnique": true,
+          "name": "articles_url_unique"
+        }
+      },
+      "name": "articles",
+      "uniqueConstraints": {}
+    },
+    "feeds": {
+      "columns": {
+        "description": {
+          "autoincrement": false,
+          "name": "description",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "icon": {
+          "autoincrement": false,
+          "name": "icon",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "id": {
+          "autoincrement": false,
+          "name": "id",
+          "notNull": true,
+          "primaryKey": true,
+          "type": "text"
+        },
+        "name": {
+          "autoincrement": false,
+          "name": "name",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "url": {
+          "autoincrement": false,
+          "name": "url",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        }
+      },
+      "checkConstraints": {},
+      "compositePrimaryKeys": {},
+      "foreignKeys": {},
+      "indexes": {
+        "feeds_url_unique": {
+          "columns": [
+            "url"
+          ],
+          "isUnique": true,
+          "name": "feeds_url_unique"
+        }
+      },
+      "name": "feeds",
+      "uniqueConstraints": {}
+    },
+    "user_article_interactions": {
+      "columns": {
+        "article_id": {
+          "autoincrement": false,
+          "name": "article_id",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "is_read": {
+          "autoincrement": false,
+          "default": false,
+          "name": "is_read",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "is_saved": {
+          "autoincrement": false,
+          "default": false,
+          "name": "is_saved",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "user_id": {
+          "autoincrement": false,
+          "name": "user_id",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        }
+      },
+      "checkConstraints": {},
+      "compositePrimaryKeys": {},
+      "foreignKeys": {
+        "user_article_interactions_article_id_articles_id_fk": {
+          "name": "user_article_interactions_article_id_articles_id_fk",
+          "columnsFrom": [
+            "article_id"
+          ],
+          "tableFrom": "user_article_interactions",
+          "columnsTo": [
+            "id"
+          ],
+          "tableTo": "articles",
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "indexes": {},
+      "name": "user_article_interactions",
+      "uniqueConstraints": {}
+    },
+    "user_subscriptions": {
+      "columns": {
+        "category": {
+          "autoincrement": false,
+          "name": "category",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "feed_id": {
+          "autoincrement": false,
+          "name": "feed_id",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "user_id": {
+          "autoincrement": false,
+          "name": "user_id",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        }
+      },
+      "checkConstraints": {},
+      "compositePrimaryKeys": {},
+      "foreignKeys": {
+        "user_subscriptions_feed_id_feeds_id_fk": {
+          "name": "user_subscriptions_feed_id_feeds_id_fk",
+          "columnsFrom": [
+            "feed_id"
+          ],
+          "tableFrom": "user_subscriptions",
+          "columnsTo": [
+            "id"
+          ],
+          "tableTo": "feeds",
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "indexes": {},
+      "name": "user_subscriptions",
+      "uniqueConstraints": {}
+    }
+  },
+  "version": "6",
+  "views": {}
+}

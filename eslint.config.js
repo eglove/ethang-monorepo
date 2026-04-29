@@ -9,6 +9,7 @@ export default defineConfig(
     "apps/**/*.gen.ts",
     "**/*.d.ts",
     "**/.sanity",
+    "**/migrations",
     "**/storybook-static",
     "**/convex/_generated",
     "**/README.md",
