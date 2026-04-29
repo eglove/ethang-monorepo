@@ -14,7 +14,7 @@
     "styled-components": "^6.4.1"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.15.8",
+    "@ethang/eslint-config": "^25.15.9",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.24",
     "@types/react": "^19.2.14",
