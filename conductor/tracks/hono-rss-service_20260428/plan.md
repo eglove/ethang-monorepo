@@ -1,7 +1,7 @@
 # Implementation Plan: Hono RSS Service
 
 ## Phase 1: Project Setup & Database Schema
-- [ ] Task: Initialize Hono App and Drizzle/D1
+- [x] Task: Initialize Hono App and Drizzle/D1 4d41c0e
     - [ ] Create `apps/rss-hono` directory and initialize Hono project.
     - [ ] Configure `wrangler.jsonc` for D1 database and Cron Triggers.
     - [ ] Set up Drizzle ORM and configure `drizzle.config.ts`.
