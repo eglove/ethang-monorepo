@@ -14,7 +14,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Project Setup & Database Schema' (Protocol in workflow.md)
 
 ## Phase 2: Authentication & Core Utilities
-- [ ] Task: Implement Authentication Middleware
+- [x] Task: Implement Authentication Middleware 0aeb667
     - [ ] Write failing test for authentication middleware ensuring it validates tokens from `auth.ethang.dev`.
     - [ ] Implement middleware logic to extract and verify the user.
     - [ ] Refactor and verify coverage.
