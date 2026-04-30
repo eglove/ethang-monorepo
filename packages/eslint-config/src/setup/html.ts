@@ -12,7 +12,7 @@ const customRules = [
   { name: "no-extra-spacing-attrs", rule: "off" },
   { name: "attrs-newline", rule: "off" },
   { name: "require-closing-tags", rule: "off" },
-  { name: "element-newline", rule: "off" },
+  { name: "element-newline", rule: "off" }
 ];
 
 export const htmlRules = genRules(ruleNames, customRules, "html");
@@ -27,5 +27,5 @@ export const htmlPlugin = new Plugin({
   pluginName: "html",
   pluginValue: "html",
   rules: htmlRules,
-  url: "https://github.com/html-eslint/html-eslint",
+  url: "https://github.com/html-eslint/html-eslint"
 });

@@ -2,7 +2,7 @@ export const workify = <T>(callback: () => T, signal?: AbortSignal) => {
   const code = callback.toString();
   const blob = new Blob(
     [`onmessage = function(e) { postMessage((${code})(e.data)) }`],
-    { type: "text/javascript" },
+    { type: "text/javascript" }
   );
   const url = URL.createObjectURL(blob);
   const worker = new Worker(url);

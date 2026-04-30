@@ -40,14 +40,14 @@ describe(Cosmos, () => {
       cosmos.addEventListener(targetA, "focus", listener);
       const results = cosmos.getEventListeners({
         eventName: "focus",
-        listener,
+        listener
       });
 
       expect(results.length).toBeGreaterThanOrEqual(1);
       expect(
         every(results, (r) => {
           return r.listener === listener;
-        }),
+        })
       ).toBe(true);
     });
 
@@ -58,7 +58,7 @@ describe(Cosmos, () => {
       const results = cosmos.getEventListeners({
         eventName: "blur",
         listener,
-        options,
+        options
       });
 
       expect(results.length).toBeGreaterThanOrEqual(1);
@@ -69,14 +69,14 @@ describe(Cosmos, () => {
       cosmos.addEventListener(targetB, "keydown", listener);
       const results = cosmos.getEventListeners({
         eventName: "keydown",
-        eventTarget: targetB,
+        eventTarget: targetB
       });
 
       expect(results.length).toBeGreaterThanOrEqual(1);
       expect(
         every(results, (r) => {
           return r.eventTarget === targetB;
-        }),
+        })
       ).toBe(true);
     });
 
@@ -98,7 +98,7 @@ describe(Cosmos, () => {
       expect(
         every(results, (r) => {
           return r.eventTarget === dedicated;
-        }),
+        })
       ).toBe(true);
     });
 
@@ -160,7 +160,7 @@ describe(Cosmos, () => {
       debugCosmos.removeEventListener("ghost-id");
       expect(warnSpy).toHaveBeenCalledWith(
         "No event listener found for id",
-        "ghost-id",
+        "ghost-id"
       );
 
       consoleSpy.mockRestore();

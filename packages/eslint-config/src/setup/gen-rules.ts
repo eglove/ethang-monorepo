@@ -33,7 +33,7 @@ type CustomRule = (Record<string, unknown> | string)[] | string;
 const getRuleStrings = (
   ruleNames: string[],
   defaultOverride: string,
-  prefix?: string,
+  prefix?: string
 ) => {
   const rules: Record<string, unknown> = {};
 
@@ -54,7 +54,7 @@ export const genRules = (
   ruleNames: string[],
   customRules?: CustomRules,
   prefix?: string,
-  defaultOverride = "error",
+  defaultOverride = "error"
 ) => {
   const rules = getRuleStrings(ruleNames, defaultOverride, prefix);
 
@@ -69,10 +69,10 @@ export const genRules = (
         }
       } else {
         globalThis.console.error(
-          `${rule.name} in ${prefix ?? "(unknown prefix)"} does not exist.`,
+          `${rule.name} in ${prefix ?? "(unknown prefix)"} does not exist.`
         );
         throw new Error(
-          `${rule.name} in ${prefix ?? "(unknown prefix)"} does not exist.`,
+          `${rule.name} in ${prefix ?? "(unknown prefix)"} does not exist.`
         );
       }
     }
@@ -82,7 +82,7 @@ export const genRules = (
   return Object.fromEntries(
     Object.entries(rules).toSorted(([a], [b]) => {
       return a.localeCompare(b);
-    }),
+    })
   ) as Linter.RulesRecord;
 };
 

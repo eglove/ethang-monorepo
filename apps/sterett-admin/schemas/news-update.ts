@@ -9,12 +9,12 @@ export default defineType({
       type: "string",
       validation(rule: Rule): Rule {
         return rule.required();
-      },
+      }
     },
     {
       initialValue(): { date: Date } {
         return {
-          date: new Date(),
+          date: new Date()
         };
       },
       name: "date",
@@ -22,7 +22,7 @@ export default defineType({
       type: "date",
       validation(rule: Rule): Rule {
         return rule.required();
-      },
+      }
     },
     {
       name: "expireDate",
@@ -49,7 +49,7 @@ export default defineType({
 
           return true;
         });
-      },
+      }
     },
     {
       name: "description",
@@ -57,11 +57,11 @@ export default defineType({
       type: "blockContent",
       validation(rule: Rule): Rule {
         return rule.required();
-      },
-    },
+      }
+    }
   ],
   icon: BulbOutlineIcon,
   name: "newsUpdate",
   title: "News Update",
-  type: "document",
+  type: "document"
 });

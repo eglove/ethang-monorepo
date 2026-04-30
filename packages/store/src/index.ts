@@ -137,7 +137,7 @@ export abstract class BaseStore<State extends object> {
 
   public async waitFor(
     predicate: (state: State) => boolean,
-    signal?: AbortSignal,
+    signal?: AbortSignal
   ): Promise<WaitForResult<State>> {
     if (this._destroyed) {
       return { error: new Error("Store is destroyed"), ok: false };
@@ -229,7 +229,7 @@ export abstract class BaseStore<State extends object> {
       this._reentrantDepth = 0;
       queueMicrotask(() => {
         throw new Error(
-          "BaseStore: reentrant depth overflow (100). Possible infinite loop in subscriber or onPropertyChange.",
+          "BaseStore: reentrant depth overflow (100). Possible infinite loop in subscriber or onPropertyChange."
         );
       });
     }
@@ -287,7 +287,7 @@ export abstract class BaseStore<State extends object> {
 
   private async waitForAsync(
     predicate: (state: State) => boolean,
-    signal?: AbortSignal,
+    signal?: AbortSignal
   ): Promise<WaitForResult<State>> {
     return new Promise((resolve) => {
       const combinedSignal =

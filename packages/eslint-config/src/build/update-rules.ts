@@ -7,7 +7,7 @@ export const updateRules = async () => {
   await Promise.all(
     map(outputConfigs, async (config) => {
       return createConfigFile(config);
-    }),
+    })
   );
 };
 

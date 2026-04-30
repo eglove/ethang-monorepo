@@ -8,10 +8,10 @@ export const projectSchema = z.object({
   techs: z.array(
     z.object({
       id: z.string(),
-      name: z.string(),
-    }),
+      name: z.string()
+    })
   ),
-  title: z.string(),
+  title: z.string()
 });
 
 export type Project = z.output<typeof projectSchema>;

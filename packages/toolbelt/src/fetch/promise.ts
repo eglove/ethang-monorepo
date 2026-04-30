@@ -4,7 +4,7 @@ import values from "lodash/values.js";
 
 const categorizeResults = <K extends PropertyKey, T>(
   promiseKeys: readonly K[],
-  results: PromiseSettledResult<Awaited<T>>[],
+  results: PromiseSettledResult<Awaited<T>>[]
 ) => {
   // @ts-expect-error init to {}
   let settledPromises: Record<K, Awaited<T> | Error> = {};
@@ -19,7 +19,7 @@ const categorizeResults = <K extends PropertyKey, T>(
     if ("fulfilled" === result.status) {
       settledPromises = {
         ...settledPromises,
-        [key]: result.value,
+        [key]: result.value
       };
     }
 
@@ -34,9 +34,9 @@ const categorizeResults = <K extends PropertyKey, T>(
 
 export const promiseAllSettled = async <
   K extends PropertyKey,
-  T extends Record<K, Promise<unknown>>,
+  T extends Record<K, Promise<unknown>>
 >(
-  promises: T,
+  promises: T
 ) => {
   const promiseKeys = keys(promises);
   const promiseValues = values(promises);

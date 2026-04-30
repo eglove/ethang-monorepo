@@ -8,10 +8,10 @@ export const blogCategoryType = defineType({
       type: "string",
       validation: (rule) => {
         return rule.required();
-      },
-    }),
+      }
+    })
   ],
   name: "blogCategory",
   title: "Blog Category",
-  type: "object",
+  type: "object"
 });

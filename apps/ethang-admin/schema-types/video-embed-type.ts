@@ -6,18 +6,18 @@ export const videoEmbedType = defineType({
     {
       name: "url",
       title: "URL",
-      type: "url",
+      type: "url"
     },
     { name: "title", title: "Title", type: "string" },
     {
       name: "source",
       options: {
-        list: [{ title: "YouTube", value: "youtube" }],
+        list: [{ title: "YouTube", value: "youtube" }]
       },
-      type: "string",
-    },
+      type: "string"
+    }
   ],
   name: "videoEmbed",
   title: "Video Embed",
-  type: "object",
+  type: "object"
 });

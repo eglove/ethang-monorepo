@@ -1,7 +1,7 @@
 import { LinkIcon } from "@sanity/icons";
 import {
   orderRankField,
-  orderRankOrdering,
+  orderRankOrdering
 } from "@sanity/orderable-document-list";
 import { defineType, type Rule } from "sanity";
 
@@ -14,7 +14,7 @@ export default defineType({
       type: "string",
       validation(rule: Rule) {
         return rule.required();
-      },
+      }
     },
     {
       name: "url",
@@ -22,14 +22,14 @@ export default defineType({
       type: "string",
       validation(rule: Rule) {
         return rule.uri({ relativeOnly: true }).required();
-      },
+      }
     },
     {
       hidden: true,
       name: "order",
       title: "Order",
-      type: "number",
-    },
+      type: "number"
+    }
   ],
   icon: LinkIcon,
   name: "navigation",
@@ -39,13 +39,13 @@ export default defineType({
       by: [
         {
           direction: "asc",
-          field: "order",
-        },
+          field: "order"
+        }
       ],
       name: "order",
-      title: "Order",
-    },
+      title: "Order"
+    }
   ],
   title: "Navigation",
-  type: "document",
+  type: "document"
 });

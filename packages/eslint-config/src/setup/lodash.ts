@@ -7,49 +7,49 @@ import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 
 const ruleNames = keys(
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  getNonDeprecatedRules(lodash.rules as unknown),
+  getNonDeprecatedRules(lodash.rules as unknown)
 );
 const customRules = [
   {
     name: "chain-style",
-    rule: [2, "as-needed"],
+    rule: [2, "as-needed"]
   },
   {
     name: "consistent-compose",
-    rule: [2, "flow"],
+    rule: [2, "flow"]
   },
   {
     name: "identity-shorthand",
-    rule: [2, "always"],
+    rule: [2, "always"]
   },
   {
     name: "import-scope",
-    rule: [2, "method"],
+    rule: [2, "method"]
   },
   {
     name: "matches-prop-shorthand",
-    rule: [2, "always"],
+    rule: [2, "always"]
   },
   {
     name: "matches-shorthand",
-    rule: [2, "always", 3],
+    rule: [2, "always", 3]
   },
   {
     name: "path-style",
-    rule: [2, "array"],
+    rule: [2, "array"]
   },
   {
     name: "prefer-includes",
-    rule: [2, { includeNative: true }],
+    rule: [2, { includeNative: true }]
   },
   {
     name: "prefer-some",
-    rule: [2, { includeNative: true }],
+    rule: [2, { includeNative: true }]
   },
   {
     name: "prop-shorthand",
-    rule: [2, "always"],
-  },
+    rule: [2, "always"]
+  }
 ];
 
 // @ts-expect-error loose types
@@ -64,5 +64,5 @@ export const lodashPlugin = new Plugin({
   pluginName: "lodash",
   pluginValue: "fixupPluginRules(lodashConfig)",
   rules: lodashRules,
-  url: "https://github.com/idok/eslint-plugin-lodash",
+  url: "https://github.com/idok/eslint-plugin-lodash"
 });

@@ -32,14 +32,14 @@ export const minimumAreaRectangle = (points: [number, number][]) => {
     },
     (numbers) => {
       return sortBy(numbers);
-    },
+    }
   )(columns);
 
   for (const sortedColumn of sortedColumns) {
     const yValuesInCurrentColumn = get(columns, [sortedColumn]).toSorted(
       (a, b) => {
         return a - b;
-      },
+      }
     );
 
     for (

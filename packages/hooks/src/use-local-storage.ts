@@ -34,13 +34,13 @@ const localStorageStore = (key: string, options?: LocalStorageStoreOptions) => {
 
       globalThis.addEventListener(`useLocalStorage-${key}`, listener, {
         signal,
-        ...options?.listenerOptions,
+        ...options?.listenerOptions
       });
 
       return () => {
         controller.abort();
       };
-    },
+    }
   };
 };
 
@@ -51,12 +51,12 @@ type UseLocalStorageProperties = {
 
 export const useLocalStorage = (
   key: string,
-  options?: UseLocalStorageProperties,
+  options?: UseLocalStorageProperties
 ) => {
   const { event, getServerSnapshot, getSnapshot, subscribe } =
     localStorageStore(key, {
       defaultValue: options?.defaultValue,
-      listenerOptions: options?.listenerOptions,
+      listenerOptions: options?.listenerOptions
     });
 
   const value = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);

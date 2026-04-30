@@ -13,20 +13,20 @@ const customRules = [
       "error",
       {
         endOfLine: "lf",
-        trailingComma: "none",
-      },
-    ],
-  },
+        trailingComma: "none"
+      }
+    ]
+  }
 ];
 
 export const prettierRules = genRules(ruleNames, customRules, "prettier");
 
 export const prettierPlugin = new Plugin({
-  files: "*",
+  files: "**/*",
   importString: 'import prettier from "eslint-plugin-prettier";',
   name: "prettier",
   pluginName: "prettier",
   pluginValue: "prettier",
   rules: prettierRules,
-  url: "https://github.com/prettier/eslint-plugin-prettier",
+  url: "https://github.com/prettier/eslint-plugin-prettier"
 });

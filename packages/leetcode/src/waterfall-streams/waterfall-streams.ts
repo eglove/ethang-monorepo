@@ -6,7 +6,7 @@ const spreadWaterRight = (
   rowAbove: number[],
   currentRow: number[],
   index: number,
-  splitWater: number,
+  splitWater: number
 ): void => {
   let rightIndex = index;
 
@@ -31,7 +31,7 @@ const spreadWaterLeft = (
   rowAbove: number[],
   currentRow: number[],
   index: number,
-  splitWater: number,
+  splitWater: number
 ): void => {
   let leftIndex = index;
 

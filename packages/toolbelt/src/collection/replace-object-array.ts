@@ -7,7 +7,7 @@ type KeyValuePredicate<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
 export const replaceObjectArray = <T>(
   collection: T[],
   predicate: ((item: T) => boolean) | KeyValuePredicate<T>,
-  newProperties: Partial<T>,
+  newProperties: Partial<T>
 ) => {
   return map(collection, (item) => {
     const isMatch = isFunction(predicate)

@@ -10,9 +10,9 @@ export const cssRules = genRules(
   ruleNames,
   [
     { name: "no-invalid-at-rules", rule: "off" },
-    { name: "use-baseline", rule: ["error", { available: "newly" }] },
+    { name: "use-baseline", rule: ["error", { available: "newly" }] }
   ],
-  "css",
+  "css"
 );
 
 export const cssPlugin = new Plugin({
@@ -24,5 +24,5 @@ export const cssPlugin = new Plugin({
   pluginName: "css",
   pluginValue: "css",
   rules: cssRules,
-  url: "https://github.com/eslint/css",
+  url: "https://github.com/eslint/css"
 });

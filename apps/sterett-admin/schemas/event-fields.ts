@@ -7,7 +7,7 @@ export const eventFields = [
     type: "string",
     validation(rule: Rule): Rule {
       return rule.required();
-    },
+    }
   },
   {
     name: "startsAt",
@@ -15,7 +15,7 @@ export const eventFields = [
     type: "datetime",
     validation(rule: Rule): Rule {
       return rule.required();
-    },
+    }
   },
   {
     name: "endsAt",
@@ -23,11 +23,11 @@ export const eventFields = [
     type: "datetime",
     validation(rule: Rule): Rule {
       return rule.min(rule.valueOfField("startsAt"));
-    },
+    }
   },
   {
     name: "description",
     title: "Description",
-    type: "blockContent",
-  },
+    type: "blockContent"
+  }
 ];

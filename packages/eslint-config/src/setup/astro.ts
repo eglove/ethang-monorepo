@@ -8,8 +8,8 @@ const ruleNames = keys(getNonDeprecatedRules(astro.rules));
 const customRules = [
   {
     name: "no-set-html-directive",
-    rule: "off",
-  },
+    rule: "off"
+  }
 ];
 
 export const astroRules = genRules(ruleNames, customRules, "astro");
@@ -21,5 +21,5 @@ export const astroPlugin = new Plugin({
   pluginName: "astro",
   pluginValue: "astro",
   rules: astroRules,
-  url: "https://github.com/ota-meshi/eslint-plugin-astro",
+  url: "https://github.com/ota-meshi/eslint-plugin-astro"
 });

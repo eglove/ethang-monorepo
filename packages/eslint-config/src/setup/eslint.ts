@@ -62,30 +62,30 @@ const customRules = [
     "require-await",
     "sort-imports",
     "sort-keys",
-    "prefer-named-capture-group",
+    "prefer-named-capture-group"
   ]),
   {
     name: "arrow-body-style",
-    rule: ["error", "always"],
+    rule: ["error", "always"]
   },
   {
     name: "func-style",
-    rule: ["error", "declaration", { allowArrowFunctions: true }],
+    rule: ["error", "declaration", { allowArrowFunctions: true }]
   },
   {
     name: "no-unsafe-optional-chaining",
-    rule: ["error", { disallowArithmeticOperators: true }],
+    rule: ["error", { disallowArithmeticOperators: true }]
   },
   {
     name: "yoda",
-    rule: ["error", "always"],
-  },
+    rule: ["error", "always"]
+  }
 ];
 
 export const eslintRules = genRules(
   ruleNames,
 
-  customRules,
+  customRules
 );
 
 export const eslintPlugin = new Plugin({
@@ -93,5 +93,5 @@ export const eslintPlugin = new Plugin({
   name: "@eslint/js",
   order: 1,
   rules: eslintRules,
-  url: "https://github.com/eslint/eslint/tree/main/packages/js",
+  url: "https://github.com/eslint/eslint/tree/main/packages/js"
 });

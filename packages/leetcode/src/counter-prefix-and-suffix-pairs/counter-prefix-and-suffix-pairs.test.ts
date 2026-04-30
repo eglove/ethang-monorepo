@@ -7,7 +7,7 @@ describe("countPrefixSuffixPairs", () => {
     // cspell:disable-next-line
     [["a", "aba", "ababa", "aa"], 4],
     [["pa", "papa", "ma", "mama"], 2],
-    [["abab", "ab"], 0],
+    [["abab", "ab"], 0]
   ])("should work", (input, output) => {
     expect(countPrefixSuffixPairs(input)).toBe(output);
   });

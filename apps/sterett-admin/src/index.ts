@@ -4,10 +4,10 @@ export default {
 
     if (404 === response.status) {
       return environment.ASSETS.fetch(
-        new Request(new URL("/", request.url), request),
+        new Request(new URL("/", request.url), request)
       );
     }
 
     return response;
-  },
+  }
 } satisfies ExportedHandler<{ ASSETS: Fetcher }>;

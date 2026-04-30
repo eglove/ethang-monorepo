@@ -8,7 +8,7 @@ import trim from "lodash/trim.js";
 
 export const getCookieValue = <T extends string>(
   cookieName: T,
-  cookieSource: Headers | string,
+  cookieSource: Headers | string
 ): Error | string => {
   let cookies: null | string = null;
 
@@ -64,7 +64,7 @@ export const setCookieValue = <T extends string>({
   config,
   cookieName,
   cookieValue,
-  response,
+  response
 }: SetCookieValueProperties<T>) => {
   let cookieString = `${cookieName}=${cookieValue}`;
 
@@ -91,16 +91,16 @@ export const setCookieValue = <T extends string>({
 export const deleteCookieValue = <T extends string>(
   cookieName: T,
   response: Response,
-  config?: Omit<SetCookieValueProperties<T>["config"], "Expires" | "Max-Age">,
+  config?: Omit<SetCookieValueProperties<T>["config"], "Expires" | "Max-Age">
 ): void => {
   setCookieValue({
     config: {
       ...config,
       Expires: new Date(0),
-      "Max-Age": 0,
+      "Max-Age": 0
     },
     cookieName,
     cookieValue: "",
-    response,
+    response
   });
 };

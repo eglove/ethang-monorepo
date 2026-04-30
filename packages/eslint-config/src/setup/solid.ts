@@ -8,8 +8,8 @@ const ruleNames = keys(getNonDeprecatedRules(solid.rules));
 const customRules = [
   {
     name: "no-proxy-apis",
-    rule: "off",
-  },
+    rule: "off"
+  }
 ];
 
 export const solidRules = genRules(ruleNames, customRules, "solid");
@@ -21,5 +21,5 @@ export const solidPlugin = new Plugin({
   pluginName: "solid",
   pluginValue: "solid",
   rules: solidRules,
-  url: "https://github.com/solidjs-community/eslint-plugin-solid",
+  url: "https://github.com/solidjs-community/eslint-plugin-solid"
 });

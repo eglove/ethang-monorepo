@@ -21,5 +21,5 @@ export const schemaTypes = [
   techType,
   wowTaskType,
   blockContentType,
-  videoEmbedType,
+  videoEmbedType
 ];

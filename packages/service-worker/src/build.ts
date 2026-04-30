@@ -11,7 +11,7 @@ export const buildServiceWorker = async (outfile: string) => {
   await build({
     bundle: true,
     define: {
-      "process.env.SW_VERSION": JSON.stringify(swVersion),
+      "process.env.SW_VERSION": JSON.stringify(swVersion)
     },
     entryPoints: [swPath],
     format: "esm",
@@ -19,7 +19,7 @@ export const buildServiceWorker = async (outfile: string) => {
     outfile,
     target: "es2022",
     // Workbox needs this for certain environments
-    conditions: ["worker", "browser"],
+    conditions: ["worker", "browser"]
   });
 
   // eslint-disable-next-line no-console

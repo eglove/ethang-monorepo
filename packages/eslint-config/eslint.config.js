@@ -28,5 +28,12 @@ export default defineConfig(
         tsconfigRootDir: import.meta.dirname
       }
     }
+  },
+  {
+    files: ["src/config.*.js"],
+    rules: {
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "sonar/max-lines": "off"
+    }
   }
 );

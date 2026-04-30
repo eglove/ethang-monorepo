@@ -11,7 +11,7 @@ export const isPalindrome = (string: string) => {
     reverse,
     (value) => {
       return join(value, "");
-    },
+    }
   )(string);
 
   return string === reversed;

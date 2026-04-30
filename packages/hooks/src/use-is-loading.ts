@@ -8,7 +8,7 @@ type UseIsLoadingReturn<T, E> = {
 };
 
 export const useIsLoading = <T, E>(
-  callback: () => Promise<T>,
+  callback: () => Promise<T>
 ): UseIsLoadingReturn<T, E> => {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<T>();
@@ -38,6 +38,6 @@ export const useIsLoading = <T, E>(
     caller,
     error,
     isLoading,
-    results,
+    results
   };
 };

@@ -21,9 +21,9 @@ const getDefaultHeaders = () => {
       `base-uri 'none'`,
       `frame-ancestors 'self'`,
       `form-action 'self'`,
-      `require-trusted-types-for 'script'`,
+      `require-trusted-types-for 'script'`
     ],
-    "; ",
+    "; "
   );
 
   return {
@@ -41,14 +41,14 @@ const getDefaultHeaders = () => {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "SAMEORIGIN",
     "X-Powered-By": undefined,
-    "X-XSS-Protection": "1; mode=block",
+    "X-XSS-Protection": "1; mode=block"
   };
 };
 
 export const createJsonResponse = <T>(
   data: T,
   status: keyof typeof HTTP_STATUS,
-  responseInit?: ResponseInit,
+  responseInit?: ResponseInit
 ) => {
   const headers = merge(getDefaultHeaders(), responseInit?.headers);
 
@@ -63,6 +63,6 @@ export const createJsonResponse = <T>(
   return new globalThis.Response(isNil(data) ? null : JSON.stringify(data), {
     status: HTTP_STATUS[status],
     ...responseInit,
-    headers,
+    headers
   });
 };

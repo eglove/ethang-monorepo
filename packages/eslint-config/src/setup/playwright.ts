@@ -9,7 +9,7 @@ const ruleNames = keys(getNonDeprecatedRules(playwright.rules));
 const customRules = [
   { name: "require-tags", rule: "off" },
   { name: "no-nth-methods", rule: "off" },
-  { name: "no-hooks", rule: "off" },
+  { name: "no-hooks", rule: "off" }
 ];
 
 export const playwrightRules = genRules(ruleNames, customRules, "playwright");
@@ -21,5 +21,5 @@ export const playwrightPlugin = new Plugin({
   pluginName: "playwright",
   pluginValue: "playwright",
   rules: playwrightRules,
-  url: "https://github.com/mskelton/eslint-plugin-playwright",
+  url: "https://github.com/mskelton/eslint-plugin-playwright"
 });

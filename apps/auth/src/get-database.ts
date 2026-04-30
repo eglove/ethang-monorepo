@@ -6,6 +6,6 @@ import { user } from "./db/schema.js";
 
 export const getDatabase = (context: AuthContext) => {
   return drizzle(context.env.DB, {
-    schema: { userTable: user },
+    schema: { userTable: user }
   });
 };

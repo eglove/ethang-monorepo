@@ -11,7 +11,7 @@ const possibleMoves = [
   [2, -1],
   [1, -2],
   [-1, -2],
-  [-2, -1],
+  [-2, -1]
 ] as const;
 
 const positionToString = (position: Coordinate) => {
@@ -41,7 +41,7 @@ export const knightConnection = (knightA: Coordinate, knightB: Coordinate) => {
     for (const possibleMove of possibleMoves) {
       const position: Coordinate = [
         currentPosition[0] + possibleMove[0],
-        currentPosition[1] + possibleMove[1],
+        currentPosition[1] + possibleMove[1]
       ];
       const positionString = positionToString(position);
 
