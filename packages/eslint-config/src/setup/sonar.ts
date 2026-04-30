@@ -14,9 +14,9 @@ const customRules = [
     rule: [
       "error",
       {
-        format: "^(?:[a-z][a-zA-Z0-9]*|[A-Z][A-Z0-9]*)$",
-      },
-    ],
+        format: "^(?:[a-z][a-zA-Z0-9]*|[A-Z][A-Z0-9]*)$"
+      }
+    ]
   },
   { name: "function-return-type", rule: "off" },
   { name: "max-union-size", rule: "off" },
@@ -25,7 +25,7 @@ const customRules = [
   { name: "no-undefined-assignment", rule: "off" },
   { name: "shorthand-property-grouping", rule: "off" }, // Conflicts with perfectionist sorting
   { name: "todo-tag", rule: "off" },
-  { name: "no-reference-error", rule: "off" },
+  { name: "no-reference-error", rule: "off" }
 ];
 
 export const sonarRules = genRules(ruleNames, customRules, "sonar");
@@ -38,5 +38,5 @@ export const sonarPlugin = new Plugin({
   pluginName: "sonar",
   pluginValue: "sonar",
   rules: sonarRules,
-  url: "https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md",
+  url: "https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md"
 });

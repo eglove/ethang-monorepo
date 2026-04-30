@@ -5,91 +5,91 @@ import { Plugin } from "../build/plugin.ts";
 import {
   type EsLintRules,
   genRules,
-  getNonDeprecatedRules,
+  getNonDeprecatedRules
 } from "./gen-rules.ts";
 
 const ruleNames = keys(
   getNonDeprecatedRules(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    (tseslint.plugin as unknown as { rules: EsLintRules }).rules,
-  ),
+    (tseslint.plugin as unknown as { rules: EsLintRules }).rules
+  )
 );
 const customRules = [
   {
     name: "adjacent-overload-signatures",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "class-methods-use-this",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "consistent-return",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "consistent-type-definitions",
-    rule: ["error", "type"],
+    rule: ["error", "type"]
   },
   {
     name: "consistent-type-imports",
-    rule: ["error", { fixStyle: "inline-type-imports" }],
+    rule: ["error", { fixStyle: "inline-type-imports" }]
   },
   {
     name: "explicit-function-return-type",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "explicit-module-boundary-types",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "init-declarations",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "member-ordering",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "naming-convention",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "no-dupe-class-members",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "no-invalid-this",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "no-magic-numbers",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "no-redeclare",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "no-unnecessary-type-parameters",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "no-use-before-define",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "parameter-properties",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "prefer-readonly-parameter-types",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "max-params",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "no-unused-vars",
@@ -102,16 +102,16 @@ const customRules = [
         caughtErrorsIgnorePattern: "^_",
         destructuredArrayIgnorePattern: "^_",
         ignoreRestSiblings: true,
-        varsIgnorePattern: "^_",
-      },
-    ],
-  },
+        varsIgnorePattern: "^_"
+      }
+    ]
+  }
 ];
 
 export const typescriptRules = genRules(
   ruleNames,
   customRules,
-  "@typescript-eslint",
+  "@typescript-eslint"
 );
 
 export const typescriptPlugin = new Plugin({
@@ -122,5 +122,5 @@ export const typescriptPlugin = new Plugin({
   pluginName: "@typescript-eslint",
   pluginValue: "tseslint.plugin",
   rules: typescriptRules,
-  url: "https://github.com/typescript-eslint/typescript-eslint",
+  url: "https://github.com/typescript-eslint/typescript-eslint"
 });

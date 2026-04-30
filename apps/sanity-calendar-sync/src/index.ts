@@ -25,7 +25,7 @@ export default {
       dataset: "production",
       // cspell:disable-next-line
       projectId: "540gjnt8",
-      useCdn: true,
+      useCdn: true
     });
 
     const eventQuery = `
@@ -51,7 +51,7 @@ export default {
         stamp: { date: startDate.toJSDate(), type: "DATE-TIME" } as const,
         start: { date: startDate.toJSDate(), type: "DATE-TIME" } as const,
         summary: item.title,
-        uid: item._id,
+        uid: item._id
       } as IcsEvent;
     });
 
@@ -59,13 +59,13 @@ export default {
       events,
       name: "Sterett Creek Village Trustee",
       prodId: "sterettcreekvillagetrustee.com",
-      version: "2.0",
+      version: "2.0"
     });
 
     return new Response(calendar, {
       headers: {
-        "Content-Type": "text/calendar",
-      },
+        "Content-Type": "text/calendar"
+      }
     });
-  },
+  }
 } satisfies ExportedHandler<Env>;

@@ -3,7 +3,7 @@ import type { JSX } from "react";
 import {
   type DashboardWidget,
   DashboardWidgetContainer,
-  type LayoutConfig,
+  type LayoutConfig
 } from "@sanity/dashboard";
 
 import { UpdateItems } from "./update-items.js";
@@ -39,6 +39,6 @@ export const updateWidget = (config?: {
       return <UpdateWidget />;
     },
     ...(config?.layout !== undefined && { layout: config.layout }),
-    name: "update-widget",
+    name: "update-widget"
   };
 };

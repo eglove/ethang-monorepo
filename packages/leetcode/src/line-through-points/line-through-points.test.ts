@@ -9,7 +9,7 @@ const points: [number, number][] = [
   [0, 4],
   [-2, 6],
   [4, 0],
-  [2, 1],
+  [2, 1]
 ];
 
 describe("lineThroughPoints", () => {

@@ -6,7 +6,7 @@ export type IntervalCallback = (time: number | undefined) => void;
 export const animationInterval = (
   ms: number,
   signal: AbortSignal,
-  callback: IntervalCallback,
+  callback: IntervalCallback
 ): void => {
   const start = isNil(globalThis.document.timeline)
     ? globalThis.performance.now()
@@ -41,7 +41,7 @@ export const animationInterval = (
 
 export const useAnimationInterval = (
   ms: number,
-  callback: IntervalCallback,
+  callback: IntervalCallback
 ): void => {
   useEffect(() => {
     const controller = new AbortController();

@@ -9,7 +9,7 @@ import { getAcceptLanguage } from "../http/headers.ts";
 
 type LocaleHandler = (
   source?: Readonly<Headers> | string,
-  valueName?: string,
+  valueName?: string
 ) => null | string | undefined;
 
 type LocaleSource = "accept-language" | "cookie" | "localStorage" | "navigator";
@@ -38,13 +38,13 @@ const SOURCE_HANDLERS: Record<LocaleSource, LocaleHandler> = {
   "accept-language": acceptLanguageHandler,
   cookie: cookieHandler,
   localStorage: localStorageHandler,
-  navigator: navigatorHandler,
+  navigator: navigatorHandler
 };
 
 export const getLocale = (
   sourceTypes: readonly LocaleSource[],
   source?: Readonly<Headers> | string,
-  valueName?: string,
+  valueName?: string
 ): null | string => {
   for (const sourceType of sourceTypes) {
     const result = SOURCE_HANDLERS[sourceType](source, valueName);
@@ -80,7 +80,7 @@ const getFromAcceptLanguage = (source: Readonly<Headers> | string) => {
 
 const getFromCookie = (
   valueName: string,
-  source: Readonly<Headers> | string,
+  source: Readonly<Headers> | string
 ) => {
   const value = getCookieValue(valueName, source);
 

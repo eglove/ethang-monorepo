@@ -21,7 +21,7 @@ export const useDimensions = ({
   delay = DEFAULT_DELAY,
   effectDeps,
   initialDimensions = {},
-  liveMeasure = true,
+  liveMeasure = true
 }: UseDimensionsProperties): UseDimensionsReturn => {
   const [dimensions, setDimensions] = useState(initialDimensions);
   const [element, setElement] = useState<Element | undefined>();
@@ -70,6 +70,6 @@ export const useDimensions = ({
   return {
     dimensions,
     element,
-    reference,
+    reference
   };
 };

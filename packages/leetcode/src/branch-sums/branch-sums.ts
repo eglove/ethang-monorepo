@@ -5,7 +5,7 @@ import isNil from "lodash/isNil.js";
 const calculateBranchSums = (
   node: null | TreeNode<number>,
   runningSum: number,
-  sums: number[],
+  sums: number[]
 ) => {
   if (isNil(node)) {
     return;

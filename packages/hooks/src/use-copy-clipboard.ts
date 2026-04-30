@@ -12,7 +12,7 @@ type UseCopyClipboardReturn = {
 const DEFAULT_DURATION = 2000;
 
 export const useCopyClipboard = (
-  successDuration = DEFAULT_DURATION,
+  successDuration = DEFAULT_DURATION
 ): UseCopyClipboardReturn => {
   const [isCopied, setIsCopied] = useState(false);
   const [error, setError] = useState<Error>();
@@ -57,6 +57,6 @@ export const useCopyClipboard = (
   return {
     copyToClipboard,
     error,
-    isCopied,
+    isCopied
   };
 };

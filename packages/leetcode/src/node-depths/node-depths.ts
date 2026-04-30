@@ -10,8 +10,8 @@ export const nodeDepths = (root: TreeNode<number>) => {
   }[] = [
     {
       depth: 0,
-      node: root,
-    },
+      node: root
+    }
   ];
 
   while (0 < stack.length) {
@@ -26,12 +26,12 @@ export const nodeDepths = (root: TreeNode<number>) => {
     stack.push(
       {
         depth: nodeInfo.depth + 1,
-        node: nodeInfo.node.left,
+        node: nodeInfo.node.left
       },
       {
         depth: nodeInfo.depth + 1,
-        node: nodeInfo.node.right,
-      },
+        node: nodeInfo.node.right
+      }
     );
   }
 
@@ -40,7 +40,7 @@ export const nodeDepths = (root: TreeNode<number>) => {
 
 export const nodeDepthsRecursive = (
   root: null | TreeNode<number>,
-  depth = 0,
+  depth = 0
 ): number => {
   if (isNil(root)) {
     return 0;

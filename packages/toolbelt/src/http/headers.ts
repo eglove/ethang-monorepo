@@ -17,7 +17,7 @@ type AcceptLanguageResults = {
 }[];
 
 export const getAcceptLanguage = (
-  acceptLanguage: Readonly<Headers | string>,
+  acceptLanguage: Readonly<Headers | string>
 ): AcceptLanguageResults | Error => {
   const languages = isString(acceptLanguage)
     ? split(acceptLanguage, ",")
@@ -42,7 +42,7 @@ export const getAcceptLanguage = (
       country,
       language,
       name: trim(name),
-      quality,
+      quality
     } as const;
   });
 

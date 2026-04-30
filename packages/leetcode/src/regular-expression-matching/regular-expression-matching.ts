@@ -25,7 +25,7 @@ export const isMatch = (s: string, p: string): boolean => {
 
 const isCharacterMatch = (
   charS: string | undefined,
-  charP: string | undefined,
+  charP: string | undefined
 ) => {
   return charS !== undefined && (charS === charP || "." === charP);
 };
@@ -34,7 +34,7 @@ const handleRepeatingPattern = (
   stack: [number, number][],
   stringIndex: number,
   patternIndex: number,
-  characterMatches: boolean,
+  characterMatches: boolean
 ) => {
   stack.push([stringIndex, patternIndex + 2]);
   if (characterMatches) {
@@ -73,7 +73,7 @@ export const isMatchNoRecursion = (s: string, p: string): boolean => {
         stack,
         stringIndex,
         patternIndex,
-        characterMatches,
+        characterMatches
       );
       // eslint-disable-next-line sonar/elseif-without-else
     } else if (characterMatches) {

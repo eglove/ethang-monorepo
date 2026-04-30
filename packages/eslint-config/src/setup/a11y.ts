@@ -9,12 +9,12 @@ const customRules = [
   {
     // throws false positives
     name: "control-has-associated-label",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "media-has-caption",
-    rule: "off",
-  },
+    rule: "off"
+  }
 ];
 
 export const a11yRules = genRules(ruleNames, customRules, "a11y");
@@ -27,5 +27,5 @@ export const a11yPlugin = new Plugin({
   pluginName: "a11y",
   pluginValue: "a11y",
   rules: a11yRules,
-  url: "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y",
+  url: "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y"
 });

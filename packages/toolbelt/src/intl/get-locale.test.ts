@@ -92,7 +92,7 @@ describe(getLocale, () => {
   describe("localStorage source", () => {
     beforeEach(() => {
       vi.stubGlobal("localStorage", {
-        getItem: vi.fn().mockReturnValue("ja-JP"),
+        getItem: vi.fn().mockReturnValue("ja-JP")
       });
     });
 

@@ -8,5 +8,5 @@ export default defineType({
   icon: CalendarIcon,
   name: "calendarEvent",
   title: "Calendar Event",
-  type: "document",
+  type: "document"
 });

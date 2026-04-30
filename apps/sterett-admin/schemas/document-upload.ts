@@ -9,23 +9,23 @@ export default defineType({
       type: "string",
       validation(rule: Rule): Rule {
         return rule.required();
-      },
+      }
     },
     {
       name: "category",
       options: {
-        list: ["Covenant", "General", "Meeting Minute"],
+        list: ["Covenant", "General", "Meeting Minute"]
       },
       title: "Category",
       type: "string",
       validation(rule: Rule): Rule {
         return rule.required();
-      },
+      }
     },
     {
       initialValue(): { date: Date } {
         return {
-          date: new Date(),
+          date: new Date()
         };
       },
       name: "date",
@@ -33,7 +33,7 @@ export default defineType({
       type: "date",
       validation(rule: Rule): Rule {
         return rule.required();
-      },
+      }
     },
     {
       name: "file",
@@ -41,11 +41,11 @@ export default defineType({
       type: "fileUpload",
       validation(rule: Rule): Rule {
         return rule.required();
-      },
-    },
+      }
+    }
   ],
   icon: DocumentPdfIcon,
   name: "documentUpload",
   title: "Document",
-  type: "document",
+  type: "document"
 });

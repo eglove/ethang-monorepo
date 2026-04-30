@@ -7,10 +7,10 @@ export const languageOptions = {
   parser,
   parserOptions: {
     project: true,
-    tsconfigRootDir: import.meta.dirname,
-  },
+    tsconfigRootDir: import.meta.dirname
+  }
 };
 
 export const angularLanguageOptions = {
-  parser: angularTemplateParser,
+  parser: angularTemplateParser
 };

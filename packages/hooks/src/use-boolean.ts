@@ -22,6 +22,6 @@ export const useBoolean = (initialValue = false) => {
     setTrue,
     setValue,
     toggle,
-    value,
+    value
   };
 };

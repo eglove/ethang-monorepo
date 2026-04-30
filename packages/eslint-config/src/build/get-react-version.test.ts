@@ -6,7 +6,7 @@ describe("get-react-version", () => {
   it("should return react version on successful fetch", async () => {
     const mockResponse = {
       json: vi.fn().mockResolvedValue({ version: "18.2.0" }),
-      ok: true,
+      ok: true
     };
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse));
 
@@ -14,14 +14,14 @@ describe("get-react-version", () => {
 
     expect(result).toStrictEqual({ version: "18.2.0" });
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      "https://registry.npmjs.org/react/latest",
+      "https://registry.npmjs.org/react/latest"
     );
   });
 
   it("should return undefined on fetch error", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockRejectedValue(new Error("Network error")),
+      vi.fn().mockRejectedValue(new Error("Network error"))
     );
 
     await expect(getLatestReact()).rejects.toThrow("Network error");
@@ -30,7 +30,7 @@ describe("get-react-version", () => {
   it("should return undefined on invalid json", async () => {
     const mockResponse = {
       json: vi.fn().mockResolvedValue({ invalid: "data" }),
-      ok: true,
+      ok: true
     };
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse));
 

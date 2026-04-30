@@ -4,7 +4,7 @@ import {
   missingNumberBitwise,
   missingNumbers,
   missingNumbersMathTrick,
-  missingNumbersSet,
+  missingNumbersSet
 } from "./missing-numbers.js";
 
 describe("missingNumbers", () => {

@@ -26,20 +26,20 @@ export type UrlConfig<Url extends string> = {
 const hasValidationError = <Url extends string>(
   parameterKey: keyof UrlConfig<Url>,
   schemaKey: keyof UrlConfig<Url>,
-  config?: UrlConfig<Url>,
+  config?: UrlConfig<Url>
 ) => {
   return !isNil(get(config, [parameterKey])) && isNil(get(config, [schemaKey]));
 };
 
 const resolvePath = <Url extends string>(
   urlString: Url,
-  config?: UrlConfig<Url>,
+  config?: UrlConfig<Url>
 ) => {
   if (!isNil(config) && !isNil(config.pathVariables)) {
     const path = createUrlPath(
       urlString,
       config.pathVariables,
-      config.pathVariablesSchema,
+      config.pathVariablesSchema
     );
 
     if (isError(path)) {
@@ -55,7 +55,7 @@ const resolvePath = <Url extends string>(
 
 export const createUrl = <Url extends string>(
   urlString: Url,
-  config?: UrlConfig<Url>,
+  config?: UrlConfig<Url>
 ): Error | URL | ZodError => {
   if (hasValidationError("pathVariables", "pathVariablesSchema", config)) {
     return new Error("must provide path variables schema");
@@ -86,7 +86,7 @@ export const createUrl = <Url extends string>(
   ) {
     const parameters = createSearchParameters(
       config.searchParams,
-      config.searchParamsSchema,
+      config.searchParamsSchema
     );
 
     if (isError(parameters)) {

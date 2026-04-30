@@ -6,7 +6,7 @@ import { updateRules } from "./update-rules.ts";
 
 vi.mock(import("./create-config-file.ts"), () => {
   return {
-    createConfigFile: vi.fn(),
+    createConfigFile: vi.fn()
   };
 });
 

@@ -10,7 +10,7 @@ import convertToString from "lodash/toString.js";
 import { getDatabase } from "./get-database.ts";
 import {
   type AuthContextObject,
-  AuthService,
+  AuthService
 } from "./services/auth-service.js";
 
 const app = new Hono<AuthContextObject>();
@@ -20,20 +20,20 @@ app.post("/sign-up", zValidator("json", signUpSchema), async (context) => {
   const database = getDatabase(context);
   const authService = new AuthService(
     database,
-    convertToString(context.env[AuthService.TOKEN_SECRET_KEY]),
+    convertToString(context.env[AuthService.TOKEN_SECRET_KEY])
   );
   const body = context.req.valid("json");
 
   const user = await authService.signUp(
     body.email,
     body.password,
-    body.username,
+    body.username
   );
 
   if (isError(user) || isNil(user)) {
     return createJsonResponse(
       { error: user?.message },
-      "INTERNAL_SERVER_ERROR",
+      "INTERNAL_SERVER_ERROR"
     );
   }
 
@@ -49,7 +49,7 @@ app.post("/sign-in", zValidator("json", signInSchema), async (context) => {
   const database = getDatabase(context);
   const authService = new AuthService(
     database,
-    convertToString(context.env[AuthService.TOKEN_SECRET_KEY]),
+    convertToString(context.env[AuthService.TOKEN_SECRET_KEY])
   );
   const body = context.req.valid("json");
 
@@ -70,7 +70,7 @@ app.get("/verify", async (context) => {
   const database = getDatabase(context);
   const authService = new AuthService(
     database,
-    convertToString(context.env[AuthService.TOKEN_SECRET_KEY]),
+    convertToString(context.env[AuthService.TOKEN_SECRET_KEY])
   );
 
   const token = context.req.raw.headers.get("X-Token");

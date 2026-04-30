@@ -4,7 +4,7 @@ type TimeDisplayProperties = {
 
 const formatDate = (date: string): string => {
   return new Date(date).toLocaleDateString("en-US", {
-    dateStyle: "medium",
+    dateStyle: "medium"
   });
 };
 

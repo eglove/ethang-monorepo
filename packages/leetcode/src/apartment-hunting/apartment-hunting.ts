@@ -36,14 +36,14 @@ export const apartmentHunting = (blocks: Block[], requirements: string[]) => {
         if (get(_block, [requirement])) {
           closestRequirementDistance = Math.min(
             closestRequirementDistance,
-            distanceBetween(index, _index),
+            distanceBetween(index, _index)
           );
         }
       }
 
       maxDistancesAtBlocks[index] = Math.max(
         get(maxDistancesAtBlocks, [index], Number.NEGATIVE_INFINITY),
-        closestRequirementDistance,
+        closestRequirementDistance
       );
     }
   }

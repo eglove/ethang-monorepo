@@ -1,6 +1,6 @@
 import {
   orderRankField,
-  orderRankOrdering,
+  orderRankOrdering
 } from "@sanity/orderable-document-list";
 import { defineField, defineType } from "sanity";
 
@@ -11,7 +11,7 @@ export const wowTaskType = defineType({
       type: "string",
       validation: (Rule) => {
         return Rule.required();
-      },
+      }
     }),
     defineField({
       name: "taskType",
@@ -19,30 +19,30 @@ export const wowTaskType = defineType({
         list: [
           { title: "Daily", value: "daily" },
           { title: "Weekly", value: "weekly" },
-          { title: "One Time", value: "one-time" },
-        ],
+          { title: "One Time", value: "one-time" }
+        ]
       },
       title: "Task Type",
       type: "string",
       validation: (Rule) => {
         return Rule.required();
-      },
+      }
     }),
     defineField({
       description: "e.g. Until reputation is tentative",
       name: "objective",
-      type: "string",
+      type: "string"
     }),
     defineField({
       name: "requirements",
       of: [{ to: [{ type: "wowTask" }], type: "reference" }],
-      type: "array",
+      type: "array"
     }),
     defineField({
       name: "notes",
-      type: "text",
+      type: "text"
     }),
-    orderRankField({ type: "order" }),
+    orderRankField({ type: "order" })
   ],
   name: "wowTask",
   orderings: [orderRankOrdering],
@@ -59,14 +59,14 @@ export const wowTaskType = defineType({
       }
 
       return {
-        title: `${typeLabel} - ${title}`,
+        title: `${typeLabel} - ${title}`
       };
     },
     select: {
       taskType: "taskType",
-      title: "title",
-    },
+      title: "title"
+    }
   },
   title: "WoW Task",
-  type: "document",
+  type: "document"
 });

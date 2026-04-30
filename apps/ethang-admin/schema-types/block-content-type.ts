@@ -12,19 +12,19 @@ export const blockContentType = defineType({
               defineField({
                 name: "href",
                 title: "URL",
-                type: "url",
-              }),
+                type: "url"
+              })
             ],
             name: "link",
             title: "URL",
-            type: "object",
-          },
+            type: "object"
+          }
         ],
         decorators: [
           { title: "Strong", value: "strong" },
           { title: "Emphasis", value: "em" },
-          { title: "Code", value: "code" },
-        ],
+          { title: "Code", value: "code" }
+        ]
       },
       styles: [
         { title: "Normal", value: "normal" },
@@ -32,10 +32,10 @@ export const blockContentType = defineType({
         { title: "H2", value: "h2" },
         { title: "H3", value: "h3" },
         { title: "H4", value: "h4" },
-        { title: "Quote", value: "blockquote" },
+        { title: "Quote", value: "blockquote" }
       ],
       title: "Block",
-      type: "block",
+      type: "block"
     },
     {
       fields: [
@@ -45,33 +45,33 @@ export const blockContentType = defineType({
           type: "string",
           validation: (Rule) => {
             return Rule.required();
-          },
+          }
         }),
         defineField({
           name: "caption",
           title: "Caption",
-          type: "string",
-        }),
+          type: "string"
+        })
       ],
       options: { hotspot: true },
-      type: "image",
+      type: "image"
     },
     defineField({
       name: "quote",
       title: "Quote",
-      type: "blockquote",
+      type: "blockquote"
     }),
     defineField({
       name: "code",
       title: "Code",
-      type: "code",
+      type: "code"
     }),
     defineField({
       name: "video",
       title: "Video",
-      type: "videoEmbed",
-    }),
+      type: "videoEmbed"
+    })
   ],
   title: "Block Content",
-  type: "array",
+  type: "array"
 });

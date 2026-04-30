@@ -6,7 +6,7 @@ export const newsSchema = z.object({
   published: z.string(),
   quote: z.string().optional().nullable(),
   title: z.string(),
-  youtubeVideoId: z.string().optional().nullable(),
+  youtubeVideoId: z.string().optional().nullable()
 });
 
 export type NewsSchema = z.output<typeof newsSchema>;

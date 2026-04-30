@@ -8,5 +8,5 @@ export default defineType({
   icon: ActivityIcon,
   name: "beyonderEvent",
   title: "Beyonder Event",
-  type: "document",
+  type: "document"
 });

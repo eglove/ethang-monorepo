@@ -21,7 +21,7 @@ export class AuthService {
 
   public constructor(
     private readonly database: ReturnType<typeof getDatabase>,
-    private readonly tokenSecret: string,
+    private readonly tokenSecret: string
   ) {}
 
   public async createUser(email: string, password: string, username: string) {
@@ -38,7 +38,7 @@ export class AuthService {
           email,
           lastLoggedIn: new Date().toISOString(),
           password: hashedPassword,
-          username,
+          username
         })
         .returning();
 
@@ -59,11 +59,11 @@ export class AuthService {
         "Max-Age": 31_536_000, // 1 year in seconds
         Path: "/",
         SameSite: "None",
-        Secure: true,
+        Secure: true
       },
       cookieName: AuthService.AUTH_COOKIE_NAME,
       cookieValue: token,
-      response,
+      response
     });
   }
 
@@ -91,7 +91,7 @@ export class AuthService {
 
   public async signUp(email: string, password: string, username?: string) {
     const userResult = await this.database.query.userTable.findFirst({
-      where: eq(userTable.email, email),
+      where: eq(userTable.email, email)
     });
 
     if (isNil(userResult)) {
@@ -117,7 +117,7 @@ export class AuthService {
         email: user.email,
         role: user.role,
         sub: user.id,
-        username: user.username,
+        username: user.username
       })
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
@@ -135,7 +135,7 @@ export class AuthService {
 
   private async rehashPassword(
     user: typeof userTable.$inferSelect,
-    newPassword: string,
+    newPassword: string
   ) {
     const hashedPassword = await this.hashPassword(newPassword);
 
@@ -148,7 +148,7 @@ export class AuthService {
         .update(userTable)
         .set({
           lastLoggedIn: new Date().toISOString(),
-          password: hashedPassword,
+          password: hashedPassword
         })
         .where(eq(userTable.email, user.email))
         .returning();
@@ -177,7 +177,7 @@ export class AuthService {
 
   private async validateCredentials(email: string, password: string) {
     const userResult = await this.database.query.userTable.findFirst({
-      where: eq(userTable.email, email),
+      where: eq(userTable.email, email)
     });
 
     if (isNil(userResult)) {

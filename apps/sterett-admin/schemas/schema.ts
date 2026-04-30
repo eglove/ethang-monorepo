@@ -20,5 +20,5 @@ export default [
   navigation,
 
   blockContent,
-  file,
+  file
 ];

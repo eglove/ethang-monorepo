@@ -22,18 +22,18 @@ export const countSquares = (points: Coordinate[]) => {
 
       const midpoint: Coordinate = [
         (pointA[0] + pointB[0]) / 2,
-        (pointA[1] + pointB[1]) / 2,
+        (pointA[1] + pointB[1]) / 2
       ];
       const xDistanceFromMId = pointA[0] - midpoint[0];
       const yDistanceFromMId = pointA[1] - midpoint[1];
 
       const pointC: Coordinate = [
         midpoint[0] + yDistanceFromMId,
-        midpoint[1] - xDistanceFromMId,
+        midpoint[1] - xDistanceFromMId
       ];
       const pointD: Coordinate = [
         midpoint[0] - yDistanceFromMId,
-        midpoint[1] + xDistanceFromMId,
+        midpoint[1] + xDistanceFromMId
       ];
 
       if (

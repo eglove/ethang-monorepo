@@ -7,10 +7,10 @@ export const techType = defineType({
       type: "string",
       validation: (rule) => {
         return rule.required();
-      },
-    }),
+      }
+    })
   ],
   name: "tech",
   title: "Tech",
-  type: "document",
+  type: "document"
 });

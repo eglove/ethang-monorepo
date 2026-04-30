@@ -19,7 +19,7 @@ export const useOnline = (properties?: UseOnlineProperties) => {
         setIsOnline(true);
         properties?.onOnline?.();
       },
-      { signal: controller.signal },
+      { signal: controller.signal }
     );
 
     globalThis.addEventListener(
@@ -28,7 +28,7 @@ export const useOnline = (properties?: UseOnlineProperties) => {
         setIsOnline(false);
         properties?.onOffline?.();
       },
-      { signal: controller.signal },
+      { signal: controller.signal }
     );
 
     return () => {

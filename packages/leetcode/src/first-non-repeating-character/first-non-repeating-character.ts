@@ -14,12 +14,12 @@ export const firstNonRepeatingCharacter = (string: string) => {
       found.set(character, {
         // @ts-expect-error checked above
         count: found.get(character).count + 1,
-        index,
+        index
       });
     } else {
       found.set(character, {
         count: 1,
-        index,
+        index
       });
     }
   }

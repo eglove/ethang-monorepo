@@ -20,19 +20,19 @@ export const getSubbedNumber = ({
   maxSubDigits = 4,
   minFractionDigitsAfterZeros,
   options,
-  value,
+  value
 }: GetNumberMetaProperties) => {
   const preModifiedFormatter = Intl.NumberFormat(locale, {
-    ...options,
+    ...options
   });
   const resolvedOptions = preModifiedFormatter.resolvedOptions();
 
   const formatter = Intl.NumberFormat(locale, {
     ...options,
-    maximumFractionDigits: 100,
+    maximumFractionDigits: 100
   });
   const parts = formatter.formatToParts(
-    isNumber(value) ? value : Number(value),
+    isNumber(value) ? value : Number(value)
   );
 
   let finalNumber = "";
@@ -47,18 +47,18 @@ export const getSubbedNumber = ({
         const afterZerosString = padEnd(
           afterZeroes,
           minFractionDigitsAfterZeros ?? resolvedOptions.minimumFractionDigits,
-          "0",
+          "0"
         ).slice(
           0,
           // eslint-disable-next-line sonar/argument-type
-          maxFractionDigitsAfterZeros ?? resolvedOptions.maximumFractionDigits,
+          maxFractionDigitsAfterZeros ?? resolvedOptions.maximumFractionDigits
         );
         finalNumber += `0:sub:${leadingZeroes - 1}:sub:${afterZerosString}`;
       } else {
         finalNumber += padEnd(
           part.value,
           resolvedOptions.minimumFractionDigits,
-          "0",
+          "0"
         )
           // eslint-disable-next-line sonar/argument-type
           .slice(0, resolvedOptions.maximumFractionDigits);

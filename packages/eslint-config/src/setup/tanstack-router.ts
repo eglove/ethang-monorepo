@@ -16,5 +16,5 @@ export const tanstackRouterPlugin = new Plugin({
   pluginName: "@tanstack/router",
   pluginValue: "tanstackRouter",
   rules: tanstackRouterRules,
-  url: "https://tanstack.com/router/latest/docs/eslint/eslint-plugin-router",
+  url: "https://tanstack.com/router/latest/docs/eslint/eslint-plugin-router"
 });

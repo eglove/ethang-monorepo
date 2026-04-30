@@ -53,7 +53,7 @@ export const missingNumbersMathTrick = (nums: number[]) => {
 
   return [
     expectedFirstHalf - foundFirstHalf,
-    expectSecondHalf - foundSecondHalf,
+    expectSecondHalf - foundSecondHalf
   ];
 };
 

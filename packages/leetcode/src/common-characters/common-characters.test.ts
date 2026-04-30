@@ -7,7 +7,7 @@ describe("commonCharacters", () => {
     // cspell:disable-next-line
     expect(commonCharacters(["abc", "bcd", "cbaccd"])).toStrictEqual([
       "b",
-      "c",
+      "c"
     ]);
   });
 });

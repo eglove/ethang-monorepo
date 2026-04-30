@@ -27,9 +27,9 @@ self.addEventListener("activate", (event) => {
           })
           .map(async (cacheName) => {
             return caches.delete(cacheName);
-          }),
+          })
       );
-    }),
+    })
   );
 });
 
@@ -42,10 +42,10 @@ registerRoute(
     cacheName: HTML_CACHE,
     plugins: [
       new BroadcastUpdatePlugin({
-        headersToCheck: ["etag", "last-modified"],
-      }),
-    ],
-  }),
+        headersToCheck: ["etag", "last-modified"]
+      })
+    ]
+  })
 );
 
 // Route 2: GET Assets
@@ -54,8 +54,8 @@ registerRoute(
     return "GET" === request.method && "navigate" !== request.mode;
   },
   new StaleWhileRevalidate({
-    cacheName: ASSETS_CACHE,
-  }),
+    cacheName: ASSETS_CACHE
+  })
 );
 
 // Custom: Pre-cache Links
@@ -77,7 +77,7 @@ self.addEventListener("message", (event) => {
     event.waitUntil(
       caches.open(HTML_CACHE).then(async (cache) => {
         return cache.addAll(urls);
-      }),
+      })
     );
   }
 });

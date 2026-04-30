@@ -8,29 +8,29 @@ export const blogType = defineType({
       type: "string",
       validation: (rule) => {
         return rule.required();
-      },
+      }
     }),
     defineField({
       name: "slug",
       options: {
         maxLength: 96,
-        source: "title",
+        source: "title"
       },
       title: "Slug",
       type: "slug",
       validation: (rule) => {
         return rule.required();
-      },
+      }
     }),
     defineField({
       name: "description",
       title: "Description",
-      type: "string",
+      type: "string"
     }),
     defineField({
       name: "canonicalUrl",
       title: "Canonical URL",
-      type: "url",
+      type: "url"
     }),
     defineField({
       initialValue: "Ethan Glover",
@@ -39,7 +39,7 @@ export const blogType = defineType({
       type: "string",
       validation: (rule) => {
         return rule.required();
-      },
+      }
     }),
     defineField({
       fields: [
@@ -49,33 +49,33 @@ export const blogType = defineType({
           type: "string",
           validation: (Rule) => {
             return Rule.required();
-          },
-        }),
+          }
+        })
       ],
       name: "featuredImage",
       options: { hotspot: true },
       title: "Featured Image",
-      type: "image",
+      type: "image"
     }),
     defineField({
       name: "blogCategory",
       title: "Category",
       to: { type: "blogCategory" },
-      type: "reference",
+      type: "reference"
     }),
     {
       initialValue: new Date().toISOString(),
       name: "publishedAt",
       title: "Published At",
-      type: "datetime",
+      type: "datetime"
     },
     {
       name: "body",
       title: "Body",
-      type: "blockContent",
-    },
+      type: "blockContent"
+    }
   ],
   name: "blog",
   title: "Blog",
-  type: "document",
+  type: "document"
 });

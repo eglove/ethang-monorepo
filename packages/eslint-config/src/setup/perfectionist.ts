@@ -13,13 +13,13 @@ const customRules = [
       {
         fallbackSort: { order: "asc", type: "alphabetical" },
         order: "asc",
-        type: "line-length",
-      },
-    ],
+        type: "line-length"
+      }
+    ]
   },
   {
     name: "sort-objects",
-    rule: ["error", { partitionByComment: true }],
+    rule: ["error", { partitionByComment: true }]
   },
   {
     name: "sort-switch-case",
@@ -27,9 +27,9 @@ const customRules = [
       "error",
       {
         order: "asc",
-        type: "alphabetical",
-      },
-    ],
+        type: "alphabetical"
+      }
+    ]
   },
   {
     name: "sort-variable-declarations",
@@ -37,16 +37,16 @@ const customRules = [
       "error",
       {
         order: "asc",
-        type: "alphabetical",
-      },
-    ],
-  },
+        type: "alphabetical"
+      }
+    ]
+  }
 ];
 
 export const perfectionistRules = genRules(
   ruleNames,
   customRules,
-  "perfectionist",
+  "perfectionist"
 );
 
 export const perfectionistPlugin = new Plugin({
@@ -57,5 +57,5 @@ export const perfectionistPlugin = new Plugin({
   pluginName: "perfectionist",
   pluginValue: "perfectionist",
   rules: perfectionistRules,
-  url: "https://github.com/azat-io/eslint-plugin-perfectionist",
+  url: "https://github.com/azat-io/eslint-plugin-perfectionist"
 });

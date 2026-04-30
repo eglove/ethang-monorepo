@@ -10,31 +10,31 @@ describe("apartmentHunting", () => {
           {
             gym: false,
             school: true,
-            store: false,
+            store: false
           },
           {
             gym: true,
             school: false,
-            store: false,
+            store: false
           },
           {
             gym: true,
             school: true,
-            store: false,
+            store: false
           },
           {
             gym: false,
             school: true,
-            store: false,
+            store: false
           },
           {
             gym: false,
             school: true,
-            store: true,
-          },
+            store: true
+          }
         ],
-        ["gym", "school", "store"],
-      ),
+        ["gym", "school", "store"]
+      )
     ).toBe(3);
   });
 });

@@ -24,7 +24,7 @@ describe(lastModifiedMiddleware, () => {
     const response = await app.request("http://localhost/");
 
     expect(response.headers.get("Last-Modified")).toBe(
-      "Sun, 01 Jan 2023 12:00:00 GMT",
+      "Sun, 01 Jan 2023 12:00:00 GMT"
     );
   });
 

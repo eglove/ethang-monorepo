@@ -7,7 +7,7 @@ export const tokenSchema = z.object({
   email: z.string().trim(),
   role: z.string().trim(),
   sub: z.string().trim(),
-  username: z.string().trim(),
+  username: z.string().trim()
 });
 
 export const signInResponseToken = z.object({
@@ -17,7 +17,7 @@ export const signInResponseToken = z.object({
   role: z.string(),
   sessionToken: z.string(),
   updatedAt: z.string(),
-  username: z.string(),
+  username: z.string()
 });
 
 export type TokenSchema = z.infer<typeof tokenSchema>;

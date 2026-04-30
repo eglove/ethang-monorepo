@@ -14,7 +14,7 @@ export default defineType({
       type: "string",
       validation(rule: Rule): Rule {
         return rule.required();
-      },
+      }
     },
     {
       name: "slug",
@@ -22,25 +22,25 @@ export default defineType({
         slugify(input: string) {
           return replace(toLower(input), /\s+/gu, "-").slice(
             MIN_SLUG_CHARS,
-            MAX_SLUG_CHARS,
+            MAX_SLUG_CHARS
           );
         },
-        source: "title",
+        source: "title"
       },
       title: "Slug - https://sterettcreekvillagetrustee.com/page/SLUG",
       type: "slug",
       validation(rule: Rule): Rule {
         return rule.required();
-      },
+      }
     },
     {
       name: "content",
       title: "Content",
-      type: "blockContent",
-    },
+      type: "blockContent"
+    }
   ],
   icon: DocumentTextIcon,
   name: "page",
   title: "Page",
-  type: "document",
+  type: "document"
 });

@@ -28,7 +28,7 @@ const recursiveSort = <T extends object>(object: T): T => {
         return sorted;
       },
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      {} as T,
+      {} as T
     );
   }
 
@@ -55,7 +55,7 @@ export const sortJson = (filePath: string) => {
 export const findFilesRecursively = (
   directory: string,
   filename: string,
-  results: string[] = [],
+  results: string[] = []
 ) => {
   const entries = readdirSync(directory, { withFileTypes: true });
 

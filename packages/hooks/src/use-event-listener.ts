@@ -7,7 +7,7 @@ export const useEventListener = <Type extends keyof WindowEventMapPlus>(
   listener: Type extends keyof WindowEventMap
     ? (this: Window, event_: WindowEventMap[Type]) => void
     : EventListenerOrEventListenerObject,
-  options?: AddEventListenerOptions | EventListenerOptions,
+  options?: AddEventListenerOptions | EventListenerOptions
 ): void => {
   useEffect(() => {
     const controller = new AbortController();
@@ -19,7 +19,7 @@ export const useEventListener = <Type extends keyof WindowEventMapPlus>(
 
     globalThis.addEventListener(type, listener, {
       signal,
-      ...options,
+      ...options
     });
 
     return () => {

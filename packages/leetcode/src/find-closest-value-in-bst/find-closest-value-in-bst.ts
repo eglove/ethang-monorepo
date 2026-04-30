@@ -3,7 +3,7 @@ import type { TreeNode } from "@ethang/toolbelt/tree/tree-node.js";
 const findClosestValueInBstHelper = (
   tree: null | TreeNode<number>,
   target: number,
-  closestValue: number,
+  closestValue: number
 ) => {
   let currentNode = tree;
   let currentClosestValue = closestValue;
@@ -29,7 +29,7 @@ const findClosestValueInBstHelper = (
 
 export const findClosestValueInBst = (
   tree: TreeNode<number>,
-  target: number,
+  target: number
 ) => {
   return findClosestValueInBstHelper(tree, target, tree.value);
 };

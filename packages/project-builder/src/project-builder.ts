@@ -16,7 +16,7 @@ export const projectBuilder = async (basePath: string, options?: Options) => {
   const config = isNil(options)
     ? ({
         entry: ["src"],
-        outDir: "dist",
+        outDir: "dist"
       } satisfies Options)
     : options;
 
@@ -32,10 +32,10 @@ export const projectBuilder = async (basePath: string, options?: Options) => {
       moduleResolution: "bundler",
       outDir: config.outDir,
       target: "esnext",
-      types: ["node"],
+      types: ["node"]
     },
     exclude: ["**/*.test.ts"],
-    include: config.entry,
+    include: config.entry
   });
 
   await tsup({
@@ -46,7 +46,7 @@ export const projectBuilder = async (basePath: string, options?: Options) => {
     minify: true,
     outDir: config.outDir,
     sourcemap: true,
-    target: "esnext",
+    target: "esnext"
   });
 
   copyFileSync(packageJsonString, `${config.outDir}/package.json`);

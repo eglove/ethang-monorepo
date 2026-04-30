@@ -9,7 +9,7 @@ export class MarkdownGenerator {
   public alert(
     type: "CAUTION" | "IMPORTANT" | "NOTE" | "TIP" | "WARNING",
     text: string,
-    lineBreaksAfter = 0,
+    lineBreaksAfter = 0
   ) {
     this.markdown += `> [!${type}]\n`;
     this.markdown += `> ${text}`;
@@ -139,7 +139,7 @@ ${text}
       isComplete: boolean;
       label: string;
     }[],
-    lineBreaksAfter = 0,
+    lineBreaksAfter = 0
   ) {
     for (const text of texts) {
       this.markdown += `[${text.isComplete ? "X" : " "}] ${text.label}`;

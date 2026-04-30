@@ -60,9 +60,9 @@ export const HTTP_STATUS = {
   UNUSED: 306,
   UPGRADE_REQUIRED: 426,
   URI_TOO_LONG: 414,
-  VARIANT_ALSO_NEGOTIATES: 506,
+  VARIANT_ALSO_NEGOTIATES: 506
 } as const;
 
 export const jsonHeaders = {
-  "Content-Type": "application/json",
+  "Content-Type": "application/json"
 };

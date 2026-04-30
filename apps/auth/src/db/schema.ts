@@ -16,5 +16,5 @@ export const user = sqliteTable("User", {
   updatedAt: text("updatedAt")
     .notNull()
     .default(sql`(strftime('%Y-%m-%d %H:%M:%f', 'now'))`),
-  username: text("username").unique().notNull(),
+  username: text("username").unique().notNull()
 });

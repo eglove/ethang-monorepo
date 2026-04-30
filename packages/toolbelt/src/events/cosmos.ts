@@ -51,12 +51,12 @@ export class Cosmos {
     const originalAddEventListener = get(globalThis, [
       "EventTarget",
       "prototype",
-      "addEventListener",
+      "addEventListener"
     ]);
     const originalRemoveEventListener = get(globalThis, [
       "EventTarget",
       "prototype",
-      "removeEventListener",
+      "removeEventListener"
     ]);
     // eslint-disable-next-line @typescript-eslint/no-this-alias,unicorn/no-this-assignment
     const cosmos = this;
@@ -65,7 +65,7 @@ export class Cosmos {
       this: EventTarget,
       eventName: string,
       listener: EventListenerOrEventListenerObject,
-      options?: (AddEventListenerOptions | boolean) & ExtraEventListenerOptions,
+      options?: (AddEventListenerOptions | boolean) & ExtraEventListenerOptions
     ) {
       if (false !== options?.isNative) {
         cosmos.addEventListener(this, eventName, listener, options);
@@ -83,13 +83,13 @@ export class Cosmos {
     globalThis.EventTarget.prototype.removeEventListener = function (
       eventName: string,
       listener: EventListenerOrEventListenerObject,
-      options?: (AddEventListenerOptions | boolean) & ExtraEventListenerOptions,
+      options?: (AddEventListenerOptions | boolean) & ExtraEventListenerOptions
     ) {
       if (false !== options?.isNative) {
         cosmos.removeEventListeners({
           eventName,
           listener,
-          options,
+          options
         });
       }
 
@@ -109,7 +109,7 @@ export class Cosmos {
 
     this._observer.observe(globalThis.document, {
       childList: true,
-      subtree: true,
+      subtree: true
     });
   }
 
@@ -117,7 +117,7 @@ export class Cosmos {
     element: EventTarget,
     eventName: T,
     listener: Listener<T>,
-    options?: (AddEventListenerOptions | boolean) & ExtraEventListenerOptions,
+    options?: (AddEventListenerOptions | boolean) & ExtraEventListenerOptions
   ) {
     const id = v7();
 
@@ -126,13 +126,13 @@ export class Cosmos {
       eventTarget: element,
       id,
       listener,
-      options,
+      options
     });
 
     element.addEventListener(
       eventName,
       listener,
-      merge(options, { isNative: false }),
+      merge(options, { isNative: false })
     );
 
     if (true === this._debug) {
@@ -143,7 +143,7 @@ export class Cosmos {
   }
 
   public getEventListeners<T extends keyof WindowEventMapPlus>(
-    filters?: EventListenerFilters<T>,
+    filters?: EventListenerFilters<T>
   ) {
     const result: StoredListener<string>[] = [];
 
@@ -170,8 +170,8 @@ export class Cosmos {
       listener.eventName,
       listener.listener,
       merge(get(listener, ["options"], {} as AddEventListenerOptions), {
-        isNative: false,
-      }),
+        isNative: false
+      })
     );
 
     if (true === this._debug) {
@@ -182,7 +182,7 @@ export class Cosmos {
   }
 
   public removeEventListeners<T extends keyof WindowEventMapPlus>(
-    filters?: EventListenerFilters<T>,
+    filters?: EventListenerFilters<T>
   ) {
     this.onEventListenerFilter(filters ?? {}, (id) => {
       this.removeEventListener(id);
@@ -192,7 +192,7 @@ export class Cosmos {
   private listenerMatchesFilters(
     id: string,
     listener: StoredListener<string>,
-    filters: EventListenerFilters<string>,
+    filters: EventListenerFilters<string>
   ): boolean {
     return (
       this.matchesById(id, filters) ||
@@ -204,7 +204,7 @@ export class Cosmos {
 
   private matchesByAny(
     listener: StoredListener<string>,
-    filters: EventListenerFilters<string>,
+    filters: EventListenerFilters<string>
   ): boolean {
     const isEventNameEqual =
       !isNil(filters.eventName) && filters.eventName === listener.eventName;
@@ -223,7 +223,7 @@ export class Cosmos {
 
   private matchesByEventAndTarget(
     listener: StoredListener<string>,
-    filters: EventListenerFilters<string>,
+    filters: EventListenerFilters<string>
   ): boolean {
     const isEventNameEqual =
       !isNil(filters.eventName) && filters.eventName === listener.eventName;
@@ -236,14 +236,14 @@ export class Cosmos {
 
   private matchesById(
     id: string,
-    filters: EventListenerFilters<string>,
+    filters: EventListenerFilters<string>
   ): boolean {
     return !isNil(filters.id) && id === filters.id;
   }
 
   private matchesByListenerAndEvent(
     listener: StoredListener<string>,
-    filters: EventListenerFilters<string>,
+    filters: EventListenerFilters<string>
   ): boolean {
     const isOptionsEmpty = isNil(filters.options) || isEmpty(filters.options);
     const isEventNameEqual =
@@ -256,7 +256,7 @@ export class Cosmos {
 
   private matchesByListenerAndEventAndOptions(
     listener: StoredListener<string>,
-    filters: EventListenerFilters<string>,
+    filters: EventListenerFilters<string>
   ): boolean {
     const isEventNameEqual =
       !isNil(filters.eventName) && filters.eventName === listener.eventName;
@@ -279,7 +279,7 @@ export class Cosmos {
    */
   private onEventListenerFilter<T extends keyof WindowEventMapPlus>(
     filters: EventListenerFilters<T>,
-    callback: (id: string, listener: StoredListener<string>) => void,
+    callback: (id: string, listener: StoredListener<string>) => void
   ) {
     for (const [id, listener] of this._nativeListeners) {
       if (
