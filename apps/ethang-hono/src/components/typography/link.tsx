@@ -28,7 +28,7 @@ export const Link = async (properties: LinkProperties) => {
       rel={isExternal ? "noopener noreferrer" : undefined}
       class={twMerge(
         "font-medium text-sky-300 hover:underline",
-        properties.className,
+        properties.className
       )}
     >
       {properties.children}

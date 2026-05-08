@@ -70,7 +70,7 @@ test.describe("blog pagination", () => {
   });
 
   test("pagination controls are visible when multiple pages exist", async ({
-    page,
+    page
   }) => {
     await page.goto(routes.blog);
     await expect

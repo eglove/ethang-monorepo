@@ -34,7 +34,7 @@ const makeChild = (text: string, marks: string[] = []) => {
     _key: "key-1",
     _type: "span",
     marks,
-    text,
+    text
   };
 };
 
@@ -45,7 +45,7 @@ const makeBlock = (style: string, text: string, overrides = {}) => {
     children: [makeChild(text)],
     markDefs: [],
     style,
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -58,7 +58,7 @@ describe(`${PortableText.name} - block styles`, () => {
 
   it("renders normal paragraph blocks", async () => {
     const html = await renderPortableText([
-      makeBlock(NORMAL_STYLE, "Hello world"),
+      makeBlock(NORMAL_STYLE, "Hello world")
     ]);
 
     expect(html).toContain("Hello world");
@@ -81,7 +81,7 @@ describe(`${PortableText.name} - block styles`, () => {
 
   it("renders blockquote style blocks", async () => {
     const html = await renderPortableText([
-      makeBlock(BLOCKQUOTE_STYLE, "A famous quote"),
+      makeBlock(BLOCKQUOTE_STYLE, "A famous quote")
     ]);
 
     expect(html).toContain("A famous quote");
@@ -96,7 +96,7 @@ describe(`${PortableText.name} - block styles`, () => {
       children: [makeChild("A great thought")],
       markDefs: [],
       source: "Great Book",
-      style: BLOCKQUOTE_STYLE,
+      style: BLOCKQUOTE_STYLE
     };
     const html = await renderPortableText([block]);
 
@@ -112,8 +112,8 @@ describe(`${PortableText.name} - list rendering`, () => {
       {
         ...makeBlock(NORMAL_STYLE, "item2"),
         _key: "b2",
-        listItem: BULLET_LIST_ITEM,
-      },
+        listItem: BULLET_LIST_ITEM
+      }
     ]);
 
     expect(html).toContain(UL_TAG);
@@ -123,7 +123,7 @@ describe(`${PortableText.name} - list rendering`, () => {
   it("renders list items when followed by a non-list block", async () => {
     const html = await renderPortableText([
       { ...makeBlock(NORMAL_STYLE, "List Item"), listItem: BULLET_LIST_ITEM },
-      { ...makeBlock(NORMAL_STYLE, "After list"), _key: "b2" },
+      { ...makeBlock(NORMAL_STYLE, "After list"), _key: "b2" }
     ]);
 
     expect(html).toContain(UL_TAG);
@@ -134,8 +134,8 @@ describe(`${PortableText.name} - list rendering`, () => {
     const html = await renderPortableText([
       {
         ...makeBlock(NORMAL_STYLE, "Only list item"),
-        listItem: BULLET_LIST_ITEM,
-      },
+        listItem: BULLET_LIST_ITEM
+      }
     ]);
 
     expect(html).toContain(UL_TAG);
@@ -150,8 +150,8 @@ describe(`${PortableText.name} - inline block types`, () => {
         _key: "c1",
         _type: CODE_TYPE,
         code: "const x = 1;",
-        language: "javascript",
-      },
+        language: "javascript"
+      }
     ]);
 
     expect(html).toContain("const x = 1;");
@@ -159,7 +159,7 @@ describe(`${PortableText.name} - inline block types`, () => {
 
   it("renders code block without language (defaults to typescript)", async () => {
     const html = await renderPortableText([
-      { _key: "c2", _type: CODE_TYPE, code: "let y = 2;" },
+      { _key: "c2", _type: CODE_TYPE, code: "let y = 2;" }
     ]);
 
     expect(html).toContain("let y = 2;");
@@ -171,8 +171,8 @@ describe(`${PortableText.name} - inline block types`, () => {
         _key: "v1",
         _type: VIDEO_TYPE,
         title: "My Video",
-        videoId: "abc123",
-      },
+        videoId: "abc123"
+      }
     ]);
 
     expect(html).toContain("abc123");
@@ -180,7 +180,7 @@ describe(`${PortableText.name} - inline block types`, () => {
 
   it("renders video embed block without title", async () => {
     const html = await renderPortableText([
-      { _key: "v2", _type: VIDEO_TYPE, videoId: "xyz789" },
+      { _key: "v2", _type: VIDEO_TYPE, videoId: "xyz789" }
     ]);
 
     expect(html).toContain("xyz789");
@@ -188,7 +188,7 @@ describe(`${PortableText.name} - inline block types`, () => {
 
   it("renders quote type blocks", async () => {
     const html = await renderPortableText([
-      { _key: "q1", _type: "quote" as const, quote: "An inspiring quote" },
+      { _key: "q1", _type: "quote" as const, quote: "An inspiring quote" }
     ]);
 
     expect(html).toContain("An inspiring quote");
@@ -201,8 +201,8 @@ describe(`${PortableText.name} - inline block types`, () => {
       alt: "An image",
       asset: {
         metadata: { dimensions: { height: 300, width: 400 } },
-        url: "https://example.com/image.jpg",
-      },
+        url: "https://example.com/image.jpg"
+      }
     };
     const html = await renderPortableText([imageBlock] as unknown as Body);
 
@@ -216,9 +216,9 @@ describe(`${PortableText.name} - inline block types`, () => {
         _type: "image" as const,
         asset: {
           metadata: { dimensions: { height: 200, width: 300 } },
-          url: "https://example.com/no-alt.jpg",
-        },
-      },
+          url: "https://example.com/no-alt.jpg"
+        }
+      }
     ] as unknown as Body);
 
     expect(html).toContain("img");
@@ -232,7 +232,7 @@ describe(`${PortableText.name} - text marks`, () => {
       _type: BLOCK_TYPE,
       children: [makeChild("myVar", ["code"])],
       markDefs: [],
-      style: "normal",
+      style: "normal"
     };
     const html = await renderPortableText([block]);
 
@@ -246,9 +246,9 @@ describe(`${PortableText.name} - text marks`, () => {
       _type: BLOCK_TYPE,
       children: [makeChild(CLICK_HERE, [LINK_MARK_KEY])],
       markDefs: [
-        { _key: LINK_MARK_KEY, _type: "link", href: "https://example.com" },
+        { _key: LINK_MARK_KEY, _type: "link", href: "https://example.com" }
       ],
-      style: "normal",
+      style: "normal"
     };
     const html = await renderPortableText([block]);
 
@@ -262,7 +262,7 @@ describe(`${PortableText.name} - text marks`, () => {
       _type: BLOCK_TYPE,
       children: [makeChild(CLICK_HERE, [LINK_MARK_KEY])],
       markDefs: [{ _key: LINK_MARK_KEY, _type: "link" }],
-      style: "normal",
+      style: "normal"
     };
 
     // @ts-expect-error for test
@@ -276,7 +276,7 @@ describe(`${PortableText.name} - text marks`, () => {
       _key: "b1",
       _type: BLOCK_TYPE,
       children: [makeChild("emphasized text", ["em"])],
-      style: "normal",
+      style: "normal"
       // markDefs intentionally omitted to cover the `?? []` fallback
     };
     const html = await renderPortableText([block]);
@@ -292,8 +292,8 @@ describe(`${PortableText.name} - edge cases`, () => {
         _key: "b1",
         _type: BLOCK_TYPE,
         children: [],
-        markDefs: [],
-      },
+        markDefs: []
+      }
     ]);
 
     expect(html).toBeDefined();
@@ -306,8 +306,8 @@ describe(`${PortableText.name} - edge cases`, () => {
         _type: BLOCK_TYPE,
         children: [],
         markDefs: [],
-        style: "h4",
-      },
+        style: "h4"
+      }
     ]);
 
     expect(html).toBeDefined();
@@ -315,7 +315,7 @@ describe(`${PortableText.name} - edge cases`, () => {
 
   it("renders nothing for unrecognized block types", async () => {
     const html = await renderPortableText([
-      { _key: "u1", _type: "unknown-type" },
+      { _key: "u1", _type: "unknown-type" }
     ]);
 
     expect(html).toBeDefined();
@@ -329,8 +329,8 @@ describe(`${PortableText.name} - edge cases`, () => {
         // @ts-expect-error testing null children
         children: null,
         markDefs: [],
-        style: "normal",
-      },
+        style: "normal"
+      }
     ]);
 
     expect(html).toBeDefined();
@@ -338,7 +338,7 @@ describe(`${PortableText.name} - edge cases`, () => {
 
   it("renders nothing for image block without asset url", async () => {
     const html = await renderPortableText([
-      { _key: "img3", _type: IMAGE_TYPE },
+      { _key: "img3", _type: IMAGE_TYPE }
     ]);
 
     expect(html).not.toContain("<img");
@@ -358,7 +358,7 @@ describe(`${PortableText.name} - edge cases`, () => {
 
   it("renders nothing for quote block without quote property", async () => {
     const html = await renderPortableText([
-      { _key: "q2", _type: "quote" as const },
+      { _key: "q2", _type: "quote" as const }
     ]);
 
     expect(html).not.toContain(BLOCKQUOTE_STYLE);

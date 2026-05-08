@@ -5,7 +5,7 @@ import { BlogModel } from "../../models/blog-model.ts";
 
 vi.mock(import("../../models/blog-model.ts"), () => {
   return {
-    BlogModel: vi.fn(),
+    BlogModel: vi.fn()
   };
 });
 
@@ -15,9 +15,9 @@ const mockBlogModel = (maxPages: number) => {
       public getPaginatedBlogs = vi.fn().mockResolvedValue({
         maxPages,
         posts: [],
-        total: 100,
+        total: 100
       });
-    } as never,
+    } as never
   );
 };
 

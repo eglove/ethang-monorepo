@@ -5,7 +5,7 @@ import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 import { formatTimeOnly } from "../utils/calendar.ts";
 
 export const DayView = async ({
-  events,
+  events
 }: {
   events: CalendarEventRecord[];
 }) => {

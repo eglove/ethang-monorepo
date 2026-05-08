@@ -8,7 +8,7 @@ const navigationLinks = [
   { href: "/", title: "Home" },
   { href: "/blog", title: "Blog" },
   { href: "/tips", title: "Tips" },
-  { href: "/courses", title: "Courses" },
+  { href: "/courses", title: "Courses" }
 ];
 
 type NavigationProperties = {

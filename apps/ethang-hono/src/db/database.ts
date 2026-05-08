@@ -8,7 +8,7 @@ import type { AppContext } from "../stores/global-store-properties.ts";
 import * as schema from "./schema.ts";
 
 export const getDatabase = <P extends string, I extends Input>(
-  context: Context<AppContext, P, I>,
+  context: Context<AppContext, P, I>
 ) => {
   return drizzle(context.env.ethang_hono, { schema });
 };

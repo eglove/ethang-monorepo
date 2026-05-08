@@ -5,9 +5,9 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
   return {
     NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
@@ -21,7 +21,7 @@ describe(getPage, () => {
       _id: "abc",
       _updatedAt: "2024-01-01T00:00:00Z",
       content: [],
-      title: "Home",
+      title: "Home"
     };
     // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue([mockPage]);
@@ -30,7 +30,7 @@ describe(getPage, () => {
 
     expect(sterettSanityClient.fetch).toHaveBeenCalledWith(
       expect.stringContaining("$slug"),
-      { slug: "home" },
+      { slug: "home" }
     );
     expect(result).toStrictEqual(mockPage);
   });
@@ -53,7 +53,7 @@ describe(getPage, () => {
     await getPage("about");
 
     expect(sterettSanityClient.fetch).toHaveBeenCalledWith(expect.any(String), {
-      slug: "about",
+      slug: "about"
     });
   });
 });

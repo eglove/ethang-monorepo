@@ -22,7 +22,7 @@ import { sitemap } from "./sitemap.ts";
 import { coursePathData } from "./stores/course-path-store.ts";
 import {
   type AppContext,
-  globalStore,
+  globalStore
 } from "./stores/global-store-properties.ts";
 import { COURSE_TRACKING_STATUS } from "./utilities/constants.ts";
 
@@ -54,8 +54,8 @@ app.get("/sitemap.xml", async () => {
 
   return new Response(sitemapString, {
     headers: {
-      "Content-Type": "application/xml",
-    },
+      "Content-Type": "application/xml"
+    }
   });
 });
 
@@ -141,7 +141,7 @@ app.get("/api/course-tracking/:courseId", async (context) => {
   const courseTracking = new CourseTracking(getDatabase(context));
   const courseStatus = await courseTracking.getCourseTrackingByUserIdCourseId(
     userId,
-    courseId,
+    courseId
   );
 
   return context.json({ data: courseStatus, status: 200 });
@@ -171,7 +171,7 @@ app.put("/api/course-tracking/:courseId", async (context) => {
   const courseTracking = new CourseTracking(getDatabase(context));
   const courseStatus = await courseTracking.getCourseTrackingByUserIdCourseId(
     userId,
-    courseId,
+    courseId
   );
 
   if (isNil(courseStatus)) {
@@ -180,28 +180,28 @@ app.put("/api/course-tracking/:courseId", async (context) => {
     if (COURSE_TRACKING_STATUS.COMPLETE === courseStatus.status) {
       await courseTracking.updateCourseTrackingStatus(
         courseStatus.id,
-        COURSE_TRACKING_STATUS.REVISIT,
+        COURSE_TRACKING_STATUS.REVISIT
       );
     }
 
     if (COURSE_TRACKING_STATUS.REVISIT === courseStatus.status) {
       await courseTracking.updateCourseTrackingStatus(
         courseStatus.id,
-        COURSE_TRACKING_STATUS.INCOMPLETE,
+        COURSE_TRACKING_STATUS.INCOMPLETE
       );
     }
 
     if (COURSE_TRACKING_STATUS.INCOMPLETE === courseStatus.status) {
       await courseTracking.updateCourseTrackingStatus(
         courseStatus.id,
-        COURSE_TRACKING_STATUS.COMPLETE,
+        COURSE_TRACKING_STATUS.COMPLETE
       );
     }
   }
 
   const updated = await courseTracking.getCourseTrackingByUserIdCourseId(
     userId,
-    courseId,
+    courseId
   );
 
   return context.json({ data: updated, status: 200 });

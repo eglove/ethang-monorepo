@@ -11,7 +11,7 @@ test.describe("sw", () => {
       await route.fulfill({
         body: JSON.stringify({ data: { status: "Complete" }, status: 200 }),
         contentType: "application/json",
-        status: 200,
+        status: 200
       });
     });
 
@@ -19,7 +19,7 @@ test.describe("sw", () => {
     await page.evaluate(async () => {
       return fetch("/api/course-tracking/test-user/abc123", {
         body: JSON.stringify({}),
-        method: "PUT",
+        method: "PUT"
       });
     });
     await page.waitForLoadState("load");

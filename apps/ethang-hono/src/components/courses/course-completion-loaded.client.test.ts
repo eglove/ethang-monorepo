@@ -5,7 +5,7 @@ describe("course-completion.client loaded state", () => {
   it("calls init immediately if document is already loaded", async () => {
     Object.defineProperty(document, "readyState", {
       configurable: true,
-      value: "complete",
+      value: "complete"
     });
 
     // Mock fetch for the immediate init call
@@ -15,8 +15,8 @@ describe("course-completion.client loaded state", () => {
         json: () => {
           return {};
         },
-        ok: true,
-      }),
+        ok: true
+      })
     );
     document.cookie = "ethang-auth-token=test-token";
 
@@ -25,7 +25,7 @@ describe("course-completion.client loaded state", () => {
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
       expect.any(String),
-      expect.any(Object),
+      expect.any(Object)
     );
   });
 });

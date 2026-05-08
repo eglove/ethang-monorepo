@@ -7,7 +7,7 @@ import { renderCalendarEvent } from "../test-utilities/render.tsx";
 const NOW = new Date("2024-06-15T12:00:00.000Z");
 
 const makeEvent = (
-  overrides: Partial<CalendarEventReturn> = {},
+  overrides: Partial<CalendarEventReturn> = {}
 ): CalendarEventReturn => {
   return {
     _id: "e1",
@@ -16,7 +16,7 @@ const makeEvent = (
     endsAt: "2024-06-15T14:00:00.000Z",
     startsAt: "2024-06-15T13:00:00.000Z",
     title: "Board Meeting",
-    ...overrides,
+    ...overrides
   } as CalendarEventReturn;
 };
 
@@ -28,8 +28,8 @@ describe("calendarEvent", () => {
     const html = await renderCalendarEvent(
       makeEvent({
         endsAt: "2024-06-15T13:00:00.000Z",
-        startsAt: "2024-06-15T11:00:00.000Z",
-      }),
+        startsAt: "2024-06-15T11:00:00.000Z"
+      })
     );
 
     vi.useRealTimers();
@@ -44,8 +44,8 @@ describe("calendarEvent", () => {
     const html = await renderCalendarEvent(
       makeEvent({
         endsAt: "2024-06-18T14:00:00.000Z",
-        startsAt: "2024-06-18T11:00:00.000Z",
-      }),
+        startsAt: "2024-06-18T11:00:00.000Z"
+      })
     );
 
     vi.useRealTimers();
@@ -60,8 +60,8 @@ describe("calendarEvent", () => {
     const html = await renderCalendarEvent(
       makeEvent({
         endsAt: "2024-06-12T14:00:00.000Z",
-        startsAt: "2024-06-12T11:00:00.000Z",
-      }),
+        startsAt: "2024-06-12T11:00:00.000Z"
+      })
     );
 
     vi.useRealTimers();
@@ -74,7 +74,7 @@ describe("calendarEvent", () => {
     vi.setSystemTime(NOW);
 
     const html = await renderCalendarEvent(
-      makeEvent({ title: "Annual Trustee Meeting" }),
+      makeEvent({ title: "Annual Trustee Meeting" })
     );
 
     vi.useRealTimers();
@@ -101,10 +101,10 @@ describe("calendarEvent", () => {
       _key: "b1",
       _type: "block",
       children: [
-        { _key: "s1", _type: "span", marks: [], text: "Bring your agenda" },
+        { _key: "s1", _type: "span", marks: [], text: "Bring your agenda" }
       ],
       markDefs: [],
-      style: "normal",
+      style: "normal"
     };
     const html = await renderCalendarEvent(makeEvent({ description }));
 
@@ -118,7 +118,7 @@ describe("calendarEvent", () => {
     vi.setSystemTime(NOW);
 
     const html = await renderCalendarEvent(
-      makeEvent({ description: undefined as never }),
+      makeEvent({ description: undefined as never })
     );
 
     vi.useRealTimers();

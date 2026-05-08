@@ -12,7 +12,7 @@ const DAY_HEADERS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export const WeekView = async ({
   eventsByDate,
   today,
-  weekDays,
+  weekDays
 }: {
   eventsByDate: Map<string, CalendarEventRecord[]>;
   today: string;
@@ -26,10 +26,10 @@ export const WeekView = async ({
           const cellEvents = eventsByDate.get(dayKey) ?? [];
           const isToday = dayKey === today;
           const label = DateTime.fromISO(dayKey, {
-            zone: "America/Chicago",
+            zone: "America/Chicago"
           }).toLocaleString(
             { day: "numeric", month: "short", weekday: "short" },
-            { locale: "en-US" },
+            { locale: "en-US" }
           );
 
           return (
@@ -37,7 +37,7 @@ export const WeekView = async ({
               key={dayKey}
               class={twMerge(
                 "rounded-lg border border-white/10 bg-white/5 p-3",
-                isToday && "bg-white/10",
+                isToday && "bg-white/10"
               )}
             >
               <div class="mb-2 flex items-center gap-2">
@@ -45,7 +45,7 @@ export const WeekView = async ({
                   href={`/calendar?view=day&date=${dayKey}`}
                   class={twMerge(
                     "text-sm text-white/70 transition-colors hover:text-white hover:underline",
-                    isToday && "font-semibold text-white",
+                    isToday && "font-semibold text-white"
                   )}
                 >
                   {label}
@@ -103,7 +103,7 @@ export const WeekView = async ({
                 key={dayKey}
                 class={twMerge(
                   "min-h-32 border border-white/5 p-1",
-                  isToday && "bg-white/10",
+                  isToday && "bg-white/10"
                 )}
               >
                 <a
@@ -112,7 +112,7 @@ export const WeekView = async ({
                     "inline-flex h-6 w-6 items-center justify-center text-xs text-white/60 transition-colors hover:text-white",
                     isToday
                       ? "rounded-full bg-white font-bold text-lake-deep"
-                      : "rounded",
+                      : "rounded"
                   )}
                 >
                   {dayNumber}

@@ -5,9 +5,9 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
   return {
     NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
@@ -23,7 +23,7 @@ describe(getTrustees, () => {
     await getTrustees();
 
     expect(sterettSanityClient.fetch).toHaveBeenCalledWith(
-      expect.stringContaining("trustee"),
+      expect.stringContaining("trustee")
     );
   });
 
@@ -37,12 +37,12 @@ describe(getTrustees, () => {
         image: {
           asset: {
             metadata: { dimensions: { height: 400, width: 400 } },
-            url: "https://cdn.sanity.io/images/test/abc123-400x400.jpg",
-          },
+            url: "https://cdn.sanity.io/images/test/abc123-400x400.jpg"
+          }
         },
         name: "Jane Smith",
-        phoneNumber: "555-123-4567",
-      },
+        phoneNumber: "555-123-4567"
+      }
     ];
     // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue(mockTrustees);

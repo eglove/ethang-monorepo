@@ -7,12 +7,12 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
     sanityImage: {
       image: () => {
         return {};
-      },
+      }
     },
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
@@ -21,7 +21,7 @@ import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 import { renderCalendarEventDialog } from "../test-utilities/render.tsx";
 
 const makeEvent = (
-  overrides: Partial<CalendarEventRecord> = {},
+  overrides: Partial<CalendarEventRecord> = {}
 ): CalendarEventRecord => {
   return {
     _id: "event-1",
@@ -31,14 +31,14 @@ const makeEvent = (
     endsAt: "2024-06-15T15:00:00.000Z",
     startsAt: "2024-06-15T13:00:00.000Z",
     title: "Test Event",
-    ...overrides,
+    ...overrides
   };
 };
 
 describe("calendarEventDialog", () => {
   it("renders dialog with correct id", async () => {
     const html = await renderCalendarEventDialog(
-      makeEvent({ _id: "my-event" }),
+      makeEvent({ _id: "my-event" })
     );
 
     expect(html).toContain("cal-my-event");
@@ -46,7 +46,7 @@ describe("calendarEventDialog", () => {
 
   it("renders event title", async () => {
     const html = await renderCalendarEventDialog(
-      makeEvent({ title: "Annual Meeting" }),
+      makeEvent({ title: "Annual Meeting" })
     );
 
     expect(html).toContain("Annual Meeting");
@@ -92,13 +92,13 @@ describe("calendarEventDialog", () => {
               _key: "span1",
               _type: "span",
               marks: [],
-              text: "Event description text",
-            },
+              text: "Event description text"
+            }
           ],
           markDefs: [],
-          style: "normal",
-        },
-      ],
+          style: "normal"
+        }
+      ]
     });
     const html = await renderCalendarEventDialog(event);
 
@@ -108,7 +108,7 @@ describe("calendarEventDialog", () => {
   it("does not render description section when description is null", async () => {
     const html = await renderCalendarEventDialog(
       // @ts-expect-error mock
-      makeEvent({ description: null }),
+      makeEvent({ description: null })
     );
 
     expect(html).not.toContain("prose");

@@ -6,19 +6,19 @@ import { twMerge } from "tailwind-merge";
 
 import {
   getCalendarEvents,
-  getLatestCalendarEventUpdatedAt,
+  getLatestCalendarEventUpdatedAt
 } from "../../sanity/get-calendar-events.ts";
 import {
   buildCrossViewDate,
   buildNavConfig,
   buildPrefetchUrls,
-  type CalendarView,
+  type CalendarView
 } from "../../utils/calendar-nav.ts";
 import {
   buildCalendarWeeks,
   buildEventsByDate,
   getViewDateRange,
-  getWeekDays,
+  getWeekDays
 } from "../../utils/calendar.ts";
 import { DayView } from "../calendar-day-view.tsx";
 import { CalendarEventDialog } from "../calendar-event-dialog.tsx";
@@ -31,7 +31,7 @@ const CHICAGO = "America/Chicago";
 const tabClass = (active: boolean) => {
   return twMerge(
     "px-4 py-1.5 text-sm rounded-md text-white/60 hover:text-white hover:bg-white/10 transition-colors",
-    active && "bg-white/20 text-white font-medium",
+    active && "bg-white/20 text-white font-medium"
   );
 };
 
@@ -39,7 +39,7 @@ export const CalendarPage = async ({
   date,
   month,
   view,
-  year,
+  year
 }: {
   date: string;
   month: number;
@@ -50,7 +50,7 @@ export const CalendarPage = async ({
     view,
     year,
     month,
-    date,
+    date
   );
   const events = await getCalendarEvents(rangeStart, rangeEndExclusive);
   const updatedAt =
@@ -71,7 +71,7 @@ export const CalendarPage = async ({
   const weeks = buildCalendarWeeks(year, month);
   const currentMonthDt = DateTime.fromObject(
     { day: 1, month, year },
-    { zone: CHICAGO },
+    { zone: CHICAGO }
   );
   const previousMonth = currentMonthDt.minus({ months: 1 }).month;
   const previousYear = currentMonthDt.minus({ months: 1 }).year;
@@ -79,7 +79,7 @@ export const CalendarPage = async ({
   const nextYear = currentMonthDt.plus({ months: 1 }).year;
   const monthName = currentMonthDt.toLocaleString(
     { month: "long" },
-    { locale: "en-US" },
+    { locale: "en-US" }
   );
   const todayYear = todayDt.year;
   const todayMonth = todayDt.month;
@@ -119,13 +119,13 @@ export const CalendarPage = async ({
     previousYear,
     today,
     view,
-    year,
+    year
   });
 
   const prefetch = buildPrefetchUrls(navConfig, view, {
     tabDayHref,
     tabMonthHref,
-    tabWeekHref,
+    tabWeekHref
   });
 
   return (

@@ -1,7 +1,7 @@
 const button = document.querySelector("#scrollbar-gutter-show-extra-content");
 const withContainer = document.querySelector("#scrollbar-gutter-with-example");
 const withoutContainer = document.querySelector(
-  "#scrollbar-gutter-without-example",
+  "#scrollbar-gutter-without-example"
 );
 let isExtraContentVisible = false;
 

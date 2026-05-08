@@ -7,9 +7,9 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
   return {
     NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
@@ -17,7 +17,7 @@ import { sterettSanityClient } from "../clients/sanity-client.ts";
 import {
   eventRangeFormat,
   getNewsAndEvents,
-  getRelativeDate,
+  getRelativeDate
 } from "./get-news-and-events.ts";
 
 // Fixed "now" for all relative date tests: 2024-06-15 12:00:00 UTC
@@ -27,7 +27,7 @@ describe(eventRangeFormat, () => {
   it("formats a same-day event with start datetime and end time only", () => {
     const result = eventRangeFormat(
       "2024-06-15T14:00:00.000Z",
-      "2024-06-15T16:30:00.000Z",
+      "2024-06-15T16:30:00.000Z"
     );
 
     expect(result).toContain("–");
@@ -41,7 +41,7 @@ describe(eventRangeFormat, () => {
   it("formats a multi-day event with full datetime on both ends", () => {
     const result = eventRangeFormat(
       "2024-06-15T14:00:00.000Z",
-      "2024-06-16T16:00:00.000Z",
+      "2024-06-16T16:00:00.000Z"
     );
 
     expect(result).toContain("–");
@@ -56,7 +56,7 @@ describe(eventRangeFormat, () => {
     // 11 PM Chicago = 4 AM UTC next day — this start/end pair is same Chicago day
     const result = eventRangeFormat(
       "2024-06-16T02:00:00.000Z", // 9 PM Chicago Jun 15
-      "2024-06-16T04:00:00.000Z", // 11 PM Chicago Jun 15
+      "2024-06-16T04:00:00.000Z" // 11 PM Chicago Jun 15
     );
 
     const [, end] = split(result, " – ");
@@ -204,14 +204,14 @@ describe(getNewsAndEvents, () => {
       description: null,
       endsAt: "2024-06-15T15:00:00Z",
       startsAt: "2024-06-15T13:00:00Z",
-      title: "Board Meeting",
+      title: "Board Meeting"
     };
     const mockUpdate = {
       _id: "upd-1",
       _updatedAt: "2024-06-14T12:00:00Z",
       date: "2024-06-14",
       description: null,
-      title: "News Update",
+      title: "News Update"
     };
 
     // @ts-expect-error for test
@@ -230,30 +230,30 @@ describe(getNewsAndEvents, () => {
     vi.clearAllMocks();
     const mockEvent1 = {
       _id: "evt-1",
-      startsAt: "2024-06-15T13:00:00Z",
+      startsAt: "2024-06-15T13:00:00Z"
     };
     const mockEvent2 = {
       _id: "evt-2",
-      startsAt: "2024-06-13T10:00:00Z",
+      startsAt: "2024-06-13T10:00:00Z"
     };
     const mockUpdate1 = {
       _id: "upd-1",
-      date: "2024-06-14",
+      date: "2024-06-14"
     };
     const mockUpdate2 = {
       _id: "upd-2",
-      date: "2024-06-16",
+      date: "2024-06-16"
     };
 
     // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([
       mockEvent1,
-      mockEvent2,
+      mockEvent2
     ]);
     // @ts-expect-error for test
     vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([
       mockUpdate1,
-      mockUpdate2,
+      mockUpdate2
     ]);
 
     const result = await getNewsAndEvents();
@@ -261,7 +261,7 @@ describe(getNewsAndEvents, () => {
     expect(
       map(result, (r) => {
         return r._id;
-      }),
+      })
     ).toStrictEqual(["evt-2", "upd-1", "evt-1", "upd-2"]);
   });
 

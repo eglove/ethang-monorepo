@@ -11,7 +11,7 @@ const makeFile = (overrides: Partial<FileRecord> = {}): FileRecord => {
     date: "2024-03-15T12:00:00.000Z",
     file: { asset: { url: "https://cdn.sanity.io/test.pdf" } },
     title: "Test Document",
-    ...overrides,
+    ...overrides
   } as FileRecord;
 };
 
@@ -50,7 +50,7 @@ describe("fileTable", () => {
   it("renders all files when multiple are provided", async () => {
     const files = [
       makeFile({ _id: "f1", title: "Doc One" }),
-      makeFile({ _id: "f2", title: "Doc Two" }),
+      makeFile({ _id: "f2", title: "Doc Two" })
     ];
     const html = await renderFileTable(files, "General");
 

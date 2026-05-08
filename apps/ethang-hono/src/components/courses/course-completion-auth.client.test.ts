@@ -26,8 +26,8 @@ const resetTestState = async () => {
       json: () => {
         return {};
       },
-      ok: true,
-    }),
+      ok: true
+    })
   );
   vi.stubGlobal("location", { reload: vi.fn() });
   document.body.innerHTML = "";
@@ -52,11 +52,11 @@ describe("course-completion.client authenticated functionality", () => {
     exp: 2,
     iat: 1,
     sub: "user-123",
-    username: "testuser",
+    username: "testuser"
   };
   const trackingData = [
     { courseUrl: "url-1", id: "id-1", status: "Complete", userId: "user-123" },
-    { courseUrl: "url-2", id: "id-2", status: "Revisit", userId: "user-123" },
+    { courseUrl: "url-2", id: "id-2", status: "Revisit", userId: "user-123" }
   ];
 
   it("applies stored statuses and sets percentages", async () => {
@@ -70,7 +70,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return userData;
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       if (isString(url) && includes(url, TRACKING_URL)) {
@@ -78,7 +78,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { data: trackingData };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       throw new Error(UNKNOWN_URL);
@@ -135,7 +135,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return userData;
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       if (isString(url) && includes(url, TRACKING_URL)) {
@@ -143,7 +143,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { data: trackingData };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       throw new Error(UNKNOWN_URL);
@@ -165,17 +165,17 @@ describe("course-completion.client authenticated functionality", () => {
     await init();
 
     const button = document.querySelector<HTMLButtonElement>(
-      COURSE_COMPLETION_BUTTON_CLASS,
+      COURSE_COMPLETION_BUTTON_CLASS
     );
     const statusText = button?.parentElement?.querySelector(
-      COURSE_STATUS_TEXT_CLASS,
+      COURSE_STATUS_TEXT_CLASS
     );
 
     vi.mocked(fetch).mockResolvedValue({
       json: () => {
         return { data: { ...trackingData[0], status: "Revisit" } };
       },
-      ok: true,
+      ok: true
     } as unknown as Response);
 
     button?.click();
@@ -195,7 +195,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { email: "e", exp: 2, iat: 1, sub: "user-1", username: "u" };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       if (isString(url) && includes(url, TRACKING_URL)) {
@@ -203,7 +203,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { data: [] };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       throw new Error(UNKNOWN_URL);
@@ -217,12 +217,12 @@ describe("course-completion.client authenticated functionality", () => {
 
     await init();
     const button = document.querySelector<HTMLButtonElement>(
-      COURSE_COMPLETION_BUTTON_CLASS,
+      COURSE_COMPLETION_BUTTON_CLASS
     );
     const statusText = document.querySelector(COURSE_STATUS_TEXT_CLASS);
 
     vi.mocked(fetch).mockResolvedValue({
-      ok: false,
+      ok: false
     } as Response);
 
     button?.click();
@@ -241,7 +241,7 @@ describe("course-completion.client authenticated functionality", () => {
       json: () => {
         return { email: "e", exp: 2, iat: 1, sub: "123", username: "u" };
       },
-      ok: true,
+      ok: true
     } as unknown as Response);
     document.body.innerHTML = `
       <button class="course-completion-button" data-course-url="url-1"></button>
@@ -251,8 +251,8 @@ describe("course-completion.client authenticated functionality", () => {
 
     expect(fetch).toHaveBeenCalledWith("https://auth.ethang.dev/verify", {
       headers: {
-        "X-Token": "valid-token",
-      },
+        "X-Token": "valid-token"
+      }
     });
   });
 
@@ -267,7 +267,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { email: "e", exp: 2, iat: 1, sub: "user-1", username: "u" };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       if (isString(url) && includes(url, TRACKING_URL)) {
@@ -275,7 +275,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { data: [] };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       throw new Error(UNKNOWN_URL);
@@ -286,7 +286,7 @@ describe("course-completion.client authenticated functionality", () => {
 
     await init();
     const button = document.querySelector<HTMLButtonElement>(
-      COURSE_COMPLETION_BUTTON_CLASS,
+      COURSE_COMPLETION_BUTTON_CLASS
     );
 
     vi.mocked(fetch).mockResolvedValue({
@@ -296,11 +296,11 @@ describe("course-completion.client authenticated functionality", () => {
             courseUrl: "url-1",
             id: "id-1",
             status: "Complete",
-            userId: "user-1",
-          },
+            userId: "user-1"
+          }
         };
       },
-      ok: true,
+      ok: true
     } as unknown as Response);
 
     button?.click();
@@ -320,7 +320,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { email: "e", exp: 2, iat: 1, sub: "user-1", username: "u" };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       if (isString(url) && includes(url, TRACKING_URL)) {
@@ -328,7 +328,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { data: [] };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       throw new Error(UNKNOWN_URL);
@@ -342,14 +342,14 @@ describe("course-completion.client authenticated functionality", () => {
 
     await init();
     const button = document.querySelector<HTMLButtonElement>(
-      COURSE_COMPLETION_BUTTON_CLASS,
+      COURSE_COMPLETION_BUTTON_CLASS
     );
 
     vi.mocked(fetch).mockResolvedValue({
       json: () => {
         return { data: "invalid" };
       },
-      ok: true,
+      ok: true
     } as unknown as Response);
 
     button?.click();
@@ -369,7 +369,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { email: "e", exp: 2, iat: 1, sub: "user-1", username: "u" };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       if (isString(url) && includes(url, TRACKING_URL)) {
@@ -377,7 +377,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { data: [] };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       throw new Error(UNKNOWN_URL);
@@ -388,12 +388,12 @@ describe("course-completion.client authenticated functionality", () => {
 
     await init();
     const button = document.querySelector<HTMLButtonElement>(
-      COURSE_COMPLETION_BUTTON_CLASS,
+      COURSE_COMPLETION_BUTTON_CLASS
     );
 
     vi.mocked(fetch).mockResolvedValue({
       json: constant(null),
-      ok: true,
+      ok: true
     } as unknown as Response);
 
     button?.click();
@@ -413,7 +413,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { email: "e", exp: 2, iat: 1, sub: "user-1", username: "u" };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       if (isString(url) && includes(url, TRACKING_URL)) {
@@ -421,7 +421,7 @@ describe("course-completion.client authenticated functionality", () => {
           json: () => {
             return { data: [] };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       throw new Error(UNKNOWN_URL);
@@ -432,7 +432,7 @@ describe("course-completion.client authenticated functionality", () => {
 
     await init();
     const button = document.querySelector<HTMLButtonElement>(
-      COURSE_COMPLETION_BUTTON_CLASS,
+      COURSE_COMPLETION_BUTTON_CLASS
     );
 
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(noop);

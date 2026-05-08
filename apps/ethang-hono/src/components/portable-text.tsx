@@ -59,7 +59,7 @@ const STYLE_RENDERERS: Record<
   },
   normal: (block, context): Child => {
     return <P>{context.renderChildren(block.children)}</P>;
-  },
+  }
 };
 
 const renderImageBlock = (block: Block): Child => {
@@ -120,13 +120,13 @@ const TYPE_RENDERERS: Record<
   code: renderCodeBlock,
   image: renderImageBlock,
   quote: renderQuoteBlock, // Sanity "quote" _type — same renderer as "blockquote"
-  video: renderVideoBlock,
+  video: renderVideoBlock
 };
 
 const applyMark = (
   content: Child,
   mark: string,
-  markDefs: MarkDefinition[],
+  markDefs: MarkDefinition[]
 ): { content: Child; done: boolean } => {
   if ("code" === mark) {
     return { content: <InlineCode>{content}</InlineCode>, done: true };
@@ -139,7 +139,7 @@ const applyMark = (
   if ("link" === markDefinition?._type) {
     return {
       content: <Link href={markDefinition.href ?? ""}>{content}</Link>,
-      done: false,
+      done: false
     };
   }
 
@@ -149,7 +149,7 @@ const applyMark = (
 const resolveMarkedText = async (
   text: string,
   marks: string[],
-  markDefs: MarkDefinition[],
+  markDefs: MarkDefinition[]
 ): Promise<Child> => {
   let content: Child = text;
 
@@ -164,7 +164,7 @@ const resolveMarkedText = async (
 
 const renderBlockChildren = (
   nodeChildren: BlockChildren,
-  allMarkDefs: MarkDefinition[],
+  allMarkDefs: MarkDefinition[]
 ): Child[] => {
   // @ts-expect-error -- hono's Child only includes Promise<string>, but async children are supported at runtime
   return map(nodeChildren, async (child) => {
@@ -192,7 +192,7 @@ export const PortableText = async ({ children }: PortableTextProperties) => {
   });
 
   const renderChildren = (
-    nodeChildren: BlockChildren | undefined,
+    nodeChildren: BlockChildren | undefined
   ): Child[] | null => {
     if (isNil(nodeChildren)) {
       return null;

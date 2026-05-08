@@ -22,12 +22,12 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
     sanityImage: {
       image: () => {
         return { height: mockHeight };
-      },
+      }
     },
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
@@ -40,12 +40,12 @@ const makeTrustee = (overrides: Partial<TrusteeRecord> = {}): TrusteeRecord => {
     image: {
       asset: {
         metadata: { dimensions: { height: 400, width: 400 } },
-        url: "https://cdn.sanity.io/images/540gjnt8/production/abc123-400x400.jpg",
-      },
+        url: "https://cdn.sanity.io/images/540gjnt8/production/abc123-400x400.jpg"
+      }
     },
     name: "Jane Smith",
     phoneNumber: "555-123-4567",
-    ...overrides,
+    ...overrides
   } as TrusteeRecord;
 };
 
@@ -78,7 +78,7 @@ describe("trusteeCard", () => {
   it("renders different trustees independently", async () => {
     const [htmlA, htmlB] = await Promise.all([
       renderTrusteeCard(makeTrustee({ name: "Alice" })),
-      renderTrusteeCard(makeTrustee({ name: "Bob" })),
+      renderTrusteeCard(makeTrustee({ name: "Bob" }))
     ]);
 
     expect(htmlA).toContain("Alice");

@@ -13,7 +13,7 @@ test.describe("navigation", () => {
       await axePage.goto("/");
 
       const hamburgerButton = axePage.getByRole("button", {
-        name: "Open main menu",
+        name: "Open main menu"
       });
 
       const navMenu = axePage.locator(NAV_MENU);
@@ -31,6 +31,6 @@ test.describe("navigation", () => {
         .soft(hamburgerButton)
         .toHaveAttribute("aria-expanded", "false");
       await expect.soft(navMenu).toBeHidden();
-    },
+    }
   );
 });

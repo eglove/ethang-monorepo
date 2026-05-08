@@ -5,5 +5,5 @@ export const sanityClient = createClient({
   dataset: "production",
   // cspell:disable-next-line
   projectId: "3rkvshhk",
-  useCdn: true,
+  useCdn: true
 });

@@ -53,8 +53,8 @@ export const PortableText = async ({ content }: PortableTextProperties) => {
         }),
         async (block) => {
           imageHtmlMap.set(block._key, await buildImageHtml(block));
-        },
-      ),
+        }
+      )
     );
   }
 
@@ -68,10 +68,10 @@ export const PortableText = async ({ content }: PortableTextProperties) => {
               // toHTML handlers must be synchronous and return HTML strings
               image: ({ value }: { value: { _key: string } }) => {
                 return imageHtmlMap.get(value._key) ?? "";
-              },
-            },
-          },
-        }),
+              }
+            }
+          }
+        })
       }}
     />
   );

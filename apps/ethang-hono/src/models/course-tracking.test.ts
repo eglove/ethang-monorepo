@@ -8,8 +8,8 @@ import { CourseTracking } from "./course-tracking.ts";
 vi.mock(import("../clients/sanity.ts"), () => {
   return {
     sanityClient: {
-      fetch: vi.fn(),
-    },
+      fetch: vi.fn()
+    }
   };
 });
 
@@ -37,21 +37,21 @@ describe(CourseTracking, () => {
           .mockImplementation(
             (options: { where: (table: any, operators: any) => void }) => {
               options.where({}, { and: vi.fn(), eq: vi.fn() });
-            },
+            }
           ),
         findMany: vi
           .fn()
           .mockImplementation(
             (options: { where: (table: any, operators: any) => void }) => {
               options.where({}, { eq: vi.fn() });
-            },
-          ),
-      },
+            }
+          )
+      }
     },
     set: vi.fn().mockReturnThis(),
     update: vi.fn().mockReturnThis(),
     values: vi.fn().mockReturnThis(),
-    where: vi.fn().mockReturnThis(),
+    where: vi.fn().mockReturnThis()
   };
 
   it("createCourseTracking calls insert with correct data", async () => {
@@ -66,7 +66,7 @@ describe(CourseTracking, () => {
     expect(mockDatabase.values).toHaveBeenCalledWith({
       courseUrl: "test-url",
       status: "Complete",
-      userId: "user-1",
+      userId: "user-1"
     });
   });
 
@@ -75,7 +75,7 @@ describe(CourseTracking, () => {
     await model.getCourseTrackingByUserId("user-1");
 
     expect(
-      mockDatabase.query.courseTrackingTable.findMany,
+      mockDatabase.query.courseTrackingTable.findMany
       // eslint-disable-next-line vitest/prefer-called-with
     ).toHaveBeenCalled();
   });
@@ -87,7 +87,7 @@ describe(CourseTracking, () => {
     await model.getCourseTrackingByUserIdCourseId("user-1", "course-1");
 
     expect(
-      mockDatabase.query.courseTrackingTable.findFirst,
+      mockDatabase.query.courseTrackingTable.findFirst
       // eslint-disable-next-line vitest/prefer-called-with
     ).toHaveBeenCalled();
   });

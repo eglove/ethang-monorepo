@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock(import("drizzle-orm/d1"), () => {
   return {
-    drizzle: vi.fn().mockReturnValue({}),
+    drizzle: vi.fn().mockReturnValue({})
   };
 });
 

@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import {
   type ButtonSize,
   type ButtonVariant,
-  getButtonClasses,
+  getButtonClasses
 } from "./button-classes.ts";
 
 describe(getButtonClasses, () => {
@@ -18,7 +18,7 @@ describe(getButtonClasses, () => {
     "secondary",
     "success",
     "tertiary",
-    "warning",
+    "warning"
   ];
 
   it("returns an array of strings", () => {
@@ -44,7 +44,7 @@ describe(getButtonClasses, () => {
       ["default", "bg-sky-300/10", "border-sky-300/30", "text-sky-300"],
       ["success", "bg-green-400/10", "border-green-400/30", "text-green-400"],
       ["danger", "bg-red-400/10", "border-red-400/30", "text-red-400"],
-      ["warning", "bg-amber-400/10", "border-amber-400/30", "text-amber-400"],
+      ["warning", "bg-amber-400/10", "border-amber-400/30", "text-amber-400"]
     ] as const)(
       "%s variant includes tinted classes",
       (variant, bg, border, text) => {
@@ -53,7 +53,7 @@ describe(getButtonClasses, () => {
         expect(classes).toContain(bg);
         expect(classes).toContain(border);
         expect(classes).toContain(text);
-      },
+      }
     );
 
     it("secondary variant includes neutral classes", () => {
@@ -102,7 +102,7 @@ describe(getButtonClasses, () => {
 
     it.each([
       ["lg", "px-5", "py-3"],
-      ["xl", "px-6", "py-3.5"],
+      ["xl", "px-6", "py-3.5"]
     ] as const)(
       "%s size adds large padding and removes leading-5",
       (size, px, py) => {
@@ -112,7 +112,7 @@ describe(getButtonClasses, () => {
         expect(classes).toContain(py);
         expect(classes).toContain("text-base");
         expect(classes).not.toContain("leading-5");
-      },
+      }
     );
 
     it("xs size adds extra-small padding", () => {

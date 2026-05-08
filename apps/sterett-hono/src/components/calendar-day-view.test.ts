@@ -7,13 +7,13 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
     sanityImage: {
       image: () => {
         return {};
-      },
+      }
     },
 
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
@@ -22,7 +22,7 @@ import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 import { renderCalendarDayView } from "../test-utilities/render.tsx";
 
 const makeEvent = (
-  overrides: Partial<CalendarEventRecord> = {},
+  overrides: Partial<CalendarEventRecord> = {}
 ): CalendarEventRecord => {
   return {
     _id: "event-1",
@@ -30,7 +30,7 @@ const makeEvent = (
     endsAt: "2024-06-15T15:00:00.000Z",
     startsAt: "2024-06-15T13:00:00.000Z",
     title: "Test Event",
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -43,7 +43,7 @@ describe("dayView", () => {
 
   it("renders event title", async () => {
     const html = await renderCalendarDayView([
-      makeEvent({ title: "Board Meeting" }),
+      makeEvent({ title: "Board Meeting" })
     ]);
 
     expect(html).toContain("Board Meeting");
@@ -53,8 +53,8 @@ describe("dayView", () => {
     const html = await renderCalendarDayView([
       makeEvent({
         endsAt: "2024-06-15T15:00:00.000Z",
-        startsAt: "2024-06-15T13:00:00.000Z",
-      }),
+        startsAt: "2024-06-15T13:00:00.000Z"
+      })
     ]);
 
     // Should contain formatted times (Chicago timezone)
@@ -70,7 +70,7 @@ describe("dayView", () => {
   it("renders multiple events", async () => {
     const events = [
       makeEvent({ _id: "evt-1", title: "Morning Meeting" }),
-      makeEvent({ _id: "evt-2", title: "Afternoon Call" }),
+      makeEvent({ _id: "evt-2", title: "Afternoon Call" })
     ];
     const html = await renderCalendarDayView(events);
 

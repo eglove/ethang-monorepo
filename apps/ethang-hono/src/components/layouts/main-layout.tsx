@@ -150,7 +150,7 @@ if ('serviceWorker' in navigator) {
     }
   });
 }
-    `,
+    `
           }}
         />
       </body>

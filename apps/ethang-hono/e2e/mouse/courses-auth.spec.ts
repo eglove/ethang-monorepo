@@ -7,7 +7,7 @@ import {
   mockTrackingApi,
   mockVerifyOk,
   setAuthCookie,
-  type Tracking,
+  type Tracking
 } from "../helpers/courses-auth-helpers.ts";
 import { expect, test } from "../index.ts";
 
@@ -25,9 +25,9 @@ const mockPutTracking = async (page: Page, tracking: Tracking) => {
       return route.fulfill({
         body: JSON.stringify({ data: tracking, status: 200 }),
         contentType: "application/json",
-        status: 200,
+        status: 200
       });
-    },
+    }
   );
 };
 
@@ -66,8 +66,8 @@ test.describe("courses page — authenticated", () => {
         courseUrl: MOCK_TRACKED_URL,
         id: "t1",
         status: "Revisit",
-        userId: MOCK_USER_ID,
-      },
+        userId: MOCK_USER_ID
+      }
     ]);
     await setAuthCookie(page);
     await page.goto(routes.courses, { waitUntil: "load" });
@@ -90,16 +90,16 @@ test.describe("courses page — authenticated", () => {
   });
 
   test("applies Revisit status styling to tracked course button", async ({
-    axePage,
+    axePage
   }) => {
     const revisitButton = axePage.locator(
-      `${COMPLETION_BUTTON}[data-course-url="${MOCK_TRACKED_URL}"]`,
+      `${COMPLETION_BUTTON}[data-course-url="${MOCK_TRACKED_URL}"]`
     );
     await expect.soft(revisitButton).toHaveClass(/bg-warning/u);
   });
 
   test("applies Complete status styling to tracked course button", async ({
-    axePage,
+    axePage
   }) => {
     // WebKit requires routes to be registered before navigation. Use a fresh
     // goto instead of unrouteAll + reload so the mocks are active from the start.
@@ -110,14 +110,14 @@ test.describe("courses page — authenticated", () => {
         courseUrl: MOCK_TRACKED_URL,
         id: "t1",
         status: "Complete",
-        userId: MOCK_USER_ID,
-      },
+        userId: MOCK_USER_ID
+      }
     ]);
     await setAuthCookie(axePage);
     await axePage.goto(routes.courses, { waitUntil: "load" });
 
     const completeButton = axePage.locator(
-      `${COMPLETION_BUTTON}[data-course-url="${MOCK_TRACKED_URL}"]`,
+      `${COMPLETION_BUTTON}[data-course-url="${MOCK_TRACKED_URL}"]`
     );
     await expect.soft(completeButton).toHaveClass(/bg-brand/u);
   });
@@ -125,7 +125,7 @@ test.describe("courses page — authenticated", () => {
 
 test.describe("courses page — completion button interactions", () => {
   test("clicking a completion button applies Revisit styling after API responds", async ({
-    axePage,
+    axePage
   }) => {
     await mockVerifyOk(axePage);
     await mockTrackingApi(axePage, []);
@@ -133,7 +133,7 @@ test.describe("courses page — completion button interactions", () => {
       courseUrl: MOCK_TRACKED_URL,
       id: "t2",
       status: "Revisit",
-      userId: MOCK_USER_ID,
+      userId: MOCK_USER_ID
     });
     await setAuthCookie(axePage);
     await axePage.goto(routes.courses, { waitUntil: "load" });
@@ -146,7 +146,7 @@ test.describe("courses page — completion button interactions", () => {
   });
 
   test("clicking a completion button applies Complete styling after API responds", async ({
-    axePage,
+    axePage
   }) => {
     await mockVerifyOk(axePage);
     await mockTrackingApi(axePage, []);
@@ -154,7 +154,7 @@ test.describe("courses page — completion button interactions", () => {
       courseUrl: MOCK_TRACKED_URL,
       id: "t3",
       status: "Complete",
-      userId: MOCK_USER_ID,
+      userId: MOCK_USER_ID
     });
     await setAuthCookie(axePage);
     await axePage.goto(routes.courses, { waitUntil: "load" });
@@ -167,7 +167,7 @@ test.describe("courses page — completion button interactions", () => {
   });
 
   test("completion button is disabled and shows spinner while request is in flight", async ({
-    axePage,
+    axePage
   }) => {
     await mockVerifyOk(axePage);
     await mockTrackingApi(axePage, []);
@@ -190,14 +190,14 @@ test.describe("courses page — completion button interactions", () => {
                 courseUrl: MOCK_TRACKED_URL,
                 id: "t4",
                 status: "Complete",
-                userId: MOCK_USER_ID,
+                userId: MOCK_USER_ID
               },
-              status: 200,
+              status: 200
             }),
             contentType: "application/json",
-            status: 200,
+            status: 200
           });
-        },
+        }
       );
     });
 
@@ -220,7 +220,7 @@ test.describe("courses page — completion button interactions", () => {
   });
 
   test("progress bar percentages update after completion button click", async ({
-    axePage,
+    axePage
   }) => {
     await mockVerifyOk(axePage);
     await mockTrackingApi(axePage, []);
@@ -228,7 +228,7 @@ test.describe("courses page — completion button interactions", () => {
       courseUrl: MOCK_TRACKED_URL,
       id: "t5",
       status: "Complete",
-      userId: MOCK_USER_ID,
+      userId: MOCK_USER_ID
     });
     await setAuthCookie(axePage);
     await axePage.goto(routes.courses, { waitUntil: "load" });
@@ -243,7 +243,7 @@ test.describe("courses page — completion button interactions", () => {
 
 test.describe("courses page — stale cache regression", () => {
   test("hides auth UI when cookie removed after authenticated cache entry", async ({
-    axePage,
+    axePage
   }) => {
     await mockVerifyOk(axePage);
     await mockTrackingApi(axePage, []);
@@ -263,7 +263,7 @@ test.describe("courses page — stale cache regression", () => {
   });
 
   test("shows auth UI and applies statuses when navigating from another page", async ({
-    axePage,
+    axePage
   }) => {
     // Set mocks and cookie before any navigation so they are active for the
     // entire test — Firefox and WebKit require routes to be registered before
@@ -274,8 +274,8 @@ test.describe("courses page — stale cache regression", () => {
         courseUrl: MOCK_TRACKED_URL,
         id: "t1",
         status: "Revisit",
-        userId: MOCK_USER_ID,
-      },
+        userId: MOCK_USER_ID
+      }
     ]);
     await setAuthCookie(axePage);
     // Navigate to home first to simulate arriving from another page, then go
@@ -288,7 +288,7 @@ test.describe("courses page — stale cache regression", () => {
     await expect.soft(axePage.locator(SIGN_IN_PROMPT)).toBeHidden();
 
     const revisitButton = axePage.locator(
-      `${COMPLETION_BUTTON}[data-course-url="${MOCK_TRACKED_URL}"]`,
+      `${COMPLETION_BUTTON}[data-course-url="${MOCK_TRACKED_URL}"]`
     );
     await expect.soft(revisitButton).toHaveClass(/bg-warning/u);
   });

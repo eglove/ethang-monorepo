@@ -2,22 +2,22 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock(import("@ethang/toolbelt/http/cookie.js"), () => {
   return {
-    getCookieValue: vi.fn().mockReturnValue(new Error("no cookie")),
+    getCookieValue: vi.fn().mockReturnValue(new Error("no cookie"))
   };
 });
 vi.mock(import("./models/blog-model.ts"), () => {
   return {
-    BlogModel: vi.fn(),
+    BlogModel: vi.fn()
   };
 });
 vi.mock(import("./clients/sanity.ts"), (() => {
   return {
-    sanityClient: { fetch: vi.fn() },
+    sanityClient: { fetch: vi.fn() }
   };
 }) as never);
 vi.mock(import("./db/database.ts"), () => {
   return {
-    getDatabase: vi.fn(),
+    getDatabase: vi.fn()
   };
 });
 vi.mock(import("./stores/course-path-store.ts"), () => {
@@ -31,11 +31,11 @@ vi.mock(import("./stores/course-path-store.ts"), () => {
     latestUpdate: undefined,
     learningPaths: [],
     setup: vi.fn().mockResolvedValue(undefined),
-    totalCourseCount: 0,
+    totalCourseCount: 0
   };
   return {
     coursePathData: mockStore,
-    CoursePathStore: vi.fn(),
+    CoursePathStore: vi.fn()
   };
 });
 
@@ -51,14 +51,14 @@ const TEXT_HTML = "text/html";
 const mockBlogModelWith = (
   getPaginatedBlogs: ReturnType<typeof vi.fn>,
   getBlogBySlug: ReturnType<typeof vi.fn> = vi.fn(),
-  getAllBlogs: ReturnType<typeof vi.fn> = vi.fn(),
+  getAllBlogs: ReturnType<typeof vi.fn> = vi.fn()
 ) => {
   vi.mocked(BlogModel).mockImplementation(
     class {
       public getAllBlogs = getAllBlogs;
       public getBlogBySlug = getBlogBySlug;
       public getPaginatedBlogs = getPaginatedBlogs;
-    } as never,
+    } as never
   );
 };
 
@@ -79,7 +79,7 @@ describe("app — www redirect", () => {
 
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe(
-      "https://ethang.dev/blog/my-post",
+      "https://ethang.dev/blog/my-post"
     );
   });
 
@@ -87,12 +87,12 @@ describe("app — www redirect", () => {
     vi.clearAllMocks();
     mockBlogModelWith(vi.fn(), vi.fn());
     const response = await app.request(
-      "https://www.ethang.dev/courses?format=text",
+      "https://www.ethang.dev/courses?format=text"
     );
 
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe(
-      "https://ethang.dev/courses?format=text",
+      "https://ethang.dev/courses?format=text"
     );
   });
 });
@@ -162,7 +162,7 @@ describe("app — static pages", () => {
     vi.clearAllMocks();
     mockBlogModelWith(vi.fn(), vi.fn());
     const response = await app.request(
-      "https://ethang.dev/tips/scroll-containers",
+      "https://ethang.dev/tips/scroll-containers"
     );
 
     expect(response.status).toBe(200);
@@ -172,7 +172,7 @@ describe("app — static pages", () => {
     vi.clearAllMocks();
     mockBlogModelWith(vi.fn(), vi.fn());
     const response = await app.request(
-      "https://ethang.dev/tips/scrollbar-gutter",
+      "https://ethang.dev/tips/scrollbar-gutter"
     );
 
     expect(response.status).toBe(200);
@@ -182,7 +182,7 @@ describe("app — static pages", () => {
     vi.clearAllMocks();
     mockBlogModelWith(vi.fn(), vi.fn());
     const response = await app.request(
-      "https://ethang.dev/this-does-not-exist",
+      "https://ethang.dev/this-does-not-exist"
     );
 
     expect(response.headers.get(CONTENT_TYPE)).toContain(TEXT_HTML);
@@ -194,7 +194,7 @@ describe("app — blog pages", () => {
     vi.clearAllMocks();
     mockBlogModelWith(
       vi.fn().mockResolvedValue({ maxPages: 1, posts: [], total: 0 }),
-      vi.fn(),
+      vi.fn()
     );
     const response = await app.request("https://ethang.dev/blog");
 
@@ -215,8 +215,8 @@ describe("app — blog pages", () => {
         description: "A test blog post",
         featuredImage: { asset: { url: "https://example.com/image.jpg" } },
         slug: { current: "my-post" },
-        title: "My Test Post",
-      }),
+        title: "My Test Post"
+      })
     );
     const response = await app.request("https://ethang.dev/blog/my-post");
 
@@ -273,7 +273,7 @@ describe("app — blog pages", () => {
     vi.clearAllMocks();
     mockBlogModelWith(
       vi.fn().mockResolvedValue({ maxPages: 3, posts: [], total: 25 }),
-      vi.fn(),
+      vi.fn()
     );
     const response = await app.request("https://ethang.dev/blog/page/999");
 
@@ -285,7 +285,7 @@ describe("app — blog pages", () => {
     vi.clearAllMocks();
     mockBlogModelWith(
       vi.fn().mockResolvedValue({ maxPages: 3, posts: [], total: 25 }),
-      vi.fn(),
+      vi.fn()
     );
     const response = await app.request("https://ethang.dev/blog/page/2");
 
@@ -321,7 +321,7 @@ describe("app — script loading", () => {
     const html = await response.text();
 
     expect(html).not.toContain(
-      'src="/scripts/components/navigation/navigation.client.js"',
+      'src="/scripts/components/navigation/navigation.client.js"'
     );
   });
 });

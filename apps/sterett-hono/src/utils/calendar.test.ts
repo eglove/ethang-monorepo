@@ -23,7 +23,7 @@ import {
   renderDescriptionHtml,
   shiftDate,
   toDateKey,
-  toPlainText,
+  toPlainText
 } from "./calendar.ts";
 
 // ─── formatDateTime ──────────────────────────────────────────────────────────
@@ -61,13 +61,13 @@ describe(toDateKey, () => {
 const makeEvent = (
   id: string,
   startsAt: string,
-  endsAt: string,
+  endsAt: string
 ): CalendarEventRecord => {
   return {
     _id: id,
     endsAt,
     startsAt,
-    title: id,
+    title: id
   } as CalendarEventRecord;
 };
 
@@ -80,7 +80,7 @@ describe(buildEventsByDate, () => {
     const event = makeEvent(
       "e1",
       "2024-06-15T14:00:00Z",
-      "2024-06-15T16:00:00Z",
+      "2024-06-15T16:00:00Z"
     );
     const map = buildEventsByDate([event]);
 
@@ -92,7 +92,7 @@ describe(buildEventsByDate, () => {
     const event = makeEvent(
       "event1",
       "2024-06-13T14:00:00Z",
-      "2024-06-15T16:00:00Z",
+      "2024-06-15T16:00:00Z"
     );
     const map = buildEventsByDate([event]);
 
@@ -106,12 +106,12 @@ describe(buildEventsByDate, () => {
     const event1 = makeEvent(
       "event1",
       "2024-06-15T09:00:00Z",
-      "2024-06-15T10:00:00Z",
+      "2024-06-15T10:00:00Z"
     );
     const event2 = makeEvent(
       "event2",
       "2024-06-15T14:00:00Z",
-      "2024-06-15T15:00:00Z",
+      "2024-06-15T15:00:00Z"
     );
     const map = buildEventsByDate([event1, event2]);
 
@@ -122,7 +122,7 @@ describe(buildEventsByDate, () => {
     const event = makeEvent(
       "e1",
       "2024-06-30T20:00:00Z",
-      "2024-07-02T08:00:00Z",
+      "2024-07-02T08:00:00Z"
     );
     const map = buildEventsByDate([event]);
 
@@ -135,7 +135,7 @@ describe(buildEventsByDate, () => {
     const event = makeEvent(
       "e1",
       "2024-12-31T20:00:00Z",
-      "2025-01-01T08:00:00Z",
+      "2025-01-01T08:00:00Z"
     );
     const map = buildEventsByDate([event]);
 
@@ -168,7 +168,7 @@ describe(buildCalendarWeeks, () => {
     expect(
       every(otherCells, (c) => {
         return 6 !== c.month;
-      }),
+      })
     ).toBe(true);
   });
 
@@ -180,7 +180,7 @@ describe(buildCalendarWeeks, () => {
       current: true,
       day: 1,
       month: 1,
-      year: 2023,
+      year: 2023
     });
   });
 
@@ -255,7 +255,7 @@ describe(renderDescriptionHtml, () => {
       _type: "block",
       children: [{ _key: "s1", _type: "span", marks: [], text: "Hello world" }],
       markDefs: [],
-      style: "normal",
+      style: "normal"
     };
 
     const html = renderDescriptionHtml(block);
@@ -271,15 +271,15 @@ describe(renderDescriptionHtml, () => {
         _type: "block",
         children: [{ _key: "s1", _type: "span", marks: [], text: "First" }],
         markDefs: [],
-        style: "normal",
+        style: "normal"
       },
       {
         _key: "b2",
         _type: "block",
         children: [{ _key: "s2", _type: "span", marks: [], text: "Second" }],
         markDefs: [],
-        style: "normal",
-      },
+        style: "normal"
+      }
     ];
 
     const html = renderDescriptionHtml(blocks);
@@ -423,7 +423,7 @@ describe(toPlainText, () => {
       _type: "block",
       children: [{ _key: "s1", _type: "span", marks: [], text: "Hello" }],
       markDefs: [],
-      style: "normal",
+      style: "normal"
     };
 
     expect(toPlainText(block as never)).toBe("Hello");
@@ -436,15 +436,15 @@ describe(toPlainText, () => {
         _type: "block",
         children: [{ _key: "s1", _type: "span", marks: [], text: "First" }],
         markDefs: [],
-        style: "normal",
+        style: "normal"
       },
       {
         _key: "b2",
         _type: "block",
         children: [{ _key: "s2", _type: "span", marks: [], text: "Second" }],
         markDefs: [],
-        style: "normal",
-      },
+        style: "normal"
+      }
     ];
 
     expect(toPlainText(blocks as never)).toBe("First\nSecond");
@@ -466,7 +466,7 @@ describe(toPlainText, () => {
     const block = {
       _key: "b1",
       _type: "block",
-      children: [{ _key: "s1", _type: "span" }],
+      children: [{ _key: "s1", _type: "span" }]
     };
 
     expect(toPlainText(block as never)).toBe("");
@@ -481,7 +481,7 @@ describe(getViewDateRange, () => {
       "day",
       2024,
       6,
-      DATE_KEY_JUNE_15,
+      DATE_KEY_JUNE_15
     );
 
     expect(rangeStart).toBe(DATE_KEY_JUNE_15);
@@ -493,7 +493,7 @@ describe(getViewDateRange, () => {
       "day",
       2024,
       6,
-      DATE_KEY_JUNE_30,
+      DATE_KEY_JUNE_30
     );
 
     expect(rangeStart).toBe(DATE_KEY_JUNE_30);
@@ -506,7 +506,7 @@ describe(getViewDateRange, () => {
       "week",
       2024,
       6,
-      DATE_KEY_JUNE_15,
+      DATE_KEY_JUNE_15
     );
 
     expect(rangeStart).toBe(DATE_KEY_JUNE_09);
@@ -519,7 +519,7 @@ describe(getViewDateRange, () => {
       "week",
       2024,
       6,
-      DATE_KEY_JUNE_09,
+      DATE_KEY_JUNE_09
     );
 
     expect(rangeStart).toBe(DATE_KEY_JUNE_09);
@@ -532,7 +532,7 @@ describe(getViewDateRange, () => {
       "month",
       2024,
       6,
-      "2024-06-01",
+      "2024-06-01"
     );
 
     // Grid starts on Sunday 2024-05-26 (day before June 1 which is a Saturday)
@@ -559,7 +559,7 @@ describe(getViewDateRange, () => {
       "month",
       2022,
       1,
-      "2022-01-01",
+      "2022-01-01"
     );
 
     // Jan 31 is Monday (weekday % 7 = 1), trailing days = 7 - 1 = 6, grid ends Sat Feb 5, exclusive Feb 6
@@ -575,22 +575,22 @@ describe(getViewDateRange, () => {
       "month",
       2024,
       6,
-      "2024-06-01",
+      "2024-06-01"
     );
 
     const firstCellKey = toDateKey(
       firstCell?.year ?? 0,
       firstCell?.month ?? 0,
-      firstCell?.day ?? 0,
+      firstCell?.day ?? 0
     );
     const lastCellKey = toDateKey(
       lastCell?.year ?? 0,
       lastCell?.month ?? 0,
-      lastCell?.day ?? 0,
+      lastCell?.day ?? 0
     );
 
     expect(Date.parse(firstCellKey)).toBeGreaterThanOrEqual(
-      Date.parse(rangeStart),
+      Date.parse(rangeStart)
     );
     expect(Date.parse(lastCellKey)).toBeLessThan(Date.parse(rangeEndExclusive));
   });

@@ -7,12 +7,12 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
     sanityImage: {
       image: () => {
         return {};
-      },
+      }
     },
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
@@ -74,7 +74,7 @@ describe("mainLayout", () => {
 
   it("renders prefetch link tags when prefetch urls are provided", async () => {
     const html = await renderMainLayout({
-      prefetch: ["/calendar?view=month&year=2024&month=6"],
+      prefetch: ["/calendar?view=month&year=2024&month=6"]
     });
 
     expect(html).toContain('rel="prefetch"');

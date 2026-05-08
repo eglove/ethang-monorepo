@@ -31,7 +31,7 @@ describe(NavigationButton, () => {
 describe(NavigationLink, () => {
   it("renders an anchor element", async () => {
     const html = String(
-      await NavigationLink({ children: "Home", href: "/", pathname: "/blog" }),
+      await NavigationLink({ children: "Home", href: "/", pathname: "/blog" })
     );
 
     expect(html).toContain("<a");
@@ -44,8 +44,8 @@ describe(NavigationLink, () => {
       await NavigationLink({
         children: "Blog",
         href: "/blog",
-        pathname: "/blog",
-      }),
+        pathname: "/blog"
+      })
     );
 
     expect(html).toContain('aria-current="page"');
@@ -57,8 +57,8 @@ describe(NavigationLink, () => {
       await NavigationLink({
         children: "Tips",
         href: "/tips",
-        pathname: "/blog",
-      }),
+        pathname: "/blog"
+      })
     );
 
     expect(html).not.toContain('aria-current="page"');
@@ -67,7 +67,7 @@ describe(NavigationLink, () => {
 
   it("does not include aria-current when not current page", async () => {
     const html = String(
-      await NavigationLink({ children: "Tips", href: "/tips", pathname: "/" }),
+      await NavigationLink({ children: "Tips", href: "/tips", pathname: "/" })
     );
 
     expect(html).not.toContain("aria-current");

@@ -12,9 +12,9 @@ import { List } from "../typography/list.tsx";
 export const allTips = [
   {
     href: "/tips/scroll-containers",
-    title: "Easy Sticky Header/Footer",
+    title: "Easy Sticky Header/Footer"
   },
-  { href: "/tips/scrollbar-gutter", title: "scrollbar-gutter" },
+  { href: "/tips/scrollbar-gutter", title: "scrollbar-gutter" }
 ];
 
 export const Tips = async () => {

@@ -2,7 +2,7 @@ import "../../test-utilities/mocks/sanity-client.ts";
 
 vi.mock(import("../../sanity/get-files.ts"), () => {
   return {
-    getFiles: vi.fn(),
+    getFiles: vi.fn()
   };
 });
 
@@ -19,7 +19,7 @@ const COVENANT_1 = {
   category: "Covenant",
   date: "2024-06-15",
   file: { asset: { url: "https://example.com/covenant.pdf" } },
-  title: "Covenant 1",
+  title: "Covenant 1"
 };
 
 const COVENANT_2 = {
@@ -28,7 +28,7 @@ const COVENANT_2 = {
   category: "Covenant",
   date: "2024-06-16",
   file: { asset: { url: "https://example.com/covenant2.pdf" } },
-  title: "Covenant 2",
+  title: "Covenant 2"
 };
 
 describe("filesPage", () => {
@@ -46,7 +46,7 @@ describe("filesPage", () => {
     vi.mocked(getFiles).mockResolvedValue({
       covenants: [{ ...COVENANT_1, title: "Main Covenant" }],
       general: [],
-      meetingMinutes: [],
+      meetingMinutes: []
     });
 
     const html = await renderFilesPage();
@@ -60,7 +60,7 @@ describe("filesPage", () => {
     vi.mocked(getFiles).mockResolvedValue({
       covenants: [COVENANT_1, COVENANT_2],
       general: [],
-      meetingMinutes: [],
+      meetingMinutes: []
     });
 
     const html = await renderFilesPage();

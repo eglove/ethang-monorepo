@@ -23,8 +23,8 @@ const resetTestState = async () => {
       json: () => {
         return {};
       },
-      ok: true,
-    }),
+      ok: true
+    })
   );
   vi.stubGlobal("location", { reload: vi.fn() });
   document.body.innerHTML = "";
@@ -54,7 +54,7 @@ describe("course-completion.client applyStoredStatuses", () => {
           json: () => {
             return { email: "e", exp: 2, iat: 1, sub: "123", username: "u" };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       return { ok: false } as Response;
@@ -64,8 +64,8 @@ describe("course-completion.client applyStoredStatuses", () => {
 
     expect(fetch).toHaveBeenCalledWith(VERIFY_URL, {
       headers: {
-        [X_TOKEN]: VALID_TOKEN,
-      },
+        [X_TOKEN]: VALID_TOKEN
+      }
     });
   });
 
@@ -82,8 +82,8 @@ describe("course-completion.client applyStoredStatuses", () => {
 
     expect(fetch).toHaveBeenCalledWith(VERIFY_URL, {
       headers: {
-        [X_TOKEN]: VALID_TOKEN,
-      },
+        [X_TOKEN]: VALID_TOKEN
+      }
     });
     expect(deleteSpy).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
   });
@@ -99,8 +99,8 @@ describe("course-completion.client applyStoredStatuses", () => {
 
     expect(fetch).toHaveBeenCalledWith(VERIFY_URL, {
       headers: {
-        [X_TOKEN]: VALID_TOKEN,
-      },
+        [X_TOKEN]: VALID_TOKEN
+      }
     });
     expect(document.cookie).toBe("");
   });
@@ -116,14 +116,14 @@ describe("course-completion.client applyStoredStatuses", () => {
           json: () => {
             return { email: "e", exp: 2, iat: 1, sub: "123", username: "u" };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       return {
         json: () => {
           return { data: [{ invalid: "object" }] };
         },
-        ok: true,
+        ok: true
       } as unknown as Response;
     });
 
@@ -131,8 +131,8 @@ describe("course-completion.client applyStoredStatuses", () => {
 
     expect(fetch).toHaveBeenCalledWith(VERIFY_URL, {
       headers: {
-        [X_TOKEN]: VALID_TOKEN,
-      },
+        [X_TOKEN]: VALID_TOKEN
+      }
     });
   });
 
@@ -147,12 +147,12 @@ describe("course-completion.client applyStoredStatuses", () => {
           json: () => {
             return { email: "e", exp: 2, iat: 1, sub: "123", username: "u" };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       return {
         json: constant(null),
-        ok: true,
+        ok: true
       } as unknown as Response;
     });
 
@@ -160,8 +160,8 @@ describe("course-completion.client applyStoredStatuses", () => {
 
     expect(fetch).toHaveBeenCalledWith(VERIFY_URL, {
       headers: {
-        [X_TOKEN]: VALID_TOKEN,
-      },
+        [X_TOKEN]: VALID_TOKEN
+      }
     });
   });
 
@@ -176,14 +176,14 @@ describe("course-completion.client applyStoredStatuses", () => {
           json: () => {
             return { email: "e", exp: 2, iat: 1, sub: "123", username: "u" };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       return {
         json: () => {
           return { other: [] };
         },
-        ok: true,
+        ok: true
       } as unknown as Response;
     });
 
@@ -191,8 +191,8 @@ describe("course-completion.client applyStoredStatuses", () => {
 
     expect(fetch).toHaveBeenCalledWith(VERIFY_URL, {
       headers: {
-        [X_TOKEN]: VALID_TOKEN,
-      },
+        [X_TOKEN]: VALID_TOKEN
+      }
     });
   });
 });

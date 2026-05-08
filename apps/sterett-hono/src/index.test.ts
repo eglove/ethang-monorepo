@@ -1,35 +1,35 @@
 // @ts-expect-error ignore for now
 vi.mock(import("./components/pages/calendar-page.tsx"), () => {
   return {
-    CalendarPage: vi.fn(constant("")),
+    CalendarPage: vi.fn(constant(""))
   };
 });
 
 // @ts-expect-error ignore for now
 vi.mock(import("./components/pages/files-page.tsx"), () => {
   return {
-    FilesPage: vi.fn(constant("")),
+    FilesPage: vi.fn(constant(""))
   };
 });
 
 // @ts-expect-error ignore for now
 vi.mock(import("./components/pages/home-page.tsx"), () => {
   return {
-    HomePage: vi.fn(constant("")),
+    HomePage: vi.fn(constant(""))
   };
 });
 
 // @ts-expect-error ignore for now
 vi.mock(import("./components/pages/news-page.tsx"), () => {
   return {
-    NewsPage: vi.fn(constant("")),
+    NewsPage: vi.fn(constant(""))
   };
 });
 
 // @ts-expect-error ignore for now
 vi.mock(import("./components/pages/trustees-page.tsx"), () => {
   return {
-    TrusteesPage: vi.fn(constant("")),
+    TrusteesPage: vi.fn(constant(""))
   };
 });
 
@@ -62,7 +62,7 @@ describe("app routes", () => {
     const response = await app.request(
       `${BASE}/news-preview`,
       { body: "[]", headers: JSON_CONTENT_TYPE, method: "POST" },
-      {},
+      {}
     );
 
     expect(response.status).toBe(404);
@@ -72,7 +72,7 @@ describe("app routes", () => {
     const response = await app.request(
       `${BASE}/news-preview`,
       { body: "[]", headers: JSON_CONTENT_TYPE, method: "POST" },
-      { ENABLE_TEST_ROUTES: "true" },
+      { ENABLE_TEST_ROUTES: "true" }
     );
 
     expect(response.status).toBe(200);
@@ -95,7 +95,7 @@ describe("app routes", () => {
     await app.request(`${BASE}/calendar?view=week&date=2024-06-17`);
 
     expect(vi.mocked(CalendarPage)).toHaveBeenCalledWith(
-      expect.objectContaining({ view: "week" }),
+      expect.objectContaining({ view: "week" })
     );
   });
 
@@ -104,7 +104,7 @@ describe("app routes", () => {
     await app.request(`${BASE}/calendar?view=unknown`);
 
     expect(vi.mocked(CalendarPage)).toHaveBeenCalledWith(
-      expect.objectContaining({ view: "month" }),
+      expect.objectContaining({ view: "month" })
     );
   });
 
@@ -113,7 +113,7 @@ describe("app routes", () => {
     await app.request(`${BASE}/calendar?view=day&date=2024-06-17`);
 
     expect(vi.mocked(CalendarPage)).toHaveBeenCalledWith(
-      expect.objectContaining({ view: "day" }),
+      expect.objectContaining({ view: "day" })
     );
   });
 
@@ -122,7 +122,7 @@ describe("app routes", () => {
     await app.request(`${BASE}/calendar?view=week&view=day`);
 
     expect(vi.mocked(CalendarPage)).toHaveBeenCalledWith(
-      expect.objectContaining({ view: "day" }),
+      expect.objectContaining({ view: "day" })
     );
   });
 

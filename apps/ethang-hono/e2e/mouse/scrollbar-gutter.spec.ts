@@ -14,7 +14,7 @@ test.describe("scrollbar-gutter", () => {
   });
 
   test("show extra content button reveals hidden demo content", async ({
-    axePage,
+    axePage
   }) => {
     await axePage.goto(routes.scrollbarGutter);
 
@@ -31,7 +31,7 @@ test.describe("scrollbar-gutter", () => {
   });
 
   test("hide extra content button hides demo content again", async ({
-    axePage,
+    axePage
   }) => {
     await axePage.goto(routes.scrollbarGutter);
 

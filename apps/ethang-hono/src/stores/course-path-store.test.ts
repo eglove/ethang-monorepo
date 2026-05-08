@@ -4,17 +4,17 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock(import("../clients/sanity.ts"), (() => {
   return {
-    sanityClient: { fetch: vi.fn() },
+    sanityClient: { fetch: vi.fn() }
   };
 }) as never);
 vi.mock(import("../db/database.ts"), () => {
   return {
-    getDatabase: vi.fn().mockReturnValue({}),
+    getDatabase: vi.fn().mockReturnValue({})
   };
 });
 vi.mock(import("../models/course-tracking.ts"), () => {
   return {
-    CourseTracking: vi.fn(),
+    CourseTracking: vi.fn()
   };
 });
 
@@ -29,7 +29,7 @@ const makeContext = async (courseStore: CoursePathStore) => {
   const testApp = new Hono();
   testApp.get("/", async (c) => {
     await courseStore.setup(
-      c as unknown as Parameters<typeof courseStore.setup>[0],
+      c as unknown as Parameters<typeof courseStore.setup>[0]
     );
     return c.json({ ok: true });
   });
@@ -42,7 +42,7 @@ const makeCourse = (overrides = {}) => {
     author: faker.person.fullName(),
     name: faker.lorem.words(2),
     url: faker.internet.url(),
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -54,7 +54,7 @@ const makeLearningPath = (courses = [makeCourse()], overrides = {}) => {
     name: faker.lorem.word(),
     swebokFocus: faker.lorem.word(),
     url: faker.internet.url(),
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -64,17 +64,17 @@ const makeCourseTracking = (overrides = {}) => {
     id: faker.string.uuid(),
     status: COURSE_TRACKING_STATUS.COMPLETE,
     userId: faker.string.uuid(),
-    ...overrides,
+    ...overrides
   };
 };
 
 const mockCourseTrackingWith = (
-  getCourseTrackingByUserId: ReturnType<typeof vi.fn>,
+  getCourseTrackingByUserId: ReturnType<typeof vi.fn>
 ) => {
   vi.mocked(CourseTracking).mockImplementation(
     class {
       public getCourseTrackingByUserId = getCourseTrackingByUserId;
-    } as never,
+    } as never
   );
 };
 
@@ -122,7 +122,7 @@ describe("coursePathStore — getCourse", () => {
     const targetCourse = makeCourse({ _id: courseId });
     store.learningPaths = [
       makeLearningPath([makeCourse()]),
-      makeLearningPath([targetCourse]),
+      makeLearningPath([targetCourse])
     ];
 
     const result = store.getCourse(courseId);
@@ -186,7 +186,7 @@ describe("coursePathStore — getStatusPercentages", () => {
     store.totalCourseCount = 2;
     store.courseTrackings = [
       makeCourseTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
-      makeCourseTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
+      makeCourseTracking({ status: COURSE_TRACKING_STATUS.COMPLETE })
     ];
 
     const result = store.getStatusPercentages();
@@ -203,7 +203,7 @@ describe("coursePathStore — getStatusPercentages", () => {
       makeCourseTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
       makeCourseTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
       makeCourseTracking({ status: COURSE_TRACKING_STATUS.REVISIT }),
-      makeCourseTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
+      makeCourseTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE })
     ];
 
     const result = store.getStatusPercentages();
@@ -217,7 +217,7 @@ describe("coursePathStore — getStatusPercentages", () => {
     const store = new CoursePathStore();
     store.totalCourseCount = 5;
     store.courseTrackings = [
-      makeCourseTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
+      makeCourseTracking({ status: COURSE_TRACKING_STATUS.COMPLETE })
     ];
 
     const result = store.getStatusPercentages();
@@ -242,7 +242,7 @@ describe("coursePathStore — getStatusPercentages", () => {
     store.totalCourseCount = 2;
     store.courseTrackings = [
       makeCourseTracking({ status: COURSE_TRACKING_STATUS.REVISIT }),
-      makeCourseTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
+      makeCourseTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE })
     ];
 
     const result = store.getStatusPercentages();
@@ -266,12 +266,12 @@ describe("coursePathStore — setup", () => {
         courses: [],
         name: "Test Path",
         swebokFocus: "testing",
-        url: faker.internet.url(),
-      },
+        url: faker.internet.url()
+      }
     ];
     vi.mocked(sanityClient).fetch.mockResolvedValue({
       latestUpdate: { _id: "lu1", _updatedAt: LATEST_UPDATE_DATE },
-      learningPaths,
+      learningPaths
     } as never);
 
     await makeContext(store);
@@ -292,16 +292,16 @@ describe("coursePathStore — setup", () => {
           courseCount: 3,
           courses: [],
           name: "A",
-          swebokFocus: "testing",
+          swebokFocus: "testing"
         },
         {
           _id: "lp2",
           courseCount: 5,
           courses: [],
           name: "B",
-          swebokFocus: "quality",
-        },
-      ],
+          swebokFocus: "quality"
+        }
+      ]
     } as never);
 
     await makeContext(store);
@@ -317,7 +317,7 @@ describe("coursePathStore — setup", () => {
     const store = new CoursePathStore();
     vi.mocked(sanityClient).fetch.mockResolvedValue({
       latestUpdate: { _id: "lu1", _updatedAt: LATEST_UPDATE_DATE },
-      learningPaths: [],
+      learningPaths: []
     } as never);
 
     await makeContext(store);
@@ -333,7 +333,7 @@ describe("coursePathStore — setup", () => {
     const latestUpdate = { _id: "lu-1", _updatedAt: "2024-06-01T00:00:00Z" };
     vi.mocked(sanityClient).fetch.mockResolvedValue({
       latestUpdate,
-      learningPaths: [],
+      learningPaths: []
     } as never);
 
     await makeContext(store);

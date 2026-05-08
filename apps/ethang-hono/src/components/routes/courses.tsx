@@ -19,11 +19,11 @@ export const Courses = async () => {
     get(latestUpdate, ["_updatedAt"], DateTime.now().toISO()),
     {
       locale,
-      zone: timezone,
-    },
+      zone: timezone
+    }
   ).toLocaleString({
     dateStyle: "medium",
-    timeStyle: "long",
+    timeStyle: "long"
   });
 
   return (
@@ -51,7 +51,7 @@ export const Courses = async () => {
         </P>
         <CourseProgressBar
           classNames={{
-            container: isAuthenticated ? "" : "hidden",
+            container: isAuthenticated ? "" : "hidden"
           }}
         />
         <div class="my-6" data-script="components/courses/course-completion">

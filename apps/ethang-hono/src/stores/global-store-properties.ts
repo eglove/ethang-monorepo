@@ -28,7 +28,7 @@ export class GlobalStore {
   public userId: null | string = null;
 
   public async setup<P extends string, I extends Input>(
-    context: Context<AppContext, P, I>,
+    context: Context<AppContext, P, I>
   ) {
     const { origin, pathname } = new URL(context.req.url);
     const cfTimezone = context.req.raw.cf?.timezone;
@@ -54,8 +54,8 @@ export class GlobalStore {
   private async setAuthToken(value: null | string) {
     await fetch("https://auth.ethang.dev/verify", {
       headers: {
-        "X-Token": value ?? "",
-      },
+        "X-Token": value ?? ""
+      }
     })
       .then(async (response) => {
         if (response.ok) {

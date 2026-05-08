@@ -18,7 +18,7 @@ describe(Button, () => {
         as: "a",
         children: "Go here",
         href: "/about",
-        type: "button",
+        type: "button"
       });
       return c.html(result as never);
     });
@@ -32,7 +32,7 @@ describe(Button, () => {
 
   it("applies custom className", async () => {
     const html = String(
-      await Button({ children: "x", className: "my-btn", type: "submit" }),
+      await Button({ children: "x", className: "my-btn", type: "submit" })
     );
 
     expect(html).toContain("my-btn");
@@ -40,7 +40,7 @@ describe(Button, () => {
 
   it("applies id attribute", async () => {
     const html = String(
-      await Button({ children: "x", id: "my-id", type: "reset" }),
+      await Button({ children: "x", id: "my-id", type: "reset" })
     );
 
     expect(html).toContain('id="my-id"');
@@ -52,7 +52,7 @@ describe(Button, () => {
       const result = await Button({
         as: "a",
         children: "Link",
-        type: "button",
+        type: "button"
       });
       return c.html(result as never);
     });

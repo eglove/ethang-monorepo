@@ -15,22 +15,22 @@ const MOCK_NEWS_ITEM: NewsAndEvents = [
     date: "2099-12-31",
     description: {
       _type: "block",
-      children: [] as PortableTextSpan[],
+      children: [] as PortableTextSpan[]
     },
-    title: "Test News Item",
-  },
+    title: "Test News Item"
+  }
 ];
 
 const mockNewsPage = async (page: Page, items: NewsAndEvents) => {
   await page.route("**/news", async (route) => {
     const response = await page.request.post(NEWS_PREVIEW_URL, {
       data: items,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" }
     });
     await route.fulfill({
       body: await response.text(),
       contentType: "text/html",
-      status: 200,
+      status: 200
     });
   });
 };

@@ -4,7 +4,7 @@ type ArrowUpRightSvgProperties = {
 };
 
 export const ArrowUpRightSvg = async (
-  properties: ArrowUpRightSvgProperties,
+  properties: ArrowUpRightSvgProperties
 ) => {
   return (
     <svg

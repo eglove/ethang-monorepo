@@ -21,7 +21,7 @@ test.describe("404 page — keyboard user", () => {
       const homeNavLink = page.getByRole("link", { name: "Home" });
       await homeNavLink.focus();
       await expect.soft(homeNavLink).toBeFocused();
-    },
+    }
   );
 
   test(
@@ -35,6 +35,6 @@ test.describe("404 page — keyboard user", () => {
       const homeNavLink = page.getByRole("link", { name: "Home" });
       await homeNavLink.focus();
       await expect.soft(homeNavLink).toBeFocused();
-    },
+    }
   );
 });

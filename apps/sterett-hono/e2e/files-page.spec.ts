@@ -6,7 +6,7 @@ test.describe("files Page", () => {
     await assertTitleAndNavigation(
       page,
       "/files",
-      "Sterett Creek Village Trustee | Files",
+      "Sterett Creek Village Trustee | Files"
     );
     await assertHeading(page, "Files");
 

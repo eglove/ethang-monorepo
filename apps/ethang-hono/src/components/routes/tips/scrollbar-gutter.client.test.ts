@@ -13,10 +13,10 @@ describe("scrollbar-gutter.client.ts", () => {
 
     const button = document.querySelector("button");
     const withContainer = document.querySelector(
-      "#scrollbar-gutter-with-example",
+      "#scrollbar-gutter-with-example"
     );
     const withoutContainer = document.querySelector(
-      "#scrollbar-gutter-without-example",
+      "#scrollbar-gutter-without-example"
     );
 
     button?.click();

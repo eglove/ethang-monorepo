@@ -7,12 +7,12 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
     sanityImage: {
       image: () => {
         return {};
-      },
+      }
     },
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
@@ -31,7 +31,7 @@ const makeEvent = (id: string, title: string): CalendarEventRecord => {
     description: [],
     endsAt: "2024-06-15T15:00:00.000Z",
     startsAt: "2024-06-15T13:00:00.000Z",
-    title,
+    title
   };
 };
 
@@ -41,7 +41,7 @@ describe("weekView", () => {
     const html = await renderCalendarWeekView(
       weekDays,
       new Map(),
-      DATE_JUNE_15,
+      DATE_JUNE_15
     );
 
     // Desktop headers
@@ -61,7 +61,7 @@ describe("weekView", () => {
     const html = await renderCalendarWeekView(
       weekDays,
       new Map(),
-      DATE_JUNE_15,
+      DATE_JUNE_15
     );
 
     expect(html).toContain("bg-white/10");
@@ -70,12 +70,12 @@ describe("weekView", () => {
   it("renders event title in day column", async () => {
     const weekDays = getWeekDays(DATE_JUNE_15);
     const eventsByDate = new Map<string, CalendarEventRecord[]>([
-      [DATE_JUNE_15, [makeEvent("evt-1", "Team Standup")]],
+      [DATE_JUNE_15, [makeEvent("evt-1", "Team Standup")]]
     ]);
     const html = await renderCalendarWeekView(
       weekDays,
       eventsByDate,
-      DATE_JUNE_01,
+      DATE_JUNE_01
     );
 
     expect(html).toContain("Team Standup");
@@ -86,7 +86,7 @@ describe("weekView", () => {
     const html = await renderCalendarWeekView(
       weekDays,
       new Map(),
-      DATE_JUNE_01,
+      DATE_JUNE_01
     );
 
     expect(html).toContain("No events");
@@ -97,7 +97,7 @@ describe("weekView", () => {
     const html = await renderCalendarWeekView(
       weekDays,
       new Map(),
-      DATE_JUNE_15,
+      DATE_JUNE_15
     );
 
     expect(html).toContain("Today");
@@ -109,15 +109,15 @@ describe("weekView", () => {
       makeEvent("e1", "Event 1"),
       makeEvent("e2", "Event 2"),
       makeEvent("e3", "Event 3"),
-      makeEvent("e4", "Event 4"),
+      makeEvent("e4", "Event 4")
     ];
     const eventsByDate = new Map<string, CalendarEventRecord[]>([
-      [DATE_JUNE_15, events],
+      [DATE_JUNE_15, events]
     ]);
     const html = await renderCalendarWeekView(
       weekDays,
       eventsByDate,
-      DATE_JUNE_01,
+      DATE_JUNE_01
     );
 
     expect(html).toContain("+1 more");
@@ -128,7 +128,7 @@ describe("weekView", () => {
     const html = await renderCalendarWeekView(
       weekDays,
       new Map(),
-      DATE_JUNE_01,
+      DATE_JUNE_01
     );
 
     expect(html).toContain("view=day");

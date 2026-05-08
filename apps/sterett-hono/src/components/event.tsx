@@ -1,7 +1,7 @@
 import {
   type CalendarEventReturn,
   eventRangeFormat,
-  getRelativeDate,
+  getRelativeDate
 } from "../sanity/get-news-and-events.ts";
 import { PortableText } from "./portable-text.tsx";
 

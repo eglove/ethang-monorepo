@@ -10,5 +10,5 @@ export const test = base.extend<{ axePage: Page }>({
     if ("about:blank" === page.url()) return;
     const results = await new AxeBuilder({ page }).exclude("iframe").analyze();
     expect(results.violations).toEqual([]);
-  },
+  }
 });

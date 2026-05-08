@@ -10,7 +10,7 @@ const makeCourse = (overrides = {}) => {
     author: faker.person.fullName(),
     name: faker.lorem.words(2),
     url: faker.internet.url(),
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -22,7 +22,7 @@ const makeLearningPath = (courses = [makeCourse()], overrides = {}) => {
     name: faker.company.name(),
     swebokFocus: faker.lorem.word(),
     url: faker.internet.url(),
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -57,7 +57,7 @@ describe(coursesText, () => {
     const course = makeCourse({
       author: "Jane Smith",
       name: "Advanced TypeScript",
-      url: "https://ts-course.example.com",
+      url: "https://ts-course.example.com"
     });
     coursePathData.learningPaths = [makeLearningPath([course])];
 
@@ -103,7 +103,7 @@ describe(coursesText, () => {
     const course2 = makeCourse({ name: "Course Two" });
     coursePathData.learningPaths = [
       makeLearningPath([course1]),
-      makeLearningPath([course2]),
+      makeLearningPath([course2])
     ];
 
     const result = coursesText();

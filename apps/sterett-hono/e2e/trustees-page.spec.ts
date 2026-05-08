@@ -9,7 +9,7 @@ test.describe("trustees Page", () => {
     await assertTitleAndNavigation(
       page,
       "/trustees",
-      "Sterett Creek Village Trustee | Trustees",
+      "Sterett Creek Village Trustee | Trustees"
     );
     await assertHeading(page, "Trustees");
 

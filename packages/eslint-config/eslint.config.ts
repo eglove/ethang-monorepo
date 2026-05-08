@@ -5,6 +5,7 @@ import vitestConfig from "./src/config.vitest.js";
 
 export default defineConfig(
   globalIgnores([
+    "tsconfig.json",
     "dist",
     "coverage",
     "src/README.md",

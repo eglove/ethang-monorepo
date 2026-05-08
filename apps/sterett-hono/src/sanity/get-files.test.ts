@@ -6,9 +6,9 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
   return {
     NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
@@ -22,7 +22,7 @@ const makeFile = (id: string, category: string) => {
     category,
     date: "2024-01-01",
     file: { asset: { url: `https://example.com/${id}.pdf` } },
-    title: `File ${id}`,
+    title: `File ${id}`
   };
 };
 
@@ -32,7 +32,7 @@ describe(getFiles, () => {
     const generalCovenant = [
       makeFile("1", "Covenant"),
       makeFile("2", "General"),
-      makeFile("3", "Covenant"),
+      makeFile("3", "Covenant")
     ];
     const meetingMinutes = [makeFile("4", "Meeting Minute")];
 
@@ -65,7 +65,7 @@ describe(getFiles, () => {
     vi.clearAllMocks();
     const generalCovenant = [
       makeFile("c1", "Covenant"),
-      makeFile("c2", "Covenant"),
+      makeFile("c2", "Covenant")
     ];
     vi.mocked(sterettSanityClient.fetch)
       // @ts-expect-error for test
@@ -78,7 +78,7 @@ describe(getFiles, () => {
     expect(
       every(result.covenants, (f) => {
         return "Covenant" === f.category;
-      }),
+      })
     ).toBe(true);
     expect(result.general).toHaveLength(0);
   });
@@ -87,7 +87,7 @@ describe(getFiles, () => {
     vi.clearAllMocks();
     const generalCovenant = [
       makeFile("g1", "General"),
-      makeFile("g2", "General"),
+      makeFile("g2", "General")
     ];
     vi.mocked(sterettSanityClient.fetch)
       // @ts-expect-error for test
@@ -100,7 +100,7 @@ describe(getFiles, () => {
     expect(
       every(result.general, (f) => {
         return "General" === f.category;
-      }),
+      })
     ).toBe(true);
     expect(result.covenants).toHaveLength(0);
   });

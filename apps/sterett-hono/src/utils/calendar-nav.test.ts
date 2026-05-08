@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildCrossViewDate,
   buildNavConfig,
-  buildPrefetchUrls,
+  buildPrefetchUrls
 } from "./calendar-nav.ts";
 
 const CHICAGO = "America/Chicago";
@@ -14,7 +14,7 @@ describe(buildCrossViewDate, () => {
   it("returns currentMonthDt for month view", () => {
     const currentMonthDt = DateTime.fromObject(
       { day: 1, month: 6, year: 2024 },
-      { zone: CHICAGO },
+      { zone: CHICAGO }
     );
     const result = buildCrossViewDate("month", JUNE_26_2026, currentMonthDt);
 
@@ -24,7 +24,7 @@ describe(buildCrossViewDate, () => {
   it("returns date-parsed DateTime for week view", () => {
     const currentMonthDt = DateTime.fromObject(
       { day: 1, month: 6, year: 2024 },
-      { zone: CHICAGO },
+      { zone: CHICAGO }
     );
     const result = buildCrossViewDate("week", JUNE_26_2026, currentMonthDt);
 
@@ -34,7 +34,7 @@ describe(buildCrossViewDate, () => {
   it("returns date-parsed DateTime for day view", () => {
     const currentMonthDt = DateTime.fromObject(
       { day: 1, month: 6, year: 2024 },
-      { zone: CHICAGO },
+      { zone: CHICAGO }
     );
     const result = buildCrossViewDate("day", JUNE_26_2026, currentMonthDt);
 
@@ -55,7 +55,7 @@ describe(buildNavConfig, () => {
     previousMonth: 5,
     previousYear: 2024,
     today: "2024-06-01",
-    year: 2024,
+    year: 2024
   };
 
   it("day view: heading uses formatDayHeading output format", () => {
@@ -81,7 +81,7 @@ describe(buildNavConfig, () => {
     const config = buildNavConfig({
       ...baseArguments,
       isToday: false,
-      view: "day",
+      view: "day"
     });
 
     expect(config.showToday).toBe(true);
@@ -91,7 +91,7 @@ describe(buildNavConfig, () => {
     const config = buildNavConfig({
       ...baseArguments,
       isToday: true,
-      view: "day",
+      view: "day"
     });
 
     expect(config.showToday).toBe(false);
@@ -113,7 +113,7 @@ describe(buildNavConfig, () => {
     const config = buildNavConfig({
       ...baseArguments,
       isCurrentMonth: true,
-      view: "month",
+      view: "month"
     });
 
     expect(config.showToday).toBe(false);
@@ -123,7 +123,7 @@ describe(buildNavConfig, () => {
     const config = buildNavConfig({
       ...baseArguments,
       isCurrentWeek: true,
-      view: "week",
+      view: "week"
     });
 
     expect(config.showToday).toBe(false);
@@ -136,12 +136,12 @@ describe(buildPrefetchUrls, () => {
     nextHref: "/calendar?view=month&year=2024&month=7",
     prevHref: "/calendar?view=month&year=2024&month=5",
     showToday: false,
-    todayHref: "/calendar?view=month&year=2024&month=6",
+    todayHref: "/calendar?view=month&year=2024&month=6"
   };
   const hrefs = {
     tabDayHref: "/calendar?view=day&date=2024-06-15",
     tabMonthHref: "/calendar?view=month&year=2024&month=6",
-    tabWeekHref: "/calendar?view=week&date=2024-06-15",
+    tabWeekHref: "/calendar?view=week&date=2024-06-15"
   };
 
   it("always includes prev and next hrefs", () => {

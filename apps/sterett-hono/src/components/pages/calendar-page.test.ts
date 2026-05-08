@@ -21,7 +21,7 @@ describe("calendarPage", () => {
       date: DATE,
       month: 6,
       view: "month",
-      year: 2024,
+      year: 2024
     });
 
     expect(html).toContain(CALENDAR_TITLE);
@@ -39,14 +39,14 @@ describe("calendarPage", () => {
         date: DATE,
         month: 6,
         view,
-        year: 2024,
+        year: 2024
       });
 
       expect(html).toContain(CALENDAR_TITLE);
       expect(html).toContain("Month");
       expect(html).toContain("Week");
       expect(html).toContain("Day");
-    },
+    }
   );
 
   it("renders the day view with events", async () => {
@@ -56,7 +56,7 @@ describe("calendarPage", () => {
       description: [],
       endsAt: "2024-06-17T15:00:00Z",
       startsAt: "2024-06-17T13:00:00Z",
-      title: "Test Event",
+      title: "Test Event"
     };
 
     // @ts-expect-error for test
@@ -66,7 +66,7 @@ describe("calendarPage", () => {
       date: DATE,
       month: 6,
       view: "day",
-      year: 2024,
+      year: 2024
     });
 
     expect(html).toContain(CALENDAR_TITLE);
@@ -81,7 +81,7 @@ describe("calendarPage", () => {
         description: [],
         endsAt: "2024-06-17T15:00:00Z",
         startsAt: "2024-06-17T13:00:00Z",
-        title: "Event 1",
+        title: "Event 1"
       },
       {
         _id: "evt-2",
@@ -89,8 +89,8 @@ describe("calendarPage", () => {
         description: [],
         endsAt: "2024-06-17T16:00:00Z",
         startsAt: "2024-06-17T14:00:00Z",
-        title: "Event 2",
-      },
+        title: "Event 2"
+      }
     ];
 
     // @ts-expect-error for test
@@ -100,7 +100,7 @@ describe("calendarPage", () => {
       date: DATE,
       month: 6,
       view: "day",
-      year: 2024,
+      year: 2024
     });
 
     expect(html).toContain("Event 1");

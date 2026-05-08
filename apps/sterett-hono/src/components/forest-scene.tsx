@@ -18,27 +18,23 @@ const FRONT_HEIGHTS = [105, 132, 110, 140, 96, 126, 114, 136, 105, 128];
 const SPACING = 68;
 const COUNT = 22; // covers 1440px
 
-const backPaths = Array.from({ length: COUNT }, (_, index) =>
-  {
-    return tree(
-      34 + index * SPACING,
-      173,
-      // @ts-expect-error it's ok
-      BACK_HEIGHTS[index % BACK_HEIGHTS.length],
-    );
-  },
-).join(" ");
+const backPaths = Array.from({ length: COUNT }, (_, index) => {
+  return tree(
+    34 + index * SPACING,
+    173,
+    // @ts-expect-error it's ok
+    BACK_HEIGHTS[index % BACK_HEIGHTS.length]
+  );
+}).join(" ");
 
-const frontPaths = Array.from({ length: COUNT }, (_, index) =>
-  {
-    return tree(
-      index * SPACING,
-      178,
-      // @ts-expect-error it's ok
-      FRONT_HEIGHTS[index % FRONT_HEIGHTS.length],
-    );
-  },
-).join(" ");
+const frontPaths = Array.from({ length: COUNT }, (_, index) => {
+  return tree(
+    index * SPACING,
+    178,
+    // @ts-expect-error it's ok
+    FRONT_HEIGHTS[index % FRONT_HEIGHTS.length]
+  );
+}).join(" ");
 
 const forestSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 220" width="100%" height="220" preserveAspectRatio="none">

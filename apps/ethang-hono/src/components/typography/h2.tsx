@@ -11,7 +11,7 @@ export const H2 = async (properties: H2Properties) => {
     <h2
       class={twMerge(
         "scroll-m-20 border-b border-slate-600 pb-2 text-3xl font-semibold tracking-tight text-slate-100 font-heading wrap-break-word mt-4",
-        properties.className,
+        properties.className
       )}
     >
       {properties.children}

@@ -11,7 +11,7 @@ const DAY_HEADERS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export const MonthView = async ({
   eventsByDate,
   today,
-  weeks,
+  weeks
 }: {
   eventsByDate: Map<string, CalendarEventRecord[]>;
   today: string;
@@ -44,14 +44,14 @@ export const MonthView = async ({
                 class={twMerge(
                   "min-h-16 border border-white/5 p-1",
                   !cell.current && "opacity-30",
-                  isToday && "bg-white/10",
+                  isToday && "bg-white/10"
                 )}
               >
                 <span
                   class={twMerge(
                     "text-xs text-white/60",
                     isToday &&
-                      "inline-flex h-5 w-5 items-center justify-center rounded-full bg-white font-bold text-lake-deep",
+                      "inline-flex h-5 w-5 items-center justify-center rounded-full bg-white font-bold text-lake-deep"
                   )}
                 >
                   {cell.day}

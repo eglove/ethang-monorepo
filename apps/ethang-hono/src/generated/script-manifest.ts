@@ -18,5 +18,5 @@ export const scriptManifest: Record<ScriptId, string> = {
     "/scripts/components/navigation/navigation.client.js",
   "components/routes/sign-in": "/scripts/components/routes/sign-in.client.js",
   "components/routes/tips/scrollbar-gutter":
-    "/scripts/components/routes/tips/scrollbar-gutter.client.js",
+    "/scripts/components/routes/tips/scrollbar-gutter.client.js"
 };
