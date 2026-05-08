@@ -1,6 +1,0 @@
-{
-  "compilerOptions": {
-    "types": ["@cloudflare/workers-types", "vitest/globals"]
-  },
-  "extends": ["../../packages/tsconfig/tsconfig.base.json"]
-}
