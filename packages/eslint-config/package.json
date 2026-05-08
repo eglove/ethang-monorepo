@@ -64,7 +64,7 @@
   },
   "scripts": {
     "build": "bun build.ts",
-    "lint": "eslint . --fix --cache --ignore-pattern '!src/*.js' && pnpm tsc --noEmit",
+    "lint": "pnpm build && eslint . --fix --cache --ignore-pattern '!src/*.js' && pnpm tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage"
   },
