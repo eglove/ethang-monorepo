@@ -9,14 +9,14 @@ export const courseType = defineType({
       type: "string",
       validation: (rule) => {
         return rule.required();
-      },
+      }
     }),
     defineField({
       name: "author",
       type: "string",
       validation: (rule) => {
         return rule.required();
-      },
+      }
     }),
     defineField({
       name: "url",
@@ -24,10 +24,10 @@ export const courseType = defineType({
       type: "url",
       validation: (rule) => {
         return isUrlUnique(rule, true, "course");
-      },
-    }),
+      }
+    })
   ],
   name: "course",
   title: "Course",
-  type: "document",
+  type: "document"
 });

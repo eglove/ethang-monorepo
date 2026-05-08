@@ -23,6 +23,6 @@ export const useAsync = <T, E>(callback: () => Promise<T>) => {
   return {
     error,
     isLoading,
-    result,
+    result
   };
 };

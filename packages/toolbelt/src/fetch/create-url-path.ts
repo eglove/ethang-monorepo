@@ -16,7 +16,7 @@ export type ParseUrlParameters<Url> =
 export const createUrlPath = <T extends string>(
   path: T,
   parameters: ParseUrlParameters<T>,
-  parametersSchema?: ZodObject,
+  parametersSchema?: ZodObject
 ): Error | string | ZodError<typeof parametersSchema> => {
   let url = path;
 

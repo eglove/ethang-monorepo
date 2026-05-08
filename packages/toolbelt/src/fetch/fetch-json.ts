@@ -5,7 +5,7 @@ import { parseFetchJson } from "./json.ts";
 export const fetchJson = async <Z extends ZodObject>(
   input: Request | string | URL,
   schema: Z,
-  init?: RequestInit,
+  init?: RequestInit
 ) => {
   const response = await globalThis.fetch(input, init);
   const json = await parseFetchJson(response, schema);

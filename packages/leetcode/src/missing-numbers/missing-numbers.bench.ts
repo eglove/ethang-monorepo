@@ -4,7 +4,7 @@ import {
   missingNumberBitwise,
   missingNumbers,
   missingNumbersMathTrick,
-  missingNumbersSet,
+  missingNumbersSet
 } from "./missing-numbers.js";
 
 const data = Array.from({ length: 100_000 }, (_, index) => {

@@ -6,7 +6,7 @@ import { attemptAsync } from "../functional/attempt-async.js";
 
 export const parseFetchJson = async <Z extends ZodObject>(
   value: Request | Response,
-  schema: Z,
+  schema: Z
 ): Promise<Error | z.output<Z> | ZodError<Z>> => {
   const unparsed = await attemptAsync(async () => {
     return value.json();

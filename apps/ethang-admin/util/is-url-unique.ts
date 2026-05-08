@@ -8,7 +8,7 @@ import split from "lodash/split.js";
 export const isUrlUnique = (
   rule: UrlRule,
   isRequired: boolean,
-  documentType: string,
+  documentType: string
 ) => {
   return rule.custom(async (value, context) => {
     if (isNil(value) || "" === value) {
@@ -28,14 +28,14 @@ export const isUrlUnique = (
     const parameters = {
       id,
       type: documentType,
-      url: value,
+      url: value
     };
 
     const query = `*[_type == $type && url == $url && _id != $id && !(_id in path('drafts.**'))][0]`;
 
     const result = await client.fetch<{ _id: string; name: string }>(
       query,
-      parameters,
+      parameters
     );
     return isNil(result) ? true : `URL already used by ${result.name}`;
   });

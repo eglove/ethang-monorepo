@@ -5,7 +5,7 @@ import isNil from "lodash/isNil.js";
 
 export const lastModifiedMiddleware: MiddlewareHandler = async (
   context,
-  next,
+  next
 ) => {
   await next();
   // c.res.clone() is safe here: clone() creates a new Response that shares the
@@ -38,6 +38,6 @@ export const lastModifiedMiddleware: MiddlewareHandler = async (
   context.res = new Response(context.res.body, {
     headers,
     status: context.res.status,
-    statusText: context.res.statusText,
+    statusText: context.res.statusText
   });
 };

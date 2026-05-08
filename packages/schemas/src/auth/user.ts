@@ -13,18 +13,18 @@ export const userSchema = z.object({
   password: passwordSchema,
   role: z.string().trim().nullable(),
   updatedAt: z.string().trim(),
-  username: z.string().trim(),
+  username: z.string().trim()
 });
 
 export const signUpSchema = z.object({
   email: z.email().trim(),
   password: passwordSchema,
-  username: z.string().trim().optional(),
+  username: z.string().trim().optional()
 });
 
 export const signInSchema = z.object({
   email: z.email().trim(),
-  password: passwordSchema,
+  password: passwordSchema
 });
 
 export type SignInSchema = z.infer<typeof signInSchema>;

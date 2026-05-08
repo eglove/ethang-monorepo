@@ -8,7 +8,7 @@ describe("findClosestValueInBst", () => {
     const bst = new Tree(
       [10, 15, 22, 13, 14, 5, 5, 2, 1].toSorted((a, b) => {
         return a - b;
-      }),
+      })
     );
 
     expect(findClosestValueInBst(bst.root, 11)).toBe(14);

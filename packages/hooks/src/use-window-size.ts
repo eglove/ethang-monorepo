@@ -4,14 +4,14 @@ const isBrowser = "undefined" !== typeof globalThis;
 
 export const useWindowSize = (
   initialWidth = Number.POSITIVE_INFINITY,
-  initialHeight = Number.POSITIVE_INFINITY,
+  initialHeight = Number.POSITIVE_INFINITY
 ): {
   height: number;
   width: number;
 } => {
   const [state, setState] = useState({
     height: isBrowser ? globalThis.innerHeight : initialHeight,
-    width: isBrowser ? globalThis.innerWidth : initialWidth,
+    width: isBrowser ? globalThis.innerWidth : initialWidth
   });
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export const useWindowSize = (
     const handler = (): void => {
       setState({
         height: globalThis.innerHeight,
-        width: globalThis.innerWidth,
+        width: globalThis.innerWidth
       });
     };
 

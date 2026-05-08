@@ -19,12 +19,12 @@ const timeToMinutes = (time: string) => {
 
 const updateCalendar = (
   calendar: CalendarList<string>,
-  dailyBounds: CalendarPeriod<string>,
+  dailyBounds: CalendarPeriod<string>
 ): CalendarList<number> => {
   const updatedCalendar: CalendarList<string> = [
     ["0:00", get(dailyBounds, [0])],
     ...calendar,
-    [get(dailyBounds, [1]), "23:59"],
+    [get(dailyBounds, [1]), "23:59"]
   ];
 
   return map(updatedCalendar, (meeting) => {
@@ -34,7 +34,7 @@ const updateCalendar = (
 
 const mergeCalendars = (
   calendar1: CalendarList<number>,
-  calendar2: CalendarList<number>,
+  calendar2: CalendarList<number>
 ): CalendarList<number> => {
   const merged = [];
 
@@ -68,7 +68,7 @@ const mergeCalendars = (
 };
 
 const flattenCalendar = (
-  calendar: CalendarList<number>,
+  calendar: CalendarList<number>
 ): CalendarList<number> => {
   const flattened: CalendarList<number> = [[...get(calendar, [0])]];
 
@@ -82,7 +82,7 @@ const flattenCalendar = (
     if (previousEnd >= currentStart) {
       flattened[flattened.length - 1] = [
         previousStart,
-        Math.max(previousEnd, currentEnd),
+        Math.max(previousEnd, currentEnd)
       ];
     } else {
       flattened.push([...currentMeeting]);
@@ -104,7 +104,7 @@ const minutesToTime = (minutes: number) => {
 
 const getMatchingAvailabilities = (
   calendar: CalendarList<number>,
-  meetingDuration: number,
+  meetingDuration: number
 ) => {
   const matchingAvailabilities: CalendarList<number> = [];
 
@@ -127,7 +127,7 @@ export const calendarMatching = (
   dailyBounds1: CalendarPeriod<string>,
   calendar2: CalendarList<string>,
   dailyBounds2: CalendarPeriod<string>,
-  meetingDuration: number,
+  meetingDuration: number
 ) => {
   const updatedCalendar1 = updateCalendar(calendar1, dailyBounds1);
   const updatedCalendar2 = updateCalendar(calendar2, dailyBounds2);

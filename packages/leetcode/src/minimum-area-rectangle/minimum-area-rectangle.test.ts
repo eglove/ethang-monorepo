@@ -11,7 +11,7 @@ const points: [number, number][] = [
   [1, 2],
   [4, 5],
   [2, 5],
-  [-1, -2],
+  [-1, -2]
 ];
 
 describe("minimumAreaRectangle", () => {

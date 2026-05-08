@@ -16,7 +16,7 @@ export const useMediaQuery = (query: string) => {
       (event) => {
         setMatches(event.matches);
       },
-      { signal: controller.signal },
+      { signal: controller.signal }
     );
 
     return () => {

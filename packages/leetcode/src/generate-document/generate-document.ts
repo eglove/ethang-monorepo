@@ -7,14 +7,14 @@ export const generateDocument = (characters: string, document: string) => {
     split(characters, "").toSorted((a, b) => {
       return a.localeCompare(b);
     }),
-    "",
+    ""
   );
 
   const documentSorted = join(
     split(document, "").toSorted((a, b) => {
       return a.localeCompare(b);
     }),
-    "",
+    ""
   );
 
   return (

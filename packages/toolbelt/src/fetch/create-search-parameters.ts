@@ -11,7 +11,7 @@ type SearchParametersRecord = Record<
 
 export const createSearchParameters = <Z extends ZodObject>(
   searchParameters: SearchParametersRecord,
-  searchParametersSchema: ZodObject,
+  searchParametersSchema: ZodObject
 ): ReturnType<Z["safeParse"]>["error"] | URLSearchParams => {
   const result = searchParametersSchema.safeParse(searchParameters);
 

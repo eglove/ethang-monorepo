@@ -16,7 +16,7 @@ const closeFullScreen = (): void => {
 };
 
 export const useFullscreen = (
-  reference: RefObject<HTMLElement>,
+  reference: RefObject<HTMLElement>
 ): UseFullscreenReturn => {
   const initialState =
     "undefined" === typeof globalThis
@@ -40,6 +40,6 @@ export const useFullscreen = (
     closeFullScreen,
     fullScreen,
     openFullScreen,
-    toggle: fullScreen ? closeFullScreen : openFullScreen,
+    toggle: fullScreen ? closeFullScreen : openFullScreen
   };
 };

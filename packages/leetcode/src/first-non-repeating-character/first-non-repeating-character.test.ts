@@ -7,7 +7,7 @@ describe("firstNonRepeatingCharacter", () => {
     // cspell:disable-next-line
     ["abcdcaf", 1],
     // cspell:disable-next-line
-    ["faadabcbbebdf", 6],
+    ["faadabcbbebdf", 6]
   ])("should work", (string, expected) => {
     expect(firstNonRepeatingCharacter(string)).toBe(expected);
   });

@@ -25,7 +25,7 @@ const greatestCommonDivisor = (number1: number, number2: number) => {
 
 const getSlopeBetweenPoints = (
   point1: [number, number],
-  point2: [number, number],
+  point2: [number, number]
 ) => {
   const [x1, y1] = point1;
   const [x2, y2] = point2;
@@ -51,7 +51,7 @@ const getSlopeBetweenPoints = (
 
 const createHashTableKeyForRational = (
   numerator: number,
-  denominator: number,
+  denominator: number
 ) => {
   return `${numerator}:${denominator}`;
 };
@@ -79,13 +79,13 @@ export const lineThroughPoints = (points: [number, number][]) => {
     forEach(values(slopes), (value) => {
       currentMaxNumberOfPointsOnLine = Math.max(
         value,
-        currentMaxNumberOfPointsOnLine,
+        currentMaxNumberOfPointsOnLine
       );
     });
 
     maxNumbersOfPointsOnLine = Math.max(
       maxNumbersOfPointsOnLine,
-      currentMaxNumberOfPointsOnLine,
+      currentMaxNumberOfPointsOnLine
     );
   }
 

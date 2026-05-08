@@ -6,7 +6,7 @@ const testCases = [
   ["aa", "a", false],
   ["aa", "a*", true],
   ["ab", ".*", true],
-  ["aab", "c*a*b", true],
+  ["aab", "c*a*b", true]
 ] as const;
 
 describe("regularExpressionMatching", () => {

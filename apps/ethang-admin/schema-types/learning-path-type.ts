@@ -1,6 +1,6 @@
 import {
   orderRankField,
-  orderRankOrdering,
+  orderRankOrdering
 } from "@sanity/orderable-document-list";
 import { defineField, defineType } from "sanity";
 
@@ -13,7 +13,7 @@ export const learningPathType = defineType({
       type: "string",
       validation: (rule) => {
         return rule.required();
-      },
+      }
     }),
     defineField({
       name: "url",
@@ -21,7 +21,7 @@ export const learningPathType = defineType({
       type: "url",
       validation: (rule) => {
         return isUrlUnique(rule, false, "learningPath");
-      },
+      }
     }),
     defineField({
       name: "swebokFocus",
@@ -38,39 +38,39 @@ export const learningPathType = defineType({
           { title: "Software Configuration Management", value: "scm" },
           {
             title: "Software Engineering Operations",
-            value: "engineering-operations",
+            value: "engineering-operations"
           },
           { title: "Software Maintenance", value: "maintenance" },
           { title: "Software Quality", value: "quality" },
           { title: "Software Security", value: "security" },
           {
             title: "Software Engineering Models and Methods",
-            value: "models-methods",
+            value: "models-methods"
           },
           { title: "Software Engineering Process", value: "process" },
           { title: "Software Engineering Management", value: "management" },
           { title: "Software Engineering Economics", value: "economics" },
           {
             title: "Software Engineering Professional Practice",
-            value: "professional-practice",
+            value: "professional-practice"
           },
-          { title: "Certification", value: "certification" },
-        ],
+          { title: "Certification", value: "certification" }
+        ]
       },
       type: "string",
       validation: (rule) => {
         return rule.required();
-      },
+      }
     }),
     defineField({
       name: "courses",
       of: [{ to: [{ type: "course" }], type: "reference" }],
-      type: "array",
+      type: "array"
     }),
-    orderRankField({ type: "order" }),
+    orderRankField({ type: "order" })
   ],
   name: "learningPath",
   orderings: [orderRankOrdering],
   title: "Learning Path",
-  type: "document",
+  type: "document"
 });

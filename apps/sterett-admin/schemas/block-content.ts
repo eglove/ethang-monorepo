@@ -7,8 +7,8 @@ export default defineType({
       lists: [
         {
           title: "Bullet",
-          value: "bullet",
-        },
+          value: "bullet"
+        }
       ],
       marks: {
         annotations: [
@@ -17,53 +17,53 @@ export default defineType({
               {
                 name: "href",
                 title: "URL",
-                type: "url",
-              },
+                type: "url"
+              }
             ],
             name: "link",
             title: "URL",
-            type: "object",
-          },
+            type: "object"
+          }
         ],
         decorators: [
           {
             title: "Strong",
-            value: "strong",
+            value: "strong"
           },
           {
             title: "Emphasis",
-            value: "em",
-          },
-        ],
+            value: "em"
+          }
+        ]
       },
       styles: [
         {
           title: "Normal",
-          value: "normal",
+          value: "normal"
         },
         {
           title: "H1",
-          value: "h1",
+          value: "h1"
         },
         {
           title: "H2",
-          value: "h2",
+          value: "h2"
         },
         {
           title: "H3",
-          value: "h3",
+          value: "h3"
         },
         {
           title: "H4",
-          value: "h4",
+          value: "h4"
         },
         {
           title: "Quote",
-          value: "blockquote",
-        },
+          value: "blockquote"
+        }
       ],
       title: "Block",
-      type: "block",
+      type: "block"
     },
     {
       fields: [
@@ -76,14 +76,14 @@ export default defineType({
             return rule
               .required()
               .error(
-                "Alt Text is required for all images, to add click the three dots on the image, then click the pencil icon.",
+                "Alt Text is required for all images, to add click the three dots on the image, then click the pencil icon."
               );
-          },
-        },
+          }
+        }
       ],
-      type: "image",
-    },
+      type: "image"
+    }
   ],
   title: "Block Content",
-  type: "array",
+  type: "array"
 });

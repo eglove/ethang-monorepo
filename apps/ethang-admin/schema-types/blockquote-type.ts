@@ -5,25 +5,25 @@ export const blockquoteType = defineType({
     defineField({
       name: "sourceUrl",
       title: "Source URL",
-      type: "url",
+      type: "url"
     }),
     defineField({
       name: "source",
       title: "Source",
-      type: "string",
+      type: "string"
     }),
     defineField({
       name: "author",
       title: "Author",
-      type: "string",
+      type: "string"
     }),
     defineField({
       name: "quote",
       title: "Quote",
-      type: "text",
-    }),
+      type: "text"
+    })
   ],
   name: "blockquote",
   title: "Blockquote",
-  type: "object",
+  type: "object"
 });

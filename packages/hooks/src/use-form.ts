@@ -12,7 +12,7 @@ import {
   type SetStateAction,
   type SubmitEventHandler,
   useCallback,
-  useState,
+  useState
 } from "react";
 import { z, ZodError } from "zod";
 
@@ -43,19 +43,19 @@ export type UseFormReturn<StateType> = {
 
 const setAll = <ObjectType extends Record<string, unknown>>(
   object: ObjectType,
-  value?: unknown,
+  value?: unknown
 ): ObjectType => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   return Object.fromEntries(
     map(entries(object), ([key]) => {
       return [key, value];
-    }),
+    })
   ) as unknown as ObjectType;
 };
 
 export const useForm = <StateType extends Record<string, unknown>>(
   initialState: StateType,
-  properties?: UseFormProperties<StateType>,
+  properties?: UseFormProperties<StateType>
 ): UseFormReturn<StateType> => {
   const [formState, setFormState] = useState(() => {
     const defaultState: Record<string, unknown> = {};
@@ -107,13 +107,13 @@ export const useForm = <StateType extends Record<string, unknown>>(
       setFormState((_formState) => {
         return {
           ..._formState,
-          [name]: value,
+          [name]: value
         };
       });
 
       properties?.onChange?.(event);
     },
-    [properties],
+    [properties]
   );
 
   const validate = useCallback(() => {
@@ -158,7 +158,7 @@ export const useForm = <StateType extends Record<string, unknown>>(
         setFormError("");
       }
     },
-    [properties, validate],
+    [properties, validate]
   );
 
   const setValue = useCallback((key: keyof StateType) => {
@@ -166,7 +166,7 @@ export const useForm = <StateType extends Record<string, unknown>>(
       setFormState((previousState) => {
         return {
           ...previousState,
-          [key]: value,
+          [key]: value
         };
       });
     };
@@ -182,6 +182,6 @@ export const useForm = <StateType extends Record<string, unknown>>(
     setFormError,
     setFormState,
     setValue,
-    validate,
+    validate
   };
 };

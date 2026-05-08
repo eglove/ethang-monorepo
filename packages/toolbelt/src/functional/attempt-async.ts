@@ -1,7 +1,7 @@
 import isError from "lodash/isError.js";
 
 export const attemptAsync = async <
-  T extends (...parameters: Parameters<T>) => unknown,
+  T extends (...parameters: Parameters<T>) => unknown
 >(
   callback: T,
   ...parameters: Parameters<T>

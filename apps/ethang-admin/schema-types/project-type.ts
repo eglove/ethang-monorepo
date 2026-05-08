@@ -7,28 +7,28 @@ export const projectType = defineType({
       type: "string",
       validation: (rule) => {
         return rule.required();
-      },
+      }
     }),
     defineField({
       name: "publicUrl",
-      type: "url",
+      type: "url"
     }),
     defineField({
       name: "githubUrl",
       type: "url",
       validation: (rule) => {
         return rule.required();
-      },
+      }
     }),
     defineField({
       name: "techs",
       of: [
         {
           to: [{ type: "tech" }],
-          type: "reference",
-        },
+          type: "reference"
+        }
       ],
-      type: "array",
+      type: "array"
     }),
     defineField({
       name: "description",
@@ -36,10 +36,10 @@ export const projectType = defineType({
       type: "array",
       validation: (rule) => {
         return rule.required();
-      },
-    }),
+      }
+    })
   ],
   name: "project",
   title: "Project",
-  type: "document",
+  type: "document"
 });

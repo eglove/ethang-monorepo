@@ -12,7 +12,7 @@ export const useIsMobile = (mobileBreakPoint = 768) => {
   useEffect(() => {
     const controller = new AbortController();
     const mediaQueryList = globalThis.matchMedia(
-      `(max-width: ${mobileBreakPoint - 1}px)`,
+      `(max-width: ${mobileBreakPoint - 1}px)`
     );
 
     mediaQueryList.addEventListener(
@@ -20,7 +20,7 @@ export const useIsMobile = (mobileBreakPoint = 768) => {
       () => {
         setIsMobile(globalThis.window.innerWidth < mobileBreakPoint);
       },
-      { signal: controller.signal },
+      { signal: controller.signal }
     );
 
     return () => {

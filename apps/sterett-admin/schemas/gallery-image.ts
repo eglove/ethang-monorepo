@@ -10,7 +10,7 @@ export default defineType({
       type: "string",
       validation(rule: Rule): Rule {
         return rule.required();
-      },
+      }
     },
     {
       name: "image",
@@ -18,11 +18,11 @@ export default defineType({
       type: "image",
       validation(rule: Rule): Rule {
         return rule.required();
-      },
-    },
+      }
+    }
   ],
   icon: ImageIcon,
   name: "galleryImage",
   title: "Gallery Image",
-  type: "document",
+  type: "document"
 });
