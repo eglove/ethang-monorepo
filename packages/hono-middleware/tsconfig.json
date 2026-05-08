@@ -1,12 +1,3 @@
 {
-  "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "types": ["node"]
-  },
-  "exclude": ["./dist", "./coverage", "**/*.test.ts"],
-  "extends": ["../tsconfig/tsconfig.base.json"],
-  "include": ["src/**/*"]
+  "extends": ["../tsconfig/tsconfig.base.json"]
 }

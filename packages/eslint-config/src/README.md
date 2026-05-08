@@ -25,15 +25,15 @@
 
 ## Add Even More
 
-* 60 rules for **HTML**
+* 61 rules for **HTML**
 	* `import htmlConfig from "@ethang/eslint-config/config.html.js";`
-	* 60 rules from [@html-eslint/eslint-plugin](https://github.com/html-eslint/html-eslint)
+	* 61 rules from [@html-eslint/eslint-plugin](https://github.com/html-eslint/html-eslint)
 * 54 rules for **Astro**
 	* `import astroConfig from "@ethang/eslint-config/config.astro.js";`
 	* 54 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)
-* 176 rules for **React**
+* 168 rules for **React**
 	* `import reactConfig from "@ethang/eslint-config/config.react.js";`
-	* 147 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
+	* 139 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
 	* 29 rules from [eslint-plugin-react-hooks](https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks)
 * 18 rules for **Solid**
 	* `import solidConfig from "@ethang/eslint-config/config.solid.js";`
