@@ -16,7 +16,7 @@ describe("lodash setup", () => {
     expect(lodashRules["lodash/consistent-compose"]).toStrictEqual([2, "flow"]);
     expect(lodashRules["lodash/identity-shorthand"]).toStrictEqual([
       2,
-      "always",
+      "always"
     ]);
     expect(lodashRules["lodash/import-scope"]).toStrictEqual([2, "method"]);
   });
@@ -27,7 +27,7 @@ describe("lodash setup", () => {
     expect(
       every(ruleKeys, (key) => {
         return startsWith(key, "lodash/");
-      }),
+      })
     ).toBe(true);
   });
 });

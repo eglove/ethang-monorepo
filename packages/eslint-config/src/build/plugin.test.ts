@@ -6,7 +6,7 @@ const base = {
   files: "**/*.ts",
   name: "test-plugin",
   rules: {},
-  url: "https://example.com",
+  url: "https://example.com"
 };
 
 describe(Plugin, () => {
@@ -16,7 +16,7 @@ describe(Plugin, () => {
       importString: 'import foo from "foo";',
       order: 3,
       pluginName: "foo",
-      pluginValue: "foo",
+      pluginValue: "foo"
     });
 
     expect(plugin.name).toBe("test-plugin");
@@ -34,7 +34,7 @@ describe(Plugin, () => {
     it("counts only non-off rules", () => {
       const plugin = new Plugin({
         ...base,
-        rules: { "rule-a": "error", "rule-b": "warn", "rule-c": "off" },
+        rules: { "rule-a": "error", "rule-b": "warn", "rule-c": "off" }
       });
 
       expect(plugin.ruleCount).toBe(2);
@@ -43,7 +43,7 @@ describe(Plugin, () => {
     it("counts rules with array config as non-off", () => {
       const plugin = new Plugin({
         ...base,
-        rules: { "rule-a": ["error", { option: true }], "rule-b": "off" },
+        rules: { "rule-a": ["error", { option: true }], "rule-b": "off" }
       });
 
       expect(plugin.ruleCount).toBe(1);
@@ -52,7 +52,7 @@ describe(Plugin, () => {
     it("does not count array-config off rules", () => {
       const plugin = new Plugin({
         ...base,
-        rules: { "rule-a": ["off", { option: true }], "rule-b": "error" },
+        rules: { "rule-a": ["off", { option: true }], "rule-b": "error" }
       });
 
       expect(plugin.ruleCount).toBe(1);
@@ -61,7 +61,7 @@ describe(Plugin, () => {
     it("does not count numeric 0 (off) rules", () => {
       const plugin = new Plugin({
         ...base,
-        rules: { "rule-a": 0, "rule-b": 2 },
+        rules: { "rule-a": 0, "rule-b": 2 }
       });
 
       expect(plugin.ruleCount).toBe(1);
@@ -70,7 +70,7 @@ describe(Plugin, () => {
     it("counts numeric 1 and 2 severity rules", () => {
       const plugin = new Plugin({
         ...base,
-        rules: { "rule-a": 1, "rule-b": 2 },
+        rules: { "rule-a": 1, "rule-b": 2 }
       });
 
       expect(plugin.ruleCount).toBe(2);

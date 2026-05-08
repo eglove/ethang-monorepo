@@ -13,6 +13,7 @@
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "articles": {
+      "checkConstraints": {},
       "columns": {
         "content": {
           "autoincrement": false,
@@ -57,21 +58,20 @@
           "type": "text"
         }
       },
-      "checkConstraints": {},
       "compositePrimaryKeys": {},
       "foreignKeys": {
         "articles_feed_id_feeds_id_fk": {
-          "name": "articles_feed_id_feeds_id_fk",
           "columnsFrom": [
             "feed_id"
           ],
-          "tableFrom": "articles",
           "columnsTo": [
             "id"
           ],
-          "tableTo": "feeds",
+          "name": "articles_feed_id_feeds_id_fk",
           "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "tableFrom": "articles",
+          "tableTo": "feeds"
         }
       },
       "indexes": {
@@ -87,6 +87,7 @@
       "uniqueConstraints": {}
     },
     "feeds": {
+      "checkConstraints": {},
       "columns": {
         "description": {
           "autoincrement": false,
@@ -124,7 +125,6 @@
           "type": "text"
         }
       },
-      "checkConstraints": {},
       "compositePrimaryKeys": {},
       "foreignKeys": {},
       "indexes": {
@@ -140,6 +140,7 @@
       "uniqueConstraints": {}
     },
     "user_article_interactions": {
+      "checkConstraints": {},
       "columns": {
         "article_id": {
           "autoincrement": false,
@@ -172,21 +173,20 @@
           "type": "text"
         }
       },
-      "checkConstraints": {},
       "compositePrimaryKeys": {},
       "foreignKeys": {
         "user_article_interactions_article_id_articles_id_fk": {
-          "name": "user_article_interactions_article_id_articles_id_fk",
           "columnsFrom": [
             "article_id"
           ],
-          "tableFrom": "user_article_interactions",
           "columnsTo": [
             "id"
           ],
-          "tableTo": "articles",
+          "name": "user_article_interactions_article_id_articles_id_fk",
           "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "tableFrom": "user_article_interactions",
+          "tableTo": "articles"
         }
       },
       "indexes": {},
@@ -194,6 +194,7 @@
       "uniqueConstraints": {}
     },
     "user_subscriptions": {
+      "checkConstraints": {},
       "columns": {
         "category": {
           "autoincrement": false,
@@ -217,21 +218,20 @@
           "type": "text"
         }
       },
-      "checkConstraints": {},
       "compositePrimaryKeys": {},
       "foreignKeys": {
         "user_subscriptions_feed_id_feeds_id_fk": {
-          "name": "user_subscriptions_feed_id_feeds_id_fk",
           "columnsFrom": [
             "feed_id"
           ],
-          "tableFrom": "user_subscriptions",
           "columnsTo": [
             "id"
           ],
-          "tableTo": "feeds",
+          "name": "user_subscriptions_feed_id_feeds_id_fk",
           "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "tableFrom": "user_subscriptions",
+          "tableTo": "feeds"
         }
       },
       "indexes": {},

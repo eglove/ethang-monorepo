@@ -1,8 +1,0 @@
-{
-  "track_id": "hono-rss-service_20260428",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-04-28T00:00:00Z",
-  "updated_at": "2026-04-28T00:00:00Z",
-  "description": "Hono RSS service. Basic API for CRUD operations of RSS feeds, track subscriptions by user. Auth from existing auth service (`auth.ethang.dev`). Uses wrangler SQLite and Drizzle. Uses lodash and @ethang/store classes for OOP logic + atomic updates + subscriptions."
-}

@@ -1,9 +1,9 @@
-import { requireAuth } from '@ethang/hono-middleware';
+import {requireAuth} from "@ethang/hono-middleware/src/auth/require-auth";
 import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 
-import { createDatabaseClient } from '../db/client.js';
+import { createDatabaseClient } from '../db/client.js'; 
 import { userArticleInteractionsTable } from '../schema.js';
 
 export const articleInteractionsApi = new Hono<{ Bindings: { DB: D1Database }; Variables: { user: { id: string } } }>();

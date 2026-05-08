@@ -5,7 +5,7 @@ import { Plugin } from "../build/plugin.ts";
 import {
   type CustomRules,
   genRules,
-  getNonDeprecatedRules,
+  getNonDeprecatedRules
 } from "./gen-rules.ts";
 
 const ruleNames = keys(getNonDeprecatedRules(json.rules));
@@ -26,7 +26,7 @@ export const jsonPlugin = new Plugin({
   pluginName: "json",
   pluginValue: "json",
   rules: jsonRules,
-  url: eslintJsonUrl,
+  url: eslintJsonUrl
 });
 
 export const jsoncPlugin = new Plugin({
@@ -38,7 +38,7 @@ export const jsoncPlugin = new Plugin({
   pluginName: "json",
   pluginValue: "json",
   rules: jsonRules,
-  url: eslintJsonUrl,
+  url: eslintJsonUrl
 });
 
 export const json5Plugin = new Plugin({
@@ -50,5 +50,5 @@ export const json5Plugin = new Plugin({
   pluginName: "json",
   pluginValue: "json",
   rules: jsonRules,
-  url: eslintJsonUrl,
+  url: eslintJsonUrl
 });

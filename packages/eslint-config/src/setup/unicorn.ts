@@ -8,32 +8,32 @@ const ruleNames = keys(getNonDeprecatedRules(unicorn.rules));
 const customRules = [
   {
     name: "empty-brace-spaces",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "explicit-length-check",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "no-keyword-prefix",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "no-nested-ternary",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "no-null",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "number-literal-case",
-    rule: "off",
+    rule: "off"
   },
   {
     name: "template-indent",
-    rule: "off",
-  },
+    rule: "off"
+  }
 ];
 
 export const unicornRules = genRules(ruleNames, customRules, "unicorn");
@@ -46,5 +46,5 @@ export const unicornPlugin = new Plugin({
   pluginName: "unicorn",
   pluginValue: "unicorn",
   rules: unicornRules,
-  url: "https://github.com/sindresorhus/eslint-plugin-unicorn",
+  url: "https://github.com/sindresorhus/eslint-plugin-unicorn"
 });

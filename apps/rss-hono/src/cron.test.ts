@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
 import Parser from 'rss-parser';
+import { describe, expect, it, vi } from 'vitest';
 
 import { runCron } from './cron.js';
 import { createDatabaseClient } from './db/client.js';
@@ -34,27 +34,27 @@ describe('runCron', () => {
     const mockValues = vi.fn();
 
     (createDatabaseClient as ReturnType<typeof vi.fn>).mockReturnValue({
-      select: mockSelect,
       insert: mockInsert,
+      select: mockSelect,
     });
 
-    mockSelect.mockImplementation(() => ({ from: mockFrom }));
-    mockFrom.mockImplementation(() => ({ where: mockWhere }));
-    mockWhere.mockImplementation(() => ({ get: mockGet }));
+    mockSelect.mockImplementation(() => {return { from: mockFrom }});
+    mockFrom.mockImplementation(() => {return { where: mockWhere }});
+    mockWhere.mockImplementation(() => {return { get: mockGet }});
 
     mockFrom.mockReturnValueOnce(mockFeeds); // for fetching feeds
-    mockGet.mockReturnValueOnce(undefined); // No existing article
+    mockGet.mockReturnValueOnce(); // No existing article
     mockInsert.mockReturnValueOnce({ values: mockValues });
-    mockValues.mockResolvedValueOnce(undefined);
+    mockValues.mockResolvedValueOnce();
 
     // Mock rss-parser
     vi.mocked(Parser.prototype.parseURL).mockResolvedValue({
       items: [
         {
-          title: 'Article 1',
-          link: 'http://test.com/article1',
           contentSnippet: 'Article 1 content',
+          link: 'http://test.com/article1',
           pubDate: '2026-04-28T12:00:00Z',
+          title: 'Article 1',
         },
       ],
     } as any);
@@ -94,25 +94,25 @@ describe('runCron', () => {
     const mockValues = vi.fn();
 
     (createDatabaseClient as ReturnType<typeof vi.fn>).mockReturnValue({
-      select: mockSelect,
       insert: mockInsert,
+      select: mockSelect,
     });
 
-    mockSelect.mockImplementation(() => ({ from: mockFrom }));
-    mockFrom.mockImplementation(() => ({ where: mockWhere }));
-    mockWhere.mockImplementation(() => ({ get: mockGet }));
+    mockSelect.mockImplementation(() => {return { from: mockFrom }});
+    mockFrom.mockImplementation(() => {return { where: mockWhere }});
+    mockWhere.mockImplementation(() => {return { get: mockGet }});
 
     mockFrom.mockReturnValueOnce(mockFeeds); // for fetching feeds
-    mockGet.mockReturnValueOnce({ id: 'existing', feedId: 'feed1', url: 'http://test.com/article1', title: 'Article 1' }); // Existing article
+    mockGet.mockReturnValueOnce({ feedId: 'feed1', id: 'existing', title: 'Article 1', url: 'http://test.com/article1' }); // Existing article
 
     // Mock rss-parser
     vi.mocked(Parser.prototype.parseURL).mockResolvedValue({
       items: [
         {
-          title: 'Article 1',
-          link: 'http://test.com/article1',
           contentSnippet: 'Article 1 content',
+          link: 'http://test.com/article1',
           pubDate: '2026-04-28T12:00:00Z',
+          title: 'Article 1',
         },
       ],
     } as any);

@@ -2,15 +2,6 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { articleInteractionsApi } from './article-interactions.js';
 
-vi.mock('@ethang/hono-middleware', () => {
-  return {
-    requireAuth: () => {return async (c: { set: (k: string, v: unknown) => void }, next: () => Promise<void>) => {
-      c.set('user', { id: 'test-user-id' });
-      await next();
-    }},
-  };
-});
-
 const mockDatabase = {
   from: vi.fn().mockReturnThis(),
   get: vi.fn(),
@@ -30,14 +21,16 @@ vi.mock('../db/client.js', () => {
   };
 });
 
-const environment = { DB: {} as unknown as D1Database };
+const environment = { DB: {} as Partial<D1Database> };
+const LOCALHOST_ARTICLE_ID = 'http://localhost/article-123';
+const ARTICLE_ID_123 = 'article-123';
 
 describe('Article Interactions API', () => {
   it('should create a new interaction if it does not exist', async () => {
     mockDatabase.get.mockResolvedValueOnce();
     mockDatabase.values.mockResolvedValueOnce();
 
-    const request = new Request('http://localhost/article-123', {
+    const request = new Request(LOCALHOST_ARTICLE_ID, {
       body: JSON.stringify({
         isRead: true,
       }),
@@ -52,10 +45,10 @@ describe('Article Interactions API', () => {
   });
 
   it('should update an existing interaction', async () => {
-    mockDatabase.get.mockResolvedValueOnce({ articleId: 'article-123', isRead: false, isSaved: false, userId: 'test-user-id' });
+    mockDatabase.get.mockResolvedValueOnce({ articleId: ARTICLE_ID_123, isRead: false, isSaved: false, userId: 'test-user-id' });
     mockDatabase.set.mockReturnThis();
 
-    const request = new Request('http://localhost/article-123', {
+    const request = new Request(LOCALHOST_ARTICLE_ID, {
       body: JSON.stringify({
         isSaved: true,
       }),

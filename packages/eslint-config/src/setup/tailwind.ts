@@ -7,7 +7,7 @@ import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 const ruleNames = keys(getNonDeprecatedRules(tailwind.rules));
 const customRules = [
   { name: "no-custom-classname", rule: "off" },
-  { name: "no-arbitrary-value", rule: "off" },
+  { name: "no-arbitrary-value", rule: "off" }
 ];
 
 export const tailwindRules = genRules(ruleNames, customRules, "tailwind");
@@ -22,5 +22,5 @@ export const tailwindPlugin = new Plugin({
   pluginName: "tailwind",
   pluginValue: "fixupPluginRules(tailwind)",
   rules: tailwindRules,
-  url: "https://github.com/francoismassart/eslint-plugin-tailwindcss",
+  url: "https://github.com/francoismassart/eslint-plugin-tailwindcss"
 });

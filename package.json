@@ -13,9 +13,9 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "@parcel/watcher",
+      "@swc/core",
       "bun",
       "esbuild",
-      "protobufjs",
       "sharp",
       "workerd"
     ]

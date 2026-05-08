@@ -11,29 +11,29 @@ const templateRuleNames = keys(getNonDeprecatedRules(angularTemplate.rules));
 const customTsRules = [
   {
     name: "directive-selector",
-    rule: ["error", { prefix: "app", style: "camelCase", type: "attribute" }],
+    rule: ["error", { prefix: "app", style: "camelCase", type: "attribute" }]
   },
   {
     name: "component-selector",
-    rule: ["error", { prefix: "app", style: "kebab-case", type: "element" }],
-  },
+    rule: ["error", { prefix: "app", style: "kebab-case", type: "element" }]
+  }
 ];
 
 const customTemplateRules = [
   { name: "i18n", rule: "off" },
   { name: "no-call-expression", rule: "off" },
-  { name: "prefer-ngsrc", rule: "warn" },
+  { name: "prefer-ngsrc", rule: "warn" }
 ];
 
 export const angularTsRules = genRules(
   tsRuleNames,
   customTsRules,
-  "@angular-eslint",
+  "@angular-eslint"
 );
 export const angularTemplateRules = genRules(
   templateRuleNames,
   customTemplateRules,
-  "@angular-eslint/template",
+  "@angular-eslint/template"
 );
 
 export const angularTsPlugin = new Plugin({
@@ -45,7 +45,7 @@ export const angularTsPlugin = new Plugin({
   pluginValue: "angularTS",
   processor: "angular.processInlineTemplates",
   rules: angularTsRules,
-  url: "https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md",
+  url: "https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md"
 });
 
 export const angularTemplatePlugin = new Plugin({
@@ -57,5 +57,5 @@ export const angularTemplatePlugin = new Plugin({
   pluginName: "@angular-eslint/template",
   pluginValue: "angularTemplate",
   rules: angularTemplateRules,
-  url: "https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md",
+  url: "https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md"
 });

@@ -3,15 +3,6 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { subscriptionsApi } from './subscriptions.js';
 
-vi.mock('@ethang/hono-middleware', () => {
-  return {
-    requireAuth: () => {return async (c: { set: (k: string, v: unknown) => void }, next: () => Promise<void>) => {
-      c.set('user', { id: 'test-user-id' });
-      await next();
-    }},
-  };
-});
-
 const mockDatabase = {
   delete: vi.fn().mockReturnThis(),
   from: vi.fn().mockReturnThis(),
@@ -35,6 +26,7 @@ vi.mock('../db/client.js', () => {
 const environment = { DB: {} as unknown as D1Database };
 
 const LOCALHOST_ROOT = 'http://localhost/';
+const FEED_ID_123 = 'feed-123';
 
 describe('Subscriptions API', () => {
   it('should list user subscriptions', async () => {
@@ -50,7 +42,7 @@ describe('Subscriptions API', () => {
     const request = new Request(LOCALHOST_ROOT, {
       body: JSON.stringify({
         category: 'Tech',
-        feedId: 'feed-123',
+        feedId: FEED_ID_123,
       }),
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -58,14 +50,14 @@ describe('Subscriptions API', () => {
     const response = await subscriptionsApi.fetch(request, environment);
     expect(response.status).toBe(201);
     const body = await response.json();
-    expect(body.feedId).toBe('feed-123');
+    expect(body.feedId).toBe(FEED_ID_123);
     expect(body.userId).toBe('test-user-id');
     expect(body.category).toBe('Tech');
   });
 
   it('should update a subscription category', async () => {
-    mockDatabase.get.mockResolvedValueOnce({ category: 'News', feedId: 'feed-123', userId: 'test-user-id' });
-    const updateRequest = new Request('http://localhost/feed-123', {
+    mockDatabase.get.mockResolvedValueOnce({ category: 'News', feedId: FEED_ID_123, userId: 'test-user-id' });
+    const updateRequest = new Request(`${LOCALHOST_ROOT}${FEED_ID_123}`, {
       body: JSON.stringify({
         category: 'News',
       }),
@@ -80,7 +72,7 @@ describe('Subscriptions API', () => {
 
   it('should unsubscribe from a feed', async () => {
     mockDatabase.where.mockResolvedValueOnce();
-    const deleteRequest = new Request('http://localhost/feed-123', {
+    const deleteRequest = new Request(`${LOCALHOST_ROOT}${FEED_ID_123}`, {
       method: 'DELETE',
     });
     const deleteResponse = await subscriptionsApi.fetch(deleteRequest, environment);

@@ -17,5 +17,5 @@ export const storybookPlugin = new Plugin({
   pluginName: "storybook",
   pluginValue: "storybook",
   rules: storybookRules,
-  url: "https://github.com/storybookjs/eslint-plugin-storybook",
+  url: "https://github.com/storybookjs/eslint-plugin-storybook"
 });

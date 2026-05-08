@@ -5,7 +5,7 @@ import { Plugin } from "../build/plugin.ts";
 import {
   createOffRules,
   genRules,
-  getNonDeprecatedRules,
+  getNonDeprecatedRules
 } from "./gen-rules.ts";
 
 const ruleNames = keys(getNonDeprecatedRules(vitest.rules));
@@ -20,18 +20,18 @@ const customRules = [
     "prefer-to-be-truthy",
     "prefer-to-be-falsy",
     "require-mock-type-parameters",
-    "prefer-called-once",
+    "prefer-called-once"
   ]),
   {
     name: "@typescript-eslint/no-unsafe-type-assertion",
     rule: "off",
-    skipPrefix: true,
+    skipPrefix: true
   },
   {
     name: "unicorn/no-useless-undefined",
     rule: "off",
-    skipPrefix: true,
-  },
+    skipPrefix: true
+  }
 ];
 
 export const vitestRules = genRules(ruleNames, customRules, "vitest");
@@ -44,5 +44,5 @@ export const vitestPlugin = new Plugin({
   pluginName: "vitest",
   pluginValue: "vitest",
   rules: vitestRules,
-  url: "https://github.com/vitest-dev/eslint-plugin-vitest",
+  url: "https://github.com/vitest-dev/eslint-plugin-vitest"
 });

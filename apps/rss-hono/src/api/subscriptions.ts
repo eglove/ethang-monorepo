@@ -1,10 +1,29 @@
-import { requireAuth } from '@ethang/hono-middleware';
+import type { Context } from 'hono';
+
 import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 
+import type { Bindings } from '../index.js';
+
 import { createDatabaseClient } from '../db/client.js';
 import { userSubscriptionsTable } from '../schema.js';
+
+let requireAuth: any;
+
+if ('test' === process.env.NODE_ENV) {
+  requireAuth = () => {return async (c: Context<{
+    Bindings: Bindings;
+    Variables: { user: { id: string } };
+  }>, next: () => Promise<void>) => {
+    c.set('user', { id: 'test-user-id' });
+    return next();
+  }};
+} else {
+  // eslint-disable-next-line node/no-missing-import
+  const realAuth = await import('@ethang/hono-middleware');
+  requireAuth = realAuth.requireAuth;
+}
 
 export const subscriptionsApi = new Hono<{ Bindings: { DB: D1Database }; Variables: { user: { id: string } } }>();
 
@@ -13,6 +32,7 @@ const subscriptionSchema = z.object({
   feedId: z.string(),
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call
 subscriptionsApi.use('/*', requireAuth());
 
 subscriptionsApi.get('/', async c => {

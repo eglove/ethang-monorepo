@@ -12,21 +12,21 @@ const reactHookRuleNames = keys(reactHooks.rules);
 const customHookRules = [
   {
     name: "exhaustive-deps",
-    rule: "error",
+    rule: "error"
   },
   {
     name: "rules-of-hooks",
-    rule: "error",
-  },
+    rule: "error"
+  }
 ];
 const hookGen = genRules(reactHookRuleNames, customHookRules, "react-hooks");
 
 export const reactRules = {
-  ...reactGen,
+  ...reactGen
 };
 
 export const reactHookRules = {
-  ...hookGen,
+  ...hookGen
 };
 
 export const reactPlugin = new Plugin({
@@ -36,7 +36,7 @@ export const reactPlugin = new Plugin({
   pluginName: "react",
   pluginValue: "react",
   rules: reactRules,
-  url: "https://eslint-react.xyz/",
+  url: "https://eslint-react.xyz/"
 });
 
 export const reactHooksPlugin = new Plugin({
@@ -46,5 +46,5 @@ export const reactHooksPlugin = new Plugin({
   pluginName: "react-hooks",
   pluginValue: "reactHooks",
   rules: reactHookRules,
-  url: "https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks",
+  url: "https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks"
 });

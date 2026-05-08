@@ -16,5 +16,5 @@ export const tanstackQueryPlugin = new Plugin({
   pluginName: "@tanstack/query",
   pluginValue: "tanstackQuery",
   rules: tanstackQueryRules,
-  url: "https://tanstack.com/query/latest/docs/eslint/eslint-plugin-query",
+  url: "https://tanstack.com/query/latest/docs/eslint/eslint-plugin-query"
 });

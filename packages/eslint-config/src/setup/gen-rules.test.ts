@@ -9,7 +9,7 @@ describe("gen-rules", () => {
       const mockRules = {
         rule1: { meta: { deprecated: false } },
         rule2: { meta: { deprecated: true } },
-        rule3: { meta: {} },
+        rule3: { meta: {} }
       };
       const result = getNonDeprecatedRules(mockRules);
 
@@ -26,14 +26,14 @@ describe("gen-rules", () => {
 
       expect(result).toStrictEqual({
         "my-plugin/rule1": "warn",
-        "my-plugin/rule2": "warn",
+        "my-plugin/rule2": "warn"
       });
     });
 
     it("should include custom rules", () => {
       const ruleNames = ["rule1", "rule2"];
       const customRules = [
-        { name: "rule1", rule: ["error", { option: true }] },
+        { name: "rule1", rule: ["error", { option: true }] }
       ];
       const result = genRules(ruleNames, customRules, "prefix");
 

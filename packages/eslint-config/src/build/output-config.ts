@@ -105,8 +105,8 @@ export const outputConfigs: OutputConfig[] = [
       jsonPlugin,
       jsoncPlugin,
       json5Plugin,
-      prettierPlugin,
-    ] as const,
+      prettierPlugin
+    ] as const
   }),
   new OutputConfig({
     fileName: "config.html.js",
@@ -115,7 +115,7 @@ export const outputConfigs: OutputConfig[] = [
     plugins: [htmlPlugin],
     readmeImport:
       'import htmlConfig from "@ethang/eslint-config/config.html.js";',
-    readmeLabel: "HTML",
+    readmeLabel: "HTML"
   }),
   new OutputConfig({
     fileName: "config.astro.js",
@@ -124,7 +124,7 @@ export const outputConfigs: OutputConfig[] = [
     plugins: [astroPlugin] as const,
     readmeImport:
       'import astroConfig from "@ethang/eslint-config/config.astro.js";',
-    readmeLabel: "Astro",
+    readmeLabel: "Astro"
   }),
   new OutputConfig({
     fileName: "config.react.js",
@@ -134,7 +134,7 @@ export const outputConfigs: OutputConfig[] = [
     plugins: [reactPlugin, reactHooksPlugin] as const,
     readmeImport:
       'import reactConfig from "@ethang/eslint-config/config.react.js";',
-    readmeLabel: "React",
+    readmeLabel: "React"
   }),
   new OutputConfig({
     fileName: "config.solid.js",
@@ -143,7 +143,7 @@ export const outputConfigs: OutputConfig[] = [
     plugins: [solidPlugin] as const,
     readmeImport:
       'import solidConfig from "@ethang/eslint-config/config.solid.js";',
-    readmeLabel: "Solid",
+    readmeLabel: "Solid"
   }),
   new OutputConfig({
     fileName: "config.angular.js",
@@ -153,7 +153,7 @@ export const outputConfigs: OutputConfig[] = [
     plugins: [angularTsPlugin, angularTemplatePlugin],
     readmeImport:
       'import angularConfig from "@ethang/eslint-config/config.angular.js";',
-    readmeLabel: "Angular",
+    readmeLabel: "Angular"
   }),
   new OutputConfig({
     fileName: "config.storybook.js",
@@ -162,7 +162,7 @@ export const outputConfigs: OutputConfig[] = [
     plugins: [storybookPlugin] as const,
     readmeImport:
       'import storybookConfig from "@ethang/eslint-config/config.storybook.js";',
-    readmeLabel: "Storybook",
+    readmeLabel: "Storybook"
   }),
   new OutputConfig({
     fileName: "config.tailwind.js",
@@ -172,7 +172,7 @@ export const outputConfigs: OutputConfig[] = [
     plugins: [tailwindPlugin] as const,
     readmeImport:
       'import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";',
-    readmeLabel: "Tailwind",
+    readmeLabel: "Tailwind"
   }),
   new OutputConfig({
     fileName: "config.vitest.js",
@@ -181,7 +181,7 @@ export const outputConfigs: OutputConfig[] = [
     plugins: [vitestPlugin] as const,
     readmeImport:
       'import vitestConfig from "@ethang/eslint-config/config.vitest.js";',
-    readmeLabel: "Vitest",
+    readmeLabel: "Vitest"
   }),
   new OutputConfig({
     fileName: "config.playwright.js",
@@ -189,6 +189,6 @@ export const outputConfigs: OutputConfig[] = [
     includeLanguageOptions: true,
     plugins: [playwrightPlugin] as const,
     readmeImport: 'import playwright from "eslint-plugin-playwright";',
-    readmeLabel: "Playwright",
-  }),
+    readmeLabel: "Playwright"
+  })
 ];

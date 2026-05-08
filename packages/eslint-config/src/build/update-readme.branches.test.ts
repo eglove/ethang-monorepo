@@ -14,7 +14,7 @@ vi.mock(import("./output-config.ts"), async (importOriginal) => {
     ...importedModule,
     get outputConfigs() {
       return testOutputConfigs;
-    },
+    }
   };
 });
 
@@ -22,7 +22,7 @@ vi.mock(import("./output-config.ts"), async (importOriginal) => {
 const { updateReadme } = await import("./update-readme.ts");
 
 const makePlugin = (
-  overrides: Partial<ConstructorParameters<typeof Plugin>[0]> = {},
+  overrides: Partial<ConstructorParameters<typeof Plugin>[0]> = {}
 ) => {
   return new Plugin({
     files: "**/*.ts",
@@ -32,7 +32,7 @@ const makePlugin = (
     pluginValue: "testPlugin",
     rules: { "rule-a": "error", "rule-b": "warn" },
     url: "https://example.com",
-    ...overrides,
+    ...overrides
   });
 };
 
@@ -59,7 +59,7 @@ describe("updateReadme — featured config branches", () => {
     testOutputConfigs.length = 0;
     vi.clearAllMocks();
     const singleRulePlugin = makePlugin({
-      rules: { "only-rule": "error" },
+      rules: { "only-rule": "error" }
     });
 
     testOutputConfigs.push(
@@ -68,8 +68,8 @@ describe("updateReadme — featured config branches", () => {
         plugins: [singleRulePlugin],
         readmeImport:
           'import testConfig from "@ethang/eslint-config/config.test.js";',
-        readmeLabel: "Test",
-      }),
+        readmeLabel: "Test"
+      })
     );
 
     updateReadme();
@@ -88,9 +88,9 @@ describe("updateReadme — featured config branches", () => {
       new OutputConfig({
         fileName: "config.test.js",
         plugins: [makePlugin()],
-        readmeLabel: "Test",
+        readmeLabel: "Test"
         // readmeImport intentionally omitted
-      }),
+      })
     );
 
     updateReadme();

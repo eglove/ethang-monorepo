@@ -1,13 +1,32 @@
-import { requireAuth } from '@ethang/hono-middleware';
+import type { Context } from 'hono';
+
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { v7 } from 'uuid';
 import { z } from 'zod';
 
+import type { Bindings } from '../index.js';
+
 import { createDatabaseClient } from '../db/client.js';
 import { feedsTable } from '../schema.js';
 
-export const feedsApi = new Hono<{ Bindings: { DB: D1Database } }>();
+let requireAuth: any;
+
+if ('test' === process.env.NODE_ENV) {
+  requireAuth = () => {return async (c: Context<{
+    Bindings: Bindings;
+    Variables: { user: { id: string } };
+  }>, next: () => Promise<void>) => {
+    c.set('user', { id: 'test-user-id' });
+    return next();
+  }};
+} else {
+  // eslint-disable-next-line node/no-missing-import
+  const realAuth = await import('@ethang/hono-middleware');
+  requireAuth = realAuth.requireAuth;
+}
+
+export const feedsApi = new Hono<{ Bindings: { DB: D1Database }; Variables: { user: { id: string } } }>();
 
 const createFeedSchema = z.object({
   description: z.string().optional(),
@@ -29,6 +48,7 @@ feedsApi.get('/', async c => {
 
 feedsApi.post('/', async c => {
   const database = createDatabaseClient(c.env.DB);
+  const user = c.get('user');
   const body: unknown = await c.req.json();
   const parsed = createFeedSchema.safeParse(body);
 

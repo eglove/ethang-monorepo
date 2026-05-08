@@ -19,7 +19,7 @@ export const updateReadme = () => {
     return {
       count: plugin.ruleCount,
       name: plugin.name,
-      url: plugin.url,
+      url: plugin.url
     };
   }).toSorted((a, b) => {
     return b.count - a.count;
@@ -34,7 +34,7 @@ export const updateReadme = () => {
       ruleDocumentation.push(
         `${list.count} ${
           1 >= list.count ? "rule" : "rules"
-        } from [${list.name}](${list.url})`,
+        } from [${list.name}](${list.url})`
       );
     }
     /* v8 ignore stop */
@@ -57,12 +57,12 @@ export const updateReadme = () => {
       map(output.plugins, (plugin) => {
         const ruleWord = 1 >= plugin.ruleCount ? "rule" : "rules";
         return `${plugin.ruleCount} ${ruleWord} from [${plugin.name}](${plugin.url})`;
-      }),
+      })
     );
 
     listItems.push([
       isNil(output.readmeImport) ? "" : `\`${output.readmeImport}\``,
-      ...perPlugin,
+      ...perPlugin
     ]);
   }
 
@@ -100,7 +100,7 @@ export default defineConfig(
   }
 );`,
     "js",
-    2,
+    2
   );
   md.bold("Scripts", 2);
   md.codeBlock(
@@ -108,18 +108,18 @@ export default defineConfig(
   "lint": "eslint . --fix"
 }`,
     "json",
-    2,
+    2
   );
   md.bold("Browserslist", 2);
   md.text(
     "This config will also lint for browserslist features. [More info.](https://github.com/browserslist/browserslist)",
-    2,
+    2
   );
   md.text("It's recommended to use ");
   md.link(
     "browserslist-config-baseline",
     "https://github.com/web-platform-dx/browserslist-config-baseline",
-    2,
+    2
   );
   md.codeBlock("pnpm i -D browserslist-config-baseline", "powershell", 2);
 
@@ -129,7 +129,7 @@ export default defineConfig(
   "current node"
 ],`,
     "json",
-    2,
+    2
   );
 
   md.text("Or a simpler config without an additional dependency.", 2);
@@ -140,7 +140,7 @@ export default defineConfig(
   "current node"
 ],`,
     "json",
-    2,
+    2
   );
 
   md.bold("Engines", 2);
@@ -148,13 +148,13 @@ export default defineConfig(
     `"engines": {
   "node": ">=24"
 },`,
-    "json",
+    "json"
   );
 
   writeFileSync(
     path.join(import.meta.dirname, "../README.md"),
     md.render(),
-    "utf8",
+    "utf8"
   );
 };
 

@@ -20,7 +20,7 @@ describe(OutputConfig, () => {
       fileName: TEST_FILE_NAME,
       includeIgnores: true,
       includeLanguageOptions: true,
-      plugins: [plugin],
+      plugins: [plugin]
     });
 
     expect(config.fileName).toBe(TEST_FILE_NAME);
@@ -40,7 +40,7 @@ describe(OutputConfig, () => {
       includeReactVersion: true,
       plugins: [makePlugin("**/*.ts")],
       readmeImport,
-      readmeLabel: "Test",
+      readmeLabel: "Test"
     });
 
     expect(config.extraImports).toStrictEqual(['import foo from "foo";']);
@@ -54,7 +54,7 @@ describe(OutputConfig, () => {
     const config = new OutputConfig({
       fileName: TEST_FILE_NAME,
       plugins: [makePlugin("**/*.ts")],
-      readmeLabel: "Test",
+      readmeLabel: "Test"
     });
 
     expect(config.readmeLabel).toBe("Test");
@@ -66,7 +66,7 @@ describe(OutputConfig, () => {
       const p2 = makePlugin("**/*.ts", { "rule-c": "warn" });
       const config = new OutputConfig({
         fileName: TEST_FILE_NAME,
-        plugins: [p1, p2],
+        plugins: [p1, p2]
       });
 
       expect(config.ruleCount).toBe(2);
@@ -80,7 +80,7 @@ describe(OutputConfig, () => {
       const md = makePlugin("**/*.md", { "rule-c": "error" });
       const config = new OutputConfig({
         fileName: TEST_FILE_NAME,
-        plugins: [ts1, ts2, md],
+        plugins: [ts1, ts2, md]
       });
 
       expect(keys(config.pluginsByFiles)).toHaveLength(2);

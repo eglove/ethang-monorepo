@@ -1,3 +1,1 @@
-import { projectBuilder } from "./src/project-builder.ts";
-
-await projectBuilder(import.meta.dirname);
+import './tsup.config.js';

@@ -1,16 +1,7 @@
+import isArray from 'lodash/isArray.js';
 import { describe, expect, it, vi } from 'vitest';
 
 import { feedsApi } from './feeds.js';
-
-// Mock the auth middleware to always pass for these tests
-vi.mock('@ethang/hono-middleware', () => {
-  return {
-    requireAuth: () => {return async (c: any, next: any) => {
-      c.set('user', { id: 'test-user' });
-      await next();
-    }},
-  };
-});
 
 const mockDatabase = {
   delete: vi.fn().mockReturnThis(),
@@ -26,60 +17,69 @@ const mockDatabase = {
 
 vi.mock('../db/client.js', () => {
   return {
-    createDatabaseClient: () => {return mockDatabase},
+    createDatabaseClient: () => {
+      return mockDatabase;
+    },
   };
 });
 
 const environment = { DB: {} as D1Database };
 
+const TEST_FEED_NAME = 'Test Feed';
+const TEST_FEED_URL = 'https://test.com/rss';
+const UPDATED_FEED_NAME = 'Updated Name';
+const UPDATED_FEED_URL = 'https://update.com/rss';
+const LOCALHOST_ROOT = 'http://localhost/';
+const LOCALHOST_ID = 'http://localhost/1';
+
 describe('Feeds API', () => {
   it('should list feeds', async () => {
-    mockDatabase.from.mockResolvedValueOnce([{ id: '1', name: 'Test Feed' }]);
-    const res = await feedsApi.fetch(new Request('http://localhost/'), environment);
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(Array.isArray(body)).toBe(true);
+    mockDatabase.from.mockResolvedValueOnce([{ id: '1', name: TEST_FEED_NAME }]);
+    const response = await feedsApi.fetch(new Request(LOCALHOST_ROOT), environment);
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(isArray(body)).toBe(true);
   });
 
   it('should create a new feed', async () => {
     mockDatabase.values.mockResolvedValueOnce();
-    const request = new Request('http://localhost/', {
+    const request = new Request(LOCALHOST_ROOT, {
       body: JSON.stringify({
-        name: 'Test Feed',
-        url: 'https://test.com/rss',
+        name: TEST_FEED_NAME,
+        url: TEST_FEED_URL,
       }),
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
     });
-    const res = await feedsApi.fetch(request, environment);
-    expect(res.status).toBe(201);
-    const body = await res.json() as any;
-    expect(body.name).toBe('Test Feed');
+    const response = await feedsApi.fetch(request, environment);
+    expect(response.status).toBe(201);
+    const body = await response.json();
+    expect(body.name).toBe(TEST_FEED_NAME);
     expect(body.id).toBeDefined();
   });
 
   it('should update a feed', async () => {
-    mockDatabase.get.mockResolvedValueOnce({ id: '1', name: 'Updated Name', url: 'https://update.com/rss' });
-    const updateRequest = new Request('http://localhost/1', {
+    mockDatabase.get.mockResolvedValueOnce({ id: '1', name: UPDATED_FEED_NAME, url: UPDATED_FEED_URL });
+    const updateRequest = new Request(LOCALHOST_ID, {
       body: JSON.stringify({
-        name: 'Updated Name',
+        name: UPDATED_FEED_NAME,
       }),
       headers: { 'Content-Type': 'application/json' },
       method: 'PUT',
     });
-    const updateRes = await feedsApi.fetch(updateRequest, environment);
-    expect(updateRes.status).toBe(200);
-    const updatedBody = await updateRes.json() as any;
-    expect(updatedBody.name).toBe('Updated Name');
-    expect(updatedBody.url).toBe('https://update.com/rss');
+    const updateResponse = await feedsApi.fetch(updateRequest, environment);
+    expect(updateResponse.status).toBe(200);
+    const updatedBody = await updateResponse.json();
+    expect(updatedBody.name).toBe(UPDATED_FEED_NAME);
+    expect(updatedBody.url).toBe(UPDATED_FEED_URL);
   });
 
   it('should delete a feed', async () => {
     mockDatabase.where.mockResolvedValueOnce();
-    const deleteRequest = new Request('http://localhost/1', {
+    const deleteRequest = new Request(LOCALHOST_ID, {
       method: 'DELETE',
     });
-    const deleteRes = await feedsApi.fetch(deleteRequest, environment);
-    expect(deleteRes.status).toBe(204);
+    const deleteResponse = await feedsApi.fetch(deleteRequest, environment);
+    expect(deleteResponse.status).toBe(204);
   });
 });

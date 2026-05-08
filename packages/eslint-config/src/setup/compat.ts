@@ -5,7 +5,7 @@ import { Plugin } from "../build/plugin.ts";
 import {
   type CustomRules,
   genRules,
-  getNonDeprecatedRules,
+  getNonDeprecatedRules
 } from "./gen-rules.ts";
 
 const ruleNames = keys(getNonDeprecatedRules(compat.rules));
@@ -21,5 +21,5 @@ export const compatPlugin = new Plugin({
   pluginName: "compat",
   pluginValue: "compat",
   rules: compatRules,
-  url: "https://github.com/amilajack/eslint-plugin-compat",
+  url: "https://github.com/amilajack/eslint-plugin-compat"
 });

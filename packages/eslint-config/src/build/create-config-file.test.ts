@@ -9,7 +9,7 @@ import { Plugin } from "./plugin.ts";
 vi.mock(import("node:fs"));
 vi.mock(import("./get-react-version.ts"), () => {
   return {
-    getLatestReact: vi.fn().mockResolvedValue({ version: "19.0.0" }),
+    getLatestReact: vi.fn().mockResolvedValue({ version: "19.0.0" })
   };
 });
 
@@ -17,7 +17,7 @@ const TEST_FILE_NAME = "config.test.js";
 const TEST_PLUGIN_IMPORT = 'import testPlugin from "test-plugin";';
 
 const makePlugin = (
-  overrides: Partial<ConstructorParameters<typeof Plugin>[0]> = {},
+  overrides: Partial<ConstructorParameters<typeof Plugin>[0]> = {}
 ) => {
   return new Plugin({
     files: "**/*.ts",
@@ -27,7 +27,7 @@ const makePlugin = (
     pluginValue: "testPlugin",
     rules: { "test-rule": "error" },
     url: "https://example.com",
-    ...overrides,
+    ...overrides
   });
 };
 
@@ -49,7 +49,7 @@ describe(createConfigFile, () => {
     it("writes to the correct path", async () => {
       const output = new OutputConfig({
         fileName: TEST_FILE_NAME,
-        plugins: [makePlugin()],
+        plugins: [makePlugin()]
       });
 
       await createConfigFile(output);
@@ -62,7 +62,7 @@ describe(createConfigFile, () => {
     it("generates file with ts-nocheck header and imports", async () => {
       const output = new OutputConfig({
         fileName: TEST_FILE_NAME,
-        plugins: [makePlugin()],
+        plugins: [makePlugin()]
       });
 
       await createConfigFile(output);
@@ -71,7 +71,7 @@ describe(createConfigFile, () => {
 
       expect(content).toContain("// @ts-nocheck");
       expect(content).toContain(
-        'import { defineConfig, globalIgnores } from "eslint/config";',
+        'import { defineConfig, globalIgnores } from "eslint/config";'
       );
       expect(content).toContain(TEST_PLUGIN_IMPORT);
       expect(content).toContain('files: ["**/*.ts"]');
@@ -81,7 +81,7 @@ describe(createConfigFile, () => {
     it("generates file with plugin rules and defineConfig export", async () => {
       const output = new OutputConfig({
         fileName: TEST_FILE_NAME,
-        plugins: [makePlugin()],
+        plugins: [makePlugin()]
       });
 
       await createConfigFile(output);
@@ -96,7 +96,7 @@ describe(createConfigFile, () => {
       const output = new OutputConfig({
         fileName: TEST_FILE_NAME,
         functionParameters: "pathToConfig",
-        plugins: [makePlugin()],
+        plugins: [makePlugin()]
       });
 
       await createConfigFile(output);
@@ -112,10 +112,10 @@ describe(createConfigFile, () => {
       const output = new OutputConfig({
         extraConfigEntries: ["eslintConfigPrettier"],
         extraImports: [
-          'import eslintConfigPrettier from "eslint-config-prettier";',
+          'import eslintConfigPrettier from "eslint-config-prettier";'
         ],
         fileName: TEST_FILE_NAME,
-        plugins: [makePlugin()],
+        plugins: [makePlugin()]
       });
 
       await createConfigFile(output);
@@ -124,7 +124,7 @@ describe(createConfigFile, () => {
 
       expect(content).toContain("eslintConfigPrettier");
       expect(content).toContain(
-        'import eslintConfigPrettier from "eslint-config-prettier";',
+        'import eslintConfigPrettier from "eslint-config-prettier";'
       );
     });
   });
@@ -135,17 +135,17 @@ describe(createConfigFile, () => {
         importString: 'import p1 from "p1";',
         pluginName: "p1",
         pluginValue: "plugin1",
-        rules: { "rule-a": "error" },
+        rules: { "rule-a": "error" }
       });
       const p2 = makePlugin({
         importString: 'import p2 from "p2";',
         pluginName: "p2",
         pluginValue: "plugin2",
-        rules: { "rule-b": "warn" },
+        rules: { "rule-b": "warn" }
       });
       const output = new OutputConfig({
         fileName: TEST_FILE_NAME,
-        plugins: [p1, p2],
+        plugins: [p1, p2]
       });
 
       await createConfigFile(output);
@@ -166,11 +166,11 @@ describe(createConfigFile, () => {
         files: "**/*.md",
         importString: 'import md from "md";',
         pluginName: "md",
-        pluginValue: "markdown",
+        pluginValue: "markdown"
       });
       const output = new OutputConfig({
         fileName: TEST_FILE_NAME,
-        plugins: [tsPlugin, mdPlugin],
+        plugins: [tsPlugin, mdPlugin]
       });
 
       await createConfigFile(output);
@@ -186,25 +186,25 @@ describe(createConfigFile, () => {
         importString:
           'import { fixupPluginRules } from "@eslint/compat";\nimport p1 from "p1";',
         pluginName: "p1",
-        pluginValue: "fixupPluginRules(p1)",
+        pluginValue: "fixupPluginRules(p1)"
       });
       const p2 = makePlugin({
         files: "**/*.md",
         importString:
           'import { fixupPluginRules } from "@eslint/compat";\nimport p2 from "p2";',
         pluginName: "p2",
-        pluginValue: "fixupPluginRules(p2)",
+        pluginValue: "fixupPluginRules(p2)"
       });
       const output = new OutputConfig({
         fileName: TEST_FILE_NAME,
-        plugins: [p1, p2],
+        plugins: [p1, p2]
       });
 
       await createConfigFile(output);
 
       const content = getWrittenContent();
       const fixupMatches = content.match(
-        /import \{ fixupPluginRules \} from "@eslint\/compat";/gu,
+        /import \{ fixupPluginRules \} from "@eslint\/compat";/gu
       );
 
       expect(fixupMatches).toHaveLength(1);
@@ -217,7 +217,7 @@ describe(`${createConfigFile.name} — ignore and language options`, () => {
     const output = new OutputConfig({
       fileName: TEST_FILE_NAME,
       includeIgnores: true,
-      plugins: [makePlugin()],
+      plugins: [makePlugin()]
     });
 
     await createConfigFile(output);
@@ -232,7 +232,7 @@ describe(`${createConfigFile.name} — ignore and language options`, () => {
     const output = new OutputConfig({
       fileName: TEST_FILE_NAME,
       globalIgnores: ["**/*.spec.ts"],
-      plugins: [makePlugin()],
+      plugins: [makePlugin()]
     });
 
     await createConfigFile(output);
@@ -246,7 +246,7 @@ describe(`${createConfigFile.name} — ignore and language options`, () => {
     const output = new OutputConfig({
       fileName: TEST_FILE_NAME,
       includeLanguageOptions: true,
-      plugins: [makePlugin()],
+      plugins: [makePlugin()]
     });
 
     await createConfigFile(output);
@@ -257,7 +257,7 @@ describe(`${createConfigFile.name} — ignore and language options`, () => {
   it("uses angularLanguageOptions when plugin has includeAngularLanguageOptions", async () => {
     const output = new OutputConfig({
       fileName: TEST_FILE_NAME,
-      plugins: [makePlugin({ includeAngularLanguageOptions: true })],
+      plugins: [makePlugin({ includeAngularLanguageOptions: true })]
     });
 
     await createConfigFile(output);
@@ -266,7 +266,7 @@ describe(`${createConfigFile.name} — ignore and language options`, () => {
 
     expect(content).toContain("languageOptions: angularLanguageOptions,");
     expect(content).toContain(
-      'import { angularLanguageOptions } from "./constants.js";',
+      'import { angularLanguageOptions } from "./constants.js";'
     );
   });
 });
@@ -276,7 +276,7 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
     const output = new OutputConfig({
       fileName: TEST_FILE_NAME,
       includeReactVersion: true,
-      plugins: [makePlugin()],
+      plugins: [makePlugin()]
     });
 
     await createConfigFile(output);
@@ -290,7 +290,7 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
   it("adds language when plugin has language set", async () => {
     const output = new OutputConfig({
       fileName: TEST_FILE_NAME,
-      plugins: [makePlugin({ files: "**/*.css", language: "css/css" })],
+      plugins: [makePlugin({ files: "**/*.css", language: "css/css" })]
     });
 
     await createConfigFile(output);
@@ -301,13 +301,13 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
   it("adds processor when plugin has processor set", async () => {
     const output = new OutputConfig({
       fileName: TEST_FILE_NAME,
-      plugins: [makePlugin({ processor: "angular.processInlineTemplates" })],
+      plugins: [makePlugin({ processor: "angular.processInlineTemplates" })]
     });
 
     await createConfigFile(output);
 
     expect(getWrittenContent()).toContain(
-      "processor: angular.processInlineTemplates,",
+      "processor: angular.processInlineTemplates,"
     );
   });
 
@@ -317,15 +317,15 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
       plugins: [
         makePlugin({
           auxiliaryImport: 'import angular from "angular-eslint";',
-          processor: "angular.processInlineTemplates",
-        }),
-      ],
+          processor: "angular.processInlineTemplates"
+        })
+      ]
     });
 
     await createConfigFile(output);
 
     expect(getWrittenContent()).toContain(
-      'import angular from "angular-eslint";',
+      'import angular from "angular-eslint";'
     );
   });
 
@@ -334,15 +334,15 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
       fileName: "config.test.js",
       plugins: [
         makePlugin({
-          extraOptions: "settings: { tailwindcss: { config: pathToConfig } },",
-        }),
-      ],
+          extraOptions: "settings: { tailwindcss: { config: pathToConfig } },"
+        })
+      ]
     });
 
     await createConfigFile(output);
 
     expect(getWrittenContent()).toContain(
-      "settings: { tailwindcss: { config: pathToConfig } },",
+      "settings: { tailwindcss: { config: pathToConfig } },"
     );
   });
 
@@ -351,9 +351,9 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
       fileName: TEST_FILE_NAME,
       plugins: [
         makePlugin({
-          importString: undefined,
-        }),
-      ],
+          importString: undefined
+        })
+      ]
     });
 
     await createConfigFile(output);
@@ -370,9 +370,9 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
       plugins: [
         makePlugin({
           pluginName: undefined,
-          pluginValue: undefined,
-        }),
-      ],
+          pluginValue: undefined
+        })
+      ]
     });
 
     await createConfigFile(output);
@@ -389,9 +389,9 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
       plugins: [
         makePlugin({
           extraRules: { "extra-rule": "warn" },
-          rules: { "base-rule": "error" },
-        }),
-      ],
+          rules: { "base-rule": "error" }
+        })
+      ]
     });
 
     await createConfigFile(output);

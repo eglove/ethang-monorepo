@@ -5,7 +5,7 @@ import { Plugin } from "../build/plugin.ts";
 import {
   type CustomRules,
   genRules,
-  getNonDeprecatedRules,
+  getNonDeprecatedRules
 } from "./gen-rules.ts";
 
 const ruleNames = keys(getNonDeprecatedRules(markdown.rules));
@@ -22,5 +22,5 @@ export const markdownPlugin = new Plugin({
   pluginName: "markdown",
   pluginValue: "markdown",
   rules: markdownRules,
-  url: "https://github.com/eslint/markdown",
+  url: "https://github.com/eslint/markdown"
 });

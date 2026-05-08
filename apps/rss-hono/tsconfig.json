@@ -1,12 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["ESNext", "DOM"],
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "ESNext",
     "types": ["@cloudflare/workers-types", "vitest/globals"]
   },
-  "include": ["src/**/*", "worker-configuration.d.ts", "drizzle.config.ts", "vitest.config.ts"]
+  "extends": ["../../packages/tsconfig/tsconfig.base.json"]
 }

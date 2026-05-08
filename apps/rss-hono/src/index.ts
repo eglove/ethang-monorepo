@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import { requireAuth } from '@ethang/hono-middleware';
 
 import { articleInteractionsApi } from './api/article-interactions.js';
 import { feedsApi } from './api/feeds.js';

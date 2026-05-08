@@ -63,8 +63,8 @@
     "url": "git+https://github.com/eglove/ethang-monorepo.git#master"
   },
   "scripts": {
-    "build": "pnpm lint",
-    "lint": "bun build.ts && eslint . --fix --cache && pnpm tsc --noEmit",
+    "build": "bun build.ts",
+    "lint": "eslint . --fix --cache --ignore-pattern '!src/*.js' && pnpm tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage"
   },

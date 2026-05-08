@@ -17,7 +17,7 @@ import { getLatestReact } from "./get-react-version.ts";
 
 const buildImportList = (output: OutputConfig): string[] => {
   const rawImports: string[] = [
-    'import { defineConfig, globalIgnores } from "eslint/config";',
+    'import { defineConfig, globalIgnores } from "eslint/config";'
   ];
 
   const constantsImports: string[] = [];
@@ -39,7 +39,7 @@ const buildImportList = (output: OutputConfig): string[] => {
       return a.localeCompare(b);
     });
     rawImports.push(
-      `import { ${sortedConstants.join(", ")} } from "./constants.js";`,
+      `import { ${sortedConstants.join(", ")} } from "./constants.js";`
     );
   }
 
@@ -65,7 +65,7 @@ const buildImportList = (output: OutputConfig): string[] => {
 const buildConfigBlockOptionals = (
   sorted: Plugin[],
   output: OutputConfig,
-  reactSettings: string | undefined,
+  reactSettings: string | undefined
 ): string => {
   let optionals = "";
 
@@ -100,7 +100,7 @@ const buildConfigBlock = (
   files: string,
   plugins: Plugin[],
   output: OutputConfig,
-  reactSettings: string | undefined,
+  reactSettings: string | undefined
 ): string => {
   const sorted = [...plugins].toSorted((a, b) => {
     return (a.order ?? 0) - (b.order ?? 0);
@@ -117,7 +117,7 @@ const buildConfigBlock = (
   }
 
   const rulesJson = trimLodash(
-    JSON.stringify(mergedRules, undefined, 2).slice(2, -1),
+    JSON.stringify(mergedRules, undefined, 2).slice(2, -1)
   );
 
   let pluginsString = "";
@@ -144,7 +144,7 @@ const buildConfigBlock = (
     }),
     (p) => {
       return p.extraOptions;
-    },
+    }
   ).join("\n");
 
   return `{
@@ -161,7 +161,7 @@ const buildConfigBlock = (
 
 const buildConfigEntries = (
   output: OutputConfig,
-  reactSettings: string | undefined,
+  reactSettings: string | undefined
 ): string[] => {
   const configEntries: string[] = [];
 
@@ -213,7 +213,7 @@ export const createConfigFile = async (output: OutputConfig): Promise<void> => {
   if (!isNil(output.includeReactVersion)) {
     const react = await getLatestReact();
     reactSettings = JSON.stringify({
-      react: { version: react?.version },
+      react: { version: react?.version }
     }).slice(1, -1);
   }
 
@@ -226,6 +226,6 @@ export const createConfigFile = async (output: OutputConfig): Promise<void> => {
   writeFileSync(
     path.join(import.meta.dirname, `../${output.fileName}`),
     configFile,
-    "utf8",
+    "utf8"
   );
 };
