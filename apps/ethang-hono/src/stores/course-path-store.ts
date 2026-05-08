@@ -44,7 +44,7 @@ export class CoursePathStore {
       flatMap(this.learningPaths, (_path) => {
         return _path.courses;
       }),
-      ["_id", courseId],
+      ["_id", courseId]
     );
   }
 
@@ -71,12 +71,12 @@ export class CoursePathStore {
     return {
       complete: (complete / this.totalCourseCount) * 100,
       incomplete: (incomplete / this.totalCourseCount) * 100,
-      revisit: (revisit / this.totalCourseCount) * 100,
+      revisit: (revisit / this.totalCourseCount) * 100
     };
   }
 
   public setup = async <P extends string, I extends Input>(
-    context: Context<AppContext, P, I>,
+    context: Context<AppContext, P, I>
   ) => {
     const database = getDatabase(context);
     const courseTracking = new CourseTracking(database);
@@ -103,8 +103,8 @@ export class CoursePathStore {
             author
           }
         }
-      }`,
-      ),
+      }`
+      )
     ]);
 
     let totalCourseCount = 0;

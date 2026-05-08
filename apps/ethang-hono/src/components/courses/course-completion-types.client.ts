@@ -4,7 +4,7 @@ export const courseStatusSchema = z.object({
   courseUrl: z.string(),
   id: z.string(),
   status: z.enum(["Complete", "Incomplete", "Revisit"]),
-  userId: z.string(),
+  userId: z.string()
 });
 
 export const userTokenSchema = z.object({
@@ -13,7 +13,7 @@ export const userTokenSchema = z.object({
   iat: z.number(),
   role: z.string().optional(),
   sub: z.string(),
-  username: z.string(),
+  username: z.string()
 });
 
 export type CourseCompletionState = {

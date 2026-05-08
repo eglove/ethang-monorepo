@@ -25,7 +25,7 @@ export const formatDateTime = (iso: string) => {
     .setZone(CHICAGO)
     .toLocaleString(
       { dateStyle: "medium", timeStyle: "short" },
-      { locale: LOCALE },
+      { locale: LOCALE }
     );
 };
 
@@ -36,7 +36,7 @@ export const toDateKey = (year: number, month: number, day: number) => {
 const addToDateMap = (
   dateMap: Map<string, CalendarEventRecord[]>,
   key: string,
-  event: CalendarEventRecord,
+  event: CalendarEventRecord
 ) => {
   if (!dateMap.has(key)) dateMap.set(key, []);
   dateMap.get(key)?.push(event);
@@ -63,11 +63,11 @@ export const buildEventsByDate = (events: CalendarEventRecord[]) => {
 
 export const buildCalendarWeeks = (
   year: number,
-  month: number,
+  month: number
 ): CalendarCell[][] => {
   const firstDayDt = DateTime.fromObject(
     { day: 1, month, year },
-    { zone: CHICAGO },
+    { zone: CHICAGO }
   );
   const firstDay = firstDayDt.weekday % 7; // 0=Sun, 1=Mon, …, 6=Sat
   const { daysInMonth } = firstDayDt;
@@ -89,7 +89,7 @@ export const buildCalendarWeeks = (
       current: false,
       day: daysInPreviousMonth - index,
       month: previousMonth,
-      year: previousYear,
+      year: previousYear
     });
   }
   for (let d = 1; d <= daysInMonth; d += 1) {
@@ -113,7 +113,7 @@ export const getViewDateRange = (
   view: "day" | "month" | "week",
   year: number,
   month: number,
-  date: string,
+  date: string
 ): { rangeEndExclusive: string; rangeStart: string } => {
   if ("day" === view) {
     return { rangeEndExclusive: shiftDate(date, 1), rangeStart: date };
@@ -123,28 +123,28 @@ export const getViewDateRange = (
     const { 0: firstDay, 6: lastDay } = weekDays;
     return {
       rangeEndExclusive: shiftDate(isNil(lastDay) ? date : lastDay, 1),
-      rangeStart: isNil(firstDay) ? date : firstDay,
+      rangeStart: isNil(firstDay) ? date : firstDay
     };
   }
   // Month view: use the full visible grid including leading/trailing days from adjacent months.
   // Grid start = Sunday on or before the 1st; grid end = Saturday on or after the last day.
   const firstDayDt = DateTime.fromObject(
     { day: 1, month, year },
-    { zone: CHICAGO },
+    { zone: CHICAGO }
   );
   const lastDayDt = firstDayDt.endOf("month").startOf("day");
   const gridStartDt = firstDayDt.minus({ days: firstDayDt.weekday % 7 });
   const gridEndExclusiveDt = lastDayDt.plus({
-    days: 7 - (lastDayDt.weekday % 7),
+    days: 7 - (lastDayDt.weekday % 7)
   });
   return {
     rangeEndExclusive: gridEndExclusiveDt.toISODate() ?? shiftDate(date, 42),
-    rangeStart: gridStartDt.toISODate() ?? date,
+    rangeStart: gridStartDt.toISODate() ?? date
   };
 };
 
 export const renderDescriptionHtml = (
-  description: CalendarEventRecord["description"],
+  description: CalendarEventRecord["description"]
 ): string => {
   if (!description) return "";
   const blocks = isArray(description) ? description : [description];
@@ -176,7 +176,7 @@ export const formatTimeOnly = (iso: string): string => {
 export const formatDayHeading = (dateString: string): string => {
   return DateTime.fromISO(dateString, { zone: CHICAGO }).toLocaleString(
     { day: "numeric", month: "long", weekday: "long", year: "numeric" },
-    { locale: LOCALE },
+    { locale: LOCALE }
   );
 };
 
@@ -192,17 +192,17 @@ export const formatWeekHeading = (dateString: string): string => {
 
   const start = startDt.toLocaleString(
     { day: "numeric", month: "short" },
-    { locale: LOCALE },
+    { locale: LOCALE }
   );
   const end = endDt.toLocaleString(
     { day: "numeric", month: "short", year: "numeric" },
-    { locale: LOCALE },
+    { locale: LOCALE }
   );
   return `${start} – ${end}`;
 };
 
 export const toPlainText = (
-  description: CalendarEventRecord["description"],
+  description: CalendarEventRecord["description"]
 ): string => {
   if (!description) return "";
   const blocks = isArray(description) ? description : [description];
@@ -214,6 +214,6 @@ export const toPlainText = (
       return map(b.children, (child) => {
         return "text" in child && isString(child.text) ? child.text : "";
       }).join("");
-    },
+    }
   ).join("\n");
 };

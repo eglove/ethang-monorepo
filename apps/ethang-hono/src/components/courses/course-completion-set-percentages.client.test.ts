@@ -19,8 +19,8 @@ const resetTestState = async () => {
       json: () => {
         return {};
       },
-      ok: true,
-    }),
+      ok: true
+    })
   );
   vi.stubGlobal("location", { reload: vi.fn() });
   document.body.innerHTML = "";
@@ -53,14 +53,14 @@ describe("course-completion.client setPercentages tests", () => {
           json: () => {
             return { email: "e", exp: 2, iat: 1, sub: "123", username: "u" };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       return {
         json: () => {
           return { data: [] };
         },
-        ok: true,
+        ok: true
       } as unknown as Response;
     });
 
@@ -93,7 +93,7 @@ describe("course-completion.client setPercentages tests", () => {
     const courses: Record<string, CourseState> = {
       "url-1": { isLoading: false, status: "Complete" },
       "url-2": { isLoading: false, status: "Incomplete" },
-      "url-3": { isLoading: false, status: "Revisit" },
+      "url-3": { isLoading: false, status: "Revisit" }
     };
     for (let index = 0; 97 > index; index += 1) {
       courses[`url-${index + 4}`] = { isLoading: false, status: "Complete" };
@@ -124,14 +124,14 @@ describe("course-completion.client setPercentages tests", () => {
           json: () => {
             return { email: "e", exp: 2, iat: 1, sub: "123", username: "u" };
           },
-          ok: true,
+          ok: true
         } as unknown as Response;
       }
       return {
         json: () => {
           return { data: [] };
         },
-        ok: true,
+        ok: true
       } as unknown as Response;
     });
 

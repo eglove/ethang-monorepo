@@ -5,7 +5,7 @@ import { BlogLayout } from "./blog-layout.tsx";
 import { MainLayout, type MainLayoutProperties } from "./main-layout.tsx";
 
 const renderMain = async (
-  properties: MainLayoutProperties,
+  properties: MainLayoutProperties
 ): Promise<string> => {
   const testApp = new Hono();
   testApp.get("/", async (c) => {
@@ -46,7 +46,7 @@ describe(MainLayout, () => {
   it("uses custom description when provided", async () => {
     const html = await renderMain({
       children: "",
-      description: "Custom description",
+      description: "Custom description"
     });
 
     expect(html).toContain("Custom description");
@@ -57,7 +57,7 @@ describe(MainLayout, () => {
       children: "",
       isBlog: true,
       publishedAt: "2024-01-01",
-      updatedAt: "2024-02-01",
+      updatedAt: "2024-02-01"
     });
 
     expect(html).toContain("blogRss.xml");
@@ -74,7 +74,7 @@ describe(MainLayout, () => {
   it("includes canonical link when canonicalUrl is provided", async () => {
     const html = await renderMain({
       canonicalUrl: "https://ethang.dev/page",
-      children: "",
+      children: ""
     });
 
     expect(html).toContain('rel="canonical"');
@@ -90,7 +90,7 @@ describe(MainLayout, () => {
   it("includes text alternate link when textAlternate is provided", async () => {
     const html = await renderMain({
       children: "",
-      textAlternate: "/page?format=text",
+      textAlternate: "/page?format=text"
     });
 
     expect(html).toContain("text/plain");

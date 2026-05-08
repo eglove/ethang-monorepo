@@ -5,7 +5,7 @@ import type { FileRecord } from "../sanity/get-files.ts";
 import type {
   CalendarEventReturn,
   NewsAndEvents,
-  NewsUpdateReturn,
+  NewsUpdateReturn
 } from "../sanity/get-news-and-events.ts";
 import type { TrusteeRecord } from "../sanity/get-trustees.ts";
 import type { CalendarCell } from "../utils/calendar.ts";
@@ -81,7 +81,7 @@ export const renderMainLayout = async (properties: {
         description={properties.description}
       >
         {properties.children}
-      </MainLayout>,
+      </MainLayout>
     );
   });
   return html(app);
@@ -106,12 +106,12 @@ export const renderCalendarEventDialog = async (event: CalendarEventRecord) => {
 export const renderCalendarMonthView = async (
   weeks: CalendarCell[][],
   eventsByDate: Map<string, CalendarEventRecord[]>,
-  today: string,
+  today: string
 ) => {
   const app = new Hono();
   app.get("/", async (c) => {
     return c.html(
-      <MonthView today={today} weeks={weeks} eventsByDate={eventsByDate} />,
+      <MonthView today={today} weeks={weeks} eventsByDate={eventsByDate} />
     );
   });
   return html(app);
@@ -120,23 +120,19 @@ export const renderCalendarMonthView = async (
 export const renderCalendarWeekView = async (
   weekDays: string[],
   eventsByDate: Map<string, CalendarEventRecord[]>,
-  today: string,
+  today: string
 ) => {
   const app = new Hono();
   app.get("/", async (c) => {
     return c.html(
-      <WeekView
-        today={today}
-        weekDays={weekDays}
-        eventsByDate={eventsByDate}
-      />,
+      <WeekView today={today} weekDays={weekDays} eventsByDate={eventsByDate} />
     );
   });
   return html(app);
 };
 
 export const renderPortableText = async (
-  content: Parameters<typeof PortableText>[0]["content"],
+  content: Parameters<typeof PortableText>[0]["content"]
 ) => {
   const app = new Hono();
   app.get("/", async (c) => {

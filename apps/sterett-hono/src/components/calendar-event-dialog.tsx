@@ -6,7 +6,7 @@ import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 import {
   formatDateTime,
   renderDescriptionHtml,
-  toPlainText,
+  toPlainText
 } from "../utils/calendar.ts";
 
 const CAL_SERVICES = [
@@ -14,14 +14,14 @@ const CAL_SERVICES = [
   { key: "ics" as const, label: "Apple / ICS" },
   { key: "outlook" as const, label: "Outlook" },
   { key: "office365" as const, label: "Office 365" },
-  { key: "yahoo" as const, label: "Yahoo" },
+  { key: "yahoo" as const, label: "Yahoo" }
 ];
 
 const calLinkClass =
   "inline-flex items-center rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 hover:text-white transition-colors";
 
 export const CalendarEventDialog = async ({
-  event,
+  event
 }: {
   event: CalendarEventRecord;
 }) => {
@@ -29,14 +29,14 @@ export const CalendarEventDialog = async ({
     description: toPlainText(event.description),
     end: event.endsAt,
     start: event.startsAt,
-    title: event.title,
+    title: event.title
   };
   const links = {
     google: google(calEvent),
     ics: ics(calEvent),
     office365: office365(calEvent),
     outlook: outlook(calEvent),
-    yahoo: yahoo(calEvent),
+    yahoo: yahoo(calEvent)
   };
 
   return (
@@ -60,7 +60,7 @@ export const CalendarEventDialog = async ({
           <div
             class="prose prose-sm prose-invert"
             dangerouslySetInnerHTML={{
-              __html: renderDescriptionHtml(event.description),
+              __html: renderDescriptionHtml(event.description)
             }}
           />
         )}

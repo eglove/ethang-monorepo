@@ -22,7 +22,7 @@ describe(H1, () => {
 
   it("merges custom className with base classes", async () => {
     const html = String(
-      await H1({ children: "x", className: "my-custom-class" }),
+      await H1({ children: "x", className: "my-custom-class" })
     );
 
     expect(html).toContain("my-custom-class");
@@ -111,7 +111,7 @@ describe(Link, () => {
 
   it("adds target and rel for external links", async () => {
     const html = String(
-      await Link({ children: "External", href: "https://example.com" }),
+      await Link({ children: "External", href: "https://example.com" })
     );
 
     expect(html).toContain('target="_blank"');
@@ -132,7 +132,7 @@ describe(Link, () => {
 
   it("merges custom className", async () => {
     const html = String(
-      await Link({ children: "x", className: "text-red-500", href: "/" }),
+      await Link({ children: "x", className: "text-red-500", href: "/" })
     );
 
     expect(html).toContain("text-red-500");
@@ -149,7 +149,7 @@ describe(Blockquote, () => {
 
   it("renders author attribution when author is provided", async () => {
     const html = String(
-      await Blockquote({ author: "Confucius", children: "Quote" }),
+      await Blockquote({ author: "Confucius", children: "Quote" })
     );
 
     expect(html).toContain("Confucius");
@@ -162,7 +162,7 @@ describe(Blockquote, () => {
       const result = await Blockquote({
         children: "Quote",
         source: "The Book",
-        sourceUrl: "https://example.com",
+        sourceUrl: "https://example.com"
       });
       return c.html(result as never);
     });
@@ -175,7 +175,7 @@ describe(Blockquote, () => {
 
   it("renders source without link when only source is provided", async () => {
     const html = String(
-      await Blockquote({ children: "Quote", source: "The Source" }),
+      await Blockquote({ children: "Quote", source: "The Source" })
     );
 
     expect(html).toContain("The Source");
@@ -187,8 +187,8 @@ describe(Blockquote, () => {
       await Blockquote({
         author: "Author",
         children: "Quote",
-        source: "Source",
-      }),
+        source: "Source"
+      })
     );
 
     expect(html).toContain("Author");

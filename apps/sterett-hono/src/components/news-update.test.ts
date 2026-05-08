@@ -7,14 +7,14 @@ import { renderNewsUpdate } from "../test-utilities/render.tsx";
 const TITLE = "Road Closure Notice";
 
 const makeUpdate = (
-  overrides: Partial<NewsUpdateReturn> = {},
+  overrides: Partial<NewsUpdateReturn> = {}
 ): NewsUpdateReturn => {
   return {
     _id: "n1",
     date: "2024-06-15",
     description: undefined as never,
     title: TITLE,
-    ...overrides,
+    ...overrides
   } as NewsUpdateReturn;
 };
 
@@ -30,10 +30,10 @@ describe("newsUpdate", () => {
       _key: "b1",
       _type: "block",
       children: [
-        { _key: "s1", _type: "span", marks: [], text: "Important update" },
+        { _key: "s1", _type: "span", marks: [], text: "Important update" }
       ],
       markDefs: [],
-      style: "normal",
+      style: "normal"
     };
     const html = await renderNewsUpdate(makeUpdate({ description }));
 
@@ -42,7 +42,7 @@ describe("newsUpdate", () => {
 
   it("renders without crashing when description is undefined", async () => {
     const html = await renderNewsUpdate(
-      makeUpdate({ description: undefined as never }),
+      makeUpdate({ description: undefined as never })
     );
 
     expect(html).toContain(TITLE);

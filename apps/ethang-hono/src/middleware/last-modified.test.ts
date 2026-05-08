@@ -6,8 +6,8 @@ const noop: () => Promise<void> = vi.fn().mockResolvedValue(undefined);
 const makeContext = (html: string, contentType = "text/html") => {
   return {
     res: new Response(html, {
-      headers: { "Content-Type": contentType },
-    }),
+      headers: { "Content-Type": contentType }
+    })
   };
 };
 
@@ -19,7 +19,7 @@ describe(lastModifiedMiddleware, () => {
 
     await lastModifiedMiddleware(
       context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
+      noop
     );
 
     const lastModified = context.res.headers.get("Last-Modified");
@@ -34,7 +34,7 @@ describe(lastModifiedMiddleware, () => {
 
     await lastModifiedMiddleware(
       context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
+      noop
     );
 
     expect(context.res).toBe(originalResponse);
@@ -46,7 +46,7 @@ describe(lastModifiedMiddleware, () => {
 
     await lastModifiedMiddleware(
       context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
+      noop
     );
 
     expect(context.res).toBe(originalResponse);
@@ -55,14 +55,14 @@ describe(lastModifiedMiddleware, () => {
   it("leaves response unchanged when body is null", async () => {
     const context = {
       res: new Response(null, {
-        headers: { "Content-Type": "text/html" },
-      }),
+        headers: { "Content-Type": "text/html" }
+      })
     };
     const originalResponse = context.res;
 
     await lastModifiedMiddleware(
       context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
+      noop
     );
 
     expect(context.res).toBe(originalResponse);
@@ -75,7 +75,7 @@ describe(lastModifiedMiddleware, () => {
 
     await lastModifiedMiddleware(
       context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
+      noop
     );
 
     expect(context.res).toBe(originalResponse);
@@ -88,7 +88,7 @@ describe(lastModifiedMiddleware, () => {
 
     await lastModifiedMiddleware(
       context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
+      noop
     );
 
     expect(context.res).toBe(originalResponse);
@@ -101,13 +101,13 @@ describe(lastModifiedMiddleware, () => {
       res: new Response(html, {
         headers: { "Content-Type": "text/html" },
         status: 201,
-        statusText: "Created",
-      }),
+        statusText: "Created"
+      })
     };
 
     await lastModifiedMiddleware(
       context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
+      noop
     );
 
     expect(context.res.status).toBe(201);
@@ -124,7 +124,7 @@ describe(lastModifiedMiddleware, () => {
 
     await lastModifiedMiddleware(
       context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      trackingNext,
+      trackingNext
     );
 
     expect(nextCalled).toBe(true);
@@ -137,16 +137,16 @@ describe(lastModifiedMiddleware, () => {
       start(controller) {
         controller.enqueue(new TextEncoder().encode("body content"));
         controller.close();
-      },
+      }
     });
     const context = {
-      res: new Response(stream, { headers: {} }),
+      res: new Response(stream, { headers: {} })
     };
     const originalResponse = context.res;
 
     await lastModifiedMiddleware(
       context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
+      noop
     );
 
     expect(context.res).toBe(originalResponse);
@@ -159,11 +159,11 @@ describe(lastModifiedMiddleware, () => {
 
     await lastModifiedMiddleware(
       context as unknown as Parameters<typeof lastModifiedMiddleware>[0],
-      noop,
+      noop
     );
 
     expect(context.res.headers.get("Last-Modified")).toBe(
-      new Date(isoDate).toUTCString(),
+      new Date(isoDate).toUTCString()
     );
   });
 });

@@ -6,12 +6,12 @@ const SCROLL_CONTAINERS_TITLE = "Easy Sticky Header/Footer";
 
 test.describe("tips page — keyboard user", () => {
   test("tip links are keyboard accessible and navigable with Enter", async ({
-    page,
+    page
   }) => {
     await page.goto(routes.tips);
 
     const scrollContainersLink = page.getByRole("link", {
-      name: SCROLL_CONTAINERS_TITLE,
+      name: SCROLL_CONTAINERS_TITLE
     });
     await scrollContainersLink.focus();
     await expect.soft(scrollContainersLink).toBeFocused();

@@ -3,7 +3,7 @@ import isNil from "lodash/isNil.js";
 
 import type {
   CourseCompletionState,
-  CourseStatusValue,
+  CourseStatusValue
 } from "./course-completion-types.client.js";
 
 export class CourseCompletionStore extends BaseStore<CourseCompletionState> {
@@ -47,7 +47,7 @@ export class CourseCompletionStore extends BaseStore<CourseCompletionState> {
   }
 
   public setStatuses(
-    trackings: { courseUrl: string; status: CourseStatusValue }[],
+    trackings: { courseUrl: string; status: CourseStatusValue }[]
   ) {
     this.update((draft) => {
       for (const tracking of trackings) {
@@ -55,7 +55,7 @@ export class CourseCompletionStore extends BaseStore<CourseCompletionState> {
         if (isNil(course)) {
           draft.courses[tracking.courseUrl] = {
             isLoading: false,
-            status: tracking.status,
+            status: tracking.status
           };
         } else {
           course.status = tracking.status;

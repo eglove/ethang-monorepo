@@ -21,7 +21,7 @@ const baseClasses = new Set([
   "py-2.5",
   "rounded-lg",
   "text-sm",
-  "transition-colors",
+  "transition-colors"
 ]);
 
 const defaultClasses = new Set([
@@ -30,7 +30,7 @@ const defaultClasses = new Set([
   "focus:ring-sky-300/30",
   "hover:bg-sky-300/20",
   "hover:border-sky-300/50",
-  "text-sky-300",
+  "text-sky-300"
 ]);
 
 const FOCUS_RING_SLATE_400 = "focus:ring-slate-400/30";
@@ -43,7 +43,7 @@ const secondaryClasses = new Set([
   FOCUS_RING_SLATE_400,
   "hover:bg-slate-600",
   "hover:border-slate-400",
-  TEXT_SLATE_200,
+  TEXT_SLATE_200
 ]);
 
 const tertiaryClasses = new Set([
@@ -52,7 +52,7 @@ const tertiaryClasses = new Set([
   FOCUS_RING_SLATE_400,
   HOVER_BORDER_SLATE_500,
   "hover:bg-slate-700",
-  TEXT_SLATE_200,
+  TEXT_SLATE_200
 ]);
 
 const successClasses = new Set([
@@ -61,7 +61,7 @@ const successClasses = new Set([
   "focus:ring-green-400/30",
   "hover:bg-green-400/20",
   "hover:border-green-400/50",
-  "text-green-400",
+  "text-green-400"
 ]);
 
 const dangerClasses = new Set([
@@ -70,7 +70,7 @@ const dangerClasses = new Set([
   "focus:ring-red-400/30",
   "hover:bg-red-400/20",
   "hover:border-red-400/50",
-  "text-red-400",
+  "text-red-400"
 ]);
 
 const warningClasses = new Set([
@@ -79,7 +79,7 @@ const warningClasses = new Set([
   "focus:ring-amber-400/30",
   "hover:bg-amber-400/20",
   "hover:border-amber-400/50",
-  "text-amber-400",
+  "text-amber-400"
 ]);
 
 const darkClasses = new Set([
@@ -88,7 +88,7 @@ const darkClasses = new Set([
   FOCUS_RING_SLATE_400,
   HOVER_BORDER_SLATE_500,
   "hover:bg-slate-800",
-  "text-slate-100",
+  "text-slate-100"
 ]);
 
 const ghostClasses = new Set([
@@ -97,7 +97,7 @@ const ghostClasses = new Set([
   FOCUS_RING_SLATE_400,
   HOVER_BORDER_SLATE_500,
   "hover:bg-slate-700",
-  TEXT_SLATE_200,
+  TEXT_SLATE_200
 ]);
 
 const extraSmallClasses = new Set(["px-3", "py-1.5", "text-xs"]);
@@ -113,7 +113,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, Set<string>> = {
   secondary: secondaryClasses,
   success: successClasses,
   tertiary: tertiaryClasses,
-  warning: warningClasses,
+  warning: warningClasses
 };
 
 const SIZE_CLASSES: Record<ButtonSize, Set<string>> = {
@@ -121,14 +121,14 @@ const SIZE_CLASSES: Record<ButtonSize, Set<string>> = {
   lg: largeClasses,
   sm: smallClasses,
   xl: xLargeClasses,
-  xs: extraSmallClasses,
+  xs: extraSmallClasses
 };
 
 const SIZES_WITHOUT_LEADING = new Set<ButtonSize>(["lg", "xl"]);
 
 export const getButtonClasses = (
   variant: ButtonVariant,
-  size: ButtonSize = "base",
+  size: ButtonSize = "base"
 ) => {
   let classSet = new Set(baseClasses).union(VARIANT_CLASSES[variant]);
   classSet = classSet.union(SIZE_CLASSES[size]);

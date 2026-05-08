@@ -11,7 +11,7 @@ export const H3 = async (properties: H3Properties) => {
     <h3
       class={twMerge(
         "scroll-m-20 text-2xl font-semibold tracking-tight text-slate-100 font-heading",
-        properties.className,
+        properties.className
       )}
     >
       {properties.children}

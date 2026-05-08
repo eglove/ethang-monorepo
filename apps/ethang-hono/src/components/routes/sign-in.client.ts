@@ -27,9 +27,9 @@ if (form && errorMessageElement && button) {
     fetch("https://auth.ethang.dev/sign-up", {
       body: JSON.stringify(data),
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
-      method: "POST",
+      method: "POST"
     })
       .then(async (response) => {
         if (response.ok) {

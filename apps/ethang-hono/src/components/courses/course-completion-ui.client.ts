@@ -3,7 +3,7 @@ import isNil from "lodash/isNil.js";
 import type { CourseCompletionStore } from "./course-completion-store.client.js";
 import type {
   CourseCompletionState,
-  CourseState,
+  CourseState
 } from "./course-completion-types.client.js";
 import type { CourseTrackingService } from "./course-tracking-service.client.js";
 
@@ -14,7 +14,7 @@ const REVISIT = "bg-amber-400";
 const COMPLETE = "bg-sky-300";
 
 const formatter = new Intl.NumberFormat("en-US", {
-  style: "percent",
+  style: "percent"
 });
 
 export class CourseCompletionUI {
@@ -22,7 +22,7 @@ export class CourseCompletionUI {
 
   public constructor(
     private readonly store: CourseCompletionStore,
-    private readonly service: CourseTrackingService,
+    private readonly service: CourseTrackingService
   ) {}
 
   public init() {
@@ -45,7 +45,7 @@ export class CourseCompletionUI {
 
   private attachEventListeners() {
     for (const button of document.querySelectorAll<HTMLButtonElement>(
-      BUTTON_SELECTOR,
+      BUTTON_SELECTOR
     )) {
       const { courseId, courseUrl } = button.dataset;
 
@@ -55,7 +55,7 @@ export class CourseCompletionUI {
 
           if (!isNil(userId)) {
             this.handleButtonClick(courseUrl, courseId, userId).catch(
-              globalThis.console.error,
+              globalThis.console.error
             );
           }
         });
@@ -66,7 +66,7 @@ export class CourseCompletionUI {
   private async handleButtonClick(
     courseUrl: string,
     courseId: string,
-    userId: string,
+    userId: string
   ) {
     this.store.setLoading(courseUrl, true);
 
@@ -84,13 +84,13 @@ export class CourseCompletionUI {
 
   private hideAuthenticatedUi() {
     for (const button of document.querySelectorAll<HTMLButtonElement>(
-      BUTTON_SELECTOR,
+      BUTTON_SELECTOR
     )) {
       button.classList.add("hidden");
     }
 
     for (const status of document.querySelectorAll<HTMLDivElement>(
-      STATUS_SELECTOR,
+      STATUS_SELECTOR
     )) {
       status.classList.add("hidden");
     }
@@ -114,7 +114,7 @@ export class CourseCompletionUI {
     let total = 0;
 
     for (const button of document.querySelectorAll<HTMLButtonElement>(
-      BUTTON_SELECTOR,
+      BUTTON_SELECTOR
     )) {
       const { courseUrl } = button.dataset;
 
@@ -122,7 +122,7 @@ export class CourseCompletionUI {
         total += 1;
         const courseState = state.courses[courseUrl] ?? {
           isLoading: false,
-          status: "Incomplete",
+          status: "Incomplete"
         };
 
         const statusElement =
@@ -150,7 +150,7 @@ export class CourseCompletionUI {
   private setPercentageContent(
     element: HTMLDivElement | null,
     elementTotal: number,
-    total: number,
+    total: number
   ) {
     if (element) {
       const decimal = elementTotal / total;
@@ -166,13 +166,13 @@ export class CourseCompletionUI {
 
   private showAuthenticatedUi() {
     for (const button of document.querySelectorAll<HTMLButtonElement>(
-      BUTTON_SELECTOR,
+      BUTTON_SELECTOR
     )) {
       button.classList.remove("hidden");
     }
 
     for (const status of document.querySelectorAll<HTMLDivElement>(
-      STATUS_SELECTOR,
+      STATUS_SELECTOR
     )) {
       status.classList.remove("hidden");
     }
@@ -184,7 +184,7 @@ export class CourseCompletionUI {
 
   private updateButtonState(
     button: HTMLButtonElement,
-    courseState: CourseState,
+    courseState: CourseState
   ) {
     button.disabled = courseState.isLoading;
 
@@ -212,12 +212,12 @@ export class CourseCompletionUI {
     complete: number,
     incomplete: number,
     revisit: number,
-    total: number,
+    total: number
   ) {
     const completeProgress =
       document.querySelector<HTMLDivElement>("#complete-progress");
     const incompleteProgress = document.querySelector<HTMLDivElement>(
-      "#incomplete-progress",
+      "#incomplete-progress"
     );
     const revisitProgress =
       document.querySelector<HTMLDivElement>("#revisit-progress");

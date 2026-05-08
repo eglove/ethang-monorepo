@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock(import("../models/blog-model.ts"), () => {
   return {
-    BlogModel: vi.fn(),
+    BlogModel: vi.fn()
   };
 });
 
@@ -18,7 +18,7 @@ const makeBlog = (overrides = {}) => {
     description: faker.lorem.sentence(),
     slug: { current: faker.lorem.slug() },
     title: faker.lorem.words(3),
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -26,7 +26,7 @@ const mockBlogModelWith = (getAllBlogs: ReturnType<typeof vi.fn>) => {
   vi.mocked(BlogModel).mockImplementation(
     class {
       public getAllBlogs = getAllBlogs;
-    } as never,
+    } as never
   );
 };
 
@@ -74,7 +74,7 @@ describe(blogRss, () => {
     const parsedDate = new Date(match?.groups?.["date"] ?? "");
 
     expect(parsedDate.getTime()).toBeGreaterThanOrEqual(
-      before.getTime() - 1000,
+      before.getTime() - 1000
     );
     expect(parsedDate.getTime()).toBeLessThanOrEqual(after.getTime() + 1000);
   });
@@ -84,7 +84,7 @@ describe(blogRss, () => {
     const updatedAt = "2024-07-15T09:30:00.000Z";
     const blogs = [
       makeBlog({ _updatedAt: "2024-01-01T00:00:00Z" }),
-      makeBlog({ _updatedAt: updatedAt }),
+      makeBlog({ _updatedAt: updatedAt })
     ];
     const mockGetAllBlogs = vi.fn().mockResolvedValue(blogs);
     mockBlogModelWith(mockGetAllBlogs);
@@ -112,7 +112,7 @@ describe(blogRss, () => {
       _id: "unique-guid-123",
       description: "A great post about testing",
       slug: { current: "testing-tips" },
-      title: "Testing Tips",
+      title: "Testing Tips"
     });
     const mockGetAllBlogs = vi.fn().mockResolvedValue([blog]);
     mockBlogModelWith(mockGetAllBlogs);

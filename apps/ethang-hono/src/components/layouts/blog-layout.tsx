@@ -3,7 +3,7 @@ import { MainLayout, type MainLayoutProperties } from "./main-layout.tsx";
 type BlogLayoutProperties = MainLayoutProperties;
 
 export const BlogLayout = async (
-  properties: Omit<BlogLayoutProperties, "isBlog">,
+  properties: Omit<BlogLayoutProperties, "isBlog">
 ) => {
   const { nextUrl, prevUrl, ...rest } = properties;
 

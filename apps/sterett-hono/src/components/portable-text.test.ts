@@ -16,11 +16,11 @@ describe("portableText", () => {
         _key: "b1",
         _type: "block",
         children: [
-          { _key: "s1", _type: "span", marks: [], text: "Hello world" },
+          { _key: "s1", _type: "span", marks: [], text: "Hello world" }
         ],
         markDefs: [],
-        style: "normal",
-      },
+        style: "normal"
+      }
     ];
 
     const html = await renderPortableText(content);
@@ -35,15 +35,15 @@ describe("portableText", () => {
         _type: "block",
         children: [{ _key: "s1", _type: "span", marks: [], text: "First" }],
         markDefs: [],
-        style: "normal",
+        style: "normal"
       },
       {
         _key: "b2",
         _type: "block",
         children: [{ _key: "s2", _type: "span", marks: [], text: "Second" }],
         markDefs: [],
-        style: "normal",
-      },
+        style: "normal"
+      }
     ];
 
     const html = await renderPortableText(content);
@@ -61,9 +61,9 @@ describe("portableText", () => {
         asset: {
           _id: "asset1",
           metadata: { dimensions: { height: 100, width: 200 }, lqip: "" },
-          url: "https://example.com/lake.jpg",
-        },
-      },
+          url: "https://example.com/lake.jpg"
+        }
+      }
     ];
 
     const html = await renderPortableText(content);
@@ -77,8 +77,8 @@ describe("portableText", () => {
       {
         _key: "img1",
         _type: "image",
-        altText: "No asset",
-      },
+        altText: "No asset"
+      }
     ];
 
     const html = await renderPortableText(content);

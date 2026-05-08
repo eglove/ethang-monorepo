@@ -33,7 +33,7 @@ const processElement = (element: HTMLElement): void => {
 };
 
 const processElements = (
-  elements: HTMLElement[] | NodeListOf<HTMLElement>,
+  elements: HTMLElement[] | NodeListOf<HTMLElement>
 ): void => {
   for (const element of elements) {
     processElement(element);
@@ -60,5 +60,5 @@ const observer = new MutationObserver((mutations) => {
 
 observer.observe(document.documentElement, {
   childList: true,
-  subtree: true,
+  subtree: true
 });

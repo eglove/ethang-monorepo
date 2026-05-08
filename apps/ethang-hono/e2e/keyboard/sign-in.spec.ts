@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { routes } from "../../routes.ts";
 import {
   mockSignInError,
-  mockSignInSuccess,
+  mockSignInSuccess
 } from "../helpers/courses-auth-helpers.ts";
 
 const SIGN_IN_ERROR = "#sign-in-error";
@@ -23,7 +23,7 @@ test.describe("sign-in page — keyboard user", () => {
   });
 
   test("submit button receives focus after password on Tab", async ({
-    page,
+    page
   }) => {
     await page.goto(routes.signIn);
     await page.getByLabel("Password").focus();
@@ -56,7 +56,7 @@ test.describe("sign-in page — keyboard user", () => {
   });
 
   test("error message is in the DOM and readable after failed login", async ({
-    page,
+    page
   }) => {
     await mockSignInError(page);
 

@@ -44,13 +44,13 @@ export class BlogModel {
   public async getBlogBySlug(slug: string) {
     return sanityClient.fetch<GetBlogBySlug>(
       `*[_type == "blog" && slug.current == $slug][0]${this.blogSchema}`,
-      { slug },
+      { slug }
     );
   }
 
   public async getPaginatedBlogs(
     page: number,
-    pageSize: number,
+    pageSize: number
   ): Promise<PaginatedBlogResult> {
     const start = (page - 1) * pageSize;
     const end = start + pageSize;
@@ -72,7 +72,7 @@ export class BlogModel {
       } },
       { "total": count(*[_type == "blog"]) }
     ]`,
-      { end, start },
+      { end, start }
     );
 
     const [{ posts }, { total }] = result;

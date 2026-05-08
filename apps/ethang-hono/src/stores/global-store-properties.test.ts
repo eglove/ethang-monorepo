@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock(import("@ethang/toolbelt/http/cookie.js"), () => {
   return {
-    getCookieValue: vi.fn(),
+    getCookieValue: vi.fn()
   };
 });
 
@@ -18,7 +18,7 @@ const makeContext = (
   options: {
     acceptLanguage?: string;
     timezone?: string;
-  } = {},
+  } = {}
 ) => {
   return {
     req: {
@@ -29,10 +29,10 @@ const makeContext = (
       raw: {
         cf:
           options.timezone === undefined ? {} : { timezone: options.timezone },
-        headers: new Headers(),
+        headers: new Headers()
       },
-      url,
-    },
+      url
+    }
   };
 };
 
@@ -104,7 +104,7 @@ describe("globalStore — setup() request parsing", () => {
   it("uses Cloudflare timezone when available", async () => {
     const store = makeStore();
     const context = makeContext(EXAMPLE_URL, {
-      timezone: "America/New_York",
+      timezone: "America/New_York"
     });
 
     await store.setup(context as never);
@@ -124,7 +124,7 @@ describe("globalStore — setup() request parsing", () => {
   it("takes the first locale from Accept-Language header", async () => {
     const store = makeStore();
     const context = makeContext(EXAMPLE_URL, {
-      acceptLanguage: "fr-FR,fr;q=0.9,en;q=0.8",
+      acceptLanguage: "fr-FR,fr;q=0.9,en;q=0.8"
     });
 
     await store.setup(context as never);
@@ -166,8 +166,8 @@ describe("globalStore — setup() auth", () => {
         json: () => {
           return { sub: "user-abc" };
         },
-        ok: true,
-      }),
+        ok: true
+      })
     );
     const store = new GlobalStore();
     const context = makeContext(EXAMPLE_URL);
@@ -189,8 +189,8 @@ describe("globalStore — setup() auth", () => {
         json: () => {
           return { sub: "user-abc" };
         },
-        ok: false,
-      }),
+        ok: false
+      })
     );
     const store = new GlobalStore();
     const context = makeContext(EXAMPLE_URL);
@@ -209,7 +209,7 @@ describe("globalStore — setup() auth", () => {
       json: () => {
         return { sub: "user-1" };
       },
-      ok: true,
+      ok: true
     });
     vi.stubGlobal("fetch", mockFetch);
     const store = new GlobalStore();
@@ -222,8 +222,8 @@ describe("globalStore — setup() auth", () => {
 
       expect.objectContaining({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        headers: expect.objectContaining({ "X-Token": "my-secret-token" }),
-      }),
+        headers: expect.objectContaining({ "X-Token": "my-secret-token" })
+      })
     );
   });
 
@@ -233,7 +233,7 @@ describe("globalStore — setup() auth", () => {
     vi.mocked(getCookieValue).mockReturnValue("token");
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockRejectedValue(new Error("Network error")),
+      vi.fn().mockRejectedValue(new Error("Network error"))
     );
     vi.spyOn(globalThis.console, "error").mockImplementation(noop);
     const store = new GlobalStore();
@@ -251,7 +251,7 @@ describe("globalStore — setup() auth", () => {
       json: () => {
         return { sub: "user-1" };
       },
-      ok: true,
+      ok: true
     });
     vi.stubGlobal("fetch", mockFetch);
     const store = new GlobalStore();
@@ -264,8 +264,8 @@ describe("globalStore — setup() auth", () => {
 
       expect.objectContaining({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        headers: expect.objectContaining({ "X-Token": "" }),
-      }),
+        headers: expect.objectContaining({ "X-Token": "" })
+      })
     );
   });
 });

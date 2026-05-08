@@ -5,16 +5,16 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
   return {
     NO_DRAFTS: "!(_id in path('drafts.**'))" as const,
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
 import { sterettSanityClient } from "../clients/sanity-client.ts";
 import {
   getCalendarEvents,
-  getLatestCalendarEventUpdatedAt,
+  getLatestCalendarEventUpdatedAt
 } from "./get-calendar-events.ts";
 
 const RANGE_START = "2024-06-01";
@@ -28,7 +28,7 @@ const makeEvent = (id: string) => {
     description: null,
     endsAt: "2024-06-15T15:00:00Z",
     startsAt: "2024-06-15T13:00:00Z",
-    title: `Event ${id}`,
+    title: `Event ${id}`
   };
 };
 
@@ -79,8 +79,8 @@ describe(getCalendarEvents, () => {
       expect.stringContaining("$rangeStart"),
       expect.objectContaining({
         rangeEndExclusive: RANGE_END,
-        rangeStart: RANGE_START,
-      }),
+        rangeStart: RANGE_START
+      })
     );
   });
 

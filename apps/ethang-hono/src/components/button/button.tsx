@@ -6,7 +6,7 @@ import { Link } from "../typography/link.tsx";
 import {
   type ButtonSize,
   type ButtonVariant,
-  getButtonClasses,
+  getButtonClasses
 } from "./button-classes.ts";
 
 type ButtonProperties = PropsWithChildren<{
@@ -31,7 +31,7 @@ export const Button = async (properties: ButtonProperties) => {
     id,
     size = "base",
     type,
-    variant = "default",
+    variant = "default"
   } = properties;
 
   const classes = getButtonClasses(variant, size);

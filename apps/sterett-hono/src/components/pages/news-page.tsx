@@ -2,7 +2,7 @@ import map from "lodash/map.js";
 
 import {
   getNewsAndEvents,
-  type NewsAndEvents,
+  type NewsAndEvents
 } from "../../sanity/get-news-and-events.ts";
 import { CalendarEvent } from "../event.tsx";
 import { MainLayout } from "../layouts/main-layout.tsx";
@@ -13,7 +13,7 @@ type NewsPageProperties = {
 };
 
 export const NewsPage = async ({
-  items: providedItems,
+  items: providedItems
 }: NewsPageProperties = {}) => {
   const items = providedItems ?? (await getNewsAndEvents());
   const updatedAt = map(items, (index) => {

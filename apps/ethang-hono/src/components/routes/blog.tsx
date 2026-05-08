@@ -14,7 +14,7 @@ import { P } from "../typography/p.tsx";
 
 const formattedDateTime = (dateTime: string) => {
   return DateTime.fromISO(dateTime, {
-    zone: globalStore.timezone,
+    zone: globalStore.timezone
   }).toLocaleString({ dateStyle: "medium", timeStyle: "short" });
 };
 
@@ -24,7 +24,7 @@ const shouldIncludePage = (
   pageNumber: number,
   max: number,
   current: number,
-  range: number,
+  range: number
 ) => {
   const isFirst = 1 === pageNumber;
   const isLast = pageNumber === max;
@@ -71,7 +71,7 @@ const renderPageLink = async (pageNumber: PageEntry, currentPage: number) => {
         "px-3 py-1 rounded text-sm",
         isActive
           ? "bg-sky-600 text-white font-semibold"
-          : "text-slate-300 hover:bg-slate-700",
+          : "text-slate-300 hover:bg-slate-700"
       )}
       {...(undefined === ariaCurrent ? {} : { "aria-current": ariaCurrent })}
     >
@@ -107,7 +107,7 @@ export const Blog = async ({ page = 1 }: { page?: number }) => {
   const pageSize = 10;
   const { maxPages, posts: blogs } = await blogModel.getPaginatedBlogs(
     page,
-    pageSize,
+    pageSize
   );
   const latestBlog = maxBy(blogs, "_updatedAt");
 
@@ -144,7 +144,7 @@ export const Blog = async ({ page = 1 }: { page?: number }) => {
                 class={twMerge(
                   "text-base uppercase",
                   "Dev Reads" === blog.blogCategory.title && "text-sky-300",
-                  "Blog" === blog.blogCategory.title && "text-sky-300",
+                  "Blog" === blog.blogCategory.title && "text-sky-300"
                 )}
               >
                 {blog.blogCategory.title}

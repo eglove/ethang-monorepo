@@ -26,7 +26,7 @@ export const swebokFocusMap = new Map([
   ["requirements", "Software Requirements"],
   ["scm", "Software Configuration Management"],
   ["security", "Software Security"],
-  ["testing", "Software Testing"],
+  ["testing", "Software Testing"]
 ]);
 
 class Counter {

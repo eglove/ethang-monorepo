@@ -1,5 +1,5 @@
 const button = document.querySelector<HTMLButtonElement>(
-  "[aria-controls='navbar-default']",
+  "[aria-controls='navbar-default']"
 );
 const menu = document.querySelector<HTMLElement>("#navbar-default");
 

@@ -10,8 +10,8 @@ describe(Image, () => {
         alt: "A photo",
         height: 200,
         src: "photo.jpg",
-        width: 300,
-      }),
+        width: 300
+      })
     );
 
     expect(html).toContain("<figure");
@@ -25,8 +25,8 @@ describe(Image, () => {
         alt: "Sunset view",
         height: 100,
         src: "a.jpg",
-        width: 100,
-      }),
+        width: 100
+      })
     );
 
     expect(html).toContain('alt="Sunset view"');
@@ -38,8 +38,8 @@ describe(Image, () => {
         alt: "x",
         height: 50,
         src: "https://example.com/img.png",
-        width: 50,
-      }),
+        width: 50
+      })
     );
 
     expect(html).toContain('src="https://example.com/img.png"');
@@ -47,7 +47,7 @@ describe(Image, () => {
 
   it("passes width and height to the img element", async () => {
     const html = String(
-      await Image({ alt: "x", height: 400, src: "a.jpg", width: 800 }),
+      await Image({ alt: "x", height: 400, src: "a.jpg", width: 800 })
     );
 
     expect(html).toContain('width="800"');
@@ -61,8 +61,8 @@ describe(Image, () => {
         caption: "Figure 1: Sales data",
         height: 200,
         src: "chart.png",
-        width: 400,
-      }),
+        width: 400
+      })
     );
 
     expect(html).toContain("<figcaption");
@@ -71,7 +71,7 @@ describe(Image, () => {
 
   it("does not render figcaption when caption is absent", async () => {
     const html = String(
-      await Image({ alt: "No caption", height: 100, src: "a.jpg", width: 100 }),
+      await Image({ alt: "No caption", height: 100, src: "a.jpg", width: 100 })
     );
 
     expect(html).not.toContain("<figcaption");
@@ -79,7 +79,7 @@ describe(Image, () => {
 
   it("uses lazy loading by default", async () => {
     const html = String(
-      await Image({ alt: "x", height: 100, src: "a.jpg", width: 100 }),
+      await Image({ alt: "x", height: 100, src: "a.jpg", width: 100 })
     );
 
     expect(html).toContain('loading="lazy"');
@@ -92,8 +92,8 @@ describe(Image, () => {
         height: 100,
         lazy: false,
         src: "a.jpg",
-        width: 100,
-      }),
+        width: 100
+      })
     );
 
     expect(html).toContain('loading="eager"');
@@ -106,8 +106,8 @@ describe(Image, () => {
         height: 100,
         priority: true,
         src: "a.jpg",
-        width: 100,
-      }),
+        width: 100
+      })
     );
 
     expect(html).toContain('loading="eager"');
@@ -116,7 +116,7 @@ describe(Image, () => {
 
   it("sets auto fetchpriority by default", async () => {
     const html = String(
-      await Image({ alt: "x", height: 100, src: "a.jpg", width: 100 }),
+      await Image({ alt: "x", height: 100, src: "a.jpg", width: 100 })
     );
 
     expect(html).toContain('fetchpriority="auto"');
@@ -129,8 +129,8 @@ describe(Image, () => {
         containerWidth: 640,
         height: 100,
         src: "a.jpg",
-        width: 640,
-      }),
+        width: 640
+      })
     );
 
     expect(html).toContain("640px");
@@ -143,8 +143,8 @@ describe(Image, () => {
         containerWidth: "50%",
         height: 100,
         src: "a.jpg",
-        width: 100,
-      }),
+        width: 100
+      })
     );
 
     expect(html).toContain("50%");
@@ -153,7 +153,7 @@ describe(Image, () => {
   it("passes srcset to the img element", async () => {
     const srcset = "img-480.jpg 480w, img-800.jpg 800w";
     const html = String(
-      await Image({ alt: "x", height: 100, src: "a.jpg", srcset, width: 100 }),
+      await Image({ alt: "x", height: 100, src: "a.jpg", srcset, width: 100 })
     );
 
     expect(html).toContain(srcset);
@@ -162,7 +162,7 @@ describe(Image, () => {
   it("passes sizes to the img element", async () => {
     const sizes = "(max-width: 600px) 100vw, 50vw";
     const html = String(
-      await Image({ alt: "x", height: 100, sizes, src: "a.jpg", width: 100 }),
+      await Image({ alt: "x", height: 100, sizes, src: "a.jpg", width: 100 })
     );
 
     expect(html).toContain(sizes);

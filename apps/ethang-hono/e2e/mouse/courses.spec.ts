@@ -11,7 +11,7 @@ test.describe("courses page", () => {
   });
 
   test("courses page shows sign-in link when unauthenticated", async ({
-    axePage,
+    axePage
   }) => {
     await axePage.goto(routes.courses);
     await expect

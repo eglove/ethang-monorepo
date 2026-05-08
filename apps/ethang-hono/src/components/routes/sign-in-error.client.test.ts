@@ -22,7 +22,7 @@ describe("sign-in.client.ts error handling", () => {
     `;
 
     vi.mocked(fetch).mockResolvedValue({
-      ok: false,
+      ok: false
     } as Response);
 
     // @ts-expect-error for test

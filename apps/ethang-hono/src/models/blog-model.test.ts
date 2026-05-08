@@ -5,8 +5,8 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock(import("../clients/sanity.ts"), (() => {
   return {
     sanityClient: {
-      fetch: vi.fn(),
-    },
+      fetch: vi.fn()
+    }
   };
 }) as never);
 
@@ -22,7 +22,7 @@ const makeBlog = () => {
     blogCategory: { _id: faker.string.uuid(), title: faker.lorem.word() },
     description: faker.lorem.sentence(),
     slug: { current: faker.lorem.slug() },
-    title: faker.lorem.words(3),
+    title: faker.lorem.words(3)
   };
 };
 
@@ -100,7 +100,7 @@ describe(BlogModel, () => {
 
       const parameters = get(
         vi.mocked(sanityClient).fetch.mock.calls,
-        "[0][1]",
+        "[0][1]"
       );
 
       expect(parameters).toStrictEqual({ slug: "specific-slug" });
@@ -141,9 +141,9 @@ describe(BlogModel, () => {
         {
           posts: Array.from({ length: 10 }, () => {
             return makeBlog();
-          }),
+          })
         },
-        { total: 25 },
+        { total: 25 }
       ] as never);
 
       const model = new BlogModel();
@@ -160,9 +160,9 @@ describe(BlogModel, () => {
         {
           posts: Array.from({ length: 10 }, () => {
             return makeBlog();
-          }),
+          })
         },
-        { total: 25 },
+        { total: 25 }
       ] as never);
 
       const model = new BlogModel();
@@ -170,7 +170,7 @@ describe(BlogModel, () => {
 
       const parameters = get(
         vi.mocked(sanityClient).fetch.mock.calls,
-        "[0][1]",
+        "[0][1]"
       );
 
       expect(parameters).toMatchObject({ end: 20, start: 10 });
@@ -182,9 +182,9 @@ describe(BlogModel, () => {
         {
           posts: Array.from({ length: 5 }, () => {
             return makeBlog();
-          }),
+          })
         },
-        { total: 25 },
+        { total: 25 }
       ] as never);
 
       const model = new BlogModel();
@@ -192,7 +192,7 @@ describe(BlogModel, () => {
 
       const parameters = get(
         vi.mocked(sanityClient).fetch.mock.calls,
-        "[0][1]",
+        "[0][1]"
       );
 
       expect(parameters).toMatchObject({ end: 30, start: 20 });
@@ -202,7 +202,7 @@ describe(BlogModel, () => {
       vi.clearAllMocks();
       vi.mocked(sanityClient).fetch.mockResolvedValue([
         { posts: [] },
-        { total: 25 },
+        { total: 25 }
       ] as never);
 
       const model = new BlogModel();
@@ -217,7 +217,7 @@ describe(BlogModel, () => {
       vi.clearAllMocks();
       vi.mocked(sanityClient).fetch.mockResolvedValue([
         { posts: [] },
-        { total: 0 },
+        { total: 0 }
       ] as never);
 
       const model = new BlogModel();
@@ -234,9 +234,9 @@ describe(BlogModel, () => {
         {
           posts: Array.from({ length: 5 }, () => {
             return makeBlog();
-          }),
+          })
         },
-        { total: 5 },
+        { total: 5 }
       ] as never);
 
       const model = new BlogModel();
@@ -251,7 +251,7 @@ describe(BlogModel, () => {
       vi.clearAllMocks();
       vi.mocked(sanityClient).fetch.mockResolvedValue([
         { posts: [] },
-        { total: 0 },
+        { total: 0 }
       ] as never);
 
       const model = new BlogModel();

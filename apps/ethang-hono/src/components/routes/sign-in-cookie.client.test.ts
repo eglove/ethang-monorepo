@@ -20,7 +20,7 @@ describe("sign-in.client.ts cookieStore success", () => {
       json: () => {
         return { sessionToken: "test-token" };
       },
-      ok: true,
+      ok: true
     } as unknown as Response);
 
     // @ts-expect-error for test

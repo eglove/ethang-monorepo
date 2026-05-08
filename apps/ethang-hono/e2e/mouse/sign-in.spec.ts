@@ -9,7 +9,7 @@ import {
   mockSignInError,
   mockSignInSuccess,
   mockTrackingApi,
-  mockVerifyOk,
+  mockVerifyOk
 } from "../helpers/courses-auth-helpers.ts";
 import { expect, test } from "../index.ts";
 
@@ -23,7 +23,7 @@ test.describe("sign in", () => {
   });
 
   test("sign-in form has accessible email and password fields", async ({
-    axePage,
+    axePage
   }) => {
     await axePage.goto(routes.signIn);
     await expect.soft(axePage.getByLabel("Email")).toBeVisible();
@@ -35,7 +35,7 @@ test.describe("sign in", () => {
 
   test.describe("sign-in form — submission behavior", () => {
     test("successful sign-in sets auth cookie and redirects to /courses", async ({
-      axePage,
+      axePage
     }) => {
       await mockSignInSuccess(axePage);
       // Mock the verify and tracking endpoints so the courses client does not
@@ -71,7 +71,7 @@ test.describe("sign in", () => {
     });
 
     test("submit button is disabled while request is in flight", async ({
-      axePage,
+      axePage
     }) => {
       let resolveRoute!: () => void;
       await axePage.context().route(AUTH_SIGN_UP_URL, async (route) => {
@@ -81,7 +81,7 @@ test.describe("sign in", () => {
         await route.fulfill({
           body: JSON.stringify({ sessionToken: MOCK_SESSION_TOKEN }),
           contentType: CONTENT_TYPE_JSON,
-          status: 200,
+          status: 200
         });
       });
       // Mock verify and tracking so the courses client does not delete the auth

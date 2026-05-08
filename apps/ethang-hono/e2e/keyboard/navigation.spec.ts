@@ -13,7 +13,7 @@ test.describe("navigation hamburger menu — keyboard user (mobile)", () => {
       await page.goto("/");
 
       const hamburgerButton = page.getByRole("button", {
-        name: HAMBURGER_BUTTON_NAME,
+        name: HAMBURGER_BUTTON_NAME
       });
       await hamburgerButton.focus();
       await expect.soft(hamburgerButton).toBeFocused();
@@ -27,7 +27,7 @@ test.describe("navigation hamburger menu — keyboard user (mobile)", () => {
         .soft(hamburgerButton)
         .toHaveAttribute(ARIA_EXPANDED, "false");
       await expect.soft(page.locator(NAV_MENU)).toBeHidden();
-    },
+    }
   );
 
   test(
@@ -37,12 +37,12 @@ test.describe("navigation hamburger menu — keyboard user (mobile)", () => {
       await page.goto("/");
 
       const hamburgerButton = page.getByRole("button", {
-        name: HAMBURGER_BUTTON_NAME,
+        name: HAMBURGER_BUTTON_NAME
       });
       await hamburgerButton.focus();
       await page.keyboard.press("Space");
       await expect.soft(hamburgerButton).toHaveAttribute(ARIA_EXPANDED, "true");
       await expect.soft(page.locator(NAV_MENU)).toBeVisible();
-    },
+    }
   );
 });

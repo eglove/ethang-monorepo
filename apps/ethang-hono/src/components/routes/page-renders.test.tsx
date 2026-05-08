@@ -8,7 +8,7 @@ import { globalStore } from "../../stores/global-store-properties.ts";
 
 vi.mock(import("../../models/blog-model.ts"), () => {
   return {
-    BlogModel: vi.fn(),
+    BlogModel: vi.fn()
   };
 });
 
@@ -37,7 +37,7 @@ const mockBlogModelWith = (getPaginatedBlogs: ReturnType<typeof vi.fn>) => {
   vi.mocked(BlogModel).mockImplementation(
     class {
       public getPaginatedBlogs = getPaginatedBlogs;
-    } as never,
+    } as never
   );
 };
 
@@ -53,7 +53,7 @@ const makeBlogPost = (index: number) => {
     blogCategory: BLOG_CATEGORY,
     description: `Post ${index}`,
     slug: { current: `post-${index}` },
-    title: `Post ${index}`,
+    title: `Post ${index}`
   };
 };
 
@@ -149,7 +149,7 @@ describe(ScrollbarGutter, () => {
     const html = await render(<ScrollbarGutter />);
 
     expect(html).toContain(
-      'data-script="components/routes/tips/scrollbar-gutter"',
+      'data-script="components/routes/tips/scrollbar-gutter"'
     );
   });
 });
@@ -169,11 +169,11 @@ describe(Blog, () => {
             blogCategory: BLOG_CATEGORY,
             description: "A post",
             slug: { current: "my-post" },
-            title: "My Post",
-          },
+            title: "My Post"
+          }
         ],
-        total: 1,
-      }),
+        total: 1
+      })
     );
 
     const html = await render(<Blog />);
@@ -185,7 +185,7 @@ describe(Blog, () => {
   it("renders empty state when no blogs", async () => {
     vi.clearAllMocks();
     mockBlogModelWith(
-      vi.fn().mockResolvedValue({ maxPages: 1, posts: [], total: 0 }),
+      vi.fn().mockResolvedValue({ maxPages: 1, posts: [], total: 0 })
     );
 
     const html = await render(<Blog />);
@@ -206,11 +206,11 @@ describe(Blog, () => {
             blogCategory: { _id: "cat-2", title: "Dev Reads" },
             description: "A dev reads post",
             slug: { current: "dev-reads-post" },
-            title: "Dev Reads Post",
-          },
+            title: "Dev Reads Post"
+          }
         ],
-        total: 1,
-      }),
+        total: 1
+      })
     );
 
     const html = await render(<Blog />);
@@ -227,8 +227,8 @@ describe(Blog, () => {
         posts: Array.from({ length: 10 }, (_, index) => {
           return makeBlogPost(index);
         }),
-        total: 50,
-      }),
+        total: 50
+      })
     );
 
     const html = await render(<Blog page={3} />);
@@ -246,8 +246,8 @@ describe(Blog, () => {
         posts: Array.from({ length: 10 }, (_, index) => {
           return makeBlogPost(index);
         }),
-        total: 100,
-      }),
+        total: 100
+      })
     );
 
     const html = await render(<Blog page={5} />);
@@ -263,8 +263,8 @@ describe(Blog, () => {
         posts: Array.from({ length: 10 }, (_, index) => {
           return makeBlogPost(index);
         }),
-        total: 50,
-      }),
+        total: 50
+      })
     );
 
     const html = await render(<Blog page={2} />);
@@ -291,7 +291,7 @@ describe(Courses, () => {
     coursePathData.learningPaths = [];
     coursePathData.latestUpdate = {
       _id: "update-1",
-      _updatedAt: "2024-06-01T00:00:00Z",
+      _updatedAt: "2024-06-01T00:00:00Z"
     };
 
     const html = await render(<Courses />);
@@ -303,7 +303,7 @@ describe(Courses, () => {
     const html = await render(<Courses />);
 
     expect(html).toContain(
-      'data-script="components/courses/course-completion"',
+      'data-script="components/courses/course-completion"'
     );
   });
 

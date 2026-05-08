@@ -17,8 +17,8 @@ const resetTestState = async () => {
       json: () => {
         return {};
       },
-      ok: true,
-    }),
+      ok: true
+    })
   );
   vi.stubGlobal("location", { reload: vi.fn() });
   document.body.innerHTML = "";
@@ -41,7 +41,7 @@ describe("course-completion.client init tests", () => {
     await resetTestState();
     const { init } = await import("./course-completion.client.js");
     vi.stubGlobal("cookieStore", {
-      get: vi.fn().mockResolvedValue(undefined),
+      get: vi.fn().mockResolvedValue(undefined)
     });
     document.body.innerHTML = `
       <div id="auth-section-header"></div>
@@ -55,20 +55,20 @@ describe("course-completion.client init tests", () => {
     expect(
       document
         .querySelector("#auth-section-header")
-        ?.classList.contains("hidden"),
+        ?.classList.contains("hidden")
     ).toBe(true);
     expect(
-      document.querySelector("#sign-in-prompt")?.classList.contains("hidden"),
+      document.querySelector("#sign-in-prompt")?.classList.contains("hidden")
     ).toBe(false);
     expect(
       document
         .querySelector(".course-completion-button")
-        ?.classList.contains("hidden"),
+        ?.classList.contains("hidden")
     ).toBe(true);
     expect(
       document
         .querySelector(".course-status-text")
-        ?.classList.contains("hidden"),
+        ?.classList.contains("hidden")
     ).toBe(true);
   });
 
@@ -86,7 +86,7 @@ describe("course-completion.client init tests", () => {
     expect(
       document
         .querySelector("#auth-section-header")
-        ?.classList.contains("hidden"),
+        ?.classList.contains("hidden")
     ).toBe(true);
   });
 
@@ -98,7 +98,7 @@ describe("course-completion.client init tests", () => {
       json: () => {
         return { email: "e", exp: 2, iat: 1, sub: "123", username: "u" };
       },
-      ok: true,
+      ok: true
     } as unknown as Response);
     document.body.innerHTML = '<div id="auth-section-header"></div>';
 
@@ -107,8 +107,8 @@ describe("course-completion.client init tests", () => {
     expect(fetch).toHaveBeenCalledWith(
       "https://auth.ethang.dev/verify",
       expect.objectContaining({
-        headers: { "X-Token": "test-token" },
-      }),
+        headers: { "X-Token": "test-token" }
+      })
     );
   });
 
@@ -117,7 +117,7 @@ describe("course-completion.client init tests", () => {
     const { init } = await import("./course-completion.client.js");
     document.cookie = `${AUTH_COOKIE_NAME}=test-token`;
     vi.mocked(fetch).mockResolvedValue({
-      ok: false,
+      ok: false
     } as Response);
 
     await init();

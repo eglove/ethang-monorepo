@@ -8,7 +8,7 @@ export const sterettSanityClient = createClient({
   dataset: "production",
   // cspell:disable-next-line
   projectId: "540gjnt8",
-  useCdn: true,
+  useCdn: true
 });
 
 export const sanityImage = createImageUrlBuilder(sterettSanityClient);

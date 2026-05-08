@@ -35,7 +35,7 @@ describe(CourseCompletionUI, () => {
 
     ui.init();
     const button = document.querySelector<HTMLButtonElement>(
-      ".course-completion-button",
+      ".course-completion-button"
     );
 
     button?.click();

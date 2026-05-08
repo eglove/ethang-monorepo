@@ -9,5 +9,5 @@ export const courseTrackingTable = sqliteTable("courseTracking", {
   courseUrl: text("courseUrl").notNull(),
   id: text("id").primaryKey().$defaultFn(generateCourseTrackingId),
   status: text("status").notNull(),
-  userId: text("userId").notNull(),
+  userId: text("userId").notNull()
 });

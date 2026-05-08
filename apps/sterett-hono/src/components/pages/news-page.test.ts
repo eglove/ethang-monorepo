@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import type {
   CalendarEventReturn,
-  NewsUpdateReturn,
+  NewsUpdateReturn
 } from "../../sanity/get-news-and-events.ts";
 
 import { sterettSanityClient } from "../../clients/sanity-client.ts";
@@ -19,7 +19,7 @@ const mockEvent: CalendarEventReturn = {
   description: null as unknown as CalendarEventReturn["description"],
   endsAt: "2024-06-15T15:00:00Z",
   startsAt: "2024-06-15T13:00:00Z",
-  title: BOARD_MEETING,
+  title: BOARD_MEETING
 };
 
 const mockUpdate: NewsUpdateReturn = {
@@ -27,7 +27,7 @@ const mockUpdate: NewsUpdateReturn = {
   _updatedAt: "2024-06-14T00:00:00Z",
   date: "2024-06-14",
   description: null as unknown as NewsUpdateReturn["description"],
-  title: NEWS_UPDATE,
+  title: NEWS_UPDATE
 };
 
 describe("newsPage", () => {

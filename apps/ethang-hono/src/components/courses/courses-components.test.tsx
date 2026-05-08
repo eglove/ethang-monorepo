@@ -26,7 +26,7 @@ const makeCourse = (overrides = {}) => {
     author: faker.person.fullName(),
     name: faker.lorem.words(2),
     url: faker.internet.url(),
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -38,7 +38,7 @@ const makeLearningPath = (courses = [makeCourse()], overrides = {}) => {
     name: faker.company.name(),
     swebokFocus: "testing",
     url: faker.internet.url(),
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -48,7 +48,7 @@ const makeTracking = (overrides = {}) => {
     id: faker.string.uuid(),
     status: COURSE_TRACKING_STATUS.COMPLETE,
     userId: faker.string.uuid(),
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -72,7 +72,7 @@ describe(CourseItem, () => {
     const courseId = faker.string.uuid();
     const course = makeCourse({
       _id: courseId,
-      url: "https://course.example.com",
+      url: "https://course.example.com"
     });
     coursePathData.learningPaths = [makeLearningPath([course])];
 
@@ -98,7 +98,7 @@ describe(CourseList, () => {
           count += 1;
           return count;
         }}
-      />,
+      />
     );
 
     expect(html).toContain("<ul");
@@ -119,7 +119,7 @@ describe(CourseList, () => {
           count += 1;
           return count;
         }}
-      />,
+      />
     );
 
     expect(html).toContain(COURSE_TRACKING_STATUS.INCOMPLETE);
@@ -140,7 +140,7 @@ describe(CourseList, () => {
           count += 1;
           return count;
         }}
-      />,
+      />
     );
 
     expect(html).toContain(`data-course-url="${courseUrl}"`);
@@ -152,7 +152,7 @@ describe(CourseList, () => {
     const course = makeCourse({ _id: "c1", url: courseUrl });
     coursePathData.learningPaths = [makeLearningPath([course])];
     coursePathData.courseTrackings = [
-      makeTracking({ courseUrl, status: COURSE_TRACKING_STATUS.COMPLETE }),
+      makeTracking({ courseUrl, status: COURSE_TRACKING_STATUS.COMPLETE })
     ];
 
     let count = 0;
@@ -163,7 +163,7 @@ describe(CourseList, () => {
           count += 1;
           return count;
         }}
-      />,
+      />
     );
 
     expect(html).toContain(COURSE_TRACKING_STATUS.COMPLETE);
@@ -175,7 +175,7 @@ describe(CourseList, () => {
     const course = makeCourse({ _id: "c1", url: courseUrl });
     coursePathData.learningPaths = [makeLearningPath([course])];
     coursePathData.courseTrackings = [
-      makeTracking({ courseUrl, status: COURSE_TRACKING_STATUS.INCOMPLETE }),
+      makeTracking({ courseUrl, status: COURSE_TRACKING_STATUS.INCOMPLETE })
     ];
 
     let count = 0;
@@ -186,7 +186,7 @@ describe(CourseList, () => {
           count += 1;
           return count;
         }}
-      />,
+      />
     );
 
     expect(html).toContain("bg-slate-700");
@@ -198,7 +198,7 @@ describe(CourseList, () => {
     const course = makeCourse({ _id: "c1", url: courseUrl });
     coursePathData.learningPaths = [makeLearningPath([course])];
     coursePathData.courseTrackings = [
-      makeTracking({ courseUrl, status: COURSE_TRACKING_STATUS.REVISIT }),
+      makeTracking({ courseUrl, status: COURSE_TRACKING_STATUS.REVISIT })
     ];
 
     let count = 0;
@@ -209,7 +209,7 @@ describe(CourseList, () => {
           count += 1;
           return count;
         }}
-      />,
+      />
     );
 
     expect(html).toContain("bg-amber-400");
@@ -223,7 +223,7 @@ describe(CourseProgressBar, () => {
     coursePathData.courseTrackings = [
       makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
       makeTracking({ status: COURSE_TRACKING_STATUS.REVISIT }),
-      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE })
     ];
     const html = String(await CourseProgressBar());
 
@@ -237,7 +237,7 @@ describe(CourseProgressBar, () => {
     coursePathData.totalCourseCount = 2;
     coursePathData.courseTrackings = [
       makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
-      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE })
     ];
     const html = String(await CourseProgressBar());
 
@@ -251,10 +251,10 @@ describe(CourseProgressBar, () => {
     coursePathData.courseTrackings = [
       makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
       makeTracking({ status: COURSE_TRACKING_STATUS.REVISIT }),
-      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE })
     ];
     const html = String(
-      await CourseProgressBar({ classNames: { container: "my-custom-class" } }),
+      await CourseProgressBar({ classNames: { container: "my-custom-class" } })
     );
 
     expect(html).toContain("my-custom-class");
@@ -266,7 +266,7 @@ describe(CourseProgressBar, () => {
     coursePathData.courseTrackings = [
       makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
       makeTracking({ status: COURSE_TRACKING_STATUS.REVISIT }),
-      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE })
     ];
     const html = String(await CourseProgressBar());
 
@@ -279,7 +279,7 @@ describe(CourseProgressBar, () => {
     coursePathData.courseTrackings = [
       makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
       makeTracking({ status: COURSE_TRACKING_STATUS.REVISIT }),
-      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.INCOMPLETE })
     ];
     const html = String(await CourseProgressBar());
 
@@ -290,7 +290,7 @@ describe(CourseProgressBar, () => {
     resetCoursePathData();
     coursePathData.totalCourseCount = 10;
     coursePathData.courseTrackings = [
-      makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE }),
+      makeTracking({ status: COURSE_TRACKING_STATUS.COMPLETE })
     ];
     const html = String(await CourseProgressBar());
 
@@ -337,8 +337,8 @@ describe(CoursesContainer, () => {
       makeLearningPath([course], {
         name: "Path One: Details",
         swebokFocus: "testing",
-        url: "https://example.com/path",
-      }),
+        url: "https://example.com/path"
+      })
     ];
     coursePathData.courseTrackings = [];
     const html = await renderJsx(<CoursesContainer />);
@@ -353,8 +353,8 @@ describe(CoursesContainer, () => {
     coursePathData.learningPaths = [
       makeLearningPath([course], {
         name: "Part One: Part Two",
-        url: "https://example.com",
-      }),
+        url: "https://example.com"
+      })
     ];
     coursePathData.courseTrackings = [];
     const html = await renderJsx(<CoursesContainer />);
@@ -369,8 +369,8 @@ describe(CoursesContainer, () => {
     coursePathData.learningPaths = [
       makeLearningPath([course], {
         name: "Single Name",
-        url: "https://example.com",
-      }),
+        url: "https://example.com"
+      })
     ];
     coursePathData.courseTrackings = [];
     const html = await renderJsx(<CoursesContainer />);
@@ -385,8 +385,8 @@ describe(CoursesContainer, () => {
       makeLearningPath([course], {
         name: "No URL Path",
         swebokFocus: "testing",
-        url: undefined,
-      }),
+        url: undefined
+      })
     ];
     coursePathData.courseTrackings = [];
     const html = await renderJsx(<CoursesContainer />);
@@ -403,8 +403,8 @@ describe(CoursesContainer, () => {
       makeLearningPath([course], {
         name: "NoURL: WithColon",
         swebokFocus: "testing",
-        url: undefined,
-      }),
+        url: undefined
+      })
     ];
     coursePathData.courseTrackings = [];
     const html = await renderJsx(<CoursesContainer />);

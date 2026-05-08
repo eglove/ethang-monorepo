@@ -9,7 +9,7 @@ export const List = async (properties: ListProperties) => {
     <ul
       class={twMerge(
         "my-6 ml-6 list-disc [&>li]:mt-2 text-slate-200",
-        properties.className,
+        properties.className
       )}
     >
       {properties.children}

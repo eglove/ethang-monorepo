@@ -34,7 +34,7 @@ test.describe("scroll-containers page — keyboard user", () => {
         // eslint-disable-next-line no-await-in-loop
         await expect.soft(link).toBeFocused();
       }
-    },
+    }
   );
 
   test(
@@ -52,6 +52,6 @@ test.describe("scroll-containers page — keyboard user", () => {
         // eslint-disable-next-line no-await-in-loop
         await expect.soft(link).toBeFocused();
       }
-    },
+    }
   );
 });

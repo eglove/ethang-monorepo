@@ -23,7 +23,7 @@ export const getFiles = async (): Promise<FilesResult> => {
 
   const [generalCovenant, meetingMinutes] = await Promise.all([
     sterettSanityClient.fetch<FileRecord[]>(generalCovenantQuery),
-    sterettSanityClient.fetch<FileRecord[]>(meetingMinutesQuery),
+    sterettSanityClient.fetch<FileRecord[]>(meetingMinutesQuery)
   ]);
 
   return {
@@ -33,6 +33,6 @@ export const getFiles = async (): Promise<FilesResult> => {
     general: filter(generalCovenant, (f) => {
       return "General" === f.category;
     }),
-    meetingMinutes,
+    meetingMinutes
   };
 };

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock(import("./models/blog-model.ts"), () => {
   return {
-    BlogModel: vi.fn(),
+    BlogModel: vi.fn()
   };
 });
 
@@ -17,7 +17,7 @@ const makeBlog = (overrides = {}) => {
     _id: faker.string.uuid(),
     _updatedAt: faker.date.recent().toISOString(),
     slug: { current: faker.lorem.slug() },
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -25,7 +25,7 @@ const mockBlogModelWith = (getAllBlogs: ReturnType<typeof vi.fn>) => {
   vi.mocked(BlogModel).mockImplementation(
     class {
       public getAllBlogs = getAllBlogs;
-    } as never,
+    } as never
   );
 };
 
@@ -38,7 +38,7 @@ describe(sitemap, () => {
 
     expect(result).toContain('<?xml version="1.0" encoding="UTF-8"?>');
     expect(result).toContain(
-      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
     );
     expect(result).toContain("</urlset>");
   });

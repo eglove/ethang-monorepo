@@ -5,18 +5,18 @@ vi.mock(import("../../clients/sanity-client.ts"), () => {
     sanityImage: {
       image: () => {
         return {};
-      },
+      }
     },
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
 vi.mock(import("../../sanity/get-page.ts"), () => {
   return {
-    getPage: vi.fn(),
+    getPage: vi.fn()
   };
 });
 
@@ -32,7 +32,7 @@ describe("homePage", () => {
       _id: "p1",
       _updatedAt: "2024-06-15T00:00:00Z",
       content: [],
-      title: "Home",
+      title: "Home"
     });
 
     const html = await renderHomePage();

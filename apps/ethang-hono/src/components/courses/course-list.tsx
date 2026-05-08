@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 
 import {
   coursePathData,
-  type CoursePathDataProperties,
+  type CoursePathDataProperties
 } from "../../stores/course-path-store.ts";
 import { globalStore } from "../../stores/global-store-properties.ts";
 import { COURSE_TRACKING_STATUS } from "../../utilities/constants.ts";
@@ -31,7 +31,7 @@ export const CourseList = async (properties: CourseListProperties) => {
               <div
                 class={twMerge(
                   "course-status-text text-sm",
-                  !globalStore.isAuthenticated && "hidden",
+                  !globalStore.isAuthenticated && "hidden"
                 )}
               >
                 {courseData?.status ?? COURSE_TRACKING_STATUS.INCOMPLETE}
@@ -51,7 +51,7 @@ export const CourseList = async (properties: CourseListProperties) => {
                   "bg-sky-300",
                 COURSE_TRACKING_STATUS.REVISIT === courseData?.status &&
                   "bg-amber-400",
-                !globalStore.isAuthenticated && "hidden",
+                !globalStore.isAuthenticated && "hidden"
               )}
             />
           </li>

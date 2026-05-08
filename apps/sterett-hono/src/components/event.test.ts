@@ -10,7 +10,7 @@ describe(getIsHappeningNow, () => {
     vi.setSystemTime(NOW);
 
     expect(
-      getIsHappeningNow("2024-06-15T13:00:00.000Z", "2024-06-15T15:00:00.000Z"),
+      getIsHappeningNow("2024-06-15T13:00:00.000Z", "2024-06-15T15:00:00.000Z")
     ).toBe(true);
 
     vi.useRealTimers();
@@ -21,7 +21,7 @@ describe(getIsHappeningNow, () => {
     vi.setSystemTime(NOW);
 
     expect(
-      getIsHappeningNow(NOW.toISOString(), "2024-06-15T16:00:00.000Z"),
+      getIsHappeningNow(NOW.toISOString(), "2024-06-15T16:00:00.000Z")
     ).toBe(true);
 
     vi.useRealTimers();
@@ -32,7 +32,7 @@ describe(getIsHappeningNow, () => {
     vi.setSystemTime(NOW);
 
     expect(
-      getIsHappeningNow("2024-06-15T13:00:00.000Z", NOW.toISOString()),
+      getIsHappeningNow("2024-06-15T13:00:00.000Z", NOW.toISOString())
     ).toBe(true);
 
     vi.useRealTimers();
@@ -43,7 +43,7 @@ describe(getIsHappeningNow, () => {
     vi.setSystemTime(NOW);
 
     expect(
-      getIsHappeningNow("2024-06-15T15:00:00.000Z", "2024-06-15T17:00:00.000Z"),
+      getIsHappeningNow("2024-06-15T15:00:00.000Z", "2024-06-15T17:00:00.000Z")
     ).toBe(false);
 
     vi.useRealTimers();
@@ -54,7 +54,7 @@ describe(getIsHappeningNow, () => {
     vi.setSystemTime(NOW);
 
     expect(
-      getIsHappeningNow("2024-06-15T10:00:00.000Z", "2024-06-15T12:00:00.000Z"),
+      getIsHappeningNow("2024-06-15T10:00:00.000Z", "2024-06-15T12:00:00.000Z")
     ).toBe(false);
 
     vi.useRealTimers();
@@ -65,7 +65,7 @@ describe(getIsHappeningNow, () => {
     vi.setSystemTime(NOW);
 
     expect(
-      getIsHappeningNow("2024-06-14T10:00:00.000Z", "2024-06-14T12:00:00.000Z"),
+      getIsHappeningNow("2024-06-14T10:00:00.000Z", "2024-06-14T12:00:00.000Z")
     ).toBe(false);
 
     vi.useRealTimers();
@@ -76,7 +76,7 @@ describe(getIsHappeningNow, () => {
     vi.setSystemTime(NOW);
 
     expect(
-      getIsHappeningNow("2024-06-16T10:00:00.000Z", "2024-06-16T12:00:00.000Z"),
+      getIsHappeningNow("2024-06-16T10:00:00.000Z", "2024-06-16T12:00:00.000Z")
     ).toBe(false);
 
     vi.useRealTimers();

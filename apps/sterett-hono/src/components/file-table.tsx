@@ -31,7 +31,7 @@ export const FileTable = async ({ files, title }: FileTableProperties) => {
                 </a>
                 <span class="shrink-0 text-white/60">
                   {new Date(file.date).toLocaleDateString("en-US", {
-                    dateStyle: "medium",
+                    dateStyle: "medium"
                   })}
                 </span>
               </li>

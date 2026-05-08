@@ -7,7 +7,7 @@ import { z } from "zod";
 
 import {
   courseStatusSchema,
-  userTokenSchema,
+  userTokenSchema
 } from "./course-completion-types.client.js";
 
 const AUTH_COOKIE_NAME = "ethang-auth-token";
@@ -15,7 +15,7 @@ const AUTH_COOKIE_NAME = "ethang-auth-token";
 export class CourseTrackingService {
   public async fetchStoredStatuses(userId: string) {
     const response = await fetch(
-      `/api/course-tracking?userId=${encodeURIComponent(userId)}`,
+      `/api/course-tracking?userId=${encodeURIComponent(userId)}`
     );
 
     if (!response.ok) return null;
@@ -41,8 +41,8 @@ export class CourseTrackingService {
       `/api/course-tracking/${encodeURIComponent(courseId)}?userId=${encodeURIComponent(userId)}`,
       {
         body: JSON.stringify({}),
-        method: "PUT",
-      },
+        method: "PUT"
+      }
     );
 
     if (!response.ok) {
@@ -74,8 +74,8 @@ export class CourseTrackingService {
 
     const verification = await fetch("https://auth.ethang.dev/verify", {
       headers: {
-        "X-Token": tokenValue,
-      },
+        "X-Token": tokenValue
+      }
     });
 
     if (!verification.ok) {

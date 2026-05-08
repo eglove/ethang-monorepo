@@ -7,9 +7,7 @@ describe(CourseTrackingService, () => {
   it("fetchStoredStatuses returns data on success", async () => {
     const service = new CourseTrackingService();
     const mockData = {
-      data: [
-        { courseUrl: "url1", id: "id1", status: "Complete", userId: "u1" },
-      ],
+      data: [{ courseUrl: "url1", id: "id1", status: "Complete", userId: "u1" }]
     };
 
     vi.stubGlobal(
@@ -19,8 +17,8 @@ describe(CourseTrackingService, () => {
         json: async () => {
           return mockData;
         },
-        ok: true,
-      }),
+        ok: true
+      })
     );
 
     const result = await service.fetchStoredStatuses("u1");
@@ -34,8 +32,8 @@ describe(CourseTrackingService, () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
-        ok: false,
-      }),
+        ok: false
+      })
     );
 
     const result = await service.fetchStoredStatuses("u1");
@@ -50,8 +48,8 @@ describe(CourseTrackingService, () => {
         courseUrl: "url1",
         id: "id1",
         status: "Complete",
-        userId: "u1",
-      },
+        userId: "u1"
+      }
     };
 
     vi.stubGlobal(
@@ -61,8 +59,8 @@ describe(CourseTrackingService, () => {
         json: async () => {
           return mockData;
         },
-        ok: true,
-      }),
+        ok: true
+      })
     );
 
     const result = await service.updateCourseStatus("id1", "u1");
@@ -77,7 +75,7 @@ describe(CourseTrackingService, () => {
       exp: 1,
       iat: 1,
       sub: "user-123",
-      username: "u",
+      username: "u"
     };
 
     document.cookie = "ethang-auth-token=valid-token";
@@ -89,8 +87,8 @@ describe(CourseTrackingService, () => {
         json: async () => {
           return mockUser;
         },
-        ok: true,
-      }),
+        ok: true
+      })
     );
 
     const result = await service.verifyToken();
@@ -106,8 +104,8 @@ describe(CourseTrackingService, () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
-        ok: false,
-      }),
+        ok: false
+      })
     );
     vi.stubGlobal("location", { reload: vi.fn() });
 

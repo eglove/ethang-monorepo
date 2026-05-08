@@ -31,7 +31,7 @@ export const Image = async (properties: ImageProperties) => {
     sizes,
     src,
     srcset,
-    width,
+    width
   } = properties;
 
   let loadingStrategy: "eager" | "lazy" = "eager";
@@ -55,7 +55,7 @@ export const Image = async (properties: ImageProperties) => {
       style={{ width: displayWidth }}
       class={twMerge(
         "relative my-4 mx-0 overflow-hidden flex flex-col",
-        className,
+        className
       )}
     >
       <img
@@ -69,7 +69,7 @@ export const Image = async (properties: ImageProperties) => {
         fetchpriority={fetchPriority}
         class={twMerge(
           "block w-full h-auto object-cover rounded-[inherit]",
-          imgClassName,
+          imgClassName
         )}
       />
       {!isNil(caption) && (

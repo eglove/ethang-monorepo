@@ -11,7 +11,7 @@ export const coursesText = () => {
   md.header(
     2,
     "A structured, self-directed curriculum covering full-stack development, architecture, and DevOps.",
-    2,
+    2
   );
   md.header(3, "Curriculum Overview", 2);
 
@@ -22,7 +22,7 @@ export const coursesText = () => {
         learningPath.name,
         course.name,
         course.author,
-        `[View Course](${course.url})`,
+        `[View Course](${course.url})`
       ]);
     });
   });
@@ -36,7 +36,7 @@ export const coursesText = () => {
       md.text(`  - **Author:** ${course.author}\n`);
       md.text(`  - **Resource:** [Direct Link](${course.url})\n`);
       md.text(
-        `  - **Semantic ID:** ethang:course:${kebabCase(toLower(course.author))}:${kebabCase(toLower(course.name))}\n`,
+        `  - **Semantic ID:** ethang:course:${kebabCase(toLower(course.author))}:${kebabCase(toLower(course.name))}\n`
       );
     });
   });

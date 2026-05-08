@@ -40,7 +40,7 @@ type TabHrefs = {
 export const buildCrossViewDate = (
   view: CalendarView,
   date: string,
-  currentMonthDt: DateTime,
+  currentMonthDt: DateTime
 ): DateTime => {
   return "month" === view
     ? currentMonthDt
@@ -59,7 +59,7 @@ export const buildNavConfig = ({
   previousYear,
   today,
   view,
-  year,
+  year
 }: BuildNavConfigArguments): NavConfig => {
   const todayDt = DateTime.fromISO(today, { zone: CHICAGO });
   const todayYear = todayDt.year;
@@ -71,22 +71,22 @@ export const buildNavConfig = ({
       nextHref: `/calendar?view=day&date=${shiftDate(date, 1)}`,
       prevHref: `/calendar?view=day&date=${shiftDate(date, -1)}`,
       showToday: !isToday,
-      todayHref: `/calendar?view=day&date=${today}`,
+      todayHref: `/calendar?view=day&date=${today}`
     },
     month: {
       heading: `${monthName} ${year}`,
       nextHref: `/calendar?view=month&year=${nextYear}&month=${nextMonth}`,
       prevHref: `/calendar?view=month&year=${previousYear}&month=${previousMonth}`,
       showToday: !isCurrentMonth,
-      todayHref: `/calendar?view=month&year=${todayYear}&month=${todayMonth}`,
+      todayHref: `/calendar?view=month&year=${todayYear}&month=${todayMonth}`
     },
     week: {
       heading: formatWeekHeading(date),
       nextHref: `/calendar?view=week&date=${shiftDate(date, 7)}`,
       prevHref: `/calendar?view=week&date=${shiftDate(date, -7)}`,
       showToday: !isCurrentWeek,
-      todayHref: `/calendar?view=week&date=${today}`,
-    },
+      todayHref: `/calendar?view=week&date=${today}`
+    }
   };
 
   return NAV_CONFIGS[view];
@@ -95,7 +95,7 @@ export const buildNavConfig = ({
 export const buildPrefetchUrls = (
   navConfig: NavConfig,
   view: CalendarView,
-  { tabDayHref, tabMonthHref, tabWeekHref }: TabHrefs,
+  { tabDayHref, tabMonthHref, tabWeekHref }: TabHrefs
 ): string[] => {
   return filter(
     [
@@ -103,10 +103,10 @@ export const buildPrefetchUrls = (
       navConfig.nextHref,
       "month" === view ? null : tabMonthHref,
       "week" === view ? null : tabWeekHref,
-      "day" === view ? null : tabDayHref,
+      "day" === view ? null : tabDayHref
     ],
     (value): value is string => {
       return !isNil(value);
-    },
+    }
   );
 };

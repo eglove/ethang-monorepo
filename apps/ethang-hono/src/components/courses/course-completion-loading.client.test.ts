@@ -6,7 +6,7 @@ describe("course-completion.client loading state", () => {
   it("attaches DOMContentLoaded listener if document is loading", async () => {
     Object.defineProperty(document, "readyState", {
       configurable: true,
-      value: "loading",
+      value: "loading"
     });
     const addEventListenerSpy = vi.spyOn(document, "addEventListener");
 
@@ -15,7 +15,7 @@ describe("course-completion.client loading state", () => {
 
     expect(addEventListenerSpy).toHaveBeenCalledWith(
       "DOMContentLoaded",
-      expect.any(Function),
+      expect.any(Function)
     );
 
     // Trigger the callback

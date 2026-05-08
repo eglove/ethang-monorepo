@@ -27,7 +27,7 @@ test.describe("calendar Page — Month View", () => {
 
     const monthName = now.toLocaleString(
       { month: "long" },
-      { locale: "en-US" },
+      { locale: "en-US" }
     );
     await expect
       .soft(page.getByRole("heading", { name: new RegExp(monthName, "iu") }))
@@ -61,21 +61,21 @@ test.describe("calendar Page — Month View", () => {
   });
 
   test("shows Today link when viewing a month other than the current month", async ({
-    page,
+    page
   }) => {
     const nextMonth = now.plus({ months: 1 });
     await page.goto(
-      `/calendar?view=month&year=${nextMonth.year}&month=${nextMonth.month}`,
+      `/calendar?view=month&year=${nextMonth.year}&month=${nextMonth.month}`
     );
 
     await expect.soft(page.getByRole("link", { name: "Today" })).toBeVisible();
   });
 
   test("does not show Today link when viewing the current month", async ({
-    page,
+    page
   }) => {
     await page.goto(
-      `/calendar?view=month&year=${currentYear}&month=${currentMonth}`,
+      `/calendar?view=month&year=${currentYear}&month=${currentMonth}`
     );
 
     await expect.soft(page.getByRole("link", { name: "Today" })).toBeHidden();
@@ -123,7 +123,7 @@ test.describe("calendar Page — Week View", () => {
   });
 
   test("shows Today link when viewing a week that does not contain today", async ({
-    page,
+    page
   }) => {
     const futureDate = now.plus({ weeks: 2 }).toISODate() ?? today;
     await page.goto(`/calendar?view=week&date=${futureDate}`);
@@ -132,7 +132,7 @@ test.describe("calendar Page — Week View", () => {
   });
 
   test("does not show Today link when viewing the current week", async ({
-    page,
+    page
   }) => {
     await page.goto(`/calendar?view=week&date=${today}`);
 
@@ -148,7 +148,7 @@ test.describe("calendar Page — Week View", () => {
   });
 
   test("renders links to day view for each day in the week", async ({
-    page,
+    page
   }) => {
     await page.goto(`/calendar?view=week&date=${today}`);
 
@@ -190,7 +190,7 @@ test.describe("calendar Page — Day View", () => {
   });
 
   test("shows Today link when viewing a day other than today", async ({
-    page,
+    page
   }) => {
     const yesterday = now.minus({ days: 1 }).toISODate() ?? today;
     await page.goto(`/calendar?view=day&date=${yesterday}`);
@@ -222,10 +222,10 @@ test.describe("calendar Page — Day View", () => {
 
 test.describe("calendar Page — View Switching", () => {
   test("switching from month to week lands on week containing the 1st", async ({
-    page,
+    page
   }) => {
     await page.goto(
-      `/calendar?view=month&year=${currentYear}&month=${currentMonth}`,
+      `/calendar?view=month&year=${currentYear}&month=${currentMonth}`
     );
 
     await page.getByRole("link", { name: "Week" }).click();
@@ -233,10 +233,10 @@ test.describe("calendar Page — View Switching", () => {
   });
 
   test("switching from month to day lands on the 1st of that month", async ({
-    page,
+    page
   }) => {
     await page.goto(
-      `/calendar?view=month&year=${currentYear}&month=${currentMonth}`,
+      `/calendar?view=month&year=${currentYear}&month=${currentMonth}`
     );
 
     await page.getByRole("link", { name: "Day" }).click();
@@ -244,7 +244,7 @@ test.describe("calendar Page — View Switching", () => {
   });
 
   test("switching from week to month preserves the month context", async ({
-    page,
+    page
   }) => {
     await page.goto(`/calendar?view=week&date=${today}`);
 
@@ -253,7 +253,7 @@ test.describe("calendar Page — View Switching", () => {
   });
 
   test("switching from day to week preserves the date context", async ({
-    page,
+    page
   }) => {
     await page.goto(`/calendar?view=day&date=${today}`);
 
@@ -262,7 +262,7 @@ test.describe("calendar Page — View Switching", () => {
   });
 
   test("switching from day to month preserves the month context", async ({
-    page,
+    page
   }) => {
     await page.goto(`/calendar?view=day&date=${today}`);
 

@@ -18,18 +18,18 @@ vi.mock(import("../../clients/sanity-client.ts"), () => {
     sanityImage: {
       image: () => {
         return { height: mockHeight };
-      },
+      }
     },
     sterettSanityClient: {
-      fetch: vi.fn(),
+      fetch: vi.fn()
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    } as unknown as (typeof import("../../clients/sanity-client.ts"))["sterettSanityClient"],
+    } as unknown as (typeof import("../../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });
 
 vi.mock(import("../../sanity/get-trustees.ts"), () => {
   return {
-    getTrustees: vi.fn(),
+    getTrustees: vi.fn()
   };
 });
 
@@ -46,11 +46,11 @@ const makeTrustee = (id: string, name: string) => {
     image: {
       asset: {
         metadata: { dimensions: { height: 400, width: 400 } },
-        url: `https://cdn.sanity.io/images/test/${id}-400x400.jpg`,
-      },
+        url: `https://cdn.sanity.io/images/test/${id}-400x400.jpg`
+      }
     },
     name,
-    phoneNumber: "555-000-0000",
+    phoneNumber: "555-000-0000"
   };
 };
 
@@ -68,7 +68,7 @@ describe("trusteesPage", () => {
     vi.clearAllMocks();
     vi.mocked(getTrustees).mockResolvedValue([
       makeTrustee("t1", "Alice Smith"),
-      makeTrustee("t2", "Bob Jones"),
+      makeTrustee("t2", "Bob Jones")
     ]);
 
     const html = await renderTrusteesPage();

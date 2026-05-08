@@ -33,7 +33,7 @@ export const getPage = async (slug: string) => {
   }`;
 
   const pages = await sterettSanityClient.fetch<GetPageReturn>(pageQuery, {
-    slug,
+    slug
   });
 
   return pages[0];

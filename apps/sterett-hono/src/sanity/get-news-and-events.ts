@@ -34,7 +34,7 @@ export const eventRangeFormat = (start: string, end: string): string => {
   const dateTimeOptions: Intl.DateTimeFormatOptions = {
     dateStyle: "medium",
     timeStyle: "short",
-    timeZone: CHICAGO,
+    timeZone: CHICAGO
   };
 
   if (sameDay) {
@@ -71,7 +71,7 @@ export const getNewsAndEvents = async (): Promise<NewsAndEvents> => {
 
   const [events, updates] = await Promise.all([
     sterettSanityClient.fetch<CalendarEventReturn[]>(eventQuery),
-    sterettSanityClient.fetch<NewsUpdateReturn[]>(updateQuery),
+    sterettSanityClient.fetch<NewsUpdateReturn[]>(updateQuery)
   ]);
 
   return [...events, ...updates].toSorted((a, b) => {

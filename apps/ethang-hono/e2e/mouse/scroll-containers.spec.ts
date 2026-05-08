@@ -11,7 +11,7 @@ test.describe("scroll-containers", () => {
   });
 
   test("scroll-containers page shows CSS and Tailwind code examples", async ({
-    axePage,
+    axePage
   }) => {
     await axePage.goto(routes.scrollContainers);
     await expect

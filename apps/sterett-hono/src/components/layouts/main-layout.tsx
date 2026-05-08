@@ -18,7 +18,7 @@ export const MainLayout = async ({
   description,
   prefetch,
   title,
-  updatedAt,
+  updatedAt
 }: MainLayoutProperties) => {
   const pageTitle = title ?? "Sterett Creek Village Trustee";
   const pageDescription = description ?? "Sterett Creek Village Trustee Board";
@@ -185,7 +185,7 @@ export const MainLayout = async ({
     el.style.animationDelay = (current - elapsed) + 's';
   });
 })();
-        `,
+        `
           }}
         />
         <script
@@ -208,7 +208,7 @@ if ('serviceWorker' in navigator) {
     }
   });
 }
-        `,
+        `
           }}
         />
       </body>

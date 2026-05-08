@@ -10,7 +10,7 @@ export const P = async (properties: PProperties) => {
       id={properties.id}
       class={twMerge(
         "leading-7 not-first:mt-6 text-slate-200",
-        properties.className,
+        properties.className
       )}
     >
       {properties.children}

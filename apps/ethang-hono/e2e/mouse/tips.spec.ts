@@ -17,7 +17,7 @@ test.describe("tips", () => {
   });
 
   test("navigating to scroll-containers tip loads the page", async ({
-    axePage,
+    axePage
   }) => {
     await axePage.goto(routes.tips);
     await axePage.getByRole("link", { name: SCROLL_CONTAINERS_TITLE }).click();
@@ -27,7 +27,7 @@ test.describe("tips", () => {
   });
 
   test("navigating to scrollbar-gutter tip loads the page", async ({
-    axePage,
+    axePage
   }) => {
     await axePage.goto(routes.tips);
     await axePage.getByRole("link", { name: SCROLLBAR_GUTTER_TITLE }).click();

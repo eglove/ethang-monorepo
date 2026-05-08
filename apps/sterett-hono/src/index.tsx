@@ -26,7 +26,7 @@ const isCalendarView = (v: string): v is CalendarView => {
 };
 
 const lastQuery = (
-  value: string | string[] | undefined,
+  value: string | string[] | undefined
 ): string | undefined => {
   return isArray(value) ? last(value) : value;
 };
@@ -57,19 +57,19 @@ app.get(
       date: lastQuery(value["date"]) ?? now.toFormat("yyyy-MM-dd"),
       month: Number(lastQuery(value["month"]) ?? now.month),
       view: isCalendarView(rawView) ? rawView : "month",
-      year: Number(lastQuery(value["year"]) ?? now.year),
+      year: Number(lastQuery(value["year"]) ?? now.year)
     };
   }),
   async (c) => {
     try {
       const { date, month, view, year } = c.req.valid("query");
       return await c.html(
-        <CalendarPage date={date} view={view} year={year} month={month} />,
+        <CalendarPage date={date} view={view} year={year} month={month} />
       );
     } catch {
       return c.text("Internal error", 500);
     }
-  },
+  }
 );
 app.get("/trustees", async (c) => {
   return c.html(<TrusteesPage />);
@@ -85,7 +85,7 @@ app.get("/sitemap.xml", (c) => {
     { changefreq: "weekly", path: "/news", priority: "0.8" },
     { changefreq: "weekly", path: "/calendar", priority: "0.8" },
     { changefreq: "monthly", path: "/files", priority: "0.6" },
-    { changefreq: "monthly", path: "/trustees", priority: "0.6" },
+    { changefreq: "monthly", path: "/trustees", priority: "0.6" }
   ];
 
   const urls = map(pages, ({ changefreq, path, priority }) => {
@@ -99,7 +99,7 @@ app.get("/sitemap.xml", (c) => {
 
   c.header("Content-Type", "application/xml; charset=utf-8");
   return c.body(
-    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}\n</urlset>`,
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}\n</urlset>`
   );
 });
 

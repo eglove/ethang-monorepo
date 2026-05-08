@@ -24,10 +24,10 @@ export const mockVerifyOk = async (page: Page) => {
         exp: 9_999_999_999,
         iat: 1_000_000_000,
         sub: MOCK_USER_ID,
-        username: "testuser",
+        username: "testuser"
       }),
       contentType: "application/json",
-      status: 200,
+      status: 200
     });
   });
 };
@@ -47,7 +47,7 @@ export const mockTrackingApi = async (page: Page, trackings: Tracking[]) => {
       await route.fulfill({
         body: JSON.stringify({ data: trackings, status: 200 }),
         contentType: "application/json",
-        status: 200,
+        status: 200
       });
     });
 };
@@ -58,20 +58,20 @@ export const setAuthCookie = async (page: Page) => {
       domain: "localhost",
       name: "ethang-auth-token",
       path: "/",
-      value: "mock-token-value",
-    },
+      value: "mock-token-value"
+    }
   ]);
 };
 
 export const mockSignInSuccess = async (
   page: Page,
-  token = MOCK_SESSION_TOKEN,
+  token = MOCK_SESSION_TOKEN
 ) => {
   return page.context().route(AUTH_SIGN_UP_URL, async (route) => {
     return route.fulfill({
       body: JSON.stringify({ sessionToken: token }),
       contentType: CONTENT_TYPE_JSON,
-      status: 200,
+      status: 200
     });
   });
 };
@@ -84,7 +84,7 @@ export const mockSignInError = async (page: Page) => {
 
 export const mockCourseStatusUpdate = async (
   page: Page,
-  { id, status }: { id: string; status: string },
+  { id, status }: { id: string; status: string }
 ) =>
   // Use page.route() (not context.route()) so WebKit honours the mock even
   // when it is registered after the page has already navigated.
@@ -98,13 +98,13 @@ export const mockCourseStatusUpdate = async (
               courseUrl: MOCK_TRACKED_URL,
               id,
               status,
-              userId: MOCK_USER_ID,
+              userId: MOCK_USER_ID
             },
-            status: 200,
+            status: 200
           }),
           contentType: CONTENT_TYPE_JSON,
-          status: 200,
+          status: 200
         });
-      },
+      }
     );
   };

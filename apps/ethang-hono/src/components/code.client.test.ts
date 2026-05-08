@@ -6,8 +6,8 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock(import("highlight.js"), () => {
   return {
     default: {
-      highlightAll: vi.fn(),
-    },
+      highlightAll: vi.fn()
+    }
   };
 });
 

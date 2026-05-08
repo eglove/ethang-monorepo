@@ -8,7 +8,7 @@ import { COURSE_TRACKING_STATUS } from "../utilities/constants.ts";
 
 export class CourseTracking {
   public constructor(
-    private readonly _database: ReturnType<typeof getDatabase>,
+    private readonly _database: ReturnType<typeof getDatabase>
   ) {}
 
   public async createCourseTracking(userId: string, courseId: string) {
@@ -17,7 +17,7 @@ export class CourseTracking {
     return this._database.insert(courseTrackingTable).values({
       courseUrl,
       status: COURSE_TRACKING_STATUS.COMPLETE,
-      userId,
+      userId
     });
   }
 
@@ -25,13 +25,13 @@ export class CourseTracking {
     return this._database.query.courseTrackingTable.findMany({
       where: (table, operators) => {
         return operators.eq(table.userId, userId);
-      },
+      }
     });
   }
 
   public async getCourseTrackingByUserIdCourseId(
     userId: string,
-    courseId: string,
+    courseId: string
   ) {
     const courseUrl = await this.getCourseUrl(courseId);
 
@@ -39,9 +39,9 @@ export class CourseTracking {
       where: (table, operators) => {
         return operators.and(
           operators.eq(table.userId, userId),
-          operators.eq(table.courseUrl, courseUrl),
+          operators.eq(table.courseUrl, courseUrl)
         );
-      },
+      }
     });
   }
 
@@ -49,14 +49,14 @@ export class CourseTracking {
     return this._database
       .update(courseTrackingTable)
       .set({
-        status,
+        status
       })
       .where(eq(courseTrackingTable.id, id));
   }
 
   private async getCourseUrl(courseId: string) {
     const course = await sanityClient.fetch<{ url: string }>(
-      `*[_type == "course" && _id == "${courseId}"][0]`,
+      `*[_type == "course" && _id == "${courseId}"][0]`
     );
     return course.url;
   }

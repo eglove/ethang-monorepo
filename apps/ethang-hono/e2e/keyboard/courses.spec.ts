@@ -7,19 +7,19 @@ import {
   mockCourseStatusUpdate,
   mockTrackingApi,
   mockVerifyOk,
-  setAuthCookie,
+  setAuthCookie
 } from "../helpers/courses-auth-helpers.ts";
 
 const COMPLETION_BUTTON = ".course-completion-button";
 
 test.describe("courses page — keyboard user (unauthenticated)", () => {
   test("sign-in link is reachable via keyboard and activates on Enter", async ({
-    page,
+    page
   }) => {
     await page.goto(routes.courses, { waitUntil: "load" });
 
     const signInLink = page.getByRole("link", {
-      name: "Sign In To Track Changes",
+      name: "Sign In To Track Changes"
     });
     await signInLink.focus();
     await expect.soft(signInLink).toBeFocused();
@@ -37,8 +37,8 @@ test.describe("courses page — keyboard user (authenticated)", () => {
         courseUrl: MOCK_TRACKED_URL,
         id: "t1",
         status: "Revisit",
-        userId: MOCK_USER_ID,
-      },
+        userId: MOCK_USER_ID
+      }
     ]);
     await setAuthCookie(page);
     await page.goto(routes.courses, { waitUntil: "load" });
@@ -51,7 +51,7 @@ test.describe("courses page — keyboard user (authenticated)", () => {
   });
 
   test("enter on completion button triggers status update", async ({
-    page,
+    page
   }) => {
     await mockCourseStatusUpdate(page, { id: "t2", status: "Complete" });
 
@@ -63,7 +63,7 @@ test.describe("courses page — keyboard user (authenticated)", () => {
   });
 
   test("space on completion button triggers status update", async ({
-    page,
+    page
   }) => {
     await mockCourseStatusUpdate(page, { id: "t3", status: "Revisit" });
 

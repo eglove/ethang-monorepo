@@ -9,7 +9,7 @@ const A11Y_TAGS = [
   "wcag21aa",
   "wcag22aa",
   "best-practice",
-  "cat.*",
+  "cat.*"
 ];
 
 export const test = base.extend({
@@ -27,7 +27,7 @@ export const test = base.extend({
       .analyze();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
     expect(results.violations).toEqual([]);
-  },
+  }
 });
 
 export { expect } from "@playwright/test";
