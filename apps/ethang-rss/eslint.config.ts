@@ -2,7 +2,7 @@ import config from "@ethang/eslint-config/config.main.js";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig(
-  globalIgnores(["node_modules", "dist", "**/*.d.ts"]),
+  globalIgnores(["node_modules", "dist", "**/*.d.ts", ".wrangler"]),
   ...config,
   {
     languageOptions: {

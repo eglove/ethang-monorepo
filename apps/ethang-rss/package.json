@@ -37,8 +37,7 @@
     "dev": "wrangler dev",
     "drizzle:generate": "drizzle-kit generate",
     "lint": "eslint . --fix",
-    "start": "wrangler dev",
-    "test": "vitest"
+    "start": "wrangler dev"
   },
   "type": "module",
   "version": "0.0.0"

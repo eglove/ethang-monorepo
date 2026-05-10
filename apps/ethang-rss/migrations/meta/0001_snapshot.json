@@ -13,6 +13,7 @@
   "prevId": "c8ecc76d-1522-42ba-8c7b-bcff5836e946",
   "tables": {
     "articles": {
+      "checkConstraints": {},
       "columns": {
         "content": {
           "autoincrement": false,
@@ -64,19 +65,16 @@
           "type": "text"
         }
       },
-      "checkConstraints": {},
       "compositePrimaryKeys": {},
       "foreignKeys": {
         "articles_feedId_feeds_id_fk": {
-          "name": "articles_feedId_feeds_id_fk",
-          "columnsFrom": [
-            "feedId"
-          ],
-          "tableFrom": "articles",
+          "columnsFrom": ["feedId"],
           "columnsTo": ["id"],
-          "tableTo": "feeds",
+          "name": "articles_feedId_feeds_id_fk",
           "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "tableFrom": "articles",
+          "tableTo": "feeds"
         }
       },
       "indexes": {
@@ -90,6 +88,7 @@
       "uniqueConstraints": {}
     },
     "feeds": {
+      "checkConstraints": {},
       "columns": {
         "id": {
           "autoincrement": false,
@@ -127,7 +126,6 @@
           "type": "text"
         }
       },
-      "checkConstraints": {},
       "compositePrimaryKeys": {},
       "foreignKeys": {},
       "indexes": {
@@ -141,6 +139,7 @@
       "uniqueConstraints": {}
     },
     "subscriptions": {
+      "checkConstraints": {},
       "columns": {
         "createdAt": {
           "autoincrement": false,
@@ -171,19 +170,16 @@
           "type": "text"
         }
       },
-      "checkConstraints": {},
       "compositePrimaryKeys": {},
       "foreignKeys": {
         "subscriptions_feedId_feeds_id_fk": {
-          "name": "subscriptions_feedId_feeds_id_fk",
-          "columnsFrom": [
-            "feedId"
-          ],
-          "tableFrom": "subscriptions",
+          "columnsFrom": ["feedId"],
           "columnsTo": ["id"],
-          "tableTo": "feeds",
+          "name": "subscriptions_feedId_feeds_id_fk",
           "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "tableFrom": "subscriptions",
+          "tableTo": "feeds"
         }
       },
       "indexes": {
@@ -197,6 +193,7 @@
       "uniqueConstraints": {}
     },
     "user_item_states": {
+      "checkConstraints": {},
       "columns": {
         "articleId": {
           "autoincrement": false,
@@ -236,19 +233,16 @@
           "type": "text"
         }
       },
-      "checkConstraints": {},
       "compositePrimaryKeys": {},
       "foreignKeys": {
         "user_item_states_articleId_articles_id_fk": {
-          "name": "user_item_states_articleId_articles_id_fk",
-          "columnsFrom": [
-            "articleId"
-          ],
-          "tableFrom": "user_item_states",
+          "columnsFrom": ["articleId"],
           "columnsTo": ["id"],
-          "tableTo": "articles",
+          "name": "user_item_states_articleId_articles_id_fk",
           "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "tableFrom": "user_item_states",
+          "tableTo": "articles"
         }
       },
       "indexes": {
