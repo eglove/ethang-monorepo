@@ -1,0 +1,20 @@
+{
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "breakpoints": true,
+      "idx": 0,
+      "tag": "0000_yummy_scarecrow",
+      "version": "6",
+      "when": 1778368007796
+    },
+    {
+      "breakpoints": true,
+      "idx": 1,
+      "tag": "0001_aromatic_cloak",
+      "version": "6",
+      "when": 1778369155195
+    }
+  ],
+  "version": "7"
+}

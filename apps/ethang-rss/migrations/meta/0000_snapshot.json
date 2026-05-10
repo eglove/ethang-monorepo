@@ -1,0 +1,63 @@
+{
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  },
+  "dialect": "sqlite",
+  "enums": {},
+  "id": "c8ecc76d-1522-42ba-8c7b-bcff5836e946",
+  "internal": {
+    "indexes": {}
+  },
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "feeds": {
+      "columns": {
+        "id": {
+          "autoincrement": false,
+          "default": "'019e0efe-4e6d-74f9-99c5-5ae8871dba62'",
+          "name": "id",
+          "notNull": true,
+          "primaryKey": true,
+          "type": "text"
+        },
+        "title": {
+          "autoincrement": false,
+          "name": "title",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "website": {
+          "autoincrement": false,
+          "name": "website",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "xmlAddress": {
+          "autoincrement": false,
+          "name": "xmlAddress",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        }
+      },
+      "checkConstraints": {},
+      "compositePrimaryKeys": {},
+      "foreignKeys": {},
+      "indexes": {
+        "feeds_xmlAddress_unique": {
+          "columns": ["xmlAddress"],
+          "isUnique": true,
+          "name": "feeds_xmlAddress_unique"
+        }
+      },
+      "name": "feeds",
+      "uniqueConstraints": {}
+    }
+  },
+  "version": "6",
+  "views": {}
+}
