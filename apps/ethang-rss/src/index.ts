@@ -40,5 +40,18 @@ export default {
     }
 
     return handler(request, environment, context);
+  },
+  async scheduled(_controller, environment, _context) {
+    try {
+      await environment.FETCH_FEEDS_WORKFLOW.create({
+        id: "rss-sync-singleton"
+      });
+    } catch {
+      globalThis.console.log(
+        "Sync already in progress, skipping this interval."
+      );
+    }
   }
 } satisfies ExportedHandler<Env>;
+
+export { FetchFeedsWorkflow } from "./cron/fetch-feeds-workflow.ts";

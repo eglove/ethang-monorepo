@@ -1,22 +1,18 @@
-import type { buildSchema } from "drizzle-graphql";
-import type { DrizzleD1Database } from "drizzle-orm/d1";
-
 import { eq } from "drizzle-orm";
 import { GraphQLList, GraphQLNonNull } from "graphql/type/index.js";
 import map from "lodash/map.js";
 
 import type { ServerContext } from "../../index.ts";
 
-// eslint-disable-next-line sonar/no-wildcard-import
-import * as databaseSchema from "../../db/schema.ts";
-
-type DatabaseSchema = typeof databaseSchema;
+import {
+  type Database,
+  type DatabaseEntities,
+  databaseSchema
+} from "../../db/database-schema.ts";
 
 export const subscriptions = (
-  database: DrizzleD1Database<DatabaseSchema>,
-  entities: ReturnType<
-    typeof buildSchema<DrizzleD1Database<DatabaseSchema>>
-  >["entities"]
+  database: Database,
+  entities: DatabaseEntities
 ) => {
   return {
     resolve: async (_: unknown, __: unknown, context: ServerContext) => {

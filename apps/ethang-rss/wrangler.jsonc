@@ -18,5 +18,15 @@
   "placement": {
     "mode": "smart"
   },
-  "upload_source_maps": true
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+  "upload_source_maps": true,
+  "workflows": [
+    {
+      "binding": "FETCH_FEEDS_WORKFLOW",
+      "class_name": "FetchFeedsWorkflow",
+      "name": "fetch-feeds-workflow"
+    }
+  ]
 }

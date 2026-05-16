@@ -9,6 +9,7 @@
     "@ethang/toolbelt": "^4.5.0",
     "drizzle-graphql": "^0.8.5",
     "drizzle-orm": "^0.45.2",
+    "fast-xml-parser": "^5.8.0",
     "graphql": "^16.14.0",
     "lodash": "^4.18.1",
     "uuid": "^14.0.0"
