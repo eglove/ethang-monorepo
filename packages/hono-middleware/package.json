@@ -26,7 +26,7 @@
   "main": "./dist/index.js",
   "name": "@ethang/hono-middleware",
   "scripts": {
-    "lint": "eslint . --fix --cache && pnpm tsc --noEmit",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
     "test": "vitest run --coverage"
   },
   "type": "module",

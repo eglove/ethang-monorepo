@@ -46,7 +46,7 @@
     "cf-typegen": "wrangler types",
     "deploy": "pnpm build && wrangler deploy",
     "dev": "sanity dev",
-    "lint": "eslint . --fix --cache && pnpm tsc --noEmit",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
     "start": "sanity start"
   },
   "type": "module",

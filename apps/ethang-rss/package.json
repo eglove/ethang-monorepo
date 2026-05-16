@@ -5,12 +5,13 @@
   ],
   "dependencies": {
     "@apollo/server": "^5.5.1",
+    "@apollo/subgraph": "^2.14.0",
     "@as-integrations/cloudflare-workers": "^1.1.1",
     "@ethang/toolbelt": "^4.5.0",
-    "drizzle-graphql": "^0.8.5",
     "drizzle-orm": "^0.45.2",
     "fast-xml-parser": "^5.8.0",
     "graphql": "^16.14.0",
+    "graphql-tag": "^2.12.6",
     "lodash": "^4.18.1",
     "uuid": "^14.0.0"
   },

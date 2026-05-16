@@ -29,7 +29,7 @@
   "name": "leetcode",
   "scripts": {
     "bench": "vitest bench",
-    "lint": "eslint . --fix --cache && pnpm tsc --noEmit",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
     "test": "vitest run --coverage"
   },
   "type": "module",

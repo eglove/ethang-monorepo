@@ -25,7 +25,7 @@
   "name": "@ethang/project-builder",
   "scripts": {
     "build": "bun build.ts",
-    "lint": "eslint . --fix --cache && pnpm tsc --noEmit"
+    "lint": "eslint . --fix && pnpm tsc --noEmit"
   },
   "type": "module",
   "version": "3.0.2"

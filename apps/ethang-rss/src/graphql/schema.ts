@@ -1,31 +1,57 @@
-import { buildSchema } from "drizzle-graphql";
+import { buildSubgraphSchema } from "@apollo/subgraph";
 import { drizzle } from "drizzle-orm/d1";
-import { GraphQLObjectType, GraphQLSchema } from "graphql/type";
+import { gql } from "graphql-tag";
 
 // eslint-disable-next-line sonar/no-wildcard-import
 import * as databaseSchema from "../db/schema.ts";
-import { addSubscription } from "./mutations/add-subscription.ts";
-import { subscriptions } from "./queries/subscriptions.ts";
+import { createResolvers } from "./resolvers.ts";
+
+const typeDefs = gql`
+  extend schema
+    @link(
+      url: "https://specs.apollo.dev/federation/v2.0"
+      import: ["@key", "@shareable"]
+    )
+
+  type Query {
+    subscriptions: [Feed!]!
+  }
+
+  type Mutation {
+    addSubscription(
+      title: String!
+      website: String!
+      xmlAddress: String!
+    ): Feed!
+  }
+
+  type Feed @key(fields: "id") {
+    id: ID!
+    lastFetchedAt: String
+    title: String!
+    website: String!
+    xmlAddress: String!
+    articles: [Article!]!
+  }
+
+  type Article @key(fields: "id") {
+    id: ID!
+    content: String
+    feedId: String!
+    guid: String!
+    link: String!
+    publishedAt: String
+    title: String!
+  }
+`;
 
 export const createSchema = (environment: Env) => {
   const database = drizzle(environment.ethang_rss, {
     schema: databaseSchema
   });
 
-  const { entities } = buildSchema(database);
-
-  return new GraphQLSchema({
-    mutation: new GraphQLObjectType({
-      fields: {
-        addSubscription: addSubscription(database, entities)
-      },
-      name: "Mutation"
-    }),
-    query: new GraphQLObjectType({
-      fields: {
-        subscriptions: subscriptions(database, entities)
-      },
-      name: "Query"
-    })
+  return buildSubgraphSchema({
+    resolvers: createResolvers(database),
+    typeDefs
   });
 };

@@ -4,33 +4,31 @@
     "current node"
   ],
   "dependencies": {
-    "@portabletext/react": "^6.2.0",
-    "@portabletext/types": "^4.0.2",
-    "@sanity/client": "^7.22.0",
-    "lodash": "^4.18.1",
-    "luxon": "^3.7.2",
-    "ts-ics": "^2.4.4"
+    "@apollo/gateway": "^2.9.2",
+    "@apollo/server": "^5.5.1",
+    "@as-integrations/cloudflare-workers": "^1.1.1",
+    "graphql": "^16.14.0",
+    "graphql-tag": "^2.12.6",
+    "lodash": "^4.18.1"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.16.6",
+    "@ethang/eslint-config": "^25.17.3",
     "@types/lodash": "^4.17.24",
-    "@types/luxon": "^3.7.1",
     "browserslist-config-baseline": "^0.5.0",
+    "eslint": "^10.4.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.13",
-    "vitest": "~4.1.6",
     "wrangler": "^4.92.0"
   },
   "engines": {
     "node": ">=24"
   },
-  "name": "sanity-calendar-sync",
+  "name": "ethang-graphql",
   "private": true,
   "scripts": {
     "cf-typegen": "wrangler types",
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "lint": "eslint . --fix && pnpm tsc --noEmit",
+    "lint": "eslint . --fix",
     "start": "wrangler dev"
   },
   "type": "module",

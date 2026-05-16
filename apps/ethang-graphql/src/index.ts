@@ -1,14 +1,13 @@
+import { ApolloGateway } from "@apollo/gateway";
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 import { startServerAndCreateCloudflareWorkersHandler } from "@as-integrations/cloudflare-workers";
 import isNil from "lodash/isNil.js";
 
-import { authenticate, type User } from "./authenticate.ts";
-import { createSchema } from "./graphql/schema.ts";
+// @ts-expect-error imported as string
+import supergraphSdl from "./supergraph.graphql";
 
-export type ServerContext = {
-  user: User;
-};
+export type ServerContext = object;
 
 let handler: ReturnType<
   typeof startServerAndCreateCloudflareWorkersHandler<Env, ServerContext>
@@ -17,10 +16,15 @@ let handler: ReturnType<
 export default {
   async fetch(request, environment, context) {
     if (isNil(handler)) {
+      const gateway = new ApolloGateway({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        supergraphSdl: supergraphSdl as string
+      });
+
       const server = new ApolloServer<ServerContext>({
+        gateway,
         introspection: true,
-        plugins: [ApolloServerPluginLandingPageLocalDefault({ footer: false })],
-        schema: createSchema(environment)
+        plugins: [ApolloServerPluginLandingPageLocalDefault({ footer: false })]
       });
 
       handler = startServerAndCreateCloudflareWorkersHandler<
@@ -30,28 +34,13 @@ export default {
         // @ts-expect-error allow server type mismatch
         server,
         {
-          context: async ({ request: _request }) => {
-            const user = await authenticate(_request);
-
-            return { user } satisfies ServerContext;
+          context: () => {
+            return {} satisfies ServerContext;
           }
         }
       );
     }
 
     return handler(request, environment, context);
-  },
-  async scheduled(_controller, environment, _context) {
-    try {
-      await environment.FETCH_FEEDS_WORKFLOW.create({
-        id: "rss-sync-singleton"
-      });
-    } catch {
-      globalThis.console.log(
-        "Sync already in progress, skipping this interval."
-      );
-    }
   }
 } satisfies ExportedHandler<Env>;
-
-export { FetchFeedsWorkflow } from "./cron/fetch-feeds-workflow.ts";

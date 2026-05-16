@@ -30,7 +30,7 @@
   "name": "@ethang/service-worker",
   "scripts": {
     "build": "tsx src/build.ts",
-    "lint": "eslint . --fix --cache && pnpm tsc --noEmit"
+    "lint": "eslint . --fix && pnpm tsc --noEmit"
   },
   "type": "module",
   "types": "dist/index.d.ts",

@@ -1,0 +1,30 @@
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.0",
+        import: ["@key", "@shareable"])
+
+type Query {
+  subscriptions: [Feed!]!
+}
+
+type Mutation {
+  addSubscription(title: String!, website: String!, xmlAddress: String!): Feed!
+}
+
+type Feed @key(fields: "id") {
+  id: ID!
+  lastFetchedAt: String
+  title: String!
+  website: String!
+  xmlAddress: String!
+  articles: [Article!]!
+}
+
+type Article @key(fields: "id") {
+  id: ID!
+  content: String
+  feedId: String!
+  guid: String!
+  link: String!
+  publishedAt: String
+  title: String!
+}

@@ -11,7 +11,7 @@
     "./*": "./src/*"
   },
   "scripts": {
-    "lint": "eslint src --fix --cache && pnpm tsc --noEmit"
+    "lint": "eslint src --fix && pnpm tsc --noEmit"
   },
   "dependencies": {
     "jose": "^6.2.3",
