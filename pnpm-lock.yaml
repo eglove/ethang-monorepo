@@ -14,6 +14,9 @@ importers:
       '@ethang/eslint-config':
         specifier: ^25.17.3
         version: 25.17.3(@angular/cli@21.1.4(@types/node@25.8.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.3(@typescript-eslint/parser@8.59.3(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.59.3)(@typescript-eslint/utils@8.59.3(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.4.0(jiti@2.7.0)))(jiti@2.7.0)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(typescript@6.0.3)(vitest@4.1.6)
+      '@types/lodash':
+        specifier: ^4.17.24
+        version: 4.17.24
       '@types/node':
         specifier: ^25.8.0
         version: 25.8.0
@@ -23,6 +26,9 @@ importers:
       eslint:
         specifier: ^10.4.0
         version: 10.4.0(jiti@2.7.0)
+      lodash:
+        specifier: ^4.18.1
+        version: 4.18.1
       typescript-eslint:
         specifier: ^8.59.3
         version: 8.59.3(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3)
@@ -43,7 +49,7 @@ importers:
         version: 3.0.3
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@opentelemetry/api@1.9.1)
+        version: 0.45.2(@cloudflare/workers-types@4.20260516.1)(@opentelemetry/api@1.9.1)
       hono:
         specifier: ^4.12.19
         version: 4.12.19
@@ -83,7 +89,7 @@ importers:
         version: 8.59.3(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3)
       wrangler:
         specifier: ^4.92.0
-        version: 4.92.0
+        version: 4.92.0(@cloudflare/workers-types@4.20260516.1)
 
   apps/ethang-admin:
     dependencies:
@@ -148,22 +154,19 @@ importers:
       '@as-integrations/cloudflare-workers':
         specifier: ^1.1.1
         version: 1.1.1(@apollo/server@5.5.1(graphql@16.14.0))(graphql@16.14.0)
+      '@cloudflare/workers-types':
+        specifier: ^4.20260516.1
+        version: 4.20260516.1
       graphql:
         specifier: ^16.14.0
         version: 16.14.0
       graphql-tag:
         specifier: ^2.12.6
         version: 2.12.6(graphql@16.14.0)
-      lodash:
-        specifier: ^4.18.1
-        version: 4.18.1
     devDependencies:
       '@ethang/eslint-config':
         specifier: ^25.17.3
         version: 25.17.3(@angular/cli@21.1.4(@types/node@25.8.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.3(@typescript-eslint/parser@8.59.3(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.59.3)(@typescript-eslint/utils@8.59.3(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.4.0(jiti@2.7.0)))(jiti@2.7.0)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(typescript@6.0.3)(vitest@4.1.6)
-      '@types/lodash':
-        specifier: ^4.17.24
-        version: 4.17.24
       browserslist-config-baseline:
         specifier: ^0.5.0
         version: 0.5.0
@@ -175,7 +178,7 @@ importers:
         version: 6.0.3
       wrangler:
         specifier: ^4.92.0
-        version: 4.92.0
+        version: 4.92.0(@cloudflare/workers-types@4.20260516.1)
 
   apps/ethang-hono:
     dependencies:
@@ -208,7 +211,7 @@ importers:
         version: 17.4.2
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@opentelemetry/api@1.9.1)
+        version: 0.45.2(@cloudflare/workers-types@4.20260516.1)(@opentelemetry/api@1.9.1)
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
@@ -293,7 +296,7 @@ importers:
         version: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@25.8.0)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@2.0.1))(vite@8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.0)(yaml@2.9.0))
       wrangler:
         specifier: ^4.92.0
-        version: 4.92.0
+        version: 4.92.0(@cloudflare/workers-types@4.20260516.1)
 
   apps/ethang-rss:
     dependencies:
@@ -311,7 +314,7 @@ importers:
         version: 4.5.0
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@opentelemetry/api@1.9.1)
+        version: 0.45.2(@cloudflare/workers-types@4.20260516.1)(@opentelemetry/api@1.9.1)
       fast-xml-parser:
         specifier: ^5.8.0
         version: 5.8.0
@@ -330,7 +333,7 @@ importers:
     devDependencies:
       '@cloudflare/vitest-pool-workers':
         specifier: ^0.16.6
-        version: 0.16.6(@vitest/runner@4.1.6)(@vitest/snapshot@4.1.6)(vitest@4.1.6)
+        version: 0.16.6(@cloudflare/workers-types@4.20260516.1)(@vitest/runner@4.1.6)(@vitest/snapshot@4.1.6)(vitest@4.1.6)
       '@ethang/eslint-config':
         specifier: ^25.17.3
         version: 25.17.3(@angular/cli@21.1.4(@types/node@25.8.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.59.3(@typescript-eslint/parser@8.59.3(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.59.3)(@typescript-eslint/utils@8.59.3(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(eslint-config-prettier@10.1.8(eslint@10.4.0(jiti@2.7.0)))(jiti@2.7.0)(prettier@3.8.3)(storybook@10.2.10(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(typescript@6.0.3)(vitest@4.1.6)
@@ -360,7 +363,7 @@ importers:
         version: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@25.8.0)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@2.0.1))(vite@8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.0)(yaml@2.9.0))
       wrangler:
         specifier: ^4.92.0
-        version: 4.92.0
+        version: 4.92.0(@cloudflare/workers-types@4.20260516.1)
 
   apps/sanity-calendar-sync:
     dependencies:
@@ -385,7 +388,7 @@ importers:
     devDependencies:
       '@cloudflare/vitest-pool-workers':
         specifier: ^0.16.6
-        version: 0.16.6(@vitest/runner@4.1.6)(@vitest/snapshot@4.1.6)(vitest@4.1.6)
+        version: 0.16.6(@cloudflare/workers-types@4.20260516.1)(@vitest/runner@4.1.6)(@vitest/snapshot@4.1.6)(vitest@4.1.6)
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
@@ -406,7 +409,7 @@ importers:
         version: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@25.8.0)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@2.0.1))(vite@8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.0)(yaml@2.9.0))
       wrangler:
         specifier: ^4.92.0
-        version: 4.92.0
+        version: 4.92.0(@cloudflare/workers-types@4.20260516.1)
 
   apps/sterett-admin:
     dependencies:
@@ -476,7 +479,7 @@ importers:
         version: 8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.0)(yaml@2.9.0)
       wrangler:
         specifier: ^4.92.0
-        version: 4.92.0
+        version: 4.92.0(@cloudflare/workers-types@4.20260516.1)
 
   apps/sterett-hono:
     dependencies:
@@ -561,7 +564,7 @@ importers:
         version: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@25.8.0)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@2.0.1))(vite@8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.0)(yaml@2.9.0))
       wrangler:
         specifier: ^4.92.0
-        version: 4.92.0
+        version: 4.92.0(@cloudflare/workers-types@4.20260516.1)
 
   packages/eslint-config:
     dependencies:
@@ -2113,6 +2116,9 @@ packages:
     engines: {node: '>=16'}
     cpu: [x64]
     os: [win32]
+
+  '@cloudflare/workers-types@4.20260516.1':
+    resolution: {integrity: sha512-aPckyZSPQXhOo+nSIvGLtXVl9M2qmf2GwFZYmvut9z47F1XTjHYcaYpI9/BvxrI+Q5l99UtXZU4bmQtX10JG+w==}
 
   '@codemirror/autocomplete@6.20.2':
     resolution: {integrity: sha512-G5FPkgIiLjOgZMjqVjvuKQ1rGPtHogLldJr33eFJdVLtmwY+giGrlv/ewljLz6b9BSQLkjxuwBc6g6omDM+YxQ==}
@@ -12172,7 +12178,7 @@ snapshots:
     optionalDependencies:
       workerd: 1.20260515.1
 
-  '@cloudflare/vitest-pool-workers@0.16.6(@vitest/runner@4.1.6)(@vitest/snapshot@4.1.6)(vitest@4.1.6)':
+  '@cloudflare/vitest-pool-workers@0.16.6(@cloudflare/workers-types@4.20260516.1)(@vitest/runner@4.1.6)(@vitest/snapshot@4.1.6)(vitest@4.1.6)':
     dependencies:
       '@vitest/runner': 4.1.6
       '@vitest/snapshot': 4.1.6
@@ -12180,7 +12186,7 @@ snapshots:
       esbuild: 0.27.3
       miniflare: 4.20260515.0
       vitest: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@25.8.0)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@2.0.1))(vite@8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.0)(yaml@2.9.0))
-      wrangler: 4.92.0
+      wrangler: 4.92.0(@cloudflare/workers-types@4.20260516.1)
       zod: 3.25.76
     transitivePeerDependencies:
       - '@cloudflare/workers-types'
@@ -12201,6 +12207,8 @@ snapshots:
 
   '@cloudflare/workerd-windows-64@1.20260515.1':
     optional: true
+
+  '@cloudflare/workers-types@4.20260516.1': {}
 
   '@codemirror/autocomplete@6.20.2':
     dependencies:
@@ -16789,8 +16797,9 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.22.0
 
-  drizzle-orm@0.45.2(@opentelemetry/api@1.9.1):
+  drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260516.1)(@opentelemetry/api@1.9.1):
     optionalDependencies:
+      '@cloudflare/workers-types': 4.20260516.1
       '@opentelemetry/api': 1.9.1
 
   dunder-proto@1.0.1:
@@ -21674,7 +21683,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20260515.1
       '@cloudflare/workerd-windows-64': 1.20260515.1
 
-  wrangler@4.92.0:
+  wrangler@4.92.0(@cloudflare/workers-types@4.20260516.1):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.0
       '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260515.1)
@@ -21685,6 +21694,7 @@ snapshots:
       unenv: 2.0.0-rc.24
       workerd: 1.20260515.1
     optionalDependencies:
+      '@cloudflare/workers-types': 4.20260516.1
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil

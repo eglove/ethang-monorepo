@@ -3,11 +3,19 @@ import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin
 import { startServerAndCreateCloudflareWorkersHandler } from "@as-integrations/cloudflare-workers";
 import isNil from "lodash/isNil.js";
 
-import { authenticate, type User } from "./authenticate.ts";
 import { createSchema } from "./graphql/schema.ts";
 
 export type ServerContext = {
   user: User;
+};
+
+export type User = {
+  email: string;
+  exp: number;
+  iat: number;
+  role?: string;
+  sub: string;
+  username: string;
 };
 
 let handler: ReturnType<
@@ -30,8 +38,23 @@ export default {
         // @ts-expect-error allow server type mismatch
         server,
         {
-          context: async ({ request: _request }) => {
-            const user = await authenticate(_request);
+          context: ({ request: _request }) => {
+            const userHeader = _request.headers.get("x-user");
+
+            if (isNil(userHeader)) {
+              return {
+                user: {
+                  email: "gateway@ethang.dev",
+                  exp: Number.MAX_SAFE_INTEGER,
+                  iat: 0,
+                  sub: "gateway",
+                  username: "gateway"
+                }
+              } satisfies ServerContext;
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+            const user = JSON.parse(userHeader) as User;
 
             return { user } satisfies ServerContext;
           }
@@ -41,10 +64,10 @@ export default {
 
     return handler(request, environment, context);
   },
-  async scheduled(_controller, environment, _context) {
+  async scheduled(_event, environment) {
     try {
       await environment.FETCH_FEEDS_WORKFLOW.create({
-        id: "rss-sync-singleton"
+        id: "fetch-feeds-workflow"
       });
     } catch {
       globalThis.console.log(

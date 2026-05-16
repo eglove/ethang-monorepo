@@ -3,9 +3,11 @@
   "devDependencies": {
     "@apollo/rover": "^0.38.1",
     "@ethang/eslint-config": "^25.17.3",
+    "@types/lodash": "^4.17.24",
     "@types/node": "^25.8.0",
     "bun": "^1.3.14",
     "eslint": "^10.4.0",
+    "lodash": "^4.18.1",
     "typescript-eslint": "^8.59.3"
   },
   "license": "ISC",

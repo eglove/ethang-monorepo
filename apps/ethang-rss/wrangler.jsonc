@@ -22,6 +22,7 @@
     "crons": ["*/15 * * * *"]
   },
   "upload_source_maps": true,
+  "workers_dev": false,
   "workflows": [
     {
       "binding": "FETCH_FEEDS_WORKFLOW",

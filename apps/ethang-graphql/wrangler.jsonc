@@ -9,5 +9,11 @@
   },
   "placement": {
     "mode": "smart"
-  }
+  },
+  "services": [
+    {
+      "binding": "ethang_rss",
+      "service": "ethang-rss"
+    }
+  ]
 }

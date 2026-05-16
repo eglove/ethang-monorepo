@@ -38,7 +38,7 @@
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "drizzle:generate": "drizzle-kit generate",
-    "lint": "eslint . --fix",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
     "start": "wrangler dev"
   },
   "type": "module",
