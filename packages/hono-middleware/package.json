@@ -4,7 +4,7 @@
     "current node"
   ],
   "dependencies": {
-    "hono": "^4.12.16",
+    "hono": "^4.12.19",
     "lodash": "^4.18.1"
   },
   "devDependencies": {
