@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2026-05-16",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "ethang_rss",
+      "database_id": "14ad1254-859f-406b-a6af-fc02c6f75b2f",
+      "database_name": "ethang-rss",
+      "remote": true
+    }
+  ],
+  "main": "src/index.ts",
+  "name": "ethang-rss",
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "mode": "smart"
+  },
+  "upload_source_maps": true
+}

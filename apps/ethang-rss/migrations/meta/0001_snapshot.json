@@ -1,0 +1,261 @@
+{
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  },
+  "dialect": "sqlite",
+  "enums": {},
+  "id": "c42f005c-19ca-493d-b399-4cfd484a7f3e",
+  "internal": {
+    "indexes": {}
+  },
+  "prevId": "c8ecc76d-1522-42ba-8c7b-bcff5836e946",
+  "tables": {
+    "articles": {
+      "checkConstraints": {},
+      "columns": {
+        "content": {
+          "autoincrement": false,
+          "name": "content",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "feedId": {
+          "autoincrement": false,
+          "name": "feedId",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "guid": {
+          "autoincrement": false,
+          "name": "guid",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "id": {
+          "autoincrement": false,
+          "name": "id",
+          "notNull": true,
+          "primaryKey": true,
+          "type": "text"
+        },
+        "link": {
+          "autoincrement": false,
+          "name": "link",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "publishedAt": {
+          "autoincrement": false,
+          "name": "publishedAt",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "title": {
+          "autoincrement": false,
+          "name": "title",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "foreignKeys": {
+        "articles_feedId_feeds_id_fk": {
+          "columnsFrom": ["feedId"],
+          "columnsTo": ["id"],
+          "name": "articles_feedId_feeds_id_fk",
+          "onDelete": "cascade",
+          "onUpdate": "no action",
+          "tableFrom": "articles",
+          "tableTo": "feeds"
+        }
+      },
+      "indexes": {
+        "articles_feed_guid_unique": {
+          "columns": ["feedId", "guid"],
+          "isUnique": true,
+          "name": "articles_feed_guid_unique"
+        }
+      },
+      "name": "articles",
+      "uniqueConstraints": {}
+    },
+    "feeds": {
+      "checkConstraints": {},
+      "columns": {
+        "id": {
+          "autoincrement": false,
+          "name": "id",
+          "notNull": true,
+          "primaryKey": true,
+          "type": "text"
+        },
+        "lastFetchedAt": {
+          "autoincrement": false,
+          "name": "lastFetchedAt",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "title": {
+          "autoincrement": false,
+          "name": "title",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "website": {
+          "autoincrement": false,
+          "name": "website",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "xmlAddress": {
+          "autoincrement": false,
+          "name": "xmlAddress",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "foreignKeys": {},
+      "indexes": {
+        "feeds_xmlAddress_unique": {
+          "columns": ["xmlAddress"],
+          "isUnique": true,
+          "name": "feeds_xmlAddress_unique"
+        }
+      },
+      "name": "feeds",
+      "uniqueConstraints": {}
+    },
+    "subscriptions": {
+      "checkConstraints": {},
+      "columns": {
+        "createdAt": {
+          "autoincrement": false,
+          "name": "createdAt",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "feedId": {
+          "autoincrement": false,
+          "name": "feedId",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "id": {
+          "autoincrement": false,
+          "name": "id",
+          "notNull": true,
+          "primaryKey": true,
+          "type": "text"
+        },
+        "userId": {
+          "autoincrement": false,
+          "name": "userId",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "foreignKeys": {
+        "subscriptions_feedId_feeds_id_fk": {
+          "columnsFrom": ["feedId"],
+          "columnsTo": ["id"],
+          "name": "subscriptions_feedId_feeds_id_fk",
+          "onDelete": "no action",
+          "onUpdate": "no action",
+          "tableFrom": "subscriptions",
+          "tableTo": "feeds"
+        }
+      },
+      "indexes": {
+        "subscriptions_user_feed_unique": {
+          "columns": ["userId", "feedId"],
+          "isUnique": true,
+          "name": "subscriptions_user_feed_unique"
+        }
+      },
+      "name": "subscriptions",
+      "uniqueConstraints": {}
+    },
+    "user_item_states": {
+      "checkConstraints": {},
+      "columns": {
+        "articleId": {
+          "autoincrement": false,
+          "name": "articleId",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "id": {
+          "autoincrement": false,
+          "name": "id",
+          "notNull": true,
+          "primaryKey": true,
+          "type": "text"
+        },
+        "isBookmarked": {
+          "autoincrement": false,
+          "default": false,
+          "name": "isBookmarked",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "isRead": {
+          "autoincrement": false,
+          "default": false,
+          "name": "isRead",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "userId": {
+          "autoincrement": false,
+          "name": "userId",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "foreignKeys": {
+        "user_item_states_articleId_articles_id_fk": {
+          "columnsFrom": ["articleId"],
+          "columnsTo": ["id"],
+          "name": "user_item_states_articleId_articles_id_fk",
+          "onDelete": "no action",
+          "onUpdate": "no action",
+          "tableFrom": "user_item_states",
+          "tableTo": "articles"
+        }
+      },
+      "indexes": {
+        "user_item_article_unique": {
+          "columns": ["userId", "articleId"],
+          "isUnique": true,
+          "name": "user_item_article_unique"
+        }
+      },
+      "name": "user_item_states",
+      "uniqueConstraints": {}
+    }
+  },
+  "version": "6",
+  "views": {}
+}
