@@ -154,6 +154,15 @@
     "subfolders",
     "tomtom",
     "toolbelts",
-    "vite"
+    "vite",
+    "pids",
+    "jscoverage",
+    "wscript",
+    "jspm",
+    "eslintcache",
+    "stylelintcache",
+    "Microbundle",
+    "vuepress",
+    "serviceworker"
   ]
 }
