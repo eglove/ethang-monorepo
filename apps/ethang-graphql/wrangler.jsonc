@@ -10,6 +10,19 @@
   "placement": {
     "mode": "smart"
   },
+  "routes": [
+    {
+      "custom_domain": true,
+      "pattern": "graphql.ethang.dev"
+    }
+  ],
+  "rules": [
+    {
+      "fallthrough": true,
+      "globs": ["**/*.graphql"],
+      "type": "Text"
+    }
+  ],
   "services": [
     {
       "binding": "ethang_rss",

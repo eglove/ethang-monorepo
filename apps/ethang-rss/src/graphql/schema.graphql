@@ -3,6 +3,7 @@ extend schema
         import: ["@key", "@shareable"])
 
 type Query {
+  feedArticles(feedId: String!): [Article!]!
   subscriptions: [Feed!]!
 }
 

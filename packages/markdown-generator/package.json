@@ -10,7 +10,7 @@
   },
   "description": "Markdown Generator following GitHub syntax.",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.17.3",
+    "@ethang/eslint-config": "^25.18.0",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.24",
     "@vitest/coverage-v8": "^4.1.6",

@@ -14,6 +14,7 @@ const typeDefs = gql`
     )
 
   type Query {
+    feedArticles(feedId: String!): [Article!]!
     subscriptions: [Feed!]!
   }
 
@@ -50,6 +51,7 @@ export const createSchema = (environment: Env) => {
     schema: databaseSchema
   });
 
+  // @ts-expect-error ignore
   return buildSubgraphSchema({
     resolvers: createResolvers(database),
     typeDefs

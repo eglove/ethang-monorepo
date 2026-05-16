@@ -42,15 +42,7 @@ export default {
             const userHeader = _request.headers.get("x-user");
 
             if (isNil(userHeader)) {
-              return {
-                user: {
-                  email: "gateway@ethang.dev",
-                  exp: Number.MAX_SAFE_INTEGER,
-                  iat: 0,
-                  sub: "gateway",
-                  username: "gateway"
-                }
-              } satisfies ServerContext;
+              throw new Error("Unauthorized");
             }
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion

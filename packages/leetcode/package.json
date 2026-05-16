@@ -10,7 +10,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.17.3",
+    "@ethang/eslint-config": "^25.18.0",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.8.0",
     "@vitest/coverage-v8": "^4.1.6",
