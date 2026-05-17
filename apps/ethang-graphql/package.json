@@ -25,7 +25,7 @@
   "name": "ethang-graphql",
   "private": true,
   "scripts": {
-    "build": "rover supergraph compose --config supergraph.yaml > public/supergraph.graphql",
+    "build": "rover supergraph compose --elv2-license=accept --config supergraph.yaml > public/supergraph.graphql",
     "cf-typegen": "wrangler types",
     "deploy": "pnpm build && wrangler deploy",
     "dev": "pnpm build && wrangler dev",
