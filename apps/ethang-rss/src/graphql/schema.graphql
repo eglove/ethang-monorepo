@@ -1,29 +1,129 @@
+"""
+An individual RSS article
+"""
 type Article @key(fields: "id") {
+  """
+  The HTML or text content of the article
+  """
   content: String
+  """
+  The ID of the feed this article belongs to
+  """
   feedId: String!
+  """
+  The globally unique identifier for the article from the RSS feed
+  """
   guid: String!
+  """
+  The internal ID of the article
+  """
   id: ID!
+  """
+  The URL link to the original article
+  """
   link: String!
+  """
+  The publication date and time of the article
+  """
   publishedAt: String
+  """
+  The title of the article
+  """
   title: String!
 }
 
+"""
+An RSS feed subscription
+"""
 type Feed @key(fields: "id") {
+  """
+  The articles associated with this feed
+  """
   articles: [Article!]!
+  """
+  The internal ID of the feed
+  """
   id: ID!
+  """
+  The date and time the feed was last fetched
+  """
   lastFetchedAt: String
+  """
+  The title of the feed
+  """
   title: String!
+  """
+  The website URL associated with the feed
+  """
   website: String!
+  """
+  The URL of the RSS XML feed
+  """
   xmlAddress: String!
 }
 
+"""
+The root Mutation type
+"""
 type Mutation {
-  addSubscription(title: String!, website: String!, xmlAddress: String!): Feed!
+  """
+  Adds a new RSS feed subscription
+  """
+  addSubscription(
+    """
+    The title of the new subscription
+    """
+    title: String!
+    """
+    The website URL of the subscription
+    """
+    website: String!
+    """
+    The XML address of the RSS feed
+    """
+    xmlAddress: String!
+  ): Feed!
 }
 
+"""
+The root Query type
+"""
 type Query {
-  feedArticles(feedId: String!): [Article!]!
+  """
+  Retrieves a list of articles for a specific feed
+  """
+  feedArticles(
+    """
+    The ID of the feed to retrieve articles for
+    """
+    feedId: String!
+  ): [Article!]!
+  """
+  Retrieves a list of all feed subscriptions
+  """
   subscriptions: [Feed!]!
+}
+
+"""
+Information about pagination in a connection.
+"""
+type PageInfo {
+  """
+  When paginating forwards, the cursor to continue.
+  """
+  endCursor: String
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+  """
+  When paginating backwards, the cursor to continue.
+  """
+  startCursor: String
 }
 
 extend schema
