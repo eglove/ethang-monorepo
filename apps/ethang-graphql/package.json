@@ -7,13 +7,13 @@
     "@apollo/gateway": "^2.9.2",
     "@apollo/server": "^5.5.1",
     "@as-integrations/cloudflare-workers": "^1.1.1",
-    "@cloudflare/workers-types": "^4.20260516.1",
+    "@cloudflare/workers-types": "^4.20260517.1",
     "dataloader": "^2.2.3",
     "graphql": "^16.14.0",
     "graphql-tag": "^2.12.6"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.18.0",
+    "@ethang/eslint-config": "^25.19.0",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.4.0",
     "typescript": "^6.0.3",

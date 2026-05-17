@@ -19,10 +19,10 @@ directive @link(url: String, as: String, for: link__Purpose, import: [link__Impo
 type Article
   @join__type(graph: ETHANG_RSS, key: "id")
 {
-  id: ID!
   content: String
   feedId: String!
   guid: String!
+  id: ID!
   link: String!
   publishedAt: String
   title: String!
@@ -31,12 +31,12 @@ type Article
 type Feed
   @join__type(graph: ETHANG_RSS, key: "id")
 {
+  articles: [Article!]!
   id: ID!
   lastFetchedAt: String
   title: String!
   website: String!
   xmlAddress: String!
-  articles: [Article!]!
 }
 
 scalar join__FieldSet

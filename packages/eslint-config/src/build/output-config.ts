@@ -9,7 +9,6 @@ import { astroPlugin } from "../setup/astro.ts";
 import { compatPlugin } from "../setup/compat.ts";
 import { cssPlugin } from "../setup/css.ts";
 import { eslintPlugin } from "../setup/eslint.ts";
-import { graphqlPlugin } from "../setup/graphql.ts";
 import { htmlPlugin } from "../setup/html.ts";
 import { json5Plugin, jsoncPlugin, jsonPlugin } from "../setup/json.ts";
 import { lodashPlugin } from "../setup/lodash.ts";
@@ -106,7 +105,6 @@ export const outputConfigs: OutputConfig[] = [
       jsonPlugin,
       jsoncPlugin,
       json5Plugin,
-      graphqlPlugin,
       prettierPlugin
     ] as const
   }),
