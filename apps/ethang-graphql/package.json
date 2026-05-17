@@ -1,0 +1,37 @@
+{
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "@apollo/gateway": "^2.9.2",
+    "@apollo/server": "^5.5.1",
+    "@as-integrations/cloudflare-workers": "^1.1.1",
+    "@cloudflare/workers-types": "^4.20260517.1",
+    "dataloader": "^2.2.3",
+    "graphql": "^16.14.0",
+    "graphql-tag": "^2.12.6"
+  },
+  "devDependencies": {
+    "@ethang/eslint-config": "^25.19.0",
+    "browserslist-config-baseline": "^0.5.0",
+    "eslint": "^10.4.0",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.92.0"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "name": "ethang-graphql",
+  "private": true,
+  "scripts": {
+    "build": "rover supergraph compose --elv2-license=accept --config supergraph.yaml > public/supergraph.graphql",
+    "cf-typegen": "wrangler types",
+    "deploy": "pnpm build && wrangler deploy",
+    "dev": "pnpm build && wrangler dev",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
+    "start": "pnpm dev"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}

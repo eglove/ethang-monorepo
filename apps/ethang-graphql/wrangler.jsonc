@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2026-05-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "src/index.ts",
+  "name": "ethang-graphql",
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "mode": "smart"
+  },
+  "routes": [
+    {
+      "custom_domain": true,
+      "pattern": "graphql.ethang.dev"
+    }
+  ],
+  "rules": [
+    {
+      "fallthrough": true,
+      "globs": ["**/*.graphql"],
+      "type": "Text"
+    }
+  ],
+  "services": [
+    {
+      "binding": "ethang_rss",
+      "service": "ethang-rss"
+    }
+  ]
+}

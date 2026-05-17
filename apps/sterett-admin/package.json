@@ -21,7 +21,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.17.3",
+    "@ethang/eslint-config": "^25.19.0",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.24",
     "browserslist-config-baseline": "^0.5.0",
@@ -46,7 +46,7 @@
     "cf-typegen": "wrangler types",
     "deploy": "pnpm build && wrangler deploy",
     "dev": "sanity dev",
-    "lint": "eslint . --fix --cache && pnpm tsc --noEmit",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
     "start": "sanity start"
   },
   "type": "module",

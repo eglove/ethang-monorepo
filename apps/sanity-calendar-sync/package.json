@@ -30,7 +30,7 @@
     "cf-typegen": "wrangler types",
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "lint": "eslint . --fix --cache && pnpm tsc --noEmit",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
     "start": "wrangler dev"
   },
   "type": "module",

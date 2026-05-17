@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "compatibility_date": "2026-05-16",
+  "compatibility_date": "2026-05-17",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {
@@ -18,5 +18,16 @@
   "placement": {
     "mode": "smart"
   },
-  "upload_source_maps": true
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+  "upload_source_maps": true,
+  "workers_dev": false,
+  "workflows": [
+    {
+      "binding": "FETCH_FEEDS_WORKFLOW",
+      "class_name": "FetchFeedsWorkflow",
+      "name": "fetch-feeds-workflow"
+    }
+  ]
 }
