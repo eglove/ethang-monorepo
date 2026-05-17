@@ -183,6 +183,8 @@
     "Microtask",
     "esbuild",
     "typegen",
-    "dedupe"
+    "dedupe",
+    "JSONLINT",
+    "supergraph"
   ]
 }
