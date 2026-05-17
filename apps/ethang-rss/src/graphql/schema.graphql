@@ -1,3 +1,6 @@
+directive @key(fields: String!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
+directive @link(url: String!, as: String, import: [String]) repeatable on SCHEMA
+
 """
 An individual RSS article
 """
@@ -33,13 +36,50 @@ type Article @key(fields: "id") {
 }
 
 """
+A connection to a list of articles.
+"""
+type ArticleConnection {
+  """
+  A list of edges.
+  """
+  edges: [ArticleEdge!]!
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""
+An edge in a connection.
+"""
+type ArticleEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+  """
+  The item at the end of the edge.
+  """
+  node: Article!
+}
+
+"""
 An RSS feed subscription
 """
 type Feed @key(fields: "id") {
   """
   The articles associated with this feed
   """
-  articles: [Article!]!
+  articles(
+    """
+    The number of articles to retrieve
+    """
+    first: Int
+    """
+    The cursor to start retrieving articles from
+    """
+    after: String
+  ): ArticleConnection!
   """
   The internal ID of the feed
   """
@@ -60,6 +100,34 @@ type Feed @key(fields: "id") {
   The URL of the RSS XML feed
   """
   xmlAddress: String!
+}
+
+"""
+A connection to a list of feeds.
+"""
+type FeedConnection {
+  """
+  A list of edges.
+  """
+  edges: [FeedEdge!]!
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""
+An edge in a connection.
+"""
+type FeedEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+  """
+  The item at the end of the edge.
+  """
+  node: Feed!
 }
 
 """
@@ -97,11 +165,28 @@ type Query {
     The ID of the feed to retrieve articles for
     """
     feedId: String!
-  ): [Article!]!
+    """
+    The number of articles to retrieve
+    """
+    first: Int
+    """
+    The cursor to start retrieving articles from
+    """
+    after: String
+  ): ArticleConnection!
   """
   Retrieves a list of all feed subscriptions
   """
-  subscriptions: [Feed!]!
+  subscriptions(
+    """
+    The number of subscriptions to retrieve
+    """
+    first: Int
+    """
+    The cursor to start retrieving subscriptions from
+    """
+    after: String
+  ): FeedConnection!
 }
 
 """
