@@ -163,6 +163,26 @@
     "stylelintcache",
     "Microbundle",
     "vuepress",
-    "serviceworker"
+    "serviceworker",
+    "worktrees",
+    "sonarcloud",
+    "dbnavigator",
+    "mpeltonen",
+    "replstate",
+    "sonarlint",
+    "dotenv",
+    "ionide",
+    "creds",
+    "webstorm",
+    "JACOCO",
+    "worktree",
+    "statefulset",
+    "configmap",
+    "winget",
+    "miktex",
+    "Microtask",
+    "esbuild",
+    "typegen",
+    "dedupe"
   ]
 }
