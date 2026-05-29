@@ -22,7 +22,6 @@
   "type": "module",
   "version": "1.0.0",
   "dependencies": {
-    "@ethang/project-builder": "^3.0.2",
     "drizzle-graphql": "^0.8.5"
   }
 }
