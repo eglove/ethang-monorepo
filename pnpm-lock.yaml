@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@ethang/project-builder':
-        specifier: ^3.0.2
-        version: 3.0.2(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.3)(typescript@6.0.3)(yaml@2.9.0)
       drizzle-graphql:
         specifier: ^0.8.5
         version: 0.8.5(drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260528.1)(@opentelemetry/api@1.9.1))(graphql@16.14.0)
