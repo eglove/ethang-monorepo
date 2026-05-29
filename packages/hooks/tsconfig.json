@@ -1,3 +1,6 @@
 {
-  "extends": ["../tsconfig/tsconfig.react.json"]
+  "extends": "../tsconfig/tsconfig.react.json",
+  "compilerOptions": {
+    "moduleResolution": "bundler"
+  }
 }
