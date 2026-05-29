@@ -185,6 +185,7 @@
     "typegen",
     "dedupe",
     "JSONLINT",
-    "supergraph"
+    "supergraph",
+    "protobufjs"
   ]
 }
