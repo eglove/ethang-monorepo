@@ -1,8 +1,7 @@
-import path from "path";
-import { fileURLToPath } from "url";
-
 import config from "@ethang/eslint-config/config.main.js";
 import { defineConfig, globalIgnores } from "eslint/config";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 
@@ -17,7 +16,8 @@ export default defineConfig(
       }
     },
     rules: {
-      "unicorn/prefer-import-meta-properties": "off"
+      "unicorn/prefer-import-meta-properties": "off",
+      "unicorn/prefer-node-protocol": "off"
     }
   }
 );
