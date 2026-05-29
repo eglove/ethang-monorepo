@@ -1,3 +1,3 @@
-import { projectBuilder } from "../project-builder/src/project-builder";
+import { projectBuilder } from "@ethang/project-builder/project-builder.js";
 
 await projectBuilder(import.meta.dirname);

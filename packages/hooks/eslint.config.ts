@@ -7,10 +7,12 @@ export default defineConfig(
   {
     languageOptions: {
       parserOptions: {
-        project: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
+        // Point explicitly to your local config or true,
+        // but bound it strictly to this directory
+        project: ["./tsconfig.json"],
+        tsconfigRootDir: import.meta.dirname
+      }
     },
-    rules: {},
-  },
+    rules: {}
+  }
 );
