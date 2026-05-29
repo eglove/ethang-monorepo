@@ -1,5 +1,3 @@
-import type DataLoader from "dataloader";
-
 import { and, desc, eq, lt } from "drizzle-orm";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
@@ -9,12 +7,7 @@ import type { ServerContext } from "../../index.ts";
 
 import { type Database, databaseSchema } from "../../db/database-schema.ts";
 
-type Feed = typeof databaseSchema.feedsTable.$inferSelect;
-
-export const subscriptionsQuery = (
-  database: Database,
-  feedLoader: DataLoader<string, Feed | null>
-) => {
+export const subscriptionsQuery = (database: Database) => {
   return async (
     _parent: unknown,
     parameters: { after?: string; first?: number },
@@ -43,7 +36,7 @@ export const subscriptionsQuery = (
     const hasNextPage = subscriptions.length > first;
     const items = subscriptions.slice(0, first);
 
-    const feeds = await feedLoader.loadMany(
+    const feeds = await context.feedLoader.loadMany(
       map(items, (result) => {
         return result.feedId;
       })

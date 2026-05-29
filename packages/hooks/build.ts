@@ -1,3 +1,7 @@
-import { projectBuilder } from "../project-builder/src/project-builder";
+import { projectBuilder } from "@ethang/project-builder/project-builder.js";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 
-await projectBuilder(import.meta.dirname);
+const root = dirname(fileURLToPath(import.meta.url));
+
+await projectBuilder(root);

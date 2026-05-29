@@ -4,24 +4,24 @@
     "current node"
   ],
   "dependencies": {
-    "@sanity/code-input": "^7.1.0",
+    "@sanity/code-input": "^7.1.2",
     "@sanity/orderable-document-list": "^1.5.1",
-    "@sanity/vision": "^5.25.1",
+    "@sanity/vision": "^5.28.0",
     "lodash": "^4.18.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "sanity": "^5.25.1",
-    "styled-components": "^6.4.1"
+    "sanity": "^5.28.0",
+    "styled-components": "^6.4.2"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.19.0",
+    "@ethang/eslint-config": "^25.19.1",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.24",
-    "@types/react": "^19.2.14",
+    "@types/react": "^19.2.15",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.4.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.13"
+    "vite": "^8.0.14"
   },
   "engines": {
     "node": ">=24"
