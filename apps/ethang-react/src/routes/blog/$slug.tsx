@@ -7,11 +7,11 @@ import { SanityText } from "../../components/sanity-text.tsx";
 import { getBlogBySlug } from "../../models/blog-model.ts";
 
 const RouteComponent = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { slug } = useParams({ from: "/blog/$slug" });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const { data } = useQuery(getBlogBySlug(slug));
-
-  console.log(data);
 
   return (
     <MainLayout>

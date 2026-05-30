@@ -6,7 +6,13 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import path from "node:path";
 
 export default defineConfig(
-  globalIgnores(["node_modules", ".wrangler", "dist", "**/*.d.ts"]),
+  globalIgnores([
+    "node_modules",
+    ".wrangler",
+    "dist",
+    "**/*.d.ts",
+    "src/routeTree.gen.ts"
+  ]),
   ...config,
   ...reactConfig,
   ...htmlConfig,

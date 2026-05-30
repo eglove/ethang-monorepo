@@ -16,7 +16,7 @@ const RouteComponent = () => {
       <Heading as="h1" size="8">
         Tips
       </Heading>
-      <Flex asChild direction="column" gap="4" my="6">
+      <Flex my="6" asChild gap="4" direction="column">
         <ul>
           {map(allTips, (tip) => {
             return (
