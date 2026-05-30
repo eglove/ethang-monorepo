@@ -72,7 +72,7 @@ const typeDefs = gql`
     node: Feed!
   }
 
-  type PageInfo {
+  type PageInfo @shareable {
     endCursor: String
     hasNextPage: Boolean!
     hasPreviousPage: Boolean!

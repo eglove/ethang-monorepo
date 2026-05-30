@@ -17,6 +17,12 @@ export type CourseTrackingRecord = {
   userId: string;
 };
 
+type CourseTrackingConnection = {
+  edges: {
+    node: CourseTrackingRecord;
+  }[];
+};
+
 const executeQuery = async <P extends string, I extends Input>(
   context: Context<AppContext, P, I>,
   query: string,
@@ -96,20 +102,30 @@ export const getCourseTrackingsByUserId = async <
     context,
     `query CourseTrackings($userId: String!) {
       courseTrackings(userId: $userId) {
-        courseUrl
-        id
-        status
-        userId
+        edges {
+          node {
+            courseUrl
+            id
+            status
+            userId
+          }
+        }
       }
     }`,
     { userId }
   );
 
   const data = await extractGraphqlData<{
-    courseTrackings?: CourseTrackingRecord[];
+    courseTrackings?: CourseTrackingConnection;
   }>(response);
 
-  return data.courseTrackings ?? [];
+  if (isNil(data.courseTrackings)) {
+    return [];
+  }
+
+  return data.courseTrackings.edges.map((edge) => {
+    return edge.node;
+  });
 };
 
 export const getCourseTrackingByUserIdCourseId = async <

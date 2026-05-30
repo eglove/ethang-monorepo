@@ -20,7 +20,11 @@ const typeDefs = gql`
 
   type Query {
     courseTracking(courseId: String!, userId: String!): CourseTracking
-    courseTrackings(userId: String!): [CourseTracking!]!
+    courseTrackings(
+      userId: String!
+      first: Int
+      after: String
+    ): CourseTrackingConnection!
   }
 
   type Mutation {
@@ -35,6 +39,23 @@ const typeDefs = gql`
     id: ID!
     status: String!
     userId: String!
+  }
+
+  type CourseTrackingConnection {
+    edges: [CourseTrackingEdge!]!
+    pageInfo: PageInfo!
+  }
+
+  type CourseTrackingEdge {
+    cursor: String!
+    node: CourseTracking!
+  }
+
+  type PageInfo @shareable {
+    endCursor: String
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
   }
 `;
 
