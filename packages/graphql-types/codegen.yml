@@ -1,0 +1,16 @@
+schema:
+  - "../../apps/ethang-courses/src/graphql/schema.graphql"
+  - "../../apps/ethang-rss/src/graphql/schema.graphql"
+plugins:
+  - "@graphql-codegen/typescript"
+  - "@graphql-codegen/typescript-operations"
+
+generates:
+  dist/courses.ts:
+    plugins:
+      - "@graphql-codegen/typescript"
+      - "@graphql-codegen/typescript-operations"
+  dist/rss.ts:
+    plugins:
+      - "@graphql-codegen/typescript"
+      - "@graphql-codegen/typescript-operations"
