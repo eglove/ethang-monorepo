@@ -1,7 +1,9 @@
 import { and, desc, eq, lt } from "drizzle-orm";
+import map from "lodash/map.js";
+
+import type { Database } from "../types.ts";
 
 import { courseTrackingTable } from "../../db/schema.ts";
-import type { Database } from "../types.ts";
 
 export const courseTrackingsQuery = (database: Database) => {
   return async (
@@ -42,7 +44,7 @@ export const courseTrackingsQuery = (database: Database) => {
         ? trackings
         : trackings.slice(0, parameters.first);
 
-    const edges = items.map((item) => {
+    const edges = map(items, (item) => {
       return {
         cursor: item.id,
         node: item

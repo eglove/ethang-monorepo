@@ -16,7 +16,6 @@ vi.mock(import("./queries/course-trackings.ts"), () => {
   };
 });
 
-import type { Database } from "./types.ts";
 import { cycleCourseTrackingStatusMutation } from "./mutations/cycle-course-tracking-status.ts";
 import { courseTrackingQuery } from "./queries/course-tracking.ts";
 import { courseTrackingsQuery } from "./queries/course-trackings.ts";
@@ -27,11 +26,14 @@ describe("createResolvers", () => {
     const mutationResolver = vi.fn();
     const trackingResolver = vi.fn();
     const trackingsResolver = vi.fn();
-    vi.mocked(cycleCourseTrackingStatusMutation).mockReturnValue(mutationResolver);
+    vi.mocked(cycleCourseTrackingStatusMutation).mockReturnValue(
+      mutationResolver
+    );
     vi.mocked(courseTrackingQuery).mockReturnValue(trackingResolver);
     vi.mocked(courseTrackingsQuery).mockReturnValue(trackingsResolver);
 
-    const database = {} as Database;
+    const database = {};
+    // @ts-expect-error minimal database test double for this unit test
     const resolvers = createResolvers(database);
 
     expect(cycleCourseTrackingStatusMutation).toHaveBeenCalledWith(database);

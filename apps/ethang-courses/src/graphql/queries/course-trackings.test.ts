@@ -1,6 +1,6 @@
+import assign from "lodash/assign.js";
 import { describe, expect, it, vi } from "vitest";
 
-import type { Database } from "../types.ts";
 import { courseTrackingsQuery } from "./course-trackings.ts";
 
 type Tracking = {
@@ -11,16 +11,12 @@ type Tracking = {
 };
 
 const createDatabaseMock = (trackings: Tracking[]) => {
-  const limit = vi.fn(async (count: number) => {
+  const limit = vi.fn((count: number) => {
     return trackings.slice(0, count);
   });
-  const orderByResult = {
-    limit,
-    then: (resolve: (value: Tracking[]) => unknown) => {
-      return resolve(trackings);
-    }
-  };
-  const orderBy = vi.fn(() => {
+  const basePromise = Promise.resolve(trackings);
+  const orderByResult = assign(basePromise, { limit });
+  const orderBy = vi.fn(async () => {
     return orderByResult;
   });
   const where = vi.fn(() => {
@@ -37,7 +33,7 @@ const createDatabaseMock = (trackings: Tracking[]) => {
 
   const database = {
     select
-  } as unknown as Database;
+  };
 
   return { database, limit, where };
 };
@@ -50,6 +46,7 @@ describe("courseTrackingsQuery", () => {
     ];
     const { database, limit } = createDatabaseMock(trackings);
 
+    // @ts-expect-error minimal database test double for this unit test
     const resolver = courseTrackingsQuery(database);
     const result = await resolver(undefined, { userId: "user-1" });
 
@@ -76,6 +73,7 @@ describe("courseTrackingsQuery", () => {
     ];
     const { database, limit } = createDatabaseMock(trackings);
 
+    // @ts-expect-error minimal database test double for this unit test
     const resolver = courseTrackingsQuery(database);
     const result = await resolver(undefined, { first: 2, userId: "user-1" });
 
@@ -92,6 +90,7 @@ describe("courseTrackingsQuery", () => {
     ];
     const { database, where } = createDatabaseMock(trackings);
 
+    // @ts-expect-error minimal database test double for this unit test
     const resolver = courseTrackingsQuery(database);
     await resolver(undefined, { after: "3", first: 1, userId: "user-1" });
 

@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { Database } from "../types.ts";
 import { getTrackingByUserIdCourseUrl } from "./get-tracking-by-user-id-course-url.ts";
 
 describe("getTrackingByUserIdCourseUrl", () => {
@@ -18,9 +17,10 @@ describe("getTrackingByUserIdCourseUrl", () => {
           findFirst
         }
       }
-    } as unknown as Database;
+    };
 
     const result = await getTrackingByUserIdCourseUrl(
+      // @ts-expect-error minimal database test double for this unit test
       database,
       "user-1",
       "https://example.com/course"

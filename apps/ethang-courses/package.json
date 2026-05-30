@@ -24,8 +24,8 @@
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.4.0",
-    "vitest": "^4.1.7",
     "typescript": "^6.0.3",
+    "vitest": "^4.1.7",
     "wrangler": "^4.95.0"
   },
   "engines": {

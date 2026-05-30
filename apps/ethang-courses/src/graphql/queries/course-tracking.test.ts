@@ -11,23 +11,25 @@ vi.mock(import("../functions/get-tracking-by-user-id-course-url.ts"), () => {
   };
 });
 
-import type { Database } from "../types.ts";
 import { getCourseUrlByCourseId } from "../functions/get-course-url-by-course-id.ts";
 import { getTrackingByUserIdCourseUrl } from "../functions/get-tracking-by-user-id-course-url.ts";
 import { courseTrackingQuery } from "./course-tracking.ts";
 
+const COURSE_URL = "https://example.com/c";
+
 describe("courseTrackingQuery", () => {
   it("looks up courseUrl then fetches tracking for user", async () => {
-    vi.mocked(getCourseUrlByCourseId).mockResolvedValue("https://example.com/c");
+    vi.mocked(getCourseUrlByCourseId).mockResolvedValue(COURSE_URL);
     const tracking = {
-      courseUrl: "https://example.com/c",
+      courseUrl: COURSE_URL,
       id: "tracking-1",
       status: "Complete",
       userId: "user-1"
     };
     vi.mocked(getTrackingByUserIdCourseUrl).mockResolvedValue(tracking);
 
-    const resolver = courseTrackingQuery({} as Database);
+    // @ts-expect-error minimal database test double for this unit test
+    const resolver = courseTrackingQuery({});
     const result = await resolver(undefined, {
       courseId: "course-1",
       userId: "user-1"
@@ -37,7 +39,7 @@ describe("courseTrackingQuery", () => {
     expect(getTrackingByUserIdCourseUrl).toHaveBeenCalledWith(
       expect.anything(),
       "user-1",
-      "https://example.com/c"
+      COURSE_URL
     );
     expect(result).toStrictEqual(tracking);
   });

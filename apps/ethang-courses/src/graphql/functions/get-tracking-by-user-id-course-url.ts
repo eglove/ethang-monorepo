@@ -1,4 +1,4 @@
-import { courseTrackingTable } from "../../db/schema.ts";
+import type { courseTrackingTable } from "../../db/schema.ts";
 import type { Database } from "../types.ts";
 
 export const getTrackingByUserIdCourseUrl = async (

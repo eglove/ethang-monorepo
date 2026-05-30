@@ -1,4 +1,5 @@
 import type { Database } from "../types.ts";
+
 import { getCourseUrlByCourseId } from "../functions/get-course-url-by-course-id.ts";
 import { getTrackingByUserIdCourseUrl } from "../functions/get-tracking-by-user-id-course-url.ts";
 

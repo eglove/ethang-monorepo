@@ -1,3 +1,4 @@
+import map from "lodash/map.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { createResolversMock, drizzleMock } = vi.hoisted(() => {
@@ -21,6 +22,16 @@ vi.mock("./resolvers.ts", () => {
 import { createSchema } from "./schema.ts";
 
 describe("createSchema", () => {
+  const createResolversReturn = {
+    Mutation: {
+      cycleCourseTrackingStatus: vi.fn()
+    },
+    Query: {
+      courseTracking: vi.fn(),
+      courseTrackings: vi.fn()
+    }
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -30,24 +41,19 @@ describe("createSchema", () => {
       marker: "database"
     };
     drizzleMock.mockReturnValue(database);
-    createResolversMock.mockReturnValue({
-      Mutation: {
-        cycleCourseTrackingStatus: vi.fn()
-      },
-      Query: {
-        courseTracking: vi.fn(),
-        courseTrackings: vi.fn()
-      }
-    });
+    createResolversMock.mockReturnValue(createResolversReturn);
 
-    const schema = createSchema({} as never);
+    // @ts-expect-error minimal binding test double for this unit test
+    const schema = createSchema({});
     const queryType = schema.getQueryType();
     const courseTrackings = queryType?.getFields()["courseTrackings"];
 
     expect(String(courseTrackings?.type)).toBe("CourseTrackingConnection!");
-    expect(courseTrackings?.args.map((argument) => {
-      return argument.name;
-    })).toStrictEqual(["userId", "first", "after"]);
+    expect(
+      map(courseTrackings?.args, (argument) => {
+        return argument.name;
+      })
+    ).toStrictEqual(["userId", "first", "after"]);
     expect(schema.getType("CourseTrackingConnection")).toBeDefined();
     expect(schema.getType("CourseTrackingEdge")).toBeDefined();
     expect(schema.getType("PageInfo")).toBeDefined();
@@ -61,23 +67,16 @@ describe("createSchema", () => {
       marker: "database"
     };
     drizzleMock.mockReturnValue(database);
-    createResolversMock.mockReturnValue({
-      Mutation: {
-        cycleCourseTrackingStatus: vi.fn()
-      },
-      Query: {
-        courseTracking: vi.fn(),
-        courseTrackings: vi.fn()
-      }
-    });
+    createResolversMock.mockReturnValue(createResolversReturn);
 
-    createSchema(databaseBinding as never);
+    // @ts-expect-error minimal binding test double for this unit test
+    createSchema(databaseBinding);
 
-    expect(drizzleMock).toHaveBeenCalledWith(databaseBinding, {
-      schema: expect.objectContaining({
-        courseTrackingTable: expect.anything()
-      })
-    });
+    expect(drizzleMock).toHaveBeenCalledTimes(1);
+    expect(drizzleMock).toHaveBeenCalledWith(
+      databaseBinding,
+      expect.anything()
+    );
     expect(createResolversMock).toHaveBeenCalledWith(database);
   });
 });

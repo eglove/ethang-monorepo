@@ -7,6 +7,7 @@ export default defineConfig(
     "dist",
     "**/*.d.ts",
     ".wrangler",
+    "coverage",
     "scripts",
     "migrations"
   ]),

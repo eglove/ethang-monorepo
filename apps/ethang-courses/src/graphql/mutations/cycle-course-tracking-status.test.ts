@@ -11,67 +11,76 @@ vi.mock(import("../functions/get-tracking-by-user-id-course-url.ts"), () => {
   };
 });
 
-import type { Database } from "../types.ts";
 import { COURSE_TRACKING_STATUS } from "../constants/course-tracking-status.ts";
 import { getCourseUrlByCourseId } from "../functions/get-course-url-by-course-id.ts";
 import { getTrackingByUserIdCourseUrl } from "../functions/get-tracking-by-user-id-course-url.ts";
 import { cycleCourseTrackingStatusMutation } from "./cycle-course-tracking-status.ts";
 
+const COURSE_URL = "https://example.com/c";
+const TRACKING_ID = "tracking-1";
+const USER_ID = "user-1";
+
 describe("cycleCourseTrackingStatusMutation", () => {
   it("creates a tracking when one does not exist", async () => {
-    vi.mocked(getCourseUrlByCourseId).mockResolvedValue("https://example.com/c");
+    vi.mocked(getCourseUrlByCourseId).mockResolvedValue(COURSE_URL);
     vi.mocked(getTrackingByUserIdCourseUrl)
-      .mockResolvedValueOnce(undefined)
+      .mockImplementationOnce(async () => {
+        // eslint-disable-next-line unicorn/no-useless-undefined,unicorn/no-useless-promise-resolve-reject
+        return Promise.resolve(undefined);
+      })
       .mockResolvedValueOnce({
-        courseUrl: "https://example.com/c",
-        id: "tracking-1",
+        courseUrl: COURSE_URL,
+        id: TRACKING_ID,
         status: COURSE_TRACKING_STATUS.COMPLETE,
-        userId: "user-1"
+        userId: USER_ID
       });
 
-    const values = vi.fn().mockResolvedValue(undefined);
+    // eslint-disable-next-line unicorn/no-useless-undefined,sonar/no-undefined-argument
+    const values = vi.fn(undefined);
     const database = {
       insert: vi.fn(() => {
         return { values };
       })
-    } as unknown as Database;
+    };
 
+    // @ts-expect-error minimal database test double for this unit test
     const resolver = cycleCourseTrackingStatusMutation(database);
     const result = await resolver(undefined, {
       courseId: "course-1",
-      userId: "user-1"
+      userId: USER_ID
     });
 
     expect(values).toHaveBeenCalledWith({
-      courseUrl: "https://example.com/c",
+      courseUrl: COURSE_URL,
       status: COURSE_TRACKING_STATUS.COMPLETE,
-      userId: "user-1"
+      userId: USER_ID
     });
     expect(result).toStrictEqual({
-      courseUrl: "https://example.com/c",
-      id: "tracking-1",
+      courseUrl: COURSE_URL,
+      id: TRACKING_ID,
       status: COURSE_TRACKING_STATUS.COMPLETE,
-      userId: "user-1"
+      userId: USER_ID
     });
   });
 
   it("cycles existing status and updates row", async () => {
-    vi.mocked(getCourseUrlByCourseId).mockResolvedValue("https://example.com/c");
+    vi.mocked(getCourseUrlByCourseId).mockResolvedValue(COURSE_URL);
     vi.mocked(getTrackingByUserIdCourseUrl)
       .mockResolvedValueOnce({
-        courseUrl: "https://example.com/c",
-        id: "tracking-1",
+        courseUrl: COURSE_URL,
+        id: TRACKING_ID,
         status: COURSE_TRACKING_STATUS.COMPLETE,
-        userId: "user-1"
+        userId: USER_ID
       })
       .mockResolvedValueOnce({
-        courseUrl: "https://example.com/c",
-        id: "tracking-1",
+        courseUrl: COURSE_URL,
+        id: TRACKING_ID,
         status: COURSE_TRACKING_STATUS.REVISIT,
-        userId: "user-1"
+        userId: USER_ID
       });
 
-    const where = vi.fn().mockResolvedValue(undefined);
+    // eslint-disable-next-line unicorn/no-useless-undefined,sonar/no-undefined-argument
+    const where = vi.fn(undefined);
     const set = vi.fn(() => {
       return { where };
     });
@@ -79,31 +88,37 @@ describe("cycleCourseTrackingStatusMutation", () => {
       update: vi.fn(() => {
         return { set };
       })
-    } as unknown as Database;
+    };
 
+    // @ts-expect-error minimal database test double for this unit test
     const resolver = cycleCourseTrackingStatusMutation(database);
     const result = await resolver(undefined, {
       courseId: "course-1",
-      userId: "user-1"
+      userId: USER_ID
     });
 
-    expect(set).toHaveBeenCalledWith({ status: COURSE_TRACKING_STATUS.REVISIT });
+    expect(set).toHaveBeenCalledWith({
+      status: COURSE_TRACKING_STATUS.REVISIT
+    });
     expect(where).toHaveBeenCalledTimes(1);
     expect(result).toStrictEqual({
-      courseUrl: "https://example.com/c",
-      id: "tracking-1",
+      courseUrl: COURSE_URL,
+      id: TRACKING_ID,
       status: COURSE_TRACKING_STATUS.REVISIT,
-      userId: "user-1"
+      userId: USER_ID
     });
   });
 
   it("bubbles lookup errors from course fetch", async () => {
-    vi.mocked(getCourseUrlByCourseId).mockRejectedValue(new Error("Course not found"));
+    vi.mocked(getCourseUrlByCourseId).mockRejectedValue(
+      new Error("Course not found")
+    );
 
-    const resolver = cycleCourseTrackingStatusMutation({} as Database);
+    // @ts-expect-error minimal database test double for this unit test
+    const resolver = cycleCourseTrackingStatusMutation({});
 
     await expect(
-      resolver(undefined, { courseId: "missing", userId: "user-1" })
+      resolver(undefined, { courseId: "missing", userId: USER_ID })
     ).rejects.toThrow("Course not found");
   });
 });
