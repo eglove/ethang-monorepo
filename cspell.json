@@ -189,6 +189,7 @@
     "protobufjs",
     "sessioninfo",
     "ntvs",
-    "njsproj"
+    "njsproj",
+    "tanstack"
   ]
 }
