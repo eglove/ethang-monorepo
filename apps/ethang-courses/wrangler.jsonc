@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2026-05-29",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "ethang_courses",
+      "database_id": "7930072d-1d49-4e57-a100-ac95e7916ac7",
+      "database_name": "ethang-courses",
+      "remote": true
+    }
+  ],
+  "main": "src/index.ts",
+  "name": "ethang-courses",
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "mode": "smart"
+  },
+  "workers_dev": false
+}

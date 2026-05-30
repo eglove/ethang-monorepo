@@ -1,5 +1,9 @@
 federation_version: =2.0.0
 subgraphs:
+  ethang-courses:
+    routing_url: http://localhost:8788/graphql
+    schema:
+      file: ../ethang-courses/src/graphql/schema.graphql
   ethang-rss:
     routing_url: http://localhost:8787/graphql
     schema:

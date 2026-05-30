@@ -1,0 +1,24 @@
+directive @link(url: String!, as: String, import: [String]) repeatable on SCHEMA
+directive @shareable on FIELD_DEFINITION | OBJECT
+
+type CourseTracking @shareable {
+  courseUrl: String!
+  id: ID!
+  status: String!
+  userId: String!
+}
+
+type Mutation {
+  cycleCourseTrackingStatus(courseId: String!, userId: String!): CourseTracking
+}
+
+type Query {
+  courseTracking(courseId: String!, userId: String!): CourseTracking
+  courseTrackings(userId: String!): [CourseTracking!]!
+}
+
+extend schema
+  @link(
+    import: ["@shareable"]
+    url: "https://specs.apollo.dev/federation/v2.0"
+  )
