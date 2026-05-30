@@ -11,5 +11,15 @@
     "enabled": true
   },
   "placement": { "mode": "smart" },
+  "routes": [
+    {
+      "custom_domain": true,
+      "pattern": "ethang.dev"
+    },
+    {
+      "custom_domain": true,
+      "pattern": "www.ethang.dev"
+    }
+  ],
   "upload_source_maps": true
 }

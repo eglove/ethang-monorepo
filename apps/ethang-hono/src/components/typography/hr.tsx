@@ -1,3 +1,0 @@
-export const Hr = async () => {
-  return <hr class="my-8 h-px border-0 bg-slate-600" />;
-};

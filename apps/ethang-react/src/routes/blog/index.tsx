@@ -1,5 +1,5 @@
 import { useStore } from "@ethang/store/use-store";
-import { Card, Heading, Link, Spinner, Text } from "@radix-ui/themes";
+import { Card, Heading, Spinner, Text } from "@radix-ui/themes";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import isNil from "lodash/isNil.js";
@@ -40,9 +40,6 @@ const RouteComponent = () => {
         <Heading as="h1" size="8">
           Blog
         </Heading>
-        <Link target="_blank" href="https://ethang.dev/blogRss.xml">
-          RSS Feed
-        </Link>
         <div className="my-6 grid w-full gap-4">
           {!hasData && <Spinner size="3" className="mx-auto" />}
           {hasData &&
