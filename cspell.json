@@ -190,6 +190,7 @@
     "sessioninfo",
     "ntvs",
     "njsproj",
-    "tanstack"
+    "tanstack",
+    "codegen"
   ]
 }
