@@ -2,5 +2,6 @@
   "compilerOptions": {
     "types": ["node"]
   },
+  "exclude": ["coverage"],
   "extends": ["../../packages/tsconfig/tsconfig.base.json"]
 }
