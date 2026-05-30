@@ -15,7 +15,9 @@ const RouteComponent = () => {
 
   return (
     <MainLayout>
-      <Heading as="h1">{data?.title}</Heading>
+      <Heading as="h1" size="8">
+        {data?.title}
+      </Heading>
       <SanityText value={data?.body}></SanityText>
     </MainLayout>
   );

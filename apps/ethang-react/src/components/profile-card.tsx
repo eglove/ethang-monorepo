@@ -47,7 +47,7 @@ export const ProfileCard = () => {
             <Button asChild>
               <Link
                 target="_blank"
-                className="border-2 border-foreground px-4 py-2"
+                className="border-foreground border-2 px-4 py-2"
                 href="https://www.linkedin.com/build-relation/newsletter-follow?entityUrn=7316126013938143232"
               >
                 Subscribe to my Newsletter
@@ -57,7 +57,7 @@ export const ProfileCard = () => {
               <Link
                 target="_blank"
                 href="https://cal.com/ethan-glover/meet"
-                className="border-2 border-foreground px-4 py-2"
+                className="border-foreground border-2 px-4 py-2"
               >
                 Schedule a Meeting
               </Link>

@@ -37,7 +37,9 @@ const RouteComponent = () => {
   return (
     <MainLayout>
       <div className="flex flex-col items-center justify-center gap-2">
-        <h1 className="text-3xl font-bold">Blog</h1>
+        <Heading as="h1" size="8">
+          Blog
+        </Heading>
         <Link target="_blank" href="https://ethang.dev/blogRss.xml">
           RSS Feed
         </Link>

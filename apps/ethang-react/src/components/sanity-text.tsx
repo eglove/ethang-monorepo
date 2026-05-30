@@ -1,15 +1,22 @@
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
-import { Blockquote, Box, Code, Em, Heading, Link, Strong, Text } from "@radix-ui/themes";
+import {
+  Blockquote,
+  Box,
+  Code,
+  Em,
+  Heading,
+  Link,
+  Strong,
+  Text
+} from "@radix-ui/themes";
 import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
-import SyntaxHighlighter from "react-syntax-highlighter";
-// @ts-expect-error no types
-import nightOwl from "react-syntax-highlighter/dist/esm/styles/hljs/night-owl.js";
 
 import { sanityImage } from "../clients/sanity.ts";
+import { Code as CodeBlock } from "./code.tsx";
 import { HybridLink } from "./hybrid-link.tsx";
 
 type BlockquoteFooterProperties = {
@@ -152,13 +159,9 @@ const CodeBlockRenderer = ({ value }: { value: unknown }) => {
 
   return (
     <Box mb="3" mt="3">
-      <SyntaxHighlighter
-        PreTag="div"
-        style={nightOwl}
-        language={node.language ?? "typescript"}
-      >
+      <CodeBlock language={node.language ?? "typescript"}>
         {node.code}
-      </SyntaxHighlighter>
+      </CodeBlock>
     </Box>
   );
 };
@@ -170,7 +173,9 @@ const ImageRenderer = ({ value }: { value: unknown }) => {
   const node = value as {
     alt?: string;
     asset?: {
-      metadata?: { dimensions?: { aspectRatio?: number; height?: number; width?: number } };
+      metadata?: {
+        dimensions?: { aspectRatio?: number; height?: number; width?: number };
+      };
       url?: string;
     };
     caption?: string;
@@ -185,22 +190,33 @@ const ImageRenderer = ({ value }: { value: unknown }) => {
   const aspectRatio = dimensions?.aspectRatio;
   const width = dimensions?.width ?? IMAGE_MAX_WIDTH;
   const displayWidth = Math.min(width, IMAGE_MAX_WIDTH);
-  const height = dimensions?.height ?? Math.round(displayWidth / (aspectRatio ?? 16 / 9));
+  const height =
+    dimensions?.height ?? Math.round(displayWidth / (aspectRatio ?? 16 / 9));
 
-  const src = sanityImage.image(assetUrl).width(IMAGE_MAX_WIDTH).fit("max").auto("format").url();
+  const source = sanityImage
+    .image(assetUrl)
+    .width(IMAGE_MAX_WIDTH)
+    .fit("max")
+    .auto("format")
+    .url();
 
   return (
     <Box mb="3" mt="3">
       <img
-        alt={node.alt ?? ""}
-        height={height}
+        src={source}
         loading="lazy"
-        src={src}
-        style={{ borderRadius: "var(--radius-4)", display: "block", margin: "0 auto", maxWidth: "100%" }}
+        height={height}
+        alt={node.alt ?? ""}
         width={displayWidth}
+        style={{
+          borderRadius: "var(--radius-4)",
+          display: "block",
+          margin: "0 auto",
+          maxWidth: "100%"
+        }}
       />
       {!isNil(node.caption) && (
-        <Text align="center" asChild color="gray" mt="1" size="2">
+        <Text mt="1" asChild size="2" color="gray" align="center">
           <figcaption>{node.caption}</figcaption>
         </Text>
       )}
