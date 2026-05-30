@@ -25,4 +25,4 @@ SHOW_ELAPSED_TIME: true
 VALIDATE_ALL_CODEBASE: true # Validate all sources
 IGNORE_GITIGNORED_FILES: true
 
-FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts|apps/ethang-hono/public/scripts/.*|.*-megalinter_file_names_cspell\.txt|.*\.idea.*|.*/migrations/meta/_journal.json)
+FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts|.*-megalinter_file_names_cspell\.txt|.*\.idea.*|.*/migrations/meta/_journal.json)
