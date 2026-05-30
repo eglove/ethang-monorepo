@@ -25,7 +25,8 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **ethang-admin**: Sanity Studio administrative interface for the ethang site content.
 - **ethang-courses**: Course tracking service using Apollo GraphQL and Drizzle ORM on Cloudflare Workers.
 - **ethang-graphql**: Apollo Gateway / Supergraph service.
-- **ethang-hono**: The ethang web application built with Hono, Tailwind, and Sanity.
+- **ethang-react**: The ethang web application built with React, TanStack, and Sanity.
+
 - **ethang-rss**: RSS aggregator service with Apollo GraphQL and Drizzle.
 - **sanity-calendar-sync**: Utility application for synchronizing calendar events between Sanity CMS and external calendar services.
 - **sterett-admin**: Administrative interface for the Sterett Creek Village Trustees, providing content management capabilities for the sterett-react website.

@@ -1,1 +1,0 @@
-ALTER TABLE `courseTracking` ADD `userId` text NOT NULL;
