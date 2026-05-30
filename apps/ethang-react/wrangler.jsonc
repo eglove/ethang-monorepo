@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "assets": {
+    "not_found_handling": "single-page-application"
+  },
+  "compatibility_date": "2026-05-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "worker/index.ts",
+  "name": "ethang-react",
+  "observability": {
+    "enabled": true
+  },
+  "placement": { "mode": "smart" },
+  "upload_source_maps": true
+}

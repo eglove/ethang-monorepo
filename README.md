@@ -21,22 +21,27 @@ This monorepo contains a collection of web applications, libraries, and tools us
 
 ### Applications
 
-- **dashboard**: Personal productivity dashboard with features for managing bookmarks, to-do lists, and job search tracking (with statistics and Q&A features), built with React and deployed to Cloudflare.
-- **ethang**: Personal website.
-- **auth**: Authentication service used for my own projects.
+- **auth**: Authentication service utilizing Cloudflare Workers, Hono, and Drizzle ORM.
+- **ethang-admin**: Sanity Studio administrative interface for the ethang site content.
+- **ethang-courses**: Course tracking service using Apollo GraphQL and Drizzle ORM on Cloudflare Workers.
+- **ethang-graphql**: Apollo Gateway / Supergraph service.
+- **ethang-hono**: The ethang web application built with Hono, Tailwind, and Sanity.
+- **ethang-rss**: RSS aggregator service with Apollo GraphQL and Drizzle.
 - **sanity-calendar-sync**: Utility application for synchronizing calendar events between Sanity CMS and external calendar services.
 - **sterett-admin**: Administrative interface for the Sterett Creek Village Trustees, providing content management capabilities for the sterett-react website.
-- **sterett-client**: Community organization/HOA website with content management through Sanity CMS, featuring news, events, galleries, and document management.
+- **sterett-hono**: Sterett Creek community web application built with Hono.
 
 ### Packages
 
 - **eslint-config**: Shared ESLint configuration for multiple frameworks including React, Angular, Astro, and Solid, ensuring consistent code style.
-- **fetch**: Enhanced fetch API wrapper with caching and IndexedDB integration for offline support and improved data fetching.
+- **hono-middleware**: Shared middleware utilities for Hono applications.
 - **hooks**: Collection of reusable React hooks for UI interactions, state management, and browser APIs like local storage, clipboard, and media queries.
-- **markdown-generators**: Utility for programmatically generating structured markdown content for documentation and other text-based outputs.
+- **leetcode**: Collection of LeetCode solutions.
+- **markdown-generator**: Utility for programmatically generating structured markdown content for documentation and other text-based outputs.
 - **project-builder**: Scaffolding tool for creating new projects with consistent structure and configuration based on templates.
 - **schemas**: Shared data schemas and validation utilities used across applications.
 - **scripts**: Collection of utility scripts for development, deployment, and maintenance tasks.
+- **service-worker**: Shared Workbox-based service worker configuration.
 - **store**: State management utilities and stores for frontend applications.
 - **toolbelt**: Comprehensive utility library with modules for collections, HTTP, functional programming, type checking, and more, shared across applications.
 - **tsconfig**: Shared TypeScript configuration files for consistent TypeScript settings across projects.
@@ -44,7 +49,7 @@ This monorepo contains a collection of web applications, libraries, and tools us
 ## Technologies
 
 - **Frontend**: React, TanStack (Query, Router, Table, Form), Tailwind CSS
-- **Backend**: Cloudflare Workers
-- **Data**: Sanity CMS, IndexedDB
+- **Backend**: Cloudflare Workers, Hono, Apollo GraphQL
+- **Data**: Sanity CMS, IndexedDB, Drizzle ORM
 - **DevOps**: Automated testing, CI/CD pipelines, Wrangler deployment
 - **Tools**: TypeScript, ESLint, Vite, pnpm workspaces
