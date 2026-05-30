@@ -4,6 +4,7 @@ import isArray from "lodash/isArray.js";
 import isFunction from "lodash/isFunction.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
+import map from "lodash/map.js";
 
 import {
   type AppContext,
@@ -123,7 +124,7 @@ export const getCourseTrackingsByUserId = async <
     return [];
   }
 
-  return data.courseTrackings.edges.map((edge) => {
+  return map(data.courseTrackings.edges, (edge) => {
     return edge.node;
   });
 };

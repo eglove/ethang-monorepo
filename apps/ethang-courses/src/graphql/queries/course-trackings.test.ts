@@ -16,7 +16,8 @@ const createDatabaseMock = (trackings: Tracking[]) => {
   });
   const basePromise = Promise.resolve(trackings);
   const orderByResult = assign(basePromise, { limit });
-  const orderBy = vi.fn(async () => {
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
+  const orderBy = vi.fn(() => {
     return orderByResult;
   });
   const where = vi.fn(() => {

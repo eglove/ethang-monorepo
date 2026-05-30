@@ -10,8 +10,8 @@ export default defineConfig({
         autoUpdate: true,
         branches: 81.81,
         functions: 80,
-        lines: 86.79,
-        statements: 86.79
+        lines: 88.67,
+        statements: 88.67
       }
     },
     environment: "node",

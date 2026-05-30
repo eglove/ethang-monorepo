@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { globalStore } from "../stores/global-store-properties.ts";
 import {
@@ -16,7 +16,7 @@ const makeContext = (service?: { fetch: (request: Request) => unknown }) => {
 };
 
 const makeJsonResponse = (payload: unknown, status = 200) => {
-  return new Response(JSON.stringify(payload), {
+  return Response.json(payload, {
     headers: {
       "Content-Type": "application/json"
     },
@@ -24,33 +24,33 @@ const makeJsonResponse = (payload: unknown, status = 200) => {
   });
 };
 
-describe("course-tracking-graphql client", () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-    globalStore.authToken = null;
-  });
+const resetTestState = () => {
+  vi.restoreAllMocks();
+  globalStore.authToken = null;
+};
 
+describe("course-tracking-graphql client", () => {
   it("flattens courseTrackings connection edges", async () => {
+    resetTestState();
     const service = {
-      fetch: vi.fn(() => {
-        return Promise.resolve(
-          makeJsonResponse({
-            data: {
-              courseTrackings: {
-                edges: [
-                  {
-                    node: {
-                      courseUrl: "url-1",
-                      id: "id-1",
-                      status: "Complete",
-                      userId: "user-1"
-                    }
+      // eslint-disable-next-line @typescript-eslint/require-await
+      fetch: vi.fn(async () => {
+        return makeJsonResponse({
+          data: {
+            courseTrackings: {
+              edges: [
+                {
+                  node: {
+                    courseUrl: "url-1",
+                    id: "id-1",
+                    status: "Complete",
+                    userId: "user-1"
                   }
-                ]
-              }
+                }
+              ]
             }
-          })
-        );
+          }
+        });
       })
     };
 
@@ -70,13 +70,13 @@ describe("course-tracking-graphql client", () => {
   });
 
   it("returns empty array when connection is missing", async () => {
+    resetTestState();
     const service = {
-      fetch: vi.fn(() => {
-        return Promise.resolve(
-          makeJsonResponse({
-            data: {}
-          })
-        );
+      // eslint-disable-next-line @typescript-eslint/require-await
+      fetch: vi.fn(async () => {
+        return makeJsonResponse({
+          data: {}
+        });
       })
     };
 
@@ -89,24 +89,23 @@ describe("course-tracking-graphql client", () => {
   });
 
   it("uses global fetch fallback when service binding is unavailable", async () => {
+    resetTestState();
     const fetchMock = vi.fn(() => {
-      return Promise.resolve(
-        makeJsonResponse({
-          data: {
-            courseTracking: {
-              courseUrl: "url-1",
-              id: "id-1",
-              status: "Complete",
-              userId: "user-1"
-            }
+      return makeJsonResponse({
+        data: {
+          courseTracking: {
+            courseUrl: "url-1",
+            id: "id-1",
+            status: "Complete",
+            userId: "user-1"
           }
-        })
-      );
+        }
+      });
     });
     vi.stubGlobal("fetch", fetchMock);
 
     const result = await getCourseTrackingByUserIdCourseId(
-      makeContext(undefined) as never,
+      makeContext() as never,
       "user-1",
       "course-1"
     );
@@ -121,23 +120,23 @@ describe("course-tracking-graphql client", () => {
   });
 
   it("adds X-Token header when auth token exists", async () => {
+    resetTestState();
     globalStore.authToken = "token-1";
     const service = {
-      fetch: vi.fn((request: Request) => {
+      // eslint-disable-next-line @typescript-eslint/require-await
+      fetch: vi.fn(async (request: Request) => {
         expect(request.headers.get("X-Token")).toBe("token-1");
 
-        return Promise.resolve(
-          makeJsonResponse({
-            data: {
-              cycleCourseTrackingStatus: {
-                courseUrl: "url-1",
-                id: "id-1",
-                status: "Revisit",
-                userId: "user-1"
-              }
+        return makeJsonResponse({
+          data: {
+            cycleCourseTrackingStatus: {
+              courseUrl: "url-1",
+              id: "id-1",
+              status: "Revisit",
+              userId: "user-1"
             }
-          })
-        );
+          }
+        });
       })
     };
 
@@ -151,9 +150,11 @@ describe("course-tracking-graphql client", () => {
   });
 
   it("throws when HTTP response is not ok", async () => {
+    resetTestState();
     const service = {
-      fetch: vi.fn(() => {
-        return Promise.resolve(makeJsonResponse({ data: {} }, 500));
+      // eslint-disable-next-line @typescript-eslint/require-await
+      fetch: vi.fn(async () => {
+        return makeJsonResponse({ data: {} }, 500);
       })
     };
 
@@ -163,13 +164,13 @@ describe("course-tracking-graphql client", () => {
   });
 
   it("throws GraphQL error message when payload has errors", async () => {
+    resetTestState();
     const service = {
-      fetch: vi.fn(() => {
-        return Promise.resolve(
-          makeJsonResponse({
-            errors: [{ message: "boom" }]
-          })
-        );
+      // eslint-disable-next-line @typescript-eslint/require-await
+      fetch: vi.fn(async () => {
+        return makeJsonResponse({
+          errors: [{ message: "boom" }]
+        });
       })
     };
 
@@ -179,13 +180,13 @@ describe("course-tracking-graphql client", () => {
   });
 
   it("uses fallback GraphQL error message when missing", async () => {
+    resetTestState();
     const service = {
-      fetch: vi.fn(() => {
-        return Promise.resolve(
-          makeJsonResponse({
-            errors: [{}]
-          })
-        );
+      // eslint-disable-next-line @typescript-eslint/require-await
+      fetch: vi.fn(async () => {
+        return makeJsonResponse({
+          errors: [{}]
+        });
       })
     };
 
@@ -195,9 +196,11 @@ describe("course-tracking-graphql client", () => {
   });
 
   it("throws when GraphQL payload has no data", async () => {
+    resetTestState();
     const service = {
-      fetch: vi.fn(() => {
-        return Promise.resolve(makeJsonResponse({}));
+      // eslint-disable-next-line @typescript-eslint/require-await
+      fetch: vi.fn(async () => {
+        return makeJsonResponse({});
       })
     };
 
@@ -207,6 +210,7 @@ describe("course-tracking-graphql client", () => {
   });
 
   it("throws when service fetch does not return a promise", async () => {
+    resetTestState();
     const service = {
       fetch: vi.fn(() => {
         return makeJsonResponse({ data: {} });
@@ -219,9 +223,11 @@ describe("course-tracking-graphql client", () => {
   });
 
   it("throws when service fetch promise resolves to non-Response", async () => {
+    resetTestState();
     const service = {
-      fetch: vi.fn(() => {
-        return Promise.resolve({});
+      // eslint-disable-next-line @typescript-eslint/require-await
+      fetch: vi.fn(async () => {
+        return {};
       })
     };
 
