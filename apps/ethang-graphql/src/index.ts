@@ -9,6 +9,7 @@ import { authenticate, type User } from "./authenticate.ts";
 import { buildService } from "./build-service.ts";
 
 export type ServerContext = {
+  token?: string | undefined;
   user?: User;
 };
 
@@ -39,7 +40,8 @@ export default {
         {
           context: async ({ request: _request }) => {
             const user = await authenticate(_request);
-            return { user } satisfies ServerContext;
+            const token = _request.headers.get("X-Token") ?? undefined;
+            return { token, user } satisfies ServerContext;
           }
         }
       );

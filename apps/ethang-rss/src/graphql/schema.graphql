@@ -22,6 +22,10 @@ type Article @key(fields: "id") {
   """
   id: ID!
   """
+  Whether the article has been marked as read by the user
+  """
+  isRead: Boolean!
+  """
   The URL link to the original article
   """
   link: String!
@@ -151,6 +155,19 @@ type Mutation {
     """
     xmlAddress: String!
   ): Feed!
+  """
+  Marks an RSS article as read or unread
+  """
+  markArticleRead(
+    """
+    The ID of the article to mark as read or unread
+    """
+    articleId: ID!
+    """
+    Whether the article should be marked as read or unread
+    """
+    isRead: Boolean!
+  ): Article!
 }
 
 """

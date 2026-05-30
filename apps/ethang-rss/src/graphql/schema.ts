@@ -14,7 +14,7 @@ const typeDefs = gql`
     )
 
   type Query {
-    feedArticles(feedId: String!): [Article!]!
+    feedArticles(feedId: String!): ArticleConnection!
     subscriptions: [Feed!]!
   }
 
@@ -24,6 +24,7 @@ const typeDefs = gql`
       website: String!
       xmlAddress: String!
     ): Feed!
+    markArticleRead(articleId: ID!, isRead: Boolean!): Article!
   }
 
   type Feed @key(fields: "id") {
@@ -32,7 +33,7 @@ const typeDefs = gql`
     title: String!
     website: String!
     xmlAddress: String!
-    articles: [Article!]!
+    articles(first: Int, after: String): ArticleConnection!
   }
 
   type Article @key(fields: "id") {
@@ -40,9 +41,27 @@ const typeDefs = gql`
     content: String
     feedId: String!
     guid: String!
+    isRead: Boolean!
     link: String!
     publishedAt: String
     title: String!
+  }
+
+  type ArticleConnection {
+    edges: [ArticleEdge!]!
+    pageInfo: PageInfo!
+  }
+
+  type ArticleEdge {
+    cursor: String!
+    node: Article!
+  }
+
+  type PageInfo {
+    endCursor: String
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
   }
 `;
 

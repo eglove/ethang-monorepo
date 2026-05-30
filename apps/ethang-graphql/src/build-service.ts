@@ -1,5 +1,6 @@
 import { RemoteGraphQLDataSource } from "@apollo/gateway";
 import isNil from "lodash/isNil.js";
+import convertToString from "lodash/toString.js";
 
 import { subgraphs } from "./subgraphs/index.ts";
 
@@ -22,9 +23,9 @@ export const buildService = (environment: Env) => {
       },
       url: url ?? "",
       willSendRequest({ context: gatewayContext, request: outgoingRequest }) {
-        const { user } = gatewayContext;
-        if (!isNil(user)) {
-          outgoingRequest.http?.headers.set("x-user", JSON.stringify(user));
+        const { token } = gatewayContext;
+        if (!isNil(token)) {
+          outgoingRequest.http?.headers.set("X-Token", convertToString(token));
         }
       }
     });
