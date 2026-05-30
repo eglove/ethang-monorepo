@@ -8,7 +8,7 @@ export default defineConfig(
     "**/*.d.ts",
     ".wrangler",
     "scripts",
-    "**/*.md"
+    "migrations"
   ]),
   ...config,
   {
