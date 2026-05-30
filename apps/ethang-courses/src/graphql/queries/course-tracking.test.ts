@@ -1,13 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("../functions/get-course-url-by-course-id.ts"), () => {
-  return {
-    getCourseUrlByCourseId: vi.fn()
-  };
-});
 vi.mock(import("../functions/get-tracking-by-user-id-course-url.ts"), () => {
   return {
     getTrackingByUserIdCourseUrl: vi.fn()
+  };
+});
+
+vi.mock(import("../functions/get-course-url-by-course-id.ts"), () => {
+  return {
+    getCourseUrlByCourseId: vi.fn()
   };
 });
 
@@ -35,9 +36,9 @@ describe("courseTrackingQuery", () => {
       userId: "user-1"
     });
 
-    expect(getCourseUrlByCourseId).toHaveBeenCalledWith("course-1");
+    expect(getCourseUrlByCourseId).toHaveBeenCalledWith({}, "course-1");
     expect(getTrackingByUserIdCourseUrl).toHaveBeenCalledWith(
-      expect.anything(),
+      {},
       "user-1",
       COURSE_URL
     );

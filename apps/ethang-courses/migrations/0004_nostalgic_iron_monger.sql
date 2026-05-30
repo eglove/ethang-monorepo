@@ -1,0 +1,1 @@
+ALTER TABLE `learning_path_courses` ADD `tempOrderRank` integer;

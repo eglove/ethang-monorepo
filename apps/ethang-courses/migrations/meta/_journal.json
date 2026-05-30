@@ -22,6 +22,27 @@
       "when": 1772988904368,
       "tag": "0002_broken_blacklash",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1780137707920,
+      "tag": "0003_zippy_shinobi_shaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1780160063104,
+      "tag": "0004_nostalgic_iron_monger",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1780160719213,
+      "tag": "0005_purple_chronomancer",
+      "breakpoints": true
     }
   ]
 }

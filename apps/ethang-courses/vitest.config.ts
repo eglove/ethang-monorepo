@@ -8,10 +8,10 @@ export default defineConfig({
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 81.81,
-        functions: 80,
-        lines: 88.67,
-        statements: 88.67
+        branches: 93.75,
+        functions: 97.36,
+        lines: 98.07,
+        statements: 98.07
       }
     },
     environment: "node",

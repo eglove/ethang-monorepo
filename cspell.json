@@ -187,6 +187,9 @@
     "JSONLINT",
     "supergraph",
     "protobufjs",
-    "sessioninfo"
+    "sessioninfo",
+    "ntvs",
+    "njsproj",
+    "tanstack"
   ]
 }

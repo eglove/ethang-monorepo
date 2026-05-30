@@ -16,7 +16,10 @@ export const cycleCourseTrackingStatusMutation = (database: Database) => {
       userId: string;
     }
   ) => {
-    const courseUrl = await getCourseUrlByCourseId(parameters.courseId);
+    const courseUrl = await getCourseUrlByCourseId(
+      database,
+      parameters.courseId
+    );
     const existing = await getTrackingByUserIdCourseUrl(
       database,
       parameters.userId,
