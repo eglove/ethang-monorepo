@@ -7,6 +7,8 @@ import * as databaseSchema from "../db/schema.ts";
 import { createResolvers } from "./resolvers.ts";
 
 const typeDefs = gql`
+  directive @shareable on FIELD_DEFINITION | OBJECT
+
   extend schema
     @link(
       url: "https://specs.apollo.dev/federation/v2.0"

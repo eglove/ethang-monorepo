@@ -1,5 +1,6 @@
 directive @key(fields: String!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
 directive @link(url: String!, as: String, import: [String]) repeatable on SCHEMA
+directive @shareable on FIELD_DEFINITION | OBJECT
 
 """
 An individual RSS article
