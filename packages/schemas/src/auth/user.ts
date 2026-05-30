@@ -27,6 +27,12 @@ export const signInSchema = z.object({
   password: passwordSchema
 });
 
+export const verifySchema = z.object({
+  email: z.email().trim(),
+  password: passwordSchema
+});
+
 export type SignInSchema = z.infer<typeof signInSchema>;
 export type SignUpSchema = z.infer<typeof signUpSchema>;
 export type UserSchema = z.infer<typeof userSchema>;
+export type VerifySchema = z.infer<typeof verifySchema>;

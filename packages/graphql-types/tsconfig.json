@@ -1,3 +1,4 @@
 {
+  "exclude": ["__generated__"],
   "extends": ["../tsconfig/tsconfig.base.json"]
 }
