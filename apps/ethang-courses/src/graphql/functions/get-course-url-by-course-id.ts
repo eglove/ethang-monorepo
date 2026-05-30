@@ -1,14 +1,19 @@
-import { sanityClient } from "../../clients/sanity.ts";
+import { eq } from "drizzle-orm";
 
-export const getCourseUrlByCourseId = async (courseId: string) => {
-  const course = await sanityClient.fetch<{ url: string } | null>(
-    `*[_type == "course" && _id == $courseId][0]{"url": url}`,
-    { courseId }
-  );
+import type { Database } from "../types.ts";
 
-  if (null === course) {
+import { coursesTable } from "../../db/schema.ts";
+
+export const getCourseUrlByCourseId = async (
+  database: Database,
+  courseId: string
+) => {
+  const course = await database
+    .select({ url: coursesTable.url })
+    .from(coursesTable)
+    .where(eq(coursesTable.id, courseId))
+    .limit(1);
+  if (0 === course.length || undefined === course[0])
     throw new Error("Course not found");
-  }
-
-  return course.url;
+  return course[0].url;
 };

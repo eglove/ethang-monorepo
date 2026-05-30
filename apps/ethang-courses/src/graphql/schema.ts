@@ -2,11 +2,19 @@ import { buildSubgraphSchema } from "@apollo/subgraph";
 import { drizzle } from "drizzle-orm/d1";
 import { gql } from "graphql-tag";
 
-import { courseTrackingTable } from "../db/schema.ts";
+import {
+  coursesTable,
+  courseTrackingTable,
+  learningPathCoursesTable,
+  learningPathsTable
+} from "../db/schema.ts";
 import { createResolvers } from "./resolvers.ts";
 
 const databaseSchema = {
-  courseTrackingTable
+  coursesTable,
+  courseTrackingTable,
+  learningPathCoursesTable,
+  learningPathsTable
 };
 
 export type DatabaseBinding = Parameters<typeof drizzle>[0];
@@ -25,6 +33,10 @@ const typeDefs = gql`
       first: Int
       after: String
     ): CourseTrackingConnection!
+    courses: [Course!]!
+    course(id: ID!): Course
+    learningPaths: [LearningPath!]!
+    learningPath(id: ID!): LearningPath
   }
 
   type Mutation {
@@ -39,6 +51,25 @@ const typeDefs = gql`
     id: ID!
     status: String!
     userId: String!
+  }
+
+  type Course @shareable {
+    id: ID!
+    name: String!
+    author: String!
+    url: String!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  type LearningPath @shareable {
+    id: ID!
+    name: String!
+    url: String
+    swebokFocus: String!
+    courses: [Course!]!
+    createdAt: String!
+    updatedAt: String!
   }
 
   type CourseTrackingConnection {

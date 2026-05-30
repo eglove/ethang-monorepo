@@ -25,6 +25,40 @@ type CourseTracking @shareable {
   userId: String!
 }
 
+"""Course information"""
+type Course @shareable {
+  """The unique identifier for the course."""
+  id: ID!
+  """The name of the course."""
+  name: String!
+  """The author of the course."""
+  author: String!
+  """The URL of the course."""
+  url: String!
+  """Date when the course was created."""
+  createdAt: String!
+  """Date when the course was last updated."""
+  updatedAt: String!
+}
+
+"""Learning path containing ordered courses"""
+type LearningPath @shareable {
+  """The unique identifier for the learning path."""
+  id: ID!
+  """The name of the learning path."""
+  name: String!
+  """The URL of the learning path."""
+  url: String
+  """The SWEBOK focus area of the learning path."""
+  swebokFocus: String!
+  """The ordered courses in this learning path."""
+  courses: [Course!]!
+  """Date when the learning path was created."""
+  createdAt: String!
+  """Date when the learning path was last updated."""
+  updatedAt: String!
+}
+
 """A connection to a list of course tracking records."""
 type CourseTrackingConnection {
   """A list of edges."""
@@ -70,6 +104,14 @@ type Query {
     """The cursor to start retrieving course trackings from."""
     after: String
   ): CourseTrackingConnection!
+  """Returns all courses"""
+  courses: [Course!]!
+  """Returns a specific course by ID"""
+  course(id: ID!): Course
+  """Returns all learning paths with their courses"""
+  learningPaths: [LearningPath!]!
+  """Returns a specific learning path by ID"""
+  learningPath(id: ID!): LearningPath
 }
 
 extend schema

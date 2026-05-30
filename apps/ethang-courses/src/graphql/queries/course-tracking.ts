@@ -11,7 +11,10 @@ export const courseTrackingQuery = (database: Database) => {
       userId: string;
     }
   ) => {
-    const courseUrl = await getCourseUrlByCourseId(parameters.courseId);
+    const courseUrl = await getCourseUrlByCourseId(
+      database,
+      parameters.courseId
+    );
 
     return getTrackingByUserIdCourseUrl(database, parameters.userId, courseUrl);
   };

@@ -39,7 +39,6 @@
     "dev": "wrangler dev",
     "drizzle:generate": "drizzle-kit generate",
     "lint": "eslint . --fix && pnpm tsc --noEmit",
-    "migrate:sync": "node ./scripts/sync-course-tracking.mjs",
     "start": "wrangler dev",
     "test": "pnpm test:vitest",
     "test:vitest": "vitest run --coverage"
