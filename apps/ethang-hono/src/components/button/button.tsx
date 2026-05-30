@@ -27,6 +27,8 @@ export const Button = async (properties: ButtonProperties) => {
     as,
     children,
     className,
+    command,
+    commandFor,
     href,
     id,
     size = "base",
@@ -48,6 +50,8 @@ export const Button = async (properties: ButtonProperties) => {
     <button
       id={id}
       type={type}
+      command={command}
+      commandFor={commandFor}
       class={twMerge(classes, className)}
       data-script={properties["data-script"]}
     >

@@ -1,6 +1,7 @@
 import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 
+import { AuthService } from "../../stores/auth-service.client.ts";
 import { CourseCompletionStore } from "./course-completion-store.client.js";
 import { CourseCompletionUI } from "./course-completion-ui.client.js";
 import { CourseTrackingService } from "./course-tracking-service.client.js";
@@ -8,10 +9,11 @@ import { CourseTrackingService } from "./course-tracking-service.client.js";
 export const store = new CourseCompletionStore();
 export const service = new CourseTrackingService();
 export const ui = new CourseCompletionUI(store, service);
+const auth = new AuthService();
 
 export const init = async () => {
   ui.init();
-  const userId = await service.verifyToken();
+  const userId = await auth.verifyToken();
 
   if (isNil(userId)) {
     store.setAuthenticated(null);

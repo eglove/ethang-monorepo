@@ -14,8 +14,13 @@ const typeDefs = gql`
     )
 
   type Query {
-    feedArticles(feedId: String!): ArticleConnection!
-    subscriptions: [Feed!]!
+    feedArticles(
+      feedId: String!
+      first: Int
+      after: String
+      isRead: Boolean
+    ): ArticleConnection!
+    subscriptions(first: Int, after: String): FeedConnection!
   }
 
   type Mutation {
@@ -33,7 +38,7 @@ const typeDefs = gql`
     title: String!
     website: String!
     xmlAddress: String!
-    articles(first: Int, after: String): ArticleConnection!
+    articles(first: Int, after: String, isRead: Boolean): ArticleConnection!
   }
 
   type Article @key(fields: "id") {
@@ -52,9 +57,19 @@ const typeDefs = gql`
     pageInfo: PageInfo!
   }
 
+  type FeedConnection {
+    edges: [FeedEdge!]!
+    pageInfo: PageInfo!
+  }
+
   type ArticleEdge {
     cursor: String!
     node: Article!
+  }
+
+  type FeedEdge {
+    cursor: String!
+    node: Feed!
   }
 
   type PageInfo {

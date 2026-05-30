@@ -83,6 +83,10 @@ type Feed @key(fields: "id") {
     The cursor to start retrieving articles from
     """
     after: String
+    """
+    Filter articles by read status for the authenticated user
+    """
+    isRead: Boolean
   ): ArticleConnection!
   """
   The internal ID of the feed
@@ -190,6 +194,10 @@ type Query {
     The cursor to start retrieving articles from
     """
     after: String
+    """
+    Filter articles by read status for the authenticated user
+    """
+    isRead: Boolean
   ): ArticleConnection!
   """
   Retrieves a list of all feed subscriptions

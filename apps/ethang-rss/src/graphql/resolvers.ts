@@ -35,12 +35,17 @@ export const createResolvers = (database: Database) => {
       },
       articles: async (
         parent: { id: string },
-        parameters: { after?: string; first?: number }
+        parameters: { after?: string; first?: number; isRead?: boolean },
+        context: ServerContext
       ) => {
-        return feedArticlesQuery(database)(undefined, {
-          ...parameters,
-          feedId: parent.id
-        });
+        return feedArticlesQuery(database)(
+          undefined,
+          {
+            ...parameters,
+            feedId: parent.id
+          },
+          context
+        );
       }
     },
     Mutation: {
