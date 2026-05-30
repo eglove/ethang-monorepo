@@ -10,14 +10,11 @@ vi.mock(import("./models/blog-model.ts"), () => {
     BlogModel: vi.fn()
   };
 });
-vi.mock(import("./clients/sanity.ts"), (() => {
+vi.mock(import("./clients/course-tracking-graphql.ts"), () => {
   return {
-    sanityClient: { fetch: vi.fn() }
-  };
-}) as never);
-vi.mock(import("./db/database.ts"), () => {
-  return {
-    getDatabase: vi.fn()
+    cycleCourseTrackingStatus: vi.fn(),
+    getCourseTrackingByUserIdCourseId: vi.fn(),
+    getCourseTrackingsByUserId: vi.fn()
   };
 });
 vi.mock(import("./stores/course-path-store.ts"), () => {
@@ -39,8 +36,11 @@ vi.mock(import("./stores/course-path-store.ts"), () => {
   };
 });
 
-import { sanityClient } from "./clients/sanity.ts";
-import { getDatabase } from "./db/database.ts";
+import {
+  cycleCourseTrackingStatus,
+  getCourseTrackingByUserIdCourseId,
+  getCourseTrackingsByUserId
+} from "./clients/course-tracking-graphql.ts";
 import { app } from "./index.tsx";
 import { COURSE_TRACKING_STATUS } from "./utilities/constants.ts";
 
@@ -48,164 +48,41 @@ const COURSE_EXAMPLE_URL = "https://course.example.com";
 const TRACKING_API_URL =
   "https://ethang.dev/api/course-tracking/course1?userId=user1";
 
-const makeMockDatabase = () => {
-  const mockFindFirst = vi.fn();
-  const mockFindMany = vi.fn().mockResolvedValue([]);
-  const mockValues = vi.fn().mockResolvedValue(undefined);
-  const mockInsert = vi.fn().mockReturnValue({ values: mockValues });
-  const mockWhere = vi.fn().mockResolvedValue(undefined);
-  const mockSet = vi.fn().mockReturnValue({ where: mockWhere });
-  const mockUpdate = vi.fn().mockReturnValue({ set: mockSet });
-
-  return {
-    _findFirst: mockFindFirst,
-    _findMany: mockFindMany,
-    _set: mockSet,
-    _values: mockValues,
-    _where: mockWhere,
-    insert: mockInsert,
-    query: {
-      courseTrackingTable: {
-        findFirst: mockFindFirst,
-        findMany: mockFindMany
-      }
-    },
-    update: mockUpdate
-  };
-};
-
 describe("app — API", () => {
   describe("pUT /api/course-tracking/:userId/:courseId — status cycle", () => {
-    it("creates a new tracking entry with COMPLETE status when none exists", async () => {
+    it("returns updated tracking data from GraphQL mutation", async () => {
       vi.clearAllMocks();
-      const mockDatabase = makeMockDatabase();
-      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
-      vi.mocked(sanityClient).fetch.mockResolvedValue({
-        url: COURSE_EXAMPLE_URL
-      } as never);
-      mockDatabase._findFirst.mockResolvedValue(undefined);
 
-      const response = await app.request(TRACKING_API_URL, { method: "PUT" });
-
-      expect(response.status).toBe(200);
-      expect(mockDatabase._values).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: COURSE_TRACKING_STATUS.COMPLETE,
-          userId: "user1"
-        })
-      );
-    });
-
-    it("cycles COMPLETE status to REVISIT", async () => {
-      vi.clearAllMocks();
-      const mockDatabase = makeMockDatabase();
-      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
-      vi.mocked(sanityClient).fetch.mockResolvedValue({
-        url: COURSE_EXAMPLE_URL
-      } as never);
-      const existing = {
-        courseUrl: COURSE_EXAMPLE_URL,
-        id: "track-id",
-        status: COURSE_TRACKING_STATUS.COMPLETE,
-        userId: "user1"
-      };
-      mockDatabase._findFirst
-        .mockResolvedValueOnce(existing)
-        .mockResolvedValueOnce({
-          ...existing,
-          status: COURSE_TRACKING_STATUS.REVISIT
-        });
-
-      const response = await app.request(TRACKING_API_URL, { method: "PUT" });
-
-      expect(response.status).toBe(200);
-      expect(mockDatabase._set).toHaveBeenCalledWith({
-        status: COURSE_TRACKING_STATUS.REVISIT
-      });
-    });
-
-    it("cycles REVISIT status to INCOMPLETE", async () => {
-      vi.clearAllMocks();
-      const mockDatabase = makeMockDatabase();
-      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
-      vi.mocked(sanityClient).fetch.mockResolvedValue({
-        url: COURSE_EXAMPLE_URL
-      } as never);
-      const existing = {
+      vi.mocked(cycleCourseTrackingStatus).mockResolvedValue({
         courseUrl: COURSE_EXAMPLE_URL,
         id: "track-id",
         status: COURSE_TRACKING_STATUS.REVISIT,
         userId: "user1"
-      };
-      mockDatabase._findFirst
-        .mockResolvedValueOnce(existing)
-        .mockResolvedValueOnce({
-          ...existing,
-          status: COURSE_TRACKING_STATUS.INCOMPLETE
-        });
+      });
 
       const response = await app.request(TRACKING_API_URL, { method: "PUT" });
 
       expect(response.status).toBe(200);
-      expect(mockDatabase._set).toHaveBeenCalledWith({
-        status: COURSE_TRACKING_STATUS.INCOMPLETE
-      });
-    });
-
-    it("cycles INCOMPLETE status to COMPLETE", async () => {
-      vi.clearAllMocks();
-      const mockDatabase = makeMockDatabase();
-      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
-      vi.mocked(sanityClient).fetch.mockResolvedValue({
-        url: COURSE_EXAMPLE_URL
-      } as never);
-      const existing = {
-        courseUrl: COURSE_EXAMPLE_URL,
-        id: "track-id",
-        status: COURSE_TRACKING_STATUS.INCOMPLETE,
-        userId: "user1"
-      };
-      mockDatabase._findFirst
-        .mockResolvedValueOnce(existing)
-        .mockResolvedValueOnce({
-          ...existing,
-          status: COURSE_TRACKING_STATUS.COMPLETE
-        });
-
-      const response = await app.request(TRACKING_API_URL, { method: "PUT" });
-
-      expect(response.status).toBe(200);
-      expect(mockDatabase._set).toHaveBeenCalledWith({
-        status: COURSE_TRACKING_STATUS.COMPLETE
-      });
-    });
-
-    it("returns updated tracking data as JSON", async () => {
-      vi.clearAllMocks();
-      const mockDatabase = makeMockDatabase();
-      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
-      vi.mocked(sanityClient).fetch.mockResolvedValue({
-        url: COURSE_EXAMPLE_URL
-      } as never);
-      const existing = {
-        courseUrl: COURSE_EXAMPLE_URL,
-        id: "track-id",
-        status: COURSE_TRACKING_STATUS.COMPLETE,
-        userId: "user1"
-      };
-      const updated = { ...existing, status: COURSE_TRACKING_STATUS.REVISIT };
-      mockDatabase._findFirst
-        .mockResolvedValueOnce(existing)
-        .mockResolvedValueOnce(updated);
-
-      const response = await app.request(TRACKING_API_URL, { method: "PUT" });
+      expect(cycleCourseTrackingStatus).toHaveBeenCalledWith(
+        expect.anything(),
+        "user1",
+        "course1"
+      );
 
       const json = await response.json<Record<string, unknown>>();
 
+      expect(json["data"]).toStrictEqual({
+        courseUrl: COURSE_EXAMPLE_URL,
+        id: "track-id",
+        status: COURSE_TRACKING_STATUS.REVISIT,
+        userId: "user1"
+      });
       expect(json["status"]).toBe(200);
     });
 
     it("returns 400 when userId is missing on PUT", async () => {
+      vi.clearAllMocks();
+
       const response = await app.request(
         "https://ethang.dev/api/course-tracking/course1",
         { method: "PUT" }
@@ -216,14 +93,14 @@ describe("app — API", () => {
       const json = await response.json<Record<string, unknown>>();
 
       expect(json["status"]).toBe(400);
+      expect(cycleCourseTrackingStatus).not.toHaveBeenCalled();
     });
   });
 
   describe("gET /api/course-tracking/:userId", () => {
     it("returns course trackings for a user", async () => {
       vi.clearAllMocks();
-      const mockDatabase = makeMockDatabase();
-      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
+
       const trackings = [
         {
           courseUrl: COURSE_EXAMPLE_URL,
@@ -232,7 +109,8 @@ describe("app — API", () => {
           userId: "user1"
         }
       ];
-      mockDatabase._findMany.mockResolvedValue(trackings);
+
+      vi.mocked(getCourseTrackingsByUserId).mockResolvedValue(trackings);
 
       const response = await app.request(
         "https://ethang.dev/api/course-tracking?userId=user1"
@@ -241,9 +119,15 @@ describe("app — API", () => {
 
       expect(response.status).toBe(200);
       expect(json["data"]).toStrictEqual(trackings);
+      expect(getCourseTrackingsByUserId).toHaveBeenCalledWith(
+        expect.anything(),
+        "user1"
+      );
     });
 
     it("returns 400 when userId is missing on GET", async () => {
+      vi.clearAllMocks();
+
       const response = await app.request(
         "https://ethang.dev/api/course-tracking"
       );
@@ -253,40 +137,39 @@ describe("app — API", () => {
       const json = await response.json<Record<string, unknown>>();
 
       expect(json["status"]).toBe(400);
+      expect(getCourseTrackingsByUserId).not.toHaveBeenCalled();
     });
   });
 
   describe("gET /api/course-tracking/:userId/:courseId", () => {
     it("returns the course tracking entry", async () => {
       vi.clearAllMocks();
-      const mockDatabase = makeMockDatabase();
-      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
-      vi.mocked(sanityClient).fetch.mockResolvedValue({
-        url: COURSE_EXAMPLE_URL
-      } as never);
+
       const tracking = {
         courseUrl: COURSE_EXAMPLE_URL,
         id: "t1",
         status: COURSE_TRACKING_STATUS.COMPLETE,
         userId: "user1"
       };
-      mockDatabase._findFirst.mockResolvedValue(tracking);
+
+      vi.mocked(getCourseTrackingByUserIdCourseId).mockResolvedValue(tracking);
 
       const response = await app.request(TRACKING_API_URL);
       const json = await response.json<Record<string, unknown>>();
 
       expect(response.status).toBe(200);
       expect(json["data"]).toStrictEqual(tracking);
+      expect(getCourseTrackingByUserIdCourseId).toHaveBeenCalledWith(
+        expect.anything(),
+        "user1",
+        "course1"
+      );
     });
 
     it("returns null data when tracking does not exist", async () => {
       vi.clearAllMocks();
-      const mockDatabase = makeMockDatabase();
-      vi.mocked(getDatabase).mockReturnValue(mockDatabase as never);
-      vi.mocked(sanityClient).fetch.mockResolvedValue({
-        url: COURSE_EXAMPLE_URL
-      } as never);
-      mockDatabase._findFirst.mockResolvedValue(undefined);
+
+      vi.mocked(getCourseTrackingByUserIdCourseId).mockResolvedValue(undefined);
 
       const response = await app.request(TRACKING_API_URL);
       const json = await response.json<Record<string, unknown>>();
@@ -296,6 +179,8 @@ describe("app — API", () => {
     });
 
     it("returns 400 when userId is missing on GET by courseId", async () => {
+      vi.clearAllMocks();
+
       const response = await app.request(
         "https://ethang.dev/api/course-tracking/course1"
       );
@@ -305,6 +190,7 @@ describe("app — API", () => {
       const json = await response.json<Record<string, unknown>>();
 
       expect(json["status"]).toBe(400);
+      expect(getCourseTrackingByUserIdCourseId).not.toHaveBeenCalled();
     });
   });
 });

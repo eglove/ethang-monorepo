@@ -4,9 +4,11 @@ import find from "lodash/find.js";
 import flatMap from "lodash/flatMap.js";
 import forEach from "lodash/forEach.js";
 
+import {
+  type CourseTrackingRecord,
+  getCourseTrackingsByUserId
+} from "../clients/course-tracking-graphql.ts";
 import { sanityClient } from "../clients/sanity.ts";
-import { getDatabase } from "../db/database.ts";
-import { CourseTracking } from "../models/course-tracking.ts";
 import { COURSE_TRACKING_STATUS } from "../utilities/constants.ts";
 import { type AppContext, globalStore } from "./global-store-properties.ts";
 
@@ -32,9 +34,7 @@ export type CoursePathDataProperties = {
 };
 
 export class CoursePathStore {
-  public courseTrackings: Awaited<
-    ReturnType<CourseTracking["getCourseTrackingByUserId"]>
-  > = [];
+  public courseTrackings: CourseTrackingRecord[] = [];
   public latestUpdate: CoursePathDataProperties["latestUpdate"] | undefined;
   public learningPaths: CoursePathDataProperties["learningPaths"] | undefined;
   public totalCourseCount = 0;
@@ -78,12 +78,10 @@ export class CoursePathStore {
   public setup = async <P extends string, I extends Input>(
     context: Context<AppContext, P, I>
   ) => {
-    const database = getDatabase(context);
-    const courseTracking = new CourseTracking(database);
     const userId = globalStore.userId ?? "";
 
     const [courseTrackings, sanityData] = await Promise.all([
-      courseTracking.getCourseTrackingByUserId(userId),
+      getCourseTrackingsByUserId(context, userId),
       sanityClient.fetch<CoursePathDataProperties>(
         `{
         "latestUpdate": *[_type in ["course", "learningPath"]] | order(_updatedAt desc)[0] {

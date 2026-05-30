@@ -10,4 +10,5 @@ export type ScriptId =
   | "components/courses/course-tracking-service"
   | "components/navigation/navigation"
   | "components/routes/sign-in"
-  | "components/routes/tips/scrollbar-gutter";
+  | "components/routes/tips/scrollbar-gutter"
+  | "stores/auth-service";

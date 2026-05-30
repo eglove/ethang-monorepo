@@ -4,12 +4,16 @@ import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 import { startServerAndCreateCloudflareWorkersHandler } from "@as-integrations/cloudflare-workers";
 import { drizzle } from "drizzle-orm/d1";
+import includes from "lodash/includes.js";
+import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 
+import { authenticate } from "./authenticate.ts";
 // eslint-disable-next-line sonar/no-wildcard-import
 import * as databaseSchema from "./db/schema.ts";
 import { createArticleLoader } from "./graphql/data-loader/article-loader.ts";
 import { createFeedLoader } from "./graphql/data-loader/feed-loader.ts";
+import { createUserArticleStateLoader } from "./graphql/data-loader/user-article-state-loader.ts";
 import { createSchema } from "./graphql/schema.ts";
 import { depthLimit } from "./graphql/util/depth-limit.ts";
 
@@ -17,6 +21,7 @@ export type ServerContext = {
   articleLoader: DataLoader<string, Article | null>;
   feedLoader: DataLoader<string, Feed | null>;
   user: User;
+  userArticleStateLoader: DataLoader<string, null | UserItemState>;
 };
 export type User = {
   email: string;
@@ -30,6 +35,8 @@ export type User = {
 type Article = typeof databaseSchema.articlesTable.$inferSelect;
 
 type Feed = typeof databaseSchema.feedsTable.$inferSelect;
+
+type UserItemState = typeof databaseSchema.userItemStatesTable.$inferSelect;
 
 let handler: ReturnType<
   typeof startServerAndCreateCloudflareWorkersHandler<Env, ServerContext>
@@ -52,15 +59,8 @@ export default {
         // @ts-expect-error allow server type mismatch
         server,
         {
-          context: ({ request: _request }) => {
-            const userHeader = _request.headers.get("x-user");
-
-            if (isNil(userHeader)) {
-              throw new Error("Unauthorized");
-            }
-
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-            const user = JSON.parse(userHeader) as User;
+          context: async ({ request: _request }) => {
+            const user = await authenticate(_request);
 
             const database = drizzle(environment.ethang_rss, {
               schema: databaseSchema
@@ -69,7 +69,11 @@ export default {
             return {
               articleLoader: createArticleLoader(database),
               feedLoader: createFeedLoader(database),
-              user
+              user,
+              userArticleStateLoader: createUserArticleStateLoader(
+                database,
+                user.sub
+              )
             } satisfies ServerContext;
           }
         }
@@ -78,14 +82,23 @@ export default {
 
     return handler(request, environment, context);
   },
-  async scheduled(_event, environment) {
+  async scheduled(event, environment) {
+    const workflowId = `fetch-feeds-${event.scheduledTime}`;
+
     try {
       await environment.FETCH_FEEDS_WORKFLOW.create({
-        id: "fetch-feeds-workflow"
+        id: workflowId
       });
-    } catch {
+    } catch (error) {
+      const message = isError(error) ? error.message : String(error);
+
+      if (!includes(message, "already exists")) {
+        globalThis.console.error("Failed to start feed sync workflow:", error);
+        throw error;
+      }
+
       globalThis.console.log(
-        "Sync already in progress, skipping this interval."
+        `Workflow ${workflowId} already exists, skipping duplicate trigger.`
       );
     }
   }

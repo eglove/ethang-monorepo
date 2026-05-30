@@ -1,4 +1,8 @@
-/* eslint-disable lodash/prefer-lodash-method */
+import filter from "lodash/filter.js";
+import isArray from "lodash/isArray.js";
+import isNil from "lodash/isNil.js";
+import isObject from "lodash/isObject.js";
+import map from "lodash/map.js";
 import { BroadcastUpdatePlugin } from "workbox-broadcast-update";
 import { clientsClaim } from "workbox-core";
 import { registerRoute } from "workbox-routing";
@@ -21,13 +25,14 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then(async (cacheNames) => {
       return Promise.all(
-        cacheNames
-          .filter((cacheName) => {
+        map(
+          filter(cacheNames, (cacheName) => {
             return !ALL_CACHES.has(cacheName);
-          })
-          .map(async (cacheName) => {
+          }),
+          async (cacheName) => {
             return caches.delete(cacheName);
-          })
+          }
+        )
       );
     })
   );
@@ -61,15 +66,14 @@ registerRoute(
 // Custom: Pre-cache Links
 self.addEventListener("message", (event) => {
   const data = event.data as unknown;
-  // eslint-disable-next-line lodash/prefer-lodash-typecheck
-  const isObject = null !== data && "object" === typeof data;
+  const isDataObject = !isNil(data) && isObject(data);
 
-  if (!isObject) {
+  if (!isDataObject) {
     return;
   }
 
   const isPrecache = "type" in data && "PRECACHE_LINKS" === data.type;
-  const hasUrls = "urls" in data && Array.isArray(data.urls);
+  const hasUrls = "urls" in data && isArray(data.urls);
 
   if (isPrecache && hasUrls) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion

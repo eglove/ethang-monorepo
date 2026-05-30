@@ -25,6 +25,10 @@
   ],
   "services": [
     {
+      "binding": "ethang_courses",
+      "service": "ethang-courses"
+    },
+    {
       "binding": "ethang_rss",
       "service": "ethang-rss"
     }

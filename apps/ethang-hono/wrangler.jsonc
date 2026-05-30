@@ -31,5 +31,11 @@
       "custom_domain": true,
       "pattern": "www.ethang.dev"
     }
+  ],
+  "services": [
+    {
+      "binding": "ethang_graphql",
+      "service": "ethang-graphql"
+    }
   ]
 }

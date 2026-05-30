@@ -2,6 +2,7 @@ import type { Database } from "../db/database-schema.ts";
 import type { ServerContext } from "../index.ts";
 
 import { addSubscriptionMutation } from "./mutations/add-subscription.ts";
+import { markArticleReadMutation } from "./mutations/mark-article-read.ts";
 import { feedArticlesQuery } from "./queries/feed-articles.ts";
 import { subscriptionsQuery } from "./queries/subscriptions.ts";
 
@@ -14,6 +15,14 @@ export const createResolvers = (database: Database) => {
         context: ServerContext
       ) => {
         return context.articleLoader.load(reference.id);
+      },
+      isRead: async (
+        parent: { id: string },
+        _parameters: unknown,
+        context: ServerContext
+      ) => {
+        const state = await context.userArticleStateLoader.load(parent.id);
+        return state?.isRead ?? false;
       }
     },
     Feed: {
@@ -26,16 +35,22 @@ export const createResolvers = (database: Database) => {
       },
       articles: async (
         parent: { id: string },
-        parameters: { after?: string; first?: number }
+        parameters: { after?: string; first?: number; isRead?: boolean },
+        context: ServerContext
       ) => {
-        return feedArticlesQuery(database)(undefined, {
-          ...parameters,
-          feedId: parent.id
-        });
+        return feedArticlesQuery(database)(
+          undefined,
+          {
+            ...parameters,
+            feedId: parent.id
+          },
+          context
+        );
       }
     },
     Mutation: {
-      addSubscription: addSubscriptionMutation(database)
+      addSubscription: addSubscriptionMutation(database),
+      markArticleRead: markArticleReadMutation(database)
     },
     Query: {
       feedArticles: feedArticlesQuery(database),

@@ -1,5 +1,6 @@
 directive @key(fields: String!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
 directive @link(url: String!, as: String, import: [String]) repeatable on SCHEMA
+directive @shareable on FIELD_DEFINITION | OBJECT
 
 """
 An individual RSS article
@@ -21,6 +22,10 @@ type Article @key(fields: "id") {
   The internal ID of the article
   """
   id: ID!
+  """
+  Whether the article has been marked as read by the user
+  """
+  isRead: Boolean!
   """
   The URL link to the original article
   """
@@ -79,6 +84,10 @@ type Feed @key(fields: "id") {
     The cursor to start retrieving articles from
     """
     after: String
+    """
+    Filter articles by read status for the authenticated user
+    """
+    isRead: Boolean
   ): ArticleConnection!
   """
   The internal ID of the feed
@@ -151,6 +160,19 @@ type Mutation {
     """
     xmlAddress: String!
   ): Feed!
+  """
+  Marks an RSS article as read or unread
+  """
+  markArticleRead(
+    """
+    The ID of the article to mark as read or unread
+    """
+    articleId: ID!
+    """
+    Whether the article should be marked as read or unread
+    """
+    isRead: Boolean!
+  ): Article!
 }
 
 """
@@ -173,6 +195,10 @@ type Query {
     The cursor to start retrieving articles from
     """
     after: String
+    """
+    Filter articles by read status for the authenticated user
+    """
+    isRead: Boolean
   ): ArticleConnection!
   """
   Retrieves a list of all feed subscriptions
@@ -192,7 +218,7 @@ type Query {
 """
 Information about pagination in a connection.
 """
-type PageInfo {
+type PageInfo @shareable {
   """
   When paginating forwards, the cursor to continue.
   """

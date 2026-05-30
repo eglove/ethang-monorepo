@@ -1,0 +1,79 @@
+directive @link(url: String!, as: String, import: [String]) repeatable on SCHEMA
+directive @shareable on FIELD_DEFINITION | OBJECT
+
+"""Information about pagination in a connection."""
+type PageInfo @shareable {
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+}
+
+"""A user's tracking state for a course."""
+type CourseTracking @shareable {
+  """The canonical URL of the course."""
+  courseUrl: String!
+  """The unique identifier for the tracking record."""
+  id: ID!
+  """The current progress status for the course."""
+  status: String!
+  """The user identifier who owns this tracking record."""
+  userId: String!
+}
+
+"""A connection to a list of course tracking records."""
+type CourseTrackingConnection {
+  """A list of edges."""
+  edges: [CourseTrackingEdge!]!
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+"""An edge in a course tracking connection."""
+type CourseTrackingEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+  """The item at the end of the edge."""
+  node: CourseTracking!
+}
+
+"""The root Mutation type"""
+type Mutation {
+  """Cycles a course tracking status to the next value."""
+  cycleCourseTrackingStatus(
+    """The course identifier to update."""
+    courseId: String!
+    """The user identifier associated with the course tracking."""
+    userId: String!
+  ): CourseTracking
+}
+
+"""The root Query type"""
+type Query {
+  """Returns tracking details for a single course and user."""
+  courseTracking(
+    """The course identifier to look up."""
+    courseId: String!
+    """The user identifier associated with the course tracking."""
+    userId: String!
+  ): CourseTracking
+  """Returns tracked courses for a user with cursor pagination."""
+  courseTrackings(
+    """The user identifier whose course trackings are requested."""
+    userId: String!
+    """The number of course trackings to retrieve. Omit to return all."""
+    first: Int
+    """The cursor to start retrieving course trackings from."""
+    after: String
+  ): CourseTrackingConnection!
+}
+
+extend schema
+  @link(
+    import: ["@shareable"]
+    url: "https://specs.apollo.dev/federation/v2.0"
+  )

@@ -1,0 +1,49 @@
+{
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "@apollo/server": "^5.5.1",
+    "@apollo/subgraph": "^2.14.0",
+    "@as-integrations/cloudflare-workers": "^1.1.1",
+    "@sanity/client": "^7.22.1",
+    "drizzle-orm": "^0.45.2",
+    "graphql": "^16.14.0",
+    "graphql-tag": "^2.12.6",
+    "lodash": "^4.18.1",
+    "uuid": "^14.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260528.1",
+    "@ethang/eslint-config": "workspace:*",
+    "@types/lodash": "^4.17.24",
+    "@types/node": "^25.9.1",
+    "@vitest/coverage-v8": "^4.1.7",
+    "browserslist-config-baseline": "^0.5.0",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^10.4.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7",
+    "wrangler": "^4.95.0"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "name": "ethang-courses",
+  "private": true,
+  "scripts": {
+    "cf-typegen": "wrangler types",
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "drizzle:generate": "drizzle-kit generate",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
+    "migrate:sync": "node ./scripts/sync-course-tracking.mjs",
+    "start": "wrangler dev",
+    "test": "pnpm test:vitest",
+    "test:vitest": "vitest run --coverage"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}

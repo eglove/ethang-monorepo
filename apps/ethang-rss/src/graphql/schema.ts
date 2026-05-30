@@ -7,6 +7,8 @@ import * as databaseSchema from "../db/schema.ts";
 import { createResolvers } from "./resolvers.ts";
 
 const typeDefs = gql`
+  directive @shareable on FIELD_DEFINITION | OBJECT
+
   extend schema
     @link(
       url: "https://specs.apollo.dev/federation/v2.0"
@@ -14,8 +16,13 @@ const typeDefs = gql`
     )
 
   type Query {
-    feedArticles(feedId: String!): [Article!]!
-    subscriptions: [Feed!]!
+    feedArticles(
+      feedId: String!
+      first: Int
+      after: String
+      isRead: Boolean
+    ): ArticleConnection!
+    subscriptions(first: Int, after: String): FeedConnection!
   }
 
   type Mutation {
@@ -24,6 +31,7 @@ const typeDefs = gql`
       website: String!
       xmlAddress: String!
     ): Feed!
+    markArticleRead(articleId: ID!, isRead: Boolean!): Article!
   }
 
   type Feed @key(fields: "id") {
@@ -32,7 +40,7 @@ const typeDefs = gql`
     title: String!
     website: String!
     xmlAddress: String!
-    articles: [Article!]!
+    articles(first: Int, after: String, isRead: Boolean): ArticleConnection!
   }
 
   type Article @key(fields: "id") {
@@ -40,9 +48,37 @@ const typeDefs = gql`
     content: String
     feedId: String!
     guid: String!
+    isRead: Boolean!
     link: String!
     publishedAt: String
     title: String!
+  }
+
+  type ArticleConnection {
+    edges: [ArticleEdge!]!
+    pageInfo: PageInfo!
+  }
+
+  type FeedConnection {
+    edges: [FeedEdge!]!
+    pageInfo: PageInfo!
+  }
+
+  type ArticleEdge {
+    cursor: String!
+    node: Article!
+  }
+
+  type FeedEdge {
+    cursor: String!
+    node: Feed!
+  }
+
+  type PageInfo @shareable {
+    endCursor: String
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
   }
 `;
 

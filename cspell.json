@@ -186,6 +186,7 @@
     "dedupe",
     "JSONLINT",
     "supergraph",
-    "protobufjs"
+    "protobufjs",
+    "sessioninfo"
   ]
 }
