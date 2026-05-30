@@ -101,6 +101,24 @@ export class AuthService {
     return this.signIn(email, password);
   }
 
+  public async validateCredentials(email: string, password: string) {
+    const userResult = await this.database.query.userTable.findFirst({
+      where: eq(userTable.email, email)
+    });
+
+    if (isNil(userResult)) {
+      return new Error("Invalid Credentials");
+    }
+
+    const compared = await bcrypt.compare(password, userResult.password);
+
+    if (!compared) {
+      return new Error("Invalid Credentials");
+    }
+
+    return userResult;
+  }
+
   public async verifyToken(token: string) {
     const secretKey = new TextEncoder().encode(this.tokenSecret);
 
@@ -173,23 +191,5 @@ export class AuthService {
 
       return updatedUser;
     });
-  }
-
-  private async validateCredentials(email: string, password: string) {
-    const userResult = await this.database.query.userTable.findFirst({
-      where: eq(userTable.email, email)
-    });
-
-    if (isNil(userResult)) {
-      return new Error("Invalid Credentials");
-    }
-
-    const compared = await bcrypt.compare(password, userResult.password);
-
-    if (!compared) {
-      return new Error("Invalid Credentials");
-    }
-
-    return userResult;
   }
 }

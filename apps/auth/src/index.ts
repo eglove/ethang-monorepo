@@ -1,4 +1,8 @@
-import { signInSchema, signUpSchema } from "@ethang/schemas/auth/user.ts";
+import {
+  signInSchema,
+  signUpSchema,
+  verifySchema
+} from "@ethang/schemas/auth/user.ts";
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
@@ -86,6 +90,27 @@ app.get("/verify", async (context) => {
   }
 
   return createJsonResponse(jwt.payload, "OK");
+});
+
+app.post("/verify", zValidator("json", verifySchema), async (context) => {
+  const database = getDatabase(context);
+  const authService = new AuthService(
+    database,
+    context.env[AuthService.TOKEN_SECRET_KEY]
+  );
+
+  const body = context.req.valid("json");
+
+  const result = await authService.validateCredentials(
+    body.email,
+    body.password
+  );
+
+  if (isError(result)) {
+    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+  }
+
+  return createJsonResponse(result, "OK");
 });
 
 export default app;

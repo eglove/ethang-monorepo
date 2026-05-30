@@ -1,3 +1,5 @@
+import { useQuery as useApolloQuery } from "@apollo/client/react";
+import { gql } from "@ethang/graphql-types/__generated__";
 import {
   Badge,
   Card,
@@ -7,19 +9,20 @@ import {
   Spinner,
   Text
 } from "@radix-ui/themes";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import first from "lodash/first.js";
+import flatMap from "lodash/flatMap.js";
 import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map";
+import orderBy from "lodash/orderBy.js";
+import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import reduce from "lodash/reduce";
 import { DateTime } from "luxon";
 import { useMemo } from "react";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 
 import { MainLayout } from "../components/layout/main-layout.tsx";
-import { getCourses } from "../models/courses-model.ts";
 
 const swebokFocusMap = new Map([
   ["architecture", "Software Architecture"],
@@ -44,28 +47,56 @@ const swebokFocusMap = new Map([
 ]);
 
 const RouteComponent = () => {
-  const { data, isPending } = useQuery(getCourses());
+  const { data: result, loading } = useApolloQuery(
+    gql(`
+    query GetCourses {
+      learningPaths {
+        id
+        name
+        url
+        swebokFocus
+        courses {
+          id
+          name
+          url
+          author
+          updatedAt
+        }
+      }
+    }
+  `)
+  );
 
-  const hasData = !isPending && !isNil(data?.learningPaths);
+  const hasData = !loading && !isNil(result?.learningPaths);
 
-  const formattedDate = isNil(data?.latestUpdate._updatedAt)
+  const latestUpdate = first(
+    orderBy(
+      flatMap(result?.learningPaths, (path) => {
+        return path.courses;
+      }),
+      ["updatedAt"],
+      "desc"
+    )
+  );
+
+  const formattedDate = isNil(latestUpdate)
     ? ""
-    : DateTime.fromISO(data.latestUpdate._updatedAt).toLocaleString({
+    : DateTime.fromISO(latestUpdate.updatedAt).toLocaleString({
         dateStyle: "medium",
         timeStyle: "long"
       });
 
   const pathOffsets = useMemo(() => {
     return reduce(
-      data?.learningPaths ?? [],
+      result?.learningPaths ?? [],
       (accumulator, path) => {
         const offset = accumulator.at(-1) ?? 0;
-        accumulator.push(offset + path.courseCount);
+        accumulator.push(offset + path.courses.length);
         return accumulator;
       },
       [0] as number[]
     );
-  }, [data?.learningPaths]);
+  }, [result?.learningPaths]);
 
   return (
     <MainLayout>
@@ -89,9 +120,9 @@ const RouteComponent = () => {
       )}
       {hasData && (
         <Flex my="6" gap="4" direction="column">
-          {map(data.learningPaths, (path, pathIndex) => {
+          {map(result.learningPaths, (path, pathIndex) => {
             return (
-              <Card key={path._id}>
+              <Card key={path.id}>
                 <Flex gap="3" wrap="wrap" align="center">
                   <Heading as="h2" size="5">
                     {isNil(path.url) ? (
@@ -111,14 +142,14 @@ const RouteComponent = () => {
                   </Badge>
                 </Flex>
                 <Text as="p" mb="3" mt="1" color="gray">
-                  {path.courseCount}{" "}
-                  {1 === path.courseCount ? "course" : "courses"}
+                  {path.courses.length}{" "}
+                  {1 === path.courses.length ? "course" : "courses"}
                 </Text>
                 <Flex asChild gap="1" direction="column">
                   <ul>
                     {map(path.courses, (course, index) => {
                       return (
-                        <li key={course._id}>
+                        <li key={course.id}>
                           <Text as="span">
                             {get(pathOffsets, pathIndex, 0) + index + 1}.{" "}
                           </Text>

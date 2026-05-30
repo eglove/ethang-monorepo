@@ -5,12 +5,22 @@ plugins:
   - "@graphql-codegen/typescript"
   - "@graphql-codegen/typescript-operations"
 
+documents:
+  - "../../apps/ethang-react/src/**/*.{ts,tsx}"
+
 generates:
-  dist/courses.ts:
+  "__generated__/":
+    preset: "client"
+    config:
+      useTypeImports: true
+    presetConfig:
+      gqlTagName: "gql"
+      fragmentMaking: false
+  courses.ts:
     plugins:
       - "@graphql-codegen/typescript"
       - "@graphql-codegen/typescript-operations"
-  dist/rss.ts:
+  rss.ts:
     plugins:
       - "@graphql-codegen/typescript"
       - "@graphql-codegen/typescript-operations"

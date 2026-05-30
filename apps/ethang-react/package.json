@@ -4,6 +4,8 @@
     "current node"
   ],
   "dependencies": {
+    "@apollo/client": "^4.2.0",
+    "@ethang/graphql-types": "workspace:*",
     "@ethang/store": "^3.0.0",
     "@portabletext/react": "^6.2.0",
     "@radix-ui/themes": "^3.3.0",
@@ -20,6 +22,7 @@
     "react-dom": "^19.2.6",
     "react-lite-youtube-embed": "^3.5.1",
     "react-syntax-highlighter": "^16.1.1",
+    "rxjs": "^7.8.2",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.0"
   },
@@ -29,7 +32,7 @@
     "@tanstack/router-plugin": "^1.168.12",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",
-    "@types/node": "^24.12.4",
+    "@types/node": "^25.9.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/react-syntax-highlighter": "^15.5.13",
@@ -37,6 +40,7 @@
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.4.0",
     "globals": "^17.6.0",
+    "graphql": "^16.14.0",
     "typescript": "~6.0.2",
     "vite": "^8.0.12",
     "wrangler": "^4.95.0"
