@@ -1,11 +1,10 @@
-import { Link } from "@radix-ui/themes";
+import { Link, type LinkProps } from "@radix-ui/themes";
 import { Link as RouterLink } from "@tanstack/react-router";
 
 type InternalLinkProperties = {
-  children: string;
   href: string;
   underline?: Parameters<typeof Link>[0]["underline"];
-};
+} & LinkProps;
 
 export const InternalLink = ({
   children,
