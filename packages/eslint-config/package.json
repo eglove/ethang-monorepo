@@ -20,7 +20,7 @@
     "@typescript-eslint/parser": "^8.60.0",
     "@vitest/eslint-plugin": "^1.6.18",
     "angular-eslint": "21.4.0",
-    "eslint": "^10.4.0",
+    "eslint": "^10.4.1",
     "eslint-plugin-astro": "^1.7.0",
     "eslint-plugin-compat": "^7.0.2",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -44,7 +44,7 @@
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.9.1",
     "@vitest/coverage-v8": "^4.1.7",
-    "baseline-browser-mapping": "^2.10.32",
+    "baseline-browser-mapping": "^2.10.33",
     "browserslist-config-baseline": "^0.5.0",
     "lodash": "^4.18.1",
     "tailwindcss": "^4.3.0",
@@ -69,5 +69,5 @@
     "test:watch": "vitest --coverage"
   },
   "type": "module",
-  "version": "25.19.2"
+  "version": "25.19.3"
 }

@@ -3,14 +3,16 @@
   "assets": {
     "not_found_handling": "single-page-application"
   },
-  "compatibility_date": "2026-05-30",
+  "compatibility_date": "2026-05-31",
   "compatibility_flags": ["nodejs_compat"],
   "main": "worker/index.ts",
   "name": "ethang-react",
   "observability": {
     "enabled": true
   },
-  "placement": { "mode": "smart" },
+  "placement": {
+    "mode": "smart"
+  },
   "routes": [
     {
       "custom_domain": true,
