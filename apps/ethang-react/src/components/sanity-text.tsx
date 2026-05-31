@@ -116,10 +116,7 @@ const MarkComponents: PortableTextComponents["marks"] = {
     const link = get(value, ["href"]) as string | undefined;
     const href = isString(link) ? link : "";
 
-    return (
-      // @ts-expect-error children type mismatch between PortableText ReactNode and HybridLink string
-      <HybridLink href={href}>{children}</HybridLink>
-    );
+    return <HybridLink href={href}>{children}</HybridLink>;
   },
   strong: ({ children }) => {
     return <Strong>{children}</Strong>;

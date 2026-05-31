@@ -4,14 +4,14 @@
     "extends browserslist-config-baseline"
   ],
   "dependencies": {
-    "eslint": "^10.4.0",
+    "eslint": "^10.4.1",
     "lodash": "^4.18.1",
     "react": "^19.2.6",
     "zod": "^4.4.1"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.19.1",
+    "@ethang/eslint-config": "^25.19.2",
     "@ethang/project-builder": "^3.0.2",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.9.1",
