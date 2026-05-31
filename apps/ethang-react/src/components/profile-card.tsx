@@ -1,12 +1,14 @@
+import {
+  EnvelopeClosedIcon,
+  GitHubLogoIcon,
+  LinkedInLogoIcon
+} from "@radix-ui/react-icons";
 import { Avatar, Box, Button, Card, Flex, Link, Text } from "@radix-ui/themes";
-import { MailIcon } from "lucide-react";
 
 import frontendMastersIcon from "../assets/frontend-masters-icon.png";
 import pluralsightIcon from "../assets/pluralsight-icon.png";
 import profileImage from "../assets/profile.jpeg";
 import { Image } from "./image.tsx";
-import { GitHubSvg } from "./svg/github.tsx";
-import { LinkedInSvg } from "./svg/linked-in.tsx";
 
 export const ProfileCard = () => {
   return (
@@ -22,13 +24,13 @@ export const ProfileCard = () => {
               aria-label="LinkedIn"
               href="https://www.linkedin.com/in/ethan-glover/"
             >
-              <LinkedInSvg className="size-8" />
+              <LinkedInLogoIcon className="size-8" />
             </Link>
             <Link aria-label="GitHub" href="https://github.com/eglove">
-              <GitHubSvg className="size-8" />
+              <GitHubLogoIcon className="size-8" />
             </Link>
             <Link aria-label="Email" href="mailto:hello@ethang.email">
-              <MailIcon className="size-8" />
+              <EnvelopeClosedIcon className="size-8" />
             </Link>
             <Link href="https://frontendmasters.com/u/ethang/">
               <Image
