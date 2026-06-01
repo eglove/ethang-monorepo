@@ -8,29 +8,8 @@ allowBuilds:
   "@parcel/watcher": true
   bun: true
   esbuild: true
+  msw: true
   protobufjs: true
   sharp: true
   workerd: true
-minimumReleaseAgeExclude:
-  - '@cloudflare/workers-types@4.20260518.1'
-  - '@eslint-react/ast@5.8.1'
-  - '@eslint-react/core@5.8.1'
-  - '@eslint-react/eslint-plugin@5.8.1'
-  - '@eslint-react/eslint@5.8.1'
-  - '@eslint-react/jsx@5.8.1'
-  - '@eslint-react/shared@5.8.1'
-  - '@eslint-react/var@5.8.1'
-  - '@ethang/eslint-config@25.19.1'
-  - '@sanity/code-input@7.1.1'
-  - '@types/node@25.9.0'
-  - baseline-browser-mapping@2.10.31
-  - eslint-plugin-playwright@2.10.3
-  - eslint-plugin-react-dom@5.8.1
-  - eslint-plugin-react-jsx@5.8.1
-  - eslint-plugin-react-naming-convention@5.8.1
-  - eslint-plugin-react-rsc@5.8.1
-  - eslint-plugin-react-web-api@5.8.1
-  - eslint-plugin-react-x@5.8.1
-  - tsx@4.22.2
-  - '@ethang/graphql-types@1.0.0'
-  - '@ethang/graphql-types@1.0.1'
+minimumReleaseAge: 0

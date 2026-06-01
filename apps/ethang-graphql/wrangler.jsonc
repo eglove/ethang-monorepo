@@ -26,10 +26,12 @@
   "services": [
     {
       "binding": "ethang_courses",
+      "remote": true,
       "service": "ethang-courses"
     },
     {
       "binding": "ethang_rss",
+      "remote": true,
       "service": "ethang-rss"
     }
   ]

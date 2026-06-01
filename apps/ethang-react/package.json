@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.39.0",
-    "@ethang/eslint-config": "^25.19.2",
+    "@ethang/eslint-config": "^25.19.4",
     "@tanstack/router-plugin": "^1.168.13",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",

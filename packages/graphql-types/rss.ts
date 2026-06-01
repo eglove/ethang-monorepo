@@ -231,6 +231,7 @@ export type Query = {
   learningPath?: Maybe<LearningPath>;
   /** Returns all learning paths with their courses */
   learningPaths: LearningPath[];
+  subscription: Feed;
   /** Retrieves a list of all feed subscriptions */
   subscriptions: FeedConnection;
 };
@@ -264,6 +265,11 @@ export type QueryFeedArticlesArgs = {
 /** The root Query type */
 export type QueryLearningPathArgs = {
   id: Scalars["ID"]["input"];
+};
+
+/** The root Query type */
+export type QuerySubscriptionArgs = {
+  feedId: Scalars["String"]["input"];
 };
 
 /** The root Query type */

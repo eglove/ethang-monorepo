@@ -10,7 +10,8 @@ export const cssRules = genRules(
   ruleNames,
   [
     { name: "no-invalid-at-rules", rule: "off" },
-    { name: "use-baseline", rule: ["error", { available: "newly" }] }
+    { name: "use-baseline", rule: ["error", { available: "newly" }] },
+    { name: "use-layers", rule: "off" }
   ],
   "css"
 );
