@@ -14,10 +14,14 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n    query GetCourses {\n      learningPaths {\n        id\n        name\n        url\n        swebokFocus\n        courses {\n          id\n          name\n          url\n          author\n          updatedAt\n        }\n      }\n    }\n  ": typeof types.GetCoursesDocument,
+    "query Course($courseId: ID!) {\n  course(id: $courseId) {\n    id\n    name\n    url\n    author\n  }\n}": typeof types.CourseDocument,
+    "query LearningPath($learningPathId: ID!) {\n  learningPath(id: $learningPathId) {\n    id\n    swebokFocus\n    name\n    url\n    courses {\n      id\n    }\n  }\n}": typeof types.LearningPathDocument,
+    "query GetRecommendedCoursesLearningPathIds {\n  curriculum(id: \"019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4\") {\n    id\n    name\n    updatedAt\n    learningPaths {\n      id\n        courses {\n            id\n        }\n    }\n  }\n}": typeof types.GetRecommendedCoursesLearningPathIdsDocument,
 };
 const documents: Documents = {
-    "\n    query GetCourses {\n      learningPaths {\n        id\n        name\n        url\n        swebokFocus\n        courses {\n          id\n          name\n          url\n          author\n          updatedAt\n        }\n      }\n    }\n  ": types.GetCoursesDocument,
+    "query Course($courseId: ID!) {\n  course(id: $courseId) {\n    id\n    name\n    url\n    author\n  }\n}": types.CourseDocument,
+    "query LearningPath($learningPathId: ID!) {\n  learningPath(id: $learningPathId) {\n    id\n    swebokFocus\n    name\n    url\n    courses {\n      id\n    }\n  }\n}": types.LearningPathDocument,
+    "query GetRecommendedCoursesLearningPathIds {\n  curriculum(id: \"019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4\") {\n    id\n    name\n    updatedAt\n    learningPaths {\n      id\n        courses {\n            id\n        }\n    }\n  }\n}": types.GetRecommendedCoursesLearningPathIdsDocument,
 };
 
 /**
@@ -37,7 +41,15 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n    query GetCourses {\n      learningPaths {\n        id\n        name\n        url\n        swebokFocus\n        courses {\n          id\n          name\n          url\n          author\n          updatedAt\n        }\n      }\n    }\n  "): (typeof documents)["\n    query GetCourses {\n      learningPaths {\n        id\n        name\n        url\n        swebokFocus\n        courses {\n          id\n          name\n          url\n          author\n          updatedAt\n        }\n      }\n    }\n  "];
+export function gql(source: "query Course($courseId: ID!) {\n  course(id: $courseId) {\n    id\n    name\n    url\n    author\n  }\n}"): (typeof documents)["query Course($courseId: ID!) {\n  course(id: $courseId) {\n    id\n    name\n    url\n    author\n  }\n}"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "query LearningPath($learningPathId: ID!) {\n  learningPath(id: $learningPathId) {\n    id\n    swebokFocus\n    name\n    url\n    courses {\n      id\n    }\n  }\n}"): (typeof documents)["query LearningPath($learningPathId: ID!) {\n  learningPath(id: $learningPathId) {\n    id\n    swebokFocus\n    name\n    url\n    courses {\n      id\n    }\n  }\n}"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "query GetRecommendedCoursesLearningPathIds {\n  curriculum(id: \"019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4\") {\n    id\n    name\n    updatedAt\n    learningPaths {\n      id\n        courses {\n            id\n        }\n    }\n  }\n}"): (typeof documents)["query GetRecommendedCoursesLearningPathIds {\n  curriculum(id: \"019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4\") {\n    id\n    name\n    updatedAt\n    learningPaths {\n      id\n        courses {\n            id\n        }\n    }\n  }\n}"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

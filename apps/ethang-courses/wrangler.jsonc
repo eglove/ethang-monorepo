@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "compatibility_date": "2026-05-31",
+  "compatibility_date": "2026-06-06",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {
@@ -18,5 +18,12 @@
   "placement": {
     "mode": "smart"
   },
+  "rules": [
+    {
+      "fallthrough": true,
+      "globs": ["**/*.graphql"],
+      "type": "Text"
+    }
+  ],
   "workers_dev": false
 }

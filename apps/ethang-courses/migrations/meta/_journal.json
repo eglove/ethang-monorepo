@@ -43,6 +43,13 @@
       "when": 1780160719213,
       "tag": "0005_purple_chronomancer",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1780759914730,
+      "tag": "0006_safe_blockbuster",
+      "breakpoints": true
     }
   ]
 }

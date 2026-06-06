@@ -50,6 +50,14 @@ export type Course = {
   /** The URL of the course. */
   url: Scalars["String"]["output"];
 };
+export type CourseQuery = {
+  course: { author: string; id: string; name: string; url: string } | null;
+};
+
+export type CourseQueryVariables = Exact<{
+  courseId: number | string;
+}>;
+
 /** A user's tracking state for a course. */
 export type CourseTracking = {
   __typename?: "CourseTracking";
@@ -79,6 +87,23 @@ export type CourseTrackingEdge = {
   cursor: Scalars["String"]["output"];
   /** The item at the end of the edge. */
   node: CourseTracking;
+};
+
+/** Curriculum representing an ordered list of learning paths */
+export type Curriculum = {
+  __typename?: "Curriculum";
+  /** Date when the curriculum was created. */
+  createdAt: Scalars["String"]["output"];
+  /** The unique identifier for the curriculum. */
+  id: Scalars["ID"]["output"];
+  /** The ordered learning paths in this curriculum. */
+  learningPaths: LearningPath[];
+  /** The name of the curriculum. */
+  name: Scalars["String"]["output"];
+  /** Date when the curriculum was last updated. */
+  updatedAt: Scalars["String"]["output"];
+  /** The URL of the curriculum. */
+  url?: Maybe<Scalars["String"]["output"]>;
 };
 
 /** An RSS feed subscription */
@@ -123,23 +148,18 @@ export type FeedEdge = {
   node: Feed;
 };
 
-export type GetCoursesQuery = {
-  learningPaths: {
-    courses: {
-      author: string;
-      id: string;
-      name: string;
-      updatedAt: string;
-      url: string;
-    }[];
+export type GetRecommendedCoursesLearningPathIdsQuery = {
+  curriculum: {
     id: string;
+    learningPaths: { courses: { id: string }[]; id: string }[];
     name: string;
-    swebokFocus: string;
-    url: null | string;
-  }[];
+    updatedAt: string;
+  } | null;
 };
 
-export type GetCoursesQueryVariables = Exact<Record<string, never>>;
+export type GetRecommendedCoursesLearningPathIdsQueryVariables = Exact<
+  Record<string, never>
+>;
 
 /** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> =
@@ -169,6 +189,20 @@ export type LearningPath = {
   url?: Maybe<Scalars["String"]["output"]>;
 };
 
+export type LearningPathQuery = {
+  learningPath: {
+    courses: { id: string }[];
+    id: string;
+    name: string;
+    swebokFocus: string;
+    url: null | string;
+  } | null;
+};
+
+export type LearningPathQueryVariables = Exact<{
+  learningPathId: number | string;
+}>;
+
 export type Maybe<T> = null | T;
 
 /** The root Mutation type */
@@ -176,6 +210,8 @@ export type Mutation = {
   __typename?: "Mutation";
   /** Adds a new RSS feed subscription */
   addSubscription: Feed;
+  /** Creates a new curriculum. */
+  createCurriculum?: Maybe<Curriculum>;
   /** Cycles a course tracking status to the next value. */
   cycleCourseTrackingStatus?: Maybe<CourseTracking>;
   /** Marks an RSS article as read or unread */
@@ -187,6 +223,13 @@ export type MutationAddSubscriptionArgs = {
   title: Scalars["String"]["input"];
   website: Scalars["String"]["input"];
   xmlAddress: Scalars["String"]["input"];
+};
+
+/** The root Mutation type */
+export type MutationCreateCurriculumArgs = {
+  learningPathIds?: InputMaybe<Scalars["String"]["input"][]>;
+  name: Scalars["String"]["input"];
+  url?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 /** The root Mutation type */
@@ -225,6 +268,10 @@ export type Query = {
   courseTracking?: Maybe<CourseTracking>;
   /** Returns tracked courses for a user with cursor pagination. */
   courseTrackings: CourseTrackingConnection;
+  /** Returns a specific curriculum by ID */
+  curriculum?: Maybe<Curriculum>;
+  /** Returns all curriculums with their learning paths and courses */
+  curriculums: Curriculum[];
   /** Retrieves a list of articles for a specific feed */
   feedArticles: ArticleConnection;
   /** Returns a specific learning path by ID */
@@ -252,6 +299,11 @@ export type QueryCourseTrackingsArgs = {
   after?: InputMaybe<Scalars["String"]["input"]>;
   first?: InputMaybe<Scalars["Int"]["input"]>;
   userId: Scalars["String"]["input"];
+};
+
+/** The root Query type */
+export type QueryCurriculumArgs = {
+  id: Scalars["ID"]["input"];
 };
 
 /** The root Query type */

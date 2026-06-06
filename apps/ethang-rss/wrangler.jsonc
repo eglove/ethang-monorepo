@@ -1,12 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "compatibility_date": "2026-05-31",
+  "compatibility_date": "2026-06-06",
   "compatibility_flags": ["nodejs_compat"],
-  "rules": [{
-    "type": "Text",
-    "globs": ["**/*.graphql"],
-    "fallthrough": true
-  }],
   "d1_databases": [
     {
       "binding": "ethang_rss",
@@ -23,6 +18,13 @@
   "placement": {
     "mode": "smart"
   },
+  "rules": [
+    {
+      "fallthrough": true,
+      "globs": ["**/*.graphql"],
+      "type": "Text"
+    }
+  ],
   "triggers": {
     "crons": ["*/15 * * * *"]
   },
