@@ -10,8 +10,8 @@ type UseFullscreenReturn = {
 };
 
 const closeFullScreen = (): void => {
-  globalThis.document.exitFullscreen().catch(() => {
-    //
+  globalThis.document.exitFullscreen().catch((): void => {
+    // Ignore error
   });
 };
 
@@ -25,8 +25,8 @@ export const useFullscreen = (
   const [fullScreen, setFullScreen] = useState(initialState);
 
   const openFullScreen = (): void => {
-    reference.current.requestFullscreen().catch(() => {
-      //
+    reference.current.requestFullscreen().catch((): void => {
+      // Ignore error
     });
   };
 
