@@ -5,10 +5,6 @@ import isNil from "lodash/isNil.js";
 import merge from "lodash/merge.js";
 import { v7 } from "uuid";
 
-type CosmosConfig = {
-  debug?: boolean;
-};
-
 type EventListenerFilters<T extends keyof WindowEventMapPlus> = {
   eventName?: T;
   eventTarget?: EventTarget;
@@ -41,13 +37,10 @@ export class Cosmos {
     return this._nativeListeners.size;
   }
 
-  private readonly _debug: boolean | undefined;
   private readonly _nativeListeners = new Map<string, StoredListener<string>>();
   private readonly _observer: MutationObserver;
 
-  public constructor(config?: CosmosConfig) {
-    this._debug = config?.debug;
-
+  public constructor() {
     const originalAddEventListener = get(globalThis, [
       "EventTarget",
       "prototype",
@@ -135,10 +128,6 @@ export class Cosmos {
       merge(options, { isNative: false })
     );
 
-    if (true === this._debug) {
-      globalThis.console.log("Added event listener", id);
-    }
-
     return id;
   }
 
@@ -158,10 +147,6 @@ export class Cosmos {
     const listener = this._nativeListeners.get(id);
 
     if (isNil(listener)) {
-      if (true === this._debug) {
-        globalThis.console.warn("No event listener found for id", id);
-      }
-
       return false;
     }
 
@@ -173,10 +158,6 @@ export class Cosmos {
         isNative: false
       })
     );
-
-    if (true === this._debug) {
-      globalThis.console.log("Removed event listener", id);
-    }
 
     return true;
   }

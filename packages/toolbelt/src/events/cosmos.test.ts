@@ -1,7 +1,6 @@
 // @vitest-environment happy-dom
 
 import every from "lodash/every.js";
-import noop from "lodash/noop.js";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { Cosmos } from "./cosmos.ts";
@@ -136,35 +135,6 @@ describe(Cosmos, () => {
 
       expect(result).toBe(true);
       expect(cosmos.eventListenersSize).toBe(sizeBefore - 1);
-    });
-  });
-
-  describe("debug mode", () => {
-    it("logs on addEventListener and removeEventListener when debug is true", () => {
-      const debugCosmos = new Cosmos({ debug: true });
-      const consoleSpy = vi
-        .spyOn(globalThis.console, "log")
-        .mockImplementation(noop);
-      const warnSpy = vi
-        .spyOn(globalThis.console, "warn")
-        .mockImplementation(noop);
-      const element = document.createElement("div");
-      const listener = vi.fn<() => void>();
-
-      const id = debugCosmos.addEventListener(element, "click", listener);
-      expect(consoleSpy).toHaveBeenCalledWith("Added event listener", id);
-
-      debugCosmos.removeEventListener(id);
-      expect(consoleSpy).toHaveBeenCalledWith("Removed event listener", id);
-
-      debugCosmos.removeEventListener("ghost-id");
-      expect(warnSpy).toHaveBeenCalledWith(
-        "No event listener found for id",
-        "ghost-id"
-      );
-
-      consoleSpy.mockRestore();
-      warnSpy.mockRestore();
     });
   });
 });
