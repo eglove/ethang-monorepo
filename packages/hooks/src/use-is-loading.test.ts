@@ -1,5 +1,5 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
+import { expect, test } from "vitest";
 
 import { useIsLoading } from "./use-is-loading";
 

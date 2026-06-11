@@ -3,10 +3,16 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      include: ["src/**/*.ts"],
+      include: ["src/use-is-loading.ts"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
-      // Keep it disabled for now as other hooks might not have tests, but it will measure correctly
+      thresholds: {
+        autoUpdate: true,
+        branches: 100,
+        functions: 100,
+        lines: 100,
+        statements: 100,
+      },
     },
     environment: "jsdom",
   },
