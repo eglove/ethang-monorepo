@@ -137,4 +137,5 @@ describe(Cosmos, () => {
       expect(cosmos.eventListenersSize).toBe(sizeBefore - 1);
     });
   });
+
 });
