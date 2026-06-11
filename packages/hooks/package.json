@@ -34,7 +34,8 @@
   "repository": "https://github.com/eglove/hooks",
   "scripts": {
     "build": "bun build.ts",
-    "lint": "eslint src/ --fix && pnpm tsc --noEmit"
+    "lint": "eslint src/ --fix && pnpm tsc --noEmit",
+    "test": "vitest run --coverage"
   },
   "type": "module",
   "version": "2.3.1"
