@@ -66,6 +66,9 @@ type TranscriptEntry = {
   content?: ContentBlock[] | string;
   message?: { content?: ContentBlock[] | string; role?: string };
   role?: string;
+  source?: string;
+  thinking?: string;
+  type?: string;
 };
 
 // ── constants ───────────────────────────────────────────────────────────────────
@@ -77,7 +80,7 @@ const RAW_FALLBACK_CAP = 50_000;
 const ASSISTANT_TURN_CAP = 800;
 
 /** Default rate-limit window between dispatches for the same conversation. */
-export const DEFAULT_MIN_INTERVAL_MS = 60 * 60 * 1000;
+export const DEFAULT_MIN_INTERVAL_MS = 5 * 60 * 1000;
 
 /** Soft ceiling the extraction prompt instructs the model to keep lessons under. */
 export const LESSONS_SOFT_LIMIT = 11_000;
@@ -164,7 +167,56 @@ const turnFromEntryAssistantRole = (
   return "";
 };
 
+const turnFromAntigravityUser = (
+  source: string,
+  type: string,
+  content: unknown
+): string | undefined => {
+  if (
+    "USER_INPUT" === type &&
+    startsWith(source, "USER") &&
+    isString(content)
+  ) {
+    const text = trim(content);
+    return "" === text ? "" : `User: ${text}`;
+  }
+  return undefined;
+};
+
+const turnFromAntigravityModel = (
+  source: string,
+  type: string,
+  thinking: unknown
+): string | undefined => {
+  if ("PLANNER_RESPONSE" === type && "MODEL" === source && isString(thinking)) {
+    const text = trim(thinking);
+    return "" === text ? "" : `Claude: ${text.slice(0, ASSISTANT_TURN_CAP)}`;
+  }
+  return undefined;
+};
+
+const turnFromAntigravityEntry = (
+  entry: TranscriptEntry
+): string | undefined => {
+  const { content, source, thinking, type } = entry;
+
+  if (!isString(source) || !isString(type)) {
+    return undefined;
+  }
+
+  return (
+    turnFromAntigravityUser(source, type, content) ??
+    turnFromAntigravityModel(source, type, thinking)
+  );
+};
+
 const turnFromEntry = (entry: TranscriptEntry): string => {
+  const antigravityTurn = turnFromAntigravityEntry(entry);
+
+  if (undefined !== antigravityTurn) {
+    return antigravityTurn;
+  }
+
   const role = entry.message?.role ?? entry.role;
   const content = entry.message?.content ?? entry.content;
 
@@ -343,8 +395,10 @@ silently and make only the file edits described below.
 
 Read the session transcript slice at this path: \`${sliceFilePath}\`.
 Identify (a) explicit user corrections — things the assistant did wrong and was
-told to change — and (b) non-obvious patterns confirmed to work in this
-workspace. Ignore transient errors and generic programming advice.
+told to change or avoid —, (b) implicit developer preferences, style/command
+preferences, and architectural decisions established during the session, and
+(c) non-obvious patterns confirmed to work in this workspace. Ignore transient
+errors and generic programming advice.
 
 ## Task 1: update lessons.md
 
@@ -525,4 +579,56 @@ export const parseClaudeEnvelope = (
   } catch {
     return undefined;
   }
+};
+
+// ── pre-invocation session start helpers ────────────────────────────────────────
+
+const SEED_MARKERS = ["*(none yet)*"];
+
+/** True when lessons.md holds only the seed skeleton (no real learned content). */
+export const isSeedOnly = (content: string): boolean => {
+  const trimmedContent = trim(content);
+  if ("" === trimmedContent) {
+    return true;
+  }
+
+  const bulletLines = filter(
+    map(split(trimmedContent, "\n"), (line) => {
+      return trim(line);
+    }),
+    (line) => {
+      return startsWith(line, "- ");
+    }
+  );
+
+  if (0 < bulletLines.length) {
+    return false;
+  }
+
+  return some(SEED_MARKERS, (marker) => {
+    return includes(trimmedContent, marker);
+  });
+};
+
+export const getPreInvocationResponse = (
+  invocationNumber: number | undefined,
+  lessonsContent: string | undefined
+): { injectSteps?: { ephemeralMessage: string }[] } => {
+  if (1 !== invocationNumber) {
+    return {};
+  }
+
+  const injectSteps: { ephemeralMessage: string }[] = [
+    {
+      ephemeralMessage: `# SWEBOK v4 Standards & Glossary\n\nAll requirements analysis, design, testing, and maintenance work must align with SWEBOK v4 guidelines:\n* **Always read** the [swebok](.agents/skills/swebok/SKILL.md) glossary and chapter index first to align on vocabulary and find the matching chapter resource path.\n* Read the matching \`resources/chNN-*.md\` file inside that skill (maximum 3 chapters per task to conserve context).\n* Reference the cross-cutting vocabulary (e.g., distinguishing between **Error**, **Defect/Fault**, and **Failure**).`
+    }
+  ];
+
+  if (undefined !== lessonsContent && !isSeedOnly(lessonsContent)) {
+    injectSteps.push({
+      ephemeralMessage: `# Learned Lessons (from previous sessions)\n\n${trim(lessonsContent)}`
+    });
+  }
+
+  return { injectSteps };
 };

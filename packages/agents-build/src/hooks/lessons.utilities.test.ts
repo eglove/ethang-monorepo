@@ -5,8 +5,11 @@ import { describe, expect, it } from "vitest";
 import {
   applyDelta,
   buildExtractionPrompt,
+  DEFAULT_MIN_INTERVAL_MS,
   detectInvokedArtifacts,
+  getPreInvocationResponse,
   isDeltaEmpty,
+  isSeedOnly,
   parseClaudeEnvelope,
   parseHookInput,
   parseSectionEntries,
@@ -139,6 +142,73 @@ describe("parseTranscriptSlice", () => {
     expect(parseTranscriptSlice(lines)).toBe("User: Kept turn");
   });
 
+  it("extracts turns from Antigravity format lines with source and type", () => {
+    const lines = [
+      JSON.stringify({
+        content:
+          "<USER_REQUEST>\nPlease don't use this import.\n</USER_REQUEST>",
+        source: "USER_EXPLICIT",
+        type: "USER_INPUT"
+      }),
+      JSON.stringify({
+        source: "MODEL",
+        thinking: "Okay, I will change that.",
+        type: "PLANNER_RESPONSE"
+      })
+    ].join("\n");
+
+    expect(parseTranscriptSlice(lines)).toBe(
+      "User: <USER_REQUEST>\nPlease don't use this import.\n</USER_REQUEST>\n\nClaude: Okay, I will change that."
+    );
+  });
+
+  it("falls back to Claude format if source/type are not strings or missing", () => {
+    const line = JSON.stringify({
+      message: { content: "Claude fallback", role: "user" },
+      source: 123,
+      type: "USER_INPUT"
+    });
+    expect(parseTranscriptSlice(line)).toBe("User: Claude fallback");
+  });
+
+  it("skips Antigravity format lines with empty content/thinking", () => {
+    const lines = [
+      JSON.stringify({
+        content: "",
+        source: "USER_EXPLICIT",
+        type: "USER_INPUT"
+      }),
+      JSON.stringify({
+        source: "MODEL",
+        thinking: "",
+        type: "PLANNER_RESPONSE"
+      })
+    ].join("\n");
+    expect(parseTranscriptSlice(lines)).toBe("");
+  });
+
+  it("skips Antigravity lines with non-matching types or invalid content", () => {
+    const lines = [
+      JSON.stringify({
+        content: "hello",
+        source: "USER_EXPLICIT",
+        type: "OTHER_TYPE"
+      }),
+      JSON.stringify({
+        source: "MODEL",
+        thinking: 123,
+        type: "PLANNER_RESPONSE"
+      }),
+      JSON.stringify({ source: "MODEL", type: "PLANNER_RESPONSE" }),
+      JSON.stringify({
+        content: "something",
+        source: "MODEL",
+        type: "LIST_DIRECTORY"
+      })
+    ].join("\n");
+    expect(parseTranscriptSlice(lines)).toBe("");
+  });
+
   it("truncates the raw-text fallback to the last 50k chars", () => {
     const raw = repeat("x", 60_000);
     const result = parseTranscriptSlice(raw);
@@ -260,6 +330,10 @@ describe("shouldDispatch", () => {
     expect(shouldDispatch(state, "conv-1", 600, 1000 + HOUR, HOUR)).toBe(true);
   });
 
+  it("uses a 5-minute default rate limit interval", () => {
+    expect(DEFAULT_MIN_INTERVAL_MS).toBe(5 * 60 * 1000);
+  });
+
   it("isolates dedupe state per conversation", () => {
     const state = { "conv-1": { lastDispatch: 1_000_000, offset: 9999 } };
     expect(shouldDispatch(state, "conv-2", 100, 1_000_000, HOUR)).toBe(true);
@@ -334,6 +408,12 @@ describe("buildExtractionPrompt", () => {
     const prompt = toLower(buildExtractionPrompt(baseArguments));
     expect(prompt).toContain("no other files");
     expect(prompt).toContain("never commit");
+  });
+
+  it("instructs identifying developer preferences and architectural decisions", () => {
+    const prompt = buildExtractionPrompt(baseArguments);
+    expect(prompt).toContain("preferences");
+    expect(prompt).toContain("architectural");
   });
 
   it("omits artifact-improvement instructions when no artifacts are present", () => {
@@ -514,5 +594,68 @@ describe("parseClaudeEnvelope", () => {
   it("trims surrounding whitespace before parsing", () => {
     const stdout = `  ${JSON.stringify({ structured_output: { artifact_improvements: "y" } })}\n`;
     expect(parseClaudeEnvelope(stdout)).toEqual({ artifact_improvements: "y" });
+  });
+});
+
+// ── isSeedOnly ─────────────────────────────────────────────────────────────────
+
+describe("isSeedOnly", () => {
+  it("returns true for empty string or just whitespace", () => {
+    expect(isSeedOnly("")).toBe(true);
+    expect(isSeedOnly("   \n  ")).toBe(true);
+  });
+
+  it("returns true for seed skeleton with none-yet markers", () => {
+    const seed = `# Learned Lessons\n\n## Corrections\n\n*(none yet)*\n\n## Proven Patterns\n\n*(none yet)*`;
+    expect(isSeedOnly(seed)).toBe(true);
+  });
+
+  it("returns false if there are actual bulleted entries", () => {
+    const content = `# Learned Lessons\n\n## Corrections\n- **Rule**: Avoid X\n\n## Proven Patterns\n*(none yet)*`;
+    expect(isSeedOnly(content)).toBe(false);
+  });
+});
+
+// ── getPreInvocationResponse ───────────────────────────────────────────────────
+
+describe("getPreInvocationResponse", () => {
+  const swebokHeading = "SWEBOK v4 Standards & Glossary";
+
+  it("returns an empty object if invocationNum is not 1", () => {
+    expect(getPreInvocationResponse(2, "some content")).toEqual({});
+    expect(getPreInvocationResponse(undefined, "some content")).toEqual({});
+  });
+
+  it("injects only SWEBOK guidelines when lessons content is empty or seed-only", () => {
+    const response = getPreInvocationResponse(1, "");
+    expect(response.injectSteps).toHaveLength(1);
+    expect(response.injectSteps?.[0]?.ephemeralMessage).toContain(
+      swebokHeading
+    );
+    expect(response.injectSteps?.[0]?.ephemeralMessage).not.toContain(
+      "Learned Lessons"
+    );
+
+    const seed = `# Learned Lessons\n\n## Corrections\n\n*(none yet)*`;
+    const responseSeed = getPreInvocationResponse(1, seed);
+    expect(responseSeed.injectSteps).toHaveLength(1);
+    expect(responseSeed.injectSteps?.[0]?.ephemeralMessage).toContain(
+      swebokHeading
+    );
+  });
+
+  it("injects both SWEBOK guidelines and learned lessons when actual lessons exist", () => {
+    const lessons = `# Learned Lessons\n\n## Corrections\n- **Rule**: Do Y`;
+    const response = getPreInvocationResponse(1, lessons);
+    expect(response.injectSteps).toHaveLength(2);
+    expect(response.injectSteps?.[0]?.ephemeralMessage).toContain(
+      swebokHeading
+    );
+    expect(response.injectSteps?.[1]?.ephemeralMessage).toContain(
+      "# Learned Lessons (from previous sessions)"
+    );
+    expect(response.injectSteps?.[1]?.ephemeralMessage).toContain(
+      "- **Rule**: Do Y"
+    );
   });
 });

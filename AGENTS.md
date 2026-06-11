@@ -71,15 +71,6 @@ All agents must apply a DDD analytical lens when analyzing, planning, and implem
 
 ---
 
-## SWEBOK v4 Standards & Glossary
-
-All requirements analysis, design, testing, and maintenance work must align with SWEBOK v4 guidelines:
-* **Always read** the [swebok](.agents/skills/swebok/SKILL.md) glossary and chapter index first to align on vocabulary and find the matching chapter resource path.
-* Read the matching `resources/chNN-*.md` file inside that skill (maximum 3 chapters per task to conserve context).
-* Reference the cross-cutting vocabulary (e.g., distinguishing between **Error**, **Defect/Fault**, and **Failure**).
-
----
-
 ## ESLint Troubleshooting & User Collaboration
 
 * **Request User Help when Struggling with ESLint:** If you encounter conflicting ESLint rules, loops, or tricky typescript/linter constraints that are hard to resolve automatically, do not spin or struggle in a loop. Ask the user for help, explain what you are trying to change, and collaborate to find a clean path forward.
