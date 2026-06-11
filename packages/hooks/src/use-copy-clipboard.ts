@@ -24,8 +24,7 @@ export const useCopyClipboard = (
         setIsCopied(true);
       } catch (writeTextError: unknown) {
         if (isError(writeTextError)) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-          setError(writeTextError as Error);
+          setError(writeTextError);
         }
 
         setIsCopied(false);

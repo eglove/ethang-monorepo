@@ -13,15 +13,23 @@ describe("useCopyClipboard", () => {
       return 1;
     });
 
-    globalThis.navigator.clipboard = {
-      writeText: vi.fn(),
-    } as unknown as Clipboard;
+    Object.defineProperty(globalThis.navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: vi.fn(),
+      } as unknown as Clipboard,
+      writable: true,
+    });
   });
 
   afterEach(() => {
     vi.useRealTimers();
     vi.clearAllMocks();
-    globalThis.navigator.clipboard = originalClipboard;
+    Object.defineProperty(globalThis.navigator, "clipboard", {
+      configurable: true,
+      value: originalClipboard,
+      writable: true,
+    });
   });
 
   it("should return initial state", () => {

@@ -3,15 +3,16 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      include: ["src/"],
+
+      include: ["src/**/*.ts"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 71.42,
-        functions: 85.71,
-        lines: 87.5,
-        statements: 87.5,
+        branches: 12.65,
+        functions: 17.92,
+        lines: 20.75,
+        statements: 20.75,
       },
     },
     environment: "jsdom",

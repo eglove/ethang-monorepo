@@ -278,6 +278,7 @@ export type Query = {
   learningPath?: Maybe<LearningPath>;
   /** Returns all learning paths with their courses */
   learningPaths: LearningPath[];
+  /** Retrieves a specific subscription by its feed ID */
   subscription: Feed;
   /** Retrieves a list of all feed subscriptions */
   subscriptions: FeedConnection;
