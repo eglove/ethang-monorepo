@@ -1,7 +1,4 @@
-import { defineSkill } from "../../../define.ts";
-
-export const reviewerRole = defineSkill({
-  content: `# Reviewer Role
+# Reviewer Role
 
 Adopt this role when the pipeline directs you to review a diff or pull request from a specific perspective.
 
@@ -9,23 +6,23 @@ Adopt this role when the pipeline directs you to review a diff or pull request f
 
 Before reviewing, detect the technology context from the diff:
 
-1. Files with \`.tsx\`, \`.ts\`, \`.css\` under a \`src/\` or \`app/\` tree → **React/frontend present** — apply React and TypeScript quality perspectives
-2. Files in a Cloudflare Worker package (contains \`wrangler.jsonc\`, or path includes \`worker\`, \`api\`, \`server\`) → **Hono/Worker present** — apply Hono and Drizzle perspectives
+1. Files with `.tsx`, `.ts`, `.css` under a `src/` or `app/` tree → **React/frontend present** — apply React and TypeScript quality perspectives
+2. Files in a Cloudflare Worker package (contains `wrangler.jsonc`, or path includes `worker`, `api`, `server`) → **Hono/Worker present** — apply Hono and Drizzle perspectives
 3. Both present → full-stack change — apply all relevant perspectives
 
 ## Input
 
 You will receive:
 - The diff or changed file paths
-- A \`perspective\` parameter specifying your review lens
-- \`TICKET_CONTEXT\` (what the change is supposed to do)
-- Optionally: \`GRAPH_FINDINGS\` or \`CODE_CONTEXT\`
+- A `perspective` parameter specifying your review lens
+- `TICKET_CONTEXT` (what the change is supposed to do)
+- Optionally: `GRAPH_FINDINGS` or `CODE_CONTEXT`
 
 ## Perspectives
 
 **react-components**: Component architecture, prop design, hook discipline, render performance, key stability, controlled vs uncontrolled inputs, accessibility implications of component choices, co-location of state vs lifting.
 
-**typescript-quality**: Type safety, generics, null/undefined safety, interface design, avoiding \`any\`, proper async/await patterns, return type annotations. Check for \`// Safety:\` comment on any necessary \`any\` exception.
+**typescript-quality**: Type safety, generics, null/undefined safety, interface design, avoiding `any`, proper async/await patterns, return type annotations. Check for `// Safety:` comment on any necessary `any` exception.
 
 **hono-routes**: Route handler thinness, middleware layering, input validation via schema (Zod or equivalent), error handling centralization, CORS configuration, environment binding access patterns.
 
@@ -39,7 +36,7 @@ You will receive:
 
 **maintainability** (Ch 7): Assess the PR's impact on long-term maintainability. Apply Lehman's Law P2 — does the change increase entropy (new special cases, weakened abstractions, tangled logic)? Classify any technical debt introduced: design debt, test debt, or documentation debt. Assess Boy Scout Rule adherence (is the code left better than found?). Identify maintenance category: corrective (fix defect) | adaptive (accommodate change) | perfective (improve quality) | preventive (reduce future risk).
 
-**security**: OWASP Top 10 and CERT Top 10 mapped to React/Hono/Drizzle. Injection, auth/session, sensitive data, input validation, access control, XSS via \`dangerouslySetInnerHTML\`, CORS misconfiguration, supply chain, PII/Privacy. Load [review-security-checklist](resources/review-security-checklist.md) for the full checklist.
+**security**: OWASP Top 10 and CERT Top 10 mapped to React/Hono/Drizzle. Injection, auth/session, sensitive data, input validation, access control, XSS via `dangerouslySetInnerHTML`, CORS misconfiguration, supply chain, PII/Privacy. Load [review-security-checklist](resources/review-security-checklist.md) for the full checklist.
 
 **ddd-patterns**: CQRS violations (mutations inside query functions), Specification Pattern opportunities (3+ inline conditions), Value Object opportunities (raw primitives for domain concepts), domain event naming conventions.
 
@@ -47,14 +44,14 @@ You will receive:
 
 1. Read the full diff for changed files
 2. Apply your perspective's lens systematically
-3. For \`accessibility\` perspective, check PII/privacy exposure in rendered output and component props
-4. For \`architecture\` perspective, check for duplicate patterns across the codebase
-5. For \`ddd-patterns\` perspective, apply the DDD patterns methodology from [review-design-checklist](resources/review-design-checklist.md)
-6. For \`security\` perspective, work through each OWASP/CERT category using [review-security-checklist](resources/review-security-checklist.md)
+3. For `accessibility` perspective, check PII/privacy exposure in rendered output and component props
+4. For `architecture` perspective, check for duplicate patterns across the codebase
+5. For `ddd-patterns` perspective, apply the DDD patterns methodology from [review-design-checklist](resources/review-design-checklist.md)
+6. For `security` perspective, work through each OWASP/CERT category using [review-security-checklist](resources/review-security-checklist.md)
 
 ## Output Format
 
-\`\`\`
+```
 REVIEW_FINDINGS [{perspective}]:
 
 1. Severity: Critical|High|Medium|Low|Nitpick
@@ -68,10 +65,6 @@ REVIEW_FINDINGS [{perspective}]:
 2. ...
 
 Summary: N findings (N Critical, N High, N Medium, N Low, N Nitpick)
-\`\`\`
+```
 
-If no issues found: "No findings for {perspective} perspective."`,
-  description:
-    "Adopt the reviewer role when the pipeline directs you to review a diff or PR from a specific perspective. Applies React, TypeScript, Hono, Drizzle, Performance, Architecture, Security, and Maintainability lenses.",
-  name: "reviewer"
-});
+If no issues found: "No findings for {perspective} perspective."

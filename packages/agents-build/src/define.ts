@@ -1,11 +1,3 @@
-export type PluginDefinition = {
-  /** plugin.json name — must match the plugin folder name. */
-  name: string;
-  /** Plugin-local rules; compile prepends the shared rules to every plugin. */
-  rules?: RuleDefinition[];
-  skills: SkillDefinition[];
-};
-
 export type RuleDefinition = {
   content: string;
   /** Required when trigger is "model_decision" (build-validated). */
@@ -35,16 +27,8 @@ export type SkillDefinition = {
   name: string;
   resources?: SkillResource[];
   sections?: Section[];
-  skillRefs?: readonly SkillReference[];
   /** Build-time router keywords (swebok table); never rendered to frontmatter. */
   triggers?: readonly string[];
-};
-
-export type SkillReference = {
-  /** 1-3 line pointer: when and why to read the sibling skill. */
-  description: string;
-  /** Sibling skill name within the same plugin — build-validated to exist. */
-  skill: string;
 };
 
 export type SkillResource = {
@@ -58,11 +42,5 @@ export const defineRule = (definition: RuleDefinition): RuleDefinition => {
 };
 
 export const defineSkill = (definition: SkillDefinition): SkillDefinition => {
-  return definition;
-};
-
-export const definePlugin = (
-  definition: PluginDefinition
-): PluginDefinition => {
   return definition;
 };

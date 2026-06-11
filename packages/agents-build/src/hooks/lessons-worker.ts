@@ -35,8 +35,8 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { PLUGINS } from "../content/plugins/index.ts";
-import { SHARED_RULES } from "../content/rules/shared.ts";
+import { GLOBAL_RULES } from "../content/rules/global.ts";
+import { SKILLS } from "../content/skills/index.ts";
 import {
   applyDelta,
   buildExtractionPrompt,
@@ -60,17 +60,10 @@ const LOG_PATH = path.resolve(PACKAGE_ROOT, "lessons.log");
  */
 export const CANDIDATE_ARTIFACTS: readonly string[] = [
   ...new Set([
-    ...PLUGINS.flatMap((plugin) => {
-      return [
-        ...map(plugin.skills, (skill) => {
-          return skill.name;
-        }),
-        ...map(plugin.rules ?? [], (rule) => {
-          return rule.filename;
-        })
-      ];
+    ...map(SKILLS, (skill) => {
+      return skill.name;
     }),
-    ...map(SHARED_RULES, (rule) => {
+    ...map(GLOBAL_RULES, (rule) => {
       return rule.filename;
     })
   ])

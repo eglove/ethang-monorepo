@@ -1,19 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import type {
-  RuleDefinition,
-  Section,
-  SkillDefinition,
-  SkillReference
-} from "./define.ts";
+import type { RuleDefinition, Section, SkillDefinition } from "./define.ts";
 
 import {
-  pluginJson,
   renderJson,
   renderRuleFrontmatter,
   renderSkillFrontmatter,
   resolveSections,
-  resolveSkillReferences,
   ruleMarkdown,
   skillMarkdown
 } from "./render.ts";
@@ -182,29 +175,6 @@ describe("resolveSections", () => {
   });
 });
 
-describe("resolveSkillRefs", () => {
-  const referenceOne: SkillReference = {
-    description: "Read before writing tests.",
-    skill: "tdd-state-coverage"
-  };
-  const referenceTwo: SkillReference = {
-    description: "Read during review.",
-    skill: "ddd-tactical"
-  };
-
-  it("renders a Skills heading with one block per ref", () => {
-    expect(resolveSkillReferences([referenceOne, referenceTwo])).toBe(
-      "## Skills\n\n### `tdd-state-coverage`\n\nRead before writing tests.\n\n### `ddd-tactical`\n\nRead during review."
-    );
-  });
-
-  it("dedupes refs by skill name", () => {
-    expect(resolveSkillReferences([referenceOne, referenceOne])).toBe(
-      "## Skills\n\n### `tdd-state-coverage`\n\nRead before writing tests."
-    );
-  });
-});
-
 describe("skillMarkdown", () => {
   it("emits frontmatter, a blank line, the body, and a trailing newline", () => {
     expect(skillMarkdown(baseSkill)).toBe(
@@ -220,31 +190,6 @@ describe("skillMarkdown", () => {
     };
 
     expect(skillMarkdown(skill)).toContain("Intro.\n\nShared.\n\nOutro.");
-  });
-
-  it("appends skill refs after sections in the token replacement", () => {
-    const skill: SkillDefinition = {
-      ...baseSkill,
-      content: "{{sections}}",
-      sections: [{ content: "Shared.", id: "shared", label: "Shared" }],
-      skillRefs: [{ description: "Use it.", skill: "other-skill" }]
-    };
-
-    expect(skillMarkdown(skill)).toContain(
-      "Shared.\n\n---\n\n## Skills\n\n### `other-skill`\n\nUse it."
-    );
-  });
-
-  it("replaces the token with only skill refs when no sections are declared", () => {
-    const skill: SkillDefinition = {
-      ...baseSkill,
-      content: "{{sections}}",
-      skillRefs: [{ description: "Use it.", skill: "other-skill" }]
-    };
-
-    expect(skillMarkdown(skill)).toContain(
-      "## Skills\n\n### `other-skill`\n\nUse it."
-    );
   });
 
   it("throws when sections are declared but the token is missing", () => {
@@ -264,12 +209,6 @@ describe("ruleMarkdown", () => {
     expect(ruleMarkdown(baseRule)).toBe(
       "---\ntrigger: always_on\n---\n\nRule body.\n"
     );
-  });
-});
-
-describe("pluginJson", () => {
-  it("emits the plugin marker with a trailing newline", () => {
-    expect(pluginJson("tdd")).toBe('{\n  "name": "tdd"\n}\n');
   });
 });
 

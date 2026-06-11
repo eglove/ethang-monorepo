@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type { PluginDefinition, RuleDefinition } from "./define.ts";
+import type { RuleDefinition } from "./define.ts";
 
 import {
   checkRuleSize,
@@ -12,7 +12,6 @@ import {
   findForbiddenStrings,
   findUnresolvedTokens,
   validateFrontmatterBlock,
-  validateSkillReferenceIntegrity,
   validateSwebokGuard
 } from "./validate.ts";
 
@@ -71,42 +70,6 @@ describe("findForbiddenStrings", () => {
     expect(findForbiddenStrings("NISC and more NISC plus Jira")).toStrictEqual([
       "NISC",
       "Jira"
-    ]);
-  });
-});
-
-describe("validateSkillRefIntegrity", () => {
-  const plugin: PluginDefinition = {
-    name: "tdd",
-    skills: [
-      {
-        content: "{{sections}}",
-        description: "Pipeline.",
-        name: "tdd-pipeline",
-        skillRefs: [{ description: "Use it.", skill: "ddd-tactical" }]
-      },
-      { content: "Tactics.", description: "DDD tactics.", name: "ddd-tactical" }
-    ]
-  };
-
-  it("returns no violations when refs point at sibling skills", () => {
-    expect(validateSkillReferenceIntegrity(plugin)).toStrictEqual([]);
-  });
-
-  it("reports refs that point at skills missing from the plugin", () => {
-    const [firstSkill] = plugin.skills;
-
-    if (undefined === firstSkill) {
-      throw new Error("test setup: plugin must have at least one skill");
-    }
-
-    const broken: PluginDefinition = {
-      ...plugin,
-      skills: [firstSkill]
-    };
-
-    expect(validateSkillReferenceIntegrity(broken)).toStrictEqual([
-      'tdd/tdd-pipeline -> missing sibling skill "ddd-tactical"'
     ]);
   });
 });
