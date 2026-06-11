@@ -23,7 +23,7 @@ export const useCopyClipboard = (
         await globalThis.navigator.clipboard.writeText(text);
         setIsCopied(true);
       } catch (writeTextError: unknown) {
-        if (isError(error)) {
+        if (isError(writeTextError)) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           setError(writeTextError as Error);
         }
