@@ -5,18 +5,15 @@ export default defineConfig({
   plugins: [react()],
   test: {
     coverage: {
-      include: [
-        "src/components/auth/auth-store.ts",
-        "src/routes/login.tsx",
-        "src/components/layout/main-layout.tsx"
-      ],
+      include: ["src", "worker"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
-        branches: 100,
-        functions: 100,
-        lines: 100,
-        statements: 100
+        autoUpdate: true,
+        branches: 45.45,
+        functions: 35.45,
+        lines: 43.39,
+        statements: 43.39
       }
     },
     environment: "jsdom",

@@ -1,3 +1,16 @@
+export type AddSubscriptionMutation = {
+  addSubscription: {
+    id: string;
+    title: string;
+    website: string;
+    xmlAddress: string;
+  };
+};
+export type AddSubscriptionMutationVariables = Exact<{
+  title: string;
+  website: string;
+  xmlAddress: string;
+}>;
 /** An individual RSS article */
 export type Article = {
   __typename?: "Article";
@@ -34,6 +47,7 @@ export type ArticleEdge = {
   /** The item at the end of the edge. */
   node: Article;
 };
+
 /** Course information */
 export type Course = {
   __typename?: "Course";
@@ -50,6 +64,7 @@ export type Course = {
   /** The URL of the course. */
   url: Scalars["String"]["output"];
 };
+
 export type CourseQuery = {
   course: { author: string; id: string; name: string; url: string } | null;
 };
@@ -161,6 +176,34 @@ export type GetRecommendedCoursesLearningPathIdsQueryVariables = Exact<
   Record<string, never>
 >;
 
+export type GetSubscriptionsWithArticlesQuery = {
+  subscriptions: {
+    edges: {
+      node: {
+        articles: {
+          edges: {
+            node: {
+              id: string;
+              isRead: boolean;
+              link: string;
+              publishedAt: null | string;
+              title: string;
+            };
+          }[];
+        };
+        id: string;
+        title: string;
+        website: string;
+        xmlAddress: string;
+      };
+    }[];
+  };
+};
+
+export type GetSubscriptionsWithArticlesQueryVariables = Exact<
+  Record<string, never>
+>;
+
 /** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> =
   | {
@@ -201,6 +244,15 @@ export type LearningPathQuery = {
 
 export type LearningPathQueryVariables = Exact<{
   learningPathId: number | string;
+}>;
+
+export type MarkArticleReadMutation = {
+  markArticleRead: { id: string; isRead: boolean };
+};
+
+export type MarkArticleReadMutationVariables = Exact<{
+  articleId: number | string;
+  isRead: boolean;
 }>;
 
 export type Maybe<T> = null | T;
@@ -278,6 +330,7 @@ export type Query = {
   learningPath?: Maybe<LearningPath>;
   /** Returns all learning paths with their courses */
   learningPaths: LearningPath[];
+  /** Retrieves a specific subscription by its feed ID */
   subscription: Feed;
   /** Retrieves a list of all feed subscriptions */
   subscriptions: FeedConnection;

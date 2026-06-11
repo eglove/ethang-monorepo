@@ -12,7 +12,8 @@ const links = [
   { href: "/", label: "Home" },
   { href: "/blog", label: "Blog" },
   { href: "/tips", label: "Tips" },
-  { href: "/courses", label: "Courses" }
+  { href: "/courses", label: "Courses" },
+  { href: "/rss", label: "RSS" }
 ];
 
 export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {

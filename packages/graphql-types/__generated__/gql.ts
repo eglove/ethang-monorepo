@@ -17,11 +17,17 @@ type Documents = {
     "query Course($courseId: ID!) {\n  course(id: $courseId) {\n    id\n    name\n    url\n    author\n  }\n}": typeof types.CourseDocument,
     "query LearningPath($learningPathId: ID!) {\n  learningPath(id: $learningPathId) {\n    id\n    swebokFocus\n    name\n    url\n    courses {\n      id\n    }\n  }\n}": typeof types.LearningPathDocument,
     "query GetRecommendedCoursesLearningPathIds {\n  curriculum(id: \"019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4\") {\n    id\n    name\n    updatedAt\n    learningPaths {\n      id\n        courses {\n            id\n        }\n    }\n  }\n}": typeof types.GetRecommendedCoursesLearningPathIdsDocument,
+    "\n  query GetSubscriptionsWithArticles {\n    subscriptions {\n      edges {\n        node {\n          id\n          title\n          website\n          xmlAddress\n          articles(first: 50, isRead: false) {\n            edges {\n              node {\n                id\n                title\n                link\n                publishedAt\n                isRead\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n": typeof types.GetSubscriptionsWithArticlesDocument,
+    "\n  mutation AddSubscription($title: String!, $website: String!, $xmlAddress: String!) {\n    addSubscription(title: $title, website: $website, xmlAddress: $xmlAddress) {\n      id\n      title\n      website\n      xmlAddress\n    }\n  }\n": typeof types.AddSubscriptionDocument,
+    "\n  mutation MarkArticleRead($articleId: ID!, $isRead: Boolean!) {\n    markArticleRead(articleId: $articleId, isRead: $isRead) {\n      id\n      isRead\n    }\n  }\n": typeof types.MarkArticleReadDocument,
 };
 const documents: Documents = {
     "query Course($courseId: ID!) {\n  course(id: $courseId) {\n    id\n    name\n    url\n    author\n  }\n}": types.CourseDocument,
     "query LearningPath($learningPathId: ID!) {\n  learningPath(id: $learningPathId) {\n    id\n    swebokFocus\n    name\n    url\n    courses {\n      id\n    }\n  }\n}": types.LearningPathDocument,
     "query GetRecommendedCoursesLearningPathIds {\n  curriculum(id: \"019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4\") {\n    id\n    name\n    updatedAt\n    learningPaths {\n      id\n        courses {\n            id\n        }\n    }\n  }\n}": types.GetRecommendedCoursesLearningPathIdsDocument,
+    "\n  query GetSubscriptionsWithArticles {\n    subscriptions {\n      edges {\n        node {\n          id\n          title\n          website\n          xmlAddress\n          articles(first: 50, isRead: false) {\n            edges {\n              node {\n                id\n                title\n                link\n                publishedAt\n                isRead\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n": types.GetSubscriptionsWithArticlesDocument,
+    "\n  mutation AddSubscription($title: String!, $website: String!, $xmlAddress: String!) {\n    addSubscription(title: $title, website: $website, xmlAddress: $xmlAddress) {\n      id\n      title\n      website\n      xmlAddress\n    }\n  }\n": types.AddSubscriptionDocument,
+    "\n  mutation MarkArticleRead($articleId: ID!, $isRead: Boolean!) {\n    markArticleRead(articleId: $articleId, isRead: $isRead) {\n      id\n      isRead\n    }\n  }\n": types.MarkArticleReadDocument,
 };
 
 /**
@@ -50,6 +56,18 @@ export function gql(source: "query LearningPath($learningPathId: ID!) {\n  learn
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "query GetRecommendedCoursesLearningPathIds {\n  curriculum(id: \"019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4\") {\n    id\n    name\n    updatedAt\n    learningPaths {\n      id\n        courses {\n            id\n        }\n    }\n  }\n}"): (typeof documents)["query GetRecommendedCoursesLearningPathIds {\n  curriculum(id: \"019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4\") {\n    id\n    name\n    updatedAt\n    learningPaths {\n      id\n        courses {\n            id\n        }\n    }\n  }\n}"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query GetSubscriptionsWithArticles {\n    subscriptions {\n      edges {\n        node {\n          id\n          title\n          website\n          xmlAddress\n          articles(first: 50, isRead: false) {\n            edges {\n              node {\n                id\n                title\n                link\n                publishedAt\n                isRead\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetSubscriptionsWithArticles {\n    subscriptions {\n      edges {\n        node {\n          id\n          title\n          website\n          xmlAddress\n          articles(first: 50, isRead: false) {\n            edges {\n              node {\n                id\n                title\n                link\n                publishedAt\n                isRead\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation AddSubscription($title: String!, $website: String!, $xmlAddress: String!) {\n    addSubscription(title: $title, website: $website, xmlAddress: $xmlAddress) {\n      id\n      title\n      website\n      xmlAddress\n    }\n  }\n"): (typeof documents)["\n  mutation AddSubscription($title: String!, $website: String!, $xmlAddress: String!) {\n    addSubscription(title: $title, website: $website, xmlAddress: $xmlAddress) {\n      id\n      title\n      website\n      xmlAddress\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation MarkArticleRead($articleId: ID!, $isRead: Boolean!) {\n    markArticleRead(articleId: $articleId, isRead: $isRead) {\n      id\n      isRead\n    }\n  }\n"): (typeof documents)["\n  mutation MarkArticleRead($articleId: ID!, $isRead: Boolean!) {\n    markArticleRead(articleId: $articleId, isRead: $isRead) {\n      id\n      isRead\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

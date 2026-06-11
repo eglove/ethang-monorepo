@@ -3,6 +3,17 @@ export const autoAuthenticate = async (
   url: URL,
   environment: Env
 ) => {
+  const clientToken = request.headers.get("X-Token");
+  const destinationUrl = new URL("https://graphql.ethang.dev/");
+  destinationUrl.search = url.search;
+
+  if (null !== clientToken && "" !== clientToken) {
+    const newHeaders = new Headers(request.headers);
+    newHeaders.set("Content-Type", "application/json");
+    newHeaders.set("X-Token", clientToken);
+    return { destinationUrl, headers: newHeaders };
+  }
+
   const requestOptions = {
     body: JSON.stringify({
       email: environment.ADMIN_USER,
@@ -25,9 +36,6 @@ export const autoAuthenticate = async (
   }
 
   const verifiedData: { sessionToken: string } = await verified.json();
-
-  const destinationUrl = new URL("https://graphql.ethang.dev/");
-  destinationUrl.search = url.search;
 
   const newHeaders = new Headers(request.headers);
   newHeaders.set("Content-Type", "application/json");

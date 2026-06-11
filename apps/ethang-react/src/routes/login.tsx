@@ -8,7 +8,13 @@ import {
   Text,
   TextField
 } from "@radix-ui/themes";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  useSearch
+} from "@tanstack/react-router";
+import isNil from "lodash/isNil";
+import isString from "lodash/isString.js";
 import noop from "lodash/noop.js";
 import trim from "lodash/trim.js";
 import { type SyntheticEvent, useEffect, useState } from "react";
@@ -28,11 +34,16 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const search = useSearch({ from: "/login" });
+
   useEffect(() => {
-    if (null !== user) {
-      navigate({ to: "/" }).catch(noop);
+    if (!isNil(user)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      navigate({ to: search.redirect ?? "/" }).catch(noop);
     }
-  }, [user, navigate]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  }, [user, navigate, search.redirect]);
 
   const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
@@ -118,6 +129,15 @@ const Login = () => {
   );
 };
 
+type LoginSearch = {
+  redirect?: string;
+};
+
 export const Route = createFileRoute("/login")({
-  component: Login
+  component: Login,
+  validateSearch: (search: Record<string, unknown>): LoginSearch => {
+    return {
+      redirect: isString(search["redirect"]) ? search["redirect"] : ""
+    };
+  }
 });

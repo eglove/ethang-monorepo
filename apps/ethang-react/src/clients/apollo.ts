@@ -1,12 +1,50 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { BatchHttpLink } from "@apollo/client/link/batch-http";
+import { SetContextLink } from "@apollo/client/link/context";
 import { LocalStorageWrapper, persistCache } from "apollo3-cache-persist";
+import isNil from "lodash/isNil.js";
+import isObject from "lodash/isObject.js";
+import isString from "lodash/isString.js";
 
-const link = new BatchHttpLink({
+const authLink = new SetContextLink(
+  // @ts-expect-error for now
+  (previousContext: { headers?: Record<string, string> }) => {
+    const headers = previousContext.headers ?? {};
+    const storedUser = localStorage.getItem("ethang-user");
+    let token = "";
+
+    if (null !== storedUser) {
+      try {
+        const parsed: unknown = JSON.parse(storedUser);
+        if (isObject(parsed) && !isNil(parsed) && "sessionToken" in parsed) {
+          const { sessionToken } = parsed as Record<string, unknown>;
+          // eslint-disable-next-line sonar/nested-control-flow
+          if (isString(sessionToken)) {
+            token = sessionToken;
+          }
+        }
+      } catch {
+        //
+      }
+    }
+
+    return {
+      headers: {
+        ...headers,
+        ...(token ? { "X-Token": token } : {})
+      }
+    };
+  }
+);
+
+const httpLink = new BatchHttpLink({
   batchInterval: 300,
   batchMax: 100,
   uri: "/api/graphql"
 });
+
+// eslint-disable-next-line unicorn/prefer-spread
+const link = authLink.concat(httpLink);
 
 const cache = new InMemoryCache();
 

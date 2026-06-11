@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { ComponentType, ReactNode } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -13,6 +14,8 @@ const TEST_PASSWORD = "password123";
 const mockNavigate = vi.fn(async () => {
   //
 });
+// @ts-expect-error for test
+let mockSearch: { redirect?: string } = { redirect: undefined };
 vi.mock("@tanstack/react-router", async () => {
   const actual = await vi.importActual<Record<string, unknown>>(
     "@tanstack/react-router"
@@ -21,7 +24,13 @@ vi.mock("@tanstack/react-router", async () => {
     ...actual,
     createFileRoute: (path: string) => {
       return (options: { component: ComponentType }) => {
-        return { options, path };
+        return {
+          options,
+          path,
+          useSearch: () => {
+            return mockSearch;
+          }
+        };
       };
     },
     Link: ({
@@ -32,6 +41,9 @@ vi.mock("@tanstack/react-router", async () => {
     },
     useNavigate: () => {
       return mockNavigate;
+    },
+    useSearch: () => {
+      return mockSearch;
     }
   };
 });
@@ -42,6 +54,8 @@ describe("Login Integration", () => {
     authStore.reset();
     vi.restoreAllMocks();
     mockNavigate.mockClear();
+    // @ts-expect-error for test
+    mockSearch = { redirect: undefined };
   });
 
   it("should render the login form and handle successful authentication", async () => {
@@ -77,6 +91,40 @@ describe("Login Integration", () => {
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith({ to: "/" });
+    });
+  });
+
+  it("should navigate to redirect path if redirect search param is present", async () => {
+    mockSearch = { redirect: "/rss" };
+
+    const mockUser = {
+      email: TEST_EMAIL,
+      sessionToken: "mock-session-token",
+      username: "testuser"
+    };
+
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(Response.json(mockUser, { status: 200 }));
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    const LoginComponent = Route.options.component as ComponentType;
+    render(<LoginComponent />);
+
+    const emailInput = screen.getByPlaceholderText(/enter your email/iu);
+    const passwordInput = screen.getByPlaceholderText(/enter your password/iu);
+    const submitButton = screen.getByRole("button", { name: /sign in/iu });
+
+    fireEvent.change(emailInput, { target: { value: TEST_EMAIL } });
+    fireEvent.change(passwordInput, { target: { value: TEST_PASSWORD } });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith({ to: "/rss" });
     });
   });
 
@@ -158,5 +206,23 @@ describe("Login Integration", () => {
     fireEvent.click(submitButton);
 
     expect(signInSpy).not.toHaveBeenCalled();
+  });
+
+  describe("validateSearch", () => {
+    it("should validate and return redirect as a string if redirect is a string", () => {
+      // @ts-expect-error for test
+      const result = Route.options.validateSearch?.({ redirect: "/rss" });
+      expect(result).toEqual({ redirect: "/rss" });
+    });
+
+    it("should return empty string if redirect is not a string", () => {
+      // @ts-expect-error for test
+      const result1 = Route.options.validateSearch?.({ redirect: 123 });
+      expect(result1).toEqual({ redirect: "" });
+
+      // @ts-expect-error for test
+      const result2 = Route.options.validateSearch?.({});
+      expect(result2).toEqual({ redirect: "" });
+    });
   });
 });

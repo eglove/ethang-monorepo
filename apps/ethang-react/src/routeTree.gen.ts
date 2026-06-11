@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RssRouteImport } from './routes/rss'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,6 +19,11 @@ import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar
 import { Route as TipsScrollContainersRouteImport } from './routes/tips/scroll-containers'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 
+const RssRoute = RssRouteImport.update({
+  id: '/rss',
+  path: '/rss',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/courses': typeof CoursesRoute
   '/login': typeof LoginRoute
+  '/rss': typeof RssRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/courses': typeof CoursesRoute
   '/login': typeof LoginRoute
+  '/rss': typeof RssRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/courses': typeof CoursesRoute
   '/login': typeof LoginRoute
+  '/rss': typeof RssRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/courses'
     | '/login'
+    | '/rss'
     | '/blog/$slug'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/courses'
     | '/login'
+    | '/rss'
     | '/blog/$slug'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/courses'
     | '/login'
+    | '/rss'
     | '/blog/$slug'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CoursesRoute: typeof CoursesRoute
   LoginRoute: typeof LoginRoute
+  RssRoute: typeof RssRoute
   BlogSlugRoute: typeof BlogSlugRoute
   TipsScrollContainersRoute: typeof TipsScrollContainersRoute
   TipsScrollbarGutterRoute: typeof TipsScrollbarGutterRoute
@@ -136,6 +149,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/rss': {
+      id: '/rss'
+      path: '/rss'
+      fullPath: '/rss'
+      preLoaderRoute: typeof RssRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CoursesRoute: CoursesRoute,
   LoginRoute: LoginRoute,
+  RssRoute: RssRoute,
   BlogSlugRoute: BlogSlugRoute,
   TipsScrollContainersRoute: TipsScrollContainersRoute,
   TipsScrollbarGutterRoute: TipsScrollbarGutterRoute,
