@@ -1,14 +1,14 @@
 /* eslint-disable no-bitwise */
 import get from "lodash/get.js";
-import includes from "lodash/includes.js";
 import range from "lodash/range.js";
 import sum from "lodash/sum.js";
 
 export const missingNumbers = (nums: number[]) => {
   const result = [];
+  const numberSet = new Set(nums);
 
   for (let index = 1; index <= nums.length + 2; index += 1) {
-    if (!includes(nums, index)) {
+    if (!numberSet.has(index)) {
       result.push(index);
     }
   }
