@@ -174,6 +174,10 @@ export class Cosmos {
       })
     );
 
+    if (true === this._debug) {
+      globalThis.console.log("Removed event listener", id);
+    }
+
     return true;
   }
 
