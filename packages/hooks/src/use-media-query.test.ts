@@ -11,11 +11,12 @@ describe("useMediaQuery", () => {
   beforeEach(() => {
     mockAddEventListener = vi.fn();
     mockRemoveEventListener = vi.fn();
+
     mockMatchMedia = vi.fn().mockImplementation((query: string) => {
       return {
         addEventListener: mockAddEventListener,
-        matches: query === "(min-width: 768px)",
-        removeEventListener: mockRemoveEventListener,
+        matches: "(min-width: 768px)" === query,
+        removeEventListener: mockRemoveEventListener
       };
     });
 
@@ -52,12 +53,12 @@ describe("useMediaQuery", () => {
       (
         event: string,
         handler: (event: { matches: boolean }) => void,
-        options?: any,
+        _options?: unknown
       ) => {
-        if (event === "change") {
+        if ("change" === event) {
           changeHandler = handler;
         }
-      },
+      }
     );
 
     const { result } = renderHook(() => {
@@ -68,19 +69,20 @@ describe("useMediaQuery", () => {
 
     if (changeHandler) {
       // simulate matchMedia matches change to true
-      mockMatchMedia.mockImplementation((query: string) => {
+
+      mockMatchMedia.mockImplementation(() => {
         return {
           addEventListener: mockAddEventListener,
           matches: true,
-          removeEventListener: mockRemoveEventListener,
+          removeEventListener: mockRemoveEventListener
         };
       });
 
       const { act } = await import("@testing-library/react");
       act(() => {
-          if(changeHandler) {
-              changeHandler({ matches: true });
-          }
+        if (changeHandler) {
+          changeHandler({ matches: true });
+        }
       });
 
       expect(result.current).toBe(true);

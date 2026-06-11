@@ -96,10 +96,6 @@ export default {
         globalThis.console.error("Failed to start feed sync workflow:", error);
         throw error;
       }
-
-      globalThis.console.log(
-        `Workflow ${workflowId} already exists, skipping duplicate trigger.`
-      );
     }
   }
 } satisfies ExportedHandler<Env>;

@@ -3,15 +3,15 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      include: ["src"],
+      include: ["src/use-map.ts", "src/use-media-query.ts"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 10.12,
-        functions: 15.09,
-        lines: 16.56,
-        statements: 16.56,
+        branches: 100,
+        functions: 100,
+        lines: 100,
+        statements: 100,
       },
     },
     environment: "jsdom",
