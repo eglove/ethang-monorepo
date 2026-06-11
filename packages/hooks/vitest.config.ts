@@ -3,7 +3,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      include: ["src/use-map.ts", "src/use-fullscreen.ts", "src/use-boolean.ts"],
+      include: ["src"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {

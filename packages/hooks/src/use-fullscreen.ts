@@ -29,12 +29,9 @@ export const useFullscreen = (
 
   const openFullScreen = (): void => {
     // eslint-disable-next-line lodash/prefer-noop
-    reference.current
-      /* v8 ignore next 2 */
-      ?.requestFullscreen()
-      .catch((): void => {
-        // Ignore error
-      });
+    reference.current.requestFullscreen().catch((): void => {
+      // Ignore error
+    });
   };
 
   useEventListener("fullscreenchange", () => {
