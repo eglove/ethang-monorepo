@@ -4,6 +4,7 @@
     "@apollo/rover": "^0.40.0",
     "@ethang/eslint-config": "^25.19.5",
     "@testing-library/react": "^16.3.2",
+    "@types/jsdom": "^28.0.3",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.9.2",
     "@vitest/coverage-v8": "^4.1.8",
