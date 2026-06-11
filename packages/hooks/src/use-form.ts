@@ -45,7 +45,6 @@ const setAll = <ObjectType extends Record<string, unknown>>(
   object: ObjectType,
   value?: unknown
 ): ObjectType => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   return Object.fromEntries(
     map(entries(object), ([key]) => {
       return [key, value];
@@ -64,7 +63,6 @@ export const useForm = <StateType extends Record<string, unknown>>(
         initialState[key] === undefined ? "" : initialState[key];
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     return defaultState as StateType;
   });
   const [formError, setFormError] = useState<string>();
@@ -79,7 +77,6 @@ export const useForm = <StateType extends Record<string, unknown>>(
 
   const handleChange = useCallback(
     (event: ChangeEvent): void => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const eventTarget = event.target as unknown as {
         checked?: boolean;
         files: File[];

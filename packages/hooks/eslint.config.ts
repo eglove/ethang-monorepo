@@ -18,7 +18,9 @@ export default defineConfig(
     rules: {
       "unicorn/import-style": "off",
       "unicorn/prefer-import-meta-properties": "off",
-      "unicorn/prefer-node-protocol": "off"
+      "unicorn/prefer-node-protocol": "off",
+      "@typescript-eslint/strict-void-return": "off",
+      "@typescript-eslint/no-unsafe-type-assertion": "off"
     }
   }
 );

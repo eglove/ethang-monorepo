@@ -23,7 +23,6 @@ export const useIsLoading = <T, E>(
           setResults(result);
         })
         .catch((_error: unknown) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           setError(_error as E);
         })
         .finally(() => {
