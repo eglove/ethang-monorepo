@@ -2,6 +2,7 @@ import endsWith from "lodash/endsWith.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
+import keys from "lodash/keys.js";
 import map from "lodash/map.js";
 import repeat from "lodash/repeat.js";
 import split from "lodash/split.js";
@@ -100,10 +101,23 @@ const renderFrontmatter = (
   frontmatter: Record<string, boolean | number | string>
 ): string => {
   const lines: string[] = [];
-  for (const [key, value] of Object.entries(frontmatter)) {
-    const valueString = String(value);
-    assertNoNewline(valueString, key);
-    lines.push(`${key}: ${yamlScalar(valueString)}`);
+  const sortedKeys = keys(frontmatter).toSorted((a, b) => {
+    if ("title" === a) {
+      return -1;
+    }
+    if ("title" === b) {
+      return 1;
+    }
+    return a.localeCompare(b);
+  });
+
+  for (const key of sortedKeys) {
+    const value = frontmatter[key];
+    if (!isNil(value)) {
+      const valueString = String(value);
+      assertNoNewline(valueString, key);
+      lines.push(`${key}: ${yamlScalar(valueString)}`);
+    }
   }
   return `---\n${lines.join("\n")}\n---\n`;
 };
@@ -208,6 +222,9 @@ const renderBlock = (
     }
     case "unorderedList": {
       return renderList(block.items, "unordered");
+    }
+    default: {
+      return "";
     }
   }
 };

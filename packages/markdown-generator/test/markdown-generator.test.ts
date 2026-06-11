@@ -82,6 +82,20 @@ describe("Markdown Generator", () => {
         expect(generateMarkdown(document)).toBe(expectedExact);
       });
 
+      it("renders frontmatter with title, multiple other keys, and ignores nil values", () => {
+        const document = {
+          blocks: [],
+          frontmatter: {
+            zKey: "last",
+            title: "My Doc",
+            aKey: "first",
+            ignoredKey: undefined as unknown as string
+          }
+        };
+        const expected = `---\ntitle: My Doc\naKey: first\nzKey: last\n---\n`;
+        expect(generateMarkdown(document)).toBe(expected);
+      });
+
       it("throws error when a frontmatter value contains newlines", () => {
         const document = {
           blocks: [],
