@@ -17,3 +17,5 @@ Approaches confirmed to work well in this workspace.
 
 - **Everything Search CLI (es) Fallback**: The `es` CLI relies on the Windows Everything IPC service. If the Everything service/application is not running, `es` fails. In this case, fall back to JetBrains WebStorm MCP `find_files_by_glob` or ripgrep (`rg`) to search for file paths.
 - **ESLint and Lodash Compliance**: Avoid native `.filter`, `typeof === "string"`, and `.endsWith` on arrays/strings when using Lodash-preferred conventions. Additionally, avoid variable abbreviations like `srcDir` to prevent triggering `unicorn/prevent-abbreviations` (prefer descriptive names like `sourceDirectory`).
+- **WebStorm Text Search**: For text searches, prefer using the WebStorm MCP tool `search_in_files_by_text` (passing `projectPath`) rather than broad `rtk rg` terminal commands. WebStorm utilizes its indexed project structure, which executes instantly and avoids background task timeouts/hangs.
+

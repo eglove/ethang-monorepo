@@ -9,36 +9,17 @@ Produces a single artifact: \`requirements.md\` — a structured requirements de
 
 ---
 
-## Step 1: Intake
+## Step 1: Task Intake (Interview via /grill-me)
 
-Accept any of the following inputs:
-- A GitHub issue number or URL → use \`gh issue view {number} --json title,body,labels,milestone,assignees,comments\`
-- User-provided prose description → treat as the issue body directly
+Interview the user about every aspect of their requirements/task using the \`/grill-me\` command workflow to establish a shared understanding.
 
-Run in parallel:
+Guidelines:
+- Ask questions one at a time using the \`ask_question\` tool.
+- For each question, provide a recommended option first.
+- If a question can be answered by exploring the codebase, explore the codebase instead of asking.
+- Walk down each branch of the design tree, resolving dependencies between decisions.
 
-### 1a. Fetch main issue (if GitHub issue)
-
-\`\`
-gh issue view {number} --json title,body,labels,milestone,assignees,comments,state
-\`\`
-
-### 1b. Detect linked issues
-
-Scan the issue body and comments for GitHub issue URLs or cross-references (\`#NNN\`). For each found:
-\`\`
-gh issue view {linked-number} --json title,body,labels,state
-\`\`
-
-### 1c. Detect technology context
-
-From the issue body and any referenced code paths, determine:
-- **React/frontend** (mentions components, UI, screens, forms, TanStack Query)
-- **Hono/Worker** (mentions API, endpoint, Worker, wrangler, Drizzle, database)
-- **Both** (full-stack change)
-- **Other** (scripts, config, tooling)
-
-Present to the user: issue title, type, acceptance criteria summary, technology context, linked issues found. Ask: "Does this look right? Confirm / Correct." Wait for the answer.
+Once the interview is complete, summarize back to the user: task title, technology context (React/frontend, Hono/Worker, Both, or Other), acceptance criteria list, and any linked issues or documents. Ask: "Does this look right?" — Confirm / Correct / Cancel. Wait for the answer.
 
 > Produces: \`ISSUE_KEY\`, \`ISSUE_CONTEXT\`, \`LINKED_ISSUES_LIST\`, \`TECH_CONTEXT\`
 
@@ -46,7 +27,7 @@ Present to the user: issue title, type, acceptance criteria summary, technology 
 
 ## Step 2: Gather Linked Context
 
-For each linked issue (from Step 1b), fetch and summarize. If the body references external URLs (documentation, RFCs, design docs), fetch them.
+For each linked issue (discovered in Step 1), fetch and summarize. If the body references external URLs (documentation, RFCs, design docs), fetch them.
 
 Run all fetches in parallel.
 
@@ -94,7 +75,7 @@ Provide all artifacts: \`ISSUE_KEY\`, \`ISSUE_CONTEXT\`, \`LINKED_CONTEXT\`, \`D
 
 The writer produces \`requirements.md\` at \`{output-path}/{ISSUE_KEY}/requirements.md\`.
 
-Present to the user: output file path, requirement counts, and any gaps discovered. Ask: "Approve as final / Request changes / Abort." Wait for the answer.
+Present to the user: output file path, requirement counts, and any gaps discovered. Ask: "Approve as final?" — Approve / Request changes / Cancel. Wait for the answer.
 
 On changes requested: apply feedback, regenerate the affected sections, re-present. Repeat until approved.
 
