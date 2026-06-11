@@ -3,7 +3,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      include: ["src/use-copy-clipboard.ts"],
+      include: ["src/"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
