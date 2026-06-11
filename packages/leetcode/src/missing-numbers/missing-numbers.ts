@@ -6,9 +6,10 @@ import sum from "lodash/sum.js";
 
 export const missingNumbers = (nums: number[]) => {
   const result = [];
+  const numSet = new Set(nums);
 
   for (let index = 1; index <= nums.length + 2; index += 1) {
-    if (!includes(nums, index)) {
+    if (!numSet.has(index)) {
       result.push(index);
     }
   }
