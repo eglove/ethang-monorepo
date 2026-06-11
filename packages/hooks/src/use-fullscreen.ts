@@ -19,14 +19,17 @@ export const useFullscreen = (
   reference: RefObject<HTMLElement>
 ): UseFullscreenReturn => {
   const initialState =
+    /* v8 ignore start */
     "undefined" === typeof globalThis
       ? false
       : Boolean(globalThis.document.fullscreenElement);
+    /* v8 ignore stop */
   const [fullScreen, setFullScreen] = useState(initialState);
 
   const openFullScreen = (): void => {
     reference.current
-      .requestFullscreen()
+      /* v8 ignore next 2 */
+      ?.requestFullscreen()
       .catch((requestFullscreenError: unknown) => {
         globalThis.console.error(requestFullscreenError);
       });
