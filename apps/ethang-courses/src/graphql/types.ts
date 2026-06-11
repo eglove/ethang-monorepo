@@ -13,3 +13,7 @@ export type Database = DrizzleD1Database<{
   learningPathCoursesTable: typeof learningPathCoursesTable;
   learningPathsTable: typeof learningPathsTable;
 }>;
+
+export type DatabaseTransaction =
+  | Database
+  | Parameters<Parameters<Database["transaction"]>[0]>[0];

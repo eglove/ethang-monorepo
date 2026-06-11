@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   coursesTable,
+  curriculumLearningPathsTable,
+  curriculumsTable,
   generateCourseTrackingId,
   generateId,
   learningPathCoursesTable,
@@ -43,6 +45,34 @@ describe("schema", () => {
     );
     // @ts-expect-error test double
     expect(typeof learningPathCoursesTable.createdAt.defaultFn()).toBe(
+      "string"
+    );
+
+    // Evaluate the references thunk
+    // @ts-expect-error test double
+    expect(config.foreignKeys[0].reference().columns[0].name).toBeDefined();
+    // @ts-expect-error test double
+    expect(config.foreignKeys[1].reference().columns[0].name).toBeDefined();
+  });
+
+  it("curriculumsTable has default functions", () => {
+    expect(typeof curriculumsTable.createdAt.defaultFn).toBe("function");
+    // @ts-expect-error test double
+    expect(typeof curriculumsTable.createdAt.defaultFn()).toBe("string");
+
+    expect(typeof curriculumsTable.updatedAt.defaultFn).toBe("function");
+    // @ts-expect-error test double
+    expect(typeof curriculumsTable.updatedAt.defaultFn()).toBe("string");
+  });
+
+  it("curriculumLearningPathsTable has default functions and references", () => {
+    const config = getTableConfig(curriculumLearningPathsTable);
+
+    expect(typeof curriculumLearningPathsTable.createdAt.defaultFn).toBe(
+      "function"
+    );
+    // @ts-expect-error test double
+    expect(typeof curriculumLearningPathsTable.createdAt.defaultFn()).toBe(
       "string"
     );
 

@@ -140,6 +140,49 @@ describe("learningPathsQuery", () => {
       url: EXAMPLE_LP
     });
   });
+
+  it("returns learning paths with no courses gracefully", async () => {
+    const mockLearningPathsSelectResult = {
+      from: vi.fn().mockResolvedValue([
+        {
+          createdAt: CREATED_AT,
+          id: LP_1,
+          name: TEST_LP,
+          swebokFocus: TEST_FOCUS,
+          updatedAt: UPDATED_AT,
+          url: EXAMPLE_LP
+        }
+      ])
+    };
+
+    const mockLPCoursesSelectResult = {
+      from: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockResolvedValue([]),
+      where: vi.fn().mockReturnThis()
+    };
+
+    const mockDatabase = {
+      select: vi
+        .fn()
+        .mockReturnValueOnce(mockLearningPathsSelectResult)
+        .mockReturnValueOnce(mockLPCoursesSelectResult)
+    };
+
+    // @ts-expect-error test double
+    const resolver = learningPathsQuery(mockDatabase);
+    const result = await resolver();
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toStrictEqual({
+      courses: [],
+      createdAt: CREATED_AT,
+      id: LP_1,
+      name: TEST_LP,
+      swebokFocus: TEST_FOCUS,
+      updatedAt: UPDATED_AT,
+      url: EXAMPLE_LP
+    });
+  });
 });
 
 describe("learningPathQuery", () => {
@@ -239,6 +282,50 @@ describe("learningPathQuery", () => {
     expect(result).toHaveLength(1);
     expect(result[0]).toStrictEqual({
       courses: [], // Should be empty because course wasn't found
+      createdAt: CREATED_AT,
+      id: LP_1,
+      name: TEST_LP,
+      swebokFocus: TEST_FOCUS,
+      updatedAt: UPDATED_AT,
+      url: EXAMPLE_LP
+    });
+  });
+
+  it("returns a specific learning path with no courses gracefully", async () => {
+    const mockLearningPathSelectResult = {
+      from: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockResolvedValue([
+        {
+          createdAt: CREATED_AT,
+          id: LP_1,
+          name: TEST_LP,
+          swebokFocus: TEST_FOCUS,
+          updatedAt: UPDATED_AT,
+          url: EXAMPLE_LP
+        }
+      ]),
+      where: vi.fn().mockReturnThis()
+    };
+
+    const mockLPCoursesSelectResult = {
+      from: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockResolvedValue([]),
+      where: vi.fn().mockReturnThis()
+    };
+
+    const mockDatabase = {
+      select: vi
+        .fn()
+        .mockReturnValueOnce(mockLearningPathSelectResult)
+        .mockReturnValueOnce(mockLPCoursesSelectResult)
+    };
+
+    // @ts-expect-error test double
+    const resolver = learningPathQuery(mockDatabase);
+    const result = await resolver({}, { id: LP_1 });
+
+    expect(result).toStrictEqual({
+      courses: [],
       createdAt: CREATED_AT,
       id: LP_1,
       name: TEST_LP,

@@ -5,23 +5,23 @@
   ],
   "dependencies": {
     "@sanity/code-input": "^7.1.2",
-    "@sanity/orderable-document-list": "^1.5.1",
-    "@sanity/vision": "^5.28.0",
+    "@sanity/orderable-document-list": "^2.0.0",
+    "@sanity/vision": "^5.30.0",
     "lodash": "^4.18.1",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "sanity": "^5.28.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "sanity": "^5.30.0",
     "styled-components": "^6.4.2"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.19.2",
+    "@ethang/eslint-config": "^25.19.5",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.24",
-    "@types/react": "^19.2.15",
+    "@types/react": "^19.2.17",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.4.1",
     "typescript": "^6.0.3",
-    "vite": "^8.0.14"
+    "vite": "^8.0.16"
   },
   "engines": {
     "node": ">=24"

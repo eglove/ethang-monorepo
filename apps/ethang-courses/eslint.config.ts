@@ -19,6 +19,8 @@ export default defineConfig(
         tsconfigRootDir: import.meta.dirname
       }
     },
-    rules: {}
+    rules: {
+      "sonar/no-wildcard-import": "off"
+    }
   }
 );

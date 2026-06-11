@@ -10,7 +10,7 @@
     "@sanity/client": "^7.22.1",
     "@sanity/image-url": "^2.1.1",
     "@tailwindcss/cli": "^4.3.0",
-    "calendar-link": "^2.11.2",
+    "calendar-link": "^2.11.3",
     "hono": "^4.12.23",
     "lodash": "^4.18.1",
     "luxon": "^3.7.2",
@@ -19,20 +19,20 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
-    "@ethang/eslint-config": "^25.19.2",
+    "@ethang/eslint-config": "^25.19.5",
     "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.60.0",
     "@portabletext/types": "^4.0.2",
     "@tailwindcss/typography": "^0.5.19",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",
-    "@types/node": "^25.9.1",
-    "@vitest/coverage-v8": "^4.1.7",
+    "@types/node": "^25.9.2",
+    "@vitest/coverage-v8": "^4.1.8",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.4.1",
-    "tsx": "^4.22.3",
-    "vitest": "^4.1.7",
-    "wrangler": "^4.95.0"
+    "tsx": "^4.22.4",
+    "vitest": "^4.1.8",
+    "wrangler": "^4.98.0"
   },
   "engines": {
     "node": ">=24"

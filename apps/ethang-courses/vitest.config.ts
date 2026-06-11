@@ -1,6 +1,21 @@
+import endsWith from "lodash/endsWith.js";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  plugins: [
+    {
+      name: "graphql-loader",
+      transform(code, id) {
+        if (endsWith(id, ".graphql")) {
+          return {
+            code: `export default ${JSON.stringify(code)};`,
+            map: null
+          };
+        }
+        return null;
+      }
+    }
+  ],
   test: {
     coverage: {
       include: ["src/**/*.ts"],
@@ -8,10 +23,10 @@ export default defineConfig({
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 93.75,
-        functions: 97.36,
-        lines: 98.07,
-        statements: 98.07
+        branches: 100,
+        functions: 98.46,
+        lines: 98.85,
+        statements: 98.85
       }
     },
     environment: "node",

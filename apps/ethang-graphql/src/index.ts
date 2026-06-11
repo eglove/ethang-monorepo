@@ -26,6 +26,7 @@ export default {
       });
 
       const server = new ApolloServer<ServerContext>({
+        allowBatchedHttpRequests: true,
         gateway,
         introspection: true,
         plugins: [ApolloServerPluginLandingPageLocalDefault({ footer: false })]

@@ -1,12 +1,20 @@
 import type { Get, Simplify } from "type-fest";
 
-import { enablePatches, type Patch, produce } from "immer";
+import {
+  enableArrayMethods,
+  enableMapSet,
+  enablePatches,
+  type Patch,
+  produce
+} from "immer";
 // attempt (lodash) for sync error handling, attemptAsync (@ethang/toolbelt) for async
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
 import noop from "lodash/noop.js";
 
 enablePatches();
+enableMapSet();
+enableArrayMethods();
 
 export type StorePatch<State extends object> = Simplify<Patch> &
   (ValidDataPathTuple<State> extends infer P

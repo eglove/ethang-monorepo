@@ -75,3 +75,48 @@ export const learningPathCoursesTable = sqliteTable("learning_path_courses", {
     ),
   orderRank: integer("orderRank").notNull() // For maintaining order of courses in learning paths
 });
+
+export const curriculumsTable = sqliteTable("curriculums", {
+  createdAt: text("createdAt")
+    .notNull()
+    .$defaultFn(() => {
+      return new Date().toISOString();
+    }),
+  id: text("id").primaryKey().$defaultFn(generateId),
+  name: text("name").notNull(),
+  updatedAt: text("updatedAt")
+    .notNull()
+    .$defaultFn(() => {
+      return new Date().toISOString();
+    }),
+  url: text("url")
+});
+
+export const curriculumLearningPathsTable = sqliteTable(
+  "curriculum_learning_paths",
+  {
+    createdAt: text("createdAt")
+      .notNull()
+      .$defaultFn(() => {
+        return new Date().toISOString();
+      }),
+    curriculumId: text("curriculumId")
+      .notNull()
+      .references(
+        () => {
+          return curriculumsTable.id;
+        },
+        { onDelete: "cascade" }
+      ),
+    id: text("id").primaryKey().$defaultFn(generateId),
+    learningPathId: text("learningPathId")
+      .notNull()
+      .references(
+        () => {
+          return learningPathsTable.id;
+        },
+        { onDelete: "cascade" }
+      ),
+    orderRank: integer("orderRank").notNull() // For maintaining order of learning paths in curriculums
+  }
+);

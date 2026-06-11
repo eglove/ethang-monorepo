@@ -191,6 +191,7 @@
     "ntvs",
     "njsproj",
     "tanstack",
-    "codegen"
+    "codegen",
+    "nomoreide"
   ]
 }

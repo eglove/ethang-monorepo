@@ -59,6 +59,22 @@ type LearningPath @shareable {
   url: String
 }
 
+"""Curriculum representing an ordered list of learning paths"""
+type Curriculum @shareable {
+  """Date when the curriculum was created."""
+  createdAt: String!
+  """The unique identifier for the curriculum."""
+  id: ID!
+  """The ordered learning paths in this curriculum."""
+  learningPaths: [LearningPath!]!
+  """The name of the curriculum."""
+  name: String!
+  """Date when the curriculum was last updated."""
+  updatedAt: String!
+  """The URL of the curriculum."""
+  url: String
+}
+
 """A connection to a list of course tracking records."""
 type CourseTrackingConnection {
   """A list of edges."""
@@ -77,6 +93,15 @@ type CourseTrackingEdge {
 
 """The root Mutation type"""
 type Mutation {
+  """Creates a new curriculum."""
+  createCurriculum(
+    """The name of the curriculum."""
+    name: String!
+    """The URL of the curriculum."""
+    url: String
+    """The ordered learning path identifiers to associate with the curriculum."""
+    learningPathIds: [String!]
+  ): Curriculum
   """Cycles a course tracking status to the next value."""
   cycleCourseTrackingStatus(
     """The course identifier to update."""
@@ -102,15 +127,22 @@ type Query {
   ): CourseTracking
   """Returns tracked courses for a user with cursor pagination."""
   courseTrackings(
-    """The cursor to start retrieving course trackings from."""
-    after: String
-    """The number of course trackings to retrieve. Omit to return all."""
-    first: Int
     """The user identifier whose course trackings are requested."""
     userId: String!
+    """The number of course trackings to retrieve. Omit to return all."""
+    first: Int
+    """The cursor to start retrieving course trackings from."""
+    after: String
   ): CourseTrackingConnection!
   """Returns all courses"""
   courses: [Course!]!
+  """Returns a specific curriculum by ID"""
+  curriculum(
+    """The unique identifier for the curriculum."""
+    id: ID!
+  ): Curriculum
+  """Returns all curriculums with their learning paths and courses"""
+  curriculums: [Curriculum!]!
   """Returns a specific learning path by ID"""
   learningPath(
     """The unique identifier for the learning path."""
