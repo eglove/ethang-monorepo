@@ -293,3 +293,7 @@ packages/vibe-cli/state/graph-state.json
 
 .gemini/
 gha-creds-*.json
+
+# Lessons pipeline ephemeral state
+packages/agents-build/.lessons-state.json
+packages/agents-build/lessons.log
