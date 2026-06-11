@@ -25,6 +25,7 @@ export default defineConfig(
     },
     rules: {
       "vitest/no-import-node-test": "off",
+      "lodash/prefer-noop": "off",
     },
   },
 );

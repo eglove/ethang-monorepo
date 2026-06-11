@@ -18,7 +18,8 @@ export default defineConfig(
     rules: {
       "unicorn/import-style": "off",
       "unicorn/prefer-import-meta-properties": "off",
-      "unicorn/prefer-node-protocol": "off"
+      "unicorn/prefer-node-protocol": "off",
+      "lodash/prefer-noop": "off"
     }
   }
 );
