@@ -2,6 +2,7 @@ import { definePlugin, defineRule } from "../../define.ts";
 import { esSkill } from "../skills/cli/es.ts";
 import { jqSkill } from "../skills/cli/jq.ts";
 import { rgSkill } from "../skills/cli/rg.ts";
+import { webstormSkill } from "../skills/cli/webstorm.ts";
 import { dddTacticalSkill } from "../skills/ddd/tactical.ts";
 import { reviewDesignChecklist } from "../skills/review/design-checklist.ts";
 import { reviewPipeline } from "../skills/review/pipeline.ts";
@@ -50,6 +51,7 @@ export const reviewPlugin = definePlugin({
     esSkill,
     jqSkill,
     rgSkill,
+    webstormSkill,
     swebokSkill([
       "review-pipeline",
       "reviewer",

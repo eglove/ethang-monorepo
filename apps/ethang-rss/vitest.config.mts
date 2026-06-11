@@ -1,13 +1,22 @@
-// @ts-expect-error ignore
-import { defineWorkersConfig } from "@cloudflare/vitest-pool-workers/config";
+import endsWith from "lodash/endsWith.js";
+import { defineConfig } from "vitest/config";
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-export default defineWorkersConfig({
-  test: {
-    poolOptions: {
-      workers: {
-        wrangler: { configPath: "./wrangler.jsonc" }
+export default defineConfig({
+  plugins: [
+    {
+      name: "graphql-loader",
+      transform(code, id) {
+        if (endsWith(id, ".graphql")) {
+          return {
+            code: `export default ${JSON.stringify(code)};`,
+            map: null
+          };
+        }
+        return null;
       }
     }
+  ],
+  test: {
+    environment: "node"
   }
 });

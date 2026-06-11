@@ -2,6 +2,7 @@ import { definePlugin } from "../../define.ts";
 import { esSkill } from "../skills/cli/es.ts";
 import { jqSkill } from "../skills/cli/jq.ts";
 import { rgSkill } from "../skills/cli/rg.ts";
+import { webstormSkill } from "../skills/cli/webstorm.ts";
 import { dddStrategicSkill } from "../skills/ddd/strategic.ts";
 import { requirementsPipeline } from "../skills/requirements/pipeline.ts";
 import { requirementsAnalystRole } from "../skills/roles/requirements-analyst.ts";
@@ -18,6 +19,7 @@ export const requirementsPlugin = definePlugin({
     esSkill,
     jqSkill,
     rgSkill,
+    webstormSkill,
     swebokSkill([
       "requirements-pipeline",
       "requirements-analyst",

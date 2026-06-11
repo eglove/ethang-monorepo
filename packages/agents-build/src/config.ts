@@ -21,7 +21,6 @@ export const FORBIDDEN_PATTERNS: readonly {
   { name: "SmartHub", pattern: /\bSmartHub\b/iu },
   { name: "SHWA", pattern: /\bSHWA?\b/u },
   { name: "iVUE", pattern: /\biVUE\b/iu },
-  { name: "mcp__webstorm", pattern: /mcp__webstorm/iu },
   { name: "mcp__intellij", pattern: /mcp__intellij/iu },
   { name: "sourcebot", pattern: /\bsourcebot\b/iu },
   { name: "NGXS", pattern: /\bNGXS\b/iu },

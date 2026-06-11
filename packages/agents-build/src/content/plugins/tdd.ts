@@ -2,6 +2,7 @@ import { definePlugin } from "../../define.ts";
 import { esSkill } from "../skills/cli/es.ts";
 import { jqSkill } from "../skills/cli/jq.ts";
 import { rgSkill } from "../skills/cli/rg.ts";
+import { webstormSkill } from "../skills/cli/webstorm.ts";
 import { dddStrategicSkill } from "../skills/ddd/strategic.ts";
 import { dddTacticalSkill } from "../skills/ddd/tactical.ts";
 import { rcaFiveWhysSkill } from "../skills/rca/five-whys.ts";
@@ -32,6 +33,7 @@ export const tddPlugin = definePlugin({
     esSkill,
     jqSkill,
     rgSkill,
+    webstormSkill,
     swebokSkill([
       "tdd-pipeline",
       "planner",

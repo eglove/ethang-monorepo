@@ -49,7 +49,6 @@ describe("findForbiddenStrings", () => {
     ["Post the diff to Stash for review.", ["Stash"]],
     ["Dispatch an NGXS action.", ["NGXS"]],
     ["Use the Angular CLI.", ["Angular"]],
-    ["Call mcp__webstorm__get_file_problems.", ["mcp__webstorm"]],
     ["Call mcp__intellij__get_file_problems.", ["mcp__intellij"]],
     ["Gate on AskUserQuestion before continuing.", ["AskUserQuestion"]],
     ['Spawn it with subagent_type: "planner".', ["subagent_type"]],
@@ -62,7 +61,8 @@ describe("findForbiddenStrings", () => {
   it.each([
     ["Run git stash before switching branches."],
     ["Write a Vitest it.each table for every state."],
-    ["Use Hono middleware on the Cloudflare Worker."]
+    ["Use Hono middleware on the Cloudflare Worker."],
+    ["Call mcp__webstorm__get_file_problems."]
   ])("does not flag clean content %j", (content) => {
     expect(findForbiddenStrings(content)).toStrictEqual([]);
   });
