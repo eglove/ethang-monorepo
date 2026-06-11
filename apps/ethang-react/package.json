@@ -58,7 +58,8 @@
     "deploy": "pnpm run build && wrangler deploy",
     "dev": "vite",
     "lint": "eslint . --fix && pnpm tsc --noEmit",
-    "preview": "pnpm run build && vite preview"
+    "preview": "pnpm run build && vite preview",
+    "test": "vitest run --coverage"
   },
   "type": "module",
   "version": "0.0.0"

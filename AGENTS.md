@@ -67,6 +67,14 @@ Treat every test as a scientific experiment:
 
 ---
 
+## Parallel Agent Execution & Efficiency
+
+To optimize resource usage, latency, and token consumption:
+* **Fan out work** into parallel subagents as often as possible.
+* **Choose the minimum model and effort level** required for each task to minimize token usage.
+
+---
+
 ## Domain-Driven Design (DDD) Lens
 
 All agents must apply a DDD analytical lens when analyzing, planning, and implementing features in the codebase:
@@ -92,3 +100,9 @@ All requirements analysis, design, testing, and maintenance work must align with
 * Load the [swebok](.agents/plugins/requirements/skills/swebok/SKILL.md) chapter index and router to find the matching chapter resource path.
 * Read the matching `resources/chNN-*.md` file (maximum 3 chapters per task to conserve context).
 * Reference the cross-cutting vocabulary (e.g., distinguishing between **Error**, **Defect/Fault**, and **Failure**).
+
+---
+
+## ESLint Troubleshooting & User Collaboration
+
+* **Request User Help when Struggling with ESLint:** If you encounter conflicting ESLint rules, loops, or tricky typescript/linter constraints that are hard to resolve automatically, do not spin or struggle in a loop. Ask the user for help, explain what you are trying to change, and collaborate to find a clean path forward.
