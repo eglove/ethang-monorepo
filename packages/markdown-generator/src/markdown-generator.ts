@@ -9,26 +9,26 @@ export class MarkdownGenerator {
   public alert(
     type: "CAUTION" | "IMPORTANT" | "NOTE" | "TIP" | "WARNING",
     text: string,
-    lineBreaksAfter = 0
+    lineBreaksAfter = 1
   ) {
     this.markdown += `> [!${type}]\n`;
     this.markdown += `> ${text}`;
     this.newLine(lineBreaksAfter);
   }
 
-  public bold(text: string, lineBreaksAfter = 0) {
+  public bold(text: string, lineBreaksAfter = 1) {
     this.markdown += `**${text}**`;
     this.newLine(lineBreaksAfter);
   }
 
-  public codeBlock(text: string, language = "", lineBreaksAfter = 0) {
+  public codeBlock(text: string, language = "", lineBreaksAfter = 1) {
     this.markdown += `\`\`\`${language}
 ${text}
 \`\`\``;
     this.newLine(lineBreaksAfter);
   }
 
-  public header(level: 1 | 2 | 3, text: string, lineBreaksAfter = 0) {
+  public header(level: 1 | 2 | 3, text: string, lineBreaksAfter = 1) {
     let prefix = "";
     for (let index = 0; index < level; index += 1) {
       prefix += "#";
@@ -38,27 +38,27 @@ ${text}
     this.newLine(lineBreaksAfter);
   }
 
-  public image(text: string, url: string, lineBreaksAfter = 0) {
-    this.markdown = `![${text}](${url})`;
+  public image(text: string, url: string, lineBreaksAfter = 1) {
+    this.markdown += `![${text}](${url})`;
     this.newLine(lineBreaksAfter);
   }
 
-  public inlineCode(text: string, lineBreaksAfter = 0) {
+  public inlineCode(text: string, lineBreaksAfter = 1) {
     this.markdown += `\`${text}\``;
     this.newLine(lineBreaksAfter);
   }
 
-  public italic(text: string, lineBreaksAfter = 0) {
+  public italic(text: string, lineBreaksAfter = 1) {
     this.markdown += `*${text}*`;
     this.newLine(lineBreaksAfter);
   }
 
-  public link(text: string, url: string, lineBreaksAfter = 0) {
+  public link(text: string, url: string, lineBreaksAfter = 1) {
     this.markdown += `[${text}](${url})`;
     this.newLine(lineBreaksAfter);
   }
 
-  public mention(text: string, lineBreaksAfter = 0) {
+  public mention(text: string, lineBreaksAfter = 1) {
     this.markdown += `@${text}`;
     this.newLine(lineBreaksAfter);
   }
@@ -88,7 +88,7 @@ ${text}
     }
   }
 
-  public quote(text: string, lineBreaksAfter = 0) {
+  public quote(text: string, lineBreaksAfter = 1) {
     this.markdown += `> ${text}`;
     this.newLine(lineBreaksAfter);
   }
@@ -97,17 +97,17 @@ ${text}
     return this.markdown;
   }
 
-  public strikeThrough(text: string, lineBreaksAfter = 0) {
+  public strikeThrough(text: string, lineBreaksAfter = 1) {
     this.markdown += `~~${text}~~`;
     this.newLine(lineBreaksAfter);
   }
 
-  public subscript(text: string, lineBreaksAfter = 0) {
+  public subscript(text: string, lineBreaksAfter = 1) {
     this.markdown += `<sub>${text}</sub>`;
     this.newLine(lineBreaksAfter);
   }
 
-  public superscript(text: string, lineBreaksAfter = 0) {
+  public superscript(text: string, lineBreaksAfter = 1) {
     this.markdown += `<sup>${text}</sup>`;
     this.newLine(lineBreaksAfter);
   }
@@ -139,7 +139,7 @@ ${text}
       isComplete: boolean;
       label: string;
     }[],
-    lineBreaksAfter = 0
+    lineBreaksAfter = 1
   ) {
     for (const text of texts) {
       this.markdown += `[${text.isComplete ? "X" : " "}] ${text.label}`;
@@ -147,7 +147,7 @@ ${text}
     this.newLine(lineBreaksAfter);
   }
 
-  public text(text: string, lineBreaksAfter = 0) {
+  public text(text: string, lineBreaksAfter = 1) {
     this.markdown += text;
     this.newLine(lineBreaksAfter);
   }
