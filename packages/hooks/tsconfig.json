@@ -1,14 +1,8 @@
 {
+  "extends": "../tsconfig/tsconfig.react.json",
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "moduleResolution": "bundler",
     "types": ["node", "vite/client", "vitest"],
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx"
   },
   "include": ["src", "tests", "vitest.config.ts"]
