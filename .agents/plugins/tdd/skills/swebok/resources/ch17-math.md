@@ -28,8 +28,8 @@
 | **FSM** | Finite-State Machine — mathematical abstraction: finite states + transitions driven by inputs |
 | **Accept state** | FSM state marking a successful flow of operation |
 | **CFG** | Context-Free Grammar — theoretical basis for most programming language syntax |
-| **Absolute error** | |x* − x| |
-| **Relative error** | |x* − x| / |x| — preferred; more intuitive than absolute error |
+| **Absolute error** | \|x* − x\| |
+| **Relative error** | \|x* − x\| / \|x\| — preferred; more intuitive than absolute error |
 | **Overflow** | Computation produces a value outside the representable range |
 | **Random variable** | Function assigning a number to each outcome in a sample space |
 | **Discrete r.v.** | Countable set of values; probabilities sum to 1 |
@@ -76,12 +76,12 @@ Operators: ¬p (not), p ∧ q (and), p ∨ q (or), p ⊕ q (XOR), p → q (impli
 
 | Operation | Notation | Rule |
 |---|---|---|
-| Union | X ∪ Y | |X ∪ Y| = |X| + |Y| − |X ∩ Y| |
+| Union | X ∪ Y | \|X ∪ Y\| = \|X\| + \|Y\| − \|X ∩ Y\| |
 | Intersection | X ∩ Y | Elements in both |
 | Complement | X̄ | Elements of U not in X |
 | Set difference | X − Y | X ∩ Ȳ |
 | Cartesian product | X × Y | All ordered pairs (x, y) |
-| Power set | ℘(X) | All subsets; |℘(X)| = 2^n if |X|=n |
+| Power set | ℘(X) | All subsets; \|℘(X)\| = 2^n if \|X\|=n |
 
 **Function:** every element of the domain maps to exactly one range element. **Relation:** ordered pairs; functions are well-behaved relations.
 

@@ -10,10 +10,19 @@
  * ever written to stdout.
  */
 
+import filter from "lodash/filter.js";
+import includes from "lodash/includes.js";
+import isArray from "lodash/isArray.js";
+import isString from "lodash/isString.js";
+import map from "lodash/map.js";
+import some from "lodash/some.js";
+import split from "lodash/split.js";
+import startsWith from "lodash/startsWith.js";
+import trim from "lodash/trim.js";
 import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import path from "node:path";
 
-import { parseHookInput } from "./lessons.utils.ts";
+import { parseHookInput } from "./lessons.utilities.ts";
 
 const SEED_MARKERS = ["*(none yet)*"];
 
@@ -30,7 +39,9 @@ const readStdin = async (): Promise<string> => {
   const chunks: Buffer[] = [];
 
   for await (const chunk of process.stdin) {
-    chunks.push(chunk as Buffer);
+    if (Buffer.isBuffer(chunk)) {
+      chunks.push(chunk);
+    }
   }
 
   return Buffer.concat(chunks).toString("utf8");
@@ -38,21 +49,21 @@ const readStdin = async (): Promise<string> => {
 
 /** True when lessons.md holds only the seed skeleton (no real learned content). */
 const isSeedOnly = (content: string): boolean => {
-  const bulletLines = content
-    .split("\n")
-    .map((line) => {
-      return line.trim();
-    })
-    .filter((line) => {
-      return line.startsWith("- ");
-    });
+  const bulletLines = filter(
+    map(split(content, "\n"), (line) => {
+      return trim(line);
+    }),
+    (line) => {
+      return startsWith(line, "- ");
+    }
+  );
 
   if (0 < bulletLines.length) {
     return false;
   }
 
-  return SEED_MARKERS.some((marker) => {
-    return content.includes(marker);
+  return some(SEED_MARKERS, (marker) => {
+    return includes(content, marker);
   });
 };
 
@@ -61,12 +72,12 @@ const resolveWorkspaceRoot = (
 ): string => {
   const paths = payload?.["workspacePaths"];
 
-  if (Array.isArray(paths) && "string" === typeof paths[0] && "" !== paths[0]) {
+  if (isArray(paths) && isString(paths[0]) && "" !== paths[0]) {
     return paths[0];
   }
 
   // Fallback: this file lives at <root>/packages/agents-build/src/hooks/.
-  return resolve(import.meta.dirname, "../../../..");
+  return path.resolve(import.meta.dirname, "../../../..");
 };
 
 try {
@@ -77,7 +88,7 @@ try {
     emit({});
   }
 
-  const lessonsPath = resolve(
+  const lessonsPath = path.resolve(
     resolveWorkspaceRoot(payload),
     ".agents",
     "lessons.md"
@@ -87,7 +98,7 @@ try {
     emit({});
   }
 
-  const content = readFileSync(lessonsPath, "utf8").trim();
+  const content = trim(readFileSync(lessonsPath, "utf8"));
 
   if ("" === content || isSeedOnly(content)) {
     emit({});

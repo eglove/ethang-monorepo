@@ -46,7 +46,7 @@ import {
   type LessonsDelta,
   parseClaudeEnvelope,
   parseTranscriptSlice
-} from "./lessons.utils.ts";
+} from "./lessons.utilities.ts";
 
 const PACKAGE_ROOT = path.resolve(import.meta.dirname, "../..");
 const STATE_PATH = path.resolve(PACKAGE_ROOT, ".lessons-state.json");
@@ -131,6 +131,10 @@ const log = (message: string): void => {
   }
 };
 
+const isDispatchState = (value: unknown): value is DispatchState => {
+  return null !== value && isObject(value) && !isArray(value);
+};
+
 const readState = (): DispatchState => {
   try {
     if (!existsSync(STATE_PATH)) {
@@ -139,12 +143,11 @@ const readState = (): DispatchState => {
 
     const parsed: unknown = JSON.parse(readFileSync(STATE_PATH, "utf8"));
 
-    if (null === parsed || !isObject(parsed) || isArray(parsed)) {
+    if (!isDispatchState(parsed)) {
       return {};
     }
 
-    // parsed is a non-null, non-array object at this point; treat as DispatchState.
-    return parsed as unknown as DispatchState;
+    return parsed;
   } catch {
     return {};
   }
@@ -314,7 +317,7 @@ const dispatchViaClaude = (
   lessonsPath: string,
   improvementsPath: string
 ): void => {
-  // eslint-disable-next-line sonar/no-os-command-from-path -- claude is a known CLI tool on the user's PATH
+  /* eslint-disable sonar/no-os-command-from-path -- claude is a known CLI tool on the user's PATH */
   const result = spawnSync(
     "claude",
     [
@@ -331,6 +334,7 @@ const dispatchViaClaude = (
       timeout: 120_000
     }
   );
+  /* eslint-enable sonar/no-os-command-from-path */
 
   if (
     undefined !== result.error ||

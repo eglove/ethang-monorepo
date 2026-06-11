@@ -1,12 +1,10 @@
+import repeat from "lodash/repeat.js";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type {
-  PluginDefinitioninition,
-  RuleDefinitioninition
-} from "./define.ts";
+import type { PluginDefinition, RuleDefinition } from "./define.ts";
 
 import {
   checkRuleSize,
@@ -14,7 +12,7 @@ import {
   findForbiddenStrings,
   findUnresolvedTokens,
   validateFrontmatterBlock,
-  validateSkillRefIntegrity as validateSkillReferenceIntegrity,
+  validateSkillReferenceIntegrity,
   validateSwebokGuard
 } from "./validate.ts";
 
@@ -37,7 +35,7 @@ describe("checkRuleSize", () => {
     [12_000, "warn"],
     [12_001, "fail"]
   ])("classifies %i chars as %s", (length, status) => {
-    expect(checkRuleSize("x".repeat(length))).toStrictEqual({
+    expect(checkRuleSize(repeat("x", length))).toStrictEqual({
       length,
       status
     });
@@ -96,9 +94,15 @@ describe("validateSkillRefIntegrity", () => {
   });
 
   it("reports refs that point at skills missing from the plugin", () => {
+    const [firstSkill] = plugin.skills;
+
+    if (undefined === firstSkill) {
+      throw new Error("test setup: plugin must have at least one skill");
+    }
+
     const broken: PluginDefinition = {
       ...plugin,
-      skills: [plugin.skills[0]!]
+      skills: [firstSkill]
     };
 
     expect(validateSkillReferenceIntegrity(broken)).toStrictEqual([
@@ -107,20 +111,25 @@ describe("validateSkillRefIntegrity", () => {
   });
 });
 
-describe("findDuplicateRuleFilenames", () => {
-  const rule = (filename: string): RuleDefinition => {
-    return { content: "x", filename, trigger: "always_on" };
-  };
+const makeRule = (filename: string): RuleDefinition => {
+  return { content: "x", filename, trigger: "always_on" };
+};
 
+describe("findDuplicateRuleFilenames", () => {
   it("returns no duplicates for unique filenames", () => {
-    expect(findDuplicateRuleFilenames([rule("a"), rule("b")])).toStrictEqual(
-      []
-    );
+    expect(
+      findDuplicateRuleFilenames([makeRule("a"), makeRule("b")])
+    ).toStrictEqual([]);
   });
 
   it("reports each duplicated filename once", () => {
     expect(
-      findDuplicateRuleFilenames([rule("a"), rule("a"), rule("b"), rule("a")])
+      findDuplicateRuleFilenames([
+        makeRule("a"),
+        makeRule("a"),
+        makeRule("b"),
+        makeRule("a")
+      ])
     ).toStrictEqual(["a"]);
   });
 });
@@ -152,7 +161,7 @@ describe("findUnresolvedTokens", () => {
   let directory = "";
 
   beforeEach(() => {
-    directory = mkdtempSync(join(tmpdir(), "agents-build-test-"));
+    directory = mkdtempSync(path.join(tmpdir(), "agents-build-test-"));
   });
 
   afterEach(() => {
@@ -160,14 +169,14 @@ describe("findUnresolvedTokens", () => {
   });
 
   it("finds markdown files containing the sections token", () => {
-    mkdirSync(join(directory, "nested"));
-    writeFileSync(join(directory, "clean.md"), "All resolved.", "utf8");
+    mkdirSync(path.join(directory, "nested"));
+    writeFileSync(path.join(directory, "clean.md"), "All resolved.", "utf8");
     writeFileSync(
-      join(directory, "nested", "dirty.md"),
+      path.join(directory, "nested", "dirty.md"),
       "Oops {{sections}} left over.",
       "utf8"
     );
-    writeFileSync(join(directory, "ignored.json"), "{{sections}}", "utf8");
+    writeFileSync(path.join(directory, "ignored.json"), "{{sections}}", "utf8");
 
     const violations = findUnresolvedTokens(directory);
 
@@ -176,7 +185,7 @@ describe("findUnresolvedTokens", () => {
   });
 
   it("returns nothing for a clean tree", () => {
-    writeFileSync(join(directory, "clean.md"), "All resolved.", "utf8");
+    writeFileSync(path.join(directory, "clean.md"), "All resolved.", "utf8");
 
     expect(findUnresolvedTokens(directory)).toStrictEqual([]);
   });

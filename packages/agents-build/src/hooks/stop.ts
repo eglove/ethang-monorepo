@@ -10,21 +10,23 @@
  * `{}` and exits 0 — the hook must never break a session.
  */
 
+import isArray from "lodash/isArray.js";
+import isObject from "lodash/isObject.js";
+import isString from "lodash/isString.js";
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
-
-import type { DispatchState } from "./lessons.utils.ts";
+import path from "node:path";
 
 import {
   DEFAULT_MIN_INTERVAL_MS,
+  type DispatchState,
   parseHookInput,
   shouldDispatch
-} from "./lessons.utils.ts";
+} from "./lessons.utilities.ts";
 
-const PACKAGE_ROOT = resolve(import.meta.dirname, "../..");
-const STATE_PATH = resolve(PACKAGE_ROOT, ".lessons-state.json");
-const WORKER_PATH = resolve(import.meta.dirname, "lessons-worker.ts");
+const PACKAGE_ROOT = path.resolve(import.meta.dirname, "../..");
+const STATE_PATH = path.resolve(PACKAGE_ROOT, ".lessons-state.json");
+const WORKER_PATH = path.resolve(import.meta.dirname, "lessons-worker.ts");
 
 const allow = (): never => {
   process.stdout.write("{}");
@@ -39,10 +41,16 @@ const readStdin = async (): Promise<string> => {
   const chunks: Buffer[] = [];
 
   for await (const chunk of process.stdin) {
-    chunks.push(chunk as Buffer);
+    if (Buffer.isBuffer(chunk)) {
+      chunks.push(chunk);
+    }
   }
 
   return Buffer.concat(chunks).toString("utf8");
+};
+
+const isDispatchState = (value: unknown): value is DispatchState => {
+  return null !== value && isObject(value) && !isArray(value);
 };
 
 const loadState = (): DispatchState => {
@@ -53,15 +61,11 @@ const loadState = (): DispatchState => {
 
     const parsed: unknown = JSON.parse(readFileSync(STATE_PATH, "utf8"));
 
-    if (
-      null === parsed ||
-      "object" !== typeof parsed ||
-      Array.isArray(parsed)
-    ) {
+    if (!isDispatchState(parsed)) {
       return {};
     }
 
-    return parsed as DispatchState;
+    return parsed;
   } catch {
     return {};
   }
@@ -70,11 +74,11 @@ const loadState = (): DispatchState => {
 const resolveWorkspaceRoot = (payload: Record<string, unknown>): string => {
   const paths = payload["workspacePaths"];
 
-  if (Array.isArray(paths) && "string" === typeof paths[0] && "" !== paths[0]) {
+  if (isArray(paths) && isString(paths[0]) && "" !== paths[0]) {
     return paths[0];
   }
 
-  return resolve(PACKAGE_ROOT, "../..");
+  return path.resolve(PACKAGE_ROOT, "../..");
 };
 
 try {
@@ -84,8 +88,10 @@ try {
     allow();
   }
 
-  const conversationId = String(payload?.["conversationId"] ?? "");
-  const transcriptPath = String(payload?.["transcriptPath"] ?? "");
+  const rawId = payload?.["conversationId"];
+  const conversationId = isString(rawId) ? rawId : "";
+  const rawPath = payload?.["transcriptPath"];
+  const transcriptPath = isString(rawPath) ? rawPath : "";
 
   if (
     "" === conversationId ||
@@ -113,6 +119,7 @@ try {
 
   const workspaceRoot = resolveWorkspaceRoot(payload ?? {});
 
+  /* eslint-disable sonar/no-os-command-from-path -- bun is a trusted runtime installed on PATH */
   const child = spawn(
     "bun",
     [WORKER_PATH, transcriptPath, conversationId, workspaceRoot],
@@ -123,6 +130,7 @@ try {
       windowsHide: true
     }
   );
+  /* eslint-enable sonar/no-os-command-from-path */
 
   child.unref();
 

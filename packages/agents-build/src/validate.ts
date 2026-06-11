@@ -3,8 +3,16 @@
  * compile.ts can aggregate and report all failures in one pass.
  */
 
+import endsWith from "lodash/endsWith.js";
+import every from "lodash/every.js";
+import filter from "lodash/filter.js";
+import includes from "lodash/includes.js";
+import isString from "lodash/isString.js";
+import map from "lodash/map.js";
+import split from "lodash/split.js";
+import startsWith from "lodash/startsWith.js";
 import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import path from "node:path";
 
 import type { PluginDefinition, RuleDefinition } from "./define.ts";
 
@@ -19,7 +27,7 @@ import {
  * `---`, `key: value` lines only, closing `---`.
  */
 export const validateFrontmatterBlock = (markdown: string): boolean => {
-  if (!markdown.startsWith("---\n")) {
+  if (!startsWith(markdown, "---\n")) {
     return false;
   }
 
@@ -32,12 +40,9 @@ export const validateFrontmatterBlock = (markdown: string): boolean => {
 
   const linePattern = /^[a-z][a-z-]*: .+$/iu;
 
-  return rest
-    .slice(0, closeIndex)
-    .split("\n")
-    .every((line) => {
-      return linePattern.test(line);
-    });
+  return every(split(rest.slice(0, closeIndex), "\n"), (line) => {
+    return linePattern.test(line);
+  });
 };
 
 export const checkRuleSize = (
@@ -58,19 +63,22 @@ export const checkRuleSize = (
 
 /** Names of forbidden source-workspace vocabulary found in the content. */
 export const findForbiddenStrings = (content: string): string[] => {
-  return FORBIDDEN_PATTERNS.filter(({ pattern }) => {
-    return pattern.test(content);
-  }).map(({ name }) => {
-    return name;
-  });
+  return map(
+    filter(FORBIDDEN_PATTERNS, ({ pattern }) => {
+      return pattern.test(content);
+    }),
+    ({ name }) => {
+      return name;
+    }
+  );
 };
 
 /** Every skillRef must point at a sibling skill bundled in the same plugin. */
-export const validateSkillRefIntegrity = (
+export const validateSkillReferenceIntegrity = (
   plugin: PluginDefinition
 ): string[] => {
   const siblingNames = new Set(
-    plugin.skills.map((skill) => {
+    map(plugin.skills, (skill) => {
       return skill.name;
     })
   );
@@ -116,8 +124,8 @@ export const validateSwebokGuard = (
   resourcePaths: readonly string[],
   routerContent: string
 ): string[] => {
-  return resourcePaths.filter((path) => {
-    return !routerContent.includes(path);
+  return filter(resourcePaths, (resourcePath) => {
+    return !includes(routerContent, resourcePath);
   });
 };
 
@@ -125,17 +133,16 @@ export const validateSwebokGuard = (
 export const findUnresolvedTokens = (directory: string): string[] => {
   const violations: string[] = [];
 
-  for (const file of readdirSync(directory, {
-    recursive: true
-  }) as string[]) {
-    if (!file.endsWith(".md")) {
-      continue;
-    }
+  for (const file of filter(
+    readdirSync(directory, { recursive: true }),
+    isString
+  )) {
+    if (endsWith(file, ".md")) {
+      const content = readFileSync(path.join(directory, file), "utf8");
 
-    const content = readFileSync(join(directory, file), "utf8");
-
-    if (content.includes("{{sections}}")) {
-      violations.push(join(directory, file));
+      if (includes(content, "{{sections}}")) {
+        violations.push(path.join(directory, file));
+      }
     }
   }
 

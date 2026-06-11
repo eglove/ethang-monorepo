@@ -58,6 +58,8 @@ export const CHAPTERS: readonly ChapterDefinition[] = [
 
 const SKILL_REVIEW_DESIGN = "review-design-checklist";
 const SKILL_TDD_PRINCIPLES = "tdd-principles";
+const SKILL_TDD_STATE_COVERAGE = "tdd-state-coverage";
+const EMPTY_CELL = "—";
 
 /**
  * Maps resource paths to related operational skill names.
@@ -75,12 +77,12 @@ const CHAPTER_RELATED_SKILLS: Record<string, readonly string[]> = {
     SKILL_TDD_PRINCIPLES,
     "tdd-test-as-documentation"
   ],
-  "resources/ch05-testing.md": [SKILL_TDD_PRINCIPLES, "tdd-state-coverage"],
-  "resources/ch11-models.md": ["tdd-state-coverage"],
+  "resources/ch05-testing.md": [SKILL_TDD_PRINCIPLES, SKILL_TDD_STATE_COVERAGE],
+  "resources/ch11-models.md": [SKILL_TDD_STATE_COVERAGE],
   "resources/ch12-quality.md": [SKILL_REVIEW_DESIGN, "rca-five-whys"],
   "resources/ch13-security.md": ["review-security-checklist"],
   "resources/ch16-computing.md": [SKILL_REVIEW_DESIGN],
-  "resources/ch17-math.md": ["tdd-state-coverage"],
+  "resources/ch17-math.md": [SKILL_TDD_STATE_COVERAGE],
   "resources/ch18-engineering.md": ["rca-five-whys"]
 };
 
@@ -107,7 +109,7 @@ const buildChapterTable = (siblingSkillNames: readonly string[]): string => {
       return includes(siblingSkillNames, skill);
     });
     const relatedCell =
-      0 < filteredRelated.length ? filteredRelated.join(", ") : "—";
+      0 < filteredRelated.length ? filteredRelated.join(", ") : EMPTY_CELL;
 
     return `| Ch ${chNumber} | ${chapter.title} | \`${chapter.path}\` | ${triggers} | ${relatedCell} |`;
   });

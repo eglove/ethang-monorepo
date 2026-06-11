@@ -1,4 +1,5 @@
 import repeat from "lodash/repeat.js";
+import toLower from "lodash/toLower.js";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -11,7 +12,7 @@ import {
   parseSectionEntries,
   parseTranscriptSlice,
   shouldDispatch
-} from "./lessons.utils.ts";
+} from "./lessons.utilities.ts";
 
 // ── parseHookInput ─────────────────────────────────────────────────────────────
 
@@ -128,11 +129,21 @@ describe("parseTranscriptSlice", () => {
     expect(parseTranscriptSlice(raw)).toBe(raw);
   });
 
+  it("skips lines that parse to non-objects or objects without a role", () => {
+    const lines = [
+      "[1,2]",
+      '{"unrelated": true}',
+      '{"message": {"role": "user", "content": "Kept turn"}}'
+    ].join("\n");
+
+    expect(parseTranscriptSlice(lines)).toBe("User: Kept turn");
+  });
+
   it("truncates the raw-text fallback to the last 50k chars", () => {
-    const raw = "x".repeat(60_000);
+    const raw = repeat("x", 60_000);
     const result = parseTranscriptSlice(raw);
     expect(result.length).toBe(50_000);
-    expect(result).toBe("x".repeat(50_000));
+    expect(result).toBe(repeat("x", 50_000));
   });
 
   it("never throws on garbage input", () => {
@@ -148,9 +159,11 @@ describe("parseTranscriptSlice", () => {
 
 // ── detectInvokedArtifacts ─────────────────────────────────────────────────────
 
+const GIT_WORKFLOW = "git-workflow";
+
 const CANDIDATES = [
   "tdd-principles",
-  "git-workflow",
+  GIT_WORKFLOW,
   "philosophy",
   "verification"
 ];
@@ -158,8 +171,11 @@ const CANDIDATES = [
 describe("detectInvokedArtifacts", () => {
   it("detects a candidate name mentioned in the text", () => {
     expect(
-      detectInvokedArtifacts("I used the git-workflow skill here", CANDIDATES)
-    ).toEqual(["git-workflow"]);
+      detectInvokedArtifacts(
+        `I used the ${GIT_WORKFLOW} skill here`,
+        CANDIDATES
+      )
+    ).toEqual([GIT_WORKFLOW]);
   });
 
   it("detects multiple distinct candidates", () => {
@@ -173,10 +189,10 @@ describe("detectInvokedArtifacts", () => {
   it("deduplicates repeated mentions", () => {
     expect(
       detectInvokedArtifacts(
-        "git-workflow git-workflow git-workflow",
+        `${GIT_WORKFLOW} ${GIT_WORKFLOW} ${GIT_WORKFLOW}`,
         CANDIDATES
       )
-    ).toEqual(["git-workflow"]);
+    ).toEqual([GIT_WORKFLOW]);
   });
 
   it("returns an empty array when no candidate is mentioned", () => {
@@ -186,13 +202,13 @@ describe("detectInvokedArtifacts", () => {
   });
 
   it("returns an empty array for an empty candidate list", () => {
-    expect(detectInvokedArtifacts("git-workflow", [])).toEqual([]);
+    expect(detectInvokedArtifacts(GIT_WORKFLOW, [])).toEqual([]);
   });
 
   it("preserves candidate-list order in the result", () => {
-    const text = "verification first then git-workflow";
+    const text = `verification first then ${GIT_WORKFLOW}`;
     expect(detectInvokedArtifacts(text, CANDIDATES)).toEqual([
-      "git-workflow",
+      GIT_WORKFLOW,
       "verification"
     ]);
   });
@@ -254,13 +270,15 @@ describe("shouldDispatch", () => {
 
 describe("buildExtractionPrompt", () => {
   const baseArguments = {
-    artifacts: ["git-workflow", "verification"],
+    artifacts: [GIT_WORKFLOW, "verification"],
+    // eslint-disable-next-line sonar/publicly-writable-directories -- tests need a real temp directory
     sliceFilePath: "/tmp/slice-abc.txt",
     workspaceRoot: "/c/work/repo"
   };
 
   it("instructs reading the transcript slice at the given temp path", () => {
     expect(buildExtractionPrompt(baseArguments)).toContain(
+      // eslint-disable-next-line sonar/publicly-writable-directories -- tests need a real temp directory
       "/tmp/slice-abc.txt"
     );
   });
@@ -291,7 +309,7 @@ describe("buildExtractionPrompt", () => {
   });
 
   it("instructs remove then modify then add ordering", () => {
-    const prompt = buildExtractionPrompt(baseArguments).toLowerCase();
+    const prompt = toLower(buildExtractionPrompt(baseArguments));
     const removeAt = prompt.indexOf("remove");
     const modifyAt = prompt.indexOf("modify");
     const addAt = prompt.lastIndexOf("add");
@@ -308,19 +326,19 @@ describe("buildExtractionPrompt", () => {
 
   it("lists the artifact names when artifacts are present", () => {
     const prompt = buildExtractionPrompt(baseArguments);
-    expect(prompt).toContain("git-workflow");
+    expect(prompt).toContain(GIT_WORKFLOW);
     expect(prompt).toContain("verification");
   });
 
   it("instructs touching no other files and never committing", () => {
-    const prompt = buildExtractionPrompt(baseArguments).toLowerCase();
+    const prompt = toLower(buildExtractionPrompt(baseArguments));
     expect(prompt).toContain("no other files");
     expect(prompt).toContain("never commit");
   });
 
   it("omits artifact-improvement instructions when no artifacts are present", () => {
     const prompt = buildExtractionPrompt({ ...baseArguments, artifacts: [] });
-    expect(prompt).not.toContain("git-workflow");
+    expect(prompt).not.toContain(GIT_WORKFLOW);
   });
 });
 
@@ -361,6 +379,8 @@ describe("isDeltaEmpty", () => {
 
 // ── parseSectionEntries (ported) ───────────────────────────────────────────────
 
+const RULE_ONE = "- **Rule**: Rule one";
+
 const SAMPLE_DOC = `# Learned Lessons
 
 ## Corrections
@@ -378,7 +398,7 @@ Approaches confirmed to work well.
 describe("parseSectionEntries", () => {
   it("returns entries from Corrections section", () => {
     expect(parseSectionEntries(SAMPLE_DOC, "Corrections")).toEqual([
-      "- **Rule**: Rule one",
+      RULE_ONE,
       "- **Rule**: Rule two"
     ]);
   });
@@ -424,26 +444,24 @@ describe("applyDelta", () => {
   it("modifies an existing entry", () => {
     const result = applyDelta(SAMPLE_DOC, {
       corrections: {
-        modify: [
-          { new: "- **Rule**: Rule one (updated)", old: "- **Rule**: Rule one" }
-        ]
+        modify: [{ new: `${RULE_ONE} (updated)`, old: RULE_ONE }]
       }
     });
-    expect(result).toContain("- **Rule**: Rule one (updated)");
-    expect(result).not.toContain("- **Rule**: Rule one\n");
+    expect(result).toContain(`${RULE_ONE} (updated)`);
+    expect(result).not.toContain(`${RULE_ONE}\n`);
   });
 
   it("removes an entry", () => {
     const result = applyDelta(SAMPLE_DOC, {
-      corrections: { remove: ["- **Rule**: Rule one"] }
+      corrections: { remove: [RULE_ONE] }
     });
-    expect(result).not.toContain("- **Rule**: Rule one");
+    expect(result).not.toContain(RULE_ONE);
     expect(result).toContain("- **Rule**: Rule two");
   });
 
   it("does not duplicate an item already present", () => {
     const result = applyDelta(SAMPLE_DOC, {
-      corrections: { add: ["- **Rule**: Rule one"] }
+      corrections: { add: [RULE_ONE] }
     });
     expect(result.match(/- \*\*Rule\*\*: Rule one/gu)?.length).toBe(1);
   });
@@ -487,6 +505,10 @@ describe("parseClaudeEnvelope", () => {
 
   it("returns undefined for malformed JSON", () => {
     expect(parseClaudeEnvelope("not json")).toBeUndefined();
+  });
+
+  it("returns undefined when the envelope parses to a non-object", () => {
+    expect(parseClaudeEnvelope("42")).toBeUndefined();
   });
 
   it("trims surrounding whitespace before parsing", () => {

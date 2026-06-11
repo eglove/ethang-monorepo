@@ -37,7 +37,7 @@ import {
   findForbiddenStrings,
   findUnresolvedTokens,
   validateFrontmatterBlock,
-  validateSkillRefIntegrity as validateSkillReferenceIntegrity,
+  validateSkillReferenceIntegrity,
   validateSwebokGuard
 } from "./validate.ts";
 
@@ -153,7 +153,7 @@ for (const token of findUnresolvedTokens(PLUGINS_DIR)) {
 for (const file of filter(
   readdirSync(PLUGINS_DIR, { recursive: true }),
   isString
-) as string[]) {
+)) {
   if (endsWith(file, ".md") || endsWith(file, ".json")) {
     const filePath = path.join(PLUGINS_DIR, file);
 

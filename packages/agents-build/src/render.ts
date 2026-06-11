@@ -7,6 +7,10 @@
  * I/O; everything here is unit-testable without side effects.
  */
 
+import includes from "lodash/includes.js";
+import map from "lodash/map.js";
+import replace from "lodash/replace.js";
+
 import type {
   RuleDefinition,
   Section,
@@ -15,7 +19,7 @@ import type {
 } from "./define.ts";
 
 const assertNoNewline = (value: string, key: string): void => {
-  if (value.includes("\n")) {
+  if (includes(value, "\n")) {
     throw new Error(
       `Frontmatter value for "${key}" contains a newline; multi-line values are not allowed: ${JSON.stringify(value)}`
     );
@@ -31,7 +35,10 @@ const yamlScalar = (value: string): string => {
     return value;
   }
 
-  return `"${value.replaceAll("\\", "\\\\").replaceAll('"', String.raw`\"`)}"`;
+  const escaped = value
+    .replaceAll("\\", "\\\\")
+    .replaceAll('"', String.raw`\"`);
+  return `"${escaped}"`;
 };
 
 /**
@@ -75,7 +82,7 @@ export const renderSkillFrontmatter = (skill: SkillDefinition): string => {
 
 export const resolveSections = (sections: Section[], label: string): string => {
   const declaredIds = new Set(
-    sections.map((section) => {
+    map(sections, (section) => {
       return section.id;
     })
   );
@@ -103,7 +110,7 @@ export const resolveSections = (sections: Section[], label: string): string => {
   return blocks.join("\n\n---\n\n");
 };
 
-export const resolveSkillRefs = (
+export const resolveSkillReferences = (
   skillReferences: readonly SkillReference[]
 ): string => {
   const seen = new Set<string>();
@@ -119,6 +126,20 @@ export const resolveSkillRefs = (
   return `## Skills\n\n${blocks.join("\n\n")}`;
 };
 
+const buildSkillParts = (skill: SkillDefinition): string[] => {
+  const parts: string[] = [];
+
+  if (0 < (skill.sections?.length ?? 0)) {
+    parts.push(resolveSections(skill.sections ?? [], `skill:${skill.name}`));
+  }
+
+  if (0 < (skill.skillRefs?.length ?? 0)) {
+    parts.push(resolveSkillReferences(skill.skillRefs ?? []));
+  }
+
+  return parts;
+};
+
 const resolveSkillBody = (skill: SkillDefinition): string => {
   const hasContent =
     0 < (skill.sections?.length ?? 0) || 0 < (skill.skillRefs?.length ?? 0);
@@ -127,23 +148,15 @@ const resolveSkillBody = (skill: SkillDefinition): string => {
     return skill.content;
   }
 
-  if (!skill.content.includes("{{sections}}")) {
+  if (!includes(skill.content, "{{sections}}")) {
     throw new Error(
       `Skill "${skill.name}": sections/skillRefs declared but {{sections}} token missing from content`
     );
   }
 
-  const parts: string[] = [];
+  const parts = buildSkillParts(skill);
 
-  if (0 < (skill.sections?.length ?? 0)) {
-    parts.push(resolveSections(skill.sections ?? [], `skill:${skill.name}`));
-  }
-
-  if (0 < (skill.skillRefs?.length ?? 0)) {
-    parts.push(resolveSkillRefs(skill.skillRefs ?? []));
-  }
-
-  return skill.content.replace("{{sections}}", parts.join("\n\n---\n\n"));
+  return replace(skill.content, "{{sections}}", parts.join("\n\n---\n\n"));
 };
 
 export const skillMarkdown = (skill: SkillDefinition): string => {

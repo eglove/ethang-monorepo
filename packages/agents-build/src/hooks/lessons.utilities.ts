@@ -8,6 +8,18 @@
  * with a raw-text fallback and never throws.
  */
 
+import filter from "lodash/filter.js";
+import findIndex from "lodash/findIndex.js";
+import includes from "lodash/includes.js";
+import isArray from "lodash/isArray.js";
+import isObject from "lodash/isObject.js";
+import isString from "lodash/isString.js";
+import map from "lodash/map.js";
+import some from "lodash/some.js";
+import split from "lodash/split.js";
+import startsWith from "lodash/startsWith.js";
+import trim from "lodash/trim.js";
+
 // ── types ─────────────────────────────────────────────────────────────────────
 
 export type ClaudeEnvelopeOutput = {
@@ -23,7 +35,7 @@ export type DispatchRecord = {
 
 export type DispatchState = Record<string, DispatchRecord>;
 
-export type ExtractionPromptArgs = {
+export type ExtractionPromptArguments = {
   artifacts: string[];
   sliceFilePath: string;
   workspaceRoot: string;
@@ -70,13 +82,19 @@ export const DEFAULT_MIN_INTERVAL_MS = 60 * 60 * 1000;
 /** Soft ceiling the extraction prompt instructs the model to keep lessons under. */
 export const LESSONS_SOFT_LIMIT = 11_000;
 
+// ── type predicates ────────────────────────────────────────────────────────────
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> => {
+  return null !== value && isObject(value) && !isArray(value);
+};
+
 // ── hook stdin parsing ──────────────────────────────────────────────────────────
 
 /** Lenient parse of a hook's JSON stdin payload into a plain object, or undefined. */
 export const parseHookInput = (
   raw: string
 ): Record<string, unknown> | undefined => {
-  const trimmed = raw.trim();
+  const trimmed = trim(raw);
 
   if ("" === trimmed) {
     return undefined;
@@ -85,15 +103,11 @@ export const parseHookInput = (
   try {
     const parsed: unknown = JSON.parse(trimmed);
 
-    if (
-      null === parsed ||
-      "object" !== typeof parsed ||
-      Array.isArray(parsed)
-    ) {
+    if (!isPlainObject(parsed)) {
       return undefined;
     }
 
-    return parsed as Record<string, unknown>;
+    return parsed;
   } catch {
     return undefined;
   }
@@ -102,28 +116,52 @@ export const parseHookInput = (
 // ── transcript parsing ──────────────────────────────────────────────────────────
 
 const extractText = (content: ContentBlock[] | string): string => {
-  if ("string" === typeof content) {
+  if (isString(content)) {
     return content;
   }
 
-  return content
-    .filter((block): block is { text: string } & ContentBlock => {
+  return map(
+    filter(content, (block): block is { text: string } & ContentBlock => {
       return "text" === block.type && undefined !== block.text;
-    })
-    .map((block) => {
+    }),
+    (block) => {
       return block.text;
-    })
-    .join("");
+    }
+  ).join("");
 };
 
 const isToolResult = (content: ContentBlock[] | string): boolean => {
-  if ("string" === typeof content) {
+  if (isString(content)) {
     return false;
   }
 
-  return content.some((block) => {
+  return some(content, (block) => {
     return "tool_result" === block.type;
   });
+};
+
+const turnFromEntryUserRole = (
+  role: string,
+  content: ContentBlock[] | string
+): string => {
+  if (("user" === role || "human" === role) && !isToolResult(content)) {
+    const text = trim(extractText(content));
+    return "" === text ? "" : `User: ${text}`;
+  }
+
+  return "";
+};
+
+const turnFromEntryAssistantRole = (
+  role: string,
+  content: ContentBlock[] | string
+): string => {
+  if ("assistant" === role) {
+    const text = trim(extractText(content));
+    return "" === text ? "" : `Claude: ${text.slice(0, ASSISTANT_TURN_CAP)}`;
+  }
+
+  return "";
 };
 
 const turnFromEntry = (entry: TranscriptEntry): string => {
@@ -134,17 +172,13 @@ const turnFromEntry = (entry: TranscriptEntry): string => {
     return "";
   }
 
-  if (("user" === role || "human" === role) && !isToolResult(content)) {
-    const text = extractText(content).trim();
-    return "" === text ? "" : `User: ${text}`;
+  const userTurn = turnFromEntryUserRole(role, content);
+
+  if ("" !== userTurn) {
+    return userTurn;
   }
 
-  if ("assistant" === role) {
-    const text = extractText(content).trim();
-    return "" === text ? "" : `Claude: ${text.slice(0, ASSISTANT_TURN_CAP)}`;
-  }
-
-  return "";
+  return turnFromEntryAssistantRole(role, content);
 };
 
 /**
@@ -152,31 +186,43 @@ const turnFromEntry = (entry: TranscriptEntry): string => {
  * If NO line parses as a recognizable turn, fall back to the raw text capped to
  * the last RAW_FALLBACK_CAP characters. Never throws.
  */
+const safeParseTranscriptEntry = (parsed: unknown): TranscriptEntry => {
+  if (isPlainObject(parsed)) {
+    return parsed;
+  }
+
+  return {};
+};
+
+const parseJsonlLine = (trimmedLine: string, turns: string[]): boolean => {
+  try {
+    const parsed: unknown = JSON.parse(trimmedLine);
+    const entry = safeParseTranscriptEntry(parsed);
+    const turn = turnFromEntry(entry);
+
+    if ("" !== turn) {
+      turns.push(turn);
+    }
+
+    return true; // saw valid JSON
+  } catch {
+    return false; // not JSON
+  }
+};
+
 export const parseTranscriptSlice = (raw: string): string => {
-  if ("" === raw.trim()) {
+  if ("" === trim(raw)) {
     return "";
   }
 
   const turns: string[] = [];
   let sawJson = false;
 
-  for (const line of raw.split("\n")) {
-    const trimmed = line.trim();
+  for (const line of split(raw, "\n")) {
+    const trimmedLine = trim(line);
 
-    if ("" === trimmed) {
-      continue;
-    }
-
-    try {
-      const entry = JSON.parse(trimmed) as TranscriptEntry;
-      sawJson = true;
-      const turn = turnFromEntry(entry);
-
-      if ("" !== turn) {
-        turns.push(turn);
-      }
-    } catch {
-      // Not JSON — tolerated; raw fallback covers fully non-JSON transcripts.
+    if ("" !== trimmedLine) {
+      sawJson = parseJsonlLine(trimmedLine, turns) || sawJson;
     }
   }
 
@@ -210,17 +256,19 @@ export const detectInvokedArtifacts = (
   const found: string[] = [];
 
   for (const candidate of candidates) {
-    if (found.includes(candidate)) {
-      continue;
-    }
+    if (!includes(found, candidate)) {
+      const escaped = candidate.replaceAll(
+        /[.*+?^${}()|[\]\\]/gu,
+        String.raw`\$&`
+      );
+      const pattern = new RegExp(
+        String.raw`(?<![\w-])${escaped}(?![\w-])`,
+        "u"
+      );
 
-    const escaped = candidate.replaceAll(
-      /[.*+?^${}()|[\]\\]/gu,
-      String.raw`\$&`
-    );
-
-    if (new RegExp(String.raw`(?<![\w-])${escaped}(?![\w-])`, "u").test(text)) {
-      found.push(candidate);
+      if (pattern.test(text)) {
+        found.push(candidate);
+      }
     }
   }
 
@@ -269,9 +317,9 @@ export const shouldDispatch = (
  * touch-nothing-else / never-commit guardrails.
  */
 export const buildExtractionPrompt = (
-  arguments_: ExtractionPromptArgs
+  promptArguments: ExtractionPromptArguments
 ): string => {
-  const { artifacts, sliceFilePath, workspaceRoot } = arguments_;
+  const { artifacts, sliceFilePath, workspaceRoot } = promptArguments;
   const lessonsPath = `${workspaceRoot}/.agents/lessons.md`;
   const improvementsPath = `${workspaceRoot}/.agents/ARTIFACT_IMPROVEMENTS.md`;
 
@@ -322,17 +370,27 @@ Touch NO other files. Never commit; never run git.`;
 
 // ── delta application (ported) ────────────────────────────────────────────────
 
-export const isDeltaEmpty = (delta: LessonsDelta): boolean => {
-  const empty = (section?: SectionDelta): boolean => {
-    return (
-      undefined === section ||
-      (!section.add?.length &&
-        !section.modify?.length &&
-        !section.remove?.length)
-    );
-  };
+const hasAddOrRemove = (section: SectionDelta): boolean => {
+  return 0 < (section.add?.length ?? 0) || 0 < (section.remove?.length ?? 0);
+};
 
-  return empty(delta.corrections) && empty(delta.patterns);
+const hasSectionItems = (section: SectionDelta): boolean => {
+  return hasAddOrRemove(section) || 0 < (section.modify?.length ?? 0);
+};
+
+const isSectionDeltaEmpty = (section?: SectionDelta): boolean => {
+  if (undefined === section) {
+    return true;
+  }
+
+  return !hasSectionItems(section);
+};
+
+export const isDeltaEmpty = (delta: LessonsDelta): boolean => {
+  return (
+    isSectionDeltaEmpty(delta.corrections) &&
+    isSectionDeltaEmpty(delta.patterns)
+  );
 };
 
 export const parseSectionEntries = (
@@ -342,18 +400,62 @@ export const parseSectionEntries = (
   const entries: string[] = [];
   let inSection = false;
 
-  for (const line of content.split("\n")) {
-    if (line.startsWith("## ")) {
-      inSection = line.includes(sectionTitle);
-      continue;
-    }
-
-    if (inSection && line.trim().startsWith("- ")) {
-      entries.push(line.trim());
+  for (const line of split(content, "\n")) {
+    if (startsWith(line, "## ")) {
+      inSection = includes(line, sectionTitle);
+    } else if (inSection && startsWith(trim(line), "- ")) {
+      entries.push(trim(line));
+    } else {
+      // Non-heading, non-bullet line — skip
     }
   }
 
   return entries;
+};
+
+const applyRemovals = (entries: string[], removals: string[]): string[] => {
+  return filter(entries, (entry) => {
+    return !some(removals, (removal) => {
+      return trim(entry) === trim(removal);
+    });
+  });
+};
+
+const applyModifications = (
+  entries: string[],
+  modifications: ModifyEntry[]
+): string[] => {
+  const result = [...entries];
+
+  for (const { new: newLine, old: oldLine } of modifications) {
+    const index = findIndex(result, (entry) => {
+      return trim(entry) === trim(oldLine);
+    });
+
+    if (-1 !== index) {
+      result[index] = startsWith(newLine, "- ") ? newLine : `- ${newLine}`;
+    }
+  }
+
+  return result;
+};
+
+const applyAdditions = (entries: string[], additions: string[]): string[] => {
+  const result = [...entries];
+
+  for (const addition of additions) {
+    const normalized = startsWith(addition, "- ") ? addition : `- ${addition}`;
+
+    if (
+      !some(result, (entry) => {
+        return trim(entry) === trim(normalized);
+      })
+    ) {
+      result.push(normalized);
+    }
+  }
+
+  return result;
 };
 
 export const applySection = (
@@ -364,37 +466,16 @@ export const applySection = (
     return entries;
   }
 
-  let result = [...entries];
+  const afterRemovals = applyRemovals(entries, delta.remove ?? []);
+  const afterModifications = applyModifications(
+    afterRemovals,
+    delta.modify ?? []
+  );
+  return applyAdditions(afterModifications, delta.add ?? []);
+};
 
-  for (const removal of delta.remove ?? []) {
-    result = result.filter((entry) => {
-      return entry.trim() !== removal.trim();
-    });
-  }
-
-  for (const { new: newLine, old: oldLine } of delta.modify ?? []) {
-    const index = result.findIndex((entry) => {
-      return entry.trim() === oldLine.trim();
-    });
-
-    if (-1 !== index) {
-      result[index] = newLine.startsWith("- ") ? newLine : `- ${newLine}`;
-    }
-  }
-
-  for (const addition of delta.add ?? []) {
-    const normalized = addition.startsWith("- ") ? addition : `- ${addition}`;
-
-    if (
-      !result.some((entry) => {
-        return entry.trim() === normalized.trim();
-      })
-    ) {
-      result.push(normalized);
-    }
-  }
-
-  return result;
+const renderSection = (entries: string[]): string => {
+  return 0 < entries.length ? entries.join("\n") : "*(none yet)*";
 };
 
 export const applyDelta = (existing: string, delta: LessonsDelta): string => {
@@ -406,10 +487,6 @@ export const applyDelta = (existing: string, delta: LessonsDelta): string => {
     parseSectionEntries(existing, "Proven Patterns"),
     delta.patterns
   );
-
-  const renderSection = (entries: string[]): string => {
-    return 0 < entries.length ? entries.join("\n") : "*(none yet)*";
-  };
 
   return `# Learned Lessons
 
@@ -427,14 +504,22 @@ ${renderSection(patterns)}
 
 // ── claude envelope (ported) ────────────────────────────────────────────────────
 
+const isEnvelopeShape = (
+  value: unknown
+): value is { structured_output?: ClaudeEnvelopeOutput } => {
+  return isPlainObject(value);
+};
+
 /** Unwraps the `claude --print --output-format json` envelope's structured_output. */
 export const parseClaudeEnvelope = (
   stdout: string
 ): ClaudeEnvelopeOutput | undefined => {
   try {
-    const envelope = JSON.parse(stdout.trim()) as {
-      structured_output?: ClaudeEnvelopeOutput;
-    };
+    const envelope: unknown = JSON.parse(trim(stdout));
+
+    if (!isEnvelopeShape(envelope)) {
+      return undefined;
+    }
 
     return envelope.structured_output ?? undefined;
   } catch {

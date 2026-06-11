@@ -13,7 +13,7 @@ import {
   renderRuleFrontmatter,
   renderSkillFrontmatter,
   resolveSections,
-  resolveSkillRefs as resolveSkillReferences,
+  resolveSkillReferences,
   ruleMarkdown,
   skillMarkdown
 } from "./render.ts";
@@ -155,6 +155,19 @@ describe("resolveSections", () => {
     );
   });
 
+  it("accepts a section whose dependsOn id is declared", () => {
+    const dependent: Section = {
+      content: "Gamma.",
+      dependsOn: ["a"],
+      id: "c",
+      label: "C"
+    };
+
+    expect(resolveSections([sectionA, dependent], "test")).toBe(
+      "Alpha.\n\n---\n\nGamma."
+    );
+  });
+
   it("throws when a dependsOn id is not declared", () => {
     const dependent: Section = {
       content: "Gamma.",
@@ -219,6 +232,18 @@ describe("skillMarkdown", () => {
 
     expect(skillMarkdown(skill)).toContain(
       "Shared.\n\n---\n\n## Skills\n\n### `other-skill`\n\nUse it."
+    );
+  });
+
+  it("replaces the token with only skill refs when no sections are declared", () => {
+    const skill: SkillDefinition = {
+      ...baseSkill,
+      content: "{{sections}}",
+      skillRefs: [{ description: "Use it.", skill: "other-skill" }]
+    };
+
+    expect(skillMarkdown(skill)).toContain(
+      "## Skills\n\n### `other-skill`\n\nUse it."
     );
   });
 
