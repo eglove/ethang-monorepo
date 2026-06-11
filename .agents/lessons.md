@@ -15,4 +15,5 @@ Rules from explicit user corrections — things the assistant did wrong and must
 ## Proven Patterns
 Approaches confirmed to work well in this workspace.
 
-*(none yet)*
+- **Everything Search CLI (es) Fallback**: The `es` CLI relies on the Windows Everything IPC service. If the Everything service/application is not running, `es` fails. In this case, fall back to JetBrains WebStorm MCP `find_files_by_glob` or ripgrep (`rg`) to search for file paths.
+- **ESLint and Lodash Compliance**: Avoid native `.filter`, `typeof === "string"`, and `.endsWith` on arrays/strings when using Lodash-preferred conventions. Additionally, avoid variable abbreviations like `srcDir` to prevent triggering `unicorn/prevent-abbreviations` (prefer descriptive names like `sourceDirectory`).

@@ -1,5 +1,15 @@
+import endsWith from "lodash/endsWith.js";
+import filter from "lodash/filter.js";
+import isString from "lodash/isString.js";
 import repeat from "lodash/repeat.js";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -151,5 +161,27 @@ describe("findUnresolvedTokens", () => {
     writeFileSync(path.join(directory, "clean.md"), "All resolved.", "utf8");
 
     expect(findUnresolvedTokens(directory)).toStrictEqual([]);
+  });
+});
+
+describe("definePlugin check", () => {
+  it("ensures no active source files import definePlugin", () => {
+    const sourceDirectory = import.meta.dirname;
+    const allFiles = readdirSync(sourceDirectory, { recursive: true });
+    const stringFiles = filter(allFiles, isString);
+    const tsFiles = filter(stringFiles, (file) => {
+      return endsWith(file, ".ts") && !endsWith(file, ".test.ts");
+    });
+
+    const badFiles: string[] = [];
+    for (const file of tsFiles) {
+      const filePath = path.join(sourceDirectory, file);
+      const content = readFileSync(filePath, "utf8");
+      if (/import\s*\{[^}]*definePlugin[^}]*\}\s*from/u.test(content)) {
+        badFiles.push(file);
+      }
+    }
+
+    expect(badFiles).toEqual([]);
   });
 });
