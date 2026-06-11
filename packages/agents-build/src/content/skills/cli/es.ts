@@ -62,6 +62,7 @@ es [options] <search-string>
    es -json -double-quote my-file
    \`\`\`
 `,
-  description: "Locate files and folders instantly across the Windows filesystem using the Everything Search CLI (es). Use for path searching and file discovery.",
+  description:
+    "Locate files and folders instantly across the Windows filesystem using the Everything Search CLI (es). Use for path searching and file discovery.",
   name: "es-cli"
 });

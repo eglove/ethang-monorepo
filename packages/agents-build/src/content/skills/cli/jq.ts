@@ -51,6 +51,7 @@ cat file.json | jq [options] <jq filter>
    jq -r ".packages[]" pnpm-workspace.yaml
    \`\`\`
 `,
-  description: "Process, filter, and format JSON data using jq. Use when reading, inspecting, or manipulating structured JSON files or stream outputs.",
+  description:
+    "Process, filter, and format JSON data using jq. Use when reading, inspecting, or manipulating structured JSON files or stream outputs.",
   name: "jq-cli"
 });

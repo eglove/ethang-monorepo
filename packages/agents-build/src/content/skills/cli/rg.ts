@@ -69,6 +69,7 @@ rg [options] PATTERN [PATH ...]
    rg --hidden -g '!**/node_modules/**' "antigravity"
    \`\`\`
 `,
-  description: "Recursively search files and directories using ripgrep (rg). Use for text searching, pattern matching, and file listing.",
+  description:
+    "Recursively search files and directories using ripgrep (rg). Use for text searching, pattern matching, and file listing.",
   name: "rg-cli"
 });
