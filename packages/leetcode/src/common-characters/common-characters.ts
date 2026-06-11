@@ -5,12 +5,7 @@ export const commonCharacters = (strings: string[]) => {
     const uniqueStringCharacters = new Set(string);
 
     for (const character of uniqueStringCharacters) {
-      if (!characterCounts.has(character)) {
-        characterCounts.set(character, 0);
-      }
-
-      // @ts-expect-error set above
-      characterCounts.set(character, characterCounts.get(character) + 1);
+      characterCounts.set(character, (characterCounts.get(character) ?? 0) + 1);
     }
   }
 
