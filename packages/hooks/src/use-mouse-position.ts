@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useEventListener } from "./use-event-listener.ts";
+import { useEventListener } from "./use-event-listener.js";
 
 type MousePosition = {
   mouseX?: number;

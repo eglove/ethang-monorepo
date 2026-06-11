@@ -7,8 +7,8 @@ type ListenerOptions = AddEventListenerOptions | EventListenerOptions;
 type ListenerParameters = Parameters<typeof globalThis.addEventListener>;
 
 type LocalStorageStoreOptions = {
-  defaultValue?: string | undefined;
-  listenerOptions?: ListenerOptions | undefined;
+  defaultValue?: string;
+  listenerOptions?: ListenerOptions;
 };
 
 const localStorageStore = (key: string, options?: LocalStorageStoreOptions) => {

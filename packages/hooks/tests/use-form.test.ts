@@ -23,13 +23,13 @@ vi.mock("zod", async (importOriginal) => {
 
 describe("useForm", () => {
   it("should initialize with the provided state", () => {
-    const { result } = renderHook(() => useForm({ name: "John", age: 30 }));
-    expect(result.current.formState).toEqual({ name: "John", age: 30 });
+    const { result } = renderHook(() => useForm({ age: 30, name: "John" }));
+    expect(result.current.formState).toEqual({ age: 30, name: "John" });
   });
 
   it("should replace undefined with empty string in initial state", () => {
-    const { result } = renderHook(() => useForm({ name: undefined, age: 30 }));
-    expect(result.current.formState).toEqual({ name: "", age: 30 });
+    const { result } = renderHook(() => useForm({ age: 30, name: undefined }));
+    expect(result.current.formState).toEqual({ age: 30, name: "" });
   });
 
   it("should update form state on handleChange for text input", () => {
@@ -40,7 +40,7 @@ describe("useForm", () => {
 
     act(() => {
       result.current.handleChange({
-        target: { name: "name", value: "Doe", type: "text" },
+        target: { name: "name", type: "text", value: "Doe" },
       } as any);
     });
 
@@ -98,21 +98,21 @@ describe("useForm", () => {
   });
 
   it("should clear the form", () => {
-    const { result } = renderHook(() => useForm({ name: "John", age: 30 }));
+    const { result } = renderHook(() => useForm({ age: 30, name: "John" }));
 
     act(() => {
       result.current.clearForm();
     });
 
-    expect(result.current.formState).toEqual({ name: "", age: "" });
+    expect(result.current.formState).toEqual({ age: "", name: "" });
   });
 
   it("should reset the form", () => {
-    const { result } = renderHook(() => useForm({ name: "John", age: 30 }));
+    const { result } = renderHook(() => useForm({ age: 30, name: "John" }));
 
     act(() => {
       result.current.handleChange({
-        target: { name: "name", value: "Doe", type: "text" },
+        target: { name: "name", type: "text", value: "Doe" },
       } as any);
     });
 
@@ -120,7 +120,7 @@ describe("useForm", () => {
       result.current.resetForm();
     });
 
-    expect(result.current.formState).toEqual({ name: "John", age: 30 });
+    expect(result.current.formState).toEqual({ age: 30, name: "John" });
   });
 
   it("should manually set a value", () => {
@@ -135,7 +135,7 @@ describe("useForm", () => {
 
   it("should validate and succeed if no validator is provided", () => {
     const { result } = renderHook(() => useForm({ name: "John" }));
-    let isValid;
+    let isValid = false;
 
     act(() => {
       isValid = result.current.validate();
@@ -147,7 +147,7 @@ describe("useForm", () => {
   it("should set form error on validation failure", () => {
     const mockZodValidator = {
       safeParse: vi.fn().mockReturnValue({
-        error: new ZodError(),
+        error: new ZodError([]),
         success: false,
       }),
     };
@@ -166,7 +166,7 @@ describe("useForm", () => {
   it("should handle form submission when validation fails", () => {
     const mockZodValidator = {
       safeParse: vi.fn().mockReturnValue({
-        error: new ZodError(),
+        error: new ZodError([]),
         success: false,
       }),
     };
@@ -244,7 +244,7 @@ describe("useForm", () => {
       useForm({ name: "" }, { zodValidator: mockZodValidator as any })
     );
 
-    let isValid;
+    let isValid = false;
     act(() => {
       isValid = result.current.validate();
     });

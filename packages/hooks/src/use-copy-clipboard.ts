@@ -1,7 +1,7 @@
 import isError from "lodash/isError.js";
 import { useEffect, useState } from "react";
 
-import { animationInterval } from "./use-animation-interval.ts";
+import { animationInterval } from "./use-animation-interval.js";
 
 type UseCopyClipboardReturn = {
   copyToClipboard: (text: string) => void;

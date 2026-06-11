@@ -11,9 +11,7 @@ export const useIsOnscreen = <ElementType extends Element>(
     const observer = new IntersectionObserver((entries) => {
       const [entry] = entries;
 
-      if (entry) {
-        setIsOnscreen(entry.isIntersecting);
-      }
+      setIsOnscreen(entry.isIntersecting);
     });
 
     observer.observe(elementReference);
