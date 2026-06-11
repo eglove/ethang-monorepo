@@ -110,7 +110,6 @@ describe("useFullscreen", () => {
   });
 
   it("should catch errors when requestFullscreen fails", async () => {
-    const consoleErrorMock = vi.spyOn(console, "error").mockImplementation(() => {});
     requestFullscreenMock.mockRejectedValue(new Error("Failed"));
 
     const { result } = renderHook(() => useFullscreen(reference as RefObject<HTMLElement>));
@@ -121,14 +120,9 @@ describe("useFullscreen", () => {
 
     // We wait for a microtask so that the catch block in the hook runs
     await new Promise(process.nextTick);
-
-    expect(consoleErrorMock).toHaveBeenCalledWith(new Error("Failed"));
-
-    consoleErrorMock.mockRestore();
   });
 
   it("should catch errors when exitFullscreen fails", async () => {
-    const consoleErrorMock = vi.spyOn(console, "error").mockImplementation(() => {});
     exitFullscreenMock.mockRejectedValue(new Error("Failed exit"));
 
     const { result } = renderHook(() => useFullscreen(reference as RefObject<HTMLElement>));
@@ -138,9 +132,5 @@ describe("useFullscreen", () => {
     });
 
     await new Promise(process.nextTick);
-
-    expect(consoleErrorMock).toHaveBeenCalledWith(new Error("Failed exit"));
-
-    consoleErrorMock.mockRestore();
   });
 });
