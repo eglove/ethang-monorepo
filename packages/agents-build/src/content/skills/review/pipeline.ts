@@ -1,13 +1,11 @@
 import { defineSkill } from "../../../define.ts";
 
 export const reviewPipeline = defineSkill({
-  content: `# PR Review Pipeline
+  content: `# PR Review
 
 Execute this pipeline when asked to review a pull request or diff.
 
 Produces a single artifact: \`review-comments.md\` — ready-to-post comment drafts backed by failing tests with domain-language naming where applicable.
-
-{{sections}}
 
 ---
 
@@ -30,11 +28,11 @@ Run in parallel:
 
 ### 1c. Read the diff
 
-\`\`\`
+\`\`
 gh pr diff {number}
 # or
 git diff master...HEAD
-\`\`\`
+\`\`
 
 ### 1d. Classify the diff
 
@@ -75,9 +73,9 @@ Present the plan to the user and ask: "Proceed with this review plan? Yes / Adju
 
 ## Phase 3: Multi-Dimension Review
 
-Load and follow the \`reviewer\` skill for each perspective in the plan. Run all perspectives in parallel.
+Load and follow the [reviewer](resources/reviewer.md) resource for each perspective in the plan, applying [review-design-checklist](resources/review-design-checklist.md), [review-security-checklist](resources/review-security-checklist.md), and [ddd-tactical](resources/ddd-tactical.md) where appropriate. Guide the process using the [SWEBOK glossary](../swebok/SKILL.md). Run all perspectives in parallel.
 
-For each perspective, the reviewer skill produces \`REVIEW_FINDINGS [{perspective}]\`.
+For each perspective, the reviewer resource produces \`REVIEW_FINDINGS [{perspective}]\`.
 
 Also run: read all changed test files and assess test coverage directly — note files changed without accompanying test changes.
 
@@ -122,6 +120,8 @@ Architecture opinion findings: prose only — no test.
 ---
 
 ## Assembly: Write review-comments.md
+
+Load and follow the [reporter](resources/reporter.md) resource to format the output.
 
 Write \`review-comments.md\` to the output path (current directory or \`{output-path}/\` if specified).
 
@@ -178,27 +178,5 @@ For each finding in order (Critical → High → Medium → Low → Nitpick → 
 See the \`review-edge-cases\` rule for: no PR description, draft PRs, very large PRs (>2000 lines), red CI, and config-only diffs.`,
   description:
     "Primary review skill. Execute when asked to review a pull request or diff. Drives the full review pipeline: intake via gh CLI or local git diff, multi-dimension review (correctness, design, security, maintainability, test coverage), findings classified blocking/non-blocking, structured verdict, report written.",
-  name: "review-pipeline",
-  skillRefs: [
-    {
-      description:
-        "Load for each review perspective (react-components, typescript-quality, hono-routes, drizzle-data, security, accessibility, performance, architecture, maintainability). Follow its operating procedure for the named perspective.",
-      skill: "reviewer"
-    },
-    {
-      description:
-        "Load to produce the final review-results.md report in non-technical stakeholder format after findings are assembled.",
-      skill: "reporter"
-    },
-    {
-      description:
-        "Load during design/architecture/typescript-quality perspective reviews. Covers React component design, Hono route design, Drizzle patterns, layer violations, DDD tactical patterns.",
-      skill: "review-design-checklist"
-    },
-    {
-      description:
-        "Load during the security perspective review. Covers React XSS controls, Hono/Worker auth and CORS, Drizzle SQL injection, OWASP Top 10 stack-specific checks, and PII controls.",
-      skill: "review-security-checklist"
-    }
-  ]
+  name: "review"
 });

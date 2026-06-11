@@ -11,12 +11,7 @@ import includes from "lodash/includes.js";
 import map from "lodash/map.js";
 import replace from "lodash/replace.js";
 
-import type {
-  RuleDefinition,
-  Section,
-  SkillDefinition,
-  SkillReference
-} from "./define.ts";
+import type { RuleDefinition, Section, SkillDefinition } from "./define.ts";
 
 const assertNoNewline = (value: string, key: string): void => {
   if (includes(value, "\n")) {
@@ -110,22 +105,6 @@ export const resolveSections = (sections: Section[], label: string): string => {
   return blocks.join("\n\n---\n\n");
 };
 
-export const resolveSkillReferences = (
-  skillReferences: readonly SkillReference[]
-): string => {
-  const seen = new Set<string>();
-  const blocks: string[] = [];
-
-  for (const reference of skillReferences) {
-    if (!seen.has(reference.skill)) {
-      seen.add(reference.skill);
-      blocks.push(`### \`${reference.skill}\`\n\n${reference.description}`);
-    }
-  }
-
-  return `## Skills\n\n${blocks.join("\n\n")}`;
-};
-
 const buildSkillParts = (skill: SkillDefinition): string[] => {
   const parts: string[] = [];
 
@@ -133,16 +112,11 @@ const buildSkillParts = (skill: SkillDefinition): string[] => {
     parts.push(resolveSections(skill.sections ?? [], `skill:${skill.name}`));
   }
 
-  if (0 < (skill.skillRefs?.length ?? 0)) {
-    parts.push(resolveSkillReferences(skill.skillRefs ?? []));
-  }
-
   return parts;
 };
 
 const resolveSkillBody = (skill: SkillDefinition): string => {
-  const hasContent =
-    0 < (skill.sections?.length ?? 0) || 0 < (skill.skillRefs?.length ?? 0);
+  const hasContent = 0 < (skill.sections?.length ?? 0);
 
   if (!hasContent) {
     return skill.content;
@@ -150,7 +124,7 @@ const resolveSkillBody = (skill: SkillDefinition): string => {
 
   if (!includes(skill.content, "{{sections}}")) {
     throw new Error(
-      `Skill "${skill.name}": sections/skillRefs declared but {{sections}} token missing from content`
+      `Skill "${skill.name}": sections declared but {{sections}} token missing from content`
     );
   }
 
@@ -169,8 +143,4 @@ export const ruleMarkdown = (rule: RuleDefinition): string => {
 
 export const renderJson = (value: unknown): string => {
   return `${JSON.stringify(value, undefined, 2)}\n`;
-};
-
-export const pluginJson = (name: string): string => {
-  return renderJson({ name });
 };

@@ -23,27 +23,22 @@ import {
 import path from "node:path";
 
 import { HOOKS, LESSONS_SEED } from "./content/hooks.ts";
-import { PLUGINS } from "./content/plugins/index.ts";
-import { SHARED_RULES } from "./content/rules/shared.ts";
-import {
-  pluginJson,
-  renderJson,
-  ruleMarkdown,
-  skillMarkdown
-} from "./render.ts";
+import { GLOBAL_RULES } from "./content/rules/global.ts";
+import { SKILLS } from "./content/skills/index.ts";
+import { renderJson, ruleMarkdown, skillMarkdown } from "./render.ts";
 import {
   checkRuleSize,
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
   validateFrontmatterBlock,
-  validateSkillReferenceIntegrity,
   validateSwebokGuard
 } from "./validate.ts";
 
 const ROOT = path.join(import.meta.dirname, "..", "..", "..");
 const AGENTS_DIR = path.join(ROOT, ".agents");
-const PLUGINS_DIR = path.join(AGENTS_DIR, "plugins");
+const SKILLS_DIR = path.join(AGENTS_DIR, "skills");
+const RULES_DIR = path.join(AGENTS_DIR, "rules");
 
 const failures: string[] = [];
 const warnings: string[] = [];
@@ -53,86 +48,67 @@ const write = (filePath: string, content: string): void => {
   writeFileSync(filePath, content, "utf8");
 };
 
-rmSync(PLUGINS_DIR, { force: true, recursive: true });
+rmSync(SKILLS_DIR, { force: true, recursive: true });
+rmSync(RULES_DIR, { force: true, recursive: true });
 
 let fileCount = 0;
 
-for (const plugin of PLUGINS) {
-  const pluginDirectory = path.join(PLUGINS_DIR, plugin.name);
+for (const duplicate of findDuplicateRuleFilenames(GLOBAL_RULES)) {
+  failures.push(`global rules: duplicate rule filename "${duplicate}"`);
+}
 
-  write(path.join(pluginDirectory, "plugin.json"), pluginJson(plugin.name));
+for (const rule of GLOBAL_RULES) {
+  const markdown = ruleMarkdown(rule);
+  const size = checkRuleSize(markdown);
+
+  if ("fail" === size.status) {
+    failures.push(
+      `rules/${rule.filename}.md: ${String(size.length)} chars exceeds the 12k rule limit`
+    );
+  }
+
+  if ("warn" === size.status) {
+    warnings.push(
+      `rules/${rule.filename}.md: ${String(size.length)} chars is nearing the 12k rule limit`
+    );
+  }
+
+  if (!validateFrontmatterBlock(markdown)) {
+    failures.push(`rules/${rule.filename}.md: malformed frontmatter block`);
+  }
+
+  write(path.join(RULES_DIR, `${rule.filename}.md`), markdown);
+  fileCount += 1;
+}
+
+for (const skill of SKILLS) {
+  const skillDirectory = path.join(SKILLS_DIR, skill.name);
+  const markdown = skillMarkdown(skill);
+
+  if (!validateFrontmatterBlock(markdown)) {
+    failures.push(`skills/${skill.name}/SKILL.md: malformed frontmatter block`);
+  }
+
+  const resourcePaths = map(skill.resources ?? [], (resource) => {
+    return resource.path;
+  });
+
+  const allContent = `${markdown}\n${map(skill.resources ?? [], (resource) => {
+    return resource.content;
+  }).join("\n")}`;
+
+  for (const missing of validateSwebokGuard(resourcePaths, allContent)) {
+    failures.push(
+      `skills/${skill.name}: resource "${missing}" is not referenced in the skill or its resources — the router table has drifted`
+    );
+  }
+
+  write(path.join(skillDirectory, "SKILL.md"), markdown);
   fileCount += 1;
 
-  const mergedRules = [...SHARED_RULES, ...(plugin.rules ?? [])];
-
-  for (const duplicate of findDuplicateRuleFilenames(mergedRules)) {
-    failures.push(
-      `${plugin.name}: duplicate rule filename "${duplicate}" after shared-rule merge`
-    );
-  }
-
-  for (const rule of mergedRules) {
-    const markdown = ruleMarkdown(rule);
-    const size = checkRuleSize(markdown);
-
-    if ("fail" === size.status) {
-      failures.push(
-        `${plugin.name}/rules/${rule.filename}.md: ${String(size.length)} chars exceeds the 12k rule limit`
-      );
-    }
-
-    if ("warn" === size.status) {
-      warnings.push(
-        `${plugin.name}/rules/${rule.filename}.md: ${String(size.length)} chars is nearing the 12k rule limit`
-      );
-    }
-
-    if (!validateFrontmatterBlock(markdown)) {
-      failures.push(
-        `${plugin.name}/rules/${rule.filename}.md: malformed frontmatter block`
-      );
-    }
-
-    write(path.join(pluginDirectory, "rules", `${rule.filename}.md`), markdown);
+  for (const resource of skill.resources ?? []) {
+    write(path.join(skillDirectory, resource.path), resource.content);
     fileCount += 1;
-  }
-
-  for (const violation of validateSkillReferenceIntegrity(plugin)) {
-    failures.push(violation);
-  }
-
-  for (const skill of plugin.skills) {
-    const markdown = skillMarkdown(skill);
-
-    if (!validateFrontmatterBlock(markdown)) {
-      failures.push(
-        `${plugin.name}/skills/${skill.name}/SKILL.md: malformed frontmatter block`
-      );
-    }
-
-    const resourcePaths = map(skill.resources ?? [], (resource) => {
-      return resource.path;
-    });
-
-    for (const missing of validateSwebokGuard(resourcePaths, markdown)) {
-      failures.push(
-        `${plugin.name}/skills/${skill.name}: resource "${missing}" is not referenced in SKILL.md — the router table has drifted`
-      );
-    }
-
-    write(
-      path.join(pluginDirectory, "skills", skill.name, "SKILL.md"),
-      markdown
-    );
-    fileCount += 1;
-
-    for (const resource of skill.resources ?? []) {
-      write(
-        path.join(pluginDirectory, "skills", skill.name, resource.path),
-        resource.content
-      );
-      fileCount += 1;
-    }
   }
 }
 
@@ -146,18 +122,21 @@ if (!existsSync(lessonsPath)) {
   fileCount += 1;
 }
 
-for (const token of findUnresolvedTokens(PLUGINS_DIR)) {
-  failures.push(`unresolved {{sections}} token in ${token}`);
-}
+for (const directory of [SKILLS_DIR, RULES_DIR]) {
+  for (const token of findUnresolvedTokens(directory)) {
+    failures.push(`unresolved {{sections}} token in ${token}`);
+  }
 
-for (const file of filter(
-  readdirSync(PLUGINS_DIR, { recursive: true }),
-  isString
-)) {
-  if (endsWith(file, ".md") || endsWith(file, ".json")) {
-    const filePath = path.join(PLUGINS_DIR, file);
+  const files = filter(readdirSync(directory, { recursive: true }), isString);
+  const targetFiles = filter(files, (file) => {
+    return endsWith(file, ".md") || endsWith(file, ".json");
+  });
 
-    for (const name of findForbiddenStrings(readFileSync(filePath, "utf8"))) {
+  for (const file of targetFiles) {
+    const filePath = path.join(directory, file);
+    const fileContent = readFileSync(filePath, "utf8");
+
+    for (const name of findForbiddenStrings(fileContent)) {
       failures.push(
         `forbidden source-workspace reference "${name}" in ${filePath}`
       );
@@ -178,5 +157,5 @@ if (0 < failures.length) {
 }
 
 console.log(
-  `Generated ${String(fileCount)} files for ${String(PLUGINS.length)} plugin(s) into ${PLUGINS_DIR}`
+  `Generated ${String(fileCount)} files for ${String(SKILLS.length)} skill(s) into ${SKILLS_DIR}`
 );

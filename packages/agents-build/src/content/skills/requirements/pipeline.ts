@@ -1,13 +1,11 @@
 import { defineSkill } from "../../../define.ts";
 
 export const requirementsPipeline = defineSkill({
-  content: `# Requirements Pipeline
+  content: `# Requirements
 
 Execute this pipeline when asked to define requirements from a GitHub issue or user-provided description.
 
 Produces a single artifact: \`requirements.md\` — a structured requirements definition with state machine, test hypotheses, and traceability.
-
-{{sections}}
 
 ---
 
@@ -21,16 +19,16 @@ Run in parallel:
 
 ### 1a. Fetch main issue (if GitHub issue)
 
-\`\`\`
+\`\`
 gh issue view {number} --json title,body,labels,milestone,assignees,comments,state
-\`\`\`
+\`\`
 
 ### 1b. Detect linked issues
 
 Scan the issue body and comments for GitHub issue URLs or cross-references (\`#NNN\`). For each found:
-\`\`\`
+\`\`
 gh issue view {linked-number} --json title,body,labels,state
-\`\`\`
+\`\`
 
 ### 1c. Detect technology context
 
@@ -74,7 +72,7 @@ Run all searches in parallel.
 
 ## Step 4: Requirements Analysis
 
-Load and follow the \`requirements-analyst\` skill.
+Load and follow the [requirements-analyst](resources/requirements-analyst.md) resource.
 
 Provide:
 - \`ISSUE_CONTEXT\`
@@ -82,7 +80,7 @@ Provide:
 - \`DOCS_CONTEXT\`
 - \`CODE_CONTEXT\`
 
-The analyst applies SWEBOK Ch 1 (requirements), Ch 5 (state machine/test design), Ch 2 (design impact), and Ch 14 (professional & compliance).
+The analyst applies SWEBOK Ch 1 (requirements), Ch 5 (state machine/test design), Ch 2 (design impact), and Ch 14 (professional & compliance) using the [SWEBOK glossary](../swebok/SKILL.md), and applies the [ddd-strategic](resources/ddd-strategic.md) patterns lens.
 
 > Produces: \`REQUIREMENTS_ANALYSIS\`
 
@@ -90,7 +88,7 @@ The analyst applies SWEBOK Ch 1 (requirements), Ch 5 (state machine/test design)
 
 ## Step 5: Generate Requirements Definition
 
-Load and follow the \`requirements-writer\` skill.
+Load and follow the [requirements-writer](resources/requirements-writer.md) resource.
 
 Provide all artifacts: \`ISSUE_KEY\`, \`ISSUE_CONTEXT\`, \`LINKED_CONTEXT\`, \`DOCS_CONTEXT\`, \`CODE_CONTEXT\`, \`REQUIREMENTS_ANALYSIS\`.
 
@@ -112,17 +110,5 @@ On changes requested: apply feedback, regenerate the affected sections, re-prese
 - **Pure tooling/config issue** (no runtime behavior change): Skip state machine derivation. Focus on correctness and migration safety requirements only.`,
   description:
     "Primary requirements skill. Execute when asked to define requirements from a GitHub issue or user description. Drives intake, multi-lens analysis, and structured requirements.md output.",
-  name: "requirements-pipeline",
-  skillRefs: [
-    {
-      description:
-        "Load for Step 4. Performs full multi-lens requirements analysis: SWEBOK Ch 1 requirements extraction, Ch 5 state machine derivation, Ch 2 design impact, Ch 14 compliance review.",
-      skill: "requirements-analyst"
-    },
-    {
-      description:
-        "Load for Step 5. Writes the structured requirements.md from the completed analysis using the full document template.",
-      skill: "requirements-writer"
-    }
-  ]
+  name: "requirements"
 });

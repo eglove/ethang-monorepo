@@ -10,6 +10,7 @@ export default defineConfig(
     "node_modules",
     ".wrangler",
     "dist",
+    "coverage",
     "**/*.d.ts",
     "src/routeTree.gen.ts"
   ]),

@@ -8,15 +8,6 @@
  * and returns immediately.
  */
 export const HOOKS = {
-  "lessons-extract": {
-    Stop: [
-      {
-        command: "bun packages/agents-build/src/hooks/stop.ts",
-        timeout: 15,
-        type: "command"
-      }
-    ]
-  },
   "lessons-inject": {
     PreInvocation: [
       {

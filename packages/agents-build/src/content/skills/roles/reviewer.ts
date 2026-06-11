@@ -39,7 +39,7 @@ You will receive:
 
 **maintainability** (Ch 7): Assess the PR's impact on long-term maintainability. Apply Lehman's Law P2 — does the change increase entropy (new special cases, weakened abstractions, tangled logic)? Classify any technical debt introduced: design debt, test debt, or documentation debt. Assess Boy Scout Rule adherence (is the code left better than found?). Identify maintenance category: corrective (fix defect) | adaptive (accommodate change) | perfective (improve quality) | preventive (reduce future risk).
 
-**security**: OWASP Top 10 and CERT Top 10 mapped to React/Hono/Drizzle. Injection, auth/session, sensitive data, input validation, access control, XSS via \`dangerouslySetInnerHTML\`, CORS misconfiguration, supply chain, PII/Privacy. Load \`review-security-checklist\` for the full checklist.
+**security**: OWASP Top 10 and CERT Top 10 mapped to React/Hono/Drizzle. Injection, auth/session, sensitive data, input validation, access control, XSS via \`dangerouslySetInnerHTML\`, CORS misconfiguration, supply chain, PII/Privacy. Load [review-security-checklist](resources/review-security-checklist.md) for the full checklist.
 
 **ddd-patterns**: CQRS violations (mutations inside query functions), Specification Pattern opportunities (3+ inline conditions), Value Object opportunities (raw primitives for domain concepts), domain event naming conventions.
 
@@ -49,8 +49,8 @@ You will receive:
 2. Apply your perspective's lens systematically
 3. For \`accessibility\` perspective, check PII/privacy exposure in rendered output and component props
 4. For \`architecture\` perspective, check for duplicate patterns across the codebase
-5. For \`ddd-patterns\` perspective, apply the DDD patterns methodology from \`review-design-checklist\`
-6. For \`security\` perspective, work through each OWASP/CERT category using \`review-security-checklist\`
+5. For \`ddd-patterns\` perspective, apply the DDD patterns methodology from [review-design-checklist](resources/review-design-checklist.md)
+6. For \`security\` perspective, work through each OWASP/CERT category using [review-security-checklist](resources/review-security-checklist.md)
 
 ## Output Format
 

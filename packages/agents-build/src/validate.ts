@@ -14,7 +14,7 @@ import startsWith from "lodash/startsWith.js";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
-import type { PluginDefinition, RuleDefinition } from "./define.ts";
+import type { RuleDefinition } from "./define.ts";
 
 import {
   FORBIDDEN_PATTERNS,
@@ -71,30 +71,6 @@ export const findForbiddenStrings = (content: string): string[] => {
       return name;
     }
   );
-};
-
-/** Every skillRef must point at a sibling skill bundled in the same plugin. */
-export const validateSkillReferenceIntegrity = (
-  plugin: PluginDefinition
-): string[] => {
-  const siblingNames = new Set(
-    map(plugin.skills, (skill) => {
-      return skill.name;
-    })
-  );
-  const violations: string[] = [];
-
-  for (const skill of plugin.skills) {
-    for (const reference of skill.skillRefs ?? []) {
-      if (!siblingNames.has(reference.skill)) {
-        violations.push(
-          `${plugin.name}/${skill.name} -> missing sibling skill "${reference.skill}"`
-        );
-      }
-    }
-  }
-
-  return violations;
 };
 
 /** Shared rules merged with plugin rules must not collide on filename. */

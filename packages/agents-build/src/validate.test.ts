@@ -1,10 +1,20 @@
+import endsWith from "lodash/endsWith.js";
+import filter from "lodash/filter.js";
+import isString from "lodash/isString.js";
 import repeat from "lodash/repeat.js";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type { PluginDefinition, RuleDefinition } from "./define.ts";
+import type { RuleDefinition } from "./define.ts";
 
 import {
   checkRuleSize,
@@ -12,7 +22,6 @@ import {
   findForbiddenStrings,
   findUnresolvedTokens,
   validateFrontmatterBlock,
-  validateSkillReferenceIntegrity,
   validateSwebokGuard
 } from "./validate.ts";
 
@@ -49,7 +58,6 @@ describe("findForbiddenStrings", () => {
     ["Post the diff to Stash for review.", ["Stash"]],
     ["Dispatch an NGXS action.", ["NGXS"]],
     ["Use the Angular CLI.", ["Angular"]],
-    ["Call mcp__webstorm__get_file_problems.", ["mcp__webstorm"]],
     ["Call mcp__intellij__get_file_problems.", ["mcp__intellij"]],
     ["Gate on AskUserQuestion before continuing.", ["AskUserQuestion"]],
     ['Spawn it with subagent_type: "planner".', ["subagent_type"]],
@@ -62,7 +70,8 @@ describe("findForbiddenStrings", () => {
   it.each([
     ["Run git stash before switching branches."],
     ["Write a Vitest it.each table for every state."],
-    ["Use Hono middleware on the Cloudflare Worker."]
+    ["Use Hono middleware on the Cloudflare Worker."],
+    ["Call mcp__webstorm__get_file_problems."]
   ])("does not flag clean content %j", (content) => {
     expect(findForbiddenStrings(content)).toStrictEqual([]);
   });
@@ -71,42 +80,6 @@ describe("findForbiddenStrings", () => {
     expect(findForbiddenStrings("NISC and more NISC plus Jira")).toStrictEqual([
       "NISC",
       "Jira"
-    ]);
-  });
-});
-
-describe("validateSkillRefIntegrity", () => {
-  const plugin: PluginDefinition = {
-    name: "tdd",
-    skills: [
-      {
-        content: "{{sections}}",
-        description: "Pipeline.",
-        name: "tdd-pipeline",
-        skillRefs: [{ description: "Use it.", skill: "ddd-tactical" }]
-      },
-      { content: "Tactics.", description: "DDD tactics.", name: "ddd-tactical" }
-    ]
-  };
-
-  it("returns no violations when refs point at sibling skills", () => {
-    expect(validateSkillReferenceIntegrity(plugin)).toStrictEqual([]);
-  });
-
-  it("reports refs that point at skills missing from the plugin", () => {
-    const [firstSkill] = plugin.skills;
-
-    if (undefined === firstSkill) {
-      throw new Error("test setup: plugin must have at least one skill");
-    }
-
-    const broken: PluginDefinition = {
-      ...plugin,
-      skills: [firstSkill]
-    };
-
-    expect(validateSkillReferenceIntegrity(broken)).toStrictEqual([
-      'tdd/tdd-pipeline -> missing sibling skill "ddd-tactical"'
     ]);
   });
 });
@@ -188,5 +161,27 @@ describe("findUnresolvedTokens", () => {
     writeFileSync(path.join(directory, "clean.md"), "All resolved.", "utf8");
 
     expect(findUnresolvedTokens(directory)).toStrictEqual([]);
+  });
+});
+
+describe("definePlugin check", () => {
+  it("ensures no active source files import definePlugin", () => {
+    const sourceDirectory = import.meta.dirname;
+    const allFiles = readdirSync(sourceDirectory, { recursive: true });
+    const stringFiles = filter(allFiles, isString);
+    const tsFiles = filter(stringFiles, (file) => {
+      return endsWith(file, ".ts") && !endsWith(file, ".test.ts");
+    });
+
+    const badFiles: string[] = [];
+    for (const file of tsFiles) {
+      const filePath = path.join(sourceDirectory, file);
+      const content = readFileSync(filePath, "utf8");
+      if (/import\s*\{[^}]*definePlugin[^}]*\}\s*from/u.test(content)) {
+        badFiles.push(file);
+      }
+    }
+
+    expect(badFiles).toEqual([]);
   });
 });

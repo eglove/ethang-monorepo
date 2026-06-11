@@ -1,8 +1,9 @@
 /* eslint-disable unicorn/no-process-exit -- build/hook entry point: stdout is the wire protocol and exit codes are the contract */
 /**
  * Antigravity PreInvocation hook. On the first invocation of a conversation it
- * injects the workspace's accumulated lessons.md as an ephemeral message so the
- * model starts with prior corrections and proven patterns in context.
+ * injects SWEBOK v4 guidelines and the workspace's accumulated lessons.md
+ * as ephemeral messages so the model starts with standard rules and prior
+ * corrections/proven patterns in context.
  *
  * Contract: JSON on stdin -> JSON on stdout. Output is either `{}` or
  * `{"injectSteps":[{"ephemeralMessage": "..."}]}`. This hook must NEVER break a
@@ -10,21 +11,16 @@
  * ever written to stdout.
  */
 
-import filter from "lodash/filter.js";
-import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
+import isNumber from "lodash/isNumber.js";
 import isString from "lodash/isString.js";
-import map from "lodash/map.js";
-import some from "lodash/some.js";
-import split from "lodash/split.js";
-import startsWith from "lodash/startsWith.js";
-import trim from "lodash/trim.js";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
-import { parseHookInput } from "./lessons.utilities.ts";
-
-const SEED_MARKERS = ["*(none yet)*"];
+import {
+  getPreInvocationResponse,
+  parseHookInput
+} from "./lessons.utilities.ts";
 
 const emit = (output: Record<string, unknown>): never => {
   process.stdout.write(JSON.stringify(output));
@@ -47,26 +43,6 @@ const readStdin = async (): Promise<string> => {
   return Buffer.concat(chunks).toString("utf8");
 };
 
-/** True when lessons.md holds only the seed skeleton (no real learned content). */
-const isSeedOnly = (content: string): boolean => {
-  const bulletLines = filter(
-    map(split(content, "\n"), (line) => {
-      return trim(line);
-    }),
-    (line) => {
-      return startsWith(line, "- ");
-    }
-  );
-
-  if (0 < bulletLines.length) {
-    return false;
-  }
-
-  return some(SEED_MARKERS, (marker) => {
-    return includes(content, marker);
-  });
-};
-
 const resolveWorkspaceRoot = (
   payload: Record<string, unknown> | undefined
 ): string => {
@@ -82,9 +58,12 @@ const resolveWorkspaceRoot = (
 
 try {
   const payload = parseHookInput(await readStdin());
-  const invocationNumber = payload?.["invocationNum"];
+  const rawInvocationNumber = payload?.["invocationNum"];
+  const invocationNumber = isNumber(rawInvocationNumber)
+    ? rawInvocationNumber
+    : undefined;
 
-  if (1 !== invocationNumber) {
+  if (undefined === invocationNumber || 1 !== invocationNumber) {
     emit({});
   }
 
@@ -94,23 +73,14 @@ try {
     "lessons.md"
   );
 
-  if (!existsSync(lessonsPath)) {
-    emit({});
+  let lessonsContent: string | undefined;
+
+  if (existsSync(lessonsPath)) {
+    lessonsContent = readFileSync(lessonsPath, "utf8");
   }
 
-  const content = trim(readFileSync(lessonsPath, "utf8"));
-
-  if ("" === content || isSeedOnly(content)) {
-    emit({});
-  }
-
-  emit({
-    injectSteps: [
-      {
-        ephemeralMessage: `# Learned Lessons (from previous sessions)\n\n${content}`
-      }
-    ]
-  });
+  const response = getPreInvocationResponse(invocationNumber, lessonsContent);
+  emit(response);
 } catch {
   emit({});
 }

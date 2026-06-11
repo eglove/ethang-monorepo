@@ -40,7 +40,8 @@
     "dev": "wrangler dev",
     "drizzle:generate": "drizzle-kit generate",
     "lint": "eslint . --fix && pnpm tsc --noEmit",
-    "start": "wrangler dev"
+    "start": "wrangler dev",
+    "test": "vitest run --coverage"
   },
   "type": "module",
   "version": "0.0.0"
