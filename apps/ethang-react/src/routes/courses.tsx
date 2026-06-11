@@ -1,4 +1,4 @@
-import { useQuery as useApolloQuery } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { gql } from "@ethang/graphql-types/__generated__";
 import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
 import { createFileRoute } from "@tanstack/react-router";
@@ -14,7 +14,7 @@ import { LearningPath } from "../components/courses/learning-path.tsx";
 import { MainLayout } from "../components/layout/main-layout.tsx";
 
 const RouteComponent = () => {
-  const { data, loading } = useApolloQuery(
+  const { data, loading } = useQuery(
     gql(`query GetRecommendedCoursesLearningPathIds {
   curriculum(id: "019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4") {
     id
@@ -29,6 +29,7 @@ const RouteComponent = () => {
   }
 }`)
   );
+  const isPending = loading && isNil(data);
 
   const latestUpdate = get(data, ["curriculum", "updatedAt"]);
   courseStore.reset();
@@ -49,17 +50,17 @@ const RouteComponent = () => {
 
   return (
     <MainLayout>
-      <Skeleton loading={loading}>
+      <Skeleton loading={isPending}>
         <Heading mb="2" as="h1" size="8">
           {get(data, ["curriculum", "name"])}
         </Heading>
       </Skeleton>
-      <Skeleton loading={loading}>
+      <Skeleton loading={isPending}>
         <Text as="p" mb="4">
           Last Updated: {formattedDate}
         </Text>
       </Skeleton>
-      <Skeleton loading={loading}>
+      <Skeleton loading={isPending}>
         <Flex my="6" gap="4" direction="column">
           {map(get(data, ["curriculum", "learningPaths"]), (learningPath) => {
             return (

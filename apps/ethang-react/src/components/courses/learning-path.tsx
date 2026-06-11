@@ -62,6 +62,7 @@ export const LearningPath = ({
     ),
     { variables: { learningPathId } }
   );
+  const isPending = loading && isNil(data);
 
   const url = get(data, ["learningPath", "url"]);
   const name = get(data, ["learningPath", "name"]);
@@ -70,7 +71,7 @@ export const LearningPath = ({
   const courseLength = get(data, ["learningPath", "courses", "length"]);
 
   return (
-    <Skeleton loading={loading}>
+    <Skeleton loading={isPending}>
       <Card>
         <Flex gap="3" wrap="wrap" align="center">
           <Heading as="h2" size="5">

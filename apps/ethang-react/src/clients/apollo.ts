@@ -2,6 +2,7 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { SetContextLink } from "@apollo/client/link/context";
 import { LocalStorageWrapper, persistCache } from "apollo3-cache-persist";
+import isFunction from "lodash/isFunction.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
@@ -62,3 +63,14 @@ export const apolloClient = new ApolloClient({
   },
   link
 });
+
+if (isFunction(globalThis.addEventListener)) {
+  globalThis.addEventListener("focus", () => {
+    apolloClient
+      .refetchQueries({ include: "active" })
+      .catch((error: unknown) => {
+        // eslint-disable-next-line no-console
+        console.error("Failed to refetch queries on refocus:", error);
+      });
+  });
+}

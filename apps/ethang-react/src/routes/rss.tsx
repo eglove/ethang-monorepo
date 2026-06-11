@@ -114,6 +114,7 @@ type ArticleNode = {
 
 const RssComponent = () => {
   const { data, loading } = useQuery(GET_SUBSCRIPTIONS_WITH_ARTICLES);
+  const isPending = loading && isNil(data);
   const [addSubscription, { loading: addLoading }] =
     useMutation(ADD_SUBSCRIPTION);
   const [markArticleRead] = useMutation(MARK_ARTICLE_READ);
@@ -312,7 +313,7 @@ const RssComponent = () => {
               <Heading mb="3" size="4" className="text-slate-300">
                 Feeds
               </Heading>
-              <Skeleton loading={loading} data-testid="sidebar-skeleton">
+              <Skeleton loading={isPending} data-testid="sidebar-skeleton">
                 <Flex gap="2" direction="column">
                   <Button
                     style={{ justifyContent: "flex-start" }}
@@ -352,7 +353,7 @@ const RssComponent = () => {
                 Articles
               </Heading>
 
-              <Skeleton loading={loading} data-testid="articles-skeleton">
+              <Skeleton loading={isPending} data-testid="articles-skeleton">
                 {mainContent}
               </Skeleton>
             </Card>
