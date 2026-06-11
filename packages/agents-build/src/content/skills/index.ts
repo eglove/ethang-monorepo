@@ -51,13 +51,19 @@ Run in parallel:
 - \`git branch --show-current\`
 - \`git log --oneline "@{u}..HEAD"\` — unpushed commits ahead of upstream. If the command errors (no upstream set), fall back to \`git log --oneline -1\`.
 
-## Step 3: Amend vs. New Commit
+## Step 3: Update Learned Lessons
+
+1. Analyze the session history for any new learned lessons (rules you got wrong/corrected) or proven patterns (approaches confirmed to work well).
+2. Propose these additions/changes to \`.agents/lessons.md\` to the user and ask: "Would you like me to update lessons.md with these additions before we commit? — Yes / No / Cancel."
+3. On approval, write the changes to \`.agents/lessons.md\` and stage it (\`git add .agents/lessons.md\`).
+
+## Step 4: Amend vs. New Commit
 
 - At least one unpushed commit AND staged content exists, and the new work belongs to that commit → **default to amend**: load the existing message, update it only if the new staged content warrants it.
 - Otherwise → create a **new commit**.
 - **Never amend a commit that already exists on the remote.** When in doubt, ask the user before amending.
 
-## Step 4: Pre-Commit Quality Review
+## Step 5: Pre-Commit Quality Review
 
 Apply these checks to \`git diff --staged\`:
 
@@ -68,11 +74,11 @@ Apply these checks to \`git diff --staged\`:
 
 Verdict:
 
-- All clear → proceed to Step 5.
+- All clear → proceed to Step 6.
 - Blocking findings (broken behavior, weakened tests) → stop, report, and wait for fixes.
 - Minor findings only → ask "Proceed anyway? Yes / Fix first / Cancel" and wait.
 
-## Step 5: Draft + Execute
+## Step 6: Draft + Execute
 
 ### Subject line
 
@@ -106,7 +112,7 @@ git commit -m "subject line" -m @'
 
 **Show the full drafted message** (subject + body) to the user and wait for confirmation before executing. The same applies to \`--amend\`.
 
-## Step 6: Pull Request (only when asked)
+## Step 7: Pull Request (only when asked)
 
 Only when the user explicitly asks: push the branch and open a PR against \`master\` with \`gh pr create\`, using a short summary plus a test plan. Never push or open a PR otherwise.`,
   description:
