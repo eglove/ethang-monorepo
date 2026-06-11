@@ -10,12 +10,20 @@ All file operations and terminal executions on Windows must prioritize tools acc
 
 | Priority | Tool | When to Use |
 | :--- | :--- | :--- |
-| 1 | **JetBrains WebStorm MCP** (`mcp__webstorm__*`) | All file operations (reading, writing, searching, renaming, inspections) when the IDE is running. |
-| 2 | **PowerShell** | File-adjacent shell operations that the IDE cannot cover (path operations, directory listing, process management). Full access to .NET APIs for advanced scripting. |
-| 3 | **Native Tools** (`Grep`, `Glob`, `Read`, `Edit`, `Write`) | Only when WebStorm MCP and PowerShell cannot cover the operation. |
-| 4 | **Bash** | Last resort only — always prefer PowerShell on Windows. |
+| 1 | **Search & JSON CLI Tools** (`es`, `jq`, `rg`) | Priority for all file **READ** operations (e.g., path searching with `es`, JSON operations with `jq`, text searching with `rg`). |
+| 2 | **JetBrains WebStorm MCP** (`mcp__webstorm__*`) | All file **UPDATE/DELETE** operations (for safe refactoring), and as a backup for file **READ** operations when the IDE is running. |
+| 3 | **PowerShell** | File-adjacent shell operations that the prior tools cannot cover (path operations, directory listing, process management). Full access to .NET APIs for advanced scripting. |
+| 4 | **Native Tools** (`Grep`, `Glob`, `Read`, `Edit`, `Write`) | Only when prior tools cannot cover the operation. |
+| 5 | **Bash** | Last resort only — always prefer PowerShell on Windows. |
 
-*Note: WebStorm is assumed to be running. If a WebStorm MCP tool covers the operation, use it and never fall back unnecessarily.*
+*Note: WebStorm is assumed to be running. Use it for all UPDATE/DELETE operations, and as a backup for READ operations if CLI tools are unavailable or insufficient.*
+
+### Search & JSON CLI Tools Reference
+
+To ensure efficient file READ operations, familiarize yourself with the basic usage patterns of these CLI tools. Detailed help documentation and examples are available in their respective skills:
+- **Everything Search CLI**: [es-cli](.agents/plugins/git/skills/es-cli/SKILL.md)
+- **JSON Processor**: [jq-cli](.agents/plugins/git/skills/jq-cli/SKILL.md)
+- **ripgrep**: [rg-cli](.agents/plugins/git/skills/rg-cli/SKILL.md)
 
 ---
 
@@ -24,7 +32,7 @@ All file operations and terminal executions on Windows must prioritize tools acc
 **Never edit files in `.agents/` directly.** The `.agents/` directory (which contains workspace rules, lifecycle hooks, and skills) is compiled from TypeScript definitions and will be overwritten on the next build. Any direct edits will be lost.
 
 All changes to agent rules, commands, skills, and configuration must go through the compiler package:
-* **Source Path:** [packages/agents-build/](file:///C:/niscdev/ethang-monorepo/packages/agents-build/)
+* **Source Path:** [packages/agents-build/](packages/agents-build/)
 
 After modifying TypeScript definitions in the builder, compile the changes with:
 ```bash
@@ -81,6 +89,6 @@ All agents must apply a DDD analytical lens when analyzing, planning, and implem
 ## SWEBOK v4 Standards & Glossary
 
 All requirements analysis, design, testing, and maintenance work must align with SWEBOK v4 guidelines:
-* Load the [swebok](file:///C:/niscdev/ethang-monorepo/.agents/plugins/requirements/skills/swebok/SKILL.md) chapter index and router to find the matching chapter resource path.
+* Load the [swebok](.agents/plugins/requirements/skills/swebok/SKILL.md) chapter index and router to find the matching chapter resource path.
 * Read the matching `resources/chNN-*.md` file (maximum 3 chapters per task to conserve context).
 * Reference the cross-cutting vocabulary (e.g., distinguishing between **Error**, **Defect/Fault**, and **Failure**).

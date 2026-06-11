@@ -1,4 +1,7 @@
 import { definePlugin, defineSkill } from "../../define.ts";
+import { esSkill } from "../skills/cli/es.ts";
+import { jqSkill } from "../skills/cli/jq.ts";
+import { rgSkill } from "../skills/cli/rg.ts";
 
 const gitWorkflow = defineSkill({
   content: `# Git Workflow
@@ -94,5 +97,5 @@ Only when the user explicitly asks: push the branch and open a PR against \`mast
 
 export const gitPlugin = definePlugin({
   name: "git",
-  skills: [gitWorkflow]
+  skills: [gitWorkflow, esSkill, jqSkill, rgSkill]
 });

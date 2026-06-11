@@ -3,12 +3,12 @@
     "mcp__webstorm": {
       "type": "stdio",
       "env": {
-        "IJ_MCP_SERVER_PORT": "64343"
+        "IJ_MCP_SERVER_PORT": "64506"
       },
-      "command": "C:\\niscdev\\JetBrainsTools\\WebStorm\\jbr\\bin\\java",
+      "command": "C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\jbr\\bin\\java",
       "args": [
         "-classpath",
-        "C:\\niscdev\\JetBrainsTools\\WebStorm\\plugins\\mcpserver\\lib\\mcpserver-frontend.jar;C:\\niscdev\\JetBrainsTools\\WebStorm\\lib\\util-8.jar;C:\\niscdev\\JetBrainsTools\\WebStorm\\lib\\intellij.libraries.kotlinx.coroutines.core.jar;C:\\niscdev\\JetBrainsTools\\WebStorm\\lib\\intellij.libraries.ktor.client.cio.jar;C:\\niscdev\\JetBrainsTools\\WebStorm\\lib\\intellij.libraries.ktor.client.jar;C:\\niscdev\\JetBrainsTools\\WebStorm\\lib\\intellij.libraries.ktor.network.tls.jar;C:\\niscdev\\JetBrainsTools\\WebStorm\\lib\\intellij.libraries.ktor.io.jar;C:\\niscdev\\JetBrainsTools\\WebStorm\\lib\\intellij.libraries.ktor.utils.jar;C:\\niscdev\\JetBrainsTools\\WebStorm\\lib\\intellij.libraries.kotlinx.io.jar;C:\\niscdev\\JetBrainsTools\\WebStorm\\lib\\intellij.libraries.kotlinx.serialization.core.jar;C:\\niscdev\\JetBrainsTools\\WebStorm\\lib\\intellij.libraries.kotlinx.serialization.json.jar",
+        "C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\plugins\\mcpserver\\lib\\mcpserver-frontend.jar;C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\lib\\util-8.jar;C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\lib\\intellij.libraries.kotlinx.coroutines.core.jar;C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\lib\\intellij.libraries.ktor.client.cio.jar;C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\lib\\intellij.libraries.ktor.client.jar;C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\lib\\intellij.libraries.ktor.network.tls.jar;C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\lib\\intellij.libraries.ktor.io.jar;C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\lib\\intellij.libraries.ktor.utils.jar;C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\lib\\intellij.libraries.kotlinx.io.jar;C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\lib\\intellij.libraries.kotlinx.serialization.core.jar;C:\\Users\\glove\\AppData\\Local\\Programs\\WebStorm\\lib\\intellij.libraries.kotlinx.serialization.json.jar",
         "com.intellij.mcpserver.stdio.McpStdioRunnerKt"
       ]
     }
