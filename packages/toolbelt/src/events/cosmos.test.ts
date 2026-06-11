@@ -140,7 +140,7 @@ describe(Cosmos, () => {
   });
 
   describe("debug mode", () => {
-    it("logs on addEventListener and warns on removeEventListener when debug is true", () => {
+    it("logs on addEventListener and removeEventListener when debug is true", () => {
       const debugCosmos = new Cosmos({ debug: true });
       const consoleSpy = vi
         .spyOn(globalThis.console, "log")
@@ -155,6 +155,7 @@ describe(Cosmos, () => {
       expect(consoleSpy).toHaveBeenCalledWith("Added event listener", id);
 
       debugCosmos.removeEventListener(id);
+      expect(consoleSpy).toHaveBeenCalledWith("Removed event listener", id);
 
       debugCosmos.removeEventListener("ghost-id");
       expect(warnSpy).toHaveBeenCalledWith(
