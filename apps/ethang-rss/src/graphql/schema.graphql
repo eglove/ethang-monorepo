@@ -200,7 +200,15 @@ type Query {
     """
     isRead: Boolean
   ): ArticleConnection!
-  subscription(feedId: String!): Feed!
+  """
+  Retrieves a specific subscription by its feed ID
+  """
+  subscription(
+    """
+    The unique identifier of the feed subscription to retrieve
+    """
+    feedId: String!
+  ): Feed!
   """
   Retrieves a list of all feed subscriptions
   """

@@ -61,18 +61,18 @@ type LearningPath @shareable {
 
 """Curriculum representing an ordered list of learning paths"""
 type Curriculum @shareable {
-  """The unique identifier for the curriculum."""
-  id: ID!
-  """The name of the curriculum."""
-  name: String!
-  """The URL of the curriculum."""
-  url: String
-  """The ordered learning paths in this curriculum."""
-  learningPaths: [LearningPath!]!
   """Date when the curriculum was created."""
   createdAt: String!
+  """The unique identifier for the curriculum."""
+  id: ID!
+  """The ordered learning paths in this curriculum."""
+  learningPaths: [LearningPath!]!
+  """The name of the curriculum."""
+  name: String!
   """Date when the curriculum was last updated."""
   updatedAt: String!
+  """The URL of the curriculum."""
+  url: String
 }
 
 """A connection to a list of course tracking records."""
@@ -136,6 +136,13 @@ type Query {
   ): CourseTrackingConnection!
   """Returns all courses"""
   courses: [Course!]!
+  """Returns a specific curriculum by ID"""
+  curriculum(
+    """The unique identifier for the curriculum."""
+    id: ID!
+  ): Curriculum
+  """Returns all curriculums with their learning paths and courses"""
+  curriculums: [Curriculum!]!
   """Returns a specific learning path by ID"""
   learningPath(
     """The unique identifier for the learning path."""
@@ -143,13 +150,6 @@ type Query {
   ): LearningPath
   """Returns all learning paths with their courses"""
   learningPaths: [LearningPath!]!
-  """Returns all curriculums with their learning paths and courses"""
-  curriculums: [Curriculum!]!
-  """Returns a specific curriculum by ID"""
-  curriculum(
-    """The unique identifier for the curriculum."""
-    id: ID!
-  ): Curriculum
 }
 
 extend schema

@@ -139,12 +139,8 @@
           "name": "curriculum_learning_paths_curriculumId_curriculums_id_fk",
           "tableFrom": "curriculum_learning_paths",
           "tableTo": "curriculums",
-          "columnsFrom": [
-            "curriculumId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["curriculumId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -152,12 +148,8 @@
           "name": "curriculum_learning_paths_learningPathId_learning_paths_id_fk",
           "tableFrom": "curriculum_learning_paths",
           "tableTo": "learning_paths",
-          "columnsFrom": [
-            "learningPathId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["learningPathId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -256,12 +248,8 @@
           "name": "learning_path_courses_courseId_courses_id_fk",
           "tableFrom": "learning_path_courses",
           "tableTo": "courses",
-          "columnsFrom": [
-            "courseId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["courseId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -269,12 +257,8 @@
           "name": "learning_path_courses_learningPathId_learning_paths_id_fk",
           "tableFrom": "learning_path_courses",
           "tableTo": "learning_paths",
-          "columnsFrom": [
-            "learningPathId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["learningPathId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

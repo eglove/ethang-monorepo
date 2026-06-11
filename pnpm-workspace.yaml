@@ -3,8 +3,8 @@ packages:
   - packages/*
   - templates/*
 allowBuilds:
-  '@apollo/protobufjs': true
-  '@apollo/rover': true
+  "@apollo/protobufjs": true
+  "@apollo/rover": true
   "@parcel/watcher": true
   bun: true
   esbuild: true
