@@ -9,9 +9,9 @@ export default defineConfig({
       thresholds: {
         autoUpdate: true,
         branches: 10.12,
-        functions: 10.37,
-        lines: 12.81,
-        statements: 12.81,
+        functions: 15.09,
+        lines: 16.56,
+        statements: 16.56,
       },
     },
     environment: "jsdom",
