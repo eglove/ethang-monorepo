@@ -13,22 +13,9 @@ describe("useWindowSize", () => {
     expect(result.current.height).toBe(window.innerHeight);
   });
 
-  it("should return initial width and height if window is undefined", async () => {
-    // We cannot undefine globalThis in jsdom. Vitest uses it for test execution context.
-    // However, we can use `vi.stubGlobal` to mock the values the hook uses directly.
-
-    // Temporarily mock window properties used by the hook
+  it("should return initial width and height if window inner properties are undefined", async () => {
     vi.stubGlobal('innerWidth', undefined);
     vi.stubGlobal('innerHeight', undefined);
-
-    // If we want to simulate isBrowser being false, we might not be able to easily
-    // since `globalThis` is required by the environment.
-    // BUT we can test that passing initial widths and getting undefined from window
-    // behaves predictably.
-    // Actually, wait, `useWindowSize` returns `globalThis.innerWidth` which we just mocked as `undefined`.
-    // Wait, the state setup is: `isBrowser ? globalThis.innerWidth : initialWidth`
-    // Since `isBrowser` is true in our test, it returns `undefined` (which we just set).
-    // Let's ensure this is tested without crashing the worker.
 
     const { result } = renderHook(() => useWindowSize(100, 200));
 
