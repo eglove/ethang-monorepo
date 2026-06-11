@@ -7,8 +7,6 @@ export type AddSubscriptionMutation = {
   };
 };
 export type AddSubscriptionMutationVariables = Exact<{
-  title: string;
-  website: string;
   xmlAddress: string;
 }>;
 /** An individual RSS article */
@@ -272,8 +270,8 @@ export type Mutation = {
 
 /** The root Mutation type */
 export type MutationAddSubscriptionArgs = {
-  title: Scalars["String"]["input"];
-  website: Scalars["String"]["input"];
+  title?: InputMaybe<Scalars["String"]["input"]>;
+  website?: InputMaybe<Scalars["String"]["input"]>;
   xmlAddress: Scalars["String"]["input"];
 };
 

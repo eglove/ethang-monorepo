@@ -12,19 +12,17 @@ step in order; do not skip or abbreviate, even for a one-line change.
 The mandatory user gate is **Step 3 (plan approval)**. You must stop there and wait for explicit
 approval before writing any code.
 
-## Step 1: Task Intake
+## Step 1: Task Intake (Interview via /grill-me)
 
-Establish what you are building.
+Interview the user about every aspect of their task using the `/grill-me` command workflow to establish a shared understanding.
 
-- If the user gives you prose (a feature description or a bug report), treat that as the task directly.
-- If the user gives you a GitHub issue number (e.g. `#42` or `gh issue 42`), fetch it:
-  `gh issue view <n>` — and use the title + body as the task.
+Guidelines:
+- Ask questions one at a time using the `ask_question` tool.
+- For each question, provide a recommended option first.
+- If a question can be answered by exploring the codebase, explore the codebase instead of asking.
+- Walk down each branch of the design tree, resolving dependencies between decisions.
 
-Determine the target package (the `pnpm --filter <package>` name) from the task and the affected paths.
-
-Summarize back to the user: task title, whether it is a feature or a bug, the acceptance criteria you
-inferred, and the target package. Confirm this understanding before continuing. If the task is
-ambiguous, ask now — do not guess.
+Once the interview is complete, summarize back to the user: task title, whether it is a feature or a bug, the final acceptance criteria, and the target package (the `pnpm --filter <package>` name). Confirm this understanding and obtain explicit approval before proceeding to Step 2.
 
 ## Step 2: Root Cause Analysis (bug-shaped tasks only)
 

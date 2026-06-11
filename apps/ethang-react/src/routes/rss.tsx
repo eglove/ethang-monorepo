@@ -84,8 +84,8 @@ export const GET_SUBSCRIPTIONS_WITH_ARTICLES = gql(`
 `);
 
 export const ADD_SUBSCRIPTION = gql(`
-  mutation AddSubscription($title: String!, $website: String!, $xmlAddress: String!) {
-    addSubscription(title: $title, website: $website, xmlAddress: $xmlAddress) {
+  mutation AddSubscription($xmlAddress: String!) {
+    addSubscription(xmlAddress: $xmlAddress) {
       id
       title
       website
@@ -132,14 +132,13 @@ const RssComponent = () => {
       return;
     }
 
-    const { title, website, xmlAddress } = parseXmlUrl(cleanUrl);
-    if ("" === title || "" === website) {
+    if (isNil(URL.parse(cleanUrl))) {
       return;
     }
 
     await addSubscription({
       refetchQueries: [{ query: GET_SUBSCRIPTIONS_WITH_ARTICLES }],
-      variables: { title, website, xmlAddress }
+      variables: { xmlAddress: cleanUrl }
     });
     setXmlUrl("");
   };

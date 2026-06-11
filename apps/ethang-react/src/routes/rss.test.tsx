@@ -421,8 +421,6 @@ describe("RSS Feature", () => {
           request: {
             query: ADD_SUBSCRIPTION,
             variables: {
-              title: "example.com",
-              website: "https://example.com",
               xmlAddress: "https://example.com/rss.xml"
             }
           },
