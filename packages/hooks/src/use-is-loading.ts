@@ -31,7 +31,7 @@ export const useIsLoading = <T, E>(
         });
     };
 
-    setCaller(callFunction);
+    setCaller(() => callFunction);
   }, [callback]);
 
   return {
