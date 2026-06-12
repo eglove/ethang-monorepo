@@ -1,5 +1,7 @@
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { eq } from "drizzle-orm";
 import { XMLParser } from "fast-xml-parser";
+import attempt from "lodash/attempt.js";
 import find from "lodash/find.js";
 import isArray from "lodash/isArray.js";
 import isNil from "lodash/isNil.js";
@@ -121,7 +123,6 @@ export const addSubscriptionMutation = (database: Database) => {
     _parent: unknown,
     parameters: { title?: string; website?: string; xmlAddress: string },
     context: unknown
-    // eslint-disable-next-line sonar/cognitive-complexity,sonar/cyclomatic-complexity
   ) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const serverContext = context as ServerContext;
@@ -138,40 +139,39 @@ export const addSubscriptionMutation = (database: Database) => {
         "" === trim(derivedTitle) || "" === trim(derivedWebsite);
 
       if (needsMetadata) {
-        try {
+        await attemptAsync(async () => {
           const response = await globalThis.fetch(parameters.xmlAddress);
-          // eslint-disable-next-line sonar/nested-control-flow
+
           if (response.ok) {
             const xmlText = await response.text();
             const parsedMeta = parseFeedMetadata(xmlText);
-            // eslint-disable-next-line max-depth
+
+            // eslint-disable-next-line sonar/nested-control-flow
             if ("" === trim(derivedTitle) && parsedMeta.title) {
               derivedTitle = parsedMeta.title;
             }
-            // eslint-disable-next-line max-depth
+
+            // eslint-disable-next-line sonar/nested-control-flow
             if ("" === trim(derivedWebsite) && parsedMeta.website) {
               derivedWebsite = parsedMeta.website;
             }
           }
-        } catch {
-          // fetch/parse failed, fallback to URL-based parsing below
-        }
+        });
 
         if ("" === trim(derivedTitle) || "" === trim(derivedWebsite)) {
-          // eslint-disable-next-line sonar/nested-control-flow
-          try {
+          attempt(() => {
             const url = new URL(parameters.xmlAddress);
-            // eslint-disable-next-line max-depth
+
+            // eslint-disable-next-line sonar/nested-control-flow
             if ("" === trim(derivedTitle)) {
               derivedTitle = url.hostname;
             }
-            // eslint-disable-next-line max-depth
+
+            // eslint-disable-next-line sonar/nested-control-flow
             if ("" === trim(derivedWebsite)) {
               derivedWebsite = url.origin;
             }
-          } catch {
-            // Keep empty string fallback
-          }
+          });
         }
       }
 
