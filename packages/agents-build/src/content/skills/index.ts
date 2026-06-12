@@ -38,13 +38,12 @@ Create a well-formed commit for this monorepo, with an optional pull request ste
 
    Everything else goes in **include**.
 
-3. **Present both lists to the user as a native CLI artifact:**
-   Use \`write_to_file\` to create \`stage-plan.md\` in the artifact directory with:
-   - \`ArtifactMetadata.UserFacing: true\`
-   - \`ArtifactMetadata.RequestFeedback: true\`
-   - \`ArtifactMetadata.Summary\`: list of files to stage and files to skip
+3. **Present both lists to the user inline in the conversation:**
+   Print the list of files to stage and the list of files to skip clearly.
    
-   **This is an approval gate.** The user clicks **Proceed** to stage. On confirmation, \`git add\` each included file.
+   **This is an approval gate.** Call the \`ask_question\` tool directly to ask:
+   - "Stage these files and continue?" with options: Yes / Edit list / Cancel.
+   On confirmation, \`git add\` each included file.
 
 ## Step 2: Read Git Context
 
@@ -95,20 +94,18 @@ Bullet points summarizing the logical changes, with emoji prefixes where they ad
 
 Use two \`-m\` flags — git uses the second as the body paragraph. In PowerShell, pass multi-line bodies with a single-quoted here-string.
 
-**Present the commit draft as a native CLI artifact:**
+**Present the commit draft inline in the conversation:**
+Print the drafted subject line and body paragraphs clearly.
 
-Use \`write_to_file\` to create \`commit-draft.md\` in the artifact directory with:
-- \`ArtifactMetadata.UserFacing: true\`
-- \`ArtifactMetadata.RequestFeedback: true\`
-- \`ArtifactMetadata.Summary\`: the subject and body of the drafted commit message
-
-**This is a hard gate.** The user clicks **Proceed** to execute the commit.
+**This is a hard gate.** Call the \`ask_question\` tool directly to ask:
+- "Execute this commit?" with options: Yes / Edit message / Cancel.
+On confirmation, run the commit commands.
 
 ## Step 7: Pull Request (only when asked)
 
 Only when the user explicitly asks: push the branch and open a PR against \`master\` with \`gh pr create\`, using a short summary plus a test plan. Never push or open a PR otherwise.`,
   description:
-    "Create a well-formed git commit using native CLI tools: stage-plan.md and commit-draft.md native artifacts with RequestFeedback gates, invoke_subagent with research for quality checks, and ask_question for lessons prompts.",
+    "Create a well-formed git commit using native CLI tools: ask_question inline prompts for staging and commit approvals, invoke_subagent with research for quality checks in parallel.",
   name: "git"
 });
 

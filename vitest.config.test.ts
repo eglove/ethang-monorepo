@@ -1,7 +1,7 @@
 import isArray from "lodash/isArray.js";
 import { expect, it } from "vitest";
 
-import config from "./vitest.config";
+import config from "./vitest.config.ts";
 
 it("should have correct project configurations", () => {
   expect(config).toBeDefined();
