@@ -4,8 +4,6 @@ import type { RuleDefinition, Section, SkillDefinition } from "./define.ts";
 
 import {
   renderJson,
-  renderRuleFrontmatter,
-  renderSkillFrontmatter,
   resolveSections,
   ruleMarkdown,
   skillMarkdown
@@ -22,115 +20,6 @@ const baseSkill: SkillDefinition = {
   description: "Does a thing. Use when the user asks for the thing.",
   name: "my-skill"
 };
-
-describe("renderRuleFrontmatter", () => {
-  it("renders always_on with only the trigger line", () => {
-    expect(renderRuleFrontmatter(baseRule)).toBe(
-      "---\ntrigger: always_on\n---\n"
-    );
-  });
-
-  it("renders manual with only the trigger line", () => {
-    expect(renderRuleFrontmatter({ ...baseRule, trigger: "manual" })).toBe(
-      "---\ntrigger: manual\n---\n"
-    );
-  });
-
-  it("renders model_decision with its description", () => {
-    expect(
-      renderRuleFrontmatter({
-        ...baseRule,
-        description: "running tests in this monorepo",
-        trigger: "model_decision"
-      })
-    ).toBe(
-      "---\ntrigger: model_decision\ndescription: running tests in this monorepo\n---\n"
-    );
-  });
-
-  it("renders glob with its globs", () => {
-    expect(
-      renderRuleFrontmatter({
-        ...baseRule,
-        globs: "**/*.test.ts",
-        trigger: "glob"
-      })
-    ).toBe("---\ntrigger: glob\nglobs: **/*.test.ts\n---\n");
-  });
-
-  it("throws when model_decision has no description", () => {
-    expect(() => {
-      renderRuleFrontmatter({ ...baseRule, trigger: "model_decision" });
-    }).toThrow(/model_decision/u);
-  });
-
-  it("throws when glob has no globs", () => {
-    expect(() => {
-      renderRuleFrontmatter({ ...baseRule, trigger: "glob" });
-    }).toThrow(/glob/u);
-  });
-
-  it("throws when a value contains a newline", () => {
-    expect(() => {
-      renderRuleFrontmatter({
-        ...baseRule,
-        description: "line one\nline two",
-        trigger: "model_decision"
-      });
-    }).toThrow(/newline/u);
-  });
-});
-
-describe("renderSkillFrontmatter", () => {
-  it("renders name then description", () => {
-    expect(renderSkillFrontmatter(baseSkill)).toBe(
-      "---\nname: my-skill\ndescription: Does a thing. Use when the user asks for the thing.\n---\n"
-    );
-  });
-
-  it("throws when the description contains a newline", () => {
-    expect(() => {
-      renderSkillFrontmatter({ ...baseSkill, description: "a\nb" });
-    }).toThrow(/newline/u);
-  });
-
-  it("double-quotes a description containing a colon-space", () => {
-    expect(
-      renderSkillFrontmatter({
-        ...baseSkill,
-        description: "Create a commit: proposal, review, message."
-      })
-    ).toBe(
-      '---\nname: my-skill\ndescription: "Create a commit: proposal, review, message."\n---\n'
-    );
-  });
-
-  it("escapes embedded double quotes when quoting", () => {
-    expect(
-      renderSkillFrontmatter({
-        ...baseSkill,
-        description: 'Ask "why: really?" five times.'
-      })
-    ).toBe(
-      '---\nname: my-skill\ndescription: "Ask \\"why: really?\\" five times."\n---\n'
-    );
-  });
-});
-
-describe("renderRuleFrontmatter yaml quoting", () => {
-  it("double-quotes a model_decision description containing a colon-space", () => {
-    expect(
-      renderRuleFrontmatter({
-        content: "x",
-        description: "reviewing: a PR or diff",
-        filename: "edge",
-        trigger: "model_decision"
-      })
-    ).toBe(
-      '---\ntrigger: model_decision\ndescription: "reviewing: a PR or diff"\n---\n'
-    );
-  });
-});
 
 describe("resolveSections", () => {
   const sectionA: Section = { content: "Alpha.", id: "a", label: "A" };
@@ -178,7 +67,35 @@ describe("resolveSections", () => {
 describe("skillMarkdown", () => {
   it("emits frontmatter, a blank line, the body, and a trailing newline", () => {
     expect(skillMarkdown(baseSkill)).toBe(
-      "---\nname: my-skill\ndescription: Does a thing. Use when the user asks for the thing.\n---\n\nSkill body.\n"
+      "---\ndescription: Does a thing. Use when the user asks for the thing.\nname: my-skill\n---\n\nSkill body.\n"
+    );
+  });
+
+  it("throws when the description contains a newline", () => {
+    expect(() => {
+      skillMarkdown({ ...baseSkill, description: "a\nb" });
+    }).toThrow(/newline/u);
+  });
+
+  it("double-quotes a description containing a colon-space", () => {
+    expect(
+      skillMarkdown({
+        ...baseSkill,
+        description: "Create a commit: proposal, review, message."
+      })
+    ).toBe(
+      '---\ndescription: "Create a commit: proposal, review, message."\nname: my-skill\n---\n\nSkill body.\n'
+    );
+  });
+
+  it("escapes embedded double quotes when quoting", () => {
+    expect(
+      skillMarkdown({
+        ...baseSkill,
+        description: 'Ask "why: really?" five times.'
+      })
+    ).toBe(
+      '---\ndescription: "Ask \\"why: really?\\" five times."\nname: my-skill\n---\n\nSkill body.\n'
     );
   });
 
@@ -190,6 +107,17 @@ describe("skillMarkdown", () => {
     };
 
     expect(skillMarkdown(skill)).toContain("Intro.\n\nShared.\n\nOutro.");
+  });
+
+  it("does not replace sections token when sections is empty list", () => {
+    const skill: SkillDefinition = {
+      ...baseSkill,
+      sections: []
+    };
+
+    expect(skillMarkdown(skill)).toBe(
+      "---\ndescription: Does a thing. Use when the user asks for the thing.\nname: my-skill\n---\n\nSkill body.\n"
+    );
   });
 
   it("throws when sections are declared but the token is missing", () => {
@@ -208,6 +136,69 @@ describe("ruleMarkdown", () => {
   it("emits frontmatter, a blank line, the content, and a trailing newline", () => {
     expect(ruleMarkdown(baseRule)).toBe(
       "---\ntrigger: always_on\n---\n\nRule body.\n"
+    );
+  });
+
+  it("renders manual with only the trigger line", () => {
+    expect(ruleMarkdown({ ...baseRule, trigger: "manual" })).toBe(
+      "---\ntrigger: manual\n---\n\nRule body.\n"
+    );
+  });
+
+  it("emits frontmatter with description for model_decision trigger", () => {
+    const rule: RuleDefinition = {
+      ...baseRule,
+      description: "running tests in this monorepo",
+      trigger: "model_decision"
+    };
+    expect(ruleMarkdown(rule)).toBe(
+      "---\ndescription: running tests in this monorepo\ntrigger: model_decision\n---\n\nRule body.\n"
+    );
+  });
+
+  it("emits frontmatter with globs for glob trigger", () => {
+    const rule: RuleDefinition = {
+      ...baseRule,
+      globs: "**/*.test.ts",
+      trigger: "glob"
+    };
+    expect(ruleMarkdown(rule)).toBe(
+      "---\nglobs: **/*.test.ts\ntrigger: glob\n---\n\nRule body.\n"
+    );
+  });
+
+  it("throws when model_decision has no description", () => {
+    expect(() => {
+      ruleMarkdown({ ...baseRule, trigger: "model_decision" });
+    }).toThrow(/model_decision/u);
+  });
+
+  it("throws when glob has no globs", () => {
+    expect(() => {
+      ruleMarkdown({ ...baseRule, trigger: "glob" });
+    }).toThrow(/glob/u);
+  });
+
+  it("throws when a value contains a newline", () => {
+    expect(() => {
+      ruleMarkdown({
+        ...baseRule,
+        description: "line one\nline two",
+        trigger: "model_decision"
+      });
+    }).toThrow(/newline/u);
+  });
+
+  it("double-quotes a model_decision description containing a colon-space", () => {
+    expect(
+      ruleMarkdown({
+        ...baseRule,
+        content: "Rule body.",
+        description: "reviewing: a PR or diff",
+        trigger: "model_decision"
+      })
+    ).toBe(
+      '---\ndescription: "reviewing: a PR or diff"\ntrigger: model_decision\n---\n\nRule body.\n'
     );
   });
 });

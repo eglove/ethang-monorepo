@@ -1,6 +1,6 @@
 ---
-trigger: model_decision
 description: running tests, builds, or lint in this monorepo
+trigger: model_decision
 ---
 
 # Verification Commands

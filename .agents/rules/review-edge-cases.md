@@ -1,6 +1,6 @@
 ---
-trigger: model_decision
 description: reviewing a pull request or diff
+trigger: model_decision
 ---
 
 # Review Edge Cases

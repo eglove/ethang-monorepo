@@ -1,6 +1,6 @@
 ---
-name: requirements
 description: Primary requirements skill. Execute when asked to define requirements from a GitHub issue or user description. Drives intake, multi-lens analysis, and structured requirements.md output.
+name: requirements
 ---
 
 # Requirements

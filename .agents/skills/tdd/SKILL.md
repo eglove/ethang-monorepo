@@ -1,6 +1,6 @@
 ---
-name: tdd
 description: "End-to-end Red-Green-Refactor pipeline: task intake, optional bug RCA, planning with a state table, a mandatory plan-approval gate, RED tests, GREEN implementation, refactor, and summary. Use when the user asks to TDD a feature or bug, work an issue red-green-refactor, or build a change test-first."
+name: tdd
 ---
 
 # TDD

@@ -688,6 +688,9 @@ importers:
       '@ethang/eslint-config':
         specifier: ^25.20.1
         version: 25.20.1(@angular/cli@21.2.13(@types/node@25.9.3)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.61.0(@typescript-eslint/parser@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.61.0)(@typescript-eslint/utils@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(jiti@2.7.0)(prettier@3.8.4)(storybook@10.4.1(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(tailwindcss@4.3.0)(typescript@6.0.3)(vitest@4.1.8)
+      '@ethang/markdown-generator':
+        specifier: ^2.0.2
+        version: 2.0.2(lodash@4.18.1)
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24

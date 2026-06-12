@@ -1,6 +1,6 @@
 ---
-name: review
 description: "Primary review skill. Execute when asked to review a pull request or diff. Drives the full review pipeline: intake via gh CLI or local git diff, multi-dimension review (correctness, design, security, maintainability, test coverage), findings classified blocking/non-blocking, structured verdict, report written."
+name: review
 ---
 
 # PR Review

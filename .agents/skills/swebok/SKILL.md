@@ -1,6 +1,6 @@
 ---
-name: swebok
 description: SWEBOK v4 chapter index and router. Read the matching chapter resource before requirements, design, testing, or maintenance work. Maximum 3 chapters per task.
+name: swebok
 ---
 
 # SWEBOK v4 — Chapter Index
@@ -46,4 +46,3 @@ Terms used across multiple chapters:
 | **GQM** | Goal-Question-Metric — every metric must support a decision |
 | **CMMI** | Capability Maturity Model Integration — process improvement framework |
 | **SQA** | Software Quality Assurance — process assurance + product assurance |
-

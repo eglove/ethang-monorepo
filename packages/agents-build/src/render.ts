@@ -7,73 +7,13 @@
  * I/O; everything here is unit-testable without side effects.
  */
 
+import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
 import includes from "lodash/includes.js";
+import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import replace from "lodash/replace.js";
 
 import type { RuleDefinition, Section, SkillDefinition } from "./define.ts";
-
-const assertNoNewline = (value: string, key: string): void => {
-  if (includes(value, "\n")) {
-    throw new Error(
-      `Frontmatter value for "${key}" contains a newline; multi-line values are not allowed: ${JSON.stringify(value)}`
-    );
-  }
-};
-
-/**
- * YAML scalars containing ": ", "#", or quotes are ambiguous unquoted;
- * emit them as escaped double-quoted strings.
- */
-const yamlScalar = (value: string): string => {
-  if (!/[:"#]/u.test(value)) {
-    return value;
-  }
-
-  const escaped = value
-    .replaceAll("\\", "\\\\")
-    .replaceAll('"', String.raw`\"`);
-  return `"${escaped}"`;
-};
-
-/**
- * Antigravity does not document how rule activation modes are encoded in the
- * file; this emits the Windsurf-lineage `trigger:` frontmatter convention.
- * If UI verification falsifies the assumption, this is the only function to
- * change.
- */
-export const renderRuleFrontmatter = (rule: RuleDefinition): string => {
-  const lines = [`trigger: ${rule.trigger}`];
-
-  if ("model_decision" === rule.trigger) {
-    if (undefined === rule.description) {
-      throw new Error(
-        `Rule "${rule.filename}": trigger model_decision requires a description`
-      );
-    }
-
-    assertNoNewline(rule.description, "description");
-    lines.push(`description: ${yamlScalar(rule.description)}`);
-  }
-
-  if ("glob" === rule.trigger) {
-    if (undefined === rule.globs) {
-      throw new Error(`Rule "${rule.filename}": trigger glob requires globs`);
-    }
-
-    assertNoNewline(rule.globs, "globs");
-    lines.push(`globs: ${rule.globs}`);
-  }
-
-  return `---\n${lines.join("\n")}\n---\n`;
-};
-
-export const renderSkillFrontmatter = (skill: SkillDefinition): string => {
-  assertNoNewline(skill.name, "name");
-  assertNoNewline(skill.description, "description");
-
-  return `---\nname: ${skill.name}\ndescription: ${yamlScalar(skill.description)}\n---\n`;
-};
 
 export const resolveSections = (sections: Section[], label: string): string => {
   const declaredIds = new Set(
@@ -105,40 +45,58 @@ export const resolveSections = (sections: Section[], label: string): string => {
   return blocks.join("\n\n---\n\n");
 };
 
-const buildSkillParts = (skill: SkillDefinition): string[] => {
-  const parts: string[] = [];
-
-  if (0 < (skill.sections?.length ?? 0)) {
-    parts.push(resolveSections(skill.sections ?? [], `skill:${skill.name}`));
-  }
-
-  return parts;
-};
-
 const resolveSkillBody = (skill: SkillDefinition): string => {
-  const hasContent = 0 < (skill.sections?.length ?? 0);
-
-  if (!hasContent) {
-    return skill.content;
+  const { content, name, sections } = skill;
+  if (isNil(sections) || 0 === sections.length) {
+    return content;
   }
 
-  if (!includes(skill.content, "{{sections}}")) {
+  if (!includes(content, "{{sections}}")) {
     throw new Error(
-      `Skill "${skill.name}": sections declared but {{sections}} token missing from content`
+      `Skill "${name}": sections declared but {{sections}} token missing from content`
     );
   }
 
-  const parts = buildSkillParts(skill);
+  const parts = [resolveSections(sections, `skill:${name}`)];
 
-  return replace(skill.content, "{{sections}}", parts.join("\n\n---\n\n"));
+  return replace(content, "{{sections}}", parts.join("\n\n---\n\n"));
 };
 
 export const skillMarkdown = (skill: SkillDefinition): string => {
-  return `${renderSkillFrontmatter(skill)}\n${resolveSkillBody(skill)}\n`;
+  return generateMarkdown({
+    blocks: [
+      { count: 0, type: "space" },
+      { text: resolveSkillBody(skill), type: "text" }
+    ],
+    frontmatter: {
+      description: skill.description,
+      name: skill.name
+    }
+  });
 };
 
 export const ruleMarkdown = (rule: RuleDefinition): string => {
-  return `${renderRuleFrontmatter(rule)}\n${rule.content}\n`;
+  if ("model_decision" === rule.trigger && isNil(rule.description)) {
+    throw new Error(
+      `Rule "${rule.filename}": trigger model_decision requires a description`
+    );
+  }
+
+  if ("glob" === rule.trigger && isNil(rule.globs)) {
+    throw new Error(`Rule "${rule.filename}": trigger glob requires globs`);
+  }
+
+  return generateMarkdown({
+    blocks: [
+      { count: 0, type: "space" },
+      { text: rule.content, type: "text" }
+    ],
+    frontmatter: {
+      trigger: rule.trigger,
+      ...(isNil(rule.description) ? {} : { description: rule.description }),
+      ...(isNil(rule.globs) ? {} : { globs: rule.globs })
+    }
+  });
 };
 
 export const renderJson = (value: unknown): string => {
