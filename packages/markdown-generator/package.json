@@ -10,28 +10,16 @@
   },
   "description": "Markdown Generator following GitHub syntax.",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.19.5",
-    "@ethang/project-builder": "^3.0.2",
+    "@ethang/eslint-config": "^25.20.1",
     "@types/lodash": "^4.17.24",
     "@vitest/coverage-v8": "^4.1.8",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.4.1",
+    "tsc-prog": "^2.3.0",
+    "tsup": "^8.5.1",
     "typescript": "^6.0.3",
     "vite": "^8.0.16",
     "vitest": "^4.1.8"
-  },
-  "main": "./dist/markdown-generator.js",
-  "module": "./dist/markdown-generator.js",
-  "types": "./dist/markdown-generator.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/markdown-generator.js",
-      "types": "./dist/markdown-generator.d.ts"
-    },
-    "./markdown-generator.js": {
-      "import": "./dist/markdown-generator.js",
-      "types": "./dist/markdown-generator.d.ts"
-    }
   },
   "engines": {
     "node": ">=24"
@@ -48,5 +36,5 @@
     "test": "vitest run --coverage"
   },
   "type": "module",
-  "version": "2.0.0"
+  "version": "2.0.2"
 }

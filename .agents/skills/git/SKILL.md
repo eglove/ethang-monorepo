@@ -1,6 +1,6 @@
 ---
-name: git
 description: "Create a well-formed git commit: staged-file proposal, pre-commit quality review, formatted subject and emoji body, optional gh pull request. Use when the user asks to commit, amend, or open a PR."
+name: git
 ---
 
 # Git Workflow

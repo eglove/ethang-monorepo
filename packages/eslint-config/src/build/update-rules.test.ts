@@ -35,8 +35,7 @@ describe("update-rules", () => {
     // but let's make it explicit to hit the 'false' branch of the guard.
     // The guard is: if (process.argv[1] === import.meta.filename)
 
-    // We can just import it and check that createConfigFile was NOT called
-    // more than the explicit call in updateRules test.
+    // We can just import it and check that createConfigFile was NOT called more than the explicit call in updateRules test.
 
     vi.clearAllMocks();
     // @ts-expect-error for test

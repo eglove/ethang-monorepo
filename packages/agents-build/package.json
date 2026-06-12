@@ -2,9 +2,10 @@
   "author": "Ethan Glover",
   "description": "Generates Google Antigravity plugins, rules, skills, and hooks into .agents/ from typed TypeScript definitions.",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.19.5",
+    "@ethang/eslint-config": "^25.20.1",
+    "@ethang/markdown-generator": "^2.0.2",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^25.9.2",
+    "@types/node": "^25.9.3",
     "@vitest/coverage-v8": "^4.1.8",
     "eslint": "^10.4.1",
     "lodash": "^4.18.1",
@@ -25,5 +26,8 @@
     "test:watch": "vitest"
   },
   "type": "module",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "dependencies": {
+    "@ethang/toolbelt": "^4.5.0"
+  }
 }

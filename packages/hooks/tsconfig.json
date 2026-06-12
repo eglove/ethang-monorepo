@@ -4,5 +4,4 @@
     "moduleResolution": "bundler",
     "types": ["node", "vite/client"]
   },
-  "include": ["src", "tests"]
 }

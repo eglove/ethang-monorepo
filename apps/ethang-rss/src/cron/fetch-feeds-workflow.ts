@@ -1,3 +1,4 @@
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import {
   WorkflowEntrypoint,
   type WorkflowEvent,
@@ -8,6 +9,7 @@ import { drizzle } from "drizzle-orm/d1";
 import { XMLParser } from "fast-xml-parser";
 import find from "lodash/find.js";
 import isArray from "lodash/isArray.js";
+import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
@@ -134,7 +136,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     for (const feed of feeds) {
       // eslint-disable-next-line no-await-in-loop
       await step.do(`fetch-feed-${feed.id}`, async () => {
-        try {
+        const error = await attemptAsync(async () => {
           const response = await fetch(feed.xmlAddress);
           const xml = await response.text();
           // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
@@ -183,7 +185,9 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
             .update(feedsTable)
             .set({ lastFetchedAt: new Date().toISOString() })
             .where(eq(feedsTable.id, feed.id));
-        } catch (error) {
+        });
+
+        if (isError(error)) {
           // eslint-disable-next-line no-console
           console.error(`Failed to fetch feed ${feed.xmlAddress}:`, error);
           throw error; // Rethrow so Workflow can retry if configured

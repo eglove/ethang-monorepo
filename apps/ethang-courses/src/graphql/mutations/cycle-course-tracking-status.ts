@@ -27,6 +27,7 @@ export const cycleCourseTrackingStatusMutation = (database: Database) => {
     );
 
     if (undefined === existing) {
+      // eslint-disable-next-line unicorn/no-unused-array-method-return
       await database.insert(courseTrackingTable).values({
         courseUrl,
         status: COURSE_TRACKING_STATUS.COMPLETE,

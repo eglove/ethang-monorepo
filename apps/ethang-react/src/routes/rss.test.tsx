@@ -3,7 +3,10 @@ import type { ComponentType, ReactNode } from "react";
 
 import { MockedProvider } from "@apollo/client/testing/react/index.js";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import attempt from "lodash/attempt.js";
+import isError from "lodash/isError.js";
 import noop from "lodash/noop.js";
+import repeat from "lodash/repeat.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { authStore } from "../components/auth/auth-store.ts";
@@ -151,13 +154,10 @@ describe("RSS Feature", () => {
       // Setup state where no user is logged in
       authStore.signOut();
 
-      // Trigger beforeLoad
-      try {
+      attempt(() => {
         // @ts-expect-error for test
         Route.options.beforeLoad?.();
-      } catch {
-        // expected redirect error
-      }
+      });
 
       expect(redirectMock).toEqual({
         search: {
@@ -178,10 +178,12 @@ describe("RSS Feature", () => {
       });
 
       let redirectThrown = false;
-      try {
+      const result = attempt(() => {
         // @ts-expect-error for test
         Route.options.beforeLoad?.();
-      } catch {
+      });
+
+      if (isError(result)) {
         redirectThrown = true;
       }
 
@@ -722,7 +724,7 @@ describe("RSS Feature", () => {
 
       const input = screen.getByPlaceholderText(/feed xml url/iu);
 
-      fireEvent.change(input, { target: { value: "   " } });
+      fireEvent.change(input, { target: { value: repeat(" ", 3) } });
       const form = input.closest("form");
       if (form) {
         fireEvent.submit(form);
