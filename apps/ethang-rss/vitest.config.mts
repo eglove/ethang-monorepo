@@ -18,11 +18,7 @@ export default defineConfig({
   ],
   test: {
     coverage: {
-      include: ["src/**/*.ts", "src/**/*.tsx"],
-      provider: "v8",
-      reporter: ["text", "json", "html", "lcov"],
       thresholds: {
-        autoUpdate: true,
         branches: 37.3,
         functions: 7.57,
         lines: 27.1,
