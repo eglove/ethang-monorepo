@@ -1,8 +1,9 @@
 import map from "lodash/map.js";
 import replace from "lodash/replace.js";
 import { copyFileSync, writeFileSync } from "node:fs";
+import { build as tsc } from "tsc-prog";
+import { build as tsup } from "tsup";
 
-import { projectBuilder } from "../project-builder/src/project-builder.ts";
 import { outputConfigs } from "./src/build/output-config.ts";
 import { updateReadme } from "./src/build/update-readme.js";
 import { updateRules } from "./src/build/update-rules.js";
@@ -13,10 +14,36 @@ const configFiles = map(outputConfigs, (c) => {
 
 await updateRules();
 updateReadme();
-await projectBuilder(import.meta.dirname, {
-  entry: [...configFiles, "src/constants.js"],
-  outDir: "dist"
+tsc({
+  basePath: ".",
+  clean: ["dist"],
+  compilerOptions: {
+    allowImportingTsExtensions: true,
+    allowSyntheticDefaultImports: true,
+    declaration: true,
+    emitDeclarationOnly: true,
+    // @ts-expect-error allowed
+    moduleResolution: "bundler",
+    outDir: "dist",
+    target: "esnext",
+    types: ["node"]
+  },
+  exclude: ["**/*.test.ts"],
+  include: [...configFiles, "src/constants.js"]
 });
+
+await tsup({
+  bundle: true,
+  clean: false,
+  entry: [...configFiles, "src/constants.js"],
+  format: ["esm"],
+  minify: true,
+  outDir: "dist",
+  sourcemap: true,
+  target: "esnext"
+});
+
+copyFileSync("package.json", "dist/package.json");
 copyFileSync("src/README.md", "dist/README.md");
 
 const typeFile = `import { defineConfig } from "eslint/config";
