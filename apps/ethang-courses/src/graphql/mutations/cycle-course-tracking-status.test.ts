@@ -25,7 +25,7 @@ describe("cycleCourseTrackingStatusMutation", () => {
     vi.mocked(getCourseUrlByCourseId).mockResolvedValue(COURSE_URL);
     vi.mocked(getTrackingByUserIdCourseUrl)
       .mockImplementationOnce(async () => {
-        // eslint-disable-next-line unicorn/no-useless-undefined,unicorn/no-useless-promise-resolve-reject
+        // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
         return Promise.resolve(undefined);
       })
       .mockResolvedValueOnce({

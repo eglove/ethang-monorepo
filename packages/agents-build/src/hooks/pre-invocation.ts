@@ -11,7 +11,9 @@
  * ever written to stdout.
  */
 
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import isArray from "lodash/isArray.js";
+import isError from "lodash/isError.js";
 import isNumber from "lodash/isNumber.js";
 import isString from "lodash/isString.js";
 import { existsSync, readFileSync } from "node:fs";
@@ -56,7 +58,7 @@ const resolveWorkspaceRoot = (
   return path.resolve(import.meta.dirname, "../../../..");
 };
 
-try {
+const response = await attemptAsync(async () => {
   const payload = parseHookInput(await readStdin());
   const rawInvocationNumber = payload?.["invocationNum"];
   const invocationNumber = isNumber(rawInvocationNumber)
@@ -79,8 +81,11 @@ try {
     lessonsContent = readFileSync(lessonsPath, "utf8");
   }
 
-  const response = getPreInvocationResponse(invocationNumber, lessonsContent);
-  emit(response);
-} catch {
+  return getPreInvocationResponse(invocationNumber, lessonsContent);
+});
+
+if (isError(response)) {
   emit({});
+} else {
+  emit(response);
 }

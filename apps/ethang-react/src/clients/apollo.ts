@@ -2,6 +2,7 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { SetContextLink } from "@apollo/client/link/context";
 import { LocalStorageWrapper, persistCache } from "apollo3-cache-persist";
+import attempt from "lodash/attempt.js";
 import isFunction from "lodash/isFunction.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
@@ -14,19 +15,17 @@ const authLink = new SetContextLink(
     const storedUser = localStorage.getItem("ethang-user");
     let token = "";
 
-    if (null !== storedUser) {
-      try {
+    if (!isNil(storedUser)) {
+      attempt(() => {
         const parsed: unknown = JSON.parse(storedUser);
         if (isObject(parsed) && !isNil(parsed) && "sessionToken" in parsed) {
           const { sessionToken } = parsed as Record<string, unknown>;
-          // eslint-disable-next-line sonar/nested-control-flow
+
           if (isString(sessionToken)) {
             token = sessionToken;
           }
         }
-      } catch {
-        //
-      }
+      });
     }
 
     return {

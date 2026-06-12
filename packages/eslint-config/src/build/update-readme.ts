@@ -1,4 +1,10 @@
-import { MarkdownGenerator } from "@ethang/markdown-generator/markdown-generator.js";
+import {
+  bold,
+  generateMarkdown,
+  link,
+  type ListItem,
+  type MarkdownBlock
+} from "@ethang/markdown-generator/markdown-generator.js";
 import compact from "lodash/compact.js";
 import filter from "lodash/filter.js";
 import isNil from "lodash/isNil.js";
@@ -9,11 +15,6 @@ import path from "node:path";
 import { outputConfigs } from "./output-config.ts";
 
 export const updateReadme = () => {
-  const md = new MarkdownGenerator();
-  md.header(1, "Relentless Unapologetic", 2);
-  md.link("View Config", "https://eslint-config-ethang.pages.dev/rules", 2);
-  md.alert("CAUTION", "Prettier is already included for styling!", 2);
-
   const [mainConfig] = outputConfigs;
   const coreRules = map(mainConfig?.plugins ?? [], (plugin) => {
     return {
@@ -40,19 +41,13 @@ export const updateReadme = () => {
     /* v8 ignore stop */
   }
 
-  md.unorderedList(ruleDocumentation);
-  md.newLine();
-  md.header(2, "Add Even More", 2);
-
   const featuredOutputs = filter(outputConfigs, (c) => {
     return !isNil(c.readmeLabel);
   });
 
-  const listItems: (string | string[])[] = [];
+  const listItems: ListItem[] = [];
 
   for (const output of featuredOutputs) {
-    listItems.push(`${output.ruleCount} rules for **${output.readmeLabel}**`);
-
     const perPlugin = compact(
       map(output.plugins, (plugin) => {
         const ruleWord = 1 >= plugin.ruleCount ? "rule" : "rules";
@@ -60,21 +55,56 @@ export const updateReadme = () => {
       })
     );
 
-    listItems.push([
-      isNil(output.readmeImport) ? "" : `\`${output.readmeImport}\``,
-      ...perPlugin
-    ]);
+    const children: ListItem[] = [];
+    if (!isNil(output.readmeImport)) {
+      children.push({ text: `\`${output.readmeImport}\`` });
+    }
+    for (const pluginText of perPlugin) {
+      children.push({ text: pluginText });
+    }
+
+    listItems.push({
+      children,
+      text: `${output.ruleCount} rules for **${output.readmeLabel}**`
+    });
   }
 
-  md.unorderedList(listItems);
-  md.newLine();
-  md.header(2, "Install", 2);
-  md.codeBlock("pnpm i -D eslint @ethang/eslint-config", "powershell", 2);
-  md.bold("Requires TypesScript and tsconfig.json at root directory.", 2);
-  md.header(2, "Config", 2);
-  md.text("In **eslint.config.ts**", 2);
-  md.codeBlock(
-    `import config from "@ethang/eslint-config/config.main.js";
+  const blocks: MarkdownBlock[] = [
+    { level: 1, text: "Relentless Unapologetic", type: "header" },
+    {
+      text: link("View Config", "https://eslint-config-ethang.pages.dev/rules"),
+      type: "text"
+    },
+    {
+      alertType: "CAUTION",
+      text: "Prettier is already included for styling!",
+      type: "alert"
+    },
+    {
+      items: map(ruleDocumentation, (text) => {
+        return { text };
+      }),
+      type: "unorderedList"
+    },
+    { level: 2, text: "Add Even More", type: "header" },
+    {
+      items: listItems,
+      type: "unorderedList"
+    },
+    { level: 2, text: "Install", type: "header" },
+    {
+      code: "pnpm i -D eslint @ethang/eslint-config",
+      language: "powershell",
+      type: "codeBlock"
+    },
+    {
+      text: bold("Requires TypesScript and tsconfig.json at root directory."),
+      type: "text"
+    },
+    { level: 2, text: "Config", type: "header" },
+    { text: "In **eslint.config.ts**", type: "text" },
+    {
+      code: `import config from "@ethang/eslint-config/config.main.js";
 import { defineConfig, globalIgnores } from "eslint/config";
 import path from "node:path";
 import reactConfig from "@ethang/eslint-config/config.react.js"; // OPTIONAL
@@ -99,61 +129,67 @@ export default defineConfig(
     },
   }
 );`,
-    "js",
-    2
-  );
-  md.bold("Scripts", 2);
-  md.codeBlock(
-    `"scripts": {
+      language: "js",
+      type: "codeBlock"
+    },
+    { text: bold("Scripts"), type: "text" },
+    {
+      code: `"scripts": {
   "lint": "eslint . --fix"
 }`,
-    "json",
-    2
-  );
-  md.bold("Browserslist", 2);
-  md.text(
-    "This config will also lint for browserslist features. [More info.](https://github.com/browserslist/browserslist)",
-    2
-  );
-  md.text("It's recommended to use ");
-  md.link(
-    "browserslist-config-baseline",
-    "https://github.com/web-platform-dx/browserslist-config-baseline",
-    2
-  );
-  md.codeBlock("pnpm i -D browserslist-config-baseline", "powershell", 2);
-
-  md.codeBlock(
-    `"browserslist": [
+      language: "json",
+      type: "codeBlock"
+    },
+    { text: bold("Browserslist"), type: "text" },
+    {
+      text: "This config will also lint for browserslist features. [More info.](https://github.com/browserslist/browserslist)",
+      type: "text"
+    },
+    {
+      text: `It's recommended to use ${link(
+        "browserslist-config-baseline",
+        "https://github.com/web-platform-dx/browserslist-config-baseline"
+      )}`,
+      type: "text"
+    },
+    {
+      code: "pnpm i -D browserslist-config-baseline",
+      language: "powershell",
+      type: "codeBlock"
+    },
+    {
+      code: `"browserslist": [
   "extends browserslist-config-baseline",
   "current node"
 ],`,
-    "json",
-    2
-  );
-
-  md.text("Or a simpler config without an additional dependency.", 2);
-
-  md.codeBlock(
-    `"browserslist": [
+      language: "json",
+      type: "codeBlock"
+    },
+    {
+      text: "Or a simpler config without an additional dependency.",
+      type: "text"
+    },
+    {
+      code: `"browserslist": [
   "defaults and fully supports es6-module",
   "current node"
 ],`,
-    "json",
-    2
-  );
-
-  md.bold("Engines", 2);
-  md.codeBlock(
-    `"engines": {
+      language: "json",
+      type: "codeBlock"
+    },
+    { text: bold("Engines"), type: "text" },
+    {
+      code: `"engines": {
   "node": ">=24"
 },`,
-    "json"
-  );
+      language: "json",
+      type: "codeBlock"
+    }
+  ];
 
   writeFileSync(
     path.join(import.meta.dirname, "../README.md"),
-    md.render(),
+    generateMarkdown({ blocks }),
     "utf8"
   );
 };

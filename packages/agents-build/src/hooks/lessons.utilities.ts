@@ -31,6 +31,7 @@ export const parseHookInput = (
     return undefined;
   }
 
+  // eslint-disable-next-line unicorn/try-complexity
   try {
     const parsed: unknown = JSON.parse(trimmed);
 

@@ -1,8 +1,10 @@
 import { BaseStore } from "@ethang/store";
+import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
+import trim from "lodash/trim.js";
 
 export type User = {
   email: string;
@@ -51,7 +53,7 @@ export class AuthStore extends BaseStore<typeof initialState> {
       draft.error = null;
     });
 
-    try {
+    const result = await attemptAsync(async () => {
       const response = await fetch("https://auth.ethang.dev/sign-in", {
         body: JSON.stringify({ email, password }),
         headers: {
@@ -66,6 +68,7 @@ export class AuthStore extends BaseStore<typeof initialState> {
         sessionToken: string;
         username: string;
       } = await response.json();
+
       const {
         email: emailValue,
         error: errorValue,
@@ -101,13 +104,15 @@ export class AuthStore extends BaseStore<typeof initialState> {
         draft.isPending = false;
         draft.error = null;
       });
-    } catch (error: unknown) {
+    });
+
+    if (isError(result)) {
       this.update((draft) => {
-        let errorMessage = "An unexpected error occurred";
-        if (isError(error)) {
-          errorMessage = error.message;
-        }
-        draft.error = errorMessage;
+        draft.error =
+          "failed" === trim(result.message)
+            ? "An unexpected error occurred"
+            : result.message;
+
         draft.isPending = false;
       });
     }

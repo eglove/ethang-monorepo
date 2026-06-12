@@ -68,6 +68,7 @@ export class Cosmos {
       options?: (AddEventListenerOptions | boolean) & ExtraEventListenerOptions
     ) {
       if (false !== options?.isNative) {
+        // eslint-disable-next-line unicorn/no-this-outside-of-class
         cosmos.addEventListener(this, eventName, listener, options);
       }
 
@@ -76,6 +77,7 @@ export class Cosmos {
       if (true === cleanup) {
         cosmos.removeEventListeners({ eventName, listener, options });
       } else {
+        // eslint-disable-next-line unicorn/no-this-outside-of-class
         originalAddEventListener.call(this, eventName, listener, options);
       }
     };
@@ -93,6 +95,7 @@ export class Cosmos {
         });
       }
 
+      // eslint-disable-next-line unicorn/no-this-outside-of-class
       originalRemoveEventListener.call(this, eventName, listener, options);
     };
 

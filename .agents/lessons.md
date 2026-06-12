@@ -11,6 +11,8 @@ Rules from explicit user corrections — things the assistant did wrong and must
       //
     });
     ```
+- **Selective Revert Over Global Revert**: Never run global git resets or checkouts (like `git checkout -- .` or `git reset --hard`) when asked to revert agent-specific changes, as the user may have unrelated unstaged changes in their workspace. Always use `git restore` (or targeted checkout) explicitly on the specific files modified by the agent.
+- **Explicit Returns in attempt/attemptAsync**: In strict TypeScript configurations (e.g. `TS7030` check), ensure that all code paths within the callback return an explicit value (e.g., a default fallback object or `undefined`) instead of throwing errors or relying on implicit returns, to prevent compilation failures without introducing runtime exception overhead.
 
 ## Proven Patterns
 Approaches confirmed to work well in this workspace.
