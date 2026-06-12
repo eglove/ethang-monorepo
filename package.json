@@ -24,7 +24,7 @@
     "build": "pnpm -r build",
     "deps": "pnpm up -r -i --latest",
     "lint": "pnpm -r lint",
-    "test": "pnpm -r test"
+    "test": "vitest run --coverage"
   },
   "type": "module",
   "version": "1.0.0",

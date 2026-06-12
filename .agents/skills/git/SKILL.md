@@ -1,5 +1,5 @@
 ---
-description: "Create a well-formed git commit: staged-file proposal, pre-commit quality review, formatted subject and emoji body, optional gh pull request. Use when the user asks to commit, amend, or open a PR."
+description: "Create a well-formed git commit using native CLI tools: ask_question inline prompts for staging and commit approvals, invoke_subagent with research for quality checks in parallel."
 name: git
 ---
 
@@ -19,8 +19,12 @@ Create a well-formed commit for this monorepo, with an optional pull request ste
 
    Everything else goes in **include**.
 
-3. Present both lists to the user and ask: "Stage these files and continue?" — Yes / Edit list / Cancel. Wait for the answer.
-4. On confirmation, `git add` each included file.
+3. **Present both lists to the user inline in the conversation:**
+   Print the list of files to stage and the list of files to skip clearly.
+   
+   **This is an approval gate.** Call the `ask_question` tool directly to ask:
+   - "Stage these files and continue?" with options: Yes / Edit list / Cancel.
+   On confirmation, `git add` each included file.
 
 ## Step 2: Read Git Context
 
@@ -34,7 +38,8 @@ Run in parallel:
 ## Step 3: Update Learned Lessons
 
 1. Analyze the session history for any new learned lessons (rules you got wrong/corrected) or proven patterns (approaches confirmed to work well).
-2. Propose these additions/changes to `.agents/lessons.md` to the user and ask: "Would you like me to update lessons.md with these additions before we commit? — Yes / No / Cancel."
+2. Propose these additions/changes to `.agents/lessons.md` using the `ask_question` tool:
+   - "Would you like me to update lessons.md with these additions before we commit?" with options: Yes / No / Cancel.
 3. On approval, write the changes to `.agents/lessons.md` and stage it (`git add .agents/lessons.md`).
 
 ## Step 4: Amend vs. New Commit
@@ -45,18 +50,16 @@ Run in parallel:
 
 ## Step 5: Pre-Commit Quality Review
 
-Apply these checks to `git diff --staged`:
+Fan out checks on `git diff --staged` in parallel using `invoke_subagent` with the `research` subagent type:
 
 1. **Debug artifacts** — `console.log` left behind, commented-out code, stray TODOs without context.
 2. **Weakened tests** — deleted or skipped tests, loosened assertions, lowered coverage thresholds.
-3. **Atomicity** — is this one logical change? Is unrelated refactoring mixed in?
-4. **Scope** — do the changes match the task the user described?
+3. **Atomicity & Scope** — is this one logical change matching the user's task?
 
 Verdict:
-
 - All clear → proceed to Step 6.
 - Blocking findings (broken behavior, weakened tests) → stop, report, and wait for fixes.
-- Minor findings only → ask "Proceed anyway? Yes / Fix first / Cancel" and wait.
+- Minor findings only → ask "Proceed anyway? Yes / Fix first / Cancel" using `ask_question` and wait.
 
 ## Step 6: Draft + Execute
 
@@ -66,31 +69,18 @@ Imperative mood, lowercase, under 72 characters, describe the *why* rather than 
 
 ### Body
 
-Bullet points summarizing the logical changes, with emoji prefixes where they add clarity:
-
-| Emoji | Use for |
-|-------|---------|
-| ✨ | new feature or behavior |
-| 🐛 | bug fix |
-| ♻️ | refactor / cleanup |
-| 🧪 | test changes |
-| 📝 | docs / comments |
-| 🔧 | config / build changes |
-
-Rules: at most 72 characters per bullet, 2-5 bullets, omit the body entirely for a single trivial change, and describe the behavior covered rather than naming test tooling in bullet text.
+Bullet points summarizing the logical changes, with emoji prefixes where they add clarity. At most 72 characters per bullet, 2-5 bullets, omit the body entirely for a single trivial change.
 
 ### Execution
 
-Use two `-m` flags — git uses the second as the body paragraph. In PowerShell, pass multi-line bodies with a single-quoted here-string (the closing `'@` must start at column 0):
+Use two `-m` flags — git uses the second as the body paragraph. In PowerShell, pass multi-line bodies with a single-quoted here-string.
 
-```powershell
-git commit -m "subject line" -m @'
-- ✨ bullet one
-- 🐛 bullet two
-'@
-```
+**Present the commit draft inline in the conversation:**
+Print the drafted subject line and body paragraphs clearly.
 
-**Show the full drafted message** (subject + body) to the user and wait for confirmation before executing. The same applies to `--amend`.
+**This is a hard gate.** Call the `ask_question` tool directly to ask:
+- "Execute this commit?" with options: Yes / Edit message / Cancel.
+On confirmation, run the commit commands.
 
 ## Step 7: Pull Request (only when asked)
 

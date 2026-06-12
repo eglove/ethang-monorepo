@@ -3,40 +3,34 @@ import { defineSkill } from "../../../define.ts";
 export const reviewPipeline = defineSkill({
   content: `# PR Review
 
-Execute this pipeline when asked to review a pull request or diff.
+Execute this pipeline when asked to review a pull request or diff. The main agent coordinates the
+review using native Antigravity CLI tools, fanning out perspectives and tests to specialized subagents
+defined at runtime (via \`define_subagent\` and \`invoke_subagent\`), and producing native artifacts
+with \`RequestFeedback\` for approval gates.
 
-Produces a single artifact: \`review-comments.md\` — ready-to-post comment drafts backed by failing tests with domain-language naming where applicable.
+Produces a single native artifact: \`review-comments.md\` — ready-to-post comment drafts backed by
+failing tests with domain-language naming where applicable.
 
 ---
 
 ## Phase 1: Intake
 
-Gather the diff and context. Run all reads in parallel.
+Gather the diff and context. Fan out the reads in parallel using \`invoke_subagent\` with the
+\`research\` subagent type:
 
-### 1a. Identify the source
+- **Subagent A — Metadata & Diff:**
+  - Accept any of the following:
+    - A GitHub PR number or URL → use \`gh pr view {number}\` and \`gh pr diff {number}\`
+    - A branch name → use \`git diff master...{branch}\`
+    - No argument → use \`git diff master...HEAD\`
+  - Read PR metadata (if GitHub PR) using:
+    \`gh pr view {number} --json title,body,author,baseRefName,headRefName,isDraft,additions,deletions,changedFiles\`
+- **Subagent B — CI Status:**
+  - Run \`gh pr checks {number}\` to check CI status.
 
-Accept any of the following:
-- A GitHub PR number or URL → use \`gh pr view {number}\` and \`gh pr diff {number}\`
-- A branch name → use \`git diff master...{branch}\`
-- No argument → use \`git diff master...HEAD\`
+Collect the results via \`send_message\` when the subagents report back.
 
-### 1b. Read PR metadata (if GitHub PR)
-
-Run in parallel:
-- \`gh pr view {number} --json title,body,author,baseRefName,headRefName,isDraft,additions,deletions,changedFiles\`
-- \`gh pr checks {number}\` — CI status
-
-### 1c. Read the diff
-
-\`\`
-gh pr diff {number}
-# or
-git diff master...HEAD
-\`\`
-
-### 1d. Classify the diff
-
-From the diff output, determine:
+From the collected diff, determine:
 - **Frontend files** (\`.tsx\`, \`.ts\`, \`.css\` under \`src/\` or \`app/\`): set \`HAS_FRONTEND_CHANGES=true\`
 - **Worker/API files** (packages containing \`wrangler.jsonc\`, or path includes \`worker\`/\`api\`/\`server\`): set \`HAS_WORKER_CHANGES=true\`
 - **Test files** (\`*.test.ts\`, \`*.spec.ts\`): note separately
@@ -51,33 +45,40 @@ From the diff output, determine:
 
 Determine which review perspectives to apply.
 
-**Always**: Security, correctness
+- **Always**: Security, correctness
+- **If HAS_FRONTEND_CHANGES**: react-components, typescript-quality, accessibility
+- **If HAS_WORKER_CHANGES**: hono-routes, drizzle-data
+- **If performance-sensitive code touched** (loops over collections, DB queries, Worker hot paths): performance
+- **If total diff >500 lines**: architecture
+- **If draft PR**: note in verdict; reduce blocking threshold (author may be seeking early feedback)
+- **If CI is red**: note pre-existing failures separately from review findings; do not block the review but call out the state
 
-**If HAS_FRONTEND_CHANGES**: react-components, typescript-quality, accessibility
+**Produce the plan as a native CLI artifact:**
 
-**If HAS_WORKER_CHANGES**: hono-routes, drizzle-data
+Use \`write_to_file\` to create \`review-plan.md\` in the artifact directory with:
+- \`ArtifactMetadata.UserFacing: true\`
+- \`ArtifactMetadata.RequestFeedback: true\`
+- \`ArtifactMetadata.Summary\`: list of the review perspectives that will be executed
 
-**If performance-sensitive code touched** (loops over collections, DB queries, Worker hot paths): performance
+**This is a hard gate.** Wait for the user to click **Proceed** before running the review.
 
-**If total diff >500 lines**: architecture
-
-**If draft PR**: note in verdict; reduce blocking threshold (author may be seeking early feedback)
-
-**If CI is red**: note pre-existing failures separately from review findings; do not block the review but call out the state
-
-Present the plan to the user and ask: "Proceed with this review plan? Yes / Adjust / Cancel." Wait for the answer.
-
-> Produces: \`REVIEW_PLAN\`
+> Produces: \`REVIEW_PLAN\` (native artifact)
 
 ---
 
 ## Phase 3: Multi-Dimension Review
 
-Load and follow the [reviewer](resources/reviewer.md) resource for each perspective in the plan, applying [review-design-checklist](resources/review-design-checklist.md), [review-security-checklist](resources/review-security-checklist.md), and [ddd-tactical](resources/ddd-tactical.md) where appropriate. Guide the process using the [SWEBOK glossary](../swebok/SKILL.md). Run all perspectives in parallel.
+Use \`define_subagent\` to create specialized review subagents (e.g. \`security-reviewer\`,
+\`frontend-reviewer\`, \`performance-reviewer\`) for each perspective in the plan.
+Include the [reviewer](resources/reviewer.md) role instructions in each subagent's system prompt,
+along with the matching checklist ([review-design-checklist](resources/review-design-checklist.md) or
+[review-security-checklist](resources/review-security-checklist.md)) and [ddd-tactical](resources/ddd-tactical.md).
+Guide the process using the [SWEBOK glossary](../swebok/SKILL.md).
 
-For each perspective, the reviewer resource produces \`REVIEW_FINDINGS [{perspective}]\`.
+Launch the review subagents in parallel using \`invoke_subagent\`.
+Coordinate and collect their findings via \`send_message\` as they report back.
 
-Also run: read all changed test files and assess test coverage directly — note files changed without accompanying test changes.
+Also read all changed test files and assess test coverage directly — note files changed without accompanying test changes.
 
 > Produces: \`REVIEW_FINDINGS\` per perspective, \`COVERAGE_GAPS\`
 
@@ -103,14 +104,16 @@ Cross-reference \`COVERAGE_GAPS\`: for each gap, determine if a failing test can
 
 For each blocking (Critical/High) finding that describes a behavioral defect or coverage gap:
 
-Write a minimal failing Vitest test co-located with the source file that proves the specific issue exists.
+Use \`define_subagent\` to spawn a specialized \`test-writer\` subagent. Launch the subagent via
+\`invoke_subagent\` to write a minimal failing Vitest test co-located with the source file.
 
-Name \`describe\` and \`it\` blocks using domain language from the PR context — not technical jargon.
+The test-writer subagent must name \`describe\` and \`it\` blocks using domain language from the PR
+context — not technical jargon.
 
 Good: \`"when a customer has a pending balance, applying a credit does not double-count the amount"\`
 Bad: \`"when hasPendingBalance is true, applyCredit does not set total twice"\`
 
-Run the test and confirm it fails for the expected reason (not a setup/import error).
+The subagent runs the test and confirms it fails for the expected reason.
 
 Style/naming/documentation findings: prose only — no test.
 Architecture opinion findings: prose only — no test.
@@ -123,9 +126,13 @@ Architecture opinion findings: prose only — no test.
 
 Load and follow the [reporter](resources/reporter.md) resource to format the output.
 
-Write \`review-comments.md\` to the output path (current directory or \`{output-path}/\` if specified).
+**Produce the comments as a native CLI artifact:**
 
-File starts with Comment 1 — no summary header before the first comment.
+Use \`write_to_file\` to write \`review-comments.md\` to the artifact directory with:
+- \`ArtifactMetadata.UserFacing: true\`
+- \`ArtifactMetadata.Summary\`: summary of the review results, including the final verdict and findings counts
+
+The file starts with Comment 1 — no summary header before the first comment.
 
 For each finding in order (Critical → High → Medium → Low → Nitpick → Documentation):
 

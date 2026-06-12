@@ -17,6 +17,14 @@ export default defineConfig({
     }
   ],
   test: {
+    coverage: {
+      thresholds: {
+        branches: 37.3,
+        functions: 7.57,
+        lines: 27.1,
+        statements: 27.1
+      }
+    },
     environment: "node"
   }
 });
