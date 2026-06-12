@@ -2,7 +2,6 @@ import { defineSkill } from "../../define.ts";
 import { dddStrategicSkill } from "./ddd/strategic.ts";
 import { dddTacticalSkill } from "./ddd/tactical.ts";
 import { rcaFiveWhysSkill } from "./rca/five-whys.ts";
-import { requirementsPipeline } from "./requirements/pipeline.ts";
 import { reviewDesignChecklist } from "./review/design-checklist.ts";
 import { reviewPipeline } from "./review/pipeline.ts";
 import { reviewSecurityChecklist } from "./review/security-checklist.ts";
@@ -120,26 +119,6 @@ Only when the user explicitly asks: push the branch and open a PR against \`mast
   name: "git"
 });
 
-export const requirementsMasterSkill = defineSkill({
-  ...requirementsPipeline,
-  name: "requirements",
-  resources: [
-    ...(requirementsPipeline.resources ?? []),
-    {
-      content: requirementsAnalystRole.content,
-      path: "resources/requirements-analyst.md"
-    },
-    {
-      content: requirementsWriterRole.content,
-      path: "resources/requirements-writer.md"
-    },
-    {
-      content: dddStrategicSkill.content,
-      path: "resources/ddd-strategic.md"
-    }
-  ]
-});
-
 export const reviewMasterSkill = defineSkill({
   ...reviewPipeline,
   name: "review",
@@ -212,13 +191,20 @@ export const tddMasterSkill = defineSkill({
     {
       content: rcaFiveWhysSkill.content,
       path: "resources/rca-five-whys.md"
+    },
+    {
+      content: requirementsAnalystRole.content,
+      path: "resources/requirements-analyst.md"
+    },
+    {
+      content: requirementsWriterRole.content,
+      path: "resources/requirements-writer.md"
     }
   ]
 });
 
 export const SKILLS = [
   gitMasterSkill,
-  requirementsMasterSkill,
   reviewMasterSkill,
   tddMasterSkill,
   swebok
