@@ -38,8 +38,8 @@ Create a well-formed commit for this monorepo, with an optional pull request ste
 
    Everything else goes in **include**.
 
-3. **Present both lists to the user inline in the conversation:**
-   Print the list of files to stage and the list of files to skip clearly.
+3. **Propose the files to stage using a native artifact:**
+   Create a markdown artifact named \`stage-plan.md\` under the artifact directory. Define the lists of files to stage and files to skip inside this artifact, specifying \`RequestFeedback: true\` and \`UserFacing: true\` in its metadata so the user can review and approve it.
    
    **This is an approval gate.** Call the \`ask_question\` tool directly to ask:
    - "Stage these files and continue?" with options: Yes / Edit list / Cancel.
@@ -99,8 +99,8 @@ Bullet points summarizing the logical changes, with emoji prefixes where they ad
 
 Use two \`-m\` flags — git uses the second as the body paragraph. In PowerShell, pass multi-line bodies with a single-quoted here-string.
 
-**Present the commit draft inline in the conversation:**
-Print the drafted subject line and body paragraphs clearly.
+**Present the commit draft using a native artifact:**
+Create a markdown artifact named \`commit-draft.md\` under the artifact directory. Write the drafted subject line and body paragraphs inside this artifact, specifying \`RequestFeedback: true\` and \`UserFacing: true\` in its metadata.
 
 **This is a hard gate.** Call the \`ask_question\` tool directly to ask:
 - "Execute this commit?" with options: Yes / Edit message / Cancel.

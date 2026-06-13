@@ -3,8 +3,10 @@ import { describe, expect, it } from "vitest";
 import { gitMasterSkill, reviewMasterSkill } from "./index.ts";
 
 describe("gitMasterSkill content", () => {
-  it("proposes and stages files inline using ask_question", () => {
-    expect(gitMasterSkill.content).not.toContain("stage-plan.md");
+  it("proposes and stages files using a native artifact stage-plan.md with RequestFeedback and UserFacing", () => {
+    expect(gitMasterSkill.content).toContain("stage-plan.md");
+    expect(gitMasterSkill.content).toContain("RequestFeedback");
+    expect(gitMasterSkill.content).toContain("UserFacing");
     expect(gitMasterSkill.content).toContain("ask_question");
     expect(gitMasterSkill.content).toContain("Stage these files");
   });
@@ -24,8 +26,10 @@ describe("gitMasterSkill content", () => {
     expect(gitMasterSkill.content).toContain("research");
   });
 
-  it("drafts and executes commit inline using ask_question", () => {
-    expect(gitMasterSkill.content).not.toContain("commit-draft.md");
+  it("drafts and executes commit using a native artifact commit-draft.md with RequestFeedback and UserFacing", () => {
+    expect(gitMasterSkill.content).toContain("commit-draft.md");
+    expect(gitMasterSkill.content).toContain("RequestFeedback");
+    expect(gitMasterSkill.content).toContain("UserFacing");
     expect(gitMasterSkill.content).toContain("ask_question");
     expect(gitMasterSkill.content).toContain("Execute this commit");
   });
