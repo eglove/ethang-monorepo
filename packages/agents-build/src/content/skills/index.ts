@@ -17,6 +17,7 @@ import { reviewerRole } from "./roles/reviewer.ts";
 import { securityAnalystRole } from "./roles/security-analyst.ts";
 import { testWriterSkill } from "./roles/test-writer.ts";
 import { swebokSkill } from "./swebok/index.ts";
+import { ciReviewPipelineSkill } from "./tdd/ci-review.ts";
 import { tddPipelineSkill } from "./tdd/pipeline.ts";
 import { tddPrinciplesSkill } from "./tdd/principles.ts";
 import { tddStateCoverageSkill } from "./tdd/state-coverage.ts";
@@ -176,10 +177,6 @@ export const tddMasterSkill = defineSkill({
       path: "resources/ddd-strategic.md"
     },
     {
-      content: dddTacticalSkill.content,
-      path: "resources/ddd-tactical.md"
-    },
-    {
       content: rcaFiveWhysSkill.content,
       path: "resources/rca-five-whys.md"
     },
@@ -194,10 +191,26 @@ export const tddMasterSkill = defineSkill({
     {
       content: securityAnalystRole.content,
       path: "resources/security-analyst.md"
-    },
+    }
+  ]
+});
+
+export const ciReviewMasterSkill = defineSkill({
+  ...ciReviewPipelineSkill,
+  name: "ci-review",
+  resources: [
+    ...(ciReviewPipelineSkill.resources ?? []),
     {
       content: qualityAnalystRole.content,
       path: "resources/quality-analyst.md"
+    },
+    {
+      content: securityAnalystRole.content,
+      path: "resources/security-analyst.md"
+    },
+    {
+      content: dddTacticalSkill.content,
+      path: "resources/ddd-tactical.md"
     }
   ]
 });
@@ -206,6 +219,7 @@ export const SKILLS = [
   gitMasterSkill,
   reviewMasterSkill,
   tddMasterSkill,
+  ciReviewMasterSkill,
   swebok,
   eslintFixerSkill
 ];

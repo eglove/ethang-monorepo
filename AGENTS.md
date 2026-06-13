@@ -129,3 +129,4 @@ Approaches confirmed to work well in this workspace.
 - **Manifest-Based Builder Cleaning**: When writing workspace compilers or code-generators that overwrite files, write a
   build manifest (e.g. `.manifest.json`) and use it for targeted file deletion and empty folder pruning. This preserves
   third-party or externally installed files located in the output directory.
+- **SonarCloud Tree Measures Retrieval**: To retrieve file-level metrics (such as code coverage or duplication density) for a project's descendant files, use the `/api/measures/component_tree` API endpoint instead of `/api/components/tree`, as the latter does not populate the `measures` array for descendants.

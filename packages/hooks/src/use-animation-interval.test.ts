@@ -1,21 +1,21 @@
 import { renderHook } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, onTestFinished, vi } from "vitest";
 
 import {
   animationInterval,
   useAnimationInterval
 } from "./use-animation-interval.js";
 
-describe("useAnimationInterval", () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
+const setupTest = () => {
+  vi.useFakeTimers();
+  onTestFinished(() => {
     vi.restoreAllMocks();
   });
+};
 
+describe(useAnimationInterval, () => {
   it("should run callback with document.timeline", () => {
+    setupTest();
     Object.defineProperty(globalThis.document, "timeline", {
       configurable: true,
       value: { currentTime: 100 }
@@ -37,13 +37,19 @@ describe("useAnimationInterval", () => {
     });
 
     expect(globalThis.requestAnimationFrame).not.toHaveBeenCalled();
-    vi.advanceTimersByTime(100);
-    expect(globalThis.requestAnimationFrame).toHaveBeenCalled();
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions
-    if (capturedFrameCallback) {
-      (capturedFrameCallback as FrameRequestCallback)(200);
-    }
+    vi.advanceTimersByTime(100);
+
+    expect(globalThis.requestAnimationFrame).toHaveBeenCalledWith(
+      expect.any(Function)
+    );
+
+    expect(capturedFrameCallback).toBeTypeOf("function");
+
+    const frameCallback =
+      capturedFrameCallback as unknown as FrameRequestCallback;
+    frameCallback(200);
+
     expect(callback).toHaveBeenCalledWith(200);
 
     Object.defineProperty(globalThis.document, "timeline", {
@@ -53,16 +59,14 @@ describe("useAnimationInterval", () => {
   });
 
   it("should handle start time being null", () => {
+    setupTest();
     Object.defineProperty(globalThis.document, "timeline", {
       configurable: true,
       value: { currentTime: null }
     });
     vi.spyOn(globalThis.performance, "now").mockReturnValue(0);
 
-    // eslint-disable-next-line lodash/prefer-constant
-    vi.spyOn(globalThis, "requestAnimationFrame").mockImplementation(() => {
-      return 1;
-    });
+    vi.spyOn(globalThis, "requestAnimationFrame").mockReturnValue(1);
 
     const callback = vi.fn();
     renderHook(() => {
@@ -71,7 +75,10 @@ describe("useAnimationInterval", () => {
     });
 
     vi.advanceTimersByTime(100);
-    expect(globalThis.requestAnimationFrame).toHaveBeenCalled();
+
+    expect(globalThis.requestAnimationFrame).toHaveBeenCalledWith(
+      expect.any(Function)
+    );
 
     Object.defineProperty(globalThis.document, "timeline", {
       configurable: true,
@@ -80,16 +87,14 @@ describe("useAnimationInterval", () => {
   });
 
   it("should fallback to performance.now if document.timeline is missing", () => {
+    setupTest();
     Object.defineProperty(globalThis.document, "timeline", {
       configurable: true,
       value: undefined
     });
     vi.spyOn(globalThis.performance, "now").mockReturnValue(100);
 
-    // eslint-disable-next-line lodash/prefer-constant
-    vi.spyOn(globalThis, "requestAnimationFrame").mockImplementation(() => {
-      return 1;
-    });
+    vi.spyOn(globalThis, "requestAnimationFrame").mockReturnValue(1);
 
     const callback = vi.fn();
     renderHook(() => {
@@ -98,10 +103,14 @@ describe("useAnimationInterval", () => {
     });
 
     vi.advanceTimersByTime(100);
-    expect(globalThis.requestAnimationFrame).toHaveBeenCalled();
+
+    expect(globalThis.requestAnimationFrame).toHaveBeenCalledWith(
+      expect.any(Function)
+    );
   });
 
   it("should stop execution when unmounted", () => {
+    setupTest();
     Object.defineProperty(globalThis.document, "timeline", {
       configurable: true,
       value: { currentTime: 100 }
@@ -125,12 +134,16 @@ describe("useAnimationInterval", () => {
     unmount();
 
     vi.advanceTimersByTime(100);
-    expect(globalThis.requestAnimationFrame).toHaveBeenCalled();
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions
-    if (capturedFrameCallback) {
-      (capturedFrameCallback as FrameRequestCallback)(200);
-    }
+    expect(globalThis.requestAnimationFrame).toHaveBeenCalledWith(
+      expect.any(Function)
+    );
+
+    expect(capturedFrameCallback).toBeTypeOf("function");
+
+    const frameCallback =
+      capturedFrameCallback as unknown as FrameRequestCallback;
+    frameCallback(200);
 
     expect(callback).not.toHaveBeenCalled();
 
@@ -141,6 +154,7 @@ describe("useAnimationInterval", () => {
   });
 
   it("should do nothing if time is undefined in scheduleFrame", () => {
+    setupTest();
     const controller = new AbortController();
     const callback = vi.fn();
     vi.spyOn(globalThis, "setTimeout");
@@ -148,7 +162,6 @@ describe("useAnimationInterval", () => {
     let capturedTimeoutCallback: (() => void) | null = null;
     vi.spyOn(globalThis, "setTimeout").mockImplementation((timerCallback) => {
       capturedTimeoutCallback = timerCallback as () => void;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       return 1 as unknown as NodeJS.Timeout;
     });
 
@@ -162,18 +175,20 @@ describe("useAnimationInterval", () => {
 
     // eslint-disable-next-line @typescript-eslint/strict-void-return
     animationInterval(100, controller.signal, callback);
+
     expect(globalThis.setTimeout).toHaveBeenCalledTimes(1);
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions
-    if (capturedTimeoutCallback) {
-      (capturedTimeoutCallback as () => void)();
-    }
+    expect(capturedTimeoutCallback).toBeTypeOf("function");
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions
-    if (capturedFrameCallback) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      (capturedFrameCallback as unknown as (time?: number) => void)();
-    }
+    const timeoutCallback = capturedTimeoutCallback as unknown as () => void;
+    timeoutCallback();
+
+    expect(capturedFrameCallback).toBeTypeOf("function");
+
+    const frameCallback = capturedFrameCallback as unknown as (
+      time?: number
+    ) => void;
+    frameCallback();
 
     expect(callback).toHaveBeenCalledWith(undefined);
     expect(globalThis.setTimeout).toHaveBeenCalledTimes(1);
