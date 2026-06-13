@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "logger-service",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "logger-db",
+      "database_id": "47c9e83e-24d6-46e4-ac5e-09f0ab7a27a8"
+    }
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "*"
+  }
+}

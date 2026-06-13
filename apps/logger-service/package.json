@@ -1,0 +1,41 @@
+{
+  "name": "logger-service",
+  "version": "1.0.0",
+  "type": "module",
+  "author": "Ethan Glover",
+  "license": "ISC",
+  "scripts": {
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "deploy": "pnpm run cf-typegen && wrangler deploy --minify",
+    "dev": "wrangler dev",
+    "drizzle:generate": "drizzle-kit generate",
+    "lint": "eslint src --fix && pnpm tsc --noEmit",
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@ethang/schemas": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.25",
+    "lodash": "^4.18.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250204.0",
+    "@ethang/eslint-config": "^25.20.1",
+    "@types/lodash": "^4.17.24",
+    "@types/node": "^25.9.3",
+    "@vitest/coverage-v8": "^4.1.8",
+    "browserslist-config-baseline": "^0.5.0",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^10.4.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8",
+    "wrangler": "^4.100.0"
+  },
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "engines": {
+    "node": ">=24"
+  }
+}

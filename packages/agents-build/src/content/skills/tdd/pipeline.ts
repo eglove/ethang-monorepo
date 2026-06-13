@@ -1,196 +1,228 @@
 import { defineSkill } from "../../../define.ts";
 
 export const tddPipelineSkill = defineSkill({
-  content: `# TDD
+  content: `# SWEBOK Enterprise Lifecycle Pipeline v2
 
-A multi-agent Red-Green-Refactor pipeline powered by native Antigravity CLI tools. The main agent
-orchestrates specialized subagents (via \`define_subagent\` and \`invoke_subagent\`), produces native
-artifacts for approval gates (via \`write_to_file\` with \`ArtifactMetadata\`), and coordinates work
-through \`send_message\`. Follow every step in order; do not skip or abbreviate, even for a one-line
-change.
+A multi-agent, enterprise-grade software development lifecycle (SDLC) pipeline based on IEEE SWEBOK v4.0 and ISO/IEC/IEEE 12207 Technical Processes. Integrates Test-Driven Development (TDD), Domain-Driven Design (DDD), DevSecOps (STRIDE + OWASP), and software quality measurement within a formal engineering process.
+
+The main agent orchestrates specialized subagents (via \`define_subagent\` and \`invoke_subagent\`), produces native artifacts for approval gates (via \`write_to_file\` with \`ArtifactMetadata\`), and coordinates work through \`send_message\`. Follow every stage in order — do not skip or abbreviate.
+
+**Mandatory user gates:** Stage 2 (Requirements Validation) and Stage 3 (Design + Threat Model Verification). Both use artifacts with \`RequestFeedback: true\`.
+
+**Automatic hard gates:** Stage 5 SonarCloud quality gate and Security OWASP review — pipeline must not advance to Stage 6 if either fails.
 
 > **Alternative invocation modes:**
-> - For large multi-file tasks, consider \`/teamwork-preview\` to launch a full autonomous team.
-> - For unattended overnight execution, combine with \`/goal\` to run the full pipeline without stopping.
-
-The mandatory user gates are **Step 3 (requirements approval)** and **Step 5 (plan approval)**. Both
-use native artifacts with \`RequestFeedback: true\` — the user clicks **Proceed** to approve.
+> - For large multi-file tasks, use \`/teamwork-preview\` to launch a full autonomous team.
+> - For unattended overnight execution, combine with \`/goal\`.
 
 ---
 
-## Step 1: Task Intake
+## Stage 1: Concept Phase (Business Analysis & Stakeholder Needs)
 
-Use the \`/grill-me\` slash command to interview the user about every aspect of their requirements.
-Once the interview is complete, the pipeline picks up from here.
+**ISO/IEC/IEEE 12207: 6.4.1 Business or mission analysis, 6.4.2 Stakeholder needs definition**
+**SWEBOK KA: Software Engineering Management, Software Engineering Economics**
 
-If additional clarification is needed after \`/grill-me\`, use the \`ask_question\` tool for targeted
-follow-up questions — one at a time, with a recommended option listed first.
+Use the \`/grill-me\` slash command to interview the user. Identify:
+- The business problem or mission need
+- Stakeholders and their success criteria
+- Constraints (time, budget, compliance, platform)
+- Initial risks
 
-Summarize back to the user: task title, technology context (React/frontend, Hono/Worker, Both, or
-Other), acceptance criteria list, and any linked issues or documents. Ask: "Does this look right?" —
-Confirm / Correct / Cancel. Wait for the answer.
+**Defect detection:** If the task is a bug or contains the words "defect", "regression", "fix", or "incident" — flag it as \`TYPE: Maintenance\` and proceed to **Stage 1.5** before Stage 2. Otherwise, set \`TYPE: Feature\` and skip Stage 1.5.
 
-> Produces: \`ISSUE_KEY\`, \`ISSUE_CONTEXT\`, \`LINKED_ISSUES_LIST\`, \`TECH_CONTEXT\`
+If additional clarification is needed, use \`ask_question\` — one question at a time, recommended option first.
 
----
+Summarize back to the user: mission objective, stakeholder needs, technology context, linked issues. Ask: "Does this look right?" Wait for confirmation.
 
-## Step 2: Research & Analyze
-
-Fan out research in parallel using \`invoke_subagent\` with the \`research\` subagent type:
-
-- **Subagent A — Linked Context:** For each linked issue (discovered in Step 1), fetch and summarize.
-  If the body references external URLs (documentation, RFCs, design docs), use \`search_web\` and
-  \`read_url_content\` to fetch them.
-- **Subagent B — Code Analysis:** Search the codebase for code paths affected by the requirement:
-  - For React/frontend: locate components, custom hooks, query functions, and route definitions
-  - For Hono/Worker: locate route handlers, middleware, service functions, and Drizzle schema files
-  - Trace data flow end-to-end: UI → query hook → API route → service → repository → database
-
-Launch both subagents simultaneously via a single \`invoke_subagent\` call. Collect their results via
-\`send_message\` when they report back.
-
-Ask the user: "Are there additional issues, documents, or context I should include?" Present what was
-found and wait for the answer.
-
-> Produces: \`LINKED_CONTEXT\`, \`DOCS_CONTEXT\`, \`CODE_CONTEXT\`
+> Produces: \`BUSINESS_OBJECTIVE\`, \`STAKEHOLDER_NEEDS\`, \`TECH_CONTEXT\`, \`TASK_TYPE\`
 
 ---
 
-## Step 3: Requirements
+## Stage 1.5: Maintenance Triage (Defects & Corrective Work Only)
 
-Load and follow the [requirements-analyst](resources/requirements-analyst.md) resource to analyze the
-collected context. The analyst applies SWEBOK Ch 1 (requirements), Ch 5 (state machine/test design),
-Ch 2 (design impact), and Ch 14 (professional & compliance) using the
-[SWEBOK glossary](../swebok/SKILL.md), and applies the [ddd-strategic](resources/ddd-strategic.md)
-patterns lens.
+**ISO/IEC/IEEE 12207: 6.4.13 Maintenance**
+**SWEBOK KA: Software Maintenance (Ch 7), Engineering Foundations**
 
-Then load and follow the [requirements-writer](resources/requirements-writer.md) resource to produce
-the requirements document.
+**Skip this stage if \`TASK_TYPE = Feature\`.**
 
-**Produce the requirements as a native CLI artifact:**
+Apply SWEBOK Ch 7 maintenance classification. Categorize the work as exactly one of:
+- **Corrective** — fixing a confirmed fault (bug)
+- **Adaptive** — modifying software to work in a changed environment (dependency upgrade, API change)
+- **Perfective** — improving performance or maintainability without changing behavior
+- **Preventive** — proactively reducing future fault risk (refactor, hardening)
+
+Then perform Root Cause Analysis using the [rca](resources/rca.md) and [rca-five-whys](resources/rca-five-whys.md) resources:
+- Separate the reported symptom from the underlying fault
+- Run the 5-Whys to trace the fault to its origin
+- Scan git history for the introducing commit
+- Identify all affected components (ripple analysis)
+
+> Produces: \`MAINTENANCE_CLASS\`, \`RCA_FINDINGS\`, \`AFFECTED_COMPONENTS\`
+
+---
+
+## Stage 2: Development Phase — Requirements (Software Requirements Definition)
+
+**ISO/IEC/IEEE 12207: 6.4.3 System/software requirements definition**
+**SWEBOK KA: Software Requirements (Ch 1), Software Engineering Professional Practice (Ch 14)**
+
+Fan out research in parallel using \`invoke_subagent\` (research type):
+
+- **Subagent A — Context:** For each linked issue, fetch and summarize. Follow external URLs (docs, RFCs, design docs) via \`search_web\` and \`read_url_content\`.
+- **Subagent B — Code Analysis:** Trace data flow end-to-end for affected code paths.
+  - Frontend: components → hooks → query client → fetch → API route
+  - Workers: route handler → middleware → service → repository → D1/KV/R2
+
+Load and follow the [requirements-analyst](resources/requirements-analyst.md) resource. Apply SWEBOK Ch 1 (requirements elicitation, analysis, specification, validation) and Ch 14 (ethics, privacy, compliance). For \`TYPE: Maintenance\` tasks, feed \`RCA_FINDINGS\` in as authoritative context — requirements must address the root cause, not the symptom.
+
+Load and follow the [requirements-writer](resources/requirements-writer.md) resource to produce the specification.
+
+**Produce the Software Requirements Specification (SRS) as a native CLI artifact:**
 
 Use \`write_to_file\` to create \`requirements.md\` in the artifact directory with:
 - \`ArtifactMetadata.UserFacing: true\`
 - \`ArtifactMetadata.RequestFeedback: true\`
-- \`ArtifactMetadata.Summary\`: a detailed summary of the requirements
+- \`ArtifactMetadata.Summary\`: full summary of all FRs, NFRs, implicit requirements, compliance findings, and state machine.
 
-The user will see the artifact and can click **Proceed** to approve or provide feedback.
+**This is a hard gate.** Wait for user approval. Rework and re-present on feedback until approved.
 
-**This is a hard gate.** Wait for the user to approve before continuing.
-
-On changes requested: apply feedback, regenerate the affected sections, update the artifact, and
-re-present. Repeat until approved.
-
-> Produces: \`requirements.md\` (native artifact)
+> Produces: \`requirements.md\` (native artifact, user-approved)
 
 ---
 
-## Step 4: Root Cause Analysis (bug-shaped tasks only)
+## Stage 3: Development Phase — Architecture & Design + Threat Modeling
 
-**Skip unless** the task is a bug, or its description contains "defect", "regression", or "fix".
+**ISO/IEC/IEEE 12207: 6.4.4 Architecture definition, 6.4.5 Design definition**
+**SWEBOK KA: Software Architecture (Ch 2), Software Design (Ch 3), Computing Foundations / Security (Ch 13)**
 
-Load and follow the [rca](resources/rca.md) resource. Separate the problem from any proposed solution,
-run the 5-Whys, scan the package source for the defect pattern, and check git history for the
-introducing commit using the [rca-five-whys](resources/rca-five-whys.md) resource.
+**Fan out two subagents in parallel:**
 
-Carry the resulting \`RCA_FINDINGS\` into Step 5 — plan against the root cause, not the symptom.
+**Subagent A — Planner (Architecture & Design):**
+Load and follow the [planner](resources/planner.md) resource. Apply SWEBOK Ch 2 (Software Architecture) and Ch 3 (Software Design). Define architecture and detailed design using DDD strategic patterns (see [ddd-strategic](resources/ddd-strategic.md)). Derive the behavioral model via state machine table (see [tdd-state-coverage](resources/tdd-state-coverage.md)). Formulate the unit and integration test inventories.
 
----
+For Cloudflare features: load the \`cloudflare\` skill to select the correct platform products (KV vs D1 vs R2, Workers vs Pages, Durable Objects, etc.) and then load the \`workers-best-practices\` skill to validate the detailed architectural decisions against production Workers patterns before presenting the plan.
 
-## Step 5: Plan + Approval Gate (MANDATORY)
+**Subagent B — Security Analyst (STRIDE Threat Modeling):**
+Load and follow the [security-analyst](resources/security-analyst.md) resource in **Stage 3 mode**. Perform STRIDE threat modeling across all trust boundaries identified in the architecture. Produce the \`THREAT_MODEL\` including security requirements (SR-N) that must be addressed in Stage 4.
 
-Load and follow the [planner](resources/planner.md) resource, consulting the
-[SWEBOK glossary](../swebok/SKILL.md) for terminology. Produce an \`EXECUTION_PLAN\`: the state machine
-table (see [tdd-state-coverage](resources/tdd-state-coverage.md)), the unit and integration test
-inventories (following [ddd-strategic](resources/ddd-strategic.md)), and the minimal implementation
-plan. For bug tasks, feed \`RCA_FINDINGS\` into the plan's Context section. Also reference and link to
-the approved \`requirements.md\` from Step 3.
+Wait for both subagents to report back before continuing.
 
-Before presenting, verify the plan lists at least one test. If it does not, re-plan.
+Before presenting, verify the plan includes at least one test and the threat model has no unmitigated CRITICAL threats.
 
-**Produce the plan as a native CLI artifact:**
+**Produce the Architecture, Design & Security Plan as a native CLI artifact:**
 
 Use \`write_to_file\` to create \`execution-plan.md\` in the artifact directory with:
 - \`ArtifactMetadata.UserFacing: true\`
 - \`ArtifactMetadata.RequestFeedback: true\`
-- \`ArtifactMetadata.Summary\`: a detailed summary of the execution plan
+- \`ArtifactMetadata.Summary\`: architecture decisions, DDD analysis, state machine, test inventory, implementation plan, and STRIDE threat model summary.
 
-**This is a hard gate.** Wait for the user to click **Proceed** before writing any code.
-Everything up to this point has been read-only; the first write happens only after approval.
+**This is a hard gate.** Wait for the user to click **Proceed** before writing any code. Everything above is read-only; first write happens only after approval.
 
-- On approval → continue to Step 6.
-- On rejection → take the feedback, revise the plan, update the artifact, and present again.
+> Produces: \`execution-plan.md\` (native artifact), \`THREAT_MODEL\`
 
 ---
 
-## Step 6: RED — Write Failing Tests
+## Stage 4: Development Phase — Construction & Integration (TDD Red/Green)
 
-Use \`define_subagent\` to create a specialized **test-writer** subagent. Include the
-[test-writer](resources/test-writer.md) role instructions in the subagent's system prompt, along with
-[tdd-principles](resources/tdd-principles.md) and
-[tdd-test-as-documentation](resources/tdd-test-as-documentation.md).
+**ISO/IEC/IEEE 12207: 6.4.7 Implementation, 6.4.8 Integration**
+**SWEBOK KA: Software Construction (Ch 4), Software Testing (Ch 5)**
 
-Launch the subagent via \`invoke_subagent\` with the approved plan's test inventory as the prompt.
-The subagent writes unit and integration tests from the plan, co-located with the source.
+Apply SWEBOK Ch 4 (Software Construction) using Test-Driven Development.
 
-Use \`schedule\` to set a reminder if the test-writing takes longer than expected.
+**RED — Test Construction:**
+Use \`define_subagent\` to create a **test-writer** subagent. Include the [test-writer](resources/test-writer.md) role instructions, along with [tdd-principles](resources/tdd-principles.md) and [tdd-test-as-documentation](resources/tdd-test-as-documentation.md). Feed the approved test inventory plus any security requirements (SR-N) from the \`THREAT_MODEL\` that require test coverage.
 
-When the subagent reports back via \`send_message\`, verify RED:
-
-Run each new test file:
+The subagent writes unit and integration tests. When it reports back, verify RED:
 \`pnpm --filter <package> exec vitest run <path/to/file.test.ts> --no-coverage\`
 
-Every test must fail, and fail for the *right* reason — an assertion about missing behavior, not a
-setup or import error. If any test fails for the wrong reason, send corrections back to the subagent
-via \`send_message\`.
+Every test must fail for the *right* reason — an assertion about missing behavior, not a setup or import error. Send corrections back to the subagent if not.
 
-> Produces: \`TEST_WRITER_RED_RESULTS\` (file list, raw output, failure reasons)
+> Produces: \`TEST_WRITER_RED_RESULTS\`
 
----
+**GREEN — Code Construction & Integration:**
+**Checkpoint:** confirm tests are failing correctly before writing any production code.
 
-## Step 7: GREEN — Implement
+Use \`define_subagent\` to create an **implementer** subagent. Include the [implementer](resources/implementer.md) role instructions. Feed \`TEST_WRITER_RED_RESULTS\` plus the STRIDE security mitigations from \`THREAT_MODEL\`. The subagent writes minimum production code to make all tests pass, integrating the components and implementing STRIDE mitigations.
 
-**Checkpoint:** confirm the RED results show tests failing for the right reason, not setup errors,
-before writing any production code.
-
-Use \`define_subagent\` to create a specialized **implementer** subagent. Include the
-[implementer](resources/implementer.md) role instructions in the subagent's system prompt.
-
-Launch the subagent via \`invoke_subagent\` with \`TEST_WRITER_RED_RESULTS\` and the plan's implementation
-section as the prompt. The subagent writes the minimum source to make the failing tests pass.
-
-Use \`schedule\` to set a reminder if implementation takes longer than expected.
-
-When the subagent reports back via \`send_message\`, verify GREEN:
-
+When it reports back, verify GREEN:
 - \`pnpm --filter <package> exec vitest run <path/to/file.test.ts>\`
 - \`pnpm --filter <package> test\`
-
-All new/changed code must reach 100% coverage (statements, branches, functions, lines).
 
 > Produces: \`GREEN_RESULTS\`
 
 ---
 
-## Step 8: Refactor & Summary
+## Stage 5: Production Phase — Verification & Validation
 
-With tests green, improve the code while keeping them green: simplify logic, reduce the change
-surface, eliminate duplication, improve naming, and remove dead code. Apply
-[ddd-tactical](resources/ddd-tactical.md) to check CQRS (mutations vs queries), the Specification
-Pattern for 3+ condition guards, branded-type Value Objects, and past-tense Domain Event naming.
+**ISO/IEC/IEEE 12207: 6.4.9 Verification, 6.4.11 Validation**
+**SWEBOK KA: Software Quality (Ch 12), Software Testing (Ch 5), Software Engineering Measurement (Ch 8), Computing Foundations / Security (Ch 13)**
 
-Re-run \`pnpm --filter <package> test\` after every change. Repeat until the suite is green with no
-findings left to address.
+With tests green, first commit the changes, push them to a remote PR branch, and wait for the remote CI pipeline/checks to finish before checking for Sonar issues.
 
-Then report to the user inline:
-- Task summary (and root cause, for bug tasks)
-- Tests written (files and what they cover)
-- Changes made (files and what changed)
-- Final coverage on new/changed code
-- Any technical debt or follow-ups discovered along the way
+Define and fan out relevant subagent reviewers in parallel. In addition to the three listed below, dynamically create other domain-specific review subagents as needed:
+
+**Subagent A — Quality Analyst (Measurement & Quality Gate):**
+Load and follow the [quality-analyst](resources/quality-analyst.md) resource. Run SonarCloud quality gate check, validate test coverage (100% on new/changed code), perform validation traceability against the approved \`requirements.md\`. For frontend features, apply the \`web-perf\` skill to audit Core Web Vitals.
+
+**Subagent B — Security Analyst (OWASP Top 10 Review):**
+Load and follow the [security-analyst](resources/security-analyst.md) resource in **Stage 5 mode**. Review all changed files against OWASP Top 10. Verify every HIGH and CRITICAL STRIDE mitigation from the \`THREAT_MODEL\` was implemented in Stage 4.
+
+**Subagent C — DDD Refactoring (Software Maintenance):**
+Load and follow the [ddd-tactical](resources/ddd-tactical.md) resource. Review the GREEN code and identify refactoring opportunities: CQRS separation, Specification Pattern (3+ condition guards), branded Value Objects, past-tense Domain Event naming, dead code elimination, and complexity reduction. Apply improvements while keeping tests green; re-run \`pnpm --filter <package> test\` after each change.
+
+Wait for all reviewers to report back.
+
+**Automatic hard gates (non-negotiable before Stage 6):**
+1. **SonarCloud quality gate must be PASS** — if FAIL, identify and fix issues, re-run until green.
+2. **OWASP Security review must PASS** — if CRITICAL or HIGH findings remain, fix them and re-run. Confirm STRIDE mitigations are all verified.
+
+If any issues, bugs, code smells, or security vulnerabilities are found during Stage 5, write failing red tests for those issues and return to Stage 4 to implement fixes.
+
+> Produces: \`QUALITY_ANALYSIS\`, \`OWASP_REVIEW\`, \`REFACTORED_CODE\`
+
+---
+
+## Stage 6: Utilization & Support Phase (Transition & Maintenance Handoff)
+
+**ISO/IEC/IEEE 12207: 6.4.10 Transition, 6.4.12 Operation, 6.4.13 Maintenance**
+**SWEBOK KA: Software Engineering Operations (Ch 10), Software Maintenance (Ch 7)**
+
+Prepare the software for transition to the operational environment.
+
+**Generate transition artifacts using installed skills:**
+
+1. **Deployment configuration:** Load the \`wrangler\` skill to generate a correctly-formed \`wrangler.jsonc\` configuration stub and a GitHub Actions workflow YAML (\`.github/workflows/<feature-name>.yml\`) targeting this monorepo's Cloudflare deployment pattern. Present these as inline code blocks for the user to review and integrate.
+
+2. **Final transition report** — provide inline to the user:
+
+\`\`\`
+TRANSITION_REPORT:
+
+## Stakeholder Needs Satisfaction (Validation)
+For each STAKEHOLDER_NEED from Stage 1: [need] → satisfied by [FR-N] → verified by [test name] ✅/❌
+
+## Requirements Traceability (Verification)
+For each FR-N: [requirement] → implemented in [file] → covered by [test] → SonarCloud: [pass/fail] ✅/❌
+
+## Security Summary
+STRIDE threats identified: [N] | Mitigated: [N] | Deferred: [N]
+OWASP findings: [N] CRITICAL | [N] HIGH | [N] MEDIUM | [N] LOW resolved
+
+## Quality Gate Summary
+SonarCloud: PASSED | Coverage: [X%] | Bugs: [N] | Vulnerabilities: [N] | Tech Debt Rating: [A-E]
+
+## Deployment Artifacts Generated
+- wrangler.jsonc stub: [inline or file path]
+- GitHub Actions workflow: [inline or file path]
+
+## Maintenance Handoff
+Maintenance class (if applicable): Corrective | Adaptive | Perfective | Preventive
+Technical debt deferred: [list or "None"]
+Recommended next maintenance actions: [list]
+\`\`\`
 
 ---`,
   description:
-    "End-to-end Red-Green-Refactor pipeline using native CLI tools: /grill-me intake, research subagent fan-out, native artifact approval gates with RequestFeedback, define_subagent for specialized RED/GREEN agents, send_message coordination, and schedule reminders. Use when the user asks to TDD a feature or bug, work an issue red-green-refactor, or build a change test-first.",
+    "End-to-end enterprise SDLC pipeline (SWEBOK v4 / ISO 12207): Concept → Maintenance Triage (defects) → Requirements → Architecture+STRIDE Threat Model → TDD Red/Green → Verification (SonarCloud gate + OWASP review + DDD refactor) → Transition (wrangler/GHA artifacts + traceability report). Use for all production feature and maintenance work.",
   name: "tdd"
 });

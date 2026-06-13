@@ -475,6 +475,55 @@ importers:
         specifier: ^4.100.0
         version: 4.100.0(@cloudflare/workers-types@4.20260611.1)
 
+  apps/logger-service:
+    dependencies:
+      '@ethang/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      drizzle-orm:
+        specifier: ^0.45.2
+        version: 0.45.2(@cloudflare/workers-types@4.20260611.1)(@opentelemetry/api@1.9.1)
+      hono:
+        specifier: ^4.12.25
+        version: 4.12.25
+      lodash:
+        specifier: ^4.18.1
+        version: 4.18.1
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20250204.0
+        version: 4.20260611.1
+      '@ethang/eslint-config':
+        specifier: ^25.20.1
+        version: 25.20.1(@angular/cli@21.2.13(@types/node@25.9.3)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.61.0(@typescript-eslint/parser@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.61.0)(@typescript-eslint/utils@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(jiti@2.7.0)(prettier@3.8.4)(storybook@10.4.1(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(tailwindcss@4.3.0)(typescript@6.0.3)(vitest@4.1.8)
+      '@types/lodash':
+        specifier: ^4.17.24
+        version: 4.17.24
+      '@types/node':
+        specifier: ^25.9.3
+        version: 25.9.3
+      '@vitest/coverage-v8':
+        specifier: ^4.1.8
+        version: 4.1.8(vitest@4.1.8)
+      browserslist-config-baseline:
+        specifier: ^0.5.0
+        version: 0.5.0
+      drizzle-kit:
+        specifier: ^0.31.10
+        version: 0.31.10
+      eslint:
+        specifier: ^10.4.1
+        version: 10.4.1(jiti@2.7.0)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.8
+        version: 4.1.8(@opentelemetry/api@1.9.1)(@types/node@25.9.3)(@vitest/coverage-v8@4.1.8)(@vitest/ui@4.1.8)(happy-dom@20.10.2)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
+      wrangler:
+        specifier: ^4.100.0
+        version: 4.100.0(@cloudflare/workers-types@4.20260611.1)
+
   apps/sanity-calendar-sync:
     dependencies:
       '@portabletext/react':
@@ -684,6 +733,9 @@ importers:
       '@ethang/toolbelt':
         specifier: ^4.5.0
         version: 4.5.0
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@ethang/eslint-config':
         specifier: ^25.20.1
@@ -700,6 +752,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.1.8
         version: 4.1.8(vitest@4.1.8)
+      browserslist-config-baseline:
+        specifier: ^0.5.0
+        version: 0.5.0
       eslint:
         specifier: ^10.4.1
         version: 10.4.1(jiti@2.7.0)
@@ -1038,6 +1093,49 @@ importers:
         specifier: ^4.1.8
         version: 4.1.8(@opentelemetry/api@1.9.1)(@types/node@25.9.3)(@vitest/coverage-v8@4.1.8)(@vitest/ui@4.1.8)(happy-dom@20.10.2)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
 
+  packages/logger-sdk:
+    dependencies:
+      '@ethang/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+      lodash:
+        specifier: ^4.18.1
+        version: 4.18.1
+      zod:
+        specifier: ^4.4.1
+        version: 4.4.3
+    devDependencies:
+      '@ethang/eslint-config':
+        specifier: ^25.20.1
+        version: 25.20.1(@angular/cli@21.2.13(@types/node@25.9.3)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.61.0(@typescript-eslint/parser@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.61.0)(@typescript-eslint/utils@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(jiti@2.7.0)(prettier@3.8.4)(storybook@10.4.1(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(tailwindcss@4.3.0)(typescript@6.0.3)(vitest@4.1.8)
+      '@types/lodash':
+        specifier: ^4.17.24
+        version: 4.17.24
+      '@types/node':
+        specifier: ^25.9.3
+        version: 25.9.3
+      '@vitest/coverage-v8':
+        specifier: ^4.1.8
+        version: 4.1.8(vitest@4.1.8)
+      browserslist-config-baseline:
+        specifier: ^0.5.0
+        version: 0.5.0
+      eslint:
+        specifier: ^10.4.1
+        version: 10.4.1(jiti@2.7.0)
+      tsc-prog:
+        specifier: ^2.3.0
+        version: 2.3.0(typescript@6.0.3)
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@6.0.3)(yaml@2.9.0)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.8
+        version: 4.1.8(@opentelemetry/api@1.9.1)(@types/node@25.9.3)(@vitest/coverage-v8@4.1.8)(@vitest/ui@4.1.8)(happy-dom@20.10.2)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
+
   packages/markdown-generator:
     dependencies:
       lodash:
@@ -1087,6 +1185,9 @@ importers:
       '@ethang/eslint-config':
         specifier: ^25.20.1
         version: 25.20.1(@angular/cli@21.2.13(@types/node@25.9.3)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.61.0(@typescript-eslint/parser@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.61.0)(@typescript-eslint/utils@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(jiti@2.7.0)(prettier@3.8.4)(storybook@10.4.1(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(tailwindcss@4.3.0)(typescript@6.0.3)(vitest@4.1.8)
+      '@types/lodash':
+        specifier: ^4.17.24
+        version: 4.17.24
       browserslist-config-baseline:
         specifier: ^0.5.0
         version: 0.5.0

@@ -1,0 +1,50 @@
+[
+  {
+    "query": "Check the SonarCloud quality gate status for our latest PR — I want to see if there are any blockers before we can merge, especially around security vulnerabilities and code coverage",
+    "should_trigger": true
+  },
+  {
+    "query": "Pull the SonarCloud analysis results for our project — show me all the critical and major security vulnerabilities found in the last scan, with file locations and remediation guidance",
+    "should_trigger": true
+  },
+  {
+    "query": "We're in /review and SonarCloud flagged some issues — get the full list of code smells, bugs, and vulnerabilities from the latest analysis so I can address them before the quality gate passes",
+    "should_trigger": true
+  },
+  {
+    "query": "What's our current technical debt ratio in SonarCloud? Show me the metrics dashboard — maintainability rating, reliability rating, security rating, and coverage percentage",
+    "should_trigger": true
+  },
+  {
+    "query": "The SonarCloud quality gate is failing on our PR — pull the specific issues that are blocking it and show me what needs to be fixed, sorted by severity",
+    "should_trigger": true
+  },
+  {
+    "query": "Get the SonarCloud code coverage report for our project — I want to see which modules have low coverage and identify the files that need more tests before our next release",
+    "should_trigger": true
+  },
+  {
+    "query": "Implement a new REST API endpoint for user profile management with CRUD operations, input validation, and proper error handling",
+    "should_trigger": false
+  },
+  {
+    "query": "Search for best practices around implementing OAuth2 PKCE flow in a Node.js application",
+    "should_trigger": false
+  },
+  {
+    "query": "Write a comprehensive market analysis of the DevSecOps tools landscape covering SAST, DAST, and SCA vendors",
+    "should_trigger": false
+  },
+  {
+    "query": "Scrape https://docs.sonarcloud.io and extract the full list of supported languages and analysis rules",
+    "should_trigger": false
+  },
+  {
+    "query": "Build a structured company profile for SonarSource — return JSON with founding year, funding, products, and competitive positioning",
+    "should_trigger": false
+  },
+  {
+    "query": "Add proper citations to docs/research/security-audit-findings.md following our project's citation standards",
+    "should_trigger": false
+  }
+]

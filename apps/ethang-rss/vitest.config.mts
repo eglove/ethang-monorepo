@@ -18,11 +18,14 @@ export default defineConfig({
   ],
   test: {
     coverage: {
+      provider: "v8",
+      reporter: ["text", "json", "html", "lcov"],
       thresholds: {
-        branches: 37.3,
-        functions: 7.57,
-        lines: 27.1,
-        statements: 27.1
+        autoUpdate: true,
+        branches: 100,
+        functions: 29.41,
+        lines: 86.04,
+        statements: 86.04
       }
     },
     environment: "node"

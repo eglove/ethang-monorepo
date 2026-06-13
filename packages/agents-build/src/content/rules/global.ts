@@ -100,13 +100,13 @@ All file operations and terminal executions on Windows must prioritize tools acc
 
 | Priority | Tool | When to Use |
 | :--- | :--- | :--- |
-| 1 | **Search & JSON CLI Tools** (\`es\`, \`jq\`, \`rg\`) | Priority for all file **READ** operations (e.g., path searching with \`es\`, JSON operations with \`jq\`, text searching with \`rg\`). |
-| 2 | **JetBrains WebStorm MCP** (\`mcp__webstorm__*\`) | All file **UPDATE/DELETE** operations (for safe refactoring), and as a backup for file **READ** operations when the IDE is running. |
+| 1 | **JetBrains WebStorm MCP** (\`mcp__webstorm__*\`) | All file **UPDATE/DELETE** operations (for safe refactoring), and as a primary tool for file **READ** operations when the IDE is running. |
+| 2 | **Search & JSON CLI Tools** (\`es\`, \`jq\`, \`rg\`) | Priority for all file **READ** operations (e.g., path searching with \`es\`, JSON operations with \`jq\`, text searching with \`rg\`) if WebStorm MCP is unavailable. |
 | 3 | **PowerShell** | File-adjacent shell operations that the prior tools cannot cover (path operations, directory listing, process management). Full access to .NET APIs for advanced scripting. |
 | 4 | **Native Tools** (\`Grep\`, \`Glob\`, \`Read\`, \`Edit\`, \`Write\`) | Only when prior tools cannot cover the operation. |
 | 5 | **Bash** | Last resort only — always prefer PowerShell on Windows. |
 
-*Note: WebStorm is assumed to be running. Use it for all UPDATE/DELETE operations, and as a backup for READ operations if CLI tools are unavailable or insufficient.*
+*Note: WebStorm is assumed to be running. Use it as the primary tool for all file operations (READ, UPDATE, and DELETE) when the IDE is running.*
 
 ### Search & JSON CLI Tools Reference
 
@@ -242,7 +242,12 @@ es [options] <search-string>
 3. Get JSON output and wrap paths with double quotes:
    \`\`\`powershell
    es -json -double-quote my-file
-   \`\`\``,
+   \`\`\`
+
+## Learned Lessons
+
+### Proven Patterns
+- **Everything Search CLI (es) Fallback**: The \`es\` CLI relies on the Windows Everything IPC service. If the Everything service/application is not running, \`es\` fails. In this case, fall back to JetBrains WebStorm MCP \`find_files_by_glob\` or ripgrep (\`rg\`) to search for file paths.`,
   filename: "es-cli",
   trigger: "always_on"
 });
@@ -378,15 +383,6 @@ const webstormMcp = defineRule({
 
 Use this rule to interact with the JetBrains WebStorm IDE via the Model Context Protocol (MCP) server. These tools allow search, file manipulation, refactoring, building, and running tests directly inside the IDE.
 
-## Priority Hierarchy for File Operations
-As defined in the workspace rules, all file operations must prioritize tools as follows:
-1. **Search & JSON CLI Tools** (\`es\`, \`jq\`, \`rg\`) for READ operations.
-2. **JetBrains WebStorm MCP** (\`mcp__webstorm__*\`) for all UPDATE/DELETE operations, and as a backup for READ operations.
-3. **PowerShell** for directory listing, process management, etc.
-4. **Native Tools** (\`Grep\`, \`Glob\`, \`Read\`, \`Edit\`, \`Write\`) as a backup.
-
----
-
 ## Tool Category: Analysis & Diagnostics
 
 ### \`build_project\`
@@ -511,9 +507,60 @@ Supports database exploration and querying (requires the "Database Tools and SQL
 - \`list_schema_objects\`: Lists objects (tables, views, etc.) in a schema.
 - \`get_database_object_description\`: Retrieves object schema structure.
 - \`execute_sql_query\`: Executes queries (prefer read-only connections).
-- \`preview_table_data\`: Previews table data in CSV format.`,
+- \`preview_table_data\`: Previews table data in CSV format.
+
+## Learned Lessons
+
+### Corrections
+- **WebStorm MCP Argument Nesting**: When calling WebStorm MCP tools via \`call_mcp_tool\`, pass all parameters (such as \`projectPath\` and \`pathInProject\`) inside the \`Arguments\` property of the tool payload, rather than as top-level fields of \`call_mcp_tool\`.
+
+### Proven Patterns
+- **WebStorm MCP replace_text_in_file Parameter**: The WebStorm MCP tool \`replace_text_in_file\` requires the parameter \`pathInProject\` (and \`projectPath\`) to successfully locate and replace text in a file. The parameter is named \`pathInProject\`, not \`filePath\` (which might be listed in some older documentation).
+- **WebStorm Text Search**: For text searches, prefer using the WebStorm MCP tool \`search_in_files_by_text\` (passing \`projectPath\`) rather than broad \`rtk rg\` terminal commands. WebStorm utilizes its indexed project structure, which executes instantly and avoids background task timeouts/hangs.
+- **IDE Write Synchronization**: When modifying a file that is actively open or cached in JetBrains WebStorm, avoid native write tools to prevent the IDE from overwriting the file with its in-memory cache. Instead, use WebStorm MCP's \`open_file_in_editor\` followed by \`replace_text_in_file\` to ensure WebStorm applies and persists the changes.`,
   filename: "webstorm-mcp",
   trigger: "always_on"
+});
+
+const lint = defineRule({
+  content: `# Linting and TypeScript Rules
+
+## Load and Follow the eslint-fixer Skill
+Whenever you encounter an ESLint issue, linting or TypeScript compilation error, or need to run an ESLint fixer, you **must** load and follow the \`eslint-fixer\` skill.
+
+## ESLint Troubleshooting & User Collaboration
+
+* **Request User Help when Struggling with ESLint:** If you encounter conflicting ESLint rules, loops, or tricky typescript/linter constraints that are hard to resolve automatically, do not spin or struggle in a loop. Ask the user for help, explain what you are trying to change, and collaborate to find a clean path forward.
+
+## Learned Lessons
+
+### Corrections
+- **Lodash Imports Must Be Individual**: Always import lodash functions individually using the path format (e.g. \`import map from "lodash/map.js"\`). Never use \`import lodash from "lodash"\` or \`import { map } from "lodash"\` — the path-based per-function import is required to keep bundle size small.
+- **ESLint Auto-Fix Cycle Deadlock**: When mocking functions (like \`vi.fn()\`) in tests, watch out for conflicts between eslint rules. For example, using \`vi.fn(async () => { return Promise.resolve(); })\` will trigger \`unicorn/no-useless-promise-resolve-reject\`, which auto-fixes on save by stripping \`return Promise.resolve()\`. This leaves the function body empty: \`vi.fn(async () => {})\`, which then triggers \`@typescript-eslint/no-empty-function\`.
+  - *Fix:* Insert a comment inside the body to prevent it from being classified as empty:
+    \`\`\`typescript
+    const mockNavigate = vi.fn(async () => {
+      //
+    });
+    \`\`\`
+- **Explicit Returns in attempt/attemptAsync**: In strict TypeScript configurations (e.g. \`TS7030\` check), ensure that all code paths within the callback return an explicit value (e.g., a default fallback object or \`undefined\`) instead of throwing errors or relying on implicit returns, to prevent compilation failures without introducing runtime exception overhead.
+- **Lodash isNil for Nullable Checks**: When checking anything nullable, always use \`isNil()\` from lodash (e.g. \`isNil(val)\` instead of checking against \`undefined\` or \`null\`).
+- **Browser Global Stubbing**: In universal/SDK code running in tests, access window-scoped properties like \`location.href\` via \`globalThis.window.location.href\` and verify \`globalThis.window\` is defined before accessing, to prevent throwing \`ReferenceError\`/\`TypeError\` in Node test environments.
+- **Index Signature Property Access**: In packages with \`noPropertyAccessFromIndexSignature\` enabled, use bracket notation \`obj["prop"]\` instead of dot notation \`obj.prop\` for objects defined as index-signature types (like \`Record<string, any>\` or \`any\`).
+- **D1 Mocking Column Order**: When mocking D1 statements in tests or proxies for Drizzle ORM, the array of values returned by \`.raw()\` must align exactly with the alphabetical/definition order of columns in \`sqliteTable\` to avoid property mapping mismatches.
+- **No ESLint Auto-Revert**: If an ESLint fix fails or breaks something, do not auto-revert the changes globally. Ask the user for guidance on what to do.
+- **Single Category ESLint Fixes**: Only fix one category of ESLint issues at a time, and ask the user for confirmation before moving to the next category. Do not attempt to fix the same issue repeatedly if it fails.
+- **Explicit Member Accessibility**: Always use explicit accessibility modifiers (\`public\`/\`private\`/\`protected\`) for class members and methods.
+- **Arrow Functions Preference**: Enforce the use of arrow functions over function declarations (e.g., \`const fn = () => {}\` instead of \`function fn() {}\`).
+- **Wrangler Conflicting Secrets**: In Wrangler configuration files (\`wrangler.jsonc\`/\`wrangler.toml\`), avoid setting empty placeholders in the \`vars\` block for variables that are intended to be kept secure as Cloudflare Secrets. When deploying via Wrangler, any empty variables defined in \`vars\` will overwrite and clear the existing remote secrets on Cloudflare. Keep secrets entirely out of the \`vars\` block.
+
+### Proven Patterns
+- **ESLint and Lodash Compliance**: Avoid native \`.filter\`, \`typeof === "string"\`, and \`.endsWith\` on arrays/strings when using Lodash-preferred conventions. Additionally, avoid variable abbreviations like \`srcDir\` to prevent triggering \`unicorn/prevent-abbreviations\` (prefer descriptive names like \`sourceDirectory\`).
+- **Strict TypeScript/ESLint checks**: When working under strict ESLint rules (like those in \`eslint-config\`), avoid non-null assertions (\`!\`) by using TypeScript type narrowing, and explicitly check nullable values (e.g., \`!isNil(val)\`) to satisfy \`@typescript-eslint/strict-boolean-expressions\`. Also, do not mix destructuring and property access of the same object in the same function scope to satisfy \`unicorn/consistent-destructuring\`.`,
+  description:
+    "linting, fixing lint errors, formatting, typescript checks, or type errors",
+  filename: "lint",
+  trigger: "model_decision"
 });
 
 export const GLOBAL_RULES: RuleDefinition[] = [
@@ -526,5 +573,6 @@ export const GLOBAL_RULES: RuleDefinition[] = [
   esCli,
   jqCli,
   rgCli,
-  webstormMcp
+  webstormMcp,
+  lint
 ];

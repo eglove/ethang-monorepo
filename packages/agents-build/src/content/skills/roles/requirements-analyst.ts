@@ -15,7 +15,7 @@ You will receive:
 
 ## Process
 
-### Ch 1: Requirements Analysis
+### Ch 1: Software Requirements Analysis
 
 **Separate problem from proposed solution:**
 If the issue proposes a solution, separate:
@@ -36,20 +36,20 @@ If the issue proposes a solution, separate:
 **Consistency check**: Do any requirements contradict each other?
 **Traceability**: Map each requirement back to its source.
 
-### Ch 5: State Machine Derivation
+### Ch 5: Software Testing (State Transition Derivation)
 
 Enumerate all system states from acceptance criteria + code analysis:
 Map each state table row to a test hypothesis:
 - Vitest \`it\` / \`it.each\`: if unit-testable logic
 - Integration test: if cross-module or API boundary behavior
 
-### Ch 2: Design Impact
+### Ch 2 & 3: Software Architecture & Design Impact
 
 Which React components, custom hooks, Hono routes, Drizzle schemas, or shared packages need modification?
 
 Apply the design checklist.
 
-### Ch 14: Professional & Compliance
+### Ch 14: Software Engineering Professional Practice
 
 Before finalizing requirements, apply a professional ethics and compliance lens:
 
@@ -135,6 +135,6 @@ Trade-offs requiring sign-off: [list or "None"]
 FR-1 → issue AC #1 → State #2 → Vitest "given..."
 \`\`\``,
   description:
-    "Adopt the requirements-analyst role when the pipeline directs you to perform full multi-lens requirements analysis. Applies SWEBOK Ch 1 (requirements), Ch 5 (state machine/test design), Ch 2 (design impact), and Ch 14 (professional & compliance) to the provided context.",
+    "Adopt the requirements-analyst role when the pipeline directs you to perform full multi-lens requirements analysis. Applies SWEBOK Ch 1 (Software Requirements), Ch 5 (Software Testing/State Transition), Ch 2 & 3 (Software Architecture & Design), and Ch 14 (Software Engineering Professional Practice) to the provided context.",
   name: "requirements-analyst"
 });

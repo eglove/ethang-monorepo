@@ -6,10 +6,7 @@ export default defineConfig({
       exclude: [
         "src/**/*.test.ts",
         "src/compile.ts",
-        "src/content/**",
-        "src/hooks/lessons-worker.ts",
-        "src/hooks/pre-invocation.ts",
-        "src/hooks/stop.ts"
+        "src/content/**"
       ],
       include: ["src/**/*.ts"],
       provider: "v8",

@@ -3,40 +3,61 @@ import { describe, expect, it } from "vitest";
 import { tddPipelineSkill } from "./pipeline.ts";
 
 describe("tddPipelineSkill content", () => {
-  it("has Step 1 for Task Intake via /grill-me", () => {
-    expect(tddPipelineSkill.content).toContain("## Step 1: Task Intake");
+  it("has Stage 1 for Concept Phase", () => {
+    expect(tddPipelineSkill.content).toContain("## Stage 1: Concept Phase");
   });
 
-  it("has Step 2 for Research & Analyze with subagent fan-out", () => {
-    expect(tddPipelineSkill.content).toContain("## Step 2: Research & Analyze");
-  });
-
-  it("has Step 3 for Requirements with native artifact approval", () => {
-    expect(tddPipelineSkill.content).toContain("## Step 3: Requirements");
-  });
-
-  it("has Step 4 for Root Cause Analysis (bug-shaped only)", () => {
+  it("has Stage 1.5 for Maintenance Triage", () => {
     expect(tddPipelineSkill.content).toContain(
-      "## Step 4: Root Cause Analysis"
+      "## Stage 1.5: Maintenance Triage"
     );
   });
 
-  it("has Step 5 for Plan + Approval Gate", () => {
+  it("has Stage 2 for Requirements", () => {
     expect(tddPipelineSkill.content).toContain(
-      "## Step 5: Plan + Approval Gate"
+      "## Stage 2: Development Phase — Requirements"
     );
   });
 
-  it("has Step 6 for RED with specialized subagent", () => {
-    expect(tddPipelineSkill.content).toContain("## Step 6: RED");
+  it("has Stage 3 for Architecture & Design", () => {
+    expect(tddPipelineSkill.content).toContain(
+      "## Stage 3: Development Phase — Architecture & Design + Threat Modeling"
+    );
   });
 
-  it("has Step 7 for GREEN with specialized subagent", () => {
-    expect(tddPipelineSkill.content).toContain("## Step 7: GREEN");
+  it("has Stage 4 for Construction & Integration (TDD Red/Green)", () => {
+    expect(tddPipelineSkill.content).toContain(
+      "## Stage 4: Development Phase — Construction & Integration (TDD Red/Green)"
+    );
   });
 
-  it("has Step 8 for Refactor & Summary", () => {
-    expect(tddPipelineSkill.content).toContain("## Step 8: Refactor & Summary");
+  it("has Stage 5 for Verification & Validation", () => {
+    expect(tddPipelineSkill.content).toContain(
+      "## Stage 5: Production Phase — Verification & Validation"
+    );
+  });
+
+  it("Stage 5 requires committing and pushing to a PR branch and waiting for CI to finish before checking Sonar issues", () => {
+    expect(tddPipelineSkill.content).toContain("commit");
+    expect(tddPipelineSkill.content).toContain("push");
+    expect(tddPipelineSkill.content).toContain("PR branch");
+    expect(tddPipelineSkill.content).toContain("wait");
+  });
+
+  it("Stage 5 allows dynamically creating relevant reviewers in addition to the ones listed", () => {
+    expect(tddPipelineSkill.content).toContain("dynamically");
+    expect(tddPipelineSkill.content).toContain("reviewer");
+  });
+
+  it("Stage 5 requires going back to Stage 4 with red tests if issues are found", () => {
+    expect(tddPipelineSkill.content).toContain("Stage 4");
+    expect(tddPipelineSkill.content).toContain("red test");
+  });
+
+  it("has Stage 6 for Utilization & Support Phase", () => {
+    expect(tddPipelineSkill.content).toContain(
+      "## Stage 6: Utilization & Support Phase"
+    );
   });
 
   it("references native CLI tools for multi-agent orchestration", () => {
@@ -50,26 +71,25 @@ describe("tddPipelineSkill content", () => {
     expect(tddPipelineSkill.content).toContain("RequestFeedback");
   });
 
-  it("references schedule tool for long-running reminders", () => {
-    expect(tddPipelineSkill.content).toContain("schedule");
-  });
-
   it("references /grill-me, /goal, and /teamwork-preview", () => {
     expect(tddPipelineSkill.content).toContain("/grill-me");
     expect(tddPipelineSkill.content).toContain("/goal");
     expect(tddPipelineSkill.content).toContain("/teamwork-preview");
   });
 
-  it("does not contain old 11-step headings", () => {
-    expect(tddPipelineSkill.content).not.toContain(
-      "## Step 2: Gather Linked Context"
-    );
-    expect(tddPipelineSkill.content).not.toContain("## Step 9: GREEN");
-    expect(tddPipelineSkill.content).not.toContain("## Step 11: Summary");
+  it("does not contain old step headings", () => {
+    expect(tddPipelineSkill.content).not.toContain("## Step 1:");
+    expect(tddPipelineSkill.content).not.toContain("## Step 2:");
+    expect(tddPipelineSkill.content).not.toContain("## Step 3:");
+    expect(tddPipelineSkill.content).not.toContain("## Step 4:");
+    expect(tddPipelineSkill.content).not.toContain("## Step 5:");
+    expect(tddPipelineSkill.content).not.toContain("## Step 6:");
+    expect(tddPipelineSkill.content).not.toContain("## Step 7:");
+    expect(tddPipelineSkill.content).not.toContain("## Step 8:");
   });
 
-  it("has exactly 8 steps", () => {
-    expect(tddPipelineSkill.content).toContain("## Step 8:");
-    expect(tddPipelineSkill.content).not.toContain("## Step 9:");
+  it("has exactly 7 stages (including 1.5)", () => {
+    expect(tddPipelineSkill.content).toContain("## Stage 6:");
+    expect(tddPipelineSkill.content).not.toContain("## Stage 7:");
   });
 });
