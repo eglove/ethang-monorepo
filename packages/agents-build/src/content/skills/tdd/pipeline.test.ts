@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { ciReviewPipelineSkill } from "./ci-review.ts";
 import { tddPipelineSkill } from "./pipeline.ts";
 
 describe("tddPipelineSkill content", () => {
@@ -31,31 +32,14 @@ describe("tddPipelineSkill content", () => {
     );
   });
 
-  it("has Stage 5 for Verification & Validation", () => {
-    expect(tddPipelineSkill.content).toContain(
+  it("does not have Stage 5 for Verification & Validation", () => {
+    expect(tddPipelineSkill.content).not.toContain(
       "## Stage 5: Production Phase — Verification & Validation"
     );
   });
 
-  it("Stage 5 requires committing and pushing to a PR branch and waiting for CI to finish before checking Sonar issues", () => {
-    expect(tddPipelineSkill.content).toContain("commit");
-    expect(tddPipelineSkill.content).toContain("push");
-    expect(tddPipelineSkill.content).toContain("PR branch");
-    expect(tddPipelineSkill.content).toContain("wait");
-  });
-
-  it("Stage 5 allows dynamically creating relevant reviewers in addition to the ones listed", () => {
-    expect(tddPipelineSkill.content).toContain("dynamically");
-    expect(tddPipelineSkill.content).toContain("reviewer");
-  });
-
-  it("Stage 5 requires going back to Stage 4 with red tests if issues are found", () => {
-    expect(tddPipelineSkill.content).toContain("Stage 4");
-    expect(tddPipelineSkill.content).toContain("red test");
-  });
-
-  it("has Stage 6 for Utilization & Support Phase", () => {
-    expect(tddPipelineSkill.content).toContain(
+  it("does not have Stage 6 for Utilization & Support Phase", () => {
+    expect(tddPipelineSkill.content).not.toContain(
       "## Stage 6: Utilization & Support Phase"
     );
   });
@@ -88,8 +72,47 @@ describe("tddPipelineSkill content", () => {
     expect(tddPipelineSkill.content).not.toContain("## Step 8:");
   });
 
-  it("has exactly 7 stages (including 1.5)", () => {
-    expect(tddPipelineSkill.content).toContain("## Stage 6:");
-    expect(tddPipelineSkill.content).not.toContain("## Stage 7:");
+  it("has Stage 4 but not Stage 5 or 6", () => {
+    expect(tddPipelineSkill.content).toContain("## Stage 4:");
+    expect(tddPipelineSkill.content).not.toContain("## Stage 5:");
+    expect(tddPipelineSkill.content).not.toContain("## Stage 6:");
+  });
+});
+
+describe("ciReviewPipelineSkill content", () => {
+  it("has Stage 5 for Verification & Validation", () => {
+    expect(ciReviewPipelineSkill.content).toContain(
+      "## Stage 5: Production Phase — Verification & Validation"
+    );
+  });
+
+  it("Stage 5 requires committing and pushing to a PR branch and waiting for CI to finish before checking Sonar issues", () => {
+    expect(ciReviewPipelineSkill.content).toContain("commit");
+    expect(ciReviewPipelineSkill.content).toContain("push");
+    expect(ciReviewPipelineSkill.content).toContain("PR branch");
+    expect(ciReviewPipelineSkill.content).toContain("wait");
+  });
+
+  it("Stage 5 allows dynamically creating relevant reviewers in addition to the ones listed", () => {
+    expect(ciReviewPipelineSkill.content).toContain("dynamically");
+    expect(ciReviewPipelineSkill.content).toContain("reviewer");
+  });
+
+  it("Stage 5 requires going back to Stage 4 with red tests if issues are found", () => {
+    expect(ciReviewPipelineSkill.content).toContain("Stage 4");
+    expect(ciReviewPipelineSkill.content).toContain("red test");
+  });
+
+  it("has Stage 6 for Utilization & Support Phase", () => {
+    expect(ciReviewPipelineSkill.content).toContain(
+      "## Stage 6: Utilization & Support Phase"
+    );
+  });
+
+  it("does not contain Stage 1 to 4", () => {
+    expect(ciReviewPipelineSkill.content).not.toContain("## Stage 1:");
+    expect(ciReviewPipelineSkill.content).not.toContain("## Stage 2:");
+    expect(ciReviewPipelineSkill.content).not.toContain("## Stage 3:");
+    expect(ciReviewPipelineSkill.content).not.toContain("## Stage 4:");
   });
 });
