@@ -37,6 +37,12 @@
       "skillPath": "skills/sandbox-sdk/SKILL.md",
       "computedHash": "e44cceebe7e47d815034027c303315139d35c1d92a3ee287dc6d3e9a02f0667b"
     },
+    "sonarcloud-analysis": {
+      "source": "harshanandak/forge",
+      "sourceType": "github",
+      "skillPath": "skills/sonarcloud-analysis/SKILL.md",
+      "computedHash": "37aebc8eb227935ca43d41d77b1c98e61780839d8c2049ba2024b09e85db7af4"
+    },
     "turnstile-spin": {
       "source": "cloudflare/skills",
       "sourceType": "github",
