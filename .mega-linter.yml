@@ -27,4 +27,4 @@ IGNORE_GITIGNORED_FILES: true
 
 FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts|.*-megalinter_file_names_cspell\.txt|.*\.idea.*|.*/migrations/meta/_journal.json|.*\.agents/.*|skills-lock\.json)
 
-REPOSITORY_KINGFISHER_ARGUMENTS: "--exclude .agents/**"
+REPOSITORY_KINGFISHER_ARGUMENTS: "--exclude **/.agents/**"
