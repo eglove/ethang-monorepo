@@ -3,15 +3,14 @@ import { describe, expect, it } from "vitest";
 import { gitMasterSkill, reviewMasterSkill } from "./index.ts";
 
 describe("gitMasterSkill content", () => {
-  it("proposes and stages files using a native artifact stage-plan.md with RequestFeedback and UserFacing", () => {
-    expect(gitMasterSkill.content).not.toContain(
-      "Present both lists to the user inline"
+  it("proposes, stages, and drafts commit using a single consolidated git-plan.md with RequestFeedback and UserFacing", () => {
+    expect(gitMasterSkill.content).not.toContain("stage-plan.md");
+    expect(gitMasterSkill.content).not.toContain("commit-draft.md");
+    expect(gitMasterSkill.content).toContain(
+      "Produce the consolidated git plan as a native CLI artifact:"
     );
     expect(gitMasterSkill.content).toContain(
-      "Produce the stage plan as a native CLI artifact:"
-    );
-    expect(gitMasterSkill.content).toContain(
-      "Use `write_to_file` to create `stage-plan.md` in the artifact directory with:"
+      "Use `write_to_file` to create `git-plan.md` in the artifact directory with:"
     );
     expect(gitMasterSkill.content).toContain(
       "ArtifactMetadata.UserFacing: true"
@@ -35,25 +34,6 @@ describe("gitMasterSkill content", () => {
   it("performs quality review using invoke_subagent with research type in parallel", () => {
     expect(gitMasterSkill.content).toContain("invoke_subagent");
     expect(gitMasterSkill.content).toContain("research");
-  });
-
-  it("drafts and executes commit using a native artifact commit-draft.md with RequestFeedback and UserFacing", () => {
-    expect(gitMasterSkill.content).not.toContain(
-      "Present the commit draft inline"
-    );
-    expect(gitMasterSkill.content).toContain(
-      "Produce the commit draft as a native CLI artifact:"
-    );
-    expect(gitMasterSkill.content).toContain(
-      "Use `write_to_file` to create `commit-draft.md` in the artifact directory with:"
-    );
-    expect(gitMasterSkill.content).toContain(
-      "ArtifactMetadata.UserFacing: true"
-    );
-    expect(gitMasterSkill.content).toContain(
-      "ArtifactMetadata.RequestFeedback: true"
-    );
-    expect(gitMasterSkill.content).toContain("wait for the user to approve");
   });
 });
 

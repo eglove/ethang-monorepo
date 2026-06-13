@@ -26,7 +26,7 @@ export const gitMasterSkill = defineSkill({
 
 Create a well-formed commit for this monorepo, with an optional pull request step.
 
-## Step 1: Propose and Stage Files
+## Step 1: Stage Files
 
 1. Run \`git status --porcelain\` to list all changed and untracked files.
 2. Partition files into **include** and **skip** buckets:
@@ -38,14 +38,7 @@ Create a well-formed commit for this monorepo, with an optional pull request ste
 
    Everything else goes in **include**.
 
-3. **Produce the stage plan as a native CLI artifact:**
-   Use \`write_to_file\` to create \`stage-plan.md\` in the artifact directory with:
-   - \`ArtifactMetadata.UserFacing: true\`
-   - \`ArtifactMetadata.RequestFeedback: true\`
-   - \`ArtifactMetadata.Summary\`: a detailed summary of the files to stage and skip
-   
-   **This is an approval gate.** Stop calling tools to end your turn, and wait for the user to approve (by clicking **Proceed**) before continuing.
-   On confirmation, \`git add\` each included file.
+3. Directly stage all files in the **include** bucket using \`git add <file>\`.
 
 ## Step 2: Read Git Context
 
@@ -101,11 +94,11 @@ Bullet points summarizing the logical changes, with emoji prefixes where they ad
 
 Use two \`-m\` flags — git uses the second as the body paragraph. In PowerShell, pass multi-line bodies with a single-quoted here-string.
 
-**Produce the commit draft as a native CLI artifact:**
-Use \`write_to_file\` to create \`commit-draft.md\` in the artifact directory with:
+**Produce the consolidated git plan as a native CLI artifact:**
+Use \`write_to_file\` to create \`git-plan.md\` in the artifact directory with:
 - \`ArtifactMetadata.UserFacing: true\`
 - \`ArtifactMetadata.RequestFeedback: true\`
-- \`ArtifactMetadata.Summary\`: a detailed summary of the commit draft
+- \`ArtifactMetadata.Summary\`: a detailed summary of the consolidated git plan (including staged files and the commit draft)
 
 **This is a hard gate.** Stop calling tools to end your turn, and wait for the user to approve (by clicking **Proceed**) before executing the commit.
 On confirmation, run the commit commands.

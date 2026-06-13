@@ -77,8 +77,10 @@ All agents must apply a DDD analytical lens when analyzing, planning, and implem
 Rules from explicit user corrections — things the assistant did wrong and must not repeat.
 
 - **Selective Revert Over Global Revert**: Never run global git resets or checkouts (like `git checkout -- .` or `git reset --hard`) when asked to revert agent-specific changes, as the user may have unrelated unstaged changes in their workspace. Always use `git restore` (or targeted checkout) explicitly on the specific files modified by the agent.
+- **Avoid Empty Model Output**: Avoid executing a tool or finishing a turn without returning any model text or subsequent tool calls. If a tool finishes and there is no other immediate action, provide a textual response to the user to avoid empty model output errors.
 
 ## Proven Patterns
 Approaches confirmed to work well in this workspace.
 
 - **Avoid Duplicating Rules and Instructions**: Avoid duplicating existing rules, instructions, or hierarchies across different files. Check and search other rule and skill artifacts (e.g. using `search_in_files_by_text`) before making changes to keep documentation modular, single-sourced, and consistent.
+- **Manifest-Based Builder Cleaning**: When writing workspace compilers or code-generators that overwrite files, write a build manifest (e.g. `.manifest.json`) and use it for targeted file deletion and empty folder pruning. This preserves third-party or externally installed files located in the output directory.
