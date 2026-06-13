@@ -4,11 +4,22 @@ import { gitMasterSkill, reviewMasterSkill } from "./index.ts";
 
 describe("gitMasterSkill content", () => {
   it("proposes and stages files using a native artifact stage-plan.md with RequestFeedback and UserFacing", () => {
-    expect(gitMasterSkill.content).toContain("stage-plan.md");
-    expect(gitMasterSkill.content).toContain("RequestFeedback");
-    expect(gitMasterSkill.content).toContain("UserFacing");
-    expect(gitMasterSkill.content).toContain("ask_question");
-    expect(gitMasterSkill.content).toContain("Stage these files");
+    expect(gitMasterSkill.content).not.toContain(
+      "Present both lists to the user inline"
+    );
+    expect(gitMasterSkill.content).toContain(
+      "Produce the stage plan as a native CLI artifact:"
+    );
+    expect(gitMasterSkill.content).toContain(
+      "Use `write_to_file` to create `stage-plan.md` in the artifact directory with:"
+    );
+    expect(gitMasterSkill.content).toContain(
+      "ArtifactMetadata.UserFacing: true"
+    );
+    expect(gitMasterSkill.content).toContain(
+      "ArtifactMetadata.RequestFeedback: true"
+    );
+    expect(gitMasterSkill.content).toContain("wait for the user to approve");
   });
 
   it("updates lessons using ask_question tool", () => {
@@ -27,11 +38,22 @@ describe("gitMasterSkill content", () => {
   });
 
   it("drafts and executes commit using a native artifact commit-draft.md with RequestFeedback and UserFacing", () => {
-    expect(gitMasterSkill.content).toContain("commit-draft.md");
-    expect(gitMasterSkill.content).toContain("RequestFeedback");
-    expect(gitMasterSkill.content).toContain("UserFacing");
-    expect(gitMasterSkill.content).toContain("ask_question");
-    expect(gitMasterSkill.content).toContain("Execute this commit");
+    expect(gitMasterSkill.content).not.toContain(
+      "Present the commit draft inline"
+    );
+    expect(gitMasterSkill.content).toContain(
+      "Produce the commit draft as a native CLI artifact:"
+    );
+    expect(gitMasterSkill.content).toContain(
+      "Use `write_to_file` to create `commit-draft.md` in the artifact directory with:"
+    );
+    expect(gitMasterSkill.content).toContain(
+      "ArtifactMetadata.UserFacing: true"
+    );
+    expect(gitMasterSkill.content).toContain(
+      "ArtifactMetadata.RequestFeedback: true"
+    );
+    expect(gitMasterSkill.content).toContain("wait for the user to approve");
   });
 });
 

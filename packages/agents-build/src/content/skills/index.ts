@@ -38,11 +38,13 @@ Create a well-formed commit for this monorepo, with an optional pull request ste
 
    Everything else goes in **include**.
 
-3. **Propose the files to stage using a native artifact:**
-   Create a markdown artifact named \`stage-plan.md\` under the artifact directory. Define the lists of files to stage and files to skip inside this artifact, specifying \`RequestFeedback: true\` and \`UserFacing: true\` in its metadata so the user can review and approve it.
+3. **Produce the stage plan as a native CLI artifact:**
+   Use \`write_to_file\` to create \`stage-plan.md\` in the artifact directory with:
+   - \`ArtifactMetadata.UserFacing: true\`
+   - \`ArtifactMetadata.RequestFeedback: true\`
+   - \`ArtifactMetadata.Summary\`: a detailed summary of the files to stage and skip
    
-   **This is an approval gate.** Call the \`ask_question\` tool directly to ask:
-   - "Stage these files and continue?" with options: Yes / Edit list / Cancel.
+   **This is an approval gate.** Stop calling tools to end your turn, and wait for the user to approve (by clicking **Proceed**) before continuing.
    On confirmation, \`git add\` each included file.
 
 ## Step 2: Read Git Context
@@ -99,11 +101,13 @@ Bullet points summarizing the logical changes, with emoji prefixes where they ad
 
 Use two \`-m\` flags — git uses the second as the body paragraph. In PowerShell, pass multi-line bodies with a single-quoted here-string.
 
-**Present the commit draft using a native artifact:**
-Create a markdown artifact named \`commit-draft.md\` under the artifact directory. Write the drafted subject line and body paragraphs inside this artifact, specifying \`RequestFeedback: true\` and \`UserFacing: true\` in its metadata.
+**Produce the commit draft as a native CLI artifact:**
+Use \`write_to_file\` to create \`commit-draft.md\` in the artifact directory with:
+- \`ArtifactMetadata.UserFacing: true\`
+- \`ArtifactMetadata.RequestFeedback: true\`
+- \`ArtifactMetadata.Summary\`: a detailed summary of the commit draft
 
-**This is a hard gate.** Call the \`ask_question\` tool directly to ask:
-- "Execute this commit?" with options: Yes / Edit message / Cancel.
+**This is a hard gate.** Stop calling tools to end your turn, and wait for the user to approve (by clicking **Proceed**) before executing the commit.
 On confirmation, run the commit commands.
 
 ## Step 7: Pull Request (only when asked)
