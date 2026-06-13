@@ -1,7 +1,7 @@
 import isNil from "lodash/isNil.js";
 import { useState } from "react";
 
-type UseToggleReturn = [value: boolean, handleToggle: () => void];
+type UseToggleReturn = [value: boolean, handleToggle: (value?: boolean) => void];
 
 export const useToggle = (initialState = false): UseToggleReturn => {
   const [intervalValue, setIntervalValue] = useState(initialState);

@@ -47,14 +47,14 @@ describe("useToggle", () => {
 
     act(() => {
       const [, handleToggle] = result.current;
-      (handleToggle as (value?: boolean) => void)(true);
+      handleToggle(true);
     });
 
     expect(result.current[0]).toBe(true);
 
     act(() => {
       const [, handleToggle] = result.current;
-      (handleToggle as (value?: boolean) => void)(false);
+      handleToggle(false);
     });
 
     expect(result.current[0]).toBe(false);
