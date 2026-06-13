@@ -70,6 +70,20 @@ describe("loggerClient - SDK Client library", () => {
     expect(clientAny["environment"]).toBe(PRODUCTION_ENV);
   });
 
+  it("defaults to the production logger domain if endpoint is omitted", () => {
+    const client = new LoggerClient({
+      apiKey: TEST_API_KEY,
+      environment: PRODUCTION_ENV,
+      serviceName: TEST_SERVICE
+    });
+
+    const clientAny = client as unknown as Record<string, unknown>;
+
+    expect(clientAny["endpoint"]).toBe(
+      "https://logger-service.hello-a8f.workers.dev"
+    );
+  });
+
   it("sends a POST request with correct headers and body when a log method is called", async () => {
     const { fetchMock } = setupFetchMock();
 

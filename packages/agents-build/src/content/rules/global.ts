@@ -552,6 +552,7 @@ Whenever you encounter an ESLint issue, linting or TypeScript compilation error,
 - **Single Category ESLint Fixes**: Only fix one category of ESLint issues at a time, and ask the user for confirmation before moving to the next category. Do not attempt to fix the same issue repeatedly if it fails.
 - **Explicit Member Accessibility**: Always use explicit accessibility modifiers (\`public\`/\`private\`/\`protected\`) for class members and methods.
 - **Arrow Functions Preference**: Enforce the use of arrow functions over function declarations (e.g., \`const fn = () => {}\` instead of \`function fn() {}\`).
+- **Wrangler Conflicting Secrets**: In Wrangler configuration files (\`wrangler.jsonc\`/\`wrangler.toml\`), avoid setting empty placeholders in the \`vars\` block for variables that are intended to be kept secure as Cloudflare Secrets. When deploying via Wrangler, any empty variables defined in \`vars\` will overwrite and clear the existing remote secrets on Cloudflare. Keep secrets entirely out of the \`vars\` block.
 
 ### Proven Patterns
 - **ESLint and Lodash Compliance**: Avoid native \`.filter\`, \`typeof === "string"\`, and \`.endsWith\` on arrays/strings when using Lodash-preferred conventions. Additionally, avoid variable abbreviations like \`srcDir\` to prevent triggering \`unicorn/prevent-abbreviations\` (prefer descriptive names like \`sourceDirectory\`).

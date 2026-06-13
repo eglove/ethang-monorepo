@@ -8,11 +8,12 @@ export class LoggerClient {
 
   public constructor(config: {
     apiKey: string;
-    endpoint: string;
+    endpoint?: string;
     environment: string;
     serviceName: string;
   }) {
-    this.endpoint = config.endpoint;
+    this.endpoint =
+      config.endpoint ?? "https://logger-service.hello-a8f.workers.dev";
     this.apiKey = config.apiKey;
     this.serviceName = config.serviceName;
     this.environment = config.environment;

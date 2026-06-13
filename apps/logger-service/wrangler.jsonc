@@ -11,13 +11,10 @@
     {
       "binding": "DB",
       "database_name": "logger-db",
-      "database_id": "PLACEHOLDER_DATABASE_ID"
+      "database_id": "47c9e83e-24d6-46e4-ac5e-09f0ab7a27a8"
     }
   ],
   "vars": {
-    "ADMIN_KEY": "",
-    "ALLOWED_ORIGINS": "*",
-    "SERVER_API_KEYS": "",
-    "CLIENT_API_KEYS": ""
+    "ALLOWED_ORIGINS": "*"
   }
 }
