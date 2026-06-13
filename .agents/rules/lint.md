@@ -5,6 +5,9 @@ trigger: model_decision
 
 # Linting and TypeScript Rules
 
+## Load and Follow the eslint-fixer Skill
+Whenever you encounter an ESLint issue, linting or TypeScript compilation error, or need to run an ESLint fixer, you **must** load and follow the `eslint-fixer` skill.
+
 ## ESLint Troubleshooting & User Collaboration
 
 * **Request User Help when Struggling with ESLint:** If you encounter conflicting ESLint rules, loops, or tricky typescript/linter constraints that are hard to resolve automatically, do not spin or struggle in a loop. Ask the user for help, explain what you are trying to change, and collaborate to find a clean path forward.
@@ -22,6 +25,13 @@ trigger: model_decision
     ```
 - **Explicit Returns in attempt/attemptAsync**: In strict TypeScript configurations (e.g. `TS7030` check), ensure that all code paths within the callback return an explicit value (e.g., a default fallback object or `undefined`) instead of throwing errors or relying on implicit returns, to prevent compilation failures without introducing runtime exception overhead.
 - **Lodash isNil for Nullable Checks**: When checking anything nullable, always use `isNil()` from lodash (e.g. `isNil(val)` instead of checking against `undefined` or `null`).
+- **Browser Global Stubbing**: In universal/SDK code running in tests, access window-scoped properties like `location.href` via `globalThis.window.location.href` and verify `globalThis.window` is defined before accessing, to prevent throwing `ReferenceError`/`TypeError` in Node test environments.
+- **Index Signature Property Access**: In packages with `noPropertyAccessFromIndexSignature` enabled, use bracket notation `obj["prop"]` instead of dot notation `obj.prop` for objects defined as index-signature types (like `Record<string, any>` or `any`).
+- **D1 Mocking Column Order**: When mocking D1 statements in tests or proxies for Drizzle ORM, the array of values returned by `.raw()` must align exactly with the alphabetical/definition order of columns in `sqliteTable` to avoid property mapping mismatches.
+- **No ESLint Auto-Revert**: If an ESLint fix fails or breaks something, do not auto-revert the changes globally. Ask the user for guidance on what to do.
+- **Single Category ESLint Fixes**: Only fix one category of ESLint issues at a time, and ask the user for confirmation before moving to the next category. Do not attempt to fix the same issue repeatedly if it fails.
+- **Explicit Member Accessibility**: Always use explicit accessibility modifiers (`public`/`private`/`protected`) for class members and methods.
+- **Arrow Functions Preference**: Enforce the use of arrow functions over function declarations (e.g., `const fn = () => {}` instead of `function fn() {}`).
 
 ### Proven Patterns
 - **ESLint and Lodash Compliance**: Avoid native `.filter`, `typeof === "string"`, and `.endsWith` on arrays/strings when using Lodash-preferred conventions. Additionally, avoid variable abbreviations like `srcDir` to prevent triggering `unicorn/prevent-abbreviations` (prefer descriptive names like `sourceDirectory`).

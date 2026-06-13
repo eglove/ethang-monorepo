@@ -1,6 +1,7 @@
 import { defineSkill } from "../../define.ts";
 import { dddStrategicSkill } from "./ddd/strategic.ts";
 import { dddTacticalSkill } from "./ddd/tactical.ts";
+import { eslintFixerSkill } from "./eslint-fixer.ts";
 import { rcaFiveWhysSkill } from "./rca/five-whys.ts";
 import { reviewDesignChecklist } from "./review/design-checklist.ts";
 import { reviewPipeline } from "./review/pipeline.ts";
@@ -205,5 +206,6 @@ export const SKILLS = [
   gitMasterSkill,
   reviewMasterSkill,
   tddMasterSkill,
-  swebok
+  swebok,
+  eslintFixerSkill
 ];

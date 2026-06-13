@@ -29,6 +29,17 @@ describe("GLOBAL_RULES lint rule", () => {
     expect(content).toContain("ESLint and Lodash Compliance");
     expect(content).toContain("Strict TypeScript/ESLint checks");
   });
+
+  it("requires agents to load and follow the eslint-fixer skill", () => {
+    const lintRule = find(GLOBAL_RULES, (rule) => {
+      return "lint" === rule.filename;
+    });
+
+    expect(lintRule).toBeDefined();
+    const content = lintRule?.content ?? "";
+
+    expect(content).toContain("eslint-fixer");
+  });
 });
 
 describe("GLOBAL_RULES esCli rule", () => {

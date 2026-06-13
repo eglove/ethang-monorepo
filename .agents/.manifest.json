@@ -51,6 +51,7 @@
     ".agents/skills/swebok/resources/ch15-economics.md",
     ".agents/skills/swebok/resources/ch16-computing.md",
     ".agents/skills/swebok/resources/ch17-math.md",
-    ".agents/skills/swebok/resources/ch18-engineering.md"
+    ".agents/skills/swebok/resources/ch18-engineering.md",
+    ".agents/skills/eslint-fixer/SKILL.md"
   ]
 }
