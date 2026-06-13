@@ -157,7 +157,9 @@ When it reports back, verify GREEN:
 **ISO/IEC/IEEE 12207: 6.4.9 Verification, 6.4.11 Validation**
 **SWEBOK KA: Software Quality (Ch 12), Software Testing (Ch 5), Software Engineering Measurement (Ch 8), Computing Foundations / Security (Ch 13)**
 
-With tests green, fan out **three subagents in parallel:**
+With tests green, first commit the changes, push them to a remote PR branch, and wait for the remote CI pipeline/checks to finish before checking for Sonar issues.
+
+Define and fan out relevant subagent reviewers in parallel. In addition to the three listed below, dynamically create other domain-specific review subagents as needed:
 
 **Subagent A — Quality Analyst (Measurement & Quality Gate):**
 Load and follow the [quality-analyst](resources/quality-analyst.md) resource. Run SonarCloud quality gate check, validate test coverage (100% on new/changed code), perform validation traceability against the approved \`requirements.md\`. For frontend features, apply the \`web-perf\` skill to audit Core Web Vitals.
@@ -168,11 +170,13 @@ Load and follow the [security-analyst](resources/security-analyst.md) resource i
 **Subagent C — DDD Refactoring (Software Maintenance):**
 Load and follow the [ddd-tactical](resources/ddd-tactical.md) resource. Review the GREEN code and identify refactoring opportunities: CQRS separation, Specification Pattern (3+ condition guards), branded Value Objects, past-tense Domain Event naming, dead code elimination, and complexity reduction. Apply improvements while keeping tests green; re-run \`pnpm --filter <package> test\` after each change.
 
-Wait for all three subagents to report back.
+Wait for all reviewers to report back.
 
 **Automatic hard gates (non-negotiable before Stage 6):**
 1. **SonarCloud quality gate must be PASS** — if FAIL, identify and fix issues, re-run until green.
 2. **OWASP Security review must PASS** — if CRITICAL or HIGH findings remain, fix them and re-run. Confirm STRIDE mitigations are all verified.
+
+If any issues, bugs, code smells, or security vulnerabilities are found during Stage 5, write failing red tests for those issues and return to Stage 4 to implement fixes.
 
 > Produces: \`QUALITY_ANALYSIS\`, \`OWASP_REVIEW\`, \`REFACTORED_CODE\`
 
