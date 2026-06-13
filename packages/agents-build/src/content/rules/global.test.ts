@@ -25,6 +25,7 @@ describe("GLOBAL_RULES lint rule", () => {
     expect(content).toContain("ESLint Auto-Fix Cycle Deadlock");
     expect(content).toContain("Lodash Imports Must Be Individual");
     expect(content).toContain("Explicit Returns in attempt/attemptAsync");
+    expect(content).toContain("Avoid Explicit Returns");
     expect(content).toContain("Lodash isNil for Nullable Checks");
     expect(content).toContain("ESLint and Lodash Compliance");
     expect(content).toContain("Strict TypeScript/ESLint checks");
