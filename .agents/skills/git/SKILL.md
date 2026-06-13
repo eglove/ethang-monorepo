@@ -38,9 +38,9 @@ Run in parallel:
 ## Step 3: Update Learned Lessons
 
 1. Analyze the session history for any new learned lessons (rules you got wrong/corrected) or proven patterns (approaches confirmed to work well).
-2. Propose these additions/changes to `.agents/lessons.md` using the `ask_question` tool:
-   - "Would you like me to update lessons.md with these additions before we commit?" with options: Yes / No / Cancel.
-3. On approval, write the changes to `.agents/lessons.md` and stage it (`git add .agents/lessons.md`).
+2. Propose these additions/changes to `AGENTS.md` using the `ask_question` tool:
+   - "Would you like me to update AGENTS.md with these additions before we commit?" with options: Yes / No / Cancel.
+3. On approval, write the changes to the "Learned Lessons" section at the bottom of `AGENTS.md` and stage it (`git add AGENTS.md`).
 
 ## Step 4: Amend vs. New Commit
 
@@ -65,7 +65,7 @@ Verdict:
 
 ### Subject line
 
-Imperative mood, lowercase, under 72 characters, describe the *why* rather than the *how*. Example: `add offset dedupe to lessons stop hook`.
+Imperative mood, lowercase, under 72 characters, describe the *why* rather than the *how*. Example: `add vitest test suite for git workflow`.
 
 ### Body
 

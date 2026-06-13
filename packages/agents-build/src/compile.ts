@@ -1,9 +1,6 @@
-/* eslint-disable no-console, unicorn/no-process-exit -- build/hook entry point: stdout is the wire protocol and exit codes are the contract */
 /**
- * Build entry: regenerates .agents/plugins/ and .agents/hooks.json from the
- * typed definitions under content/. Wipes ONLY .agents/plugins/ — the
- * .agents/skills/ placeholder is hand-managed and .agents/lessons.md is
- * mutable state owned by the lessons hooks (seeded here only when absent).
+ * Build entry: regenerates .agents/skills/ and .agents/rules/ from the
+ * typed definitions under content/.
  *
  * Run with: bun src/compile.ts
  */
@@ -13,7 +10,6 @@ import filter from "lodash/filter.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import {
-  existsSync,
   mkdirSync,
   readdirSync,
   readFileSync,
@@ -22,10 +18,9 @@ import {
 } from "node:fs";
 import path from "node:path";
 
-import { HOOKS, LESSONS_SEED } from "./content/hooks.ts";
 import { GLOBAL_RULES } from "./content/rules/global.ts";
 import { SKILLS } from "./content/skills/index.ts";
-import { renderJson, ruleMarkdown, skillMarkdown } from "./render.ts";
+import { ruleMarkdown, skillMarkdown } from "./render.ts";
 import {
   checkRuleSize,
   findDuplicateRuleFilenames,
@@ -110,16 +105,6 @@ for (const skill of SKILLS) {
     write(path.join(skillDirectory, resource.path), resource.content);
     fileCount += 1;
   }
-}
-
-write(path.join(AGENTS_DIR, "hooks.json"), renderJson(HOOKS));
-fileCount += 1;
-
-const lessonsPath = path.join(AGENTS_DIR, "lessons.md");
-
-if (!existsSync(lessonsPath)) {
-  write(lessonsPath, LESSONS_SEED);
-  fileCount += 1;
 }
 
 for (const directory of [SKILLS_DIR, RULES_DIR]) {
