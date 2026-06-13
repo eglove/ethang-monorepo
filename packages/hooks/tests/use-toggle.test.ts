@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useToggle } from "../src/use-toggle.js";
 
-describe("useToggle", () => {
+describe(useToggle, () => {
   it("should return the correct default value", () => {
     const { result } = renderHook(() => {
       return useToggle();
