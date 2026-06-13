@@ -1,6 +1,6 @@
 {
-  "name": "@ethang/schemas",
-  "version": "1.0.1",
+  "name": "@ethang/logger-sdk",
+  "version": "1.0.0",
   "type": "module",
   "author": "Ethan Glover",
   "license": "ISC",
@@ -8,21 +8,29 @@
     "access": "public"
   },
   "exports": {
-    "./*": "./src/*"
+    ".": "./src/logger-client.ts"
   },
   "scripts": {
-    "lint": "eslint src --fix && pnpm tsc --noEmit"
+    "build": "bun build.ts",
+    "lint": "eslint src --fix && pnpm tsc --noEmit",
+    "test": "vitest run --coverage"
   },
   "dependencies": {
-    "jose": "^6.2.3",
+    "@ethang/schemas": "workspace:*",
+    "lodash": "^4.18.1",
     "zod": "^4.4.1"
   },
   "devDependencies": {
     "@ethang/eslint-config": "^25.20.1",
     "@types/lodash": "^4.17.24",
+    "@types/node": "^25.9.3",
+    "@vitest/coverage-v8": "^4.1.8",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.4.1",
-    "typescript": "^6.0.3"
+    "tsc-prog": "^2.3.0",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   },
   "browserslist": [
     "extends browserslist-config-baseline",

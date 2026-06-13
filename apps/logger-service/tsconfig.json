@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "types": ["./worker-configuration.d.ts", "node"]
+  },
+  "extends": ["../../packages/tsconfig/tsconfig.base.json"]
+}
