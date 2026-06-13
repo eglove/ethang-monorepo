@@ -15,42 +15,48 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=eglove_ethang-monorepo&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=eglove_ethang-monorepo)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=eglove_ethang-monorepo&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=eglove_ethang-monorepo)
 
-This monorepo contains a collection of web applications, libraries, and tools used for my personal and client projects.
+This monorepo contains a collection of web applications, libraries, and tools used for personal and client projects.
 
 ## Key Projects
 
 ### Applications
 
-- **auth**: Authentication service utilizing Cloudflare Workers, Hono, and Drizzle ORM.
-- **ethang-admin**: Sanity Studio administrative interface for the ethang site content.
-- **ethang-courses**: Course tracking service using Apollo GraphQL and Drizzle ORM on Cloudflare Workers.
-- **ethang-graphql**: Apollo Gateway / Supergraph service.
-- **ethang-react**: The ethang web application built with React, TanStack, and Sanity.
-
-- **ethang-rss**: RSS aggregator service with Apollo GraphQL and Drizzle.
-- **sanity-calendar-sync**: Utility application for synchronizing calendar events between Sanity CMS and external calendar services.
-- **sterett-admin**: Administrative interface for the Sterett Creek Village Trustees, providing content management capabilities for the sterett-react website.
-- **sterett-hono**: Sterett Creek community web application built with Hono.
+- **[auth](apps/auth)**: Authentication service utilizing Cloudflare Workers, Hono, and Drizzle ORM.
+- **[ethang-admin](apps/ethang-admin)**: Sanity Studio administrative interface for the ethang site content.
+- **[ethang-courses](apps/ethang-courses)**: Course tracking service using Apollo GraphQL and Drizzle ORM on Cloudflare Workers.
+- **[ethang-graphql](apps/ethang-graphql)**: Apollo Gateway / Supergraph service.
+- **[ethang-react](apps/ethang-react)**: The main personal website front-end built with React, TanStack, Radix UI, Tailwind CSS, and Sanity.
+- **[ethang-rss](apps/ethang-rss)**: RSS aggregator service with Apollo GraphQL and Drizzle.
+- **[logger-service](apps/logger-service)**: Hono-based logging service deployed to Cloudflare Workers using Drizzle ORM.
+- **[sanity-calendar-sync](apps/sanity-calendar-sync)**: Utility application for synchronizing calendar events between Sanity CMS and external calendar services.
+- **[sterett-admin](apps/sterett-admin)**: Administrative interface for the Sterett Creek Village Trustees, providing content management capabilities for the sterett-hono website.
+- **[sterett-hono](apps/sterett-hono)**: Sterett Creek community web application built with Hono and Tailwind CSS on Cloudflare Workers.
 
 ### Packages
 
-- **eslint-config**: Shared ESLint configuration for multiple frameworks including React, Angular, Astro, and Solid, ensuring consistent code style.
-- **hono-middleware**: Shared middleware utilities for Hono applications.
-- **hooks**: Collection of reusable React hooks for UI interactions, state management, and browser APIs like local storage, clipboard, and media queries.
-- **leetcode**: Collection of LeetCode solutions.
-- **markdown-generator**: Utility for programmatically generating structured markdown content for documentation and other text-based outputs.
-- **project-builder**: Scaffolding tool for creating new projects with consistent structure and configuration based on templates.
-- **schemas**: Shared data schemas and validation utilities used across applications.
-- **scripts**: Collection of utility scripts for development, deployment, and maintenance tasks.
-- **service-worker**: Shared Workbox-based service worker configuration.
-- **store**: State management utilities and stores for frontend applications.
-- **toolbelt**: Comprehensive utility library with modules for collections, HTTP, functional programming, type checking, and more, shared across applications.
-- **tsconfig**: Shared TypeScript configuration files for consistent TypeScript settings across projects.
+- **[agents-build](packages/agents-build)**: Compiler package that generates Google Antigravity rules and skills into `.agents/` from TypeScript definitions.
+- **[eslint-config](packages/eslint-config)**: Shared ESLint configuration for multiple frameworks including React, Angular, Astro, and Solid, ensuring consistent code style.
+- **[graphql-types](packages/graphql-types)**: Shared TypeScript types for GraphQL schemas and operations generated via GraphQL Code Generator.
+- **[hono-middleware](packages/hono-middleware)**: Shared middleware utilities for Hono applications.
+- **[hooks](packages/hooks)**: Collection of reusable React hooks for UI interactions, state management, and browser APIs like local storage, clipboard, and media queries.
+- **[leetcode](packages/leetcode)**: Collection of LeetCode solutions.
+- **[logger-sdk](packages/logger-sdk)**: Client SDK for sending logs to the Hono-based logger service.
+- **[markdown-generator](packages/markdown-generator)**: Utility for programmatically generating structured markdown content for documentation and other text-based outputs.
+- **[schemas](packages/schemas)**: Shared data schemas and validation utilities used across applications.
+- **[scripts](packages/scripts)**: Collection of utility scripts for development, deployment, and maintenance tasks.
+- **[service-worker](packages/service-worker)**: Shared Workbox-based service worker configuration.
+- **[store](packages/store)**: State management utilities and stores for frontend applications.
+- **[toolbelt](packages/toolbelt)**: Comprehensive utility library with modules for collections, HTTP, functional programming, type checking, and more, shared across applications.
+- **[tsconfig](packages/tsconfig)**: Shared TypeScript configuration files for consistent TypeScript settings across projects.
 
 ## Technologies
 
-- **Frontend**: React, TanStack (Query, Router, Table, Form), Tailwind CSS
-- **Backend**: Cloudflare Workers, Hono, Apollo GraphQL
-- **Data**: Sanity CMS, IndexedDB, Drizzle ORM
-- **DevOps**: Automated testing, CI/CD pipelines, Wrangler deployment
-- **Tools**: TypeScript, ESLint, Vite, pnpm workspaces
+- **Frontend & UI**: React 19, Radix UI (Radix Themes), Styled Components, Tailwind CSS (v4)
+- **State Management & Data Fetching**: TanStack Query (React Query), TanStack Router, Apollo Client, RxJS, `@ethang/store`
+- **Backend & APIs**: Cloudflare Workers, Hono, Apollo GraphQL (Apollo Gateway / Supergraph, Apollo Server, Apollo Subgraph)
+- **Data & Databases**: Sanity CMS, Drizzle ORM (SQLite / Cloudflare D1), IndexedDB
+- **Validation**: Zod, `@hono/zod-validator`
+- **Build & Tooling**: Vite, Bun, `@cloudflare/vite-plugin`, `@tanstack/router-plugin`, GraphQL Code Generator, Rover CLI
+- **Testing**: Vitest, Playwright, Testing Library, `@axe-core/playwright`, Faker
+- **Code Quality**: TypeScript (v6), ESLint, MegaLinter, SonarCloud, cspell
+- **Workspace Management**: pnpm workspaces
