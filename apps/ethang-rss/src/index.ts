@@ -3,10 +3,12 @@ import type DataLoader from "dataloader";
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 import { startServerAndCreateCloudflareWorkersHandler } from "@as-integrations/cloudflare-workers";
+import { LoggerClient } from "@ethang/logger-sdk";
 import { drizzle } from "drizzle-orm/d1";
 import includes from "lodash/includes.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
+import convertToString from "lodash/toString.js";
 
 import { authenticate } from "./authenticate.ts";
 // eslint-disable-next-line sonar/no-wildcard-import
@@ -41,6 +43,40 @@ type UserItemState = typeof databaseSchema.userItemStatesTable.$inferSelect;
 let handler: ReturnType<
   typeof startServerAndCreateCloudflareWorkersHandler<Env, ServerContext>
 >;
+
+const getEnvironmentString = (
+  object: unknown,
+  key: string
+): string | undefined => {
+  // eslint-disable-next-line lodash/prefer-lodash-typecheck
+  if ("object" === typeof object && null !== object && key in object) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    const value = (object as Record<string, unknown>)[key];
+    // eslint-disable-next-line lodash/prefer-lodash-typecheck
+    return "string" === typeof value ? value : undefined;
+  }
+  return undefined;
+};
+
+const getSecretValue = async (secret: unknown): Promise<string | undefined> => {
+  if (
+    // eslint-disable-next-line lodash/prefer-lodash-typecheck
+    "object" === typeof secret &&
+    null !== secret &&
+    "get" in secret &&
+    // eslint-disable-next-line lodash/prefer-lodash-typecheck
+    "function" === typeof secret.get
+  ) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      return await (secret as { get: () => Promise<string> }).get();
+    } catch {
+      return undefined;
+    }
+  }
+  // eslint-disable-next-line lodash/prefer-lodash-typecheck
+  return "string" === typeof secret ? secret : undefined;
+};
 
 export default {
   async fetch(request, environment, context) {
@@ -93,7 +129,22 @@ export default {
       const message = isError(error) ? error.message : String(error);
 
       if (!includes(message, "already exists")) {
-        globalThis.console.error("Failed to start feed sync workflow:", error);
+        const apiKey = convertToString(
+          await getSecretValue(environment.LOGGER_API_KEY)
+        );
+        const environmentName =
+          getEnvironmentString(environment, "ENVIRONMENT") ?? "production";
+        const logger = new LoggerClient({
+          apiKey,
+          environment: environmentName,
+          serviceName: "ethang-rss-scheduler"
+        });
+
+        logger.error(
+          "Failed to start feed sync workflow",
+          undefined,
+          isError(error) ? error.stack : String(error)
+        );
         throw error;
       }
     }

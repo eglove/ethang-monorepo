@@ -1,3 +1,4 @@
+import { LoggerClient } from "@ethang/logger-sdk";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import {
   WorkflowEntrypoint,
@@ -14,6 +15,7 @@ import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
+import convertToString from "lodash/toString.js";
 
 import { articlesTable, feedsTable } from "../db/schema.ts";
 
@@ -21,6 +23,40 @@ const parser = new XMLParser({
   attributeNamePrefix: "@_",
   ignoreAttributes: false
 });
+
+const getEnvironmentString = (
+  object: unknown,
+  key: string
+): string | undefined => {
+  // eslint-disable-next-line lodash/prefer-lodash-typecheck
+  if ("object" === typeof object && null !== object && key in object) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    const value = (object as Record<string, unknown>)[key];
+    // eslint-disable-next-line lodash/prefer-lodash-typecheck
+    return "string" === typeof value ? value : undefined;
+  }
+  return undefined;
+};
+
+const getSecretValue = async (secret: unknown): Promise<string | undefined> => {
+  if (
+    // eslint-disable-next-line lodash/prefer-lodash-typecheck
+    "object" === typeof secret &&
+    null !== secret &&
+    "get" in secret &&
+    // eslint-disable-next-line lodash/prefer-lodash-typecheck
+    "function" === typeof secret.get
+  ) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      return await (secret as { get: () => Promise<string> }).get();
+    } catch {
+      return undefined;
+    }
+  }
+  // eslint-disable-next-line lodash/prefer-lodash-typecheck
+  return "string" === typeof secret ? secret : undefined;
+};
 
 type FeedItem = {
   content?: { "#text"?: string } | string;
@@ -127,6 +163,17 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     _event: WorkflowEvent<unknown>,
     step: WorkflowStep
   ): Promise<void> {
+    const apiKey = convertToString(
+      await getSecretValue(this.env.LOGGER_API_KEY)
+    );
+    const environmentName =
+      getEnvironmentString(this.env, "ENVIRONMENT") ?? "production";
+    const logger = new LoggerClient({
+      apiKey,
+      environment: environmentName,
+      serviceName: "ethang-rss-workflow"
+    });
+
     const database = drizzle(this.env.ethang_rss);
 
     const feeds = await step.do("get-feeds", async () => {
@@ -188,8 +235,11 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
         });
 
         if (isError(error)) {
-          // eslint-disable-next-line no-console
-          console.error(`Failed to fetch feed ${feed.xmlAddress}:`, error);
+          logger.error(
+            `Failed to fetch feed ${feed.xmlAddress}`,
+            undefined,
+            error.stack
+          );
           throw error; // Rethrow so Workflow can retry if configured
         }
       });

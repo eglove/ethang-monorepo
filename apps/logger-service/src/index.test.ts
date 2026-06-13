@@ -34,7 +34,9 @@ const createMockEnvironment = () => {
     ALLOWED_ORIGINS: `${TRUSTED_CLIENT_ORIGIN},${ANOTHER_CLIENT_ORIGIN}`,
     CLIENT_API_KEYS: `${CLIENT_KEY_1},client-key-2`,
     DB: mockD1 as unknown as D1Database,
-    SERVER_API_KEYS: `${SERVER_KEY_1},${SERVER_KEY_2}`
+    SERVER_API_KEYS: {
+      get: vi.fn().mockResolvedValue(`${SERVER_KEY_1},${SERVER_KEY_2}`)
+    }
   };
 
   return { mockD1, mockEnvironment };
