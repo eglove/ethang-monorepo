@@ -1,5 +1,5 @@
 ---
-description: "Create a well-formed git commit using native CLI tools: ask_question inline prompts for staging and commit approvals, invoke_subagent with research for quality checks in parallel."
+description: Create a well-formed git commit using inline prompts for staging and commit approvals, invoke_subagent with research for quality checks in parallel.
 name: git
 ---
 
@@ -35,8 +35,7 @@ Run in parallel:
 1. Analyze the session history for:
    - Any new learned lessons (rules you got wrong/corrected) or proven patterns (approaches confirmed to work well).
    - Any opportunities to improve the agent rules, skills, or validation configuration located in `.agents` (for performance, usage, and quality).
-2. Propose these additions/changes to the user using the `ask_question` tool:
-   - "Would you like me to update AGENTS.md and/or the agent builder configurations with these improvements?" with options: Yes / No / Cancel.
+2. Propose these additions/changes to the user inline in the chat and wait for confirmation.
 3. On approval:
    - For global rules/lessons, write them to the "Learned Lessons" section of `AGENTS.md`.
    - For rules/skills defined in `.agents`, modify the source configurations under `packages/agents-build/` and run `pnpm --filter @ethang/agents-build build` to compile the changes.
@@ -59,7 +58,7 @@ Fan out checks on `git diff --staged` in parallel using `invoke_subagent` with t
 Verdict:
 - All clear → proceed to Step 6.
 - Blocking findings (broken behavior, weakened tests) → stop, report, and wait for fixes.
-- Minor findings only → ask "Proceed anyway? Yes / Fix first / Cancel" using `ask_question` and wait.
+- Minor findings only → ask the user inline and wait for confirmation.
 
 ## Step 6: Draft + Execute
 
@@ -75,13 +74,10 @@ Bullet points summarizing the logical changes, with emoji prefixes where they ad
 
 Use two `-m` flags — git uses the second as the body paragraph. In PowerShell, pass multi-line bodies with a single-quoted here-string.
 
-**Produce the consolidated git plan as a native CLI artifact:**
-Use `write_to_file` to create `git-plan.md` in the artifact directory with:
-- `ArtifactMetadata.UserFacing: true`
-- `ArtifactMetadata.RequestFeedback: true`
-- `ArtifactMetadata.Summary`: a detailed summary of the consolidated git plan (including staged files and the commit draft)
+**Present the consolidated git plan inline:**
+Present a detailed summary of the consolidated git plan (including staged files and the commit draft) inline in the chat.
 
-**This is a hard gate.** Stop calling tools to end your turn, and wait for the user to approve (by clicking **Proceed**) before executing the commit.
+**This is a hard gate.** Stop calling tools to end your turn, and wait for the user to approve inline in the chat before executing the commit.
 On confirmation, run the commit commands.
 
 ## Step 7: Pull Request (only when asked)

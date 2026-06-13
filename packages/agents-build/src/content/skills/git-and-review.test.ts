@@ -3,26 +3,20 @@ import { describe, expect, it } from "vitest";
 import { gitMasterSkill, reviewMasterSkill } from "./index.ts";
 
 describe("gitMasterSkill content", () => {
-  it("proposes, stages, and drafts commit using a single consolidated git-plan.md with RequestFeedback and UserFacing", () => {
-    expect(gitMasterSkill.content).not.toContain("stage-plan.md");
-    expect(gitMasterSkill.content).not.toContain("commit-draft.md");
-    expect(gitMasterSkill.content).toContain(
-      "Produce the consolidated git plan as a native CLI artifact:"
-    );
-    expect(gitMasterSkill.content).toContain(
-      "Use `write_to_file` to create `git-plan.md` in the artifact directory with:"
-    );
-    expect(gitMasterSkill.content).toContain(
-      "ArtifactMetadata.UserFacing: true"
-    );
-    expect(gitMasterSkill.content).toContain(
-      "ArtifactMetadata.RequestFeedback: true"
-    );
-    expect(gitMasterSkill.content).toContain("wait for the user to approve");
+  it("proposes, stages, and drafts commit inline in the chat", () => {
+    expect(gitMasterSkill.content).not.toContain("git-plan.md");
+    expect(gitMasterSkill.content).not.toContain("write_to_file");
+    expect(gitMasterSkill.content).toContain("inline");
   });
 
-  it("updates lessons using ask_question tool", () => {
-    expect(gitMasterSkill.content).toContain("ask_question");
+  it("updates lessons inline", () => {
+    expect(gitMasterSkill.content).not.toContain("ask_question");
+    expect(gitMasterSkill.content).toContain("inline");
+  });
+
+  it("has a simplified description without ask_question", () => {
+    expect(gitMasterSkill.description).not.toContain("ask_question");
+    expect(gitMasterSkill.description).toContain("inline");
   });
 
   it("mentions improvements to .agents", () => {
