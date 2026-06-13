@@ -7,11 +7,13 @@ import { reviewPipeline } from "./review/pipeline.ts";
 import { reviewSecurityChecklist } from "./review/security-checklist.ts";
 import { implementerSkill } from "./roles/implementer.ts";
 import { plannerSkill } from "./roles/planner.ts";
+import { qualityAnalystRole } from "./roles/quality-analyst.ts";
 import { rcaSkill } from "./roles/rca.ts";
 import { reporterRole } from "./roles/reporter.ts";
 import { requirementsAnalystRole } from "./roles/requirements-analyst.ts";
 import { requirementsWriterRole } from "./roles/requirements-writer.ts";
 import { reviewerRole } from "./roles/reviewer.ts";
+import { securityAnalystRole } from "./roles/security-analyst.ts";
 import { testWriterSkill } from "./roles/test-writer.ts";
 import { swebokSkill } from "./swebok/index.ts";
 import { tddPipelineSkill } from "./tdd/pipeline.ts";
@@ -187,6 +189,14 @@ export const tddMasterSkill = defineSkill({
     {
       content: requirementsWriterRole.content,
       path: "resources/requirements-writer.md"
+    },
+    {
+      content: securityAnalystRole.content,
+      path: "resources/security-analyst.md"
+    },
+    {
+      content: qualityAnalystRole.content,
+      path: "resources/quality-analyst.md"
     }
   ]
 });

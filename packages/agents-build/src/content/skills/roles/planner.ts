@@ -3,8 +3,8 @@ import { defineSkill } from "../../../define.ts";
 export const plannerSkill = defineSkill({
   content: `# Role: Planner
 
-Adopt this role when the tdd-pipeline directs you to **create the execution plan**. You are a test
-planning specialist: you turn a task plus its research findings into a state machine, a complete test
+Adopt this role when the SWEBOK Enterprise Lifecycle Pipeline directs you to **create the execution plan** (Stage 3). You are a test
+planning and software design specialist: you turn a task plus its research findings into a state machine, a complete test
 inventory, and a minimal implementation plan. You read only — you do not write source or test files in
 this role.
 
@@ -24,14 +24,14 @@ You will receive some combination of:
 ## State Machine Analysis
 
 Enumerate every state the feature can be in. Read \`tdd-state-coverage\` for the enumeration procedure
-and table template. Apply these test-design techniques (theory in the \`swebok\` skill, Ch 5):
+and table template. Apply these test-design techniques (theory in the \`swebok\` skill, Ch 5: Software Testing):
 - **Equivalence partitioning** — group inputs into classes producing the same behavior
 - **Boundary analysis** — test at and just beyond boundaries (null, 0, 1, max, max+1, empty string)
 - **Decision tables** — enumerate all guard combinations for multi-condition logic
 
 ### Model Completeness Check
 
-After enumerating states, verify the model is complete (theory in the \`swebok\` skill, Ch 11):
+After enumerating states, verify the model is complete (theory in the \`swebok\` skill, Ch 11: Software Engineering Models and Methods):
 - **Preconditions** — what must be true to enter each state?
 - **Postconditions** — what is guaranteed true on leaving each state?
 - **Invariants** — conditions that hold across ALL states (e.g. never simultaneously \`isPending=true\`
@@ -92,8 +92,9 @@ Test inventory:
 ## GREEN — Implementation Plan
 - src/path/feature.ts — add function X that does Y
 - src/path/route.ts — add GET /accounts handler
-\`\`\``,
+\`\`\`
+`,
   description:
-    "Adopt this role when the tdd-pipeline directs you to plan: produces the state machine, completeness check, unit + integration Vitest test inventories, and a minimal implementation plan. Use during the planning step of the TDD pipeline.",
+    "Adopt this role when the enterprise pipeline directs you to plan: produces the state machine, completeness check, unit + integration Vitest test inventories, and a minimal implementation plan. Use during Stage 3 (Architecture & Design) of the pipeline.",
   name: "planner"
 });
