@@ -13,6 +13,12 @@ describe("gitMasterSkill content", () => {
     expect(gitMasterSkill.content).toContain("ask_question");
   });
 
+  it("mentions improvements to .agents", () => {
+    expect(gitMasterSkill.content).toContain(
+      "opportunities to improve the agent rules, skills, or validation configuration located in `.agents`"
+    );
+  });
+
   it("performs quality review using invoke_subagent with research type in parallel", () => {
     expect(gitMasterSkill.content).toContain("invoke_subagent");
     expect(gitMasterSkill.content).toContain("research");

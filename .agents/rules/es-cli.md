@@ -62,3 +62,8 @@ es [options] <search-string>
    ```powershell
    es -json -double-quote my-file
    ```
+
+## Learned Lessons
+
+### Proven Patterns
+- **Everything Search CLI (es) Fallback**: The `es` CLI relies on the Windows Everything IPC service. If the Everything service/application is not running, `es` fails. In this case, fall back to JetBrains WebStorm MCP `find_files_by_glob` or ripgrep (`rg`) to search for file paths.

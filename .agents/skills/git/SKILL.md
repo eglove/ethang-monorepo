@@ -35,12 +35,17 @@ Run in parallel:
 - `git branch --show-current`
 - `git log --oneline "@{u}..HEAD"` — unpushed commits ahead of upstream. If the command errors (no upstream set), fall back to `git log --oneline -1`.
 
-## Step 3: Update Learned Lessons
+## Step 3: Update Learned Lessons & Agent Configurations
 
-1. Analyze the session history for any new learned lessons (rules you got wrong/corrected) or proven patterns (approaches confirmed to work well).
-2. Propose these additions/changes to `AGENTS.md` using the `ask_question` tool:
-   - "Would you like me to update AGENTS.md with these additions before we commit?" with options: Yes / No / Cancel.
-3. On approval, write the changes to the "Learned Lessons" section at the bottom of `AGENTS.md` and stage it (`git add AGENTS.md`).
+1. Analyze the session history for:
+   - Any new learned lessons (rules you got wrong/corrected) or proven patterns (approaches confirmed to work well).
+   - Any opportunities to improve the agent rules, skills, or validation configuration located in `.agents` (for performance, usage, and quality).
+2. Propose these additions/changes to the user using the `ask_question` tool:
+   - "Would you like me to update AGENTS.md and/or the agent builder configurations with these improvements?" with options: Yes / No / Cancel.
+3. On approval:
+   - For global rules/lessons, write them to the "Learned Lessons" section of `AGENTS.md`.
+   - For rules/skills defined in `.agents`, modify the source configurations under `packages/agents-build/` and run `pnpm --filter @ethang/agents-build build` to compile the changes.
+   - Stage all updated and generated files (e.g. `git add AGENTS.md packages/agents-build/ .agents/`).
 
 ## Step 4: Amend vs. New Commit
 

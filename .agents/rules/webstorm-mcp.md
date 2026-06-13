@@ -6,15 +6,6 @@ trigger: always_on
 
 Use this rule to interact with the JetBrains WebStorm IDE via the Model Context Protocol (MCP) server. These tools allow search, file manipulation, refactoring, building, and running tests directly inside the IDE.
 
-## Priority Hierarchy for File Operations
-As defined in the workspace rules, all file operations must prioritize tools as follows:
-1. **Search & JSON CLI Tools** (`es`, `jq`, `rg`) for READ operations.
-2. **JetBrains WebStorm MCP** (`mcp__webstorm__*`) for all UPDATE/DELETE operations, and as a backup for READ operations.
-3. **PowerShell** for directory listing, process management, etc.
-4. **Native Tools** (`Grep`, `Glob`, `Read`, `Edit`, `Write`) as a backup.
-
----
-
 ## Tool Category: Analysis & Diagnostics
 
 ### `build_project`
@@ -140,3 +131,13 @@ Supports database exploration and querying (requires the "Database Tools and SQL
 - `get_database_object_description`: Retrieves object schema structure.
 - `execute_sql_query`: Executes queries (prefer read-only connections).
 - `preview_table_data`: Previews table data in CSV format.
+
+## Learned Lessons
+
+### Corrections
+- **WebStorm MCP Argument Nesting**: When calling WebStorm MCP tools via `call_mcp_tool`, pass all parameters (such as `projectPath` and `pathInProject`) inside the `Arguments` property of the tool payload, rather than as top-level fields of `call_mcp_tool`.
+
+### Proven Patterns
+- **WebStorm MCP replace_text_in_file Parameter**: The WebStorm MCP tool `replace_text_in_file` requires the parameter `pathInProject` (and `projectPath`) to successfully locate and replace text in a file. The parameter is named `pathInProject`, not `filePath` (which might be listed in some older documentation).
+- **WebStorm Text Search**: For text searches, prefer using the WebStorm MCP tool `search_in_files_by_text` (passing `projectPath`) rather than broad `rtk rg` terminal commands. WebStorm utilizes its indexed project structure, which executes instantly and avoids background task timeouts/hangs.
+- **IDE Write Synchronization**: When modifying a file that is actively open or cached in JetBrains WebStorm, avoid native write tools to prevent the IDE from overwriting the file with its in-memory cache. Instead, use WebStorm MCP's `open_file_in_editor` followed by `replace_text_in_file` to ensure WebStorm applies and persists the changes.

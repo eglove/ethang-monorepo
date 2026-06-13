@@ -242,7 +242,12 @@ es [options] <search-string>
 3. Get JSON output and wrap paths with double quotes:
    \`\`\`powershell
    es -json -double-quote my-file
-   \`\`\``,
+   \`\`\`
+
+## Learned Lessons
+
+### Proven Patterns
+- **Everything Search CLI (es) Fallback**: The \`es\` CLI relies on the Windows Everything IPC service. If the Everything service/application is not running, \`es\` fails. In this case, fall back to JetBrains WebStorm MCP \`find_files_by_glob\` or ripgrep (\`rg\`) to search for file paths.`,
   filename: "es-cli",
   trigger: "always_on"
 });
@@ -378,15 +383,6 @@ const webstormMcp = defineRule({
 
 Use this rule to interact with the JetBrains WebStorm IDE via the Model Context Protocol (MCP) server. These tools allow search, file manipulation, refactoring, building, and running tests directly inside the IDE.
 
-## Priority Hierarchy for File Operations
-As defined in the workspace rules, all file operations must prioritize tools as follows:
-1. **Search & JSON CLI Tools** (\`es\`, \`jq\`, \`rg\`) for READ operations.
-2. **JetBrains WebStorm MCP** (\`mcp__webstorm__*\`) for all UPDATE/DELETE operations, and as a backup for READ operations.
-3. **PowerShell** for directory listing, process management, etc.
-4. **Native Tools** (\`Grep\`, \`Glob\`, \`Read\`, \`Edit\`, \`Write\`) as a backup.
-
----
-
 ## Tool Category: Analysis & Diagnostics
 
 ### \`build_project\`
@@ -511,9 +507,49 @@ Supports database exploration and querying (requires the "Database Tools and SQL
 - \`list_schema_objects\`: Lists objects (tables, views, etc.) in a schema.
 - \`get_database_object_description\`: Retrieves object schema structure.
 - \`execute_sql_query\`: Executes queries (prefer read-only connections).
-- \`preview_table_data\`: Previews table data in CSV format.`,
+- \`preview_table_data\`: Previews table data in CSV format.
+
+## Learned Lessons
+
+### Corrections
+- **WebStorm MCP Argument Nesting**: When calling WebStorm MCP tools via \`call_mcp_tool\`, pass all parameters (such as \`projectPath\` and \`pathInProject\`) inside the \`Arguments\` property of the tool payload, rather than as top-level fields of \`call_mcp_tool\`.
+
+### Proven Patterns
+- **WebStorm MCP replace_text_in_file Parameter**: The WebStorm MCP tool \`replace_text_in_file\` requires the parameter \`pathInProject\` (and \`projectPath\`) to successfully locate and replace text in a file. The parameter is named \`pathInProject\`, not \`filePath\` (which might be listed in some older documentation).
+- **WebStorm Text Search**: For text searches, prefer using the WebStorm MCP tool \`search_in_files_by_text\` (passing \`projectPath\`) rather than broad \`rtk rg\` terminal commands. WebStorm utilizes its indexed project structure, which executes instantly and avoids background task timeouts/hangs.
+- **IDE Write Synchronization**: When modifying a file that is actively open or cached in JetBrains WebStorm, avoid native write tools to prevent the IDE from overwriting the file with its in-memory cache. Instead, use WebStorm MCP's \`open_file_in_editor\` followed by \`replace_text_in_file\` to ensure WebStorm applies and persists the changes.`,
   filename: "webstorm-mcp",
   trigger: "always_on"
+});
+
+const lint = defineRule({
+  content: `# Linting and TypeScript Rules
+
+## ESLint Troubleshooting & User Collaboration
+
+* **Request User Help when Struggling with ESLint:** If you encounter conflicting ESLint rules, loops, or tricky typescript/linter constraints that are hard to resolve automatically, do not spin or struggle in a loop. Ask the user for help, explain what you are trying to change, and collaborate to find a clean path forward.
+
+## Learned Lessons
+
+### Corrections
+- **Lodash Imports Must Be Individual**: Always import lodash functions individually using the path format (e.g. \`import map from "lodash/map.js"\`). Never use \`import lodash from "lodash"\` or \`import { map } from "lodash"\` — the path-based per-function import is required to keep bundle size small.
+- **ESLint Auto-Fix Cycle Deadlock**: When mocking functions (like \`vi.fn()\`) in tests, watch out for conflicts between eslint rules. For example, using \`vi.fn(async () => { return Promise.resolve(); })\` will trigger \`unicorn/no-useless-promise-resolve-reject\`, which auto-fixes on save by stripping \`return Promise.resolve()\`. This leaves the function body empty: \`vi.fn(async () => {})\`, which then triggers \`@typescript-eslint/no-empty-function\`.
+  - *Fix:* Insert a comment inside the body to prevent it from being classified as empty:
+    \`\`\`typescript
+    const mockNavigate = vi.fn(async () => {
+      //
+    });
+    \`\`\`
+- **Explicit Returns in attempt/attemptAsync**: In strict TypeScript configurations (e.g. \`TS7030\` check), ensure that all code paths within the callback return an explicit value (e.g., a default fallback object or \`undefined\`) instead of throwing errors or relying on implicit returns, to prevent compilation failures without introducing runtime exception overhead.
+- **Lodash isNil for Nullable Checks**: When checking anything nullable, always use \`isNil()\` from lodash (e.g. \`isNil(val)\` instead of checking against \`undefined\` or \`null\`).
+
+### Proven Patterns
+- **ESLint and Lodash Compliance**: Avoid native \`.filter\`, \`typeof === "string"\`, and \`.endsWith\` on arrays/strings when using Lodash-preferred conventions. Additionally, avoid variable abbreviations like \`srcDir\` to prevent triggering \`unicorn/prevent-abbreviations\` (prefer descriptive names like \`sourceDirectory\`).
+- **Strict TypeScript/ESLint checks**: When working under strict ESLint rules (like those in \`eslint-config\`), avoid non-null assertions (\`!\`) by using TypeScript type narrowing, and explicitly check nullable values (e.g., \`!isNil(val)\`) to satisfy \`@typescript-eslint/strict-boolean-expressions\`. Also, do not mix destructuring and property access of the same object in the same function scope to satisfy \`unicorn/consistent-destructuring\`.`,
+  description:
+    "linting, fixing lint errors, formatting, typescript checks, or type errors",
+  filename: "lint",
+  trigger: "model_decision"
 });
 
 export const GLOBAL_RULES: RuleDefinition[] = [
@@ -526,5 +562,6 @@ export const GLOBAL_RULES: RuleDefinition[] = [
   esCli,
   jqCli,
   rgCli,
-  webstormMcp
+  webstormMcp,
+  lint
 ];
