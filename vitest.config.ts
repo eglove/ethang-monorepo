@@ -10,8 +10,8 @@ export default defineConfig({
         autoUpdate: true,
         branches: 68.04,
         functions: 65.37,
-        lines: 71.97,
-        statements: 72.01
+        lines: 71.99,
+        statements: 72.02
       }
     },
     projects: [

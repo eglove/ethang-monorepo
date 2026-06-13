@@ -138,4 +138,3 @@ FR-1 → issue AC #1 → State #2 → Vitest "given..."
     "Adopt the requirements-analyst role when the pipeline directs you to perform full multi-lens requirements analysis. Applies SWEBOK Ch 1 (Software Requirements), Ch 5 (Software Testing/State Transition), Ch 2 & 3 (Software Architecture & Design), and Ch 14 (Software Engineering Professional Practice) to the provided context.",
   name: "requirements-analyst"
 });
-
