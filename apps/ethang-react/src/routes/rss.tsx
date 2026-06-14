@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from "@apollo/client/react";
-import { gql } from "@ethang/graphql-types/__generated__";
 import {
   Box,
   Button,
@@ -16,93 +15,21 @@ import find from "lodash/find.js";
 import forEach from "lodash/forEach.js";
 import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
-import isUndefined from "lodash/isUndefined.js";
 import map from "lodash/map.js";
 import noop from "lodash/noop.js";
+import sortBy from "lodash/sortBy.js";
 import trim from "lodash/trim.js";
 import { DateTime } from "luxon";
 import { type ReactNode, type SyntheticEvent, useState } from "react";
 
 import { authStore } from "../components/auth/auth-store.ts";
 import { MainLayout } from "../components/layout/main-layout.tsx";
-
-// Helper to decode HTML entities in the browser/jsdom
-export const decodeHtmlEntities = (text: string): string => {
-  if (isUndefined(globalThis.window) || !text) {
-    return text;
-  }
-  try {
-    const parser = new DOMParser();
-    const document = parser.parseFromString(text, "text/html");
-    return document.documentElement.textContent;
-  } catch {
-    return text;
-  }
-};
-
-// Helper parser to default title and website URL from XML address
-export const parseXmlUrl = (xmlUrl: string) => {
-  try {
-    const url = new URL(xmlUrl);
-    return {
-      title: url.hostname,
-      website: url.origin,
-      xmlAddress: xmlUrl
-    };
-  } catch {
-    return {
-      title: "",
-      website: "",
-      xmlAddress: xmlUrl
-    };
-  }
-};
-
-export const GET_SUBSCRIPTIONS_WITH_ARTICLES = gql(`
-  query GetSubscriptionsWithArticles {
-    subscriptions {
-      edges {
-        node {
-          id
-          title
-          website
-          xmlAddress
-          articles(first: 50, isRead: false) {
-            edges {
-              node {
-                id
-                title
-                link
-                publishedAt
-                isRead
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`);
-
-export const ADD_SUBSCRIPTION = gql(`
-  mutation AddSubscription($xmlAddress: String!) {
-    addSubscription(xmlAddress: $xmlAddress) {
-      id
-      title
-      website
-      xmlAddress
-    }
-  }
-`);
-
-export const MARK_ARTICLE_READ = gql(`
-  mutation MarkArticleRead($articleId: ID!, $isRead: Boolean!) {
-    markArticleRead(articleId: $articleId, isRead: $isRead) {
-      id
-      isRead
-    }
-  }
-`);
+import { decodeHtmlEntities } from "../components/rss/utilities.ts";
+import {
+  ADD_SUBSCRIPTION,
+  GET_SUBSCRIPTIONS_WITH_ARTICLES,
+  MARK_ARTICLE_READ
+} from "./GET_SUBSCRIPTIONS_WITH_ARTICLES.tsx";
 
 type ArticleNode = {
   feedTitle: string;
@@ -332,7 +259,7 @@ const RssComponent = () => {
                   >
                     All Feeds
                   </Button>
-                  {map(subscriptions, (edge) => {
+                  {map(sortBy(subscriptions, "node.title"), (edge) => {
                     const feed = edge.node;
                     return (
                       <Button

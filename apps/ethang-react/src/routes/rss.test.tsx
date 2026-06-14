@@ -11,13 +11,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { authStore } from "../components/auth/auth-store.ts";
 import {
-  ADD_SUBSCRIPTION,
   decodeHtmlEntities,
+  parseXmlUrl
+} from "../components/rss/utilities.ts";
+import {
+  ADD_SUBSCRIPTION,
   GET_SUBSCRIPTIONS_WITH_ARTICLES,
-  MARK_ARTICLE_READ,
-  parseXmlUrl,
-  Route
-} from "./rss.tsx";
+  MARK_ARTICLE_READ
+} from "./GET_SUBSCRIPTIONS_WITH_ARTICLES.tsx";
+import { Route } from "./rss.tsx";
 
 const mockNavigate = vi.fn(async () => {
   //
