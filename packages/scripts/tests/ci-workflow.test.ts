@@ -137,7 +137,7 @@ const parseStep = (stepLines: string[]): StepInfo => {
   return step;
 };
 
-const getVerifySteps = (jobLines: string[]): StepInfo[] => {
+const getJobSteps = (jobLines: string[]): StepInfo[] => {
   const steps: StepInfo[] = [];
   let currentLines: string[] = [];
   let seenFirstStep = false;
@@ -259,37 +259,45 @@ describe("CI Workflow Validation", () => {
     expect(hasContentsRead).toBe(true);
   });
 
-  it("should have exactly 3 jobs: verify, codeql, megalinter", () => {
+  it("should have exactly 5 jobs: lint, build, test, codeql, megalinter", () => {
     const jobNames = getJobNames(yamlLines);
-    expect(jobNames).toContain("verify");
+    expect(jobNames).toContain("lint");
+    expect(jobNames).toContain("build");
+    expect(jobNames).toContain("test");
     expect(jobNames).toContain("codeql");
     expect(jobNames).toContain("megalinter");
-    expect(jobNames.length).toBe(3);
+    expect(jobNames.length).toBe(5);
   });
 
-  it("should configure the verify job correctly (runs-on, timeout-minutes)", () => {
-    const verifyLines = getJobLines(yamlLines, "verify");
-    let runsOnUbuntu = false;
-    let timeout15 = false;
+  it("should configure the parallel jobs correctly (runs-on, timeout-minutes)", () => {
+    const targetJobs = ["lint", "build", "test"];
+    for (const jobName of targetJobs) {
+      const jobLines = getJobLines(yamlLines, jobName);
+      let runsOnUbuntu = false;
+      let timeout15 = false;
 
-    for (const rawLine of verifyLines) {
-      const line = trim(rawLine);
-      if (startsWith(line, "runs-on:") && includes(line, "ubuntu-latest")) {
-        runsOnUbuntu = true;
-      } else if (startsWith(line, "timeout-minutes:") && includes(line, "15")) {
-        timeout15 = true;
-      } else {
-        // do nothing
+      for (const rawLine of jobLines) {
+        const line = trim(rawLine);
+        if (startsWith(line, "runs-on:") && includes(line, "ubuntu-latest")) {
+          runsOnUbuntu = true;
+        } else if (
+          startsWith(line, "timeout-minutes:") &&
+          includes(line, "15")
+        ) {
+          timeout15 = true;
+        } else {
+          // do nothing
+        }
       }
-    }
 
-    expect(runsOnUbuntu).toBe(true);
-    expect(timeout15).toBe(true);
+      expect(runsOnUbuntu).toBe(true);
+      expect(timeout15).toBe(true);
+    }
   });
 
-  it("should run verify job steps in the correct order", () => {
-    const verifyLines = getJobLines(yamlLines, "verify");
-    const steps = getVerifySteps(verifyLines);
+  it("should run test job steps in the correct order", () => {
+    const testLines = getJobLines(yamlLines, "test");
+    const steps = getJobSteps(testLines);
     const labels = map(steps, (step) => {
       return getStepLabel(step);
     });
@@ -299,17 +307,14 @@ describe("CI Workflow Validation", () => {
       "pnpm-setup",
       "setup-node",
       "install",
-      "lint",
-      "git diff",
       "test",
-      "build",
       "sonar"
     ]);
   });
 
-  it("should configure verify checkout step with fetch-depth: 0", () => {
-    const verifyLines = getJobLines(yamlLines, "verify");
-    const steps = getVerifySteps(verifyLines);
+  it("should configure test checkout step with fetch-depth: 0", () => {
+    const testLines = getJobLines(yamlLines, "test");
+    const steps = getJobSteps(testLines);
     let checkoutFetchDepthZero = false;
 
     for (const step of steps) {
@@ -347,14 +352,14 @@ describe("CI Workflow Validation", () => {
   it("should scope secrets (SONAR_TOKEN, GITHUB_TOKEN) to step levels only", () => {
     checkNoSecretsInEnvironment(yamlLines, 0);
 
-    const jobs = ["verify", "codeql", "megalinter"];
+    const jobs = ["lint", "build", "test", "codeql", "megalinter"];
     for (const jobName of jobs) {
       const jobLines = getJobLines(yamlLines, jobName);
       checkNoSecretsInEnvironment(jobLines, 4);
     }
 
-    const verifyLines = getJobLines(yamlLines, "verify");
-    const steps = getVerifySteps(verifyLines);
+    const testLines = getJobLines(yamlLines, "test");
+    const steps = getJobSteps(testLines);
 
     for (const step of steps) {
       const label = getStepLabel(step);
