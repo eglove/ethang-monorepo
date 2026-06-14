@@ -130,6 +130,8 @@ Rules from explicit user corrections — things the assistant did wrong and must
 - **Safe Array Traversal in Loops**: Avoid accessing array elements by index using non-null assertions (e.g., `arr[i]!`). Instead, use native `for (const item of arr)` loops or array slicing (`arr.slice(start)`) to traverse elements safely and satisfy `@typescript-eslint/no-non-null-assertion` rules.
 - **Comment-Stripping Preprocessing**: When parsing configuration files (like YAML) in tests, preprocess the lines to strip comments (`rawLine.slice(0, commentIndex)`) at the start of the function. This prevents inline comments from interfering with subsequent string matching or regex assertions.
 - **Yoda and Trailing Else Compliance**: Ensure that all `else if` structures terminate with a trailing `else` statement (even if it's just an empty comment body `// do nothing`), and format condition statements with constants first (e.g. `"env:" === trimmed`) to avoid `sonar/elseif-without-else` and styling violations.
+- **Drizzle Chainable Mocks**: When mocking Drizzle query builders in unit tests, chainable methods (like `.values()`, `.from()`, `.where()`) must return `vi.fn().mockReturnThis()` to allow continuous builder calls (such as `.insert().values()`) without causing type or execution errors.
+- **TypeScript Unchecked Index Access in Tests**: In packages with strict null checks and `noUncheckedIndexedAccess: true` enabled (which parses array index accesses like `arr[0]` as potentially `undefined`), test assertions should use optional chaining (e.g., `arr[0]?.prop`) to avoid compiler errors without using unsafe non-null assertions.
 
 ## Proven Patterns
 
