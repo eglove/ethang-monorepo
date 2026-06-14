@@ -18,8 +18,8 @@ import type { RuleDefinition } from "./define.ts";
 
 import {
   FORBIDDEN_PATTERNS,
-  RULE_CHAR_LIMIT,
-  RULE_WARN_CHARS
+  RULE_MAX_CHARS,
+  RULE_MIN_CHARS
 } from "./config.ts";
 
 /**
@@ -47,15 +47,11 @@ export const validateFrontmatterBlock = (markdown: string): boolean => {
 
 export const checkRuleSize = (
   content: string
-): { length: number; status: "fail" | "ok" | "warn" } => {
+): { length: number; status: "fail" | "ok" } => {
   const { length } = content;
 
-  if (RULE_CHAR_LIMIT < length) {
+  if (length < RULE_MIN_CHARS || length > RULE_MAX_CHARS) {
     return { length, status: "fail" };
-  }
-
-  if (RULE_WARN_CHARS <= length) {
-    return { length, status: "warn" };
   }
 
   return { length, status: "ok" };

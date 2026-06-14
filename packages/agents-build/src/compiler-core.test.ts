@@ -56,7 +56,7 @@ describe("first build compilation", () => {
       rootDir: temporaryDirectory,
       rules: [
         {
-          content: "rule-a content",
+          content: repeat("a", 10_500),
           filename: "rule-a",
           trigger: alwaysOnTrigger
         }
@@ -107,7 +107,7 @@ describe("incremental compilation & pruning", () => {
       rootDir: temporaryDirectory,
       rules: [
         {
-          content: "new rule content",
+          content: repeat("a", 10_500),
           filename: "new-rule",
           trigger: alwaysOnTrigger
         }
@@ -212,7 +212,7 @@ describe("resilience & error recovery", () => {
       rootDir: temporaryDirectory,
       rules: [
         {
-          content: "rule content",
+          content: repeat("a", 10_500),
           filename: "rule-a",
           trigger: alwaysOnTrigger
         }
@@ -248,7 +248,7 @@ describe("resilience & error recovery", () => {
       rootDir: temporaryDirectory,
       rules: [
         {
-          content: "rule content",
+          content: repeat("a", 10_500),
           filename: "rule-a",
           trigger: alwaysOnTrigger
         }
@@ -348,13 +348,15 @@ describe("validation failures and warnings", () => {
       rootDir: temporaryDirectory,
       rules: [
         {
-          content:
-            "rule content containing forbidden word Jira and unresolved {{sections}}",
+          content: `rule content containing forbidden word Jira and unresolved {{sections}} ${repeat(
+            "a",
+            10_500
+          )}`,
           filename: "rule-bad-content",
           trigger: alwaysOnTrigger
         },
         {
-          content: "some content",
+          content: repeat("a", 10_500),
           filename: "rule-duplicate",
           trigger: alwaysOnTrigger
         },

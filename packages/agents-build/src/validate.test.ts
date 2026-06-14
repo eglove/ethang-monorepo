@@ -38,9 +38,9 @@ describe("validateFrontmatterBlock", () => {
 
 describe("checkRuleSize", () => {
   it.each([
-    [9999, "ok"],
-    [10_000, "warn"],
-    [12_000, "warn"],
+    [9999, "fail"],
+    [10_000, "ok"],
+    [12_000, "ok"],
     [12_001, "fail"]
   ])("classifies %i chars as %s", (length, status) => {
     expect(checkRuleSize(repeat("x", length))).toStrictEqual({

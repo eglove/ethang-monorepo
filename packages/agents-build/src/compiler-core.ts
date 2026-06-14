@@ -147,7 +147,6 @@ const loadManifest = (config: CompilerConfig): string[] => {
 const processRules = (
   config: CompilerConfig,
   failures: string[],
-  warnings: string[],
   write: (absolutePath: string, content: string) => void
 ): void => {
   for (const duplicate of validationHelpers.findDuplicateRuleFilenames(
@@ -161,14 +160,9 @@ const processRules = (
     const size = validationHelpers.checkRuleSize(markdown);
 
     if ("fail" === size.status) {
+      const swebokPath = path.resolve(config.rootDir, "swebok-v4.pdf");
       failures.push(
-        `rules/${rule.filename}.md: ${String(size.length)} chars exceeds the 12k rule limit`
-      );
-    }
-
-    if ("warn" === size.status) {
-      warnings.push(
-        `rules/${rule.filename}.md: ${String(size.length)} chars is nearing the 12k rule limit`
+        `rules/${rule.filename}.md: ${String(size.length)} characters. Rules must be between 10,000 and 12,000 characters. Please reference the SWEBOK v4 PDF at "${swebokPath}" as a priority resource to expand the rule, or use websearch to find industry standard knowledge.`
       );
     }
 
@@ -221,7 +215,6 @@ export const compile = (config: CompilerConfig): void => {
   }
 
   const failures: string[] = [];
-  const warnings: string[] = [];
   const generatedFiles: string[] = [];
 
   const write = (absolutePath: string, content: string) => {
@@ -232,12 +225,8 @@ export const compile = (config: CompilerConfig): void => {
     );
   };
 
-  processRules(config, failures, warnings, write);
+  processRules(config, failures, write);
   scanDirectories(config, failures);
-
-  for (const warning of warnings) {
-    console.warn(`WARN: ${warning}`);
-  }
 
   if (0 < failures.length) {
     throw new CompileError(failures, {});

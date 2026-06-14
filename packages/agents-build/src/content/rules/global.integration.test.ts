@@ -30,10 +30,13 @@ describe("global rules integration tests", () => {
       });
     }).not.toThrow();
 
-    const generatedRulePath = path.join(rulesDirectory, "lint.md");
+    const generatedRulePath = path.join(
+      rulesDirectory,
+      "eslint-self-learning.md"
+    );
     expect(existsSync(generatedRulePath)).toBe(true);
     const ruleContent = readFileSync(generatedRulePath, "utf8");
     expect(ruleContent).toContain("trigger: model_decision");
-    expect(ruleContent).toContain("Linting and TypeScript Rules");
+    expect(ruleContent).toContain("ESLint Self-Learning");
   });
 });

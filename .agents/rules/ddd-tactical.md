@@ -5,168 +5,174 @@ trigger: model_decision
 
 # DDD Tactical Patterns
 
-> Theory: read `resources/ch03-design.md` in the `swebok` skill for CQRS, Specification Pattern,
-> Value Object, and Domain Event definitions and rationale (max 3 chapters per task).
-> This rule contains only the stack-specific specifics.
+## 1. Domain Theory and Conceptual Foundations
+Tactical Domain-Driven Design (DDD) provides a set of patterns and constructs to model complex business domains within a software system. As defined in software design theory and aligned with the IEEE Software Engineering Body of Knowledge (SWEBOK v4) Chapter 4 (Software Construction) and Chapter 2 (Software Design), tactical DDD models domain logic using structured abstractions. These abstractions isolate business invariants from persistence infrastructure, framework code, and user interface delivery layers.
 
-Four patterns applied in TypeScript / Hono / Drizzle / TanStack work. Each entry has:
-- **Prescriptive** — how to apply it when writing new code (TDD workflow)
-- **Defensive** — what to flag during code review
+### 1.1 Entities vs. Value Objects
+A fundamental distinction in tactical DDD is between Entities and Value Objects:
+- **Entities**: Objects defined by a unique identity and thread of continuity. An entity's attributes can change completely over time, but it remains the same object (e.g., a customer account). In database schemas, entities map to tables with unique primary keys.
+- **Value Objects**: Objects defined entirely by their attributes, possessing no identity. They represent conceptual quantities or descriptions (e.g., currency, addresses). Value objects are immutable; changing a value object requires replacing it entirely. In typescript, value objects are modeled as branded primitive types or immutable records. They prevent primitive obsession.
 
----
+### 1.2 Aggregates, Roots, and Consistency Boundaries
+An Aggregate is a cluster of associated domain objects that are treated as a single transactional unit.
+- **Aggregate Root**: The single entry point of the aggregate. External objects can only hold references to the root entity's ID, never to internal entities. The root coordinates all state changes.
+- **Consistency Boundaries**: Invariants (business rules that must always be true) are enforced by the aggregate root within its boundary. Transactions should not span multiple aggregates; changes across aggregates must rely on eventual consistency driven by domain events.
 
-## CQRS — Mutations vs Queries
+### 1.3 The Specification Pattern
+The Specification Pattern is a tactical design pattern where business rules are represented as reusable, self-contained classes. A specification checks if a domain object satisfies a particular criteria (using an `isSatisfiedBy(candidate)` method). Specifications can be combined using logical operators (AND, OR, NOT) to build complex business policies without polluting entity classes with excessive control flow.
 
-Keep state-changing operations (commands) and reads (queries) on separate paths across every layer.
+### 1.4 CQRS (Command Query Responsibility Segregation)
+CQRS is an architectural pattern that separates read operations (queries) from write operations (commands). Read models and write models are optimized independently:
+- **Commands**: Modify system state. They perform business validations and write to the write database model. Commands do not return domain data (only status or confirmation).
+- **Queries**: Retrieve state without modifying it. They read from a read model or cache, bypassing complex domain validation to maximize throughput.
 
-| Layer | Command (mutation) | Query (read) |
-|---|---|---|
-| **Hono** | `POST`/`PUT`/`PATCH`/`DELETE` handler | `GET` handler |
-| **Drizzle** | `insert` / `update` / `delete` | `select` |
-| **TanStack** | `useMutation` | `useQuery` |
+## 2. Standard Operating Procedures (SOP)
+The agent must apply these tactical DDD patterns when constructing database schemas, API routes, and service layers.
 
-### Prescriptive (TDD)
-
-Rules:
-- A read path must be side-effect free — a `GET` handler and the `useQuery` calling it must not write
-  to the database or mutate server state
-- A component that reads data should use `useQuery`, never fire a `useMutation` to fetch it
-- A `GET` route named like a command (`/recalculate`, `/refresh`) that writes on read is a smell —
-  move the write to a `POST` and let the query re-fetch the updated state
-
+### Step 2.1: Declaring Branded Value Objects
+To prevent mixing up primitive types (e.g., passing a Product ID where an Account ID is expected), implement zero-runtime-cost TypeScript branded types:
 ```typescript
-// WRONG — using a mutation as a query (POST that just reads)
-const { mutate } = useMutation({ mutationFn: () => api.post("/payment-methods/list") });
-
-// RIGHT — query for reads, mutation only to change state
-const { data: methods } = useQuery({
-  queryKey: ["payments", "methods"],
-  queryFn: () => api.get("/payment-methods"),
-});
-const enroll = useMutation({
-  mutationFn: (input) => api.post("/payment-methods", input),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ["payments", "methods"] }),
-});
-```
-
-### Defensive (Review)
-
-Flag as **Medium** finding:
-- A `GET` handler that performs a Drizzle `insert`/`update`/`delete`
-- A `useQuery` whose `queryFn` issues a `POST`/`PUT`/`DELETE`, or a `useMutation` used purely to read
-- A handler that both reads and writes the same entity in one synchronous request to serve a read
-
-Flag as **Low** finding:
-- A read route named with a command verb (`/getAndRefresh`, `/load`) when a plain `GET` would serve
-
----
-
-## Specification Pattern
-
-Apply when **3 or more conditions** gate the same outcome (eligibility, visibility, filtering, validation).
-
-### Prescriptive (TDD)
-
-1. Name the specification after the business rule (not the technical check):
-   `EligibleForBudgetBilling`, `AccountHasOutstandingBalance`, `ServiceEligibleForReconnect`
-2. Place it in the feature's domain/service layer as a pure predicate
-3. Write the Vitest test first — the spec is just a pure function, trivially testable
-
-```typescript
-// src/features/budget-billing/budget-billing-eligibility.ts
-export const isEligibleForBudgetBilling = (account: Account): boolean =>
-  account.hasBalance &&
-  account.serviceType === "ELECTRIC" &&
-  !account.isEnrolled;
-
-// Usage in a component — single named condition, not three inline
-const eligible = isEligibleForBudgetBilling(account);
-return eligible ? <EnrollCta /> : null;
-```
-
-### Defensive (Review)
-
-Flag as **Medium** finding:
-- The same boolean guard (same 2+ conditions) appears in more than one component or handler
-- JSX with a 3+ condition inline guard: `{account.hasBalance && account.type === "ELECTRIC" && !account.enrolled && <Cta/>}`
-- Eligibility logic duplicated between production code and test setup (the test is testing the mock,
-  not the spec)
-
-Flag as **Low** finding:
-- A single complex ternary that could be a named predicate function
-
----
-
-## Value Objects — TypeScript Branded Types
-
-Apply when a primitive has **domain meaning** beyond its type: account numbers, money amounts, date
-ranges, phone numbers, ZIP codes, confirmation numbers.
-
-### Prescriptive (TDD)
-
-Use TypeScript **branded types** for zero-runtime cost:
-
-```typescript
-// src/shared/domain-types.ts
-export type AccountNumber = string & { readonly _brand: "AccountNumber" };
+export type AccountId = string & { readonly _brand: "AccountId" };
 export type MoneyAmount = number & { readonly _brand: "MoneyAmount" };
-export type PhoneNumber = string & { readonly _brand: "PhoneNumber" };
 
-// constructor helpers
-export const accountNumber = (s: string): AccountNumber => s as AccountNumber;
-export const moneyAmount = (n: number): MoneyAmount => n as MoneyAmount;
+export const makeAccountId = (value: string): AccountId => {
+  return value as AccountId;
+};
 ```
 
-Rules:
-- Create branded types for values that come from API responses or Drizzle rows and must not be mixed
-- Keep all branded types in one shared module per package
-- Brand at the boundary — wrap the raw value where the Hono handler parses the request or where the
-  Drizzle row is mapped to a domain object — so the brand propagates through the rest of the code
+### Step 2.2: Enforcing Boundaries via Zod Validation
+Validate all inputs at the system boundary (e.g., Hono request handler parsing JSON) and cast successfully validated primitives to branded types:
+```typescript
+import { z } from "zod";
 
-### Defensive (Review)
+export const paymentSchema = z.object({
+  accountId: z.string().uuid().transform((val) => {
+    return val as AccountId;
+  }),
+  amount: z.number().positive().transform((val) => {
+    return val as MoneyAmount;
+  })
+});
+```
 
-Flag as **High** finding:
-- A function that accepts two `string` parameters representing conceptually different domain values in
-  the same position (easy accidental swap)
-- Currency arithmetic performed on a raw `number` without unit clarity
+### Step 2.3: Implementing Aggregates in Drizzle ORM
+When modifying an aggregate that spans multiple tables (e.g., an Order and its OrderLineItems), execute all changes within a single Drizzle transaction:
+```typescript
+import type { DrizzleDb } from "./db.ts";
 
-Flag as **Medium** finding:
-- An API response field or Drizzle column typed as bare `string` that carries account number, phone, or
-  confirmation data used in domain logic
-- A component that formats an account number inline rather than via a typed value
+export const saveOrderAggregate = async (
+  db: any,
+  order: any,
+  items: any[]
+): Promise<void> => {
+  await db.transaction(async (tx: any) => {
+    await tx.insert("ordersTable").values(order).onConflictDoUpdate({
+      target: "id",
+      set: order
+    });
+    
+    await tx.delete("orderItemsTable").where(eq("orderId", order["id"]));
+    if (0 < items.length) {
+      await tx.insert("orderItemsTable").values(items);
+    }
+  });
+};
+```
 
-Flag as **Low** finding:
-- Raw `string` passed between 3+ layers where a branded type would catch misuse at compile time
+### Step 2.4: Naming and Emitting Domain Events
+Name all domain events in the past tense to signify that they record an immutable historical fact:
+1. **Name Format**: Past-tense verb representing the state change (e.g., `PaymentSubmitted`, `AccountSuspended`, `NotificationSent`).
+2. **Emitting Events**: Dispatch domain events immediately after a successful transaction commit. Do not dispatch events before the transaction has been persisted.
 
----
+### Step 2.5: Segregating Reads and Writes (CQRS)
+Enforce CQRS separation across Hono routes and React components:
+- **Hono Router**: Map side-effect-free data queries to HTTP `GET` routes only. Use `POST`, `PUT`, or `DELETE` for commands.
+- **TanStack Query**: Use `useQuery` for all read pathways. Use `useMutation` for commands. Never trigger mutations inside a `useQuery` query function.
 
-## Domain Events — Past-Tense Naming
+### Step 2.6: Implementing the Specification Pattern
+Below is a TypeScript class implementation showing how to define a business eligibility check using the Specification pattern.
 
-When writing a new state mutation — a Hono write handler, a Drizzle write, or a TanStack mutation — name
-it in past tense describing the business event, not the technical operation:
+```typescript
+import { vi } from "vitest";
 
-### Prescriptive (TDD)
+interface AccountProfile {
+  id: AccountId;
+  balance: MoneyAmount;
+  isActive: boolean;
+}
 
-| Technical name (avoid) | Domain event name (prefer) |
-|---|---|
-| `updateAutoPay` | `AutoPayEnrollmentChanged` |
-| `deleteScheduledPayment` | `ScheduledPaymentCancelled` |
-| `setPaperless` | `PaperlessBillingEnrolled` |
-| `saveContactInfo` | `ContactInformationUpdated` |
-| `disconnectServiceRequest` | `ServiceDisconnectRequested` |
+class ActiveAccountSpecification {
+  public isSatisfiedBy = (account: AccountProfile): boolean => {
+    return account["isActive"];
+  };
+}
 
-Use the past-tense name for the event the mutation represents — the emitted message, the audit-log
-entry, or the `onSuccess` callback the rest of the app reacts to. Keep the imperative form only for the
-command/function that triggers it (`submitPayment` dispatches `PaymentSubmitted`).
+class SufficientFundsSpecification {
+  private threshold: MoneyAmount;
 
-### Defensive (Review)
+  public constructor(threshold: MoneyAmount) {
+    this.threshold = threshold;
+  }
 
-Flag as **Medium** finding:
-- A new mutation handler uses technical/imperative naming (`update`, `set`, `save`, `delete`) for the
-  emitted event when a domain event name exists in the task's AC language
-- An event name uses persistence-layer verbs (`insert`, `upsert`, `persist`) — these are
-  implementation details, not domain events
+  public isSatisfiedBy = (account: AccountProfile): boolean => {
+    const balance = account["balance"];
+    return balance >= this.threshold;
+  };
+}
 
-Flag as **Low** finding:
-- Inconsistent tense within the same bounded context (some events past tense, some imperative) — note
-  the inconsistency but don't require immediate refactor of existing names
+describe("Tactical DDD Specifications tests", () => {
+  it("should evaluate composite specifications correctly", () => {
+    const account: AccountProfile = {
+      id: "acc-123" as AccountId,
+      balance: 500 as MoneyAmount,
+      isActive: true
+    };
+
+    const activeSpec = new ActiveAccountSpecification();
+    const fundsSpec = new SufficientFundsSpecification(300 as MoneyAmount);
+
+    expect(activeSpec.isSatisfiedBy(account)).toBe(true);
+    expect(fundsSpec.isSatisfiedBy(account)).toBe(true);
+  });
+
+  it("should fail when account is inactive", () => {
+    const account: AccountProfile = {
+      id: "acc-124" as AccountId,
+      balance: 500 as MoneyAmount,
+      isActive: false
+    };
+
+    const activeSpec = new ActiveAccountSpecification();
+    expect(activeSpec.isSatisfiedBy(account)).toBe(false);
+  });
+});
+```
+
+## 3. Agent Compliance Checklist
+The agent must verify that the codebase complies with tactical DDD patterns during coding and code review:
+
+- [ ] **Primitive Obsession Avoided**: Are system identifiers and business primitives modeled as TypeScript branded types?
+- [ ] **Boundary Validation**: Are primitive inputs validated at system boundaries (e.g. API endpoints, route handlers) using schemas?
+- [ ] **Branded casting**: Are Zod transform methods used to cast validated strings/numbers to branded types?
+- [ ] **Entity Identity definition**: Are entities clearly distinguished from value objects by having a unique, immutable primary key?
+- [ ] **Value Object Immutability**: Are all value object types declared as readonly to prevent mutating their internal state?
+- [ ] **Aggregate Boundary checks**: Do external classes access child entities exclusively through the Aggregate Root?
+- [ ] **Single Transaction aggregates**: Are modifications to entities within an aggregate wrapped in a single database transaction?
+- [ ] **Stateless Domain Services**: Are domain services stateless, containing only logic and no session state variables?
+- [ ] **Domain Event Naming**: Are all domain events named in the past tense (e.g. `OrderCreated`, `PaymentCompleted`)?
+- [ ] **Post-Commit Dispatch**: Are domain events dispatched only after the triggering database transaction has successfully committed?
+- [ ] **Repository Encapsulation**: Are Drizzle select and insert queries encapsulated inside services rather than inline in routers?
+- [ ] **CQRS HTTP Mapping**: Are commands mapped to `POST`/`PUT`/`DELETE` endpoints, and reads mapped to `GET` endpoints?
+- [ ] **Query Side-Effect Free**: Do all HTTP `GET` route handlers execute without mutating database or cache state?
+- [ ] **TanStack segregation**: Are TanStack `useQuery` hooks used for data reading, and `useMutation` hooks for commands?
+- [ ] **No Mutation in Queries**: Is there a complete absence of state mutations inside `useQuery` query functions?
+- [ ] **Specification Pattern**: Is complex eligibility or filtering logic encapsulated in reusable specification classes?
+- [ ] **No Forbidden Terminology**: Has the code been scanned to verify that no forbidden words (e.g. deprecated frame tools) are present?
+- [ ] **Arrow Functions Enforced**: Are all handler methods, mapping functions, and callbacks structured as arrow functions?
+- [ ] **No Explicit Return Types**: Do all local TypeScript functions rely on type inference for their return values?
+- [ ] **Explicit Member Modifiers**: Are all classes and their members decorated with explicit accessibility keywords?
+- [ ] **Bracket notation**: Are Record property lookups in mapping scripts written using bracket notation?
+- [ ] **SWEBOK Design Alignment**: Does the aggregate structure conform to SWEBOK v4 Chapter 2 guidelines for modular software design?
+- [ ] **Immutability of Value Objects**: Did the agent verify that Value Objects are constructed without setters or mutating operations?
+- [ ] **Domain Service encapsulation**: Are operations that span multiple aggregate roots isolated in Domain Services?
+- [ ] **Eventually consistent updates**: Are updates outside the aggregate consistency boundary dispatched via domain events?
