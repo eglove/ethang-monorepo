@@ -126,6 +126,10 @@ Rules from explicit user corrections — things the assistant did wrong and must
 - **Sonar Assertions in Tests**: To satisfy `sonar/assertions-in-tests` for test cases verifying that a void method executes without issues, wrap the call in `expect(() => ...).not.toThrow()`.
 - **Vitest Spy Typing**: When defining variables to hold mock/spy instances at the `describe` block scope, type them explicitly using `MockInstance<typeof targetFunction>` (e.g. `let exitSpy: MockInstance<typeof process.exit>;`) rather than using complex wrappers like `ReturnType<typeof vi.spyOn<...>>` to avoid TypeScript generic constraint mismatches.
 - **Explicit Node Process Imports**: Import `process` from `"node:process"` inside test files rather than relying on global `process` references to ensure the full Node.js types are resolved correctly.
+- **Multi-Phase Scanning to Reduce Complexity**: When writing custom text/file scanners in tests, split complex loops into distinct search and extraction phases (e.g., finding indices first, then slicing lines). This simplifies loops and satisfies `sonar/cognitive-complexity` and `sonar/nested-control-flow` rules.
+- **Safe Array Traversal in Loops**: Avoid accessing array elements by index using non-null assertions (e.g., `arr[i]!`). Instead, use native `for (const item of arr)` loops or array slicing (`arr.slice(start)`) to traverse elements safely and satisfy `@typescript-eslint/no-non-null-assertion` rules.
+- **Comment-Stripping Preprocessing**: When parsing configuration files (like YAML) in tests, preprocess the lines to strip comments (`rawLine.slice(0, commentIndex)`) at the start of the function. This prevents inline comments from interfering with subsequent string matching or regex assertions.
+- **Yoda and Trailing Else Compliance**: Ensure that all `else if` structures terminate with a trailing `else` statement (even if it's just an empty comment body `// do nothing`), and format condition statements with constants first (e.g. `"env:" === trimmed`) to avoid `sonar/elseif-without-else` and styling violations.
 
 ## Proven Patterns
 
