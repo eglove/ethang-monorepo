@@ -23,10 +23,13 @@ Create a well-formed commit for this monorepo, with an optional pull request ste
 
 ## Step 2: Read Git Context
 
-Run in parallel:
+To minimize token consumption, check the size of the changes first:
+1. Run `git diff --staged --stat` or `git diff --staged --name-only`.
+2. If the total diff size is small (under 100 lines), run `git diff --staged` to get the full diff.
+3. If the total diff size is large, inspect files individually or in batches (or use WebStorm MCP tools to view file edits) to avoid bloating the conversation history.
 
+Run in parallel with the diff size check:
 - `git status`
-- `git diff --staged`
 - `git branch --show-current`
 - `git log --oneline "@{u}..HEAD"` — unpushed commits ahead of upstream. If the command errors (no upstream set), fall back to `git log --oneline -1`.
 
