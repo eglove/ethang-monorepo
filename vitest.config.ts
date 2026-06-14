@@ -4,15 +4,15 @@ export default defineConfig({
   test: {
     coverage: {
       exclude: ["**/service-worker/**"],
-      include: ["**/src/**/*.ts", "**/src/**/*.tsx"],
+      include: ["**/src/**/*.ts", "**/src/**/*.tsx", "packages/scripts/*.ts"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 75.36,
-        functions: 70.16,
-        lines: 77.27,
-        statements: 77.26
+        branches: 75.98,
+        functions: 70.69,
+        lines: 77.88,
+        statements: 77.86
       }
     },
     projects: [

@@ -34,6 +34,8 @@ Whenever you encounter an ESLint issue, linting or TypeScript compilation error,
 - **Arrow Functions Preference**: Enforce the use of arrow functions over function declarations (e.g., `const fn = () => {}` instead of `function fn() {}`).
 - **Avoid Explicit Returns**: Avoid specifying explicit return types in TypeScript functions unless strictly necessary. In general, rely on TypeScript's type inference as much as possible.
 - **Wrangler Conflicting Secrets**: In Wrangler configuration files (`wrangler.jsonc`/`wrangler.toml`), avoid setting empty placeholders in the `vars` block for variables that are intended to be kept secure as Cloudflare Secrets. When deploying via Wrangler, any empty variables defined in `vars` will overwrite and clear the existing remote secrets on Cloudflare. Keep secrets entirely out of the `vars` block.
+- **Vitest Spy Typing**: When defining variables to hold mock/spy instances at the `describe` block scope, type them explicitly using `MockInstance<typeof targetFunction>` (e.g. `let exitSpy: MockInstance<typeof process.exit>;`) rather than using complex wrappers like `ReturnType<typeof vi.spyOn<...>>` to avoid TypeScript generic constraint mismatches.
+- **Explicit Node Process Imports**: Import `process` from `"node:process"` inside test files rather than relying on global `process` references to ensure the full Node.js types are resolved correctly.
 
 ### Proven Patterns
 - **ESLint and Lodash Compliance**: Avoid native `.filter`, `typeof === "string"`, and `.endsWith` on arrays/strings when using Lodash-preferred conventions. Additionally, avoid variable abbreviations like `srcDir` to prevent triggering `unicorn/prevent-abbreviations` (prefer descriptive names like `sourceDirectory`).

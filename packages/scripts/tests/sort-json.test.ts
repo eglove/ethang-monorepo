@@ -1,3 +1,5 @@
+import type process from "node:process";
+
 import constant from "lodash/constant.js";
 import noop from "lodash/noop.js";
 import {
@@ -8,15 +10,25 @@ import {
   writeFileSync
 } from "node:fs";
 import path from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi
+} from "vitest";
 
 import {
   findFilesRecursively,
   recursiveSort,
   sortJson
 } from "../sort-json-utilities.ts";
+import { run } from "../sort-json.ts";
 
 const TARGET_JSON = "target.json";
+const SORT_JSON_SCRIPT = "sort-json.ts";
 
 class MockDirent implements Dirent {
   public isBlockDevice = constant(false);
@@ -142,6 +154,69 @@ describe("sort-json utilities", () => {
 
       expect(results).toContain(path.join("root", TARGET_JSON));
       expect(results).toContain(path.join("root", "src", TARGET_JSON));
+    });
+  });
+
+  describe("sortJson entrypoint script", () => {
+    let originalArgv: string[];
+    let exitSpy: MockInstance<typeof process.exit>;
+    let consoleErrorSpy: MockInstance<typeof console.error>;
+
+    beforeEach(() => {
+      originalArgv = globalThis.process.argv;
+      exitSpy = vi
+        .spyOn(globalThis.process, "exit")
+        .mockImplementation((code) => {
+          throw new Error(`exit:${code}`);
+        });
+      consoleErrorSpy = vi
+        .spyOn(globalThis.console, "error")
+        .mockImplementation(noop);
+    });
+
+    afterEach(() => {
+      globalThis.process.argv = originalArgv;
+      exitSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
+    });
+
+    it("should exit with 1 if no file path is provided", () => {
+      expect(() => {
+        run(["node", SORT_JSON_SCRIPT]);
+      }).toThrow("exit:1");
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith("No file path provided");
+    });
+
+    it("should exit with 1 if path is outside workspace", () => {
+      expect(() => {
+        run(["node", SORT_JSON_SCRIPT, "../../../outside.json"]);
+      }).toThrow("exit:1");
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Path is outside the repository workspace"
+      );
+    });
+
+    it("should exit with 1 if file does not exist", () => {
+      vi.mocked(existsSync).mockReturnValueOnce(false);
+
+      expect(() => {
+        run(["node", SORT_JSON_SCRIPT, "non-existent.json"]);
+      }).toThrow("exit:1");
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "File does not exist:",
+        expect.any(String)
+      );
+    });
+
+    it("should run sortJson for a valid file path", () => {
+      vi.mocked(existsSync).mockReturnValue(true);
+      vi.mocked(readFileSync).mockReturnValueOnce('{"a":1}');
+      run(["node", SORT_JSON_SCRIPT, "valid.json"]);
+
+      expect(exitSpy).not.toHaveBeenCalled();
     });
   });
 });
