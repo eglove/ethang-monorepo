@@ -24,12 +24,12 @@ import { type ReactNode, type SyntheticEvent, useState } from "react";
 
 import { authStore } from "../components/auth/auth-store.ts";
 import { MainLayout } from "../components/layout/main-layout.tsx";
-import { decodeHtmlEntities } from "../components/rss/utilities.ts";
 import {
   ADD_SUBSCRIPTION,
   GET_SUBSCRIPTIONS_WITH_ARTICLES,
   MARK_ARTICLE_READ
-} from "./GET_SUBSCRIPTIONS_WITH_ARTICLES.tsx";
+} from "../components/rss/queries.ts";
+import { decodeHtmlEntities } from "../components/rss/utilities.ts";
 
 type ArticleNode = {
   feedTitle: string;
