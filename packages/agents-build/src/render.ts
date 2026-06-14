@@ -10,7 +10,7 @@ I/O; everything here is unit-testable without side effects.
 import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
 import isNil from "lodash/isNil.js";
 
-import type { RuleDefinition } from "./define.ts";
+import type { RuleDefinition, SkillDefinition } from "./define.ts";
 
 export const ruleMarkdown = (rule: RuleDefinition): string => {
   if ("model_decision" === rule.trigger && isNil(rule.description)) {
@@ -32,6 +32,19 @@ export const ruleMarkdown = (rule: RuleDefinition): string => {
       trigger: rule.trigger,
       ...(!isNil(rule.description) && { description: rule.description }),
       ...(!isNil(rule.globs) && { globs: rule.globs })
+    }
+  });
+};
+
+export const skillMarkdown = (skill: SkillDefinition) => {
+  return generateMarkdown({
+    blocks: [
+      { count: 0, type: "space" },
+      { text: skill.content, type: "text" }
+    ],
+    frontmatter: {
+      description: skill.description,
+      name: skill.name
     }
   });
 };

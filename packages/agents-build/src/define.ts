@@ -14,3 +14,13 @@ export type RuleTrigger = "always_on" | "glob" | "manual" | "model_decision";
 export const defineRule = (definition: RuleDefinition): RuleDefinition => {
   return definition;
 };
+
+export type SkillDefinition = {
+  content: string;
+  description: string;
+  name: string;
+};
+
+export const defineSkill = (definition: SkillDefinition) => {
+  return definition;
+};

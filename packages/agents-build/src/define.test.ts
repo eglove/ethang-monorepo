@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { defineRule } from "./define.ts";
+import { defineRule, defineSkill } from "./define.ts";
 
 describe("define functions", () => {
   it("defineRule returns the input rule", () => {
@@ -10,5 +10,14 @@ describe("define functions", () => {
       trigger: "always_on" as const
     };
     expect(defineRule(rule)).toBe(rule);
+  });
+
+  it("defineSkill returns the input skill", () => {
+    const skill = {
+      content: "x",
+      description: "desc",
+      name: "test-skill"
+    };
+    expect(defineSkill(skill)).toBe(skill);
   });
 });

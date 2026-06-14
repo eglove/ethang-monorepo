@@ -23,6 +23,13 @@ import {
   fsProxy,
   validationHelpers
 } from "./compiler-core.ts";
+import {
+  BAD_FRONTMATTER_SKILL,
+  SKILL_CONTENT,
+  SKILL_DESCRIPTION,
+  SKILL_MANIFEST_PATH,
+  TEST_SKILL_NAME
+} from "./test-constants.ts";
 
 const manifestJsonName = "manifest.json";
 const utf8Encoding = "utf8";
@@ -420,5 +427,87 @@ describe("validation failures and warnings", () => {
     expect(() => {
       compile(config);
     }).not.toThrow();
+  });
+
+  it("compiles skills and includes them in the manifest", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const skillsDirectory = path.join(temporaryDirectory, "skills");
+    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory,
+      skills: [
+        {
+          content: SKILL_CONTENT,
+          description: SKILL_DESCRIPTION,
+          name: TEST_SKILL_NAME
+        }
+      ],
+      skillsDir: skillsDirectory
+    };
+
+    compile(config);
+
+    const skillFilePath = path.join(
+      skillsDirectory,
+      TEST_SKILL_NAME,
+      "SKILL.md"
+    );
+    expect(existsSync(skillFilePath)).toBe(true);
+
+    const content = readFileSync(skillFilePath, utf8Encoding);
+    expect(content).toContain(`name: ${TEST_SKILL_NAME}`);
+    expect(content).toContain(SKILL_CONTENT);
+
+    const parsed = JSON.parse(
+      readFileSync(manifestPath, utf8Encoding)
+    ) as unknown;
+    const manifest = manifestSchema.parse(parsed);
+    expect(manifest.files).toContain(SKILL_MANIFEST_PATH);
+  });
+
+  it("records a failure if a skill has a malformed frontmatter block", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const skillsDirectory = path.join(temporaryDirectory, "skills");
+    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory,
+      skills: [
+        {
+          content: SKILL_CONTENT,
+          description: SKILL_DESCRIPTION,
+          name: BAD_FRONTMATTER_SKILL
+        }
+      ],
+      skillsDir: skillsDirectory
+    };
+
+    vi.spyOn(validationHelpers, "validateFrontmatterBlock").mockReturnValue(
+      false
+    );
+
+    let thrownError: unknown;
+    try {
+      compile(config);
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toBeDefined();
+    expect(thrownError instanceof CompileError).toBe(true);
+    if (thrownError instanceof CompileError) {
+      expect(thrownError.failures).toContain(
+        `skills/${BAD_FRONTMATTER_SKILL}/SKILL.md: malformed frontmatter block`
+      );
+    }
+
+    vi.restoreAllMocks();
   });
 });

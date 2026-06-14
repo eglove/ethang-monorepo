@@ -75,6 +75,7 @@
     ".agents/rules/concurrency-control.md",
     ".agents/rules/database-normalization.md",
     ".agents/rules/boolean-logic.md",
-    ".agents/rules/empirical-experiments.md"
+    ".agents/rules/empirical-experiments.md",
+    ".agents/skills/sdlc/SKILL.md"
   ]
 }

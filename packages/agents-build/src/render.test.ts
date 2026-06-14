@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { RuleDefinition } from "./define.ts";
 
-import { renderJson, ruleMarkdown } from "./render.ts";
+import { renderJson, ruleMarkdown, skillMarkdown } from "./render.ts";
 
 const baseRule: RuleDefinition = {
   content: "Rule body.",
@@ -77,6 +77,19 @@ describe("ruleMarkdown", () => {
       })
     ).toBe(
       '---\ndescription: "reviewing: a PR or diff"\ntrigger: model_decision\n---\n\nRule body.\n'
+    );
+  });
+});
+
+describe("skillMarkdown", () => {
+  it("emits frontmatter with name and description, a blank line, and content", () => {
+    const skill = {
+      content: "Skill body.",
+      description: "A test skill.",
+      name: "test-skill"
+    };
+    expect(skillMarkdown(skill)).toBe(
+      "---\ndescription: A test skill.\nname: test-skill\n---\n\nSkill body.\n"
     );
   });
 });

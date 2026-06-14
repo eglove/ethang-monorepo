@@ -13,9 +13,9 @@ import {
 import path from "node:path";
 import { z } from "zod";
 
-import type { RuleDefinition } from "./define.ts";
+import type { RuleDefinition, SkillDefinition } from "./define.ts";
 
-import { ruleMarkdown } from "./render.ts";
+import { ruleMarkdown, skillMarkdown } from "./render.ts";
 import {
   checkRuleSize,
   findDuplicateRuleFilenames,
@@ -29,6 +29,8 @@ export type CompilerConfig = {
   rootDir: string;
   rules: RuleDefinition[];
   rulesDir: string;
+  skills?: SkillDefinition[];
+  skillsDir?: string;
 };
 
 export class CompileError extends Error {
@@ -107,9 +109,17 @@ const cleanFileAndEmptyParents = (
 };
 
 const calculateTargetPaths = (config: CompilerConfig): string[] => {
-  return Array.from(config.rules, (rule) => {
+  const rulePaths = Array.from(config.rules, (rule) => {
     return path.join(config.rulesDir, `${rule.filename}.md`);
   });
+  const { skills, skillsDir } = config;
+  const skillPaths =
+    undefined !== skills && undefined !== skillsDir
+      ? Array.from(skills, (skill) => {
+          return path.join(skillsDir, skill.name, "SKILL.md");
+        })
+      : [];
+  return [...rulePaths, ...skillPaths];
 };
 
 const readManifestContent = (filePath: string): string => {
@@ -174,6 +184,28 @@ const processRules = (
   }
 };
 
+const processSkills = (
+  config: CompilerConfig,
+  failures: string[],
+  write: (absolutePath: string, content: string) => void
+): void => {
+  const { skills, skillsDir } = config;
+  if (undefined === skills || undefined === skillsDir) {
+    return;
+  }
+  for (const skill of skills) {
+    const markdown = skillMarkdown(skill);
+
+    if (!validationHelpers.validateFrontmatterBlock(markdown)) {
+      failures.push(
+        `skills/${skill.name}/SKILL.md: malformed frontmatter block`
+      );
+    }
+
+    write(path.join(skillsDir, skill.name, "SKILL.md"), markdown);
+  }
+};
+
 const validateFileContent = (filePath: string, failures: string[]): void => {
   const fileContent = fsProxy.readFileSync(filePath, "utf8");
   for (const name of validationHelpers.findForbiddenStrings(fileContent)) {
@@ -185,6 +217,12 @@ const validateFileContent = (filePath: string, failures: string[]): void => {
 
 const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   const directoriesToScan = [config.rulesDir];
+  const { skills, skillsDir } = config;
+  if (undefined !== skills && undefined !== skillsDir) {
+    for (const skill of skills) {
+      directoriesToScan.push(path.join(skillsDir, skill.name));
+    }
+  }
 
   for (const directory of directoriesToScan) {
     if (fsProxy.existsSync(directory)) {
@@ -226,6 +264,7 @@ export const compile = (config: CompilerConfig): void => {
   };
 
   processRules(config, failures, write);
+  processSkills(config, failures, write);
   scanDirectories(config, failures);
 
   if (0 < failures.length) {
