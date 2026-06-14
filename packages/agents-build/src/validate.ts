@@ -91,20 +91,6 @@ export const findDuplicateRuleFilenames = (
   return [...duplicates];
 };
 
-/**
-Tripwire against hand-editing the generated swebok router: every chapter
-resource path must appear verbatim in the rendered router skill. Returns
-the paths that are absent.
-*/
-export const validateSwebokGuard = (
-  resourcePaths: readonly string[],
-  routerContent: string
-): string[] => {
-  return filter(resourcePaths, (resourcePath) => {
-    return !includes(routerContent, resourcePath);
-  });
-};
-
 /** Scan a built directory tree for leftover {{sections}} tokens. */
 export const findUnresolvedTokens = (directory: string): string[] => {
   const violations: string[] = [];

@@ -1,7 +1,6 @@
 import endsWith from "lodash/endsWith.js";
 import filter from "lodash/filter.js";
 import isString from "lodash/isString.js";
-import map from "lodash/map.js";
 import {
   existsSync,
   mkdirSync,
@@ -14,16 +13,15 @@ import {
 import path from "node:path";
 import { z } from "zod";
 
-import type { RuleDefinition, SkillDefinition } from "./define.ts";
+import type { RuleDefinition } from "./define.ts";
 
-import { ruleMarkdown, skillMarkdown } from "./render.ts";
+import { ruleMarkdown } from "./render.ts";
 import {
   checkRuleSize,
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
-  validateFrontmatterBlock,
-  validateSwebokGuard
+  validateFrontmatterBlock
 } from "./validate.ts";
 
 export type CompilerConfig = {
@@ -31,8 +29,6 @@ export type CompilerConfig = {
   rootDir: string;
   rules: RuleDefinition[];
   rulesDir: string;
-  skills: SkillDefinition[];
-  skillsDir: string;
 };
 
 export class CompileError extends Error {
@@ -60,8 +56,7 @@ export const validationHelpers = {
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
-  validateFrontmatterBlock,
-  validateSwebokGuard
+  validateFrontmatterBlock
 };
 
 const getDirectoryFiles = (directory: string): string[] | undefined => {
@@ -87,8 +82,7 @@ const cleanFileAndEmptyParents = (
   let currentDirectory = path.dirname(filePath);
   const stopDirectories = new Set([
     path.resolve(config.rootDir),
-    path.resolve(config.rulesDir),
-    path.resolve(config.skillsDir)
+    path.resolve(config.rulesDir)
   ]);
 
   let shouldContinue = true;
@@ -113,19 +107,9 @@ const cleanFileAndEmptyParents = (
 };
 
 const calculateTargetPaths = (config: CompilerConfig): string[] => {
-  const paths: string[] = Array.from(config.rules, (rule) => {
+  return Array.from(config.rules, (rule) => {
     return path.join(config.rulesDir, `${rule.filename}.md`);
   });
-
-  for (const skill of config.skills) {
-    const skillDirectory = path.join(config.skillsDir, skill.name);
-    paths.push(path.join(skillDirectory, "SKILL.md"));
-    for (const resource of skill.resources ?? []) {
-      paths.push(path.join(skillDirectory, resource.path));
-    }
-  }
-
-  return paths;
 };
 
 const readManifestContent = (filePath: string): string => {
@@ -196,49 +180,6 @@ const processRules = (
   }
 };
 
-const processSkills = (
-  config: CompilerConfig,
-  failures: string[],
-  write: (absolutePath: string, content: string) => void
-): void => {
-  for (const skill of config.skills) {
-    const skillDirectory = path.join(config.skillsDir, skill.name);
-    const markdown = skillMarkdown(skill);
-
-    if (!validationHelpers.validateFrontmatterBlock(markdown)) {
-      failures.push(
-        `skills/${skill.name}/SKILL.md: malformed frontmatter block`
-      );
-    }
-
-    const resourcePaths = map(skill.resources ?? [], (resource) => {
-      return resource.path;
-    });
-
-    const allContent = `${markdown}\n${map(
-      skill.resources ?? [],
-      (resource) => {
-        return resource.content;
-      }
-    ).join("\n")}`;
-
-    for (const missing of validationHelpers.validateSwebokGuard(
-      resourcePaths,
-      allContent
-    )) {
-      failures.push(
-        `skills/${skill.name}: resource "${missing}" is not referenced in the skill or its resources — the router table has drifted`
-      );
-    }
-
-    write(path.join(skillDirectory, "SKILL.md"), markdown);
-
-    for (const resource of skill.resources ?? []) {
-      write(path.join(skillDirectory, resource.path), resource.content);
-    }
-  }
-};
-
 const validateFileContent = (filePath: string, failures: string[]): void => {
   const fileContent = fsProxy.readFileSync(filePath, "utf8");
   for (const name of validationHelpers.findForbiddenStrings(fileContent)) {
@@ -250,9 +191,6 @@ const validateFileContent = (filePath: string, failures: string[]): void => {
 
 const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   const directoriesToScan = [config.rulesDir];
-  for (const skill of config.skills) {
-    directoriesToScan.push(path.join(config.skillsDir, skill.name));
-  }
 
   for (const directory of directoriesToScan) {
     if (fsProxy.existsSync(directory)) {
@@ -295,7 +233,6 @@ export const compile = (config: CompilerConfig): void => {
   };
 
   processRules(config, failures, warnings, write);
-  processSkills(config, failures, write);
   scanDirectories(config, failures);
 
   for (const warning of warnings) {

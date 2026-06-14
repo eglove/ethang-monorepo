@@ -1,5 +1,7 @@
+import endsWith from "lodash/endsWith.js";
 import includes from "lodash/includes.js";
 import isError from "lodash/isError.js";
+import isString from "lodash/isString.js";
 import repeat from "lodash/repeat.js";
 import {
   existsSync,
@@ -26,7 +28,6 @@ const manifestJsonName = "manifest.json";
 const utf8Encoding = "utf8";
 const ruleAMdName = "rules/rule-a.md";
 const rulesDirectoryName = "rules";
-const skillsDirectoryName = "skills";
 const alwaysOnTrigger = "always_on";
 const testDirectoryPrefix = "compiler-core-test-";
 const resourceContent = "resource content";
@@ -48,7 +49,6 @@ describe("first build compilation", () => {
 
   it("performs first build and creates generated files and manifest", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const skillsDirectory = path.join(temporaryDirectory, skillsDirectoryName);
     const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     const config: CompilerConfig = {
@@ -61,32 +61,12 @@ describe("first build compilation", () => {
           trigger: alwaysOnTrigger
         }
       ],
-      rulesDir: rulesDirectory,
-      skills: [
-        {
-          content: "skill-b content referencing res.md",
-          description: "skill-b description",
-          name: "skill-b",
-          resources: [
-            {
-              content: resourceContent,
-              path: "res.md"
-            }
-          ]
-        }
-      ],
-      skillsDir: skillsDirectory
+      rulesDir: rulesDirectory
     };
 
     compile(config);
 
     expect(existsSync(path.join(rulesDirectory, "rule-a.md"))).toBe(true);
-    expect(existsSync(path.join(skillsDirectory, "skill-b", "SKILL.md"))).toBe(
-      true
-    );
-    expect(existsSync(path.join(skillsDirectory, "skill-b", "res.md"))).toBe(
-      true
-    );
     expect(existsSync(manifestPath)).toBe(true);
 
     const parsed = JSON.parse(
@@ -94,8 +74,6 @@ describe("first build compilation", () => {
     ) as unknown;
     const manifest = manifestSchema.parse(parsed);
     expect(manifest.files).toContain(ruleAMdName);
-    expect(manifest.files).toContain("skills/skill-b/SKILL.md");
-    expect(manifest.files).toContain("skills/skill-b/res.md");
   });
 });
 
@@ -112,19 +90,15 @@ describe("incremental compilation & pruning", () => {
 
   it("deletes old generated files and updates manifest on definition change", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const skillsDirectory = path.join(temporaryDirectory, skillsDirectoryName);
     const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     mkdirSync(rulesDirectory, { recursive: true });
-    mkdirSync(path.join(skillsDirectory, "old-skill"), { recursive: true });
 
     const oldRulePath = path.join(rulesDirectory, "old-rule.md");
-    const oldSkillPath = path.join(skillsDirectory, "old-skill", "SKILL.md");
     writeFileSync(oldRulePath, "old rule", utf8Encoding);
-    writeFileSync(oldSkillPath, "old skill", utf8Encoding);
 
     const initialManifest = {
-      files: ["rules/old-rule.md", "skills/old-skill/SKILL.md"]
+      files: ["rules/old-rule.md"]
     };
     writeFileSync(manifestPath, JSON.stringify(initialManifest), utf8Encoding);
 
@@ -138,15 +112,12 @@ describe("incremental compilation & pruning", () => {
           trigger: alwaysOnTrigger
         }
       ],
-      rulesDir: rulesDirectory,
-      skills: [],
-      skillsDir: skillsDirectory
+      rulesDir: rulesDirectory
     };
 
     compile(config);
 
     expect(existsSync(oldRulePath)).toBe(false);
-    expect(existsSync(oldSkillPath)).toBe(false);
     expect(existsSync(path.join(rulesDirectory, "new-rule.md"))).toBe(true);
 
     const parsed = JSON.parse(
@@ -158,22 +129,16 @@ describe("incremental compilation & pruning", () => {
 
   it("cleans empty parent directories of deleted resources", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const skillsDirectory = path.join(temporaryDirectory, skillsDirectoryName);
     const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
-    const skillResourceDirectory = path.join(
-      skillsDirectory,
-      "skill-a",
-      "nested",
-      "resources"
-    );
-    mkdirSync(skillResourceDirectory, { recursive: true });
+    const ruleResourceDirectory = path.join(rulesDirectory, "nested", "folder");
+    mkdirSync(ruleResourceDirectory, { recursive: true });
 
-    const resourceFile = path.join(skillResourceDirectory, "res.md");
+    const resourceFile = path.join(ruleResourceDirectory, "res.md");
     writeFileSync(resourceFile, resourceContent, utf8Encoding);
 
     const initialManifest = {
-      files: ["skills/skill-a/nested/resources/res.md"]
+      files: ["rules/nested/folder/res.md"]
     };
     writeFileSync(manifestPath, JSON.stringify(initialManifest), utf8Encoding);
 
@@ -181,45 +146,31 @@ describe("incremental compilation & pruning", () => {
       manifestPath,
       rootDir: temporaryDirectory,
       rules: [],
-      rulesDir: rulesDirectory,
-      skills: [
-        {
-          content: "skill-a content",
-          description: "skill-a description",
-          name: "skill-a",
-          resources: []
-        }
-      ],
-      skillsDir: skillsDirectory
+      rulesDir: rulesDirectory
     };
 
     compile(config);
 
     expect(existsSync(resourceFile)).toBe(false);
-    expect(existsSync(skillResourceDirectory)).toBe(false);
-    expect(existsSync(path.dirname(skillResourceDirectory))).toBe(false);
-    expect(existsSync(path.join(skillsDirectory, "skill-a"))).toBe(true);
+    expect(existsSync(ruleResourceDirectory)).toBe(false);
+    expect(existsSync(path.dirname(ruleResourceDirectory))).toBe(false);
+    expect(existsSync(rulesDirectory)).toBe(true);
   });
 
   it("preserves unrelated external files and their parent directories", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const skillsDirectory = path.join(temporaryDirectory, skillsDirectoryName);
     const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
-    const skillResourceDirectory = path.join(
-      skillsDirectory,
-      "skill-a",
-      "nested"
-    );
-    mkdirSync(skillResourceDirectory, { recursive: true });
+    const ruleResourceDirectory = path.join(rulesDirectory, "nested");
+    mkdirSync(ruleResourceDirectory, { recursive: true });
 
-    const resourceFile = path.join(skillResourceDirectory, "res.md");
-    const unrelatedFile = path.join(skillResourceDirectory, "unrelated.txt");
+    const resourceFile = path.join(ruleResourceDirectory, "res.md");
+    const unrelatedFile = path.join(ruleResourceDirectory, "unrelated.txt");
     writeFileSync(resourceFile, resourceContent, utf8Encoding);
     writeFileSync(unrelatedFile, "unrelated content", utf8Encoding);
 
     const initialManifest = {
-      files: ["skills/skill-a/nested/res.md"]
+      files: ["rules/nested/res.md"]
     };
     writeFileSync(manifestPath, JSON.stringify(initialManifest), utf8Encoding);
 
@@ -227,16 +178,14 @@ describe("incremental compilation & pruning", () => {
       manifestPath,
       rootDir: temporaryDirectory,
       rules: [],
-      rulesDir: rulesDirectory,
-      skills: [],
-      skillsDir: skillsDirectory
+      rulesDir: rulesDirectory
     };
 
     compile(config);
 
     expect(existsSync(resourceFile)).toBe(false);
     expect(existsSync(unrelatedFile)).toBe(true);
-    expect(existsSync(skillResourceDirectory)).toBe(true);
+    expect(existsSync(ruleResourceDirectory)).toBe(true);
   });
 });
 
@@ -253,7 +202,6 @@ describe("resilience & error recovery", () => {
 
   it("falls back to current targets calculation if manifest is missing or corrupted", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const skillsDirectory = path.join(temporaryDirectory, skillsDirectoryName);
     const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     mkdirSync(rulesDirectory, { recursive: true });
@@ -269,9 +217,7 @@ describe("resilience & error recovery", () => {
           trigger: alwaysOnTrigger
         }
       ],
-      rulesDir: rulesDirectory,
-      skills: [],
-      skillsDir: skillsDirectory
+      rulesDir: rulesDirectory
     };
 
     compile(config);
@@ -288,7 +234,6 @@ describe("resilience & error recovery", () => {
 
   it("falls back to current targets calculation if readFileSync fails", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const skillsDirectory = path.join(temporaryDirectory, skillsDirectoryName);
     const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     mkdirSync(rulesDirectory, { recursive: true });
@@ -308,9 +253,7 @@ describe("resilience & error recovery", () => {
           trigger: alwaysOnTrigger
         }
       ],
-      rulesDir: rulesDirectory,
-      skills: [],
-      skillsDir: skillsDirectory
+      rulesDir: rulesDirectory
     };
 
     compile(config);
@@ -323,7 +266,6 @@ describe("resilience & error recovery", () => {
 
   it("handles readdirSync error inside cleanFileAndEmptyParents gracefully", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const skillsDirectory = path.join(temporaryDirectory, skillsDirectoryName);
     const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     const initialManifest = {
@@ -342,9 +284,40 @@ describe("resilience & error recovery", () => {
       manifestPath,
       rootDir: temporaryDirectory,
       rules: [],
-      rulesDir: rulesDirectory,
-      skills: [],
-      skillsDir: skillsDirectory
+      rulesDir: rulesDirectory
+    };
+
+    expect(() => {
+      compile(config);
+    }).not.toThrow();
+
+    spy.mockRestore();
+  });
+
+  it("handles non-existent directory during cleanFileAndEmptyParents gracefully", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
+
+    const initialManifest = {
+      files: ["rules/nested/rule-to-clean.md"]
+    };
+    const nestedDirectory = path.join(rulesDirectory, "nested");
+    mkdirSync(nestedDirectory, { recursive: true });
+    writeFileSync(path.join(nestedDirectory, "rule-to-clean.md"), "content");
+    writeFileSync(manifestPath, JSON.stringify(initialManifest), utf8Encoding);
+
+    const spy = vi.spyOn(fsProxy, "existsSync").mockImplementation((p) => {
+      if (isString(p) && endsWith(p.replaceAll("\\", "/"), "rules/nested")) {
+        return false;
+      }
+      return existsSync(p);
+    });
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory
     };
 
     expect(() => {
@@ -368,7 +341,6 @@ describe("validation failures and warnings", () => {
 
   it("throws CompileError when validation fails, handles warnings, and unresolved tokens", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const skillsDirectory = path.join(temporaryDirectory, skillsDirectoryName);
     const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     const config: CompilerConfig = {
@@ -397,26 +369,7 @@ describe("validation failures and warnings", () => {
           trigger: alwaysOnTrigger
         }
       ],
-      rulesDir: rulesDirectory,
-      skills: [
-        {
-          content: "skill content",
-          description: "skill description",
-          name: "skill-a"
-        },
-        {
-          content: "swebok content without resources references",
-          description: "swebok skill",
-          name: "skill-swebok",
-          resources: [
-            {
-              content: "res1 content",
-              path: "resources/res1.md"
-            }
-          ]
-        }
-      ],
-      skillsDir: skillsDirectory
+      rulesDir: rulesDirectory
     };
 
     const originValidateFrontmatter =
@@ -424,7 +377,7 @@ describe("validation failures and warnings", () => {
 
     vi.spyOn(validationHelpers, "validateFrontmatterBlock").mockImplementation(
       (markdown) => {
-        if (includes(markdown, "skill-a") || includes(markdown, "Jira")) {
+        if (includes(markdown, "Jira")) {
           return false;
         }
         return originValidateFrontmatter(markdown);
@@ -446,5 +399,24 @@ describe("validation failures and warnings", () => {
     }
 
     vi.restoreAllMocks();
+  });
+
+  it("skips directory scan if the rules directory does not exist", () => {
+    const rulesDirectory = path.join(
+      temporaryDirectory,
+      "non-existent-rules-dir"
+    );
+    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory
+    };
+
+    expect(() => {
+      compile(config);
+    }).not.toThrow();
   });
 });

@@ -1,4 +1,46 @@
 import { defineRule, type RuleDefinition } from "../../define.ts";
+import { codeVerification } from "./code-verification.ts";
+import { dddStrategic } from "./ddd-strategic.ts";
+import { dddTactical } from "./ddd-tactical.ts";
+import { executionPlanning } from "./execution-planning.ts";
+import { gitWorkflow } from "./git-workflow.ts";
+import { rcaFiveWhys } from "./rca-five-whys.ts";
+import { requirementsEngineering } from "./requirements-engineering.ts";
+import { reviewDesignChecklist } from "./review-design-checklist.ts";
+import { reviewPipeline } from "./review-pipeline.ts";
+import { reviewSecurityChecklist } from "./review-security-checklist.ts";
+import { roleImplementer } from "./role-implementer.ts";
+import { rolePlanner } from "./role-planner.ts";
+import { roleQualityAnalyst } from "./role-quality-analyst.ts";
+import { roleRca } from "./role-rca.ts";
+import { roleReporter } from "./role-reporter.ts";
+import { roleRequirementsAnalyst } from "./role-requirements-analyst.ts";
+import { roleRequirementsWriter } from "./role-requirements-writer.ts";
+import { roleReviewer } from "./role-reviewer.ts";
+import { roleSecurityAnalyst } from "./role-security-analyst.ts";
+import { roleTestWriter } from "./role-test-writer.ts";
+import { swebokCh01Requirements } from "./swebok-ch01-requirements.ts";
+import { swebokCh02Architecture } from "./swebok-ch02-architecture.ts";
+import { swebokCh03Design } from "./swebok-ch03-design.ts";
+import { swebokCh04Construction } from "./swebok-ch04-construction.ts";
+import { swebokCh05Testing } from "./swebok-ch05-testing.ts";
+import { swebokCh06Operations } from "./swebok-ch06-operations.ts";
+import { swebokCh07Maintenance } from "./swebok-ch07-maintenance.ts";
+import { swebokCh08Configuration } from "./swebok-ch08-configuration.ts";
+import { swebokCh09Management } from "./swebok-ch09-management.ts";
+import { swebokCh10Process } from "./swebok-ch10-process.ts";
+import { swebokCh11Models } from "./swebok-ch11-models.ts";
+import { swebokCh12Quality } from "./swebok-ch12-quality.ts";
+import { swebokCh13Security } from "./swebok-ch13-security.ts";
+import { swebokCh14Professional } from "./swebok-ch14-professional.ts";
+import { swebokCh15Economics } from "./swebok-ch15-economics.ts";
+import { swebokCh16Computing } from "./swebok-ch16-computing.ts";
+import { swebokCh17Math } from "./swebok-ch17-math.ts";
+import { swebokCh18Engineering } from "./swebok-ch18-engineering.ts";
+import { swebok } from "./swebok.ts";
+import { tddPrinciples } from "./tdd-principles.ts";
+import { tddStateCoverage } from "./tdd-state-coverage.ts";
+import { tddTestAsDocumentation } from "./tdd-test-as-documentation.ts";
 
 const philosophy = defineRule({
   content: `# Working Philosophy
@@ -520,8 +562,6 @@ Supports database exploration and querying (requires the "Database Tools and SQL
 
 ### Corrections
 - **WebStorm MCP Argument Nesting**: When calling WebStorm MCP tools via \`call_mcp_tool\`, pass all parameters (such as \`projectPath\` and \`pathInProject\`) inside the \`Arguments\` property of the tool payload, rather than as top-level fields of \`call_mcp_tool\`.
-
-### Proven Patterns
 - **WebStorm MCP replace_text_in_file Parameter**: The WebStorm MCP tool \`replace_text_in_file\` requires the parameter \`pathInProject\` (and \`projectPath\`) to successfully locate and replace text in a file. The parameter is named \`pathInProject\`, not \`filePath\` (which might be listed in some older documentation).
 - **WebStorm Text Search**: For text searches, prefer using the WebStorm MCP tool \`search_in_files_by_text\` (passing \`projectPath\`) rather than broad \`rtk rg\` terminal commands. WebStorm utilizes its indexed project structure, which executes instantly and avoids background task timeouts/hangs.
 - **IDE Write Synchronization**: When modifying a file that is actively open or cached in JetBrains WebStorm, avoid native write tools to prevent the IDE from overwriting the file with its in-memory cache. Instead, use WebStorm MCP's \`open_file_in_editor\` followed by \`replace_text_in_file\` to ensure WebStorm applies and persists the changes.`,
@@ -532,12 +572,48 @@ Supports database exploration and querying (requires the "Database Tools and SQL
 const lint = defineRule({
   content: `# Linting and TypeScript Rules
 
-## Load and Follow the eslint-fixer Skill
-Whenever you encounter an ESLint issue, linting or TypeScript compilation error, or need to run an ESLint fixer, you **must** load and follow the \`eslint-fixer\` skill.
-
 ## ESLint Troubleshooting & User Collaboration
 
 * **Request User Help when Struggling with ESLint:** If you encounter conflicting ESLint rules, loops, or tricky typescript/linter constraints that are hard to resolve automatically, do not spin or struggle in a loop. Ask the user for help, explain what you are trying to change, and collaborate to find a clean path forward.
+
+## Style/Quality Guidelines
+
+- **Yoda comparisons**: Always put the constant first in comparisons (e.g., \`if (null === value)\`).
+- **Arrow function blocks**: Always use explicit block bodies and returns in arrow functions (e.g., \`(x) => { return x; }\`).
+- **Arrow functions**: Always use arrow functions rather than function declarations for all function definitions.
+- **Explicit member accessibility**: Always use explicit accessibility modifiers (\`public\`/\`private\`/\`protected\`) for all class members.
+- **typescript type definitions**: Enforce the use of \`type\` instead of \`interface\` for declaring typescript type definitions.
+- **consistent-type-imports**: Enforce inline type imports when importing types.
+- **isNil**: Perform nullable/boolean checks using Lodash \`isNil\` for explicit checks instead of implicit truthy/falsy evaluation on nullable values.
+- **lodash/** method import path rules: Individual function path imports only, e.g., \`import map from "lodash/map.js"\`. Never import lodash globally.
+- **React 19 rules**: Enforce functional components, purity, immutability, no class components, and no nested component definitions.
+- **Ng signals and DI**: Use 信号 APIs (signals) over decorators, standalone components, and dynamic control flow in the Ng framework.
+- **Vitest spec checks**: Expect spacing around test blocks, no assertions inside loops, and correct mock setups.
+
+## Linter Conflict Solutions
+
+- **Mock Promise auto-fix deadlock loops**: Avoid conflicts where unicorn removes a mock return value and triggers an empty function error. *Solution*: Use **lodash noop for mocking** (e.g. \`vi.fn(noop)\`) or insert an empty comment \`//\` inside the mock async body.
+- **Array Methods**: **use lodash over native array methods** for all array operations (e.g., prefer \`map(arr, cb)\` from \`lodash/map.js\` over native \`arr.map(cb)\`).
+- **Strict Boolean Expressions**: **use isNil, isString instead of !!** (or other type-guard helpers like \`isNumber\`) to perform nullable/boolean evaluation. Never cast values to a boolean using \`!!\`.
+- **perfectionist object sorting vs partition comments**: Alphabetic sorting breaks logical pairings (e.g. \`{x, y}\`). *Solution*: Use partition comments (\`// partition\`) to prevent sorting.
+- **Vitest hook bypass via \`onTestFinished\`**: Since hooks are forbidden (\`vitest/no-hooks\`), register mock and stub cleanups using Vitest's \`onTestFinished(cleanupFn)\` inside setup helper functions. This also avoids using \`try-finally\` blocks that trigger \`unicorn/try-complexity\`.
+- **Vitest conditional test bypass**: Since conditionals are forbidden inside tests (\`vitest/no-conditional-in-test\`), split assertions of multiple states or conditions into multiple smaller test blocks, and avoid using \`if\` blocks directly in tests.
+- **Drizzle dynamic queries**: Avoid re-assignment type errors and unsafe \`as any\` type-casting on query builders by calling \`.$dynamic()\` on the select statement to erase strict generic types.
+- **Deletable properties vs Atomic writes**: Under strict TypeScript check, the \`delete\` operator requires properties to be optional. Instead of using \`delete\`, construct a new object that does not include the property (atomic writes), e.g., using destructuring: \`const { stack, ...rest } = row; return { ...rest, ...(!isNil(stack) ? { stack } : {}) };\`.
+- **Zod output types**: Avoid using the deprecated \`schema._output\` property. Instead, import the inferred type from the schema's package, or use \`z.output<typeof schema>\` (or \`z.infer<typeof schema>\`).
+- **TypeScript-ESLint compiler cascade warnings**: If eslint reports \`no-unsafe-assignment\` or \`no-unsafe-member-access\` on mocks/stubs, run \`tsc --noEmit\` to verify if generic parameters (e.g. \`Mock<Fn>\`) are incorrectly defined, which defaults the types to \`any\` (error types).
+- **Apollo Link Connection**: Use Apollo's \`from\` utility (e.g. \`from([authLink, httpLink])\`) instead of \`.concat\` to avoid \`unicorn/prefer-spread\` conflict.
+- **Dynamic Headers Deletion**: Avoid mutating headers dynamically using the \`delete\` operator, which violates \`@typescript-eslint/no-dynamic-delete\`. Instead, copy defaults and conditionally populate them using a structured key-value iterator or native \`Headers.set/delete\` API.
+- **EventTarget Override Context**: To avoid \`unicorn/no-this-outside-of-class\` when monkeypatching EventTarget or native prototypes, declare the patched handler functions as \`static\` class methods, keeping the \`this\` keyword lexically scoped.
+- **Zod trim Method Bypass**: Zod string validation \`.trim()\` triggers \`lodash/prefer-lodash-method\`. Bypass this conflict locally using property bracket notation: \`z.string()["trim"]()\`. For email validations where \`z.string().email()\` is deprecated, wrap it in a preprocessor to trim first: \`z.preprocess((val) => { return isString(val) ? trim(val) : val; }, z.email())\`.
+- **Command Line Argument Destructuring**: Use array destructuring (e.g., \`const [, , filePath] = globalThis.process.argv\`) instead of direct index access to resolve \`@typescript-eslint/prefer-destructuring\` on \`process.argv\`.
+- **Cyclomatic Complexity Reduction**: Replace complex switch/if statements with a static lookup registry map that routes block/event types to dedicated renderer functions, keeping individual function complexity extremely low.
+
+## Security Mitigations
+
+- **SR-1**: Limit lint-fix attempts to a maximum of 3 iterations to prevent infinite loop execution.
+- **SR-3**: Type checks must preserve exact falsy semantics (like empty string \`""\` or \`0\`) when modifying boolean checks to prevent logic bypasses.
+- **SR-7**: All changes must be traceable, logged, and isolated in specific commits (no auto-push/commit without user permission).
 
 ## Learned Lessons
 
@@ -584,5 +660,47 @@ export const GLOBAL_RULES: RuleDefinition[] = [
   jqCli,
   rgCli,
   webstormMcp,
-  lint
+  lint,
+  dddStrategic,
+  dddTactical,
+  rcaFiveWhys,
+  tddPrinciples,
+  tddStateCoverage,
+  tddTestAsDocumentation,
+  requirementsEngineering,
+  executionPlanning,
+  codeVerification,
+  reviewDesignChecklist,
+  reviewSecurityChecklist,
+  rolePlanner,
+  roleTestWriter,
+  roleImplementer,
+  roleRca,
+  roleRequirementsAnalyst,
+  roleRequirementsWriter,
+  roleSecurityAnalyst,
+  roleQualityAnalyst,
+  roleReviewer,
+  roleReporter,
+  gitWorkflow,
+  reviewPipeline,
+  swebok,
+  swebokCh01Requirements,
+  swebokCh02Architecture,
+  swebokCh03Design,
+  swebokCh04Construction,
+  swebokCh05Testing,
+  swebokCh06Operations,
+  swebokCh07Maintenance,
+  swebokCh08Configuration,
+  swebokCh09Management,
+  swebokCh10Process,
+  swebokCh11Models,
+  swebokCh12Quality,
+  swebokCh13Security,
+  swebokCh14Professional,
+  swebokCh15Economics,
+  swebokCh16Computing,
+  swebokCh17Math,
+  swebokCh18Engineering
 ];
