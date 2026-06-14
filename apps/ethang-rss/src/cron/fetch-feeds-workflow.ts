@@ -23,6 +23,7 @@ import {
   getEnvironmentString,
   getSecretValue
 } from "../util/get-environment-secret.ts";
+import { normalizeDate } from "../util/normalize-date.ts";
 
 const parser = new XMLParser({
   attributeNamePrefix: "@_",
@@ -168,11 +169,9 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
             const content = normalizeContent(item);
             const title = normalizeTitle(item);
 
-            const publishedAt =
-              item.pubDate ??
-              item.published ??
-              item.updated ??
-              DateTime.now().toISO();
+            const publishedAt = normalizeDate(
+              item.pubDate ?? item.published ?? item.updated
+            );
 
             return {
               content,

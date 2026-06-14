@@ -400,6 +400,15 @@ describe("FetchFeedsWorkflow", () => {
     // @ts-expect-error for test
     await expect(workflow.run({}, step)).resolves.not.toThrow();
   });
+});
+
+describe("FetchFeedsWorkflow - error and normalization", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    mockSelect.mockReset();
+    mockInsert.mockReset();
+    mockUpdate.mockReset();
+  });
 
   it("handles fetch error and throws inside step.do", async () => {
     const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
@@ -434,5 +443,80 @@ describe("FetchFeedsWorkflow", () => {
 
     // @ts-expect-error for test
     await expect(workflow.run({}, step)).rejects.toThrow(NETWORK_ERROR);
+  });
+
+  it("calls normalizeDate and inserts normalized ISO string into database", async () => {
+    const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
+
+    mockSelect.mockReturnValue({
+      from: vi.fn().mockResolvedValue(mockFeeds)
+    });
+
+    const mockValues = vi.fn().mockReturnValue({
+      onConflictDoNothing: vi.fn().mockResolvedValue({})
+    });
+
+    mockInsert.mockReturnValue({
+      values: mockValues
+    });
+
+    mockUpdate.mockReturnValue({
+      set: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue({})
+      })
+    });
+
+    const mockEnvironment = {
+      ENVIRONMENT: ENVIRONMENT_TEST,
+      ethang_rss: {},
+      LOGGER_API_KEY: TEST_LOGGER_KEY
+    };
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      text: async () => {
+        return `
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <rss version="2.0">
+          <channel>
+            <title>Test Feed</title>
+            <link>https://example.com</link>
+            <item>
+              <title>Article 1</title>
+              <link>https://example.com/art1</link>
+              <guid>guid-1</guid>
+              <description>Description 1</description>
+              <pubDate>Tue, 17 Feb 2026 17:58:47 GMT</pubDate>
+            </item>
+          </channel>
+        </rss>
+      `;
+      }
+    } as Response);
+
+    const step = {
+      do: vi.fn().mockImplementation(async (_name, _function) => {
+        return _function();
+      })
+    };
+
+    const context = {
+      waitUntil: noop
+    };
+
+    const workflow = new FetchFeedsWorkflow(
+      // @ts-expect-error for test
+      context,
+      mockEnvironment as unknown as Env
+    );
+
+    // @ts-expect-error for test
+    await workflow.run({}, step);
+
+    expect(mockValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        publishedAt: "2026-02-17T17:58:47.000Z"
+      })
+    );
   });
 });
