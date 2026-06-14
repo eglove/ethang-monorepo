@@ -1,8 +1,30 @@
 import { act, renderHook } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
+import { describe, expect, it, vi } from "vitest";
 
 import { BaseStore } from "../src/index.js";
 import { useStore } from "../src/use-store.js";
+
+vi.mock("use-sync-external-store/with-selector", async (importOriginal) => {
+  const actual = await importOriginal<object>();
+
+  return {
+    ...actual,
+    useSyncExternalStoreWithSelector: vi.fn(
+      (subscribe, getSnapshot, getServerSnapshot, selector, isEqual) => {
+        // @ts-expect-error for test
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-call
+        return actual.useSyncExternalStoreWithSelector(
+          subscribe,
+          getSnapshot,
+          getServerSnapshot,
+          selector,
+          isEqual
+        );
+      }
+    )
+  };
+});
 
 type TestState = {
   count: number;
@@ -86,7 +108,7 @@ describe("useStore", () => {
         },
         (a, b) => {
           return a.count === b.count;
-        },
+        }
       );
     });
 
@@ -106,5 +128,25 @@ describe("useStore", () => {
     });
 
     expect(renderCount).toBe(2);
+  });
+
+  it("should provide getServerSnapshot to useSyncExternalStoreWithSelector", () => {
+    const store = new TestStore({ count: 0, name: "Initial" });
+    renderHook(() => {
+      return useStore(store, (state) => {
+        return state.count;
+      });
+    });
+
+    const mockFunction = useSyncExternalStoreWithSelector;
+    expect(mockFunction).toHaveBeenCalled();
+    // @ts-expect-error for test
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+    const lastCall = mockFunction.mock.calls.at(-1);
+    // eslint-disable-next-line @typescript-eslint/prefer-destructuring,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+    const getServerSnapshot = lastCall[2];
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    expect(getServerSnapshot()).toEqual({ count: 0, name: "Initial" });
   });
 });

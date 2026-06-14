@@ -48,12 +48,16 @@ export class Cosmos {
   public constructor(config?: CosmosConfig) {
     this._debug = config?.debug;
 
-    const originalAddEventListener = get(globalThis, [
+    const targetContext = isNil(globalThis.window)
+      ? globalThis
+      : globalThis.window;
+
+    const originalAddEventListener = get(targetContext, [
       "EventTarget",
       "prototype",
       "addEventListener"
     ]);
-    const originalRemoveEventListener = get(globalThis, [
+    const originalRemoveEventListener = get(targetContext, [
       "EventTarget",
       "prototype",
       "removeEventListener"
@@ -61,43 +65,50 @@ export class Cosmos {
     // eslint-disable-next-line @typescript-eslint/no-this-alias,unicorn/no-this-assignment
     const cosmos = this;
 
-    globalThis.EventTarget.prototype.addEventListener = function (
-      this: EventTarget,
-      eventName: string,
-      listener: EventListenerOrEventListenerObject,
-      options?: (AddEventListenerOptions | boolean) & ExtraEventListenerOptions
-    ) {
-      if (false !== options?.isNative) {
+    if (!isNil(targetContext.EventTarget)) {
+      targetContext.EventTarget.prototype.addEventListener = function (
+        this: EventTarget,
+        eventName: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: (AddEventListenerOptions | boolean) &
+          ExtraEventListenerOptions
+      ) {
+        if (false !== options?.isNative) {
+          // eslint-disable-next-line unicorn/no-this-outside-of-class
+          cosmos.addEventListener(this, eventName, listener, options);
+        }
+
+        const cleanup = options?.cleanup?.();
+
+        if (true === cleanup) {
+          cosmos.removeEventListeners({ eventName, listener, options });
+        } else {
+          // eslint-disable-next-line unicorn/no-this-outside-of-class
+          originalAddEventListener.call(this, eventName, listener, options);
+        }
+      };
+
+      targetContext.EventTarget.prototype.removeEventListener = function (
+        this: EventTarget,
+        eventName: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: (AddEventListenerOptions | boolean) &
+          ExtraEventListenerOptions
+      ) {
+        if (false !== options?.isNative) {
+          cosmos.removeEventListeners({
+            eventName,
+            // eslint-disable-next-line unicorn/no-this-outside-of-class
+            eventTarget: this,
+            listener,
+            options
+          });
+        }
+
         // eslint-disable-next-line unicorn/no-this-outside-of-class
-        cosmos.addEventListener(this, eventName, listener, options);
-      }
-
-      const cleanup = options?.cleanup?.();
-
-      if (true === cleanup) {
-        cosmos.removeEventListeners({ eventName, listener, options });
-      } else {
-        // eslint-disable-next-line unicorn/no-this-outside-of-class
-        originalAddEventListener.call(this, eventName, listener, options);
-      }
-    };
-
-    globalThis.EventTarget.prototype.removeEventListener = function (
-      eventName: string,
-      listener: EventListenerOrEventListenerObject,
-      options?: (AddEventListenerOptions | boolean) & ExtraEventListenerOptions
-    ) {
-      if (false !== options?.isNative) {
-        cosmos.removeEventListeners({
-          eventName,
-          listener,
-          options
-        });
-      }
-
-      // eslint-disable-next-line unicorn/no-this-outside-of-class
-      originalRemoveEventListener.call(this, eventName, listener, options);
-    };
+        originalRemoveEventListener.call(this, eventName, listener, options);
+      };
+    }
 
     this._observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {

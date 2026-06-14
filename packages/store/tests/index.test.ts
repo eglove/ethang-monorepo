@@ -45,7 +45,7 @@ class ConcreteStore extends BaseStore<TestState> {
 
   public publicUpdate(
     updater: (draft: TestState) => void,
-    shouldNotify = true,
+    shouldNotify = true
   ) {
     this.update(updater, shouldNotify);
   }
@@ -71,9 +71,9 @@ describe("BaseStore", () => {
     person: {
       name: {
         firstName: "John",
-        lastName: "Doe",
-      },
-    },
+        lastName: "Doe"
+      }
+    }
   };
 
   beforeEach(() => {
@@ -327,11 +327,11 @@ describe("BaseStore", () => {
 
       expect(subscriber1).toHaveBeenCalledTimes(1);
       expect(subscriber1).toHaveBeenCalledWith(
-        expect.objectContaining({ count: newCount }),
+        expect.objectContaining({ count: newCount })
       );
       expect(subscriber2).toHaveBeenCalledTimes(1);
       expect(subscriber2).toHaveBeenCalledWith(
-        expect.objectContaining({ count: newCount }),
+        expect.objectContaining({ count: newCount })
       );
       expect(store.state.count).toBe(newCount);
     });
@@ -378,8 +378,8 @@ describe("BaseStore", () => {
         expect.objectContaining({
           count: 1,
           items: [newItem],
-          name: "updated",
-        }),
+          name: "updated"
+        })
       );
       expect(store.state.items).toContain(newItem);
     });
@@ -488,7 +488,7 @@ describe("BaseStore", () => {
         }
         public forceUpdate(
           updater: (draft: typeof initialState) => void,
-          shouldNotify = true,
+          shouldNotify = true
         ) {
           this.update(updater, shouldNotify);
         }
@@ -529,6 +529,43 @@ describe("BaseStore", () => {
       });
 
       expect(subscriber).toHaveBeenCalledTimes(1);
+    });
+
+    it("should stop firing patches if destroyed during property change notification", () => {
+      let callCount = 0;
+      // @ts-expect-error for test
+      store.onPropertyChange = () => {
+        callCount += 1;
+        store.destroy();
+      };
+
+      // Trigger multiple patches by modifying multiple properties
+      store.publicUpdate((draft) => {
+        draft.count = 1;
+        draft.name = "Another update";
+      });
+
+      expect(callCount).toBe(1);
+    });
+
+    it("should clear the patch queue and break if destroyed during processQueue", () => {
+      const subscriber = vi.fn();
+      store.subscribe((state) => {
+        if (1 === state.count) {
+          store.publicUpdate((draft) => {
+            draft.count = 2;
+          });
+          store.destroy();
+        }
+      });
+      store.subscribe(subscriber);
+
+      store.publicUpdate((draft) => {
+        draft.count = 1;
+      });
+
+      expect(store.state.count).toBe(2);
+      expect(subscriber).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -613,7 +650,7 @@ describe("BaseStore", () => {
 
       expect(error).toBeInstanceOf(Error);
       expect(error?.message).toContain(
-        "BaseStore: reentrant depth overflow (100). Possible infinite loop in subscriber or onPropertyChange.",
+        "BaseStore: reentrant depth overflow (100). Possible infinite loop in subscriber or onPropertyChange."
       );
 
       queueMicrotaskSpy.mockRestore();
@@ -643,7 +680,7 @@ describe("BaseStore", () => {
         count: 99,
         items: ["x"],
         name: "Reset",
-        person: { name: { firstName: "A", lastName: "B" } },
+        person: { name: { firstName: "A", lastName: "B" } }
       };
       store.reset(newState);
       expect(store.state).toEqual(newState);
@@ -666,7 +703,7 @@ describe("BaseStore", () => {
         count: 50,
         items: [],
         name: "New Init",
-        person: { name: { firstName: "X", lastName: "Y" } },
+        person: { name: { firstName: "X", lastName: "Y" } }
       };
       store.reset(newState);
       expect(store.state).toEqual(newState);

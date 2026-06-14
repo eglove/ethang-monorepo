@@ -1,6 +1,8 @@
 // @vitest-environment happy-dom
 
+import constant from "lodash/constant.js";
 import every from "lodash/every.js";
+import isNil from "lodash/isNil.js";
 import noop from "lodash/noop.js";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
@@ -164,6 +166,97 @@ describe(Cosmos, () => {
 
       consoleSpy.mockRestore();
       warnSpy.mockRestore();
+    });
+  });
+
+  describe("EventTarget overrides & MutationObserver", () => {
+    it("intercepts removeEventListener calls on EventTargets", () => {
+      const localCosmos = new Cosmos();
+      const element = document.createElement("button");
+      const listener = vi.fn();
+
+      // eslint-disable-next-line @typescript-eslint/strict-void-return
+      localCosmos.addEventListener(element, "click", listener);
+      expect(localCosmos.eventListenersSize).toBe(1);
+
+      const removeSpy = vi.spyOn(localCosmos, "removeEventListeners");
+
+      // Call the overridden prototype method directly since Happy DOM prototype delegation might vary
+      const targetContext = isNil(globalThis.window)
+        ? globalThis
+        : globalThis.window;
+      const overriddenRemove =
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        targetContext.EventTarget.prototype.removeEventListener;
+      overriddenRemove.call(element, "click", listener);
+
+      expect(removeSpy).toHaveBeenCalled();
+      expect(localCosmos.eventListenersSize).toBe(0);
+    });
+
+    it("automatically removes listeners when element is removed from the DOM", async () => {
+      const container = document.createElement("div");
+      document.body.append(container);
+
+      const button = document.createElement("button");
+      container.append(button);
+
+      const listener = vi.fn();
+      // eslint-disable-next-line @typescript-eslint/strict-void-return
+      cosmos.addEventListener(button, "click", listener);
+
+      const sizeBefore = cosmos.eventListenersSize;
+
+      button.remove();
+
+      // Wait for MutationObserver to fire
+      await new Promise((resolve) => {
+        setTimeout(resolve, 10);
+      });
+
+      expect(cosmos.eventListenersSize).toBe(sizeBefore - 1);
+
+      container.remove();
+    });
+
+    it("handles cleanup option in addEventListener", () => {
+      const localCosmos = new Cosmos();
+      const element = document.createElement("button");
+      const listener = vi.fn();
+
+      const removeSpy = vi.spyOn(localCosmos, "removeEventListeners");
+
+      const targetContext = isNil(globalThis.window)
+        ? globalThis
+        : globalThis.window;
+      const overriddenAdd =
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        targetContext.EventTarget.prototype.addEventListener;
+
+      // eslint-disable-next-line @typescript-eslint/strict-void-return
+      overriddenAdd.call(element, "click", listener, {
+        // @ts-expect-error for test
+        cleanup: constant(true)
+      });
+
+      expect(removeSpy).toHaveBeenCalled();
+    });
+
+    it("handles regular addEventListener via prototype override", () => {
+      const localCosmos = new Cosmos();
+      const element = document.createElement("button");
+      const listener = vi.fn();
+
+      const targetContext = isNil(globalThis.window)
+        ? globalThis
+        : globalThis.window;
+      const overriddenAdd =
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        targetContext.EventTarget.prototype.addEventListener;
+
+      overriddenAdd.call(element, "click", listener);
+
+      expect(localCosmos.eventListenersSize).toBe(1);
     });
   });
 });
