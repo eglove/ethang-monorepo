@@ -1,3 +1,4 @@
+import { LoggerClient } from "@ethang/logger-sdk";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import {
   WorkflowEntrypoint,
@@ -14,8 +15,13 @@ import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
+import convertToString from "lodash/toString.js";
 
 import { articlesTable, feedsTable } from "../db/schema.ts";
+import {
+  getEnvironmentString,
+  getSecretValue
+} from "../util/get-environment-secret.ts";
 
 const parser = new XMLParser({
   attributeNamePrefix: "@_",
@@ -49,7 +55,7 @@ type FeedResult = {
   };
 };
 
-const normalizeLink = (item: FeedItem): string => {
+export const normalizeLink = (item: FeedItem): string => {
   if (isString(item.link)) {
     return item.link;
   }
@@ -71,18 +77,16 @@ const normalizeLink = (item: FeedItem): string => {
     }
 
     return (
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       (item.link as Record<string, string>)["@_href"] ??
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      (item.link as unknown as string) ??
-      ""
+      (item.link as unknown as string)
     );
   }
 
   return "";
 };
 
-const normalizeGuid = (item: FeedItem, link: string): string => {
+export const normalizeGuid = (item: FeedItem, link: string): string => {
   if (isString(item.guid)) {
     return item.guid;
   }
@@ -94,7 +98,7 @@ const normalizeGuid = (item: FeedItem, link: string): string => {
   return item.id ?? link;
 };
 
-const normalizeContent = (item: FeedItem): string => {
+export const normalizeContent = (item: FeedItem): string => {
   if (isString(item.description)) {
     return item.description;
   }
@@ -110,7 +114,7 @@ const normalizeContent = (item: FeedItem): string => {
   return item.summary ?? "";
 };
 
-const normalizeTitle = (item: FeedItem): string => {
+export const normalizeTitle = (item: FeedItem): string => {
   if (isString(item.title)) {
     return item.title;
   }
@@ -127,6 +131,17 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     _event: WorkflowEvent<unknown>,
     step: WorkflowStep
   ): Promise<void> {
+    const apiKey = convertToString(
+      await getSecretValue(this.env.LOGGER_API_KEY)
+    );
+    const environmentName =
+      getEnvironmentString(this.env, "ENVIRONMENT") ?? "production";
+    const logger = new LoggerClient({
+      apiKey,
+      environment: environmentName,
+      serviceName: "ethang-rss-workflow"
+    });
+
     const database = drizzle(this.env.ethang_rss);
 
     const feeds = await step.do("get-feeds", async () => {
@@ -188,8 +203,11 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
         });
 
         if (isError(error)) {
-          // eslint-disable-next-line no-console
-          console.error(`Failed to fetch feed ${feed.xmlAddress}:`, error);
+          logger.error(
+            `Failed to fetch feed ${feed.xmlAddress}`,
+            undefined,
+            error.stack
+          );
           throw error; // Rethrow so Workflow can retry if configured
         }
       });

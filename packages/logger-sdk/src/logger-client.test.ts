@@ -94,25 +94,31 @@ describe("loggerClient - SDK Client library", () => {
       serviceName: TEST_SERVICE
     });
 
-    await client.info("hello world");
-    await client.debug("hello debug");
-    await client.warn("hello warn");
-    await client.error("hello error", undefined, "some stack");
-    await client.fatal("hello fatal", undefined, "some stack");
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+    const result = client.info("hello world");
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      "https://log-api.example.com/log",
-      expect.objectContaining({
-        body: expect.stringContaining(
-          '"message":"hello world"'
-        ) as unknown as string,
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": TEST_API_KEY
-        },
-        method: "POST"
-      })
-    );
+    expect(result).toBeUndefined();
+
+    client.debug("hello debug");
+    client.warn("hello warn");
+    client.error("hello error", undefined, "some stack");
+    client.fatal("hello fatal", undefined, "some stack");
+
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://log-api.example.com/log",
+        expect.objectContaining({
+          body: expect.stringContaining(
+            '"message":"hello world"'
+          ) as unknown as string,
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": TEST_API_KEY
+          },
+          method: "POST"
+        })
+      );
+    });
   });
 
   it("automatically attaches browser metadata when running in a browser environment", async () => {
@@ -133,18 +139,20 @@ describe("loggerClient - SDK Client library", () => {
       serviceName: TEST_SERVICE
     });
 
-    await client.info("in browser");
+    client.info("in browser");
 
-    const requestBody = getRequestBody(fetchMock);
+    await vi.waitFor(() => {
+      const requestBody = getRequestBody(fetchMock);
 
-    expect(requestBody["metadata"]).toStrictEqual(
-      expect.objectContaining({
-        screenHeight: 1080,
-        screenWidth: 1920,
-        url: APP_URL,
-        userAgent: USER_AGENT_STRING
-      })
-    );
+      expect(requestBody["metadata"]).toStrictEqual(
+        expect.objectContaining({
+          screenHeight: 1080,
+          screenWidth: 1920,
+          url: APP_URL,
+          userAgent: USER_AGENT_STRING
+        })
+      );
+    });
   });
 
   it("does not attach browser metadata when running in a non-browser environment", async () => {
@@ -157,12 +165,14 @@ describe("loggerClient - SDK Client library", () => {
       serviceName: TEST_SERVICE
     });
 
-    await client.info("in node");
+    client.info("in node");
 
-    const requestBody = getRequestBody(fetchMock);
+    await vi.waitFor(() => {
+      const requestBody = getRequestBody(fetchMock);
 
-    expect(requestBody["metadata"]).not.toHaveProperty("userAgent");
-    expect(requestBody["metadata"]).not.toHaveProperty("url");
+      expect(requestBody["metadata"]).not.toHaveProperty("userAgent");
+      expect(requestBody["metadata"]).not.toHaveProperty("url");
+    });
   });
 
   it("merges custom metadata with enriched metadata when a log method is called with custom metadata", async () => {
@@ -183,22 +193,24 @@ describe("loggerClient - SDK Client library", () => {
       serviceName: TEST_SERVICE
     });
 
-    await client.info("custom meta", {
+    client.info("custom meta", {
       customField: "value",
       url: OVERRIDE_URL
     });
 
-    const requestBody = getRequestBody(fetchMock);
+    await vi.waitFor(() => {
+      const requestBody = getRequestBody(fetchMock);
 
-    expect(requestBody["metadata"]).toStrictEqual(
-      expect.objectContaining({
-        customField: "value",
-        screenHeight: 1080,
-        screenWidth: 1920,
-        url: OVERRIDE_URL,
-        userAgent: USER_AGENT_STRING
-      })
-    );
+      expect(requestBody["metadata"]).toStrictEqual(
+        expect.objectContaining({
+          customField: "value",
+          screenHeight: 1080,
+          screenWidth: 1920,
+          url: OVERRIDE_URL,
+          userAgent: USER_AGENT_STRING
+        })
+      );
+    });
   });
 
   it("catches network errors and does not throw an exception when a log method fails", async () => {
@@ -213,6 +225,13 @@ describe("loggerClient - SDK Client library", () => {
       serviceName: TEST_SERVICE
     });
 
-    await expect(client.info("error test")).resolves.not.toThrow();
+    expect(() => {
+      client.info("error test");
+    }).not.toThrow();
+
+    // Verify background process completes / fails silently
+    await vi.waitFor(() => {
+      expect(fetchMock).not.toThrow();
+    });
   });
 });

@@ -16,14 +16,30 @@ import { logs } from "./db/schema.ts";
 type Bindings = {
   ADMIN_KEY: string;
   ALLOWED_ORIGINS: string;
-  CLIENT_API_KEYS: string;
-  SERVER_API_KEYS: string;
+  CLIENT_API_KEYS: SecretsStoreSecret | string;
+  SERVER_API_KEYS: SecretsStoreSecret | string;
 } & Omit<
   CloudflareBindings,
   "ADMIN_KEY" | "ALLOWED_ORIGINS" | "CLIENT_API_KEYS" | "SERVER_API_KEYS"
 >;
 
 export const app = new Hono<{ Bindings: Bindings }>();
+
+const getSecretValue = async (secret: unknown): Promise<string> => {
+  if (
+    // eslint-disable-next-line lodash/prefer-lodash-typecheck
+    "object" === typeof secret &&
+    null !== secret &&
+    "get" in secret &&
+    // eslint-disable-next-line lodash/prefer-lodash-typecheck
+    "function" === typeof secret.get
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    return (secret as { get: () => Promise<string> }).get();
+  }
+  // eslint-disable-next-line lodash/prefer-lodash-typecheck
+  return "string" === typeof secret ? secret : "";
+};
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
@@ -45,15 +61,17 @@ const getDatabase = (environment: Bindings) => {
   return drizzle(environment.DB);
 };
 
-const checkApiKey = (
+const checkApiKey = async (
   apiKey: string | undefined,
   environment: Bindings
-): { isAuthorized: boolean; isClientKey: boolean } => {
+): Promise<{ isAuthorized: boolean; isClientKey: boolean }> => {
   if (isNil(apiKey) || "" === apiKey) {
     return { isAuthorized: false, isClientKey: false };
   }
-  const serverKeys = split(environment.SERVER_API_KEYS || "", ",");
-  const clientKeys = split(environment.CLIENT_API_KEYS || "", ",");
+  const serverKeysString = await getSecretValue(environment.SERVER_API_KEYS);
+  const clientKeysString = await getSecretValue(environment.CLIENT_API_KEYS);
+  const serverKeys = split(serverKeysString, ",");
+  const clientKeys = split(clientKeysString, ",");
   const isServerKey = includes(serverKeys, apiKey);
   const isClientKey = includes(clientKeys, apiKey);
   return {
@@ -92,7 +110,7 @@ app.post("/log", async (c) => {
   }
 
   const apiKey = c.req.header("x-api-key");
-  const { isAuthorized, isClientKey } = checkApiKey(apiKey, c.env);
+  const { isAuthorized, isClientKey } = await checkApiKey(apiKey, c.env);
 
   if (!isAuthorized) {
     return c.json({ error: "Unauthorized" }, 401);

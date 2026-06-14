@@ -3,10 +3,12 @@ import type DataLoader from "dataloader";
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 import { startServerAndCreateCloudflareWorkersHandler } from "@as-integrations/cloudflare-workers";
+import { LoggerClient } from "@ethang/logger-sdk";
 import { drizzle } from "drizzle-orm/d1";
 import includes from "lodash/includes.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
+import convertToString from "lodash/toString.js";
 
 import { authenticate } from "./authenticate.ts";
 // eslint-disable-next-line sonar/no-wildcard-import
@@ -16,6 +18,10 @@ import { createFeedLoader } from "./graphql/data-loader/feed-loader.ts";
 import { createUserArticleStateLoader } from "./graphql/data-loader/user-article-state-loader.ts";
 import { createSchema } from "./graphql/schema.ts";
 import { depthLimit } from "./graphql/util/depth-limit.ts";
+import {
+  getEnvironmentString,
+  getSecretValue
+} from "./util/get-environment-secret.ts";
 
 export type ServerContext = {
   articleLoader: DataLoader<string, Article | null>;
@@ -93,7 +99,22 @@ export default {
       const message = isError(error) ? error.message : String(error);
 
       if (!includes(message, "already exists")) {
-        globalThis.console.error("Failed to start feed sync workflow:", error);
+        const apiKey = convertToString(
+          await getSecretValue(environment.LOGGER_API_KEY)
+        );
+        const environmentName =
+          getEnvironmentString(environment, "ENVIRONMENT") ?? "production";
+        const logger = new LoggerClient({
+          apiKey,
+          environment: environmentName,
+          serviceName: "ethang-rss-scheduler"
+        });
+
+        logger.error(
+          "Failed to start feed sync workflow",
+          undefined,
+          isError(error) ? error.stack : String(error)
+        );
         throw error;
       }
     }

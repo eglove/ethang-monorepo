@@ -6,6 +6,7 @@
   "dependencies": {
     "@apollo/client": "^4.2.3",
     "@ethang/graphql-types": "workspace:*",
+    "@ethang/logger-sdk": "workspace:*",
     "@ethang/store": "^3.1.0",
     "@ethang/toolbelt": "^4.5.0",
     "@portabletext/react": "^6.2.0",

@@ -98,6 +98,9 @@ All agents must apply a DDD analytical lens when analyzing, planning, and implem
 
 Rules from explicit user corrections — things the assistant did wrong and must not repeat.
 
+- **Hoisted Mock Imports**: To avoid `ReferenceError` during Vitest mock hoisting, mock classes must be imported rather than declared as variables/classes in the test file scope. Since imports are hoisted to the top of the ES module, they are fully defined before `vi.mock` runs.
+- **Constructible Mock Patterns**: When mocking classes in tests to comply with `max-classes-per-file` rules, standard ES6 class mock definitions should be isolated to their own separate files (one class per file, and nothing else), rather than using arrow functions.
+- **Resolving String Duplication**: Centralizing duplicate string literals in a dedicated `test-constants.ts` file successfully addresses SonarQube's `sonar/no-duplicate-string` rule. Since imports are hoisted, these constants can be cleanly referenced in both `vi.mock` factories and test cases.
 - **Selective Revert Over Global Revert**: Never run global git resets or checkouts (like `git checkout -- .` or
   `git reset --hard`) when asked to revert agent-specific changes, as the user may have unrelated unstaged changes in
   their workspace. Always use `git restore` (or targeted checkout) explicitly on the specific files modified by the
@@ -118,6 +121,7 @@ Rules from explicit user corrections — things the assistant did wrong and must
 - **Single Category ESLint Fixes**: Only fix one category of ESLint issues at a time, and ask the user for confirmation before moving to the next category. Do not attempt to fix the same issue repeatedly if it fails.
 - **Explicit Member Accessibility**: Always use explicit accessibility modifiers (`public`/`private`/`protected`) for class members and methods.
 - **Arrow Functions Preference**: Enforce the use of arrow functions over function declarations (e.g., `const fn = () => {}` instead of `function fn() {}`).
+- **Avoid Explicit Returns**: Avoid specifying explicit return types in TypeScript functions unless strictly necessary. In general, rely on TypeScript's type inference as much as possible.
 
 ## Proven Patterns
 

@@ -19,49 +19,40 @@ export class LoggerClient {
     this.environment = config.environment;
   }
 
-  public async debug(
-    message: string,
-    metadata?: Record<string, unknown>
-  ): Promise<void> {
-    await this.log("debug", message, metadata);
+  public debug(message: string, metadata?: Record<string, unknown>) {
+    this.log("debug", message, metadata);
   }
 
-  public async error(
+  public error(
     message: string,
     metadata?: Record<string, unknown>,
     stack?: string
-  ): Promise<void> {
-    await this.log("error", message, metadata, stack);
+  ) {
+    this.log("error", message, metadata, stack);
   }
 
-  public async fatal(
+  public fatal(
     message: string,
     metadata?: Record<string, unknown>,
     stack?: string
-  ): Promise<void> {
-    await this.log("fatal", message, metadata, stack);
+  ) {
+    this.log("fatal", message, metadata, stack);
   }
 
-  public async info(
-    message: string,
-    metadata?: Record<string, unknown>
-  ): Promise<void> {
-    await this.log("info", message, metadata);
+  public info(message: string, metadata?: Record<string, unknown>) {
+    this.log("info", message, metadata);
   }
 
-  public async warn(
-    message: string,
-    metadata?: Record<string, unknown>
-  ): Promise<void> {
-    await this.log("warn", message, metadata);
+  public warn(message: string, metadata?: Record<string, unknown>) {
+    this.log("warn", message, metadata);
   }
 
-  private async log(
+  private log(
     level: "debug" | "error" | "fatal" | "info" | "warn",
     message: string,
     metadata?: Record<string, unknown>,
     stack?: string
-  ): Promise<void> {
+  ) {
     const enrichedMetadata: Record<string, unknown> = {};
 
     if (!isUndefined(globalThis.window)) {
@@ -90,17 +81,13 @@ export class LoggerClient {
       body["stack"] = stack;
     }
 
-    try {
-      await fetch(`${this.endpoint}/log`, {
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": this.apiKey
-        },
-        method: "POST"
-      });
-    } catch {
-      // Suppress network and logging errors to not disrupt caller.
-    }
+    fetch(`${this.endpoint}/log`, {
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": this.apiKey
+      },
+      method: "POST"
+    }).catch(globalThis.console.error);
   }
 }

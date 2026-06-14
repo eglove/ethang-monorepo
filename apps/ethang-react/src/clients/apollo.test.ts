@@ -1,11 +1,25 @@
-import noop from "lodash/noop.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const mockError = vi.fn();
+
+vi.mock("@ethang/logger-sdk", () => {
+  return {
+    LoggerClient: class {
+      public debug = vi.fn();
+      public error = mockError;
+      public fatal = vi.fn();
+      public info = vi.fn();
+      public warn = vi.fn();
+    }
+  };
+});
 
 describe("apolloClient window refocus", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
+    mockError.mockClear();
   });
 
   it("registers focus event listener on globalThis when addEventListener is a function", async () => {
@@ -40,7 +54,6 @@ describe("apolloClient window refocus", () => {
   });
 
   it("catches and logs errors when refetchQueries rejects", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(noop);
     const { apolloClient } = await import("./apollo.ts");
     const testError = new Error("Refetch queries failed");
     const refetchSpy = vi
@@ -55,9 +68,10 @@ describe("apolloClient window refocus", () => {
     });
 
     expect(refetchSpy).toHaveBeenCalledWith({ include: "active" });
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "Failed to refetch queries on refocus:",
-      testError
+    expect(mockError).toHaveBeenCalledWith(
+      "Failed to refetch queries on refocus",
+      undefined,
+      testError.stack
     );
   });
 });

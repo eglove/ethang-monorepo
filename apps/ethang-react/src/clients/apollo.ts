@@ -1,12 +1,21 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { SetContextLink } from "@apollo/client/link/context";
+import { LoggerClient } from "@ethang/logger-sdk";
 import { LocalStorageWrapper, persistCache } from "apollo3-cache-persist";
 import attempt from "lodash/attempt.js";
+import isError from "lodash/isError.js";
 import isFunction from "lodash/isFunction.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
+import isUndefined from "lodash/isUndefined.js";
+import convertToString from "lodash/toString.js";
+
+const isUndefinedFunction = isUndefined as (
+  value: unknown
+) => value is undefined;
+const isErrorFunction = isError as (value: unknown) => value is Error;
 
 const authLink = new SetContextLink(
   // @ts-expect-error for now
@@ -53,6 +62,16 @@ await persistCache({
   storage: new LocalStorageWrapper(globalThis.localStorage)
 });
 
+const environment = isUndefinedFunction(import.meta.env)
+  ? "development"
+  : import.meta.env.MODE;
+
+const logger = new LoggerClient({
+  apiKey: convertToString(import.meta.env["LOGGER_CLIENT_API_KEY"]),
+  environment,
+  serviceName: "ethang-react"
+});
+
 export const apolloClient = new ApolloClient({
   cache,
   defaultOptions: {
@@ -68,8 +87,13 @@ if (isFunction(globalThis.addEventListener)) {
     apolloClient
       .refetchQueries({ include: "active" })
       .catch((error: unknown) => {
-        // eslint-disable-next-line no-console
-        console.error("Failed to refetch queries on refocus:", error);
+        const errorStack = isErrorFunction(error) ? error.stack : String(error);
+
+        logger.error(
+          "Failed to refetch queries on refocus",
+          undefined,
+          errorStack
+        );
       });
   });
 }

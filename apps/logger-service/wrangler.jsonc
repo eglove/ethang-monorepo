@@ -16,5 +16,17 @@
   ],
   "vars": {
     "ALLOWED_ORIGINS": "*"
-  }
+  },
+  "secrets_store_secrets": [
+    {
+      "binding": "SERVER_API_KEYS",
+      "store_id": "737fce8854f042e4905cb36a696dd3c2",
+      "secret_name": "LOGGER_SERVER_API_KEY"
+    },
+    {
+      "binding": "CLIENT_API_KEYS",
+      "store_id": "737fce8854f042e4905cb36a696dd3c2",
+      "secret_name": "LOGGER_CLIENT_API_KEY"
+    }
+  ]
 }

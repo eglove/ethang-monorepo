@@ -7,7 +7,13 @@ const TEST_URL = "https://localhost/api/graphql";
 
 const mockEnvironment = {
   ADMIN_PASS: "adminpass",
-  ADMIN_USER: "admin@test.com"
+  ADMIN_USER: "admin@test.com",
+  LOGGER_CLIENT_API_KEY: {
+    // eslint-disable-next-line lodash/prefer-constant,@typescript-eslint/require-await
+    get: async () => {
+      return "test-api-key";
+    }
+  }
 };
 
 describe("worker/auto-authenticate", () => {
