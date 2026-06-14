@@ -11,6 +11,8 @@ const DATE_KEY_JUNE_30 = "2024-06-30";
 const DATE_KEY_JULY_01 = "2024-07-01";
 const DATE_KEY_DEC_31 = "2024-12-31";
 
+import { DateTime } from "luxon";
+
 import {
   buildCalendarWeeks,
   buildEventsByDate,
@@ -589,9 +591,15 @@ describe(getViewDateRange, () => {
       lastCell?.day ?? 0
     );
 
-    expect(Date.parse(firstCellKey)).toBeGreaterThanOrEqual(
-      Date.parse(rangeStart)
+    const firstCellDate = DateTime.fromISO(firstCellKey);
+    const lastCellDate = DateTime.fromISO(lastCellKey);
+
+    const startLimit = DateTime.fromISO(rangeStart);
+    const endLimit = DateTime.fromISO(rangeEndExclusive);
+
+    expect(firstCellDate.toMillis()).toBeGreaterThanOrEqual(
+      startLimit.toMillis()
     );
-    expect(Date.parse(lastCellKey)).toBeLessThan(Date.parse(rangeEndExclusive));
+    expect(lastCellDate.toMillis()).toBeLessThan(endLimit.toMillis());
   });
 });

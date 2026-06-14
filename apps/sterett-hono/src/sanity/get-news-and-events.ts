@@ -1,5 +1,8 @@
 import type { PortableTextBlock } from "@portabletext/types";
 
+import includes from "lodash/includes.js";
+import { DateTime, type DateTimeFormatOptions } from "luxon";
+
 import { NO_DRAFTS, sterettSanityClient } from "../clients/sanity-client.ts";
 
 export type CalendarEventReturn = {
@@ -23,33 +26,38 @@ export type NewsUpdateReturn = {
 
 const CHICAGO = "America/Chicago";
 
+const getEpoch = (value: string): number => {
+  const hasTime = includes(value, "T");
+  return (
+    hasTime ? DateTime.fromISO(value) : DateTime.fromISO(value).setZone("UTC")
+  ).toMillis();
+};
+
 export const eventRangeFormat = (start: string, end: string): string => {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
+  const startZoned = DateTime.fromISO(start).setZone(CHICAGO);
+  const endZoned = DateTime.fromISO(end).setZone(CHICAGO);
 
-  const sameDay =
-    startDate.toLocaleDateString("en-US", { timeZone: CHICAGO }) ===
-    endDate.toLocaleDateString("en-US", { timeZone: CHICAGO });
+  const sameDay = startZoned.hasSame(endZoned, "day");
 
-  const dateTimeOptions: Intl.DateTimeFormatOptions = {
+  const dateTimeOptions: DateTimeFormatOptions = {
     dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: CHICAGO
+    timeStyle: "short"
   };
 
   if (sameDay) {
-    return `${startDate.toLocaleString("en-US", dateTimeOptions)} – ${endDate.toLocaleString("en-US", { timeStyle: "short", timeZone: CHICAGO })}`;
+    return `${startZoned.toLocaleString(dateTimeOptions)} – ${endZoned.toLocaleString({ timeStyle: "short" })}`;
   }
 
-  return `${startDate.toLocaleString("en-US", dateTimeOptions)} – ${endDate.toLocaleString("en-US", dateTimeOptions)}`;
+  return `${startZoned.toLocaleString(dateTimeOptions)} – ${endZoned.toLocaleString(dateTimeOptions)}`;
 };
 
 export const getRelativeDate = (date: string): string => {
-  const diffMs = new Date(date).getTime() - Date.now();
+  const diffMs = DateTime.fromISO(date).toMillis() - DateTime.now().toMillis();
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-  const rtf = new Intl.RelativeTimeFormat("en-US", { numeric: "auto" });
 
   if (1 > Math.abs(diffDays)) return "Today";
+
+  const rtf = new Intl.RelativeTimeFormat("en-US", { numeric: "auto" });
   if (7 > Math.abs(diffDays)) return rtf.format(diffDays, "day");
   if (30 > Math.abs(diffDays))
     return rtf.format(Math.round(diffDays / 7), "week");
@@ -57,9 +65,7 @@ export const getRelativeDate = (date: string): string => {
 };
 
 export const getNewsAndEvents = async (): Promise<NewsAndEvents> => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const formattedDate = today.toISOString().slice(0, 10);
+  const formattedDate = DateTime.now().toISODate();
 
   const eventQuery = `*[_type == "calendarEvent"
     && (startsAt >= "${formattedDate}" || endsAt >= "${formattedDate}")
@@ -75,8 +81,10 @@ export const getNewsAndEvents = async (): Promise<NewsAndEvents> => {
   ]);
 
   return [...events, ...updates].toSorted((a, b) => {
-    const aDate = new Date("startsAt" in a ? a.startsAt : a.date);
-    const bDate = new Date("startsAt" in b ? b.startsAt : b.date);
-    return aDate.getTime() - bDate.getTime();
+    // eslint-disable-next-line unicorn/prefer-minimal-ternary
+    const aString = "startsAt" in a ? a.startsAt : a.date;
+    // eslint-disable-next-line unicorn/prefer-minimal-ternary
+    const bString = "startsAt" in b ? b.startsAt : b.date;
+    return getEpoch(aString) - getEpoch(bString);
   });
 };

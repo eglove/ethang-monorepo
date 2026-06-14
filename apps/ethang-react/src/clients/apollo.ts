@@ -40,7 +40,7 @@ const authLink = new SetContextLink(
     return {
       headers: {
         ...headers,
-        ...(token ? { "X-Token": token } : {})
+        ...(token && { "X-Token": token })
       }
     };
   }
@@ -85,6 +85,7 @@ if (isFunction(globalThis.addEventListener)) {
   globalThis.addEventListener("focus", () => {
     apolloClient
       .refetchQueries({ include: "active" })
+
       .catch((error: unknown) => {
         const errorStack = isErrorFunction(error) ? error.stack : String(error);
 

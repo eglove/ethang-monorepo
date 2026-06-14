@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import { DateTime } from "luxon";
 import { v7 } from "uuid";
 
 const uuidId = text()
@@ -60,7 +61,7 @@ export const subscriptionsTable = sqliteTable(
   "subscriptions",
   {
     createdAt: text().$defaultFn(() => {
-      return new Date().toISOString();
+      return DateTime.now().toISO();
     }),
     feedId: text()
       .notNull()

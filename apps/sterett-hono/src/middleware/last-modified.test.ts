@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 
 const VALID_ISO = "2024-06-01T12:00:00Z";
-const VALID_HTTP = new Date(VALID_ISO).toUTCString();
+const VALID_HTTP = "Sat, 01 Jun 2024 12:00:00 GMT";
 const LAST_MODIFIED_HEADER = "last-modified";
 
 const metaTag = (content: string) => {

@@ -16,6 +16,7 @@ import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import convertToString from "lodash/toString.js";
+import { DateTime } from "luxon";
 
 import { articlesTable, feedsTable } from "../db/schema.ts";
 import {
@@ -171,7 +172,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
               item.pubDate ??
               item.published ??
               item.updated ??
-              new Date().toISOString();
+              DateTime.now().toISO();
 
             return {
               content,
@@ -198,7 +199,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
 
           await database
             .update(feedsTable)
-            .set({ lastFetchedAt: new Date().toISOString() })
+            .set({ lastFetchedAt: DateTime.now().toISO() })
             .where(eq(feedsTable.id, feed.id));
         });
 

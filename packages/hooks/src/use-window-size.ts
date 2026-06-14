@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 const isBrowser = "undefined" !== typeof globalThis;
 
 export const useWindowSize = (
-  initialWidth = Number.POSITIVE_INFINITY,
-  initialHeight = Number.POSITIVE_INFINITY
+  initialWidth = Infinity,
+  initialHeight = Infinity
 ): {
   height: number;
   width: number;

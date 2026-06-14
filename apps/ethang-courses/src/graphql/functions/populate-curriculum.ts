@@ -29,13 +29,13 @@ export const populateLearningPath = async (
     return relationship.courseId;
   });
 
-  let courses: (typeof coursesTable.$inferSelect)[] = [];
-  if (0 < courseIds.length) {
-    courses = await database
-      .select()
-      .from(coursesTable)
-      .where(inArray(coursesTable.id, courseIds));
-  }
+  const courses: (typeof coursesTable.$inferSelect)[] =
+    0 < courseIds.length
+      ? await database
+          .select()
+          .from(coursesTable)
+          .where(inArray(coursesTable.id, courseIds))
+      : [];
 
   const mappedCourses = map(courseIds, (courseId) => {
     return find(courses, (course) => {
@@ -72,13 +72,13 @@ export const populateCurriculum = async (
     return relationship.learningPathId;
   });
 
-  let learningPaths: (typeof learningPathsTable.$inferSelect)[] = [];
-  if (0 < lpIds.length) {
-    learningPaths = await database
-      .select()
-      .from(learningPathsTable)
-      .where(inArray(learningPathsTable.id, lpIds));
-  }
+  const learningPaths: (typeof learningPathsTable.$inferSelect)[] =
+    0 < lpIds.length
+      ? await database
+          .select()
+          .from(learningPathsTable)
+          .where(inArray(learningPathsTable.id, lpIds))
+      : [];
 
   const mappedLps = map(lpIds, (lpId) => {
     return find(learningPaths, (lp) => {

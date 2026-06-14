@@ -96,7 +96,7 @@ export const useForm = <StateType extends Record<string, unknown>>(
       }
 
       if ("number" === type && isString(value)) {
-        value = Number.parseFloat(replace(value, ",", ""));
+        value = Number(replace(value, ",", ""));
       }
 
       const file = first(files);

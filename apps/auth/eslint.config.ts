@@ -21,6 +21,8 @@ export default defineConfig(
         tsconfigRootDir: import.meta.dirname
       }
     },
-    rules: {}
+    rules: {
+      "unicorn/no-top-level-side-effects": "off"
+    }
   }
 );

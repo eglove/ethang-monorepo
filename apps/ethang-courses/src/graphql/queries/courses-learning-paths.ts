@@ -60,13 +60,13 @@ export const learningPathsQuery = (database: Database) => {
           return relationship.courseId;
         });
 
-        let courses: (typeof coursesTable.$inferSelect)[] = [];
-        if (0 < courseIds.length) {
-          courses = await database
-            .select()
-            .from(coursesTable)
-            .where(inArray(coursesTable.id, courseIds));
-        }
+        const courses: (typeof coursesTable.$inferSelect)[] =
+          0 < courseIds.length
+            ? await database
+                .select()
+                .from(coursesTable)
+                .where(inArray(coursesTable.id, courseIds))
+            : [];
 
         // Sort courses according to the orderRank in the relation
         const mappedCourses = map(courseIds, (courseId) => {
@@ -111,13 +111,13 @@ export const learningPathQuery = (database: Database) => {
       return relationship.courseId;
     });
 
-    let courses: (typeof coursesTable.$inferSelect)[] = [];
-    if (0 < courseIds.length) {
-      courses = await database
-        .select()
-        .from(coursesTable)
-        .where(inArray(coursesTable.id, courseIds));
-    }
+    const courses: (typeof coursesTable.$inferSelect)[] =
+      0 < courseIds.length
+        ? await database
+            .select()
+            .from(coursesTable)
+            .where(inArray(coursesTable.id, courseIds))
+        : [];
 
     // Sort courses according to the orderRank in the relation
     const mappedCourses = map(courseIds, (courseId) => {

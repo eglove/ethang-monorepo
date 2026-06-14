@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 type UseIsLoadingReturn<T, E> = {
   caller: (() => void) | undefined;
@@ -13,25 +13,23 @@ export const useIsLoading = <T, E>(
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<T>();
   const [error, setError] = useState<E>();
-  const [caller, setCaller] = useState<() => void>();
 
-  useEffect(() => {
-    const callFunction = (): void => {
+  const caller = useCallback((): void => {
+    const run = async () => {
       setIsLoading(true);
-      callback()
-        .then((result) => {
-          setResults(result);
-        })
-        .catch((_error: unknown) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-          setError(_error as E);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+      try {
+        const result = await callback();
+        setResults(result);
+      } catch (_error: unknown) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        setError(_error as E);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    setCaller(callFunction);
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    run();
   }, [callback]);
 
   return {

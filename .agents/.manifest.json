@@ -54,6 +54,9 @@
     ".agents/skills/swebok/resources/ch16-computing.md",
     ".agents/skills/swebok/resources/ch17-math.md",
     ".agents/skills/swebok/resources/ch18-engineering.md",
-    ".agents/skills/eslint-fixer/SKILL.md"
+    ".agents/skills/eslint-fixer/SKILL.md",
+    ".agents/skills/es-cli/SKILL.md",
+    ".agents/skills/jq-cli/SKILL.md",
+    ".agents/skills/rg-cli/SKILL.md"
   ]
 }

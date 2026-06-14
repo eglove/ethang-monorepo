@@ -50,9 +50,9 @@ export default {
         start: { date: startDate.toJSDate(), type: "DATE-TIME" },
         summary: sanitizeInput(item.title),
         uid: item._id,
-        ...(endDate.isValid
-          ? { end: { date: endDate.toJSDate(), type: "DATE-TIME" } }
-          : {})
+        ...(endDate.isValid && {
+          end: { date: endDate.toJSDate(), type: "DATE-TIME" }
+        })
       };
 
       return event;

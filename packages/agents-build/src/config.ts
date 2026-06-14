@@ -5,11 +5,11 @@ export const RULE_CHAR_LIMIT = 12_000;
 export const RULE_WARN_CHARS = 10_000;
 
 /**
- * Source-workspace vocabulary that must never reach the generated output.
- * Content is rewritten from a NISC/Angular workspace to this monorepo's
- * stack; these tripwires make the rewrite mechanically verifiable.
- * "Stash" stays case-sensitive so "git stash" remains legal.
- */
+Source-workspace vocabulary that must never reach the generated output.
+Content is rewritten from a NISC/Angular workspace to this monorepo's
+stack; these tripwires make the rewrite mechanically verifiable.
+"Stash" stays case-sensitive so "git stash" remains legal.
+*/
 export const FORBIDDEN_PATTERNS: readonly {
   name: string;
   pattern: RegExp;

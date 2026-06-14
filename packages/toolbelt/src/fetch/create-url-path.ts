@@ -20,8 +20,6 @@ export const createUrlPath = <T extends string>(
   parameters: ParseUrlParameters<T>,
   parametersSchema?: ZodObject
 ): Error | string | ZodError => {
-  let url: string = path;
-
   if (!isEmpty(parameters) && isNil(parametersSchema)) {
     return new Error("must provide path variables schema");
   }
@@ -39,6 +37,7 @@ export const createUrlPath = <T extends string>(
     }
   }
 
+  let url: string = path;
   for (const [key, value] of Object.entries(parameters)) {
     if (!isNil(value)) {
       url = replace(url, `:${key}`, value);

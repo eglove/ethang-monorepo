@@ -19,8 +19,11 @@ export const test = base.extend({
     await page.waitForLoadState("load");
 
     // @ts-expect-error no idea
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const axeBuilder = new AxeBuilder({ page });
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
-    const results = await new AxeBuilder({ page })
+    const results = axeBuilder
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       .withTags(A11Y_TAGS)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

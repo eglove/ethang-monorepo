@@ -9,11 +9,31 @@ type UseFullscreenReturn = {
   toggle: () => void;
 };
 
-const closeFullScreen = (): void => {
-  // eslint-disable-next-line lodash/prefer-noop
-  globalThis.document.exitFullscreen().catch((): void => {
+const exitFullscreen = async (): Promise<void> => {
+  try {
+    await globalThis.document.exitFullscreen();
+  } catch {
     // Ignore error
-  });
+  }
+};
+
+const requestFullscreen = async (
+  element: HTMLElement | null
+): Promise<void> => {
+  if (null === element) {
+    return;
+  }
+
+  try {
+    await element.requestFullscreen();
+  } catch {
+    // Ignore error
+  }
+};
+
+const closeFullScreen = (): void => {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  exitFullscreen();
 };
 
 export const useFullscreen = (
@@ -26,10 +46,8 @@ export const useFullscreen = (
   const [fullScreen, setFullScreen] = useState(initialState);
 
   const openFullScreen = (): void => {
-    // eslint-disable-next-line lodash/prefer-noop
-    reference.current.requestFullscreen().catch((): void => {
-      // Ignore error
-    });
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    requestFullscreen(reference.current);
   };
 
   useEventListener("fullscreenchange", () => {

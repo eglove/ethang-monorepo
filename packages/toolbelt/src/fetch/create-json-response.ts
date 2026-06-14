@@ -52,7 +52,7 @@ const getDefaultHeaders = () => {
 const getHeaderEntries = (input: HeadersInit): [string, unknown][] => {
   const entries: [string, unknown][] = [];
 
-  if (input instanceof globalThis.Headers) {
+  if (input instanceof Headers) {
     for (const [key, value] of input.entries()) {
       entries.push([key, value]);
     }
@@ -77,7 +77,7 @@ export const createJsonResponse = <T>(
   status: keyof typeof HTTP_STATUS,
   responseInit?: ResponseInit
 ) => {
-  const headers = new globalThis.Headers();
+  const headers = new Headers();
 
   const defaults = getDefaultHeaders();
   forEach(defaults, (value, key) => {
@@ -106,7 +106,7 @@ export const createJsonResponse = <T>(
     }
   }
 
-  return new globalThis.Response(isNil(data) ? null : JSON.stringify(data), {
+  return new Response(isNil(data) ? null : JSON.stringify(data), {
     status: HTTP_STATUS[status],
     ...responseInit,
     headers

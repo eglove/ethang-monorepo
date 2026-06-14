@@ -1,5 +1,6 @@
 import flow from "lodash/flow.js";
 import get from "lodash/get.js";
+import isNil from "lodash/isNil.js";
 import keys from "lodash/keys.js";
 import map from "lodash/map.js";
 import sortBy from "lodash/sortBy.js";
@@ -10,8 +11,7 @@ const initializeColumns = (points: [number, number][]) => {
   for (const point of points) {
     const [x, y] = point;
 
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    if (!columns[x]) {
+    if (isNil(columns[x])) {
       columns[x] = [];
     }
     columns[x].push(y);
@@ -58,7 +58,7 @@ export const minimumAreaRectangle = (points: [number, number][]) => {
         const pointString = `${y1}:${y2}`;
 
         // eslint-disable-next-line sonar/nested-control-flow
-        if (pointString in edgeParallelToYAxis) {
+        if (Object.hasOwn(edgeParallelToYAxis, pointString)) {
           const currentArea =
             (sortedColumn - get(edgeParallelToYAxis, [pointString])) *
             (Number(y2) - Number(y1));

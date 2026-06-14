@@ -2,6 +2,7 @@ import type { MiddlewareHandler } from "hono";
 
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
+import { DateTime } from "luxon";
 
 export const lastModifiedMiddleware: MiddlewareHandler = async (
   context,
@@ -29,12 +30,21 @@ export const lastModifiedMiddleware: MiddlewareHandler = async (
   if (isNil(content)) {
     return;
   }
-  const date = new Date(content);
-  if (Number.isNaN(date.getTime())) {
+  const fromHTTP = DateTime.fromHTTP(content);
+  const fromIso = DateTime.fromISO(content);
+  if (!fromHTTP.isValid && !fromIso.isValid) {
     return;
   }
   const headers = new Headers(context.res.headers);
-  headers.set("Last-Modified", date.toUTCString());
+
+  if (fromHTTP.isValid) {
+    headers.set("Last-Modified", fromHTTP.toHTTP());
+  }
+
+  if (fromIso.isValid) {
+    headers.set("Last-Modified", fromIso.toHTTP());
+  }
+
   context.res = new Response(context.res.body, {
     headers,
     status: context.res.status,

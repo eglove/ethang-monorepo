@@ -1,7 +1,7 @@
 /**
- * Post-build tripwires. Every check returns violations instead of throwing so
- * compile.ts can aggregate and report all failures in one pass.
- */
+Post-build tripwires. Every check returns violations instead of throwing so
+compile.ts can aggregate and report all failures in one pass.
+*/
 
 import endsWith from "lodash/endsWith.js";
 import every from "lodash/every.js";
@@ -23,9 +23,9 @@ import {
 } from "./config.ts";
 
 /**
- * A rendered markdown file must open with a well-formed frontmatter block:
- * `---`, `key: value` lines only, closing `---`.
- */
+A rendered markdown file must open with a well-formed frontmatter block:
+`---`, `key: value` lines only, closing `---`.
+*/
 export const validateFrontmatterBlock = (markdown: string): boolean => {
   if (!startsWith(markdown, "---\n")) {
     return false;
@@ -92,10 +92,10 @@ export const findDuplicateRuleFilenames = (
 };
 
 /**
- * Tripwire against hand-editing the generated swebok router: every chapter
- * resource path must appear verbatim in the rendered router skill. Returns
- * the paths that are absent.
- */
+Tripwire against hand-editing the generated swebok router: every chapter
+resource path must appear verbatim in the rendered router skill. Returns
+the paths that are absent.
+*/
 export const validateSwebokGuard = (
   resourcePaths: readonly string[],
   routerContent: string

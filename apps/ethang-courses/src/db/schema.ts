@@ -1,4 +1,5 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { DateTime } from "luxon";
 import { v7 } from "uuid";
 
 export const generateCourseTrackingId = () => {
@@ -21,14 +22,14 @@ export const coursesTable = sqliteTable("courses", {
   createdAt: text("createdAt")
     .notNull()
     .$defaultFn(() => {
-      return new Date().toISOString();
+      return DateTime.now().toISO();
     }),
   id: text("id").primaryKey().$defaultFn(generateId),
   name: text("name").notNull(),
   updatedAt: text("updatedAt")
     .notNull()
     .$defaultFn(() => {
-      return new Date().toISOString();
+      return DateTime.now().toISO();
     }),
   url: text("url").notNull()
 });
@@ -37,7 +38,7 @@ export const learningPathsTable = sqliteTable("learning_paths", {
   createdAt: text("createdAt")
     .notNull()
     .$defaultFn(() => {
-      return new Date().toISOString();
+      return DateTime.now().toISO();
     }),
   id: text("id").primaryKey().$defaultFn(generateId),
   name: text("name").notNull(),
@@ -45,7 +46,7 @@ export const learningPathsTable = sqliteTable("learning_paths", {
   updatedAt: text("updatedAt")
     .notNull()
     .$defaultFn(() => {
-      return new Date().toISOString();
+      return DateTime.now().toISO();
     }),
   url: text("url")
 });
@@ -62,7 +63,7 @@ export const learningPathCoursesTable = sqliteTable("learning_path_courses", {
   createdAt: text("createdAt")
     .notNull()
     .$defaultFn(() => {
-      return new Date().toISOString();
+      return DateTime.now().toISO();
     }),
   id: text("id").primaryKey().$defaultFn(generateId),
   learningPathId: text("learningPathId")
@@ -80,14 +81,14 @@ export const curriculumsTable = sqliteTable("curriculums", {
   createdAt: text("createdAt")
     .notNull()
     .$defaultFn(() => {
-      return new Date().toISOString();
+      return DateTime.now().toISO();
     }),
   id: text("id").primaryKey().$defaultFn(generateId),
   name: text("name").notNull(),
   updatedAt: text("updatedAt")
     .notNull()
     .$defaultFn(() => {
-      return new Date().toISOString();
+      return DateTime.now().toISO();
     }),
   url: text("url")
 });
@@ -98,7 +99,7 @@ export const curriculumLearningPathsTable = sqliteTable(
     createdAt: text("createdAt")
       .notNull()
       .$defaultFn(() => {
-        return new Date().toISOString();
+        return DateTime.now().toISO();
       }),
     curriculumId: text("curriculumId")
       .notNull()

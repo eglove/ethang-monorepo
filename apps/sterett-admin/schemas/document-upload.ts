@@ -1,4 +1,5 @@
 import { DocumentPdfIcon } from "@sanity/icons";
+import { DateTime } from "luxon";
 import { defineType, type Rule } from "sanity";
 
 export default defineType({
@@ -7,7 +8,7 @@ export default defineType({
       name: "title",
       title: "Title",
       type: "string",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     },
@@ -18,20 +19,20 @@ export default defineType({
       },
       title: "Category",
       type: "string",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     },
     {
-      initialValue(): { date: Date } {
+      initialValue: (): { date: Date } => {
         return {
-          date: new Date()
+          date: DateTime.now().toJSDate()
         };
       },
       name: "date",
       title: "Date",
       type: "date",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     },
@@ -39,7 +40,7 @@ export default defineType({
       name: "file",
       title: "File",
       type: "fileUpload",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     }

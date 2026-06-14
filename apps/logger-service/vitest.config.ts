@@ -11,9 +11,9 @@ export default defineConfig({
         branches: 94.02,
         functions: 100,
         lines: 100,
-        statements: 100,
-      },
+        statements: 100
+      }
     },
-    environment: "node",
-  },
+    environment: "node"
+  }
 });

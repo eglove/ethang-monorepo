@@ -32,9 +32,9 @@ export type ChapterDefinition = {
 };
 
 /**
- * Stable ordered array of all 18 SWEBOK v4 chapters.
- * Order must match chapter numbers ch01..ch18.
- */
+Stable ordered array of all 18 SWEBOK v4 chapters.
+Order must match chapter numbers ch01..ch18.
+*/
 export const CHAPTERS: readonly ChapterDefinition[] = [
   ch01Requirements,
   ch02Architecture,
@@ -62,10 +62,10 @@ const SKILL_TDD_STATE_COVERAGE = "tdd-state-coverage";
 const EMPTY_CELL = "—";
 
 /**
- * Maps resource paths to related operational skill names.
- * Keys are the chapter resource paths (as declared in each chapter file).
- * Values are the sibling skill names that operationalize the chapter theory.
- */
+Maps resource paths to related operational skill names.
+Keys are the chapter resource paths (as declared in each chapter file).
+Values are the sibling skill names that operationalize the chapter theory.
+*/
 const CHAPTER_RELATED_SKILLS: Record<string, readonly string[]> = {
   "resources/ch02-architecture.md": [SKILL_REVIEW_DESIGN],
   "resources/ch03-design.md": [
@@ -87,13 +87,13 @@ const CHAPTER_RELATED_SKILLS: Record<string, readonly string[]> = {
 };
 
 /**
- * Builds the chapter index table for inclusion in the SWEBOK skill body.
- * The table is generated from CHAPTERS so it cannot drift from the actual
- * resource definitions — every resource path is programmatically included.
- *
- * @param siblingSkillNames - skill names bundled in the same plugin; used to
- *   filter the "related skill" column so only present skills are listed.
- */
+Builds the chapter index table for inclusion in the SWEBOK skill body.
+The table is generated from CHAPTERS so it cannot drift from the actual
+resource definitions — every resource path is programmatically included.
+
+@param siblingSkillNames - skill names bundled in the same plugin; used to
+  filter the "related skill" column so only present skills are listed.
+*/
 const buildChapterTable = (siblingSkillNames: readonly string[]): string => {
   const header = [
     "| Ch | Title | Resource path | Trigger keywords | Related skill |",
@@ -118,11 +118,11 @@ const buildChapterTable = (siblingSkillNames: readonly string[]): string => {
 };
 
 /**
- * Builds the SWEBOK router SkillDefinition for inclusion in a plugin.
- *
- * @param siblingSkillNames - names of other skills in the same plugin;
- *   determines which "related skill" entries appear in the chapter table.
- */
+Builds the SWEBOK router SkillDefinition for inclusion in a plugin.
+
+@param siblingSkillNames - names of other skills in the same plugin;
+  determines which "related skill" entries appear in the chapter table.
+*/
 export const swebokSkill = (
   siblingSkillNames: readonly string[]
 ): SkillDefinition => {

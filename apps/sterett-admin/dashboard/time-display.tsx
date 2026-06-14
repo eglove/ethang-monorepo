@@ -1,9 +1,11 @@
+import { DateTime } from "luxon";
+
 type TimeDisplayProperties = {
   readonly date: string;
 };
 
 const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString("en-US", {
+  return DateTime.fromISO(date).toLocaleString({
     dateStyle: "medium"
   });
 };

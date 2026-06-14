@@ -1,4 +1,7 @@
 import { defineSkill } from "../../define.ts";
+import { esSkill } from "./cli/es.ts";
+import { jqSkill } from "./cli/jq.ts";
+import { rgSkill } from "./cli/rg.ts";
 import { dddStrategicSkill } from "./ddd/strategic.ts";
 import { dddTacticalSkill } from "./ddd/tactical.ts";
 import { eslintFixerSkill } from "./eslint-fixer.ts";
@@ -224,5 +227,8 @@ export const SKILLS = [
   tddMasterSkill,
   ciReviewMasterSkill,
   swebok,
-  eslintFixerSkill
+  eslintFixerSkill,
+  esSkill,
+  jqSkill,
+  rgSkill
 ];

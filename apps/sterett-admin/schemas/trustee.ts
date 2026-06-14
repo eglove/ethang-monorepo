@@ -12,7 +12,7 @@ export default defineType({
       name: "name",
       title: "Name",
       type: "string",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     },

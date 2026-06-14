@@ -16,5 +16,9 @@ export const parseJson = <Z extends ZodObject>(
 
   const unparsed = validator.safeParse(caught);
 
-  return unparsed.success ? unparsed.data : unparsed.error;
+  if (unparsed.success) {
+    return unparsed.data;
+  }
+
+  return unparsed.error;
 };

@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, lt, notInArray } from "drizzle-orm";
+import { and, desc, eq, inArray, lt, not } from "drizzle-orm";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
@@ -38,7 +38,7 @@ export const feedArticlesQuery = (database: Database) => {
 
       readStateFilter = isRead
         ? inArray(databaseSchema.articlesTable.id, readArticleIds)
-        : notInArray(databaseSchema.articlesTable.id, readArticleIds);
+        : not(inArray(databaseSchema.articlesTable.id, readArticleIds));
     }
 
     const articles = await database

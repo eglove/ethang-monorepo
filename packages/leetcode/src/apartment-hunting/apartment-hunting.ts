@@ -8,7 +8,7 @@ const distanceBetween = (a: number, b: number) => {
 
 const getIndexAtMinValue = (array: number[]) => {
   let minIndex = 0;
-  let minValue = Number.POSITIVE_INFINITY;
+  let minValue = Infinity;
 
   for (const [index, value] of array.entries()) {
     const currentValue = value;
@@ -24,12 +24,12 @@ const getIndexAtMinValue = (array: number[]) => {
 
 export const apartmentHunting = (blocks: Block[], requirements: string[]) => {
   const maxDistancesAtBlocks = Array.from({ length: blocks.length }, () => {
-    return Number.NEGATIVE_INFINITY;
+    return -Infinity;
   });
 
   for (const [index] of blocks.entries()) {
     for (const requirement of requirements) {
-      let closestRequirementDistance = Number.POSITIVE_INFINITY;
+      let closestRequirementDistance = Infinity;
 
       for (const [_index, _block] of blocks.entries()) {
         // eslint-disable-next-line sonar/nested-control-flow
@@ -42,7 +42,7 @@ export const apartmentHunting = (blocks: Block[], requirements: string[]) => {
       }
 
       maxDistancesAtBlocks[index] = Math.max(
-        get(maxDistancesAtBlocks, [index], Number.NEGATIVE_INFINITY),
+        get(maxDistancesAtBlocks, [index], -Infinity),
         closestRequirementDistance
       );
     }

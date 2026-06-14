@@ -12,14 +12,14 @@ export default defineType({
       name: "title",
       title: "Title",
       type: "string",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     },
     {
       name: "slug",
       options: {
-        slugify(input: string) {
+        slugify: (input: string) => {
           return replace(toLower(input), /\s+/gu, "-").slice(
             MIN_SLUG_CHARS,
             MAX_SLUG_CHARS
@@ -29,7 +29,7 @@ export default defineType({
       },
       title: "Slug - https://sterettcreekvillagetrustee.com/page/SLUG",
       type: "slug",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     },

@@ -23,21 +23,16 @@ export const useCopyClipboard = (
         await globalThis.navigator.clipboard.writeText(text);
         setIsCopied(true);
       } catch (writeTextError: unknown) {
-        if (isError(error)) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-          setError(writeTextError as Error);
+        if (isError(writeTextError)) {
+          setError(writeTextError);
         }
 
         setIsCopied(false);
       }
     };
 
-    asyncCopy().catch((asyncError: unknown) => {
-      if (isError(asyncError)) {
-        setError(asyncError);
-      }
-      setIsCopied(false);
-    });
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    asyncCopy();
   };
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import first from "lodash/first.js";
 import isNil from "lodash/isNil.js";
 import replace from "lodash/replace.js";
 import split from "lodash/split.js";
+import { DateTime } from "luxon";
 
 export const isUrlUnique = (
   rule: UrlRule,
@@ -21,7 +22,7 @@ export const isUrlUnique = (
       return true;
     }
 
-    const date = first(split(new Date().toISOString(), "T")) ?? "";
+    const date = first(split(DateTime.now().toISO(), "T")) ?? "";
     const client = getClient({ apiVersion: date });
     const id = replace(document._id, /^drafts\./u, "");
 

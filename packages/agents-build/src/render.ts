@@ -1,11 +1,11 @@
 /**
- * Pure rendering functions for the Antigravity artifact build.
- *
- * Ported from the Claude Code build system this package descends from: fixed
- * emission order, newline guards on every frontmatter scalar, and a single
- * {{sections}} token as the only templating mechanism. compile.ts owns all
- * I/O; everything here is unit-testable without side effects.
- */
+Pure rendering functions for the Antigravity artifact build.
+
+Ported from the Claude Code build system this package descends from: fixed
+emission order, newline guards on every frontmatter scalar, and a single
+{{sections}} token as the only templating mechanism. compile.ts owns all
+I/O; everything here is unit-testable without side effects.
+*/
 
 import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
 import includes from "lodash/includes.js";
@@ -93,8 +93,8 @@ export const ruleMarkdown = (rule: RuleDefinition): string => {
     ],
     frontmatter: {
       trigger: rule.trigger,
-      ...(isNil(rule.description) ? {} : { description: rule.description }),
-      ...(isNil(rule.globs) ? {} : { globs: rule.globs })
+      ...(!isNil(rule.description) && { description: rule.description }),
+      ...(!isNil(rule.globs) && { globs: rule.globs })
     }
   });
 };

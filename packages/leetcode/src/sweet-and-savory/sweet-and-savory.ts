@@ -17,7 +17,7 @@ export const sweetAndSavory = (dishes: number[], target: number) => {
   const sweet = getDishes(dishes, "sweet");
   const savory = getDishes(dishes, "savory");
   let bestPair: [number, number] = [0, 0];
-  let bestDifference = Number.POSITIVE_INFINITY;
+  let bestDifference = Infinity;
   let sweetIndex = 0;
   let savoryIndex = 0;
 

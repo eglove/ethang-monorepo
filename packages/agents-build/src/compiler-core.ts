@@ -38,8 +38,8 @@ export type CompilerConfig = {
 export class CompileError extends Error {
   public failures: string[];
 
-  public constructor(failures: string[]) {
-    super(`Compilation failed with ${failures.length} errors.`);
+  public constructor(failures: string[], options: ErrorOptions) {
+    super(`Compilation failed with ${failures.length} errors.`, options);
     this.name = "CompileError";
     this.failures = failures;
   }
@@ -113,11 +113,9 @@ const cleanFileAndEmptyParents = (
 };
 
 const calculateTargetPaths = (config: CompilerConfig): string[] => {
-  const paths: string[] = [];
-
-  for (const rule of config.rules) {
-    paths.push(path.join(config.rulesDir, `${rule.filename}.md`));
-  }
+  const paths: string[] = Array.from(config.rules, (rule) => {
+    return path.join(config.rulesDir, `${rule.filename}.md`);
+  });
 
   for (const skill of config.skills) {
     const skillDirectory = path.join(config.skillsDir, skill.name);
@@ -305,7 +303,7 @@ export const compile = (config: CompilerConfig): void => {
   }
 
   if (0 < failures.length) {
-    throw new CompileError(failures);
+    throw new CompileError(failures, {});
   }
 
   fsProxy.mkdirSync(path.dirname(config.manifestPath), { recursive: true });

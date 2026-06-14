@@ -20,6 +20,7 @@ import isUndefined from "lodash/isUndefined.js";
 import map from "lodash/map.js";
 import noop from "lodash/noop.js";
 import trim from "lodash/trim.js";
+import { DateTime } from "luxon";
 import { type ReactNode, type SyntheticEvent, useState } from "react";
 
 import { authStore } from "../components/auth/auth-store.ts";
@@ -39,7 +40,7 @@ export const decodeHtmlEntities = (text: string): string => {
   }
 };
 
-// Helper parser to default title and website url from XML address
+// Helper parser to default title and website URL from XML address
 export const parseXmlUrl = (xmlUrl: string) => {
   try {
     const url = new URL(xmlUrl);
@@ -194,12 +195,18 @@ const RssComponent = () => {
 
   // Sort articles by publishedAt descending, falling back to id if dates are equal or missing
   articles.sort((a, b) => {
-    const dateA = isNil(a.publishedAt) ? 0 : new Date(a.publishedAt).getTime();
-    const dateB = isNil(b.publishedAt) ? 0 : new Date(b.publishedAt).getTime();
-    if (dateA === dateB) {
+    const timeA = isNil(a.publishedAt)
+      ? 0
+      : DateTime.fromISO(a.publishedAt).valueOf();
+    const timeB = isNil(b.publishedAt)
+      ? 0
+      : DateTime.fromISO(b.publishedAt).valueOf();
+
+    if (timeA === timeB) {
       return b.id.localeCompare(a.id);
     }
-    return dateB - dateA;
+
+    return timeB - timeA;
   });
 
   let mainContent: ReactNode;
@@ -246,7 +253,7 @@ const RssComponent = () => {
                     </Text>
                     {!isNil(art.publishedAt) && (
                       <Text size="1" className="text-slate-600">
-                        {new Date(art.publishedAt).toLocaleDateString()}
+                        {DateTime.fromISO(art.publishedAt).toLocaleString()}
                       </Text>
                     )}
                   </Flex>

@@ -24,16 +24,18 @@ export const animationInterval = (
     scheduleFrame(time);
   };
 
-  const scheduleFrame = (time: number | undefined): void => {
-    if (time !== undefined) {
-      const elapsed = time - startNumber;
-      const roundedElapsed = Math.round(elapsed / ms) * ms;
-      const targetNext = startNumber + roundedElapsed + ms;
-      const delay = targetNext - globalThis.performance.now();
-      globalThis.setTimeout(() => {
-        globalThis.requestAnimationFrame(frame);
-      }, delay); // DevSkim: ignore DS172411
+  const scheduleFrame = (time: number | undefined) => {
+    if (isNil(time)) {
+      return;
     }
+
+    const elapsed = time - startNumber;
+    const roundedElapsed = Math.round(elapsed / ms) * ms;
+    const targetNext = startNumber + roundedElapsed + ms;
+    const delay = targetNext - globalThis.performance.now();
+    globalThis.setTimeout(() => {
+      globalThis.requestAnimationFrame(frame);
+    }, delay); // DevSkim: ignore DS172411
   };
 
   scheduleFrame(startNumber);

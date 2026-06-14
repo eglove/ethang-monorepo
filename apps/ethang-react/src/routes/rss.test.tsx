@@ -670,8 +670,9 @@ describe("RSS Feature", () => {
     });
 
     it("returns original string if DOMParser throws an error", () => {
-      const originalDOMParser = globalThis.DOMParser;
+      const originalDOMParser = DOMParser;
       // @ts-expect-error for test
+      // eslint-disable-next-line unicorn/no-global-object-property-assignment
       globalThis.DOMParser = class extends originalDOMParser {
         // @ts-expect-error for test
         public override parseFromString() {
@@ -682,6 +683,7 @@ describe("RSS Feature", () => {
       try {
         expect(decodeHtmlEntities("some text")).toBe("some text");
       } finally {
+        // eslint-disable-next-line unicorn/no-global-object-property-assignment
         globalThis.DOMParser = originalDOMParser;
       }
     });

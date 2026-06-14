@@ -6,18 +6,21 @@ export const useAsync = <T, E>(callback: () => Promise<T>) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    callback()
-      .then((_result) => {
+    const runAsync = async () => {
+      setIsLoading(true);
+      try {
+        const _result = await callback();
         setResult(_result);
-      })
-      .catch((_error: unknown) => {
+      } catch (_error: unknown) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         setError(_error as E);
-      })
-      .finally(() => {
+      } finally {
         setIsLoading(false);
-      });
+      }
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    runAsync();
   }, []);
 
   return {

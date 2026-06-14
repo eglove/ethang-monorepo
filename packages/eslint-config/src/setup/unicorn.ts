@@ -33,7 +33,19 @@ const customRules = [
   {
     name: "template-indent",
     rule: "off"
-  }
+  },
+  {
+    name: "prefer-type-literal-last",
+    rule: "off"
+  },
+  {
+    name: "no-incorrect-template-string-interpolation",
+    rule: "off"
+  },
+  { name: "consistent-class-member-order", rule: "off" },
+  { name: "consistent-class-member-order", rule: "off" },
+  { name: "no-top-level-side-effects", rule: "off" },
+  { name: "prefer-await", rule: "off" }
 ];
 
 export const unicornRules = genRules(ruleNames, customRules, "unicorn");

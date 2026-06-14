@@ -32,16 +32,17 @@ const BlockquoteFooter = ({
 }: BlockquoteFooterProperties) => {
   const hasAuthor = !isNil(author);
   const hasSource = !isNil(source);
-  const hasSourceUrl = !isNil(sourceUrl);
 
   if (!hasAuthor && !hasSource) {
     return null;
   }
 
+  const hasSourceUrl = !isNil(sourceUrl);
+
   return (
     <Text mt="2" asChild size="2">
       <footer>
-        {"\u2014"} {author}
+        {"\u{2014}"} {author}
         {hasAuthor && hasSource && ", "}
         {hasSource &&
           (hasSourceUrl ? (

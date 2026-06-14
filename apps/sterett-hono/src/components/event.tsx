@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 import {
   type CalendarEventReturn,
   eventRangeFormat,
@@ -10,8 +12,11 @@ type EventProperties = {
 };
 
 export const getIsHappeningNow = (start: string, end: string) => {
-  const now = Date.now();
-  return new Date(start).getTime() <= now && now <= new Date(end).getTime();
+  const now = DateTime.now().toMillis();
+  return (
+    DateTime.fromISO(start).toMillis() <= now &&
+    now <= DateTime.fromISO(end).toMillis()
+  );
 };
 
 export const CalendarEvent = async ({ data }: EventProperties) => {
