@@ -3,40 +3,49 @@ import get from "lodash/get.js";
 import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
 import isError from "lodash/isError.js";
+import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import keys from "lodash/keys.js";
 import map from "lodash/map.js";
-import reduce from "lodash/reduce.js";
-import set from "lodash/set.js";
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import startsWith from "lodash/startsWith.js";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import z from "zod";
 
-const recursiveSort = <T extends object>(object: T): T => {
-  if (isArray(object)) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    return map(object, recursiveSort) as T;
+export const recursiveSort = (value: unknown): unknown => {
+  if (isArray(value)) {
+    return map(value, recursiveSort);
   }
 
-  if (isObject(object)) {
-    return reduce(
-      keys(object).toSorted((a, b) => {
-        return a.localeCompare(b);
-      }),
-      (sorted, key) => {
-        set(sorted, key, recursiveSort(get(object, [key])));
-        return sorted;
-      },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      {} as T
-    );
+  if (isObject(value) && !isNil(value)) {
+    const sorted: Record<string, unknown> = {};
+    const sortedKeys = keys(value).toSorted((a, b) => {
+      return a.localeCompare(b);
+    });
+
+    for (const key of sortedKeys) {
+      sorted[key] = recursiveSort(get(value, [key]));
+    }
+
+    return sorted;
   }
 
-  return object;
+  return value;
 };
 
 export const sortJson = (filePath: string) => {
-  const fileContent = readFileSync(filePath, "utf8");
+  const workspaceRoot = path.resolve(import.meta.dirname, "../..");
+  const absolutePath = path.resolve(workspaceRoot, filePath);
+
+  if (!startsWith(absolutePath, workspaceRoot)) {
+    throw new Error("Path is outside of the workspace");
+  }
+
+  if (!existsSync(absolutePath)) {
+    throw new Error(`File does not exist: ${absolutePath}`);
+  }
+
+  const fileContent = readFileSync(absolutePath, "utf8");
   // @ts-expect-error allow
   const jsonObject = parseJson(fileContent, z.unknown());
 
@@ -47,7 +56,7 @@ export const sortJson = (filePath: string) => {
 
   const sortedJson = recursiveSort(jsonObject);
 
-  writeFileSync(filePath, JSON.stringify(sortedJson, null, 2), "utf8");
+  writeFileSync(absolutePath, JSON.stringify(sortedJson, null, 2), "utf8");
 
   globalThis.console.log("Sorted JSON");
 };
@@ -56,7 +65,7 @@ export const findFilesRecursively = (
   directory: string,
   filename: string,
   results: string[] = []
-) => {
+): string[] => {
   const entries = readdirSync(directory, { withFileTypes: true });
 
   for (const entry of entries) {

@@ -29,7 +29,7 @@ export type MarkdownBlock =
   | { text: string; type: "text" };
 
 export type MarkdownDocument = {
-  blocks: MarkdownBlock[];
+  blocks: (MarkdownBlock | null | undefined)[];
   frontmatter?: Record<string, boolean | number | string>;
 };
 
@@ -41,6 +41,16 @@ export type TaskListItem = {
   isComplete: boolean;
   label: string;
 };
+
+type AlertBlock = Extract<MarkdownBlock, { type: "alert" }>;
+type CodeBlock = Extract<MarkdownBlock, { type: "codeBlock" }>;
+type HeaderBlock = Extract<MarkdownBlock, { type: "header" }>;
+type NumberedListBlock = Extract<MarkdownBlock, { type: "numberedList" }>;
+type QuoteBlock = Extract<MarkdownBlock, { type: "quote" }>;
+type TableBlock = Extract<MarkdownBlock, { type: "table" }>;
+type TaskListBlock = Extract<MarkdownBlock, { type: "taskList" }>;
+type TextBlock = Extract<MarkdownBlock, { type: "text" }>;
+type UnorderedListBlock = Extract<MarkdownBlock, { type: "unorderedList" }>;
 
 export const bold = (text: string): string => {
   return `**${text}**`;
@@ -140,7 +150,7 @@ const renderList = (
   return lines.join("\n");
 };
 
-const renderAlert = (block: { type: "alert" } & MarkdownBlock): string => {
+const renderAlert = (block: AlertBlock): string => {
   const lines = split(block.text, "\n");
   const formatted = map(lines, (line) => {
     return `> ${line}`;
@@ -148,7 +158,7 @@ const renderAlert = (block: { type: "alert" } & MarkdownBlock): string => {
   return `> [!${block.alertType}]\n${formatted}`;
 };
 
-const renderTable = (block: { type: "table" } & MarkdownBlock): string => {
+const renderTable = (block: TableBlock): string => {
   const headerLength = block.headers.length;
   const rowLines: string[] = [];
 
@@ -183,52 +193,103 @@ const renderTable = (block: { type: "table" } & MarkdownBlock): string => {
   return [headerLine, dividerLine, ...rowLines].join("\n");
 };
 
-/* eslint-disable sonar/cyclomatic-complexity */
+const renderers = {
+  alert: (block: AlertBlock) => {
+    return renderAlert(block);
+  },
+  codeBlock: (block: CodeBlock) => {
+    const lang = block.language ?? "";
+    return `\`\`\`${lang}\n${block.code}\n\`\`\``;
+  },
+  header: (block: HeaderBlock) => {
+    const hashes = repeat("#", block.level);
+    return `${hashes} ${block.text}`;
+  },
+  numberedList: (block: NumberedListBlock) => {
+    return renderList(block.items, "numbered");
+  },
+  quote: (block: QuoteBlock) => {
+    return map(split(block.text, "\n"), (line) => {
+      return `> ${line}`;
+    }).join("\n");
+  },
+  table: (block: TableBlock) => {
+    return renderTable(block);
+  },
+  taskList: (block: TaskListBlock) => {
+    return map(block.items, (item) => {
+      const checkbox = item.isComplete ? "X" : " ";
+      return `[${checkbox}] ${item.label}`;
+    }).join("\n");
+  },
+  text: (block: TextBlock) => {
+    return block.text;
+  },
+  unorderedList: (block: UnorderedListBlock) => {
+    return renderList(block.items, "unordered");
+  }
+};
+
 const renderBlock = (
   block: Exclude<MarkdownBlock, { type: "space" }>
 ): string => {
-  switch (block.type) {
+  const { type } = block;
+  switch (type) {
     case "alert": {
-      return renderAlert(block);
+      return renderers.alert(block);
     }
     case "codeBlock": {
-      const lang = block.language ?? "";
-      return `\`\`\`${lang}\n${block.code}\n\`\`\``;
+      return renderers.codeBlock(block);
     }
     case "header": {
-      const hashes = repeat("#", block.level);
-      return `${hashes} ${block.text}`;
+      return renderers.header(block);
     }
     case "numberedList": {
-      return renderList(block.items, "numbered");
+      return renderers.numberedList(block);
     }
     case "quote": {
-      return map(split(block.text, "\n"), (line) => {
-        return `> ${line}`;
-      }).join("\n");
+      return renderers.quote(block);
     }
-
     case "table": {
-      return renderTable(block);
+      return renderers.table(block);
     }
     case "taskList": {
-      return map(block.items, (item) => {
-        const checkbox = item.isComplete ? "X" : " ";
-        return `[${checkbox}] ${item.label}`;
-      }).join("\n");
+      return renderers.taskList(block);
     }
     case "text": {
-      return block.text;
+      return renderers.text(block);
     }
     case "unorderedList": {
-      return renderList(block.items, "unordered");
+      return renderers.unorderedList(block);
     }
     default: {
       return "";
     }
   }
 };
-/* eslint-enable sonar/cyclomatic-complexity */
+
+const processBlock = (
+  block: MarkdownBlock,
+  state: {
+    hasWrittenBlock: boolean;
+    lastBlockType: string | undefined;
+    result: string;
+  }
+) => {
+  if ("space" === block.type) {
+    const count = block.count ?? 1;
+    state.result += repeat("\n", count + 1);
+    state.lastBlockType = "space";
+  } else {
+    const rendered = renderBlock(block);
+    if (state.hasWrittenBlock && "space" !== state.lastBlockType) {
+      state.result += "\n\n";
+    }
+    state.result += rendered;
+    state.hasWrittenBlock = true;
+    state.lastBlockType = block.type;
+  }
+};
 
 export const generateMarkdown = (document: MarkdownDocument): string => {
   let result = "";
@@ -237,24 +298,19 @@ export const generateMarkdown = (document: MarkdownDocument): string => {
     result += renderFrontmatter(document.frontmatter);
   }
 
-  let hasWrittenBlock = false;
-  let lastBlockType: string | undefined;
+  const state = {
+    hasWrittenBlock: false,
+    lastBlockType: undefined as string | undefined,
+    result: ""
+  };
 
   for (const block of document.blocks) {
-    if ("space" === block.type) {
-      const count = block.count ?? 1;
-      result += repeat("\n", count + 1);
-      lastBlockType = "space";
-    } else {
-      const rendered = renderBlock(block);
-      if (hasWrittenBlock && "space" !== lastBlockType) {
-        result += "\n\n";
-      }
-      result += rendered;
-      hasWrittenBlock = true;
-      lastBlockType = block.type;
+    if (!isNil(block)) {
+      processBlock(block, state);
     }
   }
+
+  result += state.result;
 
   if (0 < result.length && !endsWith(result, "\n")) {
     result += "\n";

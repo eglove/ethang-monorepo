@@ -77,4 +77,16 @@ describe("create search parameters", () => {
 
     expect(result?.toString()).toBe(expected.toString());
   });
+
+  it("should return error when schema is nil or invalid", () => {
+    // @ts-expect-error testing nil schema
+    const resultNil = createSearchParameters({ max: 100 }, null);
+    expect(resultNil).toBeInstanceOf(Error);
+    expect((resultNil as Error).message).toBe("must provide a valid zod schema");
+
+    // @ts-expect-error testing invalid schema lacking safeParse
+    const resultInvalid = createSearchParameters({ max: 100 }, {});
+    expect(resultInvalid).toBeInstanceOf(Error);
+    expect((resultInvalid as Error).message).toBe("must provide a valid zod schema");
+  });
 });

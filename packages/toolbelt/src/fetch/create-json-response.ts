@@ -1,8 +1,12 @@
 import forEach from "lodash/forEach.js";
+import isArray from "lodash/isArray.js";
+import isBoolean from "lodash/isBoolean.js";
 import isNil from "lodash/isNil.js";
+import isNumber from "lodash/isNumber.js";
+import isString from "lodash/isString.js";
 import join from "lodash/join.js";
-import merge from "lodash/merge.js";
 import replace from "lodash/replace.js";
+import toLower from "lodash/toLower.js";
 import { v7 } from "uuid";
 
 import { HTTP_STATUS } from "../constants/http.ts";
@@ -45,20 +49,62 @@ const getDefaultHeaders = () => {
   };
 };
 
+const getHeaderEntries = (input: HeadersInit): [string, unknown][] => {
+  const entries: [string, unknown][] = [];
+
+  if (input instanceof globalThis.Headers) {
+    for (const [key, value] of input.entries()) {
+      entries.push([key, value]);
+    }
+  } else if (isArray(input)) {
+    for (const entry of input) {
+      if (isArray(entry)) {
+        const [key, value] = entry as [string, unknown];
+        entries.push([key, value]);
+      }
+    }
+  } else {
+    forEach(input, (value, key) => {
+      entries.push([key, value]);
+    });
+  }
+
+  return entries;
+};
+
 export const createJsonResponse = <T>(
   data: T,
   status: keyof typeof HTTP_STATUS,
   responseInit?: ResponseInit
 ) => {
-  const headers = merge(getDefaultHeaders(), responseInit?.headers);
+  const headers = new globalThis.Headers();
 
-  forEach(headers, (value, key) => {
-    if (isNil(value)) {
-      // @ts-expect-error ignore
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete headers[key];
+  const defaults = getDefaultHeaders();
+  forEach(defaults, (value, key) => {
+    if (!isNil(value)) {
+      headers.set(key, value);
     }
   });
+
+  if (!isNil(responseInit) && !isNil(responseInit.headers)) {
+    const criticalHeaders = new Set([
+      "access-control-allow-origin",
+      "content-security-policy",
+      "x-frame-options"
+    ]);
+
+    const entries = getHeaderEntries(responseInit.headers);
+    for (const [key, value] of entries) {
+      const lowerKey = toLower(key);
+      if (isNil(value) && !criticalHeaders.has(lowerKey)) {
+        headers.delete(key);
+      } else if (isString(value) || isNumber(value) || isBoolean(value)) {
+        headers.set(key, String(value));
+      } else {
+        // Do nothing
+      }
+    }
+  }
 
   return new globalThis.Response(isNil(data) ? null : JSON.stringify(data), {
     status: HTTP_STATUS[status],

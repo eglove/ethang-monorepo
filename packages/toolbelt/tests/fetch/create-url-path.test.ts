@@ -59,4 +59,39 @@ describe("createUrlPath", () => {
 
     expect(result).toBe("user/profile");
   });
+
+  it("should replace multiple variables in path correctly", () => {
+    const result = createUrlPath(
+      "user/:userId/dashboard/:dashboardId",
+      {
+        dashboardId: "4",
+        userId: "2",
+      },
+      z.object({
+        dashboardId: z.string(),
+        userId: z.string(),
+      }),
+    );
+
+    expect(result).toBe("user/2/dashboard/4");
+  });
+
+  it("should skip nil values in parameters", () => {
+    const parameters = {
+      userId: "2",
+    };
+    Reflect.set(parameters, "dashboardId", undefined);
+
+    const result = createUrlPath(
+      "user/:userId/dashboard(/:dashboardId)",
+      parameters,
+      z.object({
+        dashboardId: z.string().optional(),
+        userId: z.string(),
+      }),
+    );
+
+    expect(result).toBe("user/2/dashboard");
+  });
 });
+

@@ -3,6 +3,20 @@ import { describe, expect, it } from "vitest";
 import { z, ZodError } from "zod";
 
 import { createUrl } from "../../src/fetch/create-url.ts";
+import { vi } from "vitest";
+
+vi.mock("../../src/fetch/create-search-parameters.ts", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../src/fetch/create-search-parameters.ts")>();
+  return {
+    ...actual,
+    createSearchParameters: vi.fn().mockImplementation((params, schema) => {
+      if (params && params["mockNil"] === true) {
+        return null as any;
+      }
+      return actual.createSearchParameters(params, schema);
+    }),
+  };
+});
 
 const typicode = "https://jsonplaceholder.typicode.com";
 
@@ -162,4 +176,43 @@ describe("url builder", () => {
     expect(isError(url)).toBe(true);
     expect(url).toBeInstanceOf(ZodError);
   });
+
+  describe("resolvePath and schema validation behavior", () => {
+    it("should return an Error when pathVariablesSchema is not a valid Zod schema", () => {
+      const url = createUrl("todos/:id", {
+        pathVariables: { id: "2" },
+        // @ts-expect-error for testing
+        pathVariablesSchema: {},
+        urlBase: "https://example.com",
+      });
+
+      expect(isError(url)).toBe(true);
+    });
+
+    it("should return an Error when searchParamsSchema is not a valid Zod schema", () => {
+      const url = createUrl("todos", {
+        searchParams: { id: 1 },
+        // @ts-expect-error for testing
+        searchParamsSchema: {},
+        urlBase: "https://example.com",
+      });
+
+      expect(isError(url)).toBe(true);
+    });
+
+    it("should not append search parameters if createSearchParameters returns nil", () => {
+      const url = createUrl("todos", {
+        searchParams: { mockNil: true } as any,
+        searchParamsSchema: z.object({ mockNil: z.boolean().optional() }),
+        urlBase: typicode,
+      });
+
+      expect(isError(url)).toBe(false);
+      expect(url).toBeInstanceOf(URL);
+      if (url instanceof URL) {
+        expect(url.searchParams.toString()).toBe("");
+      }
+    });
+  });
 });
+

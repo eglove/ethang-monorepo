@@ -122,6 +122,10 @@ Rules from explicit user corrections — things the assistant did wrong and must
 - **Explicit Member Accessibility**: Always use explicit accessibility modifiers (`public`/`private`/`protected`) for class members and methods.
 - **Arrow Functions Preference**: Enforce the use of arrow functions over function declarations (e.g., `const fn = () => {}` instead of `function fn() {}`).
 - **Avoid Explicit Returns**: Avoid specifying explicit return types in TypeScript functions unless strictly necessary. In general, rely on TypeScript's type inference as much as possible.
+- **Exact Optional Property Types**: When testing optional parameters under `exactOptionalPropertyTypes: true`, use `Reflect.set(obj, 'prop', undefined)` to dynamically set properties to `undefined` without violating typescript literal checking or using unsafe type assertions.
+- **Sonar Assertions in Tests**: To satisfy `sonar/assertions-in-tests` for test cases verifying that a void method executes without issues, wrap the call in `expect(() => ...).not.toThrow()`.
+- **Vitest Spy Typing**: When defining variables to hold mock/spy instances at the `describe` block scope, type them explicitly using `MockInstance<typeof targetFunction>` (e.g. `let exitSpy: MockInstance<typeof process.exit>;`) rather than using complex wrappers like `ReturnType<typeof vi.spyOn<...>>` to avoid TypeScript generic constraint mismatches.
+- **Explicit Node Process Imports**: Import `process` from `"node:process"` inside test files rather than relying on global `process` references to ensure the full Node.js types are resolved correctly.
 
 ## Proven Patterns
 

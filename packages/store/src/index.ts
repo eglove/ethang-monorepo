@@ -10,6 +10,7 @@ import {
 // attempt (lodash) for sync error handling, attemptAsync (@ethang/toolbelt) for async
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
+import isNil from "lodash/isNil.js";
 import noop from "lodash/noop.js";
 
 enablePatches();
@@ -259,8 +260,8 @@ export abstract class BaseStore<State extends object> {
 
   private notifySubscribers() {
     // Snapshot subscribers to handle self-removal during iteration
-    // eslint-disable-next-line unicorn/prefer-spread
-    for (const callback of Array.from(this._subscribers)) {
+    const callbacks = [...this._subscribers];
+    for (const callback of callbacks) {
       if (this._destroyed) {
         break;
       }
@@ -284,12 +285,13 @@ export abstract class BaseStore<State extends object> {
         break;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const entry = this._patchQueue.shift()!;
-      const queuedPatches = this.applyQueuedUpdate(entry);
+      const entry = this._patchQueue.shift();
+      if (!isNil(entry)) {
+        const queuedPatches = this.applyQueuedUpdate(entry);
 
-      this.firePatches(queuedPatches);
-      this.notifySubscribers();
+        this.firePatches(queuedPatches);
+        this.notifySubscribers();
+      }
     }
   }
 

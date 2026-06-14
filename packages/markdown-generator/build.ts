@@ -2,7 +2,6 @@ import { copyFileSync } from "node:fs";
 import { build as tsc } from "tsc-prog";
 import { build as tsup } from "tsup";
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 tsc({
   basePath: ".",
   clean: ["dist"],

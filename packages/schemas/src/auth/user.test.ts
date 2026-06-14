@@ -1,5 +1,7 @@
+import isString from "lodash/isString.js";
+import trim from "lodash/trim.js";
 import { describe, expect, it } from "vitest";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 
 import {
   TEST_DATE,
@@ -111,6 +113,35 @@ describe("user.ts schema validation", () => {
       const result = userSchema.parse(payload);
 
       expect(result).toStrictEqual(payload);
+    });
+  });
+
+  describe("bracket notation trim", () => {
+    it("should validate and trim username/email correctly using bracket notation ['trim']()", () => {
+      const emailSchema = z.preprocess((value) => {
+        return isString(value) ? trim(value) : value;
+      }, z.email());
+      const trimKey = "trim";
+      const usernameSchema = z.string()[trimKey]();
+
+      const emailResult = emailSchema.parse(`  ${TEST_EMAIL}  `);
+      const usernameResult = usernameSchema.parse(`  ${TEST_USERNAME}  `);
+
+      expect(emailResult).toBe(TEST_EMAIL);
+      expect(usernameResult).toBe(TEST_USERNAME);
+    });
+  });
+
+  describe("email preprocessor non-string handling", () => {
+    it("should pass non-string values directly to Zod validation without trimming", () => {
+      const payload = {
+        email: 123 as unknown as string,
+        password: TEST_PASS
+      };
+
+      expect(() => {
+        signInSchema.parse(payload);
+      }).toThrow(ZodError);
     });
   });
 });

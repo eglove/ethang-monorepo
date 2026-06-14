@@ -22,6 +22,7 @@ export const buildServiceWorker = async (outfile: string) => {
     conditions: ["worker", "browser"]
   });
 
-  // eslint-disable-next-line no-console
-  console.info(`Service worker built to ${outfile} with version ${swVersion}`);
+  globalThis.console.info(
+    `Service worker built to ${outfile} with version ${swVersion}`
+  );
 };

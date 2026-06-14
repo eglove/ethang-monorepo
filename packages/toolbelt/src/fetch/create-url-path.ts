@@ -1,6 +1,8 @@
 import type { ZodError, ZodObject } from "zod";
 
+import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
+import isFunction from "lodash/isFunction.js";
 import isNil from "lodash/isNil.js";
 import replace from "lodash/replace.js";
 
@@ -17,14 +19,19 @@ export const createUrlPath = <T extends string>(
   path: T,
   parameters: ParseUrlParameters<T>,
   parametersSchema?: ZodObject
-): Error | string | ZodError<typeof parametersSchema> => {
-  let url = path;
+): Error | string | ZodError => {
+  let url: string = path;
 
   if (!isEmpty(parameters) && isNil(parametersSchema)) {
     return new Error("must provide path variables schema");
   }
 
   if (!isNil(parametersSchema)) {
+    const safeParse = get(parametersSchema, "safeParse");
+    if (!isFunction(safeParse)) {
+      return new Error("must provide a valid zod schema");
+    }
+
     const result = parametersSchema.safeParse(parameters);
 
     if (!result.success) {
@@ -32,9 +39,10 @@ export const createUrlPath = <T extends string>(
     }
   }
 
-  for (const [key, value] of Object.entries<string>(parameters)) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    url = replace(path, `:${key}`, value) as T;
+  for (const [key, value] of Object.entries(parameters)) {
+    if (!isNil(value)) {
+      url = replace(url, `:${key}`, value);
+    }
   }
 
   return url.replaceAll(/(?<group>\(|\)|\/?:[^/]+)/gu, "");

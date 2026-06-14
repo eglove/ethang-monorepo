@@ -102,4 +102,73 @@ describe("createJsonResponse", () => {
       true,
     );
   });
+
+  describe("atomic header copying and security header enforcement (SR-3)", () => {
+    it("should copy headers atomically and handle Headers object input correctly", () => {
+      const customHeaders = new Headers();
+      customHeaders.append("X-Test-Header", "Value1");
+      customHeaders.append("X-Test-Header", "Value2");
+
+      const response = createJsonResponse({ ok: true }, "OK", {
+        headers: customHeaders,
+      });
+
+      expect(response.headers.get("X-Test-Header")).toBe("Value1, Value2");
+    });
+
+    it("should enforce critical security headers (CSP, CORS, X-Frame-Options) and prevent deletion via null/undefined overrides", () => {
+      const response = createJsonResponse({ ok: true }, "OK", {
+        headers: {
+          "Access-Control-Allow-Origin": null as any,
+          "Content-Security-Policy": undefined as any,
+          "X-Frame-Options": null as any,
+        },
+      });
+
+      expect(response.headers.get("Access-Control-Allow-Origin")).not.toBeNull();
+      expect(response.headers.get("Content-Security-Policy")).not.toBeNull();
+      expect(response.headers.get("X-Frame-Options")).not.toBeNull();
+
+      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
+      expect(response.headers.get("X-Frame-Options")).toBe("SAMEORIGIN");
+    });
+
+    it("should allow explicit valid overrides of critical security headers", () => {
+      const response = createJsonResponse({ ok: true }, "OK", {
+        headers: {
+          "Access-Control-Allow-Origin": "https://custom.com",
+          "Content-Security-Policy": "default-src 'none'",
+          "X-Frame-Options": "DENY",
+        },
+      });
+
+      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://custom.com");
+      expect(response.headers.get("Content-Security-Policy")).toBe("default-src 'none'");
+      expect(response.headers.get("X-Frame-Options")).toBe("DENY");
+    });
+
+    it("should support headers passed as an array of entries", () => {
+      const response = createJsonResponse({ ok: true }, "OK", {
+        headers: [
+          ["X-Custom-Array-Header", "ArrayValue"],
+          ["X-Another-Array-Header", "AnotherValue"],
+          "NotAnArray" as any,
+        ],
+      });
+      expect(response.headers.get("X-Custom-Array-Header")).toBe("ArrayValue");
+      expect(response.headers.get("X-Another-Array-Header")).toBe("AnotherValue");
+    });
+
+    it("should delete non-critical headers when set to null or undefined", () => {
+      const response = createJsonResponse({ ok: true }, "OK", {
+        headers: {
+          "X-XSS-Protection": null as any,
+          "X-Content-Type-Options": undefined as any,
+        },
+      });
+      expect(response.headers.get("X-XSS-Protection")).toBeNull();
+      expect(response.headers.get("X-Content-Type-Options")).toBeNull();
+    });
+  });
 });
+

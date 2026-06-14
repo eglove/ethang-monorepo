@@ -746,4 +746,36 @@ describe("BaseStore", () => {
       unsubscribe();
     });
   });
+
+  describe("subscriber self-unsubscribing and queue safety", () => {
+    it("should handle subscriber self-unsubscribing inside callback without crashing", () => {
+      let unsubscribe: (() => void) | undefined;
+      const callback = vi.fn(() => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      });
+
+      unsubscribe = store.subscribe(callback);
+      expect(() => {
+        store.increment();
+      }).not.toThrow();
+
+      expect(callback).toHaveBeenCalledTimes(1);
+
+      // Increment again to verify it is unsubscribed
+      store.increment();
+      expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    it("should handle empty/undefined elements in the patch queue safely without crashing", () => {
+      // @ts-expect-error accessing private property for testing safety
+      store["_patchQueue"].push(undefined);
+
+      expect(() => {
+        store["processQueue"]();
+      }).not.toThrow();
+    });
+  });
 });
+

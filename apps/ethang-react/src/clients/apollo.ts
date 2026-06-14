@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { SetContextLink } from "@apollo/client/link/context";
 import { LoggerClient } from "@ethang/logger-sdk";
@@ -52,8 +52,7 @@ const httpLink = new BatchHttpLink({
   uri: "/api/graphql"
 });
 
-// eslint-disable-next-line unicorn/prefer-spread
-const link = authLink.concat(httpLink);
+const link = ApolloLink.from([authLink, httpLink]);
 
 const cache = new InMemoryCache();
 

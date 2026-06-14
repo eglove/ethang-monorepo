@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 
 import {
   TEST_DATE,
@@ -65,6 +65,26 @@ describe("token.ts schema validation", () => {
       expect(() => {
         return signInResponseToken.parse(payload);
       }).toThrow(ZodError);
+    });
+  });
+
+  describe("bracket notation trim", () => {
+    it("should validate and trim token email/username/role/sub correctly using bracket notation ['trim']()", () => {
+      const trimKey = "trim";
+      const emailSchema = z.string()[trimKey]();
+      const usernameSchema = z.string()[trimKey]();
+      const roleSchema = z.string()[trimKey]();
+      const subSchema = z.string()[trimKey]();
+
+      const emailResult = emailSchema.parse(`  ${TEST_EMAIL}  `);
+      const usernameResult = usernameSchema.parse(`  ${TEST_USERNAME}  `);
+      const roleResult = roleSchema.parse("  admin  ");
+      const subResult = subSchema.parse(`  ${TEST_USER_ID}  `);
+
+      expect(emailResult).toBe(TEST_EMAIL);
+      expect(usernameResult).toBe(TEST_USERNAME);
+      expect(roleResult).toBe("admin");
+      expect(subResult).toBe(TEST_USER_ID);
     });
   });
 });

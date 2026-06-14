@@ -336,6 +336,18 @@ describe("Markdown Generator", () => {
         // @ts-expect-error for test
         expect(generateMarkdown(document)).toBe("");
       });
+
+      it("should handle null or undefined blocks safely without crashing", () => {
+        const document = {
+          blocks: [null, undefined, { text: "Hello", type: "text" as const }],
+        };
+
+        expect(() => {
+          const result = generateMarkdown(document);
+          expect(result).toBe("Hello\n");
+        }).not.toThrow();
+      });
     });
   });
 });
+

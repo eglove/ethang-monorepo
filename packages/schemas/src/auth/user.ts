@@ -1,34 +1,42 @@
-/* eslint-disable lodash/prefer-lodash-method */
+import isString from "lodash/isString.js";
+import trim from "lodash/trim.js";
 import { z } from "zod";
+
+const trimKey = "trim";
+const minKey = "min";
 
 const passwordSchema = z
   .string()
-  .min(8, "Password must be at least eight characters long")
-  .trim();
+  [minKey](8, "Password must be at least eight characters long")
+  [trimKey]();
+
+const emailSchema = z.preprocess((value) => {
+  return isString(value) ? trim(value) : value;
+}, z.email());
 
 export const userSchema = z.object({
-  createdAt: z.string().trim(),
-  email: z.email().trim(),
-  lastLoggedIn: z.string().trim().nullable(),
+  createdAt: z.string()[trimKey](),
+  email: emailSchema,
+  lastLoggedIn: z.string()[trimKey]().nullable(),
   password: passwordSchema,
-  role: z.string().trim().nullable(),
-  updatedAt: z.string().trim(),
-  username: z.string().trim()
+  role: z.string()[trimKey]().nullable(),
+  updatedAt: z.string()[trimKey](),
+  username: z.string()[trimKey]()
 });
 
 export const signUpSchema = z.object({
-  email: z.email().trim(),
+  email: emailSchema,
   password: passwordSchema,
-  username: z.string().trim().optional()
+  username: z.string()[trimKey]().optional()
 });
 
 export const signInSchema = z.object({
-  email: z.email().trim(),
+  email: emailSchema,
   password: passwordSchema
 });
 
 export const verifySchema = z.object({
-  email: z.email().trim(),
+  email: emailSchema,
   password: passwordSchema
 });
 

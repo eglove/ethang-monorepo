@@ -1,6 +1,36 @@
+import isBoolean from "lodash/isBoolean.js";
+import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
+import isNumber from "lodash/isNumber.js";
+import isString from "lodash/isString.js";
 import keys from "lodash/keys.js";
 import values from "lodash/values.js";
+
+const getErrorMessage = (reason: unknown) => {
+  if (undefined === reason) {
+    return "Rejected without reason";
+  }
+
+  if (
+    isString(reason) ||
+    isNumber(reason) ||
+    isBoolean(reason) ||
+    null === reason
+  ) {
+    return String(reason);
+  }
+
+  return "An error occurred";
+};
+
+const processResult = <T>(result: PromiseSettledResult<Awaited<T>>) => {
+  if ("fulfilled" === result.status) {
+    return result.value;
+  }
+
+  const reason: unknown = result.reason;
+  return isError(reason) ? reason : new Error(getErrorMessage(reason));
+};
 
 const categorizeResults = <K extends PropertyKey, T>(
   promiseKeys: readonly K[],
@@ -16,17 +46,10 @@ const categorizeResults = <K extends PropertyKey, T>(
       break;
     }
 
-    if ("fulfilled" === result.status) {
-      settledPromises = {
-        ...settledPromises,
-        [key]: result.value
-      };
-    }
-
-    if ("rejected" === result.status) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      settledPromises[key] = result.reason as Error;
-    }
+    settledPromises = {
+      ...settledPromises,
+      [key]: processResult(result)
+    };
   }
 
   return settledPromises;

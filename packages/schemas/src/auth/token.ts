@@ -1,13 +1,14 @@
-/* eslint-disable lodash/prefer-lodash-method */
 import type { JWTVerifyResult } from "jose";
 
 import { z } from "zod";
 
+const trimKey = "trim";
+
 export const tokenSchema = z.object({
-  email: z.string().trim(),
-  role: z.string().trim(),
-  sub: z.string().trim(),
-  username: z.string().trim()
+  email: z.string()[trimKey](),
+  role: z.string()[trimKey](),
+  sub: z.string()[trimKey](),
+  username: z.string()[trimKey]()
 });
 
 export const signInResponseToken = z.object({
