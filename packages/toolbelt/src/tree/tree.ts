@@ -24,21 +24,19 @@ export class Tree<T> {
         break;
       }
 
-      if (index < values.length) {
-        const value = values[index];
+      const leftValue = values[index];
 
-        if (!isNil(value)) {
-          current.left = new TreeNode(value, null, null);
-          queue.push(current.left);
-        }
-        index += 1;
+      if (!isNil(leftValue)) {
+        current.left = new TreeNode(leftValue, null, null);
+        queue.push(current.left);
       }
+      index += 1;
 
       if (index < values.length) {
-        const value = values[index];
+        const rightValue = values[index];
 
-        if (!isNil(value)) {
-          current.right = new TreeNode(value, null, null);
+        if (!isNil(rightValue)) {
+          current.right = new TreeNode(rightValue, null, null);
           queue.push(current.right);
         }
         index += 1;

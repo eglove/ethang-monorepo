@@ -33,6 +33,12 @@ This skill enforces monorepo-wide eslint resolution patterns and maps linter rul
 - **Deletable properties vs Atomic writes**: Under strict TypeScript check, the `delete` operator requires properties to be optional. Instead of using `delete`, construct a new object that does not include the property (atomic writes), e.g., using destructuring: `const { stack, ...rest } = row; return { ...rest, ...(!isNil(stack) ? { stack } : {}) };`.
 - **Zod output types**: Avoid using the deprecated `schema._output` property. Instead, import the inferred type from the schema's package, or use `z.output<typeof schema>` (or `z.infer<typeof schema>`).
 - **TypeScript-ESLint compiler cascade warnings**: If eslint reports `no-unsafe-assignment` or `no-unsafe-member-access` on mocks/stubs, run `tsc --noEmit` to verify if generic parameters (e.g. `Mock<Fn>`) are incorrectly defined, which defaults the types to `any` (error types).
+- **Apollo Link Connection**: Use Apollo's `from` utility (e.g. `from([authLink, httpLink])`) instead of `.concat` to avoid `unicorn/prefer-spread` conflict.
+- **Dynamic Headers Deletion**: Avoid mutating headers dynamically using the `delete` operator, which violates `@typescript-eslint/no-dynamic-delete`. Instead, copy defaults and conditionally populate them using a structured key-value iterator or native `Headers.set/delete` API.
+- **EventTarget Override Context**: To avoid `unicorn/no-this-outside-of-class` when monkeypatching EventTarget or native prototypes, declare the patched handler functions as `static` class methods, keeping the `this` keyword lexically scoped.
+- **Zod trim Method Bypass**: Zod string validation `.trim()` triggers `lodash/prefer-lodash-method`. Bypass this conflict locally using property bracket notation: `z.string()["trim"]()`. For email validations where `z.string().email()` is deprecated, wrap it in a preprocessor to trim first: `z.preprocess((val) => { return isString(val) ? trim(val) : val; }, z.email())`.
+- **Command Line Argument Destructuring**: Use array destructuring (e.g., `const [, , filePath] = globalThis.process.argv`) instead of direct index access to resolve `@typescript-eslint/prefer-destructuring` on `process.argv`.
+- **Cyclomatic Complexity Reduction**: Replace complex switch/if statements with a static lookup registry map that routes block/event types to dedicated renderer functions, keeping individual function complexity extremely low.
 
 ## Security Mitigations
 

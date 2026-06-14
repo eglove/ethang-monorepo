@@ -1,5 +1,5 @@
 import isError from "lodash/isError.js";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { promiseAllSettled } from "../../src/fetch/promise.ts";
 
@@ -63,4 +63,49 @@ describe("promiseAllSettled", () => {
     const results = await promiseAllSettled(promises);
     expect(results).toEqual({ "2": 3, a: 1, b: 2 });
   });
+
+  it("should wrap non-Error rejection reasons in a standard Error", async () => {
+    const results = await promiseAllSettled({
+      failString: Promise.reject("rejected string"),
+      failNumber: Promise.reject(42),
+      failNull: Promise.reject(null),
+    });
+
+    expect(results["failString"]).toBeInstanceOf(Error);
+    expect((results["failString"] as Error).message).toBe("rejected string");
+
+    expect(results["failNumber"]).toBeInstanceOf(Error);
+    expect((results["failNumber"] as Error).message).toBe("42");
+
+    expect(results["failNull"]).toBeInstanceOf(Error);
+    expect((results["failNull"] as Error).message).toBe("null");
+  });
+
+  it("should handle undefined and non-standard rejection reasons", async () => {
+    const results = await promiseAllSettled({
+      failUndefined: Promise.reject(undefined),
+      failObject: Promise.reject({ custom: "reason" }),
+    });
+
+    expect(results["failUndefined"]).toBeInstanceOf(Error);
+    expect((results["failUndefined"] as Error).message).toBe("Rejected without reason");
+
+    expect(results["failObject"]).toBeInstanceOf(Error);
+    expect((results["failObject"] as Error).message).toBe("An error occurred");
+  });
+
+  it("should break the loop if a result is nil", async () => {
+    const spy = vi.spyOn(Promise, "allSettled").mockResolvedValueOnce([] as any);
+
+    const promises = {
+      key1: Promise.resolve("val1"),
+      key2: Promise.resolve("val2"),
+    };
+
+    const results = await promiseAllSettled(promises);
+    expect(results).toStrictEqual({});
+
+    spy.mockRestore();
+  });
 });
+

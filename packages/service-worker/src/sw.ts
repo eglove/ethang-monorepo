@@ -2,6 +2,7 @@ import filter from "lodash/filter.js";
 import isArray from "lodash/isArray.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
+import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import { BroadcastUpdatePlugin } from "workbox-broadcast-update";
 import { clientsClaim } from "workbox-core";
@@ -14,8 +15,11 @@ const SW_VERSION = process.env["SW_VERSION"] ?? "v1";
 const ASSETS_CACHE = `assets-${SW_VERSION}`;
 const HTML_CACHE = `html-${SW_VERSION}`;
 
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-self.skipWaiting();
+try {
+  await self.skipWaiting();
+} catch {
+  // Do nothing
+}
 clientsClaim();
 
 // Cleanup old caches
@@ -63,25 +67,36 @@ registerRoute(
   })
 );
 
-// Custom: Pre-cache Links
-self.addEventListener("message", (event) => {
-  const data = event.data as unknown;
-  const isDataObject = !isNil(data) && isObject(data);
+const isRecord = (value: unknown): value is Record<PropertyKey, unknown> => {
+  return isObject(value) && !isNil(value);
+};
 
-  if (!isDataObject) {
+const handleMessage = (event: ExtendableMessageEvent) => {
+  const data: unknown = event.data;
+
+  if (!isRecord(data)) {
     return;
   }
 
-  const isPrecache = "type" in data && "PRECACHE_LINKS" === data.type;
-  const hasUrls = "urls" in data && isArray(data.urls);
+  const { type, urls } = data;
 
-  if (isPrecache && hasUrls) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    const urls = data.urls as string[];
-    event.waitUntil(
-      caches.open(HTML_CACHE).then(async (cache) => {
-        return cache.addAll(urls);
-      })
-    );
+  if ("PRECACHE_LINKS" !== type || !isArray(urls)) {
+    return;
   }
-});
+
+  const urlsArray: string[] = [];
+  for (const url of urls) {
+    if (isString(url)) {
+      urlsArray.push(url);
+    }
+  }
+
+  event.waitUntil(
+    caches.open(HTML_CACHE).then(async (cache) => {
+      return cache.addAll(urlsArray);
+    })
+  );
+};
+
+// Custom: Pre-cache Links
+self.addEventListener("message", handleMessage);

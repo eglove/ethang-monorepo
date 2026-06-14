@@ -16,8 +16,12 @@ type CalendarEventReturn = {
   title: string;
 };
 
+const sanitizeInput = (text: string) => {
+  return text.replaceAll("\r", "").replaceAll("\n", " ").replaceAll("\\", "");
+};
+
 export default {
-  async fetch(): Promise<Response> {
+  fetch: async (): Promise<Response> => {
     const zone = "America/Chicago";
 
     const client = createClient({
@@ -38,21 +42,20 @@ export default {
       const startDate = DateTime.fromISO(item.startsAt, { zone });
       const endDate = DateTime.fromISO(item.endsAt, { zone });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      return {
+      const event: IcsEvent = {
         description: isNil(item.description)
           ? ""
-          : toPlainText(item.description)
-              .replaceAll("\n", " ")
-              .replaceAll("\\", ""),
-        end: endDate.isValid
-          ? { date: endDate.toJSDate(), type: "DATE-TIME" }
-          : undefined,
-        stamp: { date: startDate.toJSDate(), type: "DATE-TIME" } as const,
-        start: { date: startDate.toJSDate(), type: "DATE-TIME" } as const,
-        summary: item.title,
-        uid: item._id
-      } as IcsEvent;
+          : sanitizeInput(toPlainText(item.description)),
+        stamp: { date: startDate.toJSDate(), type: "DATE-TIME" },
+        start: { date: startDate.toJSDate(), type: "DATE-TIME" },
+        summary: sanitizeInput(item.title),
+        uid: item._id,
+        ...(endDate.isValid
+          ? { end: { date: endDate.toJSDate(), type: "DATE-TIME" } }
+          : {})
+      };
+
+      return event;
     });
 
     const calendar = generateIcsCalendar({

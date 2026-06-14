@@ -34,20 +34,13 @@ const hasValidationError = <Url extends string>(
 const resolvePath = <Url extends string>(
   urlString: Url,
   config?: UrlConfig<Url>
-) => {
+): Error | string | ZodError => {
   if (!isNil(config) && !isNil(config.pathVariables)) {
-    const path = createUrlPath(
+    return createUrlPath(
       urlString,
       config.pathVariables,
       config.pathVariablesSchema
     );
-
-    if (isError(path)) {
-      return path;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    return path as Url;
   }
 
   return urlString;
