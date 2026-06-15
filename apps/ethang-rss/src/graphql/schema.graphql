@@ -221,6 +221,10 @@ type Query {
     The cursor to start retrieving subscriptions from
     """
     after: String
+    """
+    The sorting options for the subscriptions list
+    """
+    sortBy: SubscriptionSortInput
   ): FeedConnection!
 }
 
@@ -244,6 +248,30 @@ type PageInfo @shareable {
   When paginating backwards, the cursor to continue.
   """
   startCursor: String
+}
+
+"""
+The field to sort subscriptions by.
+"""
+enum SubscriptionSortField {
+  TITLE
+  PUBLISHED_AT
+}
+
+"""
+The direction to sort.
+"""
+enum SortDirection {
+  ASC
+  DESC
+}
+
+"""
+Input for sorting subscriptions.
+"""
+input SubscriptionSortInput {
+  field: SubscriptionSortField!
+  direction: SortDirection!
 }
 
 extend schema
