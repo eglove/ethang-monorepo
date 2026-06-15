@@ -254,15 +254,27 @@ type PageInfo @shareable {
 The field to sort subscriptions by.
 """
 enum SubscriptionSortField {
-  TITLE
+  """
+  Sort by the publication date of the most recent article.
+  """
   PUBLISHED_AT
+  """
+  Sort by the title of the subscription.
+  """
+  TITLE
 }
 
 """
 The direction to sort.
 """
 enum SortDirection {
+  """
+  Sort in ascending order.
+  """
   ASC
+  """
+  Sort in descending order.
+  """
   DESC
 }
 
@@ -270,8 +282,14 @@ enum SortDirection {
 Input for sorting subscriptions.
 """
 input SubscriptionSortInput {
-  field: SubscriptionSortField!
+  """
+  The direction to sort the subscriptions.
+  """
   direction: SortDirection!
+  """
+  The field to sort the subscriptions by.
+  """
+  field: SubscriptionSortField!
 }
 
 extend schema

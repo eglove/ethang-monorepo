@@ -17,7 +17,7 @@ name: "Subscription Sorting"
 ## Goals & KPIs
 
 - **Goal**: [Description of the objective]
-    - *KPI*: [Measurable indicator to track the success of this goal]
+  - *KPI*: [Measurable indicator to track the success of this goal]
 
 ## Stakeholders
 

@@ -10,7 +10,10 @@ satisfies:
 
 ## Overview
 
-This implementation adds a `sortBy` argument to the `subscriptions` query in the GraphQL schema, enabling users to sort their feed subscriptions either by the feed's title or by the publication date (`publishedAt`) of the most recent article within each feed. Since the list is paginated via cursors (`after`), sorting on non-unique or dynamic columns requires using compound cursors (e.g. `[sortValue, id]`) to maintain pagination stability and avoid missing/duplicate items.
+This implementation adds a `sortBy` argument to the `subscriptions` query in the GraphQL schema, enabling users to sort their feed
+subscriptions either by the feed's title or by the publication date (`publishedAt`) of the most recent article within each feed.
+Since the list is paginated via cursors (`after`), sorting on non-unique or dynamic columns requires using compound cursors
+(e.g. `[sortValue, id]`) to maintain pagination stability and avoid missing/duplicate items.
 
 ## Static View (Structure)
 
