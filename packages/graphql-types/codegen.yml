@@ -1,3 +1,4 @@
+---
 schema:
   - "../../apps/ethang-courses/src/graphql/schema.graphql"
   - "../../apps/ethang-rss/src/graphql/schema.graphql"
