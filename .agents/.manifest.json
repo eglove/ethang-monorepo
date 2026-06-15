@@ -77,6 +77,7 @@
     ".agents/rules/boolean-logic.md",
     ".agents/rules/empirical-experiments.md",
     ".agents/skills/sdlc/SKILL.md",
-    ".agents/skills/sdlc-1/SKILL.md"
+    ".agents/skills/sdlc-1/SKILL.md",
+    ".agents/skills/sdlc-2/SKILL.md"
   ]
 }

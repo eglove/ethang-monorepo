@@ -77,7 +77,7 @@ Conduct an interactive interview similar to the \`/grill-me\` flow. Ask the user
 Create a dictionary of domain terms used in the prose and map them explicitly to codebase elements (database columns, endpoints, component names). Resolve any semantic conflicts or naming mismatches before writing code.
 
 ### Step 3: Write SARA-Compliant Documents
-Write the gathered requirements as SARA-compatible Markdown files under a designated directory (e.g. \`docs/requirements/\`).
+Write the gathered requirements as SARA-compatible Markdown files under the feature's documentation directory (e.g. \`docs/<feature-name>/\`).
 - Ensure every file contains well-formed YAML frontmatter.
 - Make sure that IDs match exactly and there are no duplicate identifiers.
 
