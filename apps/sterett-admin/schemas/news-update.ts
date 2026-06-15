@@ -1,4 +1,5 @@
 import { BulbOutlineIcon } from "@sanity/icons";
+import { DateTime } from "luxon";
 import { defineType, type Rule } from "sanity";
 
 export default defineType({
@@ -7,20 +8,20 @@ export default defineType({
       name: "title",
       title: "Title",
       type: "string",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     },
     {
-      initialValue(): { date: Date } {
+      initialValue: (): { date: Date } => {
         return {
-          date: new Date()
+          date: DateTime.now().toJSDate()
         };
       },
       name: "date",
       title: "Start Showing",
       type: "date",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     },
@@ -28,7 +29,7 @@ export default defineType({
       name: "expireDate",
       title: "Stop Showing",
       type: "date",
-      validation(Rule): Rule {
+      validation: (Rule): Rule => {
         return Rule.custom((expireDate: string | undefined, context) => {
           if (expireDate === undefined) {
             return "Value is required";
@@ -39,11 +40,12 @@ export default defineType({
           }
 
           const INCREMENT = 1;
-          const dateFieldValue = new Date(String(context.document["date"]));
-          dateFieldValue.setDate(dateFieldValue.getDate() + INCREMENT);
-          const expireDateValue = new Date(expireDate);
+          const dateFieldValue = DateTime.fromISO(
+            String(context.document["date"])
+          ).plus({ days: INCREMENT });
+          const expireDateValue = DateTime.fromISO(expireDate);
 
-          if (expireDateValue < dateFieldValue) {
+          if (expireDateValue.toMillis() < dateFieldValue.toMillis()) {
             return "Expiration date must be at least one day after the date";
           }
 
@@ -55,7 +57,7 @@ export default defineType({
       name: "description",
       title: "Description",
       type: "blockContent",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     }

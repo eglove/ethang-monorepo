@@ -37,7 +37,7 @@ const spreadWaterLeft = (
 
   // Water reaching the left grid edge is discarded (falls off grid)
   // eslint-disable-next-line sonar/too-many-break-or-continue-in-loop
-  while (0 <= leftIndex - 1) {
+  while (1 <= leftIndex) {
     leftIndex -= 1;
 
     if (1 === rowAbove[leftIndex]) {
@@ -62,16 +62,17 @@ export const waterfallStreams = (array: number[][], source: number) => {
     // eslint-disable-next-line sonar/too-many-break-or-continue-in-loop
     for (const [index, valueAbove] of rowAbove.entries()) {
       const hasWaterAbove = 0 > valueAbove;
+      // eslint-disable-next-line unicorn/no-declarations-before-early-exit
       const hasBlock = 1 === currentRow[index];
 
       if (!hasWaterAbove) {
-        // eslint-disable-next-line no-continue
+        // eslint-disable-next-line no-continue,unicorn/no-break-in-nested-loop
         continue;
       }
 
       if (!hasBlock && !isNil(currentRow[index])) {
         currentRow[index] += valueAbove;
-        // eslint-disable-next-line no-continue
+        // eslint-disable-next-line no-continue,unicorn/no-break-in-nested-loop
         continue;
       }
 

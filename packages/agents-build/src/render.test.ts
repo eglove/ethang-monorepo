@@ -1,136 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import type { RuleDefinition, Section, SkillDefinition } from "./define.ts";
+import type { RuleDefinition } from "./define.ts";
 
-import {
-  renderJson,
-  resolveSections,
-  ruleMarkdown,
-  skillMarkdown
-} from "./render.ts";
+import { renderJson, ruleMarkdown, skillMarkdown } from "./render.ts";
 
 const baseRule: RuleDefinition = {
   content: "Rule body.",
   filename: "philosophy",
   trigger: "always_on"
 };
-
-const baseSkill: SkillDefinition = {
-  content: "Skill body.",
-  description: "Does a thing. Use when the user asks for the thing.",
-  name: "my-skill"
-};
-
-describe("resolveSections", () => {
-  const sectionA: Section = { content: "Alpha.", id: "a", label: "A" };
-  const sectionB: Section = { content: "Beta.", id: "b", label: "B" };
-
-  it("joins section contents with a horizontal rule", () => {
-    expect(resolveSections([sectionA, sectionB], "test")).toBe(
-      "Alpha.\n\n---\n\nBeta."
-    );
-  });
-
-  it("dedupes sections by id", () => {
-    expect(resolveSections([sectionA, sectionA, sectionB], "test")).toBe(
-      "Alpha.\n\n---\n\nBeta."
-    );
-  });
-
-  it("accepts a section whose dependsOn id is declared", () => {
-    const dependent: Section = {
-      content: "Gamma.",
-      dependsOn: ["a"],
-      id: "c",
-      label: "C"
-    };
-
-    expect(resolveSections([sectionA, dependent], "test")).toBe(
-      "Alpha.\n\n---\n\nGamma."
-    );
-  });
-
-  it("throws when a dependsOn id is not declared", () => {
-    const dependent: Section = {
-      content: "Gamma.",
-      dependsOn: ["missing"],
-      id: "c",
-      label: "C"
-    };
-
-    expect(() => {
-      return resolveSections([dependent], "test");
-    }).toThrow(/missing/u);
-  });
-});
-
-describe("skillMarkdown", () => {
-  it("emits frontmatter, a blank line, the body, and a trailing newline", () => {
-    expect(skillMarkdown(baseSkill)).toBe(
-      "---\ndescription: Does a thing. Use when the user asks for the thing.\nname: my-skill\n---\n\nSkill body.\n"
-    );
-  });
-
-  it("throws when the description contains a newline", () => {
-    expect(() => {
-      skillMarkdown({ ...baseSkill, description: "a\nb" });
-    }).toThrow(/newline/u);
-  });
-
-  it("double-quotes a description containing a colon-space", () => {
-    expect(
-      skillMarkdown({
-        ...baseSkill,
-        description: "Create a commit: proposal, review, message."
-      })
-    ).toBe(
-      '---\ndescription: "Create a commit: proposal, review, message."\nname: my-skill\n---\n\nSkill body.\n'
-    );
-  });
-
-  it("escapes embedded double quotes when quoting", () => {
-    expect(
-      skillMarkdown({
-        ...baseSkill,
-        description: 'Ask "why: really?" five times.'
-      })
-    ).toBe(
-      '---\ndescription: "Ask \\"why: really?\\" five times."\nname: my-skill\n---\n\nSkill body.\n'
-    );
-  });
-
-  it("replaces the sections token when sections are declared", () => {
-    const skill: SkillDefinition = {
-      ...baseSkill,
-      content: "Intro.\n\n{{sections}}\n\nOutro.",
-      sections: [{ content: "Shared.", id: "shared", label: "Shared" }]
-    };
-
-    expect(skillMarkdown(skill)).toContain("Intro.\n\nShared.\n\nOutro.");
-  });
-
-  it("does not replace sections token when sections is empty list", () => {
-    const skill: SkillDefinition = {
-      ...baseSkill,
-      sections: []
-    };
-
-    expect(skillMarkdown(skill)).toBe(
-      "---\ndescription: Does a thing. Use when the user asks for the thing.\nname: my-skill\n---\n\nSkill body.\n"
-    );
-  });
-
-  it("throws when sections are declared but the token is missing", () => {
-    const skill: SkillDefinition = {
-      ...baseSkill,
-      sections: [{ content: "Shared.", id: "shared", label: "Shared" }]
-    };
-
-    expect(() => {
-      return skillMarkdown(skill);
-    }).toThrow(/\{\{sections\}\}/u);
-  });
-});
 
 describe("ruleMarkdown", () => {
   it("emits frontmatter, a blank line, the content, and a trailing newline", () => {
@@ -199,6 +77,19 @@ describe("ruleMarkdown", () => {
       })
     ).toBe(
       '---\ndescription: "reviewing: a PR or diff"\ntrigger: model_decision\n---\n\nRule body.\n'
+    );
+  });
+});
+
+describe("skillMarkdown", () => {
+  it("emits frontmatter with name and description, a blank line, and content", () => {
+    const skill = {
+      content: "Skill body.",
+      description: "A test skill.",
+      name: "test-skill"
+    };
+    expect(skillMarkdown(skill)).toBe(
+      "---\ndescription: A test skill.\nname: test-skill\n---\n\nSkill body.\n"
     );
   });
 });

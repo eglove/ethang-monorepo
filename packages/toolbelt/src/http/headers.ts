@@ -19,9 +19,12 @@ type AcceptLanguageResults = {
 export const getAcceptLanguage = (
   acceptLanguage: Readonly<Headers | string>
 ): AcceptLanguageResults | Error => {
-  const languages = isString(acceptLanguage)
-    ? split(acceptLanguage, ",")
-    : split(acceptLanguage.get("accept-language"), ",");
+  const languages = split(
+    isString(acceptLanguage)
+      ? acceptLanguage
+      : acceptLanguage.get("accept-language"),
+    ","
+  );
 
   if (isEmpty(compact(languages))) {
     return new Error("accept-language not found");

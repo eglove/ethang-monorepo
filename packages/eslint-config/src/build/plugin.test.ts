@@ -28,7 +28,9 @@ describe(Plugin, () => {
 
   describe("ruleCount", () => {
     it("returns 0 for empty rules", () => {
-      expect(new Plugin({ ...base, rules: {} }).ruleCount).toBe(0);
+      const plugin = new Plugin({ ...base, rules: {} });
+
+      expect(plugin.ruleCount).toBe(0);
     });
 
     it("counts only non-off rules", () => {

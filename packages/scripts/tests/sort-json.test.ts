@@ -35,7 +35,6 @@ class MockDirent implements Dirent {
   public isCharacterDevice = constant(false);
   public isFIFO = constant(false);
   public isSocket = constant(false);
-
   public isSymbolicLink = constant(false);
 
   public name: string;
@@ -43,6 +42,7 @@ class MockDirent implements Dirent {
   public parentPath: string;
 
   public path: string;
+
   private readonly _isDirectory: boolean;
   public constructor(name: string, isDirectory: boolean) {
     this.name = name;

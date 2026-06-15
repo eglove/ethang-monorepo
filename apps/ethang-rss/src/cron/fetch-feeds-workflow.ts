@@ -16,12 +16,14 @@ import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import convertToString from "lodash/toString.js";
+import { DateTime } from "luxon";
 
 import { articlesTable, feedsTable } from "../db/schema.ts";
 import {
   getEnvironmentString,
   getSecretValue
 } from "../util/get-environment-secret.ts";
+import { normalizeDate } from "../util/normalize-date.ts";
 
 const parser = new XMLParser({
   attributeNamePrefix: "@_",
@@ -167,11 +169,9 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
             const content = normalizeContent(item);
             const title = normalizeTitle(item);
 
-            const publishedAt =
-              item.pubDate ??
-              item.published ??
-              item.updated ??
-              new Date().toISOString();
+            const publishedAt = normalizeDate(
+              item.pubDate ?? item.published ?? item.updated
+            );
 
             return {
               content,
@@ -198,7 +198,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
 
           await database
             .update(feedsTable)
-            .set({ lastFetchedAt: new Date().toISOString() })
+            .set({ lastFetchedAt: DateTime.now().toISO() })
             .where(eq(feedsTable.id, feed.id));
         });
 

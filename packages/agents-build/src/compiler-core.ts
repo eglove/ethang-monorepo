@@ -1,7 +1,6 @@
 import endsWith from "lodash/endsWith.js";
 import filter from "lodash/filter.js";
 import isString from "lodash/isString.js";
-import map from "lodash/map.js";
 import {
   existsSync,
   mkdirSync,
@@ -22,8 +21,7 @@ import {
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
-  validateFrontmatterBlock,
-  validateSwebokGuard
+  validateFrontmatterBlock
 } from "./validate.ts";
 
 export type CompilerConfig = {
@@ -31,15 +29,15 @@ export type CompilerConfig = {
   rootDir: string;
   rules: RuleDefinition[];
   rulesDir: string;
-  skills: SkillDefinition[];
-  skillsDir: string;
+  skills?: SkillDefinition[];
+  skillsDir?: string;
 };
 
 export class CompileError extends Error {
   public failures: string[];
 
-  public constructor(failures: string[]) {
-    super(`Compilation failed with ${failures.length} errors.`);
+  public constructor(failures: string[], options: ErrorOptions) {
+    super(`Compilation failed with ${failures.length} errors.`, options);
     this.name = "CompileError";
     this.failures = failures;
   }
@@ -60,8 +58,7 @@ export const validationHelpers = {
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
-  validateFrontmatterBlock,
-  validateSwebokGuard
+  validateFrontmatterBlock
 };
 
 const getDirectoryFiles = (directory: string): string[] | undefined => {
@@ -87,8 +84,7 @@ const cleanFileAndEmptyParents = (
   let currentDirectory = path.dirname(filePath);
   const stopDirectories = new Set([
     path.resolve(config.rootDir),
-    path.resolve(config.rulesDir),
-    path.resolve(config.skillsDir)
+    path.resolve(config.rulesDir)
   ]);
 
   let shouldContinue = true;
@@ -113,21 +109,17 @@ const cleanFileAndEmptyParents = (
 };
 
 const calculateTargetPaths = (config: CompilerConfig): string[] => {
-  const paths: string[] = [];
-
-  for (const rule of config.rules) {
-    paths.push(path.join(config.rulesDir, `${rule.filename}.md`));
-  }
-
-  for (const skill of config.skills) {
-    const skillDirectory = path.join(config.skillsDir, skill.name);
-    paths.push(path.join(skillDirectory, "SKILL.md"));
-    for (const resource of skill.resources ?? []) {
-      paths.push(path.join(skillDirectory, resource.path));
-    }
-  }
-
-  return paths;
+  const rulePaths = Array.from(config.rules, (rule) => {
+    return path.join(config.rulesDir, `${rule.filename}.md`);
+  });
+  const { skills, skillsDir } = config;
+  const skillPaths =
+    undefined !== skills && undefined !== skillsDir
+      ? Array.from(skills, (skill) => {
+          return path.join(skillsDir, skill.name, "SKILL.md");
+        })
+      : [];
+  return [...rulePaths, ...skillPaths];
 };
 
 const readManifestContent = (filePath: string): string => {
@@ -165,7 +157,6 @@ const loadManifest = (config: CompilerConfig): string[] => {
 const processRules = (
   config: CompilerConfig,
   failures: string[],
-  warnings: string[],
   write: (absolutePath: string, content: string) => void
 ): void => {
   for (const duplicate of validationHelpers.findDuplicateRuleFilenames(
@@ -179,14 +170,9 @@ const processRules = (
     const size = validationHelpers.checkRuleSize(markdown);
 
     if ("fail" === size.status) {
+      const swebokPath = path.resolve(config.rootDir, "swebok-v4.pdf");
       failures.push(
-        `rules/${rule.filename}.md: ${String(size.length)} chars exceeds the 12k rule limit`
-      );
-    }
-
-    if ("warn" === size.status) {
-      warnings.push(
-        `rules/${rule.filename}.md: ${String(size.length)} chars is nearing the 12k rule limit`
+        `rules/${rule.filename}.md: ${String(size.length)} characters. Rules must be between 10,000 and 12,000 characters. Please reference the SWEBOK v4 PDF at "${swebokPath}" as a priority resource to expand the rule, or use websearch to find industry standard knowledge.`
       );
     }
 
@@ -203,8 +189,11 @@ const processSkills = (
   failures: string[],
   write: (absolutePath: string, content: string) => void
 ): void => {
-  for (const skill of config.skills) {
-    const skillDirectory = path.join(config.skillsDir, skill.name);
+  const { skills, skillsDir } = config;
+  if (undefined === skills || undefined === skillsDir) {
+    return;
+  }
+  for (const skill of skills) {
     const markdown = skillMarkdown(skill);
 
     if (!validationHelpers.validateFrontmatterBlock(markdown)) {
@@ -213,31 +202,7 @@ const processSkills = (
       );
     }
 
-    const resourcePaths = map(skill.resources ?? [], (resource) => {
-      return resource.path;
-    });
-
-    const allContent = `${markdown}\n${map(
-      skill.resources ?? [],
-      (resource) => {
-        return resource.content;
-      }
-    ).join("\n")}`;
-
-    for (const missing of validationHelpers.validateSwebokGuard(
-      resourcePaths,
-      allContent
-    )) {
-      failures.push(
-        `skills/${skill.name}: resource "${missing}" is not referenced in the skill or its resources — the router table has drifted`
-      );
-    }
-
-    write(path.join(skillDirectory, "SKILL.md"), markdown);
-
-    for (const resource of skill.resources ?? []) {
-      write(path.join(skillDirectory, resource.path), resource.content);
-    }
+    write(path.join(skillsDir, skill.name, "SKILL.md"), markdown);
   }
 };
 
@@ -252,8 +217,11 @@ const validateFileContent = (filePath: string, failures: string[]): void => {
 
 const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   const directoriesToScan = [config.rulesDir];
-  for (const skill of config.skills) {
-    directoriesToScan.push(path.join(config.skillsDir, skill.name));
+  const { skills, skillsDir } = config;
+  if (undefined !== skills && undefined !== skillsDir) {
+    for (const skill of skills) {
+      directoriesToScan.push(path.join(skillsDir, skill.name));
+    }
   }
 
   for (const directory of directoriesToScan) {
@@ -285,7 +253,6 @@ export const compile = (config: CompilerConfig): void => {
   }
 
   const failures: string[] = [];
-  const warnings: string[] = [];
   const generatedFiles: string[] = [];
 
   const write = (absolutePath: string, content: string) => {
@@ -296,16 +263,12 @@ export const compile = (config: CompilerConfig): void => {
     );
   };
 
-  processRules(config, failures, warnings, write);
+  processRules(config, failures, write);
   processSkills(config, failures, write);
   scanDirectories(config, failures);
 
-  for (const warning of warnings) {
-    console.warn(`WARN: ${warning}`);
-  }
-
   if (0 < failures.length) {
-    throw new CompileError(failures);
+    throw new CompileError(failures, {});
   }
 
   fsProxy.mkdirSync(path.dirname(config.manifestPath), { recursive: true });

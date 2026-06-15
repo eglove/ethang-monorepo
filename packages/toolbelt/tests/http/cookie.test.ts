@@ -1,29 +1,27 @@
 import constant from "lodash/constant.js";
 import isError from "lodash/isError.js";
+import { DateTime } from "luxon";
 import { describe, expect, it } from "vitest";
 
 import {
   deleteCookieValue,
   getCookieValue,
-  setCookieValue,
+  setCookieValue
 } from "../../src/http/cookie.ts";
+
+const TEST_COOKIE = "test-cookie";
+const SET_COOKIE = "Set-Cookie";
 
 describe("get cookie", () => {
   it("should get cookie from string", () => {
-    // @ts-expect-error allow for test
-    globalThis.document = { cookie: "token=123; Secure;" };
-
-    const value = getCookieValue("token", globalThis.document.cookie);
+    const value = getCookieValue("token", "token=123; Secure;");
 
     expect(isError(value)).toBe(false);
     expect(value).toBe("123");
   });
 
   it("should get cookie with equals sign in value", () => {
-    // @ts-expect-error allow for test
-    globalThis.document = { cookie: "token=abc=123; Secure;" };
-
-    const value = getCookieValue("token", globalThis.document.cookie);
+    const value = getCookieValue("token", "token=abc=123; Secure;");
 
     expect(isError(value)).toBe(false);
     expect(value).toBe("abc=123");
@@ -40,29 +38,29 @@ describe("get cookie", () => {
   });
 
   it("should set cookie", () => {
-    const cookieName = "test-cookie";
+    const cookieName = TEST_COOKIE;
     const cookieValue = "test-val";
     const mockResponse = new Response();
 
     setCookieValue({
       cookieName,
       cookieValue,
-      response: mockResponse,
+      response: mockResponse
     });
 
-    expect(mockResponse.headers.get("Set-Cookie")).toBe(
-      `${cookieName}=${cookieValue}`,
+    expect(mockResponse.headers.get(SET_COOKIE)).toBe(
+      `${cookieName}=${cookieValue}`
     );
   });
 
   it("should set cookie with options", () => {
-    const cookieName = "test-cookie";
+    const cookieName = TEST_COOKIE;
     const cookieValue = "test-val";
-    const expires = new Date();
+    const expires = DateTime.now();
     const config = {
       Expires: expires,
       HttpOnly: true,
-      Path: "/some-path",
+      Path: "/some-path"
     };
     const mockResponse = new Response();
 
@@ -70,47 +68,46 @@ describe("get cookie", () => {
       config,
       cookieName,
       cookieValue,
-      response: mockResponse,
+      response: mockResponse
     });
 
-    expect(mockResponse.headers.get("Set-Cookie")).toBe(
-      `${cookieName}=${cookieValue}; Expires=${expires.toUTCString()}; HttpOnly; Path=${config.Path}`,
+    expect(mockResponse.headers.get(SET_COOKIE)).toBe(
+      `${cookieName}=${cookieValue}; Expires=${expires.toHTTP()}; HttpOnly; Path=${config.Path}`
     );
   });
 
   it("should delete cookie", () => {
-    const cookieName = "test-cookie";
+    const cookieName = TEST_COOKIE;
     const mockResponse = new Response();
 
     deleteCookieValue(cookieName, mockResponse);
 
-    expect(mockResponse.headers.get("Set-Cookie")).toBe(
-      `${cookieName}=; Expires=${new Date(0).toUTCString()}; Max-Age=0`,
+    const expiresDate = DateTime.fromMillis(0);
+    expect(mockResponse.headers.get(SET_COOKIE)).toBe(
+      `${cookieName}=; Expires=${expiresDate.toHTTP()}; Max-Age=0`
     );
   });
 
   it("should delete cookie with config", () => {
-    const cookieName = "test-cookie";
+    const cookieName = TEST_COOKIE;
     const mockResponse = new Response();
 
     deleteCookieValue(cookieName, mockResponse, {
       Path: "/",
-      SameSite: "Lax",
+      SameSite: "Lax"
     });
 
-    expect(mockResponse.headers.get("Set-Cookie")).toBe(
-      `${cookieName}=; Path=/; SameSite=Lax; Expires=${new Date(0).toUTCString()}; Max-Age=0`,
+    const expiresDate = DateTime.fromMillis(0);
+    expect(mockResponse.headers.get(SET_COOKIE)).toBe(
+      `${cookieName}=; Path=/; SameSite=Lax; Expires=${expiresDate.toHTTP()}; Max-Age=0`
     );
   });
 
   it("should return error if cookie source is not found", () => {
-    globalThis.document = {
-      // @ts-expect-error allow for test
-      cookie: {
-        get: constant(null),
-      },
-    };
-    const value = getCookieValue("nonexistent", globalThis.document.cookie);
+    // @ts-expect-error allow for test
+    const value = getCookieValue("nonexistent", {
+      get: constant(null)
+    });
 
     expect(isError(value)).toBe(true);
     expect(value).toBeInstanceOf(Error);
@@ -130,7 +127,7 @@ describe("get cookie", () => {
   });
 
   // eslint-disable-next-line no-sparse-arrays
-  it.each([null, undefined, {}, [], , Number.NaN])(
+  it.each([null, undefined, {}, [], , NaN])(
     "shouldn't crash with bad inputs",
     (value) => {
       // @ts-expect-error allow for test
@@ -140,7 +137,7 @@ describe("get cookie", () => {
 
       expect(isError(result1)).toBe(true);
       expect(isError(result2)).toBe(true);
-    },
+    }
   );
 
   it("should return an empty string for a cookie with an empty value", () => {
@@ -150,7 +147,7 @@ describe("get cookie", () => {
   });
 
   it("should skip config keys with a false boolean value", () => {
-    const cookieName = "test-cookie";
+    const cookieName = TEST_COOKIE;
     const cookieValue = "test-val";
     const mockResponse = new Response();
 
@@ -158,11 +155,11 @@ describe("get cookie", () => {
       config: { Secure: false },
       cookieName,
       cookieValue,
-      response: mockResponse,
+      response: mockResponse
     });
 
-    expect(mockResponse.headers.get("Set-Cookie")).toBe(
-      `${cookieName}=${cookieValue}`,
+    expect(mockResponse.headers.get(SET_COOKIE)).toBe(
+      `${cookieName}=${cookieValue}`
     );
   });
 

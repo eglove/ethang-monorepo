@@ -21,8 +21,7 @@ import {
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
-  validateFrontmatterBlock,
-  validateSwebokGuard
+  validateFrontmatterBlock
 } from "./validate.ts";
 
 describe("validateFrontmatterBlock", () => {
@@ -39,9 +38,9 @@ describe("validateFrontmatterBlock", () => {
 
 describe("checkRuleSize", () => {
   it.each([
-    [9999, "ok"],
-    [10_000, "warn"],
-    [12_000, "warn"],
+    [9999, "fail"],
+    [10_000, "ok"],
+    [12_000, "ok"],
     [12_001, "fail"]
   ])("classifies %i chars as %s", (length, status) => {
     expect(checkRuleSize(repeat("x", length))).toStrictEqual({
@@ -104,29 +103,6 @@ describe("findDuplicateRuleFilenames", () => {
         makeRule("a")
       ])
     ).toStrictEqual(["a"]);
-  });
-});
-
-describe("validateSwebokGuard", () => {
-  const resources = [
-    "resources/ch01-requirements.md",
-    "resources/ch05-testing.md"
-  ];
-
-  it("returns nothing when every resource appears in the router", () => {
-    const router =
-      "| Ch 1 | resources/ch01-requirements.md |\n| Ch 5 | resources/ch05-testing.md |";
-
-    expect(validateSwebokGuard(resources, router)).toStrictEqual([]);
-  });
-
-  it("reports resources absent from the router", () => {
-    expect(
-      validateSwebokGuard(
-        resources,
-        "| Ch 1 | resources/ch01-requirements.md |"
-      )
-    ).toStrictEqual(["resources/ch05-testing.md"]);
   });
 });
 

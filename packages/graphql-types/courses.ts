@@ -9,6 +9,26 @@ export type AddSubscriptionMutation = {
 export type AddSubscriptionMutationVariables = Exact<{
   xmlAddress: string;
 }>;
+export type AllArticlesQuery = {
+  subscriptions: {
+    edges: {
+      node: {
+        articles: {
+          edges: {
+            node: {
+              id: string;
+              isRead: boolean;
+              link: string;
+              publishedAt: null | string;
+              title: string;
+            };
+          }[];
+        };
+      };
+    }[];
+  };
+};
+export type AllArticlesQueryVariables = Exact<Record<string, never>>;
 /** An individual RSS article */
 export type Article = {
   __typename?: "Article";
@@ -29,6 +49,7 @@ export type Article = {
   /** The title of the article */
   title: Scalars["String"]["output"];
 };
+
 /** A connection to a list of articles. */
 export type ArticleConnection = {
   __typename?: "ArticleConnection";
@@ -37,6 +58,7 @@ export type ArticleConnection = {
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
 };
+
 /** An edge in a connection. */
 export type ArticleEdge = {
   __typename?: "ArticleEdge";
@@ -143,6 +165,24 @@ export type FeedArticlesArgs = {
   isRead?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+export type FeedArticlesQuery = {
+  feedArticles: {
+    edges: {
+      node: {
+        id: string;
+        isRead: boolean;
+        link: string;
+        publishedAt: null | string;
+        title: string;
+      };
+    }[];
+  };
+};
+
+export type FeedArticlesQueryVariables = Exact<{
+  feedId: string;
+}>;
+
 /** A connection to a list of feeds. */
 export type FeedConnection = {
   __typename?: "FeedConnection";
@@ -161,6 +201,12 @@ export type FeedEdge = {
   node: Feed;
 };
 
+export type GetFeedsQuery = {
+  subscriptions: { edges: { node: { id: string; title: string } }[] };
+};
+
+export type GetFeedsQueryVariables = Exact<Record<string, never>>;
+
 export type GetRecommendedCoursesLearningPathIdsQuery = {
   curriculum: {
     id: string;
@@ -171,34 +217,6 @@ export type GetRecommendedCoursesLearningPathIdsQuery = {
 };
 
 export type GetRecommendedCoursesLearningPathIdsQueryVariables = Exact<
-  Record<string, never>
->;
-
-export type GetSubscriptionsWithArticlesQuery = {
-  subscriptions: {
-    edges: {
-      node: {
-        articles: {
-          edges: {
-            node: {
-              id: string;
-              isRead: boolean;
-              link: string;
-              publishedAt: null | string;
-              title: string;
-            };
-          }[];
-        };
-        id: string;
-        title: string;
-        website: string;
-        xmlAddress: string;
-      };
-    }[];
-  };
-};
-
-export type GetSubscriptionsWithArticlesQueryVariables = Exact<
   Record<string, never>
 >;
 

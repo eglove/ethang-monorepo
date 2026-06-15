@@ -48,11 +48,7 @@ export const wowTaskType = defineType({
   orderings: [orderRankOrdering],
   preview: {
     prepare({ taskType, title }) {
-      let typeLabel = "Daily";
-
-      if ("weekly" === taskType) {
-        typeLabel = "Weekly";
-      }
+      let typeLabel = "weekly" === taskType ? "Weekly" : "Daily";
 
       if ("one-time" === taskType) {
         typeLabel = "One Time";

@@ -10,7 +10,7 @@ export const commonCharacters = (strings: string[]) => {
   }
 
   const finalCharacters: string[] = [];
-  for (const [character, count] of characterCounts.entries()) {
+  for (const [character, count] of characterCounts) {
     if (count === strings.length) {
       finalCharacters.push(character);
     }

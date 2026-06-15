@@ -68,7 +68,7 @@ export const lineThroughPoints = (points: [number, number][]) => {
       const [rise, run] = getSlopeBetweenPoints(point1, point2);
       const slopeKey = createHashTableKeyForRational(rise, run);
 
-      if (!(slopeKey in slopes)) {
+      if (!Object.hasOwn(slopes, slopeKey)) {
         set(slopes, [slopeKey], 1);
       }
 

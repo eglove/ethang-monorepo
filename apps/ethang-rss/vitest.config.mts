@@ -18,14 +18,15 @@ export default defineConfig({
   ],
   test: {
     coverage: {
+      exclude: ["**/*.mock.ts", "src/db/database-schema.ts"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
         branches: 100,
-        functions: 65.71,
-        lines: 94.39,
-        statements: 94.39
+        functions: 100,
+        lines: 100,
+        statements: 100
       }
     },
     environment: "node"

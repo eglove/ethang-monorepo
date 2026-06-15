@@ -1,5 +1,5 @@
 export const majorityElement = (array: number[]) => {
-  let majority = Number.NEGATIVE_INFINITY;
+  let majority = -Infinity;
   const counts = new Map<number, number>();
 
   for (const value of array) {
@@ -9,18 +9,12 @@ export const majorityElement = (array: number[]) => {
       counts.set(value, 1);
     }
 
-    if (
-      (counts.get(value) ?? Number.NEGATIVE_INFINITY) >
-      (counts.get(majority) ?? 0)
-    ) {
+    if ((counts.get(value) ?? -Infinity) > (counts.get(majority) ?? 0)) {
       majority = value;
     }
   }
 
-  if (
-    (counts.get(majority) ?? Number.NEGATIVE_INFINITY) >=
-    Math.ceil(array.length / 2)
-  ) {
+  if ((counts.get(majority) ?? -Infinity) >= Math.ceil(array.length / 2)) {
     return majority;
   }
 

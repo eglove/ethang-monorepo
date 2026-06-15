@@ -8,7 +8,7 @@ export default defineType({
       title:
         "Description (This is read by screen readers for visually impaired people.)",
       type: "string",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     },
@@ -16,7 +16,7 @@ export default defineType({
       name: "image",
       title: "Image",
       type: "image",
-      validation(rule: Rule): Rule {
+      validation: (rule: Rule): Rule => {
         return rule.required();
       }
     }

@@ -9,18 +9,19 @@ export default defineConfig(
     "generated",
     "wrangler.jsonc",
     "tsconfig.json",
-    "migrations"
+    "migrations",
+    "coverage"
   ]),
   ...config,
   {
     languageOptions: {
       parserOptions: {
         project: true,
-        // @ts-expect-error import meta
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         tsconfigRootDir: import.meta.dirname
       }
     },
-    rules: {}
+    rules: {
+      "unicorn/no-top-level-side-effects": "off"
+    }
   }
 );

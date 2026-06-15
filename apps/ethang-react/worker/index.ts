@@ -14,7 +14,7 @@ export default {
         return new Response(authentication.message, { status: 401 });
       }
 
-      return fetch(authentication.destinationUrl.toString(), {
+      return fetch(authentication.destinationUrl.href, {
         body: request.body,
         headers: authentication.headers,
         method: request.method

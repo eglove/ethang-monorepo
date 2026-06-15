@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { jwtVerify, SignJWT } from "jose";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
+import { DateTime } from "luxon";
 
 import type { getDatabase } from "../get-database.js";
 
@@ -36,7 +37,7 @@ export class AuthService {
         .insert(userTable)
         .values({
           email,
-          lastLoggedIn: new Date().toISOString(),
+          lastLoggedIn: DateTime.now().toISO(),
           password: hashedPassword,
           username
         })
@@ -120,7 +121,8 @@ export class AuthService {
   }
 
   public async verifyToken(token: string) {
-    const secretKey = new TextEncoder().encode(this.tokenSecret);
+    const textEncoder = new TextEncoder();
+    const secretKey = textEncoder.encode(this.tokenSecret);
 
     return attemptAsync(async () => {
       return jwtVerify(token, secretKey);
@@ -128,15 +130,18 @@ export class AuthService {
   }
 
   private async generateToken(user: typeof userTable.$inferSelect) {
-    const secretKey = new TextEncoder().encode(this.tokenSecret);
+    const textEncoder = new TextEncoder();
+    const secretKey = textEncoder.encode(this.tokenSecret);
 
     return attemptAsync(async () => {
-      return new SignJWT({
+      const jwt = new SignJWT({
         email: user.email,
         role: user.role,
         sub: user.id,
         username: user.username
-      })
+      });
+
+      return jwt
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
         .setExpirationTime("1yr")
@@ -165,7 +170,7 @@ export class AuthService {
       const [updatedUser] = await this.database
         .update(userTable)
         .set({
-          lastLoggedIn: new Date().toISOString(),
+          lastLoggedIn: DateTime.now().toISO(),
           password: hashedPassword
         })
         .where(eq(userTable.email, user.email))

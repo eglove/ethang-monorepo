@@ -72,7 +72,7 @@ export default defineType({
           title:
             "Alt Text (Read by screen readers for people with vision impairments.)",
           type: "string",
-          validation(rule: Rule): Rule {
+          validation: (rule: Rule): Rule => {
             return rule
               .required()
               .error(

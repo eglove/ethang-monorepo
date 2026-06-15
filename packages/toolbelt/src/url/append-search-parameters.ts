@@ -5,7 +5,7 @@ export const appendSearchParameters = (
   parameters: URLSearchParams
 ): void => {
   if (!isNil(parameters)) {
-    for (const [key, value] of parameters.entries()) {
+    for (const [key, value] of parameters) {
       url.searchParams.append(key, value);
     }
   }

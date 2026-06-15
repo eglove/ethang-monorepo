@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { describe, expect, it } from "vitest";
 import { ZodError } from "zod";
 
@@ -61,13 +62,13 @@ describe("log-schema.ts - Shared Schemas Validation", () => {
       const result = logQuerySchema.parse(queryParameters);
 
       expect(result).toStrictEqual({
-        endDate: new Date("2026-06-13T23:59:59.000Z"),
+        endDate: DateTime.fromISO("2026-06-13T23:59:59.000Z").toJSDate(),
         environment: "production",
         level: "error",
         limit: 50,
         offset: 100,
         serviceName: TEST_SERVICE,
-        startDate: new Date("2026-06-13T00:00:00.000Z")
+        startDate: DateTime.fromISO("2026-06-13T00:00:00.000Z").toJSDate()
       });
     });
 
@@ -79,6 +80,16 @@ describe("log-schema.ts - Shared Schemas Validation", () => {
       expect(() => {
         logQuerySchema.parse(invalidParameters);
       }).toThrow(ZodError);
+    });
+
+    it("given an invalid endDate format, parsing it sets it to undefined instead of throwing", () => {
+      const queryParameters = {
+        endDate: "not-a-date"
+      };
+
+      const result = logQuerySchema.parse(queryParameters);
+
+      expect(result.endDate).toBeUndefined();
     });
   });
 });

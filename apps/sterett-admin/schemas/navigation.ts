@@ -12,7 +12,7 @@ export default defineType({
       name: "title",
       title: "Title",
       type: "string",
-      validation(rule: Rule) {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     },
@@ -20,7 +20,7 @@ export default defineType({
       name: "url",
       title: "URL",
       type: "string",
-      validation(rule: Rule) {
+      validation: (rule: Rule) => {
         return rule.uri({ relativeOnly: true }).required();
       }
     },

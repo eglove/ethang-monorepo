@@ -113,10 +113,7 @@ const parseStep = (stepLines: string[]): StepInfo => {
 
   for (const rawLine of stepLines) {
     const trimmed = trim(rawLine);
-    let line = trimmed;
-    if (startsWith(trimmed, "-")) {
-      line = trim(trimmed.slice(1));
-    }
+    const line = startsWith(trimmed, "-") ? trim(trimmed.slice(1)) : trimmed;
 
     if (startsWith(line, "uses:")) {
       step.uses = trim(line.slice(5));

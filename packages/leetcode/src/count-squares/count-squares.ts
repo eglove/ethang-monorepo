@@ -16,7 +16,7 @@ export const countSquares = (points: Coordinate[]) => {
   for (const pointA of points) {
     for (const pointB of points) {
       if (pointA === pointB) {
-        // eslint-disable-next-line no-continue
+        // eslint-disable-next-line no-continue,unicorn/no-break-in-nested-loop
         continue;
       }
 

@@ -37,7 +37,7 @@ describe("worker/auto-authenticate", () => {
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const successResult = result as { destinationUrl: URL; headers: Headers };
-      expect(successResult.destinationUrl.toString()).toBe(
+      expect(successResult.destinationUrl.href).toBe(
         "https://graphql.ethang.dev/"
       );
       expect(successResult.headers.get("X-Token")).toBe(
@@ -68,7 +68,7 @@ describe("worker/auto-authenticate", () => {
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const successResult = result as { destinationUrl: URL; headers: Headers };
-      expect(successResult.destinationUrl.toString()).toBe(
+      expect(successResult.destinationUrl.href).toBe(
         "https://graphql.ethang.dev/"
       );
       expect(successResult.headers.get("X-Token")).toBe("admin-session-token");

@@ -13,7 +13,11 @@ describe("define functions", () => {
   });
 
   it("defineSkill returns the input skill", () => {
-    const skill = { content: "x", description: "desc", name: "test" };
+    const skill = {
+      content: "x",
+      description: "desc",
+      name: "test-skill"
+    };
     expect(defineSkill(skill)).toBe(skill);
   });
 });

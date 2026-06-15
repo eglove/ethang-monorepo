@@ -8,7 +8,8 @@ export default defineConfig(
     "dist",
     "node_modules",
     "tsconfig.json",
-    "wrangler.jsonc"
+    "wrangler.jsonc",
+    "coverage"
   ]),
   ...config,
   {

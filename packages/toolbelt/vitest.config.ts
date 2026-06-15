@@ -8,13 +8,12 @@ export default defineConfig({
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 96.79,
+        branches: 99.47,
         functions: 100,
         lines: 100,
         statements: 100
       }
     },
-    environment: "node",
-    setupFiles: ["src/test-setup.ts"]
+    environment: "node"
   }
 });

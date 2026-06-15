@@ -1,7 +1,7 @@
 /**
- * Post-build tripwires. Every check returns violations instead of throwing so
- * compile.ts can aggregate and report all failures in one pass.
- */
+Post-build tripwires. Every check returns violations instead of throwing so
+compile.ts can aggregate and report all failures in one pass.
+*/
 
 import endsWith from "lodash/endsWith.js";
 import every from "lodash/every.js";
@@ -18,14 +18,14 @@ import type { RuleDefinition } from "./define.ts";
 
 import {
   FORBIDDEN_PATTERNS,
-  RULE_CHAR_LIMIT,
-  RULE_WARN_CHARS
+  RULE_MAX_CHARS,
+  RULE_MIN_CHARS
 } from "./config.ts";
 
 /**
- * A rendered markdown file must open with a well-formed frontmatter block:
- * `---`, `key: value` lines only, closing `---`.
- */
+A rendered markdown file must open with a well-formed frontmatter block:
+`---`, `key: value` lines only, closing `---`.
+*/
 export const validateFrontmatterBlock = (markdown: string): boolean => {
   if (!startsWith(markdown, "---\n")) {
     return false;
@@ -47,15 +47,11 @@ export const validateFrontmatterBlock = (markdown: string): boolean => {
 
 export const checkRuleSize = (
   content: string
-): { length: number; status: "fail" | "ok" | "warn" } => {
+): { length: number; status: "fail" | "ok" } => {
   const { length } = content;
 
-  if (RULE_CHAR_LIMIT < length) {
+  if (length < RULE_MIN_CHARS || length > RULE_MAX_CHARS) {
     return { length, status: "fail" };
-  }
-
-  if (RULE_WARN_CHARS <= length) {
-    return { length, status: "warn" };
   }
 
   return { length, status: "ok" };
@@ -89,20 +85,6 @@ export const findDuplicateRuleFilenames = (
   }
 
   return [...duplicates];
-};
-
-/**
- * Tripwire against hand-editing the generated swebok router: every chapter
- * resource path must appear verbatim in the rendered router skill. Returns
- * the paths that are absent.
- */
-export const validateSwebokGuard = (
-  resourcePaths: readonly string[],
-  routerContent: string
-): string[] => {
-  return filter(resourcePaths, (resourcePath) => {
-    return !includes(routerContent, resourcePath);
-  });
 };
 
 /** Scan a built directory tree for leftover {{sections}} tokens. */

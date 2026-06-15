@@ -1,5 +1,6 @@
 import { Link, type LinkProps } from "@radix-ui/themes";
-import isNil from "lodash/isNil.js";
+import attempt from "lodash/attempt.js";
+import isError from "lodash/isError.js";
 
 import { InternalLink } from "./internal-link.tsx";
 
@@ -10,9 +11,12 @@ type HybridLinkProperties = {
 
 export const HybridLink = (properties: Readonly<HybridLinkProperties>) => {
   const { origin } = new URL(globalThis.location.href);
-  const parsed = URL.parse(properties.href);
 
-  if (isNil(parsed) || origin === new URL(properties.href).origin) {
+  const url = attempt(() => {
+    return new URL(properties.href);
+  });
+
+  if (isError(url) || (!isError(url) && url.origin === origin)) {
     return <InternalLink {...properties} />;
   }
 

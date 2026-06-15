@@ -1,15 +1,15 @@
-/** Antigravity rejects rules files above this size. */
-export const RULE_CHAR_LIMIT = 12_000;
+/** Minimum rule file size in characters. */
+export const RULE_MIN_CHARS = 10_000;
 
-/** Warn threshold so growing rules are visible before they hard-fail. */
-export const RULE_WARN_CHARS = 10_000;
+/** Maximum rule file size in characters. */
+export const RULE_MAX_CHARS = 12_000;
 
 /**
- * Source-workspace vocabulary that must never reach the generated output.
- * Content is rewritten from a NISC/Angular workspace to this monorepo's
- * stack; these tripwires make the rewrite mechanically verifiable.
- * "Stash" stays case-sensitive so "git stash" remains legal.
- */
+Source-workspace vocabulary that must never reach the generated output.
+Content is rewritten from a NISC/Angular workspace to this monorepo's
+stack; these tripwires make the rewrite mechanically verifiable.
+"Stash" stays case-sensitive so "git stash" remains legal.
+*/
 export const FORBIDDEN_PATTERNS: readonly {
   name: string;
   pattern: RegExp;

@@ -1,7 +1,0 @@
-{
-  "extends": "../tsconfig/tsconfig.react.json",
-  "compilerOptions": {
-    "moduleResolution": "bundler",
-    "types": ["node", "vite/client"]
-  },
-}

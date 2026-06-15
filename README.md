@@ -38,7 +38,6 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **[eslint-config](packages/eslint-config)**: Shared ESLint configuration for multiple frameworks including React, Angular, Astro, and Solid, ensuring consistent code style.
 - **[graphql-types](packages/graphql-types)**: Shared TypeScript types for GraphQL schemas and operations generated via GraphQL Code Generator.
 - **[hono-middleware](packages/hono-middleware)**: Shared middleware utilities for Hono applications.
-- **[hooks](packages/hooks)**: Collection of reusable React hooks for UI interactions, state management, and browser APIs like local storage, clipboard, and media queries.
 - **[leetcode](packages/leetcode)**: Collection of LeetCode solutions.
 - **[logger-sdk](packages/logger-sdk)**: Client SDK for sending logs to the Hono-based logger service.
 - **[markdown-generator](packages/markdown-generator)**: Utility for programmatically generating structured markdown content for documentation and other text-based outputs.

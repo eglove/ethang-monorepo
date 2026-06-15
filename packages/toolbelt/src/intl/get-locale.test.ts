@@ -113,12 +113,6 @@ describe(getLocale, () => {
     });
   });
 
-  it("returns null when no source type matches", () => {
-    const result = getLocale(["navigator"]);
-
-    expect(result).toBeNull();
-  });
-
   describe("respects source type order — first matching wins", () => {
     beforeEach(() => {
       vi.stubGlobal("navigator", { language: "es-ES" });

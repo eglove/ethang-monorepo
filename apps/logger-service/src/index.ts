@@ -176,10 +176,10 @@ const buildConditions = (filters: LogQueryInput) => {
     conditions.push(eq(logs.environment, filters.environment));
   }
   if (!isNil(filters.startDate)) {
-    conditions.push(gte(logs.timestamp, filters.startDate.toISOString()));
+    conditions.push(gte(logs.timestamp, filters.startDate.toString()));
   }
   if (!isNil(filters.endDate)) {
-    conditions.push(lte(logs.timestamp, filters.endDate.toISOString()));
+    conditions.push(lte(logs.timestamp, filters.endDate.toString()));
   }
 
   return conditions;
@@ -189,8 +189,8 @@ const cleanLogRows = (results: (typeof logs.$inferSelect)[]) => {
   return map(results, ({ metadata, stack, ...rest }) => {
     return {
       ...rest,
-      ...(isNil(stack) ? {} : { stack }),
-      ...(isNil(metadata) ? {} : { metadata })
+      ...(!isNil(stack) && { stack }),
+      ...(!isNil(metadata) && { metadata })
     };
   });
 };

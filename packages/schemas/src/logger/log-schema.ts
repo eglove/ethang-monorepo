@@ -1,4 +1,5 @@
 import isString from "lodash/isString.js";
+import { DateTime } from "luxon";
 import { z } from "zod";
 
 export const logIngestSchema = z.object({
@@ -13,7 +14,12 @@ export const logIngestSchema = z.object({
 export const logQuerySchema = z.object({
   endDate: z
     .preprocess((value) => {
-      return isString(value) ? new Date(value) : undefined;
+      if (isString(value)) {
+        const date = DateTime.fromISO(value);
+
+        return date.isValid ? date.toJSDate() : undefined;
+      }
+      return value;
     }, z.date().optional())
     .optional(),
   environment: z.string().optional(),
@@ -23,7 +29,12 @@ export const logQuerySchema = z.object({
   serviceName: z.string().optional(),
   startDate: z
     .preprocess((value) => {
-      return isString(value) ? new Date(value) : undefined;
+      if (isString(value)) {
+        const date = DateTime.fromISO(value);
+
+        return date.isValid ? date.toJSDate() : null;
+      }
+      return value;
     }, z.date().optional())
     .optional()
 });

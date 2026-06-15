@@ -35,7 +35,7 @@ describe("cycleCourseTrackingStatusMutation", () => {
         userId: USER_ID
       });
 
-    // eslint-disable-next-line unicorn/no-useless-undefined,sonar/no-undefined-argument
+    // eslint-disable-next-line sonar/no-undefined-argument
     const values = vi.fn(undefined);
     const database = {
       insert: vi.fn(() => {
@@ -79,7 +79,7 @@ describe("cycleCourseTrackingStatusMutation", () => {
         userId: USER_ID
       });
 
-    // eslint-disable-next-line unicorn/no-useless-undefined,sonar/no-undefined-argument
+    // eslint-disable-next-line sonar/no-undefined-argument
     const where = vi.fn(undefined);
     const set = vi.fn(() => {
       return { where };
