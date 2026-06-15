@@ -64,4 +64,16 @@ describe("GLOBAL_SKILLS verification", () => {
     expect(sdlc5?.content).toContain("Conventional Commit");
     expect(sdlc5?.content).toContain("FSM");
   });
+
+  it("should contain the sdlc-6 skill with valid properties", () => {
+    const sdlc6 = find(GLOBAL_SKILLS, (skill) => {
+      return "sdlc-6" === skill.name;
+    });
+
+    expect(sdlc6).toBeDefined();
+    expect(sdlc6?.name).toBe("sdlc-6");
+    expect(sdlc6?.description).toContain("Troubleshooting");
+    expect(sdlc6?.content).toContain("FSM");
+    expect(sdlc6?.content).toContain("corrective");
+  });
 });
