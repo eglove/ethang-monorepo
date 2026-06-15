@@ -1,15 +1,27 @@
-import { useMutation } from "@apollo/client/react";
+import { AddSubscriptionDocument } from "@ethang/graphql-types/__generated__/graphql.ts";
 import { Box, Button, Card, Flex, TextField } from "@radix-ui/themes";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 import noop from "lodash/noop";
 import trim from "lodash/trim";
 import { type SyntheticEvent, useState } from "react";
 
-import { ADD_SUBSCRIPTION, GET_FEEDS } from "./queries.ts";
+import { graphqlRequest } from "../../clients/graphql-client.ts";
+import { subscriptionsOptions } from "./queries.ts";
 
 export const AddFeedForm = () => {
-  const [addSubscription, { loading: addLoading }] =
-    useMutation(ADD_SUBSCRIPTION);
+  const queryClient = useQueryClient();
+
+  const { isPending: addLoading, mutateAsync: addSubscription } = useMutation({
+    mutationFn: async (variables: { xmlAddress: string }) => {
+      return graphqlRequest(AddSubscriptionDocument, variables);
+    },
+    onSuccess: () => {
+      queryClient
+        .invalidateQueries({ queryKey: subscriptionsOptions().queryKey })
+        .catch(noop);
+    }
+  });
 
   const [xmlUrl, setXmlUrl] = useState("");
 
@@ -24,10 +36,7 @@ export const AddFeedForm = () => {
       return;
     }
 
-    await addSubscription({
-      refetchQueries: [{ query: GET_FEEDS }],
-      variables: { xmlAddress: cleanUrl }
-    });
+    await addSubscription({ xmlAddress: cleanUrl });
     setXmlUrl("");
   };
 

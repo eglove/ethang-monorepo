@@ -4,7 +4,6 @@
     "current node"
   ],
   "dependencies": {
-    "@apollo/client": "^4.2.3",
     "@ethang/graphql-types": "workspace:*",
     "@ethang/logger-sdk": "workspace:*",
     "@ethang/store": "^3.1.0",
@@ -17,7 +16,6 @@
     "@tailwindcss/vite": "^4.3.1",
     "@tanstack/react-query": "^5.101.0",
     "@tanstack/react-router": "^1.170.15",
-    "apollo3-cache-persist": "^0.15.0",
     "lodash": "^4.18.1",
     "lucide-react": "^1.18.0",
     "luxon": "^3.7.2",

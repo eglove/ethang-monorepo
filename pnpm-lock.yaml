@@ -21,7 +21,7 @@ importers:
         version: 0.40.0
       '@ethang/eslint-config':
         specifier: ^25.20.11
-        version: 25.20.11(@angular/cli@21.2.13(@types/node@25.9.3)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.61.1(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.61.0)(@typescript-eslint/utils@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(jiti@2.7.0)(prettier@3.8.4)(storybook@10.4.1(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(tailwindcss@4.3.1)(typescript@6.0.3)(vitest@4.1.9)
+        version: 25.20.11(@angular/cli@21.2.13(@types/node@25.9.3)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.61.1(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.61.1)(@typescript-eslint/utils@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(jiti@2.7.0)(prettier@3.8.4)(storybook@10.4.1(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(tailwindcss@4.3.1)(typescript@6.0.3)(vitest@4.1.9)
       '@testing-library/dom':
         specifier: ^10.4.1
         version: 10.4.1
@@ -302,9 +302,6 @@ importers:
 
   apps/ethang-react:
     dependencies:
-      '@apollo/client':
-        specifier: ^4.2.3
-        version: 4.2.3(graphql-ws@6.0.8(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))(ws@8.21.0))(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(rxjs@7.8.2)
       '@ethang/graphql-types':
         specifier: workspace:*
         version: link:../../packages/graphql-types
@@ -341,9 +338,6 @@ importers:
       '@tanstack/react-router':
         specifier: ^1.170.15
         version: 1.170.15(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      apollo3-cache-persist:
-        specifier: ^0.15.0
-        version: 0.15.0(@apollo/client@4.2.3(graphql-ws@6.0.8(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))(ws@8.21.0))(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(rxjs@7.8.2))
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
@@ -1574,25 +1568,6 @@ packages:
     resolution: {integrity: sha512-F17/vCp7QVwom9eG7ToauIKdAxpSoadsJnqIfyryLFSkLSOEqu+eC5Z3N8OXcUVStuOMcNHlyraRsA6rRICu4g==}
     peerDependencies:
       graphql: 14.x || 15.x || 16.x
-
-  '@apollo/client@4.2.3':
-    resolution: {integrity: sha512-+auRYBXow2v7cT+wKzvjyMyyEojq+G7Sf80vIR57rtEPcxRFuMXuU9IKjwxZ3muclUgdGKwZXNeuki+g0GabgQ==}
-    peerDependencies:
-      graphql: ^16.0.0 || ^17.0.0
-      graphql-ws: ^5.5.5 || ^6.0.3
-      react: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
-      react-dom: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
-      rxjs: ^7.3.0
-      subscriptions-transport-ws: ^0.9.0 || ^0.11.0
-    peerDependenciesMeta:
-      graphql-ws:
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      subscriptions-transport-ws:
-        optional: true
 
   '@apollo/composition@2.14.1':
     resolution: {integrity: sha512-VWtB2jb19lnR5JaD181x7g2oyCpNsLEAetYdB41McmxHIemFAv0AEs679bPmr0IL8dzf74Cm8dL5bxWCaHBnBQ==}
@@ -7317,22 +7292,6 @@ packages:
     resolution: {integrity: sha512-Nst5JdK47VIl9UcGwtv2Rcgyn5lWtZ0/mhRQ4G8NN2isxpq2TO30iqHzmwoJycjWuyUfg3GFXqP/gFHXeV57IA==}
     engines: {node: '>=16.0.0'}
 
-  '@wry/caches@1.0.1':
-    resolution: {integrity: sha512-bXuaUNLVVkD20wcGBWRyo7j9N3TxePEWFZj2Y+r9OoUzfqmavM84+mFykRicNsBqatba5JLay1t48wxaXaWnlA==}
-    engines: {node: '>=8'}
-
-  '@wry/context@0.7.4':
-    resolution: {integrity: sha512-jmT7Sb4ZQWI5iyu3lobQxICu2nC/vbUhP0vIdd6tHC9PTfenmRmuIFqktc6GH9cgi+ZHnsLWPvfSvc4DrYmKiQ==}
-    engines: {node: '>=8'}
-
-  '@wry/equality@0.5.7':
-    resolution: {integrity: sha512-BRFORjsTuQv5gxcXsuDXx6oGRhuVsEGwZy6LOzRRfgu+eSfxbhUQ9L9YtSEIuIjY/o7g3iWFjrc5eSY1GXP2Dw==}
-    engines: {node: '>=8'}
-
-  '@wry/trie@0.5.0':
-    resolution: {integrity: sha512-FNoYzHawTMk/6KMQoEG5O4PuioX19UbwdQKF44yw0nLfOypfQdjtfZzo/UIJWAJ23sNIFbD1Ug9lbaDGMwbqQA==}
-    engines: {node: '>=8'}
-
   '@xstate/react@6.1.0':
     resolution: {integrity: sha512-ep9F0jGTI63B/jE8GHdMpUqtuz7yRebNaKv8EMUaiSi29NOglywc2X2YSOV/ygbIK+LtmgZ0q9anoEA2iBSEOw==}
     peerDependencies:
@@ -7467,11 +7426,6 @@ packages:
 
   anynum@1.0.0:
     resolution: {integrity: sha512-xjR9/zBVnUOP6ztMIIgShjsxui80nQUQH+5xJnvrYLs+90bF25/KJqaAi8mk+B4RDtX1Nspi6fmp4YTEts8SfA==}
-
-  apollo3-cache-persist@0.15.0:
-    resolution: {integrity: sha512-asxhPOHGddgXYvY4/Wa+XLODYpjci/kPB4zdy82D0tVGzVmvO4lqp3k06NtzHvd//gd9kCnTaG8iziwAcXZYjw==}
-    peerDependencies:
-      '@apollo/client': ^3.7.17
 
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -10648,9 +10602,6 @@ packages:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
 
-  optimism@0.18.1:
-    resolution: {integrity: sha512-mLXNwWPa9dgFyDqkNi54sjDyNJ9/fTI6WGBLgnXku1vdKY/jovHfZT5r+aiVeFFLOz+foPNOm5YJ4mqgld2GBQ==}
-
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -12999,22 +12950,6 @@ snapshots:
     dependencies:
       graphql: 17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306)
 
-  '@apollo/client@4.2.3(graphql-ws@6.0.8(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))(ws@8.21.0))(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(rxjs@7.8.2)':
-    dependencies:
-      '@graphql-typed-document-node/core': 3.2.0(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))
-      '@wry/caches': 1.0.1
-      '@wry/equality': 0.5.7
-      '@wry/trie': 0.5.0
-      graphql: 17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306)
-      graphql-tag: 2.12.6(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))
-      optimism: 0.18.1
-      rxjs: 7.8.2
-      tslib: 2.8.1
-    optionalDependencies:
-      graphql-ws: 6.0.8(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))(ws@8.21.0)
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
-
   '@apollo/composition@2.14.1(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))':
     dependencies:
       '@apollo/federation-internals': 2.14.1(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))
@@ -14998,54 +14933,6 @@ snapshots:
     dependencies:
       '@eslint/core': 1.2.1
       levn: 0.4.1
-
-  '@ethang/eslint-config@25.20.11(@angular/cli@21.2.13(@types/node@25.9.3)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.61.1(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.61.0)(@typescript-eslint/utils@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(jiti@2.7.0)(prettier@3.8.4)(storybook@10.4.1(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(tailwindcss@4.3.1)(typescript@6.0.3)(vitest@4.1.9)':
-    dependencies:
-      '@angular-eslint/eslint-plugin': 22.0.0(@typescript-eslint/utils@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
-      '@angular-eslint/eslint-plugin-template': 22.0.0(@angular-eslint/template-parser@22.0.0(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.61.0)(@typescript-eslint/utils@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
-      '@angular-eslint/template-parser': 22.0.0(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
-      '@eslint-react/eslint-plugin': 5.9.0(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
-      '@eslint/compat': 2.1.0(eslint@10.5.0(jiti@2.7.0))
-      '@eslint/css': 1.3.0
-      '@eslint/js': 10.0.1(eslint@10.5.0(jiti@2.7.0))
-      '@eslint/json': 2.0.0
-      '@eslint/markdown': 8.0.2
-      '@html-eslint/eslint-plugin': 0.62.0(eslint@10.5.0(jiti@2.7.0))
-      '@tanstack/eslint-plugin-query': 5.101.0(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
-      '@tanstack/eslint-plugin-router': 1.162.0(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
-      '@typescript-eslint/parser': 8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
-      '@vitest/eslint-plugin': 1.6.20(@typescript-eslint/eslint-plugin@8.61.1(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)(vitest@4.1.9)
-      angular-eslint: 22.0.0(@angular/cli@21.2.13(@types/node@25.9.3)(chokidar@5.0.0))(chokidar@5.0.0)(eslint@10.5.0(jiti@2.7.0))(typescript-eslint@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(typescript@6.0.3)
-      eslint: 10.5.0(jiti@2.7.0)
-      eslint-plugin-astro: 1.7.0(eslint@10.5.0(jiti@2.7.0))
-      eslint-plugin-compat: 7.0.2(eslint@10.5.0(jiti@2.7.0))
-      eslint-plugin-jsx-a11y: 6.10.2(eslint@10.5.0(jiti@2.7.0))
-      eslint-plugin-lodash: 8.0.0(eslint@10.5.0(jiti@2.7.0))
-      eslint-plugin-perfectionist: 5.9.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
-      eslint-plugin-playwright: 2.10.4(eslint@10.5.0(jiti@2.7.0))
-      eslint-plugin-prettier: 5.5.6(@types/eslint@9.6.1)(eslint@10.5.0(jiti@2.7.0))(prettier@3.8.4)
-      eslint-plugin-react-hooks: 7.1.1(eslint@10.5.0(jiti@2.7.0))
-      eslint-plugin-solid: 0.14.5(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
-      eslint-plugin-sonarjs: 4.0.3(eslint@10.5.0(jiti@2.7.0))
-      eslint-plugin-storybook: 10.4.5(eslint@10.5.0(jiti@2.7.0))(storybook@10.4.1(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(typescript@6.0.3)
-      eslint-plugin-tailwindcss: 4.0.0-beta.0(tailwindcss@4.3.1)
-      eslint-plugin-unicorn: 66.0.0(eslint@10.5.0(jiti@2.7.0))
-      typescript-eslint: 8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
-    transitivePeerDependencies:
-      - '@angular/cli'
-      - '@types/eslint'
-      - '@typescript-eslint/eslint-plugin'
-      - '@typescript-eslint/types'
-      - '@typescript-eslint/utils'
-      - chokidar
-      - eslint-config-prettier
-      - jiti
-      - prettier
-      - storybook
-      - supports-color
-      - tailwindcss
-      - typescript
-      - vitest
 
   '@ethang/eslint-config@25.20.11(@angular/cli@21.2.13(@types/node@25.9.3)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.61.1(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.61.1)(@typescript-eslint/utils@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(jiti@2.7.0)(prettier@3.8.4)(storybook@10.4.1(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(tailwindcss@4.3.1)(typescript@6.0.3)(vitest@4.1.9)':
     dependencies:
@@ -19268,22 +19155,6 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@wry/caches@1.0.1':
-    dependencies:
-      tslib: 2.8.1
-
-  '@wry/context@0.7.4':
-    dependencies:
-      tslib: 2.8.1
-
-  '@wry/equality@0.5.7':
-    dependencies:
-      tslib: 2.8.1
-
-  '@wry/trie@0.5.0':
-    dependencies:
-      tslib: 2.8.1
-
   '@xstate/react@6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.0)':
     dependencies:
       react: 19.2.7
@@ -19426,10 +19297,6 @@ snapshots:
       picomatch: 2.3.2
 
   anynum@1.0.0: {}
-
-  apollo3-cache-persist@0.15.0(@apollo/client@4.2.3(graphql-ws@6.0.8(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))(ws@8.21.0))(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(rxjs@7.8.2)):
-    dependencies:
-      '@apollo/client': 4.2.3(graphql-ws@6.0.8(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))(ws@8.21.0))(graphql@17.0.0(patch_hash=69d2f6e18d5b4fe84b256c48ce064c6c68df71c12d55ba16b001e6ea8df80306))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(rxjs@7.8.2)
 
   argparse@1.0.10:
     dependencies:
@@ -23132,13 +22999,6 @@ snapshots:
       define-lazy-prop: 2.0.0
       is-docker: 2.2.1
       is-wsl: 2.2.0
-
-  optimism@0.18.1:
-    dependencies:
-      '@wry/caches': 1.0.1
-      '@wry/context': 0.7.4
-      '@wry/trie': 0.5.0
-      tslib: 2.8.1
 
   optionator@0.9.4:
     dependencies:

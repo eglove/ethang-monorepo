@@ -1,30 +1,29 @@
-import { useQuery } from "@apollo/client/react";
-import { gql } from "@ethang/graphql-types/__generated__";
+import { CourseDocument } from "@ethang/graphql-types/__generated__/graphql";
 import { Link, Skeleton, Text } from "@radix-ui/themes";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import get from "lodash/get.js";
-import isNil from "lodash/isNil.js";
+
+import { graphqlRequest } from "../../clients/graphql-client.ts";
 
 type CourseProperties = {
   courseId: string;
   courseIndex: number;
 };
 
+export const courseQueryOptions = (courseId: string) => {
+  return queryOptions({
+    queryFn: async () => {
+      return graphqlRequest(CourseDocument, { courseId });
+    },
+    queryKey: ["course", courseId]
+  });
+};
+
 export const Course = ({
   courseId,
   courseIndex
 }: Readonly<CourseProperties>) => {
-  const { data, loading } = useQuery(
-    gql(`query Course($courseId: ID!) {
-  course(id: $courseId) {
-    id
-    name
-    url
-    author
-  }
-}`),
-    { variables: { courseId } }
-  );
-  const isPending = loading && isNil(data);
+  const { data, isPending } = useQuery(courseQueryOptions(courseId));
 
   const link = get(data, ["course", "url"]);
   const name = get(data, ["course", "name"]);

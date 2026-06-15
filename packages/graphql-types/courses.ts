@@ -12,39 +12,6 @@ export enum SubscriptionSortField {
   /** Sort by the title of the subscription. */
   Title = "TITLE"
 }
-export type AddSubscriptionMutation = {
-  addSubscription: {
-    id: string;
-    title: string;
-    website: string;
-    xmlAddress: string;
-  };
-};
-export type AddSubscriptionMutationVariables = Exact<{
-  xmlAddress: string;
-}>;
-export type AllArticlesQuery = {
-  subscriptions: {
-    edges: {
-      node: {
-        articles: {
-          edges: {
-            node: {
-              id: string;
-              isRead: boolean;
-              link: string;
-              publishedAt: null | string;
-              title: string;
-            };
-          }[];
-        };
-      };
-    }[];
-  };
-};
-
-export type AllArticlesQueryVariables = Exact<Record<string, never>>;
-
 /** An individual RSS article */
 export type Article = {
   __typename?: "Article";
@@ -100,14 +67,6 @@ export type Course = {
   /** The URL of the course. */
   url: Scalars["String"]["output"];
 };
-
-export type CourseQuery = {
-  course: { author: string; id: string; name: string; url: string } | null;
-};
-
-export type CourseQueryVariables = Exact<{
-  courseId: number | string;
-}>;
 
 /** A user's tracking state for a course. */
 export type CourseTracking = {
@@ -181,24 +140,6 @@ export type FeedArticlesArgs = {
   isRead?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
-export type FeedArticlesQuery = {
-  feedArticles: {
-    edges: {
-      node: {
-        id: string;
-        isRead: boolean;
-        link: string;
-        publishedAt: null | string;
-        title: string;
-      };
-    }[];
-  };
-};
-
-export type FeedArticlesQueryVariables = Exact<{
-  feedId: string;
-}>;
-
 /** A connection to a list of feeds. */
 export type FeedConnection = {
   __typename?: "FeedConnection";
@@ -216,32 +157,6 @@ export type FeedEdge = {
   /** The item at the end of the edge. */
   node: Feed;
 };
-
-export type GetFeedsQuery = {
-  subscriptions: { edges: { node: { id: string; title: string } }[] };
-};
-
-export type GetFeedsQueryVariables = Exact<Record<string, never>>;
-
-export type GetRecommendedCoursesLearningPathIdsQuery = {
-  curriculum: {
-    id: string;
-    learningPaths: { courses: { id: string }[]; id: string }[];
-    name: string;
-    updatedAt: string;
-  } | null;
-};
-
-export type GetRecommendedCoursesLearningPathIdsQueryVariables = Exact<
-  Record<string, never>
->;
-
-/** Internal type. DO NOT USE DIRECTLY. */
-export type Incremental<T> =
-  | {
-      [P in keyof T]?: P extends "__typename" | " $fragmentName" ? T[P] : never;
-    }
-  | T;
 
 export type InputMaybe<T> = Maybe<T>;
 
@@ -263,29 +178,6 @@ export type LearningPath = {
   /** The URL of the learning path. */
   url?: Maybe<Scalars["String"]["output"]>;
 };
-
-export type LearningPathQuery = {
-  learningPath: {
-    courses: { id: string }[];
-    id: string;
-    name: string;
-    swebokFocus: string;
-    url: null | string;
-  } | null;
-};
-
-export type LearningPathQueryVariables = Exact<{
-  learningPathId: number | string;
-}>;
-
-export type MarkArticleReadMutation = {
-  markArticleRead: { id: string; isRead: boolean };
-};
-
-export type MarkArticleReadMutationVariables = Exact<{
-  articleId: number | string;
-  isRead: boolean;
-}>;
 
 export type Maybe<T> = null | T;
 
@@ -432,6 +324,3 @@ export type SubscriptionSortInput = {
   /** The field to sort the subscriptions by. */
   field: SubscriptionSortField;
 };
-
-/** Internal type. DO NOT USE DIRECTLY. */
-type Exact<T extends Record<string, unknown>> = { [K in keyof T]: T[K] };

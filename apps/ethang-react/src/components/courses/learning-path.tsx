@@ -1,5 +1,4 @@
-import { useQuery } from "@apollo/client/react";
-import { gql } from "@ethang/graphql-types/__generated__";
+import { LearningPathDocument } from "@ethang/graphql-types/__generated__/graphql";
 import {
   Badge,
   Card,
@@ -9,10 +8,12 @@ import {
   Skeleton,
   Text
 } from "@radix-ui/themes";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import get from "lodash/get";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
 
+import { graphqlRequest } from "../../clients/graphql-client.ts";
 import { Course } from "./course.tsx";
 
 type LearningPathProperties = {
@@ -42,27 +43,22 @@ const swebokFocusMap = new Map([
   ["testing", "Software Testing"]
 ]);
 
+export const learningPathQueryOptions = (learningPathId: string) => {
+  return queryOptions({
+    queryFn: async () => {
+      return graphqlRequest(LearningPathDocument, { learningPathId });
+    },
+    queryKey: ["learningPath", learningPathId]
+  });
+};
+
 export const LearningPath = ({
   courseOffset,
   learningPathId
 }: Readonly<LearningPathProperties>) => {
-  const { data, loading } = useQuery(
-    gql(
-      `query LearningPath($learningPathId: ID!) {
-  learningPath(id: $learningPathId) {
-    id
-    swebokFocus
-    name
-    url
-    courses {
-      id
-    }
-  }
-}`
-    ),
-    { variables: { learningPathId } }
+  const { data, isPending } = useQuery(
+    learningPathQueryOptions(learningPathId)
   );
-  const isPending = loading && isNil(data);
 
   const url = get(data, ["learningPath", "url"]);
   const name = get(data, ["learningPath", "name"]);
