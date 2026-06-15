@@ -22,7 +22,6 @@ describe("requireAuth Middleware", () => {
   });
 
   it("should return 401 if verification fails", async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call
     (globalThis.fetch as any).mockResolvedValueOnce({
       ok: false
     });
@@ -42,9 +41,7 @@ describe("requireAuth Middleware", () => {
   });
 
   it("should proceed if verification succeeds", async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call
     (globalThis.fetch as any).mockResolvedValueOnce({
-      // eslint-disable-next-line @typescript-eslint/require-await
       json: async () => {
         return { id: "123" };
       },
@@ -65,7 +62,6 @@ describe("requireAuth Middleware", () => {
 
     expect(response.status).toBe(200);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const body: { user: { id: string } } = await response.json();
 
     expect(body.user).toStrictEqual({ id: "123" });

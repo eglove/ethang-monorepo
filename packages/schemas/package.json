@@ -19,7 +19,7 @@
     "zod": "^4.4.1"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.20.9",
+    "@ethang/eslint-config": "^25.20.10",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",
     "browserslist-config-baseline": "^0.5.0",

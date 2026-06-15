@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { fireEvent, render, screen } from "@testing-library/react";
 import repeat from "lodash/repeat.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
 import { describe, expect, it, vi } from "vitest";
 
 import { MockApolloServer } from "./test-utilities/mock-apollo-server.ts";

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { ComponentType, ReactNode } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -69,7 +68,6 @@ describe("Login Integration", () => {
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(Response.json(mockUser, { status: 200 }));
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const LoginComponent = Route.options.component as ComponentType;
     render(<LoginComponent />);
 
@@ -107,7 +105,6 @@ describe("Login Integration", () => {
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(Response.json(mockUser, { status: 200 }));
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const LoginComponent = Route.options.component as ComponentType;
     render(<LoginComponent />);
 
@@ -138,7 +135,6 @@ describe("Login Integration", () => {
       )
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const LoginComponent = Route.options.component as ComponentType;
     render(<LoginComponent />);
 
@@ -164,7 +160,6 @@ describe("Login Integration", () => {
   it("should not call signIn if email or password are empty or whitespace", () => {
     const signInSpy = vi.spyOn(authStore, "signIn");
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const LoginComponent = Route.options.component as ComponentType;
     render(<LoginComponent />);
 
@@ -179,7 +174,6 @@ describe("Login Integration", () => {
   it("should not call signIn if email is filled but password is empty", () => {
     const signInSpy = vi.spyOn(authStore, "signIn");
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const LoginComponent = Route.options.component as ComponentType;
     render(<LoginComponent />);
 
@@ -195,7 +189,6 @@ describe("Login Integration", () => {
   it("should not call signIn if email is empty but password is filled", () => {
     const signInSpy = vi.spyOn(authStore, "signIn");
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const LoginComponent = Route.options.component as ComponentType;
     render(<LoginComponent />);
 

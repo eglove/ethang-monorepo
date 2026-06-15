@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import "../../test-utilities/mocks/sanity-client.ts";
 
 import { describe, expect, it, vi } from "vitest";

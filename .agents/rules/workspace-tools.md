@@ -44,6 +44,14 @@ To prevent commands from blocking on interactive inputs, all terminal executions
 ### 1.8 Background Task Lifecycle and Reactive Wakeup
 Long-running operations (like dev servers, long builds, or test suites) are automatically sent to the background as tasks. The system uses a reactive wake-up model, pausing execution and resuming automatically when background processes complete or send stdout. Developers must not write polling scripts or continuously check status, relying instead on system notifications.
 
+### 1.9 GitHub Integration via gh CLI
+The GitHub CLI (`gh`) is integrated under the `rtk` wrapper. It supports optimized, token-efficient formats for query operations, pull requests, issues, repository metadata, and CI run actions.
+- **Ultra-compact output**: Using the `--ultra-compact` flag compresses tables into ASCII icons and inline lines.
+
+### 1.10 Requirements Validation via SARA CLI
+The SARA CLI (`sara`) manages requirements and design integrity in a local traceability graph. It parses files, checks relationships, queries chains, and generates reports.
+- **Integrity Validation**: SARA verifies that all system and software requirements have corresponding traceability relationships and design matches.
+
 ## 2. Standard Operating Procedures (SOP)
 
 ### Step 2.1: Prioritizing WebStorm MCP for File Edits
@@ -128,6 +136,24 @@ rtk pnpm --filter @ethang/agents-build test
 rtk pnpm --filter @ethang/agents-build lint
 ```
 
+### Step 2.9: Managing Pull Requests and Workflows via gh CLI
+Use `rtk gh` subcommands to interact with GitHub. Wrap multi-line arguments in quotes:
+```bash
+# Create a pull request
+rtk gh pr create --title "feat: add feature" --body "My body details"
+# View CI run log
+rtk gh run view <run-id> --log
+```
+
+### Step 2.10: Validating Requirements and Design Traceability via SARA CLI
+Use `rtk sara` to initialize, validate, and query the graph:
+```bash
+# Verify integrity of requirements and designs
+rtk sara check
+# Generate coverage report
+rtk sara report
+```
+
 ## 3. Agent Compliance Checklist
 The agent must verify compliance with the following workspace tools usage rules:
 
@@ -150,3 +176,5 @@ The agent must verify compliance with the following workspace tools usage rules:
 - [ ] **Rule Character Bounds**: Is the compiled markdown file size strictly between 10,000 and 11,800 characters?
 - [ ] **Backticks Escaped**: Are all backticks and code snippets in the rule content template properly escaped?
 - [ ] **Walkthrough Updated**: Are build verification status, benchmark times, and test logs documented in `walkthrough.md`?
+- [ ] **SARA Graph Checked**: Did you run `rtk sara check` to validate requirements and design integrity?
+- [ ] **GitHub PR Opened**: Did you open the Pull Request using the `rtk gh pr` CLI when submitting changes?

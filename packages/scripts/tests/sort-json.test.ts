@@ -145,9 +145,9 @@ describe("sort-json utilities", () => {
       ];
 
       vi.mocked(readdirSync)
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+
         .mockReturnValueOnce(mockDirectoryEntries as any) // root
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+
         .mockReturnValueOnce([new MockDirent(TARGET_JSON, false)] as any); // src
 
       const results = findFilesRecursively("root", TARGET_JSON);

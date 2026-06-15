@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/require-await, @typescript-eslint/no-unsafe-type-assertion, lodash/prefer-constant */
+/* eslint-disable lodash/prefer-constant */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { addSubscriptionMutation } from "./add-subscription.ts";

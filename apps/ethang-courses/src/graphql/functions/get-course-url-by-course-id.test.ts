@@ -36,7 +36,6 @@ describe("getCourseUrlByCourseId", () => {
       // Should not reach here
       expect(true).toBe(false);
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       expect((error as Error).message).toBe("Course not found");
     }
   });
@@ -56,7 +55,6 @@ describe("getCourseUrlByCourseId", () => {
       // Should not reach here
       expect(true).toBe(false);
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       expect((error as Error).message).toBe("Course not found");
     }
   });

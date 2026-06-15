@@ -1,3 +1,17 @@
+/** The direction to sort. */
+export enum SortDirection {
+  /** Sort in ascending order. */
+  Asc = "ASC",
+  /** Sort in descending order. */
+  Desc = "DESC"
+}
+/** The field to sort subscriptions by. */
+export enum SubscriptionSortField {
+  /** Sort by the publication date of the most recent article. */
+  PublishedAt = "PUBLISHED_AT",
+  /** Sort by the title of the subscription. */
+  Title = "TITLE"
+}
 export type AddSubscriptionMutation = {
   addSubscription: {
     id: string;
@@ -28,7 +42,9 @@ export type AllArticlesQuery = {
     }[];
   };
 };
+
 export type AllArticlesQueryVariables = Exact<Record<string, never>>;
+
 /** An individual RSS article */
 export type Article = {
   __typename?: "Article";
@@ -397,6 +413,7 @@ export type QuerySubscriptionArgs = {
 export type QuerySubscriptionsArgs = {
   after?: InputMaybe<Scalars["String"]["input"]>;
   first?: InputMaybe<Scalars["Int"]["input"]>;
+  sortBy?: InputMaybe<SubscriptionSortInput>;
 };
 
 /** All built-in and custom scalars, mapped to their actual values */
@@ -406,6 +423,14 @@ export type Scalars = {
   ID: { input: string; output: string };
   Int: { input: number; output: number };
   String: { input: string; output: string };
+};
+
+/** Input for sorting subscriptions. */
+export type SubscriptionSortInput = {
+  /** The direction to sort the subscriptions. */
+  direction: SortDirection;
+  /** The field to sort the subscriptions by. */
+  field: SubscriptionSortField;
 };
 
 /** Internal type. DO NOT USE DIRECTLY. */

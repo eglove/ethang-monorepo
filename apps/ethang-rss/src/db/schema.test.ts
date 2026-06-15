@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/consistent-function-scoping,@typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call */
+/* eslint-disable unicorn/consistent-function-scoping */
 import find from "lodash/find.js";
 import { describe, expect, it } from "vitest";
 
@@ -67,7 +67,7 @@ describe("Database Schema Definitions", () => {
 
     const getKeys = (table: unknown) => {
       // @ts-expect-error for test
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
       return (table[sqliteInlineKeysSymbol] ?? []) as {
         reference: () => unknown;
       }[];

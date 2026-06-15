@@ -136,7 +136,7 @@ describe("RSS Feature", () => {
 
     it("returns original string if empty or undefined", () => {
       expect(decodeHtmlEntities("")).toBe("");
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
       expect(decodeHtmlEntities(null as unknown as string)).toBeNull();
     });
 
