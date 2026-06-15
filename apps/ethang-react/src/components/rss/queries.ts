@@ -26,6 +26,53 @@ export const GET_SUBSCRIPTIONS_WITH_ARTICLES = gql(`
   }
 `);
 
+export const GET_FEEDS = gql(`
+    query GetFeeds {
+        subscriptions {
+            edges {
+                node {
+                    title
+                    id
+                }
+            }
+        }
+    }
+`);
+
+export const ALL_ARTICLES = gql(`query AllArticles {
+    subscriptions {
+        edges {
+            node {
+                articles {
+                    edges {
+                        node {
+                            id
+                            isRead
+                            link
+                            title
+                            publishedAt
+                        }
+                    }
+                }
+            }
+        }
+    }
+}`);
+
+export const FEED_ARTICLES = gql(`query FeedArticles($feedId: String!) {
+    feedArticles(feedId: $feedId) {
+        edges {
+            node {
+                id
+                isRead
+                link
+                title
+                publishedAt
+            }
+        }
+    }
+}`);
+
 export const ADD_SUBSCRIPTION = gql(`
   mutation AddSubscription($xmlAddress: String!) {
     addSubscription(xmlAddress: $xmlAddress) {
