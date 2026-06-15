@@ -1,3 +1,4 @@
+---
 schema:
   - "../../apps/ethang-courses/src/graphql/schema.graphql"
   - "../../apps/ethang-rss/src/graphql/schema.graphql"
@@ -18,9 +19,7 @@ generates:
       fragmentMaking: false
   courses.ts:
     plugins:
-      - "@graphql-codegen/typescript"
       - "@graphql-codegen/typescript-operations"
   rss.ts:
     plugins:
-      - "@graphql-codegen/typescript"
       - "@graphql-codegen/typescript-operations"

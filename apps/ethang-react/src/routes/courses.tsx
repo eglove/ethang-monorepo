@@ -1,35 +1,44 @@
-import { useQuery } from "@apollo/client/react";
 import { gql } from "@ethang/graphql-types/__generated__";
 import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import forEach from "lodash/forEach.js";
+import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import map from "lodash/map";
 import { DateTime } from "luxon";
 
+import { graphqlRequest } from "../clients/graphql-client.ts";
 import { courseStore } from "../components/courses/course-store.ts";
 import { LearningPath } from "../components/courses/learning-path.tsx";
 import { MainLayout } from "../components/layout/main-layout.tsx";
 
+export const curriculumQueryOptions = () => {
+  return queryOptions({
+    queryFn: async () => {
+      return graphqlRequest(
+        gql(`query Curriculum($curriculumId: ID!) {
+            curriculum(id: $curriculumId) {
+                id
+                updatedAt
+                learningPaths {
+                    id
+                    courses {
+                        id
+                    }
+                }
+            }
+        }`),
+        { curriculumId: "019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4" }
+      );
+    },
+    queryKey: ["curriculum", "019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4"]
+  });
+};
+
 const RouteComponent = () => {
-  const { data, loading } = useQuery(
-    gql(`query GetRecommendedCoursesLearningPathIds {
-  curriculum(id: "019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4") {
-    id
-    name
-    updatedAt
-    learningPaths {
-      id
-        courses {
-            id
-        }
-    }
-  }
-}`)
-  );
-  const isPending = loading && isNil(data);
+  const { data, isPending } = useQuery(curriculumQueryOptions());
 
   const latestUpdate = get(data, ["curriculum", "updatedAt"]);
   courseStore.reset();

@@ -1,26 +1,37 @@
-import { useQuery } from "@apollo/client/react";
 import { useStore } from "@ethang/store/use-store";
 import { Box, Button, Card, Flex, Heading, Skeleton } from "@radix-ui/themes";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
+import noop from "lodash/noop";
 
-import { GET_FEEDS } from "./queries.ts";
+import { subscriptionsOptions } from "./queries.ts";
 import { rssStore } from "./rss-store.ts";
 import { decodeHtmlEntities } from "./utilities.ts";
 
 export const Feeds = () => {
-  const { data, loading } = useQuery(GET_FEEDS);
-  const isPending = loading && isNil(data);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
+    useInfiniteQuery(subscriptionsOptions());
 
   const selectedFeedId = useStore(rssStore, (state) => {
     return state.selectedFeedId;
   });
 
-  const sorted = isNil(data)
+  const edges = isNil(data)
     ? []
-    : data.subscriptions.edges.toSorted((a, b) => {
-        return a.node.title.localeCompare(b.node.title);
+    : data.pages.flatMap((page) => {
+        return page.subscriptions.edges;
       });
+
+  const sorted = edges.toSorted((a, b) => {
+    return a.node.title.localeCompare(b.node.title);
+  });
+
+  const handleLoadMore = () => {
+    if (hasNextPage) {
+      fetchNextPage().catch(noop);
+    }
+  };
 
   return (
     <Box className="md:col-span-1">
@@ -56,6 +67,17 @@ export const Feeds = () => {
                 </Button>
               );
             })}
+            {hasNextPage && (
+              <Button
+                color="gray"
+                variant="outline"
+                onClick={handleLoadMore}
+                loading={isFetchingNextPage}
+                className="mt-1 w-full cursor-pointer"
+              >
+                Load More
+              </Button>
+            )}
           </Flex>
         </Skeleton>
       </Card>

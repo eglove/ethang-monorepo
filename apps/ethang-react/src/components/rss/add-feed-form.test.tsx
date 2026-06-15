@@ -4,23 +4,30 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AddFeedForm } from "./add-feed-form.tsx";
 
-const mockAddSubscription = vi.fn();
+const mockAddSubscription = vi.fn().mockResolvedValue({});
 let mockLoading = false;
+const mockInvalidateQueries = vi.fn().mockResolvedValue({});
 
-const FEED_XML_URL_PLACEHOLDER = "Feed XML URL";
-const SCOPE_FORM = ":scope form";
-
-vi.mock("@apollo/client/react", () => {
+vi.mock("@tanstack/react-query", () => {
   return {
     useMutation: () => {
-      return [mockAddSubscription, { loading: mockLoading }];
+      return { isPending: mockLoading, mutateAsync: mockAddSubscription };
+    },
+    useQueryClient: () => {
+      return {
+        invalidateQueries: mockInvalidateQueries
+      };
     }
   };
 });
 
+const FEED_XML_URL_PLACEHOLDER = "Feed XML URL";
+const SCOPE_FORM = ":scope form";
+
 describe("AddFeedForm", () => {
   beforeEach(() => {
     mockAddSubscription.mockClear();
+    mockInvalidateQueries.mockClear();
     mockLoading = false;
   });
 
@@ -46,8 +53,7 @@ describe("AddFeedForm", () => {
     fireEvent.click(button);
 
     expect(mockAddSubscription).toHaveBeenCalledWith({
-      refetchQueries: [{ query: expect.any(Object) }],
-      variables: { xmlAddress: "https://example.com/rss.xml" }
+      xmlAddress: "https://example.com/rss.xml"
     });
   });
 

@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260615.1",
-    "@ethang/eslint-config": "^25.20.10",
+    "@ethang/eslint-config": "^25.20.11",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.9.3",

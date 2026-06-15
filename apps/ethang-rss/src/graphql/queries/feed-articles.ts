@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, lt, not } from "drizzle-orm";
+import { and, desc, eq, lt } from "drizzle-orm";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
@@ -6,6 +6,7 @@ import type { ServerContext } from "../../index.ts";
 
 import { type Database, databaseSchema } from "../../db/database-schema.ts";
 import { createConnection } from "../util/pagination.ts";
+import { getReadStateFilter } from "../util/read-filter.ts";
 
 export const feedArticlesQuery = (database: Database) => {
   return async (
@@ -21,25 +22,9 @@ export const feedArticlesQuery = (database: Database) => {
     const { after, feedId, first = 20, isRead } = parameters;
     const limit = first + 1;
 
-    let readStateFilter;
-
-    if (!isNil(isRead)) {
-      const readArticleIds = database
-        .select({
-          articleId: databaseSchema.userItemStatesTable.articleId
-        })
-        .from(databaseSchema.userItemStatesTable)
-        .where(
-          and(
-            eq(databaseSchema.userItemStatesTable.userId, context.user.sub),
-            eq(databaseSchema.userItemStatesTable.isRead, true)
-          )
-        );
-
-      readStateFilter = isRead
-        ? inArray(databaseSchema.articlesTable.id, readArticleIds)
-        : not(inArray(databaseSchema.articlesTable.id, readArticleIds));
-    }
+    const readStateFilter = getReadStateFilter(database, context.user.sub, {
+      isRead
+    });
 
     const articles = await database
       .select()

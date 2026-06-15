@@ -5,16 +5,31 @@ import { Feeds } from "./feeds.tsx";
 import { rssStore } from "./rss-store.ts";
 
 let mockQueryData: unknown = null;
-let mockQueryLoading = false;
+let mockQueryPending = false;
+let mockIsFetchingNextPage = false;
 let mockSelectedFeedId: null | string = null;
+const mockFetchNextPage = vi.fn().mockResolvedValue({});
 
-const ALPHA_FEED_TITLE = "Alpha Feed";
-const BETA_FEED_TITLE = "Beta Feed";
-
-vi.mock("@apollo/client/react", () => {
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal();
   return {
-    useQuery: () => {
-      return { data: mockQueryData, loading: mockQueryLoading };
+    // @ts-expect-error for test
+    ...actual,
+    useInfiniteQuery: () => {
+      let hasNextPage = false;
+      if (null !== mockQueryData) {
+        const { pages } = mockQueryData as {
+          pages: { subscriptions: { pageInfo: { hasNextPage: boolean } } }[];
+        };
+        hasNextPage = pages[0]?.subscriptions.pageInfo.hasNextPage ?? false;
+      }
+      return {
+        data: mockQueryData,
+        fetchNextPage: mockFetchNextPage,
+        hasNextPage,
+        isFetchingNextPage: mockIsFetchingNextPage,
+        isPending: mockQueryPending
+      };
     }
   };
 });
@@ -38,16 +53,21 @@ vi.mock("./rss-store.ts", () => {
   };
 });
 
+const ALPHA_FEED_TITLE = "Alpha Feed";
+const BETA_FEED_TITLE = "Beta Feed";
+
 describe("Feeds", () => {
   beforeEach(() => {
     mockQueryData = null;
-    mockQueryLoading = false;
+    mockQueryPending = false;
+    mockIsFetchingNextPage = false;
     mockSelectedFeedId = null;
+    mockFetchNextPage.mockClear();
     vi.mocked(rssStore.setSelectedFeedId).mockClear();
   });
 
   it("renders a loading skeleton when loading and data is nil", () => {
-    mockQueryLoading = true;
+    mockQueryPending = true;
     render(<Feeds />);
 
     expect(screen.getByTestId("sidebar-skeleton")).toBeDefined();
@@ -55,12 +75,17 @@ describe("Feeds", () => {
 
   it("renders sorted feeds when data is present", () => {
     mockQueryData = {
-      subscriptions: {
-        edges: [
-          { node: { id: "feed-b", title: BETA_FEED_TITLE } },
-          { node: { id: "feed-a", title: ALPHA_FEED_TITLE } }
-        ]
-      }
+      pages: [
+        {
+          subscriptions: {
+            edges: [
+              { node: { id: "feed-b", title: BETA_FEED_TITLE } },
+              { node: { id: "feed-a", title: ALPHA_FEED_TITLE } }
+            ],
+            pageInfo: { endCursor: null, hasNextPage: false }
+          }
+        }
+      ]
     };
 
     render(<Feeds />);
@@ -74,9 +99,14 @@ describe("Feeds", () => {
 
   it("calls setSelectedFeedId(null) when All Feeds is clicked", () => {
     mockQueryData = {
-      subscriptions: {
-        edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }]
-      }
+      pages: [
+        {
+          subscriptions: {
+            edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
+            pageInfo: { endCursor: null, hasNextPage: false }
+          }
+        }
+      ]
     };
     mockSelectedFeedId = "feed-a";
 
@@ -90,9 +120,14 @@ describe("Feeds", () => {
 
   it("calls setSelectedFeedId(feed.id) when a feed button is clicked", () => {
     mockQueryData = {
-      subscriptions: {
-        edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }]
-      }
+      pages: [
+        {
+          subscriptions: {
+            edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
+            pageInfo: { endCursor: null, hasNextPage: false }
+          }
+        }
+      ]
     };
 
     render(<Feeds />);
@@ -101,5 +136,42 @@ describe("Feeds", () => {
     fireEvent.click(feedButton);
 
     expect(rssStore.setSelectedFeedId).toHaveBeenCalledWith("feed-a");
+  });
+
+  it("renders a Load More button when hasNextPage is true", () => {
+    mockQueryData = {
+      pages: [
+        {
+          subscriptions: {
+            edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
+            pageInfo: { endCursor: "cursor-a", hasNextPage: true }
+          }
+        }
+      ]
+    };
+
+    render(<Feeds />);
+
+    expect(screen.getByRole("button", { name: "Load More" })).toBeDefined();
+  });
+
+  it("calls fetchMore when Load More is clicked", () => {
+    mockQueryData = {
+      pages: [
+        {
+          subscriptions: {
+            edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
+            pageInfo: { endCursor: "cursor-a", hasNextPage: true }
+          }
+        }
+      ]
+    };
+
+    render(<Feeds />);
+
+    const loadMoreButton = screen.getByRole("button", { name: "Load More" });
+    fireEvent.click(loadMoreButton);
+
+    expect(mockFetchNextPage).toHaveBeenCalled();
   });
 });

@@ -1,14 +1,20 @@
-import { useMutation, useQuery } from "@apollo/client/react";
+import { gql } from "@ethang/graphql-types/__generated__";
 import { useStore } from "@ethang/store/use-store";
 import { Box, Button, Card, Flex, Heading, Text } from "@radix-ui/themes";
-import flatMap from "lodash/flatMap.js";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient
+} from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
 import noop from "lodash/noop";
-import orderBy from "lodash/orderBy.js";
+import orderBy from "lodash/orderBy";
 import { DateTime } from "luxon";
 
-import { ALL_ARTICLES, FEED_ARTICLES, MARK_ARTICLE_READ } from "./queries.ts";
+import { graphqlRequest } from "../../clients/graphql-client.ts";
+import { allArticlesOptions, feedArticlesOptions } from "./queries.ts";
 import { rssStore } from "./rss-store.ts";
 import { decodeHtmlEntities } from "./utilities.ts";
 
@@ -21,30 +27,53 @@ export const Articles = ({ feedTitle }: Readonly<ArticlesProperties>) => {
     return state.selectedFeedId;
   });
 
-  const { data: allData } = useQuery(ALL_ARTICLES);
+  const queryClient = useQueryClient();
 
-  const { data: feedData } = useQuery(FEED_ARTICLES, {
-    skip: isNil(feedId),
-    variables: { feedId: feedId ?? "" }
-  });
+  const { data: allData } = useQuery(allArticlesOptions());
+
+  const {
+    data: feedData,
+    fetchNextPage: fetchNextPageFeed,
+    hasNextPage: hasNextPageFeed,
+    isFetchingNextPage: isFetchingNextPageFeed
+  } = useInfiniteQuery(feedArticlesOptions(feedId));
+
+  const feedEdges = isNil(feedData)
+    ? []
+    : feedData.pages.flatMap((page) => {
+        return page.feedArticles.edges;
+      });
 
   const data = isNil(feedId)
-    ? flatMap(allData?.subscriptions.edges, (edge) => {
+    ? (allData?.subscriptions.edges ?? []).flatMap((edge) => {
         return edge.node.articles.edges;
       })
-    : feedData?.feedArticles.edges;
+    : feedEdges;
 
-  const [markArticleRead, { loading: isMarkingRead }] =
-    useMutation(MARK_ARTICLE_READ);
+  const { isPending: isMarkingRead, mutateAsync: markArticleRead } =
+    useMutation({
+      mutationFn: async (variables: { articleId: string; isRead: boolean }) => {
+        return graphqlRequest(
+          gql(`mutation MarkArticleRead($isRead: Boolean!, $articleId: ID!) {
+              markArticleRead(isRead: $isRead, articleId: $articleId) {
+                  id
+              }
+          }`),
+          variables
+        );
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: allArticlesOptions().queryKey
+        });
+        await queryClient.invalidateQueries({
+          queryKey: feedArticlesOptions(feedId).queryKey
+        });
+      }
+    });
 
   const handleMarkRead = async (articleId: string) => {
-    await markArticleRead({
-      refetchQueries: [
-        { query: ALL_ARTICLES },
-        { query: FEED_ARTICLES, variables: { feedId } }
-      ],
-      variables: { articleId, isRead: true }
-    });
+    await markArticleRead({ articleId, isRead: true });
   };
 
   return (
@@ -100,6 +129,19 @@ export const Articles = ({ feedTitle }: Readonly<ArticlesProperties>) => {
           </Card>
         );
       })}
+      {hasNextPageFeed && (
+        <Button
+          color="gray"
+          variant="outline"
+          loading={isFetchingNextPageFeed}
+          className="mt-2 w-full cursor-pointer"
+          onClick={() => {
+            fetchNextPageFeed().catch(noop);
+          }}
+        >
+          Load More
+        </Button>
+      )}
     </Flex>
   );
 };
