@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await, @typescript-eslint/no-unsafe-type-assertion */
 import { XMLParser } from "fast-xml-parser";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 

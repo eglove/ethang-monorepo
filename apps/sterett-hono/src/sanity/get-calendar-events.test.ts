@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock(import("../clients/sanity-client.ts"), () => {

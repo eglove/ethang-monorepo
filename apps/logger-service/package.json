@@ -20,17 +20,17 @@
     "luxon": "^3.7.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260613.1",
-    "@ethang/eslint-config": "^25.20.9",
+    "@cloudflare/workers-types": "^4.20260615.1",
+    "@ethang/eslint-config": "^25.20.10",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.9.3",
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.9",
     "browserslist-config-baseline": "^0.5.0",
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.5.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.8",
+    "vitest": "^4.1.9",
     "wrangler": "^4.100.0"
   },
   "browserslist": [

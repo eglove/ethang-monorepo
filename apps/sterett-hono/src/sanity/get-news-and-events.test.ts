@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import map from "lodash/map.js";
 import split from "lodash/split.js";
 import { describe, expect, it, vi } from "vitest";

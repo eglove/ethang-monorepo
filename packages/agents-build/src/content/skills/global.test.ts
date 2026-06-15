@@ -21,6 +21,6 @@ describe("GLOBAL_SKILLS verification", () => {
     expect(content).toContain("Phase 5: Release & Deployment");
     expect(content).toContain("Phase 6: Maintenance & Operations");
 
-    expect(content).toContain("invoke the 'self' subagent");
+    expect(content).toContain("execute all phases in the main window");
   });
 });

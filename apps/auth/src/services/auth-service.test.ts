@@ -16,12 +16,11 @@ vi.mock("jose", async (importOriginal) => {
   return {
     ...actual,
     SignJWT: class extends actual.SignJWT {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       public override async sign(secret: any, options?: any) {
         if (mockState.shouldSignFails) {
           throw new Error("JWT sign failed");
         }
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
         return super.sign(secret, options);
       }
     }

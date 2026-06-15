@@ -65,7 +65,7 @@ describe("newsPage", () => {
   it("fetches news from sanity when no items are provided", async () => {
     vi.clearAllMocks();
     // @ts-expect-error for test
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+
     vi.mocked(sterettSanityClient.fetch).mockResolvedValue([]);
     const html = await renderNewsPage();
 

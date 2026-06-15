@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-type-assertion, @typescript-eslint/require-await, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call */
 import noop from "lodash/noop.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 

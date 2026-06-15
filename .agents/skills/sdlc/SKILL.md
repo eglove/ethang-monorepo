@@ -5,17 +5,26 @@ name: sdlc
 
 # Software Development Lifecycle (SDLC) Workflow Guide
 
-This skill acts as a workflow director to guide you through the software development process in this monorepo. It organizes all 80+ global rules into 6 distinct SDLC phases. For each phase, the main agent should launch a dedicated subagent using the standard `self` subagent type to focus on that specific phase's tasks.
+This skill acts as a workflow director to guide you through the software development process in this monorepo. It organizes all 80+ global rules into 6 distinct SDLC phases. You must execute all phases in the main window context to maintain continuity of state, memory, and conversation.
 
-## Subagent Invocation Strategy
-To execute a phase, invoke the 'self' subagent. Do not try to complete the entire lifecycle in a single context. Instead, delegate each phase to a subagent that focuses purely on that phase's checklist, rules, and steps. Once the subagent finishes and reports back, proceed to the next phase by launching the next subagent.
+## Main Window Execution Strategy
+1. **Direct Execution**: Perform the checklists, rules, and step-by-step plans for each phase directly within the main window conversation.
+2. **Optional Subagent Delegation**: While you are responsible for running the main flow in the main window, you may optionally spawn subagents (using the `self` or `research` subagent types) if you need to:
+   - Perform extensive or parallel research on the codebase to minimize token usage and latency.
+   - Run parallel validation, testing, or linting tasks.
+   - Isolate complex, independent subtasks.
+3. **Sequence**: Proceed sequentially through the phases (Phase 1 through Phase 6), ensuring entry and exit criteria are validated.
 
-Example subagent invocation:
+Example of optionally spawning a research subagent to audit dependencies during Phase 2:
 ```json
 {
-  "TypeName": "self",
-  "Role": "Requirements Elicitor",
-  "Prompt": "Execute Phase 1 (Requirements & Analysis) for task: <task description>."
+  "Subagents": [
+    {
+      "TypeName": "research",
+      "Role": "Dependency Auditor",
+      "Prompt": "Analyze the dependencies of package X and report back any conflicts or security risks."
+    }
+  ]
 }
 ```
 
@@ -24,7 +33,7 @@ Example subagent invocation:
 ## Phase 1: Requirements & Analysis
 Focus on discovering, defining, and scoping stakeholder requirements. Establish boundaries before writing any code.
 
-### Subagent Profile
+### Optional Subagent Profile (For Delegation)
 - **Role**: `Requirements Elicitor`
 - **Prompt**:
   ```
@@ -52,7 +61,7 @@ Focus on discovering, defining, and scoping stakeholder requirements. Establish 
 - [clinical-trials-database](file:///.agents/skills/clinical-trials-database/SKILL.md) (if dealing with trial data requirements)
 - [openfda-database](file:///.agents/skills/openfda-database/SKILL.md) (if analyzing regulatory requirements)
 
-### Step-by-Step Execution Plan (For the Subagent)
+### Step-by-Step Execution Plan (Main Window or Subagent)
 1. **Elicitation & Requirements Gathering Interview**: Conduct an interactive interview. Ask the user clear questions to cover: core objectives, persona and user story definitions, behavioral acceptance criteria (happy path, boundary/validation path, exception/error path), MoSCoW prioritization, and constraints/risks.
 2. **Ubiquitous Language Glossary**: Create a dictionary of domain terms and map them explicitly to codebase elements (database columns, endpoints, component names). Resolve any semantic conflicts or naming mismatches.
 3. **Write SARA-Compliant Documents**: Write the gathered requirements as SARA-compatible Markdown files under `docs/<feature-name>/` with well-formed YAML frontmatter.
@@ -64,7 +73,7 @@ Focus on discovering, defining, and scoping stakeholder requirements. Establish 
 ## Phase 2: Architecture & Design
 Translate requirements into software architectures. Focus on coupling, database design, domain modeling, and technical patterns.
 
-### Subagent Profile
+### Optional Subagent Profile (For Delegation)
 - **Role**: `Architect`
 - **Prompt**:
   ```
@@ -95,7 +104,7 @@ Translate requirements into software architectures. Focus on coupling, database 
 - [durable-objects](file:///.agents/skills/durable-objects/SKILL.md) (stateful coordination design)
 - [agents-sdk](file:///.agents/skills/agents-sdk/SKILL.md) (agent-based architecture design)
 
-### Step-by-Step Execution Plan (For the Subagent)
+### Step-by-Step Execution Plan (Main Window or Subagent)
 1. **Ingest Phase 1 Requirements**: Locate SARA requirements under `docs/<feature-name>/`. Run `rtk sara check`. If missing or invalid, halt and notify.
 2. **System Context Inspection**: Query Wrangler/Drizzle config, check DB schemas, GraphQL supergraph, and active services.
 3. **Interactive Architecture Interview**: Conduct an interactive interview to cover strategic/tactical DDD (bounded contexts, value objects, domain events), 3NF database schema, Mermaid diagram specs, and architectural tactics (performance, security, caching).
@@ -107,7 +116,7 @@ Translate requirements into software architectures. Focus on coupling, database 
 ## Phase 3: Implementation & Development
 Build production code using pair programming practices. Optimize tool usage and adhere to coding rules.
 
-### Subagent Profile
+### Optional Subagent Profile (For Delegation)
 - **Role**: `Developer`
 - **Prompt**:
   ```
@@ -131,7 +140,7 @@ Build production code using pair programming practices. Optimize tool usage and 
 - [sandbox-sdk](file:///.agents/skills/sandbox-sdk/SKILL.md) (sandbox creation and execution)
 - [turnstile-spin](file:///.agents/skills/turnstile-spin/SKILL.md) (Turnstile integration)
 
-### Step-by-Step Execution Plan (For the Subagent)
+### Step-by-Step Execution Plan (Main Window or Subagent)
 1. **Pre-Implementation Graph Validation**: Run `rtk sara check`. Halt if validation fails or design files are missing.
 2. **Strict TDD Verification Loop**: For every module:
    - **Red**: Write a failing test in `*.test.ts` in the target directory and run `rtk pnpm --filter <package> test` to watch it fail.
@@ -146,7 +155,7 @@ Build production code using pair programming practices. Optimize tool usage and 
 ## Phase 4: Verification & Testing
 Verify system functionality against specification. Follow TDD strictly.
 
-### Subagent Profile
+### Optional Subagent Profile (For Delegation)
 - **Role**: `QA Engineer`
 - **Prompt**:
   ```
@@ -170,7 +179,7 @@ Verify system functionality against specification. Follow TDD strictly.
 ### Relevant Skills
 - [web-perf](file:///.agents/skills/web-perf/SKILL.md) (performance audits and profiling)
 
-### Step-by-Step Execution Plan (For the Subagent)
+### Step-by-Step Execution Plan (Main Window or Subagent)
 1. **Verification FSM Flow**:
    - **GraphCheck**: Run `rtk sara check`.
    - **CoverageRun**: Run tests with coverage: `rtk pnpm --filter <package> test --coverage`.
@@ -188,7 +197,7 @@ Verify system functionality against specification. Follow TDD strictly.
 ## Phase 5: Release & Deployment
 Prepare changes for repository integration, staging, and deployment.
 
-### Subagent Profile
+### Optional Subagent Profile (For Delegation)
 - **Role**: `Release Specialist`
 - **Prompt**:
   ```
@@ -204,7 +213,7 @@ Prepare changes for repository integration, staging, and deployment.
 - [configuration-change-process](file:///.agents/rules/configuration-change-process.md) - SCM hygiene and change request controls.
 - [rollback-revert-planning](file:///.agents/rules/rollback-revert-planning.md) - Recovery planning, targeted git restore.
 
-### Step-by-Step Execution Plan (For the Subagent)
+### Step-by-Step Execution Plan (Main Window or Subagent)
 1. **Pre-Execution Graph Validation**: Run `rtk sara check`. Halt if it fails.
 2. **Branch Safety Gate**: Query current branch. If on `master` or `main`, checkout a sanitized new feature branch.
 3. **Staging Changes**: Run `rtk git add .`. Verify changes are staged using git status.
@@ -221,7 +230,7 @@ Prepare changes for repository integration, staging, and deployment.
 ## Phase 6: Maintenance & Operations
 Monitor production health, handle bugs/incidents, and manage refactoring cycles.
 
-### Subagent Profile
+### Optional Subagent Profile (For Delegation)
 - **Role**: `Operations Specialist`
 - **Prompt**:
   ```
@@ -239,7 +248,7 @@ Monitor production health, handle bugs/incidents, and manage refactoring cycles.
 - [review-edge-cases](file:///.agents/rules/review-edge-cases.md) - Code reviews, diff inspections, and edge case coverage.
 - [reverse-engineering](file:///.agents/rules/reverse-engineering.md) - Reading call stacks, tracing execution logs.
 
-### Step-by-Step Execution Plan (For the Subagent)
+### Step-by-Step Execution Plan (Main Window or Subagent)
 1. **Pre-Execution Graph Check**: Run `rtk sara check`. Halt on failure.
 2. **Check Git Diff**: Run `rtk git diff --name-only` to identify modified package scopes.
 3. **Ingest Failure Reports**: Retrieve remote checks status with `rtk gh pr checks` and workflow logs with `rtk gh run view <run-id> --log`. View SonarCloud issues. Halt on missing/empty reports.

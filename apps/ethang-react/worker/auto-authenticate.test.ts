@@ -9,7 +9,7 @@ const mockEnvironment = {
   ADMIN_PASS: "adminpass",
   ADMIN_USER: "admin@test.com",
   LOGGER_CLIENT_API_KEY: {
-    // eslint-disable-next-line lodash/prefer-constant,@typescript-eslint/require-await
+    // eslint-disable-next-line lodash/prefer-constant
     get: async () => {
       return "test-api-key";
     }
@@ -35,7 +35,6 @@ describe("worker/auto-authenticate", () => {
       // Verify the result is not an Error
       expect(result).not.toBeInstanceOf(Error);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const successResult = result as { destinationUrl: URL; headers: Headers };
       expect(successResult.destinationUrl.href).toBe(
         "https://graphql.ethang.dev/"
@@ -66,7 +65,6 @@ describe("worker/auto-authenticate", () => {
 
       expect(result).not.toBeInstanceOf(Error);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const successResult = result as { destinationUrl: URL; headers: Headers };
       expect(successResult.destinationUrl.href).toBe(
         "https://graphql.ethang.dev/"
@@ -99,7 +97,7 @@ describe("worker/auto-authenticate", () => {
       const result = await autoAuthenticate(mockRequest, url, mockEnvironment);
 
       expect(result).not.toBeInstanceOf(Error);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
       const successResult = result as { destinationUrl: URL; headers: Headers };
       expect(successResult.headers.get("X-Token")).toBe("signin-session-token");
       expect(fetchSpy).toHaveBeenCalledTimes(2);

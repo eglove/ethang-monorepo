@@ -20,7 +20,7 @@ describe("getDatabase", () => {
   it("should evaluate default function for user id", () => {
     const { defaultFn } = user.id;
     expect(defaultFn).toBeTypeOf("function");
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
     const id = (defaultFn as () => string)();
     expect(id).toBeTypeOf("string");
   });

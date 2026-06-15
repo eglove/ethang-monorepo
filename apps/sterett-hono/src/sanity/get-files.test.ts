@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import every from "lodash/every.js";
 import { describe, expect, it, vi } from "vitest";
 
