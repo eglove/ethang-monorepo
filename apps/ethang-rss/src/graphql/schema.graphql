@@ -180,6 +180,23 @@ The root Query type
 """
 type Query {
   """
+  Retrieves a flat list of articles across all subscriptions
+  """
+  allArticles(
+    """
+    The number of articles to retrieve
+    """
+    first: Int
+    """
+    The cursor to start retrieving articles from
+    """
+    after: String
+    """
+    Filter articles by read status for the authenticated user
+    """
+    isRead: Boolean
+  ): ArticleConnection!
+  """
   Retrieves a list of articles for a specific feed
   """
   feedArticles(
