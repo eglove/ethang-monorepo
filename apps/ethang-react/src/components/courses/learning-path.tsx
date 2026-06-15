@@ -1,4 +1,4 @@
-import { LearningPathDocument } from "@ethang/graphql-types/__generated__/graphql";
+import { gql } from "@ethang/graphql-types/__generated__";
 import {
   Badge,
   Card,
@@ -46,7 +46,20 @@ const swebokFocusMap = new Map([
 export const learningPathQueryOptions = (learningPathId: string) => {
   return queryOptions({
     queryFn: async () => {
-      return graphqlRequest(LearningPathDocument, { learningPathId });
+      return graphqlRequest(
+        gql(`query LearningPath($learningPathId: ID!) {
+            learningPath(id: $learningPathId) {
+                url
+                name
+                id
+                swebokFocus
+                courses {
+                    id
+                }
+            }
+        }`),
+        { learningPathId }
+      );
     },
     queryKey: ["learningPath", learningPathId]
   });

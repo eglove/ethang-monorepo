@@ -1,4 +1,4 @@
-import { MarkArticleReadDocument } from "@ethang/graphql-types/__generated__/graphql.ts";
+import { gql } from "@ethang/graphql-types/__generated__";
 import { useStore } from "@ethang/store/use-store";
 import { Box, Button, Card, Flex, Heading, Text } from "@radix-ui/themes";
 import {
@@ -53,7 +53,14 @@ export const Articles = ({ feedTitle }: Readonly<ArticlesProperties>) => {
   const { isPending: isMarkingRead, mutateAsync: markArticleRead } =
     useMutation({
       mutationFn: async (variables: { articleId: string; isRead: boolean }) => {
-        return graphqlRequest(MarkArticleReadDocument, variables);
+        return graphqlRequest(
+          gql(`mutation MarkArticleRead($isRead: Boolean!, $articleId: ID!) {
+              markArticleRead(isRead: $isRead, articleId: $articleId) {
+                  id
+              }
+          }`),
+          variables
+        );
       },
       onSuccess: async () => {
         await queryClient.invalidateQueries({

@@ -13,6 +13,3 @@ allowBuilds:
   sharp: true
   workerd: true
 minimumReleaseAge: 0
-patchedDependencies:
-  '@graphql-codegen/visitor-plugin-common': patches/@graphql-codegen__visitor-plugin-common.patch
-  graphql: patches/graphql.patch

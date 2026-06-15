@@ -1,4 +1,4 @@
-import { AddSubscriptionDocument } from "@ethang/graphql-types/__generated__/graphql.ts";
+import { gql } from "@ethang/graphql-types/__generated__";
 import { Box, Button, Card, Flex, TextField } from "@radix-ui/themes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
@@ -14,7 +14,14 @@ export const AddFeedForm = () => {
 
   const { isPending: addLoading, mutateAsync: addSubscription } = useMutation({
     mutationFn: async (variables: { xmlAddress: string }) => {
-      return graphqlRequest(AddSubscriptionDocument, variables);
+      return graphqlRequest(
+        gql(`mutation AddSubscription($xmlAddress: String!) {
+            addSubscription(xmlAddress: $xmlAddress) {
+                id
+            }
+        }`),
+        variables
+      );
     },
     onSuccess: () => {
       queryClient

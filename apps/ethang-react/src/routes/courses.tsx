@@ -1,10 +1,10 @@
-import { GetRecommendedCoursesLearningPathIdsDocument } from "@ethang/graphql-types/__generated__/graphql";
+import { gql } from "@ethang/graphql-types/__generated__";
 import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import forEach from "lodash/forEach.js";
-import get from "lodash/get.js";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map";
 import { DateTime } from "luxon";
@@ -17,7 +17,21 @@ import { MainLayout } from "../components/layout/main-layout.tsx";
 export const curriculumQueryOptions = () => {
   return queryOptions({
     queryFn: async () => {
-      return graphqlRequest(GetRecommendedCoursesLearningPathIdsDocument);
+      return graphqlRequest(
+        gql(`query Curriculum($curriculumId: ID!) {
+            curriculum(id: $curriculumId) {
+                id
+                updatedAt
+                learningPaths {
+                    id
+                    courses {
+                        id
+                    }
+                }
+            }
+        }`),
+        { curriculumId: "019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4" }
+      );
     },
     queryKey: ["curriculum", "019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4"]
   });

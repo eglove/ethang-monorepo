@@ -1,4 +1,4 @@
-import { CourseDocument } from "@ethang/graphql-types/__generated__/graphql";
+import { gql } from "@ethang/graphql-types/__generated__";
 import { Link, Skeleton, Text } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import get from "lodash/get.js";
@@ -13,7 +13,17 @@ type CourseProperties = {
 export const courseQueryOptions = (courseId: string) => {
   return queryOptions({
     queryFn: async () => {
-      return graphqlRequest(CourseDocument, { courseId });
+      return graphqlRequest(
+        gql(`query Course($courseId: ID!) {
+            course(id: $courseId) {
+                id
+                url
+                name
+                author
+            }
+        }`),
+        { courseId }
+      );
     },
     queryKey: ["course", courseId]
   });

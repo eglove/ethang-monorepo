@@ -18,7 +18,7 @@ generates:
       fragmentMaking: false
   courses.ts:
     plugins:
-      - "@graphql-codegen/typescript"
+      - "@graphql-codegen/typescript-operations"
   rss.ts:
     plugins:
-      - "@graphql-codegen/typescript"
+      - "@graphql-codegen/typescript-operations"
