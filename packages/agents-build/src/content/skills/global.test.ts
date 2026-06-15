@@ -29,6 +29,39 @@ describe("GLOBAL_SKILLS verification", () => {
     expect(sdlc2?.content).toContain("Mermaid");
   });
 
+  it("should contain the sdlc-3 skill with valid properties", () => {
+    const sdlc3 = find(GLOBAL_SKILLS, (skill) => {
+      return "sdlc-3" === skill.name;
+    });
 
+    expect(sdlc3).toBeDefined();
+    expect(sdlc3?.name).toBe("sdlc-3");
+    expect(sdlc3?.description).toContain("TDD");
+    expect(sdlc3?.content).toContain("Red-Green-Refactor");
+    expect(sdlc3?.content).toContain("ESLint");
+  });
+
+  it("should contain the sdlc-4 skill with valid properties", () => {
+    const sdlc4 = find(GLOBAL_SKILLS, (skill) => {
+      return "sdlc-4" === skill.name;
+    });
+
+    expect(sdlc4).toBeDefined();
+    expect(sdlc4?.name).toBe("sdlc-4");
+    expect(sdlc4?.description).toContain("Verification");
+    expect(sdlc4?.content).toContain("FSM");
+    expect(sdlc4?.content).toContain("coverage");
+  });
+
+  it("should contain the sdlc-5 skill with valid properties", () => {
+    const sdlc5 = find(GLOBAL_SKILLS, (skill) => {
+      return "sdlc-5" === skill.name;
+    });
+
+    expect(sdlc5).toBeDefined();
+    expect(sdlc5?.name).toBe("sdlc-5");
+    expect(sdlc5?.description).toContain("Release");
+    expect(sdlc5?.content).toContain("Conventional Commit");
+    expect(sdlc5?.content).toContain("FSM");
+  });
 });
-
