@@ -1,34 +1,8 @@
 import { gql } from "@ethang/graphql-types/__generated__";
 
-export const GET_SUBSCRIPTIONS_WITH_ARTICLES = gql(`
-  query GetSubscriptionsWithArticles {
-    subscriptions {
-      edges {
-        node {
-          id
-          title
-          website
-          xmlAddress
-          articles(first: 50, isRead: false) {
-            edges {
-              node {
-                id
-                title
-                link
-                publishedAt
-                isRead
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`);
-
 export const GET_FEEDS = gql(`
     query GetFeeds {
-        subscriptions {
+        subscriptions(first: 100) {
             edges {
                 node {
                     title
@@ -40,7 +14,7 @@ export const GET_FEEDS = gql(`
 `);
 
 export const ALL_ARTICLES = gql(`query AllArticles {
-    subscriptions {
+    subscriptions(first: 100) {
         edges {
             node {
                 articles {

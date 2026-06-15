@@ -5,6 +5,7 @@ import flatMap from "lodash/flatMap.js";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
 import noop from "lodash/noop";
+import orderBy from "lodash/orderBy.js";
 import { DateTime } from "luxon";
 
 import { ALL_ARTICLES, FEED_ARTICLES, MARK_ARTICLE_READ } from "./queries.ts";
@@ -48,7 +49,7 @@ export const Articles = ({ feedTitle }: Readonly<ArticlesProperties>) => {
 
   return (
     <Flex gap="3" direction="column">
-      {map(data, (article) => {
+      {map(orderBy(data, "node.publishedAt", "desc"), (article) => {
         if (article.node.isRead) {
           return null;
         }

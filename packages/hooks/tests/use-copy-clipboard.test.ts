@@ -55,4 +55,22 @@ describe("useCopyClipboard", () => {
       expect(result.current.error).toBe(mockError);
     });
   });
+
+  it("should handle non-Error failures when copy fails", async () => {
+    const writeTextMock = vi.fn().mockRejectedValue("non-error-string");
+    setupClipboard(writeTextMock);
+
+    const { result } = renderHook(() => {
+      return useCopyClipboard();
+    });
+
+    act(() => {
+      result.current.copyToClipboard("test-text");
+    });
+
+    await waitFor(() => {
+      expect(result.current.isCopied).toBe(false);
+      expect(result.current.error).toBeUndefined();
+    });
+  });
 });

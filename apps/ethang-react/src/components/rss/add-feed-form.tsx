@@ -5,11 +5,7 @@ import noop from "lodash/noop";
 import trim from "lodash/trim";
 import { type SyntheticEvent, useState } from "react";
 
-import {
-  ADD_SUBSCRIPTION,
-  GET_FEEDS,
-  GET_SUBSCRIPTIONS_WITH_ARTICLES
-} from "./queries.ts";
+import { ADD_SUBSCRIPTION, GET_FEEDS } from "./queries.ts";
 
 export const AddFeedForm = () => {
   const [addSubscription, { loading: addLoading }] =
@@ -29,10 +25,7 @@ export const AddFeedForm = () => {
     }
 
     await addSubscription({
-      refetchQueries: [
-        { query: GET_SUBSCRIPTIONS_WITH_ARTICLES },
-        { query: GET_FEEDS }
-      ],
+      refetchQueries: [{ query: GET_FEEDS }],
       variables: { xmlAddress: cleanUrl }
     });
     setXmlUrl("");

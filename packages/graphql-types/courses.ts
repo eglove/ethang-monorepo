@@ -220,34 +220,6 @@ export type GetRecommendedCoursesLearningPathIdsQueryVariables = Exact<
   Record<string, never>
 >;
 
-export type GetSubscriptionsWithArticlesQuery = {
-  subscriptions: {
-    edges: {
-      node: {
-        articles: {
-          edges: {
-            node: {
-              id: string;
-              isRead: boolean;
-              link: string;
-              publishedAt: null | string;
-              title: string;
-            };
-          }[];
-        };
-        id: string;
-        title: string;
-        website: string;
-        xmlAddress: string;
-      };
-    }[];
-  };
-};
-
-export type GetSubscriptionsWithArticlesQueryVariables = Exact<
-  Record<string, never>
->;
-
 /** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> =
   | {

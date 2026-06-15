@@ -3,16 +3,16 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      exclude: ["**/service-worker/**"],
+      exclude: ["**/service-worker/**", "**/.agents/**"],
       include: ["**/src/**/*.ts", "**/src/**/*.tsx", "packages/scripts/*.ts"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 78.66,
-        functions: 75.42,
-        lines: 81.26,
-        statements: 81.21
+        branches: 84.76,
+        functions: 80.31,
+        lines: 86.45,
+        statements: 86.5
       }
     },
     projects: [

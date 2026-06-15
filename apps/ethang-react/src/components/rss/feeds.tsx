@@ -3,7 +3,6 @@ import { useStore } from "@ethang/store/use-store";
 import { Box, Button, Card, Flex, Heading, Skeleton } from "@radix-ui/themes";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
-import sortBy from "lodash/sortBy";
 
 import { GET_FEEDS } from "./queries.ts";
 import { rssStore } from "./rss-store.ts";
@@ -17,7 +16,11 @@ export const Feeds = () => {
     return state.selectedFeedId;
   });
 
-  const sorted = sortBy(data?.subscriptions.edges, "node.title");
+  const sorted = isNil(data)
+    ? []
+    : data.subscriptions.edges.toSorted((a, b) => {
+        return a.node.title.localeCompare(b.node.title);
+      });
 
   return (
     <Box className="md:col-span-1">

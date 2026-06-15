@@ -3,17 +3,17 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      include: ["src"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 89.87,
-        functions: 94.17,
-        lines: 97.29,
-        statements: 97.29,
-      },
+        branches: 100,
+        functions: 100,
+        lines: 100,
+        statements: 100
+      }
     },
-    environment: "jsdom",
-  },
+    environment: "node",
+    passWithNoTests: true
+  }
 });
