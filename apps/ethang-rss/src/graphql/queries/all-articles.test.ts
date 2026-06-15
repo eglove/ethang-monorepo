@@ -1,13 +1,8 @@
-/* eslint-disable unicorn/prefer-uint8array-base64, unicorn/no-this-outside-of-class */
-import isFunction from "lodash/isFunction.js";
-import { Buffer } from "node:buffer";
+/* eslint-disable unicorn/prefer-uint8array-base64 */
 import { describe, expect, it, vi } from "vitest";
 
+import { encodeCursor } from "../util/cursor.ts";
 import { allArticlesQuery } from "./all-articles.ts";
-
-type Uint8ArrayWithBase64 = {
-  toBase64?: () => string;
-} & Uint8Array;
 
 const FEED_ID_1 = "feed-1";
 const FEED_ID_2 = "feed-2";
@@ -16,17 +11,6 @@ const PUBLISHED_AT_1 = "2026-06-15T10:00:00.000Z";
 const PUBLISHED_AT_2 = "2026-06-15T09:00:00.000Z";
 const ARTICLE_TITLE_1 = "Article 1";
 const ARTICLE_TITLE_2 = "Article 2";
-
-const encodeCursor = (value: [null | string, string]) => {
-  const json = JSON.stringify(value);
-  const encoder = new TextEncoder();
-  const bytes = encoder.encode(json) as Uint8ArrayWithBase64;
-
-  if (isFunction(bytes.toBase64)) {
-    return bytes.toBase64();
-  }
-  return Buffer.from(bytes).toString("base64");
-};
 
 const mockContext = {
   user: {
@@ -351,113 +335,5 @@ describe("allArticlesQuery - validation error paths", () => {
       mockContext
     );
     expect(result.edges.length).toBe(0);
-  });
-});
-
-describe("allArticlesQuery - native environments stubs", () => {
-  it("should cover toBase64 and fromBase64 native paths", async () => {
-    /* eslint-disable no-extend-native */
-    const originalToBase64 = (Uint8Array.prototype as any).toBase64;
-    const originalFromBase64 = (Uint8Array as any).fromBase64;
-
-    Object.defineProperty(Uint8Array.prototype, "toBase64", {
-      configurable: true,
-      value() {
-        return Buffer.from(this).toString("base64");
-      },
-      writable: true
-    });
-
-    Object.defineProperty(Uint8Array, "fromBase64", {
-      configurable: true,
-      value: (base64: string) => {
-        return new Uint8Array(Buffer.from(base64, "base64"));
-      },
-      writable: true
-    });
-
-    try {
-      const mockArticles = [
-        {
-          feedId: FEED_ID_1,
-          id: "1",
-          publishedAt: PUBLISHED_AT_1,
-          title: ARTICLE_TITLE_1
-        }
-      ];
-      const mockDatabase = {
-        select: vi.fn().mockReturnValue({
-          from: vi.fn().mockReturnThis(),
-          innerJoin: vi.fn().mockReturnThis(),
-          limit: vi.fn().mockResolvedValue(mockArticles),
-          orderBy: vi.fn().mockReturnThis(),
-          where: vi.fn().mockReturnThis()
-        })
-      };
-
-      // @ts-expect-error test double
-      const resolver = allArticlesQuery(mockDatabase);
-      const result = await resolver(
-        undefined,
-        {
-          after: encodeCursor([PUBLISHED_AT_1, "1"]),
-          first: 1
-        },
-        // @ts-expect-error test double
-        mockContext
-      );
-      expect(result.edges.length).toBe(1);
-    } finally {
-      if (undefined === originalToBase64) {
-        delete (Uint8Array.prototype as any).toBase64;
-      } else {
-        (Uint8Array.prototype as any).toBase64 = originalToBase64;
-      }
-
-      if (undefined === originalFromBase64) {
-        delete (Uint8Array as any).fromBase64;
-      } else {
-        (Uint8Array as any).fromBase64 = originalFromBase64;
-      }
-    }
-  });
-
-  it("should cover fromBase64 throwing on invalid base64", async () => {
-    const originalFromBase64 = (Uint8Array as any).fromBase64;
-    Object.defineProperty(Uint8Array, "fromBase64", {
-      configurable: true,
-      value: () => {
-        throw new Error("Invalid base64");
-      },
-      writable: true
-    });
-
-    try {
-      const mockDatabase = {
-        select: vi.fn().mockReturnValue({
-          from: vi.fn().mockReturnThis(),
-          innerJoin: vi.fn().mockReturnThis(),
-          limit: vi.fn().mockResolvedValue([]),
-          orderBy: vi.fn().mockReturnThis(),
-          where: vi.fn().mockReturnThis()
-        })
-      };
-
-      // @ts-expect-error test double
-      const resolver = allArticlesQuery(mockDatabase);
-      const result = await resolver(
-        undefined,
-        { after: "invalid!!" },
-        // @ts-expect-error test double
-        mockContext
-      );
-      expect(result.edges.length).toBe(0);
-    } finally {
-      if (undefined === originalFromBase64) {
-        delete (Uint8Array as any).fromBase64;
-      } else {
-        (Uint8Array as any).fromBase64 = originalFromBase64;
-      }
-    }
   });
 });
