@@ -81,5 +81,14 @@ describe("log-schema.ts - Shared Schemas Validation", () => {
         logQuerySchema.parse(invalidParameters);
       }).toThrow(ZodError);
     });
+
+    it("given an invalid endDate format, parsing it sets it to undefined instead of throwing", () => {
+      const queryParameters = {
+        endDate: "not-a-date"
+      };
+
+      const result = logQuerySchema.parse(queryParameters);
+      expect(result.endDate).toBeUndefined();
+    });
   });
 });

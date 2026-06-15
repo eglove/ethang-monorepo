@@ -39,4 +39,26 @@ describe(lastModifiedMiddleware, () => {
 
     expect(response.headers.get("Last-Modified")).toBeNull();
   });
+
+  it("should set Last-Modified header from HTTP format meta tag", async () => {
+    const app = new Hono<BlankEnv>();
+    app.use(lastModifiedMiddleware);
+    app.get("/", (c) => {
+      const html = `
+        <html>
+          <head>
+            <meta name="last-modified" content="Sun, 01 Jan 2023 12:00:00 GMT" />
+          </head>
+          <body>Hello</body>
+        </html>
+      `;
+      return c.html(html);
+    });
+
+    const response = await app.request("http://localhost/");
+
+    expect(response.headers.get("Last-Modified")).toBe(
+      "Sun, 01 Jan 2023 12:00:00 GMT"
+    );
+  });
 });
