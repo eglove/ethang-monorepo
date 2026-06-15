@@ -18,11 +18,7 @@ export default defineConfig({
   ],
   test: {
     coverage: {
-      exclude: [
-        "**/*.mock.ts",
-        "src/db/database-schema.ts",
-        "src/db/schema.ts"
-      ],
+      exclude: ["**/*.mock.ts", "src/db/database-schema.ts"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {

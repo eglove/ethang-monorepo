@@ -36,7 +36,8 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "deploy": "pnpm run cf-typegen && wrangler deploy --minify",
     "dev": "wrangler dev",
-    "lint": "eslint . --fix && pnpm tsc --noEmit"
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
+    "test": "vitest run --coverage"
   },
   "type": "module",
   "version": "1.0.0"

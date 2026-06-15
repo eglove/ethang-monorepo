@@ -41,7 +41,8 @@
     "deploy-graphql": "sanity graphql deploy",
     "dev": "sanity dev",
     "lint": "eslint . --fix && pnpm tsc --noEmit",
-    "start": "sanity start"
+    "start": "sanity start",
+    "test": "vitest run --coverage"
   },
   "type": "module",
   "version": "1.0.0"

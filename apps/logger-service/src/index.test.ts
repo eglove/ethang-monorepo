@@ -15,6 +15,7 @@ const TRUSTED_CLIENT_ORIGIN = "https://trusted-client.com";
 const ANOTHER_CLIENT_ORIGIN = "https://another-client.com";
 const D1_QUERY_FAILED = "D1 query failed";
 const D1_WRITE_FAILED = "D1 write failed";
+const AUTH_SERVICE_NAME = "auth-service";
 
 const createMockEnvironment = () => {
   const prepareMock = vi.fn().mockReturnValue({
@@ -70,8 +71,18 @@ describe("apps/logger-service - GET /logs", () => {
         id: "1",
         level: INFO_LEVEL,
         message: "hello",
-        serviceName: "auth-service",
+        metadata: { key: "value" },
+        serviceName: AUTH_SERVICE_NAME,
+        stack: "error stack",
         timestamp: "2026-06-13T14:00:00Z"
+      },
+      {
+        environment: PRODUCTION_ENV,
+        id: "2",
+        level: INFO_LEVEL,
+        message: "world",
+        serviceName: AUTH_SERVICE_NAME,
+        timestamp: "2026-06-13T14:05:00Z"
       }
     ];
 
@@ -81,10 +92,20 @@ describe("apps/logger-service - GET /logs", () => {
         "1",
         INFO_LEVEL,
         "hello",
-        null,
-        "auth-service",
-        null,
+        '{"key":"value"}',
+        AUTH_SERVICE_NAME,
+        "error stack",
         "2026-06-13T14:00:00Z"
+      ],
+      [
+        PRODUCTION_ENV,
+        "2",
+        INFO_LEVEL,
+        "world",
+        null,
+        AUTH_SERVICE_NAME,
+        null,
+        "2026-06-13T14:05:00Z"
       ]
     ];
 
@@ -97,7 +118,7 @@ describe("apps/logger-service - GET /logs", () => {
     });
 
     const response = await app.request(
-      `/logs?level=info&serviceName=auth-service&environment=production&startDate=2026-06-13T00:00:00.000Z&endDate=2026-06-13T23:59:59.000Z&limit=50&offset=0`,
+      `/logs?level=info&serviceName=${AUTH_SERVICE_NAME}&environment=production&startDate=2026-06-13T00:00:00.000Z&endDate=2026-06-13T23:59:59.000Z&limit=50&offset=0`,
       {
         headers: { "x-admin-key": ADMIN_SECRET_KEY }
       },
@@ -171,6 +192,25 @@ describe("apps/logger-service - POST /log Auth", () => {
     );
 
     expect(responseInvalid.status).toBe(401);
+  });
+
+  it("returns 401 Unauthorized when environment secrets are non-string and non-object-with-get", async () => {
+    const { mockEnvironment } = createMockEnvironment();
+
+    (mockEnvironment as unknown as Record<string, unknown>)["SERVER_API_KEYS"] =
+      12_345;
+
+    const response = await app.request(
+      "/log",
+      {
+        body: JSON.stringify({ message: TEST_MESSAGE }),
+        headers: { "x-api-key": "any-key" },
+        method: "POST"
+      },
+      mockEnvironment
+    );
+
+    expect(response.status).toBe(401);
   });
 
   it("returns 403 Forbidden when requesting POST /log using a client write key with an invalid or missing Origin header", async () => {
@@ -418,5 +458,25 @@ describe("apps/logger-service - OPTIONS /log CORS", () => {
 
     expect(allowedMethods).toBeTypeOf("string");
     expect(allowedMethods).toContain("POST");
+  });
+
+  it("does not set Access-Control-Allow-Origin header if origin is not allowed", async () => {
+    const { mockEnvironment } = createMockEnvironment();
+
+    const response = await app.request(
+      "/log",
+      {
+        headers: {
+          "Access-Control-Request-Headers": "x-api-key, content-type",
+          "Access-Control-Request-Method": "POST",
+          Origin: "https://untrusted-origin.com"
+        },
+        method: "OPTIONS"
+      },
+      mockEnvironment
+    );
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get("Access-Control-Allow-Origin")).toBeNull();
   });
 });

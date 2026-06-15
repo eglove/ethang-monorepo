@@ -9,7 +9,8 @@ export default defineConfig(
     "generated",
     "wrangler.jsonc",
     "tsconfig.json",
-    "migrations"
+    "migrations",
+    "coverage"
   ]),
   ...config,
   {

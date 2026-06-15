@@ -88,6 +88,7 @@ describe("log-schema.ts - Shared Schemas Validation", () => {
       };
 
       const result = logQuerySchema.parse(queryParameters);
+
       expect(result.endDate).toBeUndefined();
     });
   });
