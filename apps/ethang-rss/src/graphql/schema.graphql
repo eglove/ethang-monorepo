@@ -152,14 +152,6 @@ type Mutation {
   """
   addSubscription(
     """
-    The title of the new subscription
-    """
-    title: String
-    """
-    The website URL of the subscription
-    """
-    website: String
-    """
     The XML address of the RSS feed
     """
     xmlAddress: String!
