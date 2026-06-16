@@ -3,28 +3,24 @@ export type AddSubscriptionMutationVariables = Exact<{
   xmlAddress: string;
 }>;
 export type AllArticlesQuery = {
-  subscriptions: {
+  allArticles: {
     edges: {
       node: {
-        articles: {
-          edges: {
-            node: {
-              id: string;
-              isRead: boolean;
-              link: string;
-              publishedAt: null | string;
-              title: string;
-            };
-          }[];
-        };
         id: string;
+        isRead: boolean;
+        link: string;
+        publishedAt: null | string;
         title: string;
       };
     }[];
+    pageInfo: { endCursor: null | string; hasNextPage: boolean };
   };
 };
 
-export type AllArticlesQueryVariables = Exact<Record<string, never>>;
+export type AllArticlesQueryVariables = Exact<{
+  after?: null | string | undefined;
+  isRead?: boolean | null | undefined;
+}>;
 
 export type CourseQuery = {
   course: { author: string; id: string; name: string; url: string } | null;
