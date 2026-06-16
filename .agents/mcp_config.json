@@ -4,6 +4,10 @@
       "type": "streamable-http",
       "url": "http://127.0.0.1:64506/stream",
       "headers": {}
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["chrome-devtools-mcp@latest", "--categoryExtensions"]
     }
   }
 }

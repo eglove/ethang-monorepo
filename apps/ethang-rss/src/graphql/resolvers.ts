@@ -18,6 +18,13 @@ export const createResolvers = (database: Database) => {
       ) => {
         return context.articleLoader.load(reference.id);
       },
+      feed: async (
+        parent: { feedId: string },
+        _parameters: unknown,
+        context: ServerContext
+      ) => {
+        return context.feedLoader.load(parent.feedId);
+      },
       isRead: async (
         parent: { id: string },
         _parameters: unknown,

@@ -11,6 +11,10 @@ type Article @key(fields: "id") {
   """
   content: String
   """
+  The feed this article belongs to
+  """
+  feed: Feed!
+  """
   The ID of the feed this article belongs to
   """
   feedId: String!
@@ -147,14 +151,6 @@ type Mutation {
   Adds a new RSS feed subscription
   """
   addSubscription(
-    """
-    The title of the new subscription
-    """
-    title: String
-    """
-    The website URL of the subscription
-    """
-    website: String
     """
     The XML address of the RSS feed
     """

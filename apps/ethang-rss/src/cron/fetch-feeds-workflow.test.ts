@@ -194,6 +194,7 @@ describe("normalizeTitle", () => {
   });
 });
 
+// eslint-disable-next-line sonar/max-lines-per-function
 describe("FetchFeedsWorkflow", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -376,6 +377,56 @@ describe("FetchFeedsWorkflow", () => {
             <title>Empty Feed</title>
           </channel>
         </rss>
+      `;
+      }
+    } as Response);
+
+    const step = {
+      do: vi.fn().mockImplementation(async (_name, _function) => {
+        return _function();
+      })
+    };
+
+    const context = {
+      waitUntil: noop
+    };
+
+    const workflow = new FetchFeedsWorkflow(
+      // @ts-expect-error for test
+      context,
+      mockEnvironment as unknown as Env
+    );
+
+    // @ts-expect-error for test
+    await expect(workflow.run({}, step)).resolves.not.toThrow();
+  });
+
+  it("runs the workflow with invalid feed XML, updating lastFetchedAt without modifying title and website", async () => {
+    const mockFeeds = [
+      { id: "feed-invalid", xmlAddress: "https://example.com/invalid.xml" }
+    ];
+
+    mockSelect.mockReturnValue({
+      from: vi.fn().mockResolvedValue(mockFeeds)
+    });
+
+    mockUpdate.mockReturnValue({
+      set: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue({})
+      })
+    });
+
+    const mockEnvironment = {
+      ethang_rss: {},
+      LOGGER_API_KEY: TEST_LOGGER_KEY
+    };
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      text: async () => {
+        return `
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <notfeed></notfeed>
       `;
       }
     } as Response);

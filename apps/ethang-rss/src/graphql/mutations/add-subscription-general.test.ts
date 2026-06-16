@@ -3,10 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { addSubscriptionMutation } from "./add-subscription.ts";
 
-const PROVIDED_TITLE = "Provided Title";
-const PROVIDED_WEBSITE = "https://provided.com";
-const PROVIDED_XML = "https://provided.com/feed.xml";
-
 const NETWORK_ERROR = "Network Error";
 
 const FALLBACK_TITLE = "fallback.com";
@@ -15,7 +11,6 @@ const FALLBACK_XML = "https://fallback.com/feed.xml";
 
 const EXISTING_XML = "https://existing.com/feed.xml";
 
-const PROVIDED_WEBSITE_2 = "https://provided-website.com";
 const NOTOK_XML = "https://notok.com/feed.xml";
 
 const mockContext = {
@@ -32,64 +27,6 @@ const mockContext = {
 describe("addSubscriptionMutation", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-  });
-
-  it("should insert feed directly without fetching when title and website are provided", async () => {
-    const fetchSpy = vi.spyOn(globalThis, "fetch");
-
-    const mockFeedsInsertResult = {
-      returning: vi.fn().mockResolvedValue([
-        {
-          id: "feed-1",
-          title: PROVIDED_TITLE,
-          website: PROVIDED_WEBSITE,
-          xmlAddress: PROVIDED_XML
-        }
-      ]),
-      values: vi.fn().mockReturnThis()
-    };
-
-    const mockSubscriptionsInsertResult = {
-      onConflictDoNothing: vi.fn().mockResolvedValue({}),
-      values: vi.fn().mockReturnThis()
-    };
-
-    const mockDatabase = {
-      insert: vi
-        .fn()
-        .mockReturnValueOnce(mockFeedsInsertResult)
-        .mockReturnValueOnce(mockSubscriptionsInsertResult),
-      select: vi.fn().mockReturnValue({
-        from: vi.fn().mockReturnThis(),
-        where: vi.fn().mockResolvedValue([])
-      })
-    };
-
-    // @ts-expect-error test double
-    const resolver = addSubscriptionMutation(mockDatabase);
-    const result = await resolver(
-      undefined,
-      {
-        title: PROVIDED_TITLE,
-        website: PROVIDED_WEBSITE,
-        xmlAddress: PROVIDED_XML
-      },
-      mockContext
-    );
-
-    expect(result).toEqual({
-      id: "feed-1",
-      title: PROVIDED_TITLE,
-      website: PROVIDED_WEBSITE,
-      xmlAddress: PROVIDED_XML
-    });
-    expect(fetchSpy).not.toHaveBeenCalled();
-    expect(mockDatabase.insert).toHaveBeenCalledTimes(2);
-    expect(mockFeedsInsertResult.values).toHaveBeenCalledWith({
-      title: PROVIDED_TITLE,
-      website: PROVIDED_WEBSITE,
-      xmlAddress: PROVIDED_XML
-    });
   });
 
   it("should fallback to URL parsing if fetching or XML parsing fails", async () => {
@@ -210,8 +147,6 @@ describe("addSubscriptionMutation", () => {
       resolver(
         undefined,
         {
-          title: "Title",
-          website: "https://website.com",
           xmlAddress: "https://website.com/feed.xml"
         },
         mockContext
@@ -311,104 +246,6 @@ describe("addSubscriptionMutation", () => {
     expect(result.title).toBe("notok.com");
     expect(result.website).toBe("https://notok.com");
     expect(fetchSpy).toHaveBeenCalledWith(NOTOK_XML);
-  });
-
-  it("should fallback to URL origin for website if fetch fails and only website is missing", async () => {
-    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error(NETWORK_ERROR));
-
-    const mockFeedsInsertResult = {
-      returning: vi.fn().mockResolvedValue([
-        {
-          id: "feed-fallback-website",
-          title: PROVIDED_TITLE,
-          website: FALLBACK_WEBSITE,
-          xmlAddress: FALLBACK_XML
-        }
-      ]),
-      values: vi.fn().mockReturnThis()
-    };
-
-    const mockDatabase = {
-      insert: vi
-        .fn()
-        .mockReturnValueOnce(mockFeedsInsertResult)
-        .mockReturnValueOnce({
-          onConflictDoNothing: vi.fn().mockResolvedValue({}),
-          values: vi.fn().mockReturnThis()
-        }),
-      select: vi.fn().mockReturnValue({
-        from: vi.fn().mockReturnThis(),
-        where: vi.fn().mockResolvedValue([])
-      })
-    };
-
-    // @ts-expect-error test double
-    const resolver = addSubscriptionMutation(mockDatabase);
-    const result = await resolver(
-      undefined,
-      {
-        title: PROVIDED_TITLE,
-        xmlAddress: FALLBACK_XML
-      },
-      mockContext
-    );
-
-    expect(result.title).toBe(PROVIDED_TITLE);
-    expect(result.website).toBe(FALLBACK_WEBSITE);
-    expect(mockFeedsInsertResult.values).toHaveBeenCalledWith({
-      title: PROVIDED_TITLE,
-      website: FALLBACK_WEBSITE,
-      xmlAddress: FALLBACK_XML
-    });
-  });
-
-  it("should fallback to URL hostname for title if fetch fails and only title is missing", async () => {
-    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error(NETWORK_ERROR));
-
-    const mockFeedsInsertResult = {
-      returning: vi.fn().mockResolvedValue([
-        {
-          id: "feed-fallback-title",
-          title: FALLBACK_TITLE,
-          website: PROVIDED_WEBSITE_2,
-          xmlAddress: FALLBACK_XML
-        }
-      ]),
-      values: vi.fn().mockReturnThis()
-    };
-
-    const mockDatabase = {
-      insert: vi
-        .fn()
-        .mockReturnValueOnce(mockFeedsInsertResult)
-        .mockReturnValueOnce({
-          onConflictDoNothing: vi.fn().mockResolvedValue({}),
-          values: vi.fn().mockReturnThis()
-        }),
-      select: vi.fn().mockReturnValue({
-        from: vi.fn().mockReturnThis(),
-        where: vi.fn().mockResolvedValue([])
-      })
-    };
-
-    // @ts-expect-error test double
-    const resolver = addSubscriptionMutation(mockDatabase);
-    const result = await resolver(
-      undefined,
-      {
-        website: PROVIDED_WEBSITE_2,
-        xmlAddress: FALLBACK_XML
-      },
-      mockContext
-    );
-
-    expect(result.title).toBe(FALLBACK_TITLE);
-    expect(result.website).toBe(PROVIDED_WEBSITE_2);
-    expect(mockFeedsInsertResult.values).toHaveBeenCalledWith({
-      title: FALLBACK_TITLE,
-      website: PROVIDED_WEBSITE_2,
-      xmlAddress: FALLBACK_XML
-    });
   });
 
   it("should handle XML with neither RSS nor Atom feed", async () => {

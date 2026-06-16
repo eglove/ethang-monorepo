@@ -4,7 +4,6 @@ import { Box, Button, Card, Flex, Heading, Text } from "@radix-ui/themes";
 import {
   useInfiniteQuery,
   useMutation,
-  useQuery,
   useQueryClient
 } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
@@ -18,18 +17,19 @@ import { allArticlesOptions, feedArticlesOptions } from "./queries.ts";
 import { rssStore } from "./rss-store.ts";
 import { decodeHtmlEntities } from "./utilities.ts";
 
-type ArticlesProperties = {
-  feedTitle: string;
-};
-
-export const Articles = ({ feedTitle }: Readonly<ArticlesProperties>) => {
+export const Articles = () => {
   const feedId = useStore(rssStore, (state) => {
     return state.selectedFeedId;
   });
 
   const queryClient = useQueryClient();
 
-  const { data: allData } = useQuery(allArticlesOptions());
+  const {
+    data: allData,
+    fetchNextPage: fetchNextPageAll,
+    hasNextPage: hasNextPageAll,
+    isFetchingNextPage: isFetchingNextPageAll
+  } = useInfiniteQuery(allArticlesOptions());
 
   const {
     data: feedData,
@@ -38,17 +38,25 @@ export const Articles = ({ feedTitle }: Readonly<ArticlesProperties>) => {
     isFetchingNextPage: isFetchingNextPageFeed
   } = useInfiniteQuery(feedArticlesOptions(feedId));
 
+  const allEdges = isNil(allData)
+    ? []
+    : allData.pages.flatMap((page) => {
+        return page.allArticles.edges;
+      });
+
   const feedEdges = isNil(feedData)
     ? []
     : feedData.pages.flatMap((page) => {
         return page.feedArticles.edges;
       });
 
-  const data = isNil(feedId)
-    ? (allData?.subscriptions.edges ?? []).flatMap((edge) => {
-        return edge.node.articles.edges;
-      })
-    : feedEdges;
+  const data = isNil(feedId) ? allEdges : feedEdges;
+
+  const hasNextPage = isNil(feedId) ? hasNextPageAll : hasNextPageFeed;
+  const isFetchingNextPage = isNil(feedId)
+    ? isFetchingNextPageAll
+    : isFetchingNextPageFeed;
+  const fetchNextPage = isNil(feedId) ? fetchNextPageAll : fetchNextPageFeed;
 
   const { isPending: isMarkingRead, mutateAsync: markArticleRead } =
     useMutation({
@@ -102,7 +110,7 @@ export const Articles = ({ feedTitle }: Readonly<ArticlesProperties>) => {
                 </Heading>
                 <Flex gap="3" align="center">
                   <Text size="1" className="text-slate-500">
-                    {decodeHtmlEntities(feedTitle)}
+                    {decodeHtmlEntities(article.node.feed.title)}
                   </Text>
                   {!isNil(article.node.publishedAt) && (
                     <Text size="1" className="text-slate-600">
@@ -129,14 +137,14 @@ export const Articles = ({ feedTitle }: Readonly<ArticlesProperties>) => {
           </Card>
         );
       })}
-      {hasNextPageFeed && (
+      {hasNextPage && (
         <Button
           color="gray"
           variant="outline"
-          loading={isFetchingNextPageFeed}
+          loading={isFetchingNextPage}
           className="mt-2 w-full cursor-pointer"
           onClick={() => {
-            fetchNextPageFeed().catch(noop);
+            fetchNextPage().catch(noop);
           }}
         >
           Load More

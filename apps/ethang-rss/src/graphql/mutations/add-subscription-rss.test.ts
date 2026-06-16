@@ -3,11 +3,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { addSubscriptionMutation } from "./add-subscription.ts";
 
-const PROVIDED_TITLE = "Provided Title";
 const RSS_TITLE = "RSS Feed Title";
 const RSS_WEBSITE = "https://rsswebsite.com";
 const RSS_XML = "https://rsswebsite.com/feed.xml";
-const PROVIDED_WEBSITE_2 = "https://provided-website.com";
 
 const mockContext = {
   user: {
@@ -19,7 +17,6 @@ const mockContext = {
   }
 };
 
-// eslint-disable-next-line sonar/max-lines-per-function
 describe("addSubscriptionMutation - RSS parsing", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -56,38 +53,7 @@ describe("addSubscriptionMutation - RSS parsing", () => {
       `,
       xmlAddress: "https://nested.com/feed.xml"
     },
-    {
-      expectedTitle: PROVIDED_TITLE,
-      expectedWebsite: RSS_WEBSITE,
-      name: "should fetch metadata and only update missing website if title is already provided",
-      providedTitle: PROVIDED_TITLE,
-      rssXml: `
-        <?xml version="1.0" encoding="UTF-8" ?>
-        <rss version="2.0">
-          <channel>
-            <title>${RSS_TITLE}</title>
-            <link>${RSS_WEBSITE}</link>
-          </channel>
-        </rss>
-      `,
-      xmlAddress: RSS_XML
-    },
-    {
-      expectedTitle: RSS_TITLE,
-      expectedWebsite: PROVIDED_WEBSITE_2,
-      name: "should fetch metadata and only update missing title if website is already provided",
-      providedWebsite: PROVIDED_WEBSITE_2,
-      rssXml: `
-        <?xml version="1.0" encoding="UTF-8" ?>
-        <rss version="2.0">
-          <channel>
-            <title>${RSS_TITLE}</title>
-            <link>${RSS_WEBSITE}</link>
-          </channel>
-        </rss>
-      `,
-      xmlAddress: RSS_XML
-    },
+
     {
       expectedTitle: "RSS Title",
       expectedWebsite: "https://nestedrss.com",
@@ -182,8 +148,6 @@ describe("addSubscriptionMutation - RSS parsing", () => {
       expectedTitle,
       expectedWebsite,
       parserMock,
-      providedTitle,
-      providedWebsite,
       rssXml,
       xmlAddress
     }) => {
@@ -226,21 +190,7 @@ describe("addSubscriptionMutation - RSS parsing", () => {
 
       // @ts-expect-error test double
       const resolver = addSubscriptionMutation(mockDatabase);
-      const parameters: {
-        title?: string;
-        website?: string;
-        xmlAddress: string;
-      } = {
-        xmlAddress
-      };
-      if (providedTitle !== undefined) {
-        parameters.title = providedTitle;
-      }
-      if (providedWebsite !== undefined) {
-        parameters.website = providedWebsite;
-      }
-
-      const result = await resolver(undefined, parameters, mockContext);
+      const result = await resolver(undefined, { xmlAddress }, mockContext);
 
       expect(result.title).toBe(expectedTitle);
       expect(result.website).toBe(expectedWebsite);

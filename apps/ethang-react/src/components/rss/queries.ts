@@ -1,5 +1,5 @@
 import { gql } from "@ethang/graphql-types/__generated__";
-import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 
 import { graphqlRequest } from "../../clients/graphql-client.ts";
@@ -40,6 +40,45 @@ export const subscriptionsOptions = () => {
   });
 };
 
+export const allArticlesOptions = () => {
+  return infiniteQueryOptions({
+    queryFn: async ({ pageParam }) => {
+      return graphqlRequest(
+        gql(`query AllArticles($after: String, $isRead: Boolean) {
+          allArticles(after: $after, isRead: $isRead) {
+              pageInfo {
+                  hasNextPage
+                  endCursor
+              }
+              edges {
+                  node {
+                      id
+                      isRead
+                      title
+                      link
+                      publishedAt
+                      feed {
+                          id
+                          title
+                      }
+                  }
+              }
+          }
+      }`),
+        { after: pageParam, isRead: false }
+      );
+    },
+    // query order
+    getNextPageParam: (lastPage) => {
+      return lastPage.allArticles.pageInfo.hasNextPage
+        ? lastPage.allArticles.pageInfo.endCursor
+        : null;
+    },
+    initialPageParam: null as null | string,
+    queryKey: ["allArticles"]
+  });
+};
+
 export const feedArticlesOptions = (feedId: null | string) => {
   return infiniteQueryOptions({
     enabled: !isNil(feedId),
@@ -58,6 +97,10 @@ export const feedArticlesOptions = (feedId: null | string) => {
                         title
                         link
                         publishedAt
+                        feed {
+                            id
+                            title
+                        }
                     }
                 }
             }
@@ -77,36 +120,5 @@ export const feedArticlesOptions = (feedId: null | string) => {
     },
     initialPageParam: null as null | string,
     queryKey: ["feedArticles", feedId]
-  });
-};
-
-export const allArticlesOptions = () => {
-  return queryOptions({
-    queryFn: async () => {
-      return graphqlRequest(
-        gql(`query AllArticles {
-            subscriptions {
-                edges {
-                    node {
-                        id
-                        title
-                        articles {
-                            edges {
-                                node {
-                                    id
-                                    isRead
-                                    title
-                                    link
-                                    publishedAt
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }`)
-      );
-    },
-    queryKey: ["allArticles"]
   });
 };

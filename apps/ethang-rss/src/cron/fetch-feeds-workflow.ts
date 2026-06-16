@@ -24,6 +24,7 @@ import {
   getSecretValue
 } from "../util/get-environment-secret.ts";
 import { normalizeDate } from "../util/normalize-date.ts";
+import { parseFeedMetadata } from "../util/parse-feed-metadata.ts";
 
 const parser = new XMLParser({
   attributeNamePrefix: "@_",
@@ -156,6 +157,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
         const error = await attemptAsync(async () => {
           const response = await fetch(feed.xmlAddress);
           const xml = await response.text();
+          const parsedMeta = parseFeedMetadata(xml);
           // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           const result = parser.parse(xml) as unknown as FeedResult;
 
@@ -196,9 +198,21 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
 
           await Promise.all(insertPromises);
 
+          const updateFields: Partial<typeof feedsTable.$inferInsert> = {
+            lastFetchedAt: DateTime.now().toISO()
+          };
+
+          if ("" !== parsedMeta.title) {
+            updateFields.title = parsedMeta.title;
+          }
+
+          if ("" !== parsedMeta.website) {
+            updateFields.website = parsedMeta.website;
+          }
+
           await database
             .update(feedsTable)
-            .set({ lastFetchedAt: DateTime.now().toISO() })
+            .set(updateFields)
             .where(eq(feedsTable.id, feed.id));
         });
 
