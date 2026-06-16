@@ -10,7 +10,7 @@ export const RssContainer = () => {
           Articles
         </Heading>
 
-        <Articles feedTitle="" />
+        <Articles />
       </Card>
     </Box>
   );

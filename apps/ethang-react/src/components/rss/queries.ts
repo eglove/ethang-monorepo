@@ -57,6 +57,10 @@ export const allArticlesOptions = () => {
                       title
                       link
                       publishedAt
+                      feed {
+                          id
+                          title
+                      }
                   }
               }
           }
@@ -93,6 +97,10 @@ export const feedArticlesOptions = (feedId: null | string) => {
                         title
                         link
                         publishedAt
+                        feed {
+                            id
+                            title
+                        }
                     }
                 }
             }

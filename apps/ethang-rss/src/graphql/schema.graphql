@@ -11,6 +11,10 @@ type Article @key(fields: "id") {
   """
   content: String
   """
+  The feed this article belongs to
+  """
+  feed: Feed!
+  """
   The ID of the feed this article belongs to
   """
   feedId: String!

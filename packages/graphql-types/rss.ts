@@ -6,6 +6,7 @@ export type AllArticlesQuery = {
   allArticles: {
     edges: {
       node: {
+        feed: { id: string; title: string };
         id: string;
         isRead: boolean;
         link: string;
@@ -46,6 +47,7 @@ export type FeedArticlesQuery = {
   feedArticles: {
     edges: {
       node: {
+        feed: { id: string; title: string };
         id: string;
         isRead: boolean;
         link: string;

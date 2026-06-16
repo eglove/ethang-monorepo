@@ -17,11 +17,7 @@ import { allArticlesOptions, feedArticlesOptions } from "./queries.ts";
 import { rssStore } from "./rss-store.ts";
 import { decodeHtmlEntities } from "./utilities.ts";
 
-type ArticlesProperties = {
-  feedTitle: string;
-};
-
-export const Articles = ({ feedTitle }: Readonly<ArticlesProperties>) => {
+export const Articles = () => {
   const feedId = useStore(rssStore, (state) => {
     return state.selectedFeedId;
   });
@@ -114,7 +110,7 @@ export const Articles = ({ feedTitle }: Readonly<ArticlesProperties>) => {
                 </Heading>
                 <Flex gap="3" align="center">
                   <Text size="1" className="text-slate-500">
-                    {decodeHtmlEntities(feedTitle)}
+                    {decodeHtmlEntities(article.node.feed.title)}
                   </Text>
                   {!isNil(article.node.publishedAt) && (
                     <Text size="1" className="text-slate-600">
