@@ -75,8 +75,6 @@ const ARTICLE_TWO_ID = "article-2";
 const ARTICLE_TWO_LINK = "https://example.com/2";
 const ARTICLE_TWO_DATE = "2026-06-15T21:00:00.000Z";
 const ARTICLE_TWO_TITLE = "Article Two";
-const TEST_FEED_TITLE = "Test Feed";
-
 const ARTICLE_ONE_ID = "article-1";
 const ARTICLE_ONE_LINK = "https://example.com/1";
 const ARTICLE_ONE_DATE = "2026-06-15T20:00:00.000Z";
@@ -110,6 +108,7 @@ describe("Articles - Rendering and Actions", () => {
             edges: [
               {
                 node: {
+                  feed: { id: "feed-1", title: "Test Feed" },
                   id: ARTICLE_ONE_ID,
                   isRead: false,
                   link: ARTICLE_ONE_LINK,
@@ -127,7 +126,7 @@ describe("Articles - Rendering and Actions", () => {
       ]
     };
 
-    render(<Articles feedTitle={TEST_FEED_TITLE} />);
+    render(<Articles />);
 
     expect(screen.getByText(ARTICLE_ONE_TITLE)).toBeDefined();
     expect(
@@ -144,6 +143,7 @@ describe("Articles - Rendering and Actions", () => {
             edges: [
               {
                 node: {
+                  feed: { id: FEED_ONE, title: "Test Feed" },
                   id: ARTICLE_TWO_ID,
                   isRead: false,
                   link: ARTICLE_TWO_LINK,
@@ -161,7 +161,7 @@ describe("Articles - Rendering and Actions", () => {
       ]
     };
 
-    render(<Articles feedTitle={TEST_FEED_TITLE} />);
+    render(<Articles />);
 
     expect(screen.getByText(ARTICLE_TWO_TITLE)).toBeDefined();
     expect(
@@ -178,6 +178,7 @@ describe("Articles - Rendering and Actions", () => {
             edges: [
               {
                 node: {
+                  feed: { id: FEED_ONE, title: "Test Feed" },
                   id: ARTICLE_TWO_ID,
                   isRead: false,
                   link: ARTICLE_TWO_LINK,
@@ -195,7 +196,7 @@ describe("Articles - Rendering and Actions", () => {
       ]
     };
 
-    render(<Articles feedTitle={TEST_FEED_TITLE} />);
+    render(<Articles />);
 
     const markReadButton = screen.getByRole("button", { name: "Mark as Read" });
     fireEvent.click(markReadButton);
@@ -223,6 +224,7 @@ describe("Articles - Pagination", () => {
             edges: [
               {
                 node: {
+                  feed: { id: FEED_ONE, title: "Test Feed" },
                   id: ARTICLE_TWO_ID,
                   isRead: false,
                   link: ARTICLE_TWO_LINK,
@@ -240,7 +242,7 @@ describe("Articles - Pagination", () => {
       ]
     };
 
-    render(<Articles feedTitle={TEST_FEED_TITLE} />);
+    render(<Articles />);
 
     expect(
       screen.getByRole("button", { name: LOAD_MORE_BUTTON_NAME })
@@ -256,6 +258,7 @@ describe("Articles - Pagination", () => {
             edges: [
               {
                 node: {
+                  feed: { id: FEED_ONE, title: "Test Feed" },
                   id: ARTICLE_TWO_ID,
                   isRead: false,
                   link: ARTICLE_TWO_LINK,
@@ -273,7 +276,7 @@ describe("Articles - Pagination", () => {
       ]
     };
 
-    render(<Articles feedTitle={TEST_FEED_TITLE} />);
+    render(<Articles />);
 
     const loadMoreButton = screen.getByRole("button", {
       name: LOAD_MORE_BUTTON_NAME
@@ -292,6 +295,7 @@ describe("Articles - Pagination", () => {
             edges: [
               {
                 node: {
+                  feed: { id: "feed-1", title: "Test Feed" },
                   id: ARTICLE_ONE_ID,
                   isRead: false,
                   link: ARTICLE_ONE_LINK,
@@ -309,7 +313,7 @@ describe("Articles - Pagination", () => {
       ]
     };
 
-    render(<Articles feedTitle={TEST_FEED_TITLE} />);
+    render(<Articles />);
 
     expect(
       screen.getByRole("button", { name: LOAD_MORE_BUTTON_NAME })
@@ -325,6 +329,7 @@ describe("Articles - Pagination", () => {
             edges: [
               {
                 node: {
+                  feed: { id: "feed-1", title: "Test Feed" },
                   id: ARTICLE_ONE_ID,
                   isRead: false,
                   link: ARTICLE_ONE_LINK,
@@ -342,7 +347,7 @@ describe("Articles - Pagination", () => {
       ]
     };
 
-    render(<Articles feedTitle={TEST_FEED_TITLE} />);
+    render(<Articles />);
 
     const loadMoreButton = screen.getByRole("button", {
       name: LOAD_MORE_BUTTON_NAME
