@@ -45,6 +45,7 @@ import { philosophy } from "./philosophy.ts";
 import { privacyDataProtection } from "./privacy-data-protection.ts";
 import { processMeasurement } from "./process-measurement.ts";
 import { professionalEthics } from "./professional-ethics.ts";
+import { projectLinking } from "./project-linking.ts";
 import { qualityAssuranceReviews } from "./quality-assurance-reviews.ts";
 import { regressionTestingStrategy } from "./regression-testing-strategy.ts";
 import { requirementsAttributes } from "./requirements-attributes.ts";
@@ -140,6 +141,7 @@ export const GLOBAL_RULES: RuleDefinition[] = [
   qualityAssuranceReviews,
   verificationVsValidation,
   privacyDataProtection,
+  projectLinking,
   securityVulnerabilityScanning,
   effortEstimation,
   riskManagement,
