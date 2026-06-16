@@ -62,6 +62,7 @@
     ".agents/rules/quality-assurance-reviews.md",
     ".agents/rules/verification-vs-validation.md",
     ".agents/rules/privacy-data-protection.md",
+    ".agents/rules/project-linking.md",
     ".agents/rules/security-vulnerability-scanning.md",
     ".agents/rules/effort-estimation.md",
     ".agents/rules/risk-management.md",
