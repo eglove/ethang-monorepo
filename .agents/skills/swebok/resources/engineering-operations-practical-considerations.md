@@ -21,6 +21,7 @@ All modifications to production systems introduce operational risks, which must 
 Automated risk monitoring systems must continuously track SLIs against SLO thresholds. When a threshold is breached or an error budget is rapidly depleted, automated alert triggers must fire. Alert triggers should be designed to classify severity based on the rate of error budget consumption rather than static thresholds. This prevents alert fatigue, where engineers are overwhelmed by low-severity notifications. 
 
 To mitigate operational risk during releases, organizations employ progressive exposure patterns:
+
 * Canary Deployments: The new version is routed to a tiny fraction of live traffic. Automated monitors compare telemetry between the canary instance and the baseline. If anomaly rates rise, the deployment is automatically rolled back.
 * Blue-Green Environments: Two identical environments exist, with only one active. Upgrades are applied to the inactive environment and verified before traffic is atomically switched. Failures trigger an immediate switchback, minimizing exposure.
 * Circuit Breakers: Distributed calls are protected by stateful software components that fail fast when downstream dependencies degrade, preventing cascading failures across the system topology.

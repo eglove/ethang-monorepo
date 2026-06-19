@@ -2,24 +2,18 @@
 
 The Specification Pattern encapsulates business rules and criteria into dedicated, reusable objects. It solves the problem of scattered, duplicated, and inconsistent validation or filtering logic across different layers.
 
----
-
 ## 1. Core Use Cases
 
 1. **In-Memory Validation**: Checking if an object loaded in memory complies with specific business criteria (e.g., is this product eligible for a discount?).
-2. **Database Querying**: Filtering data in the database using the exact same business criteria, ensuring consistency between query and validation logic.
-3. **Guided Object Creation**: Determining how a new object should be constructed or selecting valid items from a pool to generate packages or suggestions.
-
----
+1. **Database Querying**: Filtering data in the database using the exact same business criteria, ensuring consistency between query and validation logic.
+1. **Guided Object Creation**: Determining how a new object should be constructed or selecting valid items from a pool to generate packages or suggestions.
 
 ## 2. C# Expression Trees vs. TypeScript
 
-- **In C# (LINQ/EF Core)**: Specifications can return an `Expression<Func<T, bool>>` (an Expression Tree). EF Core parses this tree at runtime to generate SQL `WHERE` clauses, while the specification compiles it into a delegate for in-memory checks.
-- **In TypeScript**: JavaScript and TypeScript lack runtime Expression Trees. Thus, we represent specifications using:
-  - **Predicates**: `(item: T) => boolean` functions for in-memory filtering.
-  - **Query Adapters**: A separate method (e.g., `toQueryFilter()`) that returns a query builder object or filter object compatible with standard ORMs like Prisma or Drizzle.
-
----
+* **In C# (LINQ/EF Core)**: Specifications can return an `Expression<Func<T, bool>>` (an Expression Tree). EF Core parses this tree at runtime to generate SQL `WHERE` clauses, while the specification compiles it into a delegate for in-memory checks.
+* **In TypeScript**: JavaScript and TypeScript lack runtime Expression Trees. Thus, we represent specifications using:
+- **Predicates**: `(item: T) => boolean` functions for in-memory filtering.
+- **Query Adapters**: A separate method (e.g., `toQueryFilter()`) that returns a query builder object or filter object compatible with standard ORMs like Prisma or Drizzle.
 
 ## 3. TypeScript Specification Implementation
 
@@ -134,8 +128,6 @@ const premiumAndAvailableSpec = premiumSpec.and(availableSpec);
 const phone: Product = { price: 800, stock: 12, category: "electronics" };
 const result = premiumAndAvailableSpec.isSatisfiedBy(phone); // returns true
 ```
-
----
 
 ## 4. Query Adapters (e.g., Prisma Integration)
 

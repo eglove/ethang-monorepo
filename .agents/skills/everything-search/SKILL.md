@@ -15,31 +15,35 @@ name: everything-search
 
 ## Table of Contents
 
-- [Basic File Searching](#basic-file-searching)
-  - [Simple Keyword Search](#simple-keyword-search)
-  - [Wildcard Search](#wildcard-search)
-- [Filtering by Type](#filtering-by-type)
-  - [Files Only (`/a-d`)](#files-only-a-d)
-  - [Directories Only (`/ad`)](#directories-only-ad)
-- [Advanced Matching](#advanced-matching)
-  - [Regex Search (`-r`)](#regex-search--r)
-  - [Match Full Path (`-p`)](#match-full-path--p)
-  - [Limit Results (`-n`)](#limit-results--n)
-- [Formatting Output](#formatting-output)
-  - [JSON Output (`-json`)](#json-output--json)
+* [Basic File Searching](#basic-file-searching)
+- [Simple Keyword Search](#simple-keyword-search)
+- [Wildcard Search](#wildcard-search)
+* [Filtering by Type](#filtering-by-type)
+- [Files Only (`/a-d`)](#files-only-a-d)
+- [Directories Only (`/ad`)](#directories-only-ad)
+* [Advanced Matching](#advanced-matching)
+- [Regex Search (`-r`)](#regex-search--r)
+- [Match Full Path (`-p`)](#match-full-path--p)
+- [Limit Results (`-n`)](#limit-results--n)
+* [Formatting Output](#formatting-output)
+- [JSON Output (`-json`)](#json-output--json)
 
 ## Basic File Searching
 
 ### Simple Keyword Search
+
 Find files or folders containing the keyword anywhere in their name.
 **Example Usage:**
+
 ```bash
 rtk es "my-module"
 ```
 
 ### Wildcard Search
+
 Use `*` and `?` to perform glob-style matching on filenames.
 **Example Usage:**
+
 ```bash
 rtk es "*my-module*.ts"
 ```
@@ -47,15 +51,19 @@ rtk es "*my-module*.ts"
 ## Filtering by Type
 
 ### Files Only (`/a-d`)
+
 Exclude directories from the results. This is the most common flag when looking for source files.
 **Example Usage:**
+
 ```bash
 rtk es /a-d "*controller*.js"
 ```
 
 ### Directories Only (`/ad`)
+
 Only return folders. Useful for locating project directories or configuration folders.
 **Example Usage:**
+
 ```bash
 rtk es /ad "node_modules"
 ```
@@ -63,22 +71,28 @@ rtk es /ad "node_modules"
 ## Advanced Matching
 
 ### Regex Search (`-r`)
+
 Use regular expressions to match filenames instead of simple wildcards.
 **Example Usage:**
+
 ```bash
 rtk es -r "^test_.*\\.ts$"
 ```
 
 ### Match Full Path (`-p`)
+
 By default, `es` matches against the filename. Use `-p` to match against the full absolute path.
 **Example Usage:**
+
 ```bash
 rtk es -p "packages\\agents-build\\*.ts"
 ```
 
 ### Limit Results (`-n`)
+
 Restrict the number of results returned. Highly recommended to prevent flooding the context window.
 **Example Usage:**
+
 ```bash
 rtk es -n 5 "*index*.ts"
 ```
@@ -86,8 +100,10 @@ rtk es -n 5 "*index*.ts"
 ## Formatting Output
 
 ### JSON Output (`-json`)
+
 Format the search results as a JSON array. This is extremely powerful when combined with `jq`.
 **Example Usage:**
+
 ```bash
 # Output as JSON
 rtk es /a-d -json *my-module*.ts
@@ -365,9 +381,9 @@ General options
         Display the total folder size for the specified filename.
 
    -save-settings
-        Save settings to %APPDATA%oidtoolseses.ini
+        Save settings to %APPDATA%\voidtools\es\es.ini
    -clear-settings
-        Delete %APPDATA%oidtoolseses.ini
+        Delete %APPDATA%\voidtools\es\es.ini
 
    -version
         Display ES major.minor.revision.build version and exit.
@@ -392,7 +408,6 @@ Notes
     Use double quotes to escape spaces and switches.
     Switches can be disabled by prefixing them with no-, eg: -no-size.
     -instance=1.5a is the same as -instance 1.5a
-    Use a ^ prefix or wrap with double quotes (") to escape  & | > < ^
+    Use a ^ prefix or wrap with double quotes (") to escape \ & | > < ^
 
 ```
-

@@ -12,35 +12,41 @@ The GitHub CLI (`gh`) brings pull requests, issues, and other GitHub concepts to
 
 ## Table of Contents
 
-- [Pull Requests](#pull-requests)
-  - [Create a Pull Request](#create-a-pull-request)
-  - [List Pull Requests](#list-pull-requests)
-  - [View Pull Request Details](#view-pull-request-details)
-- [GitHub Actions (CI/CD)](#github-actions-cicd)
-  - [View CI Run Logs](#view-ci-run-logs)
-  - [List Recent Workflow Runs](#list-recent-workflow-runs)
-- [Issues](#issues)
-  - [Create an Issue](#create-an-issue)
+* [Pull Requests](#pull-requests)
+- [Create a Pull Request](#create-a-pull-request)
+- [List Pull Requests](#list-pull-requests)
+- [View Pull Request Details](#view-pull-request-details)
+* [GitHub Actions (CI/CD)](#github-actions-cicd)
+- [View CI Run Logs](#view-ci-run-logs)
+- [List Recent Workflow Runs](#list-recent-workflow-runs)
+* [Issues](#issues)
+- [Create an Issue](#create-an-issue)
 
 ## Pull Requests
 
 ### Create a Pull Request
+
 Creates a pull request on the current branch. Be sure to wrap multi-line arguments in quotes.
 **Example Usage:**
+
 ```bash
 rtk gh pr create --title "feat: add user authentication" --body "Implements JWT-based user authentication. Closes #42."
 ```
 
 ### List Pull Requests
+
 Lists open pull requests in the repository. The `rtk` wrapper will compress the output tables.
 **Example Usage:**
+
 ```bash
 rtk gh pr list --limit 10
 ```
 
 ### View Pull Request Details
+
 View the status, description, and checks for a specific PR.
 **Example Usage:**
+
 ```bash
 rtk gh pr view 123
 ```
@@ -48,15 +54,19 @@ rtk gh pr view 123
 ## GitHub Actions (CI/CD)
 
 ### View CI Run Logs
+
 View the logs of a specific GitHub Actions workflow run.
 **Example Usage:**
+
 ```bash
 rtk gh run view <run-id> --log
 ```
 
 ### List Recent Workflow Runs
+
 List recent workflow executions.
 **Example Usage:**
+
 ```bash
 rtk gh run list --limit 5
 ```
@@ -64,8 +74,10 @@ rtk gh run list --limit 5
 ## Issues
 
 ### Create an Issue
+
 Create a new GitHub issue.
 **Example Usage:**
+
 ```bash
 rtk gh issue create --title "Bug: Login form crashes on submit" --body "When submitting the form with an empty password, the app crashes."
 ``
@@ -150,4 +162,3 @@ LEARN MORE
 
 
 ```
-

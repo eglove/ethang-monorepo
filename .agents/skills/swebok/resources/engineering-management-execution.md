@@ -1,68 +1,81 @@
 # Engineering Management Execution
 
 ## 1. Domain Theory and Conceptual Foundations
+
 Software project execution, or project enactment, represents the operational phase within the software engineering management lifecycle where planned models, architectures, and processes are implemented. As defined in the IEEE Software Engineering Body of Knowledge (SWEBOK v4) Chapter 9 (Software Engineering Management), execution is the disciplined instantiation of the processes, methods, and procedures embodied in the project plan. The primary focus during execution is strict adherence to the selected Software Development Life Cycle (SDLC) processes, with the guiding expectation that process discipline is the most reliable mechanism to satisfy stakeholder requirements and achieve project objectives. Project enactment requires active management across three concurrent dimensions: monitoring, controlling, and reporting.
 
 ### 1.1 Implementation of Plans
+
 The implementation of plans demands that all engineering activities follow the project plan and its supporting plans (including quality assurance, configuration management, risk management, and measurement plans). Project activities consume key organizational resources, categorized as personnel (skills, effort, and cognitive capacity of the team), technology (development environments, compilers, static analyzers, and test runners), and funding (infrastructure and tooling). The consumption of these resources generates concrete, high-value work products, including software designs, source code, and comprehensive software test cases. Adhering to the plans prevents scope creep, ensures resource efficiency, and establishes a clear path of execution.
 
 ### 1.2 Software Acquisition and Supplier Contract Management
+
 In modern software engineering, software is rarely developed entirely from scratch. Software acquisition and supplier contract management have become core aspects of project execution. Software acquisition refers to the process of obtaining software components, libraries, services, or complete systems from external entities. While modern package managers simplify the acquisition of third-party libraries, they also introduce significant supply chain risks and expand the attack surface of applications. Unrestricted and un-audited inclusion of external libraries exposes projects to dependency confusion, typosquatting, and malicious code injections. To mitigate these risks, organizations must implement technical and procedural controls, such as locked dependency files, private package repositories, automated security vulnerability scanners, software review boards, and licensing audits.
 
 ### 1.3 Classes of Software Acquisition and COTS Integration
+
 SWEBOK v4 defines several software acquisition classes:
+
 1. **Commercial Off-The-Shelf (COTS)**: Existing products acquired "as is" under commercial license terms, offering rapid deployment but limited customization.
-2. **Custom Developed Software**: Software built specifically for the organization, which may customize COTS products.
-3. **Open Source Software**: Nominally free software requiring license reviews (permissive vs. restrictive copyleft) to identify usage restrictions.
-4. **Customer Loaned Software**: Software provided by the customer for simulation or integration testing.
-5. **Software as a Service (SaaS)**: Rented cloud-hosted applications or environments (e.g., hosting, version control).
+1. **Custom Developed Software**: Software built specifically for the organization, which may customize COTS products.
+1. **Open Source Software**: Nominally free software requiring license reviews (permissive vs. restrictive copyleft) to identify usage restrictions.
+1. **Customer Loaned Software**: Software provided by the customer for simulation or integration testing.
+1. **Software as a Service (SaaS)**: Rented cloud-hosted applications or environments (e.g., hosting, version control).
 
 Regardless of the acquisition class, validation and verification activities must be performed: verifying that each component is complete, correct, and consistent with the architectural design; integrating the components; verifying that the integrated components are complete and correct; and validating that the integrated system satisfies its intended purpose in the target operating environment.
 
 ### 1.4 Contractual Structures, Risk Allocation, and Quality Requirements
+
 Supplier management requires appropriate contract types:
-- **Fixed-Price Contracts**: Suitable when requirements are stable, transferring risk to the supplier.
-- **Time-and-Materials (T&M) Contracts**: Buyer pays based on actual hours and material costs, preferred when scope is fluid.
-- **Cost Plus Fixed Fee Contracts**: Reimburses actual costs plus a fixed fee, useful for high-risk research projects.
-- **Cost-Plus Incentive Fee Contracts**: Reimburses costs and pays a fee that varies based on supplier performance against targets.
+
+* **Fixed-Price Contracts**: Suitable when requirements are stable, transferring risk to the supplier.
+* **Time-and-Materials (T&M) Contracts**: Buyer pays based on actual hours and material costs, preferred when scope is fluid.
+* **Cost Plus Fixed Fee Contracts**: Reimburses actual costs plus a fixed fee, useful for high-risk research projects.
+* **Cost-Plus Incentive Fee Contracts**: Reimburses costs and pays a fee that varies based on supplier performance against targets.
 
 Supplier agreements must specify the scope of work, deliverables, penalty clauses for late or non-delivery, intellectual property (IP) rights, and explicit software quality requirements. Data set acquisition is also critical in many agreements, involving the licensing, provisioning, custom extraction, or integration of external datasets.
 
 ### 1.5 Implementation of the Measurement Process
+
 Data-driven project management requires the systematic implementation of the measurement process during execution. This process ensures that relevant, objective, and useful data is collected. Measurement data provides quantitative visibility into the project's health and progress. Key metrics include product size (lines of code, function points), quality (defect density, test coverage), effort (personnel hours worked), and schedule (milestone completion rates). Collecting these metrics at regular intervals builds a historical baseline that enables accurate project tracking, informs future estimation, and provides the quantitative foundation for statistical analysis and variance calculation.
 
 ### 1.6 The Project Monitoring Process and Variance Analysis
+
 Project monitoring continuously assesses progress against plans regarding scope, schedule, budget, and quality:
-- **Task Evaluation**: Evaluating outputs and completion criteria for individual tasks.
-- **Deliverable Inspection**: Assessing deliverables through inspections or functional demonstrations.
-- **Resource Analysis**: Analyzing effort expenditure, schedule adherence, resource use, and costs to date.
-- **Risk Re-evaluation**: Regularly updating risk profiles and recalculating exposure.
-- **Variance Analysis**: Identifying deviations between actual and expected values (e.g., cost overruns, schedule slippage, defect rates).
-- **Outlier Identification**: Locating anomalies in quality and measurement data.
-- **Reporting Thresholds**: Reporting outcomes when variance thresholds are exceeded.
+
+* **Task Evaluation**: Evaluating outputs and completion criteria for individual tasks.
+* **Deliverable Inspection**: Assessing deliverables through inspections or functional demonstrations.
+* **Resource Analysis**: Analyzing effort expenditure, schedule adherence, resource use, and costs to date.
+* **Risk Re-evaluation**: Regularly updating risk profiles and recalculating exposure.
+* **Variance Analysis**: Identifying deviations between actual and expected values (e.g., cost overruns, schedule slippage, defect rates).
+* **Outlier Identification**: Locating anomalies in quality and measurement data.
+* **Reporting Thresholds**: Reporting outcomes when variance thresholds are exceeded.
 
 ### 1.7 The Project Control Process and Configuration Control
+
 The control process uses the insights gained from monitoring to make decisions and direct corrective actions. When variance analysis indicates that project performance deviates significantly from the plans, management must intervene to steer the project back on track. Corrective actions may include reallocating resources, adjusting schedules, or retesting software components to address quality regressions. In cases of requirements uncertainty, management may incorporate prototyping as an additional action to validate requirements with stakeholders. When deviations cannot be resolved through minor corrections, the control process may require revising the project plan, software requirements specification, or, in extreme circumstances, abandoning the project entirely. Throughout all control activities, the software team must adhere strictly to configuration control and configuration management procedures, ensuring that all changes to code, designs, or specifications are formally requested, reviewed, approved, and documented.
 
 ### 1.8 Reporting and Communication of Project Status
+
 Progress reporting is the communication channel that keeps internal and external stakeholders informed of project status. Reports must be delivered at specified and agreed-upon intervals, such as weekly status updates or monthly milestone reviews. The content of these reports must be tailored to the information needs of the target audience. High-level stakeholders, such as steering committees, clients, or executive sponsors, require summaries of milestone achievements, budget status, high-level risks, and major variances rather than the low-level, detailed task tracking used by the development team. Tailored reporting ensures transparent communication and facilitates timely decision-making at all levels of the organization.
 
 ## 2. Compliance Checklist
-- [ ] Does the software project execution strictly follow the established SDLC processes and baseline plans?
-- [ ] Are all project activities utilizing authorized personnel, technology, and funding resources as defined in the resource allocation plan?
-- [ ] Are all generated work products (designs, code, test cases) verified against their parent requirements and architectural specifications?
-- [ ] Is there a technical control mechanism (e.g., lockfiles, private registry) implemented to scan and approve acquired third-party package libraries before integration?
-- [ ] Has the risk profile of each acquired commercial off-the-shelf (COTS) component been evaluated for security, legality, and license compliance?
-- [ ] Has a formal license review been conducted for all open-source software components to identify and mitigate copyleft or usage restrictions?
-- [ ] Are customer-loaned software components protected, simulated, and integrated according to safety and security specifications?
-- [ ] Are all integrated software components validated for operational correctness and completeness within the target environment?
-- [ ] Do supplier agreements explicitly define the scope of work, quality requirements, delivery schedule, and intellectual property ownership?
-- [ ] Is data set acquisition (licensing, integration, provisioning) governed by formal agreements and verified for correctness?
-- [ ] Has the measurement process been successfully enacted to collect quantitative metrics on size, effort, schedule, and quality?
-- [ ] Is the project monitoring process conducted at predetermined intervals to assess scope, schedule, and cost performance?
-- [ ] Is variance analysis performed on the collected metrics to detect schedule slippage, cost overruns, or defect density spikes?
-- [ ] Are corrective actions (such as component retesting or resource shifting) triggered when variance thresholds are exceeded?
-- [ ] Is prototyping utilized when requirements validation is needed to address stakeholder feedback?
-- [ ] Are all project changes, document revisions, and control decisions formally managed under configuration control?
-- [ ] Are control decisions (including potential project abandonment) documented and communicated to all relevant stakeholders?
-- [ ] Do project progress reports focus on the specific information needs of the target audience rather than internal team details?
+
+* Does the software project execution strictly follow the established SDLC processes and baseline plans?
+* Are all project activities utilizing authorized personnel, technology, and funding resources as defined in the resource allocation plan?
+* Are all generated work products (designs, code, test cases) verified against their parent requirements and architectural specifications?
+* Is there a technical control mechanism (e.g., lockfiles, private registry) implemented to scan and approve acquired third-party package libraries before integration?
+* Has the risk profile of each acquired commercial off-the-shelf (COTS) component been evaluated for security, legality, and license compliance?
+* Has a formal license review been conducted for all open-source software components to identify and mitigate copyleft or usage restrictions?
+* Are customer-loaned software components protected, simulated, and integrated according to safety and security specifications?
+* Are all integrated software components validated for operational correctness and completeness within the target environment?
+* Do supplier agreements explicitly define the scope of work, quality requirements, delivery schedule, and intellectual property ownership?
+* Is data set acquisition (licensing, integration, provisioning) governed by formal agreements and verified for correctness?
+* Has the measurement process been successfully enacted to collect quantitative metrics on size, effort, schedule, and quality?
+* Is the project monitoring process conducted at predetermined intervals to assess scope, schedule, and cost performance?
+* Is variance analysis performed on the collected metrics to detect schedule slippage, cost overruns, or defect density spikes?
+* Are corrective actions (such as component retesting or resource shifting) triggered when variance thresholds are exceeded?
+* Is prototyping utilized when requirements validation is needed to address stakeholder feedback?
+* Are all project changes, document revisions, and control decisions formally managed under configuration control?
+* Are control decisions (including potential project abandonment) documented and communicated to all relevant stakeholders?
+* Do project progress reports focus on the specific information needs of the target audience rather than internal team details?

@@ -12,16 +12,18 @@ SARA is a Requirements and Design Traceability CLI tool used within this workspa
 
 ## Table of Contents
 
-- [Validation and Integrity](#validation-and-integrity)
-  - [Check Graph Integrity](#check-graph-integrity)
-- [Reporting](#reporting)
-  - [Generate Coverage Report](#generate-coverage-report)
+* [Validation and Integrity](#validation-and-integrity)
+- [Check Graph Integrity](#check-graph-integrity)
+* [Reporting](#reporting)
+- [Generate Coverage Report](#generate-coverage-report)
 
 ## Validation and Integrity
 
 ### Check Graph Integrity
+
 Validates the requirements and design graph. This ensures that all requirements trace correctly to design files and implementations, and that there are no broken links or missing traces.
 **Example Usage:**
+
 ```bash
 rtk sara check
 ```
@@ -29,8 +31,10 @@ rtk sara check
 ## Reporting
 
 ### Generate Coverage Report
+
 Generates a coverage report detailing the traceability from requirements down to the implementation layer.
 **Example Usage:**
+
 ```bash
 rtk sara report
 ``
@@ -65,4 +69,3 @@ Global Options:
   -V, --version                  Print version
 
 ```
-

@@ -2,14 +2,12 @@
 
 Tactical Domain-Driven Design (DDD) provides concrete coding patterns and building blocks to implement a rich domain model inside a bounded context.
 
----
-
 ## 1. Entities vs. Value Objects
 
 A domain model is composed of two primary object types: Entities and Value Objects.
 
 | Characteristic | Entity | Value Object |
-|---|---|---|
+| --- | --- | --- |
 | **Identity** | Unique identifier (e.g., UUID, database ID). | No identity. Defined entirely by its attributes. |
 | **Lifecycle** | Mutable. Changes state over time while remaining the same object. | Immutable. To modify a Value Object, replace it completely. |
 | **Equality** | Evaluated by comparing identifiers. | Evaluated by comparing all attributes (structural equality). |
@@ -69,12 +67,10 @@ export class Money extends ValueObject<Money> {
 }
 ```
 
----
-
 ## 2. Anemic vs. Rich Domain Models
 
-- **Anemic Domain Model**: A database-centric model where entities are simple property bags with public getters and setters (e.g., `dto-like` classes). All business rules and behaviors are scattered across external services or controllers. This increases technical debt and creates consistency issues.
-- **Rich Domain Model**: A behavior-driven model where entities encapsulate both data and the operations allowed on that data. Setters are private/protected, and state transitions occur only through explicit domain methods that enforce invariants.
+* **Anemic Domain Model**: A database-centric model where entities are simple property bags with public getters and setters (e.g., `dto-like` classes). All business rules and behaviors are scattered across external services or controllers. This increases technical debt and creates consistency issues.
+* **Rich Domain Model**: A behavior-driven model where entities encapsulate both data and the operations allowed on that data. Setters are private/protected, and state transitions occur only through explicit domain methods that enforce invariants.
 
 ### TypeScript Example: Rich Entity
 
@@ -122,24 +118,22 @@ export class Employee {
 }
 ```
 
----
-
 ## 3. Aggregates and Aggregate Roots
 
 An **Aggregate** is a cluster of associated entities and value objects that are treated as a single unit for data changes.
 
 ### 3.1 Consistency and Transactional Boundaries
-- **Aggregate Root**: The main entity in the aggregate through which all external interactions must flow. External objects can only hold references to the Aggregate Root.
-- **Invariants**: Business rules that must remain consistent at the end of every transaction. The Aggregate Root is responsible for guarding these invariants.
-- **Transactional Boundary**: An aggregate is persisted as a single unit. Changes to child entities within the aggregate are updated or rolled back together.
 
----
+* **Aggregate Root**: The main entity in the aggregate through which all external interactions must flow. External objects can only hold references to the Aggregate Root.
+* **Invariants**: Business rules that must remain consistent at the end of every transaction. The Aggregate Root is responsible for guarding these invariants.
+* **Transactional Boundary**: An aggregate is persisted as a single unit. Changes to child entities within the aggregate are updated or rolled back together.
 
 ## 4. Domain Services
 
 A **Domain Service** is a stateless class that encapsulates business logic that does not naturally belong to a single entity or aggregate root, particularly operations that:
-- Coordinate tasks across multiple different aggregate roots.
-- Interact with external infrastructure (e.g., third-party identity providers, legacy systems) through interfaces.
+
+* Coordinate tasks across multiple different aggregate roots.
+* Interact with external infrastructure (e.g., third-party identity providers, legacy systems) through interfaces.
 
 *Note: Domain services are purely algorithmic and coordinate aggregates by reference (usually by ID) to respect aggregate boundaries.*
 

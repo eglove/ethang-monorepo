@@ -2,27 +2,22 @@
 
 Command Query Responsibility Segregation (CQRS) separates data reads (Queries) from data writes (Commands) across the entire architecture.
 
----
-
 ## 1. CQS vs. CQRS
 
-- **CQS (Command-Query Separation)**: A method-level design principle. A method should either change the state of the system (Command) or return data (Query), but never both.
-  - *Command*: Alters state, returns success/error status or generated ID. Has side effects.
-  - *Query*: Read-only, returns data, has no side effects, and is safe to run repeatedly.
-- **CQRS**: An architectural-level design pattern. It segregates read operations from write operations across different classes, models, handlers, and sometimes physical databases.
-
----
+* **CQS (Command-Query Separation)**: A method-level design principle. A method should either change the state of the system (Command) or return data (Query), but never both.
+- *Command*: Alters state, returns success/error status or generated ID. Has side effects.
+- *Query*: Read-only, returns data, has no side effects, and is safe to run repeatedly.
+* **CQRS**: An architectural-level design pattern. It segregates read operations from write operations across different classes, models, handlers, and sometimes physical databases.
 
 ## 2. Refactoring CRUD to a Task-Based UI
 
 Traditional CRUD interfaces expose full records for bulk edits (e.g., a single `Edit Employee` form containing salary, address, personal details, and roles). This makes validation difficult, increases the risk of overriding unrelated data, and fails to reflect user intent.
 
 A **Task-Based UI** models specific business tasks as distinct operations. It guides the user through isolated workflows (e.g., `Give Raise`, `Assign Role`, `Update Address`). This allows:
-- Context-specific validations (e.g., salary raise can only be positive).
-- Precise user intent logging.
-- Loose coupling between different domain functionalities.
 
----
+* Context-specific validations (e.g., salary raise can only be positive).
+* Precise user intent logging.
+* Loose coupling between different domain functionalities.
 
 ## 3. Command and Query Handlers with a Mediator
 
@@ -71,7 +66,8 @@ export class Mediator {
 }
 ```
 
-#### 3.1 Write Side (Command): Hire Employee
+### 3.1 Write Side (Command): Hire Employee
+
 ```typescript
 // application/commands/HireEmployeeCommand.ts
 import { Request } from "../Mediator.ts";
@@ -111,7 +107,8 @@ export class HireEmployeeCommandHandler implements RequestHandler<HireEmployeeCo
 }
 ```
 
-#### 3.2 Read Side (Query): Get Employee View Model
+### 3.2 Read Side (Query): Get Employee View Model
+
 ```typescript
 // application/queries/GetEmployeeByIdQuery.ts
 import { Request } from "../Mediator.ts";
@@ -157,10 +154,9 @@ export class GetEmployeeByIdQueryHandler implements RequestHandler<GetEmployeeBy
 }
 ```
 
----
-
 ## 4. Segregating Write and Read Models
 
 By segregating Write and Read models:
-- **Write Models (Aggregates)**: Optimized for transaction consistency, business rule checking, and data isolation. They do not expose getters or properties that allow external mutation.
-- **Read Models (DTOs)**: Optimized for presentation requirements, containing pre-formatted fields, aggregated statistics, and denormalized views. They bypass domain logic and use direct SQL database queries.
+
+* **Write Models (Aggregates)**: Optimized for transaction consistency, business rule checking, and data isolation. They do not expose getters or properties that allow external mutation.
+* **Read Models (DTOs)**: Optimized for presentation requirements, containing pre-formatted fields, aggregated statistics, and denormalized views. They bypass domain logic and use direct SQL database queries.

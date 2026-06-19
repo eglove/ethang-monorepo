@@ -2,8 +2,6 @@
 
 Clean Architecture separates business rules from frameworks, databases, user interfaces, and external systems. It ensures the codebase remains testable, maintainable, and independent of technological volatility.
 
----
-
 ## 1. The Four Layers of Clean Architecture
 
 ```
@@ -32,57 +30,59 @@ Clean Architecture separates business rules from frameworks, databases, user int
 ```
 
 ### 1.1 Presentation Layer
-- **Role**: The entry point of the system (API endpoints, controllers, serverless handlers).
-- **Responsibilities**:
-  - Handles incoming network requests, parses payloads, and validates basic HTTP parameters.
-  - Binds incoming requests to Data Transfer Objects (DTOs).
-  - Delegates the execution of the request to the application layer.
-  - Serializes response data (e.g., as JSON, HTML) and returns the HTTP status.
+
+* **Role**: The entry point of the system (API endpoints, controllers, serverless handlers).
+* **Responsibilities**:
+- Handles incoming network requests, parses payloads, and validates basic HTTP parameters.
+- Binds incoming requests to Data Transfer Objects (DTOs).
+- Delegates the execution of the request to the application layer.
+- Serializes response data (e.g., as JSON, HTML) and returns the HTTP status.
 
 ### 1.2 Application Layer
-- **Role**: Orchestrates the workflows of the system's use cases.
-- **Responsibilities**:
-  - Defines the operational steps for specific tasks (e.g., "Hire Employee", "Finalize Order").
-  - Retrieves domain aggregates from repositories (defined as interfaces).
-  - Invokes domain model behaviors or domain services.
-  - Persists changes back through repository interfaces.
-  - Formulates command responses or view models to return to the presentation layer.
+
+* **Role**: Orchestrates the workflows of the system's use cases.
+* **Responsibilities**:
+- Defines the operational steps for specific tasks (e.g., "Hire Employee", "Finalize Order").
+- Retrieves domain aggregates from repositories (defined as interfaces).
+- Invokes domain model behaviors or domain services.
+- Persists changes back through repository interfaces.
+- Formulates command responses or view models to return to the presentation layer.
 
 ### 1.3 Domain Layer
-- **Role**: Contains the pure business rules, logic, and state validations of the business.
-- **Responsibilities**:
-  - Encapsulates entities, value objects, and aggregates.
-  - Implements core algorithmic domain services.
-  - **No dependencies**: The domain layer must not import classes, packages, or annotations from the presentation, application, or infrastructure layers.
+
+* **Role**: Contains the pure business rules, logic, and state validations of the business.
+* **Responsibilities**:
+- Encapsulates entities, value objects, and aggregates.
+- Implements core algorithmic domain services.
+- **No dependencies**: The domain layer must not import classes, packages, or annotations from the presentation, application, or infrastructure layers.
 
 ### 1.4 Infrastructure Layer
-- **Role**: Implements technical details, databases, file systems, and network communication.
-- **Responsibilities**:
-  - Implements database adapters and repositories using ORMs (e.g., Prisma, Drizzle).
-  - Manages database transactions and connection strings.
-  - Integrates third-party services, queues, and message buses (e.g., RabbitMQ, Kafka, WebSockets).
 
----
+* **Role**: Implements technical details, databases, file systems, and network communication.
+* **Responsibilities**:
+- Implements database adapters and repositories using ORMs (e.g., Prisma, Drizzle).
+- Manages database transactions and connection strings.
+- Integrates third-party services, queues, and message buses (e.g., RabbitMQ, Kafka, WebSockets).
 
 ## 2. Inward-Flowing Dependency Rule
 
 Dependencies must flow inward only:
-- Code in the **Domain** layer cannot depend on any other layer.
-- Code in the **Application** layer can only depend on the **Domain** layer. It interacts with the Infrastructure layer *only* via interfaces (e.g., repository interfaces).
-- Code in the **Infrastructure** and **Presentation** layers can depend on the **Application** and **Domain** layers.
 
----
+* Code in the **Domain** layer cannot depend on any other layer.
+* Code in the **Application** layer can only depend on the **Domain** layer. It interacts with the Infrastructure layer *only* via interfaces (e.g., repository interfaces).
+* Code in the **Infrastructure** and **Presentation** layers can depend on the **Application** and **Domain** layers.
 
 ## 3. Persistence Ignorance: Domain Model vs. Data Model
 
-- **Data Model**: The schema representation optimized for storage (e.g., tables, columns, indexes).
-- **Domain Model**: The object graph representation optimized for enforcing business rules, invariants, and lifecycle transitions.
+* **Data Model**: The schema representation optimized for storage (e.g., tables, columns, indexes).
+* **Domain Model**: The object graph representation optimized for enforcing business rules, invariants, and lifecycle transitions.
 
 In complex domains, the Domain Model and Data Model should be separated. The repository implementation maps the data retrieved from the ORM database context into rich, behavior-driven domain entities.
 
 ### TypeScript Example: Complete Flow (Separation of Layers)
 
-#### 3.1 Domain Layer: Aggregate and Repository Interface
+### 3.1 Domain Layer: Aggregate and Repository Interface
+
 ```typescript
 // domain/Employee.ts
 import { Money } from "./Money.ts";
@@ -115,7 +115,8 @@ export interface EmployeeRepository {
 }
 ```
 
-#### 3.2 Application Layer: DTO and Service Orchestrator
+### 3.2 Application Layer: DTO and Service Orchestrator
+
 ```typescript
 // application/UpdateSalaryDto.ts
 export interface UpdateSalaryDto {
@@ -150,7 +151,8 @@ export class SalaryApplicationService {
 }
 ```
 
-#### 3.3 Presentation Layer: Express/Hono-Style Controller
+### 3.3 Presentation Layer: Express/Hono-Style Controller
+
 ```typescript
 // presentation/EmployeeController.ts
 import { SalaryApplicationService } from "../application/SalaryApplicationService.ts";
@@ -180,7 +182,8 @@ export class EmployeeController {
 }
 ```
 
-#### 3.4 Infrastructure Layer: Drizzle/Prisma Repository Implementation
+### 3.4 Infrastructure Layer: Drizzle/Prisma Repository Implementation
+
 ```typescript
 // infrastructure/DbEmployeeRepository.ts
 import { Employee } from "../domain/Employee.ts";

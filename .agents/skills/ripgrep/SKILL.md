@@ -12,41 +12,47 @@ Ripgrep (`rg`) is a line-oriented search tool that recursively searches the curr
 
 ## Table of Contents
 
-- [Basic Searching](#basic-searching)
-  - [Case-Insensitive Search](#case-insensitive-search--i---ignore-case)
-  - [Match Whole Words](#match-whole-words--w---word-regexp)
-  - [Invert Match](#invert-match--v---invert-match)
-- [Context Flags](#context-flags)
-  - [Lines After Match](#lines-after-match--a---after-context)
-  - [Lines Before Match](#lines-before-match--b---before-context)
-  - [Lines Around Match](#lines-around-match--c---context)
-- [File Filtering](#file-filtering)
-  - [Print Filenames Only](#print-filenames-only--l---files-with-matches)
-  - [Glob Filtering](#glob-filtering--g---glob)
-  - [Search Specific File Types](#search-specific-file-types--t---type)
-- [Search Behavior](#search-behavior)
-  - [Search Hidden Files](#search-hidden-files---hidden)
-  - [Ignore `.gitignore`](#ignore-gitignore---no-ignore)
+* [Basic Searching](#basic-searching)
+- [Case-Insensitive Search](#case-insensitive-search--i---ignore-case)
+- [Match Whole Words](#match-whole-words--w---word-regexp)
+- [Invert Match](#invert-match--v---invert-match)
+* [Context Flags](#context-flags)
+- [Lines After Match](#lines-after-match--a---after-context)
+- [Lines Before Match](#lines-before-match--b---before-context)
+- [Lines Around Match](#lines-around-match--c---context)
+* [File Filtering](#file-filtering)
+- [Print Filenames Only](#print-filenames-only--l---files-with-matches)
+- [Glob Filtering](#glob-filtering--g---glob)
+- [Search Specific File Types](#search-specific-file-types--t---type)
+* [Search Behavior](#search-behavior)
+- [Search Hidden Files](#search-hidden-files---hidden)
+- [Ignore `.gitignore`](#ignore-gitignore---no-ignore)
 
 ## Basic Searching
 
 ### Case-Insensitive Search (`-i`, `--ignore-case`)
+
 Searches without caring about uppercase or lowercase.
 **Example Usage:**
+
 ```bash
 rtk rg -i "my-search-term" packages/agents-build/src/
 ```
 
 ### Match Whole Words (`-w`, `--word-regexp`)
+
 Only match the pattern as a whole word (so `rg -w "foo"` won't match `foobar`).
 **Example Usage:**
+
 ```bash
 rtk rg -w "functionName" src/
 ```
 
 ### Invert Match (`-v`, `--invert-match`)
+
 Invert matching. Show all lines that do *not* match the pattern.
 **Example Usage:**
+
 ```bash
 rtk rg -v "console.log" src/
 ```
@@ -54,22 +60,28 @@ rtk rg -v "console.log" src/
 ## Context Flags
 
 ### Lines After Match (`-A`, `--after-context`)
+
 Show `NUM` lines after each match.
 **Example Usage:**
+
 ```bash
 rtk rg -A 3 "class User" packages/
 ```
 
 ### Lines Before Match (`-B`, `--before-context`)
+
 Show `NUM` lines before each match.
 **Example Usage:**
+
 ```bash
 rtk rg -B 2 "return true;" src/
 ```
 
 ### Lines Around Match (`-C`, `--context`)
+
 Show `NUM` lines before and after each match.
 **Example Usage:**
+
 ```bash
 rtk rg -C 3 "function complexLogic" src/
 ```
@@ -77,15 +89,19 @@ rtk rg -C 3 "function complexLogic" src/
 ## File Filtering
 
 ### Print Filenames Only (`-l`, `--files-with-matches`)
+
 Only print the names of files that contain at least one match. This is extremely useful for discovering which files mention a specific token without dumping the whole file's contents into the context.
 **Example Usage:**
+
 ```bash
 rtk rg -l "export const globalRules" packages/
 ```
 
 ### Glob Filtering (`-g`, `--glob`)
+
 Include or exclude files and directories matching a glob pattern. Prefix with `!` to exclude.
 **Example Usage:**
+
 ```bash
 # Only search inside TypeScript files
 rtk rg -g "*.ts" "class" src/
@@ -94,8 +110,10 @@ rtk rg -g "!*.test.ts" "function" src/
 ```
 
 ### Search Specific File Types (`-t`, `--type`)
+
 Search only files matching a specific type (e.g., `ts`, `js`, `json`).
 **Example Usage:**
+
 ```bash
 rtk rg -t ts "interface" src/
 ```
@@ -103,15 +121,19 @@ rtk rg -t ts "interface" src/
 ## Search Behavior
 
 ### Search Hidden Files (`--hidden`)
+
 By default, ripgrep ignores hidden files and directories. This flag forces it to search them.
 **Example Usage:**
+
 ```bash
 rtk rg --hidden "secret" .github/
 ```
 
 ### Ignore `.gitignore` (`--no-ignore`)
+
 Forces ripgrep to search files that would normally be ignored by `.gitignore` rules.
 **Example Usage:**
+
 ```bash
 rtk rg --no-ignore "build_artifact" dist/
 ``
@@ -259,4 +281,3 @@ OTHER BEHAVIORS:
   -V, --version                   Print ripgrep's version.
 
 ```
-

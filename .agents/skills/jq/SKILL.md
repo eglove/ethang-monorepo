@@ -12,34 +12,38 @@ name: jq
 
 ## Table of Contents
 
-- [Basic Selection](#basic-selection)
-  - [Pluck a Specific Object Key](#pluck-a-specific-object-key)
-  - [Nested Key Selection](#nested-key-selection)
-- [Extracting Raw Text](#extracting-raw-text)
-  - [Raw Output (`-r`)](#raw-output--r---raw-output)
-- [Array Operations](#array-operations)
-  - [Extract Array Elements](#extract-array-elements)
-  - [Map Array to Specific Keys](#map-array-to-specific-keys)
-  - [Rebuild an Array of Mapped Objects](#rebuild-an-array-of-mapped-objects)
-- [Filtering and Selecting](#filtering-and-selecting)
-  - [Filter Array Elements by Condition](#filter-array-elements-by-condition-select)
-  - [Filter by Array Inclusion](#filter-by-array-inclusion)
-- [Advanced Formatting](#advanced-formatting)
-  - [Minify JSON (`-c`)](#minify-json--c---compact-output)
-  - [Check if Key Exists](#check-if-key-exists-has)
+* [Basic Selection](#basic-selection)
+- [Pluck a Specific Object Key](#pluck-a-specific-object-key)
+- [Nested Key Selection](#nested-key-selection)
+* [Extracting Raw Text](#extracting-raw-text)
+- [Raw Output (`-r`)](#raw-output--r---raw-output)
+* [Array Operations](#array-operations)
+- [Extract Array Elements](#extract-array-elements)
+- [Map Array to Specific Keys](#map-array-to-specific-keys)
+- [Rebuild an Array of Mapped Objects](#rebuild-an-array-of-mapped-objects)
+* [Filtering and Selecting](#filtering-and-selecting)
+- [Filter Array Elements by Condition](#filter-array-elements-by-condition-select)
+- [Filter by Array Inclusion](#filter-by-array-inclusion)
+* [Advanced Formatting](#advanced-formatting)
+- [Minify JSON (`-c`)](#minify-json--c---compact-output)
+- [Check if Key Exists](#check-if-key-exists-has)
 
 ## Basic Selection
 
 ### Pluck a Specific Object Key
+
 Extract a single key from a JSON object.
 **Example Usage:**
+
 ```bash
 rtk jq ".dependencies" package.json
 ```
 
 ### Nested Key Selection
+
 Drill down into nested objects.
 **Example Usage:**
+
 ```bash
 rtk jq ".scripts.build" package.json
 ```
@@ -47,8 +51,10 @@ rtk jq ".scripts.build" package.json
 ## Extracting Raw Text
 
 ### Raw Output (`-r`, `--raw-output`)
+
 Outputs strings without JSON quotes (e.g., `value` instead of `"value"`). This is extremely useful for passing values to other shell commands.
 **Example Usage:**
+
 ```bash
 rtk jq -r ".name" package.json
 ```
@@ -56,22 +62,28 @@ rtk jq -r ".name" package.json
 ## Array Operations
 
 ### Extract Array Elements
+
 Output all elements of an array.
 **Example Usage:**
+
 ```bash
 rtk jq ".items[]" data.json
 ```
 
 ### Map Array to Specific Keys
+
 If you have an array of objects and only want one field from each, you can map over them.
 **Example Usage:**
+
 ```bash
 rtk jq ".[] | .name" packages.json
 ```
 
 ### Rebuild an Array of Mapped Objects
+
 If you want to construct a new array containing only a subset of keys from each item.
 **Example Usage:**
+
 ```bash
 rtk jq "[ .[] | { name: .name, version: .version } ]" packages.json
 ```
@@ -79,16 +91,20 @@ rtk jq "[ .[] | { name: .name, version: .version } ]" packages.json
 ## Filtering and Selecting
 
 ### Filter Array Elements by Condition (`select`)
+
 Extract elements from an array that match a specific condition.
 **Example Usage:**
+
 ```bash
 # Find objects where the "name" property matches "target-package"
 rtk jq ".[] | select(.name == \\"target-package\\")" packages.json
 ```
 
 ### Filter by Array Inclusion
+
 Filter objects where a property contains a specific value.
 **Example Usage:**
+
 ```bash
 rtk jq ".[] | select(.tags[] | contains(\\"frontend\\"))" data.json
 ```
@@ -96,15 +112,19 @@ rtk jq ".[] | select(.tags[] | contains(\\"frontend\\"))" data.json
 ## Advanced Formatting
 
 ### Minify JSON (`-c`, `--compact-output`)
+
 Output each JSON object on a single line instead of pretty-printing it. This is highly recommended when returning arrays of objects to conserve vertical space.
 **Example Usage:**
+
 ```bash
 rtk jq -c ".[]" data.json
 ```
 
 ### Check if Key Exists (`has`)
+
 Check whether an object has a specific key (returns a boolean).
 **Example Usage:**
+
 ```bash
 rtk jq "has(\\"devDependencies\\")" package.json
 ``
@@ -180,4 +200,3 @@ Named arguments are also available as $ARGS.named[], while
 positional arguments are available as $ARGS.positional[].
 
 ```
-

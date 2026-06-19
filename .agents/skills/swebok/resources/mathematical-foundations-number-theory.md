@@ -8,14 +8,14 @@ Number theory is a fundamental branch of pure mathematics that focuses on the pr
 
 Number systems are classified into distinct categories, each serving unique analytical and computational purposes. Software engineers must understand these classifications to choose appropriate data types and prevent domain-related errors.
 
-- **Natural Numbers**: Indicated by the mathematical symbol N, this set represents the positive counting numbers. In the historical SWEBOK context, natural numbers start at 1 and continue sequentially. However, in modern set-theoretic frameworks (such as von Neumann ordinals), the number 0 is often included. This dual definition requires engineers to be explicit about the lower bound of natural number domains in specifications.
-- **Whole Numbers**: This set expands the natural numbers by explicitly including the number 0. There are no negative or fractional elements in this set.
-- **Integers**: Represented by the symbol Z, this set encompasses all whole numbers and their negative counterparts. Integers are closed under addition, subtraction, and multiplication, making them the primary representation for discrete counters in digital computers.
-- **Rational Numbers**: Denoted by the symbol Q, rational numbers can be expressed as a ratio of two integers, a/b, where b is not zero. They are characterized by decimal representations that either terminate or repeat in a periodic pattern.
-- **Irrational Numbers**: These numbers cannot be expressed as a ratio of two integers. Their decimal representations are non-terminating and non-repeating. Classic examples include the square root of two and mathematical constants like pi.
-- **Real Numbers**: Represented by the symbol R, this set contains all rational and irrational numbers, forming the continuous real line used in calculus and physics engine modeling.
-- **Imaginary Numbers**: Built upon the imaginary unit i, defined as the square root of negative one. Any real number multiple of i represents an imaginary number.
-- **Complex Numbers**: Indicated by the symbol C, a complex number is a combination of a real part and an imaginary part, written in the form a + bi. Every real number is a complex number where the imaginary part is zero, and every imaginary number is a complex number where the real part is zero.
+* **Natural Numbers**: Indicated by the mathematical symbol N, this set represents the positive counting numbers. In the historical SWEBOK context, natural numbers start at 1 and continue sequentially. However, in modern set-theoretic frameworks (such as von Neumann ordinals), the number 0 is often included. This dual definition requires engineers to be explicit about the lower bound of natural number domains in specifications.
+* **Whole Numbers**: This set expands the natural numbers by explicitly including the number 0. There are no negative or fractional elements in this set.
+* **Integers**: Represented by the symbol Z, this set encompasses all whole numbers and their negative counterparts. Integers are closed under addition, subtraction, and multiplication, making them the primary representation for discrete counters in digital computers.
+* **Rational Numbers**: Denoted by the symbol Q, rational numbers can be expressed as a ratio of two integers, a/b, where b is not zero. They are characterized by decimal representations that either terminate or repeat in a periodic pattern.
+* **Irrational Numbers**: These numbers cannot be expressed as a ratio of two integers. Their decimal representations are non-terminating and non-repeating. Classic examples include the square root of two and mathematical constants like pi.
+* **Real Numbers**: Represented by the symbol R, this set contains all rational and irrational numbers, forming the continuous real line used in calculus and physics engine modeling.
+* **Imaginary Numbers**: Built upon the imaginary unit i, defined as the square root of negative one. Any real number multiple of i represents an imaginary number.
+* **Complex Numbers**: Indicated by the symbol C, a complex number is a combination of a real part and an imaginary part, written in the form a + bi. Every real number is a complex number where the imaginary part is zero, and every imaginary number is a complex number where the real part is zero.
 
 ### 1.2 Divisibility and the Division Algorithm
 
@@ -35,8 +35,9 @@ Let m be a positive integer. Two integers a and b are congruent modulo m (writte
 
 Congruence behaves as an equivalence relation, satisfying the properties of reflexivity, symmetry, and transitivity. Furthermore, it is compatible with integer addition and multiplication:
 If a is congruent to b modulo m, and c is congruent to d modulo m, then:
+
 1. (a + c) is congruent to (b + d) modulo m.
-2. (a * c) is congruent to (b * d) modulo m.
+1. (a * c) is congruent to (b * d) modulo m.
 
 These algebraic properties enable modular arithmetic, which is used in software engineering for cyclic buffer indexing, hashing functions, checksum calculations, and digital signatures.
 
@@ -61,20 +62,20 @@ This identity is essential for calculating modular multiplicative inverses, whic
 
 ## 2. Compliance Checklist
 
-- [ ] **Number System Mapping**: Have the variables representing discrete entities been restricted to natural numbers or integers, rather than floating-point real numbers, to avoid precision errors?
-- [ ] **Zero Inclusivity Definition**: Has the project specification defined whether the number zero is included in the domain of natural numbers to prevent off-by-one errors?
-- [ ] **Negative Dividend Remainder Handling**: Does the implementation of the modulo operation explicitly handle negative dividends to ensure the remainder remains non-negative?
-- [ ] **Division-by-Zero Protection**: Are there input validation checks in place to prevent the divisor from being zero in all division and modulo computations?
-- [ ] **Congruence Equivalence Verification**: When using modular arithmetic for cyclic buffers, does the indexing logic correctly wrap around at the boundary without causing out-of-bounds errors?
-- [ ] **Prime Generation Entropy**: Are the prime numbers used in cryptographic key generation sourced from a cryptographically secure pseudorandom number generator with high entropy?
-- [ ] **Factorization Hardness Assumptions**: Have the lengths of the prime factors been audited to ensure they meet current industry standards for security against factorization attacks?
-- [ ] **Euclidean Algorithm Bounds**: Does the GCD calculation utility incorporate limits on execution depth or time to prevent CPU resource exhaustion during malicious inputs?
-- [ ] **Modular Inverse Existence**: Before calculating a modular multiplicative inverse, does the system verify that the target integer and the modulo are coprime?
-- [ ] **Overflow Prevention in Modular Arithmetic**: Are intermediate multiplication steps in modular equations protected against integer overflow (e.g., by using arbitrary-precision arithmetic or larger integer types)?
-- [ ] **Hashing Prime Selection**: Are the hash table sizes and prime multipliers selected to minimize collisions based on distribution characteristics?
-- [ ] **Linear Congruential Generator Auditing**: If LCGs are used for non-security simulations, have the multiplier and increment constants been verified to yield a maximal period?
-- [ ] **Rational Fraction Reduction**: When representing fractions using rational number structures, does the library automatically reduce them to their lowest terms using the greatest common divisor?
-- [ ] **Real-to-Integer Rounding Strategy**: Is the rounding strategy (floor, ceiling, truncation) documented when converting real number outputs to integer values?
-- [ ] **Coprimality Verification for Cyclic Sequences**: When generating pseudo-random sequences or array strides, are the stride size and the array length coprime to ensure complete traversal?
-- [ ] **Complex Number Part Handling**: When interacting with libraries that return complex values, does the application safely handle or isolate the imaginary component?
-- [ ] **Key Factorization Safety Audit**: Does the public-key infrastructure regularly review the product of the keys to verify that no public primes are shared across separate key pairs?
+* **Number System Mapping**: Have the variables representing discrete entities been restricted to natural numbers or integers, rather than floating-point real numbers, to avoid precision errors?
+* **Zero Inclusivity Definition**: Has the project specification defined whether the number zero is included in the domain of natural numbers to prevent off-by-one errors?
+* **Negative Dividend Remainder Handling**: Does the implementation of the modulo operation explicitly handle negative dividends to ensure the remainder remains non-negative?
+* **Division-by-Zero Protection**: Are there input validation checks in place to prevent the divisor from being zero in all division and modulo computations?
+* **Congruence Equivalence Verification**: When using modular arithmetic for cyclic buffers, does the indexing logic correctly wrap around at the boundary without causing out-of-bounds errors?
+* **Prime Generation Entropy**: Are the prime numbers used in cryptographic key generation sourced from a cryptographically secure pseudorandom number generator with high entropy?
+* **Factorization Hardness Assumptions**: Have the lengths of the prime factors been audited to ensure they meet current industry standards for security against factorization attacks?
+* **Euclidean Algorithm Bounds**: Does the GCD calculation utility incorporate limits on execution depth or time to prevent CPU resource exhaustion during malicious inputs?
+* **Modular Inverse Existence**: Before calculating a modular multiplicative inverse, does the system verify that the target integer and the modulo are coprime?
+* **Overflow Prevention in Modular Arithmetic**: Are intermediate multiplication steps in modular equations protected against integer overflow (e.g., by using arbitrary-precision arithmetic or larger integer types)?
+* **Hashing Prime Selection**: Are the hash table sizes and prime multipliers selected to minimize collisions based on distribution characteristics?
+* **Linear Congruential Generator Auditing**: If LCGs are used for non-security simulations, have the multiplier and increment constants been verified to yield a maximal period?
+* **Rational Fraction Reduction**: When representing fractions using rational number structures, does the library automatically reduce them to their lowest terms using the greatest common divisor?
+* **Real-to-Integer Rounding Strategy**: Is the rounding strategy (floor, ceiling, truncation) documented when converting real number outputs to integer values?
+* **Coprimality Verification for Cyclic Sequences**: When generating pseudo-random sequences or array strides, are the stride size and the array length coprime to ensure complete traversal?
+* **Complex Number Part Handling**: When interacting with libraries that return complex values, does the application safely handle or isolate the imaginary component?
+* **Key Factorization Safety Audit**: Does the public-key infrastructure regularly review the product of the keys to verify that no public primes are shared across separate key pairs?

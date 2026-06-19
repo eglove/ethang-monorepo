@@ -8,12 +8,12 @@ Counting is a fundamental discipline within discrete mathematics that deals with
 
 The sum rule and the product rule are the twin pillars of combinatorics, forming the basis for all counting procedures.
 
-- **The Sum Rule**: If a task t1 can be performed in n1 ways, and a second task t2 can be performed in n2 ways, and if these tasks cannot be performed at the same time (they are mutually exclusive), then there are n1 + n2 ways to perform either task. In set-theoretic terms, if A and B are disjoint sets, the cardinality of their union is the sum of their individual cardinalities:
+* **The Sum Rule**: If a task t1 can be performed in n1 ways, and a second task t2 can be performed in n2 ways, and if these tasks cannot be performed at the same time (they are mutually exclusive), then there are n1 + n2 ways to perform either task. In set-theoretic terms, if A and B are disjoint sets, the cardinality of their union is the sum of their individual cardinalities:
 |A union B| = |A| + |B|
 
 This rule generalizes to any finite number of pairwise disjoint sets. In software design, the sum rule is applied when calculating the total execution paths in conditional branching structures (such as switch-case blocks) where only one branch can execute.
 
-- **The Product Rule**: If a procedure can be broken down into two successive tasks, t1 and t2, such that t1 can be done in n1 ways and t2 can be done in n2 ways after t1 has been completed, then there are n1 * n2 ways to perform the procedure. In set-theoretic terms, for disjoint sets A and B, the cardinality of their Cartesian product is:
+* **The Product Rule**: If a procedure can be broken down into two successive tasks, t1 and t2, such that t1 can be done in n1 ways and t2 can be done in n2 ways after t1 has been completed, then there are n1 * n2 ways to perform the procedure. In set-theoretic terms, for disjoint sets A and B, the cardinality of their Cartesian product is:
 |A x B| = |A| * |B|
 
 This rule generalizes to any finite sequence of tasks. In system engineering, the product rule is used to estimate the configuration space of systems (e.g., the combination of network protocols, database engines, and runtime environments).
@@ -32,15 +32,15 @@ This principle is vital when optimizing database queries involving multiple sear
 
 Selecting and arranging objects from a finite set is a common requirement in data processing, testing, and optimization algorithms.
 
-- **Permutations without Repetition**: A permutation is an arrangement of a set of distinct objects in a particular order, without repetition. The number of ways to choose r objects in order from a total of n objects is denoted by P(n, r) and calculated as:
+* **Permutations without Repetition**: A permutation is an arrangement of a set of distinct objects in a particular order, without repetition. The number of ways to choose r objects in order from a total of n objects is denoted by P(n, r) and calculated as:
 P(n, r) = n! / (n - r)!
 
-- **Permutations with Repetition**: When objects can be chosen multiple times and order matters, the number of permutations of n objects taken r at a time is n raised to the power of r. Furthermore, when arranging n objects where some are identical, such as arranging n objects where n1 are of type 1, n2 are of type 2, and so on, the total permutations are n! / (n1! * n2! * ... * nk!).
+* **Permutations with Repetition**: When objects can be chosen multiple times and order matters, the number of permutations of n objects taken r at a time is n raised to the power of r. Furthermore, when arranging n objects where some are identical, such as arranging n objects where n1 are of type 1, n2 are of type 2, and so on, the total permutations are n! / (n1! * n2! * ... * nk!).
 
-- **Combinations without Repetition**: A combination is a selection of distinct objects in which the order does not matter, without repetition. Changing the order of the selected objects does not create a new combination. The number of ways to choose r objects from a total of n objects in any order is denoted by C(n, r) and calculated as:
+* **Combinations without Repetition**: A combination is a selection of distinct objects in which the order does not matter, without repetition. Changing the order of the selected objects does not create a new combination. The number of ways to choose r objects from a total of n objects in any order is denoted by C(n, r) and calculated as:
 C(n, r) = n! / [r! * (n - r)!]
 
-- **Combinations with Repetition**: When selecting r elements from a set of n elements where repetition is allowed and order does not matter, the formula utilizes the stars and bars method, calculated as C(n + r - 1, r).
+* **Combinations with Repetition**: When selecting r elements from a set of n elements where repetition is allowed and order does not matter, the formula utilizes the stars and bars method, calculated as C(n + r - 1, r).
 
 Because factorials grow extremely rapidly, computing permutations and combinations directly can lead to integer overflow. Software engineers must utilize modular arithmetic or incremental simplification (such as multiplicative cancellation) to prevent numerical errors in production code.
 
@@ -66,20 +66,20 @@ In software engineering, the Pigeonhole Principle is used to prove the inevitabi
 
 ## 2. Compliance Checklist
 
-- [ ] **Cardinality Overlap Verification**: When calculating the total size of combined datasets, has the Principle of Inclusion-Exclusion been applied to subtract overlapping records?
-- [ ] **Conditional Branching Completeness**: Have execution path estimates using the sum rule verified that branching statements are mutually exclusive?
-- [ ] **State Space Size Estimation**: Has the system configuration state space been calculated using the product rule to identify test matrix boundaries?
-- [ ] **Factorial Overflow Guardrails**: Are factorial operations in permutation and combination calculations protected against integer overflow (e.g., by using BigInt or incremental multiplication)?
-- [ ] **Permutation Order Dependency**: When utilizing permutation formulas, has the ordering requirement of the system objects been verified as significant?
-- [ ] **Combination Order Irrelevance**: When utilizing combination formulas, has it been verified that rearranging the selected elements does not alter the system state?
-- [ ] **Recursive Base Case Verification**: Do all recursive functions and algorithms incorporate an explicit, tested base case to prevent infinite loops and stack overflow?
-- [ ] **Recursion Depth Limits**: Are there runtime limits on recursion depth to prevent thread stack exhaustion under extreme inputs?
-- [ ] **Recurrence Relation Solvability**: Have the recurrence relations representing algorithm execution times been solved to verify asymptotic complexity?
-- [ ] **Divide-and-Conquer Allocation Bounds**: Does the recursive data splitter verify that subproblem sizes strictly decrease to guarantee termination?
-- [ ] **Hash Collision Resolution Design**: Has a collision resolution strategy been implemented to handle the inevitable collisions proved by the Pigeonhole Principle?
-- [ ] **Lossless Compression Boundary Limits**: When designing compression algorithms, is there a handler to prevent file expansion when input data cannot be compressed?
-- [ ] **ID Collision Mitigation**: If generating short identifiers (such as shortened URLs) from a larger namespace, does the system incorporate collision detection or salting?
-- [ ] **Iterative Multiplication Pruning**: Do combinatorial utility libraries cancel out terms in the numerator and denominator before executing multiplications to maintain precision?
-- [ ] **Switch-Case Mutual Exclusion**: Are compiler flags or static analysis rules configured to verify that switch-case statements do not contain overlapping execution states?
-- [ ] **Pigeonhole Allocation Check**: When allocating fixed resources (such as thread pools or connections) to a larger number of tasks, does the system implement queuing to prevent resource exhaustion?
-- [ ] **Search Space Bounds Auditing**: Has the combinatorics space of search algorithms been mapped to ensure search limits are set for NP-complete operations?
+* **Cardinality Overlap Verification**: When calculating the total size of combined datasets, has the Principle of Inclusion-Exclusion been applied to subtract overlapping records?
+* **Conditional Branching Completeness**: Have execution path estimates using the sum rule verified that branching statements are mutually exclusive?
+* **State Space Size Estimation**: Has the system configuration state space been calculated using the product rule to identify test matrix boundaries?
+* **Factorial Overflow Guardrails**: Are factorial operations in permutation and combination calculations protected against integer overflow (e.g., by using BigInt or incremental multiplication)?
+* **Permutation Order Dependency**: When utilizing permutation formulas, has the ordering requirement of the system objects been verified as significant?
+* **Combination Order Irrelevance**: When utilizing combination formulas, has it been verified that rearranging the selected elements does not alter the system state?
+* **Recursive Base Case Verification**: Do all recursive functions and algorithms incorporate an explicit, tested base case to prevent infinite loops and stack overflow?
+* **Recursion Depth Limits**: Are there runtime limits on recursion depth to prevent thread stack exhaustion under extreme inputs?
+* **Recurrence Relation Solvability**: Have the recurrence relations representing algorithm execution times been solved to verify asymptotic complexity?
+* **Divide-and-Conquer Allocation Bounds**: Does the recursive data splitter verify that subproblem sizes strictly decrease to guarantee termination?
+* **Hash Collision Resolution Design**: Has a collision resolution strategy been implemented to handle the inevitable collisions proved by the Pigeonhole Principle?
+* **Lossless Compression Boundary Limits**: When designing compression algorithms, is there a handler to prevent file expansion when input data cannot be compressed?
+* **ID Collision Mitigation**: If generating short identifiers (such as shortened URLs) from a larger namespace, does the system incorporate collision detection or salting?
+* **Iterative Multiplication Pruning**: Do combinatorial utility libraries cancel out terms in the numerator and denominator before executing multiplications to maintain precision?
+* **Switch-Case Mutual Exclusion**: Are compiler flags or static analysis rules configured to verify that switch-case statements do not contain overlapping execution states?
+* **Pigeonhole Allocation Check**: When allocating fixed resources (such as thread pools or connections) to a larger number of tasks, does the system implement queuing to prevent resource exhaustion?
+* **Search Space Bounds Auditing**: Has the combinatorics space of search algorithms been mapped to ensure search limits are set for NP-complete operations?
