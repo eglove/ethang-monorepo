@@ -11,4 +11,17 @@ import { sdlc } from "./sdlc.ts";
 import { swebok } from "./swebok.ts";
 import { webstormMcp } from "./webstorm-mcp.ts";
 
-export const GLOBAL_SKILLS = [sdlc, swebok, ddd, commit, lint, webstormMcp, ripgrep, jq, everythingSearch, githubCli, saraCli, codebaseMemoryMcp];
+export const GLOBAL_SKILLS = [
+  sdlc,
+  swebok,
+  ddd,
+  commit,
+  lint,
+  webstormMcp,
+  ripgrep,
+  jq,
+  everythingSearch,
+  githubCli,
+  saraCli,
+  codebaseMemoryMcp
+];

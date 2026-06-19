@@ -1,3 +1,4 @@
+import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
 import endsWith from "lodash/endsWith.js";
 import filter from "lodash/filter.js";
 import isString from "lodash/isString.js";
@@ -23,32 +24,6 @@ import {
   findUnresolvedTokens,
   validateFrontmatterBlock
 } from "./validate.ts";
-
-const getBannedTools = (rootDir: string): string[] => {
-  const scriptPath = path.join(rootDir, ".agents", "scripts", "pre-tool-use.ts");
-  if (!fsProxy.existsSync(scriptPath)) {
-    return [];
-  }
-  const content = fsProxy.readFileSync(scriptPath, "utf8");
-  const tools: string[] = [];
-  let inMap = false;
-  for (const line of content.split("\n")) {
-    if (line.includes("const bannedToolsMap")) {
-      inMap = true;
-      continue;
-    }
-    if (inMap && line.includes("};")) {
-      break;
-    }
-    if (inMap) {
-      const match = line.match(/^\s*"([^"]+)":\s*\{/);
-      if (match) {
-        tools.push(match[1]);
-      }
-    }
-  }
-  return tools;
-};
 
 export type CompilerConfig = {
   manifestPath: string;
@@ -138,10 +113,9 @@ const calculateTargetPaths = (config: CompilerConfig): string[] => {
   const rulePaths = Array.from(config.rules, (rule) => {
     return path.join(config.rulesDir, `${rule.filename}.md`);
   });
-  const hooksPath = path.join(config.rootDir, ".agents", "hooks.json");
   const { skills, skillsDir } = config;
   if (undefined === skills || undefined === skillsDir) {
-    return [...rulePaths, hooksPath];
+    return rulePaths;
   }
   const skillPaths: string[] = [];
   for (const skill of skills) {
@@ -153,7 +127,7 @@ const calculateTargetPaths = (config: CompilerConfig): string[] => {
       );
     }
   }
-  return [...rulePaths, ...skillPaths, hooksPath];
+  return [...rulePaths, ...skillPaths];
 };
 
 const readManifestContent = (filePath: string): string => {
@@ -240,44 +214,15 @@ const processSkills = (
 
     const resources = skill.resources ?? [];
     for (const resource of resources) {
+      const resourceContent = isString(resource.content)
+        ? resource.content
+        : generateMarkdown({ blocks: resource.content });
       write(
         path.join(skillsDir, skill.name, "resources", resource.filename),
-        resource.content
+        resourceContent
       );
     }
   }
-};
-
-const processHooks = (
-  config: CompilerConfig,
-  write: (absolutePath: string, content: string) => void
-): void => {
-  const tools = getBannedTools(config.rootDir);
-  if (tools.length === 0) {
-    return;
-  }
-
-  const preToolUseMatchers = tools.map((toolName) => ({
-    matcher: toolName,
-    hooks: [
-      {
-        type: "command",
-        command: "bun",
-        args: [".agents/scripts/pre-tool-use.ts", toolName]
-      }
-    ]
-  }));
-
-  const hooksContent = {
-    "banned-tools-hook": {
-      "PreToolUse": preToolUseMatchers
-    }
-  };
-
-  write(
-    path.join(config.rootDir, ".agents", "hooks.json"),
-    JSON.stringify(hooksContent, null, 2)
-  );
 };
 
 const validateFileContent = (filePath: string, failures: string[]): void => {
@@ -339,7 +284,6 @@ export const compile = (config: CompilerConfig): void => {
 
   processRules(config, failures, write);
   processSkills(config, failures, write);
-  // processHooks(config, write);
   scanDirectories(config, failures);
 
   if (0 < failures.length) {

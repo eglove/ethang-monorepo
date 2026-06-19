@@ -1,53 +1,157 @@
+import type { MarkdownBlock } from "@ethang/markdown-generator/markdown-generator.js";
+
 import { defineRule } from "../../define.ts";
 
 export const engineeringManagementInitiationScope = defineRule({
-  content: `# Software Project Initiation and Scope Definition
-
-## 1. Domain Theory and Conceptual Foundations
-Software project initiation and scope definition are foundational lifecycle processes within the discipline of Software Engineering Management, as defined by the IEEE Software Engineering Body of Knowledge (SWEBOK v4). These initial activities establish the business justification, technical boundaries, and overall feasibility of a software project before significant resources are committed to construction. The primary goal of project initiation is to determine and negotiate requirements with diverse stakeholders, evaluate alternative project solutions, and assess various operational constraints. By defining a clear project scope, engineering organizations can establish a realistic baseline for scheduling, resource allocation, and quality management. This process prevents scope creep, aligns technical objectives with organizational strategy, and provides a formal structure for managing change throughout the software development lifecycle.
-
-### 1.1 Determination and Negotiation of Requirements
-The determination and negotiation of requirements form the cornerstone of project initiation. During this phase, software engineers must identify key stakeholders, including end-users, business sponsors, operations staff, and regulatory bodies, each representing distinct and often conflicting perspectives. Eliciting requirements involves active discovery using methods such as interviews, workshops, and domain analysis. Once identified, these requirements must be analyzed for feasibility, consistency, and completeness. Negotiation is critical to resolve conflicts between stakeholder expectations and the realities of budget, schedule, and technical capability. The result of this negotiation is typically captured in a Project Charter or a high-level project initiation document. This document serves as the formal authorization for the project, defining the high-level scope, key deliverables, and initial assumptions. Establishing this baseline is essential, as requirements provide the objective criteria against which all subsequent architecture, design, and construction activities are validated.
-
-### 1.2 Feasibility Analysis and Alternative Solutions
-Before a software project receives formal authorization, a rigorous feasibility analysis must be conducted. The purpose of this analysis is to develop a clear description of the project objectives and to evaluate alternative technical and managerial approaches. Engineers must evaluate whether a proposed software solution is the best approach to address the identified business need. This involves investigating off-the-shelf alternatives versus custom software construction, comparing different architectural styles, and analyzing various delivery models. The feasibility analysis examines whether the project can be successfully completed within the constraints of technology, resources, and finances. Infrastructure needs, core competencies of the available workforce, support models, and deployment environments must be thoroughly assessed. Furthermore, the analysis must estimate the required effort and cost using appropriate estimation methods (such as algorithmic cost modeling or expert judgment). Ultimately, the feasibility study produces an initial scope statement and resource estimate, enabling stakeholders to make an informed go/no-go decision.
-
-### 1.3 Multidimensional Constraint Assessment
-Software projects are subject to overlapping constraints that must be mapped during initiation. Technological constraints include the existing software stack, legacy systems, hardware limits, and network topology, requiring alignment with the technology roadmap of the organization. Resource constraints encompass the availability of skilled personnel, development tools, and physical infrastructure. Financial constraints dictate budget allocations, team sizing, tool licensing, and project duration, requiring positive return-on-investment (ROI) models. Finally, ethical, environmental, and socio-technical considerations govern compliance with privacy laws, energy footprints, and integration with organizational workflows.
-
-### 1.4 Work Breakdown Structure (WBS)
-The Work Breakdown Structure (WBS) is a hierarchical decomposition of the total scope of work to be executed by the project team, breaking complex deliverables into manageable tasks (work packages). Importantly, while the WBS organizes cost and schedule tracking, it does not contain cost or schedule baselines; these are established during the project planning phase. Decomposition must continue down to a level where the work packages can be reliably estimated, managed, and monitored for progress. Each node in the WBS represents a distinct component of project scope that can be assigned to a specific engineering owner. When developing the WBS, engineers must treat all configuration items as tasks under control, ensuring that every project deliverable maps to a specific node in the decomposition.
-
-### 1.5 Engineering Context Diagrams
-An engineering context diagram defines the boundary between a system and its environment, representing the system as a single central entity interacting with external users, databases, and hardware. The context diagram is critical for identifying management and technical interfaces and trade-offs. By mapping these boundaries, the team can establish clear responsibilities and avoid interface conflicts between decoupled systems. By establishing these system boundaries early, engineers prevent scope creep, clarify interface protocols, identify integration risks, and provide essential inputs for architectural design and configuration control.
-
-### 1.6 Process for the Review and Revision of Requirements
-Because change is inevitable, stakeholders must establish processes for the review and revision of requirements. This managed-change approach defines change management workflows, trade-off procedures, and retrospectives. Rather than treating scope as static, requirements are re-evaluated at predetermined milestone reviews or backlog prioritization cycles. Accepted changes must undergo risk and impact analysis to determine how they propagate through the design, code, and test suites, preventing chaotic scope creep.
-
-### 1.7 Backlog Prioritization and Agile Scope Management
-In iterative lifecycles, scope is dynamically managed through a prioritized product backlog. Backlog prioritization orders items by business value, technical risk, dependencies, and cost of delay. This prioritization is re-evaluated at predetermined points (such as iteration planning or milestone reviews) to incorporate user feedback. This dynamic model enables engineers to make ongoing requirements and design trade-offs, delivering high-value features first while maintaining transparency with stakeholders.
-
-### 1.8 Forward and Backward Traceability Analysis
-Traceability ensures that requirements are tracked throughout the project lifecycle. Forward traceability links a requirement to architectural components, code, and test scripts, verifying implementation. Backward traceability links test scripts back to requirements and design, monitoring satisfaction and guiding decisions on when to stop testing. Establishing these traceability pathways during initiation is essential for impact analysis, allowing engineers to quickly identify which assets must change when a requirement is revised.
-
-## 2. Compliance Checklist
-- [ ] Were the software requirements reviewed, determined, and negotiated across all key stakeholder perspectives during project initiation?
-- [ ] Has a high-level project charter or initiation document been formally approved to authorize the project and establish its initial scope boundary?
-- [ ] Was a feasibility analysis performed to evaluate alternative solutions, including custom development versus purchasing off-the-shelf software?
-- [ ] Are project objectives clearly specified and aligned with the constraints of technology, resource availability, and financial budgets?
-- [ ] Have the ethical, environmental, and socio-technical considerations and constraints of the proposed software solution been evaluated?
-- [ ] Was a Work Breakdown Structure (WBS) created to decompose the project scope into manageable tasks without embedding schedule or cost baselines?
-- [ ] Are all identified software configuration items represented as tasks within the Work Breakdown Structure to ensure configuration control?
-- [ ] Was an engineering context diagram developed to define the boundary between the system and its external environment and systems?
-- [ ] Are all management and technical interfaces with external entities clearly identified and documented on the system context diagram?
-- [ ] Have stakeholders established and agreed upon a formal process for the continuous review and revision of requirements and scope?
-- [ ] Are requirements and scope changes evaluated at predetermined milestone reviews, retrospective sessions, or backlog prioritization cycles?
-- [ ] Did the team perform backward traceability analysis to link test scripts back to their associated requirements and design decisions?
-- [ ] Is backward traceability used to determine when requirements are satisfied and to make informed decisions about when to stop testing?
-- [ ] Were risk analyses and impact assessments conducted for every accepted change to the project requirements or product scope?
-- [ ] Is forward traceability maintained by linking requirements forward to architectural elements, design components, code modules, and test suites?
-- [ ] Are backlog priorities re-evaluated at predetermined points to incorporate user feedback, technical risks, and project constraints?
-- [ ] Did the project team document a clear strategy for managing technical and management interface trade-offs identified during initiation?`,
+  content: [
+    {
+      level: 1,
+      text: "Software Project Initiation and Scope Definition",
+      type: "header"
+    },
+    {
+      level: 2,
+      text: "1. Domain Theory and Conceptual Foundations",
+      type: "header"
+    },
+    {
+      text: "Software project initiation and scope definition are foundational lifecycle processes within the discipline of Software Engineering Management, as defined by the IEEE Software Engineering Body of Knowledge (SWEBOK v4). These initial activities establish the business justification, technical boundaries, and overall feasibility of a software project before significant resources are committed to construction. The primary goal of project initiation is to determine and negotiate requirements with diverse stakeholders, evaluate alternative project solutions, and assess various operational constraints. By defining a clear project scope, engineering organizations can establish a realistic baseline for scheduling, resource allocation, and quality management. This process prevents scope creep, aligns technical objectives with organizational strategy, and provides a formal structure for managing change throughout the software development lifecycle.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.1 Determination and Negotiation of Requirements",
+      type: "header"
+    },
+    {
+      text: "The determination and negotiation of requirements form the cornerstone of project initiation. During this phase, software engineers must identify key stakeholders, including end-users, business sponsors, operations staff, and regulatory bodies, each representing distinct and often conflicting perspectives. Eliciting requirements involves active discovery using methods such as interviews, workshops, and domain analysis. Once identified, these requirements must be analyzed for feasibility, consistency, and completeness. Negotiation is critical to resolve conflicts between stakeholder expectations and the realities of budget, schedule, and technical capability. The result of this negotiation is typically captured in a Project Charter or a high-level project initiation document. This document serves as the formal authorization for the project, defining the high-level scope, key deliverables, and initial assumptions. Establishing this baseline is essential, as requirements provide the objective criteria against which all subsequent architecture, design, and construction activities are validated.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.2 Feasibility Analysis and Alternative Solutions",
+      type: "header"
+    },
+    {
+      text: "Before a software project receives formal authorization, a rigorous feasibility analysis must be conducted. The purpose of this analysis is to develop a clear description of the project objectives and to evaluate alternative technical and managerial approaches. Engineers must evaluate whether a proposed software solution is the best approach to address the identified business need. This involves investigating off-the-shelf alternatives versus custom software construction, comparing different architectural styles, and analyzing various delivery models. The feasibility analysis examines whether the project can be successfully completed within the constraints of technology, resources, and finances. Infrastructure needs, core competencies of the available workforce, support models, and deployment environments must be thoroughly assessed. Furthermore, the analysis must estimate the required effort and cost using appropriate estimation methods (such as algorithmic cost modeling or expert judgment). Ultimately, the feasibility study produces an initial scope statement and resource estimate, enabling stakeholders to make an informed go/no-go decision.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.3 Multidimensional Constraint Assessment",
+      type: "header"
+    },
+    {
+      text: "Software projects are subject to overlapping constraints that must be mapped during initiation. Technological constraints include the existing software stack, legacy systems, hardware limits, and network topology, requiring alignment with the technology roadmap of the organization. Resource constraints encompass the availability of skilled personnel, development tools, and physical infrastructure. Financial constraints dictate budget allocations, team sizing, tool licensing, and project duration, requiring positive return-on-investment (ROI) models. Finally, ethical, environmental, and socio-technical considerations govern compliance with privacy laws, energy footprints, and integration with organizational workflows.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.4 Work Breakdown Structure (WBS)",
+      type: "header"
+    },
+    {
+      text: "The Work Breakdown Structure (WBS) is a hierarchical decomposition of the total scope of work to be executed by the project team, breaking complex deliverables into manageable tasks (work packages). Importantly, while the WBS organizes cost and schedule tracking, it does not contain cost or schedule baselines; these are established during the project planning phase. Decomposition must continue down to a level where the work packages can be reliably estimated, managed, and monitored for progress. Each node in the WBS represents a distinct component of project scope that can be assigned to a specific engineering owner. When developing the WBS, engineers must treat all configuration items as tasks under control, ensuring that every project deliverable maps to a specific node in the decomposition.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.5 Engineering Context Diagrams",
+      type: "header"
+    },
+    {
+      text: "An engineering context diagram defines the boundary between a system and its environment, representing the system as a single central entity interacting with external users, databases, and hardware. The context diagram is critical for identifying management and technical interfaces and trade-offs. By mapping these boundaries, the team can establish clear responsibilities and avoid interface conflicts between decoupled systems. By establishing these system boundaries early, engineers prevent scope creep, clarify interface protocols, identify integration risks, and provide essential inputs for architectural design and configuration control.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.6 Process for the Review and Revision of Requirements",
+      type: "header"
+    },
+    {
+      text: "Because change is inevitable, stakeholders must establish processes for the review and revision of requirements. This managed-change approach defines change management workflows, trade-off procedures, and retrospectives. Rather than treating scope as static, requirements are re-evaluated at predetermined milestone reviews or backlog prioritization cycles. Accepted changes must undergo risk and impact analysis to determine how they propagate through the design, code, and test suites, preventing chaotic scope creep.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.7 Backlog Prioritization and Agile Scope Management",
+      type: "header"
+    },
+    {
+      text: "In iterative lifecycles, scope is dynamically managed through a prioritized product backlog. Backlog prioritization orders items by business value, technical risk, dependencies, and cost of delay. This prioritization is re-evaluated at predetermined points (such as iteration planning or milestone reviews) to incorporate user feedback. This dynamic model enables engineers to make ongoing requirements and design trade-offs, delivering high-value features first while maintaining transparency with stakeholders.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.8 Forward and Backward Traceability Analysis",
+      type: "header"
+    },
+    {
+      text: "Traceability ensures that requirements are tracked throughout the project lifecycle. Forward traceability links a requirement to architectural components, code, and test scripts, verifying implementation. Backward traceability links test scripts back to requirements and design, monitoring satisfaction and guiding decisions on when to stop testing. Establishing these traceability pathways during initiation is essential for impact analysis, allowing engineers to quickly identify which assets must change when a requirement is revised.",
+      type: "text"
+    },
+    {
+      level: 2,
+      text: "2. Compliance Checklist",
+      type: "header"
+    },
+    {
+      items: [
+        {
+          text: "Were the software requirements reviewed, determined, and negotiated across all key stakeholder perspectives during project initiation?"
+        },
+        {
+          text: "Has a high-level project charter or initiation document been formally approved to authorize the project and establish its initial scope boundary?"
+        },
+        {
+          text: "Was a feasibility analysis performed to evaluate alternative solutions, including custom development versus purchasing off-the-shelf software?"
+        },
+        {
+          text: "Are project objectives clearly specified and aligned with the constraints of technology, resource availability, and financial budgets?"
+        },
+        {
+          text: "Have the ethical, environmental, and socio-technical considerations and constraints of the proposed software solution been evaluated?"
+        },
+        {
+          text: "Was a Work Breakdown Structure (WBS) created to decompose the project scope into manageable tasks without embedding schedule or cost baselines?"
+        },
+        {
+          text: "Are all identified software configuration items represented as tasks within the Work Breakdown Structure to ensure configuration control?"
+        },
+        {
+          text: "Was an engineering context diagram developed to define the boundary between the system and its external environment and systems?"
+        },
+        {
+          text: "Are all management and technical interfaces with external entities clearly identified and documented on the system context diagram?"
+        },
+        {
+          text: "Have stakeholders established and agreed upon a formal process for the continuous review and revision of requirements and scope?"
+        },
+        {
+          text: "Are requirements and scope changes evaluated at predetermined milestone reviews, retrospective sessions, or backlog prioritization cycles?"
+        },
+        {
+          text: "Did the team perform backward traceability analysis to link test scripts back to their associated requirements and design decisions?"
+        },
+        {
+          text: "Is backward traceability used to determine when requirements are satisfied and to make informed decisions about when to stop testing?"
+        },
+        {
+          text: "Were risk analyses and impact assessments conducted for every accepted change to the project requirements or product scope?"
+        },
+        {
+          text: "Is forward traceability maintained by linking requirements forward to architectural elements, design components, code modules, and test suites?"
+        },
+        {
+          text: "Are backlog priorities re-evaluated at predetermined points to incorporate user feedback, technical risks, and project constraints?"
+        },
+        {
+          text: "Did the project team document a clear strategy for managing technical and management interface trade-offs identified during initiation?"
+        }
+      ],
+      type: "unorderedList"
+    }
+  ] as MarkdownBlock[],
   description:
     "software project initiation, scope definition, requirements negotiation, feasibility analysis, technological constraints, resource constraints, financial constraints, work breakdown structure (WBS), context diagrams, requirements review and revision, backlog prioritization, forward and backward traceability analysis",
   filename: "engineering-management-initiation-scope",

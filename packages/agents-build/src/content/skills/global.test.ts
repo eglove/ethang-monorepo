@@ -1,7 +1,19 @@
+import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
 import find from "lodash/find.js";
+import isNil from "lodash/isNil.js";
+import isString from "lodash/isString.js";
 import { describe, expect, it } from "vitest";
 
 import { GLOBAL_SKILLS } from "./global.ts";
+
+const getSkillContent = (skill: any): string => {
+  if (isNil(skill?.content)) {
+    return "";
+  }
+  return isString(skill.content)
+    ? skill.content
+    : generateMarkdown({ blocks: skill.content });
+};
 
 describe("GLOBAL_SKILLS verification", () => {
   it("should contain the sdlc skill with all 6 merged phases and subagent instructions", () => {
@@ -12,7 +24,7 @@ describe("GLOBAL_SKILLS verification", () => {
     expect(sdlc).toBeDefined();
     expect(sdlc?.name).toBe("sdlc");
 
-    const content = sdlc?.content ?? "";
+    const content = getSkillContent(sdlc);
     expect(content).toContain("Phase 1: Requirements & Analysis");
     expect(content).toContain("Phase 2: Architecture & Design");
     expect(content).toContain("Phase 3: Implementation & Development");
@@ -52,13 +64,13 @@ describe("GLOBAL_SKILLS verification", () => {
 
     expect(commitSkill).toBeDefined();
     expect(commitSkill?.name).toBe("commit");
-    expect(commitSkill?.content).toContain(
+
+    const content = getSkillContent(commitSkill);
+    expect(content).toContain(
       "Git Staging and Commit Workflow Guide (/commit)"
     );
-    expect(commitSkill?.content).toContain(
-      "Conventional Commits specification"
-    );
-    expect(commitSkill?.content).toContain("RFC 2119");
+    expect(content).toContain("Conventional Commits specification");
+    expect(content).toContain("RFC 2119");
   });
 
   it("should contain the lint skill", () => {
@@ -68,12 +80,12 @@ describe("GLOBAL_SKILLS verification", () => {
 
     expect(lintSkill).toBeDefined();
     expect(lintSkill?.name).toBe("lint");
-    expect(lintSkill?.content).toContain(
-      "ESLint Fixer and Config Manager (/lint)"
-    );
+
+    const content = getSkillContent(lintSkill);
+    expect(content).toContain("ESLint Fixer and Config Manager (/lint)");
   });
 
-  it("should have exactly five registered skills", () => {
-    expect(GLOBAL_SKILLS.length).toBe(5);
+  it("should have exactly twelve registered skills", () => {
+    expect(GLOBAL_SKILLS.length).toBe(12);
   });
 });

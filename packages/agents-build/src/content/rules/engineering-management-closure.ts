@@ -1,47 +1,136 @@
+import type { MarkdownBlock } from "@ethang/markdown-generator/markdown-generator.js";
+
 import { defineRule } from "../../define.ts";
 
 export const engineeringManagementClosure = defineRule({
-  content: `# Engineering Management Closure
-
-## 1. Domain Theory and Conceptual Foundations
-Software engineering management closure is the systematic process of concluding all activities associated with a software project, a major development phase, or an individual iterative cycle. As defined in the IEEE Software Engineering Body of Knowledge (SWEBOK v4) and aligned with international lifecycle standards such as ISO/IEC/IEEE 12207, closure occurs when all plans and processes have been enacted, verified, and completed. Rather than being a simple administrative step, closure is a critical governance activity that transitions the software system from active development to maintenance and operations, or formally terminates the project. During closure, the engineering team evaluates the degree of success achieved, documents stakeholder acceptance, archives project materials, sanitizes hardware, updates measurement databases, and conducts retrospective reviews. A disciplined closure process ensures that all deliverables are verified, operational risks are quantified, and organizational knowledge is preserved to benefit future engineering efforts. This phase acts as a quality gate that prevents incomplete deliverables from sliding into production. This phase bridges the gap between construction activities and evolutionary maintenance. By ensuring that the system is properly closed out, organizations maintain the integrity of their configuration baselines, preventing architectural drift and minimizing security vulnerabilities. Managers must coordinate with operations to ensure a clean handover of all software artifacts.
-
-### 1.1 Transition Criteria and Determining Closure
-Closure is determined by evaluating whether the project, phase, or iteration has met its predefined success criteria. The management team must verify that all specified tasks have been completed and that the outputs meet the quality and functional requirements. A primary aspect of determining closure is confirming the status of all software requirements. Each requirement must be explicitly verified as either fully satisfied, partially satisfied, or formally deferred. By mapping deliverables back to the initial requirements baseline using a requirements verification matrix (RVM) or requirement traceability matrix (RTM), managers can determine the degree to which project objectives were achieved. If certain requirements remain unfulfilled, they must be reviewed with stakeholders to determine if they should be moved to a future release or cancelled. The determination of closure is therefore a data-driven process that relies on objective verification evidence, preventing the premature release of incomplete or unvalidated software. A project or iteration is not considered complete until all functional and non-functional requirements have been validated through testing, inspection, or demonstration. In cases where requirements cannot be satisfied due to constraints, they must be formally renegotiated with stakeholders. Any deferred requirements are documented in the product backlog for subsequent iterations, preventing incomplete features from entering production.
-
-### 1.2 Stakeholder Acceptance and Governance
-A successful closure process requires active involvement from all relevant stakeholders and the formal documentation of their acceptance. Stakeholders—including customers, end-users, developers, quality assurance leads, and operations staff—must review final deliverables and verification evidence against agreed acceptance criteria. Once satisfied, their formal sign-off must be recorded to establish a legal and operational baseline. Because software projects rarely close with zero defects, a critical governance activity during closure is the documentation of all known problems, outstanding defects, and technical debt. These problems must be categorized, prioritized, and logged in a defect tracking database, ensuring they are not forgotten. The formal sign-off and disclosure of known issues create a transparent boundary and contract governing the handoff of operational responsibilities.
-
-### 1.3 Archival Protocols and Retention Policies
-After closure is confirmed, project materials must be archived to preserve the integrity and reproducibility of the software engineering assets. Archival activities must conform to stakeholder agreed-upon rules specifying methods, locations, access controls, and retention durations. These archives must include the source code, build environments, compiler configurations, build scripts, design documents, test cases, verification logs, and requirements matrices. Proper archiving ensures that the software system can be rebuilt and maintained over its entire operational lifespan. Archival policies must comply with regulatory requirements, such as GDPR, HIPAA, or ISO 9001, and must define clear procedures for secure retrieval as well as the destruction of the archives once their retention period expires.
-
-### 1.4 Comprehensive Data Sanitization and Device Disposal
-Data security and privacy compliance require strict protocols for the sanitization of sensitive information on obsolete or decommissioned hardware during project closure. SWEBOK v4 mandates that all project data be permanently removed and destroyed from any devices containing relevant information before physical disposal or repurposing. This sanitization process must cover the hard drives of personal computers, server arrays, mainframes, personal digital assistants (PDAs), routers, firewalls, and network switches. Additionally, storage media such as backup tapes, diskettes, compact discs (CDs), digital versatile discs (DVDs), mobile cell phones, printers, and universal serial bus (USB) data storage devices must be securely wiped, degaussed, or physically destroyed. Ensuring that peripheral devices and memory caches are completely cleared prevents data leakage and ensures compliance with security baselines.
-
-### 1.5 Measurement Database Updates and Quantitative Feedback
-To support continuous process improvement, the organization's measurement database must be updated with relevant project data upon closure. Managers must collect and report actual metrics including total effort expended, schedule duration, product size (measured in lines of code, function points, or user stories), and defect metrics (such as defect density and post-release defect counts). Comparing actual metrics to initial project estimates allows teams to compute scheduling variance and analyze estimation accuracy. Feeding this empirical data back into the database calibrates estimation models (such as COCOMO II) and historical baselines for future projects, transitioning the organization toward quantitative software project management.
-
-### 1.6 Retrospective Analysis and Lessons Learned
-A key closure task is the execution of a retrospective analysis for the completed project, phase, or iteration to drive continuous improvement. Conducted immediately after closure, the retrospective brings the team together to review milestones, challenges, and opportunities. The team uses root cause analysis techniques, such as the 5-Whys methodology or Ishikawa diagrams, to investigate why specific problems occurred. The lessons learned from these investigations are codified and uploaded to a central organizational repository, where they can be accessed by other teams during planning. This institutionalized knowledge prevents the repetition of known mistakes, propagates proven design patterns, and elevates overall engineering capability.
-
-## 2. Compliance Checklist
-
-- [ ] Have all specified project, phase, or iteration tasks been completed and verified against the success criteria?
-- [ ] Has the status of all software requirements been confirmed, with explicit documentation of which requirements were satisfied and which were deferred?
-- [ ] Was a formal stakeholder review conducted to secure and document stakeholder acceptance and sign-off?
-- [ ] Are all known problems, open bugs, and deferred requirements logged and documented in a controlled defect tracking database?
-- [ ] Did the team establish and follow stakeholder agreed-upon rules for the archival methods, locations, and durations of all project materials?
-- [ ] Were all software configurations, source code, build scripts, and design documents archived in a secure, version-controlled repository?
-- [ ] Has sensitive information been completely removed and destroyed from all personal computers, servers, and mainframes before decommissioning?
-- [ ] Were network devices, including routers, firewalls, and switches, sanitized of all configurations and project data prior to physical disposal?
-- [ ] Have all mobile devices, including cell phones and personal digital assistants (PDAs), been wiped and verified clean of project data?
-- [ ] Were physical storage media, including backup tapes, diskettes, CDs, DVDs, and USB data storage devices, securely sanitized or physically destroyed?
-- [ ] Has all project-related data residing on peripheral devices, such as printers, been cleared from memory caches?
-- [ ] Was the organization's measurement database updated with actual project metrics, including effort, schedule variance, defect density, and sizing data?
-- [ ] Was a formal retrospective analysis conducted to identify issues, problems, risks, and opportunities encountered during execution?
-- [ ] Were the lessons learned from the retrospective codified and fed into organizational learning and continuous process improvement systems?
-- [ ] Did the closure process verify that no unauthorized, orphaned, or unmanaged copies of the software remain in production or test environments?
-- [ ] Has the project manager compiled a final closure report summarizing project performance, financial metrics, and stakeholder satisfaction?`,
+  content: [
+    {
+      level: 1,
+      text: "Engineering Management Closure",
+      type: "header"
+    },
+    {
+      level: 2,
+      text: "1. Domain Theory and Conceptual Foundations",
+      type: "header"
+    },
+    {
+      text: "Software engineering management closure is the systematic process of concluding all activities associated with a software project, a major development phase, or an individual iterative cycle. As defined in the IEEE Software Engineering Body of Knowledge (SWEBOK v4) and aligned with international lifecycle standards such as ISO/IEC/IEEE 12207, closure occurs when all plans and processes have been enacted, verified, and completed. Rather than being a simple administrative step, closure is a critical governance activity that transitions the software system from active development to maintenance and operations, or formally terminates the project. During closure, the engineering team evaluates the degree of success achieved, documents stakeholder acceptance, archives project materials, sanitizes hardware, updates measurement databases, and conducts retrospective reviews. A disciplined closure process ensures that all deliverables are verified, operational risks are quantified, and organizational knowledge is preserved to benefit future engineering efforts. This phase acts as a quality gate that prevents incomplete deliverables from sliding into production. This phase bridges the gap between construction activities and evolutionary maintenance. By ensuring that the system is properly closed out, organizations maintain the integrity of their configuration baselines, preventing architectural drift and minimizing security vulnerabilities. Managers must coordinate with operations to ensure a clean handover of all software artifacts.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.1 Transition Criteria and Determining Closure",
+      type: "header"
+    },
+    {
+      text: "Closure is determined by evaluating whether the project, phase, or iteration has met its predefined success criteria. The management team must verify that all specified tasks have been completed and that the outputs meet the quality and functional requirements. A primary aspect of determining closure is confirming the status of all software requirements. Each requirement must be explicitly verified as either fully satisfied, partially satisfied, or formally deferred. By mapping deliverables back to the initial requirements baseline using a requirements verification matrix (RVM) or requirement traceability matrix (RTM), managers can determine the degree to which project objectives were achieved. If certain requirements remain unfulfilled, they must be reviewed with stakeholders to determine if they should be moved to a future release or cancelled. The determination of closure is therefore a data-driven process that relies on objective verification evidence, preventing the premature release of incomplete or unvalidated software. A project or iteration is not considered complete until all functional and non-functional requirements have been validated through testing, inspection, or demonstration. In cases where requirements cannot be satisfied due to constraints, they must be formally renegotiated with stakeholders. Any deferred requirements are documented in the product backlog for subsequent iterations, preventing incomplete features from entering production.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.2 Stakeholder Acceptance and Governance",
+      type: "header"
+    },
+    {
+      text: "A successful closure process requires active involvement from all relevant stakeholders and the formal documentation of their acceptance. Stakeholders—including customers, end-users, developers, quality assurance leads, and operations staff—must review final deliverables and verification evidence against agreed acceptance criteria. Once satisfied, their formal sign-off must be recorded to establish a legal and operational baseline. Because software projects rarely close with zero defects, a critical governance activity during closure is the documentation of all known problems, outstanding defects, and technical debt. These problems must be categorized, prioritized, and logged in a defect tracking database, ensuring they are not forgotten. The formal sign-off and disclosure of known issues create a transparent boundary and contract governing the handoff of operational responsibilities.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.3 Archival Protocols and Retention Policies",
+      type: "header"
+    },
+    {
+      text: "After closure is confirmed, project materials must be archived to preserve the integrity and reproducibility of the software engineering assets. Archival activities must conform to stakeholder agreed-upon rules specifying methods, locations, access controls, and retention durations. These archives must include the source code, build environments, compiler configurations, build scripts, design documents, test cases, verification logs, and requirements matrices. Proper archiving ensures that the software system can be rebuilt and maintained over its entire operational lifespan. Archival policies must comply with regulatory requirements, such as GDPR, HIPAA, or ISO 9001, and must define clear procedures for secure retrieval as well as the destruction of the archives once their retention period expires.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.4 Comprehensive Data Sanitization and Device Disposal",
+      type: "header"
+    },
+    {
+      text: "Data security and privacy compliance require strict protocols for the sanitization of sensitive information on obsolete or decommissioned hardware during project closure. SWEBOK v4 mandates that all project data be permanently removed and destroyed from any devices containing relevant information before physical disposal or repurposing. This sanitization process must cover the hard drives of personal computers, server arrays, mainframes, personal digital assistants (PDAs), routers, firewalls, and network switches. Additionally, storage media such as backup tapes, diskettes, compact discs (CDs), digital versatile discs (DVDs), mobile cell phones, printers, and universal serial bus (USB) data storage devices must be securely wiped, degaussed, or physically destroyed. Ensuring that peripheral devices and memory caches are completely cleared prevents data leakage and ensures compliance with security baselines.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.5 Measurement Database Updates and Quantitative Feedback",
+      type: "header"
+    },
+    {
+      text: "To support continuous process improvement, the organization's measurement database must be updated with relevant project data upon closure. Managers must collect and report actual metrics including total effort expended, schedule duration, product size (measured in lines of code, function points, or user stories), and defect metrics (such as defect density and post-release defect counts). Comparing actual metrics to initial project estimates allows teams to compute scheduling variance and analyze estimation accuracy. Feeding this empirical data back into the database calibrates estimation models (such as COCOMO II) and historical baselines for future projects, transitioning the organization toward quantitative software project management.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.6 Retrospective Analysis and Lessons Learned",
+      type: "header"
+    },
+    {
+      text: "A key closure task is the execution of a retrospective analysis for the completed project, phase, or iteration to drive continuous improvement. Conducted immediately after closure, the retrospective brings the team together to review milestones, challenges, and opportunities. The team uses root cause analysis techniques, such as the 5-Whys methodology or Ishikawa diagrams, to investigate why specific problems occurred. The lessons learned from these investigations are codified and uploaded to a central organizational repository, where they can be accessed by other teams during planning. This institutionalized knowledge prevents the repetition of known mistakes, propagates proven design patterns, and elevates overall engineering capability.",
+      type: "text"
+    },
+    {
+      level: 2,
+      text: "2. Compliance Checklist",
+      type: "header"
+    },
+    {
+      items: [
+        {
+          text: "Have all specified project, phase, or iteration tasks been completed and verified against the success criteria?"
+        },
+        {
+          text: "Has the status of all software requirements been confirmed, with explicit documentation of which requirements were satisfied and which were deferred?"
+        },
+        {
+          text: "Was a formal stakeholder review conducted to secure and document stakeholder acceptance and sign-off?"
+        },
+        {
+          text: "Are all known problems, open bugs, and deferred requirements logged and documented in a controlled defect tracking database?"
+        },
+        {
+          text: "Did the team establish and follow stakeholder agreed-upon rules for the archival methods, locations, and durations of all project materials?"
+        },
+        {
+          text: "Were all software configurations, source code, build scripts, and design documents archived in a secure, version-controlled repository?"
+        },
+        {
+          text: "Has sensitive information been completely removed and destroyed from all personal computers, servers, and mainframes before decommissioning?"
+        },
+        {
+          text: "Were network devices, including routers, firewalls, and switches, sanitized of all configurations and project data prior to physical disposal?"
+        },
+        {
+          text: "Have all mobile devices, including cell phones and personal digital assistants (PDAs), been wiped and verified clean of project data?"
+        },
+        {
+          text: "Were physical storage media, including backup tapes, diskettes, CDs, DVDs, and USB data storage devices, securely sanitized or physically destroyed?"
+        },
+        {
+          text: "Has all project-related data residing on peripheral devices, such as printers, been cleared from memory caches?"
+        },
+        {
+          text: "Was the organization's measurement database updated with actual project metrics, including effort, schedule variance, defect density, and sizing data?"
+        },
+        {
+          text: "Was a formal retrospective analysis conducted to identify issues, problems, risks, and opportunities encountered during execution?"
+        },
+        {
+          text: "Were the lessons learned from the retrospective codified and fed into organizational learning and continuous process improvement systems?"
+        },
+        {
+          text: "Did the closure process verify that no unauthorized, orphaned, or unmanaged copies of the software remain in production or test environments?"
+        },
+        {
+          text: "Has the project manager compiled a final closure report summarizing project performance, financial metrics, and stakeholder satisfaction?"
+        }
+      ],
+      type: "unorderedList"
+    }
+  ] as MarkdownBlock[],
   description:
     "software project closure, engineering management, success criteria, stakeholder acceptance, archival methods, sensitive data destruction, retrospective analysis, lessons learned, organizational learning",
   filename: "engineering-management-closure",

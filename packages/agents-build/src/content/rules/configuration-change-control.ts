@@ -1,51 +1,151 @@
+import type { MarkdownBlock } from "@ethang/markdown-generator/markdown-generator.js";
+
 import { defineRule } from "../../define.ts";
 
 export const configurationChangeControl = defineRule({
-  content: `# Configuration Change Control
-
-## 1. Domain Theory and Conceptual Foundations
-Software Configuration Change Control is a core pillar of Software Configuration Management (SCM) as defined in the IEEE Software Engineering Body of Knowledge (SWEBOK v4) Chapter 8. It addresses the systematic control of changes to software configuration items (CIs) throughout the software engineering lifecycle. During software development, configuration items—ranging from source files and project layouts to design documentation and build configurations—are subject to frequent modification. Without a disciplined and formalized process to regulate these changes, projects risk experiencing unchecked scope creep, undocumented deviations, baseline corruption, and configuration drift. Configuration change control provides the authority, workflow, and verification gates necessary to manage change traffic, collect quality metrics, minimize breakage, and monitor rework. By establishing formal procedures for requesting, evaluating, approving, and auditing changes, software organizations can maintain the integrity and reproducibility of their release baselines.
-
-### 1.1 The Software Change Request (SCR) Process
-Managing modifications to controlled configuration items begins with the Software Change Request (SCR) process. This process provides the operational framework for submitting, recording, evaluating, and determining the disposition of proposed modifications. A Change Request (CR) is a formal proposal that can be initiated by any stakeholder—such as developers, managers, testers, or customers—at any point in the system lifecycle. The scope of a CR is broad, encompassing requests to expand or reduce project scope; modify policies, processes, plans, or procedures; adjust costs or budgets; modify implemented code; or revise schedules. Every submitted CR must be recorded in a tracking repository, capturing essential metadata such as the change category (e.g., defect correction, security patch, perfective refactoring, or feature enhancement), the originator, the target configuration items, and the proposed priority. Recording this data enables engineering groups to collect historical metrics regarding change traffic and defect density. These metrics are critical for assessing overall software quality, predicting resource allocation, and optimizing process performance.
-
-### 1.2 Impact Analysis and Technical Evaluation
-Upon receipt of a Software Change Request, the engineering team must perform a technical evaluation known as an impact analysis. The primary goal of an impact analysis is to systematically determine the scope and depth of the modifications required should the CR be accepted. Performing a thorough impact analysis requires a comprehensive understanding of the relationships, dependencies, and interconnections among various software and hardware configuration items. A change to a seemingly isolated component can have a cascading effect, causing compilation errors, runtime failures, or security vulnerabilities in dependent modules. SCM practices mandate documenting these relationships to facilitate decision-making and prevent regression failures. During impact analysis, engineers evaluate the potential consequences of the change on system stability, performance characteristics, testing requirements, security profiles, and build performance. This evaluation also estimates the effort, resources, and schedule adjustments needed to implement and verify the change, providing decision-makers with the information required to assess the cost-benefit trade-offs of the proposal.
-
-### 1.3 Configuration Control Boards (CCB and SCCB)
-The authority for evaluating, accepting, modifying, deferring, or rejecting proposed change requests resides with a designated entity known as the Configuration Control Board (CCB). The composition and scale of the CCB vary based on project characteristics, organizational complexity, and lifecycle phase. In large-scale systems, the CCB is a multi-disciplinary body composed of representatives from engineering, software quality assurance, product management, operations, and customer advocacy, ensuring all stakeholder interests are represented. In smaller projects, this authority may be delegated to a project lead or an individual developer. When the board's authority is restricted solely to software configuration items, it is referred to as a Software Configuration Control Board (SCCB). SCM principles require an SCM representative to be present on the board to ensure compliance with SCM policies. CCB operations are subject to quality audits and reviews to verify that decision-making processes are consistent and transparent. There may also be multiple hierarchical levels of change authority, where minor changes are approved by team leads, while major changes affecting budgets, key schedules, or system-critical baselines are escalated to executive-level CCBs.
-
-### 1.4 Supporting Tools and Artifact Forms
-To operate effectively, the change request process must be supported by automated tools and standardized forms. These tools are responsible for originating change requests, enforcing the approved change control workflow, capturing and logging CCB decisions, and reporting change process information. Linking this tool capability with the problem-reporting system can facilitate the problem resolution tracking and how quickly solutions are developed. A compliant change control application relies on two primary documents: the Change Request (CR) form and the Change Certification form. The CR form must clearly describe the proposed change, identify the affected configuration items, and provide a clear rationale for the request. The Change Certification form is utilized upon completion of the implementation, certifying that the modifications have been completed and verified in accordance with the CCB's authorization. While automated tools handle the storage, routing, and state transitions of these records, human engineers remain responsible for designing the content and layout of these forms.
-
-### 1.5 Implementing and Auditing Software Changes
-Once a Change Request is formally approved, it is scheduled for implementation according to the project's baseline release cycle. Because multiple approved change requests are frequently implemented concurrently by a distributed engineering team, SCM processes must provide a reliable mechanism to track which changes are incorporated into specific software versions and baselines. After implementation is complete, the modified configuration items undergo rigorous quality verification and SCM audits. These audits verify that the modifications conform to the authorized design and that no unauthorized changes have been introduced. The final SCM approval and certification details must be documented within the change control record to complete the audit trail, ensuring that every line of code in a production baseline can be traced back to an approved change request.
-
-### 1.6 Version Control and Parallel Development
-Modern software construction relies heavily on version control systems to support the implementation of approved changes. These tools provide a central or distributed repository for storing configuration items, recording their historical changes, and allowing developers to collaborate. By providing check-out and check-in mechanisms, version control systems prevent conflicting updates and coordinate work. In geographically distributed environments, version control tools support parallel development by managing separate branches. Branching allows engineers to isolate their work on individual change requests, preventing unstable code from impacting the primary development baseline. When changes are complete, merging procedures combine the isolated changes back into the main branch, enforcing quality gates (such as automated testing and compilation checks) to ensure only verified code is integrated.
-
-### 1.7 Deviations and Waivers
-During the development and production lifecycle, situations arise where the constraints or requirements imposed on a software project cannot be fully satisfied at a specific point in time. In these scenarios, SCM provides a formal process for requesting and documenting deviations and waivers. A deviation is a written authorization, granted before the implementation or manufacture of an item, to depart from a specific performance or design requirement for a designated number of units or a limited period of time. Deviations are typically temporary, allowing development to proceed while a permanent solution is designed. A waiver is a written authorization, granted after an item has been produced or submitted for inspection, to accept a configuration item that departs from specified requirements. Waivers are only granted if the item is deemed suitable for use, either in its current state or after undergoing a certified rework procedure. Both deviations and waivers require formal approval from the change control authority, and their records must be maintained in the SCM log to ensure the baseline remains documented and auditable.
-
-## 2. Compliance Checklist
-- [ ] Has a formal process been established for submitting, recording, and tracking all Software Change Requests (SCRs)?
-- [ ] Are all change requests categorized (e.g., defect correction, security patch, enhancement) and recorded systematically?
-- [ ] Is there an established Change Control Board (CCB) or designated software change authority (SCCB) responsible for evaluating and deciding on proposed modifications?
-- [ ] Are all key stakeholders represented on the Change Control Board commensurate with the affected baselines?
-- [ ] Is an SCM representative present during all Change Control Board meetings and decisions to ensure policy compliance?
-- [ ] Does every change request include a documented rationale and a description of the proposed modification before evaluation?
-- [ ] Has a technical evaluation and impact analysis been performed for every change request to determine its effect on other configuration items?
-- [ ] Are the dependencies and relationships between configuration items analyzed and documented to prevent regression breakage?
-- [ ] Is there a change certification process in place to verify that completed modifications conform to the CCB's authorization?
-- [ ] Are approved changes implemented using defined software procedures and tracked against specific target versions and baselines?
-- [ ] Is there a process to detect, prevent, and audit unauthorized modifications to the established baseline?
-- [ ] Are source code version control tools configured to prevent conflicting simultaneous edits and maintain a complete change history?
-- [ ] Does the version control system support parallel development and branching isolation for concurrent change requests?
-- [ ] Are quality verification gates (such as tests and static analysis) enforced before changes are integrated into the main baseline?
-- [ ] Is there a formal process for requesting, evaluating, and documenting deviations from design requirements before implementation?
-- [ ] Are waivers formally requested, approved, and recorded when configuration items depart from specified requirements during inspection?
-- [ ] Are deviations and waivers restricted to specific units, versions, or time durations to prevent permanent baseline decay?
-- [ ] Are SCM audits and reviews conducted regularly to verify the integrity and traceability of the change control process?`,
+  content: [
+    {
+      level: 1,
+      text: "Configuration Change Control",
+      type: "header"
+    },
+    {
+      level: 2,
+      text: "1. Domain Theory and Conceptual Foundations",
+      type: "header"
+    },
+    {
+      text: "Software Configuration Change Control is a core pillar of Software Configuration Management (SCM) as defined in the IEEE Software Engineering Body of Knowledge (SWEBOK v4) Chapter 8. It addresses the systematic control of changes to software configuration items (CIs) throughout the software engineering lifecycle. During software development, configuration items—ranging from source files and project layouts to design documentation and build configurations—are subject to frequent modification. Without a disciplined and formalized process to regulate these changes, projects risk experiencing unchecked scope creep, undocumented deviations, baseline corruption, and configuration drift. Configuration change control provides the authority, workflow, and verification gates necessary to manage change traffic, collect quality metrics, minimize breakage, and monitor rework. By establishing formal procedures for requesting, evaluating, approving, and auditing changes, software organizations can maintain the integrity and reproducibility of their release baselines.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.1 The Software Change Request (SCR) Process",
+      type: "header"
+    },
+    {
+      text: "Managing modifications to controlled configuration items begins with the Software Change Request (SCR) process. This process provides the operational framework for submitting, recording, evaluating, and determining the disposition of proposed modifications. A Change Request (CR) is a formal proposal that can be initiated by any stakeholder—such as developers, managers, testers, or customers—at any point in the system lifecycle. The scope of a CR is broad, encompassing requests to expand or reduce project scope; modify policies, processes, plans, or procedures; adjust costs or budgets; modify implemented code; or revise schedules. Every submitted CR must be recorded in a tracking repository, capturing essential metadata such as the change category (e.g., defect correction, security patch, perfective refactoring, or feature enhancement), the originator, the target configuration items, and the proposed priority. Recording this data enables engineering groups to collect historical metrics regarding change traffic and defect density. These metrics are critical for assessing overall software quality, predicting resource allocation, and optimizing process performance.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.2 Impact Analysis and Technical Evaluation",
+      type: "header"
+    },
+    {
+      text: "Upon receipt of a Software Change Request, the engineering team must perform a technical evaluation known as an impact analysis. The primary goal of an impact analysis is to systematically determine the scope and depth of the modifications required should the CR be accepted. Performing a thorough impact analysis requires a comprehensive understanding of the relationships, dependencies, and interconnections among various software and hardware configuration items. A change to a seemingly isolated component can have a cascading effect, causing compilation errors, runtime failures, or security vulnerabilities in dependent modules. SCM practices mandate documenting these relationships to facilitate decision-making and prevent regression failures. During impact analysis, engineers evaluate the potential consequences of the change on system stability, performance characteristics, testing requirements, security profiles, and build performance. This evaluation also estimates the effort, resources, and schedule adjustments needed to implement and verify the change, providing decision-makers with the information required to assess the cost-benefit trade-offs of the proposal.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.3 Configuration Control Boards (CCB and SCCB)",
+      type: "header"
+    },
+    {
+      text: "The authority for evaluating, accepting, modifying, deferring, or rejecting proposed change requests resides with a designated entity known as the Configuration Control Board (CCB). The composition and scale of the CCB vary based on project characteristics, organizational complexity, and lifecycle phase. In large-scale systems, the CCB is a multi-disciplinary body composed of representatives from engineering, software quality assurance, product management, operations, and customer advocacy, ensuring all stakeholder interests are represented. In smaller projects, this authority may be delegated to a project lead or an individual developer. When the board's authority is restricted solely to software configuration items, it is referred to as a Software Configuration Control Board (SCCB). SCM principles require an SCM representative to be present on the board to ensure compliance with SCM policies. CCB operations are subject to quality audits and reviews to verify that decision-making processes are consistent and transparent. There may also be multiple hierarchical levels of change authority, where minor changes are approved by team leads, while major changes affecting budgets, key schedules, or system-critical baselines are escalated to executive-level CCBs.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.4 Supporting Tools and Artifact Forms",
+      type: "header"
+    },
+    {
+      text: "To operate effectively, the change request process must be supported by automated tools and standardized forms. These tools are responsible for originating change requests, enforcing the approved change control workflow, capturing and logging CCB decisions, and reporting change process information. Linking this tool capability with the problem-reporting system can facilitate the problem resolution tracking and how quickly solutions are developed. A compliant change control application relies on two primary documents: the Change Request (CR) form and the Change Certification form. The CR form must clearly describe the proposed change, identify the affected configuration items, and provide a clear rationale for the request. The Change Certification form is utilized upon completion of the implementation, certifying that the modifications have been completed and verified in accordance with the CCB's authorization. While automated tools handle the storage, routing, and state transitions of these records, human engineers remain responsible for designing the content and layout of these forms.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.5 Implementing and Auditing Software Changes",
+      type: "header"
+    },
+    {
+      text: "Once a Change Request is formally approved, it is scheduled for implementation according to the project's baseline release cycle. Because multiple approved change requests are frequently implemented concurrently by a distributed engineering team, SCM processes must provide a reliable mechanism to track which changes are incorporated into specific software versions and baselines. After implementation is complete, the modified configuration items undergo rigorous quality verification and SCM audits. These audits verify that the modifications conform to the authorized design and that no unauthorized changes have been introduced. The final SCM approval and certification details must be documented within the change control record to complete the audit trail, ensuring that every line of code in a production baseline can be traced back to an approved change request.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.6 Version Control and Parallel Development",
+      type: "header"
+    },
+    {
+      text: "Modern software construction relies heavily on version control systems to support the implementation of approved changes. These tools provide a central or distributed repository for storing configuration items, recording their historical changes, and allowing developers to collaborate. By providing check-out and check-in mechanisms, version control systems prevent conflicting updates and coordinate work. In geographically distributed environments, version control tools support parallel development by managing separate branches. Branching allows engineers to isolate their work on individual change requests, preventing unstable code from impacting the primary development baseline. When changes are complete, merging procedures combine the isolated changes back into the main branch, enforcing quality gates (such as automated testing and compilation checks) to ensure only verified code is integrated.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.7 Deviations and Waivers",
+      type: "header"
+    },
+    {
+      text: "During the development and production lifecycle, situations arise where the constraints or requirements imposed on a software project cannot be fully satisfied at a specific point in time. In these scenarios, SCM provides a formal process for requesting and documenting deviations and waivers. A deviation is a written authorization, granted before the implementation or manufacture of an item, to depart from a specific performance or design requirement for a designated number of units or a limited period of time. Deviations are typically temporary, allowing development to proceed while a permanent solution is designed. A waiver is a written authorization, granted after an item has been produced or submitted for inspection, to accept a configuration item that departs from specified requirements. Waivers are only granted if the item is deemed suitable for use, either in its current state or after undergoing a certified rework procedure. Both deviations and waivers require formal approval from the change control authority, and their records must be maintained in the SCM log to ensure the baseline remains documented and auditable.",
+      type: "text"
+    },
+    {
+      level: 2,
+      text: "2. Compliance Checklist",
+      type: "header"
+    },
+    {
+      items: [
+        {
+          text: "Has a formal process been established for submitting, recording, and tracking all Software Change Requests (SCRs)?"
+        },
+        {
+          text: "Are all change requests categorized (e.g., defect correction, security patch, enhancement) and recorded systematically?"
+        },
+        {
+          text: "Is there an established Change Control Board (CCB) or designated software change authority (SCCB) responsible for evaluating and deciding on proposed modifications?"
+        },
+        {
+          text: "Are all key stakeholders represented on the Change Control Board commensurate with the affected baselines?"
+        },
+        {
+          text: "Is an SCM representative present during all Change Control Board meetings and decisions to ensure policy compliance?"
+        },
+        {
+          text: "Does every change request include a documented rationale and a description of the proposed modification before evaluation?"
+        },
+        {
+          text: "Has a technical evaluation and impact analysis been performed for every change request to determine its effect on other configuration items?"
+        },
+        {
+          text: "Are the dependencies and relationships between configuration items analyzed and documented to prevent regression breakage?"
+        },
+        {
+          text: "Is there a change certification process in place to verify that completed modifications conform to the CCB's authorization?"
+        },
+        {
+          text: "Are approved changes implemented using defined software procedures and tracked against specific target versions and baselines?"
+        },
+        {
+          text: "Is there a process to detect, prevent, and audit unauthorized modifications to the established baseline?"
+        },
+        {
+          text: "Are source code version control tools configured to prevent conflicting simultaneous edits and maintain a complete change history?"
+        },
+        {
+          text: "Does the version control system support parallel development and branching isolation for concurrent change requests?"
+        },
+        {
+          text: "Are quality verification gates (such as tests and static analysis) enforced before changes are integrated into the main baseline?"
+        },
+        {
+          text: "Is there a formal process for requesting, evaluating, and documenting deviations from design requirements before implementation?"
+        },
+        {
+          text: "Are waivers formally requested, approved, and recorded when configuration items depart from specified requirements during inspection?"
+        },
+        {
+          text: "Are deviations and waivers restricted to specific units, versions, or time durations to prevent permanent baseline decay?"
+        },
+        {
+          text: "Are SCM audits and reviews conducted regularly to verify the integrity and traceability of the change control process?"
+        }
+      ],
+      type: "unorderedList"
+    }
+  ] as MarkdownBlock[],
   description:
     "configuration change control, change board authority, and deviations or waivers",
   filename: "configuration-change-control",

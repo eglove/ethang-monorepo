@@ -30,10 +30,10 @@ describe("global rules integration tests", () => {
       });
     }).not.toThrow();
 
-    const generatedRulePath = path.join(rulesDirectory, "workspace-tools.md");
+    const generatedRulePath = path.join(rulesDirectory, "tool-hierarchy.md");
     expect(existsSync(generatedRulePath)).toBe(true);
     const ruleContent = readFileSync(generatedRulePath, "utf8");
     expect(ruleContent).toContain("trigger: always_on");
-    expect(ruleContent).toContain("Workspace Tools Usage & Optimization");
+    expect(ruleContent).toContain("Tool Usage Hierarchy");
   });
 });

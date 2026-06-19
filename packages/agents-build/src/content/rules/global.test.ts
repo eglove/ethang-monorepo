@@ -1,3 +1,5 @@
+import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
+import isString from "lodash/isString.js";
 import startsWith from "lodash/startsWith.js";
 import trim from "lodash/trim.js";
 import { describe, expect, it } from "vitest";
@@ -20,18 +22,21 @@ describe("GLOBAL_RULES schema verification", () => {
       // 3. Description must be non-empty string when trigger is "model_decision"
       if ("model_decision" === rule.trigger) {
         expect(rule.description).toBeDefined();
-        expect(typeof rule.description).toBe("string");
+        expect(isString(rule.description)).toBe(true);
         expect(rule.description?.length).toBeGreaterThan(0);
       }
 
       // 4. Content must be non-empty and start with Markdown title
       expect(rule.content).toBeDefined();
-      expect(typeof rule.content).toBe("string");
-      expect(rule.content.length).toBeGreaterThan(0);
-      expect(startsWith(trim(rule.content), "#")).toBe(true);
+      const contentString = isString(rule.content)
+        ? rule.content
+        : generateMarkdown({ blocks: rule.content });
+
+      expect(contentString.length).toBeGreaterThan(0);
+      expect(startsWith(trim(contentString), "#")).toBe(true);
 
       // 5. Rule length must be under the limit
-      expect(rule.content.length).toBeLessThanOrEqual(12_000);
+      expect(contentString.length).toBeLessThanOrEqual(12_000);
     }
   );
 });

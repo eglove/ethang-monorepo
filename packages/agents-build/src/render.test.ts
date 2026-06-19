@@ -79,6 +79,15 @@ describe("ruleMarkdown", () => {
       '---\ndescription: "reviewing: a PR or diff"\ntrigger: model_decision\n---\n\nRule body.\n'
     );
   });
+  it("renders when content is MarkdownBlock[]", () => {
+    const rule: RuleDefinition = {
+      ...baseRule,
+      content: [{ text: "Rule body from block.", type: "text" as const }]
+    };
+    expect(ruleMarkdown(rule)).toBe(
+      "---\ntrigger: always_on\n---\n\nRule body from block.\n"
+    );
+  });
 });
 
 describe("skillMarkdown", () => {
@@ -90,6 +99,17 @@ describe("skillMarkdown", () => {
     };
     expect(skillMarkdown(skill)).toBe(
       "---\ndescription: A test skill.\nname: test-skill\n---\n\nSkill body.\n"
+    );
+  });
+
+  it("renders when content is MarkdownBlock[]", () => {
+    const skill = {
+      content: [{ text: "Skill body from block.", type: "text" as const }],
+      description: "A test skill.",
+      name: "test-skill"
+    };
+    expect(skillMarkdown(skill)).toBe(
+      "---\ndescription: A test skill.\nname: test-skill\n---\n\nSkill body from block.\n"
     );
   });
 });
