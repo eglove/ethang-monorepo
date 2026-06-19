@@ -339,7 +339,7 @@ export const compile = (config: CompilerConfig): void => {
 
   processRules(config, failures, write);
   processSkills(config, failures, write);
-  processHooks(config, write);
+  // processHooks(config, write);
   scanDirectories(config, failures);
 
   if (0 < failures.length) {

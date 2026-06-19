@@ -128,7 +128,6 @@
     ".agents/skills/everything-search/SKILL.md",
     ".agents/skills/github-cli/SKILL.md",
     ".agents/skills/sara-cli/SKILL.md",
-    ".agents/skills/codebase-memory-mcp/SKILL.md",
-    ".agents/hooks.json"
+    ".agents/skills/codebase-memory-mcp/SKILL.md"
   ]
 }
