@@ -9,8 +9,8 @@ import { lint } from "./lint.ts";
 import { ripgrep } from "./ripgrep.ts";
 import { saraCli } from "./sara-cli.ts";
 import { sdlc } from "./sdlc.ts";
-import { swebok } from "./swebok.ts";
-import { webstormMcp } from "./webstorm-mcp.ts";
+import { swebok } from "./swebok/swebok.ts";
+import { webstormMcp } from "./webstorm-mcp/webstorm-mcp.ts";
 
 export const GLOBAL_SKILLS = [
   sdlc,

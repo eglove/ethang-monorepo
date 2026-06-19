@@ -85,7 +85,7 @@ describe("GLOBAL_SKILLS verification", () => {
     expect(content).toContain("ESLint Fixer and Config Manager (/lint)");
   });
 
-  it("should have exactly twelve registered skills", () => {
-    expect(GLOBAL_SKILLS.length).toBe(12);
+  it("should have exactly thirteen registered skills", () => {
+    expect(GLOBAL_SKILLS.length).toBe(13);
   });
 });
