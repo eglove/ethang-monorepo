@@ -8,6 +8,7 @@ import {
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { XMLParser } from "fast-xml-parser";
+import filter from "lodash/filter.js";
 import find from "lodash/find.js";
 import isArray from "lodash/isArray.js";
 import isError from "lodash/isError.js";
@@ -30,6 +31,8 @@ const parser = new XMLParser({
   attributeNamePrefix: "@_",
   ignoreAttributes: false
 });
+
+const YOUTUBE_SHORTS_REGEX = /https?:\/\/(?:www\.)?youtube\.com\/shorts\//u;
 
 type FeedItem = {
   content?: { "#text"?: string } | string;
@@ -185,7 +188,11 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
             };
           });
 
-          const insertPromises = map(normalizedItems, async (item) => {
+          const filteredItems = filter(normalizedItems, (item) => {
+            return !YOUTUBE_SHORTS_REGEX.test(item.link);
+          });
+
+          const insertPromises = map(filteredItems, async (item) => {
             if (isNil(item.guid) || "" === item.guid) {
               return;
             }
