@@ -1,3 +1,4 @@
+import { atddFsmTdd } from "./atdd-fsm-tdd.ts";
 import { codebaseMemoryMcp } from "./codebase-memory-mcp.ts";
 import { commit } from "./commit.ts";
 import { ddd } from "./ddd.ts";
@@ -14,6 +15,7 @@ import { webstormMcp } from "./webstorm-mcp.ts";
 export const GLOBAL_SKILLS = [
   sdlc,
   swebok,
+  atddFsmTdd,
   ddd,
   commit,
   lint,

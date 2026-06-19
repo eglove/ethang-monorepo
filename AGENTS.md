@@ -7,6 +7,9 @@ This document outlines the global rules, development principles, and tool-usage 
 > The [swebok](file:///C:/Users/glove/projects/ethang-monorepo/.agents/skills/swebok/SKILL.md) skill must always be read using the `view_file` tool right away to provide foundational knowledge and guidance on all tasks.
 
 > [!IMPORTANT]
+> The [atdd-fsm-tdd](file:///C:/Users/glove/projects/ethang-monorepo/.agents/skills/atdd-fsm-tdd/SKILL.md) skill must be read using the `view_file` tool and followed for all feature development tasks.
+
+> [!IMPORTANT]
 > All tasks on this repository should follow the [ddd](file:///C:/Users/glove/projects/ethang-monorepo/.agents/skills/ddd/SKILL.md) principles.
 
 > [!IMPORTANT]
