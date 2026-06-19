@@ -469,6 +469,61 @@ describe("validation failures and warnings", () => {
     expect(manifest.files).toContain(SKILL_MANIFEST_PATH);
   });
 
+  it("compiles skills with resources and includes resources in the manifest", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const skillsDirectory = path.join(temporaryDirectory, "skills");
+    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory,
+      skills: [
+        {
+          content: SKILL_CONTENT,
+          description: SKILL_DESCRIPTION,
+          name: TEST_SKILL_NAME,
+          resources: [
+            {
+              content: "test resource content",
+              filename: "res1.md"
+            }
+          ]
+        }
+      ],
+      skillsDir: skillsDirectory
+    };
+
+    compile(config);
+
+    const skillFilePath = path.join(
+      skillsDirectory,
+      TEST_SKILL_NAME,
+      "SKILL.md"
+    );
+    const resourceFilePath = path.join(
+      skillsDirectory,
+      TEST_SKILL_NAME,
+      "resources",
+      "res1.md"
+    );
+    expect(existsSync(skillFilePath)).toBe(true);
+    expect(existsSync(resourceFilePath)).toBe(true);
+
+    const resourceContentRead = readFileSync(resourceFilePath, utf8Encoding);
+    expect(resourceContentRead).toBe("test resource content");
+
+    const parsed = JSON.parse(
+      readFileSync(manifestPath, utf8Encoding)
+    ) as unknown;
+    const manifest = manifestSchema.parse(parsed);
+    expect(manifest.files).toContain(SKILL_MANIFEST_PATH);
+    expect(manifest.files).toContain(
+      `skills/${TEST_SKILL_NAME}/resources/res1.md`
+    );
+  });
+
   it("records a failure if a skill has a malformed frontmatter block", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
     const skillsDirectory = path.join(temporaryDirectory, "skills");

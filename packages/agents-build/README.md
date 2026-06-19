@@ -27,15 +27,14 @@ Generated artifacts are committed under `.agents/`:
 ```
 
 Each plugin bundles:
-- **Always-on rules**: `philosophy.md`, `tdd-discipline.md`, `verification.md` — activate unconditionally
-- **Smart rules**: `review-edge-cases.md` — activate on Model Decision (frontmatter: `trigger: model-decision`)
+- **Always-on rules**: `philosophy.md` — activate unconditionally
 - **Router skill**: Named `swebok-glossary`, `tdd-principles`, etc. — points to 18 SWEBOK chapter resources (read max 3 per task)
 
 ## The Four Plugins
 
 1. **git** — Commit workflow: branch naming, commit message structure, pre-commit checks
 2. **tdd** — Red-Green-Refactor pipeline, test design, roles, plus DDD (strategic/tactical), RCA (5-Whys), and SWEBOK router skill
-3. **review** — PR review pipeline, code review checklist, security checklist, plus verification and edge-case smart rules
+3. **review** — PR review pipeline, code review checklist, security checklist, plus edge-case smart rules
 4. **requirements** — Requirements analysis pipeline, SWEBOK 18-chapter router skill
 
 ## Build Tripwires
@@ -55,9 +54,8 @@ After deploying:
 1. Open the workspace in Google Antigravity
 2. Navigate to **Customizations** and verify all 4 plugins are present (git, tdd, review, requirements)
 3. For each plugin, check that its rules show the intended activation mode:
-   - Philosophy, TDD-discipline, verification rules: **Always On** (no frontmatter)
-   - review-edge-cases rule: **Model Decision** (frontmatter: `trigger: model-decision`)
-4. If modes don't render correctly, verify `.agents/plugins/<name>/rules/*.md` files contain frontmatter `trigger:` fields in YAML block at the top
+   - Philosophy rule: **Always On** (no frontmatter)
+5. If modes don't render correctly, verify `.agents/plugins/<name>/rules/*.md` files contain frontmatter `trigger:` fields in YAML block at the top
    - Antigravity recognizes the Windsurf-lineage frontmatter convention; if it doesn't render, the fallback is emitting rules without frontmatter and setting modes once in the Antigravity UI manually (see `renderRuleFrontmatter()` in `src/render.ts`)
 
 ## Lessons Hooks

@@ -30,13 +30,10 @@ describe("global rules integration tests", () => {
       });
     }).not.toThrow();
 
-    const generatedRulePath = path.join(
-      rulesDirectory,
-      "eslint-self-learning.md"
-    );
+    const generatedRulePath = path.join(rulesDirectory, "workspace-tools.md");
     expect(existsSync(generatedRulePath)).toBe(true);
     const ruleContent = readFileSync(generatedRulePath, "utf8");
-    expect(ruleContent).toContain("trigger: model_decision");
-    expect(ruleContent).toContain("ESLint Self-Learning");
+    expect(ruleContent).toContain("trigger: always_on");
+    expect(ruleContent).toContain("Workspace Tools Usage & Optimization");
   });
 });

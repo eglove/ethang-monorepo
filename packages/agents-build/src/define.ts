@@ -19,8 +19,9 @@ export type SkillDefinition = {
   content: string;
   description: string;
   name: string;
+  resources?: { content: string; filename: string }[];
 };
 
-export const defineSkill = (definition: SkillDefinition) => {
+export const defineSkill = (definition: SkillDefinition): SkillDefinition => {
   return definition;
 };

@@ -1,0 +1,149 @@
+{
+  "banned-tools-hook": {
+    "PreToolUse": [
+      {
+        "matcher": "bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              ".agents/scripts/pre-tool-use.ts",
+              "bash"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "read_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              ".agents/scripts/pre-tool-use.ts",
+              "read_file"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "view_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              ".agents/scripts/pre-tool-use.ts",
+              "view_file"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "write_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              ".agents/scripts/pre-tool-use.ts",
+              "write_file"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "edit_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              ".agents/scripts/pre-tool-use.ts",
+              "edit_file"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              ".agents/scripts/pre-tool-use.ts",
+              "replace_file_content"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "write_to_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              ".agents/scripts/pre-tool-use.ts",
+              "write_to_file"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "multi_replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              ".agents/scripts/pre-tool-use.ts",
+              "multi_replace_file_content"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "list_dir",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              ".agents/scripts/pre-tool-use.ts",
+              "list_dir"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "find_by_name",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              ".agents/scripts/pre-tool-use.ts",
+              "find_by_name"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "grep_search",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              ".agents/scripts/pre-tool-use.ts",
+              "grep_search"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

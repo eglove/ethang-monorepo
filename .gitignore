@@ -9,6 +9,8 @@ docs/tla-specs/**/states
 .junie
 trace*.txt
 .aider*
+swebok-v4.md
+plan.md
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,jetbrains+all,visualstudiocode,storybookjs
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,react,jetbrains+all,visualstudiocode,storybookjs

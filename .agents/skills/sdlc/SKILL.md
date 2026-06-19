@@ -84,7 +84,6 @@ Translate requirements into software architectures. Focus on coupling, database 
 ### Phase 2 Checklists & Rules
 - [ddd-strategic](file:///.agents/rules/ddd-strategic.md) - Bounded contexts, context boundaries, and ubiquitous language.
 - [ddd-tactical](file:///.agents/rules/ddd-tactical.md) - CQRS patterns, Specifications, Value Objects, and Domain Events.
-- [atomic-design](file:///.agents/rules/atomic-design.md) - Modularity rules for React components and Hono/Cloudflare Worker routes.
 - [architectural-documentation](file:///.agents/rules/architectural-documentation.md) - Descriptions, viewpoints, and notations (e.g. C4 model).
 - [architectural-synthesis](file:///.agents/rules/architectural-synthesis.md) - ASRs, architectural patterns, and ADD.
 - [architectural-evaluation](file:///.agents/rules/architectural-evaluation.md) - Evaluating architectures via ATAM, design trade-offs, and quality attributes.
@@ -172,7 +171,6 @@ Verify system functionality against specification. Follow TDD strictly.
 - [equivalence-partitioning](file:///.agents/rules/equivalence-partitioning.md) - Input domain partitions to optimize testing coverage.
 - [mutation-testing-adequacy](file:///.agents/rules/mutation-testing-adequacy.md) - Verifying assertion adequacy via mutation analysis.
 - [regression-testing-strategy](file:///.agents/rules/regression-testing-strategy.md) - Running regression suites on modification.
-- [verification](file:///.agents/rules/verification.md) - Executing builds, tests, and lint checks.
 - [verification-vs-validation](file:///.agents/rules/verification-vs-validation.md) - Conformance to specs vs. user correctness.
 - [linter-quality-gates](file:///.agents/rules/linter-quality-gates.md) - Static analysis checks.
 
@@ -206,7 +204,6 @@ Prepare changes for repository integration, staging, and deployment.
   ```
 
 ### Phase 5 Checklists & Rules
-- [conventional-commits](file:///.agents/rules/conventional-commits.md) - Staging, commit scopes, and PR creation.
 - [actor-action-format](file:///.agents/rules/actor-action-format.md) - Descriptive actor-action structure for commit/PR messages.
 - [automated-release-engineering](file:///.agents/rules/automated-release-engineering.md) - Repeatable deployments and build scripts.
 - [configuration-baselines](file:///.agents/rules/configuration-baselines.md) - Library versions and configuration baselines.
@@ -245,7 +242,6 @@ Monitor production health, handle bugs/incidents, and manage refactoring cycles.
 - [operations-monitoring](file:///.agents/rules/operations-monitoring.md) - SLA metrics, capacity planning, and structured logs.
 - [incident-vs-problem-management](file:///.agents/rules/incident-vs-problem-management.md) - 5-Whys root cause analysis, resolving incident flows.
 - [technical-debt-valuation](file:///.agents/rules/technical-debt-valuation.md) - Technical debt valuation and refactoring cycles.
-- [review-edge-cases](file:///.agents/rules/review-edge-cases.md) - Code reviews, diff inspections, and edge case coverage.
 - [reverse-engineering](file:///.agents/rules/reverse-engineering.md) - Reading call stacks, tracing execution logs.
 
 ### Step-by-Step Execution Plan (Main Window or Subagent)
