@@ -8,6 +8,7 @@
     "@apollo/server": "^5.5.1",
     "@as-integrations/cloudflare-workers": "^1.1.1",
     "@cloudflare/workers-types": "^4.20260619.1",
+    "@ethang/intl": "workspace:*",
     "dataloader": "^2.2.3",
     "graphql": "^17.0.1",
     "graphql-tag": "^2.12.7"

@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from "react";
 
+import { navigation } from "@ethang/intl/en/navigation.ts";
 import { useStore } from "@ethang/store/use-store";
 import { Button, Flex, Text } from "@radix-ui/themes";
 import map from "lodash/map";
@@ -9,11 +10,11 @@ import { authStore } from "../auth/auth-store.ts";
 import { InternalLink } from "../internal-link.tsx";
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/blog", label: "Blog" },
-  { href: "/tips", label: "Tips" },
-  { href: "/courses", label: "Courses" },
-  { href: "/rss", label: "RSS" }
+  { href: "/", label: navigation.HOME },
+  { href: "/blog", label: navigation.BLOG },
+  { href: "/tips", label: navigation.TIPS },
+  { href: "/courses", label: navigation.COURSES },
+  { href: "/rss", label: navigation.RSS }
 ];
 
 export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
@@ -49,14 +50,14 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
             <NavigationMenu.Root>
               <NavigationMenu.List>
                 <NavigationMenu.Link asChild>
-                  <InternalLink href="/login">Login</InternalLink>
+                  <InternalLink href="/login">{navigation.LOGIN}</InternalLink>
                 </NavigationMenu.Link>
               </NavigationMenu.List>
             </NavigationMenu.Root>
           ) : (
             <>
               <Text size="2" className="font-medium text-slate-400">
-                Logged in as{" "}
+                {navigation.LOGGED_IN_AS}{" "}
                 <span className="font-bold text-white">{user.username}</span>
               </Text>
               <Button
@@ -66,7 +67,7 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
                 onClick={handleLogout}
                 className="cursor-pointer font-semibold"
               >
-                Logout
+                {navigation.LOGOUT}
               </Button>
             </>
           )}

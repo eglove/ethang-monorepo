@@ -1,4 +1,5 @@
 import { gql } from "@ethang/graphql-types/__generated__";
+import { courses as coursesIntl } from "@ethang/intl/en/courses.ts";
 import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -66,7 +67,7 @@ const RouteComponent = () => {
       </Skeleton>
       <Skeleton loading={isPending}>
         <Text as="p" mb="4">
-          Last Updated: {formattedDate}
+          {coursesIntl.LAST_UPDATED} {formattedDate}
         </Text>
       </Skeleton>
       <Skeleton loading={isPending}>

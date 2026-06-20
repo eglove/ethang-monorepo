@@ -11,7 +11,8 @@ vi.mock(import("../functions/get-tracking-by-user-id-course-url.ts"), () => {
   };
 });
 
-import { COURSE_TRACKING_STATUS } from "../constants/course-tracking-status.ts";
+import { courseTracking as COURSE_TRACKING_STATUS } from "@ethang/intl/en/course-tracking.ts";
+
 import { getCourseUrlByCourseId } from "../functions/get-course-url-by-course-id.ts";
 import { getTrackingByUserIdCourseUrl } from "../functions/get-tracking-by-user-id-course-url.ts";
 import { cycleCourseTrackingStatusMutation } from "./cycle-course-tracking-status.ts";

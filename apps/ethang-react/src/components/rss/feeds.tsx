@@ -1,3 +1,4 @@
+import { rss } from "@ethang/intl/en/rss.ts";
 import { useStore } from "@ethang/store/use-store";
 import { Box, Button, Card, Flex, Heading, Skeleton } from "@radix-ui/themes";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -37,7 +38,7 @@ export const Feeds = () => {
     <Box className="md:col-span-1">
       <Card className="min-h-75 border border-slate-800 bg-slate-900/40 p-4 backdrop-blur-md">
         <Heading mb="3" size="4" className="text-slate-300">
-          Feeds
+          {rss.FEEDS}
         </Heading>
         <Skeleton loading={isPending} data-testid="sidebar-skeleton">
           <Flex gap="2" direction="column">
@@ -49,7 +50,7 @@ export const Feeds = () => {
                 rssStore.setSelectedFeedId(null);
               }}
             >
-              All Feeds
+              {rss.ALL_FEEDS}
             </Button>
             {map(sorted, (edge) => {
               const feed = edge.node;
@@ -75,7 +76,7 @@ export const Feeds = () => {
                 loading={isFetchingNextPage}
                 className="mt-1 w-full cursor-pointer"
               >
-                Load More
+                {rss.LOAD_MORE}
               </Button>
             )}
           </Flex>

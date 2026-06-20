@@ -1,3 +1,4 @@
+import { courses } from "@ethang/intl/en/courses.ts";
 import { inArray } from "drizzle-orm";
 import chunk from "lodash/chunk.js";
 import filter from "lodash/filter.js";
@@ -41,7 +42,7 @@ export const createCurriculumMutation = (database: Database) => {
 
       if (0 < missingIds.length) {
         throw new Error(
-          `The following learning path IDs do not exist: ${missingIds.join(", ")}`
+          `${courses.LEARNING_PATH_IDS_MISSING} ${missingIds.join(", ")}`
         );
       }
     }
@@ -90,7 +91,7 @@ export const createCurriculumMutation = (database: Database) => {
     }
 
     if (inserted === undefined) {
-      throw new Error("Failed to create curriculum");
+      throw new Error(courses.FAILED_TO_CREATE_CURRICULUM);
     }
 
     return populateCurriculum(database, inserted);

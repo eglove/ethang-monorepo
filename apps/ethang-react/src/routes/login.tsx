@@ -1,3 +1,4 @@
+import { forms } from "@ethang/intl/en/forms.ts";
 import { useStore } from "@ethang/store/use-store";
 import {
   Box,
@@ -65,7 +66,7 @@ const Login = () => {
                 align="center"
                 className="mb-2 tracking-tight text-white"
               >
-                Sign In to Your Account
+                {forms.SIGN_IN_TO_ACCOUNT}
               </Heading>
 
               {null !== error && (
@@ -83,13 +84,13 @@ const Login = () => {
 
               <Flex gap="1" direction="column">
                 <Text size="2" weight="bold" className="text-slate-300">
-                  Email Address
+                  {forms.EMAIL_ADDRESS}
                 </Text>
                 <TextField.Root
                   required
                   type="email"
                   value={email}
-                  placeholder="Enter your email"
+                  placeholder={forms.ENTER_YOUR_EMAIL}
                   onChange={(event) => {
                     setEmail(event.target.value);
                   }}
@@ -99,13 +100,13 @@ const Login = () => {
 
               <Flex gap="1" direction="column">
                 <Text size="2" weight="bold" className="text-slate-300">
-                  Password
+                  {forms.PASSWORD}
                 </Text>
                 <TextField.Root
                   required
                   type="password"
                   value={password}
-                  placeholder="Enter your password"
+                  placeholder={forms.ENTER_YOUR_PASSWORD}
                   onChange={(event) => {
                     setPassword(event.target.value);
                   }}
@@ -119,7 +120,7 @@ const Login = () => {
                 disabled={isPending}
                 className="mt-4 cursor-pointer bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 font-semibold shadow-lg shadow-blue-500/20 transition-all duration-300 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isPending ? "Signing In..." : "Sign In"}
+                {isPending ? forms.SIGNING_IN : forms.SIGN_IN}
               </Button>
             </Flex>
           </form>

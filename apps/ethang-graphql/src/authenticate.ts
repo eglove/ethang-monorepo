@@ -1,3 +1,4 @@
+import { auth } from "@ethang/intl/en/auth.ts";
 import isNil from "lodash/isNil.js";
 
 export type User = {
@@ -13,7 +14,7 @@ export const authenticate = async (request: Request) => {
   const token = request.headers.get("X-Token");
 
   if (isNil(token)) {
-    throw new Error("Unauthorized");
+    throw new Error(auth.UNAUTHORIZED);
   }
 
   const response = await fetch("https://auth.ethang.dev/verify", {
@@ -23,14 +24,14 @@ export const authenticate = async (request: Request) => {
   });
 
   if (!response.ok) {
-    throw new Error("Unauthorized");
+    throw new Error(auth.UNAUTHORIZED);
   }
 
   const user: User = await response.json();
   const currentTime = Math.floor(Date.now() / 1000);
 
   if (currentTime > user.exp) {
-    throw new Error("Unauthorized");
+    throw new Error(auth.UNAUTHORIZED);
   }
 
   return user;

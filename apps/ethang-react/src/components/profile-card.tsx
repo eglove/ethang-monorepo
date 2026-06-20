@@ -1,3 +1,4 @@
+import { forms } from "@ethang/intl/en/forms.ts";
 import {
   EnvelopeClosedIcon,
   GitHubLogoIcon,
@@ -53,7 +54,7 @@ export const ProfileCard = () => {
                 className="border-foreground border-2 px-4 py-2"
                 href="https://www.linkedin.com/build-relation/newsletter-follow?entityUrn=7316126013938143232"
               >
-                Subscribe to my Newsletter
+                {forms.SUBSCRIBE_NEWSLETTER}
               </HybridLink>
             </Button>
             <Button asChild variant="surface">
@@ -62,7 +63,7 @@ export const ProfileCard = () => {
                 href="https://cal.com/ethan-glover/meet"
                 className="border-foreground border-2 px-4 py-2"
               >
-                Schedule a Meeting
+                {forms.SCHEDULE_MEETING}
               </HybridLink>
             </Button>
           </Flex>

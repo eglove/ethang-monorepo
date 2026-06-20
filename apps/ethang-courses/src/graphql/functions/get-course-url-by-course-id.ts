@@ -1,3 +1,4 @@
+import { courses } from "@ethang/intl/en/courses.ts";
 import { eq } from "drizzle-orm";
 
 import type { Database } from "../types.ts";
@@ -14,6 +15,6 @@ export const getCourseUrlByCourseId = async (
     .where(eq(coursesTable.id, courseId))
     .limit(1);
   if (0 === course.length || undefined === course[0])
-    throw new Error("Course not found");
+    throw new Error(courses.COURSE_NOT_FOUND);
   return course[0].url;
 };

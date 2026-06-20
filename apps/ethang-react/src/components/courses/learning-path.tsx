@@ -1,4 +1,5 @@
 import { gql } from "@ethang/graphql-types/__generated__";
+import { courses as coursesIntl } from "@ethang/intl/en/courses.ts";
 import {
   Badge,
   Card,
@@ -99,7 +100,8 @@ export const LearningPath = ({
           )}
         </Flex>
         <Text as="p" mb="3" mt="1" color="gray">
-          {courseLength} {1 === courseLength ? "course" : "courses"}
+          {courseLength}{" "}
+          {1 === courseLength ? coursesIntl.COURSE : coursesIntl.COURSES}
         </Text>
         <Flex asChild gap="1" direction="column">
           <ul>
