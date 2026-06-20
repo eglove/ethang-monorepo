@@ -41,7 +41,6 @@ const getRuleStrings = (
     if (prefix === undefined) {
       rules[rule] = isNil(defaultOverride) ? "error" : defaultOverride;
     } else {
-      // eslint-disable-next-line unicorn/no-unsafe-property-key
       rules[`${prefix}/${rule}`] = isNil(defaultOverride)
         ? "error"
         : defaultOverride;
@@ -66,7 +65,6 @@ export const genRules = (
         if (prefix === undefined || true === rule.skipPrefix) {
           rules[rule.name] = rule.rule;
         } else {
-          // eslint-disable-next-line unicorn/no-unsafe-property-key
           rules[`${prefix}/${rule.name}`] = rule.rule;
         }
       } else {

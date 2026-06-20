@@ -11,12 +11,12 @@ import { computingFoundationsHumanFactors } from "../../rules/computing-foundati
 import { computingFoundationsNetworks } from "../../rules/computing-foundations-networks.ts";
 import { computingFoundationsOperatingSystems } from "../../rules/computing-foundations-operating-systems.ts";
 import { computingFoundationsProgrammingFundamentals } from "../../rules/computing-foundations-programming-fundamentals.ts";
-import { configurationAuditing } from "../../rules/configuration-auditing.ts";
-import { configurationChangeControl } from "../../rules/configuration-change-control.ts";
-import { configurationIdentification } from "../../rules/configuration-identification.ts";
-import { configurationManagementProcess } from "../../rules/configuration-management-process.ts";
-import { configurationReleaseManagement } from "../../rules/configuration-release-management.ts";
-import { configurationStatusAccounting } from "../../rules/configuration-status-accounting.ts";
+import { configAuditing } from "../../rules/config-auditing.ts";
+import { configChangeControl } from "../../rules/config-change-control.ts";
+import { configIdentification } from "../../rules/config-identification.ts";
+import { configManagementProcess } from "../../rules/config-management-process.ts";
+import { configReleaseManagement } from "../../rules/config-release-management.ts";
+import { configStatusAccounting } from "../../rules/config-status-accounting.ts";
 import { constructionFundamentals } from "../../rules/construction-fundamentals.ts";
 import { constructionManagement } from "../../rules/construction-management.ts";
 import { constructionPracticalConsiderations } from "../../rules/construction-practical-considerations.ts";
@@ -163,27 +163,27 @@ export const swebokResources = [
     filename: "computing-foundations-programming-fundamentals.md"
   },
   {
-    content: configurationAuditing.content,
+    content: configAuditing.content,
     filename: "configuration-auditing.md"
   },
   {
-    content: configurationChangeControl.content,
+    content: configChangeControl.content,
     filename: "configuration-change-control.md"
   },
   {
-    content: configurationIdentification.content,
+    content: configIdentification.content,
     filename: "configuration-identification.md"
   },
   {
-    content: configurationManagementProcess.content,
+    content: configManagementProcess.content,
     filename: "configuration-management-process.md"
   },
   {
-    content: configurationReleaseManagement.content,
+    content: configReleaseManagement.content,
     filename: "configuration-release-management.md"
   },
   {
-    content: configurationStatusAccounting.content,
+    content: configStatusAccounting.content,
     filename: "configuration-status-accounting.md"
   },
   {

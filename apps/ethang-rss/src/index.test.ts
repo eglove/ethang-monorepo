@@ -21,14 +21,16 @@ vi.mock("cloudflare:workers", () => {
 });
 
 const mockHandler = vi.fn().mockResolvedValue(new Response("GraphQL Response"));
-let capturedOptions: unknown = null;
+const store = {
+  capturedOptions: null as unknown
+};
 
 vi.mock("@as-integrations/cloudflare-workers", () => {
   return {
     startServerAndCreateCloudflareWorkersHandler: vi
       .fn()
       .mockImplementation((_server, options) => {
-        capturedOptions = options;
+        store.capturedOptions = options;
         return mockHandler;
       })
   };
@@ -113,11 +115,12 @@ describe("worker fetch", () => {
     const response = await worker.fetch(request, environment, context);
     expect(response).toBeInstanceOf(Response);
     expect(mockHandler).toHaveBeenCalledWith(request, environment, context);
-    expect(capturedOptions).toBeDefined();
+    expect(store.capturedOptions).toBeDefined();
 
     // Verify context creation callback
-    // @ts-expect-error for test
-    const contextResult = await capturedOptions.context({ request });
+    const contextResult = await (store.capturedOptions as any).context({
+      request
+    });
     expect(contextResult).toEqual({
       articleLoader: ARTICLE_LOADER,
       feedLoader: FEED_LOADER,

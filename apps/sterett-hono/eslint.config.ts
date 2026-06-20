@@ -22,9 +22,15 @@ export default defineConfig(
   ]),
   ...config,
   ...htmlConfig,
-  ...tailwindConfig(path.join(import.meta.dirname, "src", "index.css")),
+  ...tailwindConfig(path.join(import.meta.dirname, "src", "style.css")),
   ...vitestConfig,
   ...playwrightConfig,
+  {
+    files: ["e2e/*.spec.ts"],
+    rules: {
+      "sonar/assertions-in-tests": "off"
+    }
+  },
   {
     languageOptions: {
       parserOptions: {

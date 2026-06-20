@@ -20,8 +20,8 @@ export const getIsHappeningNow = (start: string, end: string) => {
 };
 
 export const CalendarEvent = async ({ data }: EventProperties) => {
-  const happeningNow = getIsHappeningNow(data.startsAt, data.endsAt);
-  const relative = happeningNow
+  const isHappeningNow = getIsHappeningNow(data.startsAt, data.endsAt);
+  const relative = isHappeningNow
     ? "Happening Now!"
     : getRelativeDate(data.startsAt);
 

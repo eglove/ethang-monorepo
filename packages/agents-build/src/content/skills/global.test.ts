@@ -86,6 +86,6 @@ describe("GLOBAL_SKILLS verification", () => {
   });
 
   it("should have exactly thirteen registered skills", () => {
-    expect(GLOBAL_SKILLS.length).toBe(13);
+    expect(GLOBAL_SKILLS).toHaveLength(13);
   });
 });

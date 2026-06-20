@@ -49,7 +49,7 @@ export const createCurriculumMutation = (database: Database) => {
     // 2. Pre-generate the curriculum ID to support atomic batching
     const curriculumId = generateId();
 
-    const insertCurriculumStmt = database
+    const insertCurriculumStatement = database
       .insert(curriculumsTable)
       .values({
         id: curriculumId,
@@ -74,18 +74,18 @@ export const createCurriculumMutation = (database: Database) => {
       );
 
       const chunks = chunk(relationshipInserts, 15);
-      const insertRelationsStmts = map(chunks, (itemChunk) => {
+      const insertRelationsStatements = map(chunks, (itemChunk) => {
         return database.insert(curriculumLearningPathsTable).values(itemChunk);
       });
 
       const [[insertedCurriculum]] = await database.batch([
-        insertCurriculumStmt,
-        ...insertRelationsStmts
+        insertCurriculumStatement,
+        ...insertRelationsStatements
       ]);
 
       inserted = insertedCurriculum;
     } else {
-      const [insertResults] = await insertCurriculumStmt;
+      const [insertResults] = await insertCurriculumStatement;
       inserted = insertResults;
     }
 

@@ -3,7 +3,7 @@ import isNil from "lodash/isNil.js";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
-import "./index.css";
+import "./style.css";
 import "@radix-ui/themes/styles.css";
 
 import { routeTree } from "./routeTree.gen";

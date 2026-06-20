@@ -22,7 +22,7 @@ vi.mock("./resolvers.ts", () => {
 import { createSchema } from "./schema.ts";
 
 describe("createSchema", () => {
-  const createResolversReturn = {
+  const resolversMockReturn = {
     Mutation: {
       cycleCourseTrackingStatus: vi.fn()
     },
@@ -41,7 +41,7 @@ describe("createSchema", () => {
       marker: "database"
     };
     drizzleMock.mockReturnValue(database);
-    createResolversMock.mockReturnValue(createResolversReturn);
+    createResolversMock.mockReturnValue(resolversMockReturn);
 
     // @ts-expect-error minimal binding test double for this unit test
     const schema = createSchema({});
@@ -67,7 +67,7 @@ describe("createSchema", () => {
       marker: "database"
     };
     drizzleMock.mockReturnValue(database);
-    createResolversMock.mockReturnValue(createResolversReturn);
+    createResolversMock.mockReturnValue(resolversMockReturn);
 
     // @ts-expect-error minimal binding test double for this unit test
     createSchema(databaseBinding);

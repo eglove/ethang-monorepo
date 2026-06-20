@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
-    "@ethang/eslint-config": "^25.22.0",
+    "@ethang/eslint-config": "^25.22.1",
     "@faker-js/faker": "^10.5.0",
     "@playwright/test": "^1.61.0",
     "@portabletext/types": "^4.0.2",
@@ -47,8 +47,8 @@
     "test": "pnpm test:vitest",
     "test:playwright": "playwright test",
     "test:vitest": "vitest run --coverage",
-    "tw": "pnpx @tailwindcss/cli -i ./src/index.css -o ./public/index.css",
-    "tw:watch": "pnpx @tailwindcss/cli -i ./src/index.css -o ./public/index.css --watch"
+    "tw": "pnpx @tailwindcss/cli -i ./src/style.css -o ./public/index.css",
+    "tw:watch": "pnpx @tailwindcss/cli -i ./src/style.css -o ./public/index.css --watch"
   },
   "type": "module",
   "version": "1.0.0"

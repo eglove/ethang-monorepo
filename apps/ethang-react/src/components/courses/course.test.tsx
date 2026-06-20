@@ -3,8 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Course, courseQueryOptions } from "./course.tsx";
 
-let mockCourseData: unknown = null;
-let mockIsPending = false;
+const mockCourseStore = {
+  data: null as unknown,
+  isPending: false
+};
 const introductionToTesting = "Introduction to Testing";
 const testingUrl = "https://example.com/testing";
 
@@ -15,8 +17,8 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
     ...actual,
     useQuery: () => {
       return {
-        data: mockCourseData,
-        isPending: mockIsPending
+        data: mockCourseStore.data,
+        isPending: mockCourseStore.isPending
       };
     }
   };
@@ -24,8 +26,8 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
 
 describe("Course", () => {
   beforeEach(() => {
-    mockCourseData = null;
-    mockIsPending = false;
+    mockCourseStore.data = null;
+    mockCourseStore.isPending = false;
   });
 
   it("executes the query function", async () => {
@@ -49,7 +51,7 @@ describe("Course", () => {
   });
 
   it("renders loader skeleton when query is pending", () => {
-    mockIsPending = true;
+    mockCourseStore.isPending = true;
     render(
       <ul>
         <Course courseId="1" courseIndex={1} />
@@ -62,7 +64,7 @@ describe("Course", () => {
   });
 
   it("renders course details when data is loaded", () => {
-    mockCourseData = {
+    mockCourseStore.data = {
       course: {
         author: "John Doe",
         id: "1",

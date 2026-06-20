@@ -10,9 +10,11 @@ export const caesarCipherEncrypt = (string: string, key: number) => {
 
     result.push(
       String(
-        characterIndex >= alphabet.length
-          ? alphabet[characterIndex % alphabet.length]
-          : alphabet[characterIndex]
+        alphabet[
+          characterIndex >= alphabet.length
+            ? characterIndex % alphabet.length
+            : characterIndex
+        ]
       )
     );
   }

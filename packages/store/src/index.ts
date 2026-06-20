@@ -145,7 +145,7 @@ export abstract class BaseStore<State extends object> {
   }
 
   public async waitFor(
-    predicate: (state: State) => boolean,
+    isTrue: (state: State) => boolean,
     signal?: AbortSignal
   ): Promise<WaitForResult<State>> {
     if (this._destroyed) {
@@ -157,7 +157,7 @@ export abstract class BaseStore<State extends object> {
     }
 
     const immediateResult = attempt(() => {
-      return predicate(this._state);
+      return isTrue(this._state);
     });
     if (isError(immediateResult)) {
       return { error: immediateResult, ok: false };
@@ -167,7 +167,7 @@ export abstract class BaseStore<State extends object> {
       return { ok: true, value: this._state };
     }
 
-    return this.waitForAsync(predicate, signal);
+    return this.waitForAsync(isTrue, signal);
   }
 
   protected onFirstSubscriber?(): void;
@@ -285,6 +285,7 @@ export abstract class BaseStore<State extends object> {
         break;
       }
 
+      // eslint-disable-next-line unicorn/no-array-front-mutation
       const entry = this._patchQueue.shift();
       if (!isNil(entry)) {
         const queuedPatches = this.applyQueuedUpdate(entry);
@@ -296,7 +297,7 @@ export abstract class BaseStore<State extends object> {
   }
 
   private async waitForAsync(
-    predicate: (state: State) => boolean,
+    isTrue: (state: State) => boolean,
     signal?: AbortSignal
   ): Promise<WaitForResult<State>> {
     return new Promise((resolve) => {
@@ -326,7 +327,7 @@ export abstract class BaseStore<State extends object> {
 
       reference.unsubscribe = this.subscribe((subscriberState) => {
         const result = attempt(() => {
-          return predicate(subscriberState);
+          return isTrue(subscriberState);
         });
         if (isError(result)) {
           cleanup();

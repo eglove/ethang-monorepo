@@ -68,17 +68,17 @@ export const missingNumberBitwise = (nums: number[]) => {
 
   const solution: [number, number] = [0, 0];
 
-  const setBit = solutionXor & -solutionXor;
+  const bitToCheck = solutionXor & -solutionXor;
 
   for (let index = 0; index < nums.length + 3; index += 1) {
-    if (0 === (index & setBit)) {
+    if (0 === (index & bitToCheck)) {
       solution[0] ^= index;
     } else {
       solution[1] ^= index;
     }
 
     if (index < nums.length) {
-      if (0 === (get(nums, [index]) & setBit)) {
+      if (0 === (get(nums, [index]) & bitToCheck)) {
         solution[0] ^= get(nums, [index]);
       } else {
         solution[1] ^= get(nums, [index]);

@@ -111,7 +111,7 @@ describe("subscriptionsQuery - default pagination", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(2);
+    expect(result.edges).toHaveLength(2);
     expect(result.pageInfo.hasNextPage).toBe(false);
     expect(result.edges[0]?.cursor).toBe(SUB_ID_1);
     expect(result.edges[0]?.node.title).toBe(FEED_NAME_1);
@@ -162,7 +162,7 @@ describe("subscriptionsQuery - default pagination", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(2);
+    expect(result.edges).toHaveLength(2);
     expect(result.pageInfo.hasNextPage).toBe(true);
     expect(result.edges[0]?.cursor).toBe(SUB_ID_1);
     expect(result.pageInfo.endCursor).toBe(SUB_ID_2);
@@ -245,7 +245,7 @@ describe("subscriptionsQuery - error handling", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(0);
+    expect(result.edges).toHaveLength(0);
     expect(result.pageInfo.hasNextPage).toBe(false);
     expect(result.pageInfo.startCursor).toBeNull();
     expect(result.pageInfo.endCursor).toBeNull();
@@ -290,7 +290,7 @@ describe("subscriptionsQuery - error handling", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(2);
+    expect(result.edges).toHaveLength(2);
     expect(result.edges[0]?.cursor).toBe("");
     expect(result.edges[1]?.cursor).toBe("");
   });
@@ -338,7 +338,7 @@ describe("subscriptionsQuery - sorting by TITLE", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(2);
+    expect(result.edges).toHaveLength(2);
     expect(decodeTestCursor(result.edges[0]?.cursor ?? "")).toEqual([
       FEED_NAME_A,
       SUB_ID_1
@@ -390,7 +390,7 @@ describe("subscriptionsQuery - sorting by TITLE", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(2);
+    expect(result.edges).toHaveLength(2);
     expect(decodeTestCursor(result.edges[0]?.cursor ?? "")).toEqual([
       FEED_NAME_B,
       SUB_ID_1
@@ -427,7 +427,7 @@ describe("subscriptionsQuery - sorting by TITLE", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
     expect(decodeTestCursor(result.edges[0]?.cursor ?? "")).toEqual(["", ""]);
   });
 
@@ -462,7 +462,7 @@ describe("subscriptionsQuery - sorting by TITLE", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
     expect(decodeTestCursor(result.edges[0]?.cursor ?? "")).toEqual([
       FEED_NAME_A,
       SUB_ID_1
@@ -510,7 +510,7 @@ describe("subscriptionsQuery - sorting by TITLE", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
     expect(decodeTestCursor(result.edges[0]?.cursor ?? "")).toEqual([
       FEED_NAME_A,
       SUB_ID_1
@@ -565,7 +565,7 @@ describe("subscriptionsQuery - sorting by PUBLISHED_AT", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(2);
+    expect(result.edges).toHaveLength(2);
     expect(decodeTestCursor(result.edges[0]?.cursor ?? "")).toEqual([
       publishedAt1,
       SUB_ID_1
@@ -608,7 +608,7 @@ describe("subscriptionsQuery - sorting by PUBLISHED_AT", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
     expect(decodeTestCursor(result.edges[0]?.cursor ?? "")).toEqual([
       publishedAt2,
       SUB_ID_1
@@ -664,7 +664,7 @@ describe("subscriptionsQuery - sorting by PUBLISHED_AT", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(2);
+    expect(result.edges).toHaveLength(2);
     expect(decodeTestCursor(result.edges[0]?.cursor ?? "")).toEqual([
       publishedAt2,
       SUB_ID_1
@@ -701,7 +701,7 @@ describe("subscriptionsQuery - sorting by PUBLISHED_AT", () => {
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
     expect(decodeTestCursor(result.edges[0]?.cursor ?? "")).toEqual(["", ""]);
   });
 });
@@ -738,7 +738,7 @@ describe("subscriptionsQuery - environment fallbacks and invalid inputs", () => 
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
   });
 
   it("should use native Uint8Array base64 methods if available", async () => {
@@ -795,7 +795,7 @@ describe("subscriptionsQuery - environment fallbacks and invalid inputs", () => 
         mockUserContext
       );
 
-      expect(result.edges.length).toBe(1);
+      expect(result.edges).toHaveLength(1);
     } finally {
       if (undefined === originalToBase64) {
         delete (Uint8Array.prototype as any).toBase64;
@@ -852,6 +852,6 @@ describe("subscriptionsQuery - environment fallbacks and invalid inputs", () => 
       mockUserContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
   });
 });

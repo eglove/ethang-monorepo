@@ -18,6 +18,7 @@ export class Tree<T> {
     let index = 1;
 
     while (index < values.length) {
+      // eslint-disable-next-line unicorn/no-array-front-mutation
       const current = queue.shift();
 
       if (isNil(current)) {

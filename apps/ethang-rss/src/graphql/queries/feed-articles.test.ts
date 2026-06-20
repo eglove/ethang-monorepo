@@ -37,7 +37,7 @@ describe("feedArticlesQuery", () => {
       mockContext
     );
 
-    expect(result.edges.length).toBe(2);
+    expect(result.edges).toHaveLength(2);
     expect(result.pageInfo.hasNextPage).toBe(false);
     expect(result.edges[0]?.node.title).toBe("Article 1");
   });
@@ -68,7 +68,7 @@ describe("feedArticlesQuery", () => {
       mockContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
     expect(mockDatabase.select).toHaveBeenCalledTimes(2);
   });
 
@@ -98,7 +98,7 @@ describe("feedArticlesQuery", () => {
       mockContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
     expect(mockDatabase.select).toHaveBeenCalledTimes(2);
   });
 
@@ -126,7 +126,7 @@ describe("feedArticlesQuery", () => {
       mockContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
     expect(result.pageInfo.hasNextPage).toBe(true);
     expect(result.edges[0]?.node.id).toBe("2");
   });

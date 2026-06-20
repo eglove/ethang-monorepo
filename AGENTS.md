@@ -13,7 +13,7 @@ This document outlines the global rules, development principles, and tool-usage 
 > All tasks on this repository should follow the [ddd](file:///C:/Users/glove/projects/ethang-monorepo/.agents/skills/ddd/SKILL.md) principles.
 
 > [!IMPORTANT]
-> ESLint should **never** be directly run or fixed manually by an agent. All linting tasks must be routed exclusively through the `/lint` skill.
+> ESLint should **never** be directly run or fixed manually by an agent. All linting tasks must be routed exclusively through the [lint](file:///C:/Users/glove/projects/ethang-monorepo/.agents/skills/lint/SKILL.md) skill.
 
 ---
 

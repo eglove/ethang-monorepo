@@ -35,13 +35,13 @@ describe("resolvers", () => {
         }
       };
 
-      const result = await resolvers.Article.isRead(
+      const isResult = await resolvers.Article.isRead(
         { id: "article-1" },
         undefined,
         mockContext as any
       );
 
-      expect(result).toBe(true);
+      expect(isResult).toBe(true);
       expect(mockContext.userArticleStateLoader.load).toHaveBeenCalledWith(
         "article-1"
       );
@@ -54,13 +54,13 @@ describe("resolvers", () => {
         }
       };
 
-      const result = await resolvers.Article.isRead(
+      const isResult = await resolvers.Article.isRead(
         { id: "article-1" },
         undefined,
         mockContext as any
       );
 
-      expect(result).toBe(false);
+      expect(isResult).toBe(false);
     });
 
     it("should resolve feed using feedLoader", async () => {
@@ -120,7 +120,7 @@ describe("resolvers", () => {
         mockContext as any
       );
 
-      expect(result.edges.length).toBe(1);
+      expect(result.edges).toHaveLength(1);
       expect(result.edges[0]?.node).toEqual({
         __typename: "Article",
         ...mockArticle

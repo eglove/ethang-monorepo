@@ -26,7 +26,7 @@ import {
 A rendered markdown file must open with a well-formed frontmatter block:
 `---`, `key: value` lines only, closing `---`.
 */
-export const validateFrontmatterBlock = (markdown: string): boolean => {
+export const isValidFrontmatterBlock = (markdown: string): boolean => {
   if (!startsWith(markdown, "---\n")) {
     return false;
   }
@@ -91,16 +91,16 @@ export const findDuplicateRuleFilenames = (
 export const findUnresolvedTokens = (directory: string): string[] => {
   const violations: string[] = [];
 
-  for (const file of filter(
-    readdirSync(directory, { recursive: true }),
-    isString
-  )) {
-    if (endsWith(file, ".md")) {
-      const content = readFileSync(path.join(directory, file), "utf8");
+  const files = filter(readdirSync(directory, { recursive: true }), isString);
+  const mdFiles = filter(files, (item) => {
+    return endsWith(item, ".md");
+  });
 
-      if (includes(content, "{{sections}}")) {
-        violations.push(path.join(directory, file));
-      }
+  for (const file of mdFiles) {
+    const content = readFileSync(path.join(directory, file), "utf8");
+
+    if (includes(content, "{{sections}}")) {
+      violations.push(path.join(directory, file));
     }
   }
 

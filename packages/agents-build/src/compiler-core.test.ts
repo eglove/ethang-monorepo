@@ -382,10 +382,9 @@ describe("validation failures and warnings", () => {
       rulesDir: rulesDirectory
     };
 
-    const originValidateFrontmatter =
-      validationHelpers.validateFrontmatterBlock;
+    const originValidateFrontmatter = validationHelpers.isValidFrontmatterBlock;
 
-    vi.spyOn(validationHelpers, "validateFrontmatterBlock").mockImplementation(
+    vi.spyOn(validationHelpers, "isValidFrontmatterBlock").mockImplementation(
       (markdown) => {
         if (includes(markdown, "Jira")) {
           return false;
@@ -576,7 +575,7 @@ describe("skills compilation and validation", () => {
       skillsDir: skillsDirectory
     };
 
-    vi.spyOn(validationHelpers, "validateFrontmatterBlock").mockReturnValue(
+    vi.spyOn(validationHelpers, "isValidFrontmatterBlock").mockReturnValue(
       false
     );
 
@@ -587,8 +586,7 @@ describe("skills compilation and validation", () => {
       thrownError = error;
     }
 
-    expect(thrownError).toBeDefined();
-    expect(thrownError instanceof CompileError).toBe(true);
+    expect(thrownError).toBeInstanceOf(CompileError);
     if (thrownError instanceof CompileError) {
       expect(thrownError.failures).toContain(
         `skills/${BAD_FRONTMATTER_SKILL}/SKILL.md: malformed frontmatter block`

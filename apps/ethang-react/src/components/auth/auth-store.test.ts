@@ -62,6 +62,7 @@ describe("AuthStore", () => {
     await signInPromise;
 
     expect(fetchSpy).toHaveBeenCalledWith("https://auth.ethang.dev/sign-in", {
+      // eslint-disable-next-line sonar/no-hardcoded-passwords
       body: JSON.stringify({ email: TEST_EMAIL, password: "password123" }),
       headers: { "Content-Type": "application/json" },
       method: "POST"

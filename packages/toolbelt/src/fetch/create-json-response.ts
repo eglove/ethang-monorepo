@@ -58,10 +58,13 @@ const getHeaderEntries = (input: HeadersInit): [string, unknown][] => {
     }
   } else if (isArray(input)) {
     for (const entry of input) {
-      if (isArray(entry)) {
-        const [key, value] = entry as [string, unknown];
-        entries.push([key, value]);
+      if (!isArray(entry)) {
+        // eslint-disable-next-line no-continue
+        continue;
       }
+
+      const [key, value] = entry as [string, unknown];
+      entries.push([key, value]);
     }
   } else {
     forEach(input, (value, key) => {

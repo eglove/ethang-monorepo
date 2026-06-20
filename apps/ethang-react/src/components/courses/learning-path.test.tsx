@@ -3,9 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LearningPath, learningPathQueryOptions } from "./learning-path.tsx";
 
-let mockLearningPathData: unknown = null;
-let mockLearningPathPending = false;
-let mockCourseDataMap: Record<string, unknown> = {};
+const mockLearningPathStore = {
+  courseDataMap: {} as Record<string, unknown>,
+  data: null as unknown,
+  isPending: false
+};
 
 const softwareConstructionPath = "Software Construction Path";
 const consturctionUrl = "https://example.com/construction";
@@ -19,13 +21,13 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
       const [key, courseId = ""] = options.queryKey;
       if ("learningPath" === key) {
         return {
-          data: mockLearningPathData,
-          isPending: mockLearningPathPending
+          data: mockLearningPathStore.data,
+          isPending: mockLearningPathStore.isPending
         };
       }
 
       return {
-        data: mockCourseDataMap[courseId] ?? null,
+        data: mockLearningPathStore.courseDataMap[courseId] ?? null,
         isPending: false
       };
     }
@@ -34,9 +36,9 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
 
 describe("LearningPath", () => {
   beforeEach(() => {
-    mockLearningPathData = null;
-    mockLearningPathPending = false;
-    mockCourseDataMap = {};
+    mockLearningPathStore.data = null;
+    mockLearningPathStore.isPending = false;
+    mockLearningPathStore.courseDataMap = {};
   });
 
   it("executes the query function", async () => {
@@ -61,7 +63,7 @@ describe("LearningPath", () => {
   });
 
   it("renders loaders when query is pending", () => {
-    mockLearningPathPending = true;
+    mockLearningPathStore.isPending = true;
     render(<LearningPath courseOffset={0} learningPathId="path-1" />);
 
     const heading = screen.queryByRole("heading");
@@ -69,7 +71,7 @@ describe("LearningPath", () => {
   });
 
   it("renders learning path metadata and list of courses", () => {
-    mockLearningPathData = {
+    mockLearningPathStore.data = {
       learningPath: {
         courses: [{ id: "course-1" }, { id: "course-2" }],
         id: "path-1",
@@ -79,7 +81,7 @@ describe("LearningPath", () => {
       }
     };
 
-    mockCourseDataMap["course-1"] = {
+    mockLearningPathStore.courseDataMap["course-1"] = {
       course: {
         author: "Author One",
         id: "course-1",
@@ -88,7 +90,7 @@ describe("LearningPath", () => {
       }
     };
 
-    mockCourseDataMap["course-2"] = {
+    mockLearningPathStore.courseDataMap["course-2"] = {
       course: {
         author: "Author Two",
         id: "course-2",

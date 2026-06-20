@@ -26,7 +26,7 @@ describe("depthLimit", () => {
     `);
 
     const errors = validate(schema, query, [depthLimit(2)]);
-    expect(errors.length).toBe(0);
+    expect(errors).toHaveLength(0);
   });
 
   it("should report an error if the query exceeds the depth limit", () => {
@@ -41,7 +41,7 @@ describe("depthLimit", () => {
     `);
 
     const errors = validate(schema, query, [depthLimit(1)]);
-    expect(errors.length).toBe(1);
+    expect(errors).toHaveLength(1);
     expect(errors[0]?.message).toBe(
       "Query depth of 2 exceeds maximum depth of 1"
     );
@@ -61,7 +61,7 @@ describe("depthLimit", () => {
     `);
 
     const errors = validate(schema, query, [depthLimit(2)]);
-    expect(errors.length).toBe(0);
+    expect(errors).toHaveLength(0);
   });
 
   it("should report error if fragment spread exceeds limit", () => {
@@ -82,7 +82,7 @@ describe("depthLimit", () => {
     `);
 
     const errors = validate(schema, query, [depthLimit(2)]);
-    expect(errors.length).toBe(1);
+    expect(errors).toHaveLength(1);
     expect(errors[0]?.message).toBe(
       "Query depth of 3 exceeds maximum depth of 2"
     );
@@ -99,7 +99,7 @@ describe("depthLimit", () => {
 
     // The validation rule itself should not crash, it will just not find the fragment and treat it at current depth
     const errors = validate(schema, query, [depthLimit(2)]);
-    expect(errors.length).toBe(0);
+    expect(errors).toHaveLength(0);
   });
 
   it("should support inline fragments", () => {
@@ -118,7 +118,7 @@ describe("depthLimit", () => {
     `);
 
     const errors = validate(schema, query, [depthLimit(2)]);
-    expect(errors.length).toBe(1);
+    expect(errors).toHaveLength(1);
     expect(errors[0]?.message).toBe(
       "Query depth of 3 exceeds maximum depth of 2"
     );
@@ -136,6 +136,6 @@ describe("depthLimit", () => {
     `);
 
     const errors = validate(schema, query, [depthLimit(2)]);
-    expect(errors.length).toBe(0);
+    expect(errors).toHaveLength(0);
   });
 });

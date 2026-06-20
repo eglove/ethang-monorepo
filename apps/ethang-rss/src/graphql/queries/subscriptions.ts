@@ -258,40 +258,37 @@ export const subscriptionsQuery = (database: Database) => {
       title?: string;
     }[] = [];
     let hasNextPage = false;
+    let subscriptions: typeof items;
 
     if (isNil(sortBy)) {
-      const subscriptions = await getDefaultSubscriptions(
+      subscriptions = await getDefaultSubscriptions(
         database,
         context.user.sub,
         after,
         limit
       );
-      hasNextPage = subscriptions.length > first;
-      items = subscriptions.slice(0, first);
     } else {
       const { direction, field } = sortBy;
-      if ("TITLE" === field) {
-        const subscriptions = await getTitleSortedSubscriptions(
-          database,
-          context.user.sub,
-          after,
-          direction,
-          limit
-        );
-        hasNextPage = subscriptions.length > first;
-        items = subscriptions.slice(0, first);
-      } else {
-        const subscriptions = await getPublishedAtSortedSubscriptions(
-          database,
-          context.user.sub,
-          after,
-          direction,
-          limit
-        );
-        hasNextPage = subscriptions.length > first;
-        items = subscriptions.slice(0, first);
-      }
+      subscriptions =
+        "TITLE" === field
+          ? await getTitleSortedSubscriptions(
+              database,
+              context.user.sub,
+              after,
+              direction,
+              limit
+            )
+          : await getPublishedAtSortedSubscriptions(
+              database,
+              context.user.sub,
+              after,
+              direction,
+              limit
+            );
     }
+
+    hasNextPage = subscriptions.length > first;
+    items = subscriptions.slice(0, first);
 
     const feeds = await context.feedLoader.loadMany(
       map(items, (result) => {

@@ -5,7 +5,7 @@
     "current node"
   ],
   "devDependencies": {
-    "@ethang/eslint-config": "^25.22.0",
+    "@ethang/eslint-config": "^25.22.1",
     "@graphql-codegen/cli": "^7.1.3",
     "@graphql-codegen/client-preset": "^6.0.1",
     "@graphql-codegen/typescript": "^6.0.2",

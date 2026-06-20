@@ -5,8 +5,8 @@
 > [!CAUTION]
 > Prettier is already included for styling!
 
-* 950 rules.
-* 290 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
+* 949 rules.
+* 289 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
 * 244 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
 * 143 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
 * 110 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)

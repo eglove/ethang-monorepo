@@ -5,7 +5,6 @@ import { mockState } from "./compile-mock-state.ts";
 import { CompileError } from "./compiler-core.ts";
 
 vi.mock("./compiler-core.ts", async (importOriginal) => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const original = await importOriginal<typeof import("./compiler-core.ts")>();
   return {
     ...original,

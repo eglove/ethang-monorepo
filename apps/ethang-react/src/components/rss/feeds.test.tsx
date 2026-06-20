@@ -4,10 +4,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Feeds } from "./feeds.tsx";
 import { rssStore } from "./rss-store.ts";
 
-let mockQueryData: unknown = null;
-let mockQueryPending = false;
-let mockIsFetchingNextPage = false;
-let mockSelectedFeedId: null | string = null;
+const mockFeedsStore = {
+  isFetchingNextPage: false,
+  isQueryPending: false,
+  queryData: null as unknown,
+  selectedFeedId: null as null | string
+};
 const mockFetchNextPage = vi.fn().mockResolvedValue({});
 
 vi.mock("@tanstack/react-query", async (importOriginal) => {
@@ -17,18 +19,18 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
     ...actual,
     useInfiniteQuery: () => {
       let hasNextPage = false;
-      if (null !== mockQueryData) {
-        const { pages } = mockQueryData as {
+      if (null !== mockFeedsStore.queryData) {
+        const { pages } = mockFeedsStore.queryData as {
           pages: { subscriptions: { pageInfo: { hasNextPage: boolean } } }[];
         };
         hasNextPage = pages[0]?.subscriptions.pageInfo.hasNextPage ?? false;
       }
       return {
-        data: mockQueryData,
+        data: mockFeedsStore.queryData,
         fetchNextPage: mockFetchNextPage,
         hasNextPage,
-        isFetchingNextPage: mockIsFetchingNextPage,
-        isPending: mockQueryPending
+        isFetchingNextPage: mockFeedsStore.isFetchingNextPage,
+        isPending: mockFeedsStore.isQueryPending
       };
     }
   };
@@ -40,7 +42,7 @@ vi.mock("@ethang/store/use-store", () => {
       _store: T,
       selector: (state: { selectedFeedId: null | string }) => U
     ): U => {
-      return selector({ selectedFeedId: mockSelectedFeedId });
+      return selector({ selectedFeedId: mockFeedsStore.selectedFeedId });
     }
   };
 });
@@ -58,23 +60,23 @@ const BETA_FEED_TITLE = "Beta Feed";
 
 describe("Feeds", () => {
   beforeEach(() => {
-    mockQueryData = null;
-    mockQueryPending = false;
-    mockIsFetchingNextPage = false;
-    mockSelectedFeedId = null;
+    mockFeedsStore.queryData = null;
+    mockFeedsStore.isQueryPending = false;
+    mockFeedsStore.isFetchingNextPage = false;
+    mockFeedsStore.selectedFeedId = null;
     mockFetchNextPage.mockClear();
     vi.mocked(rssStore.setSelectedFeedId).mockClear();
   });
 
   it("renders a loading skeleton when loading and data is nil", () => {
-    mockQueryPending = true;
+    mockFeedsStore.isQueryPending = true;
     render(<Feeds />);
 
     expect(screen.getByTestId("sidebar-skeleton")).toBeDefined();
   });
 
   it("renders sorted feeds when data is present", () => {
-    mockQueryData = {
+    mockFeedsStore.queryData = {
       pages: [
         {
           subscriptions: {
@@ -98,7 +100,7 @@ describe("Feeds", () => {
   });
 
   it("calls setSelectedFeedId(null) when All Feeds is clicked", () => {
-    mockQueryData = {
+    mockFeedsStore.queryData = {
       pages: [
         {
           subscriptions: {
@@ -108,7 +110,7 @@ describe("Feeds", () => {
         }
       ]
     };
-    mockSelectedFeedId = "feed-a";
+    mockFeedsStore.selectedFeedId = "feed-a";
 
     render(<Feeds />);
 
@@ -119,7 +121,7 @@ describe("Feeds", () => {
   });
 
   it("calls setSelectedFeedId(feed.id) when a feed button is clicked", () => {
-    mockQueryData = {
+    mockFeedsStore.queryData = {
       pages: [
         {
           subscriptions: {
@@ -139,7 +141,7 @@ describe("Feeds", () => {
   });
 
   it("renders a Load More button when hasNextPage is true", () => {
-    mockQueryData = {
+    mockFeedsStore.queryData = {
       pages: [
         {
           subscriptions: {
@@ -156,7 +158,7 @@ describe("Feeds", () => {
   });
 
   it("calls fetchMore when Load More is clicked", () => {
-    mockQueryData = {
+    mockFeedsStore.queryData = {
       pages: [
         {
           subscriptions: {

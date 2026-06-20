@@ -22,7 +22,7 @@ import {
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
-  validateFrontmatterBlock
+  isValidFrontmatterBlock
 } from "./validate.ts";
 
 export type CompilerConfig = {
@@ -59,7 +59,7 @@ export const validationHelpers = {
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
-  validateFrontmatterBlock
+  isValidFrontmatterBlock
 };
 
 const getDirectoryFiles = (directory: string): string[] | undefined => {
@@ -184,7 +184,7 @@ const processRules = (
       );
     }
 
-    if (!validationHelpers.validateFrontmatterBlock(markdown)) {
+    if (!validationHelpers.isValidFrontmatterBlock(markdown)) {
       failures.push(`rules/${rule.filename}.md: malformed frontmatter block`);
     }
 
@@ -204,7 +204,7 @@ const processSkills = (
   for (const skill of skills) {
     const markdown = skillMarkdown(skill);
 
-    if (!validationHelpers.validateFrontmatterBlock(markdown)) {
+    if (!validationHelpers.isValidFrontmatterBlock(markdown)) {
       failures.push(
         `skills/${skill.name}/SKILL.md: malformed frontmatter block`
       );
@@ -244,7 +244,9 @@ const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   }
 
   for (const directory of directoriesToScan) {
-    if (fsProxy.existsSync(directory)) {
+    const isExists = fsProxy.existsSync(directory);
+
+    if (isExists) {
       for (const token of validationHelpers.findUnresolvedTokens(directory)) {
         failures.push(`unresolved {{sections}} token in ${token}`);
       }

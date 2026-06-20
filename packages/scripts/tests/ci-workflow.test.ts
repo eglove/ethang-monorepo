@@ -25,7 +25,7 @@ const getCiYamlPath = (): string => {
 
 const getJobNames = (lines: string[]): string[] => {
   const result: string[] = [];
-  let inJobs = false;
+  let isInJobs = false;
 
   for (const rawLine of lines) {
     const trimmed = trim(rawLine);
@@ -34,10 +34,10 @@ const getJobNames = (lines: string[]): string[] => {
 
     if (!isEmptyOrComment) {
       if ("jobs:" === trimmed) {
-        inJobs = true;
-      } else if (inJobs && 0 === indent) {
-        inJobs = false;
-      } else if (inJobs && 2 === indent && endsWith(trimmed, ":")) {
+        isInJobs = true;
+      } else if (isInJobs && 0 === indent) {
+        isInJobs = false;
+      } else if (isInJobs && 2 === indent && endsWith(trimmed, ":")) {
         result.push(trimmed.slice(0, -1));
       } else {
         // do nothing
@@ -49,7 +49,7 @@ const getJobNames = (lines: string[]): string[] => {
 };
 
 const findJobStartLineIndex = (lines: string[], jobName: string): number => {
-  let inJobs = false;
+  let isInJobs = false;
   let index = 0;
 
   for (const rawLine of lines) {
@@ -59,10 +59,10 @@ const findJobStartLineIndex = (lines: string[], jobName: string): number => {
 
     if (!isEmptyOrComment) {
       if ("jobs:" === trimmed) {
-        inJobs = true;
-      } else if (inJobs && 0 === indent) {
-        inJobs = false;
-      } else if (inJobs && 2 === indent && trimmed === `${jobName}:`) {
+        isInJobs = true;
+      } else if (isInJobs && 0 === indent) {
+        isInJobs = false;
+      } else if (isInJobs && 2 === indent && trimmed === `${jobName}:`) {
         return index;
       } else {
         // do nothing
@@ -137,18 +137,18 @@ const parseStep = (stepLines: string[]): StepInfo => {
 const getJobSteps = (jobLines: string[]): StepInfo[] => {
   const steps: StepInfo[] = [];
   let currentLines: string[] = [];
-  let seenFirstStep = false;
+  let isSeenFirstStep = false;
 
   for (const rawLine of jobLines) {
     const trimmed = trim(rawLine);
     if (startsWith(trimmed, "-")) {
-      seenFirstStep = true;
+      isSeenFirstStep = true;
       if (0 < currentLines.length) {
         steps.push(parseStep(currentLines));
         currentLines = [];
       }
     }
-    if (seenFirstStep) {
+    if (isSeenFirstStep) {
       currentLines.push(rawLine);
     }
   }
@@ -200,7 +200,7 @@ const checkNoSecretsInEnvironment = (
   lines: string[],
   startIndent: number
 ): void => {
-  let inEnvironment = false;
+  let isInEnvironment = false;
   let environmentIndent = -1;
 
   for (const rawLine of lines) {
@@ -208,11 +208,11 @@ const checkNoSecretsInEnvironment = (
     const indent = rawLine.length - rawLine.trimStart().length;
 
     if ("env:" === trimmed && indent === startIndent) {
-      inEnvironment = true;
+      isInEnvironment = true;
       environmentIndent = indent;
-    } else if (inEnvironment) {
+    } else if (isInEnvironment) {
       if (indent <= environmentIndent) {
-        inEnvironment = false;
+        isInEnvironment = false;
       } else {
         expect(includes(trimmed, "SONAR_TOKEN")).toBe(false);
         expect(includes(trimmed, "GITHUB_TOKEN")).toBe(false);
@@ -232,18 +232,18 @@ describe("CI Workflow Validation", () => {
 
   it("should have global permissions locked to contents: read", () => {
     let hasContentsRead = false;
-    let inPermissions = false;
+    let isInPermissions = false;
 
     for (const rawLine of yamlLines) {
       const line = trim(rawLine);
       const indent = rawLine.length - rawLine.trimStart().length;
 
       if ("permissions:" === line) {
-        inPermissions = true;
-      } else if (inPermissions && 0 === indent && "" !== line) {
-        inPermissions = false;
+        isInPermissions = true;
+      } else if (isInPermissions && 0 === indent && "" !== line) {
+        isInPermissions = false;
       } else if (
-        inPermissions &&
+        isInPermissions &&
         startsWith(line, "contents:") &&
         includes(line, "read")
       ) {
@@ -263,32 +263,32 @@ describe("CI Workflow Validation", () => {
     expect(jobNames).toContain("test");
     expect(jobNames).toContain("codeql");
     expect(jobNames).toContain("megalinter");
-    expect(jobNames.length).toBe(5);
+    expect(jobNames).toHaveLength(5);
   });
 
   it("should configure the parallel jobs correctly (runs-on, timeout-minutes)", () => {
     const targetJobs = ["lint", "build", "test"];
     for (const jobName of targetJobs) {
       const jobLines = getJobLines(yamlLines, jobName);
-      let runsOnUbuntu = false;
-      let timeout15 = false;
+      let isRunsOnUbuntu = false;
+      let isTimeout15 = false;
 
       for (const rawLine of jobLines) {
         const line = trim(rawLine);
         if (startsWith(line, "runs-on:") && includes(line, "ubuntu-latest")) {
-          runsOnUbuntu = true;
+          isRunsOnUbuntu = true;
         } else if (
           startsWith(line, "timeout-minutes:") &&
           includes(line, "15")
         ) {
-          timeout15 = true;
+          isTimeout15 = true;
         } else {
           // do nothing
         }
       }
 
-      expect(runsOnUbuntu).toBe(true);
-      expect(timeout15).toBe(true);
+      expect(isRunsOnUbuntu).toBe(true);
+      expect(isTimeout15).toBe(true);
     }
   });
 
@@ -312,7 +312,7 @@ describe("CI Workflow Validation", () => {
   it("should configure test checkout step with fetch-depth: 0", () => {
     const testLines = getJobLines(yamlLines, "test");
     const steps = getJobSteps(testLines);
-    let checkoutFetchDepthZero = false;
+    let isCheckoutFetchDepthZero = false;
 
     for (const step of steps) {
       if (
@@ -320,11 +320,11 @@ describe("CI Workflow Validation", () => {
         includes(step.uses, "actions/checkout") &&
         "0" === step.fetchDepth
       ) {
-        checkoutFetchDepthZero = true;
+        isCheckoutFetchDepthZero = true;
       }
     }
 
-    expect(checkoutFetchDepthZero).toBe(true);
+    expect(isCheckoutFetchDepthZero).toBe(true);
   });
 
   it("should pin all external action references to 40-character SHAs", () => {

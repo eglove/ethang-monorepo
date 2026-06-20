@@ -44,13 +44,17 @@ type Feed = typeof databaseSchema.feedsTable.$inferSelect;
 
 type UserItemState = typeof databaseSchema.userItemStatesTable.$inferSelect;
 
-let handler: ReturnType<
-  typeof startServerAndCreateCloudflareWorkersHandler<Env, ServerContext>
->;
+const store = {
+  handler: undefined as
+    | ReturnType<
+        typeof startServerAndCreateCloudflareWorkersHandler<Env, ServerContext>
+      >
+    | undefined
+};
 
 export default {
   async fetch(request, environment, context) {
-    if (isNil(handler)) {
+    if (isNil(store.handler)) {
       const server = new ApolloServer<ServerContext>({
         introspection: true,
         plugins: [ApolloServerPluginLandingPageLocalDefault({ footer: false })],
@@ -58,7 +62,7 @@ export default {
         validationRules: [depthLimit(10)]
       });
 
-      handler = startServerAndCreateCloudflareWorkersHandler<
+      store.handler = startServerAndCreateCloudflareWorkersHandler<
         Env,
         ServerContext
       >(
@@ -86,7 +90,8 @@ export default {
       );
     }
 
-    return handler(request, environment, context);
+    // @ts-expect-error allow context type mismatch
+    return store.handler(request, environment, context);
   },
   async scheduled(event, environment) {
     const workflowId = `fetch-feeds-${event.scheduledTime}`;

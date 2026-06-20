@@ -1,0 +1,146 @@
+import type { MarkdownBlock } from "@ethang/markdown-generator/markdown-generator.js";
+
+import { defineRule } from "../../define.ts";
+
+export const configAuditing = defineRule({
+  content: [
+    {
+      level: 1,
+      text: "Software Configuration Auditing",
+      type: "header"
+    },
+    {
+      level: 2,
+      text: "1. Domain Theory and Conceptual Foundations",
+      type: "header"
+    },
+    {
+      level: 3,
+      text: "1.1 The Software Configuration Auditing Concept and Foundations",
+      type: "header"
+    },
+    {
+      text: "Software configuration auditing represents a core quality gate and verification activity within the software engineering discipline, as detailed in the IEEE Software Engineering Body of Knowledge (SWEBOK v4) Chapter 5 (Software Configuration Management) and Chapter 10 (Software Quality). Configuration auditing is defined as the independent, systematic evaluation of software work products and processes to determine their compliance with specifications, standards, contractual agreements, and other predefined criteria. Within the broader context of software configuration management, which includes configuration identification, configuration control, and configuration status accounting, auditing serves as the definitive mechanism for validating that the physical configuration of the software corresponds to its logical requirements. By conducting these examinations, organizations establish objective, empirical proof that the software product is correct and complete before it is baselined or released. This prevents the propagation of unverified changes, configuration drift, and undocumented features, which are common sources of system failure, regression defects, and compliance violations.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.2 Auditing Process, Planning, and Execution Mechanics",
+      type: "header"
+    },
+    {
+      text: "The execution of a software configuration audit is a complex process that demands careful, structured planning. Because audits often involve multiple individuals reviewing diverse technical artifacts over a compressed timeframe, they must follow a well-defined process to be effective. The planning phase involves defining the audit scope, establishing the audit schedule, identifying the configuration items (CIs) to be audited, and formulating the evaluation criteria. Auditors use specialized tools to manage the audit workflow, map requirements to target artifacts, and track findings. The execution phase consists of gathering objective evidence, which includes analyzing source code, inspecting build scripts, running verification test suites, and interviewing project stakeholders. The final step is the generation of an audit report that documents the findings, logs any detected non-conformances, and defines the corrective actions necessary to bring the software back into compliance. This structured methodology ensures that the audit is rigorous, repeatable, and capable of providing an accurate assessment of system compliance.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.3 Roles and Responsibilities in Software Audits",
+      type: "header"
+    },
+    {
+      text: "Orchestrating a configuration audit requires the coordination of a dedicated audit team with clearly defined roles and responsibilities. The Lead Auditor is the primary coordinator, responsible for drafting the audit plan, presiding over audit meetings, resolving conflicts, and compiling the final audit report. Technical Auditors are subject matter experts who perform the hands-on inspection of technical work products, checking them for compliance with architectural designs, coding standards, and security requirements. The Software Configuration Management (SCM) team supports the audit by providing the auditors with access to the baseline registry, version control history, and change logs, ensuring that the audited artifacts are retrieved from a secure, controlled environment. The auditees, consisting of the software developers and system architects who developed the software, present the work products, explain design decisions, and provide clarifications. The operational independence of the auditors from the developers is critical to ensure that the audit is objective and free from conflict of interest.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.4 Functional Configuration Audit (FCA) Depth",
+      type: "header"
+    },
+    {
+      text: "The Functional Configuration Audit (FCA) is a formal verification activity that ensures a software configuration item (CI) performs in complete accordance with its functional and performance specifications. The primary goal of the FCA is to confirm that the software actually does what it was designed and specified to do. The inputs to this audit include the requirements specifications, system design documentation, user manuals, and the complete outputs of the Software Verification and Validation (V&V) activities. Technical auditors inspect the test plans, test cases, test scripts, automated execution logs, and coverage reports to verify that every requirement is backed by a valid, passing test. The FCA also checks that the tests were executed under the correct target environment configurations and that all detected anomalies were formally recorded and resolved. By verifying the completeness and correctness of the V&V activities, the FCA establishes that the functional characteristics of the software have been met, which is a prerequisite for baseline approval.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.5 Physical Configuration Audit (PCA) Depth",
+      type: "header"
+    },
+    {
+      text: "While the FCA focuses on functionality and performance, the Physical Configuration Audit (PCA) focuses on the physical integrity and build accuracy of the software product. The PCA is a formal examination that ensures the design and reference documentation are entirely consistent with the as-built software product. The primary objective is to verify that the software can be successfully, repeatedly, and reliably built and installed directly from the source repository. Auditors examine the physical contents of the release package, comparing it against the Version Description Document (VDD), installation manuals, and release manifests. The audit includes checking the source code files, build scripts, compiler settings, dependency configurations, database schemas, and output binaries. Technical auditors verify that the software does not contain any unauthorized modifications, orphaned code, or undocumented dependencies. A successful PCA confirms that the project's documentation is a true and complete representation of the actual software system, enabling reliable deployment and maintenance.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.6 In-Process Audits and Continuous Reviews",
+      type: "header"
+    },
+    {
+      text: "In addition to the formal FCAs and PCAs conducted at major baseline transitions, software configuration auditing includes in-process audits and continuous reviews executed throughout the software lifecycle. In-process audits are applied to evolving configuration items during the development process to investigate the status of specific elements. These audits check that the developing baseline continues to align with the governing specifications and that design modifications are not introducing architectural drift. Continuous reviews of configuration items help verify conformance to coding standards, safety rules, and project-specific guidelines. By integrating continuous configuration reviews into the automated integration pipeline, development teams can identify and correct quality issues, compliance deviations, and design inconsistencies early. This proactive auditing approach reduces the risk of discovering major non-conformances during formal audits, resulting in lower lifecycle cost and improved system stability.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.7 Governance, Standards, and Regulatory Compliance",
+      type: "header"
+    },
+    {
+      text: "Software configuration auditing is a cornerstone of corporate governance and regulatory compliance, particularly in safety-critical and highly regulated domains such as aerospace, medical devices, automotive systems, and financial services. In these sectors, configuration audits are legally mandated to verify compliance with standards such as ISO/IEC/IEEE 12207, IEEE Std 828, or DO-178C. The procedures, schedules, success criteria, and responsibilities for configuration auditing must be formally documented in the project's Quality Plan or SCM Plan. Auditors verify that the software conforms to these external standards, proving that due diligence was exercised during development. Furthermore, audits serve as a tool for intellectual property protection, ensuring that the software does not contain unauthorized third-party code or open-source components that violate licensing agreements. By establishing compliance with internal quality plans and external regulations, configuration auditing protects the organization from legal liabilities, financial penalties, and operational failures.",
+      type: "text"
+    },
+    {
+      level: 2,
+      text: "2. Compliance Checklist",
+      type: "header"
+    },
+    {
+      items: [
+        {
+          text: "Has a formal audit plan been established defining the scope, schedule, objectives, and evaluation criteria for the software configuration audit?"
+        },
+        {
+          text: "Are the roles and responsibilities of the audit team (including Lead Auditor, Technical Auditors, and auditees) clearly defined and operationally separated to ensure objectivity?"
+        },
+        {
+          text: "Were the inputs for the Functional Configuration Audit (FCA), including requirements specifications, design descriptions, and verification and validation (V&V) reports, verified for completeness?"
+        },
+        {
+          text: "Does the FCA verify that each software requirement has a corresponding test case, test execution log, and observed result matching the specified performance parameters?"
+        },
+        {
+          text: "Were all deviations, anomalies, and test failures identified during the functional audit documented, tracked, and resolved before baseline progression?"
+        },
+        {
+          text: "Does the Physical Configuration Audit (PCA) verify that the design and reference documentation match the exact as-built composition of the software deliverables?"
+        },
+        {
+          text: "Did the PCA verify that the software build is reproducible, with all source code, dependencies, build scripts, and settings explicitly documented in the release package?"
+        },
+        {
+          text: "Are version description documents, user manuals, and installation instructions checked for accuracy and consistency against the audited binary release?"
+        },
+        {
+          text: "Were in-process audits conducted at key lifecycle milestones to ensure that evolving configuration items remain consistent with specifications?"
+        },
+        {
+          text: "Is there a defined process for continuous review of configuration items to verify alignment with software development policies and quality guidelines?"
+        },
+        {
+          text: "Does the configuration audit verify that the correct versions of all configuration items are compiled and packed into the release baseline?"
+        },
+        {
+          text: "Were the configuration audit procedures and results documented in accordance with the Quality Plan or Software Configuration Management Plan?"
+        },
+        {
+          text: "Is there a formal mechanism to track, verify, and close non-conformances identified during configuration audits prior to establishing the product baseline?"
+        },
+        {
+          text: "Were the audit findings, reports, and baseline decisions formally reviewed and approved by the configuration control authority?"
+        },
+        {
+          text: "Does the audit verify compliance with relevant regulatory, contract, and governance standards applicable to the software product?"
+        },
+        {
+          text: "Are configuration auditing tools used during the planning and execution stages to facilitate tracking and reporting of audit results?"
+        },
+        {
+          text: "Were the software artifacts under audit verified to be under active version control, with a clear change history for each modification?"
+        }
+      ],
+      type: "unorderedList"
+    }
+  ] as MarkdownBlock[],
+  description:
+    "software configuration auditing, audit concept, auditor roles, FCA, PCA, in-process audits, continuous reviews, governance, regulatory compliance, quality plans",
+  filename: "configuration-auditing",
+  trigger: "model_decision"
+});

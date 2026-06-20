@@ -21,7 +21,7 @@ describe(getLocale, () => {
     it("should returns null for -", () => {
       const result = getLocale([ACCEPT_LANGUAGE], "-");
 
-      expect(result).toBe(null);
+      expect(result).toBeNull();
     });
 
     it("should return language if no country specified", () => {
@@ -33,7 +33,7 @@ describe(getLocale, () => {
     it("should return null if no language specified", () => {
       const result = getLocale([ACCEPT_LANGUAGE], "-country");
 
-      expect(result).toBe(null);
+      expect(result).toBeNull();
     });
 
     describe("falls through to the next source when accept-language source is absent", () => {

@@ -27,7 +27,7 @@ export const apartmentHunting = (blocks: Block[], requirements: string[]) => {
     return -Infinity;
   });
 
-  for (const [index] of blocks.entries()) {
+  for (const index of blocks.keys()) {
     for (const requirement of requirements) {
       let closestRequirementDistance = Infinity;
 

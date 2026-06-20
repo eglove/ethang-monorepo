@@ -103,16 +103,16 @@ describe("createCurriculumMutation", () => {
     };
 
     // 2. insert curriculumsTable statement builder
-    const mockCurriculumStmt = {};
+    const mockCurriculumStatement = {};
     const mockLPInsertResult1 = {
-      returning: vi.fn().mockReturnValue(mockCurriculumStmt),
+      returning: vi.fn().mockReturnValue(mockCurriculumStatement),
       values: vi.fn().mockReturnThis()
     };
 
     // 3. insert curriculumLearningPathsTable statement builder
-    const mockRelationsStmt = {};
+    const mockRelationsStatement = {};
     const mockLPConnectionsInsertResult = {
-      values: vi.fn().mockReturnValue(mockRelationsStmt)
+      values: vi.fn().mockReturnValue(mockRelationsStatement)
     };
 
     // 4. select curriculumLearningPathsTable (populateCurriculum)
@@ -176,8 +176,8 @@ describe("createCurriculumMutation", () => {
     expect(mockDatabase.insert).toHaveBeenCalledTimes(2);
     expect(mockDatabase.select).toHaveBeenCalledTimes(5);
     expect(mockDatabase.batch).toHaveBeenCalledWith([
-      mockCurriculumStmt,
-      mockRelationsStmt
+      mockCurriculumStatement,
+      mockRelationsStatement
     ]);
     expect(mockLPConnectionsInsertResult.values).toHaveBeenCalledWith([
       {
