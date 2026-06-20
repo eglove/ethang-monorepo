@@ -15,6 +15,9 @@ This document outlines the global rules, development principles, and tool-usage 
 > [!IMPORTANT]
 > ESLint should **never** be directly run or fixed manually by an agent. All linting tasks must be routed exclusively through the [lint](file:///C:/Users/glove/projects/ethang-monorepo/.agents/skills/lint/SKILL.md) skill.
 
+> [!IMPORTANT]
+> Always read and respect the [tool-usage-hierarchy](file:///C:/Users/glove/projects/ethang-monorepo/.agents/rules/tool-hierarchy.md) rule. It defines a strict priority order for tool selection and must be followed at all times.
+
 ---
 
 ## CRITICAL: `.agents/` is a Generated Artifact
