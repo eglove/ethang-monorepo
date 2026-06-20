@@ -3,19 +3,16 @@ import { describe, expect, it, vi } from "vitest";
 
 import { Route } from "./scrollbar-gutter.tsx";
 
-const createFileRouteConfig = (config: { component: React.ComponentType }) => {
-  return {
-    component: config.component
-  };
-};
-
-const createFileRouteMock = () => {
-  return createFileRouteConfig;
-};
-
 vi.mock("@tanstack/react-router", () => {
   return {
-    createFileRoute: createFileRouteMock
+    createFileRoute: () => {
+      // eslint-disable-next-line unicorn/consistent-function-scoping
+      return (config: { component: React.ComponentType }) => {
+        return {
+          component: config.component
+        };
+      };
+    }
   };
 });
 

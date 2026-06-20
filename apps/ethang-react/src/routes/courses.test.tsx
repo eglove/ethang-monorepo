@@ -46,22 +46,16 @@ vi.mock("../components/courses/learning-path.tsx", () => {
 });
 
 // We need a Router provider/context since Route is created with createFileRoute("/courses")
-const createFileRouteWithPath = (path: string) => {
-  return (config: { component: React.ComponentType }) => {
-    return {
-      component: config.component,
-      path
-    };
-  };
-};
-
-const createFileRouteForCourses = (path: string) => {
-  return createFileRouteWithPath(path);
-};
-
 vi.mock("@tanstack/react-router", () => {
   return {
-    createFileRoute: createFileRouteForCourses,
+    createFileRoute: (path: string) => {
+      return (config: { component: React.ComponentType }) => {
+        return {
+          component: config.component,
+          path
+        };
+      };
+    },
     Link: ({ children, to }: { children: React.ReactNode; to: string }) => {
       return <a href={to}>{children}</a>;
     }
