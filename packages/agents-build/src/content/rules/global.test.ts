@@ -35,8 +35,6 @@ describe("GLOBAL_RULES schema verification", () => {
       expect(contentString.length).toBeGreaterThan(0);
       expect(startsWith(trim(contentString), "#")).toBe(true);
 
-      // 5. Rule length must be under the limit
-      expect(contentString.length).toBeLessThanOrEqual(12_000);
     }
   );
 });

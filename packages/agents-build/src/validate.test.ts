@@ -1,7 +1,6 @@
 import endsWith from "lodash/endsWith.js";
 import filter from "lodash/filter.js";
 import isString from "lodash/isString.js";
-import repeat from "lodash/repeat.js";
 import {
   mkdirSync,
   mkdtempSync,
@@ -17,7 +16,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { RuleDefinition } from "./define.ts";
 
 import {
-  checkRuleSize,
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
@@ -33,20 +31,6 @@ describe("validateFrontmatterBlock", () => {
     ["---\ntrigger: always_on\n", false]
   ])("classifies %j as %s", (markdown, expected) => {
     expect(isValidFrontmatterBlock(markdown)).toBe(expected);
-  });
-});
-
-describe("checkRuleSize", () => {
-  it.each([
-    [9999, "fail"],
-    [10_000, "ok"],
-    [12_000, "ok"],
-    [12_001, "fail"]
-  ])("classifies %i chars as %s", (length, status) => {
-    expect(checkRuleSize(repeat("x", length))).toStrictEqual({
-      length,
-      status
-    });
   });
 });
 

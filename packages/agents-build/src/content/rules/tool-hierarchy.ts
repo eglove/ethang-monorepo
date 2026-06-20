@@ -1,9 +1,4 @@
-import {
-  generateMarkdown,
-  type MarkdownBlock
-} from "@ethang/markdown-generator/markdown-generator.js";
-import repeat from "lodash/repeat.js";
-
+import type { MarkdownBlock } from "@ethang/markdown-generator/markdown-generator.js";
 import { defineRule } from "../../define.ts";
 
 const contentBlocks: MarkdownBlock[] = [
@@ -92,22 +87,8 @@ const contentBlocks: MarkdownBlock[] = [
   }
 ];
 
-const baseMarkdown = generateMarkdown({ blocks: contentBlocks });
-const paddingSize = 10_000 - baseMarkdown.length;
-const finalBlocks = [
-  ...contentBlocks,
-  ...(0 < paddingSize
-    ? [
-        {
-          text: `${repeat(" ", paddingSize)}<!-- padding to meet 10k requirement -->`,
-          type: "text" as const
-        }
-      ]
-    : [])
-];
-
 export const toolHierarchy = defineRule({
-  content: finalBlocks,
+  content: contentBlocks,
   filename: "tool-hierarchy",
   trigger: "always_on"
 });
