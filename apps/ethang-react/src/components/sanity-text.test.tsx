@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom/vitest";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -259,7 +260,7 @@ describe("SanityText - Custom Quote and Code types", () => {
     ];
 
     const { container } = render(<SanityText value={value} />);
-    expect(container.children.length).toBe(0);
+    expect(container).toBeEmptyDOMElement();
   });
 });
 
@@ -320,7 +321,7 @@ describe("SanityText - Custom Image and Video types", () => {
     ];
 
     const { container } = render(<SanityText value={value} />);
-    expect(container.children.length).toBe(0);
+    expect(container).toBeEmptyDOMElement();
   });
 
   it("renders custom video type", () => {
@@ -363,6 +364,6 @@ describe("SanityText - Custom Image and Video types", () => {
     ];
 
     const { container } = render(<SanityText value={value} />);
-    expect(container.children.length).toBe(0);
+    expect(container).toBeEmptyDOMElement();
   });
 });

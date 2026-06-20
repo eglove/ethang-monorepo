@@ -109,7 +109,7 @@ export const WeekView = async ({
                 <a
                   href={`/calendar?view=day&date=${dayKey}`}
                   class={twMerge(
-                    "inline-flex h-6 w-6 items-center justify-center text-xs text-white/60 transition-colors hover:text-white",
+                    "inline-flex size-6 items-center justify-center text-xs text-white/60 transition-colors hover:text-white",
                     isToday
                       ? "rounded-full bg-white font-bold text-lake-deep"
                       : "rounded"

@@ -51,7 +51,7 @@ export const MonthView = async ({
                   class={twMerge(
                     "text-xs text-white/60",
                     isToday &&
-                      "inline-flex h-5 w-5 items-center justify-center rounded-full bg-white font-bold text-lake-deep"
+                      "inline-flex size-5 items-center justify-center rounded-full bg-white font-bold text-lake-deep"
                   )}
                 >
                   {cell.day}

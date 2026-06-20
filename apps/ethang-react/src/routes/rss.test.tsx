@@ -15,7 +15,7 @@ const mockNavigate = vi.fn(async () => {
   //
 });
 
-let redirectMock: unknown = null;
+const redirectStore = { redirectMock: null as unknown };
 
 vi.mock("@tanstack/react-router", async () => {
   const actual = await vi.importActual<Record<string, unknown>>(
@@ -45,7 +45,7 @@ vi.mock("@tanstack/react-router", async () => {
       return <a href={to ?? href}>{children}</a>;
     },
     redirect: (_arguments: unknown) => {
-      redirectMock = _arguments;
+      redirectStore.redirectMock = _arguments;
       throw new Error("Redirecting");
     },
     useNavigate: () => {
@@ -60,7 +60,7 @@ describe("RSS Feature", () => {
     authStore.reset();
     vi.restoreAllMocks();
     mockNavigate.mockClear();
-    redirectMock = null;
+    redirectStore.redirectMock = null;
   });
 
   describe("URL Parser Helper", () => {
@@ -93,7 +93,7 @@ describe("RSS Feature", () => {
         Route.options.beforeLoad?.();
       });
 
-      expect(redirectMock).toEqual({
+      expect(redirectStore.redirectMock).toEqual({
         search: {
           redirect: "/rss"
         },
@@ -111,17 +111,17 @@ describe("RSS Feature", () => {
         };
       });
 
-      let redirectThrown = false;
+      let isRedirectThrown = false;
       const result = attempt(() => {
         // @ts-expect-error for test
         Route.options.beforeLoad?.();
       });
 
       if (isError(result)) {
-        redirectThrown = true;
+        isRedirectThrown = true;
       }
 
-      expect(redirectThrown).toBe(false);
+      expect(isRedirectThrown).toBe(false);
     });
   });
 

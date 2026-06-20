@@ -27,12 +27,16 @@ vi.mock("jose", async (importOriginal) => {
   };
 });
 
+const { mockHashedV } = vi.hoisted(() => {
+  return { mockHashedV: "hashed-pass" };
+});
+
 vi.mock("bcryptjs", () => {
   return {
     default: {
       compare: vi.fn().mockResolvedValue(true),
       genSalt: vi.fn().mockResolvedValue("salt"),
-      hash: vi.fn().mockResolvedValue("hashed-password")
+      hash: vi.fn().mockResolvedValue(mockHashedV)
     }
   };
 });
@@ -41,7 +45,7 @@ const mockUser = {
   email: TEST_EMAIL,
   id: "user-1",
   lastLoggedIn: null,
-  password: "hashed-password",
+  password: mockHashedV,
   role: "user",
   sessionToken: null,
   username: "user1"
@@ -205,6 +209,47 @@ describe("AuthService", () => {
 
       const result = await authService.signIn(TEST_EMAIL, TEST_PASSWORD);
       expect(isError(result)).toBe(true);
+    });
+
+    it("should sign in if user already exists", async () => {
+      mockDatabase.query.userTable.findFirst.mockResolvedValue(mockUser);
+      // @ts-expect-error for test
+      vi.mocked(bcrypt.hash).mockResolvedValue(mockHashedV);
+      mockReturning
+        .mockResolvedValueOnce([{ ...mockUser, lastLoggedIn: "now" }])
+        .mockResolvedValueOnce([{ ...mockUser, sessionToken: "token" }]);
+
+      const result = await authService.signUp(TEST_EMAIL, TEST_PASSWORD);
+      expect(isError(result)).toBe(false);
+      expect(result).toEqual({
+        ...mockUser,
+        lastLoggedIn: "now"
+      });
+    });
+  });
+
+  describe("updateUserToken", () => {
+    it("should return error if updating user token fails", async () => {
+      mockReturning.mockRejectedValue(new Error("Update token failed"));
+
+      // @ts-expect-error calling private method
+      const result = await authService.updateUserToken(mockUser);
+      expect(isError(result)).toBe(true);
+    });
+  });
+
+  describe("rehashPassword", () => {
+    it("should successfully rehash password", async () => {
+      // @ts-expect-error for test
+      vi.mocked(bcrypt.hash).mockResolvedValueOnce(mockHashedV);
+      mockReturning.mockResolvedValueOnce([
+        { ...mockUser, lastLoggedIn: "now" }
+      ]);
+
+      // @ts-expect-error calling private method
+      const result = await authService.rehashPassword(mockUser, TEST_PASSWORD);
+      expect(isError(result)).toBe(false);
+      expect(result).toEqual({ ...mockUser, lastLoggedIn: "now" });
     });
   });
 });

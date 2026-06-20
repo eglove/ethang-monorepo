@@ -28,10 +28,10 @@ import { MainLayout } from "../layouts/main-layout.tsx";
 
 const CHICAGO = "America/Chicago";
 
-const tabClass = (active: boolean) => {
+const tabClass = (isActive: boolean) => {
   return twMerge(
-    "px-4 py-1.5 text-sm rounded-md text-white/60 hover:text-white hover:bg-white/10 transition-colors",
-    active && "bg-white/20 text-white font-medium"
+    "rounded-md px-4 py-1.5 text-sm text-white/60 transition-colors hover:bg-white/10 hover:text-white",
+    isActive && "bg-white/20 font-medium text-white"
   );
 };
 

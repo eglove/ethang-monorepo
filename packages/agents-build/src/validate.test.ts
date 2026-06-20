@@ -21,7 +21,7 @@ import {
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
-  validateFrontmatterBlock
+  isValidFrontmatterBlock
 } from "./validate.ts";
 
 describe("validateFrontmatterBlock", () => {
@@ -32,7 +32,7 @@ describe("validateFrontmatterBlock", () => {
     ["---\nbad line without colon\n---\n", false],
     ["---\ntrigger: always_on\n", false]
   ])("classifies %j as %s", (markdown, expected) => {
-    expect(validateFrontmatterBlock(markdown)).toBe(expected);
+    expect(isValidFrontmatterBlock(markdown)).toBe(expected);
   });
 });
 

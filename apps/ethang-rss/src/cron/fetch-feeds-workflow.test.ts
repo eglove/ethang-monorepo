@@ -569,4 +569,104 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
       })
     );
   });
+
+  it("excludes YouTube Shorts and includes other feed items", async () => {
+    const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
+
+    mockSelect.mockReturnValue({
+      from: vi.fn().mockResolvedValue(mockFeeds)
+    });
+
+    const mockValues = vi.fn().mockReturnValue({
+      onConflictDoNothing: vi.fn().mockResolvedValue({})
+    });
+
+    mockInsert.mockReturnValue({
+      values: mockValues
+    });
+
+    mockUpdate.mockReturnValue({
+      set: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue({})
+      })
+    });
+
+    const mockEnvironment = {
+      ENVIRONMENT: ENVIRONMENT_TEST,
+      ethang_rss: {},
+      LOGGER_API_KEY: TEST_LOGGER_KEY
+    };
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      text: async () => {
+        return `
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <rss version="2.0">
+          <channel>
+            <title>Test Feed</title>
+            <link>https://example.com</link>
+            <item>
+              <title>Regular Video</title>
+              <link>https://www.youtube.com/watch?v=regular123</link>
+              <guid>guid-regular</guid>
+              <pubDate>2026-06-14T00:00:00Z</pubDate>
+            </item>
+            <item>
+              <title>YouTube Short</title>
+              <link>https://www.youtube.com/shorts/short456</link>
+              <guid>guid-short</guid>
+              <pubDate>2026-06-14T00:00:00Z</pubDate>
+            </item>
+            <item>
+              <title>Regular Article</title>
+              <link>https://example.com/art1</link>
+              <guid>guid-art1</guid>
+              <pubDate>2026-06-14T00:00:00Z</pubDate>
+            </item>
+          </channel>
+        </rss>
+      `;
+      }
+    } as Response);
+
+    const step = {
+      do: vi.fn().mockImplementation(async (_name, _function) => {
+        return _function();
+      })
+    };
+
+    const context = {
+      waitUntil: noop
+    };
+
+    const workflow = new FetchFeedsWorkflow(
+      // @ts-expect-error for test
+      context,
+      mockEnvironment as unknown as Env
+    );
+
+    // @ts-expect-error for test
+    await expect(workflow.run({}, step)).resolves.not.toThrow();
+
+    expect(mockValues).toHaveBeenCalledTimes(2);
+    expect(mockValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        link: "https://www.youtube.com/watch?v=regular123",
+        title: "Regular Video"
+      })
+    );
+    expect(mockValues).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        link: "https://www.youtube.com/shorts/short456",
+        title: "YouTube Short"
+      })
+    );
+    expect(mockValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        link: "https://example.com/art1",
+        title: "Regular Article"
+      })
+    );
+  });
 });

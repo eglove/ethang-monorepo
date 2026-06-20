@@ -22,7 +22,7 @@ export const Image = (properties: ImageProperties) => {
         {...properties}
         alt={properties.alt}
         className={twMerge(
-          "block w-full h-auto object-cover rounded-[inherit]",
+          "block h-auto w-full rounded-[inherit] object-cover",
           properties.className
         )}
       />

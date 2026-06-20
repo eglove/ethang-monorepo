@@ -96,7 +96,7 @@ app.post("/verify", zValidator("json", verifySchema), async (context) => {
   const database = getDatabase(context);
   const authService = new AuthService(
     database,
-    context.env[AuthService.TOKEN_SECRET_KEY]
+    convertToString(context.env[AuthService.TOKEN_SECRET_KEY])
   );
 
   const body = context.req.valid("json");

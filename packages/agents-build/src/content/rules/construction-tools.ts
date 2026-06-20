@@ -1,0 +1,167 @@
+import type { MarkdownBlock } from "@ethang/markdown-generator/markdown-generator.js";
+
+import { defineRule } from "../../define.ts";
+
+export const constructionTools = defineRule({
+  content: [
+    {
+      level: 1,
+      text: "Software Construction Tools",
+      type: "header"
+    },
+    {
+      level: 2,
+      text: "1. Domain Theory and Conceptual Foundations",
+      type: "header"
+    },
+    {
+      text: "Software construction tools represent the automated utilities, systems, and platforms that software engineers employ to translate, compile, execute, verify, and analyze source code. As defined in the IEEE Software Engineering Body of Knowledge (SWEBOK v4) Chapter 4, Section 5, construction tools are essential components that automate repetitive tasks, enforce structural rules, measure runtime behaviors, and optimize software quality. The selection, integration, and management of these tools form the foundation of a modern software engineering pipeline. Rather than operating in isolation, modern construction tools are integrated into unified development lifecycles, enabling rapid feedback, continuous verification, and automated quality gates. These tools span integrated development environments, visual and model-driven platforms, unit testing frameworks, and advanced profiling and slicing utilities.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.1 Development Environments",
+      type: "header"
+    },
+    {
+      text: "Development environments, typically recognized as Integrated Development Environments (IDEs), provide a centralized suite of tools designed to streamline the coding, building, and debugging phases of software construction:",
+      type: "text"
+    },
+    {
+      items: [
+        {
+          text: "**Core Editor and Language Server Protocol**: Modern editors go far beyond simple text editing by parsing source code in real time into abstract syntax trees (ASTs). Through the Language Server Protocol (LSP), the editor decouples the visual interface from language-specific analysis, enabling features like syntax highlighting, code completion, inline type checking, and real-time error detection. This immediate feedback helps developers resolve syntax and semantic errors before compilation."
+        },
+        {
+          text: "**Refactoring Engines**: Integrated refactoring engines analyze the dependency graph and Abstract Syntax Trees (ASTs) of the codebase, allowing developers to execute structural changes safely. These operations include renaming variables, extracting methods, moving classes, and modifying function signatures. The refactoring engine automatically analyzes data flow, verifies scopes, checks visibility constraints, and updates all references across the codebase to ensure structural updates do not break compilation or introduce regression defects."
+        },
+        {
+          text: "**Integrated Debuggers**: Debugging tools provide deep visibility into the runtime state of an application. By attaching to execution processes, debuggers allow developers to set breakpoints, inspect call stacks, monitor variable mutations, step through instructions, and evaluate expressions dynamically. Advanced debugging tools support remote process attachment, source map or symbol file resolution, heap/stack memory inspections, and multi-threaded execution tracking."
+        },
+        {
+          text: "**Cloud-Based Development Environments**: Cloud-based environments host the development runtime and IDE interface on remote virtual machines or containerized platforms. This approach ensures environment consistency across engineering teams, simplifies project onboarding, scales resources for intensive builds, and eliminates configuration drift between local workstations and staging systems."
+        },
+        {
+          text: "**AI-Assisted Programming and Generative Tools**: AI-assisted programming tools integrate Large Language Models (LLMs) to automate code generation, suggest inline completions, and generate documentation. While these assistants increase development speed, their outputs must be verified. AI-generated code requires strict validation through compilers, static analysis checkers, and automated test suites to ensure compliance with quality standards, security policies, and software licensing requirements."
+        }
+      ],
+      type: "unorderedList"
+    },
+    {
+      level: 3,
+      text: "1.2 Visual Programming and Low-Code/Zero-Code Platforms",
+      type: "header"
+    },
+    {
+      text: "Visual programming and rapid application development environments abstract text-based code into graphical components, enabling developers to build software systems visually:",
+      type: "text"
+    },
+    {
+      items: [
+        {
+          text: "**GUI Builders and WYSIWYG Editors**: Graphical User Interface (GUI) builders allow developers to design layouts, forms, and windows using drag-and-drop operations in a What-You-See-Is-What-You-Get (WYSIWYG) editor. These tools provide layout managers that handle widget positioning, alignment, and responsiveness across varying screen dimensions and device aspect ratios using grid, constraint, or flexbox layouts."
+        },
+        {
+          text: "**Event-Driven Code Generation**: Since graphical applications rely on event-driven architectures, GUI builders automatically generate the boilerplate code needed to bind visual widgets (such as buttons, fields, and menus) to backend event handlers. This automation connects UI triggers to the primary application logic, reducing manual coding errors."
+        },
+        {
+          text: "**Low-Code vs. Zero-Code Platforms**: Low-code platforms combine visual design with small sections of hand-written code to implement custom business logic, whereas zero-code platforms rely entirely on visual configurations. Both approaches compile visual models into executable code. While these platforms accelerate prototyping and development, they introduce challenges such as vendor lock-in, proprietary runtime dependencies, testing limitations, and difficulties debugging compiled visual representations."
+        }
+      ],
+      type: "unorderedList"
+    },
+    {
+      level: 3,
+      text: "1.3 Unit Testing Tools",
+      type: "header"
+    },
+    {
+      text: "Unit testing tools verify the correctness of individual, isolated software units (such as classes, methods, or components) before they are integrated into the larger system:",
+      type: "text"
+    },
+    {
+      items: [
+        {
+          text: "**Test Isolation and Doubles**: To ensure that unit tests are fast and deterministic, they must run in isolation from external collaborators. Testing tools manage test doubles to simulate behavior and verify interactions. These doubles are categorized into dummies (placeholders), stubs (canned answers), spies (recorded execution metadata), mocks (interaction verifiers), and fakes (functional shortcuts). Choosing the correct double prevents test fragility and avoids over-mocking internal behaviors."
+        },
+        {
+          text: "**Assertion Libraries**: Frameworks provide assertion libraries to validate code contracts, preconditions, and postconditions. These assertions check expected outcomes against actual results, verify error propagation, and serve as executable documentation."
+        },
+        {
+          text: "**Automated Test Runners**: Test runners organize, execute, and report on test suites. They run tests concurrently, track execution times, and integrate with continuous integration systems to block builds if assertions fail. Additionally, they generate coverage reports (statement, branch, and path coverage) to measure test adequacy."
+        }
+      ],
+      type: "unorderedList"
+    },
+    {
+      level: 3,
+      text: "1.4 Profiling, Performance Analysis, and Slicing Tools",
+      type: "header"
+    },
+    {
+      text: "To optimize execution efficiency and assist in diagnostic debugging, developers utilize tools that analyze runtime behaviors and code dependencies:",
+      type: "text"
+    },
+    {
+      items: [
+        {
+          text: "**Performance Profilers**: Profilers collect detailed runtime metrics using instrumentation (inserting timing probes into the source code) or statistical sampling (periodically inspecting the call stack at regular intervals). These metrics reveal CPU utilization, memory allocation bottlenecks, garbage collection overhead, and lock contention, pointing developers to the exact areas that require code tuning."
+        },
+        {
+          text: "**Program Slicing**: Slicing tools compute the subset of program statements (the slice) that affect the value of a specific variable at a designated program point (the slicing criterion). Static slicing analyzes all possible control and data flow paths in a Program Dependence Graph (PDG), while dynamic slicing analyzes the dependencies executed for a specific set of inputs. Program slicing simplifies debugging by isolating the precise execution path that caused a defect, aids in understanding legacy systems, and assists in predicting the impact of code modifications. By reducing the scope of statements to investigate, slicing significantly minimizes the cognitive load on developers, accelerates code maintenance activities, and improves the reliability of impact evaluations before release."
+        }
+      ],
+      type: "unorderedList"
+    },
+    {
+      level: 2,
+      text: "2. Compliance Checklist",
+      type: "header"
+    },
+    {
+      items: [
+        {
+          text: "Was the integrated development environment (IDE) or cloud-based environment selected to support static analysis, compilation, and refactoring?"
+        },
+        {
+          text: "Are AI-assisted programming tools integrated with compiler checks, linter configurations, and manual review gates to validate generated code?"
+        },
+        {
+          text: "Did the development team leverage visual GUI builders and event-handling assistants to automate user interface wiring?"
+        },
+        {
+          text: "Was the software constructed using low-code or model-driven generation, and did the team evaluate the generated output for vendor lock-in and testability?"
+        },
+        {
+          text: "Were automated unit testing tools and frameworks configured to verify the behavior of individual functions and classes in isolation?"
+        },
+        {
+          text: "Have test doubles (mocks, stubs, spies, fakes) been utilized to decouple units from slow or non-deterministic external dependencies?"
+        },
+        {
+          text: "Did the team integrate automated test runners into the local build process and CI/CD pipelines to block builds on assertion failures?"
+        },
+        {
+          text: "Were performance profiling tools used to collect CPU, memory, and runtime metrics to isolate hot spots and guide code tuning?"
+        },
+        {
+          text: "Were program slicing tools (static or dynamic) applied to isolate the statements affecting a variable state during debugging or impact analysis?"
+        },
+        {
+          text: "Has the build process been automated using tools that orchestrate compilation, type-checking, dependency resolution, and packaging?"
+        },
+        {
+          text: "Did the team configure static code analyzers and linters to verify formatting, naming conventions, and syntax rules automatically?"
+        },
+        {
+          text: "Were diagnostic runtime loggers and trace analyzers set up to monitor application behaviors across development and production environments?"
+        }
+      ],
+      type: "unorderedList"
+    }
+  ] as MarkdownBlock[],
+  description:
+    "software construction tools, development environments, integrated development environments, IDEs, compiler integration, refactoring engines, program debuggers, cloud-based IDEs, AI-assisted programming, visual programming, GUI builders, event-handling assistants, low-code, zero-code, model-driven, unit testing tools, mock, stub, assertion libraries, test runners, profiling, performance analysis, program slicing, static slicing, dynamic slicing",
+  filename: "construction-tools",
+  trigger: "model_decision"
+});

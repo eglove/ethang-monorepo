@@ -3,8 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { curriculumQueryOptions, Route } from "./courses.tsx";
 
-let mockCurriculumData: unknown = null;
-let mockIsPending = false;
+const mockCurriculumStore = {
+  data: null as unknown,
+  isPending: false
+};
 const fullStackCurriculum = "Full Stack Curriculum";
 
 vi.mock("@tanstack/react-query", async (importOriginal) => {
@@ -14,8 +16,8 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
     ...actual,
     useQuery: () => {
       return {
-        data: mockCurriculumData,
-        isPending: mockIsPending
+        data: mockCurriculumStore.data,
+        isPending: mockCurriculumStore.isPending
       };
     }
   };
@@ -62,8 +64,8 @@ vi.mock("@tanstack/react-router", () => {
 
 describe("Courses Route Component", () => {
   beforeEach(() => {
-    mockCurriculumData = null;
-    mockIsPending = false;
+    mockCurriculumStore.data = null;
+    mockCurriculumStore.isPending = false;
   });
 
   it("executes the query function", async () => {
@@ -87,17 +89,17 @@ describe("Courses Route Component", () => {
   });
 
   it("renders loader when query is pending", () => {
-    mockIsPending = true;
+    mockCurriculumStore.isPending = true;
     // @ts-expect-error for test
     const Component = Route.component;
     render(<Component />);
 
     const headings = screen.queryAllByRole("heading");
-    expect(headings.length).toBe(0);
+    expect(headings).toHaveLength(0);
   });
 
   it("renders curriculum metadata and learning paths with correct offsets", () => {
-    mockCurriculumData = {
+    mockCurriculumStore.data = {
       curriculum: {
         id: "curriculum-1",
         learningPaths: [
@@ -123,7 +125,7 @@ describe("Courses Route Component", () => {
     expect(screen.getByText(/Last Updated:/u)).toBeDefined();
 
     const learningPaths = screen.getAllByTestId("learning-path");
-    expect(learningPaths.length).toBe(2);
+    expect(learningPaths).toHaveLength(2);
 
     expect(learningPaths[0]?.dataset["id"]).toBe("path-1");
     expect(learningPaths[0]?.dataset["offset"]).toBe("0");

@@ -33,8 +33,7 @@ describe("getCourseUrlByCourseId", () => {
     try {
       // @ts-expect-error for test
       await getCourseUrlByCourseId(mockDatabase, "missing");
-      // Should not reach here
-      expect(true).toBe(false);
+      expect.fail("Should have thrown 'Course not found' error");
     } catch (error) {
       expect((error as Error).message).toBe("Course not found");
     }
@@ -52,8 +51,7 @@ describe("getCourseUrlByCourseId", () => {
     try {
       // @ts-expect-error for test
       await getCourseUrlByCourseId(mockDatabase, "missing");
-      // Should not reach here
-      expect(true).toBe(false);
+      expect.fail("Should have thrown 'Course not found' error");
     } catch (error) {
       expect((error as Error).message).toBe("Course not found");
     }

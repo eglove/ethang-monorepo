@@ -136,7 +136,7 @@ export const MainLayout = async ({
           style="bottom:5%;left:90%;width:6px;height:6px;animation-duration:12s;animation-delay:4s;"
         ></span>
 
-        <header class="sticky top-0 z-20 border-b border-white/10 bg-black/20 px-4 py-4 backdrop-blur-sm sm:px-6">
+        <header class="sticky top-0 z-20 border-b border-white/10 bg-black/20 p-4 backdrop-blur-sm sm:px-6">
           <div class="mx-auto flex max-w-4xl flex-col items-center gap-3 sm:flex-row sm:justify-between">
             <span class="text-center font-display text-lg font-semibold tracking-wide drop-shadow sm:text-left">
               Sterett Creek Village Trustee

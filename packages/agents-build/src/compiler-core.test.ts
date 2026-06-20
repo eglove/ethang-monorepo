@@ -3,6 +3,7 @@ import includes from "lodash/includes.js";
 import isError from "lodash/isError.js";
 import isString from "lodash/isString.js";
 import repeat from "lodash/repeat.js";
+import trim from "lodash/trim.js";
 import {
   existsSync,
   mkdirSync,
@@ -381,10 +382,9 @@ describe("validation failures and warnings", () => {
       rulesDir: rulesDirectory
     };
 
-    const originValidateFrontmatter =
-      validationHelpers.validateFrontmatterBlock;
+    const originValidateFrontmatter = validationHelpers.isValidFrontmatterBlock;
 
-    vi.spyOn(validationHelpers, "validateFrontmatterBlock").mockImplementation(
+    vi.spyOn(validationHelpers, "isValidFrontmatterBlock").mockImplementation(
       (markdown) => {
         if (includes(markdown, "Jira")) {
           return false;
@@ -428,6 +428,18 @@ describe("validation failures and warnings", () => {
       compile(config);
     }).not.toThrow();
   });
+});
+
+describe("skills compilation and validation", () => {
+  let temporaryDirectory = "";
+
+  beforeEach(() => {
+    temporaryDirectory = mkdtempSync(path.join(tmpdir(), testDirectoryPrefix));
+  });
+
+  afterEach(() => {
+    rmSync(temporaryDirectory, { force: true, recursive: true });
+  });
 
   it("compiles skills and includes them in the manifest", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
@@ -469,6 +481,80 @@ describe("validation failures and warnings", () => {
     expect(manifest.files).toContain(SKILL_MANIFEST_PATH);
   });
 
+  it("compiles skills with resources and includes resources in the manifest", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const skillsDirectory = path.join(temporaryDirectory, "skills");
+    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory,
+      skills: [
+        {
+          content: SKILL_CONTENT,
+          description: SKILL_DESCRIPTION,
+          name: TEST_SKILL_NAME,
+          resources: [
+            {
+              content: [
+                { text: "test resource content", type: "text" as const }
+              ],
+              filename: "res1.md"
+            },
+            {
+              content: "another test resource content",
+              filename: "res2.md"
+            }
+          ]
+        }
+      ],
+      skillsDir: skillsDirectory
+    };
+
+    compile(config);
+
+    const skillFilePath = path.join(
+      skillsDirectory,
+      TEST_SKILL_NAME,
+      "SKILL.md"
+    );
+    const resourceFilePath = path.join(
+      skillsDirectory,
+      TEST_SKILL_NAME,
+      "resources",
+      "res1.md"
+    );
+    const resourceFilePath2 = path.join(
+      skillsDirectory,
+      TEST_SKILL_NAME,
+      "resources",
+      "res2.md"
+    );
+    expect(existsSync(skillFilePath)).toBe(true);
+    expect(existsSync(resourceFilePath)).toBe(true);
+    expect(existsSync(resourceFilePath2)).toBe(true);
+
+    const resourceContentRead = readFileSync(resourceFilePath, utf8Encoding);
+    expect(trim(resourceContentRead)).toBe("test resource content");
+
+    const resourceContentRead2 = readFileSync(resourceFilePath2, utf8Encoding);
+    expect(resourceContentRead2).toBe("another test resource content");
+
+    const parsed = JSON.parse(
+      readFileSync(manifestPath, utf8Encoding)
+    ) as unknown;
+    const manifest = manifestSchema.parse(parsed);
+    expect(manifest.files).toContain(SKILL_MANIFEST_PATH);
+    expect(manifest.files).toContain(
+      `skills/${TEST_SKILL_NAME}/resources/res1.md`
+    );
+    expect(manifest.files).toContain(
+      `skills/${TEST_SKILL_NAME}/resources/res2.md`
+    );
+  });
+
   it("records a failure if a skill has a malformed frontmatter block", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
     const skillsDirectory = path.join(temporaryDirectory, "skills");
@@ -489,7 +575,7 @@ describe("validation failures and warnings", () => {
       skillsDir: skillsDirectory
     };
 
-    vi.spyOn(validationHelpers, "validateFrontmatterBlock").mockReturnValue(
+    vi.spyOn(validationHelpers, "isValidFrontmatterBlock").mockReturnValue(
       false
     );
 
@@ -500,8 +586,7 @@ describe("validation failures and warnings", () => {
       thrownError = error;
     }
 
-    expect(thrownError).toBeDefined();
-    expect(thrownError instanceof CompileError).toBe(true);
+    expect(thrownError).toBeInstanceOf(CompileError);
     if (thrownError instanceof CompileError) {
       expect(thrownError.failures).toContain(
         `skills/${BAD_FRONTMATTER_SKILL}/SKILL.md: malformed frontmatter block`

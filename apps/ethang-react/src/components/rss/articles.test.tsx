@@ -3,9 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Articles } from "./articles.tsx";
 
-let mockAllArticlesData: unknown = null;
-let mockFeedArticlesData: unknown = null;
-let mockSelectedFeedId: null | string = null;
+const mockArticlesStore = {
+  allArticlesData: null as unknown,
+  feedArticlesData: null as unknown,
+  selectedFeedId: null as null | string
+};
 const mockFetchNextPageAll = vi.fn().mockResolvedValue({});
 const mockFetchNextPageFeed = vi.fn().mockResolvedValue({});
 const mockMutate = vi.fn().mockResolvedValue({});
@@ -21,22 +23,24 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
       let hasNextPage = false;
 
       if (isAll) {
-        if (null !== mockAllArticlesData) {
-          const { pages } = mockAllArticlesData as {
+        if (null !== mockArticlesStore.allArticlesData) {
+          const { pages } = mockArticlesStore.allArticlesData as {
             pages: { allArticles: { pageInfo: { hasNextPage: boolean } } }[];
           };
           hasNextPage = pages[0]?.allArticles.pageInfo.hasNextPage ?? false;
         }
-      } else if (null === mockFeedArticlesData) {
+      } else if (null === mockArticlesStore.feedArticlesData) {
         // do nothing
       } else {
-        const { pages } = mockFeedArticlesData as {
+        const { pages } = mockArticlesStore.feedArticlesData as {
           pages: { feedArticles: { pageInfo: { hasNextPage: boolean } } }[];
         };
         hasNextPage = pages[0]?.feedArticles.pageInfo.hasNextPage ?? false;
       }
 
-      const data = isAll ? mockAllArticlesData : mockFeedArticlesData;
+      const data = isAll
+        ? mockArticlesStore.allArticlesData
+        : mockArticlesStore.feedArticlesData;
 
       return {
         data,
@@ -50,7 +54,7 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
       return { isPending: false, mutateAsync: mockMutate };
     },
     useQuery: () => {
-      return { data: mockAllArticlesData, isPending: false };
+      return { data: mockArticlesStore.allArticlesData, isPending: false };
     },
     useQueryClient: () => {
       return {
@@ -66,7 +70,7 @@ vi.mock("@ethang/store/use-store", () => {
       _store: T,
       selector: (state: { selectedFeedId: null | string }) => U
     ): U => {
-      return selector({ selectedFeedId: mockSelectedFeedId });
+      return selector({ selectedFeedId: mockArticlesStore.selectedFeedId });
     }
   };
 });
@@ -85,9 +89,9 @@ const FEED_ONE = "feed-1";
 const LOAD_MORE_BUTTON_NAME = "Load More";
 
 const clearMocks = () => {
-  mockAllArticlesData = null;
-  mockFeedArticlesData = null;
-  mockSelectedFeedId = null;
+  mockArticlesStore.allArticlesData = null;
+  mockArticlesStore.feedArticlesData = null;
+  mockArticlesStore.selectedFeedId = null;
   mockFetchNextPageAll.mockClear();
   mockFetchNextPageFeed.mockClear();
   mockMutate.mockClear();
@@ -100,8 +104,8 @@ describe("Articles - Rendering and Actions", () => {
   });
 
   it("renders flat list of all articles when selectedFeedId is null", () => {
-    mockSelectedFeedId = null;
-    mockAllArticlesData = {
+    mockArticlesStore.selectedFeedId = null;
+    mockArticlesStore.allArticlesData = {
       pages: [
         {
           allArticles: {
@@ -135,8 +139,8 @@ describe("Articles - Rendering and Actions", () => {
   });
 
   it("renders feed articles when selectedFeedId is set", () => {
-    mockSelectedFeedId = FEED_ONE;
-    mockFeedArticlesData = {
+    mockArticlesStore.selectedFeedId = FEED_ONE;
+    mockArticlesStore.feedArticlesData = {
       pages: [
         {
           feedArticles: {
@@ -170,8 +174,8 @@ describe("Articles - Rendering and Actions", () => {
   });
 
   it("calls markArticleRead mutation when Mark as Read is clicked", () => {
-    mockSelectedFeedId = FEED_ONE;
-    mockFeedArticlesData = {
+    mockArticlesStore.selectedFeedId = FEED_ONE;
+    mockArticlesStore.feedArticlesData = {
       pages: [
         {
           feedArticles: {
@@ -216,8 +220,8 @@ describe("Articles - Pagination", () => {
   });
 
   it("renders a Load More button when hasNextPage is true on specific feed", () => {
-    mockSelectedFeedId = FEED_ONE;
-    mockFeedArticlesData = {
+    mockArticlesStore.selectedFeedId = FEED_ONE;
+    mockArticlesStore.feedArticlesData = {
       pages: [
         {
           feedArticles: {
@@ -250,8 +254,8 @@ describe("Articles - Pagination", () => {
   });
 
   it("calls fetchMore when Load More is clicked on specific feed", () => {
-    mockSelectedFeedId = FEED_ONE;
-    mockFeedArticlesData = {
+    mockArticlesStore.selectedFeedId = FEED_ONE;
+    mockArticlesStore.feedArticlesData = {
       pages: [
         {
           feedArticles: {
@@ -287,8 +291,8 @@ describe("Articles - Pagination", () => {
   });
 
   it("renders a Load More button when hasNextPage is true on all articles feed", () => {
-    mockSelectedFeedId = null;
-    mockAllArticlesData = {
+    mockArticlesStore.selectedFeedId = null;
+    mockArticlesStore.allArticlesData = {
       pages: [
         {
           allArticles: {
@@ -321,8 +325,8 @@ describe("Articles - Pagination", () => {
   });
 
   it("calls fetchMore when Load More is clicked on all articles feed", () => {
-    mockSelectedFeedId = null;
-    mockAllArticlesData = {
+    mockArticlesStore.selectedFeedId = null;
+    mockArticlesStore.allArticlesData = {
       pages: [
         {
           allArticles: {

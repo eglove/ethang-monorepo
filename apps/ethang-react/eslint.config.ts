@@ -17,7 +17,7 @@ export default defineConfig(
   ...config,
   ...reactConfig,
   ...htmlConfig,
-  ...tailwindConfig(path.join(import.meta.dirname, "src", "index.css")),
+  ...tailwindConfig(path.join(import.meta.dirname, "src", "style.css")),
   {
     languageOptions: {
       parserOptions: {

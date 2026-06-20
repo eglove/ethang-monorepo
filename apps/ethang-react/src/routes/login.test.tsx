@@ -7,14 +7,16 @@ import { authStore } from "../components/auth/auth-store.ts";
 import { Route } from "./login.tsx";
 
 const TEST_EMAIL = "test@ethang.email";
+// eslint-disable-next-line sonar/no-hardcoded-passwords
 const TEST_PASSWORD = "password123";
 
 // Mock the TanStack Router hooks
 const mockNavigate = vi.fn(async () => {
   //
 });
-// @ts-expect-error for test
-let mockSearch: { redirect?: string } = { redirect: undefined };
+const mockSearchStore = {
+  search: { redirect: undefined as string | undefined }
+};
 vi.mock("@tanstack/react-router", async () => {
   const actual = await vi.importActual<Record<string, unknown>>(
     "@tanstack/react-router"
@@ -27,7 +29,7 @@ vi.mock("@tanstack/react-router", async () => {
           options,
           path,
           useSearch: () => {
-            return mockSearch;
+            return mockSearchStore.search;
           }
         };
       };
@@ -42,7 +44,7 @@ vi.mock("@tanstack/react-router", async () => {
       return mockNavigate;
     },
     useSearch: () => {
-      return mockSearch;
+      return mockSearchStore.search;
     }
   };
 });
@@ -53,8 +55,7 @@ describe("Login Integration", () => {
     authStore.reset();
     vi.restoreAllMocks();
     mockNavigate.mockClear();
-    // @ts-expect-error for test
-    mockSearch = { redirect: undefined };
+    mockSearchStore.search = { redirect: undefined as string | undefined };
   });
 
   it("should render the login form and handle successful authentication", async () => {
@@ -93,7 +94,7 @@ describe("Login Integration", () => {
   });
 
   it("should navigate to redirect path if redirect search param is present", async () => {
-    mockSearch = { redirect: "/rss" };
+    mockSearchStore.search = { redirect: "/rss" };
 
     const mockUser = {
       email: TEST_EMAIL,

@@ -37,14 +37,14 @@ export const eventRangeFormat = (start: string, end: string): string => {
   const startZoned = DateTime.fromISO(start).setZone(CHICAGO);
   const endZoned = DateTime.fromISO(end).setZone(CHICAGO);
 
-  const sameDay = startZoned.hasSame(endZoned, "day");
+  const isSameDay = startZoned.hasSame(endZoned, "day");
 
   const dateTimeOptions: DateTimeFormatOptions = {
     dateStyle: "medium",
     timeStyle: "short"
   };
 
-  if (sameDay) {
+  if (isSameDay) {
     return `${startZoned.toLocaleString(dateTimeOptions)} – ${endZoned.toLocaleString({ timeStyle: "short" })}`;
   }
 
@@ -81,9 +81,8 @@ export const getNewsAndEvents = async (): Promise<NewsAndEvents> => {
   ]);
 
   return [...events, ...updates].toSorted((a, b) => {
-    // eslint-disable-next-line unicorn/prefer-minimal-ternary
     const aString = "startsAt" in a ? a.startsAt : a.date;
-    // eslint-disable-next-line unicorn/prefer-minimal-ternary
+
     const bString = "startsAt" in b ? b.startsAt : b.date;
     return getEpoch(aString) - getEpoch(bString);
   });

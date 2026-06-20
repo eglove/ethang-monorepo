@@ -9,7 +9,6 @@ vi.mock(import("../../clients/sanity-client.ts"), () => {
     },
     sterettSanityClient: {
       fetch: vi.fn()
-      // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     } as unknown as (typeof import("../../clients/sanity-client.ts"))["sterettSanityClient"]
   };
 });

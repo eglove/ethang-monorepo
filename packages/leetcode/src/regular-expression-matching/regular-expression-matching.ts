@@ -1,26 +1,26 @@
 import isNil from "lodash/isNil.js";
 
 export const isMatch = (s: string, p: string): boolean => {
-  const match = (index1: number, index2: number): boolean => {
+  const isMatchFound = (index1: number, index2: number): boolean => {
     if (index2 === p.length) {
       return index1 === s.length;
     }
 
-    const characterMatchesOrPeriod =
+    const isCharacterMatchesOrPeriod =
       index1 < s.length && (s[index1] === p[index2] || "." === p[index2]);
 
     if (index2 + 1 < p.length && "*" === p[index2 + 1]) {
-      const zeroOccurrences = match(index1, index2 + 2);
-      const oneOrMoreOccurrences =
-        characterMatchesOrPeriod && match(index1 + 1, index2);
+      const isZeroOccurrences = isMatchFound(index1, index2 + 2);
+      const isOneOrMoreOccurrences =
+        isCharacterMatchesOrPeriod && isMatchFound(index1 + 1, index2);
 
-      return zeroOccurrences || oneOrMoreOccurrences;
+      return isZeroOccurrences || isOneOrMoreOccurrences;
     }
 
-    return characterMatchesOrPeriod && match(index1 + 1, index2 + 1);
+    return isCharacterMatchesOrPeriod && isMatchFound(index1 + 1, index2 + 1);
   };
 
-  return match(0, 0);
+  return isMatchFound(0, 0);
 };
 
 const isCharacterMatch = (
@@ -34,10 +34,10 @@ const handleRepeatingPattern = (
   stack: [number, number][],
   stringIndex: number,
   patternIndex: number,
-  characterMatches: boolean
+  isCharacterMatches: boolean
 ) => {
   stack.push([stringIndex, patternIndex + 2]);
-  if (characterMatches) {
+  if (isCharacterMatches) {
     stack.push([stringIndex + 1, patternIndex]);
   }
 };
@@ -64,19 +64,22 @@ export const isMatchNoRecursion = (s: string, p: string): boolean => {
       continue;
     }
 
-    const nextCharIsStar =
+    const isNextCharIsStar =
       patternIndex + 1 < p.length && "*" === p[patternIndex + 1];
-    const characterMatches = isCharacterMatch(s[stringIndex], p[patternIndex]);
+    const isCharacterMatches = isCharacterMatch(
+      s[stringIndex],
+      p[patternIndex]
+    );
 
-    if (nextCharIsStar) {
+    if (isNextCharIsStar) {
       handleRepeatingPattern(
         stack,
         stringIndex,
         patternIndex,
-        characterMatches
+        isCharacterMatches
       );
       // eslint-disable-next-line sonar/elseif-without-else
-    } else if (characterMatches) {
+    } else if (isCharacterMatches) {
       stack.push([stringIndex + 1, patternIndex + 1]);
     }
   }

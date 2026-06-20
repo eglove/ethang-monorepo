@@ -5,13 +5,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AddFeedForm } from "./add-feed-form.tsx";
 
 const mockAddSubscription = vi.fn().mockResolvedValue({});
-let mockLoading = false;
+const mockAddFeedFormStore = { isMockLoading: false };
 const mockInvalidateQueries = vi.fn().mockResolvedValue({});
 
 vi.mock("@tanstack/react-query", () => {
   return {
     useMutation: () => {
-      return { isPending: mockLoading, mutateAsync: mockAddSubscription };
+      return {
+        isPending: mockAddFeedFormStore.isMockLoading,
+        mutateAsync: mockAddSubscription
+      };
     },
     useQueryClient: () => {
       return {
@@ -28,7 +31,7 @@ describe("AddFeedForm", () => {
   beforeEach(() => {
     mockAddSubscription.mockClear();
     mockInvalidateQueries.mockClear();
-    mockLoading = false;
+    mockAddFeedFormStore.isMockLoading = false;
   });
 
   it("renders the form components", () => {

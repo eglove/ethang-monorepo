@@ -1,5 +1,7 @@
+import type { MarkdownBlock } from "@ethang/markdown-generator/markdown-generator.js";
+
 export type RuleDefinition = {
-  content: string;
+  content: MarkdownBlock[] | string;
   /** Required when trigger is "model_decision" (build-validated). */
   description?: string;
   /** Output filename without .md — emitted as rules/<filename>.md in each plugin. */
@@ -16,11 +18,12 @@ export const defineRule = (definition: RuleDefinition): RuleDefinition => {
 };
 
 export type SkillDefinition = {
-  content: string;
+  content: MarkdownBlock[] | string;
   description: string;
   name: string;
+  resources?: { content: MarkdownBlock[] | string; filename: string }[];
 };
 
-export const defineSkill = (definition: SkillDefinition) => {
+export const defineSkill = (definition: SkillDefinition): SkillDefinition => {
   return definition;
 };

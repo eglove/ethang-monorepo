@@ -1,108 +1,263 @@
+import type { MarkdownBlock } from "@ethang/markdown-generator/markdown-generator.js";
+
 import { defineRule } from "../../define.ts";
 
 export const requirementsElicitation = defineRule({
-  content: `# Requirements Elicitation
-
-## 1. Domain Theory and Conceptual Foundations
-Software requirements elicitation is the critical, active engineering process of identifying, discovering, and capturing the requirements of a software system from diverse sources. As defined in the IEEE Software Engineering Body of Knowledge (SWEBOK v4) Chapter 1, elicitation is not a passive task of collecting ready-made specifications, but an active, cognitive, and collaborative discovery process. Requirements are often hidden, unstated, or poorly understood by stakeholders, requiring systematic engineering techniques to bring them to light.
-
-Requirements emerge from a wide variety of sources, which SWEBOK v4 classifies as:
-- **Stakeholders**: Users, customers, sponsors, domain experts, software developers, system administrators, and operations staff.
-- **Legacy Systems**: Existing applications, physical procedures, operational databases, and historical document archives.
-- **Operational Environment**: Underlying hardware platforms, operating systems, network topologies, memory constraints, and third-party API dependencies.
-- **Organizational & Regulatory Context**: Corporate compliance rules, industry standards (e.g. ISO/IEC), legal regulations (GDPR, CCPA), and security frameworks.
-
-SWEBOK v4 defines five primary elicitation techniques that must be deployed depending on the project context:
-1. **Interviews**: Structured (guided by a formal questionnaire) or unstructured (open-ended discussions) interviews are highly effective for uncovering high-level goals, organizational rules, and user concerns. However, interviews are subject to interviewer bias and stakeholders may struggle to articulate implicit or habitual tasks.
-2. **Scenarios**: Concrete, step-by-step descriptions of specific operational flows, use cases, and storyboards. Scenarios ground abstract concepts in user-visible steps, making it easier for stakeholders to evaluate and refine requirements.
-3. **Prototypes**: Interactive mockups (ranging from low-fidelity wireframes to high-fidelity HTML/CSS screens) used to validate user expectations, test usability assumptions, and uncover unstated requirements. While powerful, prototypes run the risk of stakeholders mistaking the mockup for a nearly complete system, leading to unrealistic schedule expectations.
-4. **Facilitated Sessions**: Joint Application Design (JAD) workshops and alignment meetings where cross-functional stakeholders collaborate. Facilitated sessions are essential for resolving conflicting requirements, building consensus, and securing stakeholder alignment.
-5. **Observation**: Passive observation (watching users perform tasks in their actual environment) or active protocol analysis (where users think aloud while performing tasks). Observation is invaluable for identifying unarticulated needs, workarounds, and environmental constraints.
-
-### 1.1 Tacit Knowledge and the Cognitive Dimension of Elicitation
-A major hurdle in requirements elicitation is the discovery of "tacit knowledge"—information that stakeholders possess and utilize unconsciously but fail to articulate during passive questioning. Business users and administrators develop highly automated habits and shortcuts that they assume are "obvious" or "common sense." If the engineer relies solely on structured interviews, these critical operational constraints remain unrecorded, resulting in gaps in the final application logic.
-
-To mitigate this, engineers must combine verbal interviews with active protocol analysis and interactive prototypes. By prompting the user to perform tasks while describing their thoughts aloud, the engineer can uncover latent constraints, error recovery steps, and implicit system expectations (such as default inputs, validation ranges, and keyboard navigation shortcuts).
-
-### 1.2 Bounded Contexts and Semantic Alignment
-Crucial to requirements elicitation is the establishment of a Ubiquitous Language—a Domain-Driven Design (DDD) principle. A Ubiquitous Language is a shared, unambiguous vocabulary structured around the domain model and used consistently by all team members (developers, analysts, domain experts) to connect business prose with the software codebase (components, handlers, schema columns). This language prevents semantic drift, where terms like "customer" and "user" are used interchangeably, leading to logical errors in the software.
-
-Elicitation activities must overcome three common classes of problems defined in SWEBOK:
-- **Problems of Scope**: The boundary of the system is ill-defined, or stakeholders specify unnecessary detail or gold-plating.
-- **Problems of Understanding**: Stakeholders are unsure of what they need, have poor understanding of computer capabilities, use different vocabularies, or have difficulty expressing tacit knowledge.
-- **Problems of Volatility**: Requirements change over time as the organization or business environment evolves.
-
-## 2. Standard Operating Procedures (SOP)
-To execute requirements elicitation in this workspace, the agent must follow this step-by-step Standard Operating Procedure:
-
-### Step 2.1: Elicitation Source Mapping
-Before any code is modified, the agent must identify and inventory all requirements sources. This includes scanning the task description, analyzing the existing directory structures, examining package manifests, and identifying any legacy code that the new feature must interface with. The agent must create a "Requirements Source List" in the implementation plan.
-
-### Step 2.2: Ubiquitous Language Glossary Construction
-The agent must extract all domain-specific nouns and verbs from the user request. A glossary table must be constructed comparing these terms to the codebase vocabulary:
-- Identify if the user request uses terms that mismatch the existing codebase (e.g., the user requests a "user account freeze" but the schema uses \`billing_freeze\` and the handler is named \`suspendSubscription\`).
-- Create a translation map to align the prose with the codebase, and present this to the user for confirmation.
-- Ensure all new code (variables, functions, components, API paths) uses the vocabulary defined in the approved glossary.
-
-Here is a TypeScript utility demonstrating vocabulary translation mapping from user-facing domain terms to system-level schema properties. Note the use of arrow functions, lack of explicit return types, explicit member accessibility, and bracket notation for index signatures:
-
-\`\`\`typescript
-export type DomainRequest = {
-  customerName: string;
-  freezeRequested: string;
-};
-
-export class UserTermMapper {
-  private suffix: string;
-
-  public constructor(suffix: string) {
-    this.suffix = suffix;
-  }
-
-  public mapToSchema = (request: DomainRequest) => {
-    const rawName = request["customerName"];
-    const shouldFreeze = request["freezeRequested"] === "true";
-
-    return {
-      db_account_state: shouldFreeze ? "SUSPENDED" : "ACTIVE",
-      db_user_fullName: \`\${rawName}_\${this.suffix}\`,
-    };
-  };
-}
-\`\`\`
-
-### Step 2.3: Scenario & Storyboard Definition
-The agent must translate the functional requirements into concrete Given-When-Then scenarios. For UI changes, the agent must sketch the interface layout using markdown tables or generate mockups using standard components, detailing the state transitions (loading, success, error, empty). For complex data flows, a storyboard showing the sequence of database writes, API calls, and events must be written.
-
-### Step 2.4: Stakeholder Interview & Conflict Resolution
-The agent must present the drafted scenarios, glossary, and UI mockups to the user. If any requirements are underspecified, ambiguous, or in conflict, the agent must formulate a single, clear multiple-choice or write-in question to resolve the ambiguity. The agent must not guess or proceed with coding until the user has explicitly approved the design assumptions.
-
-### Step 2.5: Requirements Baseline Freeze
-Once the user approves the scenarios and mockups, the requirements must be baselined and written into the implementation plan. This baseline serves as the formal specification. Any future modifications to these requirements must go through the formal change control process.
-
-## 3. Agent Compliance Checklist
-The agent must verify compliance with the following criteria before completing the elicitation phase:
-
-- [ ] **Source Inventory**: Have all requirements sources (stakeholders, code, environment, regulations) been identified and listed?
-- [ ] **Elicitation Techniques**: Did the agent use appropriate elicitation techniques (scenarios for behavior, mockups for UI, interviews for open questions)?
-- [ ] **Ubiquitous Language**: Is there a documented glossary mapping user prose to the codebase vocabulary?
-- [ ] **Semantic Resolution**: Have all vocabulary mismatches and naming conflicts been resolved and approved by the user?
-- [ ] **Behavioral Scenarios**: Are all functional requirements represented by at least one Given-When-Then behavioral scenario?
-- [ ] **UI Mockups & States**: Has an approved mockup showing loading, empty, loaded, and error states been created for every new UI view?
-- [ ] **Ambiguity Resolution**: Were all open questions, assumptions, and constraints explicitly approved by the user?
-- [ ] **Baseline Freeze**: Are the requirements frozen in the implementation plan and mapped to a Traceability Matrix?
-- [ ] **Sizing & Constraints**: Has the agent verified that the size of the elicited requirements matches the project schedule and technical constraints?
-- [ ] **Error Boundaries**: Are the error paths and exception bounds explicitly documented in the scenarios?
-- [ ] **Tacit Knowledge Discovery**: Did the agent verify that unstated user assumptions (e.g. keyboard navigation, default values, cancellation states) are explicitly captured?
-- [ ] **Gold-Plating Prevention**: Has the agent verified that no unnecessary features or unrequested scope items have been introduced into the design?
-- [ ] **Context Boundary Check**: Have the system boundaries been clearly defined and verified as distinct from external microservices or third-party gateways?
-- [ ] **Consistency Audit**: Has the agent verified that none of the newly elicited requirements contradict existing system rules?
-- [ ] **Security Compliance**: Did the elicitation process capture all data protection, authentication, and authorization rules required for the feature?
-- [ ] **Operational Bounds**: Has the agent documented the system performance expectations (e.g. timeout limits, concurrent users, expected payload sizes)?
-- [ ] **Feedback Loops**: Has the agent confirmed that the user has reviewed and explicitly approved the Ubiquitous Language translation map?
-- [ ] **Regulatory Alignment**: Have all compliance rules (e.g. data retention policy, privacy mandates) relevant to the feature been cataloged?`,
+  content: [
+    {
+      level: 1,
+      text: "Requirements Elicitation",
+      type: "header"
+    },
+    {
+      level: 2,
+      text: "1. Domain Theory and Conceptual Foundations",
+      type: "header"
+    },
+    {
+      text: "Software requirements elicitation is the disciplined, active engineering process of discovering, capturing, acquiring, and surfacing candidate requirements for a software system throughout its service life. As defined in the IEEE Software Engineering Body of Knowledge (SWEBOK v4) Chapter 1, Section 2, elicitation is not a passive task of collecting ready-made specifications or simply recording stakeholder requests. Instead, it is an active, cognitive, and collaborative discovery process. Requirements are often hidden, unstated, or poorly understood by the stakeholders themselves. Incompleteness is one of the most common and critical problems in requirements work, and well-executed elicitation is the primary defense against incomplete specifications.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.1 Requirements Sources",
+      type: "header"
+    },
+    {
+      text: "SWEBOK v4 emphasizes that requirements must be elicited from a comprehensive set of sources, all of which must be identified and evaluated systematically. These sources are broadly classified into human stakeholders and non-human sources.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "Human Sources: Stakeholders",
+      type: "header"
+    },
+    {
+      text: "A stakeholder is defined as any person, group, or organization that is actively involved in the project, affected by the project's outcome, or capable of influencing its outcome. Key human stakeholder classes include:",
+      type: "text"
+    },
+    {
+      items: [
+        {
+          text: "Clients: Those who pay for the software to be constructed, such as organizational sponsors or senior management."
+        },
+        {
+          text: "Customers: Those who decide whether a software product will be put into service or purchased."
+        },
+        {
+          text: "Users: Those who interact directly or indirectly with the software. SWEBOK v4 notes that users must be segmented into distinct user classes based on dimensions such as frequency of use, specific tasks performed, skill and knowledge levels, and privilege profiles."
+        },
+        {
+          text: "Subject Matter Experts (SMEs): Domain specialists who understand the business rules, policies, manual operations, and specific business procedures."
+        },
+        {
+          text: "Operations Staff: Those responsible for executing, deploying, and maintaining the software in production."
+        },
+        {
+          text: "First-Level Product Support Staff: Those who handle end-user queries, bug reports, and operational challenges."
+        },
+        {
+          text: "Professional Bodies and Regulatory Agencies: Entities that impose compliance standards, industry regulations, or legal frameworks."
+        },
+        {
+          text: "Special Interest Groups: Entities representing specific viewpoints, such as accessibility advocates."
+        },
+        {
+          text: "Negative Stakeholders: People who can be negatively affected if the project is successful."
+        },
+        {
+          text: "Developers: The technical staff responsible for implementation, architecture, and deployment."
+        }
+      ],
+      type: "unorderedList"
+    },
+    {
+      level: 3,
+      text: "Stakeholder Analysis and Stakeholder Classes",
+      type: "header"
+    },
+    {
+      text: "To prevent requirements bias toward well-represented groups, software engineers must perform a stakeholder analysis. This analysis identifies all relevant stakeholder classes, captures their distinct perspectives, and informs negotiation and conflict resolution when different stakeholder classes express conflicting needs. Relying on individual stakeholders without grouping them into classes risks missing critical viewpoints.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "Non-Person and Other Sources",
+      type: "header"
+    },
+    {
+      text: "Requirements are also derived from non-person sources:",
+      type: "text"
+    },
+    {
+      items: [
+        {
+          text: "Previous Versions: Analyzing legacy systems to understand existing capabilities and limitations."
+        },
+        {
+          text: "Defect Databases: Inspecting defect tracking systems from previous versions to identify unresolved problems or frequent user mistakes."
+        },
+        {
+          text: "Interfacing Systems: Evaluating systems that will exchange data or control signals with the system under development."
+        },
+        {
+          text: "Business Context: Documenting organizational policies, workflows, business strategies, and mission statements."
+        },
+        {
+          text: "Computing Environment: Identifying constraints imposed by the target platform, deployment infrastructure, or physical network."
+        },
+        {
+          text: "Literature and Benchmarking: Conducting literature searches, standards reviews, and competitive benchmarking."
+        },
+        {
+          text: "Design Artifacts: Analyzing concept of operations (ConOps) and product vision documents."
+        }
+      ],
+      type: "unorderedList"
+    },
+    {
+      level: 3,
+      text: "1.2 Elicitation Techniques",
+      type: "header"
+    },
+    {
+      text: "A wide variety of techniques can be deployed to surface candidate requirements. The choice of technique depends on the target stakeholder class and the nature of the application:",
+      type: "text"
+    },
+    {
+      items: [
+        {
+          text: "**Interviews**: Structured (guided by a predefined questionnaire) or unstructured (open-ended) conversations. Interviews are highly effective for extracting high-level goals but are limited by stakeholders' ability to articulate their needs."
+        },
+        {
+          text: "**Meetings and Brainstorming**: Collaborative workshops designed to generate new ideas, identify potential features, and foster collaboration among diverse stakeholders."
+        },
+        {
+          text: "**Facilitated Workshops**: Formal sessions, such as Joint Application Development (JAD) or Joint Requirements Planning (JRP), led by a neutral facilitator to reach agreement on requirements boundaries and resolve conflicts early."
+        },
+        {
+          text: "**Protocol Analysis**: A cognitive technique where a user thinks aloud while performing a task, allowing the engineer to capture implicit decision steps, operational sequences, and validation checks."
+        },
+        {
+          text: "**Focus Groups**: Moderated discussions with representative user classes to explore usability preferences, product concepts, and market expectations."
+        },
+        {
+          text: "**Questionnaires and Surveys**: Quantitative questionnaires sent to large, distributed user groups to identify common patterns, usage frequencies, and general needs."
+        },
+        {
+          text: "**Observation and Apprenticing**: Passive observation of users in their native working environment or active apprenticing (where the engineer learns the task by doing it). These are essential for surfacing tacit knowledge."
+        },
+        {
+          text: "**Usage Scenario Descriptions**: Narrative scripts depicting the step-by-step interaction between an actor and the system under specific conditions."
+        },
+        {
+          text: "**Requirements Decomposition**: Structuring complex capabilities into a hierarchy of epics, features, and user stories."
+        },
+        {
+          text: "**Task Analysis**: Analyzing the manual and automated steps a user takes to accomplish a specific business goal."
+        },
+        {
+          text: "**Design Thinking**: A user-centric, iterative framework consisting of five phases (empathize, define, ideate, prototype, test) to discover unmet user needs."
+        },
+        {
+          text: "**Exploratory Prototyping**: Creating low-fidelity (sketches, wireframes) or high-fidelity (interactive user interfaces) prototypes to elicit feedback on UI behavior and layout."
+        },
+        {
+          text: "**User Story Mapping**: Laying out user stories along a horizontal workflow axis and vertical priority axis to plan releases."
+        },
+        {
+          text: "**Quality Function Deployment (QFD)**: Using structured methods like the House of Quality to map customer needs to technical design requirements."
+        },
+        {
+          text: "**Standardized Quality Models**: Utilizing ISO/IEC 25010 SQuaRE models to prompt stakeholders for nonfunctional Quality of Service parameters."
+        },
+        {
+          text: "**Security Abuse and Misuse Cases**: Modeling threat scenarios and malicious actor behaviors to discover security requirements."
+        }
+      ],
+      type: "numberedList"
+    },
+    {
+      level: 3,
+      text: "1.3 Tacit Knowledge and the Challenge of Incompleteness",
+      type: "header"
+    },
+    {
+      text: "A fundamental challenge in requirements elicitation is the discovery of tacit knowledge. Stakeholders often possess deep operational expertise that has become so automated that they assume it is common knowledge. As a result, they leave this critical information unstated during interviews. For instance, a user might neglect to mention that an order must be verified against credit limits because they have performed the check unconsciously for years.\nTo combat this, the engineer must not remain passive. Passive collection leads to incomplete specifications. Engineers must employ active techniques like observation, protocol analysis, apprenticing, and exploratory prototyping. These methods force the execution of real-world scenarios, bringing hidden constraints, exception paths, and validation rules to the surface.",
+      type: "text"
+    },
+    {
+      level: 3,
+      text: "1.4 Elicitation in Different Development Lifecycles",
+      type: "header"
+    },
+    {
+      text: "The timing and frequency of elicitation activities vary significantly depending on the project's software lifecycle:",
+      type: "text"
+    },
+    {
+      items: [
+        {
+          text: "In a waterfall or plan-driven lifecycle, elicitation is heavily concentrated in a discrete requirements phase at the beginning of the project, aiming to establish a complete and stable baseline before design and construction."
+        },
+        {
+          text: 'In iterative and agile lifecycles, elicitation is an ongoing, incremental activity. High-level requirements are captured during inception, and detailed elicitation is conducted "just-in-time" at the beginning of each iteration or sprint, ensuring the software remains aligned with evolving stakeholder priorities.'
+        }
+      ],
+      type: "unorderedList"
+    },
+    {
+      level: 2,
+      text: "2. Compliance Checklist",
+      type: "header"
+    },
+    {
+      items: [
+        {
+          text: "Have all potential requirements sources, including human stakeholders and non-human legacy systems, been identified and documented?"
+        },
+        {
+          text: "Has a formal stakeholder analysis been conducted to identify and document all stakeholder classes?"
+        },
+        {
+          text: "Did the elicitation strategy account for representation bias by engaging with under-represented stakeholder groups?"
+        },
+        {
+          text: "Have users been segmented into distinct user classes based on frequency of use, tasks, skill, and privilege levels?"
+        },
+        {
+          text: "Were active elicitation techniques (e.g., protocol analysis, observation, apprenticing) utilized to surface tacit knowledge?"
+        },
+        {
+          text: "Has a legacy system audit been performed, including a review of previous requirements, concept of operations, and defect tracking databases?"
+        },
+        {
+          text: "Have external interfaces and computing environment constraints been elicited and documented?"
+        },
+        {
+          text: "Are all candidate requirements traced back to their specific stakeholder source or non-human origin?"
+        },
+        {
+          text: "Were facilitated workshops (such as JAD or JRP) or brainstorming sessions used to resolve conflicting needs at the source?"
+        },
+        {
+          text: "Have usage scenario descriptions or user story mapping been used to structure the elicited capabilities?"
+        },
+        {
+          text: "Has exploratory prototyping (low-fidelity or high-fidelity) been deployed to validate user interface behavior and assumptions?"
+        },
+        {
+          text: "Did the elicitation process actively explore security requirements through abuse or misuse cases?"
+        },
+        {
+          text: "Were Quality of Service constraints systematically elicited using quality frameworks such as ISO/IEC 25010?"
+        }
+      ],
+      type: "unorderedList"
+    }
+  ] as MarkdownBlock[],
   description:
-    "active discovery, ubiquitous language, and stakeholder clarification loops",
+    "active discovery, ubiquitous language, stakeholder clarification, user story mapping, mockups, Given-When-Then scenarios, planning, plan mode, grill-me, or defining terminology and business rules before implementing",
   filename: "requirements-elicitation",
   trigger: "model_decision"
 });

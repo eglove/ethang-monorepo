@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "a11y-debugging": {
+      "source": "chromedevtools/chrome-devtools-mcp",
+      "sourceType": "github",
+      "skillPath": "skills/a11y-debugging/SKILL.md",
+      "computedHash": "0cfdaa59d1a21f94509d2633a81735f57812c06661b1645a7a7b9dc778e6e0f7"
+    },
     "agents-sdk": {
       "source": "cloudflare/skills",
       "sourceType": "github",
@@ -12,6 +18,12 @@
       "sourceType": "github",
       "skillPath": "skills/chrome-devtools/SKILL.md",
       "computedHash": "d71d3a3271c6eb6170da33d153a52742ac69efeeee68ef526d9d98dbe19ce0b5"
+    },
+    "chrome-devtools-cli": {
+      "source": "chromedevtools/chrome-devtools-mcp",
+      "sourceType": "github",
+      "skillPath": "skills/chrome-devtools-cli/SKILL.md",
+      "computedHash": "17cb3fc4a4c2dce77f5dadd8c7f906f286ea0903e051535814daa7fd7e3161c4"
     },
     "cloudflare": {
       "source": "cloudflare/skills",
@@ -25,6 +37,24 @@
       "skillPath": "skills/cloudflare-email-service/SKILL.md",
       "computedHash": "6274be056fe5211aa220833c97ff6a7d96a1cdfd8854a53ca839ca758d35f356"
     },
+    "cloudflare-one": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/cloudflare-one/SKILL.md",
+      "computedHash": "92ee52930b78562889b3bdde7c6388f1c30f5906e2c00f43032ff494e65a75c5"
+    },
+    "cloudflare-one-migrations": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/cloudflare-one-migrations/SKILL.md",
+      "computedHash": "8ee5405a05467347b9e9ac28b4dd10cec3865b6d37bc9d974c0e75860a921bb2"
+    },
+    "debug-optimize-lcp": {
+      "source": "chromedevtools/chrome-devtools-mcp",
+      "sourceType": "github",
+      "skillPath": "skills/debug-optimize-lcp/SKILL.md",
+      "computedHash": "dd3ee7c42f0f4c5c12f852188ad7f04ca4289129dc5e3d9bd0cc25e3f2e4c68c"
+    },
     "durable-objects": {
       "source": "cloudflare/skills",
       "sourceType": "github",
@@ -36,6 +66,24 @@
       "sourceType": "github",
       "skillPath": "skills/find-skills/SKILL.md",
       "computedHash": "9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd"
+    },
+    "hermes-forge": {
+      "source": "harshanandak/forge",
+      "sourceType": "github",
+      "skillPath": "skills/hermes-forge/SKILL.md",
+      "computedHash": "5199b548ae73763625d07b98221b4b975ba6af7a7a1cc99d191ba721ab7a708e"
+    },
+    "memory-leak-debugging": {
+      "source": "chromedevtools/chrome-devtools-mcp",
+      "sourceType": "github",
+      "skillPath": "skills/memory-leak-debugging/SKILL.md",
+      "computedHash": "5476f2dbfab1650c724f16774ad695bf39db7a41f2494501d70bb08a717a5ea6"
+    },
+    "parallel-deep-research": {
+      "source": "harshanandak/forge",
+      "sourceType": "github",
+      "skillPath": "skills/parallel-deep-research/SKILL.md",
+      "computedHash": "f379824ecf1368def897d7e40d8e68845878816799928fb13116808bb59ed623"
     },
     "sandbox-sdk": {
       "source": "cloudflare/skills",
@@ -49,11 +97,17 @@
       "skillPath": "skills/sonarcloud-analysis/SKILL.md",
       "computedHash": "37aebc8eb227935ca43d41d77b1c98e61780839d8c2049ba2024b09e85db7af4"
     },
+    "troubleshooting": {
+      "source": "chromedevtools/chrome-devtools-mcp",
+      "sourceType": "github",
+      "skillPath": "skills/troubleshooting/SKILL.md",
+      "computedHash": "0c516080764f283e1869cc91c269e7e23e3609efe0fa024e43ed0a14718bdf3e"
+    },
     "turnstile-spin": {
       "source": "cloudflare/skills",
       "sourceType": "github",
       "skillPath": "skills/turnstile-spin/SKILL.md",
-      "computedHash": "46ad17e8e09902993d88dc212e780e6aecd34cb3ad22fb9ae90d5e02a54e20d6"
+      "computedHash": "ec3868fef71e9ca926c177c4e2f8a5e234ae501bba4258746507ed095613bbb2"
     },
     "web-perf": {
       "source": "cloudflare/skills",

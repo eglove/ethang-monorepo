@@ -1,3 +1,4 @@
+import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
 import endsWith from "lodash/endsWith.js";
 import filter from "lodash/filter.js";
 import isString from "lodash/isString.js";
@@ -21,7 +22,7 @@ import {
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
-  validateFrontmatterBlock
+  isValidFrontmatterBlock
 } from "./validate.ts";
 
 export type CompilerConfig = {
@@ -58,7 +59,7 @@ export const validationHelpers = {
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
-  validateFrontmatterBlock
+  isValidFrontmatterBlock
 };
 
 const getDirectoryFiles = (directory: string): string[] | undefined => {
@@ -113,12 +114,19 @@ const calculateTargetPaths = (config: CompilerConfig): string[] => {
     return path.join(config.rulesDir, `${rule.filename}.md`);
   });
   const { skills, skillsDir } = config;
-  const skillPaths =
-    undefined !== skills && undefined !== skillsDir
-      ? Array.from(skills, (skill) => {
-          return path.join(skillsDir, skill.name, "SKILL.md");
-        })
-      : [];
+  if (undefined === skills || undefined === skillsDir) {
+    return rulePaths;
+  }
+  const skillPaths: string[] = [];
+  for (const skill of skills) {
+    skillPaths.push(path.join(skillsDir, skill.name, "SKILL.md"));
+    const resources = skill.resources ?? [];
+    for (const resource of resources) {
+      skillPaths.push(
+        path.join(skillsDir, skill.name, "resources", resource.filename)
+      );
+    }
+  }
   return [...rulePaths, ...skillPaths];
 };
 
@@ -176,7 +184,7 @@ const processRules = (
       );
     }
 
-    if (!validationHelpers.validateFrontmatterBlock(markdown)) {
+    if (!validationHelpers.isValidFrontmatterBlock(markdown)) {
       failures.push(`rules/${rule.filename}.md: malformed frontmatter block`);
     }
 
@@ -196,13 +204,24 @@ const processSkills = (
   for (const skill of skills) {
     const markdown = skillMarkdown(skill);
 
-    if (!validationHelpers.validateFrontmatterBlock(markdown)) {
+    if (!validationHelpers.isValidFrontmatterBlock(markdown)) {
       failures.push(
         `skills/${skill.name}/SKILL.md: malformed frontmatter block`
       );
     }
 
     write(path.join(skillsDir, skill.name, "SKILL.md"), markdown);
+
+    const resources = skill.resources ?? [];
+    for (const resource of resources) {
+      const resourceContent = isString(resource.content)
+        ? resource.content
+        : generateMarkdown({ blocks: resource.content });
+      write(
+        path.join(skillsDir, skill.name, "resources", resource.filename),
+        resourceContent
+      );
+    }
   }
 };
 
@@ -225,7 +244,9 @@ const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   }
 
   for (const directory of directoriesToScan) {
-    if (fsProxy.existsSync(directory)) {
+    const isExists = fsProxy.existsSync(directory);
+
+    if (isExists) {
       for (const token of validationHelpers.findUnresolvedTokens(directory)) {
         failures.push(`unresolved {{sections}} token in ${token}`);
       }

@@ -22,12 +22,12 @@ export const getSubbedNumber = ({
   options,
   value
 }: GetNumberMetaProperties) => {
-  const preModifiedFormatter = Intl.NumberFormat(locale, {
+  const preModifiedFormatter = new Intl.NumberFormat(locale, {
     ...options
   });
   const resolvedOptions = preModifiedFormatter.resolvedOptions();
 
-  const formatter = Intl.NumberFormat(locale, {
+  const formatter = new Intl.NumberFormat(locale, {
     ...options,
     maximumFractionDigits: 100
   });

@@ -111,9 +111,9 @@ export class AuthService {
       return new Error("Invalid Credentials");
     }
 
-    const compared = await bcrypt.compare(password, userResult.password);
+    const isCompared = await bcrypt.compare(password, userResult.password);
 
-    if (!compared) {
+    if (!isCompared) {
       return new Error("Invalid Credentials");
     }
 

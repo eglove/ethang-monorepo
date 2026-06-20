@@ -43,7 +43,7 @@ const getSecretValue = async (secret: unknown): Promise<string> => {
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
-const checkRateLimit = (ip: string): boolean => {
+const isWithinRateLimit = (ip: string): boolean => {
   const now = Date.now();
   const limit = rateLimitMap.get(ip);
   if (!limit || now > limit.resetAt) {
@@ -105,7 +105,7 @@ app.options("/log", (c) => {
 
 app.post("/log", async (c) => {
   const ip = c.req.header("CF-Connecting-IP") ?? "unknown";
-  if (!checkRateLimit(ip)) {
+  if (!isWithinRateLimit(ip)) {
     return c.json({ error: "Too Many Requests" }, 429);
   }
 

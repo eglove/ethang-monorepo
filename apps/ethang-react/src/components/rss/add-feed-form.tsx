@@ -12,23 +12,24 @@ import { subscriptionsOptions } from "./queries.ts";
 export const AddFeedForm = () => {
   const queryClient = useQueryClient();
 
-  const { isPending: addLoading, mutateAsync: addSubscription } = useMutation({
-    mutationFn: async (variables: { xmlAddress: string }) => {
-      return graphqlRequest(
-        gql(`mutation AddSubscription($xmlAddress: String!) {
+  const { isPending: isAddFeedPending, mutateAsync: addSubscription } =
+    useMutation({
+      mutationFn: async (variables: { xmlAddress: string }) => {
+        return graphqlRequest(
+          gql(`mutation AddSubscription($xmlAddress: String!) {
             addSubscription(xmlAddress: $xmlAddress) {
                 id
             }
         }`),
-        variables
-      );
-    },
-    onSuccess: () => {
-      queryClient
-        .invalidateQueries({ queryKey: subscriptionsOptions().queryKey })
-        .catch(noop);
-    }
-  });
+          variables
+        );
+      },
+      onSuccess: () => {
+        queryClient
+          .invalidateQueries({ queryKey: subscriptionsOptions().queryKey })
+          .catch(noop);
+      }
+    });
 
   const [xmlUrl, setXmlUrl] = useState("");
 
@@ -60,8 +61,8 @@ export const AddFeedForm = () => {
               required
               type="url"
               value={xmlUrl}
-              disabled={addLoading}
               placeholder="Feed XML URL"
+              disabled={isAddFeedPending}
               onChange={(event) => {
                 setXmlUrl(event.target.value);
               }}
@@ -70,7 +71,7 @@ export const AddFeedForm = () => {
           </Box>
           <Button
             type="submit"
-            disabled={addLoading}
+            disabled={isAddFeedPending}
             className="cursor-pointer bg-blue-600 font-semibold hover:bg-blue-500"
           >
             Add Feed

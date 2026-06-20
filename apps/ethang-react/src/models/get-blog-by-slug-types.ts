@@ -55,7 +55,7 @@ export type Body = {
   code?: string;
   language?: string;
   listItem?: string;
-  markDefs?: MarkDef[];
+  markDefs?: MarkDefinition[];
   quote?: string;
   source?: string;
   sourceUrl?: string;
@@ -188,8 +188,7 @@ export type LightVibrant2 = {
   title: string;
 };
 
-// eslint-disable-next-line unicorn/prevent-abbreviations
-export type MarkDef = {
+export type MarkDefinition = {
   _key: string;
   _type: string;
   href: string;

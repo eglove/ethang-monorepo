@@ -58,7 +58,7 @@ describe("allArticlesQuery - basic query path", () => {
       mockContext
     );
 
-    expect(result.edges.length).toBe(2);
+    expect(result.edges).toHaveLength(2);
     expect(result.pageInfo.hasNextPage).toBe(false);
     expect(result.edges[0]?.node.title).toBe(ARTICLE_TITLE_1);
     expect(result.edges[0]?.cursor).toBe(encodeCursor([PUBLISHED_AT_1, "1"]));
@@ -100,7 +100,7 @@ describe("allArticlesQuery - filtering", () => {
       mockContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
     expect(mockDatabase.select).toHaveBeenCalledTimes(2);
   });
 
@@ -138,7 +138,7 @@ describe("allArticlesQuery - filtering", () => {
       mockContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
     expect(mockDatabase.select).toHaveBeenCalledTimes(2);
   });
 });
@@ -182,7 +182,7 @@ describe("allArticlesQuery - pagination and cursors", () => {
       mockContext
     );
 
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
     expect(result.pageInfo.hasNextPage).toBe(true);
     expect(result.edges[0]?.node.id).toBe("2");
   });
@@ -217,7 +217,7 @@ describe("allArticlesQuery - pagination and cursors", () => {
       // @ts-expect-error test double
       mockContext
     );
-    expect(result.edges.length).toBe(1);
+    expect(result.edges).toHaveLength(1);
   });
 });
 
@@ -240,7 +240,7 @@ describe("allArticlesQuery - validation error paths", () => {
       // @ts-expect-error test double
       mockContext
     );
-    expect(result.edges.length).toBe(0);
+    expect(result.edges).toHaveLength(0);
   });
 
   it("should handle invalid JSON in cursor", async () => {
@@ -262,7 +262,7 @@ describe("allArticlesQuery - validation error paths", () => {
       // @ts-expect-error test double
       mockContext
     );
-    expect(result.edges.length).toBe(0);
+    expect(result.edges).toHaveLength(0);
   });
 
   it("should handle invalid cursor array shape", async () => {
@@ -286,7 +286,7 @@ describe("allArticlesQuery - validation error paths", () => {
       // @ts-expect-error test double
       mockContext
     );
-    expect(result.edges.length).toBe(0);
+    expect(result.edges).toHaveLength(0);
   });
 
   it("should handle cursor array where first element is not a string or null", async () => {
@@ -310,7 +310,7 @@ describe("allArticlesQuery - validation error paths", () => {
       // @ts-expect-error test double
       mockContext
     );
-    expect(result.edges.length).toBe(0);
+    expect(result.edges).toHaveLength(0);
   });
 
   it("should handle cursor array where second element is not a string", async () => {
@@ -334,6 +334,6 @@ describe("allArticlesQuery - validation error paths", () => {
       // @ts-expect-error test double
       mockContext
     );
-    expect(result.edges.length).toBe(0);
+    expect(result.edges).toHaveLength(0);
   });
 });

@@ -20,11 +20,12 @@ const positionToString = (position: Coordinate) => {
 
 export const knightConnection = (knightA: Coordinate, knightB: Coordinate) => {
   const queue: CoordinateWithDepth[] = [[...knightA, 0]];
+  let queueIndex = 0;
   const visited = new Set(positionToString(knightA));
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  while (true) {
-    const currentPosition = queue.shift();
+  while (queueIndex < queue.length) {
+    const currentPosition = queue[queueIndex];
+    queueIndex += 1;
 
     if (isNil(currentPosition)) {
       // eslint-disable-next-line no-continue
@@ -51,4 +52,6 @@ export const knightConnection = (knightA: Coordinate, knightB: Coordinate) => {
       }
     }
   }
+
+  return -1;
 };

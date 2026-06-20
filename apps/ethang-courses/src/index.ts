@@ -11,7 +11,9 @@ type WorkerEnvironment = {
   ethang_courses: DatabaseBinding;
 };
 
-let handler: ReturnType<typeof startServerAndCreateCloudflareWorkersHandler>;
+const state: {
+  handler?: ReturnType<typeof startServerAndCreateCloudflareWorkersHandler>;
+} = {};
 
 export default {
   async fetch(
@@ -19,19 +21,19 @@ export default {
     environment: WorkerEnvironment,
     context: ExecutionContext
   ) {
-    if (isNil(handler)) {
+    if (isNil(state.handler)) {
       const server = new ApolloServer({
         introspection: true,
         plugins: [ApolloServerPluginLandingPageLocalDefault({ footer: false })],
         schema: createSchema(environment.ethang_courses)
       });
 
-      handler = startServerAndCreateCloudflareWorkersHandler(
+      state.handler = startServerAndCreateCloudflareWorkersHandler(
         // @ts-expect-error cloudflare worker integration mismatch
         server
       );
     }
 
-    return handler(request, environment, context);
+    return state.handler(request, environment, context);
   }
 };
