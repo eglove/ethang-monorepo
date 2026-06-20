@@ -5,6 +5,7 @@
   ],
   "dependencies": {
     "@ethang/graphql-types": "workspace:*",
+    "@ethang/intl": "workspace:*",
     "@ethang/logger-sdk": "workspace:*",
     "@ethang/store": "^3.1.0",
     "@ethang/toolbelt": "^4.5.0",

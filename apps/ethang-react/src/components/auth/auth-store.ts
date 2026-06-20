@@ -1,3 +1,4 @@
+import { auth } from "@ethang/intl/en/auth.ts";
 import { BaseStore } from "@ethang/store";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import attempt from "lodash/attempt.js";
@@ -79,7 +80,7 @@ export class AuthStore extends BaseStore<typeof initialState> {
       if (!response.ok) {
         const errorMessage = isString(errorValue)
           ? errorValue
-          : "Failed to sign in";
+          : auth.FAILED_TO_SIGN_IN;
         throw new Error(errorMessage);
       }
 
@@ -88,7 +89,7 @@ export class AuthStore extends BaseStore<typeof initialState> {
         !isString(sessionTokenValue) ||
         !isString(usernameValue)
       ) {
-        throw new TypeError("Invalid response from server");
+        throw new TypeError(auth.INVALID_RESPONSE);
       }
 
       const user: User = {
@@ -110,7 +111,7 @@ export class AuthStore extends BaseStore<typeof initialState> {
       this.update((draft) => {
         draft.error =
           "failed" === trim(result.message)
-            ? "An unexpected error occurred"
+            ? auth.UNEXPECTED_ERROR
             : result.message;
 
         draft.isPending = false;

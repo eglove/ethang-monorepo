@@ -1,9 +1,9 @@
+import { courseTracking as COURSE_TRACKING_STATUS } from "@ethang/intl/en/course-tracking.ts";
 import { eq } from "drizzle-orm";
 
 import type { Database } from "../types.ts";
 
 import { courseTrackingTable } from "../../db/schema.ts";
-import { COURSE_TRACKING_STATUS } from "../constants/course-tracking-status.ts";
 import { getCourseUrlByCourseId } from "../functions/get-course-url-by-course-id.ts";
 import { getNextStatus } from "../functions/get-next-status.ts";
 import { getTrackingByUserIdCourseUrl } from "../functions/get-tracking-by-user-id-course-url.ts";

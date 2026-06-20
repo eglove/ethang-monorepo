@@ -194,6 +194,9 @@ importers:
       '@as-integrations/cloudflare-workers':
         specifier: ^1.1.1
         version: 1.1.1(@apollo/server@5.5.1(graphql@17.0.1))(graphql@17.0.1)
+      '@ethang/intl':
+        specifier: workspace:*
+        version: link:../../packages/intl
       '@sanity/client':
         specifier: ^7.23.0
         version: 7.23.0
@@ -270,6 +273,9 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20260619.1
         version: 4.20260619.1
+      '@ethang/intl':
+        specifier: workspace:*
+        version: link:../../packages/intl
       dataloader:
         specifier: ^2.2.3
         version: 2.2.3
@@ -301,6 +307,9 @@ importers:
       '@ethang/graphql-types':
         specifier: workspace:*
         version: link:../../packages/graphql-types
+      '@ethang/intl':
+        specifier: workspace:*
+        version: link:../../packages/intl
       '@ethang/logger-sdk':
         specifier: workspace:*
         version: link:../../packages/logger-sdk
@@ -1049,6 +1058,24 @@ importers:
         specifier: ^4.1.9
         version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.0.0)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(happy-dom@20.10.6)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.16(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
 
+  packages/intl:
+    devDependencies:
+      '@ethang/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@vitest/coverage-v8':
+        specifier: ^4.1.9
+        version: 4.1.9(vitest@4.1.9)
+      eslint:
+        specifier: ^9.39.2
+        version: 9.39.4(jiti@2.7.0)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.9
+        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.0.0)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(happy-dom@20.10.6)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.16(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
+
   packages/leetcode:
     dependencies:
       '@ethang/toolbelt':
@@ -1322,6 +1349,9 @@ importers:
 
   packages/toolbelt:
     dependencies:
+      '@ethang/intl':
+        specifier: workspace:*
+        version: link:../intl
       '@total-typescript/ts-reset':
         specifier: ^0.6.1
         version: 0.6.1
@@ -15893,7 +15923,7 @@ snapshots:
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.5
 
   '@npmcli/git@7.0.2':
     dependencies:
@@ -15903,7 +15933,7 @@ snapshots:
       lru-cache: 11.5.1
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       which: 6.0.1
 
   '@npmcli/installed-package-contents@4.0.0':
@@ -15920,7 +15950,7 @@ snapshots:
       hosted-git-info: 9.0.3
       json-parse-even-better-errors: 5.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       spdx-expression-parse: 4.0.0
 
   '@npmcli/promise-spawn@9.0.1':
@@ -22668,7 +22698,7 @@ snapshots:
       graceful-fs: 4.2.11
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       tar: 7.5.16
       tinyglobby: 0.2.17
       undici: 6.27.0
@@ -22703,7 +22733,7 @@ snapshots:
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.5
 
   npm-normalize-package-bin@5.0.0: {}
 
@@ -22711,7 +22741,7 @@ snapshots:
     dependencies:
       hosted-git-info: 9.0.3
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       validate-npm-package-name: 7.0.2
 
   npm-packlist@10.0.4:
@@ -22724,7 +22754,7 @@ snapshots:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.2
-      semver: 7.7.4
+      semver: 7.8.5
 
   npm-registry-fetch@19.1.1:
     dependencies:

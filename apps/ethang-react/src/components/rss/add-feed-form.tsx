@@ -1,4 +1,5 @@
 import { gql } from "@ethang/graphql-types/__generated__";
+import { rss } from "@ethang/intl/en/rss.ts";
 import { Box, Button, Card, Flex, TextField } from "@radix-ui/themes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
@@ -61,8 +62,8 @@ export const AddFeedForm = () => {
               required
               type="url"
               value={xmlUrl}
-              placeholder="Feed XML URL"
               disabled={isAddFeedPending}
+              placeholder={rss.FEED_XML_URL}
               onChange={(event) => {
                 setXmlUrl(event.target.value);
               }}
@@ -74,7 +75,7 @@ export const AddFeedForm = () => {
             disabled={isAddFeedPending}
             className="cursor-pointer bg-blue-600 font-semibold hover:bg-blue-500"
           >
-            Add Feed
+            {rss.ADD_FEED}
           </Button>
         </Flex>
       </form>

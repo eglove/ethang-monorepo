@@ -1,5 +1,1 @@
-export const COURSE_TRACKING_STATUS = {
-  COMPLETE: "Complete",
-  INCOMPLETE: "Incomplete",
-  REVISIT: "Revisit"
-} as const;
+export { courseTracking as COURSE_TRACKING_STATUS } from "@ethang/intl/en/course-tracking.ts";

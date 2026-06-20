@@ -1,4 +1,5 @@
 import { gql } from "@ethang/graphql-types/__generated__";
+import { courses as coursesIntl } from "@ethang/intl/en/courses.ts";
 import { Link, Skeleton, Text } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import get from "lodash/get.js";
@@ -47,7 +48,7 @@ export const Course = ({
           {name}
         </Link>{" "}
         <Text as="span" color="gray">
-          by {author}
+          {coursesIntl.BY} {author}
         </Text>
       </li>
     </Skeleton>

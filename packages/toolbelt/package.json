@@ -5,6 +5,7 @@
     "extends browserslist-config-baseline"
   ],
   "dependencies": {
+    "@ethang/intl": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
     "lodash": "^4.18.1",
     "luxon": "^3.7.2",

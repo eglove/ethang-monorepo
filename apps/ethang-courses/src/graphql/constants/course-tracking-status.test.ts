@@ -1,6 +1,5 @@
+import { courseTracking as COURSE_TRACKING_STATUS } from "@ethang/intl/en/course-tracking.ts";
 import { describe, expect, it } from "vitest";
-
-import { COURSE_TRACKING_STATUS } from "./course-tracking-status.ts";
 
 describe("COURSE_TRACKING_STATUS", () => {
   it("exposes expected status values", () => {

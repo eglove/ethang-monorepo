@@ -1,4 +1,5 @@
 import { gql } from "@ethang/graphql-types/__generated__";
+import { rss } from "@ethang/intl/en/rss.ts";
 import { useStore } from "@ethang/store/use-store";
 import { Box, Button, Card, Flex, Heading, Text } from "@radix-ui/themes";
 import {
@@ -131,7 +132,7 @@ export const Articles = () => {
                   handleMarkRead(article.node.id).catch(noop);
                 }}
               >
-                Mark as Read
+                {rss.MARK_AS_READ}
               </Button>
             </Flex>
           </Card>
@@ -147,7 +148,7 @@ export const Articles = () => {
             fetchNextPage().catch(noop);
           }}
         >
-          Load More
+          {rss.LOAD_MORE}
         </Button>
       )}
     </Flex>

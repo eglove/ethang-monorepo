@@ -63,6 +63,4 @@ export const HTTP_STATUS = {
   VARIANT_ALSO_NEGOTIATES: 506
 } as const;
 
-export const jsonHeaders = {
-  "Content-Type": "application/json"
-};
+export { jsonHeaders } from "@ethang/intl/en/http.ts";
