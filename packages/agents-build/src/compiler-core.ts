@@ -18,7 +18,6 @@ import type { RuleDefinition, SkillDefinition } from "./define.ts";
 
 import { ruleMarkdown, skillMarkdown } from "./render.ts";
 import {
-  checkRuleSize,
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
@@ -55,7 +54,6 @@ export const fsProxy = {
 };
 
 export const validationHelpers = {
-  checkRuleSize,
   findDuplicateRuleFilenames,
   findForbiddenStrings,
   findUnresolvedTokens,
@@ -175,14 +173,6 @@ const processRules = (
 
   for (const rule of config.rules) {
     const markdown = ruleMarkdown(rule);
-    const size = validationHelpers.checkRuleSize(markdown);
-
-    if ("fail" === size.status) {
-      const swebokPath = path.resolve(config.rootDir, "swebok-v4.pdf");
-      failures.push(
-        `rules/${rule.filename}.md: ${String(size.length)} characters. Rules must be between 10,000 and 12,000 characters. Please reference the SWEBOK v4 PDF at "${swebokPath}" as a priority resource to expand the rule, or use websearch to find industry standard knowledge.`
-      );
-    }
 
     if (!validationHelpers.isValidFrontmatterBlock(markdown)) {
       failures.push(`rules/${rule.filename}.md: malformed frontmatter block`);

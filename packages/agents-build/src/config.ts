@@ -1,9 +1,3 @@
-/** Minimum rule file size in characters. */
-export const RULE_MIN_CHARS = 10_000;
-
-/** Maximum rule file size in characters. */
-export const RULE_MAX_CHARS = 12_000;
-
 /**
 Source-workspace vocabulary that must never reach the generated output.
 Content is rewritten from a NISC/Angular workspace to this monorepo's

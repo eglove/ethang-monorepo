@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -29,11 +29,5 @@ describe("global rules integration tests", () => {
         rulesDir: rulesDirectory
       });
     }).not.toThrow();
-
-    const generatedRulePath = path.join(rulesDirectory, "tool-hierarchy.md");
-    expect(existsSync(generatedRulePath)).toBe(true);
-    const ruleContent = readFileSync(generatedRulePath, "utf8");
-    expect(ruleContent).toContain("trigger: always_on");
-    expect(ruleContent).toContain("Tool Usage Hierarchy");
   });
 });

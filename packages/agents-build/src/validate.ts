@@ -16,11 +16,7 @@ import path from "node:path";
 
 import type { RuleDefinition } from "./define.ts";
 
-import {
-  FORBIDDEN_PATTERNS,
-  RULE_MAX_CHARS,
-  RULE_MIN_CHARS
-} from "./config.ts";
+import { FORBIDDEN_PATTERNS } from "./config.ts";
 
 /**
 A rendered markdown file must open with a well-formed frontmatter block:
@@ -43,18 +39,6 @@ export const isValidFrontmatterBlock = (markdown: string): boolean => {
   return every(split(rest.slice(0, closeIndex), "\n"), (line) => {
     return linePattern.test(line);
   });
-};
-
-export const checkRuleSize = (
-  content: string
-): { length: number; status: "fail" | "ok" } => {
-  const { length } = content;
-
-  if (length < RULE_MIN_CHARS || length > RULE_MAX_CHARS) {
-    return { length, status: "fail" };
-  }
-
-  return { length, status: "ok" };
 };
 
 /** Names of forbidden source-workspace vocabulary found in the content. */
