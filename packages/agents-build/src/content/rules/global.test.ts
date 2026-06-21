@@ -1,4 +1,5 @@
 import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
+import isArray from "lodash/isArray.js";
 import isString from "lodash/isString.js";
 import startsWith from "lodash/startsWith.js";
 import trim from "lodash/trim.js";
@@ -7,6 +8,10 @@ import { describe, expect, it } from "vitest";
 import { GLOBAL_RULES } from "./global.ts";
 
 describe("GLOBAL_RULES schema verification", () => {
+  it("should have GLOBAL_RULES defined as an array", () => {
+    expect(isArray(GLOBAL_RULES)).toBe(true);
+  });
+
   it.each(GLOBAL_RULES)(
     "verifies schema and structure for rule: $filename",
     (rule) => {
@@ -34,7 +39,6 @@ describe("GLOBAL_RULES schema verification", () => {
 
       expect(contentString.length).toBeGreaterThan(0);
       expect(startsWith(trim(contentString), "#")).toBe(true);
-
     }
   );
 });
