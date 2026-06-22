@@ -29,14 +29,16 @@ export const Articles = () => {
     data: allData,
     fetchNextPage: fetchNextPageAll,
     hasNextPage: hasNextPageAll,
-    isFetchingNextPage: isFetchingNextPageAll
+    isFetchingNextPage: isFetchingNextPageAll,
+    isLoading: isAllLoading
   } = useInfiniteQuery(allArticlesOptions());
 
   const {
     data: feedData,
     fetchNextPage: fetchNextPageFeed,
     hasNextPage: hasNextPageFeed,
-    isFetchingNextPage: isFetchingNextPageFeed
+    isFetchingNextPage: isFetchingNextPageFeed,
+    isLoading: isFeedLoading
   } = useInfiniteQuery(feedArticlesOptions(feedId));
 
   const allEdges = isNil(allData)
@@ -80,6 +82,8 @@ export const Articles = () => {
         });
       }
     });
+
+  const isDisabled = isMarkingRead || isAllLoading || isFeedLoading;
 
   const handleMarkRead = async (articleId: string) => {
     await markArticleRead({ articleId, isRead: true });
@@ -126,7 +130,7 @@ export const Articles = () => {
                 size="2"
                 color="blue"
                 variant="soft"
-                disabled={isMarkingRead}
+                disabled={isDisabled}
                 className="shrink-0 cursor-pointer"
                 onClick={() => {
                   handleMarkRead(article.node.id).catch(noop);

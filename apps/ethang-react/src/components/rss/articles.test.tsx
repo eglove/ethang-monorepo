@@ -1,11 +1,15 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import "@testing-library/jest-dom/vitest";
 
 import { Articles } from "./articles.tsx";
 
 const mockArticlesStore = {
   allArticlesData: null as unknown,
+  allArticlesPending: false,
   feedArticlesData: null as unknown,
+  feedArticlesPending: false,
+  isMutationPending: false,
   selectedFeedId: null as null | string
 };
 const mockFetchNextPageAll = vi.fn().mockResolvedValue({});
@@ -47,11 +51,13 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
         fetchNextPage: isAll ? mockFetchNextPageAll : mockFetchNextPageFeed,
         hasNextPage,
         isFetchingNextPage: false,
-        isPending: false
+        isPending: isAll
+          ? mockArticlesStore.allArticlesPending
+          : mockArticlesStore.feedArticlesPending
       };
     },
     useMutation: () => {
-      return { isPending: false, mutateAsync: mockMutate };
+      return { isPending: mockArticlesStore.isMutationPending, mutateAsync: mockMutate };
     },
     useQuery: () => {
       return { data: mockArticlesStore.allArticlesData, isPending: false };
@@ -90,7 +96,10 @@ const LOAD_MORE_BUTTON_NAME = "Load More";
 
 const clearMocks = () => {
   mockArticlesStore.allArticlesData = null;
+  mockArticlesStore.allArticlesPending = false;
   mockArticlesStore.feedArticlesData = null;
+  mockArticlesStore.feedArticlesPending = false;
+  mockArticlesStore.isMutationPending = false;
   mockArticlesStore.selectedFeedId = null;
   mockFetchNextPageAll.mockClear();
   mockFetchNextPageFeed.mockClear();
@@ -359,5 +368,114 @@ describe("Articles - Pagination", () => {
     fireEvent.click(loadMoreButton);
 
     expect(mockFetchNextPageAll).toHaveBeenCalled();
+  });
+
+  it("disables Mark as Read button when allArticles query is pending", () => {
+    mockArticlesStore.selectedFeedId = null;
+    mockArticlesStore.allArticlesPending = true;
+    mockArticlesStore.allArticlesData = {
+      pages: [
+        {
+          allArticles: {
+            edges: [
+              {
+                node: {
+                  feed: { id: FEED_ONE, title: "Test Feed" },
+                  id: ARTICLE_ONE_ID,
+                  isRead: false,
+                  link: ARTICLE_ONE_LINK,
+                  publishedAt: ARTICLE_ONE_DATE,
+                  title: ARTICLE_ONE_TITLE
+                }
+              }
+            ],
+            pageInfo: {
+              endCursor: CURSOR_ONE,
+              hasNextPage: false
+            }
+          }
+        }
+      ]
+    };
+
+    render(<Articles />);
+
+    const markAsReadButton = screen.getByRole("button", {
+      name: "Mark as Read"
+    });
+    expect(markAsReadButton).toBeDisabled();
+  });
+
+  it("disables Mark as Read button when feedArticles query is pending", () => {
+    mockArticlesStore.selectedFeedId = FEED_ONE;
+    mockArticlesStore.feedArticlesPending = true;
+    mockArticlesStore.feedArticlesData = {
+      pages: [
+        {
+          feedArticles: {
+            edges: [
+              {
+                node: {
+                  feed: { id: FEED_ONE, title: "Test Feed" },
+                  id: ARTICLE_TWO_ID,
+                  isRead: false,
+                  link: ARTICLE_TWO_LINK,
+                  publishedAt: ARTICLE_TWO_DATE,
+                  title: ARTICLE_TWO_TITLE
+                }
+              }
+            ],
+            pageInfo: {
+              endCursor: CURSOR_TWO,
+              hasNextPage: false
+            }
+          }
+        }
+      ]
+    };
+
+    render(<Articles />);
+
+    const markAsReadButton = screen.getByRole("button", {
+      name: "Mark as Read"
+    });
+    expect(markAsReadButton).toBeDisabled();
+  });
+
+  it("enables Mark as Read button when all queries resolved and mutation not pending", () => {
+    mockArticlesStore.selectedFeedId = null;
+    mockArticlesStore.allArticlesPending = false;
+    mockArticlesStore.isMutationPending = false;
+    mockArticlesStore.allArticlesData = {
+      pages: [
+        {
+          allArticles: {
+            edges: [
+              {
+                node: {
+                  feed: { id: FEED_ONE, title: "Test Feed" },
+                  id: ARTICLE_ONE_ID,
+                  isRead: false,
+                  link: ARTICLE_ONE_LINK,
+                  publishedAt: ARTICLE_ONE_DATE,
+                  title: ARTICLE_ONE_TITLE
+                }
+              }
+            ],
+            pageInfo: {
+              endCursor: CURSOR_ONE,
+              hasNextPage: false
+            }
+          }
+        }
+      ]
+    };
+
+    render(<Articles />);
+
+    const markAsReadButton = screen.getByRole("button", {
+      name: "Mark as Read"
+    });
+    expect(markAsReadButton).not.toBeDisabled();
   });
 });
