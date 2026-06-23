@@ -26,37 +26,21 @@ import {
   learningPathsTable
 } from "./db/schema.ts";
 
-const createDatabase = (databaseBinding: D1Database): Database => {
-  return drizzle(databaseBinding, {
-    schema: {
-      coursesTable,
-      courseTrackingTable,
-      curriculumLearningPathsTable,
-      curriculumsTable,
-      learningPathCoursesTable,
-      learningPathsTable
-    }
-  });
-};
-
 // eslint-disable-next-line unicorn/no-anonymous-default-export
 export default class extends WorkerEntrypoint<Env> {
   public async course(parameters: { id: string }) {
-    const database = createDatabase(this.env.ethang_courses);
-    return courseQuery(database, parameters);
+    return courseQuery(this.getDb(), parameters);
   }
 
   public async courses() {
-    const database = createDatabase(this.env.ethang_courses);
-    return coursesQuery(database);
+    return coursesQuery(this.getDb());
   }
 
   public async courseTracking(parameters: {
     courseId: string;
     userId: string;
   }) {
-    const database = createDatabase(this.env.ethang_courses);
-    return courseTrackingQuery(database, parameters);
+    return courseTrackingQuery(this.getDb(), parameters);
   }
 
   public async courseTrackings(parameters: {
@@ -64,8 +48,7 @@ export default class extends WorkerEntrypoint<Env> {
     first?: number;
     userId: string;
   }) {
-    const database = createDatabase(this.env.ethang_courses);
-    return courseTrackingsQuery(database, parameters);
+    return courseTrackingsQuery(this.getDb(), parameters);
   }
 
   public async createCurriculum(parameters: {
@@ -73,26 +56,22 @@ export default class extends WorkerEntrypoint<Env> {
     name: string;
     url?: null | string;
   }) {
-    const database = createDatabase(this.env.ethang_courses);
-    return createCurriculumMutation(database, parameters);
+    return createCurriculumMutation(this.getDb(), parameters);
   }
 
   public async curriculum(parameters: { id: string }) {
-    const database = createDatabase(this.env.ethang_courses);
-    return curriculumQuery(database, parameters);
+    return curriculumQuery(this.getDb(), parameters);
   }
 
   public async curriculums() {
-    const database = createDatabase(this.env.ethang_courses);
-    return curriculumsQuery(database);
+    return curriculumsQuery(this.getDb());
   }
 
   public async cycleCourseTrackingStatus(parameters: {
     courseId: string;
     userId: string;
   }) {
-    const database = createDatabase(this.env.ethang_courses);
-    return cycleCourseTrackingStatusMutation(database, parameters);
+    return cycleCourseTrackingStatusMutation(this.getDb(), parameters);
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -101,12 +80,23 @@ export default class extends WorkerEntrypoint<Env> {
   }
 
   public async learningPath(parameters: { id: string }) {
-    const database = createDatabase(this.env.ethang_courses);
-    return learningPathQuery(database, parameters);
+    return learningPathQuery(this.getDb(), parameters);
   }
 
   public async learningPaths() {
-    const database = createDatabase(this.env.ethang_courses);
-    return learningPathsQuery(database);
+    return learningPathsQuery(this.getDb());
+  }
+
+  private getDb(): Database {
+    return drizzle(this.env.ethang_courses, {
+      schema: {
+        coursesTable,
+        courseTrackingTable,
+        curriculumLearningPathsTable,
+        curriculumsTable,
+        learningPathCoursesTable,
+        learningPathsTable
+      }
+    });
   }
 }
