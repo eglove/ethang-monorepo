@@ -4,16 +4,11 @@
     "current node"
   ],
   "dependencies": {
-    "@apollo/server": "^5.5.1",
-    "@apollo/subgraph": "^2.14.1",
-    "@as-integrations/cloudflare-workers": "^1.1.1",
+    "@ethang/intl": "workspace:*",
     "@ethang/logger-sdk": "workspace:*",
     "@ethang/toolbelt": "^4.5.0",
-    "dataloader": "^2.2.3",
     "drizzle-orm": "^0.45.2",
     "fast-xml-parser": "^5.9.3",
-    "graphql": "^17.0.1",
-    "graphql-tag": "^2.12.7",
     "lodash": "^4.18.1",
     "luxon": "^3.7.2",
     "uuid": "^14.0.1"

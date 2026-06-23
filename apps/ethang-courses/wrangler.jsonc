@@ -18,12 +18,5 @@
   "placement": {
     "mode": "smart"
   },
-  "rules": [
-    {
-      "fallthrough": true,
-      "globs": ["**/*.graphql"],
-      "type": "Text"
-    }
-  ],
   "workers_dev": false
 }

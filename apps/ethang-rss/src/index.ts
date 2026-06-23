@@ -1,34 +1,23 @@
-import type DataLoader from "dataloader";
-
-import { ApolloServer } from "@apollo/server";
-import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
-import { startServerAndCreateCloudflareWorkersHandler } from "@as-integrations/cloudflare-workers";
 import { LoggerClient } from "@ethang/logger-sdk";
+import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
 import includes from "lodash/includes.js";
 import isError from "lodash/isError.js";
-import isNil from "lodash/isNil.js";
 import convertToString from "lodash/toString.js";
 
-import { authenticate } from "./authenticate.ts";
+import { addSubscriptionMutation } from "./data/mutations/add-subscription.ts";
+import { markArticleReadMutation } from "./data/mutations/mark-article-read.ts";
+import { allArticlesQuery } from "./data/queries/all-articles.ts";
+import { feedArticlesQuery } from "./data/queries/feed-articles.ts";
+import { subscriptionQuery } from "./data/queries/subscription.ts";
+import { subscriptionsQuery } from "./data/queries/subscriptions.ts";
 // eslint-disable-next-line sonar/no-wildcard-import
 import * as databaseSchema from "./db/schema.ts";
-import { createArticleLoader } from "./graphql/data-loader/article-loader.ts";
-import { createFeedLoader } from "./graphql/data-loader/feed-loader.ts";
-import { createUserArticleStateLoader } from "./graphql/data-loader/user-article-state-loader.ts";
-import { createSchema } from "./graphql/schema.ts";
-import { depthLimit } from "./graphql/util/depth-limit.ts";
 import {
   getEnvironmentString,
   getSecretValue
 } from "./util/get-environment-secret.ts";
 
-export type ServerContext = {
-  articleLoader: DataLoader<string, Article | null>;
-  feedLoader: DataLoader<string, Feed | null>;
-  user: User;
-  userArticleStateLoader: DataLoader<string, null | UserItemState>;
-};
 export type User = {
   email: string;
   exp: number;
@@ -38,66 +27,90 @@ export type User = {
   username: string;
 };
 
-type Article = typeof databaseSchema.articlesTable.$inferSelect;
-
-type Feed = typeof databaseSchema.feedsTable.$inferSelect;
-
-type UserItemState = typeof databaseSchema.userItemStatesTable.$inferSelect;
-
-const store = {
-  handler: undefined as
-    | ReturnType<
-        typeof startServerAndCreateCloudflareWorkersHandler<Env, ServerContext>
-      >
-    | undefined
+const createDatabase = (databaseBinding: D1Database) => {
+  return drizzle(databaseBinding, {
+    schema: databaseSchema
+  });
 };
 
-export default {
-  async fetch(request, environment, context) {
-    if (isNil(store.handler)) {
-      const server = new ApolloServer<ServerContext>({
-        introspection: true,
-        plugins: [ApolloServerPluginLandingPageLocalDefault({ footer: false })],
-        schema: createSchema(environment),
-        validationRules: [depthLimit(10)]
-      });
-
-      store.handler = startServerAndCreateCloudflareWorkersHandler<
-        Env,
-        ServerContext
-      >(
-        // @ts-expect-error allow server type mismatch
-        server,
-        {
-          context: async ({ request: _request }) => {
-            const user = await authenticate(_request);
-
-            const database = drizzle(environment.ethang_rss, {
-              schema: databaseSchema
-            });
-
-            return {
-              articleLoader: createArticleLoader(database),
-              feedLoader: createFeedLoader(database),
-              user,
-              userArticleStateLoader: createUserArticleStateLoader(
-                database,
-                user.sub
-              )
-            } satisfies ServerContext;
-          }
-        }
-      );
+const verifySessionToken = async (sessionToken: string): Promise<User> => {
+  const userResponse = await globalThis.fetch(
+    "https://auth.ethang.dev/verify",
+    {
+      headers: { "X-Token": sessionToken }
     }
+  );
 
-    // @ts-expect-error allow context type mismatch
-    return store.handler(request, environment, context);
-  },
-  async scheduled(event, environment) {
+  if (!userResponse.ok) {
+    throw new Error("Unauthorized");
+  }
+
+  return userResponse.json();
+};
+
+// eslint-disable-next-line unicorn/no-anonymous-default-export
+export default class extends WorkerEntrypoint<Env> {
+  public async addSubscription(parameters: {
+    sessionToken: string;
+    xmlAddress: string;
+  }) {
+    const { sessionToken, xmlAddress } = parameters;
+    const user = await verifySessionToken(sessionToken);
+    const database = createDatabase(this.env.ethang_rss);
+    return addSubscriptionMutation(database, { xmlAddress }, user);
+  }
+
+  public async allArticles(parameters: {
+    after?: string;
+    first?: number;
+    isRead?: boolean;
+    sessionToken: string;
+  }) {
+    const { sessionToken, ...queryParameters } = parameters;
+    const user = await verifySessionToken(sessionToken);
+
+    const database = createDatabase(this.env.ethang_rss);
+
+    return allArticlesQuery(database, queryParameters, user);
+  }
+
+  public async feedArticles(parameters: {
+    after?: string;
+    feedId: string;
+    first?: number;
+    isRead?: boolean;
+    sessionToken: string;
+  }) {
+    const { sessionToken, ...queryParameters } = parameters;
+    const user = await verifySessionToken(sessionToken);
+
+    const database = createDatabase(this.env.ethang_rss);
+
+    return feedArticlesQuery(database, queryParameters, user);
+  }
+
+  public override fetch(): Response {
+    return new Response("OK", { status: 200 });
+  }
+
+  public async markArticleRead(parameters: {
+    articleId: string;
+    isRead: boolean;
+    sessionToken: string;
+  }) {
+    const { sessionToken, ...queryParameters } = parameters;
+    const user = await verifySessionToken(sessionToken);
+
+    const database = createDatabase(this.env.ethang_rss);
+
+    return markArticleReadMutation(database, queryParameters, user);
+  }
+
+  public override async scheduled(event: ScheduledEvent) {
     const workflowId = `fetch-feeds-${event.scheduledTime}`;
 
     try {
-      await environment.FETCH_FEEDS_WORKFLOW.create({
+      await this.env.FETCH_FEEDS_WORKFLOW.create({
         id: workflowId
       });
     } catch (error) {
@@ -105,10 +118,10 @@ export default {
 
       if (!includes(message, "already exists")) {
         const apiKey = convertToString(
-          await getSecretValue(environment.LOGGER_API_KEY)
+          await getSecretValue(this.env.LOGGER_API_KEY)
         );
         const environmentName =
-          getEnvironmentString(environment, "ENVIRONMENT") ?? "production";
+          getEnvironmentString(this.env, "ENVIRONMENT") ?? "production";
         const logger = new LoggerClient({
           apiKey,
           environment: environmentName,
@@ -124,6 +137,29 @@ export default {
       }
     }
   }
-} satisfies ExportedHandler<Env>;
+
+  public async subscription(parameters: { feedId: string }) {
+    const database = createDatabase(this.env.ethang_rss);
+
+    return subscriptionQuery(database, parameters);
+  }
+
+  public async subscriptions(parameters: {
+    after?: string;
+    first?: number;
+    sessionToken: string;
+    sortBy?: {
+      direction: "ASC" | "DESC";
+      field: "PUBLISHED_AT" | "TITLE";
+    };
+  }) {
+    const { sessionToken, ...queryParameters } = parameters;
+    const user = await verifySessionToken(sessionToken);
+
+    const database = createDatabase(this.env.ethang_rss);
+
+    return subscriptionsQuery(database, queryParameters, user);
+  }
+}
 
 export { FetchFeedsWorkflow } from "./cron/fetch-feeds-workflow.ts";

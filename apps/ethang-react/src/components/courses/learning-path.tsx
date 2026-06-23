@@ -1,4 +1,3 @@
-import { gql } from "@ethang/graphql-types/__generated__";
 import { courses as coursesIntl } from "@ethang/intl/en/courses.ts";
 import {
   Badge,
@@ -10,12 +9,13 @@ import {
   Text
 } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import get from "lodash/get";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
 
-import { graphqlRequest } from "../../clients/graphql-client.ts";
+import { rpcRequest } from "../../clients/rpc-client.ts";
 import { Course } from "./course.tsx";
+
+const COURSES_SERVICE = "ethang_courses";
 
 type LearningPathProperties = {
   courseOffset: number;
@@ -47,20 +47,13 @@ const swebokFocusMap = new Map([
 export const learningPathQueryOptions = (learningPathId: string) => {
   return queryOptions({
     queryFn: async () => {
-      return graphqlRequest(
-        gql(`query LearningPath($learningPathId: ID!) {
-            learningPath(id: $learningPathId) {
-                url
-                name
-                id
-                swebokFocus
-                courses {
-                    id
-                }
-            }
-        }`),
-        { learningPathId }
-      );
+      return rpcRequest<{
+        courses: { id: string }[];
+        id: string;
+        name: string;
+        swebokFocus?: string;
+        url?: string;
+      }>(COURSES_SERVICE, "learningPath", { id: learningPathId });
     },
     queryKey: ["learningPath", learningPathId]
   });
@@ -74,11 +67,11 @@ export const LearningPath = ({
     learningPathQueryOptions(learningPathId)
   );
 
-  const url = get(data, ["learningPath", "url"]);
-  const name = get(data, ["learningPath", "name"]);
-  const swebokFocus = get(data, ["learningPath", "swebokFocus"]);
-  const courses = get(data, ["learningPath", "courses"]);
-  const courseLength = get(data, ["learningPath", "courses", "length"]);
+  const url = data?.url;
+  const name = data?.name;
+  const swebokFocus = data?.swebokFocus;
+  const courses = data?.courses;
+  const courseLength = data?.courses.length;
 
   return (
     <Skeleton loading={isPending}>

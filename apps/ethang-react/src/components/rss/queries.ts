@@ -1,39 +1,25 @@
-import { gql } from "@ethang/graphql-types/__generated__";
 import { infiniteQueryOptions } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
 
-import { graphqlRequest } from "../../clients/graphql-client.ts";
+import { rpcRequest } from "../../clients/rpc-client.ts";
+
+const RSS_SERVICE = "ethang_rss";
 
 export const subscriptionsOptions = () => {
   return infiniteQueryOptions({
     queryFn: async ({ pageParam }) => {
-      return graphqlRequest(
-        gql(`query Subscriptions($first: Int, $after: String, $sortBy: SubscriptionSortInput) {
-            subscriptions(first: $first, after: $after, sortBy: $sortBy) {
-                pageInfo {
-                    hasNextPage
-                    endCursor
-                }
-                edges {
-                    node {
-                        id
-                        title
-                    }
-                }
-            }
-        }`),
-        {
-          after: pageParam,
-          first: 10,
-          sortBy: { direction: "ASC", field: "TITLE" }
-        }
-      );
+      return rpcRequest<{
+        edges: { cursor: string; node: { id: string; title: string } }[];
+        pageInfo: { endCursor: null | string; hasNextPage: boolean };
+      }>(RSS_SERVICE, "subscriptions", {
+        after: pageParam,
+        first: 10,
+        sortBy: { direction: "ASC", field: "TITLE" }
+      });
     },
-    // query order
+    // query sorting
     getNextPageParam: (lastPage) => {
-      return lastPage.subscriptions.pageInfo.hasNextPage
-        ? lastPage.subscriptions.pageInfo.endCursor
-        : null;
+      return lastPage.pageInfo.hasNextPage ? lastPage.pageInfo.endCursor : null;
     },
     initialPageParam: null as null | string,
     queryKey: ["subscriptions"]
@@ -43,36 +29,27 @@ export const subscriptionsOptions = () => {
 export const allArticlesOptions = () => {
   return infiniteQueryOptions({
     queryFn: async ({ pageParam }) => {
-      return graphqlRequest(
-        gql(`query AllArticles($after: String, $isRead: Boolean) {
-          allArticles(after: $after, isRead: $isRead) {
-              pageInfo {
-                  hasNextPage
-                  endCursor
-              }
-              edges {
-                  node {
-                      id
-                      isRead
-                      title
-                      link
-                      publishedAt
-                      feed {
-                          id
-                          title
-                      }
-                  }
-              }
-          }
-      }`),
-        { after: pageParam, isRead: false }
-      );
+      return rpcRequest<{
+        edges: {
+          cursor: string;
+          node: {
+            feed: { id: string; title: string };
+            id: string;
+            isRead: boolean;
+            link: string;
+            publishedAt: null | string;
+            title: string;
+          };
+        }[];
+        pageInfo: { endCursor: null | string; hasNextPage: boolean };
+      }>(RSS_SERVICE, "allArticles", {
+        after: pageParam,
+        isRead: false
+      });
     },
-    // query order
+    // query sorting
     getNextPageParam: (lastPage) => {
-      return lastPage.allArticles.pageInfo.hasNextPage
-        ? lastPage.allArticles.pageInfo.endCursor
-        : null;
+      return lastPage.pageInfo.hasNextPage ? lastPage.pageInfo.endCursor : null;
     },
     initialPageParam: null as null | string,
     queryKey: ["allArticles"]
@@ -83,40 +60,28 @@ export const feedArticlesOptions = (feedId: null | string) => {
   return infiniteQueryOptions({
     enabled: !isNil(feedId),
     queryFn: async ({ pageParam }) => {
-      return graphqlRequest(
-        gql(`query FeedArticles($feedId: String!, $after: String, $first: Int) {
-            feedArticles(feedId: $feedId, after: $after, first: $first) {
-                pageInfo {
-                    hasNextPage
-                    endCursor
-                }
-                edges {
-                    node {
-                        id
-                        isRead
-                        title
-                        link
-                        publishedAt
-                        feed {
-                            id
-                            title
-                        }
-                    }
-                }
-            }
-        }`),
-        {
-          after: pageParam,
-          feedId: feedId ?? "",
-          first: 20
-        }
-      );
+      return rpcRequest<{
+        edges: {
+          cursor: string;
+          node: {
+            feed: { id: string; title: string };
+            id: string;
+            isRead: boolean;
+            link: string;
+            publishedAt: null | string;
+            title: string;
+          };
+        }[];
+        pageInfo: { endCursor: null | string; hasNextPage: boolean };
+      }>(RSS_SERVICE, "feedArticles", {
+        after: pageParam,
+        feedId: feedId ?? "",
+        first: 20
+      });
     },
-    // query order
+    // query sorting
     getNextPageParam: (lastPage) => {
-      return lastPage.feedArticles.pageInfo.hasNextPage
-        ? lastPage.feedArticles.pageInfo.endCursor
-        : null;
+      return lastPage.pageInfo.hasNextPage ? lastPage.pageInfo.endCursor : null;
     },
     initialPageParam: null as null | string,
     queryKey: ["feedArticles", feedId]

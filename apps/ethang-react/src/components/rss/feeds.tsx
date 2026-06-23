@@ -10,6 +10,14 @@ import { subscriptionsOptions } from "./queries.ts";
 import { rssStore } from "./rss-store.ts";
 import { decodeHtmlEntities } from "./utilities.ts";
 
+type SubscriptionEdge = {
+  cursor: string;
+  node: {
+    id: string;
+    title: string;
+  };
+};
+
 export const Feeds = () => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
     useInfiniteQuery(subscriptionsOptions());
@@ -20,8 +28,8 @@ export const Feeds = () => {
 
   const edges = isNil(data)
     ? []
-    : data.pages.flatMap((page) => {
-        return page.subscriptions.edges;
+    : data.pages.flatMap((page: { edges: SubscriptionEdge[] }) => {
+        return page.edges;
       });
 
   const sorted = edges.toSorted((a, b) => {

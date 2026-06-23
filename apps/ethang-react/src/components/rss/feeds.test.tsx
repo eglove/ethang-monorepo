@@ -21,9 +21,9 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
       let hasNextPage = false;
       if (null !== mockFeedsStore.queryData) {
         const { pages } = mockFeedsStore.queryData as {
-          pages: { subscriptions: { pageInfo: { hasNextPage: boolean } } }[];
+          pages: { pageInfo: { hasNextPage: boolean } }[];
         };
-        hasNextPage = pages[0]?.subscriptions.pageInfo.hasNextPage ?? false;
+        hasNextPage = pages[0]?.pageInfo.hasNextPage ?? false;
       }
       return {
         data: mockFeedsStore.queryData,
@@ -79,13 +79,11 @@ describe("Feeds", () => {
     mockFeedsStore.queryData = {
       pages: [
         {
-          subscriptions: {
-            edges: [
-              { node: { id: "feed-b", title: BETA_FEED_TITLE } },
-              { node: { id: "feed-a", title: ALPHA_FEED_TITLE } }
-            ],
-            pageInfo: { endCursor: null, hasNextPage: false }
-          }
+          edges: [
+            { node: { id: "feed-b", title: BETA_FEED_TITLE } },
+            { node: { id: "feed-a", title: ALPHA_FEED_TITLE } }
+          ],
+          pageInfo: { endCursor: null, hasNextPage: false }
         }
       ]
     };
@@ -103,10 +101,8 @@ describe("Feeds", () => {
     mockFeedsStore.queryData = {
       pages: [
         {
-          subscriptions: {
-            edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
-            pageInfo: { endCursor: null, hasNextPage: false }
-          }
+          edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
+          pageInfo: { endCursor: null, hasNextPage: false }
         }
       ]
     };
@@ -124,10 +120,8 @@ describe("Feeds", () => {
     mockFeedsStore.queryData = {
       pages: [
         {
-          subscriptions: {
-            edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
-            pageInfo: { endCursor: null, hasNextPage: false }
-          }
+          edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
+          pageInfo: { endCursor: null, hasNextPage: false }
         }
       ]
     };
@@ -144,10 +138,8 @@ describe("Feeds", () => {
     mockFeedsStore.queryData = {
       pages: [
         {
-          subscriptions: {
-            edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
-            pageInfo: { endCursor: "cursor-a", hasNextPage: true }
-          }
+          edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
+          pageInfo: { endCursor: "cursor-a", hasNextPage: true }
         }
       ]
     };
@@ -161,10 +153,8 @@ describe("Feeds", () => {
     mockFeedsStore.queryData = {
       pages: [
         {
-          subscriptions: {
-            edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
-            pageInfo: { endCursor: "cursor-a", hasNextPage: true }
-          }
+          edges: [{ node: { id: "feed-a", title: ALPHA_FEED_TITLE } }],
+          pageInfo: { endCursor: "cursor-a", hasNextPage: true }
         }
       ]
     };
