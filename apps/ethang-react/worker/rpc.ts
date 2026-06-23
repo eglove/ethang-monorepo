@@ -26,59 +26,39 @@ type RpcDispatchHandler = (
   parameters: Record<string, unknown>
 ) => Promise<unknown>;
 
-const coursesDispatchMap: Record<string, RpcDispatchHandler> = {
-  course: async (binding, parameters) => {
-    return binding.course(parameters);
-  },
-  courses: async (binding, parameters) => {
-    return binding.courses(parameters);
-  },
-  courseTracking: async (binding, parameters) => {
-    return binding.courseTracking(parameters);
-  },
-  courseTrackings: async (binding, parameters) => {
-    return binding.courseTrackings(parameters);
-  },
-  createCurriculum: async (binding, parameters) => {
-    return binding.createCurriculum(parameters);
-  },
-  curriculum: async (binding, parameters) => {
-    return binding.curriculum(parameters);
-  },
-  curriculums: async (binding, parameters) => {
-    return binding.curriculums(parameters);
-  },
-  cycleCourseTrackingStatus: async (binding, parameters) => {
-    return binding.cycleCourseTrackingStatus(parameters);
-  },
-  learningPath: async (binding, parameters) => {
-    return binding.learningPath(parameters);
-  },
-  learningPaths: async (binding, parameters) => {
-    return binding.learningPaths(parameters);
+const buildDispatchMap = (
+  methods: (keyof RpcBinding)[]
+): Record<string, RpcDispatchHandler> => {
+  const map: Record<string, RpcDispatchHandler> = {};
+  for (const method of methods) {
+    map[method] = async (binding, parameters) => {
+      return binding[method](parameters);
+    };
   }
+  return map;
 };
 
-const rssDispatchMap: Record<string, RpcDispatchHandler> = {
-  addSubscription: async (binding, parameters) => {
-    return binding.addSubscription(parameters);
-  },
-  allArticles: async (binding, parameters) => {
-    return binding.allArticles(parameters);
-  },
-  feedArticles: async (binding, parameters) => {
-    return binding.feedArticles(parameters);
-  },
-  markArticleRead: async (binding, parameters) => {
-    return binding.markArticleRead(parameters);
-  },
-  subscription: async (binding, parameters) => {
-    return binding.subscription(parameters);
-  },
-  subscriptions: async (binding, parameters) => {
-    return binding.subscriptions(parameters);
-  }
-};
+const coursesDispatchMap = buildDispatchMap([
+  "course",
+  "courses",
+  "courseTracking",
+  "courseTrackings",
+  "createCurriculum",
+  "curriculum",
+  "curriculums",
+  "cycleCourseTrackingStatus",
+  "learningPath",
+  "learningPaths"
+]);
+
+const rssDispatchMap = buildDispatchMap([
+  "addSubscription",
+  "allArticles",
+  "feedArticles",
+  "markArticleRead",
+  "subscription",
+  "subscriptions"
+]);
 
 const rpcServiceDispatch = async (
   environment: Env,
