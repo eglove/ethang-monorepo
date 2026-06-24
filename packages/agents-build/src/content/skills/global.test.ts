@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 import { GLOBAL_SKILLS } from "./global.ts";
 
 describe("GLOBAL_SKILLS verification", () => {
-
   it("should contain the swebok skill with resources", () => {
     const swebok = find(GLOBAL_SKILLS, (skill) => {
       return "swebok" === skill.name;

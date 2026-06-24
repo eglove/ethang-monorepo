@@ -15,7 +15,7 @@
     "styled-components": "^6.4.2"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.22.1",
+    "@ethang/eslint-config": "^25.22.2",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.2",
@@ -23,7 +23,7 @@
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.5.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.16"
+    "vite": "^8.1.0"
   },
   "engines": {
     "node": ">=24"

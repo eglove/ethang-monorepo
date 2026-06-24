@@ -21,7 +21,7 @@
     "zod": "^4.4.1"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.22.1",
+    "@ethang/eslint-config": "^25.22.2",
     "@types/lodash": "^4.17.24",
     "@types/node": "^26.0.0",
     "@vitest/coverage-v8": "^4.1.9",

@@ -324,6 +324,8 @@ describe("skills compilation and validation", () => {
     expect(parsed["mcpServers"]).toBeDefined();
     const mcpServers = parsed["mcpServers"] as Record<string, unknown>;
     expect(mcpServers["JetBrains IDE"]).toBeDefined();
+    expect(mcpServers["MDN"]).toBeDefined();
+    expect(mcpServers["codebase-memory-mcp"]).toBeDefined();
   });
 
   it("writes a manifest with generated file paths", () => {

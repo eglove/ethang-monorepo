@@ -14,6 +14,7 @@ import {
   rmSync,
   writeFileSync
 } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 import type {
@@ -84,6 +85,14 @@ const processMcpConfig = (
         mcpServers: {
           "JetBrains IDE": {
             url: "http://127.0.0.1:64506/sse"
+          },
+          "MDN": {
+            type: "http",
+            url: "https://mcp.mdn.mozilla.net/"
+          },
+          "codebase-memory-mcp": {
+            command: path.join(os.homedir(), ".local", "bin", "codebase-memory-mcp.exe"),
+            args: []
           }
         }
       },
