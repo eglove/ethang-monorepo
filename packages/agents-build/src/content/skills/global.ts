@@ -10,7 +10,6 @@ import { ripgrep } from "./ripgrep.ts";
 import { saraCli } from "./sara-cli.ts";
 import { sdlc } from "./sdlc.ts";
 import { swebok } from "./swebok/swebok.ts";
-import { webstormMcp } from "./webstorm-mcp/webstorm-mcp.ts";
 
 export const GLOBAL_SKILLS = [
   sdlc,
@@ -19,7 +18,6 @@ export const GLOBAL_SKILLS = [
   ddd,
   commit,
   lint,
-  webstormMcp,
   ripgrep,
   jq,
   everythingSearch,

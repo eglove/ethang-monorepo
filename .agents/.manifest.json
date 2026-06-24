@@ -1,6 +1,5 @@
 {
   "files": [
-    ".agents/rules/tool-hierarchy.md",
     ".agents/skills/sdlc/SKILL.md",
     ".agents/skills/swebok/SKILL.md",
     ".agents/skills/swebok/resources/architecture-description.md",
@@ -123,7 +122,6 @@
     ".agents/skills/ddd/resources/legacy-modular-systems.md",
     ".agents/skills/commit/SKILL.md",
     ".agents/skills/lint/SKILL.md",
-    ".agents/skills/webstorm-mcp/SKILL.md",
     ".agents/skills/ripgrep/SKILL.md",
     ".agents/skills/jq/SKILL.md",
     ".agents/skills/everything-search/SKILL.md",

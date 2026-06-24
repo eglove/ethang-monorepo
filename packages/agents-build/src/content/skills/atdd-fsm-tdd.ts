@@ -34,49 +34,49 @@ export const atddFsmTdd = defineSkill({
               text: "Write human-readable **Given-When-Then BDD scenarios** to represent business expectations."
             },
             {
-              text: String.raw`Model the component as a **Finite-State Machine (FSM)**. Formally specify the states $S$, inputs/events $I$, outputs/actions $O$, and the transition function $f: S \times I \to S$. Use a table (State Table) or transition graph to clarify logic.`
+              text: "Accept a **general prompt** (free-form task description) from the user. Before modeling, ask clarifying questions to ensure full understanding — identify actors, triggers, constraints, and expected outcomes. Then, model the component as a **Finite-State Machine (FSM)** by deriving and formally specifying the states `S`, inputs/events `I`, outputs/actions `O`, the transition function `f: S \u{D7} I \u{2192} S`, and the initial state `s\u{2080}`. Use a table (State Table) or transition graph to clarify logic."
             }
           ],
-          text: "📋 **Phase 1: ATDD Elicitation and Modeling**"
+          text: "\u{1F4CB} **Phase 1: ATDD Elicitation, Clarification & Modeling**"
         },
         {
           children: [
             {
-              text: "Before implementing any feature logic, write **failing Vitest tests (Red)**."
+              text: "Before implementing any feature logic, write **failing Vitest tests (Red)**. Treat each test as a **scientific hypothesis**: define the expected failure mode (e.g., `expect(transition).toThrow(InvalidStateError)`) before any implementation exists."
             },
             {
-              text: "Ensure test coverage targets **100% of defined state transitions** (positive paths)."
+              text: "Ensure test coverage targets **100% of defined state transitions** (positive paths). Each hypothesis must assert a specific, predictable failure \u{2014} not a generic error."
             },
             {
-              text: "Create test cases for **invalid state-input pairs** (negative exception paths) to verify exception handling and error state transitions."
+              text: "Create test cases for **invalid state-input pairs** (negative exception paths) to verify exception handling and error state transitions. Verify each test fails for the **correct reason** before proceeding."
             }
           ],
-          text: "🔴 **Phase 2: The Red Phase (Failing Transition Tests)**"
+          text: "\u{1F534} **Phase 2: The Red Phase (Hypothesis Tests)**"
         },
         {
           children: [
             {
-              text: "Write the **minimal production code** or update the state transition table/matrix to pass the failing tests (Green)."
+              text: "Write the **minimal production code** or update the state transition table/matrix to pass the failing tests (Green). This step **proves the hypothesis** \u{2014} the test transitions from red to green, confirming the behavior matches the specification."
             },
             {
-              text: "Avoid writing premature logic or excess branch statements outside the current tests."
+              text: "Avoid writing premature logic or excess branch statements outside the current tests. Every line of code must be justified by a failing test that now passes."
             }
           ],
-          text: "🟢 **Phase 3: The Green Phase (Minimal Code)**"
+          text: "\u{1F7E2} **Phase 3: The Green Phase (Hypothesis Proof)**"
         },
         {
           children: [
             {
-              text: "Clean up code smells (e.g., God Classes, Long Methods, duplicate code) and optimize logic structure."
+              text: "Identify and fix **specific code smells**: extract duplicated logic into shared functions, break Long Methods into smaller units, and collapse God Classes into focused modules."
             },
             {
-              text: "Apply **State Minimization** rules to merge equivalent states and simplify transitions without altering behavior."
+              text: "Apply **State Minimization** rules to merge equivalent states and simplify transitions without altering behavior. Document the before/after state count."
             },
             {
-              text: "Run the Vitest regression suite continuously to guarantee **behavior preservation** (zero regressions)."
+              text: "Run the Vitest regression suite continuously to guarantee **behavior preservation** (zero regressions). If any test fails during refactor, revert the last change and try a smaller step."
             }
           ],
-          text: "🔄 **Phase 4: Refactor (Preventive Maintenance)**"
+          text: "\u{1F504} **Phase 4: Refactor (Targeted Improvement)**"
         }
       ],
       type: "unorderedList"
@@ -92,7 +92,7 @@ export const atddFsmTdd = defineSkill({
           text: "Have all states, inputs (events), and outputs (actions) been explicitly enumerated?"
         },
         {
-          text: "Is there a designated initial state $s_0$ that the system initializes to?"
+          text: "Is there a designated initial state `s\u{2080}` that the system initializes to?"
         },
         {
           text: "Are there tests verifying both positive paths (valid transitions) and negative paths (invalid events in a state)?"
