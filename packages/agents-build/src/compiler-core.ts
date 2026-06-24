@@ -1,6 +1,7 @@
 import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
 import endsWith from "lodash/endsWith.js";
 import filter from "lodash/filter.js";
+import forEach from "lodash/forEach.js";
 import isArray from "lodash/isArray.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
@@ -15,9 +16,13 @@ import {
 } from "node:fs";
 import path from "node:path";
 
-import type { RuleDefinition, SkillDefinition } from "./define.ts";
+import type {
+  CommandDefinition,
+  RuleDefinition,
+  SkillDefinition
+} from "./define.ts";
 
-import { ruleMarkdown, skillMarkdown } from "./render.ts";
+import { commandMarkdown, ruleMarkdown, skillMarkdown } from "./render.ts";
 import {
   findDuplicateRuleFilenames,
   findForbiddenStrings,
@@ -26,6 +31,8 @@ import {
 } from "./validate.ts";
 
 export type CompilerConfig = {
+  commands?: readonly CommandDefinition[];
+  commandsDir?: string;
   manifestPath?: string;
   mcpConfigPath?: string;
   rootDir: string;
@@ -108,6 +115,26 @@ const processRules = (
   }
 };
 
+const processCommands = (
+  config: CompilerConfig,
+  failures: string[],
+  write: (absolutePath: string, content: string) => void
+): void => {
+  const { commands, commandsDir } = config;
+  if (undefined === commands || undefined === commandsDir) {
+    return;
+  }
+  for (const command of commands) {
+    const markdown = commandMarkdown(command);
+
+    if (!validationHelpers.isValidFrontmatterBlock(markdown)) {
+      failures.push(`commands/${command.name}.md: malformed frontmatter block`);
+    }
+
+    write(path.join(commandsDir, `${command.name}.md`), markdown);
+  }
+};
+
 const processSkills = (
   config: CompilerConfig,
   failures: string[],
@@ -150,9 +177,38 @@ const validateFileContent = (filePath: string, failures: string[]): void => {
   }
 };
 
+const scanDirectory = (directory: string, failures: string[]): void => {
+  const isExists = fsProxy.existsSync(directory);
+
+  if (!isExists) {
+    return;
+  }
+
+  for (const token of validationHelpers.findUnresolvedTokens(directory)) {
+    failures.push(`unresolved {{sections}} token in ${token}`);
+  }
+
+  const files = filter(
+    fsProxy.readdirSync(directory, { recursive: true }),
+    isString
+  );
+  const targetFiles = filter(files, (file) => {
+    return endsWith(file, ".md") || endsWith(file, ".json");
+  });
+
+  for (const file of targetFiles) {
+    validateFileContent(path.join(directory, file), failures);
+  }
+};
+
 const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   const directoriesToScan = [config.rulesDir];
-  const { skills, skillsDir } = config;
+  const { commands, commandsDir, skills, skillsDir } = config;
+  if (undefined !== commands && undefined !== commandsDir) {
+    forEach(commands, (command) => {
+      directoriesToScan.push(path.join(commandsDir, command.name));
+    });
+  }
   if (undefined !== skills && undefined !== skillsDir) {
     for (const skill of skills) {
       directoriesToScan.push(path.join(skillsDir, skill.name));
@@ -160,25 +216,7 @@ const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   }
 
   for (const directory of directoriesToScan) {
-    const isExists = fsProxy.existsSync(directory);
-
-    if (isExists) {
-      for (const token of validationHelpers.findUnresolvedTokens(directory)) {
-        failures.push(`unresolved {{sections}} token in ${token}`);
-      }
-
-      const files = filter(
-        fsProxy.readdirSync(directory, { recursive: true }),
-        isString
-      );
-      const targetFiles = filter(files, (file) => {
-        return endsWith(file, ".md") || endsWith(file, ".json");
-      });
-
-      for (const file of targetFiles) {
-        validateFileContent(path.join(directory, file), failures);
-      }
-    }
+    scanDirectory(directory, failures);
   }
 };
 
@@ -234,6 +272,9 @@ const cleanFileAndEmptyParents = (
   if (config.skillsDir !== undefined) {
     stopDirectories.add(path.resolve(config.skillsDir));
   }
+  if (config.commandsDir !== undefined) {
+    stopDirectories.add(path.resolve(config.commandsDir));
+  }
 
   let shouldContinue = true;
   while (shouldContinue) {
@@ -268,6 +309,7 @@ export const compile = (config: CompilerConfig): void => {
   };
 
   processRules(config, failures, write);
+  processCommands(config, failures, write);
   processSkills(config, failures, write);
   processMcpConfig(config, write);
   scanDirectories(config, failures);

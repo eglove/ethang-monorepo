@@ -23,8 +23,11 @@ import {
 } from "./compiler-core.ts";
 import {
   BAD_FRONTMATTER_SKILL,
+  COMMAND_CONTENT,
+  COMMAND_DESCRIPTION,
   SKILL_CONTENT,
   SKILL_DESCRIPTION,
+  TEST_COMMAND_NAME,
   TEST_SKILL_NAME
 } from "./test-constants.ts";
 
@@ -44,6 +47,37 @@ describe("compilation", () => {
 
   afterEach(() => {
     rmSync(temporaryDirectory, { force: true, recursive: true });
+  });
+
+  it("creates generated command files", () => {
+    const commandsDirectory = path.join(temporaryDirectory, "commands");
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+
+    const config: CompilerConfig = {
+      commands: [
+        {
+          content: COMMAND_CONTENT,
+          description: COMMAND_DESCRIPTION,
+          name: TEST_COMMAND_NAME
+        }
+      ],
+      commandsDir: commandsDirectory,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory
+    };
+
+    compile(config);
+
+    expect(
+      existsSync(path.join(commandsDirectory, `${TEST_COMMAND_NAME}.md`))
+    ).toBe(true);
+    const content = readFileSync(
+      path.join(commandsDirectory, `${TEST_COMMAND_NAME}.md`),
+      utf8Encoding
+    );
+    expect(content).toContain(`description: ${COMMAND_DESCRIPTION}`);
+    expect(content).toContain(COMMAND_CONTENT);
   });
 
   it("creates generated rule files", () => {
@@ -348,7 +382,7 @@ describe("skills compilation and validation", () => {
   });
 });
 
-describe("file lifecycle and error handling", () => {
+describe("file lifecycle", () => {
   let temporaryDirectory = "";
 
   beforeEach(() => {
@@ -429,37 +463,54 @@ describe("file lifecycle and error handling", () => {
     expect(existsSync(path.join(rulesDirectory, "new-rule.md"))).toBe(true);
   });
 
-  it("handles absolute manifest paths and missing skillsDir", () => {
+  it("cleans up previously manifest-tracked command files before rebuilding", () => {
+    const commandsDirectory = path.join(temporaryDirectory, "commands");
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
     const manifestPath = path.join(temporaryDirectory, manifestFileName);
-    const manifestDirectory = path.dirname(manifestPath);
-    const absoluteFilePath = path.join(
-      temporaryDirectory,
-      rulesDirectoryName,
-      "test-rule.md"
-    );
+    const staleCommandPath = path.join(commandsDirectory, "stale-command.md");
 
-    mkdirSync(manifestDirectory, { recursive: true });
-    mkdirSync(path.dirname(absoluteFilePath), { recursive: true });
-    writeFileSync(absoluteFilePath, "test content");
-
-    writeFileSync(
-      manifestPath,
-      JSON.stringify({
-        files: [absoluteFilePath.replaceAll("\\", "/")]
-      }),
-      "utf8"
-    );
-
-    const config: CompilerConfig = {
+    const config1: CompilerConfig = {
+      commands: [
+        {
+          content: "stale command",
+          description: "stale command",
+          name: "stale-command"
+        }
+      ],
+      commandsDir: commandsDirectory,
       manifestPath,
       rootDir: temporaryDirectory,
       rules: [],
-      rulesDir: path.join(temporaryDirectory, rulesDirectoryName)
+      rulesDir: rulesDirectory
     };
 
-    compile(config);
+    compile(config1);
+    expect(existsSync(staleCommandPath)).toBe(true);
 
-    expect(existsSync(absoluteFilePath)).toBe(false);
+    const config2: CompilerConfig = {
+      commands: [],
+      commandsDir: commandsDirectory,
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory
+    };
+
+    compile(config2);
+
+    expect(existsSync(staleCommandPath)).toBe(false);
+  });
+});
+
+describe("error handling", () => {
+  let temporaryDirectory = "";
+
+  beforeEach(() => {
+    temporaryDirectory = mkdtempSync(path.join(tmpdir(), testDirectoryPrefix));
+  });
+
+  afterEach(() => {
+    rmSync(temporaryDirectory, { force: true, recursive: true });
   });
 
   it("handles readdirSync error during parent directory cleanup gracefully", () => {
@@ -530,5 +581,149 @@ describe("file lifecycle and error handling", () => {
     }
 
     vi.restoreAllMocks();
+  });
+
+  it("records a failure if a command has a malformed frontmatter block", () => {
+    const commandsDirectory = path.join(temporaryDirectory, "commands");
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+
+    const config: CompilerConfig = {
+      commands: [
+        {
+          content: COMMAND_CONTENT,
+          description: COMMAND_DESCRIPTION,
+          name: TEST_COMMAND_NAME
+        }
+      ],
+      commandsDir: commandsDirectory,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory
+    };
+
+    vi.spyOn(validationHelpers, "isValidFrontmatterBlock").mockReturnValue(
+      false
+    );
+
+    let thrownError: unknown;
+    try {
+      compile(config);
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toBeInstanceOf(CompileError);
+    if (thrownError instanceof CompileError) {
+      expect(thrownError.failures).toContain(
+        `commands/${TEST_COMMAND_NAME}.md: malformed frontmatter block`
+      );
+    }
+
+    vi.restoreAllMocks();
+  });
+});
+
+describe("manifest edge cases", () => {
+  let temporaryDirectory = "";
+
+  beforeEach(() => {
+    temporaryDirectory = mkdtempSync(path.join(tmpdir(), testDirectoryPrefix));
+  });
+
+  afterEach(() => {
+    rmSync(temporaryDirectory, { force: true, recursive: true });
+  });
+
+  it("handles absolute manifest paths and missing skillsDir", () => {
+    const manifestPath = path.join(temporaryDirectory, manifestFileName);
+    const manifestDirectory = path.dirname(manifestPath);
+    const absoluteFilePath = path.join(
+      temporaryDirectory,
+      rulesDirectoryName,
+      "test-rule.md"
+    );
+
+    mkdirSync(manifestDirectory, { recursive: true });
+    mkdirSync(path.dirname(absoluteFilePath), { recursive: true });
+    writeFileSync(absoluteFilePath, "test content");
+
+    writeFileSync(
+      manifestPath,
+      JSON.stringify({
+        files: [absoluteFilePath.replaceAll("\\", "/")]
+      }),
+      "utf8"
+    );
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: path.join(temporaryDirectory, rulesDirectoryName)
+    };
+
+    compile(config);
+
+    expect(existsSync(absoluteFilePath)).toBe(false);
+  });
+
+  it("handles manifest without a files property", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const manifestPath = path.join(temporaryDirectory, manifestFileName);
+
+    writeFileSync(
+      manifestPath,
+      JSON.stringify({ notFiles: "some value" }),
+      "utf8"
+    );
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [
+        {
+          content: repeat("a", 10_500),
+          filename: "some-rule",
+          trigger: alwaysOnTrigger
+        }
+      ],
+      rulesDir: rulesDirectory
+    };
+
+    expect(() => {
+      compile(config);
+    }).not.toThrow();
+
+    expect(existsSync(path.join(rulesDirectory, "some-rule.md"))).toBe(true);
+  });
+
+  it("handles manifest with malformed files property (not an array)", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const manifestPath = path.join(temporaryDirectory, manifestFileName);
+
+    writeFileSync(
+      manifestPath,
+      JSON.stringify({ files: "not-an-array" }),
+      "utf8"
+    );
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [
+        {
+          content: repeat("a", 10_500),
+          filename: "some-rule",
+          trigger: alwaysOnTrigger
+        }
+      ],
+      rulesDir: rulesDirectory
+    };
+
+    expect(() => {
+      compile(config);
+    }).not.toThrow();
+
+    expect(existsSync(path.join(rulesDirectory, "some-rule.md"))).toBe(true);
   });
 });

@@ -1,6 +1,6 @@
 import type { MarkdownBlock } from "@ethang/markdown-generator/markdown-generator.js";
 
-import { defineSkill } from "../../define.ts";
+import { defineCommand } from "../../define.ts";
 
 const blocks: MarkdownBlock[] = [
   {
@@ -9,7 +9,7 @@ const blocks: MarkdownBlock[] = [
     type: "header"
   },
   {
-    text: "This skill guides you through the process of staging and committing changes within this repository. It enforces structured git hygiene, Conventional Commits specification, RFC 2119 key terminology, and an interactive confirmation flow.",
+    text: "This command guides you through the process of staging and committing changes within this repository. It enforces structured git hygiene, Conventional Commits specification, RFC 2119 key terminology, and an interactive confirmation flow.",
     type: "text"
   },
   { level: 2, text: "Staging & Confirmation Flow", type: "header" },
@@ -25,23 +25,23 @@ const blocks: MarkdownBlock[] = [
             text: "Run `git status --porcelain` or `git status` to check all modified, untracked, and deleted files."
           }
         ],
-        text: "🔍 **Inspect Workspace Changes**:"
+        text: "\u{1F50D} **Inspect Workspace Changes**:"
       },
       {
         children: [
           {
             children: [
               {
-                text: "🟢 **Staged**: Files that are currently staged or planned to be staged."
+                text: "\u{1F7E2} **Staged**: Files that are currently staged or planned to be staged."
               },
               {
-                text: "🔴 **Unstaged/Untracked**: Files that are modified or untracked but will NOT be staged."
+                text: "\u{1F534} **Unstaged/Untracked**: Files that are modified or untracked but will NOT be staged."
               }
             ],
             text: "Present a clear, emoji-bulleted summary separating what will be staged from what won't:"
           }
         ],
-        text: "📋 **Categorize and Summarize Changes**:"
+        text: "\u{1F4CB} **Categorize and Summarize Changes**:"
       },
       {
         children: [
@@ -52,7 +52,7 @@ const blocks: MarkdownBlock[] = [
             text: "Do NOT run `git commit` until the user approves the staged list."
           }
         ],
-        text: "💬 **Ask for User Confirmation**:"
+        text: "\u{1F4AC} **Ask for User Confirmation**:"
       }
     ],
     type: "unorderedList"
@@ -83,7 +83,7 @@ const blocks: MarkdownBlock[] = [
             text: "A description MUST follow the colon and space. The description is a short summary of the code changes, written in lowercase."
           }
         ],
-        text: "📌 **Commit Header Structure**:"
+        text: "\u{1F4CC} **Commit Header Structure**:"
       },
       {
         children: [
@@ -91,7 +91,7 @@ const blocks: MarkdownBlock[] = [
             text: "A breaking change MUST be indicated by a `!` immediately after the type/scope (e.g., `feat(api)!: remove deprecated endpoints`), or by starting the body/footer with `BREAKING CHANGE:`."
           }
         ],
-        text: "⚡ **Breaking Changes**:"
+        text: "\u{26A1} **Breaking Changes**:"
       },
       {
         children: [
@@ -102,7 +102,7 @@ const blocks: MarkdownBlock[] = [
             text: "One or more footers MAY be provided after another blank line (e.g., `Refs: #123`)."
           }
         ],
-        text: "📝 **Commit Body & Footer**:"
+        text: "\u{1F4DD} **Commit Body & Footer**:"
       },
       {
         children: [
@@ -110,7 +110,7 @@ const blocks: MarkdownBlock[] = [
             text: "In this repository, the commit body/footers SHOULD use the descriptive `[Actor]: [Action]` format (e.g., `Agent: Implement commit skill`)."
           }
         ],
-        text: "🤖 **Actor-Action Format**:"
+        text: "\u{1F916} **Actor-Action Format**:"
       }
     ],
     type: "unorderedList"
@@ -119,19 +119,23 @@ const blocks: MarkdownBlock[] = [
   {
     items: [
       {
-        text: "⚠️ **MUST/SHALL/REQUIRED**: Indicates an absolute requirement. Failing to do this violates the repository's git hygiene rules."
+        text: "\u{26A0}\u{FE0F} **MUST/SHALL/REQUIRED**: Indicates an absolute requirement. Failing to do this violates the repository's git hygiene rules."
       },
-      { text: "🚫 **MUST NOT/SHALL NOT**: Indicates an absolute prohibition." },
       {
-        text: "💡 **SHOULD/RECOMMENDED**: Indicates a highly recommended best practice, though valid exceptions may exist."
+        text: "\u{1F6AB} **MUST NOT/SHALL NOT**: Indicates an absolute prohibition."
       },
-      { text: "⚙️ **MAY/OPTIONAL**: Indicates a truly optional action." }
+      {
+        text: "\u{1F4A1} **SHOULD/RECOMMENDED**: Indicates a highly recommended best practice, though valid exceptions may exist."
+      },
+      {
+        text: "\u{2699}\u{FE0F} **MAY/OPTIONAL**: Indicates a truly optional action."
+      }
     ],
     type: "unorderedList"
   }
 ];
 
-export const commit = defineSkill({
+export const commit = defineCommand({
   content: blocks,
   description:
     "Adds and commits uncommitted changes in the repository. Confirms staged vs unstaged files with the user, enforcing Conventional Commits, RFC 2119 key terminology, and emoji bullet points.",

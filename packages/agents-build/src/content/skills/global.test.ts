@@ -57,35 +57,7 @@ describe("GLOBAL_SKILLS verification", () => {
     expect(dddSkill?.resources?.length).toBe(6);
   });
 
-  it("should contain the commit skill", () => {
-    const commitSkill = find(GLOBAL_SKILLS, (skill) => {
-      return "commit" === skill.name;
-    });
-
-    expect(commitSkill).toBeDefined();
-    expect(commitSkill?.name).toBe("commit");
-
-    const content = getSkillContent(commitSkill);
-    expect(content).toContain(
-      "Git Staging and Commit Workflow Guide (/commit)"
-    );
-    expect(content).toContain("Conventional Commits specification");
-    expect(content).toContain("RFC 2119");
-  });
-
-  it("should contain the lint skill", () => {
-    const lintSkill = find(GLOBAL_SKILLS, (skill) => {
-      return "lint" === skill.name;
-    });
-
-    expect(lintSkill).toBeDefined();
-    expect(lintSkill?.name).toBe("lint");
-
-    const content = getSkillContent(lintSkill);
-    expect(content).toContain("ESLint Fixer and Config Manager (/lint)");
-  });
-
-  it("should have exactly twelve registered skills", () => {
-    expect(GLOBAL_SKILLS).toHaveLength(12);
+  it("should have exactly nine registered skills (atdd-fsm-tdd, commit, and lint moved to commands)", () => {
+    expect(GLOBAL_SKILLS).toHaveLength(9);
   });
 });
