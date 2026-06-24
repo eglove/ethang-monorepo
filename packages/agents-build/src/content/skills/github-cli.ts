@@ -14,7 +14,7 @@ export const githubCli = defineSkill({
       type: "text"
     },
     {
-      text: "[!IMPORTANT]\nWithin this workspace, you must ALWAYS prefix your `gh` commands with `rtk` (e.g., `rtk gh pr list`) to compress tabular data into inline ASCII and optimize the token budget.",
+      text: "[!IMPORTANT]\nWithin this workspace, use `gh` directly for GitHub CLI operations (e.g., `gh pr list`).",
       type: "quote"
     },
     {
@@ -51,7 +51,7 @@ export const githubCli = defineSkill({
       type: "text"
     },
     {
-      code: 'rtk gh pr create --title "feat: add user authentication" --body "Implements JWT-based user authentication. Closes #42."',
+      code: 'gh pr create --title "feat: add user authentication" --body "Implements JWT-based user authentication. Closes #42."',
       language: "bash",
       type: "codeBlock"
     },
@@ -61,11 +61,11 @@ export const githubCli = defineSkill({
       type: "header"
     },
     {
-      text: "Lists open pull requests in the repository. The `rtk` wrapper will compress the output tables.\n**Example Usage:**",
+      text: "Lists open pull requests in the repository. **Example Usage:**",
       type: "text"
     },
     {
-      code: "rtk gh pr list --limit 10",
+      code: "gh pr list --limit 10",
       language: "bash",
       type: "codeBlock"
     },
@@ -79,7 +79,7 @@ export const githubCli = defineSkill({
       type: "text"
     },
     {
-      code: "rtk gh pr view 123",
+      code: "gh pr view 123",
       language: "bash",
       type: "codeBlock"
     },
@@ -98,7 +98,7 @@ export const githubCli = defineSkill({
       type: "text"
     },
     {
-      code: "rtk gh run view <run-id> --log",
+      code: "gh run view <run-id> --log",
       language: "bash",
       type: "codeBlock"
     },
@@ -112,7 +112,7 @@ export const githubCli = defineSkill({
       type: "text"
     },
     {
-      code: "rtk gh run list --limit 5",
+      code: "gh run list --limit 5",
       language: "bash",
       type: "codeBlock"
     },
@@ -131,7 +131,7 @@ export const githubCli = defineSkill({
       type: "text"
     },
     {
-      code: 'rtk gh issue create --title "Bug: Login form crashes on submit" --body "When submitting the form with an empty password, the app crashes."\n``\n\n## CLI Help Reference\n\n\n\n\n```text\nWork seamlessly with GitHub from the command line.\n\nUSAGE\n  gh <command> <subcommand> [flags]\n\nCORE COMMANDS\n  auth:          Authenticate gh and git with GitHub\n  browse:        Open repositories, issues, pull requests, and more in the browser\n  codespace:     Connect to and manage codespaces\n  discussion:    Work with GitHub Discussions (preview)\n  gist:          Manage gists\n  issue:         Manage issues\n  org:           Manage organizations\n  pr:            Manage pull requests\n  project:       Work with GitHub Projects.\n  release:       Manage releases\n  repo:          Manage repositories\n  skill:         Install and manage agent skills (preview)\n\nGITHUB ACTIONS COMMANDS\n  cache:         Manage GitHub Actions caches\n  run:           View details about workflow runs\n  workflow:      View details about GitHub Actions workflows\n\nALIAS COMMANDS\n  co:            Alias for "pr checkout"\n\nADDITIONAL COMMANDS\n  agent-task:    Work with agent tasks (preview)\n  alias:         Create command shortcuts\n  api:           Make an authenticated GitHub API request\n  attestation:   Work with artifact attestations\n  completion:    Generate shell completion scripts\n  config:        Manage configuration for gh\n  copilot:       Run the GitHub Copilot CLI (preview)\n  extension:     Manage gh extensions\n  gpg-key:       Manage GPG keys\n  label:         Manage labels\n  licenses:      View third-party license information\n  preview:       Execute previews for gh features\n  ruleset:       View info about repo rulesets\n  search:        Search for repositories, issues, and pull requests\n  secret:        Manage GitHub secrets\n  ssh-key:       Manage SSH keys\n  status:        Print information about relevant issues, pull requests, and notifications across repositories\n  variable:      Manage GitHub Actions variables\n\nHELP TOPICS\n  accessibility: Learn about GitHub CLI\'s accessibility experiences\n  actions:       Learn about working with GitHub Actions\n  environment:   Environment variables that can be used with gh\n  exit-codes:    Exit codes used by gh\n  formatting:    Formatting options for JSON data exported from gh\n  mintty:        Information about using gh with MinTTY\n  reference:     A comprehensive reference of all gh commands\n  telemetry:     Information about telemetry in gh\n\nFLAGS\n  --help      Show help for command\n  --version   Show gh version\n\nEXAMPLES\n  $ gh issue create\n  $ gh repo clone cli/cli\n  $ gh pr checkout 321\n\nLEARN MORE\n  Use `gh <command> <subcommand> --help` for more information about a command.\n  Read the manual at https://cli.github.com/manual\n  Learn about exit codes using `gh help exit-codes`\n  Learn about accessibility experiences using `gh help accessibility`\n\n',
+      code: 'gh issue create --title "Bug: Login form crashes on submit" --body "When submitting the form with an empty password, the app crashes."\n``\n\n## CLI Help Reference\n\n\n\n\n```text\nWork seamlessly with GitHub from the command line.\n\nUSAGE\n  gh <command> <subcommand> [flags]\n\nCORE COMMANDS\n  auth:          Authenticate gh and git with GitHub\n  browse:        Open repositories, issues, pull requests, and more in the browser\n  codespace:     Connect to and manage codespaces\n  discussion:    Work with GitHub Discussions (preview)\n  gist:          Manage gists\n  issue:         Manage issues\n  org:           Manage organizations\n  pr:            Manage pull requests\n  project:       Work with GitHub Projects.\n  release:       Manage releases\n  repo:          Manage repositories\n  skill:         Install and manage agent skills (preview)\n\nGITHUB ACTIONS COMMANDS\n  cache:         Manage GitHub Actions caches\n  run:           View details about workflow runs\n  workflow:      View details about GitHub Actions workflows\n\nALIAS COMMANDS\n  co:            Alias for "pr checkout"\n\nADDITIONAL COMMANDS\n  agent-task:    Work with agent tasks (preview)\n  alias:         Create command shortcuts\n  api:           Make an authenticated GitHub API request\n  attestation:   Work with artifact attestations\n  completion:    Generate shell completion scripts\n  config:        Manage configuration for gh\n  copilot:       Run the GitHub Copilot CLI (preview)\n  extension:     Manage gh extensions\n  gpg-key:       Manage GPG keys\n  label:         Manage labels\n  licenses:      View third-party license information\n  preview:       Execute previews for gh features\n  ruleset:       View info about repo rulesets\n  search:        Search for repositories, issues, and pull requests\n  secret:        Manage GitHub secrets\n  ssh-key:       Manage SSH keys\n  status:        Print information about relevant issues, pull requests, and notifications across repositories\n  variable:      Manage GitHub Actions variables\n\nHELP TOPICS\n  accessibility: Learn about GitHub CLI\'s accessibility experiences\n  actions:       Learn about working with GitHub Actions\n  environment:   Environment variables that can be used with gh\n  exit-codes:    Exit codes used by gh\n  formatting:    Formatting options for JSON data exported from gh\n  mintty:        Information about using gh with MinTTY\n  reference:     A comprehensive reference of all gh commands\n  telemetry:     Information about telemetry in gh\n\nFLAGS\n  --help      Show help for command\n  --version   Show gh version\n\nEXAMPLES\n  $ gh issue create\n  $ gh repo clone cli/cli\n  $ gh pr checkout 321\n\nLEARN MORE\n  Use `gh <command> <subcommand> --help` for more information about a command.\n  Read the manual at https://cli.github.com/manual\n  Learn about exit codes using `gh help exit-codes`\n  Learn about accessibility experiences using `gh help accessibility`\n\n',
       language: "bash",
       type: "codeBlock"
     }

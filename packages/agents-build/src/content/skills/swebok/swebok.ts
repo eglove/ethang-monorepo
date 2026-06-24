@@ -137,7 +137,7 @@ export const swebok = defineSkill({
         [
           "2.1 Software Architecture Fundamentals",
           "[architecture-fundamentals.md](resources/architecture-fundamentals.md)",
-          "software architecture fundamentals, system design, architectural patterns, stakeholders and concerns, uses of architecture, get_architecture, codebase graph, SARA CLI, rtk sara, planning, plan mode, grill-me, or defining architectural boundaries and significant decisions before construction"
+          "software architecture fundamentals, system design, architectural patterns, stakeholders and concerns, uses of architecture, get_architecture, codebase graph, SARA CLI, sara, planning, plan mode, grill-me, or defining architectural boundaries and significant decisions before construction"
         ],
         [
           "2.2 Software Architecture Description",

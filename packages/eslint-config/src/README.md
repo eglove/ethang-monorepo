@@ -28,9 +28,9 @@
 * 61 rules for **HTML**
 	* `import htmlConfig from "@ethang/eslint-config/config.html.js";`
 	* 61 rules from [@html-eslint/eslint-plugin](https://github.com/html-eslint/html-eslint)
-* 54 rules for **Astro**
+* 55 rules for **Astro**
 	* `import astroConfig from "@ethang/eslint-config/config.astro.js";`
-	* 54 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)
+	* 55 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)
 * 169 rules for **React**
 	* `import reactConfig from "@ethang/eslint-config/config.react.js";`
 	* 140 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)

@@ -1,7 +1,6 @@
-import endsWith from "lodash/endsWith.js";
 import includes from "lodash/includes.js";
+import isArray from "lodash/isArray.js";
 import isError from "lodash/isError.js";
-import isString from "lodash/isString.js";
 import repeat from "lodash/repeat.js";
 import trim from "lodash/trim.js";
 import {
@@ -15,36 +14,31 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { z } from "zod";
 
 import {
   compile,
   CompileError,
   type CompilerConfig,
-  fsProxy,
   validationHelpers
 } from "./compiler-core.ts";
 import {
   BAD_FRONTMATTER_SKILL,
+  COMMAND_CONTENT,
+  COMMAND_DESCRIPTION,
   SKILL_CONTENT,
   SKILL_DESCRIPTION,
-  SKILL_MANIFEST_PATH,
+  TEST_COMMAND_NAME,
   TEST_SKILL_NAME
 } from "./test-constants.ts";
 
-const manifestJsonName = "manifest.json";
+const manifestFileName = ".manifest.json";
+
 const utf8Encoding = "utf8";
-const ruleAMdName = "rules/rule-a.md";
 const rulesDirectoryName = "rules";
 const alwaysOnTrigger = "always_on";
 const testDirectoryPrefix = "compiler-core-test-";
-const resourceContent = "resource content";
 
-const manifestSchema = z.object({
-  files: z.array(z.string())
-});
-
-describe("first build compilation", () => {
+describe("compilation", () => {
   let temporaryDirectory = "";
 
   beforeEach(() => {
@@ -55,12 +49,41 @@ describe("first build compilation", () => {
     rmSync(temporaryDirectory, { force: true, recursive: true });
   });
 
-  it("performs first build and creates generated files and manifest", () => {
+  it("creates generated command files", () => {
+    const commandsDirectory = path.join(temporaryDirectory, "commands");
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     const config: CompilerConfig = {
-      manifestPath,
+      commands: [
+        {
+          content: COMMAND_CONTENT,
+          description: COMMAND_DESCRIPTION,
+          name: TEST_COMMAND_NAME
+        }
+      ],
+      commandsDir: commandsDirectory,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory
+    };
+
+    compile(config);
+
+    expect(
+      existsSync(path.join(commandsDirectory, `${TEST_COMMAND_NAME}.md`))
+    ).toBe(true);
+    const content = readFileSync(
+      path.join(commandsDirectory, `${TEST_COMMAND_NAME}.md`),
+      utf8Encoding
+    );
+    expect(content).toContain(`description: ${COMMAND_DESCRIPTION}`);
+    expect(content).toContain(COMMAND_CONTENT);
+  });
+
+  it("creates generated rule files", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+
+    const config: CompilerConfig = {
       rootDir: temporaryDirectory,
       rules: [
         {
@@ -75,264 +98,6 @@ describe("first build compilation", () => {
     compile(config);
 
     expect(existsSync(path.join(rulesDirectory, "rule-a.md"))).toBe(true);
-    expect(existsSync(manifestPath)).toBe(true);
-
-    const parsed = JSON.parse(
-      readFileSync(manifestPath, utf8Encoding)
-    ) as unknown;
-    const manifest = manifestSchema.parse(parsed);
-    expect(manifest.files).toContain(ruleAMdName);
-  });
-});
-
-describe("incremental compilation & pruning", () => {
-  let temporaryDirectory = "";
-
-  beforeEach(() => {
-    temporaryDirectory = mkdtempSync(path.join(tmpdir(), testDirectoryPrefix));
-  });
-
-  afterEach(() => {
-    rmSync(temporaryDirectory, { force: true, recursive: true });
-  });
-
-  it("deletes old generated files and updates manifest on definition change", () => {
-    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
-
-    mkdirSync(rulesDirectory, { recursive: true });
-
-    const oldRulePath = path.join(rulesDirectory, "old-rule.md");
-    writeFileSync(oldRulePath, "old rule", utf8Encoding);
-
-    const initialManifest = {
-      files: ["rules/old-rule.md"]
-    };
-    writeFileSync(manifestPath, JSON.stringify(initialManifest), utf8Encoding);
-
-    const config: CompilerConfig = {
-      manifestPath,
-      rootDir: temporaryDirectory,
-      rules: [
-        {
-          content: repeat("a", 10_500),
-          filename: "new-rule",
-          trigger: alwaysOnTrigger
-        }
-      ],
-      rulesDir: rulesDirectory
-    };
-
-    compile(config);
-
-    expect(existsSync(oldRulePath)).toBe(false);
-    expect(existsSync(path.join(rulesDirectory, "new-rule.md"))).toBe(true);
-
-    const parsed = JSON.parse(
-      readFileSync(manifestPath, utf8Encoding)
-    ) as unknown;
-    const manifest = manifestSchema.parse(parsed);
-    expect(manifest.files).toStrictEqual(["rules/new-rule.md"]);
-  });
-
-  it("cleans empty parent directories of deleted resources", () => {
-    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
-
-    const ruleResourceDirectory = path.join(rulesDirectory, "nested", "folder");
-    mkdirSync(ruleResourceDirectory, { recursive: true });
-
-    const resourceFile = path.join(ruleResourceDirectory, "res.md");
-    writeFileSync(resourceFile, resourceContent, utf8Encoding);
-
-    const initialManifest = {
-      files: ["rules/nested/folder/res.md"]
-    };
-    writeFileSync(manifestPath, JSON.stringify(initialManifest), utf8Encoding);
-
-    const config: CompilerConfig = {
-      manifestPath,
-      rootDir: temporaryDirectory,
-      rules: [],
-      rulesDir: rulesDirectory
-    };
-
-    compile(config);
-
-    expect(existsSync(resourceFile)).toBe(false);
-    expect(existsSync(ruleResourceDirectory)).toBe(false);
-    expect(existsSync(path.dirname(ruleResourceDirectory))).toBe(false);
-    expect(existsSync(rulesDirectory)).toBe(true);
-  });
-
-  it("preserves unrelated external files and their parent directories", () => {
-    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
-
-    const ruleResourceDirectory = path.join(rulesDirectory, "nested");
-    mkdirSync(ruleResourceDirectory, { recursive: true });
-
-    const resourceFile = path.join(ruleResourceDirectory, "res.md");
-    const unrelatedFile = path.join(ruleResourceDirectory, "unrelated.txt");
-    writeFileSync(resourceFile, resourceContent, utf8Encoding);
-    writeFileSync(unrelatedFile, "unrelated content", utf8Encoding);
-
-    const initialManifest = {
-      files: ["rules/nested/res.md"]
-    };
-    writeFileSync(manifestPath, JSON.stringify(initialManifest), utf8Encoding);
-
-    const config: CompilerConfig = {
-      manifestPath,
-      rootDir: temporaryDirectory,
-      rules: [],
-      rulesDir: rulesDirectory
-    };
-
-    compile(config);
-
-    expect(existsSync(resourceFile)).toBe(false);
-    expect(existsSync(unrelatedFile)).toBe(true);
-    expect(existsSync(ruleResourceDirectory)).toBe(true);
-  });
-});
-
-describe("resilience & error recovery", () => {
-  let temporaryDirectory = "";
-
-  beforeEach(() => {
-    temporaryDirectory = mkdtempSync(path.join(tmpdir(), testDirectoryPrefix));
-  });
-
-  afterEach(() => {
-    rmSync(temporaryDirectory, { force: true, recursive: true });
-  });
-
-  it("falls back to current targets calculation if manifest is missing or corrupted", () => {
-    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
-
-    mkdirSync(rulesDirectory, { recursive: true });
-    writeFileSync(manifestPath, "{ invalid json", utf8Encoding);
-
-    const config: CompilerConfig = {
-      manifestPath,
-      rootDir: temporaryDirectory,
-      rules: [
-        {
-          content: repeat("a", 10_500),
-          filename: "rule-a",
-          trigger: alwaysOnTrigger
-        }
-      ],
-      rulesDir: rulesDirectory
-    };
-
-    compile(config);
-
-    expect(existsSync(path.join(rulesDirectory, "rule-a.md"))).toBe(true);
-    expect(existsSync(manifestPath)).toBe(true);
-
-    const parsed = JSON.parse(
-      readFileSync(manifestPath, utf8Encoding)
-    ) as unknown;
-    const manifest = manifestSchema.parse(parsed);
-    expect(manifest.files).toStrictEqual(["rules/rule-a.md"]);
-  });
-
-  it("falls back to current targets calculation if readFileSync fails", () => {
-    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
-
-    mkdirSync(rulesDirectory, { recursive: true });
-    writeFileSync(manifestPath, "{}", utf8Encoding);
-
-    const spy = vi.spyOn(fsProxy, "readFileSync").mockImplementationOnce(() => {
-      throw new Error("mock read failure");
-    });
-
-    const config: CompilerConfig = {
-      manifestPath,
-      rootDir: temporaryDirectory,
-      rules: [
-        {
-          content: repeat("a", 10_500),
-          filename: "rule-a",
-          trigger: alwaysOnTrigger
-        }
-      ],
-      rulesDir: rulesDirectory
-    };
-
-    compile(config);
-
-    expect(existsSync(path.join(rulesDirectory, "rule-a.md"))).toBe(true);
-    expect(existsSync(manifestPath)).toBe(true);
-
-    spy.mockRestore();
-  });
-
-  it("handles readdirSync error inside cleanFileAndEmptyParents gracefully", () => {
-    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
-
-    const initialManifest = {
-      files: ["rules/nested/rule-to-clean.md"]
-    };
-    const nestedDirectory = path.join(rulesDirectory, "nested");
-    mkdirSync(nestedDirectory, { recursive: true });
-    writeFileSync(path.join(nestedDirectory, "rule-to-clean.md"), "content");
-    writeFileSync(manifestPath, JSON.stringify(initialManifest), utf8Encoding);
-
-    const spy = vi.spyOn(fsProxy, "readdirSync").mockImplementationOnce(() => {
-      throw new Error("mocked readdir error");
-    });
-
-    const config: CompilerConfig = {
-      manifestPath,
-      rootDir: temporaryDirectory,
-      rules: [],
-      rulesDir: rulesDirectory
-    };
-
-    expect(() => {
-      compile(config);
-    }).not.toThrow();
-
-    spy.mockRestore();
-  });
-
-  it("handles non-existent directory during cleanFileAndEmptyParents gracefully", () => {
-    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
-
-    const initialManifest = {
-      files: ["rules/nested/rule-to-clean.md"]
-    };
-    const nestedDirectory = path.join(rulesDirectory, "nested");
-    mkdirSync(nestedDirectory, { recursive: true });
-    writeFileSync(path.join(nestedDirectory, "rule-to-clean.md"), "content");
-    writeFileSync(manifestPath, JSON.stringify(initialManifest), utf8Encoding);
-
-    const spy = vi.spyOn(fsProxy, "existsSync").mockImplementation((p) => {
-      if (isString(p) && endsWith(p.replaceAll("\\", "/"), "rules/nested")) {
-        return false;
-      }
-      return existsSync(p);
-    });
-
-    const config: CompilerConfig = {
-      manifestPath,
-      rootDir: temporaryDirectory,
-      rules: [],
-      rulesDir: rulesDirectory
-    };
-
-    expect(() => {
-      compile(config);
-    }).not.toThrow();
-
-    spy.mockRestore();
   });
 });
 
@@ -349,10 +114,8 @@ describe("validation failures and warnings", () => {
 
   it("throws CompileError when validation fails, handles warnings, and unresolved tokens", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     const config: CompilerConfig = {
-      manifestPath,
       rootDir: temporaryDirectory,
       rules: [
         {
@@ -415,10 +178,8 @@ describe("validation failures and warnings", () => {
       temporaryDirectory,
       "non-existent-rules-dir"
     );
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     const config: CompilerConfig = {
-      manifestPath,
       rootDir: temporaryDirectory,
       rules: [],
       rulesDir: rulesDirectory
@@ -441,13 +202,11 @@ describe("skills compilation and validation", () => {
     rmSync(temporaryDirectory, { force: true, recursive: true });
   });
 
-  it("compiles skills and includes them in the manifest", () => {
+  it("compiles skills", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
     const skillsDirectory = path.join(temporaryDirectory, "skills");
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     const config: CompilerConfig = {
-      manifestPath,
       rootDir: temporaryDirectory,
       rules: [],
       rulesDir: rulesDirectory,
@@ -473,21 +232,13 @@ describe("skills compilation and validation", () => {
     const content = readFileSync(skillFilePath, utf8Encoding);
     expect(content).toContain(`name: ${TEST_SKILL_NAME}`);
     expect(content).toContain(SKILL_CONTENT);
-
-    const parsed = JSON.parse(
-      readFileSync(manifestPath, utf8Encoding)
-    ) as unknown;
-    const manifest = manifestSchema.parse(parsed);
-    expect(manifest.files).toContain(SKILL_MANIFEST_PATH);
   });
 
-  it("compiles skills with resources and includes resources in the manifest", () => {
+  it("compiles skills with resources", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
     const skillsDirectory = path.join(temporaryDirectory, "skills");
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     const config: CompilerConfig = {
-      manifestPath,
       rootDir: temporaryDirectory,
       rules: [],
       rulesDir: rulesDirectory,
@@ -541,27 +292,265 @@ describe("skills compilation and validation", () => {
 
     const resourceContentRead2 = readFileSync(resourceFilePath2, utf8Encoding);
     expect(resourceContentRead2).toBe("another test resource content");
+  });
+
+  it("generates MCP config at the expected path", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const skillsDirectory = path.join(temporaryDirectory, "skills");
+    const mcpConfigPath = path.join(temporaryDirectory, "mcp", "mcp.json");
+    const manifestPath = path.join(
+      temporaryDirectory,
+      rulesDirectoryName,
+      manifestFileName
+    );
+
+    const config: CompilerConfig = {
+      manifestPath,
+      mcpConfigPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory,
+      skills: [],
+      skillsDir: skillsDirectory
+    };
+
+    compile(config);
+
+    expect(existsSync(mcpConfigPath)).toBe(true);
 
     const parsed = JSON.parse(
+      readFileSync(mcpConfigPath, utf8Encoding)
+    ) as Record<string, unknown>;
+    expect(parsed["mcpServers"]).toBeDefined();
+    const mcpServers = parsed["mcpServers"] as Record<string, unknown>;
+    expect(mcpServers["JetBrains IDE"]).toBeDefined();
+    expect(mcpServers["MDN"]).toBeDefined();
+    expect(mcpServers["codebase-memory-mcp"]).toBeDefined();
+  });
+
+  it("writes a manifest with generated file paths", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const skillsDirectory = path.join(temporaryDirectory, "skills");
+    const manifestPath = path.join(
+      temporaryDirectory,
+      rulesDirectoryName,
+      manifestFileName
+    );
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [
+        {
+          content: repeat("a", 10_500),
+          filename: "rule-a",
+          trigger: alwaysOnTrigger
+        }
+      ],
+      rulesDir: rulesDirectory,
+      skills: [
+        {
+          content: SKILL_CONTENT,
+          description: SKILL_DESCRIPTION,
+          name: TEST_SKILL_NAME
+        }
+      ],
+      skillsDir: skillsDirectory
+    };
+
+    compile(config);
+
+    expect(existsSync(manifestPath)).toBe(true);
+
+    const manifest = JSON.parse(
       readFileSync(manifestPath, utf8Encoding)
-    ) as unknown;
-    const manifest = manifestSchema.parse(parsed);
-    expect(manifest.files).toContain(SKILL_MANIFEST_PATH);
-    expect(manifest.files).toContain(
-      `skills/${TEST_SKILL_NAME}/resources/res1.md`
+    ) as Record<string, unknown>;
+    expect(isArray(manifest["files"])).toBe(true);
+    const files = manifest["files"] as string[];
+
+    expect(files).toContain(
+      path
+        .relative(temporaryDirectory, path.join(rulesDirectory, "rule-a.md"))
+        .replaceAll("\\", "/")
     );
-    expect(manifest.files).toContain(
-      `skills/${TEST_SKILL_NAME}/resources/res2.md`
+    expect(files).toContain(
+      path
+        .relative(
+          temporaryDirectory,
+          path.join(skillsDirectory, TEST_SKILL_NAME, "SKILL.md")
+        )
+        .replaceAll("\\", "/")
     );
+  });
+});
+
+describe("file lifecycle", () => {
+  let temporaryDirectory = "";
+
+  beforeEach(() => {
+    temporaryDirectory = mkdtempSync(path.join(tmpdir(), testDirectoryPrefix));
+  });
+
+  afterEach(() => {
+    rmSync(temporaryDirectory, { force: true, recursive: true });
+  });
+
+  it("cleans up previously manifest-tracked files before rebuilding", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const skillsDirectory = path.join(temporaryDirectory, "skills");
+    const manifestPath = path.join(temporaryDirectory, manifestFileName);
+    const staleRulePath = path.join(rulesDirectory, "stale-rule.md");
+    const staleSkillName = "stale-skill";
+    const staleResourcePath = path.join(
+      skillsDirectory,
+      staleSkillName,
+      "resources",
+      "stale-res.md"
+    );
+
+    const config1: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [
+        {
+          content: repeat("a", 10_500),
+          filename: "stale-rule",
+          trigger: alwaysOnTrigger
+        }
+      ],
+      rulesDir: rulesDirectory,
+      skills: [
+        {
+          content: SKILL_CONTENT,
+          description: SKILL_DESCRIPTION,
+          name: staleSkillName,
+          resources: [
+            {
+              content: "stale resource",
+              filename: "stale-res.md"
+            }
+          ]
+        }
+      ],
+      skillsDir: skillsDirectory
+    };
+
+    compile(config1);
+    expect(existsSync(staleRulePath)).toBe(true);
+    expect(existsSync(staleResourcePath)).toBe(true);
+
+    const config2: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [
+        {
+          content: repeat("a", 10_500),
+          filename: "new-rule",
+          trigger: alwaysOnTrigger
+        }
+      ],
+      rulesDir: rulesDirectory,
+      skills: [],
+      skillsDir: skillsDirectory
+    };
+
+    compile(config2);
+
+    expect(existsSync(staleRulePath)).toBe(false);
+    expect(existsSync(staleResourcePath)).toBe(false);
+    expect(
+      existsSync(path.join(skillsDirectory, staleSkillName, "resources"))
+    ).toBe(false);
+    expect(existsSync(path.join(skillsDirectory, staleSkillName))).toBe(false);
+    expect(existsSync(path.join(rulesDirectory, "new-rule.md"))).toBe(true);
+  });
+
+  it("cleans up previously manifest-tracked command files before rebuilding", () => {
+    const commandsDirectory = path.join(temporaryDirectory, "commands");
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const manifestPath = path.join(temporaryDirectory, manifestFileName);
+    const staleCommandPath = path.join(commandsDirectory, "stale-command.md");
+
+    const config1: CompilerConfig = {
+      commands: [
+        {
+          content: "stale command",
+          description: "stale command",
+          name: "stale-command"
+        }
+      ],
+      commandsDir: commandsDirectory,
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory
+    };
+
+    compile(config1);
+    expect(existsSync(staleCommandPath)).toBe(true);
+
+    const config2: CompilerConfig = {
+      commands: [],
+      commandsDir: commandsDirectory,
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory
+    };
+
+    compile(config2);
+
+    expect(existsSync(staleCommandPath)).toBe(false);
+  });
+});
+
+describe("error handling", () => {
+  let temporaryDirectory = "";
+
+  beforeEach(() => {
+    temporaryDirectory = mkdtempSync(path.join(tmpdir(), testDirectoryPrefix));
+  });
+
+  afterEach(() => {
+    rmSync(temporaryDirectory, { force: true, recursive: true });
+  });
+
+  it("handles readdirSync error during parent directory cleanup gracefully", () => {
+    const manifestPath = path.join(temporaryDirectory, manifestFileName);
+    const manifestDirectory = path.dirname(manifestPath);
+
+    mkdirSync(manifestDirectory, { recursive: true });
+    const relativeFilePath = path
+      .relative(
+        temporaryDirectory,
+        path.join(temporaryDirectory, "nonexistent", "deep", "file.md")
+      )
+      .replaceAll("\\", "/");
+    writeFileSync(
+      manifestPath,
+      JSON.stringify({ files: [relativeFilePath] }),
+      "utf8"
+    );
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: path.join(temporaryDirectory, "rules"),
+      skills: [],
+      skillsDir: path.join(temporaryDirectory, "skills")
+    };
+
+    expect(() => {
+      compile(config);
+    }).not.toThrow();
   });
 
   it("records a failure if a skill has a malformed frontmatter block", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
     const skillsDirectory = path.join(temporaryDirectory, "skills");
-    const manifestPath = path.join(temporaryDirectory, manifestJsonName);
 
     const config: CompilerConfig = {
-      manifestPath,
       rootDir: temporaryDirectory,
       rules: [],
       rulesDir: rulesDirectory,
@@ -594,5 +583,149 @@ describe("skills compilation and validation", () => {
     }
 
     vi.restoreAllMocks();
+  });
+
+  it("records a failure if a command has a malformed frontmatter block", () => {
+    const commandsDirectory = path.join(temporaryDirectory, "commands");
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+
+    const config: CompilerConfig = {
+      commands: [
+        {
+          content: COMMAND_CONTENT,
+          description: COMMAND_DESCRIPTION,
+          name: TEST_COMMAND_NAME
+        }
+      ],
+      commandsDir: commandsDirectory,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory
+    };
+
+    vi.spyOn(validationHelpers, "isValidFrontmatterBlock").mockReturnValue(
+      false
+    );
+
+    let thrownError: unknown;
+    try {
+      compile(config);
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toBeInstanceOf(CompileError);
+    if (thrownError instanceof CompileError) {
+      expect(thrownError.failures).toContain(
+        `commands/${TEST_COMMAND_NAME}.md: malformed frontmatter block`
+      );
+    }
+
+    vi.restoreAllMocks();
+  });
+});
+
+describe("manifest edge cases", () => {
+  let temporaryDirectory = "";
+
+  beforeEach(() => {
+    temporaryDirectory = mkdtempSync(path.join(tmpdir(), testDirectoryPrefix));
+  });
+
+  afterEach(() => {
+    rmSync(temporaryDirectory, { force: true, recursive: true });
+  });
+
+  it("handles absolute manifest paths and missing skillsDir", () => {
+    const manifestPath = path.join(temporaryDirectory, manifestFileName);
+    const manifestDirectory = path.dirname(manifestPath);
+    const absoluteFilePath = path.join(
+      temporaryDirectory,
+      rulesDirectoryName,
+      "test-rule.md"
+    );
+
+    mkdirSync(manifestDirectory, { recursive: true });
+    mkdirSync(path.dirname(absoluteFilePath), { recursive: true });
+    writeFileSync(absoluteFilePath, "test content");
+
+    writeFileSync(
+      manifestPath,
+      JSON.stringify({
+        files: [absoluteFilePath.replaceAll("\\", "/")]
+      }),
+      "utf8"
+    );
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: path.join(temporaryDirectory, rulesDirectoryName)
+    };
+
+    compile(config);
+
+    expect(existsSync(absoluteFilePath)).toBe(false);
+  });
+
+  it("handles manifest without a files property", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const manifestPath = path.join(temporaryDirectory, manifestFileName);
+
+    writeFileSync(
+      manifestPath,
+      JSON.stringify({ notFiles: "some value" }),
+      "utf8"
+    );
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [
+        {
+          content: repeat("a", 10_500),
+          filename: "some-rule",
+          trigger: alwaysOnTrigger
+        }
+      ],
+      rulesDir: rulesDirectory
+    };
+
+    expect(() => {
+      compile(config);
+    }).not.toThrow();
+
+    expect(existsSync(path.join(rulesDirectory, "some-rule.md"))).toBe(true);
+  });
+
+  it("handles manifest with malformed files property (not an array)", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const manifestPath = path.join(temporaryDirectory, manifestFileName);
+
+    writeFileSync(
+      manifestPath,
+      JSON.stringify({ files: "not-an-array" }),
+      "utf8"
+    );
+
+    const config: CompilerConfig = {
+      manifestPath,
+      rootDir: temporaryDirectory,
+      rules: [
+        {
+          content: repeat("a", 10_500),
+          filename: "some-rule",
+          trigger: alwaysOnTrigger
+        }
+      ],
+      rulesDir: rulesDirectory
+    };
+
+    expect(() => {
+      compile(config);
+    }).not.toThrow();
+
+    expect(existsSync(path.join(rulesDirectory, "some-rule.md"))).toBe(true);
   });
 });

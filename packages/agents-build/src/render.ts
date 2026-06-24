@@ -14,7 +14,11 @@ import {
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
-import type { RuleDefinition, SkillDefinition } from "./define.ts";
+import type {
+  CommandDefinition,
+  RuleDefinition,
+  SkillDefinition
+} from "./define.ts";
 
 export const ruleMarkdown = (rule: RuleDefinition): string => {
   if ("model_decision" === rule.trigger && isNil(rule.description)) {
@@ -40,6 +44,22 @@ export const ruleMarkdown = (rule: RuleDefinition): string => {
       trigger: rule.trigger,
       ...(!isNil(rule.description) && { description: rule.description }),
       ...(!isNil(rule.globs) && { globs: rule.globs })
+    }
+  });
+};
+
+export const commandMarkdown = (command: CommandDefinition) => {
+  const blocks: MarkdownBlock[] = isString(command.content)
+    ? [
+        { count: 0, type: "space" as const },
+        { text: command.content, type: "text" as const }
+      ]
+    : [{ count: 0, type: "space" as const }, ...command.content];
+
+  return generateMarkdown({
+    blocks,
+    frontmatter: {
+      description: command.description
     }
   });
 };

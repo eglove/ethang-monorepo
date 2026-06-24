@@ -15,10 +15,13 @@ miktex packages update
 corepack install -g npm@latest yarn@latest pnpm@latest
 pnpm store prune
 npm i -g wrangler @google/gemini-cli @angular/cli sanity
-pnpm approve-builds -g
 
 Set-Location ~/projects/ethang-monorepo/
-npx skills add cloudflare/skills --all -y
+powershell -NoProfile -ExecutionPolicy Bypass -Command "iex (irm 'https://junie.jetbrains.com/install-eap.ps1')"
+codebase-memory-mcp update
+npx skills add cloudflare/skills -y
+npx skills add tanstack-skills/tanstack-skills -y
 npx skills add chromedevtools/chrome-devtools-mcp -y
-npx skills add vercel-labs/skills -y
-npx skills add harshanandak/forge -y
+npx skills add https://github.com/vercel-labs/skills --skill find-skills -y
+npx skills add https://github.com/harshanandak/forge --skill sonarcloud-analysis -y
+npx skills add https://github.com/mattpocock/skills --skill grill-me -y

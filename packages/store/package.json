@@ -12,7 +12,7 @@
   },
   "description": "Fine grained state management",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.22.1",
+    "@ethang/eslint-config": "^25.23.0",
     "@testing-library/react": "^16.3.2",
     "@types/lodash": "^4.17.24",
     "@types/use-sync-external-store": "^1.5.0",
@@ -24,7 +24,7 @@
     "tsup": "^8.5.1",
     "type-fest": "^5.7.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.16",
+    "vite": "^8.1.0",
     "vitest": "^4.1.9"
   },
   "engines": {
