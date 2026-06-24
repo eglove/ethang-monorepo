@@ -3,27 +3,18 @@
 This document outlines the global rules, development principles, and tool-usage hierarchies for AI agents operating in
 `ethang-monorepo`.
 
-## On Session Start
+## Always-On Skills
 
-Load the `$swebok` skill documentation into context.
+The `$swebok` and `$ddd` skills **must always be loaded into context** for every session in this repository. They are not optional.
 
-> [!IMPORTANT]
-> The `$swebok` skill provides foundational knowledge and guidance on all tasks.
+## CRITICAL: `.junie/` is a Generated Artifact
 
-> [!IMPORTANT]
-> The `/atdd-fsm-tdd` slash command coordinates ATDD + FSM + TDD development.
+**Never edit files in `.junie/` directly.** The `.junie/` directory (which contains workspace rules, lifecycle hooks,
+and configuration) is compiled from TypeScript definitions and will be overwritten on the next build. Any direct edits
+will be lost.
 
-> [!IMPORTANT]
-> All tasks on this repository should follow the `$ddd` principles.
-
-> [!IMPORTANT]
-> ESLint should **never** be directly run or fixed manually by an agent. All linting tasks must be routed exclusively through the `/lint` command.
-
-## CRITICAL: `.agents/` is a Generated Artifact
-
-**Never edit files in `.agents/` directly.** The `.agents/` directory (which contains workspace rules, lifecycle hooks,
-and skills) is compiled from TypeScript definitions and will be overwritten on the next build. Any direct edits will be
-lost.
+Note that some skills in `.junie/skills/` are added externally and are not part of this build process — only the
+skills tracked in `.manifest.json` are generated.
 
 All changes to agent rules, commands, skills, and configuration must go through the compiler package:
 
@@ -35,7 +26,7 @@ After modifying TypeScript definitions in the builder, compile the changes with:
 pnpm --filter @ethang/agents-build build
 ```
 
-This compiles the configurations into the `.agents/` directory, validating rules against sizing limits, SWEBOK router
+This compiles the configurations into the `.junie/` directory, validating rules against sizing limits, SWEBOK router
 integrity, and drift checks.
 
 ---

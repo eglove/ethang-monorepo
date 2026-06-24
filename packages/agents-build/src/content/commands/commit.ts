@@ -5,57 +5,30 @@ import { defineCommand } from "../../define.ts";
 const blocks: MarkdownBlock[] = [
   {
     level: 1,
-    text: "Git Staging and Commit Workflow Guide (/commit)",
+    text: "Git Staging and Commit Workflow (/commit)",
     type: "header"
   },
   {
-    text: "This command guides you through the process of staging and committing changes within this repository. It enforces structured git hygiene, Conventional Commits specification, RFC 2119 key terminology, and an interactive confirmation flow.",
+    text: "When the user invokes `/commit`, you MUST execute the full staging and commit workflow described below. Do NOT just summarize the steps — run them directly.",
     type: "text"
   },
-  { level: 2, text: "Staging & Confirmation Flow", type: "header" },
-  {
-    text: "You MUST execute the following steps:",
-    type: "text"
-  },
+  { level: 2, text: "Execution Workflow", type: "header" },
   {
     items: [
       {
-        children: [
-          {
-            text: "Run `git status --porcelain` or `git status` to check all modified, untracked, and deleted files."
-          }
-        ],
-        text: "\u{1F50D} **Inspect Workspace Changes**:"
+        text: "**Inspect Workspace Changes**: Run `git status --porcelain` to see all modified, untracked, and deleted files."
       },
       {
-        children: [
-          {
-            children: [
-              {
-                text: "\u{1F7E2} **Staged**: Files that are currently staged or planned to be staged."
-              },
-              {
-                text: "\u{1F534} **Unstaged/Untracked**: Files that are modified or untracked but will NOT be staged."
-              }
-            ],
-            text: "Present a clear, emoji-bulleted summary separating what will be staged from what won't:"
-          }
-        ],
-        text: "\u{1F4CB} **Categorize and Summarize Changes**:"
+        text: "**Categorize Changes**: Present a clear, emoji-bulleted summary to the user separating what will be staged from what won't. List the staged files under a 🟢 heading and the unstaged/untracked files under a 🔴 heading."
       },
       {
-        children: [
-          {
-            text: "You MUST explicitly ask the user for confirmation before proceeding to commit."
-          },
-          {
-            text: "Do NOT run `git commit` until the user approves the staged list."
-          }
-        ],
-        text: "\u{1F4AC} **Ask for User Confirmation**:"
+        text: "**Ask for Confirmation**: You MUST explicitly ask the user for confirmation before proceeding. Do NOT run `git commit` until the user approves the staged list."
+      },
+      {
+        text: "**Build Commit Message**: After the user confirms, construct the commit message following the rules below, then run `git commit` with it."
       }
     ],
-    type: "unorderedList"
+    type: "numberedList"
   },
   {
     level: 2,

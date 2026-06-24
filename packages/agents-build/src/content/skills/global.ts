@@ -4,18 +4,14 @@ import { everythingSearch } from "./everything-search.ts";
 import { githubCli } from "./github-cli.ts";
 import { jq } from "./jq.ts";
 import { ripgrep } from "./ripgrep.ts";
-import { saraCli } from "./sara-cli.ts";
-import { sdlc } from "./sdlc.ts";
 import { swebok } from "./swebok/swebok.ts";
 
 export const GLOBAL_SKILLS = [
-  sdlc,
   swebok,
   ddd,
   ripgrep,
   jq,
   everythingSearch,
   githubCli,
-  saraCli,
   codebaseMemoryMcp
 ];
