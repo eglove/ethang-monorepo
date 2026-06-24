@@ -30,5 +30,17 @@
       "store_id": "737fce8854f042e4905cb36a696dd3c2"
     }
   ],
+  "services": [
+    {
+      "binding": "ethang_courses",
+      "remote": true,
+      "service": "ethang-courses"
+    },
+    {
+      "binding": "ethang_rss",
+      "remote": true,
+      "service": "ethang-rss"
+    }
+  ],
   "upload_source_maps": true
 }

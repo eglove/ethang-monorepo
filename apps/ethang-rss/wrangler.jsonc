@@ -18,13 +18,6 @@
   "placement": {
     "mode": "smart"
   },
-  "rules": [
-    {
-      "fallthrough": true,
-      "globs": ["**/*.graphql"],
-      "type": "Text"
-    }
-  ],
   "secrets_store_secrets": [
     {
       "binding": "LOGGER_API_KEY",

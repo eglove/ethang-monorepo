@@ -1,15 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { graphqlRequest } from "../../clients/graphql-client.ts";
+import { rpcRequest } from "../../clients/rpc-client.ts";
 import {
   allArticlesOptions,
   feedArticlesOptions,
   subscriptionsOptions
 } from "./queries.ts";
 
-vi.mock("../../clients/graphql-client.ts", () => {
+vi.mock("../../clients/rpc-client.ts", () => {
   return {
-    graphqlRequest: vi.fn()
+    rpcRequest: vi.fn()
   };
 });
 
@@ -18,24 +18,23 @@ const cursor456 = "cursor-456";
 const cursorAbc = "cursor-abc";
 const cursorXyz = "cursor-xyz";
 const cursor789 = "cursor-789";
-const callsGraphqlRequestInQueryFunction = "calls graphqlRequest in queryFn";
+const callsRpcInQueryFunction = "calls rpcRequest in queryFn";
 const returnsCorrectPageParameters =
   "returns correct page params when hasNextPage is true";
 const returnsNullWhenHasNextPageIsFalse =
   "returns null when hasNextPage is false";
 
+const makePageInfo = (endCursor: string, hasNextPage: boolean) => {
+  return {
+    pageInfo: { endCursor, hasNextPage }
+  };
+};
+
 describe("RSS Queries Options", () => {
   describe("subscriptionsOptions", () => {
     it(returnsCorrectPageParameters, () => {
       const options = subscriptionsOptions();
-      const lastPage = {
-        subscriptions: {
-          pageInfo: {
-            endCursor: cursor123,
-            hasNextPage: true
-          }
-        }
-      };
+      const lastPage = makePageInfo(cursor123, true);
 
       // @ts-expect-error for test
       const nextParameter = options.getNextPageParam(lastPage, [], null);
@@ -44,25 +43,16 @@ describe("RSS Queries Options", () => {
 
     it(returnsNullWhenHasNextPageIsFalse, () => {
       const options = subscriptionsOptions();
-      const lastPage = {
-        subscriptions: {
-          pageInfo: {
-            endCursor: cursor123,
-            hasNextPage: false
-          }
-        }
-      };
+      const lastPage = makePageInfo(cursor123, false);
 
       // @ts-expect-error for test
       const nextParameter = options.getNextPageParam(lastPage, [], null);
       expect(nextParameter).toBeNull();
     });
 
-    it(callsGraphqlRequestInQueryFunction, async () => {
-      const mockResult = {
-        subscriptions: { pageInfo: { endCursor: "", hasNextPage: false } }
-      };
-      vi.mocked(graphqlRequest).mockResolvedValue(mockResult);
+    it(callsRpcInQueryFunction, async () => {
+      const mockResult = makePageInfo("", false);
+      vi.mocked(rpcRequest).mockResolvedValue(mockResult);
 
       const options = subscriptionsOptions();
       // @ts-expect-error for test
@@ -72,7 +62,7 @@ describe("RSS Queries Options", () => {
         queryKey: ["subscriptions"]
       });
 
-      expect(graphqlRequest).toHaveBeenCalledWith(expect.any(Object), {
+      expect(rpcRequest).toHaveBeenCalledWith("ethang_rss", "subscriptions", {
         after: cursorAbc,
         first: 10,
         sortBy: { direction: "ASC", field: "TITLE" }
@@ -84,14 +74,7 @@ describe("RSS Queries Options", () => {
   describe("feedArticlesOptions", () => {
     it(returnsCorrectPageParameters, () => {
       const options = feedArticlesOptions("feed-1");
-      const lastPage = {
-        feedArticles: {
-          pageInfo: {
-            endCursor: cursor456,
-            hasNextPage: true
-          }
-        }
-      };
+      const lastPage = makePageInfo(cursor456, true);
 
       // @ts-expect-error for test
       const nextParameter = options.getNextPageParam(lastPage, [], null);
@@ -100,25 +83,16 @@ describe("RSS Queries Options", () => {
 
     it(returnsNullWhenHasNextPageIsFalse, () => {
       const options = feedArticlesOptions("feed-1");
-      const lastPage = {
-        feedArticles: {
-          pageInfo: {
-            endCursor: cursor456,
-            hasNextPage: false
-          }
-        }
-      };
+      const lastPage = makePageInfo(cursor456, false);
 
       // @ts-expect-error for test
       const nextParameter = options.getNextPageParam(lastPage, [], null);
       expect(nextParameter).toBeNull();
     });
 
-    it(callsGraphqlRequestInQueryFunction, async () => {
-      const mockResult = {
-        feedArticles: { pageInfo: { endCursor: "", hasNextPage: false } }
-      };
-      vi.mocked(graphqlRequest).mockResolvedValue(mockResult);
+    it(callsRpcInQueryFunction, async () => {
+      const mockResult = makePageInfo("", false);
+      vi.mocked(rpcRequest).mockResolvedValue(mockResult);
 
       const options = feedArticlesOptions("feed-123");
       // @ts-expect-error for test
@@ -128,7 +102,7 @@ describe("RSS Queries Options", () => {
         queryKey: ["feedArticles", "feed-123"]
       });
 
-      expect(graphqlRequest).toHaveBeenCalledWith(expect.any(Object), {
+      expect(rpcRequest).toHaveBeenCalledWith("ethang_rss", "feedArticles", {
         after: cursorXyz,
         feedId: "feed-123",
         first: 20
@@ -137,10 +111,8 @@ describe("RSS Queries Options", () => {
     });
 
     it("uses empty string for feedId if null is passed", async () => {
-      const mockResult = {
-        feedArticles: { pageInfo: { endCursor: "", hasNextPage: false } }
-      };
-      vi.mocked(graphqlRequest).mockResolvedValue(mockResult);
+      const mockResult = makePageInfo("", false);
+      vi.mocked(rpcRequest).mockResolvedValue(mockResult);
 
       const options = feedArticlesOptions(null);
       // @ts-expect-error for test
@@ -150,7 +122,7 @@ describe("RSS Queries Options", () => {
         queryKey: ["feedArticles", null]
       });
 
-      expect(graphqlRequest).toHaveBeenCalledWith(expect.any(Object), {
+      expect(rpcRequest).toHaveBeenCalledWith("ethang_rss", "feedArticles", {
         after: null,
         feedId: "",
         first: 20
@@ -162,14 +134,7 @@ describe("RSS Queries Options", () => {
   describe("allArticlesOptions", () => {
     it(returnsCorrectPageParameters, () => {
       const options = allArticlesOptions();
-      const lastPage = {
-        allArticles: {
-          pageInfo: {
-            endCursor: cursor789,
-            hasNextPage: true
-          }
-        }
-      };
+      const lastPage = makePageInfo(cursor789, true);
 
       // @ts-expect-error for test
       const nextParameter = options.getNextPageParam(lastPage, [], null);
@@ -178,25 +143,16 @@ describe("RSS Queries Options", () => {
 
     it(returnsNullWhenHasNextPageIsFalse, () => {
       const options = allArticlesOptions();
-      const lastPage = {
-        allArticles: {
-          pageInfo: {
-            endCursor: cursor789,
-            hasNextPage: false
-          }
-        }
-      };
+      const lastPage = makePageInfo(cursor789, false);
 
       // @ts-expect-error for test
       const nextParameter = options.getNextPageParam(lastPage, [], null);
       expect(nextParameter).toBeNull();
     });
 
-    it(callsGraphqlRequestInQueryFunction, async () => {
-      const mockResult = {
-        allArticles: { pageInfo: { endCursor: "", hasNextPage: false } }
-      };
-      vi.mocked(graphqlRequest).mockResolvedValue(mockResult);
+    it(callsRpcInQueryFunction, async () => {
+      const mockResult = makePageInfo("", false);
+      vi.mocked(rpcRequest).mockResolvedValue(mockResult);
 
       const options = allArticlesOptions();
       // @ts-expect-error for test
@@ -206,7 +162,7 @@ describe("RSS Queries Options", () => {
         queryKey: ["allArticles"]
       });
 
-      expect(graphqlRequest).toHaveBeenCalledWith(expect.any(Object), {
+      expect(rpcRequest).toHaveBeenCalledWith("ethang_rss", "allArticles", {
         after: cursorXyz,
         isRead: false
       });

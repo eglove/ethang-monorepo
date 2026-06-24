@@ -43,16 +43,14 @@ describe("LearningPath", () => {
 
   it("executes the query function", async () => {
     const mockData = {
-      learningPath: {
-        courses: [],
-        id: "path-1",
-        name: softwareConstructionPath,
-        swebokFocus: "construction",
-        url: consturctionUrl
-      }
+      courses: [],
+      id: "path-1",
+      name: softwareConstructionPath,
+      swebokFocus: "construction",
+      url: consturctionUrl
     };
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json({ data: mockData }, { status: 200 })
+      Response.json(mockData, { status: 200 })
     );
 
     const options = learningPathQueryOptions("path-1");
@@ -72,31 +70,25 @@ describe("LearningPath", () => {
 
   it("renders learning path metadata and list of courses", () => {
     mockLearningPathStore.data = {
-      learningPath: {
-        courses: [{ id: "course-1" }, { id: "course-2" }],
-        id: "path-1",
-        name: softwareConstructionPath,
-        swebokFocus: "construction",
-        url: consturctionUrl
-      }
+      courses: [{ id: "course-1" }, { id: "course-2" }],
+      id: "path-1",
+      name: softwareConstructionPath,
+      swebokFocus: "construction",
+      url: consturctionUrl
     };
 
     mockLearningPathStore.courseDataMap["course-1"] = {
-      course: {
-        author: "Author One",
-        id: "course-1",
-        name: "Code Construction Basics",
-        url: "https://example.com/c1"
-      }
+      author: "Author One",
+      id: "course-1",
+      name: "Code Construction Basics",
+      url: "https://example.com/c1"
     };
 
     mockLearningPathStore.courseDataMap["course-2"] = {
-      course: {
-        author: "Author Two",
-        id: "course-2",
-        name: "Refactoring and Patterns",
-        url: "https://example.com/c2"
-      }
+      author: "Author Two",
+      id: "course-2",
+      name: "Refactoring and Patterns",
+      url: "https://example.com/c2"
     };
 
     render(<LearningPath courseOffset={5} learningPathId="path-1" />);

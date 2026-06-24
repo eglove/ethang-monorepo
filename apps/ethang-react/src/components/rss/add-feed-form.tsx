@@ -1,4 +1,3 @@
-import { gql } from "@ethang/graphql-types/__generated__";
 import { rss } from "@ethang/intl/en/rss.ts";
 import { Box, Button, Card, Flex, TextField } from "@radix-ui/themes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,8 +6,10 @@ import noop from "lodash/noop";
 import trim from "lodash/trim";
 import { type SyntheticEvent, useState } from "react";
 
-import { graphqlRequest } from "../../clients/graphql-client.ts";
+import { rpcRequest } from "../../clients/rpc-client.ts";
 import { subscriptionsOptions } from "./queries.ts";
+
+const RSS_SERVICE = "ethang_rss";
 
 export const AddFeedForm = () => {
   const queryClient = useQueryClient();
@@ -16,14 +17,7 @@ export const AddFeedForm = () => {
   const { isPending: isAddFeedPending, mutateAsync: addSubscription } =
     useMutation({
       mutationFn: async (variables: { xmlAddress: string }) => {
-        return graphqlRequest(
-          gql(`mutation AddSubscription($xmlAddress: String!) {
-            addSubscription(xmlAddress: $xmlAddress) {
-                id
-            }
-        }`),
-          variables
-        );
+        return rpcRequest(RSS_SERVICE, "addSubscription", variables);
       },
       onSuccess: () => {
         queryClient

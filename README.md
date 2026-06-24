@@ -23,10 +23,9 @@ This monorepo contains a collection of web applications, libraries, and tools us
 
 - **[auth](apps/auth)**: Authentication service utilizing Cloudflare Workers, Hono, and Drizzle ORM.
 - **[ethang-admin](apps/ethang-admin)**: Sanity Studio administrative interface for the ethang site content.
-- **[ethang-courses](apps/ethang-courses)**: Course tracking service using Apollo GraphQL and Drizzle ORM on Cloudflare Workers.
-- **[ethang-graphql](apps/ethang-graphql)**: Apollo Gateway / Supergraph service.
+- **[ethang-courses](apps/ethang-courses)**: Course tracking service using Cloudflare Workers RPC and Drizzle ORM on Cloudflare Workers.
 - **[ethang-react](apps/ethang-react)**: The main personal website front-end built with React, TanStack, Radix UI, Tailwind CSS, and Sanity.
-- **[ethang-rss](apps/ethang-rss)**: RSS aggregator service with Apollo GraphQL and Drizzle.
+- **[ethang-rss](apps/ethang-rss)**: RSS aggregator service with Cloudflare Workers RPC and Drizzle ORM.
 - **[logger-service](apps/logger-service)**: Hono-based logging service deployed to Cloudflare Workers using Drizzle ORM.
 - **[sanity-calendar-sync](apps/sanity-calendar-sync)**: Utility application for synchronizing calendar events between Sanity CMS and external calendar services.
 - **[sterett-admin](apps/sterett-admin)**: Administrative interface for the Sterett Creek Village Trustees, providing content management capabilities for the sterett-hono website.
@@ -36,7 +35,6 @@ This monorepo contains a collection of web applications, libraries, and tools us
 
 - **[agents-build](packages/agents-build)**: Compiler package that generates Google Antigravity rules and skills into `.agents/` from TypeScript definitions.
 - **[eslint-config](packages/eslint-config)**: Shared ESLint configuration for multiple frameworks including React, Angular, Astro, and Solid, ensuring consistent code style.
-- **[graphql-types](packages/graphql-types)**: Shared TypeScript types for GraphQL schemas and operations generated via GraphQL Code Generator.
 - **[hono-middleware](packages/hono-middleware)**: Shared middleware utilities for Hono applications.
 - **[intl](packages/intl)**: Internationalization package providing locale-specific strings and translations for applications.
 - **[leetcode](packages/leetcode)**: Collection of LeetCode solutions.
@@ -52,11 +50,11 @@ This monorepo contains a collection of web applications, libraries, and tools us
 ## Technologies
 
 - **Frontend & UI**: React 19, Radix UI (Radix Themes), Styled Components, Tailwind CSS (v4)
-- **State Management & Data Fetching**: TanStack Query (React Query), TanStack Router, Apollo Client, RxJS, `@ethang/store`
-- **Backend & APIs**: Cloudflare Workers, Hono, Apollo GraphQL (Apollo Gateway / Supergraph, Apollo Server, Apollo Subgraph)
+- **State Management & Data Fetching**: TanStack Query (React Query), TanStack Router, RxJS, `@ethang/store`
+- **Backend & APIs**: Cloudflare Workers RPC, Hono
 - **Data & Databases**: Sanity CMS, Drizzle ORM (SQLite / Cloudflare D1), IndexedDB
 - **Validation**: Zod, `@hono/zod-validator`
-- **Build & Tooling**: Vite, Bun, `@cloudflare/vite-plugin`, `@tanstack/router-plugin`, GraphQL Code Generator, Rover CLI
+- **Build & Tooling**: Vite, Bun, `@cloudflare/vite-plugin`, `@tanstack/router-plugin`
 - **Testing**: Vitest, Playwright, Testing Library, `@axe-core/playwright`, Faker
 - **Code Quality**: TypeScript (v6), ESLint, MegaLinter, SonarCloud, cspell
 - **Workspace Management**: pnpm workspaces

@@ -70,15 +70,13 @@ describe("Courses Route Component", () => {
 
   it("executes the query function", async () => {
     const mockData = {
-      curriculum: {
-        id: "curriculum-1",
-        learningPaths: [],
-        name: fullStackCurriculum,
-        updatedAt: "2026-06-15T20:00:00.000Z"
-      }
+      id: "curriculum-1",
+      learningPaths: [],
+      name: fullStackCurriculum,
+      updatedAt: "2026-06-15T20:00:00.000Z"
     };
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json({ data: mockData }, { status: 200 })
+      Response.json(mockData, { status: 200 })
     );
 
     const options = curriculumQueryOptions();
@@ -100,21 +98,19 @@ describe("Courses Route Component", () => {
 
   it("renders curriculum metadata and learning paths with correct offsets", () => {
     mockCurriculumStore.data = {
-      curriculum: {
-        id: "curriculum-1",
-        learningPaths: [
-          {
-            courses: [{ id: "c1" }, { id: "c2" }],
-            id: "path-1"
-          },
-          {
-            courses: [{ id: "c3" }],
-            id: "path-2"
-          }
-        ],
-        name: fullStackCurriculum,
-        updatedAt: "2026-06-15T20:00:00.000Z"
-      }
+      id: "curriculum-1",
+      learningPaths: [
+        {
+          courses: [{ id: "c1" }, { id: "c2" }],
+          id: "path-1"
+        },
+        {
+          courses: [{ id: "c3" }],
+          id: "path-2"
+        }
+      ],
+      name: fullStackCurriculum,
+      updatedAt: "2026-06-15T20:00:00.000Z"
     };
 
     // @ts-expect-error for test

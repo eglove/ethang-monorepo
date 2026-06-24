@@ -1,8 +1,3 @@
-export const TEST_EMAIL = "test@example.com";
-export const TEST_SUB = "user-123";
-export const ARTICLE_LOADER = "articleLoader";
-export const FEED_LOADER = "feedLoader";
-export const USER_ARTICLE_STATE_LOADER = "userArticleStateLoader";
 export const SOME_OTHER_D1_ERROR = "Some other D1 error";
 export const LOGGER_KEY = "logger-key";
 export const SOME_NON_ERROR_OBJECT = "Some non-Error object";

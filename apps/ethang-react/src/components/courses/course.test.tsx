@@ -32,15 +32,13 @@ describe("Course", () => {
 
   it("executes the query function", async () => {
     const mockData = {
-      course: {
-        author: "John Doe",
-        id: "1",
-        name: introductionToTesting,
-        url: testingUrl
-      }
+      author: "John Doe",
+      id: "1",
+      name: introductionToTesting,
+      url: testingUrl
     };
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json({ data: mockData }, { status: 200 })
+      Response.json(mockData, { status: 200 })
     );
 
     const options = courseQueryOptions("1");
@@ -65,12 +63,10 @@ describe("Course", () => {
 
   it("renders course details when data is loaded", () => {
     mockCourseStore.data = {
-      course: {
-        author: "John Doe",
-        id: "1",
-        name: introductionToTesting,
-        url: testingUrl
-      }
+      author: "John Doe",
+      id: "1",
+      name: introductionToTesting,
+      url: testingUrl
     };
 
     render(

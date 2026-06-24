@@ -4,14 +4,9 @@
     "current node"
   ],
   "dependencies": {
-    "@apollo/server": "^5.5.1",
-    "@apollo/subgraph": "^2.14.1",
-    "@as-integrations/cloudflare-workers": "^1.1.1",
     "@ethang/intl": "workspace:*",
     "@sanity/client": "^7.23.0",
     "drizzle-orm": "^0.45.2",
-    "graphql": "^17.0.1",
-    "graphql-tag": "^2.12.7",
     "lodash": "^4.18.1",
     "luxon": "^3.7.2",
     "uuid": "^14.0.1"

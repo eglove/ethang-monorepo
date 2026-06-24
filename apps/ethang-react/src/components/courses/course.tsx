@@ -1,10 +1,10 @@
-import { gql } from "@ethang/graphql-types/__generated__";
 import { courses as coursesIntl } from "@ethang/intl/en/courses.ts";
 import { Link, Skeleton, Text } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import get from "lodash/get.js";
 
-import { graphqlRequest } from "../../clients/graphql-client.ts";
+import { rpcRequest } from "../../clients/rpc-client.ts";
+
+const COURSES_SERVICE = "ethang_courses";
 
 type CourseProperties = {
   courseId: string;
@@ -14,17 +14,12 @@ type CourseProperties = {
 export const courseQueryOptions = (courseId: string) => {
   return queryOptions({
     queryFn: async () => {
-      return graphqlRequest(
-        gql(`query Course($courseId: ID!) {
-            course(id: $courseId) {
-                id
-                url
-                name
-                author
-            }
-        }`),
-        { courseId }
-      );
+      return rpcRequest<{
+        author: string;
+        id: string;
+        name: string;
+        url: string;
+      }>(COURSES_SERVICE, "course", { id: courseId });
     },
     queryKey: ["course", courseId]
   });
@@ -36,9 +31,9 @@ export const Course = ({
 }: Readonly<CourseProperties>) => {
   const { data, isPending } = useQuery(courseQueryOptions(courseId));
 
-  const link = get(data, ["course", "url"]);
-  const name = get(data, ["course", "name"]);
-  const author = get(data, ["course", "author"]);
+  const link = data?.url;
+  const name = data?.name;
+  const author = data?.author;
 
   return (
     <Skeleton loading={isPending}>

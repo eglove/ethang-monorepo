@@ -8,6 +8,8 @@ const TEST_URL = "https://localhost/api/graphql";
 const mockEnvironment = {
   ADMIN_PASS: "adminpass",
   ADMIN_USER: "admin@test.com",
+  ethang_courses: {} as any,
+  ethang_rss: {} as any,
   LOGGER_CLIENT_API_KEY: {
     // eslint-disable-next-line lodash/prefer-constant
     get: async () => {

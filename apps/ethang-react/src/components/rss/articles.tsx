@@ -1,4 +1,3 @@
-import { gql } from "@ethang/graphql-types/__generated__";
 import { rss } from "@ethang/intl/en/rss.ts";
 import { useStore } from "@ethang/store/use-store";
 import { Box, Button, Card, Flex, Heading, Text } from "@radix-ui/themes";
@@ -13,10 +12,12 @@ import noop from "lodash/noop";
 import orderBy from "lodash/orderBy";
 import { DateTime } from "luxon";
 
-import { graphqlRequest } from "../../clients/graphql-client.ts";
+import { rpcRequest } from "../../clients/rpc-client.ts";
 import { allArticlesOptions, feedArticlesOptions } from "./queries.ts";
 import { rssStore } from "./rss-store.ts";
 import { decodeHtmlEntities } from "./utilities.ts";
+
+const RSS_SERVICE = "ethang_rss";
 
 export const Articles = () => {
   const feedId = useStore(rssStore, (state) => {
@@ -29,26 +30,28 @@ export const Articles = () => {
     data: allData,
     fetchNextPage: fetchNextPageAll,
     hasNextPage: hasNextPageAll,
-    isFetchingNextPage: isFetchingNextPageAll
+    isFetchingNextPage: isFetchingNextPageAll,
+    isLoading: isAllLoading
   } = useInfiniteQuery(allArticlesOptions());
 
   const {
     data: feedData,
     fetchNextPage: fetchNextPageFeed,
     hasNextPage: hasNextPageFeed,
-    isFetchingNextPage: isFetchingNextPageFeed
+    isFetchingNextPage: isFetchingNextPageFeed,
+    isLoading: isFeedLoading
   } = useInfiniteQuery(feedArticlesOptions(feedId));
 
   const allEdges = isNil(allData)
     ? []
     : allData.pages.flatMap((page) => {
-        return page.allArticles.edges;
+        return page.edges;
       });
 
   const feedEdges = isNil(feedData)
     ? []
     : feedData.pages.flatMap((page) => {
-        return page.feedArticles.edges;
+        return page.edges;
       });
 
   const data = isNil(feedId) ? allEdges : feedEdges;
@@ -62,14 +65,7 @@ export const Articles = () => {
   const { isPending: isMarkingRead, mutateAsync: markArticleRead } =
     useMutation({
       mutationFn: async (variables: { articleId: string; isRead: boolean }) => {
-        return graphqlRequest(
-          gql(`mutation MarkArticleRead($isRead: Boolean!, $articleId: ID!) {
-              markArticleRead(isRead: $isRead, articleId: $articleId) {
-                  id
-              }
-          }`),
-          variables
-        );
+        return rpcRequest(RSS_SERVICE, "markArticleRead", variables);
       },
       onSuccess: async () => {
         await queryClient.invalidateQueries({
@@ -80,6 +76,8 @@ export const Articles = () => {
         });
       }
     });
+
+  const isDisabled = isMarkingRead || isAllLoading || isFeedLoading;
 
   const handleMarkRead = async (articleId: string) => {
     await markArticleRead({ articleId, isRead: true });
@@ -126,7 +124,7 @@ export const Articles = () => {
                 size="2"
                 color="blue"
                 variant="soft"
-                disabled={isMarkingRead}
+                disabled={isDisabled}
                 className="shrink-0 cursor-pointer"
                 onClick={() => {
                   handleMarkRead(article.node.id).catch(noop);
