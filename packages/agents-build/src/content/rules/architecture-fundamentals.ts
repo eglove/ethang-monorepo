@@ -236,7 +236,7 @@ export const architectureFundamentals = defineRule({
     }
   ] as MarkdownBlock[],
   description:
-    "software architecture fundamentals, system design, architectural patterns, stakeholders and concerns, uses of architecture, get_architecture, codebase graph, SARA CLI, rtk sara, planning, plan mode, grill-me, or defining architectural boundaries and significant decisions before construction",
+    "software architecture fundamentals, system design, architectural patterns, stakeholders and concerns, uses of architecture, get_architecture, codebase graph, SARA CLI, sara, planning, plan mode, grill-me, or defining architectural boundaries and significant decisions before construction",
   filename: "architecture-fundamentals",
   trigger: "model_decision"
 });

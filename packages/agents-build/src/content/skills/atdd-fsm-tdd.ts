@@ -14,7 +14,7 @@ export const atddFsmTdd = defineSkill({
       type: "text"
     },
     {
-      text: "[!IMPORTANT]\nBefore writing any code or beginning implementation under this skill, you MUST read the following SWEBOK reference documents using the `view_file` tool to obtain the necessary theoretical foundations:\n1. [Requirements Specification](file:///C:/Users/glove/projects/ethang-monorepo/.agents/skills/swebok/resources/requirements-specification.md)\n2. [Software Testing Techniques](file:///C:/Users/glove/projects/ethang-monorepo/.agents/skills/swebok/resources/testing-techniques.md)\n3. [Mathematical Foundations - Finite State Machines](file:///C:/Users/glove/projects/ethang-monorepo/.agents/skills/swebok/resources/mathematical-foundations-finite-state-machines.md)",
+      text: "[!IMPORTANT]\nBefore writing any code or beginning implementation under this skill, you MUST read the following SWEBOK reference documents using the `open` tool to obtain the necessary theoretical foundations:\n1. [Requirements Specification](file:///C:/Users/glove/projects/ethang-monorepo/.junie/skills/swebok/resources/requirements-specification.md)\n2. [Software Testing Techniques](file:///C:/Users/glove/projects/ethang-monorepo/.junie/skills/swebok/resources/testing-techniques.md)\n3. [Mathematical Foundations - Finite State Machines](file:///C:/Users/glove/projects/ethang-monorepo/.junie/skills/swebok/resources/mathematical-foundations-finite-state-machines.md)",
       type: "quote"
     },
     {
@@ -34,7 +34,7 @@ export const atddFsmTdd = defineSkill({
               text: "Write human-readable **Given-When-Then BDD scenarios** to represent business expectations."
             },
             {
-              text: "Accept a **general prompt** (free-form task description) from the user. Before modeling, ask clarifying questions to ensure full understanding — identify actors, triggers, constraints, and expected outcomes. Then, model the component as a **Finite-State Machine (FSM)** by deriving and formally specifying the states `S`, inputs/events `I`, outputs/actions `O`, the transition function `f: S \u{D7} I \u{2192} S`, and the initial state `s\u{2080}`. Use a table (State Table) or transition graph to clarify logic."
+              text: "Accept a $prompt (free-form task description) from the user. Before modeling, ask clarifying questions to ensure full understanding — identify actors, triggers, constraints, and expected outcomes. Then, model the component as a **Finite-State Machine (FSM)** by deriving and formally specifying the states `S`, inputs/events `I`, outputs/actions `O`, the transition function `f: S \u{D7} I \u{2192} S`, and the initial state `s\u{2080}`. Use a table (State Table) or transition graph to clarify logic."
             }
           ],
           text: "\u{1F4CB} **Phase 1: ATDD Elicitation, Clarification & Modeling**"

@@ -1,6 +1,8 @@
 import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
 import endsWith from "lodash/endsWith.js";
 import filter from "lodash/filter.js";
+import isArray from "lodash/isArray.js";
+import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import {
   existsSync,
@@ -12,7 +14,6 @@ import {
   writeFileSync
 } from "node:fs";
 import path from "node:path";
-import { z } from "zod";
 
 import type { RuleDefinition, SkillDefinition } from "./define.ts";
 
@@ -25,7 +26,8 @@ import {
 } from "./validate.ts";
 
 export type CompilerConfig = {
-  manifestPath: string;
+  manifestPath?: string;
+  mcpConfigPath?: string;
   rootDir: string;
   rules: RuleDefinition[];
   rulesDir: string;
@@ -60,104 +62,28 @@ export const validationHelpers = {
   isValidFrontmatterBlock
 };
 
-const getDirectoryFiles = (directory: string): string[] | undefined => {
-  try {
-    return fsProxy.readdirSync(directory);
-  } catch {
-    return undefined;
-  }
-};
-
-const cleanFileAndEmptyParents = (
-  relativeOrAbsolutePath: string,
-  config: CompilerConfig
+const processMcpConfig = (
+  config: CompilerConfig,
+  write: (absolutePath: string, content: string) => void
 ): void => {
-  const filePath = path.isAbsolute(relativeOrAbsolutePath)
-    ? relativeOrAbsolutePath
-    : path.resolve(config.rootDir, relativeOrAbsolutePath);
-
-  if (fsProxy.existsSync(filePath)) {
-    fsProxy.rmSync(filePath, { force: true });
+  if (undefined === config.mcpConfigPath) {
+    return;
   }
 
-  let currentDirectory = path.dirname(filePath);
-  const stopDirectories = new Set([
-    path.resolve(config.rootDir),
-    path.resolve(config.rulesDir)
-  ]);
-
-  let shouldContinue = true;
-  while (shouldContinue) {
-    const resolvedDirectory = path.resolve(currentDirectory);
-    if (stopDirectories.has(resolvedDirectory)) {
-      shouldContinue = false;
-    } else if (fsProxy.existsSync(resolvedDirectory)) {
-      const files = getDirectoryFiles(resolvedDirectory);
-      if (files === undefined) {
-        shouldContinue = false;
-      } else if (0 === files.length) {
-        fsProxy.rmdirSync(resolvedDirectory);
-        currentDirectory = path.dirname(currentDirectory);
-      } else {
-        shouldContinue = false;
-      }
-    } else {
-      currentDirectory = path.dirname(currentDirectory);
-    }
-  }
-};
-
-const calculateTargetPaths = (config: CompilerConfig): string[] => {
-  const rulePaths = Array.from(config.rules, (rule) => {
-    return path.join(config.rulesDir, `${rule.filename}.md`);
-  });
-  const { skills, skillsDir } = config;
-  if (undefined === skills || undefined === skillsDir) {
-    return rulePaths;
-  }
-  const skillPaths: string[] = [];
-  for (const skill of skills) {
-    skillPaths.push(path.join(skillsDir, skill.name, "SKILL.md"));
-    const resources = skill.resources ?? [];
-    for (const resource of resources) {
-      skillPaths.push(
-        path.join(skillsDir, skill.name, "resources", resource.filename)
-      );
-    }
-  }
-  return [...rulePaths, ...skillPaths];
-};
-
-const readManifestContent = (filePath: string): string => {
-  try {
-    return fsProxy.readFileSync(filePath, "utf8");
-  } catch {
-    return "";
-  }
-};
-
-const parseJson = (content: string): unknown => {
-  try {
-    return JSON.parse(content);
-  } catch {
-    return undefined;
-  }
-};
-
-const manifestSchema = z.object({
-  files: z.array(z.string())
-});
-
-const loadManifest = (config: CompilerConfig): string[] => {
-  if (fsProxy.existsSync(config.manifestPath)) {
-    const content = readManifestContent(config.manifestPath);
-    const parsed = parseJson(content);
-    const result = manifestSchema.safeParse(parsed);
-    if (result.success) {
-      return result.data.files;
-    }
-  }
-  return calculateTargetPaths(config);
+  write(
+    config.mcpConfigPath,
+    JSON.stringify(
+      {
+        mcpServers: {
+          "JetBrains IDE": {
+            url: "http://127.0.0.1:64506/sse"
+          }
+        }
+      },
+      null,
+      2
+    )
+  );
 };
 
 const processRules = (
@@ -256,6 +182,73 @@ const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   }
 };
 
+const loadManifest = (config: CompilerConfig): string[] => {
+  if (config.manifestPath === undefined) {
+    return [];
+  }
+  try {
+    return parseManifestContent(
+      fsProxy.readFileSync(config.manifestPath, "utf8")
+    );
+  } catch {
+    return [];
+  }
+};
+
+const parseManifestContent = (content: string): string[] => {
+  const parsed: unknown = JSON.parse(content);
+  if (isObject(parsed) && "files" in parsed) {
+    const { files } = parsed;
+    if (isArray(files)) {
+      return filter(files, isString);
+    }
+  }
+  return [];
+};
+
+const canRemoveDirectory = (directory: string): boolean => {
+  try {
+    return 0 === fsProxy.readdirSync(directory).length;
+  } catch {
+    return false;
+  }
+};
+
+const cleanFileAndEmptyParents = (
+  relativeOrAbsolutePath: string,
+  config: CompilerConfig
+): void => {
+  const filePath = path.isAbsolute(relativeOrAbsolutePath)
+    ? relativeOrAbsolutePath
+    : path.resolve(config.rootDir, relativeOrAbsolutePath);
+
+  if (fsProxy.existsSync(filePath)) {
+    fsProxy.rmSync(filePath, { force: true });
+  }
+
+  let currentDirectory = path.dirname(filePath);
+  const stopDirectories = new Set([
+    path.resolve(config.rootDir),
+    path.resolve(config.rulesDir)
+  ]);
+  if (config.skillsDir !== undefined) {
+    stopDirectories.add(path.resolve(config.skillsDir));
+  }
+
+  let shouldContinue = true;
+  while (shouldContinue) {
+    const resolvedDirectory = path.resolve(currentDirectory);
+    if (stopDirectories.has(resolvedDirectory)) {
+      shouldContinue = false;
+    } else if (canRemoveDirectory(resolvedDirectory)) {
+      fsProxy.rmdirSync(resolvedDirectory);
+      currentDirectory = path.dirname(currentDirectory);
+    } else {
+      shouldContinue = false;
+    }
+  }
+};
+
 export const compile = (config: CompilerConfig): void => {
   const filesToClean = loadManifest(config);
 
@@ -276,16 +269,19 @@ export const compile = (config: CompilerConfig): void => {
 
   processRules(config, failures, write);
   processSkills(config, failures, write);
+  processMcpConfig(config, write);
   scanDirectories(config, failures);
 
   if (0 < failures.length) {
     throw new CompileError(failures, {});
   }
 
-  fsProxy.mkdirSync(path.dirname(config.manifestPath), { recursive: true });
-  fsProxy.writeFileSync(
-    config.manifestPath,
-    JSON.stringify({ files: generatedFiles }, null, 2),
-    "utf8"
-  );
+  if (config.manifestPath !== undefined) {
+    fsProxy.mkdirSync(path.dirname(config.manifestPath), { recursive: true });
+    fsProxy.writeFileSync(
+      config.manifestPath,
+      JSON.stringify({ files: generatedFiles }, null, 2),
+      "utf8"
+    );
+  }
 };

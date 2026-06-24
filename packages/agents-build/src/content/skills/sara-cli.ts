@@ -14,7 +14,7 @@ export const saraCli = defineSkill({
       type: "text"
     },
     {
-      text: "[!IMPORTANT]\nWithin this workspace, prefix your `sara` commands with `rtk` (e.g., `rtk sara check`) to compress its output and conserve the token budget.",
+      text: "[!IMPORTANT]\nWithin this workspace, use `sara` directly for requirements and design traceability operations (e.g., `sara check`).",
       type: "quote"
     },
     {
@@ -48,7 +48,7 @@ export const saraCli = defineSkill({
       type: "text"
     },
     {
-      code: "rtk sara check",
+      code: "sara check",
       language: "bash",
       type: "codeBlock"
     },
@@ -67,7 +67,7 @@ export const saraCli = defineSkill({
       type: "text"
     },
     {
-      code: "rtk sara report\n``\n\n## CLI Help Reference\n\n\n\n\n```text\nCLI for Sara - Requirements data graph\n\nUsage: sara.exe [OPTIONS] <COMMAND>\n\nCommands:\n  check   Parse documents, build data graph, and validate integrity\n  diff    Compare graphs between Git references\n  edit    Edit existing document metadata by item ID (interactive mode if no flags provided)\n  init    Initialize metadata in a Markdown file\n  query   Query items and traceability chains\n  report  Generate coverage and traceability reports\n  schema  Export the active model schema as YAML\n\nGlobal Options:\n  -c, --config <CONFIG>          Path to configuration file [default: sara.toml]\n  -h, --help                     Print help\n      --no-color                 Disable colored output\n      --no-emoji                 Disable emoji output\n  -q, --quiet                    Suppress all output except errors\n  -v, --verbose...               Increase verbosity (-v, -vv, -vvv)\n  -r, --repository <REPOSITORY>  Additional repository paths\n  -V, --version                  Print version\n",
+      code: "sara report\n``\n\n## CLI Help Reference\n\n\n\n\n```text\nCLI for Sara - Requirements data graph\n\nUsage: sara.exe [OPTIONS] <COMMAND>\n\nCommands:\n  check   Parse documents, build data graph, and validate integrity\n  diff    Compare graphs between Git references\n  edit    Edit existing document metadata by item ID (interactive mode if no flags provided)\n  init    Initialize metadata in a Markdown file\n  query   Query items and traceability chains\n  report  Generate coverage and traceability reports\n  schema  Export the active model schema as YAML\n\nGlobal Options:\n  -c, --config <CONFIG>          Path to configuration file [default: sara.toml]\n  -h, --help                     Print help\n      --no-color                 Disable colored output\n      --no-emoji                 Disable emoji output\n  -q, --quiet                    Suppress all output except errors\n  -v, --verbose...               Increase verbosity (-v, -vv, -vvv)\n  -r, --repository <REPOSITORY>  Additional repository paths\n  -V, --version                  Print version\n",
       language: "bash",
       type: "codeBlock"
     }

@@ -14,7 +14,7 @@ export const jq = defineSkill({
       type: "text"
     },
     {
-      text: "[!IMPORTANT]\nWithin this workspace, directly viewing large JSON configuration files exhausts the model token budget. You must ALWAYS use `jq` (prefixed with `rtk`) to filter and pluck JSON structures locally, streaming only the relevant subsets to the model context.",
+      text: "[!IMPORTANT]\nWithin this workspace, use `jq` to filter and pluck JSON structures locally, streaming only the relevant subsets to the model context.",
       type: "quote"
     },
     {
@@ -57,7 +57,7 @@ export const jq = defineSkill({
       type: "text"
     },
     {
-      code: 'rtk jq ".dependencies" package.json',
+      code: 'jq ".dependencies" package.json',
       language: "bash",
       type: "codeBlock"
     },
@@ -71,7 +71,7 @@ export const jq = defineSkill({
       type: "text"
     },
     {
-      code: 'rtk jq ".scripts.build" package.json',
+      code: 'jq ".scripts.build" package.json',
       language: "bash",
       type: "codeBlock"
     },
@@ -90,7 +90,7 @@ export const jq = defineSkill({
       type: "text"
     },
     {
-      code: 'rtk jq -r ".name" package.json',
+      code: 'jq -r ".name" package.json',
       language: "bash",
       type: "codeBlock"
     },
@@ -109,7 +109,7 @@ export const jq = defineSkill({
       type: "text"
     },
     {
-      code: 'rtk jq ".items[]" data.json',
+      code: 'jq ".items[]" data.json',
       language: "bash",
       type: "codeBlock"
     },
@@ -123,7 +123,7 @@ export const jq = defineSkill({
       type: "text"
     },
     {
-      code: 'rtk jq ".[] | .name" packages.json',
+      code: 'jq ".[] | .name" packages.json',
       language: "bash",
       type: "codeBlock"
     },
@@ -137,7 +137,7 @@ export const jq = defineSkill({
       type: "text"
     },
     {
-      code: 'rtk jq "[ .[] | { name: .name, version: .version } ]" packages.json',
+      code: 'jq "[ .[] | { name: .name, version: .version } ]" packages.json',
       language: "bash",
       type: "codeBlock"
     },
@@ -156,7 +156,7 @@ export const jq = defineSkill({
       type: "text"
     },
     {
-      code: '# Find objects where the "name" property matches "target-package"\nrtk jq ".[] | select(.name == \\\\"target-package\\\\")" packages.json',
+      code: '# Find objects where the "name" property matches "target-package"\njq ".[] | select(.name == \\\\"target-package\\\\")" packages.json',
       language: "bash",
       type: "codeBlock"
     },
@@ -170,7 +170,7 @@ export const jq = defineSkill({
       type: "text"
     },
     {
-      code: String.raw`rtk jq ".[] | select(.tags[] | contains(\\"frontend\\"))" data.json`,
+      code: String.raw`jq ".[] | select(.tags[] | contains(\\"frontend\\"))" data.json`,
       language: "bash",
       type: "codeBlock"
     },
@@ -189,7 +189,7 @@ export const jq = defineSkill({
       type: "text"
     },
     {
-      code: 'rtk jq -c ".[]" data.json',
+      code: 'jq -c ".[]" data.json',
       language: "bash",
       type: "codeBlock"
     },
@@ -203,12 +203,12 @@ export const jq = defineSkill({
       type: "text"
     },
     {
-      code: 'rtk jq "has(\\\\"devDependencies\\\\")" package.json\n``\n\n## CLI Help Reference\n\n\n\n\n```text\njq - commandline JSON processor [version 1.8.1]\n\nUsage:\tjq [options] <jq filter> [file...]\n\tjq [options] --args <jq filter> [strings...]\n\tjq [options] --jsonargs <jq filter> [JSON_TEXTS...]\n\njq is a tool for processing JSON inputs, applying the given filter to\nits JSON text inputs and producing the filter\'s results as JSON on\nstandard output.\n\nThe simplest filter is ., which copies jq\'s input to its output\nunmodified except for formatting. For more advanced filters see\nthe jq(1) manpage ("man jq") and/or https://jqlang.org/.\n\nExample:\n\n\t$ echo \'{"foo": 0}\' | jq .\n\t{\n\t  "foo": 0\n\t}\n\nCommand options:\n  -n, --null-input          use `null` as the single input value;\n  -R, --raw-input           read each line as string instead of JSON;\n  -s, --slurp               read all inputs into an array and use it as\n                            the single input value;\n  -c, --compact-output      compact instead of pretty-printed output;\n  -r, --raw-output          output strings without escapes and quotes;\n      --raw-output0         implies -r and output NUL after each output;\n  -j, --join-output         implies -r and output without newline after\n                            each output;\n  -a, --ascii-output        output strings by only ASCII characters\n                            using escape sequences;\n  -S, --sort-keys           sort keys of each object on output;\n  -C, --color-output        colorize JSON output;\n  -M, --monochrome-output   disable colored output;\n      --tab                 use tabs for indentation;\n      --indent n            use n spaces for indentation (max 7 spaces);\n      --unbuffered          flush output stream after each output;\n      --stream              parse the input value in streaming fashion;\n      --stream-errors       implies --stream and report parse error as\n                            an array;\n      --seq                 parse input/output as application/json-seq;\n  -f, --from-file           load the filter from a file;\n  -L, --library-path dir    search modules from the directory;\n      --arg name value      set $name to the string value;\n      --argjson name value  set $name to the JSON value;\n      --slurpfile name file set $name to an array of JSON values read\n                            from the file;\n      --rawfile name file   set $name to string contents of file;\n      --args                consume remaining arguments as positional\n                            string values;\n      --jsonargs            consume remaining arguments as positional\n                            JSON values;\n  -e, --exit-status         set exit status code based on the output;\n  -b, --binary              open input/output streams in binary mode;\n  -V, --version             show the version;\n  --build-configuration     show jq\'s build configuration;\n  -h, --help                show the help;\n  --                        terminates argument processing;\n\nNamed arguments are also available as $ARGS.named[], while\npositional arguments are available as $ARGS.positional[].\n',
+      code: 'jq "has(\\\\"devDependencies\\\\")" package.json\n``\n\n## CLI Help Reference\n\n\n\n\n```text\njq - commandline JSON processor [version 1.8.1]\n\nUsage:\tjq [options] <jq filter> [file...]\n\tjq [options] --args <jq filter> [strings...]\n\tjq [options] --jsonargs <jq filter> [JSON_TEXTS...]\n\njq is a tool for processing JSON inputs, applying the given filter to\nits JSON text inputs and producing the filter\'s results as JSON on\nstandard output.\n\nThe simplest filter is ., which copies jq\'s input to its output\nunmodified except for formatting. For more advanced filters see\nthe jq(1) manpage ("man jq") and/or https://jqlang.org/.\n\nExample:\n\n\t$ echo \'{"foo": 0}\' | jq .\n\t{\n\t  "foo": 0\n\t}\n\nCommand options:\n  -n, --null-input          use `null` as the single input value;\n  -R, --raw-input           read each line as string instead of JSON;\n  -s, --slurp               read all inputs into an array and use it as\n                            the single input value;\n  -c, --compact-output      compact instead of pretty-printed output;\n  -r, --raw-output          output strings without escapes and quotes;\n      --raw-output0         implies -r and output NUL after each output;\n  -j, --join-output         implies -r and output without newline after\n                            each output;\n  -a, --ascii-output        output strings by only ASCII characters\n                            using escape sequences;\n  -S, --sort-keys           sort keys of each object on output;\n  -C, --color-output        colorize JSON output;\n  -M, --monochrome-output   disable colored output;\n      --tab                 use tabs for indentation;\n      --indent n            use n spaces for indentation (max 7 spaces);\n      --unbuffered          flush output stream after each output;\n      --stream              parse the input value in streaming fashion;\n      --stream-errors       implies --stream and report parse error as\n                            an array;\n      --seq                 parse input/output as application/json-seq;\n  -f, --from-file           load the filter from a file;\n  -L, --library-path dir    search modules from the directory;\n      --arg name value      set $name to the string value;\n      --argjson name value  set $name to the JSON value;\n      --slurpfile name file set $name to an array of JSON values read\n                            from the file;\n      --rawfile name file   set $name to string contents of file;\n      --args                consume remaining arguments as positional\n                            string values;\n      --jsonargs            consume remaining arguments as positional\n                            JSON values;\n  -e, --exit-status         set exit status code based on the output;\n  -b, --binary              open input/output streams in binary mode;\n  -V, --version             show the version;\n  --build-configuration     show jq\'s build configuration;\n  -h, --help                show the help;\n  --                        terminates argument processing;\n\nNamed arguments are also available as $ARGS.named[], while\npositional arguments are available as $ARGS.positional[].\n',
       language: "bash",
       type: "codeBlock"
     }
   ] as MarkdownBlock[],
   description:
-    "Explains how to use the jq JSON processor for slicing, filtering, mapping, and formatting JSON files, emphasizing token conservation via rtk.",
+    "Explains how to use the jq JSON processor for slicing, filtering, mapping, and formatting JSON files.",
   name: "jq"
 });

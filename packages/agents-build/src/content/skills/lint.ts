@@ -21,10 +21,10 @@ export const lint = defineSkill({
     {
       items: [
         {
-          text: "**Rule Awareness**: You must be aware of every rule turned on or off in the configuration.\n- Use file reading tools (`view_file`, `grep_search`) to inspect `packages/eslint-config/src/config.*.js` dynamically to parse and understand the rules currently applied."
+          text: "**Rule Awareness**: You must be aware of every rule turned on or off in the configuration.\n- Use file reading tools (`open`, `search_contents_by_grep`) to inspect `packages/eslint-config/src/config.*.js` dynamically to parse and understand the rules currently applied."
         },
         {
-          text: "**Knowledge Base**: Check your static knowledge base for difficult rules before attempting to fix them.\n- The knowledge base is located at `.agents/skills/lint/resources/knowledge.md`. If the file exists, read it using `view_file`."
+          text: "**Knowledge Base**: Check your static knowledge base for difficult rules before attempting to fix them.\n- The knowledge base is located at `.junie/skills/lint/resources/knowledge.md`. If the file exists, read it using `open`."
         }
       ],
       type: "numberedList"
@@ -41,7 +41,7 @@ export const lint = defineSkill({
     {
       items: [
         {
-          text: "**Run ESLint**: Execute the linter across the affected project or monorepo to identify issues. Use `rtk pnpm lint` or `npx eslint` as appropriate for the target workspace."
+          text: "**Run ESLint**: Execute the linter across the affected project or monorepo to identify issues. Use `pnpm lint` or `npx eslint` as appropriate for the target workspace."
         },
         {
           text: "**Fix Issues**: Modify code to resolve the linting errors identified."
@@ -50,7 +50,7 @@ export const lint = defineSkill({
           text: "**Turn Tracking**: You must track how many times you have attempted to fix a specific rule across separate invocations.\n- If it takes more than 3 separate invocations (turns) to fix a specific linting rule, you MUST STOP and ask the user for guidance. Explain what you've tried and ask how they want to proceed."
         },
         {
-          text: "**Knowledge Recording**: If you encounter a difficult to fix rule and successfully find a solution (or the user provides one), you MUST append the solution to your knowledge base.\n- Append a clear Markdown section explaining the rule, the problem, and the solution to `.agents/skills/lint/resources/knowledge.md`. Use the `run_command` or file editing tools to append to this file. Do NOT overwrite the existing content of the file."
+          text: "**Knowledge Recording**: If you encounter a difficult to fix rule and successfully find a solution (or the user provides one), you MUST append the solution to your knowledge base.\n- Append a clear Markdown section explaining the rule, the problem, and the solution to `.junie/skills/lint/resources/knowledge.md`. Use the `bash` or file editing tools to append to this file. Do NOT overwrite the existing content of the file."
         }
       ],
       type: "numberedList"

@@ -75,46 +75,46 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "[requirements-elicitation](file:///.agents/rules/requirements-elicitation.md) - Active stakeholder discovery and clarification loops."
+          text: "[requirements-elicitation](file:///.junie/rules/requirements-elicitation.md) - Active stakeholder discovery and clarification loops."
         },
         {
-          text: "[requirements-attributes](file:///.agents/rules/requirements-attributes.md) - Requirements validation attributes (testability, unambiguity)."
+          text: "[requirements-attributes](file:///.junie/rules/requirements-attributes.md) - Requirements validation attributes (testability, unambiguity)."
         },
         {
-          text: "[requirements-completeness](file:///.agents/rules/requirements-completeness.md) - Complete and consistent requirements validation criteria."
+          text: "[requirements-completeness](file:///.junie/rules/requirements-completeness.md) - Complete and consistent requirements validation criteria."
         },
         {
-          text: "[requirements-change-control](file:///.agents/rules/requirements-change-control.md) - Managing scope change requests and agreements."
+          text: "[requirements-change-control](file:///.junie/rules/requirements-change-control.md) - Managing scope change requests and agreements."
         },
         {
-          text: "[requirements-prioritization](file:///.agents/rules/requirements-prioritization.md) - MoSCoW prioritization and value-cost tradeoffs."
+          text: "[requirements-prioritization](file:///.junie/rules/requirements-prioritization.md) - MoSCoW prioritization and value-cost tradeoffs."
         },
         {
-          text: "[requirements-traceability](file:///.agents/rules/requirements-traceability.md) - Mappings between requirements, implementation, and tests."
+          text: "[requirements-traceability](file:///.junie/rules/requirements-traceability.md) - Mappings between requirements, implementation, and tests."
         },
         {
-          text: "[user-story-specification](file:///.agents/rules/user-story-specification.md) - BDD behavior specs via Given-When-Then criteria."
+          text: "[user-story-specification](file:///.junie/rules/user-story-specification.md) - BDD behavior specs via Given-When-Then criteria."
         },
         {
-          text: "[scope-matching](file:///.agents/rules/scope-matching.md) - Prioritizing work within budget and schedule constraints."
+          text: "[scope-matching](file:///.junie/rules/scope-matching.md) - Prioritizing work within budget and schedule constraints."
         },
         {
-          text: "[effort-estimation](file:///.agents/rules/effort-estimation.md) - COCOMO, function points, and calibration."
+          text: "[effort-estimation](file:///.junie/rules/effort-estimation.md) - COCOMO, function points, and calibration."
         },
         {
-          text: "[risk-management](file:///.agents/rules/risk-management.md) - Constructing risk registers and mitigation strategies."
+          text: "[risk-management](file:///.junie/rules/risk-management.md) - Constructing risk registers and mitigation strategies."
         },
         {
-          text: "[software-lifecycles](file:///.agents/rules/software-lifecycles.md) - Choosing the appropriate lifecycle models and entry/exit criteria."
+          text: "[software-lifecycles](file:///.junie/rules/software-lifecycles.md) - Choosing the appropriate lifecycle models and entry/exit criteria."
         },
         {
-          text: "[process-measurement](file:///.agents/rules/process-measurement.md) - Defect density and cycle time measurements."
+          text: "[process-measurement](file:///.junie/rules/process-measurement.md) - Defect density and cycle time measurements."
         },
         {
-          text: "[professional-ethics](file:///.agents/rules/professional-ethics.md) - Public interest, professional competency, and code of conduct."
+          text: "[professional-ethics](file:///.junie/rules/professional-ethics.md) - Public interest, professional competency, and code of conduct."
         },
         {
-          text: "[cost-benefit-analysis](file:///.agents/rules/cost-benefit-analysis.md) - Buy vs build, ROI, and technical debt valuations."
+          text: "[cost-benefit-analysis](file:///.junie/rules/cost-benefit-analysis.md) - Buy vs build, ROI, and technical debt valuations."
         }
       ],
       type: "unorderedList"
@@ -127,10 +127,10 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "[clinical-trials-database](file:///.agents/skills/clinical-trials-database/SKILL.md) (if dealing with trial data requirements)"
+          text: "[clinical-trials-database](file:///.junie/skills/clinical-trials-database/SKILL.md) (if dealing with trial data requirements)"
         },
         {
-          text: "[openfda-database](file:///.agents/skills/openfda-database/SKILL.md) (if analyzing regulatory requirements)"
+          text: "[openfda-database](file:///.junie/skills/openfda-database/SKILL.md) (if analyzing regulatory requirements)"
         }
       ],
       type: "unorderedList"
@@ -152,7 +152,7 @@ export const sdlc = defineSkill({
           text: "**Write SARA-Compliant Documents**: Write the gathered requirements as SARA-compatible Markdown files under `docs/<feature-name>/` with well-formed YAML frontmatter."
         },
         {
-          text: "**Validate and Verify the Graph**: Run `rtk sara check` or `rtk sara validate` to verify the integrity of the requirements graph."
+          text: "**Validate and Verify the Graph**: Run `sara check` or `sara validate` to verify the integrity of the requirements graph."
         },
         {
           text: "**Baseline Freeze**: Present a final summary of the requirements graph structure and freeze the baseline in the implementation plan."
@@ -193,52 +193,52 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "[ddd-strategic](file:///.agents/rules/ddd-strategic.md) - Bounded contexts, context boundaries, and ubiquitous language."
+          text: "[ddd-strategic](file:///.junie/rules/ddd-strategic.md) - Bounded contexts, context boundaries, and ubiquitous language."
         },
         {
-          text: "[ddd-tactical](file:///.agents/rules/ddd-tactical.md) - CQRS patterns, Specifications, Value Objects, and Domain Events."
+          text: "[ddd-tactical](file:///.junie/rules/ddd-tactical.md) - CQRS patterns, Specifications, Value Objects, and Domain Events."
         },
         {
-          text: "[architectural-documentation](file:///.agents/rules/architectural-documentation.md) - Descriptions, viewpoints, and notations (e.g. C4 model)."
+          text: "[architectural-documentation](file:///.junie/rules/architectural-documentation.md) - Descriptions, viewpoints, and notations (e.g. C4 model)."
         },
         {
-          text: "[architectural-synthesis](file:///.agents/rules/architectural-synthesis.md) - ASRs, architectural patterns, and ADD."
+          text: "[architectural-synthesis](file:///.junie/rules/architectural-synthesis.md) - ASRs, architectural patterns, and ADD."
         },
         {
-          text: "[architectural-evaluation](file:///.agents/rules/architectural-evaluation.md) - Evaluating architectures via ATAM, design trade-offs, and quality attributes."
+          text: "[architectural-evaluation](file:///.junie/rules/architectural-evaluation.md) - Evaluating architectures via ATAM, design trade-offs, and quality attributes."
         },
         {
-          text: "[architectural-tactics](file:///.agents/rules/architectural-tactics.md) - Tactics for availability, performance, and security."
+          text: "[architectural-tactics](file:///.junie/rules/architectural-tactics.md) - Tactics for availability, performance, and security."
         },
         {
-          text: "[conways-law](file:///.agents/rules/conways-law.md) - Organization structures and boundaries."
+          text: "[conways-law](file:///.junie/rules/conways-law.md) - Organization structures and boundaries."
         },
         {
-          text: "[coupling-and-cohesion](file:///.agents/rules/coupling-and-cohesion.md) - Separation of concerns and dependency direction."
+          text: "[coupling-and-cohesion](file:///.junie/rules/coupling-and-cohesion.md) - Separation of concerns and dependency direction."
         },
         {
-          text: "[information-hiding](file:///.agents/rules/information-hiding.md) - Encapsulation, API design, and public interfaces."
+          text: "[information-hiding](file:///.junie/rules/information-hiding.md) - Encapsulation, API design, and public interfaces."
         },
         {
-          text: "[interface-control](file:///.agents/rules/interface-control.md) - API stability and inter-module isolation."
+          text: "[interface-control](file:///.junie/rules/interface-control.md) - API stability and inter-module isolation."
         },
         {
-          text: "[database-normalization](file:///.agents/rules/database-normalization.md) - Relational schema design (3NF, constraints, and indexes)."
+          text: "[database-normalization](file:///.junie/rules/database-normalization.md) - Relational schema design (3NF, constraints, and indexes)."
         },
         {
-          text: "[security-by-design](file:///.agents/rules/security-by-design.md) - OWASP Top 10, CIA Triad, STRIDE threat modeling."
+          text: "[security-by-design](file:///.junie/rules/security-by-design.md) - OWASP Top 10, CIA Triad, STRIDE threat modeling."
         },
         {
-          text: "[internationalization-strings](file:///.agents/rules/internationalization-strings.md) - String isolation and locale management."
+          text: "[internationalization-strings](file:///.junie/rules/internationalization-strings.md) - String isolation and locale management."
         },
         {
-          text: "[design-quality-reviews](file:///.agents/rules/design-quality-reviews.md) - SDD sufficiency, quality reviews, and design audits."
+          text: "[design-quality-reviews](file:///.junie/rules/design-quality-reviews.md) - SDD sufficiency, quality reviews, and design audits."
         },
         {
-          text: "[design-completeness](file:///.agents/rules/design-completeness.md) - Requirements mapping and state space coverage."
+          text: "[design-completeness](file:///.junie/rules/design-completeness.md) - Requirements mapping and state space coverage."
         },
         {
-          text: "[quality-assurance-reviews](file:///.agents/rules/quality-assurance-reviews.md) - Peer design reviews, inspections, and checklists."
+          text: "[quality-assurance-reviews](file:///.junie/rules/quality-assurance-reviews.md) - Peer design reviews, inspections, and checklists."
         }
       ],
       type: "unorderedList"
@@ -251,10 +251,10 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "[durable-objects](file:///.agents/skills/durable-objects/SKILL.md) (stateful coordination design)"
+          text: "[durable-objects](file:///.junie/skills/durable-objects/SKILL.md) (stateful coordination design)"
         },
         {
-          text: "[agents-sdk](file:///.agents/skills/agents-sdk/SKILL.md) (agent-based architecture design)"
+          text: "[agents-sdk](file:///.junie/skills/agents-sdk/SKILL.md) (agent-based architecture design)"
         }
       ],
       type: "unorderedList"
@@ -267,7 +267,7 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "**Ingest Phase 1 Requirements**: Locate SARA requirements under `docs/<feature-name>/`. Run `rtk sara check`. If missing or invalid, halt and notify."
+          text: "**Ingest Phase 1 Requirements**: Locate SARA requirements under `docs/<feature-name>/`. Run `sara check`. If missing or invalid, halt and notify."
         },
         {
           text: "**System Context Inspection**: Query Wrangler/Drizzle config, check DB schemas, GraphQL supergraph, and active services."
@@ -279,7 +279,7 @@ export const sdlc = defineSkill({
           text: "**Write SARA-Compliant Design**: Save files with type `system_architecture` or `software_detailed_design` under `docs/<feature-name>/`. Ensure they use `satisfies` to trace back to requirements."
         },
         {
-          text: "**Validate Design Graph**: Run `rtk sara check` to verify the integrated requirements and design graph."
+          text: "**Validate Design Graph**: Run `sara check` to verify the integrated requirements and design graph."
         }
       ],
       type: "numberedList"
@@ -317,46 +317,46 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "[philosophy](file:///.agents/rules/philosophy.md) - Strict lifecycle execution, complete feedback loops, and user checkpoints."
+          text: "[philosophy](file:///.junie/rules/philosophy.md) - Strict lifecycle execution, complete feedback loops, and user checkpoints."
         },
         {
-          text: "[workspace-tools](file:///.agents/rules/workspace-tools.md) - Prioritize WebStorm MCP, ripgrep, jq, and Everything Search. Use `rtk` command prefixes."
+          text: "[workspace-tools](file:///.junie/rules/workspace-tools.md) - Prioritize WebStorm MCP, ripgrep, jq, and Everything Search. Use `` command prefixes."
         },
         {
-          text: "[eslint-self-learning](file:///.agents/rules/eslint-self-learning.md) - Resolving lint issues, TypeScript check violations, and syntax errors."
+          text: "[eslint-self-learning](file:///.junie/rules/eslint-self-learning.md) - Resolving lint issues, TypeScript check violations, and syntax errors."
         },
         {
-          text: "[maintainability-clean-code](file:///.agents/rules/maintainability-clean-code.md) - Descriptive naming, single responsibility."
+          text: "[maintainability-clean-code](file:///.junie/rules/maintainability-clean-code.md) - Descriptive naming, single responsibility."
         },
         {
-          text: "[table-driven-construction](file:///.agents/rules/table-driven-construction.md) - Lookup tables and state transition maps."
+          text: "[table-driven-construction](file:///.junie/rules/table-driven-construction.md) - Lookup tables and state transition maps."
         },
         {
-          text: "[concurrency-control](file:///.agents/rules/concurrency-control.md) - Concurrency primitives, locks, and thread safety."
+          text: "[concurrency-control](file:///.junie/rules/concurrency-control.md) - Concurrency primitives, locks, and thread safety."
         },
         {
-          text: "[boolean-logic](file:///.agents/rules/boolean-logic.md) - Logic simplification and De Morgan's laws."
+          text: "[boolean-logic](file:///.junie/rules/boolean-logic.md) - Logic simplification and De Morgan's laws."
         },
         {
-          text: "[exception-handling-policy](file:///.agents/rules/exception-handling-policy.md) - Exception handling and central logging policies."
+          text: "[exception-handling-policy](file:///.junie/rules/exception-handling-policy.md) - Exception handling and central logging policies."
         },
         {
-          text: "[intellectual-property](file:///.agents/rules/intellectual-property.md) - Compliance with open source licenses and IP attribution."
+          text: "[intellectual-property](file:///.junie/rules/intellectual-property.md) - Compliance with open source licenses and IP attribution."
         },
         {
-          text: "[privacy-data-protection](file:///.agents/rules/privacy-data-protection.md) - PII protection and data minimization."
+          text: "[privacy-data-protection](file:///.junie/rules/privacy-data-protection.md) - PII protection and data minimization."
         },
         {
-          text: "[cloudflare](file:///.agents/skills/cloudflare/SKILL.md) (Cloudflare platform implementation)"
+          text: "[cloudflare](file:///.junie/skills/cloudflare/SKILL.md) (Cloudflare platform implementation)"
         },
         {
-          text: "[wrangler](file:///.agents/skills/wrangler/SKILL.md) (Wrangler configuration and CLI)"
+          text: "[wrangler](file:///.junie/skills/wrangler/SKILL.md) (Wrangler configuration and CLI)"
         },
         {
-          text: "[sandbox-sdk](file:///.agents/skills/sandbox-sdk/SKILL.md) (sandbox creation and execution)"
+          text: "[sandbox-sdk](file:///.junie/skills/sandbox-sdk/SKILL.md) (sandbox creation and execution)"
         },
         {
-          text: "[turnstile-spin](file:///.agents/skills/turnstile-spin/SKILL.md) (Turnstile integration)"
+          text: "[turnstile-spin](file:///.junie/skills/turnstile-spin/SKILL.md) (Turnstile integration)"
         }
       ],
       type: "unorderedList"
@@ -369,10 +369,10 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "**Pre-Implementation Graph Validation**: Run `rtk sara check`. Halt if validation fails or design files are missing."
+          text: "**Pre-Implementation Graph Validation**: Run `sara check`. Halt if validation fails or design files are missing."
         },
         {
-          text: "**Strict TDD Verification Loop**: For every module:\n- **Red**: Write a failing test in `*.test.ts` in the target directory and run `rtk pnpm --filter <package> test` to watch it fail.\n- **Green**: Implement minimal code to pass the test.\n- **Refactor**: Clean up the code. Enforce arrow functions, explicit accessibility modifiers, Yoda comparisons, no native Date, bracket notation, type inference."
+          text: "**Strict TDD Verification Loop**: For every module:\n- **Red**: Write a failing test in `*.test.ts` in the target directory and run `pnpm --filter <package> test` to watch it fail.\n- **Green**: Implement minimal code to pass the test.\n- **Refactor**: Clean up the code. Enforce arrow functions, explicit accessibility modifiers, Yoda comparisons, no native Date, bracket notation, type inference."
         },
         {
           text: "**Coding Standards Enforcement**: Ensure strict project compliance."
@@ -381,7 +381,7 @@ export const sdlc = defineSkill({
           text: "**ESLint Auto-Fix Loop Guard**: Run linting checks. Autofix up to 3 rounds. Halt if issues persist."
         },
         {
-          text: "**Final Graph Verification**: Run `rtk sara check` to verify requirements, design, and code trace links."
+          text: "**Final Graph Verification**: Run `sara check` to verify requirements, design, and code trace links."
         }
       ],
       type: "numberedList"
@@ -419,34 +419,34 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "[tdd-discipline](file:///.agents/rules/tdd-discipline.md) - Red-Green-Refactor method."
+          text: "[tdd-discipline](file:///.junie/rules/tdd-discipline.md) - Red-Green-Refactor method."
         },
         {
-          text: "[tdd-principles](file:///.agents/rules/tdd-principles.md) - Parameterized tests, RED/GREEN validation, and trust-the-problem discipline."
+          text: "[tdd-principles](file:///.junie/rules/tdd-principles.md) - Parameterized tests, RED/GREEN validation, and trust-the-problem discipline."
         },
         {
-          text: "[tdd-state-coverage](file:///.agents/rules/tdd-state-coverage.md) - State tables, FSM enumerations, and async/form/auth scenarios."
+          text: "[tdd-state-coverage](file:///.junie/rules/tdd-state-coverage.md) - State tables, FSM enumerations, and async/form/auth scenarios."
         },
         {
-          text: "[tdd-test-as-documentation](file:///.agents/rules/tdd-test-as-documentation.md) - Descriptive naming, mock setups, and contract validation."
+          text: "[tdd-test-as-documentation](file:///.junie/rules/tdd-test-as-documentation.md) - Descriptive naming, mock setups, and contract validation."
         },
         {
-          text: "[boundary-value-analysis](file:///.agents/rules/boundary-value-analysis.md) - Test design for boundary and off-by-one errors."
+          text: "[boundary-value-analysis](file:///.junie/rules/boundary-value-analysis.md) - Test design for boundary and off-by-one errors."
         },
         {
-          text: "[equivalence-partitioning](file:///.agents/rules/equivalence-partitioning.md) - Input domain partitions to optimize testing coverage."
+          text: "[equivalence-partitioning](file:///.junie/rules/equivalence-partitioning.md) - Input domain partitions to optimize testing coverage."
         },
         {
-          text: "[mutation-testing-adequacy](file:///.agents/rules/mutation-testing-adequacy.md) - Verifying assertion adequacy via mutation analysis."
+          text: "[mutation-testing-adequacy](file:///.junie/rules/mutation-testing-adequacy.md) - Verifying assertion adequacy via mutation analysis."
         },
         {
-          text: "[regression-testing-strategy](file:///.agents/rules/regression-testing-strategy.md) - Running regression suites on modification."
+          text: "[regression-testing-strategy](file:///.junie/rules/regression-testing-strategy.md) - Running regression suites on modification."
         },
         {
-          text: "[verification-vs-validation](file:///.agents/rules/verification-vs-validation.md) - Conformance to specs vs. user correctness."
+          text: "[verification-vs-validation](file:///.junie/rules/verification-vs-validation.md) - Conformance to specs vs. user correctness."
         },
         {
-          text: "[linter-quality-gates](file:///.agents/rules/linter-quality-gates.md) - Static analysis checks."
+          text: "[linter-quality-gates](file:///.junie/rules/linter-quality-gates.md) - Static analysis checks."
         }
       ],
       type: "unorderedList"
@@ -459,7 +459,7 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "[web-perf](file:///.agents/skills/web-perf/SKILL.md) (performance audits and profiling)"
+          text: "[web-perf](file:///.junie/skills/web-perf/SKILL.md) (performance audits and profiling)"
         }
       ],
       type: "unorderedList"
@@ -472,10 +472,10 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "**Verification FSM Flow**:\n- **GraphCheck**: Run `rtk sara check`.\n- **CoverageRun**: Run tests with coverage: `rtk pnpm --filter <package> test --coverage`.\n- **ParseCoverage**: Analyze `coverage/coverage-summary.json` for uncovered lines.\n- **StateSpaceAnalysis**: Perform static analysis on uncovered blocks (empty/zero, null/missing, extreme bounds, exceptional path, async state).\n- **DecideRemediation**: Enter TDDFixLoop if gaps exist, otherwise RunLinter.\n- **TDDFixLoop**: Red-Green-Refactor loop targeting uncovered states. Wrap void method calls in `expect(() => ...).not.toThrow()`. Loop back to CoverageRun.\n- **RunLinter**: Lint checks with up to 3 autofix iterations.\n- **RunBuild**: Build the package: `rtk pnpm --filter <package> build`.\n- **FinalGraphCheck**: Run `rtk sara check`."
+          text: "**Verification FSM Flow**:\n- **GraphCheck**: Run `sara check`.\n- **CoverageRun**: Run tests with coverage: `pnpm --filter <package> test --coverage`.\n- **ParseCoverage**: Analyze `coverage/coverage-summary.json` for uncovered lines.\n- **StateSpaceAnalysis**: Perform static analysis on uncovered blocks (empty/zero, null/missing, extreme bounds, exceptional path, async state).\n- **DecideRemediation**: Enter TDDFixLoop if gaps exist, otherwise RunLinter.\n- **TDDFixLoop**: Red-Green-Refactor loop targeting uncovered states. Wrap void method calls in `expect(() => ...).not.toThrow()`. Loop back to CoverageRun.\n- **RunLinter**: Lint checks with up to 3 autofix iterations.\n- **RunBuild**: Build the package: `pnpm --filter <package> build`.\n- **FinalGraphCheck**: Run `sara check`."
         },
         {
-          text: "**Safety Gates**: Use targeted restores (`rtk git restore <file>`) rather than global resets. Validate package names to reject path traversals (`..`)."
+          text: "**Safety Gates**: Use targeted restores (`git restore <file>`) rather than global resets. Validate package names to reject path traversals (`..`)."
         }
       ],
       type: "numberedList"
@@ -513,19 +513,19 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "[actor-action-format](file:///.agents/rules/actor-action-format.md) - Descriptive actor-action structure for commit/PR messages."
+          text: "[actor-action-format](file:///.junie/rules/actor-action-format.md) - Descriptive actor-action structure for commit/PR messages."
         },
         {
-          text: "[automated-release-engineering](file:///.agents/rules/automated-release-engineering.md) - Repeatable deployments and build scripts."
+          text: "[automated-release-engineering](file:///.junie/rules/automated-release-engineering.md) - Repeatable deployments and build scripts."
         },
         {
-          text: "[configuration-baselines](file:///.agents/rules/configuration-baselines.md) - Library versions and configuration baselines."
+          text: "[configuration-baselines](file:///.junie/rules/configuration-baselines.md) - Library versions and configuration baselines."
         },
         {
-          text: "[configuration-change-process](file:///.agents/rules/configuration-change-process.md) - SCM hygiene and change request controls."
+          text: "[configuration-change-process](file:///.junie/rules/configuration-change-process.md) - SCM hygiene and change request controls."
         },
         {
-          text: "[rollback-revert-planning](file:///.agents/rules/rollback-revert-planning.md) - Recovery planning, targeted git restore."
+          text: "[rollback-revert-planning](file:///.junie/rules/rollback-revert-planning.md) - Recovery planning, targeted git restore."
         }
       ],
       type: "unorderedList"
@@ -538,13 +538,13 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "**Pre-Execution Graph Validation**: Run `rtk sara check`. Halt if it fails."
+          text: "**Pre-Execution Graph Validation**: Run `sara check`. Halt if it fails."
         },
         {
           text: "**Branch Safety Gate**: Query current branch. If on `master` or `main`, checkout a sanitized new feature branch."
         },
         {
-          text: "**Staging Changes**: Run `rtk git add .`. Verify changes are staged using git status."
+          text: "**Staging Changes**: Run `git add .`. Verify changes are staged using git status."
         },
         {
           text: "**Diff Analysis & Message Generation**: Inspect staged diffs. Compile Conventional Commit message:\n- Header format: `<type>(<scope>): <lowercase description>`\n- Body format: `<Actor>: <Action>` (Actor-Action format, blank line after header)."
@@ -553,13 +553,13 @@ export const sdlc = defineSkill({
           text: "**Commit Changes**: Commit the staged files using the compiled message."
         },
         {
-          text: "**Push Branch**: Push commits to origin tracking branch: `rtk git push -u origin <branch>`."
+          text: "**Push Branch**: Push commits to origin tracking branch: `git push -u origin <branch>`."
         },
         {
-          text: '**Open Pull Request**: Use GitHub CLI: `rtk gh pr create --title "<header>" --body "<body>"`.'
+          text: '**Open Pull Request**: Use GitHub CLI: `gh pr create --title "<header>" --body "<body>"`.'
         },
         {
-          text: "**Final Graph Verification**: Run `rtk sara check` to verify."
+          text: "**Final Graph Verification**: Run `sara check` to verify."
         }
       ],
       type: "numberedList"
@@ -597,25 +597,25 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "[maintenance-classification](file:///.agents/rules/maintenance-classification.md) - Corrective and perfective modifications."
+          text: "[maintenance-classification](file:///.junie/rules/maintenance-classification.md) - Corrective and perfective modifications."
         },
         {
-          text: "[maintenance-impact-analysis](file:///.agents/rules/maintenance-impact-analysis.md) - Workspace package dependency impact scans."
+          text: "[maintenance-impact-analysis](file:///.junie/rules/maintenance-impact-analysis.md) - Workspace package dependency impact scans."
         },
         {
-          text: "[performance-tuning](file:///.agents/rules/performance-tuning.md) - Execution profiling and query plan optimizations."
+          text: "[performance-tuning](file:///.junie/rules/performance-tuning.md) - Execution profiling and query plan optimizations."
         },
         {
-          text: "[operations-monitoring](file:///.agents/rules/operations-monitoring.md) - SLA metrics, capacity planning, and structured logs."
+          text: "[operations-monitoring](file:///.junie/rules/operations-monitoring.md) - SLA metrics, capacity planning, and structured logs."
         },
         {
-          text: "[incident-vs-problem-management](file:///.agents/rules/incident-vs-problem-management.md) - 5-Whys root cause analysis, resolving incident flows."
+          text: "[incident-vs-problem-management](file:///.junie/rules/incident-vs-problem-management.md) - 5-Whys root cause analysis, resolving incident flows."
         },
         {
-          text: "[technical-debt-valuation](file:///.agents/rules/technical-debt-valuation.md) - Technical debt valuation and refactoring cycles."
+          text: "[technical-debt-valuation](file:///.junie/rules/technical-debt-valuation.md) - Technical debt valuation and refactoring cycles."
         },
         {
-          text: "[reverse-engineering](file:///.agents/rules/reverse-engineering.md) - Reading call stacks, tracing execution logs."
+          text: "[reverse-engineering](file:///.junie/rules/reverse-engineering.md) - Reading call stacks, tracing execution logs."
         }
       ],
       type: "unorderedList"
@@ -628,13 +628,13 @@ export const sdlc = defineSkill({
     {
       items: [
         {
-          text: "**Pre-Execution Graph Check**: Run `rtk sara check`. Halt on failure."
+          text: "**Pre-Execution Graph Check**: Run `sara check`. Halt on failure."
         },
         {
-          text: "**Check Git Diff**: Run `rtk git diff --name-only` to identify modified package scopes."
+          text: "**Check Git Diff**: Run `git diff --name-only` to identify modified package scopes."
         },
         {
-          text: "**Ingest Failure Reports**: Retrieve remote checks status with `rtk gh pr checks` and workflow logs with `rtk gh run view <run-id> --log`. View SonarCloud issues. Halt on missing/empty reports."
+          text: "**Ingest Failure Reports**: Retrieve remote checks status with `gh pr checks` and workflow logs with `gh run view <run-id> --log`. View SonarCloud issues. Halt on missing/empty reports."
         },
         {
           text: "**Categorize & Map**: Tag issues as Corrective or Perfective. Map downstream dependencies via tsconfig/package.json."
@@ -646,7 +646,7 @@ export const sdlc = defineSkill({
           text: "**Targeted Verification Loop**: Run lint and tests on affected packages. Up to 3 iterations."
         },
         {
-          text: "**Final Graph Validation**: Run `rtk sara check`."
+          text: "**Final Graph Validation**: Run `sara check`."
         }
       ],
       type: "numberedList"

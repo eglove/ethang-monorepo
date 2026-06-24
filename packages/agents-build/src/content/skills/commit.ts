@@ -22,7 +22,7 @@ const blocks: MarkdownBlock[] = [
       {
         children: [
           {
-            text: "Run `rtk git status --porcelain` or `rtk git status` to check all modified, untracked, and deleted files."
+            text: "Run `git status --porcelain` or `git status` to check all modified, untracked, and deleted files."
           }
         ],
         text: "🔍 **Inspect Workspace Changes**:"

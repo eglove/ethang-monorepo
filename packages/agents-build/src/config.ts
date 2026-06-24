@@ -25,5 +25,6 @@ export const FORBIDDEN_PATTERNS: readonly {
   { name: "JUnit", pattern: /\bJUnit\b/iu },
   { name: "Jersey", pattern: /\bJersey\b/u },
   { name: "Guice", pattern: /\bGuice\b/u },
-  { name: "Playwright", pattern: /\bPlaywright\b/iu }
+  { name: "Playwright", pattern: /\bPlaywright\b/iu },
+  { name: "rtk", pattern: /\brtk\b/u }
 ];
