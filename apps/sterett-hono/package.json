@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
-    "@ethang/eslint-config": "^25.22.2",
+    "@ethang/eslint-config": "^25.23.0",
     "@faker-js/faker": "^10.5.0",
     "@playwright/test": "^1.61.1",
     "@portabletext/types": "^4.0.2",

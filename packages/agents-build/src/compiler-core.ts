@@ -78,21 +78,28 @@ const processMcpConfig = (
     return;
   }
 
+  const homeDirectory = os.homedir();
+
   write(
     config.mcpConfigPath,
     JSON.stringify(
       {
         mcpServers: {
+          "codebase-memory-mcp": {
+            args: [],
+            command: path.join(
+              homeDirectory,
+              ".local",
+              "bin",
+              "codebase-memory-mcp.exe"
+            )
+          },
           "JetBrains IDE": {
             url: "http://127.0.0.1:64506/sse"
           },
-          "MDN": {
+          MDN: {
             type: "http",
             url: "https://mcp.mdn.mozilla.net/"
-          },
-          "codebase-memory-mcp": {
-            command: path.join(os.homedir(), ".local", "bin", "codebase-memory-mcp.exe"),
-            args: []
           }
         }
       },
