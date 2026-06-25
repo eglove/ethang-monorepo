@@ -1,49 +1,71 @@
+import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock(import("../functions/get-tracking-by-user-id-course-url.ts"), () => {
-  return {
-    getTrackingByUserIdCourseUrl: vi.fn()
-  };
-});
-
-vi.mock(import("../functions/get-course-url-by-course-id.ts"), () => {
-  return {
-    getCourseUrlByCourseId: vi.fn()
-  };
-});
-
-import { getCourseUrlByCourseId } from "../functions/get-course-url-by-course-id.ts";
-import { getTrackingByUserIdCourseUrl } from "../functions/get-tracking-by-user-id-course-url.ts";
 import { courseTrackingQuery } from "./course-tracking.ts";
 
-const COURSE_URL = "https://example.com/c";
+const COURSE_URL = "https://example.com/course";
+const COURSE_ID = "course-1";
+const USER_ID = "user-1";
 
 describe("courseTrackingQuery", () => {
-  it("looks up courseUrl then fetches tracking for user", async () => {
-    vi.mocked(getCourseUrlByCourseId).mockResolvedValue(COURSE_URL);
-    const tracking = {
+  it("returns tracking record when course exists and tracking exists", async () => {
+    const mockRecord = {
       courseUrl: COURSE_URL,
       id: "tracking-1",
-      status: "Complete",
-      userId: "user-1"
+      status: "INCOMPLETE",
+      userId: USER_ID
     };
-    vi.mocked(getTrackingByUserIdCourseUrl).mockResolvedValue(tracking);
 
-    const result = await courseTrackingQuery(
-      // @ts-expect-error minimal database test double for this unit test
-      {},
-      {
-        courseId: "course-1",
-        userId: "user-1"
-      }
+    const mockSelectResult = {
+      from: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockResolvedValue([{ url: COURSE_URL }]),
+      where: vi.fn().mockReturnThis()
+    };
+
+    const mockDatabase = {
+      query: {
+        courseTrackingTable: {
+          findFirst: vi.fn().mockResolvedValue(mockRecord)
+        }
+      },
+      select: vi.fn().mockReturnValue(mockSelectResult)
+    };
+
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      courseTrackingQuery(mockDatabase, {
+        courseId: COURSE_ID,
+        userId: USER_ID
+      })
     );
 
-    expect(getCourseUrlByCourseId).toHaveBeenCalledWith({}, "course-1");
-    expect(getTrackingByUserIdCourseUrl).toHaveBeenCalledWith(
-      {},
-      "user-1",
-      COURSE_URL
+    expect(result).toStrictEqual(mockRecord);
+  });
+
+  it("returns null when no tracking record exists", async () => {
+    const mockSelectResult = {
+      from: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockResolvedValue([{ url: COURSE_URL }]),
+      where: vi.fn().mockReturnThis()
+    };
+
+    const mockDatabase = {
+      query: {
+        courseTrackingTable: {
+          findFirst: vi.fn().mockResolvedValue(null)
+        }
+      },
+      select: vi.fn().mockReturnValue(mockSelectResult)
+    };
+
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      courseTrackingQuery(mockDatabase, {
+        courseId: COURSE_ID,
+        userId: USER_ID
+      })
     );
-    expect(result).toStrictEqual(tracking);
+
+    expect(result).toBeNull();
   });
 });

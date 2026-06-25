@@ -13,6 +13,7 @@ swebok-v4.md
 plan.md
 .agents
 .output.json
+reports
 
 # Stryker mutation testing output
 .stryker/

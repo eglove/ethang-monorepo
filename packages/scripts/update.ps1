@@ -17,8 +17,6 @@ pnpm store prune
 npm i -g wrangler @google/gemini-cli @angular/cli sanity
 
 Set-Location ~/projects/ethang-monorepo/
-powershell -NoProfile -ExecutionPolicy Bypass -Command "iex (irm 'https://junie.jetbrains.com/install-eap.ps1')"
-codebase-memory-mcp update
 npx skills add cloudflare/skills -y
 npx skills add tanstack-skills/tanstack-skills -y
 npx skills add chromedevtools/chrome-devtools-mcp -y

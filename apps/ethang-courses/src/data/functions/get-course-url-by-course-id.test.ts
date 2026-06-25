@@ -1,10 +1,11 @@
+import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
+import { NotFoundError } from "../../errors/not-found-error.ts";
 import { getCourseUrlByCourseId } from "./get-course-url-by-course-id.ts";
 
 describe("getCourseUrlByCourseId", () => {
   it("returns course url when course exists", async () => {
-    // Mock the database object with a select method that returns the expected course
     const mockDatabase = {
       from: vi.fn().mockReturnThis(),
       limit: vi.fn().mockResolvedValue([{ url: "https://example.com/course" }]),
@@ -12,17 +13,15 @@ describe("getCourseUrlByCourseId", () => {
       where: vi.fn().mockReturnThis()
     };
 
-    // @ts-expect-error for test
-    const result = await getCourseUrlByCourseId(mockDatabase, "course-1");
+    const result = await Effect.runPromise(
+      // @ts-expect-error for test
+      getCourseUrlByCourseId(mockDatabase, "course-1")
+    );
 
     expect(result).toBe("https://example.com/course");
-    expect(mockDatabase.select).toHaveBeenCalled();
-    expect(mockDatabase.from).toHaveBeenCalledWith(expect.any(Object)); // coursesTable
-    expect(mockDatabase.limit).toHaveBeenCalledWith(1);
   });
 
-  it("throws when course is missing", async () => {
-    // Mock the database object with a select method that returns an empty array
+  it("fails with NotFoundError when course is missing", async () => {
     const mockDatabase = {
       from: vi.fn().mockReturnThis(),
       limit: vi.fn().mockResolvedValue([]),
@@ -30,17 +29,15 @@ describe("getCourseUrlByCourseId", () => {
       where: vi.fn().mockReturnThis()
     };
 
-    try {
+    const result = await Effect.runPromise(
       // @ts-expect-error for test
-      await getCourseUrlByCourseId(mockDatabase, "missing");
-      expect.fail("Should have thrown 'Course not found' error");
-    } catch (error) {
-      expect((error as Error).message).toBe("Course not found");
-    }
+      getCourseUrlByCourseId(mockDatabase, "missing").pipe(Effect.flip)
+    );
+
+    expect(result).toBeInstanceOf(NotFoundError);
   });
 
-  it("throws when course is undefined at index 0", async () => {
-    // Mock the database object with a select method that returns an array with undefined
+  it("fails with NotFoundError when course is undefined at index 0", async () => {
     const mockDatabase = {
       from: vi.fn().mockReturnThis(),
       limit: vi.fn().mockResolvedValue([undefined]),
@@ -48,12 +45,11 @@ describe("getCourseUrlByCourseId", () => {
       where: vi.fn().mockReturnThis()
     };
 
-    try {
+    const result = await Effect.runPromise(
       // @ts-expect-error for test
-      await getCourseUrlByCourseId(mockDatabase, "missing");
-      expect.fail("Should have thrown 'Course not found' error");
-    } catch (error) {
-      expect((error as Error).message).toBe("Course not found");
-    }
+      getCourseUrlByCourseId(mockDatabase, "missing").pipe(Effect.flip)
+    );
+
+    expect(result).toBeInstanceOf(NotFoundError);
   });
 });

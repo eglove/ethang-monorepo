@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import { curriculumQuery, curriculumsQuery } from "./curriculums.ts";
@@ -73,15 +74,17 @@ describe("curriculumsQuery", () => {
     const mockDatabase = {
       select: vi
         .fn()
-        .mockReturnValueOnce(mockCurriculumsSelectResult) // Fetch curriculums
-        .mockReturnValueOnce(mockLPConnectionsSelectResult) // Fetch learning paths for curriculum
-        .mockReturnValueOnce(mockLPsSelectResult) // Fetch actual learning paths details
-        .mockReturnValueOnce(mockCourseConnectionsSelectResult) // Fetch courses for learning path
-        .mockReturnValueOnce(mockCoursesSelectResult) // Fetch actual courses details
+        .mockReturnValueOnce(mockCurriculumsSelectResult)
+        .mockReturnValueOnce(mockLPConnectionsSelectResult)
+        .mockReturnValueOnce(mockLPsSelectResult)
+        .mockReturnValueOnce(mockCourseConnectionsSelectResult)
+        .mockReturnValueOnce(mockCoursesSelectResult)
     };
 
-    // @ts-expect-error test double
-    const result = await curriculumsQuery(mockDatabase);
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      curriculumsQuery(mockDatabase, null)
+    );
 
     expect(result).toHaveLength(1);
     expect(result[0]).toStrictEqual({
@@ -102,7 +105,7 @@ describe("curriculumsQuery", () => {
 
     const mockLPConnectionsSelectResult = {
       from: vi.fn().mockReturnThis(),
-      orderBy: vi.fn().mockResolvedValue([]), // No learning paths
+      orderBy: vi.fn().mockResolvedValue([]),
       where: vi.fn().mockReturnThis()
     };
 
@@ -113,8 +116,10 @@ describe("curriculumsQuery", () => {
         .mockReturnValueOnce(mockLPConnectionsSelectResult)
     };
 
-    // @ts-expect-error test double
-    const result = await curriculumsQuery(mockDatabase);
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      curriculumsQuery(mockDatabase, null)
+    );
 
     expect(result).toHaveLength(1);
     expect(result[0]).toStrictEqual({
@@ -154,8 +159,10 @@ describe("curriculumsQuery", () => {
         .mockReturnValueOnce(mockCourseConnectionsSelectResult)
     };
 
-    // @ts-expect-error test double
-    const result = await curriculumsQuery(mockDatabase);
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      curriculumsQuery(mockDatabase, null)
+    );
 
     expect(result).toHaveLength(1);
     expect(result[0]).toStrictEqual({
@@ -203,15 +210,17 @@ describe("curriculumQuery", () => {
     const mockDatabase = {
       select: vi
         .fn()
-        .mockReturnValueOnce(mockCurriculumSelectResult) // Fetch curriculum by ID
-        .mockReturnValueOnce(mockLPConnectionsSelectResult) // Fetch learning paths connections
-        .mockReturnValueOnce(mockLPsSelectResult) // Fetch actual learning path details
-        .mockReturnValueOnce(mockCourseConnectionsSelectResult) // Fetch course connections for learning path
-        .mockReturnValueOnce(mockCoursesSelectResult) // Fetch actual course details
+        .mockReturnValueOnce(mockCurriculumSelectResult)
+        .mockReturnValueOnce(mockLPConnectionsSelectResult)
+        .mockReturnValueOnce(mockLPsSelectResult)
+        .mockReturnValueOnce(mockCourseConnectionsSelectResult)
+        .mockReturnValueOnce(mockCoursesSelectResult)
     };
 
-    // @ts-expect-error test double
-    const result = await curriculumQuery(mockDatabase, { id: CURRICULUM_1 });
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      curriculumQuery(mockDatabase, CURRICULUM_1)
+    );
 
     expect(result).toStrictEqual({
       ...mockCurriculumData,
@@ -239,7 +248,7 @@ describe("curriculumQuery", () => {
 
     const mockLPsSelectResult = {
       from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([]) // Simulate missing learning path in database
+      where: vi.fn().mockResolvedValue([])
     };
 
     const mockDatabase = {
@@ -250,8 +259,10 @@ describe("curriculumQuery", () => {
         .mockReturnValueOnce(mockLPsSelectResult)
     };
 
-    // @ts-expect-error test double
-    const result = await curriculumQuery(mockDatabase, { id: CURRICULUM_1 });
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      curriculumQuery(mockDatabase, CURRICULUM_1)
+    );
 
     expect(result).toStrictEqual({
       ...mockCurriculumData,
@@ -268,7 +279,7 @@ describe("curriculumQuery", () => {
 
     const mockLPConnectionsSelectResult = {
       from: vi.fn().mockReturnThis(),
-      orderBy: vi.fn().mockResolvedValue([]), // No learning paths
+      orderBy: vi.fn().mockResolvedValue([]),
       where: vi.fn().mockReturnThis()
     };
 
@@ -279,8 +290,10 @@ describe("curriculumQuery", () => {
         .mockReturnValueOnce(mockLPConnectionsSelectResult)
     };
 
-    // @ts-expect-error test double
-    const result = await curriculumQuery(mockDatabase, { id: CURRICULUM_1 });
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      curriculumQuery(mockDatabase, CURRICULUM_1)
+    );
 
     expect(result).toStrictEqual({
       ...mockCurriculumData,
@@ -298,8 +311,10 @@ describe("curriculumQuery", () => {
       select: vi.fn().mockReturnValue(mockSelectResult)
     };
 
-    // @ts-expect-error test double
-    const result = await curriculumQuery(mockDatabase, { id: "non-existent" });
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      curriculumQuery(mockDatabase, "non-existent")
+    );
 
     expect(result).toBeNull();
   });

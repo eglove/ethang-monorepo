@@ -50,7 +50,9 @@ describe("POST /sign-up", () => {
     const mockUser = { email: TEST_EMAIL, sessionToken: "token" };
     vi.mocked(AuthService).mockImplementation(function () {
       return {
-        setAuthCookie: vi.fn(),
+        setAuthCookie: vi.fn((response: Response, token: string) => {
+          response.headers.append("Set-Cookie", `${AuthService.AUTH_COOKIE_NAME}=${token}`);
+        }),
         signUp: vi.fn().mockResolvedValue(mockUser)
       };
     });
@@ -74,6 +76,8 @@ describe("POST /sign-up", () => {
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body).toEqual(mockUser);
+    const setCookie = response.headers.get("Set-Cookie");
+    expect(setCookie).toContain("ethang-auth-token=");
   });
 
   it("should return error when sign up fails", async () => {
@@ -167,7 +171,9 @@ describe("POST /sign-in", () => {
     const mockUser = { email: TEST_EMAIL, sessionToken: "token" };
     vi.mocked(AuthService).mockImplementation(function () {
       return {
-        setAuthCookie: vi.fn(),
+        setAuthCookie: vi.fn((response: Response, token: string) => {
+          response.headers.append("Set-Cookie", `${AuthService.AUTH_COOKIE_NAME}=${token}`);
+        }),
         signIn: vi.fn().mockResolvedValue(mockUser)
       };
     });
@@ -190,6 +196,8 @@ describe("POST /sign-in", () => {
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body).toEqual(mockUser);
+    const setCookie = response.headers.get("Set-Cookie");
+    expect(setCookie).toContain("ethang-auth-token=");
   });
 
   it("should return error when sign in fails", async () => {
@@ -257,6 +265,8 @@ describe("GET /verify", () => {
     );
 
     expect(response.status).toBe(401);
+    const body = await response.json();
+    expect(body).toEqual({ error: "Unauthorized" });
   });
 
   it("should return 401 if token is invalid", async () => {
@@ -278,6 +288,8 @@ describe("GET /verify", () => {
     );
 
     expect(response.status).toBe(401);
+    const body = await response.json();
+    expect(body).toEqual({ error: "Unauthorized" });
   });
 });
 
@@ -335,6 +347,8 @@ describe("POST /verify", () => {
     );
 
     expect(response.status).toBe(401);
+    const body = await response.json();
+    expect(body).toEqual({ error: "Unauthorized" });
   });
 });
 

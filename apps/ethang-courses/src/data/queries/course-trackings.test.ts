@@ -1,84 +1,60 @@
+import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import { courseTrackingsQuery } from "./course-trackings.ts";
 
 describe("courseTrackingsQuery", () => {
-  it("returns course trackings for a user", async () => {
-    const mockTrackings = [
-      { id: "3", status: "complete" },
-      { id: "2", status: "in-progress" },
-      { id: "1", status: "not-started" }
+  it("returns all course trackings for a user", async () => {
+    const mockRecords = [
+      {
+        courseUrl: "https://example.com/course-1",
+        id: "tracking-1",
+        status: "INCOMPLETE",
+        userId: "user-1"
+      },
+      {
+        courseUrl: "https://example.com/course-2",
+        id: "tracking-2",
+        status: "COMPLETE",
+        userId: "user-1"
+      }
     ];
 
-    const mockDatabase = {
+    const mockSelectResult = {
       from: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue(mockTrackings),
       orderBy: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      where: vi.fn().mockReturnThis()
+      where: vi.fn().mockResolvedValue(mockRecords)
     };
 
-    // @ts-expect-error test double
-    const result = await courseTrackingsQuery(mockDatabase, {
-      first: 2,
-      userId: "user-1"
-    });
+    const mockDatabase = {
+      select: vi.fn().mockReturnValue(mockSelectResult)
+    };
 
-    expect(result).toStrictEqual({
-      edges: [
-        { cursor: "3", node: { id: "3", status: "complete" } },
-        { cursor: "2", node: { id: "2", status: "in-progress" } }
-      ],
-      pageInfo: {
-        endCursor: "2",
-        hasNextPage: true,
-        hasPreviousPage: false,
-        startCursor: "3"
-      }
-    });
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      courseTrackingsQuery(mockDatabase, "user-1")
+    );
+
+    expect(result).toStrictEqual(mockRecords);
+    expect(mockDatabase.select).toHaveBeenCalled();
   });
 
-  it("handles empty results", async () => {
-    const mockDatabase = {
+  it("returns empty array when no trackings exist", async () => {
+    const mockSelectResult = {
       from: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue([]),
-      orderBy: vi.fn().mockResolvedValue([]),
-      select: vi.fn().mockReturnThis(),
-      where: vi.fn().mockReturnThis()
-    };
-
-    // @ts-expect-error test double
-    const result = await courseTrackingsQuery(mockDatabase, {
-      userId: "user-1"
-    });
-
-    expect(result).toStrictEqual({
-      edges: [],
-      pageInfo: {
-        endCursor: null,
-        hasNextPage: false,
-        hasPreviousPage: false,
-        startCursor: null
-      }
-    });
-  });
-
-  it("handles pagination with after cursor", async () => {
-    const mockDatabase = {
-      from: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue([{ id: "1", status: "not-started" }]),
       orderBy: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      where: vi.fn().mockReturnThis()
+      where: vi.fn().mockResolvedValue([])
     };
 
-    // @ts-expect-error test double
-    const result = await courseTrackingsQuery(mockDatabase, {
-      after: "2",
-      first: 2,
-      userId: "user-1"
-    });
+    const mockDatabase = {
+      select: vi.fn().mockReturnValue(mockSelectResult)
+    };
 
-    expect(result.pageInfo.hasNextPage).toBe(false);
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      courseTrackingsQuery(mockDatabase, "user-1")
+    );
+
+    expect(result).toStrictEqual([]);
   });
 });

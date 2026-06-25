@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 const { EXAMPLE_URL, TEST_COURSE_DATA, TEST_CURRICULUM_DATA } = vi.hoisted(
@@ -27,27 +28,31 @@ vi.mock("drizzle-orm/d1", () => {
 
 vi.mock("./data/queries/courses-learning-paths.ts", () => {
   return {
-    courseQuery: vi.fn().mockResolvedValue(TEST_COURSE_DATA),
-    coursesQuery: vi.fn().mockResolvedValue([TEST_COURSE_DATA]),
-    learningPathQuery: vi.fn().mockResolvedValue({ id: "lp1" }),
-    learningPathsQuery: vi.fn().mockResolvedValue([{ id: "lp1" }])
+    courseQuery: vi.fn().mockReturnValue(Effect.succeed(TEST_COURSE_DATA)),
+    coursesQuery: vi.fn().mockReturnValue(Effect.succeed([TEST_COURSE_DATA])),
+    learningPathQuery: vi.fn().mockReturnValue(Effect.succeed({ id: "lp1" })),
+    learningPathsQuery: vi.fn().mockReturnValue(Effect.succeed([{ id: "lp1" }]))
   };
 });
 
 vi.mock("./data/queries/course-tracking.ts", () => {
   return {
-    courseTrackingQuery: vi.fn().mockResolvedValue({
-      courseId: "c1",
-      courseUrl: EXAMPLE_URL,
-      status: "IN_PROGRESS",
-      userId: "u1"
-    })
+    courseTrackingQuery: vi.fn().mockReturnValue(
+      Effect.succeed({
+        courseId: "c1",
+        courseUrl: EXAMPLE_URL,
+        status: "IN_PROGRESS",
+        userId: "u1"
+      })
+    )
   };
 });
 
 vi.mock("./data/queries/course-trackings.ts", () => {
   return {
-    courseTrackingsQuery: vi.fn().mockResolvedValue({ edges: [], pageInfo: {} })
+    courseTrackingsQuery: vi
+      .fn()
+      .mockReturnValue(Effect.succeed({ edges: [], pageInfo: {} }))
   };
 });
 
@@ -70,8 +75,12 @@ vi.mock("./data/mutations/cycle-course-tracking-status.ts", () => {
 
 vi.mock("./data/queries/curriculums.ts", () => {
   return {
-    curriculumQuery: vi.fn().mockResolvedValue(TEST_CURRICULUM_DATA),
-    curriculumsQuery: vi.fn().mockResolvedValue([TEST_CURRICULUM_DATA])
+    curriculumQuery: vi
+      .fn()
+      .mockReturnValue(Effect.succeed(TEST_CURRICULUM_DATA)),
+    curriculumsQuery: vi
+      .fn()
+      .mockReturnValue(Effect.succeed([TEST_CURRICULUM_DATA]))
   };
 });
 
