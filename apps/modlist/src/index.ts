@@ -158,7 +158,6 @@ export default class extends WorkerEntrypoint<Env> {
   }
 
   private getDb(): Database {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return drizzle(this.env.ethang_modlist, {
       schema: {
         conflictTable,

@@ -44,6 +44,7 @@ const TEST_EMAIL = "test@test.com";
 const TEST_PASSWORD = "password";
 const TEST_USERNAME = "testuser";
 const TEST_SECRET = "secret";
+const SET_COOKIE = "Set-Cookie";
 
 describe("POST /sign-up", () => {
   it("should return success when sign up is valid", async () => {
@@ -51,7 +52,10 @@ describe("POST /sign-up", () => {
     vi.mocked(AuthService).mockImplementation(function () {
       return {
         setAuthCookie: vi.fn((response: Response, token: string) => {
-          response.headers.append("Set-Cookie", `${AuthService.AUTH_COOKIE_NAME}=${token}`);
+          response.headers.append(
+            SET_COOKIE,
+            `${AuthService.AUTH_COOKIE_NAME}=${token}`
+          );
         }),
         signUp: vi.fn().mockResolvedValue(mockUser)
       };
@@ -76,8 +80,8 @@ describe("POST /sign-up", () => {
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body).toEqual(mockUser);
-    const setCookie = response.headers.get("Set-Cookie");
-    expect(setCookie).toContain("ethang-auth-token=");
+    const cookieSet = response.headers.get(SET_COOKIE);
+    expect(cookieSet).toContain("ethang-auth-token=");
   });
 
   it("should return error when sign up fails", async () => {
@@ -172,7 +176,10 @@ describe("POST /sign-in", () => {
     vi.mocked(AuthService).mockImplementation(function () {
       return {
         setAuthCookie: vi.fn((response: Response, token: string) => {
-          response.headers.append("Set-Cookie", `${AuthService.AUTH_COOKIE_NAME}=${token}`);
+          response.headers.append(
+            SET_COOKIE,
+            `${AuthService.AUTH_COOKIE_NAME}=${token}`
+          );
         }),
         signIn: vi.fn().mockResolvedValue(mockUser)
       };
@@ -196,8 +203,8 @@ describe("POST /sign-in", () => {
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body).toEqual(mockUser);
-    const setCookie = response.headers.get("Set-Cookie");
-    expect(setCookie).toContain("ethang-auth-token=");
+    const cookieSet = response.headers.get(SET_COOKIE);
+    expect(cookieSet).toContain("ethang-auth-token=");
   });
 
   it("should return error when sign in fails", async () => {

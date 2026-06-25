@@ -1,14 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 
-const mockDb: Record<string, unknown> = {};
+const mockDatabase: Record<string, unknown> = {};
 
-vi.mock("drizzle-orm/d1", () => ({
-  drizzle: vi.fn().mockReturnValue(mockDb)
-}));
+vi.mock(import("drizzle-orm/d1"), () => {
+  return {
+    drizzle: vi.fn().mockReturnValue(mockDatabase)
+  };
+});
 
-const { modificationListQuery, modificationListsQuery } = await import(
-  "./queries/modlist.ts"
-);
+const { modificationListQuery, modificationListsQuery } =
+  await import("./queries/modlist.ts");
 const {
   conflictQuery,
   conflictsQuery,
@@ -20,46 +21,57 @@ const {
   requirementsQuery
 } = await import("./queries/mods.ts");
 
-function createMockDb(result: unknown) {
-  const rows = Array.isArray(result) ? result : [result];
-  const whereable: Record<string, unknown> = () => Promise.resolve(rows);
-  whereable.limit = () => Promise.resolve(rows);
-  whereable.then = (
-    resolve: ((v: unknown) => void) | null,
-    reject?: ((e: unknown) => void) | null
-  ) => Promise.resolve(rows).then(resolve ?? (() => {}), reject ?? (() => {}));
-  const fromable: Record<string, unknown> = {
-    where: () => whereable
+function createMockDatabase(result: unknown) {
+  const rows = toArray(result);
+  const queryable: any = Promise.resolve(rows);
+  queryable.where = () => {
+    return queryable;
   };
-  fromable.then = (
-    resolve: ((v: unknown) => void) | null,
-    reject?: ((e: unknown) => void) | null
-  ) => Promise.resolve(rows).then(resolve ?? (() => {}), reject ?? (() => {}));
+  queryable.limit = () => {
+    return queryable;
+  };
   return {
-    select: () => ({
-      from: () => fromable
-    })
+    select: () => {
+      return {
+        from: () => {
+          return queryable;
+        }
+      };
+    }
   } as unknown as Record<string, unknown>;
+}
+
+function toArray(value: unknown): unknown[] {
+  return "[object Array]" === Object.prototype.toString.call(value)
+    ? (value as unknown[])
+    : [value];
 }
 
 describe("modlist queries", () => {
   it("modificationListQuery returns first result", async () => {
     const row = { id: "ml1", name: "List" };
-    const db = createMockDb(row);
-    const result = await modificationListQuery(db as never, { id: "ml1" });
+    const database = createMockDatabase(row);
+    const result = await modificationListQuery(database as never, {
+      id: "ml1"
+    });
+
     expect(result).toEqual(row);
   });
 
   it("modificationListQuery returns null when no rows", async () => {
-    const db = createMockDb([]);
-    const result = await modificationListQuery(db as never, { id: "none" });
+    const database = createMockDatabase([]);
+    const result = await modificationListQuery(database as never, {
+      id: "none"
+    });
+
     expect(result).toBeNull();
   });
 
   it("modificationListsQuery returns all rows", async () => {
     const rows = [{ id: "ml1" }, { id: "ml2" }];
-    const db = createMockDb(rows);
-    const result = await modificationListsQuery(db as never);
+    const database = createMockDatabase(rows);
+    const result = await modificationListsQuery(database as never);
+
     expect(result).toEqual(rows);
   });
 });
@@ -67,81 +79,97 @@ describe("modlist queries", () => {
 describe("mods queries", () => {
   it("modificationQuery returns first result", async () => {
     const row = { id: "m1", title: "Mod" };
-    const db = createMockDb(row);
-    const result = await modificationQuery(db as never, { id: "m1" });
+    const database = createMockDatabase(row);
+    const result = await modificationQuery(database as never, { id: "m1" });
+
     expect(result).toEqual(row);
   });
 
   it("modificationQuery returns null when no rows", async () => {
-    const db = createMockDb([]);
-    const result = await modificationQuery(db as never, { id: "none" });
+    const database = createMockDatabase([]);
+    const result = await modificationQuery(database as never, { id: "none" });
+
     expect(result).toBeNull();
   });
 
   it("modsQuery returns rows for a mod list", async () => {
     const rows = [{ id: "m1" }, { id: "m2" }];
-    const db = createMockDb(rows);
-    const result = await modsQuery(db as never, { modListId: "ml1" });
+    const database = createMockDatabase(rows);
+    const result = await modsQuery(database as never, { modListId: "ml1" });
+
     expect(result).toEqual(rows);
   });
 
   it("requirementQuery returns first result", async () => {
     const row = { id: "r1" };
-    const db = createMockDb(row);
-    const result = await requirementQuery(db as never, { id: "r1" });
+    const database = createMockDatabase(row);
+    const result = await requirementQuery(database as never, { id: "r1" });
+
     expect(result).toEqual(row);
   });
 
   it("requirementQuery returns null when no rows", async () => {
-    const db = createMockDb([]);
-    const result = await requirementQuery(db as never, { id: "none" });
+    const database = createMockDatabase([]);
+    const result = await requirementQuery(database as never, { id: "none" });
+
     expect(result).toBeNull();
   });
 
   it("requirementsQuery returns rows for a mod list", async () => {
     const rows = [{ id: "r1" }];
-    const db = createMockDb(rows);
-    const result = await requirementsQuery(db as never, { modListId: "ml1" });
+    const database = createMockDatabase(rows);
+    const result = await requirementsQuery(database as never, {
+      modListId: "ml1"
+    });
+
     expect(result).toEqual(rows);
   });
 
   it("conflictQuery returns first result", async () => {
     const row = { id: "c1" };
-    const db = createMockDb(row);
-    const result = await conflictQuery(db as never, { id: "c1" });
+    const database = createMockDatabase(row);
+    const result = await conflictQuery(database as never, { id: "c1" });
+
     expect(result).toEqual(row);
   });
 
   it("conflictQuery returns null when no rows", async () => {
-    const db = createMockDb([]);
-    const result = await conflictQuery(db as never, { id: "none" });
+    const database = createMockDatabase([]);
+    const result = await conflictQuery(database as never, { id: "none" });
+
     expect(result).toBeNull();
   });
 
   it("conflictsQuery returns rows for a mod list", async () => {
     const rows = [{ id: "c1" }];
-    const db = createMockDb(rows);
-    const result = await conflictsQuery(db as never, { modListId: "ml1" });
+    const database = createMockDatabase(rows);
+    const result = await conflictsQuery(database as never, {
+      modListId: "ml1"
+    });
+
     expect(result).toEqual(rows);
   });
 
   it("patchQuery returns first result", async () => {
     const row = { id: "p1" };
-    const db = createMockDb(row);
-    const result = await patchQuery(db as never, { id: "p1" });
+    const database = createMockDatabase(row);
+    const result = await patchQuery(database as never, { id: "p1" });
+
     expect(result).toEqual(row);
   });
 
   it("patchQuery returns null when no rows", async () => {
-    const db = createMockDb([]);
-    const result = await patchQuery(db as never, { id: "none" });
+    const database = createMockDatabase([]);
+    const result = await patchQuery(database as never, { id: "none" });
+
     expect(result).toBeNull();
   });
 
   it("patchesQuery returns rows for a mod list", async () => {
     const rows = [{ id: "p1" }];
-    const db = createMockDb(rows);
-    const result = await patchesQuery(db as never, { modListId: "ml1" });
+    const database = createMockDatabase(rows);
+    const result = await patchesQuery(database as never, { modListId: "ml1" });
+
     expect(result).toEqual(rows);
   });
 });

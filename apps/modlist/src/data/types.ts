@@ -1,6 +1,6 @@
-import { DrizzleD1Database } from "drizzle-orm/d1";
+import type { DrizzleD1Database } from "drizzle-orm/d1";
 
-import {
+import type {
   conflictTable,
   modificationListTable as moduleListTable,
   modificationTable as moduleTable,
