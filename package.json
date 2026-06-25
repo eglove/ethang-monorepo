@@ -3,6 +3,9 @@
   "devDependencies": {
     "@apollo/rover": "^0.40.0",
     "@ethang/eslint-config": "^25.23.0",
+    "@stryker-mutator/core": "^9.6.1",
+    "@stryker-mutator/typescript-checker": "^9.6.1",
+    "@stryker-mutator/vitest-runner": "^9.6.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
     "@types/lodash": "^4.17.24",
@@ -15,6 +18,7 @@
     "lodash": "^4.18.1",
     "react-dom": "^19.2.7",
     "typescript-eslint": "^8.62.0",
+    "vite": "^8.1.0",
     "vitest": "^4.1.9"
   },
   "license": "ISC",
@@ -24,6 +28,7 @@
     "build": "pnpm -r build",
     "deps": "pnpm up -r -i --latest",
     "lint": "pnpm -r lint",
+    "stryker": "stryker run",
     "test": "vitest run --coverage"
   },
   "type": "module",
