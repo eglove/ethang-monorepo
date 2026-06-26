@@ -3,7 +3,12 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      exclude: ["**/service-worker/**", "**/.agents/**", ".junie/**"],
+      exclude: [
+        "**/service-worker/**",
+        "**/.agents/**",
+        ".junie/**",
+        ".stryker-temp/**"
+      ],
       include: ["**/src/**/*.ts", "**/src/**/*.tsx", "packages/scripts/*.ts"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],

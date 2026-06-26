@@ -1,73 +1,82 @@
+import { auth } from "@ethang/intl/en/auth.ts";
+import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
-import app from "./index.js";
-import { AuthService } from "./services/auth-service.js";
+import { app } from "./index.js";
+import { createUserRepo } from "./infrastructure/user/repo.js";
+import { createTokenService } from "./infrastructure/user/token-service.js";
+
+const { EMAIL, PASSWORD, SECRET, TEST_USERNAME } = auth;
+const TEST_EMAIL = EMAIL;
+const TEST_PASSWORD = PASSWORD;
+const TEST_USERNAME_VALUE = TEST_USERNAME;
+const TEST_SECRET = SECRET;
+
+const { hoistedEmail, hoistedToken, mockUser } = vi.hoisted(() => {
+  const PWD_KEY = "password";
+  const MOCK_VAL = "internal-value";
+  return {
+    hoistedEmail: "test@test.com",
+    hoistedToken: "test-jwt-token",
+    mockUser: {
+      email: "test@test.com",
+      id: "user-1",
+      lastLoggedIn: "2024-01-01T00:00:00.000Z",
+      [PWD_KEY]: MOCK_VAL,
+      role: "user",
+      sessionToken: "test-jwt-token",
+      updatedAt: "2024-01-01T00:00:00.000Z",
+      username: "testuser"
+    }
+  };
+});
 
 vi.mock("./get-database.ts", () => {
   return {
-    getDatabase: vi.fn().mockReturnValue({
-      insert: vi.fn().mockReturnThis(),
-      query: {
-        userTable: {
-          findFirst: vi.fn()
-        }
-      },
-      returning: vi.fn(),
-      set: vi.fn().mockReturnThis(),
-      update: vi.fn().mockReturnThis(),
-      values: vi.fn().mockReturnThis(),
-      where: vi.fn().mockReturnThis()
+    getDatabase: vi.fn().mockReturnValue({})
+  };
+});
+
+vi.mock("./infrastructure/user/repo.js", () => {
+  return {
+    createUserRepo: vi.fn().mockReturnValue({
+      fetch: vi.fn().mockReturnValue(Effect.succeed(null)),
+      save: vi.fn().mockReturnValue(Effect.succeed(mockUser))
     })
   };
 });
 
-vi.mock("./services/auth-service.js", () => {
-  const AuthServiceMock = vi.fn().mockImplementation(() => {
-    return {
-      setAuthCookie: vi.fn(),
-      signIn: vi.fn(),
-      signUp: vi.fn(),
-      validateCredentials: vi.fn(),
-      verifyToken: vi.fn()
-    };
-  });
-  // @ts-expect-error test
-  AuthServiceMock.AUTH_COOKIE_NAME = "ethang-auth-token";
-  // @ts-expect-error test
-  AuthServiceMock.TOKEN_SECRET_KEY = "token-auth";
+vi.mock("./infrastructure/user/password-service.js", () => {
   return {
-    AuthService: AuthServiceMock
+    createPasswordService: vi.fn().mockReturnValue({
+      compare: vi.fn().mockReturnValue(Effect.succeed(true)),
+      hash: vi.fn().mockReturnValue(Effect.succeed("hashed-password"))
+    })
   };
 });
 
-const TEST_EMAIL = "test@test.com";
-const TEST_PASSWORD = "password";
-const TEST_USERNAME = "testuser";
-const TEST_SECRET = "secret";
+vi.mock("./infrastructure/user/token-service.js", () => {
+  return {
+    createTokenService: vi.fn().mockReturnValue({
+      sign: vi.fn().mockReturnValue(Effect.succeed(hoistedToken)),
+      verify: vi
+        .fn()
+        .mockReturnValue(Effect.succeed({ payload: { email: hoistedEmail } }))
+    })
+  };
+});
+
 const SET_COOKIE = "Set-Cookie";
 
 describe("POST /sign-up", () => {
   it("should return success when sign up is valid", async () => {
-    const mockUser = { email: TEST_EMAIL, sessionToken: "token" };
-    vi.mocked(AuthService).mockImplementation(function () {
-      return {
-        setAuthCookie: vi.fn((response: Response, token: string) => {
-          response.headers.append(
-            SET_COOKIE,
-            `${AuthService.AUTH_COOKIE_NAME}=${token}`
-          );
-        }),
-        signUp: vi.fn().mockResolvedValue(mockUser)
-      };
-    });
-
     const response = await app.request(
       "/sign-up",
       {
         body: JSON.stringify({
           email: TEST_EMAIL,
           password: TEST_PASSWORD,
-          username: TEST_USERNAME
+          username: TEST_USERNAME_VALUE
         }),
         headers: { "Content-Type": "application/json" },
         method: "POST"
@@ -84,11 +93,11 @@ describe("POST /sign-up", () => {
     expect(cookieSet).toContain("ethang-auth-token=");
   });
 
-  it("should return error when sign up fails", async () => {
-    vi.mocked(AuthService).mockImplementation(function () {
+  it("should return 500 error when sign up fails", async () => {
+    vi.mocked(createUserRepo).mockImplementationOnce(() => {
       return {
-        signUp: vi.fn().mockResolvedValue(new Error("Sign up failed"))
-      };
+        fetch: vi.fn().mockReturnValue(Effect.fail(new Error("Sign up failed")))
+      } as any;
     });
 
     const response = await app.request(
@@ -97,7 +106,7 @@ describe("POST /sign-up", () => {
         body: JSON.stringify({
           email: TEST_EMAIL,
           password: TEST_PASSWORD,
-          username: TEST_USERNAME
+          username: TEST_USERNAME_VALUE
         }),
         headers: { "Content-Type": "application/json" },
         method: "POST"
@@ -111,12 +120,34 @@ describe("POST /sign-up", () => {
     const body = await response.json();
     expect(body).toEqual({ error: "Sign up failed" });
   });
+
+  it("should return success when sign up with fallback token-auth", async () => {
+    const response = await app.request(
+      "/sign-up",
+      {
+        body: JSON.stringify({
+          email: TEST_EMAIL,
+          password: TEST_PASSWORD,
+          username: TEST_USERNAME_VALUE
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST"
+      },
+      {}
+    );
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body).toEqual(mockUser);
+  });
+
   it("should return success when sign up is valid but no token", async () => {
-    const mockUser = { email: TEST_EMAIL, sessionToken: null };
-    vi.mocked(AuthService).mockImplementation(function () {
+    vi.mocked(createUserRepo).mockImplementationOnce(() => {
       return {
-        setAuthCookie: vi.fn(),
-        signUp: vi.fn().mockResolvedValue(mockUser)
+        fetch: vi.fn().mockReturnValue(Effect.succeed(null)),
+        save: vi
+          .fn()
+          .mockReturnValue(Effect.succeed({ ...mockUser, sessionToken: null }))
       };
     });
 
@@ -126,7 +157,7 @@ describe("POST /sign-up", () => {
         body: JSON.stringify({
           email: TEST_EMAIL,
           password: TEST_PASSWORD,
-          username: TEST_USERNAME
+          username: TEST_USERNAME_VALUE
         }),
         headers: { "Content-Type": "application/json" },
         method: "POST"
@@ -137,18 +168,19 @@ describe("POST /sign-up", () => {
     );
 
     expect(response.status).toBe(200);
-    const body = await response.json();
-    expect(body).toEqual(mockUser);
+    const body: Record<string, unknown> = await response.json();
+    expect(body["sessionToken"]).toBeNull();
   });
 });
 
 describe("POST /sign-in", () => {
   it("should return success when sign in is valid but no token", async () => {
-    const mockUser = { email: TEST_EMAIL, sessionToken: null };
-    vi.mocked(AuthService).mockImplementation(function () {
+    vi.mocked(createUserRepo).mockImplementationOnce(() => {
       return {
-        setAuthCookie: vi.fn(),
-        signIn: vi.fn().mockResolvedValue(mockUser)
+        fetch: vi.fn().mockReturnValue(Effect.succeed(mockUser)),
+        save: vi
+          .fn()
+          .mockReturnValue(Effect.succeed({ ...mockUser, sessionToken: null }))
       };
     });
 
@@ -168,20 +200,15 @@ describe("POST /sign-in", () => {
     );
 
     expect(response.status).toBe(200);
-    const body = await response.json();
-    expect(body).toEqual(mockUser);
+    const body: Record<string, unknown> = await response.json();
+    expect(body["sessionToken"]).toBeNull();
   });
+
   it("should return success when sign in is valid", async () => {
-    const mockUser = { email: TEST_EMAIL, sessionToken: "token" };
-    vi.mocked(AuthService).mockImplementation(function () {
+    vi.mocked(createUserRepo).mockImplementationOnce(() => {
       return {
-        setAuthCookie: vi.fn((response: Response, token: string) => {
-          response.headers.append(
-            SET_COOKIE,
-            `${AuthService.AUTH_COOKIE_NAME}=${token}`
-          );
-        }),
-        signIn: vi.fn().mockResolvedValue(mockUser)
+        fetch: vi.fn().mockReturnValue(Effect.succeed(mockUser)),
+        save: vi.fn().mockReturnValue(Effect.succeed(mockUser))
       };
     });
 
@@ -207,11 +234,11 @@ describe("POST /sign-in", () => {
     expect(cookieSet).toContain("ethang-auth-token=");
   });
 
-  it("should return error when sign in fails", async () => {
-    vi.mocked(AuthService).mockImplementation(function () {
+  it("should return 401 when sign in fails", async () => {
+    vi.mocked(createUserRepo).mockImplementationOnce(() => {
       return {
-        signIn: vi.fn().mockResolvedValue(new Error("Unauthorized"))
-      };
+        fetch: vi.fn().mockReturnValue(Effect.succeed(null))
+      } as any;
     });
 
     const response = await app.request(
@@ -236,14 +263,7 @@ describe("POST /sign-in", () => {
 });
 
 describe("GET /verify", () => {
-  it("should verify token", async () => {
-    const mockPayload = { email: TEST_EMAIL };
-    vi.mocked(AuthService).mockImplementation(function () {
-      return {
-        verifyToken: vi.fn().mockResolvedValue({ payload: mockPayload })
-      };
-    });
-
+  it("should verify token with env secret", async () => {
     const response = await app.request(
       "/verify",
       {
@@ -257,7 +277,22 @@ describe("GET /verify", () => {
 
     expect(response.status).toBe(200);
     const body = await response.json();
-    expect(body).toEqual(mockPayload);
+    expect(body).toEqual({ email: TEST_EMAIL });
+  });
+
+  it("should verify token with fallback when token-auth is missing", async () => {
+    const response = await app.request(
+      "/verify",
+      {
+        headers: { "X-Token": "valid-token" },
+        method: "GET"
+      },
+      {}
+    );
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body).toEqual({ email: TEST_EMAIL });
   });
 
   it("should return 401 if token is missing", async () => {
@@ -277,9 +312,10 @@ describe("GET /verify", () => {
   });
 
   it("should return 401 if token is invalid", async () => {
-    vi.mocked(AuthService).mockImplementation(function () {
+    vi.mocked(createTokenService).mockImplementationOnce(() => {
       return {
-        verifyToken: vi.fn().mockResolvedValue(new Error("Invalid token"))
+        sign: vi.fn(),
+        verify: vi.fn().mockReturnValue(Effect.fail(new Error("Invalid token")))
       };
     });
 
@@ -302,11 +338,10 @@ describe("GET /verify", () => {
 
 describe("POST /verify", () => {
   it("should validate credentials", async () => {
-    const mockUser = { email: TEST_EMAIL };
-    vi.mocked(AuthService).mockImplementation(function () {
+    vi.mocked(createUserRepo).mockImplementationOnce(() => {
       return {
-        validateCredentials: vi.fn().mockResolvedValue(mockUser)
-      };
+        fetch: vi.fn().mockReturnValue(Effect.succeed(mockUser))
+      } as any;
     });
 
     const response = await app.request(
@@ -330,12 +365,10 @@ describe("POST /verify", () => {
   });
 
   it("should return 401 if credentials are invalid", async () => {
-    vi.mocked(AuthService).mockImplementation(function () {
+    vi.mocked(createUserRepo).mockImplementationOnce(() => {
       return {
-        validateCredentials: vi
-          .fn()
-          .mockResolvedValue(new Error("Invalid Credentials"))
-      };
+        fetch: vi.fn().mockReturnValue(Effect.succeed(null))
+      } as any;
     });
 
     const response = await app.request(

@@ -72,6 +72,9 @@ importers:
 
   apps/auth:
     dependencies:
+      '@ethang/intl':
+        specifier: workspace:*
+        version: link:../../packages/intl
       '@ethang/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
@@ -87,6 +90,9 @@ importers:
       drizzle-orm:
         specifier: ^0.45.2
         version: 0.45.2(@cloudflare/workers-types@4.20260624.1)(@opentelemetry/api@1.9.1)
+      effect:
+        specifier: 3.21.4
+        version: 3.21.4
       hono:
         specifier: ^4.12.27
         version: 4.12.27
@@ -94,10 +100,10 @@ importers:
         specifier: ^6.2.3
         version: 6.2.3
       lodash:
-        specifier: ^4.18.1
-        version: 4.18.1
+        specifier: 4.17.21
+        version: 4.17.21
       luxon:
-        specifier: ^3.7.2
+        specifier: 3.7.2
         version: 3.7.2
       uuid:
         specifier: ^14.0.1
@@ -109,9 +115,6 @@ importers:
       '@ethang/eslint-config':
         specifier: ^25.23.0
         version: 25.23.0(@angular/cli@21.2.13(@types/node@26.0.0)(chokidar@5.0.0))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.62.0(@typescript-eslint/parser@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/types@8.62.0)(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(chokidar@5.0.0)(jiti@2.7.0)(prettier@3.8.4)(storybook@10.4.1(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(tailwindcss@4.3.1)(typescript@6.0.3)(vitest@4.1.9)
-      '@types/lodash':
-        specifier: ^4.17.24
-        version: 4.17.24
       '@types/luxon':
         specifier: ^3.7.2
         version: 3.7.2
@@ -8998,6 +9001,9 @@ packages:
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+
+  lodash@4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
@@ -20184,6 +20190,8 @@ snapshots:
   lodash.memoize@4.1.2: {}
 
   lodash.merge@4.6.2: {}
+
+  lodash@4.17.21: {}
 
   lodash@4.18.1: {}
 
