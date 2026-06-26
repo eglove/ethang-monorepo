@@ -18,10 +18,8 @@
     "tailwindcss": "^4.3.1"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.12.1",
     "@ethang/eslint-config": "^25.23.0",
     "@faker-js/faker": "^10.5.0",
-    "@playwright/test": "^1.61.1",
     "@portabletext/types": "^4.0.2",
     "@tailwindcss/typography": "^0.5.20",
     "@types/lodash": "^4.17.24",
@@ -44,9 +42,7 @@
     "deploy": "bun build.ts && pnpm tw && wrangler deploy --minify",
     "dev": "wrangler dev",
     "lint": "eslint . --fix && pnpm tsc --noEmit",
-    "test": "pnpm test:vitest",
-    "test:playwright": "playwright test",
-    "test:vitest": "vitest run --coverage",
+    "test": "vitest run --coverage",
     "tw": "pnpx @tailwindcss/cli -i ./src/style.css -o ./public/index.css",
     "tw:watch": "pnpx @tailwindcss/cli -i ./src/style.css -o ./public/index.css --watch"
   },

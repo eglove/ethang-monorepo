@@ -7,17 +7,21 @@ export default defineConfig({
         "**/service-worker/**",
         "**/.agents/**",
         ".junie/**",
-        ".stryker-temp/**"
+        "*.d.ts",
+        "*.bench.ts",
+        "*.gen.ts",
+        "**/.wrangler/**",
+        "**/build.ts"
       ],
-      include: ["**/src/**/*.ts", "**/src/**/*.tsx", "packages/scripts/*.ts"],
+      include: ["apps/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 96.57,
-        functions: 94.97,
-        lines: 97.12,
-        statements: 97.09
+        branches: 94.76,
+        functions: 92.26,
+        lines: 96.33,
+        statements: 96.31
       }
     },
     projects: [

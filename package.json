@@ -1,7 +1,6 @@
 {
   "author": "Ethan Glover",
   "devDependencies": {
-    "@apollo/rover": "^0.40.0",
     "@ethang/eslint-config": "^25.23.0",
     "@stryker-mutator/core": "^9.6.1",
     "@stryker-mutator/typescript-checker": "^9.6.1",
@@ -32,8 +31,5 @@
     "test": "vitest run --coverage"
   },
   "type": "module",
-  "version": "1.0.0",
-  "dependencies": {
-    "drizzle-graphql": "^0.8.5"
-  }
+  "version": "1.0.0"
 }
