@@ -9,79 +9,24 @@ import { Effect } from "effect";
 import endsWith from "lodash/endsWith.js";
 import filter from "lodash/filter.js";
 import isError from "lodash/isError.js";
-import map from "lodash/map.js";
 import trim from "lodash/trim.js";
 
+import type { ChatState } from "./chat-types.ts";
+
 import { PLAN_OUTPUT_PATH } from "../environment.ts";
-import { codebaseMemoryMcp } from "../mcp/codebase-memory.ts";
-import { webstormMcp } from "../mcp/webstorm.ts";
 import { createOpenRouterAdapter } from "../providers/openrouter.js";
-import { architectureTool } from "../tools/get-architecture.js";
-import { codeSnippetTool } from "../tools/get-code-snippet.js";
-import { searchGraphTool } from "../tools/search-graph.js";
-import { tracePathTool } from "../tools/trace-path.js";
-import { webstormReadFileTool } from "../tools/webstorm-read-file.js";
 import { logChatMessage } from "../utils/chat-logger.js";
 import { isPlanComplete } from "../utils/is-plan-complete.js";
 import { makeUIMessage } from "../utils/make-ui-message.js";
 import { parsePlanSections } from "../utils/parse-plan-sections.js";
 import { closeClients, processStream } from "../utils/process-stream.js";
 import { writePlan } from "../utils/write-plan.js";
-
-export type ChatMessage =
-  | {
-      content: string;
-      role: "assistant" | "user";
-      type: "message";
-    }
-  | {
-      content: string;
-      type: "system";
-    }
-  | {
-      input: Record<string, unknown>;
-      name: string;
-      output: string;
-      type: "tool_call";
-    };
-
-export type ChatState = {
-  isLoading: boolean;
-  messages: ChatMessage[];
-};
-
-const SYSTEM_PROMPT = `You are a planning assistant that helps developers create implementation plans.
-You have access to tools that let you explore the codebase using MCP servers (search_graph, trace_path, get_architecture, get_code_snippet, webstorm_read_file).
-
-MANDATORY: Before asking the user anything, use these tools to answer whatever you can for yourself.
-- Look up existing code, routes, data flow, and architecture relevant to the request.
-- Read source files to understand current behavior before asking about it.
-- Only ask the user a question when the answer genuinely cannot be discovered from the codebase (product intent, deployment targets, business rules, timeline, etc.).
-
-When you do ask, grill the user with follow-up questions to produce a thorough, well-thought-out plan.
-Ask about requirements, constraints, edge cases, and alternatives.`;
-
-const GRILL_NUDGE = `The user has described what they want to build.
-
-Interview them relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
-
-Before asking anything, use your tools to explore the codebase and answer for yourself whatever you can: existing code, routes, data flow, architecture, and current behavior. Read relevant source files before asking about them. If a question can be answered by exploring the codebase, explore the codebase instead.
-
-Ask the questions one at a time, waiting for feedback on each question before continuing. Asking multiple questions at once is bewildering.
-
-Only ask about something you could NOT determine from the codebase (product intent, deployment targets, business rules, timeline, etc.).
-
-Do NOT output a plan yet. Keep probing one question at a time until you have enough understanding to propose the plan. When you are ready, ask the user for approval before synthesizing the plan.`;
-
-const CONTINUE_NUDGE = `You finished your response but did not end with a focused follow-up question for the user. Ask exactly ONE follow-up question now — only about something you could NOT determine from the codebase. If you have enough understanding to propose the plan, ask the user for approval before synthesizing it.`;
-
-const BUILTIN_TOOLS = [
-  searchGraphTool,
-  tracePathTool,
-  architectureTool,
-  codeSnippetTool,
-  webstormReadFileTool
-];
+import {
+  CONTINUE_NUDGE,
+  GRILL_NUDGE,
+  SYSTEM_PROMPT
+} from "./chat-constants.ts";
+import { getMCPClients } from "./mcp-clients.ts";
 
 class ChatStore extends BaseStore<ChatState> {
   public exitCallback: (() => void) | undefined;
@@ -107,6 +52,10 @@ class ChatStore extends BaseStore<ChatState> {
   }
 
   public readonly sendMessage = async (text: string): Promise<void> => {
+    if (this.state.isLoading) {
+      return;
+    }
+
     this.messagesReference.push(makeUIMessage("user", text));
     await logChatMessage(`user: ${text}`);
     const isFirstUserMessage =
@@ -143,36 +92,18 @@ class ChatStore extends BaseStore<ChatState> {
     adapter: ReturnType<typeof createOpenRouterAdapter>,
     mcpClients: MCPToolSource[]
   ): Promise<string> {
-    let stream;
-
-    if (0 < mcpClients.length) {
-      const mcpToolsResults = await Promise.all(
-        map(mcpClients, async (client) => {
-          return client.tools({ lazy: true });
-        })
-      );
-      const mcpTools = mcpToolsResults.flat();
-
-      stream = chat({
-        adapter,
-        agentLoopStrategy: maxIterations(50),
+    const stream = chat({
+      adapter,
+      agentLoopStrategy: maxIterations(50),
+      ...(0 < mcpClients.length && {
         mcp: {
           clients: mcpClients,
           connection: "close" as const
-        },
-        messages: this.messagesReference,
-        systemPrompts: [SYSTEM_PROMPT],
-        tools: [...BUILTIN_TOOLS, ...mcpTools]
-      });
-    } else {
-      stream = chat({
-        adapter,
-        agentLoopStrategy: maxIterations(50),
-        messages: this.messagesReference,
-        systemPrompts: [SYSTEM_PROMPT],
-        tools: BUILTIN_TOOLS
-      });
-    }
+        }
+      }),
+      messages: this.messagesReference,
+      systemPrompts: [SYSTEM_PROMPT]
+    });
 
     return processStream(stream);
   }
@@ -252,21 +183,6 @@ class ChatStore extends BaseStore<ChatState> {
       )
     );
   }
-}
-
-async function getMCPClients(): Promise<MCPToolSource[]> {
-  const cmClient = await codebaseMemoryMcp();
-  const wsClient = await webstormMcp();
-
-  const clients: MCPToolSource[] = [];
-  if (null !== cmClient) {
-    clients.push(cmClient);
-  }
-  if (null !== wsClient) {
-    clients.push(wsClient);
-  }
-
-  return clients;
 }
 
 export const chatStore = new ChatStore({

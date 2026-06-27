@@ -1,5 +1,6 @@
 import type { MCPToolSource } from "@tanstack/ai";
 
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import convertToString from "lodash/toString.js";
@@ -57,18 +58,13 @@ async function handleChunk(
   content: string,
   toolArgumentsAccum: Map<string, string>,
   setContent: (value: string) => void,
-  currentAssistantIndex: number,
+  _currentAssistantIndex: number,
   setCurrentAssistantIndex: (index: number) => void
 ): Promise<void> {
   switch (chunk.type) {
     case "TEXT_MESSAGE_CONTENT": {
       setContent(
-        handleTextContent(
-          chunk["delta"],
-          content,
-          currentAssistantIndex,
-          setCurrentAssistantIndex
-        )
+        handleTextContent(chunk["delta"], content, setCurrentAssistantIndex)
       );
       break;
     }
@@ -91,7 +87,6 @@ async function handleChunk(
 function handleTextContent(
   delta: unknown,
   content: string,
-  currentAssistantIndex: number,
   setCurrentAssistantIndex: (index: number) => void
 ): string {
   if (!isString(delta) || !delta) {
@@ -99,34 +94,37 @@ function handleTextContent(
   }
   const newContent = content + delta;
   chatStore.update((draft) => {
-    // If we have a tracked assistant message and it's still the last message
-    // (no tool calls have been pushed after it), update it in place.
-    if (
-      0 <= currentAssistantIndex &&
-      currentAssistantIndex < draft.messages.length
-    ) {
-      const existing = draft.messages[currentAssistantIndex];
-      const isLastMessage = currentAssistantIndex === draft.messages.length - 1;
+    // Find the last assistant message (may not be at the end if tool calls were pushed after it).
+    let lastAssistantIndex = -1;
+    for (let index = draft.messages.length - 1; 0 <= index; index -= 1) {
+      const message = draft.messages[index];
       if (
-        "message" === existing?.type &&
-        "assistant" === existing.role &&
-        isLastMessage
+        !isNil(message) &&
+        "message" === message.type &&
+        "assistant" === message.role
       ) {
-        draft.messages[currentAssistantIndex] = {
-          content: newContent,
-          role: "assistant",
-          type: "message"
-        };
-        return;
+        lastAssistantIndex = index;
+        break;
       }
     }
-    // Otherwise, push a new assistant message at the bottom (after any tool calls).
-    draft.messages.push({
-      content: newContent,
-      role: "assistant",
-      type: "message"
-    });
-    setCurrentAssistantIndex(draft.messages.length - 1);
+
+    if (0 <= lastAssistantIndex) {
+      // Update the existing assistant message in place.
+      draft.messages[lastAssistantIndex] = {
+        content: newContent,
+        role: "assistant",
+        type: "message"
+      };
+      setCurrentAssistantIndex(lastAssistantIndex);
+    } else {
+      // No assistant message yet — push a new one.
+      draft.messages.push({
+        content: newContent,
+        role: "assistant",
+        type: "message"
+      });
+      setCurrentAssistantIndex(draft.messages.length - 1);
+    }
   });
   return newContent;
 }

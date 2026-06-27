@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { ChatMessage } from "../stores/chat-store.js";
-
+import { ChatMessage } from "../stores/chat-types.ts";
 import { updateToolCallInput } from "./update-tool-call-input.js";
 
 function getToolCallMessage(
