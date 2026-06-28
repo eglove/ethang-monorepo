@@ -1,15 +1,20 @@
+import { v7 } from "uuid";
+
 export type ChatMessage = Message | SystemMessage | ToolCall;
 export type Message = {
   readonly content: string;
+  readonly id: string;
   readonly role: "assistant" | "user";
   readonly type: "message";
 };
 export type SystemMessage = {
   readonly content: string;
+  readonly id: string;
   readonly type: "system";
 };
 
 export type ToolCall = {
+  readonly id: string;
   input: Record<string, unknown>;
   name: string;
   output: string;
@@ -20,11 +25,11 @@ export const message = (
   content: string,
   role: "assistant" | "user"
 ): Message => {
-  return { content, role, type: "message" as const };
+  return { content, id: v7(), role, type: "message" as const };
 };
 
 export const system = (content: string): SystemMessage => {
-  return { content, type: "system" as const };
+  return { content, id: v7(), type: "system" as const };
 };
 
 export const toolCall = (
@@ -33,6 +38,7 @@ export const toolCall = (
   output: string
 ): ToolCall => {
   return {
+    id: v7(),
     input,
     name,
     output,

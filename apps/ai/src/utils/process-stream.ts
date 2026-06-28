@@ -1,9 +1,9 @@
 import type { MCPToolSource } from "@tanstack/ai";
 
-import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import convertToString from "lodash/toString.js";
+import { v7 } from "uuid";
 
 import { chatStore } from "../stores/chat-store.js";
 import { logChatMessage } from "./chat-logger.js";
@@ -64,7 +64,12 @@ async function handleChunk(
   switch (chunk.type) {
     case "TEXT_MESSAGE_CONTENT": {
       setContent(
-        handleTextContent(chunk["delta"], content, setCurrentAssistantIndex)
+        handleTextContent(
+          chunk["delta"],
+          content,
+          _currentAssistantIndex,
+          setCurrentAssistantIndex
+        )
       );
       break;
     }
@@ -87,6 +92,7 @@ async function handleChunk(
 function handleTextContent(
   delta: unknown,
   content: string,
+  currentAssistantIndex: number,
   setCurrentAssistantIndex: (index: number) => void
 ): string {
   if (!isString(delta) || !delta) {
@@ -94,37 +100,24 @@ function handleTextContent(
   }
   const newContent = content + delta;
   chatStore.update((draft) => {
-    // Find the last assistant message (may not be at the end if tool calls were pushed after it).
-    let lastAssistantIndex = -1;
-    for (let index = draft.messages.length - 1; 0 <= index; index -= 1) {
-      const message = draft.messages[index];
-      if (
-        !isNil(message) &&
-        "message" === message.type &&
-        "assistant" === message.role
-      ) {
-        lastAssistantIndex = index;
-        break;
-      }
-    }
-
-    if (0 <= lastAssistantIndex) {
-      // Update the existing assistant message in place.
-      draft.messages[lastAssistantIndex] = {
+    if (0 <= currentAssistantIndex) {
+      // Already have an assistant message this round — update it in place.
+      draft.messages[currentAssistantIndex] = {
         content: newContent,
+        id: draft.messages[currentAssistantIndex]?.id ?? "",
         role: "assistant",
         type: "message"
       };
-      setCurrentAssistantIndex(lastAssistantIndex);
-    } else {
-      // No assistant message yet — push a new one.
-      draft.messages.push({
-        content: newContent,
-        role: "assistant",
-        type: "message"
-      });
-      setCurrentAssistantIndex(draft.messages.length - 1);
+      return;
     }
+    // First text chunk of a new round — push a new assistant message.
+    draft.messages.push({
+      content: newContent,
+      id: v7(),
+      role: "assistant",
+      type: "message"
+    });
+    setCurrentAssistantIndex(draft.messages.length - 1);
   });
   return newContent;
 }
@@ -172,6 +165,7 @@ async function handleToolCallStart(
   await logChatMessage(`tool_call_start: ${toolName}`);
   chatStore.update((draft) => {
     draft.messages.push({
+      id: v7(),
       input: {},
       name: toolName,
       output: "",

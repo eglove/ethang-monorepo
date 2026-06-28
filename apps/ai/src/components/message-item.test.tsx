@@ -19,6 +19,7 @@ describe("MessageItem", () => {
 
     const message = {
       content: "Hello there",
+      id: "test-id-1",
       role: "user" as const,
       type: "message" as const
     };
@@ -40,6 +41,7 @@ describe("MessageItem", () => {
 
     const message = {
       content: "system notification",
+      id: "test-id-2",
       type: "system" as const
     };
     const output = renderToString(
@@ -58,6 +60,7 @@ describe("MessageItem", () => {
     const { messageItem } = await import("./message-item.tsx");
 
     const message = {
+      id: "test-id-3",
       input: { path: "src/index.ts" },
       name: "read_file",
       output: "file contents here",
@@ -81,6 +84,7 @@ describe("MessageItem", () => {
 
     const message = {
       content: "selectable",
+      id: "test-id-4",
       role: "assistant" as const,
       type: "message" as const
     };
@@ -102,6 +106,7 @@ describe("MessageItem", () => {
 
     const message = {
       content: "system selected",
+      id: "test-id-5",
       type: "system" as const
     };
     const output = renderToString(
@@ -121,6 +126,7 @@ describe("MessageItem", () => {
     const { messageItem } = await import("./message-item.tsx");
 
     const message = {
+      id: "test-id-6",
       input: { path: "src/index.ts" },
       name: "read_file",
       output: "contents",
@@ -143,6 +149,7 @@ describe("MessageItem", () => {
     const { messageItem } = await import("./message-item.tsx");
 
     const message = {
+      id: "test-id-7",
       input: {},
       name: "no_op",
       output: "",

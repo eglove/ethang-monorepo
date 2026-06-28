@@ -1,3 +1,5 @@
+import filter from "lodash/filter.js";
+import noop from "lodash/noop.js";
 import some from "lodash/some.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -113,5 +115,34 @@ describe("chatStore.sendMessage", () => {
     const initialLength = chatStore.state.messages.length;
     await chatStore.sendMessage("Should be ignored");
     expect(chatStore.state.messages).toHaveLength(initialLength);
+  });
+
+  it("pushes system error message when runChatSession throws", async () => {
+    vi.useRealTimers();
+    try {
+      const streamModule = await import("../utils/process-stream.js");
+      // @ts-expect-error for test
+      streamModule.processStream.mockRejectedValueOnce(new Error("boom"));
+
+      const promise = chatStore.sendMessage("Trigger error");
+      // Let the error propagate through Effect.catchAll
+      await promise.catch(noop);
+
+      // Allow Effect.catchAll microtasks to flush
+      await new Promise<void>((resolve) => {
+        setTimeout(resolve, 50);
+      });
+
+      // The error branch pushes a system-type message with the error text.
+      // Depending on where the error originates (chat() vs processStream()),
+      // the message content may differ — just verify a system error was pushed.
+      const systemMsgs = filter(chatStore.state.messages, (m) => {
+        return "system" === m.type;
+      });
+      expect(systemMsgs.length).toBeGreaterThan(0);
+      expect(chatStore.state.isLoading).toBe(false);
+    } finally {
+      vi.useFakeTimers();
+    }
   });
 });

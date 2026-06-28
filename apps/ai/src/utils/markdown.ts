@@ -59,14 +59,7 @@ function hexToRgb(hex: string): string | undefined {
 
 const HLINE = repeat("─", 60);
 
-function assertToken<T extends { type: string }>(
-  value: { type: string },
-  expectedType: T["type"]
-): asserts value is T {
-  if (value.type !== expectedType) throw new TypeError("Invalid token type");
-}
-
-function createNightOwlRenderer(): Partial<Renderer> {
+export function createNightOwlRenderer(): Partial<Renderer> {
   return {
     blockquote: ({ tokens }: Tokens.Blockquote): string => {
       return `${fg(NIGHT_OWL.blockquoteBorder)}${DIM}＞ ${RESET}${DIM}${fg(NIGHT_OWL.blockquoteFg)}${renderInlineTokens(tokens)}${RESET}\n`;
@@ -158,6 +151,13 @@ function createNightOwlRenderer(): Partial<Renderer> {
       return token.text;
     }
   };
+}
+
+function assertToken<T extends { type: string }>(
+  value: { type: string },
+  expectedType: T["type"]
+): asserts value is T {
+  if (value.type !== expectedType) throw new TypeError("Invalid token type");
 }
 
 function headingColor(depth: number): string {
@@ -300,5 +300,5 @@ export function renderMarkdown(text: string): string {
 }
 
 function stripHtmlTags(input: string): string {
-  return input.replaceAll(/<[^<>]*>/gu, "");
+  return input.replaceAll(/[<>]/gu, "");
 }

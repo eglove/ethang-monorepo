@@ -98,6 +98,9 @@ importers:
       type-fest:
         specifier: ^5.7.0
         version: 5.7.0
+      uuid:
+        specifier: ^14.0.1
+        version: 14.0.1
     devDependencies:
       '@ethang/eslint-config':
         specifier: ^25.24.0

@@ -20,7 +20,7 @@ describe("chat-store", () => {
           content: "Hello",
           role: "user",
           type: "message"
-        });
+        } as any);
       });
 
       chatStore.reset();
@@ -30,6 +30,7 @@ describe("chat-store", () => {
       expect(chatStore.state.messages[0]).toEqual({
         content:
           "Welcome to the AI planning harness. What would you like to build?",
+        id: expect.any(String),
         role: "assistant",
         type: "message"
       });

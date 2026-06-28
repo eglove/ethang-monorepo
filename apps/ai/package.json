@@ -18,7 +18,8 @@
     "luxon": "^3.7.2",
     "marked": "^18.0.5",
     "react": "^19.0.0",
-    "type-fest": "^5.7.0"
+    "type-fest": "^5.7.0",
+    "uuid": "^14.0.1"
   },
   "description": "Interactive AI harness CLI using React Ink, TanStack AI, and MCP tools.",
   "devDependencies": {

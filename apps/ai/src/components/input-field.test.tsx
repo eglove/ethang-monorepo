@@ -267,6 +267,40 @@ describe("InputField", () => {
     });
   });
 
+  it("ignores multi-character input (char.length !== 1)", async () => {
+    const { createRoot } = await importReactDomClient();
+    const { InputField } = await import("./input-field.tsx");
+    const chatStoreModule = await import("../stores/chat-store.js");
+
+    const container = document.createElement("div");
+    const root = createRoot(container);
+
+    await act(async () => {
+      root.render(React.createElement(InputField));
+    });
+
+    const handler = useInputMock.mock.calls[0]?.[0] as (
+      char: string,
+      key: Record<string, unknown>
+    ) => void;
+
+    // Multi-char string => char.length !== 1, should be ignored
+    await act(async () => {
+      handler("ab", {});
+    });
+
+    // Input stays empty, so pressing enter should not send
+    await act(async () => {
+      handler("", { return: true });
+    });
+
+    expect(chatStoreModule.chatStore.sendMessage).not.toHaveBeenCalled();
+
+    await act(async () => {
+      root.unmount();
+    });
+  });
+
   it("renders loading indicator when isLoading is true", async () => {
     const { createRoot } = await importReactDomClient();
     const { InputField } = await import("./input-field.tsx");

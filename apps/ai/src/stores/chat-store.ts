@@ -10,6 +10,7 @@ import endsWith from "lodash/endsWith.js";
 import filter from "lodash/filter.js";
 import isError from "lodash/isError.js";
 import trim from "lodash/trim.js";
+import { v7 } from "uuid";
 
 import type { ChatState } from "./chat-types.ts";
 
@@ -44,6 +45,7 @@ class ChatStore extends BaseStore<ChatState> {
         {
           content:
             "Welcome to the AI planning harness. What would you like to build?",
+          id: v7(),
           role: "assistant",
           type: "message"
         }
@@ -66,7 +68,12 @@ class ChatStore extends BaseStore<ChatState> {
 
     this.update((draft) => {
       draft.isLoading = true;
-      draft.messages.push({ content: text, role: "user", type: "message" });
+      draft.messages.push({
+        content: text,
+        id: v7(),
+        role: "user",
+        type: "message"
+      });
     });
 
     if (isFirstUserMessage) {
@@ -74,6 +81,7 @@ class ChatStore extends BaseStore<ChatState> {
       this.update((draft) => {
         draft.messages.push({
           content: GRILL_NUDGE,
+          id: v7(),
           role: "user",
           type: "message"
         });
@@ -130,6 +138,7 @@ class ChatStore extends BaseStore<ChatState> {
         this.update((draft) => {
           draft.messages.push({
             content: CONTINUE_NUDGE,
+            id: v7(),
             role: "user",
             type: "message"
           });
@@ -147,6 +156,7 @@ class ChatStore extends BaseStore<ChatState> {
         this.update((draft) => {
           draft.messages.push({
             content: `Plan written to ${markdownPath} and ${jsonPath}`,
+            id: v7(),
             type: "system"
           });
         });
@@ -169,6 +179,7 @@ class ChatStore extends BaseStore<ChatState> {
             draft.isLoading = false;
             draft.messages.push({
               content: `Error: ${errorMessage}`,
+              id: v7(),
               type: "system"
             });
           });
@@ -191,6 +202,7 @@ export const chatStore = new ChatStore({
     {
       content:
         "Welcome to the AI planning harness. What would you like to build?",
+      id: v7(),
       role: "assistant",
       type: "message"
     }

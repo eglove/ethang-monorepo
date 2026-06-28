@@ -12,10 +12,10 @@ export function MessageList() {
 
   return (
     <Box flexDirection="column">
-      {map(messages, (message, index) => {
+      {map(messages, (message) => {
         if ("system" === message.type) {
           return (
-            <Box key={index} marginBottom={1}>
+            <Box key={message.id} marginBottom={1}>
               <Text color="yellow">{message.content}</Text>
             </Box>
           );
@@ -25,7 +25,7 @@ export function MessageList() {
           const { input } = message;
           const { output } = message;
           return (
-            <Box key={index} marginBottom={1} flexDirection="column">
+            <Box key={message.id} marginBottom={1} flexDirection="column">
               <Text color="cyan">Tool: {message.name}</Text>
               {isObject(input) && (
                 <Text color="gray">Input: {JSON.stringify(input)}</Text>
@@ -41,7 +41,7 @@ export function MessageList() {
         const prefix = "user" === message.role ? "> " : "";
 
         return (
-          <Box key={index} marginBottom={1}>
+          <Box key={message.id} marginBottom={1}>
             <Text color={color}>
               {prefix}
               {message.content}

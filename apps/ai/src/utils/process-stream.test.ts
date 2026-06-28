@@ -265,6 +265,35 @@ describe("processStream", () => {
     expect(chatStore.update).toHaveBeenCalledOnce();
   });
 
+  it("updates existing assistant message in place when index is set", async () => {
+    const { processStream } = await import("./process-stream.js");
+    const chatStoreModule = await import("../stores/chat-store.js");
+
+    const chatStore = chatStoreModule.chatStore as unknown as {
+      messagesReference: unknown[];
+      update: ReturnType<typeof vi.fn>;
+    };
+    chatStore.messagesReference = [];
+    // Execute the updater so setCurrentAssistantIndex is called
+    chatStore.update.mockImplementation(
+      (updater: (draft: { messages: { length: number }[] }) => void) => {
+        const draft = { messages: [] };
+        updater(draft);
+      }
+    );
+
+    // Two text deltas => second one hits the currentAssistantIndex >= 0 branch
+    const result = await processStream(
+      textMessageGenerator() as AsyncIterable<{
+        [key: string]: unknown;
+        type: string;
+      }>
+    );
+
+    expect(result).toBe("Hello world");
+    expect(chatStore.messagesReference).toHaveLength(1);
+  });
+
   it("handles a full mixed stream correctly", async () => {
     const { processStream } = await import("./process-stream.js");
     const chatStoreModule = await import("../stores/chat-store.js");

@@ -4,6 +4,7 @@ import isString from "lodash/isString.js";
 import type { ChatMessage } from "../stores/chat-types.ts";
 
 type ToolCallMessage = {
+  id: string;
   input: Record<string, unknown>;
   name: string;
   output: string;

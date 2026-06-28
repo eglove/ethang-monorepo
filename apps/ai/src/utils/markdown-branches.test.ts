@@ -1,7 +1,7 @@
 import { marked } from "marked";
 import { describe, expect, it } from "vitest";
 
-import { renderMarkdown } from "./markdown.js";
+import { createNightOwlRenderer, renderMarkdown } from "./markdown.js";
 
 const EXAMPLE_IMG_URL = "https://example.com/img.png";
 const EXAMPLE_URL = "https://example.com";
@@ -385,5 +385,33 @@ describe("renderer methods from marked.defaults", () => {
       tokens: [{ text: "item", tokens: [], type: "text" }]
     } as any);
     expect(result).toContain("item");
+  });
+
+  it("space renderer returns newline via createNightOwlRenderer", () => {
+    const renderer = createNightOwlRenderer();
+    // @ts-expect-error marked's Renderer type requires a token arg, but our implementation ignores it
+    expect(renderer.space?.()).toBe("\n");
+  });
+
+  it("text renderer recurses into nested space token", () => {
+    const renderer = createNightOwlRenderer();
+    // text token with nested space token => renderInlineToken("space") => renderSpace()
+    const result = renderer.text?.({
+      text: "fallback",
+      tokens: [{ type: "space" }],
+      type: "text"
+    } as any);
+    expect(result).toContain(" ");
+  });
+
+  it("text renderer recurses into unknown token type returning empty", () => {
+    const renderer = createNightOwlRenderer();
+    // text token with nested unknown token => renderInlineToken("unknown") => ""
+    const result = renderer.text?.({
+      text: "fallback",
+      tokens: [{ type: "unknown" }],
+      type: "text"
+    } as any);
+    expect(result).toBe("");
   });
 });
