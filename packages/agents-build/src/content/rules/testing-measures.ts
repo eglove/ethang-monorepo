@@ -20,7 +20,7 @@ export const testingMeasures = defineRule({
     },
     {
       level: 3,
-      text: "1.1 Evaluation of the SUT (System Under Test)",
+      text: "1.1 Evaluation of the SUT (system Under Test)",
       type: "header"
     },
     {

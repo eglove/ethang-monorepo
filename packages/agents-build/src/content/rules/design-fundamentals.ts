@@ -145,7 +145,7 @@ export const designFundamentals = defineRule({
     {
       items: [
         {
-          text: "**Quality Attribute Concerns**: System-wide properties that affect all modules, such as performance, security, reliability, availability, usability, safety, and maintainability."
+          text: "**Quality Attribute Concerns**: system-wide properties that affect all modules, such as performance, security, reliability, availability, usability, safety, and maintainability."
         },
         {
           text: '**Behavioral and Crosscutting Concerns**: Systemic properties that do not align with functional decomposition boundaries. SWEBOK v4 refers to these as "aspects" (e.g., concurrency control, error handling, logging, caching, and data persistence). These aspects crosscut multiple modules, requiring specialized design tactics to prevent code duplication and ensure system stability.'
@@ -183,7 +183,7 @@ export const designFundamentals = defineRule({
           text: "**Separation of Interface and Implementation**: Defining components via public APIs and isolating the client from the details of how the component is built. This ensures internal changes do not affect external consumers."
         },
         {
-          text: "**Coupling**: The measure of the degree of interdependence between modules. Designers strive for loose coupling to minimize the ripple effect of changes. SWEBOK v4 emphasizes that modules should be loosely or weakly coupled. The coupling scale ranges from Content, Common, Control, Stamp, Data, to Message coupling."
+          text: "**Coupling**: The measure of the degree of interdependence between modules. Designers strive for loose coupling to minimize the ripple effect of changes. SWEBOK v4 emphasizes that modules should be loosely or weakly coupled. The coupling scale ranges from Content, Common, Control, Stamp, Data, to message coupling."
         },
         {
           text: "**Cohesion**: The measure of the strength of association of the elements within a module. Most design methods advocate that modules should maximize cohesion and localization, grouping elements based on their relatedness. The cohesion scale ranges from coincidental, logical, temporal, procedural, communicational, sequential, to functional cohesion."

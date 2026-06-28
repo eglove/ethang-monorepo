@@ -5,8 +5,8 @@
 > [!CAUTION]
 > Prettier is already included for styling!
 
-* 949 rules.
-* 289 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
+* 961 rules.
+* 301 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
 * 244 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
 * 143 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
 * 110 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
@@ -31,9 +31,9 @@
 * 55 rules for **Astro**
 	* `import astroConfig from "@ethang/eslint-config/config.astro.js";`
 	* 55 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)
-* 169 rules for **React**
+* 168 rules for **React**
 	* `import reactConfig from "@ethang/eslint-config/config.react.js";`
-	* 140 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
+	* 139 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
 	* 29 rules from [eslint-plugin-react-hooks](https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks)
 * 18 rules for **Solid**
 	* `import solidConfig from "@ethang/eslint-config/config.solid.js";`

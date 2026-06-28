@@ -1,9 +1,11 @@
+import constant from "lodash/constant.js";
+import isString from "lodash/isString.js";
 import map from "lodash/map.js";
-import replace from "lodash/repeat.js";
+import repeat from "lodash/repeat.js";
+import replace from "lodash/replace.js";
 import split from "lodash/split.js";
 import trim from "lodash/trim.js";
-import { marked } from "marked";
-import type { Tokens } from "marked";
+import { marked, type Renderer, type Tokens } from "marked";
 
 // Night Owl–inspired palette (dark background assumed)
 // True-color hex codes – works in all modern terminals (2024+)
@@ -25,24 +27,24 @@ const NIGHT_OWL = {
   listBullet: "#5f7e97"
 };
 
-const RESET = "\u{1B}[0m";
-const BOLD = "\u{1B}[1m";
-const ITALIC = "\u{1B}[3m";
-const UNDERLINE = "\u{1B}[4m";
-const DIM = "\u{1B}[2m";
+const RESET = "[0m";
+const BOLD = "[1m";
+const ITALIC = "[3m";
+const UNDERLINE = "[4m";
+const DIM = "[2m";
 
 const EMPTY_STRING = "";
 
 function bg(hex: string): string {
   const rgb = hexToRgb(hex);
   if (rgb === undefined) return EMPTY_STRING;
-  return `\u{1B}[48;2;${rgb}m`;
+  return `[48;2;${rgb}m`;
 }
 
 function fg(hex: string): string {
   const rgb = hexToRgb(hex);
   if (rgb === undefined) return EMPTY_STRING;
-  return `\u{1B}[38;2;${rgb}m`;
+  return `[38;2;${rgb}m`;
 }
 
 function hexToRgb(hex: string): string | undefined {
@@ -55,75 +57,27 @@ function hexToRgb(hex: string): string | undefined {
   return `${r};${g};${b}`;
 }
 
-const HLINE = "─".repeat(60);
+const HLINE = repeat("─", 60);
 
-function renderInlineTokens(tokens: Tokens.Generic[]): string {
-  let result = "";
-  for (const token of tokens) {
-    const t = token as Tokens.Generic;
-    if (t.type === "strong") {
-      const strongToken = t as Tokens.Strong;
-      result += `${fg(NIGHT_OWL.bold)}${BOLD}${strongToken.text}${RESET}`;
-    } else if (t.type === "em") {
-      const emToken = t as Tokens.Em;
-      result += `${ITALIC}${fg(NIGHT_OWL.italic)}${emToken.text}${RESET}`;
-    } else if (t.type === "codespan") {
-      const codespanToken = t as Tokens.Codespan;
-      result += `${bg(NIGHT_OWL.inlineCodeBg)}${fg(NIGHT_OWL.inlineCodeFg)} ${codespanToken.text} ${RESET}`;
-    } else if (t.type === "text") {
-      const textToken = t as Tokens.Text;
-      if (textToken.tokens && textToken.tokens.length > 0) {
-        result += renderInlineTokens(textToken.tokens);
-      } else {
-        result += textToken.text;
-      }
-    } else if (t.type === "link") {
-      const linkToken = t as Tokens.Link;
-      result += `${UNDERLINE}${fg(NIGHT_OWL.link)}${linkToken.text}${RESET} ${DIM}${fg(NIGHT_OWL.linkUrl)}(${linkToken.href})${RESET}`;
-    } else if (t.type === "image") {
-      const imageToken = t as Tokens.Image;
-      result += `${fg(NIGHT_OWL.link)}[${imageToken.text ?? "image"}](${imageToken.href})${RESET}`;
-    } else if (t.type === "del") {
-      const delToken = t as Tokens.Del;
-      result += `${DIM}${delToken.text}${RESET}`;
-    } else if (t.type === "br") {
-      result += "\n";
-    } else if (t.type === "escape") {
-      result += (t as Tokens.Escape).text;
-    } else if (t.type === "checkbox") {
-      const checkboxToken = t as Tokens.Checkbox;
-      result += checkboxToken.checked ? "[x]" : "[ ]";
-    } else if (t.type === "paragraph") {
-      const paraToken = t as Tokens.Paragraph;
-      result += renderInlineTokens(paraToken.tokens ?? []);
-    } else if (t.type === "codespan") {
-      // handled above
-    } else if (t.type === "space") {
-      result += " ";
-    } else if (t.type === "html") {
-      result += (t as Tokens.HTML).raw;
-    } else if (t.type === "blockquote") {
-      const bqToken = t as Tokens.Blockquote;
-      result += `${fg(NIGHT_OWL.blockquoteBorder)}${DIM}＞ ${RESET}${DIM}${fg(NIGHT_OWL.blockquoteFg)}${bqToken.text}${RESET}`;
-    } else if ((t as { type: string }).type === "list") {
-      const listToken = t as Tokens.List;
-      result += listToken.body;
-    }
-  }
-  return result;
+function assertToken<T extends { type: string }>(
+  value: { type: string },
+  expectedType: T["type"]
+): asserts value is T {
+  if (value.type !== expectedType) throw new TypeError("Invalid token type");
 }
 
-function createNightOwlRenderer(): marked.Renderer {
+function createNightOwlRenderer(): Partial<Renderer> {
   return {
-    blockquote({ tokens }: marked.Tokens.Blockquote): string {
+    blockquote: ({ tokens }: Tokens.Blockquote): string => {
       return `${fg(NIGHT_OWL.blockquoteBorder)}${DIM}＞ ${RESET}${DIM}${fg(NIGHT_OWL.blockquoteFg)}${renderInlineTokens(tokens)}${RESET}\n`;
     },
-
-    br(): string {
+    br: (): string => {
       return `\n`;
     },
-
-    code({ text }: marked.Tokens.Code): string {
+    checkbox: ({ checked }: Tokens.Checkbox): string => {
+      return checked ? "[x]" : "[ ]";
+    },
+    code({ text }: Tokens.Code): string {
       const borderColor = fg(NIGHT_OWL.codeBlockBorder);
       const fgColor = fg(NIGHT_OWL.codeBlockFg);
       const border = `${borderColor}${DIM}${HLINE}${RESET}`;
@@ -132,86 +86,76 @@ function createNightOwlRenderer(): marked.Renderer {
       });
       return `${border}\n${lines.join("\n")}\n${border}\n`;
     },
-
-    codespan({ text }: marked.Tokens.Codespan): string {
+    codespan: ({ text }: Tokens.Codespan): string => {
       return `${bg(NIGHT_OWL.inlineCodeBg)}${fg(NIGHT_OWL.inlineCodeFg)} ${text} ${RESET}`;
     },
-
-    em({ text }: marked.Tokens.Em): string {
+    del({ text, tokens }: Tokens.Del): string {
+      if (0 < tokens.length) {
+        return `${DIM}${renderInlineTokens(tokens)}${RESET}`;
+      }
+      return `${DIM}${text}${RESET}`;
+    },
+    em: ({ text }: Tokens.Em): string => {
       return `${ITALIC}${fg(NIGHT_OWL.italic)}${text}${RESET}`;
     },
-
-    heading({ depth, text }: marked.Tokens.Heading): string {
-      const prefix = replace("  ", "", depth - 1);
+    heading({ depth, tokens }: Tokens.Heading): string {
+      const prefix = repeat("  ", depth - 1);
+      const text = renderInlineTokens(tokens);
       return `${prefix}${fg(headingColor(depth))}${BOLD}${text}${RESET}\n`;
     },
-
-    hr(): string {
+    hr: (): string => {
       return `${DIM}${HLINE}${RESET}\n`;
     },
-
-    link({ href, text }: marked.Tokens.Link): string {
-      return `${UNDERLINE}${fg(NIGHT_OWL.link)}${text}${RESET} ${DIM}${fg(NIGHT_OWL.linkUrl)}(${href})${RESET}`;
+    html: ({ text }: Tokens.HTML | Tokens.Tag): string => {
+      return text;
     },
-
-    list(token: marked.Tokens.List): string {
-      const renderer = this as unknown as marked.Renderer;
+    image: ({ href, text }: Tokens.Image): string => {
+      return `${fg(NIGHT_OWL.link)}[${text}](${href})${RESET}`;
+    },
+    link({ href, text, tokens }: Tokens.Link): string {
+      const linkText = 0 < tokens.length ? renderInlineTokens(tokens) : text;
+      return `${UNDERLINE}${fg(NIGHT_OWL.link)}${linkText}${RESET} ${DIM}${fg(NIGHT_OWL.linkUrl)}(${href})${RESET}`;
+    },
+    list(token: Tokens.List): string {
       let body = "";
       for (const item of token.items) {
-        body += renderer.listitem(item);
+        body += renderListItem(item);
       }
       return body;
     },
-
-    listitem({ tokens }: marked.Tokens.ListItem): string {
-      return `  ${fg(NIGHT_OWL.listBullet)}•${RESET} ${renderInlineTokens(tokens)}\n`;
-    },
-
-    paragraph({ tokens }: marked.Tokens.Paragraph): string {
+    listitem: renderListItem,
+    paragraph: ({ tokens }: Tokens.Paragraph): string => {
       return `${renderInlineTokens(tokens)}\n`;
     },
-
-    strong({ text }: marked.Tokens.Strong): string {
+    space: constant("\n"),
+    strong: ({ text }: Tokens.Strong): string => {
       return `${fg(NIGHT_OWL.bold)}${BOLD}${text}${RESET}`;
     },
-
-    space(): string {
-      return "\n";
+    table(token: Tokens.Table): string {
+      let result = "";
+      const headerCells = map(token.header, (cell) => {
+        return cell.text;
+      });
+      result += `${headerCells.join("")}\n`;
+      for (const row of token.rows) {
+        const rowCells = map(row, (cell) => {
+          return cell.text;
+        });
+        result += `${rowCells.join("")}\n`;
+      }
+      return result;
     },
-
-    html({ text }: marked.Tokens.HTML): string {
-      return text;
-    },
-
-    del({ text }: marked.Tokens.Del): string {
-      return `${DIM}${text}${RESET}`;
-    },
-
-    image({ href, text }: marked.Tokens.Image): string {
-      return `${fg(NIGHT_OWL.link)}[${text}](${href})${RESET}`;
-    },
-
-    text({ text, tokens }: marked.Tokens.Text): string {
-      if (tokens && tokens.length > 0) {
+    tablecell({ text, tokens }: Tokens.TableCell): string {
+      if (0 < tokens.length) {
         return renderInlineTokens(tokens);
       }
       return text;
     },
-
-    checkbox({ checked }: marked.Tokens.Checkbox): string {
-      return checked ? "[x]" : "[ ]";
-    },
-
-    table({ header, body }: marked.Tokens.Table): string {
-      return `${header}\n${body}`;
-    },
-
-    tablerow({ text }: marked.Tokens.TableRow): string {
-      return text;
-    },
-
-    tablecell({ text }: marked.Tokens.TableCell): string {
-      return text;
+    text(token: Tokens.Escape | Tokens.Text): string {
+      if ("text" === token.type && token.tokens && 0 < token.tokens.length) {
+        return renderInlineTokens(token.tokens);
+      }
+      return token.text;
     }
   };
 }
@@ -223,21 +167,138 @@ function headingColor(depth: number): string {
   return NIGHT_OWL.heading4;
 }
 
-const nightOwlRenderer = createNightOwlRenderer();
+function renderBlockquote(token: Tokens.Generic): string {
+  assertToken<Tokens.Blockquote>(token, "blockquote");
+  return `${fg(NIGHT_OWL.blockquoteBorder)}${DIM}＞ ${RESET}${DIM}${fg(NIGHT_OWL.blockquoteFg)}${token.text}${RESET}`;
+}
+
+function renderBr(): string {
+  return "\n";
+}
+
+function renderCheckbox(token: Tokens.Generic): string {
+  assertToken<Tokens.Checkbox>(token, "checkbox");
+  return token.checked ? "[x]" : "[ ]";
+}
+
+function renderCodespan(token: Tokens.Generic): string {
+  assertToken<Tokens.Codespan>(token, "codespan");
+  return `${bg(NIGHT_OWL.inlineCodeBg)}${fg(NIGHT_OWL.inlineCodeFg)} ${token.text} ${RESET}`;
+}
+
+function renderDel(token: Tokens.Generic): string {
+  assertToken<Tokens.Del>(token, "del");
+  return `${DIM}${token.text}${RESET}`;
+}
+
+function renderEm(token: Tokens.Generic): string {
+  assertToken<Tokens.Em>(token, "em");
+  return `${ITALIC}${fg(NIGHT_OWL.italic)}${token.text}${RESET}`;
+}
+
+function renderEscape(token: Tokens.Generic): string {
+  assertToken<Tokens.Escape>(token, "escape");
+  return token.text;
+}
+
+function renderHtml(token: Tokens.Generic): string {
+  assertToken<Tokens.HTML>(token, "html");
+  return token.raw;
+}
+
+function renderImage(token: Tokens.Generic): string {
+  assertToken<Tokens.Image>(token, "image");
+  const altText =
+    0 < token.tokens.length
+      ? renderInlineTokens(token.tokens)
+      : token.text || "image";
+  return `${fg(NIGHT_OWL.link)}[${altText}](${token.href})${RESET}`;
+}
+
+function renderLink(token: Tokens.Generic): string {
+  assertToken<Tokens.Link>(token, "link");
+  const linkText =
+    0 < token.tokens.length ? renderInlineTokens(token.tokens) : token.text;
+  return `${UNDERLINE}${fg(NIGHT_OWL.link)}${linkText}${RESET} ${DIM}${fg(NIGHT_OWL.linkUrl)}(${token.href})${RESET}`;
+}
+
+function renderList(token: Tokens.Generic): string {
+  assertToken<Tokens.List>(token, "list");
+  return map(token.items, (item) => {
+    return `  ${fg(NIGHT_OWL.listBullet)}• ${renderInlineTokens(item.tokens)}\n`;
+  }).join("");
+}
+
+function renderParagraph(token: Tokens.Generic): string {
+  assertToken<Tokens.Paragraph>(token, "paragraph");
+  return renderInlineTokens(token.tokens);
+}
+
+function renderSpace(): string {
+  return " ";
+}
+
+function renderStrong(token: Tokens.Generic): string {
+  assertToken<Tokens.Strong>(token, "strong");
+  return `${fg(NIGHT_OWL.bold)}${BOLD}${token.text}${RESET}`;
+}
+
+function renderText(token: Tokens.Generic): string {
+  assertToken<Tokens.Text>(token, "text");
+  return token.tokens && 0 < token.tokens.length
+    ? renderInlineTokens(token.tokens)
+    : token.text;
+}
+
+const RENDERERS: Record<string, (token: Tokens.Generic) => string> = {
+  blockquote: renderBlockquote,
+  br: renderBr,
+  checkbox: renderCheckbox,
+  codespan: renderCodespan,
+  del: renderDel,
+  em: renderEm,
+  escape: renderEscape,
+  html: renderHtml,
+  image: renderImage,
+  link: renderLink,
+  list: renderList,
+  paragraph: renderParagraph,
+  space: renderSpace,
+  strong: renderStrong,
+  text: renderText
+};
+
+function renderInlineToken(token: Tokens.Generic): string {
+  const renderer = RENDERERS[token.type];
+  if (renderer) {
+    return renderer(token);
+  }
+  return "";
+}
+
+function renderInlineTokens(tokens: Tokens.Generic[]): string {
+  return map(tokens, renderInlineToken).join("");
+}
+
+function renderListItem(item: Tokens.ListItem): string {
+  return `  ${fg(NIGHT_OWL.listBullet)}•${RESET} ${renderInlineTokens(item.tokens)}\n`;
+}
+
+marked.use({ renderer: createNightOwlRenderer() });
 
 /**
 Convert markdown text to terminal-native colored text.
 Returns a plain string with ANSI color escapes — no HTML tags.
 */
 export function renderMarkdown(text: string): string {
-  const result = marked.parse(text, {
+  const parsed = marked.parse(text, {
     breaks: false,
-    gfm: true,
-    renderer: nightOwlRenderer
+    gfm: true
   });
+  const result = isString(parsed) ? parsed : "";
   return trim(stripHtmlTags(result));
 }
 
 function stripHtmlTags(input: string): string {
-  return input.replaceAll(/<[^>]*>/gu, "");
+  return input.replaceAll(/<[^<>]*>/gu, "");
 }

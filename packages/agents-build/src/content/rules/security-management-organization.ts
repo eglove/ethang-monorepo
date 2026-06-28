@@ -24,7 +24,7 @@ export const securityManagementOrganization = defineRule({
       type: "header"
     },
     {
-      text: "The primary mechanism for organizational security governance is the Information Security Management System (ISMS). ISO/IEC 27001 specifies the requirements for establishing, implementing, maintaining, and continually improving an ISMS within the organizational context. An ISMS serves as a documented plan for managing the technology-related security of an organization.\nIts core components include:",
+      text: "The primary mechanism for organizational security governance is the Information Security Management system (ISMS). ISO/IEC 27001 specifies the requirements for establishing, implementing, maintaining, and continually improving an ISMS within the organizational context. An ISMS serves as a documented plan for managing the technology-related security of an organization.\nIts core components include:",
       type: "text"
     },
     {
@@ -36,7 +36,7 @@ export const securityManagementOrganization = defineRule({
           text: "**Risk Mitigation**: The selection and implementation of protective measures and controls to address documented risks. These controls are often documented in a Statement of Applicability (SoA)."
         },
         {
-          text: "**System Monitoring**: Assigning dedicated security and IT teams to monitor risk exposures, conduct regular log audits, and detect anomalies in real time."
+          text: "**system Monitoring**: Assigning dedicated security and IT teams to monitor risk exposures, conduct regular log audits, and detect anomalies in real time."
         },
         {
           text: "**Security Requirements Ingestion**: A structured pipeline to feed identified risk details back into software development teams. An ISMS actively raises new or modifies existing software security requirements as threat landscapes and technologies evolve."
@@ -59,7 +59,7 @@ export const securityManagementOrganization = defineRule({
           text: '**Laws**: National and international legislation governing data protection, privacy, and infrastructure security. For example, the General Data Protection Regulation (GDPR) mandates "Privacy by Design" and features like data portability and the "Right to be Forgotten" (which requires complex cascading deletions in databases). The California Consumer Privacy Act (CCPA) establishes consumer rights regarding data collection and sales. The Health Insurance Portability and Accountability Act (HIPAA) mandates strict confidentiality, encryption at rest and in transit, and detailed audit logging for protected health information (PHI).'
         },
         {
-          text: "**Regulations**: Industry-specific administrative rules. For example, the Payment Card Industry Data Security Standard (PCI-DSS) sets strict rules for encryption, network segmentation, and access controls for handling credit card data. System and Organization Controls (SOC 2) verifies security, availability, processing integrity, confidentiality, and privacy of customer data. The Federal Risk and Authorization Management Program (FedRAMP) establishes security assessment and authorization standards for cloud services used by government entities."
+          text: "**Regulations**: Industry-specific administrative rules. For example, the Payment Card Industry Data Security Standard (PCI-DSS) sets strict rules for encryption, network segmentation, and access controls for handling credit card data. system and Organization Controls (SOC 2) verifies security, availability, processing integrity, confidentiality, and privacy of customer data. The Federal Risk and Authorization Management Program (FedRAMP) establishes security assessment and authorization standards for cloud services used by government entities."
         },
         {
           text: "**Obligations**: Contractual agreements, service level agreements (SLAs), and security questionnaires with customers and partners.\nTo prevent compliance breaches and legal liability, these requirements must be formally elicitable, traceable, and validated during Software Quality Assurance (SQA) audits. Organizations utilize requirements traceability matrices (RTMs) to map regulatory controls directly to code implementation modules and test cases, ensuring complete compliance coverage."
@@ -130,7 +130,7 @@ export const securityManagementOrganization = defineRule({
     {
       items: [
         {
-          text: "Has a documented Information Security Management System (ISMS) been established in compliance with ISO/IEC 27001?"
+          text: "Has a documented Information Security Management system (ISMS) been established in compliance with ISO/IEC 27001?"
         },
         {
           text: "Are security risk assessments conducted continuously to identify system vulnerabilities and threat exposures?"

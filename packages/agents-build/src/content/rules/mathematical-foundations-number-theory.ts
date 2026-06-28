@@ -151,7 +151,7 @@ export const mathematicalFoundationsNumberTheory = defineRule({
     {
       items: [
         {
-          text: "**Number System Mapping**: Have the variables representing discrete entities been restricted to natural numbers or integers, rather than floating-point real numbers, to avoid precision errors?"
+          text: "**Number system Mapping**: Have the variables representing discrete entities been restricted to natural numbers or integers, rather than floating-point real numbers, to avoid precision errors?"
         },
         {
           text: "**Zero Inclusivity Definition**: Has the project specification defined whether the number zero is included in the domain of natural numbers to prevent off-by-one errors?"

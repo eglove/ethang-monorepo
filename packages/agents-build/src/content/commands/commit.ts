@@ -25,14 +25,14 @@ const blocks: MarkdownBlock[] = [
         text: "**Ask for Confirmation**: You MUST explicitly ask the user for confirmation before proceeding. Do NOT run `git commit` until the user approves the staged list."
       },
       {
-        text: "**Build Commit Message**: After the user confirms, construct the commit message following the rules below, then run `git commit` with it."
+        text: "**Build Commit message**: After the user confirms, construct the commit message following the rules below, then run `git commit` with it."
       }
     ],
     type: "numberedList"
   },
   {
     level: 2,
-    text: "Commit Message Format (Conventional Commits & RFC 2119)",
+    text: "Commit message Format (Conventional Commits & RFC 2119)",
     type: "header"
   },
   {

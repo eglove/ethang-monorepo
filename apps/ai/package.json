@@ -7,28 +7,30 @@
   "dependencies": {
     "@ethang/store": "^3.1.0",
     "@ethang/toolbelt": "^4.5.0",
-    "@tanstack/ai": "^0.37.0",
-    "@tanstack/ai-mcp": "^0.1.10",
-    "@tanstack/ai-openai": "^0.15.8",
-    "@tanstack/react-query": "^5.101.0",
+    "@tanstack/ai": "^0.38.0",
+    "@tanstack/ai-mcp": "^0.2.0",
+    "@tanstack/ai-openai": "^0.15.9",
+    "@tanstack/react-query": "^5.101.2",
     "dotenv": "^17.4.2",
     "effect": "^3.21.4",
     "ink": "^7.1.0",
     "lodash": "^4.18.1",
     "luxon": "^3.7.2",
+    "marked": "^18.0.5",
     "react": "^19.0.0",
     "type-fest": "^5.7.0"
   },
   "description": "Interactive AI harness CLI using React Ink, TanStack AI, and MCP tools.",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.23.0",
+    "@ethang/eslint-config": "^25.24.0",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.2",
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.0.1",
     "@types/react": "^19.0.0",
     "@vitest/coverage-v8": "^4.1.9",
     "browserslist-config-baseline": "^0.5.0",
-    "eslint": "^10.5.0",
+    "eslint": "^10.6.0",
+    "happy-dom": "^20.10.6",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
@@ -43,7 +45,8 @@
     "dev": "tsup && pnpm start",
     "lint": "eslint . --fix && pnpm tsc --noEmit",
     "start": "node dist/index.js",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "test:watch": "vitest --coverage"
   },
   "type": "module",
   "version": "0.0.0"

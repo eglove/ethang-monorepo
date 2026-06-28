@@ -20,7 +20,7 @@ export const engineeringFoundationsMeasurement = defineRule({
     },
     {
       level: 3,
-      text: "1.1 The Empirical System and Operational Definitions",
+      text: "1.1 The Empirical system and Operational Definitions",
       type: "header"
     },
     {

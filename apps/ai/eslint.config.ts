@@ -3,7 +3,7 @@ import reactConfig from "@ethang/eslint-config/config.react.js";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig(
-  globalIgnores(["node_modules", "dist", "coverage"]),
+  globalIgnores(["node_modules", "dist", "coverage", "plan.md"]),
   ...config,
   ...reactConfig,
   {

@@ -12,7 +12,7 @@ Get-ChildItem $RegPath | ForEach-Object {
 }
 Start-Process -Wait "$env:SystemRoot\System32\cleanmgr.exe" -ArgumentList "/sagerun:1" -NoNewWindow
 
-Write-Information "Optimizing System Drive."
+Write-Information "Optimizing system Drive."
 try {
     Optimize-Volume -DriveLetter C -ReTrim -Verbose
     Write-Information "Drive optimization completed."
@@ -21,5 +21,5 @@ catch {
     Write-Warning "Could not optimize drive: $($_.Exception.Message)"
 }
 
-Write-Information "Running System File Checker."
+Write-Information "Running system File Checker."
 Start-Process "sfc" -ArgumentList "/scannow" -Wait -NoNewWindow

@@ -1,82 +1,92 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { Schema } from "effect";
+import noop from "lodash/noop.js";
+import { unlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 
-import { writePlan } from "./write-plan.js";
-
-const appOverview = "App overview goes here.";
+import { PlanOutputSchema, type PlanSection, writePlan } from "./write-plan.js";
 
 describe("writePlan", () => {
-  it("writes markdown and JSON plan files with sections", async () => {
-    const directory = await mkdtemp(path.join(tmpdir(), "plan-test-"));
-    const outputPath = path.join(directory, "test-plan.md");
-    const jsonOutputPath = path.join(directory, "test-plan.json");
+  const outputDirectory = tmpdir();
 
-    const sections = [
-      { content: appOverview, title: "Overview" },
-      { content: "- Step 1\n- Step 2", title: "Delivery Plan" }
-    ];
-
-    const result = await writePlan(sections, outputPath);
-    expect(result.markdownPath).toBe(outputPath);
-    expect(result.jsonPath).toBe(jsonOutputPath);
-
-    // Verify markdown output
-    const markdownContent = await readFile(outputPath, "utf8");
-    expect(markdownContent).toContain("# Plan");
-    expect(markdownContent).toContain("## Overview");
-    expect(markdownContent).toContain(appOverview);
-    expect(markdownContent).toContain("## Delivery Plan");
-    expect(markdownContent).toContain("- Step 1");
-
-    // Verify JSON output
-    const jsonContent = JSON.parse(await readFile(jsonOutputPath, "utf8"));
-    expect(jsonContent).toHaveProperty("generatedAt");
-    expect(jsonContent.sections).toHaveLength(2);
-    expect(jsonContent.sections[0]).toEqual({
-      content: appOverview,
-      title: "Overview"
-    });
-    expect(jsonContent.sections[1]).toEqual({
-      content: "- Step 1\n- Step 2",
-      title: "Delivery Plan"
-    });
-
-    await rm(directory, { recursive: true });
+  afterAll(async () => {
+    // Safety net: clean up any plan.md/plan.json left at the project root
+    await unlink(path.resolve("plan.md")).catch(noop);
+    await unlink(path.resolve("plan.json")).catch(noop);
   });
 
-  it("uses default paths when none provided", async () => {
-    const directory = await mkdtemp(path.join(tmpdir(), "plan-test-"));
-    const originalCwd = process.cwd();
-    process.chdir(directory);
+  it("writes both markdown and JSON files", async () => {
+    const sections: PlanSection[] = [
+      { content: "Intro content.", title: "Intro" },
+      { content: "Details content.", title: "Details" }
+    ];
+    const result = await writePlan(
+      sections,
+      path.join(outputDirectory, "test.md")
+    );
 
-    const sections = [{ content: "Test content", title: "Test" }];
+    expect(result.markdownPath).toBe(path.join(outputDirectory, "test.md"));
+    expect(result.jsonPath).toBe(path.join(outputDirectory, "test.json"));
+  });
+
+  it("writes markdown with correct structure", async () => {
+    const sections: PlanSection[] = [
+      { content: "This is the overview.", title: "Overview" }
+    ];
+    const result = await writePlan(
+      sections,
+      path.join(outputDirectory, "plan.md")
+    );
+
+    const markdown = await readFile(result.markdownPath);
+    expect(markdown).toContain("# Plan");
+    expect(markdown).toContain("## Overview");
+    expect(markdown).toContain("This is the overview.");
+  });
+
+  it("writes JSON that conforms to PlanOutputSchema", async () => {
+    const sections: PlanSection[] = [
+      { content: "Do the thing.", title: "Step 1" }
+    ];
+    const result = await writePlan(
+      sections,
+      path.join(outputDirectory, "plan.md")
+    );
+
+    const json = await readFile(result.jsonPath);
+    const parsed = JSON.parse(json);
+    const decoded = Schema.decodeUnknownSync(PlanOutputSchema)(parsed);
+
+    expect(decoded.sections).toHaveLength(1);
+    expect(decoded.sections[0]?.title).toBe("Step 1");
+    expect(decoded.generatedAt).toBeDefined();
+  });
+
+  it("uses default path when outputPath is undefined", async () => {
+    const sections: PlanSection[] = [
+      { content: "Test content.", title: "Test" }
+    ];
     const result = await writePlan(sections);
 
-    expect(result.markdownPath).toBe(path.join(directory, "plan.md"));
-    expect(result.jsonPath).toBe(path.join(directory, "plan.json"));
+    expect(result.markdownPath).toBe(path.resolve("plan.md"));
+    expect(result.jsonPath).toBe(path.resolve("plan.json"));
 
-    // Verify markdown output
-    const markdownContent = await readFile(
-      path.join(directory, "plan.md"),
-      "utf8"
-    );
-    expect(markdownContent).toContain("# Plan");
-    expect(markdownContent).toContain("## Test");
+    // Clean up files written to the project root
+    await unlink(result.markdownPath);
+    await unlink(result.jsonPath);
+  });
 
-    // Verify JSON output
-    const jsonContent = JSON.parse(
-      await readFile(path.join(directory, "plan.json"), "utf8")
-    );
-    expect(jsonContent).toHaveProperty("generatedAt");
-    expect(jsonContent.sections).toHaveLength(1);
-    expect(jsonContent.sections[0]).toEqual({
-      content: "Test content",
-      title: "Test"
-    });
+  it("handles empty sections array", async () => {
+    const result = await writePlan([], path.join(outputDirectory, "empty.md"));
 
-    process.chdir(originalCwd);
-    await rm(directory, { recursive: true });
+    const markdown = await readFile(result.markdownPath);
+    expect(markdown).toContain("# Plan");
+    expect(markdown).not.toContain("## ");
   });
 });
+
+async function readFile(filePath: string): Promise<string> {
+  const { readFile: fsReadFile } = await import("node:fs/promises");
+  return fsReadFile(filePath, "utf8");
+}

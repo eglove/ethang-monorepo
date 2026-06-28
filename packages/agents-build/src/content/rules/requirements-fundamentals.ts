@@ -69,7 +69,7 @@ export const requirementsFundamentals = defineRule({
       type: "header"
     },
     {
-      text: "Quality of Service constraints specify the acceptable performance levels that the automated solution must deliver, without mandating specific technologies. These include performance characteristics such as response latency, data throughput, computational accuracy, reliability, safety, and scalability. ISO/IEC 25010 (System and Software Quality Models) provides a comprehensive standard catalog of these quality characteristics. Safety and security requirements are particularly critical QoS constraints that must be specified to prevent systemic failures and unauthorized access.",
+      text: "Quality of Service constraints specify the acceptable performance levels that the automated solution must deliver, without mandating specific technologies. These include performance characteristics such as response latency, data throughput, computational accuracy, reliability, safety, and scalability. ISO/IEC 25010 (system and Software Quality Models) provides a comprehensive standard catalog of these quality characteristics. Safety and security requirements are particularly critical QoS constraints that must be specified to prevent systemic failures and unauthorized access.",
       type: "text"
     },
     {
@@ -118,7 +118,7 @@ export const requirementsFundamentals = defineRule({
     },
     {
       level: 3,
-      text: "1.10 System Requirements and Software Requirements",
+      text: "1.10 system Requirements and Software Requirements",
       type: "header"
     },
     {

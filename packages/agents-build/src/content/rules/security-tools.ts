@@ -97,7 +97,7 @@ export const securityTools = defineRule({
           text: "**Common Attack Pattern Enumeration and Classification (CAPEC)**: A taxonomy of common methods used by adversaries to exploit software weaknesses. CAPEC helps security designers understand the threat perspective and implement appropriate mitigations."
         },
         {
-          text: "**Common Vulnerability Scoring System (CVSS)**: An open framework for communicating the characteristics and severity of software vulnerabilities. CVSS assigns a numerical score (from 0 to 10) based on three metric groups:\n- *Base Metrics*: Represent the intrinsic characteristics of a vulnerability that are constant over time and across environments (e.g., Attack Vector, Attack Complexity, Privileges Required, User Interaction, Scope, Confidentiality/Integrity/Availability Impact).\n- *Temporal Metrics*: Represent characteristics of a vulnerability that change over time but not across environments (e.g., Exploit Code Maturity, Remediation Level, Report Confidence).\n- *Environmental Metrics*: Represent characteristics of a vulnerability that are unique to a user's environment (e.g., Security Requirements, Modified Base Metrics)."
+          text: "**Common Vulnerability Scoring system (CVSS)**: An open framework for communicating the characteristics and severity of software vulnerabilities. CVSS assigns a numerical score (from 0 to 10) based on three metric groups:\n- *Base Metrics*: Represent the intrinsic characteristics of a vulnerability that are constant over time and across environments (e.g., Attack Vector, Attack Complexity, Privileges Required, User Interaction, Scope, Confidentiality/Integrity/Availability Impact).\n- *Temporal Metrics*: Represent characteristics of a vulnerability that change over time but not across environments (e.g., Exploit Code Maturity, Remediation Level, Report Confidence).\n- *Environmental Metrics*: Represent characteristics of a vulnerability that are unique to a user's environment (e.g., Security Requirements, Modified Base Metrics)."
         },
         {
           text: "**Vulnerability Management and Disclosure**: Modern projects must establish a clear vulnerability disclosure process that allows external security researchers to report vulnerabilities securely and confidentially. This is combined with automated dependency scanning to mitigate vulnerabilities in third-party components."
@@ -146,7 +146,7 @@ export const securityTools = defineRule({
           text: "Has threat modeling incorporated adversary perspectives from the Common Attack Pattern Enumeration and Classification (CAPEC)?"
         },
         {
-          text: "Are identified system vulnerabilities scored and prioritized using the Common Vulnerability Scoring System (CVSS)?"
+          text: "Are identified system vulnerabilities scored and prioritized using the Common Vulnerability Scoring system (CVSS)?"
         },
         {
           text: "Has a formal vulnerability disclosure and reporting process been established for the project?"
@@ -195,7 +195,7 @@ export const securityTools = defineRule({
     }
   ] as MarkdownBlock[],
   description:
-    "software security tools, static analysis, SAST, source code analysis, binary code analysis, dynamic testing, penetration testing, fuzzing, fuzz testing, vulnerability scanner, CVE, Common Vulnerabilities and Exposures, CWE, Common Weakness Enumeration, CAPEC, CVSS, Common Vulnerability Scoring System, vulnerability management, disclosure process",
+    "software security tools, static analysis, SAST, source code analysis, binary code analysis, dynamic testing, penetration testing, fuzzing, fuzz testing, vulnerability scanner, CVE, Common Vulnerabilities and Exposures, CWE, Common Weakness Enumeration, CAPEC, CVSS, Common Vulnerability Scoring system, vulnerability management, disclosure process",
   filename: "security-tools",
   trigger: "model_decision"
 });

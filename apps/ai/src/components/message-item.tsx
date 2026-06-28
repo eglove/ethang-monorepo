@@ -19,7 +19,7 @@ type MessageItemProperties = Readonly<{
   message: ChatMessage;
 }>;
 
-export function MessageItem({ isSelected, message }: MessageItemProperties) {
+export function messageItem({ isSelected, message }: MessageItemProperties) {
   if (isSystem(message)) {
     return renderSystemMessage(message, isSelected);
   }
@@ -66,10 +66,10 @@ function renderSystemMessage(message: SystemMessage, isSelected: boolean) {
 function renderToolCall(message: ToolCall, isSelected: boolean) {
   const gutter = isSelected ? "▶ " : "  ";
   const { input } = message;
-  const hasInput = input !== undefined && 0 < keys(input).length;
+  const hasInput = 0 < keys(input).length;
   const { output } = message;
-  const hasOutput = "string" === typeof output && "" !== output;
-  const outputText = "string" === typeof output ? output.slice(0, 200) : "";
+  const hasOutput = "" !== output;
+  const outputText = output.slice(0, 200);
   return (
     <Box marginBottom={1} flexDirection="column">
       <Box>

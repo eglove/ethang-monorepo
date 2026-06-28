@@ -128,7 +128,7 @@ export const qualityAssuranceProcess = defineRule({
           text: "**Audits**: Formal, objective evaluations conducted to check compliance with requirements, standards, or contractual agreements, often mandated to be performed by independent third parties."
         },
         {
-          text: "**Milestone Reviews**: Structured reviews conducted at key engineering gates:\n- *System Requirements Review (SRR)*: Verifies that system requirements are understood and adequate to proceed to initial design.\n- *System Functional / Preliminary Design Review (PDR)*: Ensures the design is mature enough to proceed to detailed design with acceptable risk.\n- *Test Readiness Review (TRR)*: Assesses test plans, procedures, resources, and safety protocols prior to formal testing.\n- *Production Readiness Review (PRR)*: Ascertains that the system design and production planning are ready for manufacturing or deployment."
+          text: "**Milestone Reviews**: Structured reviews conducted at key engineering gates:\n- *system Requirements Review (SRR)*: Verifies that system requirements are understood and adequate to proceed to initial design.\n- *system Functional / Preliminary Design Review (PDR)*: Ensures the design is mature enough to proceed to detailed design with acceptable risk.\n- *Test Readiness Review (TRR)*: Assesses test plans, procedures, resources, and safety protocols prior to formal testing.\n- *Production Readiness Review (PRR)*: Ascertains that the system design and production planning are ready for manufacturing or deployment."
         }
       ],
       type: "unorderedList"

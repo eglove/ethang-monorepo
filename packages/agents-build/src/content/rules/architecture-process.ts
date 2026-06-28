@@ -39,7 +39,7 @@ export const architectureProcess = defineRule({
           text: '**Agile Development Context**: In typical agile methodologies, a dedicated, upfront architecture design stage is often omitted. Instead, the architecture is expected to "emerge" incrementally through a rapid series of development cycles as user stories are implemented. SWEBOK v4 notes that while this emerging design approach can succeed for user-centric systems, it is highly challenging for complex, safety-critical, embedded, or cyber-physical systems, where critical architectural properties (such as real-time constraints, fault tolerance, and hardware-software safety boundaries) are rarely expressed in simple user stories.'
         },
         {
-          text: "**Enterprise and System-of-Systems Contexts**: Here, the software architecture must conform to an overarching enterprise architecture or system-of-systems framework. This broader context imposes constraints, interface requirements, API specifications, and conformance suites that the software architecture must respect."
+          text: "**Enterprise and system-of-Systems Contexts**: Here, the software architecture must conform to an overarching enterprise architecture or system-of-systems framework. This broader context imposes constraints, interface requirements, API specifications, and conformance suites that the software architecture must respect."
         }
       ],
       type: "numberedList"

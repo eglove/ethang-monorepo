@@ -71,7 +71,7 @@ export const configStatusAccounting = defineRule({
       type: "header"
     },
     {
-      text: "Modern SCSA systems incorporate automated integrity and security indicators to protect configuration records from tampering and configuration drift. Integrity indicators include cryptographic checksums such as Message Authentication Codes (MAC), Secure Hash Algorithm 1 (SHA1), and Message Digest 5 (MD5). These hashes represent unique fingerprints of specific CI versions, ensuring that build assets match verified configurations. Security status indicators associate governance, risk, and compliance metrics with specific baselines, verifying that security audits and dependency scans have passed. V&V evidence, such as requirements completion records and test suite pass rates, is logged alongside the baseline status (e.g., draft, approved, released, deprecated) to prove regulatory compliance and release safety. By linking security and V&V metrics directly to configuration states, SCSA prevents unverified code from entering the release pipeline.",
+      text: "Modern SCSA systems incorporate automated integrity and security indicators to protect configuration records from tampering and configuration drift. Integrity indicators include cryptographic checksums such as message Authentication Codes (MAC), Secure Hash Algorithm 1 (SHA1), and message Digest 5 (MD5). These hashes represent unique fingerprints of specific CI versions, ensuring that build assets match verified configurations. Security status indicators associate governance, risk, and compliance metrics with specific baselines, verifying that security audits and dependency scans have passed. V&V evidence, such as requirements completion records and test suite pass rates, is logged alongside the baseline status (e.g., draft, approved, released, deprecated) to prove regulatory compliance and release safety. By linking security and V&V metrics directly to configuration states, SCSA prevents unverified code from entering the release pipeline.",
       type: "text"
     },
     {
@@ -138,7 +138,7 @@ export const configStatusAccounting = defineRule({
           text: "Is the verification and validation (V&V) status of each CI recorded prior to baseline release?"
         },
         {
-          text: "Are cryptographic integrity indicators (such as Message Authentication Codes (MAC), SHA1, or MD5 hashes) recorded for all baseline assets?"
+          text: "Are cryptographic integrity indicators (such as message Authentication Codes (MAC), SHA1, or MD5 hashes) recorded for all baseline assets?"
         },
         {
           text: "Is the baseline status (e.g., draft, approved, released, deprecated) of all configuration baselines accounting-controlled?"

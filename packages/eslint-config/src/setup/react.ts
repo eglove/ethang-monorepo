@@ -6,7 +6,11 @@ import { Plugin } from "../build/plugin.ts";
 import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 
 const reactRuleNames = keys(getNonDeprecatedRules(react.rules));
-const reactGen = genRules(reactRuleNames, [], "react");
+const reactGen = genRules(
+  reactRuleNames,
+  [{ name: "naming-convention-ref-name", rule: "off" }],
+  "react"
+);
 
 const reactHookRuleNames = keys(reactHooks.rules);
 const customHookRules = [

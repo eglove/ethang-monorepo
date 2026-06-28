@@ -21,12 +21,12 @@
     "zod": "^4.4.1"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.23.0",
+    "@ethang/eslint-config": "^25.24.0",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.0.1",
     "@vitest/coverage-v8": "^4.1.9",
     "browserslist-config-baseline": "^0.5.0",
-    "eslint": "^10.5.0",
+    "eslint": "^10.6.0",
     "tsc-prog": "^2.3.0",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",

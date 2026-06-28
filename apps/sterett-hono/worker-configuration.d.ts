@@ -12116,7 +12116,7 @@ interface Disposable {
  */
 interface EmailSendResult {
     /**
-     * The Email Message ID
+     * The Email message ID
      */
     messageId: string;
 }
@@ -12801,7 +12801,7 @@ declare module "cloudflare:pipelines" {
 // itself.
 // https://developers.cloudflare.com/pub-sub/
 interface PubSubMessage {
-    // Message ID
+    // message ID
     readonly mid: number;
     // MQTT broker FQDN in the form mqtts://BROKER.NAMESPACE.cloudflarepubsub.com:PORT
     readonly broker: string;
