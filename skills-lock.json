@@ -101,7 +101,7 @@
       "source": "harshanandak/forge",
       "sourceType": "github",
       "skillPath": "skills/sonarcloud-analysis/SKILL.md",
-      "computedHash": "37aebc8eb227935ca43d41d77b1c98e61780839d8c2049ba2024b09e85db7af4"
+      "computedHash": "733b4405541f3490419ddbee50aa9fed24dda69078561e09a378faba892f9697"
     },
     "tanstack-ai": {
       "source": "tanstack-skills/tanstack-skills",
