@@ -18,22 +18,20 @@
     "tailwindcss": "^4.3.1"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.12.1",
-    "@ethang/eslint-config": "^25.23.0",
+    "@ethang/eslint-config": "^25.24.0",
     "@faker-js/faker": "^10.5.0",
-    "@playwright/test": "^1.61.1",
     "@portabletext/types": "^4.0.2",
     "@tailwindcss/typography": "^0.5.20",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.2",
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.0.1",
     "@vitest/coverage-v8": "^4.1.9",
     "browserslist-config-baseline": "^0.5.0",
-    "eslint": "^10.5.0",
+    "eslint": "^10.6.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9",
-    "wrangler": "^4.104.0"
+    "wrangler": "^4.105.0"
   },
   "engines": {
     "node": ">=24"
@@ -44,9 +42,7 @@
     "deploy": "bun build.ts && pnpm tw && wrangler deploy --minify",
     "dev": "wrangler dev",
     "lint": "eslint . --fix && pnpm tsc --noEmit",
-    "test": "pnpm test:vitest",
-    "test:playwright": "playwright test",
-    "test:vitest": "vitest run --coverage",
+    "test": "vitest run --coverage",
     "tw": "pnpx @tailwindcss/cli -i ./src/style.css -o ./public/index.css",
     "tw:watch": "pnpx @tailwindcss/cli -i ./src/style.css -o ./public/index.css --watch"
   },

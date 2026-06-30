@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mdn": {
+      "type": "http",
+      "url": "https://mcp.mdn.mozilla.net/"
+    },
+    "webstorm": {
+      "type": "sse",
+      "url": "http://127.0.0.1:64506/sse"
+    }
+  }
+}

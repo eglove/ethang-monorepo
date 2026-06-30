@@ -8,15 +8,12 @@ import every from "lodash/every.js";
 import filter from "lodash/filter.js";
 import includes from "lodash/includes.js";
 import isString from "lodash/isString.js";
-import map from "lodash/map.js";
 import split from "lodash/split.js";
 import startsWith from "lodash/startsWith.js";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import type { RuleDefinition } from "./define.ts";
-
-import { FORBIDDEN_PATTERNS } from "./config.ts";
 
 /**
 A rendered markdown file must open with a well-formed frontmatter block:
@@ -39,18 +36,6 @@ export const isValidFrontmatterBlock = (markdown: string): boolean => {
   return every(split(rest.slice(0, closeIndex), "\n"), (line) => {
     return linePattern.test(line);
   });
-};
-
-/** Names of forbidden source-workspace vocabulary found in the content. */
-export const findForbiddenStrings = (content: string): string[] => {
-  return map(
-    filter(FORBIDDEN_PATTERNS, ({ pattern }) => {
-      return pattern.test(content);
-    }),
-    ({ name }) => {
-      return name;
-    }
-  );
 };
 
 /** Shared rules merged with plugin rules must not collide on filename. */

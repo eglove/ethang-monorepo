@@ -51,7 +51,7 @@ export const computingFoundationsNetworks = defineRule({
           text: "**Storage Area Network (SAN)**: A dedicated network providing block-level data storage access, isolating storage traffic from LAN traffic."
         },
         {
-          text: "**System-Area Network (SAN)**: A high-performance, connection-oriented network linking computers in a cluster configuration."
+          text: "**system-Area Network (SAN)**: A high-performance, connection-oriented network linking computers in a cluster configuration."
         },
         {
           text: "**Enterprise Private Network (EPN)**: A private network set up to securely connect company offices and resources across multiple locations."

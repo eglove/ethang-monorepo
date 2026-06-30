@@ -1,5 +1,6 @@
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
+import { Effect } from "effect";
 
 import type { Database } from "./data/types.ts";
 
@@ -29,26 +30,30 @@ import {
 // eslint-disable-next-line unicorn/no-anonymous-default-export
 export default class extends WorkerEntrypoint<Env> {
   public async course(parameters: { id: string }) {
-    return courseQuery(this.getDb(), parameters);
+    return Effect.runPromise(courseQuery(this.getDb(), parameters.id));
   }
 
   public async courses() {
-    return coursesQuery(this.getDb());
+    return Effect.runPromise(coursesQuery(this.getDb(), null));
   }
 
   public async courseTracking(parameters: {
     courseId: string;
     userId: string;
   }) {
-    return courseTrackingQuery(this.getDb(), parameters);
+    return Effect.runPromise(courseTrackingQuery(this.getDb(), parameters));
   }
 
   public async courseTrackings(parameters: {
+    // eslint-disable-next-line unicorn/no-unused-properties
     after?: string;
+    // eslint-disable-next-line unicorn/no-unused-properties
     first?: number;
     userId: string;
   }) {
-    return courseTrackingsQuery(this.getDb(), parameters);
+    return Effect.runPromise(
+      courseTrackingsQuery(this.getDb(), parameters.userId)
+    );
   }
 
   public async createCurriculum(parameters: {
@@ -60,11 +65,11 @@ export default class extends WorkerEntrypoint<Env> {
   }
 
   public async curriculum(parameters: { id: string }) {
-    return curriculumQuery(this.getDb(), parameters);
+    return Effect.runPromise(curriculumQuery(this.getDb(), parameters.id));
   }
 
   public async curriculums() {
-    return curriculumsQuery(this.getDb());
+    return Effect.runPromise(curriculumsQuery(this.getDb(), null));
   }
 
   public async cycleCourseTrackingStatus(parameters: {
@@ -80,11 +85,11 @@ export default class extends WorkerEntrypoint<Env> {
   }
 
   public async learningPath(parameters: { id: string }) {
-    return learningPathQuery(this.getDb(), parameters);
+    return Effect.runPromise(learningPathQuery(this.getDb(), parameters.id));
   }
 
   public async learningPaths() {
-    return learningPathsQuery(this.getDb());
+    return Effect.runPromise(learningPathsQuery(this.getDb(), null));
   }
 
   private getDb(): Database {

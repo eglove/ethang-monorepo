@@ -33,7 +33,7 @@ export const computingFoundationsHumanFactors = defineRule({
           text: "**Natural Interaction**: The ultimate goal of HCI design is to create interfaces that feel as natural and intuitive as human-to-human communication, minimizing the cognitive barrier between user intent and system execution."
         },
         {
-          text: "**System Transparency**: Interfaces must present a consistent mental model of the system's internal state, allowing users to predict how the system will react to their inputs."
+          text: "**system Transparency**: Interfaces must present a consistent mental model of the system's internal state, allowing users to predict how the system will react to their inputs."
         }
       ],
       type: "unorderedList"
@@ -56,7 +56,7 @@ export const computingFoundationsHumanFactors = defineRule({
           text: "**Self-Explanatory Design**: The user interface should be self-documenting, enabling self-learning so that users can discover functionality without reading external manuals."
         },
         {
-          text: "**Consistent Responses**: System response latency must be consistent. Large fluctuations in response times increase user anxiety and lead to operational errors."
+          text: "**Consistent Responses**: system response latency must be consistent. Large fluctuations in response times increase user anxiety and lead to operational errors."
         }
       ],
       type: "unorderedList"
@@ -90,7 +90,7 @@ export const computingFoundationsHumanFactors = defineRule({
       type: "header"
     },
     {
-      text: "System design must begin with an analysis of user profiles:",
+      text: "system design must begin with an analysis of user profiles:",
       type: "text"
     },
     {

@@ -41,7 +41,7 @@ export const architectureFundamentals = defineRule({
           text: "**Focus on the Fundamental**: Architecture is not concerned with every minor detail, interface, or line of code. Instead, it encompasses only those elements, relations, and principles that are essential to the system's identity, quality attributes, and lifecycle."
         },
         {
-          text: "**System in its Environment**: Unlike classical programming, which focuses on closed algorithms, software architecture is outward-looking. It explicitly considers the system in its operational, business, social, and organizational contexts, mapping how the software interacts with people, organizations, other software systems, hardware, and physical environments."
+          text: "**system in its Environment**: Unlike classical programming, which focuses on closed algorithms, software architecture is outward-looking. It explicitly considers the system in its operational, business, social, and organizational contexts, mapping how the software interacts with people, organizations, other software systems, hardware, and physical environments."
         },
         {
           text: "**Principles of Design and Evolution**: Architecture is not static. It includes the design rationale, the history of decisions, and the principles that govern how the architecture will adapt and evolve over time without degrading."
@@ -97,7 +97,7 @@ export const architectureFundamentals = defineRule({
     {
       items: [
         {
-          text: "**System Architecture**: A comprehensive viewpoint encompassing hardware nodes, physical networks, operational workflows, business processes, and human-machine interfaces."
+          text: "**system Architecture**: A comprehensive viewpoint encompassing hardware nodes, physical networks, operational workflows, business processes, and human-machine interfaces."
         },
         {
           text: "**Software Architecture**: A specialized subset focusing on the organization of software elements, their runtime connectors, and data allocation boundaries."

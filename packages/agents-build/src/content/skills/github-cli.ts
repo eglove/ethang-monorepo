@@ -14,7 +14,7 @@ export const githubCli = defineSkill({
       type: "text"
     },
     {
-      text: "[!IMPORTANT]\nWithin this workspace, use `gh` directly for GitHub CLI operations (e.g., `gh pr list`).",
+      text: "[!IMPORTANT]\nCopilot CLI has built-in GitHub MCP tools (`github-mcp-server-search_code`, `github-mcp-server-get_file_contents`, `github-mcp-server-search_users`) that should be preferred for searching repos, fetching files, and finding users. Use the `gh` CLI directly for mutations (create PRs/issues), viewing CI runs, and operations not covered by the MCP tools.",
       type: "quote"
     },
     {

@@ -23,11 +23,8 @@ import {
 } from "./compiler-core.ts";
 import {
   BAD_FRONTMATTER_SKILL,
-  COMMAND_CONTENT,
-  COMMAND_DESCRIPTION,
   SKILL_CONTENT,
   SKILL_DESCRIPTION,
-  TEST_COMMAND_NAME,
   TEST_SKILL_NAME
 } from "./test-constants.ts";
 
@@ -49,35 +46,35 @@ describe("compilation", () => {
     rmSync(temporaryDirectory, { force: true, recursive: true });
   });
 
-  it("creates generated command files", () => {
-    const commandsDirectory = path.join(temporaryDirectory, "commands");
+  it("creates generated skill files", () => {
+    const skillsDirectory = path.join(temporaryDirectory, "skills");
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
 
     const config: CompilerConfig = {
-      commands: [
-        {
-          content: COMMAND_CONTENT,
-          description: COMMAND_DESCRIPTION,
-          name: TEST_COMMAND_NAME
-        }
-      ],
-      commandsDir: commandsDirectory,
       rootDir: temporaryDirectory,
       rules: [],
-      rulesDir: rulesDirectory
+      rulesDir: rulesDirectory,
+      skills: [
+        {
+          content: SKILL_CONTENT,
+          description: SKILL_DESCRIPTION,
+          name: TEST_SKILL_NAME
+        }
+      ],
+      skillsDir: skillsDirectory
     };
 
     compile(config);
 
     expect(
-      existsSync(path.join(commandsDirectory, `${TEST_COMMAND_NAME}.md`))
+      existsSync(path.join(skillsDirectory, TEST_SKILL_NAME, "SKILL.md"))
     ).toBe(true);
     const content = readFileSync(
-      path.join(commandsDirectory, `${TEST_COMMAND_NAME}.md`),
+      path.join(skillsDirectory, TEST_SKILL_NAME, "SKILL.md"),
       utf8Encoding
     );
-    expect(content).toContain(`description: ${COMMAND_DESCRIPTION}`);
-    expect(content).toContain(COMMAND_CONTENT);
+    expect(content).toContain(`description: ${SKILL_DESCRIPTION}`);
+    expect(content).toContain(SKILL_CONTENT);
   });
 
   it("creates generated rule files", () => {
@@ -297,7 +294,7 @@ describe("skills compilation and validation", () => {
   it("generates MCP config at the expected path", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
     const skillsDirectory = path.join(temporaryDirectory, "skills");
-    const mcpConfigPath = path.join(temporaryDirectory, "mcp", "mcp.json");
+    const mcpPublicPath = path.join(temporaryDirectory, "mcp.json");
     const manifestPath = path.join(
       temporaryDirectory,
       rulesDirectoryName,
@@ -306,7 +303,7 @@ describe("skills compilation and validation", () => {
 
     const config: CompilerConfig = {
       manifestPath,
-      mcpConfigPath,
+      mcpPublicPath,
       rootDir: temporaryDirectory,
       rules: [],
       rulesDir: rulesDirectory,
@@ -316,16 +313,15 @@ describe("skills compilation and validation", () => {
 
     compile(config);
 
-    expect(existsSync(mcpConfigPath)).toBe(true);
+    expect(existsSync(mcpPublicPath)).toBe(true);
 
     const parsed = JSON.parse(
-      readFileSync(mcpConfigPath, utf8Encoding)
+      readFileSync(mcpPublicPath, utf8Encoding)
     ) as Record<string, unknown>;
     expect(parsed["mcpServers"]).toBeDefined();
     const mcpServers = parsed["mcpServers"] as Record<string, unknown>;
-    expect(mcpServers["JetBrains IDE"]).toBeDefined();
-    expect(mcpServers["MDN"]).toBeDefined();
-    expect(mcpServers["codebase-memory-mcp"]).toBeDefined();
+    expect(mcpServers["mdn"]).toBeDefined();
+    expect(mcpServers["webstorm"]).toBeDefined();
   });
 
   it("writes a manifest with generated file paths", () => {
@@ -381,6 +377,62 @@ describe("skills compilation and validation", () => {
         )
         .replaceAll("\\", "/")
     );
+  });
+});
+
+describe("hooks generation", () => {
+  let temporaryDirectory = "";
+
+  beforeEach(() => {
+    temporaryDirectory = mkdtempSync(path.join(tmpdir(), testDirectoryPrefix));
+  });
+
+  afterEach(() => {
+    rmSync(temporaryDirectory, { force: true, recursive: true });
+  });
+
+  it("generates hooks config when hooksPath is provided", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const skillsDirectory = path.join(temporaryDirectory, "skills");
+    const hooksPath = path.join(temporaryDirectory, "hooks.json");
+
+    const config: CompilerConfig = {
+      hooksPath,
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory,
+      skills: [],
+      skillsDir: skillsDirectory
+    };
+
+    compile(config);
+
+    expect(existsSync(hooksPath)).toBe(true);
+
+    const parsed = JSON.parse(readFileSync(hooksPath, utf8Encoding)) as Record<
+      string,
+      unknown
+    >;
+    expect(parsed["version"]).toBe(1);
+    expect(parsed["hooks"]).toBeDefined();
+  });
+
+  it("skips hooks generation when hooksPath is not provided", () => {
+    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
+    const skillsDirectory = path.join(temporaryDirectory, "skills");
+    const hooksPath = path.join(temporaryDirectory, "hooks.json");
+
+    const config: CompilerConfig = {
+      rootDir: temporaryDirectory,
+      rules: [],
+      rulesDir: rulesDirectory,
+      skills: [],
+      skillsDir: skillsDirectory
+    };
+
+    compile(config);
+
+    expect(existsSync(hooksPath)).toBe(false);
   });
 });
 
@@ -465,42 +517,47 @@ describe("file lifecycle", () => {
     expect(existsSync(path.join(rulesDirectory, "new-rule.md"))).toBe(true);
   });
 
-  it("cleans up previously manifest-tracked command files before rebuilding", () => {
-    const commandsDirectory = path.join(temporaryDirectory, "commands");
+  it("cleans up previously manifest-tracked skill files before rebuilding", () => {
+    const skillsDirectory = path.join(temporaryDirectory, "skills");
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
     const manifestPath = path.join(temporaryDirectory, manifestFileName);
-    const staleCommandPath = path.join(commandsDirectory, "stale-command.md");
+    const staleSkillName = "stale-skill";
+    const staleSkillPath = path.join(
+      skillsDirectory,
+      staleSkillName,
+      "SKILL.md"
+    );
 
     const config1: CompilerConfig = {
-      commands: [
-        {
-          content: "stale command",
-          description: "stale command",
-          name: "stale-command"
-        }
-      ],
-      commandsDir: commandsDirectory,
       manifestPath,
       rootDir: temporaryDirectory,
       rules: [],
-      rulesDir: rulesDirectory
+      rulesDir: rulesDirectory,
+      skills: [
+        {
+          content: "stale skill content",
+          description: "stale skill",
+          name: staleSkillName
+        }
+      ],
+      skillsDir: skillsDirectory
     };
 
     compile(config1);
-    expect(existsSync(staleCommandPath)).toBe(true);
+    expect(existsSync(staleSkillPath)).toBe(true);
 
     const config2: CompilerConfig = {
-      commands: [],
-      commandsDir: commandsDirectory,
       manifestPath,
       rootDir: temporaryDirectory,
       rules: [],
-      rulesDir: rulesDirectory
+      rulesDir: rulesDirectory,
+      skills: [],
+      skillsDir: skillsDirectory
     };
 
     compile(config2);
 
-    expect(existsSync(staleCommandPath)).toBe(false);
+    expect(existsSync(staleSkillPath)).toBe(false);
   });
 });
 
@@ -584,45 +641,6 @@ describe("error handling", () => {
 
     vi.restoreAllMocks();
   });
-
-  it("records a failure if a command has a malformed frontmatter block", () => {
-    const commandsDirectory = path.join(temporaryDirectory, "commands");
-    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-
-    const config: CompilerConfig = {
-      commands: [
-        {
-          content: COMMAND_CONTENT,
-          description: COMMAND_DESCRIPTION,
-          name: TEST_COMMAND_NAME
-        }
-      ],
-      commandsDir: commandsDirectory,
-      rootDir: temporaryDirectory,
-      rules: [],
-      rulesDir: rulesDirectory
-    };
-
-    vi.spyOn(validationHelpers, "isValidFrontmatterBlock").mockReturnValue(
-      false
-    );
-
-    let thrownError: unknown;
-    try {
-      compile(config);
-    } catch (error) {
-      thrownError = error;
-    }
-
-    expect(thrownError).toBeInstanceOf(CompileError);
-    if (thrownError instanceof CompileError) {
-      expect(thrownError.failures).toContain(
-        `commands/${TEST_COMMAND_NAME}.md: malformed frontmatter block`
-      );
-    }
-
-    vi.restoreAllMocks();
-  });
 });
 
 describe("manifest edge cases", () => {
@@ -684,7 +702,7 @@ describe("manifest edge cases", () => {
       rootDir: temporaryDirectory,
       rules: [
         {
-          content: repeat("a", 10_500),
+          content: "Valid rule content for Copilot CLI.",
           filename: "some-rule",
           trigger: alwaysOnTrigger
         }
@@ -714,7 +732,7 @@ describe("manifest edge cases", () => {
       rootDir: temporaryDirectory,
       rules: [
         {
-          content: repeat("a", 10_500),
+          content: "Valid rule content for Copilot CLI.",
           filename: "some-rule",
           trigger: alwaysOnTrigger
         }

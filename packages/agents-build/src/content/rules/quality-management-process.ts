@@ -24,7 +24,7 @@ export const qualityManagementProcess = defineRule({
       type: "header"
     },
     {
-      text: "A cornerstone of SQM is the design, implementation, and maintenance of a Quality Management System (QMS). A QMS provides the organizational structure, policies, processes, procedures, and resources necessary to manage and improve software quality. ISO/IEC/IEEE 90003 provides specific guidance for applying the general quality concepts of ISO 9001 to the software development lifecycle, maintenance, and operations.\nA robust QMS defines:",
+      text: "A cornerstone of SQM is the design, implementation, and maintenance of a Quality Management system (QMS). A QMS provides the organizational structure, policies, processes, procedures, and resources necessary to manage and improve software quality. ISO/IEC/IEEE 90003 provides specific guidance for applying the general quality concepts of ISO 9001 to the software development lifecycle, maintenance, and operations.\nA robust QMS defines:",
       type: "text"
     },
     {
@@ -177,7 +177,7 @@ export const qualityManagementProcess = defineRule({
     {
       items: [
         {
-          text: "Has a Quality Management System (QMS) been designed, documented, and maintained for the organization?"
+          text: "Has a Quality Management system (QMS) been designed, documented, and maintained for the organization?"
         },
         {
           text: "Are process boundaries, inputs, entry criteria, task procedures, exit criteria, and process owners clearly defined in the QMS?"

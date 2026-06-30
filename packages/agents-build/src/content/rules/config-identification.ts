@@ -120,7 +120,7 @@ export const configIdentification = defineRule({
           text: "**Visibility Balance**: Is there a documented balance in SCI selection to ensure manageable control without losing visibility?"
         },
         {
-          text: "**System Context**: Is the software configuration defined and aligned within the context of the overall system configuration?"
+          text: "**system Context**: Is the software configuration defined and aligned within the context of the overall system configuration?"
         },
         {
           text: "**Standardized Identifier**: Does each SCI have a unique identifier using a documented significant or nonsignificant schema?"

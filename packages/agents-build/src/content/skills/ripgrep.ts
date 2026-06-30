@@ -14,7 +14,7 @@ export const ripgrep = defineSkill({
       type: "text"
     },
     {
-      text: '[!IMPORTANT]\nWithin this workspace, use `rg` directly for fast regex-based codebase searches (e.g., `rg "pattern" path/`).',
+      text: "[!IMPORTANT]\nCopilot CLI has a built-in `grep` tool that uses ripgrep under the hood. Prefer using the built-in `grep` tool first for code searches. Only shell out to `rg` directly when you need flags not exposed by the built-in tool (e.g., `--pcre2`, `--multiline`, custom `--type-add`).",
       type: "quote"
     },
     {

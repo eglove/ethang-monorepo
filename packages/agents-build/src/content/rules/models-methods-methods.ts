@@ -33,7 +33,7 @@ export const modelsMethodsMethods = defineRule({
           text: "**Structured Analysis and Design Methods**: These methods model the system primarily from a functional or behavioral perspective. Development begins with a high-level, macro view of the software (including data and control flows) and progressively decomposes it into increasingly detailed subcomponents until the specifications are detailed enough to be coded."
         },
         {
-          text: "**Data Modeling Methods**: These methods analyze software requirements from the perspective of data or information resources. System structure is defined in terms of data tables, entities, relationships, and constraints, providing the foundation for database designs."
+          text: "**Data Modeling Methods**: These methods analyze software requirements from the perspective of data or information resources. system structure is defined in terms of data tables, entities, relationships, and constraints, providing the foundation for database designs."
         },
         {
           text: "**Object-Oriented Analysis and Design (OOAD) Methods**: These methods model the system as a collection of interacting objects that encapsulate data and behavior. OOAD uses graphical representations (such as UML) to represent views of the software. It refines these models iteratively, often utilizing frameworks like the Unified Process (UP) or Rational Unified Process (RUP)."
@@ -126,7 +126,7 @@ export const modelsMethodsMethods = defineRule({
           text: "**Feature-Driven Development (FDD)**: A short, iterative, model-driven approach focusing on a five-phase process (develop model, build features list, plan by feature, design by feature, code/test/integrate). FDD assigns individual code ownership and prioritizes architectural design over continual refactoring."
         },
         {
-          text: "**Lean Software Development**: Adapts manufacturing principles (from the Toyota Production System) to software, focusing on building a Minimum Viable Product (MVP), gathering rapid user feedback, and optimizing the entire value flow (design, build, sales, and delivery) while eliminating process waste. Kanban is often used within Lean to support workflow management and visualization."
+          text: "**Lean Software Development**: Adapts manufacturing principles (from the Toyota Production system) to software, focusing on building a Minimum Viable Product (MVP), gathering rapid user feedback, and optimizing the entire value flow (design, build, sales, and delivery) while eliminating process waste. Kanban is often used within Lean to support workflow management and visualization."
         }
       ],
       type: "unorderedList"

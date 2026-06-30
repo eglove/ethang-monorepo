@@ -1,7 +1,5 @@
 import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
-import endsWith from "lodash/endsWith.js";
 import filter from "lodash/filter.js";
-import forEach from "lodash/forEach.js";
 import isArray from "lodash/isArray.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
@@ -14,33 +12,63 @@ import {
   rmSync,
   writeFileSync
 } from "node:fs";
-import os from "node:os";
 import path from "node:path";
 
-import type {
-  CommandDefinition,
-  RuleDefinition,
-  SkillDefinition
-} from "./define.ts";
+import type { RuleDefinition, SkillDefinition } from "./define.ts";
 
-import { commandMarkdown, ruleMarkdown, skillMarkdown } from "./render.ts";
+import { ruleMarkdown, skillMarkdown } from "./render.ts";
 import {
   findDuplicateRuleFilenames,
-  findForbiddenStrings,
   findUnresolvedTokens,
   isValidFrontmatterBlock
 } from "./validate.ts";
 
 export type CompilerConfig = {
-  commands?: readonly CommandDefinition[];
-  commandsDir?: string;
+  hooksPath?: string;
   manifestPath?: string;
-  mcpConfigPath?: string;
+  mcpPublicPath?: string;
   rootDir: string;
   rules: RuleDefinition[];
   rulesDir: string;
   skills?: SkillDefinition[];
   skillsDir?: string;
+};
+
+export type McpConfig = {
+  mcpServers: Record<string, McpServerConfig>;
+};
+
+export type McpServerConfig =
+  | { args: string[]; command: string }
+  | { type?: "http" | "sse"; url: string };
+
+export const MCP_SERVERS: McpConfig = {
+  mcpServers: {
+    mdn: {
+      type: "http",
+      url: "https://mcp.mdn.mozilla.net/"
+    },
+    webstorm: {
+      type: "sse",
+      url: "http://127.0.0.1:64506/sse"
+    }
+  }
+};
+
+export const HOOKS = {
+  hooks: {
+    sessionStart: [
+      {
+        prompt: "/swebok",
+        type: "prompt"
+      },
+      {
+        prompt: "/ddd",
+        type: "prompt"
+      }
+    ]
+  },
+  version: 1
 };
 
 export class CompileError extends Error {
@@ -65,7 +93,6 @@ export const fsProxy = {
 
 export const validationHelpers = {
   findDuplicateRuleFilenames,
-  findForbiddenStrings,
   findUnresolvedTokens,
   isValidFrontmatterBlock
 };
@@ -74,39 +101,22 @@ const processMcpConfig = (
   config: CompilerConfig,
   write: (absolutePath: string, content: string) => void
 ): void => {
-  if (undefined === config.mcpConfigPath) {
+  if (undefined === config.mcpPublicPath) {
     return;
   }
 
-  const homeDirectory = os.homedir();
+  write(config.mcpPublicPath, JSON.stringify(MCP_SERVERS, null, 2));
+};
 
-  write(
-    config.mcpConfigPath,
-    JSON.stringify(
-      {
-        mcpServers: {
-          "codebase-memory-mcp": {
-            args: [],
-            command: path.join(
-              homeDirectory,
-              ".local",
-              "bin",
-              "codebase-memory-mcp.exe"
-            )
-          },
-          "JetBrains IDE": {
-            url: "http://127.0.0.1:64506/sse"
-          },
-          MDN: {
-            type: "http",
-            url: "https://mcp.mdn.mozilla.net/"
-          }
-        }
-      },
-      null,
-      2
-    )
-  );
+const processHooksConfig = (
+  config: CompilerConfig,
+  write: (absolutePath: string, content: string) => void
+): void => {
+  if (undefined === config.hooksPath) {
+    return;
+  }
+
+  write(config.hooksPath, JSON.stringify(HOOKS, null, 2));
 };
 
 const processRules = (
@@ -128,26 +138,6 @@ const processRules = (
     }
 
     write(path.join(config.rulesDir, `${rule.filename}.md`), markdown);
-  }
-};
-
-const processCommands = (
-  config: CompilerConfig,
-  failures: string[],
-  write: (absolutePath: string, content: string) => void
-): void => {
-  const { commands, commandsDir } = config;
-  if (undefined === commands || undefined === commandsDir) {
-    return;
-  }
-  for (const command of commands) {
-    const markdown = commandMarkdown(command);
-
-    if (!validationHelpers.isValidFrontmatterBlock(markdown)) {
-      failures.push(`commands/${command.name}.md: malformed frontmatter block`);
-    }
-
-    write(path.join(commandsDir, `${command.name}.md`), markdown);
   }
 };
 
@@ -184,15 +174,6 @@ const processSkills = (
   }
 };
 
-const validateFileContent = (filePath: string, failures: string[]): void => {
-  const fileContent = fsProxy.readFileSync(filePath, "utf8");
-  for (const name of validationHelpers.findForbiddenStrings(fileContent)) {
-    failures.push(
-      `forbidden source-workspace reference "${name}" in ${filePath}`
-    );
-  }
-};
-
 const scanDirectory = (directory: string, failures: string[]): void => {
   const isExists = fsProxy.existsSync(directory);
 
@@ -203,28 +184,11 @@ const scanDirectory = (directory: string, failures: string[]): void => {
   for (const token of validationHelpers.findUnresolvedTokens(directory)) {
     failures.push(`unresolved {{sections}} token in ${token}`);
   }
-
-  const files = filter(
-    fsProxy.readdirSync(directory, { recursive: true }),
-    isString
-  );
-  const targetFiles = filter(files, (file) => {
-    return endsWith(file, ".md") || endsWith(file, ".json");
-  });
-
-  for (const file of targetFiles) {
-    validateFileContent(path.join(directory, file), failures);
-  }
 };
 
 const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   const directoriesToScan = [config.rulesDir];
-  const { commands, commandsDir, skills, skillsDir } = config;
-  if (undefined !== commands && undefined !== commandsDir) {
-    forEach(commands, (command) => {
-      directoriesToScan.push(path.join(commandsDir, command.name));
-    });
-  }
+  const { skills, skillsDir } = config;
   if (undefined !== skills && undefined !== skillsDir) {
     for (const skill of skills) {
       directoriesToScan.push(path.join(skillsDir, skill.name));
@@ -288,9 +252,6 @@ const cleanFileAndEmptyParents = (
   if (config.skillsDir !== undefined) {
     stopDirectories.add(path.resolve(config.skillsDir));
   }
-  if (config.commandsDir !== undefined) {
-    stopDirectories.add(path.resolve(config.commandsDir));
-  }
 
   let shouldContinue = true;
   while (shouldContinue) {
@@ -325,9 +286,9 @@ export const compile = (config: CompilerConfig): void => {
   };
 
   processRules(config, failures, write);
-  processCommands(config, failures, write);
   processSkills(config, failures, write);
   processMcpConfig(config, write);
+  processHooksConfig(config, write);
   scanDirectories(config, failures);
 
   if (0 < failures.length) {

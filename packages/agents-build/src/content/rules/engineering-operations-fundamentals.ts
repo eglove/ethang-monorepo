@@ -137,7 +137,7 @@ export const engineeringOperationsFundamentals = defineRule({
           text: "**Health Probing**: Load balancers continuously monitor the health of backend instances using active health probes. If an instance fails a probe (e.g., returns an HTTP 500 error or times out), the load balancer removes it from the routing pool. Once the instance recovers and passes the health checks, it is restored to the pool."
         },
         {
-          text: "**Reliability Engineering**: System reliability is enhanced through redundancy, failover mechanisms, circuit breakers, and rate limiting. Operations engineers design systems to handle hardware failures, network partitions, and traffic spikes without catastrophic failure, ensuring the application remains available to users."
+          text: "**Reliability Engineering**: system reliability is enhanced through redundancy, failover mechanisms, circuit breakers, and rate limiting. Operations engineers design systems to handle hardware failures, network partitions, and traffic spikes without catastrophic failure, ensuring the application remains available to users."
         }
       ],
       type: "unorderedList"

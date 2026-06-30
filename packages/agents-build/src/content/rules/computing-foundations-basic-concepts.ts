@@ -6,7 +6,7 @@ export const computingFoundationsBasicConcepts = defineRule({
   content: [
     {
       level: 1,
-      text: "Computing Foundations - Basic Concepts of a System or Solution",
+      text: "Computing Foundations - Basic Concepts of a system or Solution",
       type: "header"
     },
     {
@@ -62,7 +62,7 @@ export const computingFoundationsBasicConcepts = defineRule({
     },
     {
       level: 3,
-      text: "1.2 System and Subsystem Architecture",
+      text: "1.2 system and Subsystem Architecture",
       type: "header"
     },
     {

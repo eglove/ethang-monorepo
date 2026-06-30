@@ -1,11 +1,9 @@
 import { drizzle } from "drizzle-orm/d1";
 
-import type { AuthContext } from "./services/auth-service.js";
-
 import { user } from "./db/schema.js";
 
-export const getDatabase = (context: AuthContext) => {
-  return drizzle(context.env.DB, {
+export const getDatabase = (database: D1Database) => {
+  return drizzle(database, {
     schema: { userTable: user }
   });
 };

@@ -33,7 +33,7 @@ export const engineeringOperationsPracticalConsiderations = defineRule({
           text: "Application Layer: Involves instrumentation within software binaries, such as structured logs, transaction metrics, latency, and distributed traces mapping execution paths across services."
         },
         {
-          text: "Operating System Layer: Captures compute resource consumption, including CPU execution states, memory utilization, disk input-output throughput, and network socket transitions."
+          text: "Operating system Layer: Captures compute resource consumption, including CPU execution states, memory utilization, disk input-output throughput, and network socket transitions."
         },
         {
           text: "Infrastructure Layer: Monitors host environments and services, encompassing container orchestration events, virtual network link status, database connection pools, and load balancer queue depths."

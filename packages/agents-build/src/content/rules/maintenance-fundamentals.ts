@@ -54,7 +54,7 @@ export const maintenanceFundamentals = defineRule({
           text: "**Enhancing Capabilities**: As business requirements evolve, users demand new features, improved user interfaces, and extended functionality."
         },
         {
-          text: "**Adapting Environments**: System platforms change. Operating systems, databases, runtime environments, and third-party APIs are continuously updated, requiring adaptive changes to keep the application compatible."
+          text: "**Adapting Environments**: system platforms change. Operating systems, databases, runtime environments, and third-party APIs are continuously updated, requiring adaptive changes to keep the application compatible."
         },
         {
           text: "**Preventing Obsolescence**: Security threats evolve constantly, requiring maintainers to patch vulnerabilities, update third-party libraries, and refactor brittle components to prevent future failures."
@@ -101,10 +101,10 @@ export const maintenanceFundamentals = defineRule({
           text: "**Continuing Growth**: The functional content of a system must grow continually to maintain user satisfaction over time."
         },
         {
-          text: "**Declining Quality**: System quality will appear to decline unless the software is actively adapted to its changing environment."
+          text: "**Declining Quality**: system quality will appear to decline unless the software is actively adapted to its changing environment."
         },
         {
-          text: "**Feedback System**: Evolutionary processes constitute multi-loop, multi-agent feedback systems and must be managed as such to control drift.\nUnderstanding these laws allows organizations to anticipate code decay and plan proactive refactoring."
+          text: "**Feedback system**: Evolutionary processes constitute multi-loop, multi-agent feedback systems and must be managed as such to control drift.\nUnderstanding these laws allows organizations to anticipate code decay and plan proactive refactoring."
         }
       ],
       type: "numberedList"

@@ -26,7 +26,7 @@ describe("GLOBAL_SKILLS verification", () => {
     expect(dddSkill?.resources?.length).toBe(6);
   });
 
-  it("should have exactly seven registered skills (sdlc and sara-cli removed)", () => {
-    expect(GLOBAL_SKILLS).toHaveLength(7);
+  it("should have eight registered skills", () => {
+    expect(GLOBAL_SKILLS).toHaveLength(8);
   });
 });

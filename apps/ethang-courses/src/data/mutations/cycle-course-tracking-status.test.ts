@@ -1,124 +1,105 @@
+import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
+
+import type { Database } from "../types.ts";
+
+import { NotFoundError } from "../../errors/not-found-error.ts";
+import { carryCourseTrackingCommand } from "../../infrastructure/course-tracking/aggregate.ts";
+import { getCourseUrlByCourseId } from "../functions/get-course-url-by-course-id.ts";
+import { cycleCourseTrackingStatusMutation } from "./cycle-course-tracking-status.ts";
 
 vi.mock(import("../functions/get-course-url-by-course-id.ts"), () => {
   return {
     getCourseUrlByCourseId: vi.fn()
   };
 });
-vi.mock(import("../functions/get-tracking-by-user-id-course-url.ts"), () => {
+vi.mock(import("../../infrastructure/course-tracking/aggregate.ts"), () => {
   return {
-    getTrackingByUserIdCourseUrl: vi.fn()
+    carryCourseTrackingCommand: vi.fn()
   };
 });
-
-import { courseTracking as COURSE_TRACKING_STATUS } from "@ethang/intl/en/course-tracking.ts";
-
-import { getCourseUrlByCourseId } from "../functions/get-course-url-by-course-id.ts";
-import { getTrackingByUserIdCourseUrl } from "../functions/get-tracking-by-user-id-course-url.ts";
-import { cycleCourseTrackingStatusMutation } from "./cycle-course-tracking-status.ts";
 
 const COURSE_URL = "https://example.com/c";
 const TRACKING_ID = "tracking-1";
 const USER_ID = "user-1";
 
 describe("cycleCourseTrackingStatusMutation", () => {
-  it("creates a tracking when one does not exist", async () => {
-    vi.mocked(getCourseUrlByCourseId).mockResolvedValue(COURSE_URL);
-    vi.mocked(getTrackingByUserIdCourseUrl)
-      .mockImplementationOnce(async () => {
-        // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
-        return Promise.resolve(undefined);
-      })
-      .mockResolvedValueOnce({
+  it("delegates to carryCourseTrackingCommand for a new tracking", async () => {
+    vi.mocked(getCourseUrlByCourseId).mockReturnValue(
+      Effect.succeed(COURSE_URL)
+    );
+    vi.mocked(carryCourseTrackingCommand).mockReturnValue(
+      Effect.succeed({
         courseUrl: COURSE_URL,
         id: TRACKING_ID,
-        status: COURSE_TRACKING_STATUS.COMPLETE,
+        status: "COMPLETE",
         userId: USER_ID
-      });
-
-    // eslint-disable-next-line sonar/no-undefined-argument
-    const values = vi.fn(undefined);
-    const database = {
-      insert: vi.fn(() => {
-        return { values };
       })
-    };
+    );
 
-    // @ts-expect-error minimal database test double for this unit test
-    const result = await cycleCourseTrackingStatusMutation(database, {
-      courseId: "course-1",
-      userId: USER_ID
-    });
+    const result = await cycleCourseTrackingStatusMutation(
+      {} as unknown as Database,
+      {
+        courseId: "course-1",
+        userId: USER_ID
+      }
+    );
 
-    expect(values).toHaveBeenCalledWith({
-      courseUrl: COURSE_URL,
-      status: COURSE_TRACKING_STATUS.COMPLETE,
-      userId: USER_ID
-    });
+    expect(carryCourseTrackingCommand).toHaveBeenCalledWith(
+      {
+        courseUrl: COURSE_URL,
+        kind: "CycleStatus",
+        userId: USER_ID
+      },
+      expect.anything()
+    );
     expect(result).toStrictEqual({
       courseUrl: COURSE_URL,
       id: TRACKING_ID,
-      status: COURSE_TRACKING_STATUS.COMPLETE,
+      status: "COMPLETE",
       userId: USER_ID
     });
   });
 
-  it("cycles existing status and updates row", async () => {
-    vi.mocked(getCourseUrlByCourseId).mockResolvedValue(COURSE_URL);
-    vi.mocked(getTrackingByUserIdCourseUrl)
-      .mockResolvedValueOnce({
+  it("delegates to carryCourseTrackingCommand for an existing tracking", async () => {
+    vi.mocked(getCourseUrlByCourseId).mockReturnValue(
+      Effect.succeed(COURSE_URL)
+    );
+    vi.mocked(carryCourseTrackingCommand).mockReturnValue(
+      Effect.succeed({
         courseUrl: COURSE_URL,
         id: TRACKING_ID,
-        status: COURSE_TRACKING_STATUS.COMPLETE,
+        status: "REVISIT",
         userId: USER_ID
       })
-      .mockResolvedValueOnce({
-        courseUrl: COURSE_URL,
-        id: TRACKING_ID,
-        status: COURSE_TRACKING_STATUS.REVISIT,
+    );
+
+    const result = await cycleCourseTrackingStatusMutation(
+      {} as unknown as Database,
+      {
+        courseId: "course-1",
         userId: USER_ID
-      });
+      }
+    );
 
-    // eslint-disable-next-line sonar/no-undefined-argument
-    const where = vi.fn(undefined);
-    const set = vi.fn(() => {
-      return { where };
-    });
-    const database = {
-      update: vi.fn(() => {
-        return { set };
-      })
-    };
-
-    // @ts-expect-error minimal database test double for this unit test
-    const result = await cycleCourseTrackingStatusMutation(database, {
-      courseId: "course-1",
-      userId: USER_ID
-    });
-
-    expect(set).toHaveBeenCalledWith({
-      status: COURSE_TRACKING_STATUS.REVISIT
-    });
-    expect(where).toHaveBeenCalledTimes(1);
     expect(result).toStrictEqual({
       courseUrl: COURSE_URL,
       id: TRACKING_ID,
-      status: COURSE_TRACKING_STATUS.REVISIT,
+      status: "REVISIT",
       userId: USER_ID
     });
   });
 
   it("bubbles lookup errors from course fetch", async () => {
-    vi.mocked(getCourseUrlByCourseId).mockRejectedValue(
-      new Error("Course not found")
+    vi.mocked(getCourseUrlByCourseId).mockReturnValue(
+      Effect.fail(new NotFoundError("Course not found"))
     );
 
     await expect(
-      cycleCourseTrackingStatusMutation(
-        // @ts-expect-error minimal database test double for this unit test
-        {},
-        { courseId: "missing", userId: USER_ID }
-      )
+      cycleCourseTrackingStatusMutation({} as unknown as Database, {
+        courseId: "missing",
+        userId: USER_ID
+      })
     ).rejects.toThrow("Course not found");
   });
 });

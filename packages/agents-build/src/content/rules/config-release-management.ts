@@ -75,7 +75,7 @@ export const configReleaseManagement = defineRule({
       type: "header"
     },
     {
-      text: "Modern SCM relies on integrated tooling to manage the complexity of parallel development and multi-platform deployment. The Configuration Management System (CMS) provides the overarching database, logic, and interfaces needed to trace and control configuration items throughout their lifecycle. The CMS tracks the relationships between requirements, changes, source files, and builds.",
+      text: "Modern SCM relies on integrated tooling to manage the complexity of parallel development and multi-platform deployment. The Configuration Management system (CMS) provides the overarching database, logic, and interfaces needed to trace and control configuration items throughout their lifecycle. The CMS tracks the relationships between requirements, changes, source files, and builds.",
       type: "text"
     },
     {

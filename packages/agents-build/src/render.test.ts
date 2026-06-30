@@ -2,12 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { RuleDefinition } from "./define.ts";
 
-import {
-  commandMarkdown,
-  renderJson,
-  ruleMarkdown,
-  skillMarkdown
-} from "./render.ts";
+import { renderJson, ruleMarkdown, skillMarkdown } from "./render.ts";
 
 const MARKDOWN_BLOCK_CONTENT_TEST = "renders when content is MarkdownBlock[]";
 
@@ -93,30 +88,6 @@ describe("ruleMarkdown", () => {
     };
     expect(ruleMarkdown(rule)).toBe(
       "---\ntrigger: always_on\n---\n\nRule body from block.\n"
-    );
-  });
-});
-
-describe("commandMarkdown", () => {
-  it("emits frontmatter with description only, a blank line, and content", () => {
-    const command = {
-      content: "Command body.",
-      description: "A test command.",
-      name: "test-command"
-    };
-    expect(commandMarkdown(command)).toBe(
-      "---\ndescription: A test command.\n---\n\nCommand body.\n"
-    );
-  });
-
-  it(MARKDOWN_BLOCK_CONTENT_TEST, () => {
-    const command = {
-      content: [{ text: "Command body from block.", type: "text" as const }],
-      description: "A test command.",
-      name: "test-command"
-    };
-    expect(commandMarkdown(command)).toBe(
-      "---\ndescription: A test command.\n---\n\nCommand body from block.\n"
     );
   });
 });

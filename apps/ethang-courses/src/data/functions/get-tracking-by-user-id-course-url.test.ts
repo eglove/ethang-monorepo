@@ -1,32 +1,50 @@
+import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import { getTrackingByUserIdCourseUrl } from "./get-tracking-by-user-id-course-url.ts";
 
+const USER_ID = "user-1";
+const COURSE_URL = "https://example.com/course";
+
 describe("getTrackingByUserIdCourseUrl", () => {
-  it("delegates to findFirst and returns the result", async () => {
-    const expected = {
-      courseUrl: "https://example.com/course",
+  it("returns tracking record when found", async () => {
+    const mockRecord = {
+      courseUrl: COURSE_URL,
       id: "tracking-1",
-      status: "Complete",
-      userId: "user-1"
+      status: "INCOMPLETE",
+      userId: USER_ID
     };
-    const findFirst = vi.fn().mockResolvedValue(expected);
-    const database = {
+
+    const mockDatabase = {
       query: {
         courseTrackingTable: {
-          findFirst
+          findFirst: vi.fn().mockResolvedValue(mockRecord)
         }
       }
     };
 
-    const result = await getTrackingByUserIdCourseUrl(
-      // @ts-expect-error minimal database test double for this unit test
-      database,
-      "user-1",
-      "https://example.com/course"
+    const result = await Effect.runPromise(
+      // @ts-expect-error for test
+      getTrackingByUserIdCourseUrl(mockDatabase, USER_ID, COURSE_URL)
     );
 
-    expect(result).toStrictEqual(expected);
-    expect(findFirst).toHaveBeenCalledTimes(1);
+    expect(result).toStrictEqual(mockRecord);
+  });
+
+  it("returns null when no tracking record exists", async () => {
+    const mockDatabase = {
+      query: {
+        courseTrackingTable: {
+          findFirst: vi.fn().mockResolvedValue(null)
+        }
+      }
+    };
+
+    const result = await Effect.runPromise(
+      // @ts-expect-error for test
+      getTrackingByUserIdCourseUrl(mockDatabase, USER_ID, COURSE_URL)
+    );
+
+    expect(result).toBeNull();
   });
 });

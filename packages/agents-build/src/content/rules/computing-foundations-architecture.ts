@@ -69,7 +69,7 @@ export const computingFoundationsArchitecture = defineRule({
           text: "**Flynn's Taxonomy**: Michael J. Flynn proposed a classification system for concurrent computer architectures based on the number of concurrent instruction and data streams:\n- *Single Instruction, Single Data Stream (SISD)*: Standard sequential computer.\n- *Single Instruction, Multiple Data Stream (SIMD)*: A single instruction executes on multiple data streams in parallel (commonly used in vector processors and graphics processing units).\n- *Multiple Instruction, Single Data Stream (MISD)*: Multiple instructions operate on the same data stream (rare, occasionally used for fault-tolerant systems).\n- *Multiple Instruction, Multiple Data Stream (MIMD)*: Multiple processors execute different instructions on different data streams (the foundation of modern multi-core systems).\nWait, variants also include Single Program Multiple Data (SPMD) and Multiple Program Multiple Data (MPMD) models."
         },
         {
-          text: "**System Architecture**: Refers to the high-level design of hardware, software, modules, interfaces, and data pathways. Typical models include integrated system architecture (tightly coupled single-box designs), distributed architecture (networked boxes sharing computing and storage), pooled architecture (resources allocated on demand), and converged architecture (merging distributed and pooled models for maximum scalability)."
+          text: "**system Architecture**: Refers to the high-level design of hardware, software, modules, interfaces, and data pathways. Typical models include integrated system architecture (tightly coupled single-box designs), distributed architecture (networked boxes sharing computing and storage), pooled architecture (resources allocated on demand), and converged architecture (merging distributed and pooled models for maximum scalability)."
         }
       ],
       type: "unorderedList"
@@ -132,7 +132,7 @@ export const computingFoundationsArchitecture = defineRule({
           text: "**Multi-Stream Programming Alignment**: Are the software's execution loops explicitly designed to align with the hardware's data stream model (e.g., SPMD or MPMD)?"
         },
         {
-          text: "**System Architecture Selection**: Has the system deployment model (integrated, distributed, pooled, or converged) been selected based on scalability, latency, and fault-tolerance needs?"
+          text: "**system Architecture Selection**: Has the system deployment model (integrated, distributed, pooled, or converged) been selected based on scalability, latency, and fault-tolerance needs?"
         },
         {
           text: "**Microarchitecture Optimization**: Have CPU performance features, such as pipelines, FPUs, and multi-threading execution paths, been taken into account to avoid instruction stalls?"

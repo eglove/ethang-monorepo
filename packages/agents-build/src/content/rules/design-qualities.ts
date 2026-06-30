@@ -195,7 +195,7 @@ export const designQualities = defineRule({
     {
       items: [
         {
-          text: "**System Families and Product Lines**: Designing a shared core architecture that can be customized with variant features to deploy distinct product versions without duplicate codebase maintenance."
+          text: "**system Families and Product Lines**: Designing a shared core architecture that can be customized with variant features to deploy distinct product versions without duplicate codebase maintenance."
         },
         {
           text: "**Adaptability**: Constructing systems that adapt dynamically to different contexts (such as location, screen size, user privilege profiles, or device capabilities)."

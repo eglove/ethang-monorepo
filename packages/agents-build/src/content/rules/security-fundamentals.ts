@@ -56,7 +56,7 @@ export const securityFundamentals = defineRule({
           text: "**Confidentiality**: The property of ensuring that information is not disclosed to unauthorized individuals, entities, or processes. Defenses include data encryption (in transit using TLS, and at rest using AES), robust authorization controls, and secure session management."
         },
         {
-          text: "**Integrity**: The property of accuracy and completeness. This ensures that data is not altered, tampered with, or deleted in transit or at rest. Defenses include hash functions (e.g., SHA-256), Hash-based Message Authentication Codes (HMACs), digital signatures, and database transaction constraints."
+          text: "**Integrity**: The property of accuracy and completeness. This ensures that data is not altered, tampered with, or deleted in transit or at rest. Defenses include hash functions (e.g., SHA-256), Hash-based message Authentication Codes (HMACs), digital signatures, and database transaction constraints."
         },
         {
           text: "**Availability**: The property of being accessible and usable on demand by an authorized entity. Defenses include load balancing, server redundancy, automated backups, rate-limiting to prevent resource exhaustion, and denial of service (DoS) mitigations."

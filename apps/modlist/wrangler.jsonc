@@ -1,0 +1,21 @@
+{
+  "compatibility_date": "2026-06-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "ethang_modlist",
+      "database_id": "PLACEHOLDER",
+      "database_name": "modlist",
+      "remote": true
+    }
+  ],
+  "main": "src/index.ts",
+  "name": "modlist",
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "mode": "smart"
+  },
+  "workers_dev": false
+}

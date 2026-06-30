@@ -30,7 +30,7 @@ export const designProcesses = defineRule({
     {
       items: [
         {
-          text: "**Architectural Design**: Focuses on the system as a whole and its relationship with its environment. It establishes the global computational model, defines major component boundaries, and articulates system-wide architectural styles, patterns, and protocols. System-wide styles include layered (n-tier) architectures, client-server models, peer-to-peer configurations, event-driven pipelines, and microservices. It also addresses major crosscutting architectural concerns such as security boundaries, global performance targets, and data storage paradigms."
+          text: "**Architectural Design**: Focuses on the system as a whole and its relationship with its environment. It establishes the global computational model, defines major component boundaries, and articulates system-wide architectural styles, patterns, and protocols. system-wide styles include layered (n-tier) architectures, client-server models, peer-to-peer configurations, event-driven pipelines, and microservices. It also addresses major crosscutting architectural concerns such as security boundaries, global performance targets, and data storage paradigms."
         },
         {
           text: "**High-Level Design**: Focuses on the outward-facing relationships of major system components. It specifies how these components interact with the environment, other systems, users, and devices. High-level design focuses on defining component roles, interfaces, APIs, external events, message formats, sequence ordering, timing relationships, and data persistence models."
@@ -85,7 +85,7 @@ export const designProcesses = defineRule({
     {
       items: [
         {
-          text: "**Architectural Design**:\n- *Concerns*: Computational model, crosscutting concerns (performance, security, safety), system-wide styles (e.g., pipeline vs. n-tier).\n- *Stakeholders*: System architects, product owners, lead engineers.\n- *Deliverables*: Software Architecture Description (SAD), component communication protocols."
+          text: "**Architectural Design**:\n- *Concerns*: Computational model, crosscutting concerns (performance, security, safety), system-wide styles (e.g., pipeline vs. n-tier).\n- *Stakeholders*: system architects, product owners, lead engineers.\n- *Deliverables*: Software Architecture Description (SAD), component communication protocols."
         },
         {
           text: "**High-Level Design**:\n- *Concerns*: Outward-facing interactions, environment integrations, external events, end-to-end transaction threads, and database persistence schemas.\n- *Stakeholders*: Lead developers, integration engineers, external systems developers.\n- *Deliverables*: API specifications, Zod data payload contracts, sequence diagrams."

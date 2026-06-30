@@ -13,11 +13,11 @@ export const ddd = defineSkill({
   content: [
     {
       level: 1,
-      text: "Domain-Driven Design (DDD) Guideline Finder",
+      text: "Domain-Driven Design (DDD) Reference",
       type: "header"
     },
     {
-      text: "This skill acts as a comprehensive reference guide to Domain-Driven Design (DDD) and Clean/Modular Architecture. It provides a structured taxonomy of strategic design, tactical patterns, clean layering, CQRS, and specifications to align software construction with business domains.",
+      text: "Reference guide to Domain-Driven Design (DDD) and Clean/Modular Architecture. Provides a structured taxonomy of strategic design, tactical patterns, clean layering, CQRS, and specifications to align software construction with business domains.",
       type: "text"
     },
     {
@@ -173,6 +173,10 @@ export const ddd = defineSkill({
         ]
       ],
       type: "table"
+    },
+    {
+      text: "Do not produce any conversational output or solicit user input. This reference is silently loaded for agent use.",
+      type: "text"
     }
   ] as MarkdownBlock[],
   description:

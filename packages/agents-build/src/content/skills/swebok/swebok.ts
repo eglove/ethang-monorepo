@@ -8,11 +8,11 @@ export const swebok = defineSkill({
   content: [
     {
       level: 1,
-      text: "SWEBOK v4 Guideline Finder",
+      text: "SWEBOK v4 Reference",
       type: "header"
     },
     {
-      text: "This skill acts as a comprehensive reference guide to the IEEE Software Engineering Body of Knowledge (SWEBOK v4). It enables you to locate and inspect the industry-standard software engineering guidelines, domain theories, conceptual foundations, and compliance checklists compiled for each SWEBOK v4 chapter.",
+      text: "Reference guide to the IEEE Software Engineering Body of Knowledge (SWEBOK v4). Locate and inspect software engineering guidelines, domain theories, conceptual foundations, and compliance checklists for each chapter.",
       type: "text"
     },
     {
@@ -66,7 +66,7 @@ export const swebok = defineSkill({
       type: "header"
     },
     {
-      code: "Which foundation?\n├─ Engineering & problem solving → engineering-foundations-fundamentals.md\n│  ├─ System design concepts → engineering-foundations-design.md\n│  ├─ Abstraction/encapsulation → engineering-foundations-abstraction-encapsulation.md\n│  ├─ Empirical & stats analysis → engineering-foundations-empirical-methods.md\n│  └─ Standards and root cause → engineering-foundations-standards.md\n├─ Computing & DB foundations → computing-foundations-basic-concepts.md\n│  ├─ OS & network architecture → computing-foundations-operating-systems.md\n│  ├─ Data structures & algorithms → computing-foundations-data-structures-algorithms.md\n│  └─ AI & Machine Learning → computing-foundations-ai-ml.md\n└─ Mathematical foundations → mathematical-foundations-fundamentals.md\n   ├─ Logic and proof techniques → mathematical-foundations-proof-techniques.md\n   ├─ Graph and tree structures → mathematical-foundations-graphs-trees.md\n   ├─ Finite-state machine modeling → mathematical-foundations-finite-state-machines.md\n   └─ Discrete probability/counting → mathematical-foundations-discrete-probability.md",
+      code: "Which foundation?\n├─ Engineering & problem solving → engineering-foundations-fundamentals.md\n│  ├─ system design concepts → engineering-foundations-design.md\n│  ├─ Abstraction/encapsulation → engineering-foundations-abstraction-encapsulation.md\n│  ├─ Empirical & stats analysis → engineering-foundations-empirical-methods.md\n│  └─ Standards and root cause → engineering-foundations-standards.md\n├─ Computing & DB foundations → computing-foundations-basic-concepts.md\n│  ├─ OS & network architecture → computing-foundations-operating-systems.md\n│  ├─ Data structures & algorithms → computing-foundations-data-structures-algorithms.md\n│  └─ AI & Machine Learning → computing-foundations-ai-ml.md\n└─ Mathematical foundations → mathematical-foundations-fundamentals.md\n   ├─ Logic and proof techniques → mathematical-foundations-proof-techniques.md\n   ├─ Graph and tree structures → mathematical-foundations-graphs-trees.md\n   ├─ Finite-state machine modeling → mathematical-foundations-finite-state-machines.md\n   └─ Discrete probability/counting → mathematical-foundations-discrete-probability.md",
       language: "",
       type: "codeBlock"
     },
@@ -563,7 +563,7 @@ export const swebok = defineSkill({
         [
           "13.5 Software Security Tools",
           "[security-tools.md](resources/security-tools.md)",
-          "software security tools, static analysis, SAST, source code analysis, binary code analysis, dynamic testing, penetration testing, fuzzing, fuzz testing, vulnerability scanner, CVE, Common Vulnerabilities and Exposures, CWE, Common Weakness Enumeration, CAPEC, CVSS, Common Vulnerability Scoring System, vulnerability management, disclosure process"
+          "software security tools, static analysis, SAST, source code analysis, binary code analysis, dynamic testing, penetration testing, fuzzing, fuzz testing, vulnerability scanner, CVE, Common Vulnerabilities and Exposures, CWE, Common Weakness Enumeration, CAPEC, CVSS, Common Vulnerability Scoring system, vulnerability management, disclosure process"
         ],
         [
           "13.6 Domain-Specific Software Security",
@@ -664,7 +664,7 @@ export const swebok = defineSkill({
       headers: ["SWEBOK Topic", "Reference Document", "Keywords / Description"],
       rows: [
         [
-          "16.1 Basic Concepts of a System or Solution",
+          "16.1 Basic Concepts of a system or Solution",
           "[computing-foundations-basic-concepts.md](resources/computing-foundations-basic-concepts.md)",
           "computing foundations, system concepts, solution architecture, modularity, cohesion, coupling, real-time systems, distributed systems, technology selection, system design"
         ],
@@ -822,6 +822,10 @@ export const swebok = defineSkill({
         ]
       ],
       type: "table"
+    },
+    {
+      text: "Do not produce any conversational output or solicit user input. This reference is silently loaded for agent use.",
+      type: "text"
     }
   ] as MarkdownBlock[],
   description:

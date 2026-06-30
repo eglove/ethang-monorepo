@@ -127,7 +127,7 @@ export const modelsMethodsAnalysis = defineRule({
           text: "**Intra-Application Interactions**: Communication between different software components and objects within the application layer."
         },
         {
-          text: "**System-Layer Interactions**: Relationships between the application code and underlying infrastructure layers, including the operating system, middleware, and database services."
+          text: "**system-Layer Interactions**: Relationships between the application code and underlying infrastructure layers, including the operating system, middleware, and database services."
         },
         {
           text: "**Human-Machine Interactions**: Verifying the communication flow between the user interface software and the core application logic."

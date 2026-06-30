@@ -20,7 +20,7 @@ export const computingFoundationsOperatingSystems = defineRule({
     },
     {
       level: 3,
-      text: "1.1 Operating System Types and Architectures",
+      text: "1.1 Operating system Types and Architectures",
       type: "header"
     },
     {
@@ -132,7 +132,7 @@ export const computingFoundationsOperatingSystems = defineRule({
           text: "**Device Drivers**: Software modules that translate generic OS calls into hardware-specific operations, using driver tables to coordinate."
         },
         {
-          text: "**File System Structure**: Organizes data on storage devices. Directory structures utilize directed acyclic graphs (DAGs) to support hard and soft links. Operations are audited via access control lists (ACLs) or capability matrices."
+          text: "**File system Structure**: Organizes data on storage devices. Directory structures utilize directed acyclic graphs (DAGs) to support hard and soft links. Operations are audited via access control lists (ACLs) or capability matrices."
         }
       ],
       type: "unorderedList"
