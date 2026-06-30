@@ -5,6 +5,8 @@ import { githubCli } from "./github-cli.ts";
 import { jq } from "./jq.ts";
 import { lint } from "./lint.ts";
 import { ripgrep } from "./ripgrep.ts";
+import { specToArchitecture } from "./spec-to-architecture/spec-to-architecture.ts";
+import { specification } from "./specification.ts";
 import { swebok } from "./swebok/swebok.ts";
 
 export const GLOBAL_SKILLS = [
@@ -15,5 +17,7 @@ export const GLOBAL_SKILLS = [
   everythingSearch,
   githubCli,
   commit,
-  lint
+  lint,
+  specification,
+  specToArchitecture
 ];
