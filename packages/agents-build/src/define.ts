@@ -17,26 +17,11 @@ export const defineRule = (definition: RuleDefinition): RuleDefinition => {
   return definition;
 };
 
-export type CommandDefinition = {
-  /** The prompt body executed when the command is invoked. */
-  content: MarkdownBlock[] | string;
-  /** Shown in / autocomplete. */
-  description: string;
-  /** Slash command name (e.g. "atdd-fsm-tdd" → /atdd-fsm-tdd). */
-  name: string;
-};
-
 export type SkillDefinition = {
   content: MarkdownBlock[] | string;
   description: string;
   name: string;
   resources?: { content: MarkdownBlock[] | string; filename: string }[];
-};
-
-export const defineCommand = (
-  definition: CommandDefinition
-): CommandDefinition => {
-  return definition;
 };
 
 export const defineSkill = (definition: SkillDefinition): SkillDefinition => {

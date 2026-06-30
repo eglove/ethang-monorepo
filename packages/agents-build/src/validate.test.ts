@@ -17,7 +17,6 @@ import type { RuleDefinition } from "./define.ts";
 
 import {
   findDuplicateRuleFilenames,
-  findForbiddenStrings,
   findUnresolvedTokens,
   isValidFrontmatterBlock
 } from "./validate.ts";
@@ -31,43 +30,6 @@ describe("validateFrontmatterBlock", () => {
     ["---\ntrigger: always_on\n", false]
   ])("classifies %j as %s", (markdown, expected) => {
     expect(isValidFrontmatterBlock(markdown)).toBe(expected);
-  });
-});
-
-describe("findForbiddenStrings", () => {
-  it.each([
-    ["This came from a NISC workflow.", ["NISC"]],
-    ["Fetch the Jira ticket first.", ["Jira"]],
-    ["Post the diff to Stash for review.", ["Stash"]],
-    ["Dispatch an NGXS action.", ["NGXS"]],
-    ["Use the Angular CLI.", ["Angular"]],
-    ["Call mcp__intellij__get_file_problems.", ["mcp__intellij"]],
-    ["Gate on AskUserQuestion before continuing.", ["AskUserQuestion"]],
-    ['Spawn it with subagent_type: "planner".', ["subagent_type"]],
-    ["Check the knowledge graph for flows.", ["knowledge graph"]],
-    ["Write a JUnit 5 parameterized test.", ["JUnit"]],
-    ["Run `rtk rg` to search.", ["rtk"]],
-    ["Prefix with `rtk` for compression.", ["rtk"]]
-  ])("flags %j as %j", (content, expected) => {
-    expect(findForbiddenStrings(content)).toStrictEqual(expected);
-  });
-
-  it.each([
-    ["Run git stash before switching branches."],
-    ["Write a Vitest it.each table for every state."],
-    ["Use Hono middleware on the Cloudflare Worker."],
-    ["Call mcp__webstorm__get_file_problems."],
-    ["Run `rg` without any prefix."],
-    ["Just execute `sara check` directly."]
-  ])("does not flag clean content %j", (content) => {
-    expect(findForbiddenStrings(content)).toStrictEqual([]);
-  });
-
-  it("reports each forbidden name once per content", () => {
-    expect(findForbiddenStrings("NISC and more NISC plus Jira")).toStrictEqual([
-      "NISC",
-      "Jira"
-    ]);
   });
 });
 

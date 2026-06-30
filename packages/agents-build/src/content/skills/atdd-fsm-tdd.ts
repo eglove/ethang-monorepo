@@ -1,8 +1,8 @@
 import type { MarkdownBlock } from "@ethang/markdown-generator/markdown-generator.js";
 
-import { defineCommand } from "../../define.ts";
+import { defineSkill } from "../../define.ts";
 
-export const atddFsmTdd = defineCommand({
+export const atddFsmTdd = defineSkill({
   content: [
     {
       level: 1,
@@ -10,11 +10,11 @@ export const atddFsmTdd = defineCommand({
       type: "header"
     },
     {
-      text: "This command coordinates the software development process using a combination of Acceptance Test-Driven Development (ATDD), Finite-State Machine (FSM) modeling, and the Red-Green-Refactor Test-Driven Development (TDD) micro-cycle using Vitest.",
+      text: "This skill coordinates the software development process using a combination of Acceptance Test-Driven Development (ATDD), Finite-State Machine (FSM) modeling, and the Red-Green-Refactor Test-Driven Development (TDD) micro-cycle using Vitest.",
       type: "text"
     },
     {
-      text: "[!IMPORTANT]\nBefore writing any code or beginning implementation under this command, you MUST read the following SWEBOK reference documents using the `open` tool to obtain the necessary theoretical foundations:\n1. [Requirements Specification](file:///C:/Users/glove/projects/ethang-monorepo/.junie/skills/swebok/resources/requirements-specification.md)\n2. [Software Testing Techniques](file:///C:/Users/glove/projects/ethang-monorepo/.junie/skills/swebok/resources/testing-techniques.md)\n3. [Mathematical Foundations - Finite State Machines](file:///C:/Users/glove/projects/ethang-monorepo/.junie/skills/swebok/resources/mathematical-foundations-finite-state-machines.md)",
+      text: "[!IMPORTANT]\nBefore writing any code or beginning implementation under this skill, you MUST read the following SWEBOK reference documents to obtain the necessary theoretical foundations:\n1. Requirements Specification\n2. Software Testing Techniques\n3. Mathematical Foundations - Finite State Machines",
       type: "quote"
     },
     {
@@ -34,10 +34,10 @@ export const atddFsmTdd = defineCommand({
               text: "Write human-readable **Given-When-Then BDD scenarios** to represent business expectations."
             },
             {
-              text: "Accept a $prompt (free-form task description) from the user. Before modeling, ask clarifying questions to ensure full understanding — identify actors, triggers, constraints, and expected outcomes. Then, model the component as a **Finite-State Machine (FSM)** by deriving and formally specifying the states `S`, inputs/events `I`, outputs/actions `O`, the transition function `f: S × I → S`, and the initial state `s₀`. Use a table (State Table) or transition graph to clarify logic."
+              text: "Accept a task description from the user. Before modeling, ask clarifying questions to ensure full understanding — identify actors, triggers, constraints, and expected outcomes. Then, model the component as a **Finite-State Machine (FSM)** by deriving and formally specifying the states `S`, inputs/events `I`, outputs/actions `O`, the transition function `f: S × I → S`, and the initial state `s₀`. Use a table (State Table) or transition graph to clarify logic."
             }
           ],
-          text: "\u{1F4CB} **Phase 1: ATDD Elicitation, Clarification & Modeling**"
+          text: "📋 **Phase 1: ATDD Elicitation, Clarification & Modeling**"
         },
         {
           children: [
@@ -51,7 +51,7 @@ export const atddFsmTdd = defineCommand({
               text: "Create test cases for **invalid state-input pairs** (negative exception paths) to verify exception handling and error state transitions. Verify each test fails for the **correct reason** before proceeding."
             }
           ],
-          text: "\u{1F534} **Phase 2: The Red Phase (Hypothesis Tests)**"
+          text: "🔴 **Phase 2: The Red Phase (Hypothesis Tests)**"
         },
         {
           children: [
@@ -62,7 +62,7 @@ export const atddFsmTdd = defineCommand({
               text: "Avoid writing premature logic or excess branch statements outside the current tests. Every line of code must be justified by a failing test that now passes."
             }
           ],
-          text: "\u{1F7E2} **Phase 3: The Green Phase (Hypothesis Proof)**"
+          text: "🟢 **Phase 3: The Green Phase (Hypothesis Proof)**"
         },
         {
           children: [
@@ -76,7 +76,7 @@ export const atddFsmTdd = defineCommand({
               text: "Run the Vitest regression suite continuously to guarantee **behavior preservation** (zero regressions). If any test fails during refactor, revert the last change and try a smaller step."
             }
           ],
-          text: "\u{1F504} **Phase 4: Refactor (Targeted Improvement)**"
+          text: "🔄 **Phase 4: Refactor (Targeted Improvement)**"
         }
       ],
       type: "unorderedList"

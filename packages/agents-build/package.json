@@ -4,7 +4,7 @@
     "extends browserslist-config-baseline",
     "current node"
   ],
-  "description": "Generates Google Antigravity rules and skills into .agents/ from typed TypeScript definitions.",
+  "description": "Generates GitHub Copilot CLI rules, commands, and skills into `.agents/` from typed TypeScript definitions.",
   "devDependencies": {
     "@ethang/eslint-config": "^25.24.0",
     "@ethang/markdown-generator": "^2.0.2",
