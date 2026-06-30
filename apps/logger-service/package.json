@@ -20,8 +20,8 @@
     "luxon": "^3.7.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260627.1",
-    "@ethang/eslint-config": "^25.24.0",
+    "@cloudflare/workers-types": "^4.20260630.1",
+    "@ethang/eslint-config": "^25.24.1",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.2",
     "@types/node": "^26.0.1",
