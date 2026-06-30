@@ -26,7 +26,7 @@ describe("GLOBAL_SKILLS verification", () => {
     expect(dddSkill?.resources?.length).toBe(6);
   });
 
-  it("should have nine registered skills (8 original + 3 converted from commands - codebase-memory-mcp removed)", () => {
-    expect(GLOBAL_SKILLS).toHaveLength(9);
+  it("should have eight registered skills", () => {
+    expect(GLOBAL_SKILLS).toHaveLength(8);
   });
 });

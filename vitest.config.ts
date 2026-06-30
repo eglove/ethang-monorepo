@@ -11,17 +11,19 @@ export default defineConfig({
         "*.bench.ts",
         "*.gen.ts",
         "**/.wrangler/**",
-        "**/build.ts"
+        "**/build.ts",
+        "apps/sterett-admin",
+        "apps/ethang-admin"
       ],
       include: ["apps/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 94.76,
-        functions: 92.26,
-        lines: 96.33,
-        statements: 96.31
+        branches: 95.22,
+        functions: 97.06,
+        lines: 98.11,
+        statements: 98.07
       }
     },
     projects: [
