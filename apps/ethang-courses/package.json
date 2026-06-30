@@ -13,7 +13,7 @@
     "uuid": "^14.0.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260627.1",
+    "@cloudflare/workers-types": "^4.20260630.1",
     "@ethang/eslint-config": "workspace:*",
     "@types/lodash": "^4.17.24",
     "@types/luxon": "^3.7.2",
