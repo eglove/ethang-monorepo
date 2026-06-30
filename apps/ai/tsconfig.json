@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["node"]
-  },
-  "extends": ["../../packages/tsconfig/tsconfig.base.json"]
-}
