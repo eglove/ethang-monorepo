@@ -1,4 +1,3 @@
-import { atddFsmTdd } from "./atdd-fsm-tdd.ts";
 import { commit } from "./commit.ts";
 import { ddd } from "./ddd.ts";
 import { everythingSearch } from "./everything-search.ts";
@@ -15,7 +14,6 @@ export const GLOBAL_SKILLS = [
   jq,
   everythingSearch,
   githubCli,
-  atddFsmTdd,
   commit,
   lint
 ];
