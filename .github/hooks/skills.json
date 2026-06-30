@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "sessionStart": [
+      {
+        "prompt": "/swebok",
+        "type": "prompt"
+      },
+      {
+        "prompt": "/ddd",
+        "type": "prompt"
+      }
+    ]
+  },
+  "version": 1
+}

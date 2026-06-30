@@ -8,11 +8,11 @@ export const swebok = defineSkill({
   content: [
     {
       level: 1,
-      text: "SWEBOK v4 Guideline Finder",
+      text: "SWEBOK v4 Reference",
       type: "header"
     },
     {
-      text: "This skill acts as a comprehensive reference guide to the IEEE Software Engineering Body of Knowledge (SWEBOK v4). It enables you to locate and inspect the industry-standard software engineering guidelines, domain theories, conceptual foundations, and compliance checklists compiled for each SWEBOK v4 chapter.",
+      text: "Reference guide to the IEEE Software Engineering Body of Knowledge (SWEBOK v4). Locate and inspect software engineering guidelines, domain theories, conceptual foundations, and compliance checklists for each chapter.",
       type: "text"
     },
     {
@@ -822,6 +822,10 @@ export const swebok = defineSkill({
         ]
       ],
       type: "table"
+    },
+    {
+      text: "Do not produce any conversational output or solicit user input. This reference is silently loaded for agent use.",
+      type: "text"
     }
   ] as MarkdownBlock[],
   description:
