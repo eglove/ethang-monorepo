@@ -114,8 +114,7 @@ describe("learningPathsQuery", () => {
     };
 
     const mockCoursesSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([mockCourseData])
+      from: vi.fn().mockResolvedValue([mockCourseData])
     };
 
     const mockDatabase = {
@@ -212,8 +211,7 @@ describe("learningPathQuery", () => {
     };
 
     const mockCoursesSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([mockCourseData])
+      from: vi.fn().mockResolvedValue([mockCourseData])
     };
 
     const mockDatabase = {
@@ -261,8 +259,7 @@ describe("learningPathQuery", () => {
     };
 
     const mockCoursesSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([])
+      from: vi.fn().mockResolvedValue([])
     };
 
     const mockDatabase = {
@@ -367,13 +364,11 @@ describe("coursesAllQuery", () => {
     };
 
     const mockCoursesSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([mockCourseData])
+      from: vi.fn().mockResolvedValue([mockCourseData])
     };
 
     const mockLPSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([
+      from: vi.fn().mockResolvedValue([
         {
           createdAt: CREATED_AT,
           id: LP_1,
@@ -406,8 +401,10 @@ describe("coursesAllQuery", () => {
       learningPathId: LP_1,
       learningPathName: TEST_LP,
       learningPathOrder: 1,
+      learningPathUrl: EXAMPLE_LP,
       name: TEST_COURSE,
       swebokFocus: TEST_FOCUS,
+      updatedAt: UPDATED_AT,
       url: EXAMPLE_COURSE
     });
   });
@@ -442,13 +439,11 @@ describe("coursesAllQuery", () => {
     };
 
     const mockCoursesSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([mockCourseData])
+      from: vi.fn().mockResolvedValue([mockCourseData])
     };
 
     const mockLPSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([
+      from: vi.fn().mockResolvedValue([
         {
           createdAt: CREATED_AT,
           id: LP_1,
@@ -474,7 +469,7 @@ describe("coursesAllQuery", () => {
     );
 
     expect(result).toHaveLength(1);
-    expect(result[0].courseId).toBe(COURSE_1);
+    expect(result[0]?.courseId).toBe(COURSE_1);
   });
 
   it("handles missing learning path gracefully (null name/swebokFocus)", async () => {
@@ -489,13 +484,11 @@ describe("coursesAllQuery", () => {
     };
 
     const mockCoursesSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([mockCourseData])
+      from: vi.fn().mockResolvedValue([mockCourseData])
     };
 
     const mockLPSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([])
+      from: vi.fn().mockResolvedValue([])
     };
 
     const mockDatabase = {
@@ -512,8 +505,8 @@ describe("coursesAllQuery", () => {
     );
 
     expect(result).toHaveLength(1);
-    expect(result[0].courseId).toBe(COURSE_1);
-    expect(result[0].learningPathName).toBeNull();
-    expect(result[0].swebokFocus).toBeNull();
+    expect(result[0]?.courseId).toBe(COURSE_1);
+    expect(result[0]?.learningPathName).toBeNull();
+    expect(result[0]?.swebokFocus).toBeNull();
   });
 });

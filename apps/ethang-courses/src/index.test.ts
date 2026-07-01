@@ -40,7 +40,7 @@ vi.mock("./data/queries/courses-learning-paths.ts", () => {
           learningPathOrder: 1,
           name: TEST_COURSE_DATA.name,
           swebokFocus: "testing",
-          url: "https://example.com"
+          url: EXAMPLE_URL
         }
       ])
     ),
@@ -234,7 +234,7 @@ describe("ethang-courses WorkerEntrypoint", () => {
         learningPathOrder: 1,
         name: TEST_COURSE_DATA.name,
         swebokFocus: "testing",
-        url: "https://example.com"
+        url: EXAMPLE_URL
       });
     });
   });

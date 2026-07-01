@@ -1,4 +1,4 @@
-import { asc, eq, inArray } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { Effect } from "effect";
 import filter from "lodash/filter.js";
 import isError from "lodash/isError.js";
@@ -73,18 +73,21 @@ const fetchLpData = async (database: Database, lpId: string) => {
     .where(eq(learningPathCoursesTable.learningPathId, lpId))
     .orderBy(asc(learningPathCoursesTable.orderRank));
 
-  const courseIds = map(coursesInPath, (lpc) => {
-    return lpc.courseId;
-  });
+  const courseIds = new Set(
+    map(coursesInPath, (lpc) => {
+      return lpc.courseId;
+    })
+  );
 
-  if (0 === courseIds.length) {
+  if (0 === courseIds.size) {
     return { orderedCourses: [] };
   }
 
-  const courseRecords = await database
-    .select()
-    .from(coursesTable)
-    .where(inArray(coursesTable.id, courseIds));
+  // Fetch all courses and filter in-memory to avoid D1's 100 bound parameter limit
+  const allCourseRecords = await database.select().from(coursesTable);
+  const courseRecords = filter(allCourseRecords, (c) => {
+    return courseIds.has(c.id);
+  });
 
   const courseMap = new Map(
     map(courseRecords, (course) => {
@@ -173,35 +176,17 @@ export const coursesAllQuery = (database: Database, _parameters: null) => {
         return [];
       }
 
-      // Get all course IDs and learning path IDs
-      const courseIds = map(learningPathCourses, (lpc) => {
-        return lpc.courseId;
-      });
-      const learningPathIds = [
-        ...new Set(
-          map(learningPathCourses, (lpc) => {
-            return lpc.learningPathId;
-          })
-        )
-      ];
-
-      // Fetch all courses
-      const courseRecords = await database
+      // Fetch all courses and learning paths (small tables, avoids D1's 100 bound parameter limit with inArray)
+      const courseRecords = await database.select().from(coursesTable);
+      const learningPathRecords = await database
         .select()
-        .from(coursesTable)
-        .where(inArray(coursesTable.id, courseIds));
+        .from(learningPathsTable);
 
       const courseMap = new Map(
         map(courseRecords, (course) => {
           return [course.id, course] as const;
         })
       );
-
-      // Fetch all learning paths
-      const learningPathRecords = await database
-        .select()
-        .from(learningPathsTable)
-        .where(inArray(learningPathsTable.id, learningPathIds));
 
       const learningPathMap = new Map(
         map(learningPathRecords, (lp) => {
@@ -212,11 +197,12 @@ export const coursesAllQuery = (database: Database, _parameters: null) => {
       // Build courses with stable indices and learning path context
       const allCourses = map(learningPathCourses, (lpc, index) => {
         const course = courseMap.get(lpc.courseId);
-        const learningPath = learningPathMap.get(lpc.learningPathId);
 
         if (!course) {
           return null;
         }
+
+        const learningPath = learningPathMap.get(lpc.learningPathId);
 
         return {
           author: course.author,
@@ -225,8 +211,10 @@ export const coursesAllQuery = (database: Database, _parameters: null) => {
           learningPathId: lpc.learningPathId,
           learningPathName: learningPath?.name ?? null,
           learningPathOrder: lpc.orderRank,
+          learningPathUrl: learningPath?.url ?? null,
           name: course.name,
           swebokFocus: learningPath?.swebokFocus ?? null,
+          updatedAt: course.updatedAt,
           url: course.url
         };
       });
