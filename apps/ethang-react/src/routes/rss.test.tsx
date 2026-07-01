@@ -1,5 +1,6 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType, ReactElement, ReactNode } from "react";
 
+import { render, screen } from "@testing-library/react";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -50,6 +51,38 @@ vi.mock("@tanstack/react-router", async () => {
     },
     useNavigate: () => {
       return mockNavigate;
+    }
+  };
+});
+
+vi.mock("../components/layout/main-layout.tsx", () => {
+  return {
+    MainLayout: ({ children }: { children: ReactNode }) => {
+      return <div data-testid="main-layout">{children}</div>;
+    }
+  };
+});
+
+vi.mock("../components/rss/add-feed-form.tsx", () => {
+  return {
+    AddFeedForm: () => {
+      return <div data-testid="add-feed-form" />;
+    }
+  };
+});
+
+vi.mock("../components/rss/feeds.tsx", () => {
+  return {
+    Feeds: () => {
+      return <div data-testid="feeds" />;
+    }
+  };
+});
+
+vi.mock("../components/rss/rss-container.tsx", () => {
+  return {
+    RssContainer: () => {
+      return <div data-testid="rss-container" />;
     }
   };
 });
@@ -157,6 +190,19 @@ describe("RSS Feature", () => {
         // eslint-disable-next-line unicorn/no-global-object-property-assignment
         globalThis.DOMParser = originalDOMParser;
       }
+    });
+  });
+
+  describe("RssComponent Rendering", () => {
+    it("renders the RSS page with AddFeedForm, Feeds, and RssContainer", () => {
+      // @ts-expect-error for test
+      const Component = Route.options.component as ComponentType;
+      const tree = render(<Component />);
+
+      expect(tree.getByTestId("main-layout")).toBeDefined();
+      expect(tree.getByTestId("add-feed-form")).toBeDefined();
+      expect(tree.getByTestId("feeds")).toBeDefined();
+      expect(tree.getByTestId("rss-container")).toBeDefined();
     });
   });
 });

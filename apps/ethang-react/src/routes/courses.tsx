@@ -1,12 +1,9 @@
-import { courses as coursesIntl } from "@ethang/intl/en/courses.ts";
 import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import forEach from "lodash/forEach.js";
+import groupBy from "lodash/groupBy";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import isNil from "lodash/isNil.js";
-import map from "lodash/map";
-import { DateTime } from "luxon";
 
 import { rpcRequest } from "../clients/rpc-client.ts";
 import { courseStore } from "../components/courses/course-store.ts";
@@ -15,65 +12,120 @@ import { MainLayout } from "../components/layout/main-layout.tsx";
 
 const COURSES_SERVICE = "ethang_courses";
 
-export const curriculumQueryOptions = () => {
+export const coursesAllQueryOptions = () => {
   return queryOptions({
     queryFn: async () => {
-      return rpcRequest<{
-        id: string;
-        learningPaths: { courses: { id: string }[]; id: string }[];
-        name?: string;
-        updatedAt: string;
-      }>(COURSES_SERVICE, "curriculum", {
-        id: "019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4"
-      });
+      return rpcRequest<
+        {
+          author: string;
+          courseId: string;
+          courseIndex: number;
+          learningPathId: string;
+          learningPathName: null | string;
+          learningPathOrder: number;
+          learningPathUrl: null | string;
+          name: string;
+          swebokFocus: null | string;
+          url: string;
+        }[]
+      >(COURSES_SERVICE, "coursesAll", {});
     },
-    queryKey: ["curriculum", "019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4"]
+    queryKey: ["coursesAll"]
   });
 };
 
 const RouteComponent = () => {
-  const { data, isPending } = useQuery(curriculumQueryOptions());
+  const { data, isPending } = useQuery(coursesAllQueryOptions());
 
-  const latestUpdate = data?.updatedAt;
-  courseStore.reset();
+  if (isPending || isNil(data)) {
+    return (
+      <MainLayout>
+        <Skeleton loading>
+          <Heading mb="2" as="h1" size="8">
+            Courses
+          </Heading>
+        </Skeleton>
+      </MainLayout>
+    );
+  }
 
-  const formattedDate = isNil(latestUpdate)
-    ? ""
-    : DateTime.fromISO(latestUpdate).toLocaleString({
-        dateStyle: "medium",
-        timeStyle: "long"
+  // Group courses by learning path
+  const coursesByLearningPath: Record<string, any[]> = groupBy(
+    data,
+    "learningPathId"
+  );
+
+  // Calculate offsets for numbering within learning paths
+  const pathOffsets: Record<string, number> = {};
+  const learningPathOrder: Record<
+    string,
+    { name: null | string; swebokFocus: null | string; url: null | string }
+  > = {};
+
+  // Sort learning paths by the first course's learningPathOrder
+  const uniqueLearningPaths = [
+    ...new Set(
+      data.map((course) => {
+        return course.learningPathId;
+      })
+    )
+  ];
+
+  for (const lpId of uniqueLearningPaths) {
+    const lpCourses = coursesByLearningPath[lpId];
+    if (0 < lpCourses.length) {
+      // Sort by learningPathOrder to ensure consistent ordering
+      const sortedCourses = [...lpCourses].sort((a, b) => {
+        return a.learningPathOrder - b.learningPathOrder;
       });
 
-  const pathOffsets: Record<string, number> = {};
-  let totalCount = 0;
-  forEach(data?.learningPaths, (learningPath) => {
-    pathOffsets[learningPath.id] = totalCount;
-    totalCount += learningPath.courses.length;
-  });
+      // Store the first course's learningPathOrder as the offset reference
+      pathOffsets[lpId] = sortedCourses[0].courseIndex - 1; // Adjust for 0-based indexing
+
+      // Find learning path name and swebokFocus from first course
+      const firstCourse = sortedCourses[0];
+      learningPathOrder[lpId] = {
+        name: firstCourse.learningPathName,
+        swebokFocus: firstCourse.swebokFocus,
+        url: null // We don't have URL in our coursesAll response, need to fix this
+      };
+    }
+  }
 
   return (
     <MainLayout>
       <Skeleton loading={isPending}>
         <Heading mb="2" as="h1" size="8">
-          {data?.name}
+          Courses
         </Heading>
       </Skeleton>
       <Skeleton loading={isPending}>
         <Text as="p" mb="4">
-          {coursesIntl.LAST_UPDATED} {formattedDate}
+          {/* We'll need to fetch updatedAt separately or include it in coursesAll response */}
+          Last Updated: {new Date().toLocaleString()}
         </Text>
       </Skeleton>
       <Skeleton loading={isPending}>
         <Flex my="6" gap="4" direction="column">
-          {map(data?.learningPaths, (learningPath) => {
-            return (
-              <LearningPath
-                key={learningPath.id}
-                learningPathId={learningPath.id}
-                courseOffset={pathOffsets[learningPath.id] ?? 0}
-              />
-            );
-          })}
+          {Object.entries(coursesByLearningPath).map(
+            ([learningPathId, value]) => {
+              const lpInfo = learningPathOrder[learningPathId] || {
+                name: "Unknown",
+                swebokFocus: null
+              };
+              return (
+                <LearningPath
+                  key={learningPathId}
+                  courses={value || []}
+                  learningPathUrl={lpInfo.url} // This will be null until we fix the response
+                  learningPathName={lpInfo.name}
+                  learningPathId={learningPathId}
+                  learningPathSwebokFocus={lpInfo.swebokFocus}
+                  courseOffset={pathOffsets[learningPathId] || 0}
+                />
+              );
+            }
+          )}
         </Flex>
       </Skeleton>
     </MainLayout>

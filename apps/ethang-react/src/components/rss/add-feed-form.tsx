@@ -11,14 +11,18 @@ import { subscriptionsOptions } from "./queries.ts";
 
 const RSS_SERVICE = "ethang_rss";
 
+export const addSubscriptionMutationFn = async (variables: {
+  xmlAddress: string;
+}) => {
+  return rpcRequest(RSS_SERVICE, "addSubscription", variables);
+};
+
 export const AddFeedForm = () => {
   const queryClient = useQueryClient();
 
   const { isPending: isAddFeedPending, mutateAsync: addSubscription } =
     useMutation({
-      mutationFn: async (variables: { xmlAddress: string }) => {
-        return rpcRequest(RSS_SERVICE, "addSubscription", variables);
-      },
+      mutationFn: addSubscriptionMutationFn,
       onSuccess: () => {
         queryClient
           .invalidateQueries({ queryKey: subscriptionsOptions().queryKey })

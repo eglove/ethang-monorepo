@@ -3,9 +3,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LearningPath, learningPathQueryOptions } from "./learning-path.tsx";
 
-const mockLearningPathStore = {
-  courseDataMap: {} as Record<string, unknown>,
-  data: null as unknown,
+const mockLearningPathStore: {
+  allCoursesData: unknown;
+  courseDataMap: Record<string, unknown>;
+  data: unknown;
+  isAllCoursesLoading: boolean;
+  isPending: boolean;
+} = {
+  allCoursesData: null,
+  courseDataMap: {},
+  data: null,
+  isAllCoursesLoading: false,
   isPending: false
 };
 
@@ -26,6 +34,13 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
         };
       }
 
+      if ("coursesAll" === key) {
+        return {
+          data: mockLearningPathStore.allCoursesData,
+          isLoading: mockLearningPathStore.isAllCoursesLoading
+        };
+      }
+
       return {
         data: mockLearningPathStore.courseDataMap[courseId] ?? null,
         isPending: false
@@ -39,6 +54,7 @@ describe("LearningPath", () => {
     mockLearningPathStore.data = null;
     mockLearningPathStore.isPending = false;
     mockLearningPathStore.courseDataMap = {};
+    mockLearningPathStore.allCoursesData = null;
   });
 
   it("executes the query function", async () => {
@@ -91,6 +107,13 @@ describe("LearningPath", () => {
       url: "https://example.com/c2"
     };
 
+    // Provide allCourses data so Course can compute index via findIndex
+    mockLearningPathStore.allCoursesData = [
+      { id: "course-0" },
+      { id: "course-1" },
+      { id: "course-2" }
+    ];
+
     render(<LearningPath courseOffset={5} learningPathId="path-1" />);
 
     const pathLink = screen.getByRole("link", {
@@ -101,8 +124,10 @@ describe("LearningPath", () => {
     expect(screen.getByText("2 courses")).toBeDefined();
 
     // Verify individual courses are rendered with offset course index
-    expect(screen.getByText("6.")).toBeDefined();
-    expect(screen.getByText("7.")).toBeDefined();
+    // course-1 is at index 1 in allCourses, so 1 + 1 = 2
+    // course-2 is at index 2 in allCourses, so 2 + 1 = 3
+    expect(screen.getByText("2.")).toBeDefined();
+    expect(screen.getByText("3.")).toBeDefined();
 
     expect(
       screen.getByRole("link", { name: "Code Construction Basics" })

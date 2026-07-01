@@ -2,7 +2,10 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import repeat from "lodash/repeat.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { AddFeedForm } from "./add-feed-form.tsx";
+import {
+  AddFeedForm,
+  addSubscriptionMutationFn as addSubscriptionMutationFunction
+} from "./add-feed-form.tsx";
 
 const mockAddSubscription = vi.fn().mockResolvedValue({});
 const mockAddFeedFormStore = { isMockLoading: false };
@@ -26,6 +29,21 @@ vi.mock("@tanstack/react-query", () => {
 
 const FEED_XML_URL_PLACEHOLDER = "Feed XML URL";
 const SCOPE_FORM = ":scope form";
+
+describe("addSubscriptionMutationFn", () => {
+  it("calls rpcRequest with the correct arguments and returns the result", async () => {
+    const mockResponse = { success: true };
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(mockResponse, { status: 200 })
+    );
+
+    const result = await addSubscriptionMutationFunction({
+      xmlAddress: "https://example.com/rss.xml"
+    });
+
+    expect(result).toEqual(mockResponse);
+  });
+});
 
 describe("AddFeedForm", () => {
   beforeEach(() => {

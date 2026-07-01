@@ -10,6 +10,7 @@ import { courseTrackingQuery } from "./data/queries/course-tracking.ts";
 import { courseTrackingsQuery } from "./data/queries/course-trackings.ts";
 import {
   courseQuery,
+  coursesAllQuery,
   coursesQuery,
   learningPathQuery,
   learningPathsQuery
@@ -35,6 +36,11 @@ export default class extends WorkerEntrypoint<Env> {
 
   public async courses() {
     return Effect.runPromise(coursesQuery(this.getDb(), null));
+  }
+
+  // New method: Return all courses with stable indices and learning path context
+  public async coursesAll() {
+    return Effect.runPromise(coursesAllQuery(this.getDb(), null));
   }
 
   public async courseTracking(parameters: {

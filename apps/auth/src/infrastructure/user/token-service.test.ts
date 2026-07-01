@@ -62,6 +62,23 @@ describe("createTokenService", () => {
       expect(result).toStrictEqual(verifyResult);
     });
 
+    it("handles nil and non-string values in the payload", async () => {
+      const mixedPayload = {
+        email: "test@test.com",
+        nilValue: null,
+        numValue: 123,
+        sub: "user-1"
+      };
+      mockJwtVerify.mockResolvedValue({ payload: mixedPayload });
+
+      const result = await Effect.runPromise(tokenService.verify(TEST_TOKEN));
+
+      expect(result.payload.nilValue).toBe("");
+      expect(result.payload.numValue).toBe("123");
+      expect(result.payload.email).toBe("test@test.com");
+      expect(result.payload.sub).toBe("user-1");
+    });
+
     it("fails with TokenVerifyError when verification fails", async () => {
       mockJwtVerify.mockRejectedValue(new Error("Verification failed"));
 

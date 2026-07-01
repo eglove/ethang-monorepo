@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { Route } from "./scrollbar-gutter.tsx";
@@ -29,8 +29,12 @@ vi.mock("@radix-ui/themes", () => {
     Box: ({ children }: any) => {
       return <div>{children}</div>;
     },
-    Button: ({ children, type }: any) => {
-      return <button type={type ?? "button"}>{children}</button>;
+    Button: (properties: any) => {
+      return (
+        <button onClick={properties.onClick} type={properties.type ?? "button"}>
+          {properties.children}
+        </button>
+      );
     },
     Card: ({ children }: any) => {
       return <div>{children}</div>;
@@ -63,5 +67,23 @@ describe("Scrollbar Gutter Route", () => {
     render(<Component />);
     expect(screen.getByTestId("main-layout")).toBeDefined();
     expect(screen.getByText("scrollbar-gutter")).toBeDefined();
+  });
+
+  it("toggles extra content when button is clicked", () => {
+    // @ts-expect-error test
+    const Component = Route.component;
+    render(<Component />);
+
+    const button = screen.getByRole("button", { name: "Show Extra Content" });
+    fireEvent.click(button);
+
+    expect(screen.getByText("Hide extra content")).toBeDefined();
+    const extraContent = screen.getAllByText(
+      "Additional content to trigger scrollbar..."
+    );
+    expect(extraContent).toHaveLength(2);
+
+    fireEvent.click(button);
+    expect(screen.getByText("Show Extra Content")).toBeDefined();
   });
 });

@@ -3,6 +3,19 @@ import { describe, expect, it, vi } from "vitest";
 
 import { Route } from "./index.tsx";
 
+const mockBlogStore = {
+  isPending: false,
+  posts: [
+    {
+      _id: "1",
+      _updatedAt: "2024-01-01T12:00:00Z",
+      blogCategory: { title: "Blog" },
+      slug: { current: "test-blog" },
+      title: "Test Blog Title"
+    }
+  ]
+};
+
 vi.mock("@tanstack/react-router", () => {
   return {
     createFileRoute: () => {
@@ -25,19 +38,11 @@ vi.mock("@ethang/store/use-store", () => {
 vi.mock("@tanstack/react-query", () => {
   return {
     keepPreviousData: {},
-    useQuery: vi.fn().mockReturnValue({
-      data: {
-        posts: [
-          {
-            _id: "1",
-            _updatedAt: "2024-01-01T12:00:00Z",
-            blogCategory: { title: "Blog" },
-            slug: { current: "test-blog" },
-            title: "Test Blog Title"
-          }
-        ]
-      },
-      isPending: false
+    useQuery: vi.fn().mockImplementation(() => {
+      return {
+        data: { posts: mockBlogStore.posts },
+        isPending: mockBlogStore.isPending
+      };
     })
   };
 });
@@ -98,6 +103,7 @@ vi.mock("../../models/blog-model.ts", () => {
 
 describe("Blog Index Route", () => {
   it("renders blog list", () => {
+    mockBlogStore.isPending = false;
     // @ts-expect-error for test
     const Component = Route.component;
     render(<Component />);
@@ -107,5 +113,13 @@ describe("Blog Index Route", () => {
     ).toBeDefined();
     expect(screen.getByText("Test Blog Title")).toBeDefined();
     expect(screen.getByTestId("pagination")).toBeDefined();
+  });
+
+  it("shows spinner when data is loading", () => {
+    mockBlogStore.isPending = true;
+    // @ts-expect-error for test
+    const Component = Route.component;
+    render(<Component />);
+    expect(screen.getByTestId("spinner")).toBeDefined();
   });
 });

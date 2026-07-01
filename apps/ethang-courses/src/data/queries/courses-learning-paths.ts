@@ -153,3 +153,87 @@ export const learningPathQuery = (
     }
   });
 };
+
+export const coursesAllQuery = (database: Database, _parameters: null) => {
+  return Effect.tryPromise({
+    catch: (cause) => {
+      return isError(cause) ? cause : new Error(String(cause));
+    },
+    try: async () => {
+      // Fetch all learning path course relationships with order
+      const learningPathCourses = await database
+        .select()
+        .from(learningPathCoursesTable)
+        .orderBy(
+          asc(learningPathCoursesTable.learningPathId),
+          asc(learningPathCoursesTable.orderRank)
+        );
+
+      if (0 === learningPathCourses.length) {
+        return [];
+      }
+
+      // Get all course IDs and learning path IDs
+      const courseIds = map(learningPathCourses, (lpc) => {
+        return lpc.courseId;
+      });
+      const learningPathIds = [
+        ...new Set(
+          map(learningPathCourses, (lpc) => {
+            return lpc.learningPathId;
+          })
+        )
+      ];
+
+      // Fetch all courses
+      const courseRecords = await database
+        .select()
+        .from(coursesTable)
+        .where(inArray(coursesTable.id, courseIds));
+
+      const courseMap = new Map(
+        map(courseRecords, (course) => {
+          return [course.id, course] as const;
+        })
+      );
+
+      // Fetch all learning paths
+      const learningPathRecords = await database
+        .select()
+        .from(learningPathsTable)
+        .where(inArray(learningPathsTable.id, learningPathIds));
+
+      const learningPathMap = new Map(
+        map(learningPathRecords, (lp) => {
+          return [lp.id, lp] as const;
+        })
+      );
+
+      // Build courses with stable indices and learning path context
+      const allCourses = map(learningPathCourses, (lpc, index) => {
+        const course = courseMap.get(lpc.courseId);
+        const learningPath = learningPathMap.get(lpc.learningPathId);
+
+        if (!course) {
+          return null;
+        }
+
+        return {
+          author: course.author,
+          courseId: course.id,
+          courseIndex: index + 1,
+          learningPathId: lpc.learningPathId,
+          learningPathName: learningPath?.name ?? null,
+          learningPathOrder: lpc.orderRank,
+          name: course.name,
+          swebokFocus: learningPath?.swebokFocus ?? null,
+          url: course.url
+        };
+      });
+
+      return filter(allCourses, (c): c is NonNullable<typeof c> => {
+        return Boolean(c);
+      });
+    }
+  });
+};

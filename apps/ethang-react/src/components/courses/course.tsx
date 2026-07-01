@@ -6,11 +6,6 @@ import { rpcRequest } from "../../clients/rpc-client.ts";
 
 const COURSES_SERVICE = "ethang_courses";
 
-type CourseProperties = {
-  courseId: string;
-  courseIndex: number;
-};
-
 export const courseQueryOptions = (courseId: string) => {
   return queryOptions({
     queryFn: async () => {
@@ -25,20 +20,35 @@ export const courseQueryOptions = (courseId: string) => {
   });
 };
 
-export const Course = ({
-  courseId,
-  courseIndex
-}: Readonly<CourseProperties>) => {
-  const { data, isPending } = useQuery(courseQueryOptions(courseId));
+export const coursesAllQueryOptions = () => {
+  return queryOptions({
+    queryFn: async () => {
+      return rpcRequest(COURSES_SERVICE, "coursesAll");
+    },
+    queryKey: ["coursesAll"]
+  });
+};
 
-  const link = data?.url;
-  const name = data?.name;
-  const author = data?.author;
+export type CourseProperties = {
+  courseId: string;
+};
+
+export const Course = ({ courseId }: Readonly<CourseProperties>) => {
+  const { data: course, isPending } = useQuery(courseQueryOptions(courseId));
+  const { data: allCourses, isLoading } = useQuery(coursesAllQueryOptions());
+
+  const index =
+    allCourses?.findIndex((c) => {
+      return c.id === courseId;
+    }) ?? 0;
+  const link = course?.url;
+  const name = course?.name;
+  const author = course?.author;
 
   return (
-    <Skeleton loading={isPending}>
+    <Skeleton loading={isPending || isLoading}>
       <li>
-        <Text as="span">{courseIndex}. </Text>
+        <Text as="span">{index + 1}. </Text>
         <Link href={link} target="_blank">
           {name}
         </Link>{" "}
