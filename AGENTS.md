@@ -41,9 +41,9 @@ integrity, and drift checks.
 
 ---
 
-## CRITICAL: MCP Server Usage
+## CRITICAL: Tool Usage
 
-AI agents must follow this MCP tool priority order:
+AI agents must follow this tool priority order:
 
 1. **webstorm** — use for: file writes/creates/renames, refactoring, builds, database/SQL queries
 2. **PowerShell + Specialized CLIs** (fallback) — use `rg`, `jq`, `es` (Everything Search), `gh`

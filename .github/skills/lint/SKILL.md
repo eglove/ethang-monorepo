@@ -11,7 +11,7 @@ This skill is designed specifically to understand, execute, and fix issues relat
 
 1. **Rule Awareness**: You must be aware of every rule turned on or off in the configuration.
 - Use the `grep` tool to inspect `packages/eslint-config/src/config.*.js` dynamically to parse and understand the rules currently applied.
-1. **Knowledge Base**: Check the skill resources `resources/knowledge-base.md` for difficult rules and their solutions before attempting to fix them.
+1. **Knowledge Base**: Check the skill resources for difficult rules and their solutions before attempting to fix them.
 
 ## Execution Workflow
 

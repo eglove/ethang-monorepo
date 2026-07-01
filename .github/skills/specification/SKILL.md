@@ -1,5 +1,5 @@
 ---
-description: Interview-style requirements discovery (grill-me) following SWEBOK v4 / ISO/IEC 29148 standards, producing BDD documents in /docs/<feature-name>/ directories.
+description: Interview-style requirements discovery following SWEBOK v4 / ISO/IEC 29148 standards, producing BDD documents in /docs/<feature-name>/ directories.
 name: specification
 ---
 
@@ -11,13 +11,13 @@ Run a `/specification` session to interview the user about a feature, produce re
 
 Invoke this skill when the user wants to define a new feature or capability. The skill MUST be used when the user mentions 'specification', 'spec', 'requirements interview', 'BDD documents', 'feature spec', or 'planning a new feature'.
 
-## Interview Workflow (Grill-Me Style)
+## Interview Workflow
 
 The agent MUST conduct a relentless, interview-style discovery session. Do NOT assume requirements — actively interrogate every assumption. The interview follows these phases:
 
 1. **Phase 1 — Feature Identity**: Ask the user for a concise feature name and high-level purpose. This name will be used as the directory name `/docs/<feature-name>/`.
 1. **Phase 2 — Stakeholder Analysis**: Ask who the stakeholders are (users, clients, operators, etc.). Identify distinct user classes and their goals.
-1. **Phase 3 — Functional Discovery**: Use the grill-me technique — ask 'why' relentlessly. For each capability the user describes, ask 'what happens when this fails?', 'who triggers this?', 'what changes after this succeeds?'. Do not accept vague answers — push for concrete actor-action statements.
+1. **Phase 3 — Functional Discovery**: Ask 'why' relentlessly. For each capability the user describes, ask 'what happens when this fails?', 'who triggers this?', 'what changes after this succeeds?'. Do not accept vague answers — push for concrete actor-action statements.
 1. **Phase 4 — Constraints & QoS**: Ask about non-functional requirements — performance, security, reliability, scalability targets. Push for quantitative values (e.g., 'fast' is unacceptable — 'under 200ms p95' is required). Apply Gilb's Planguage where appropriate.
 1. **Phase 5 — Edge Cases & Exceptions**: Ask 'what should NOT happen?', 'what are the boundaries?', 'what happens under load or failure?'. Surface tacit knowledge by asking about existing manual processes.
 1. **Phase 6 — Confirmation**: Summarize all discovered requirements back to the user. Ask for confirmation or corrections before proceeding to document generation.
@@ -74,7 +74,7 @@ The README MUST contain:
 
 ## Compliance Checklist
 
-* Was the interview conducted in a grill-me style (relentless questioning, no assumptions accepted)?
+* Was the interview conducted in a relentless questioning, no assumptions accepted style?
 * Were all stakeholder classes identified and documented?
 * Is each requirement uniquely identified and classified as Functional or Non-Functional?
 * Are functional requirements written in structured natural language (Actor-Action or Use Case)?

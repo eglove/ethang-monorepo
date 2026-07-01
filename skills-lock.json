@@ -374,10 +374,10 @@
       "computedHash": "cc32685413a75070d297a6531f0f2cb3e8b842d82015a5f9564fb14ac05451ab"
     },
     "chrome-devtools": {
-      "source": "github/awesome-copilot",
+      "source": "chromedevtools/chrome-devtools-mcp",
       "sourceType": "github",
       "skillPath": "skills/chrome-devtools/SKILL.md",
-      "computedHash": "85d9c4ef94e00ddfc937d50aab72a307e80b98bc7e6744ec6e239ef68819c2d7"
+      "computedHash": "d71d3a3271c6eb6170da33d153a52742ac69efeeee68ef526d9d98dbe19ce0b5"
     },
     "chrome-devtools-cli": {
       "source": "chromedevtools/chrome-devtools-mcp",
@@ -732,6 +732,12 @@
       "sourceType": "github",
       "skillPath": "skills/dependabot/SKILL.md",
       "computedHash": "a7f64786f061e1ec9a513757a54f96e3c05b1f88d9d7e380222defbcd87a56e4"
+    },
+    "dev": {
+      "source": "microsoft/playwright-cli",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/dev/SKILL.md",
+      "computedHash": "da14d3749ab3f65b479db8b056ab64cd262ce15d07dd642f7d3263ad10708c1b"
     },
     "devops-rollout-plan": {
       "source": "github/awesome-copilot",
@@ -1590,6 +1596,24 @@
       "sourceType": "github",
       "skillPath": "skills/playwright-automation-fill-in-form/SKILL.md",
       "computedHash": "05c39652cc1ef6a3066221d77d51e208f88f3ac8cbdd7ffe57a99de93776efe7"
+    },
+    "playwright-cli": {
+      "source": "microsoft/playwright-cli",
+      "sourceType": "github",
+      "skillPath": "skills/playwright-cli/SKILL.md",
+      "computedHash": "bf3fd079a642ccd949d6eb4e702c9aa6d3bba62768b08bc772eb0a5f743dd959"
+    },
+    "playwright-dev": {
+      "source": "microsoft/playwright",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/playwright-dev/SKILL.md",
+      "computedHash": "c491b4f287224c452e01f1f3e3ae3109dc7fd5f633f2ae7d11f569d7065ef084"
+    },
+    "playwright-devops": {
+      "source": "microsoft/playwright",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/playwright-devops/SKILL.md",
+      "computedHash": "5f6899cfc05fcd27045190a7fc733eb299460a49573bbe898f74f800af8b7e77"
     },
     "playwright-explore-website": {
       "source": "github/awesome-copilot",
