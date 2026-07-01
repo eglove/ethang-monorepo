@@ -110,11 +110,16 @@ export const LearningPath = ({
         </Text>
         <Flex asChild gap="1" direction="column">
           <ul>
-            {map(courses, (course) => {
-              return (
-                <Course key={course.courseId} courseId={course.courseId} />
-              );
-            })}
+            {map(
+              courses?.toSorted((a, b) => {
+                return a.courseIndex - b.courseIndex;
+              }) ?? [],
+              (course) => {
+                return (
+                  <Course key={course.courseId} courseId={course.courseId} />
+                );
+              }
+            )}
           </ul>
         </Flex>
       </Card>

@@ -2,11 +2,8 @@ import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import filter from "lodash/filter";
-import groupBy from "lodash/groupBy";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import isNil from "lodash/isNil.js";
-import map from "lodash/map.js";
-import orderBy from "lodash/orderBy.js";
 import { DateTime } from "luxon";
 
 import { rpcRequest } from "../clients/rpc-client.ts";
@@ -25,12 +22,6 @@ type CourseData = {
   swebokFocus: null | string;
   updatedAt: string;
   url: string;
-};
-
-type LearningPathInfo = {
-  name: null | string;
-  swebokFocus: null | string;
-  url: null | string;
 };
 
 const COURSES_SERVICE = "ethang_courses";
@@ -71,36 +62,14 @@ const RouteComponent = () => {
     DateTime.DATETIME_FULL
   );
 
-  // Group courses by learning path
-  const coursesByLearningPath = groupBy(data, "learningPathId") as Record<
-    string,
-    CourseData[]
-  >;
-
-  // Calculate offsets for numbering within learning paths
-  const learningPathOrder: Record<string, LearningPathInfo> = {};
-
-  // Sort learning paths by the first course's learningPathOrder
-  const uniqueLearningPaths = [
-    ...new Set(
-      map(data, (course) => {
-        return course.learningPathId;
-      })
-    )
-  ];
-
-  for (const lpId of uniqueLearningPaths) {
-    const lpCourses = coursesByLearningPath[lpId];
-    if (!isNil(lpCourses) && 0 < lpCourses.length) {
-      // Find learning path name and swebokFocus from first course
-      const [firstCourse] = lpCourses.toSorted((a, b) => {
-        return a.learningPathOrder - b.learningPathOrder;
-      });
-      learningPathOrder[lpId] = {
-        name: firstCourse?.learningPathName ?? "",
-        swebokFocus: firstCourse?.swebokFocus ?? "",
-        url: firstCourse?.learningPathUrl ?? null
-      };
+  // Group courses by learning path, preserving backend sort order
+  const learningPathsData = new Map<string, CourseData[]>();
+  for (const course of data) {
+    const existing = learningPathsData.get(course.learningPathId);
+    if (existing) {
+      existing.push(course);
+    } else {
+      learningPathsData.set(course.learningPathId, [course]);
     }
   }
 
@@ -118,19 +87,14 @@ const RouteComponent = () => {
       </Skeleton>
       <Skeleton loading={isPending}>
         <Flex my="6" gap="4" direction="column">
-          {map(
-            orderBy(Object.entries(coursesByLearningPath), ([, courses]) => {
-              return courses[0]?.learningPathOrder;
-            }),
-            ([learningPathId]) => {
-              return (
-                <LearningPath
-                  key={learningPathId}
-                  learningPathId={learningPathId}
-                />
-              );
-            }
-          )}
+          {[...learningPathsData.keys()].map((learningPathId) => {
+            return (
+              <LearningPath
+                key={learningPathId}
+                learningPathId={learningPathId}
+              />
+            );
+          })}
         </Flex>
       </Skeleton>
     </MainLayout>

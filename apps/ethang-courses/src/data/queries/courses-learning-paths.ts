@@ -8,6 +8,7 @@ import type { Database } from "../types.ts";
 
 import {
   coursesTable,
+  curriculumLearningPathsTable,
   learningPathCoursesTable,
   learningPathsTable
 } from "../../db/schema.ts";
@@ -157,6 +158,49 @@ export const learningPathQuery = (
   });
 };
 
+type LearningPathCourseEntry = {
+  author: string;
+  courseId: string;
+  courseIndex: number;
+  learningPathId: string;
+  learningPathName: null | string;
+  learningPathOrder: number;
+  learningPathUrl: null | string;
+  name: string;
+  swebokFocus: null | string;
+  updatedAt: string;
+  url: string;
+};
+
+const buildCourseEntry = (
+  lpc: typeof learningPathCoursesTable.$inferSelect,
+  index: number,
+  courseMap: Map<string, typeof coursesTable.$inferSelect>,
+  learningPathMap: Map<string, typeof learningPathsTable.$inferSelect>
+): LearningPathCourseEntry | null => {
+  const course = courseMap.get(lpc.courseId);
+
+  if (!course) {
+    return null;
+  }
+
+  const learningPath = learningPathMap.get(lpc.learningPathId);
+
+  return {
+    author: course.author,
+    courseId: course.id,
+    courseIndex: index,
+    learningPathId: lpc.learningPathId,
+    learningPathName: learningPath?.name ?? null,
+    learningPathOrder: lpc.orderRank,
+    learningPathUrl: learningPath?.url ?? null,
+    name: course.name,
+    swebokFocus: learningPath?.swebokFocus ?? null,
+    updatedAt: course.updatedAt,
+    url: course.url
+  };
+};
+
 export const coursesAllQuery = (database: Database, _parameters: null) => {
   return Effect.tryPromise({
     catch: (cause) => {
@@ -182,6 +226,20 @@ export const coursesAllQuery = (database: Database, _parameters: null) => {
         .select()
         .from(learningPathsTable);
 
+      // Fetch curriculum learning path ordering to sort learning paths correctly
+      const curriculumLearningPaths = await database
+        .select()
+        .from(curriculumLearningPathsTable)
+        .orderBy(asc(curriculumLearningPathsTable.orderRank));
+
+      // Build a map of learning path ID → its first curriculum order rank (or null if not in curriculum)
+      const lpCurriculumOrder = new Map<string, number>();
+      for (const clp of curriculumLearningPaths) {
+        if (!lpCurriculumOrder.has(clp.learningPathId)) {
+          lpCurriculumOrder.set(clp.learningPathId, clp.orderRank);
+        }
+      }
+
       const courseMap = new Map(
         map(courseRecords, (course) => {
           return [course.id, course] as const;
@@ -194,34 +252,49 @@ export const coursesAllQuery = (database: Database, _parameters: null) => {
         })
       );
 
-      // Build courses with stable indices and learning path context
-      const allCourses = map(learningPathCourses, (lpc, index) => {
-        const course = courseMap.get(lpc.courseId);
+      // Group courses by learning path, preserving order within each path
+      const coursesByLp = new Map<string, typeof learningPathCourses>();
+      for (const lpc of learningPathCourses) {
+        const existing = coursesByLp.get(lpc.learningPathId);
+        if (existing) {
+          existing.push(lpc);
+        } else {
+          coursesByLp.set(lpc.learningPathId, [lpc]);
+        }
+      }
 
-        if (!course) {
-          return null;
+      // Sort learning path IDs by curriculum order (or fall back to learning path ID)
+      const sortedLpIds = [...coursesByLp.keys()].toSorted((a, b) => {
+        const orderA = lpCurriculumOrder.get(a) ?? Number.MAX_SAFE_INTEGER;
+        const orderB = lpCurriculumOrder.get(b) ?? Number.MAX_SAFE_INTEGER;
+        return orderA - orderB;
+      });
+
+      // Build flat course list in correct learning path order with stable indices
+      let courseIndex = 0;
+      const allCourses: ReturnType<typeof buildCourseEntry>[] = [];
+
+      for (const lpId of sortedLpIds) {
+        const lpcList = coursesByLp.get(lpId);
+        if (!lpcList) {
+          continue;
         }
 
-        const learningPath = learningPathMap.get(lpc.learningPathId);
+        for (const lpc of lpcList) {
+          courseIndex++;
+          const result = buildCourseEntry(
+            lpc,
+            courseIndex,
+            courseMap,
+            learningPathMap
+          );
+          if (result) {
+            allCourses.push(result);
+          }
+        }
+      }
 
-        return {
-          author: course.author,
-          courseId: course.id,
-          courseIndex: index + 1,
-          learningPathId: lpc.learningPathId,
-          learningPathName: learningPath?.name ?? null,
-          learningPathOrder: lpc.orderRank,
-          learningPathUrl: learningPath?.url ?? null,
-          name: course.name,
-          swebokFocus: learningPath?.swebokFocus ?? null,
-          updatedAt: course.updatedAt,
-          url: course.url
-        };
-      });
-
-      return filter(allCourses, (c): c is NonNullable<typeof c> => {
-        return Boolean(c);
-      });
+      return allCourses;
     }
   });
 };
