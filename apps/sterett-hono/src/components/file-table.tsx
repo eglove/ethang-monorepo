@@ -1,5 +1,5 @@
+import { DateTime } from "effect";
 import map from "lodash/map.js";
-import { DateTime } from "luxon";
 
 import type { FileRecord } from "../sanity/get-files.ts";
 
@@ -31,8 +31,9 @@ export const FileTable = async ({ files, title }: FileTableProperties) => {
                   {file.title}
                 </a>
                 <span class="shrink-0 text-white/60">
-                  {DateTime.fromISO(file.date.slice(0, 10)).toLocaleString({
-                    dateStyle: "medium"
+                  {DateTime.format(DateTime.unsafeMake(file.date), {
+                    dateStyle: "medium",
+                    timeZone: "America/Chicago"
                   })}
                 </span>
               </li>

@@ -1,7 +1,6 @@
 import type { PortableTextBlock } from "@portabletext/types";
 
-import includes from "lodash/includes.js";
-import { DateTime, type DateTimeFormatOptions } from "luxon";
+import { DateTime } from "effect";
 
 import { NO_DRAFTS, sterettSanityClient } from "../clients/sanity-client.ts";
 
@@ -27,32 +26,38 @@ export type NewsUpdateReturn = {
 const CHICAGO = "America/Chicago";
 
 const getEpoch = (value: string): number => {
-  const hasTime = includes(value, "T");
-  return (
-    hasTime ? DateTime.fromISO(value) : DateTime.fromISO(value).setZone("UTC")
-  ).toMillis();
+  return DateTime.toEpochMillis(DateTime.unsafeMake(value));
 };
 
 export const eventRangeFormat = (start: string, end: string): string => {
-  const startZoned = DateTime.fromISO(start).setZone(CHICAGO);
-  const endZoned = DateTime.fromISO(end).setZone(CHICAGO);
+  const startDt = DateTime.unsafeMake(start);
+  const endDt = DateTime.unsafeMake(end);
 
-  const isSameDay = startZoned.hasSame(endZoned, "day");
-
-  const dateTimeOptions: DateTimeFormatOptions = {
+  const startZoned = DateTime.format(startDt, {
     dateStyle: "medium",
-    timeStyle: "short"
-  };
+    timeStyle: "short",
+    timeZone: CHICAGO
+  });
+  const endZoned = DateTime.format(endDt, {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: CHICAGO
+  });
+
+  const isSameDay =
+    DateTime.formatIsoDate(startDt) === DateTime.formatIsoDate(endDt);
 
   if (isSameDay) {
-    return `${startZoned.toLocaleString(dateTimeOptions)} – ${endZoned.toLocaleString({ timeStyle: "short" })}`;
+    return `${startZoned} – ${DateTime.format(endDt, { timeStyle: "short", timeZone: CHICAGO })}`;
   }
 
-  return `${startZoned.toLocaleString(dateTimeOptions)} – ${endZoned.toLocaleString(dateTimeOptions)}`;
+  return `${startZoned} – ${endZoned}`;
 };
 
 export const getRelativeDate = (date: string): string => {
-  const diffMs = DateTime.fromISO(date).toMillis() - DateTime.now().toMillis();
+  const diffMs =
+    DateTime.toEpochMillis(DateTime.unsafeMake(date)) -
+    DateTime.toEpochMillis(DateTime.unsafeNow());
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
   if (1 > Math.abs(diffDays)) return "Today";
@@ -65,7 +70,7 @@ export const getRelativeDate = (date: string): string => {
 };
 
 export const getNewsAndEvents = async (): Promise<NewsAndEvents> => {
-  const formattedDate = DateTime.now().toISODate();
+  const formattedDate = DateTime.formatIsoDate(DateTime.unsafeNow());
 
   const eventQuery = `*[_type == "calendarEvent"
     && (startsAt >= "${formattedDate}" || endsAt >= "${formattedDate}")

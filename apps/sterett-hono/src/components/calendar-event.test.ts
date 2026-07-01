@@ -1,11 +1,13 @@
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import type { CalendarEventReturn } from "../sanity/get-news-and-events.ts";
 
 import { renderCalendarEvent } from "../test-utilities/render.tsx";
 
-const NOW = DateTime.fromISO("2024-06-15T12:00:00.000Z");
+const NOW_MS = DateTime.toEpochMillis(
+  DateTime.unsafeMake("2024-06-15T12:00:00.000Z")
+);
 
 const makeEvent = (
   overrides: Partial<CalendarEventReturn> = {}
@@ -24,7 +26,7 @@ const makeEvent = (
 describe("calendarEvent", () => {
   it('shows "Happening Now!" for an active event', async () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
     const html = await renderCalendarEvent(
       makeEvent({
@@ -40,7 +42,7 @@ describe("calendarEvent", () => {
 
   it("shows relative date for a future event", async () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
     const html = await renderCalendarEvent(
       makeEvent({
@@ -56,7 +58,7 @@ describe("calendarEvent", () => {
 
   it("shows relative date for a past event", async () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
     const html = await renderCalendarEvent(
       makeEvent({
@@ -72,7 +74,7 @@ describe("calendarEvent", () => {
 
   it("renders the event title", async () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
     const html = await renderCalendarEvent(
       makeEvent({ title: "Annual Trustee Meeting" })
@@ -85,7 +87,7 @@ describe("calendarEvent", () => {
 
   it("renders the event date range separator", async () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
     const html = await renderCalendarEvent(makeEvent());
 
@@ -96,7 +98,7 @@ describe("calendarEvent", () => {
 
   it("renders description text when provided", async () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
     const description = {
       _key: "b1",
@@ -116,7 +118,7 @@ describe("calendarEvent", () => {
 
   it("renders without crashing when description is undefined", async () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
     const html = await renderCalendarEvent(
       makeEvent({ description: undefined as never })

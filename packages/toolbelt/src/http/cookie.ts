@@ -1,10 +1,11 @@
+import { DateTime } from "effect";
+import isDate from "lodash/isDate.js";
 import isNil from "lodash/isNil.js";
 import isNumber from "lodash/isNumber.js";
 import isString from "lodash/isString.js";
 import keys from "lodash/keys.js";
 import split from "lodash/split.js";
 import trim from "lodash/trim.js";
-import { DateTime } from "luxon";
 
 export const getCookieValue = <T extends string>(
   cookieName: T,
@@ -43,7 +44,7 @@ export const getCookieValue = <T extends string>(
 type SetCookieValueProperties<T extends string> = {
   config?: {
     Domain?: string;
-    Expires?: DateTime;
+    Expires?: Date;
     HttpOnly?: boolean;
     "Max-Age"?: number;
     Partitioned?: boolean;
@@ -73,8 +74,8 @@ export const setCookieValue = <T extends string>({
         cookieString += `; ${key}=${String(value)}`;
       } else if (true === value) {
         cookieString += `; ${key}`;
-      } else if (value instanceof DateTime) {
-        cookieString += `; Expires=${value.toHTTP()}`;
+      } else if (isDate(value)) {
+        cookieString += `; Expires=${value.toUTCString()}`;
       } else {
         // do nothing
       }
@@ -92,7 +93,7 @@ export const deleteCookieValue = <T extends string>(
   setCookieValue({
     config: {
       ...config,
-      Expires: DateTime.fromMillis(0),
+      Expires: DateTime.toDateUtc(DateTime.unsafeMake(0)),
       "Max-Age": 0
     },
     cookieName,

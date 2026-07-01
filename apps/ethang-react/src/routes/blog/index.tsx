@@ -2,9 +2,9 @@ import { useStore } from "@ethang/store/use-store";
 import { Card, Heading, Spinner, Text } from "@radix-ui/themes";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { DateTime } from "effect";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map";
-import { DateTime } from "luxon";
 import { twMerge } from "tailwind-merge";
 
 import { BlogPagination } from "../../components/blog/blog-pagination.tsx";
@@ -14,7 +14,7 @@ import { MainLayout } from "../../components/layout/main-layout.tsx";
 import { getPaginatedBlogs } from "../../models/blog-model.ts";
 
 const formattedDateTime = (dateTime: string) => {
-  return DateTime.fromISO(dateTime).toLocaleString({
+  return DateTime.format(DateTime.unsafeMake(dateTime), {
     dateStyle: "medium",
     timeStyle: "short"
   });

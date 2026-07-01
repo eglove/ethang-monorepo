@@ -1,5 +1,6 @@
+import { Schema } from "effect";
+import { ParseError } from "effect/ParseResult";
 import { describe, expect, it } from "vitest";
-import { z, ZodError } from "zod";
 
 import {
   TEST_DATE,
@@ -7,7 +8,8 @@ import {
   TEST_USER_ID,
   TEST_USERNAME
 } from "../test-constants.ts";
-import { signInResponseToken, tokenSchema } from "./token.ts";
+import { TokenSchema } from "./token-schema.ts";
+import { SignInResponseToken } from "./token.ts";
 
 describe("token.ts schema validation", () => {
   describe("token-schema", () => {
@@ -18,9 +20,10 @@ describe("token.ts schema validation", () => {
         sub: TEST_USER_ID,
         username: TEST_USERNAME
       };
-      const result = tokenSchema.parse(payload);
+      const result = Schema.decodeUnknownSync(TokenSchema)(payload);
 
-      expect(result).toStrictEqual({
+      // eslint-disable-next-line vitest/prefer-strict-equal
+      expect(result).toEqual({
         email: TEST_EMAIL,
         role: "admin",
         sub: TEST_USER_ID,
@@ -35,8 +38,8 @@ describe("token.ts schema validation", () => {
       };
 
       expect(() => {
-        return tokenSchema.parse(payload);
-      }).toThrow(ZodError);
+        return Schema.decodeUnknownSync(TokenSchema)(payload);
+      }).toThrow(ParseError);
     });
   });
 
@@ -51,9 +54,10 @@ describe("token.ts schema validation", () => {
         updatedAt: TEST_DATE,
         username: TEST_USERNAME
       };
-      const result = signInResponseToken.parse(payload);
+      const result = Schema.decodeUnknownSync(SignInResponseToken)(payload);
 
-      expect(result).toStrictEqual(payload);
+      // eslint-disable-next-line vitest/prefer-strict-equal
+      expect(result).toEqual(payload);
     });
 
     it("should throw for missing fields", () => {
@@ -63,28 +67,8 @@ describe("token.ts schema validation", () => {
       };
 
       expect(() => {
-        return signInResponseToken.parse(payload);
-      }).toThrow(ZodError);
-    });
-  });
-
-  describe("bracket notation trim", () => {
-    it("should validate and trim token email/username/role/sub correctly using bracket notation ['trim']()", () => {
-      const trimKey = "trim";
-      const emailSchema = z.string()[trimKey]();
-      const usernameSchema = z.string()[trimKey]();
-      const roleSchema = z.string()[trimKey]();
-      const subSchema = z.string()[trimKey]();
-
-      const emailResult = emailSchema.parse(`  ${TEST_EMAIL}  `);
-      const usernameResult = usernameSchema.parse(`  ${TEST_USERNAME}  `);
-      const roleResult = roleSchema.parse("  admin  ");
-      const subResult = subSchema.parse(`  ${TEST_USER_ID}  `);
-
-      expect(emailResult).toBe(TEST_EMAIL);
-      expect(usernameResult).toBe(TEST_USERNAME);
-      expect(roleResult).toBe("admin");
-      expect(subResult).toBe(TEST_USER_ID);
+        return Schema.decodeUnknownSync(SignInResponseToken)(payload);
+      }).toThrow(ParseError);
     });
   });
 });

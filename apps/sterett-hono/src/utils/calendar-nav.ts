@@ -1,10 +1,8 @@
+import { DateTime } from "effect";
 import filter from "lodash/filter.js";
 import isNil from "lodash/isNil.js";
-import { DateTime } from "luxon";
 
 import { formatDayHeading, formatWeekHeading, shiftDate } from "./calendar.ts";
-
-const CHICAGO = "America/Chicago";
 
 export type CalendarView = "day" | "month" | "week";
 
@@ -37,14 +35,16 @@ type TabHrefs = {
   tabWeekHref: string;
 };
 
+const parseDateToEpoch = (dateString: string): number => {
+  return DateTime.toEpochMillis(DateTime.unsafeMake(dateString));
+};
+
 export const buildCrossViewDate = (
   view: CalendarView,
   date: string,
-  currentMonthDt: DateTime
-): DateTime => {
-  return "month" === view
-    ? currentMonthDt
-    : DateTime.fromISO(date, { zone: CHICAGO });
+  currentMonthDt: number
+): number => {
+  return "month" === view ? currentMonthDt : parseDateToEpoch(date);
 };
 
 export const buildNavConfig = ({
@@ -61,9 +61,9 @@ export const buildNavConfig = ({
   view,
   year
 }: BuildNavConfigArguments): NavConfig => {
-  const todayDt = DateTime.fromISO(today, { zone: CHICAGO });
-  const todayYear = todayDt.year;
-  const todayMonth = todayDt.month;
+  const todayParts = DateTime.toPartsUtc(DateTime.unsafeMake(today));
+  const todayYear = todayParts.year;
+  const todayMonth = todayParts.month;
 
   const NAV_CONFIGS: Record<CalendarView, NavConfig> = {
     day: {

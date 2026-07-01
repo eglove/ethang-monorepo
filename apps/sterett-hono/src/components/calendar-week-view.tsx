@@ -1,6 +1,6 @@
+import { DateTime } from "effect";
 import map from "lodash/map.js";
 import slice from "lodash/slice.js";
-import { DateTime } from "luxon";
 import { twMerge } from "tailwind-merge";
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
@@ -8,6 +8,21 @@ import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 import { formatTimeOnly } from "../utils/calendar.ts";
 
 const DAY_HEADERS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const formatDayLabel = (dayKey: string): string => {
+  return DateTime.format(
+    DateTime.unsafeMakeZoned(dayKey, {
+      adjustForTimeZone: true,
+      timeZone: "America/Chicago"
+    }),
+    {
+      day: "numeric",
+      month: "short",
+      timeZone: "America/Chicago",
+      weekday: "short"
+    }
+  );
+};
 
 export const WeekView = async ({
   eventsByDate,
@@ -25,12 +40,7 @@ export const WeekView = async ({
         {map(weekDays, async (dayKey) => {
           const cellEvents = eventsByDate.get(dayKey) ?? [];
           const isToday = dayKey === today;
-          const label = DateTime.fromISO(dayKey, {
-            zone: "America/Chicago"
-          }).toLocaleString(
-            { day: "numeric", month: "short", weekday: "short" },
-            { locale: "en-US" }
-          );
+          const label = formatDayLabel(dayKey);
 
           return (
             <div

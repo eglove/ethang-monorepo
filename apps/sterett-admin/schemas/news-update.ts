@@ -1,5 +1,5 @@
 import { BulbOutlineIcon } from "@sanity/icons";
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 import { defineType, type Rule } from "sanity";
 
 export default defineType({
@@ -15,7 +15,7 @@ export default defineType({
     {
       initialValue: (): { date: Date } => {
         return {
-          date: DateTime.now().toJSDate()
+          date: DateTime.toDateUtc(DateTime.unsafeNow())
         };
       },
       name: "date",
@@ -40,12 +40,15 @@ export default defineType({
           }
 
           const INCREMENT = 1;
-          const dateFieldValue = DateTime.fromISO(
-            String(context.document["date"])
-          ).plus({ days: INCREMENT });
-          const expireDateValue = DateTime.fromISO(expireDate);
+          const dateFieldValue = DateTime.toDateUtc(
+            DateTime.unsafeMake(String(context.document["date"]))
+          );
+          dateFieldValue.setDate(dateFieldValue.getDate() + INCREMENT);
+          const expireDateValue = DateTime.toDateUtc(
+            DateTime.unsafeMake(expireDate)
+          );
 
-          if (expireDateValue.toMillis() < dateFieldValue.toMillis()) {
+          if (expireDateValue.getTime() < dateFieldValue.getTime()) {
             return "Expiration date must be at least one day after the date";
           }
 

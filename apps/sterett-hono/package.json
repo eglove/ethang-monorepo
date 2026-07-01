@@ -11,9 +11,9 @@
     "@sanity/image-url": "^2.1.1",
     "@tailwindcss/cli": "^4.3.2",
     "calendar-link": "^2.11.4",
+    "effect": "^3.21.4",
     "hono": "^4.12.27",
     "lodash": "^4.18.1",
-    "luxon": "^3.7.2",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.2"
   },
@@ -23,7 +23,6 @@
     "@portabletext/types": "^4.0.2",
     "@tailwindcss/typography": "^0.5.20",
     "@types/lodash": "^4.17.24",
-    "@types/luxon": "^3.7.2",
     "@types/node": "^26.0.1",
     "@vitest/coverage-v8": "^4.1.9",
     "browserslist-config-baseline": "^0.5.0",

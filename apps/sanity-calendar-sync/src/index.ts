@@ -2,9 +2,9 @@ import type { PortableTextBlock } from "@portabletext/types";
 
 import { toPlainText } from "@portabletext/react";
 import { createClient } from "@sanity/client";
+import { DateTime, Option } from "effect";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
-import { DateTime } from "luxon";
 import { generateIcsCalendar, type IcsEvent } from "ts-ics";
 
 type CalendarEventReturn = {
@@ -39,19 +39,21 @@ export default {
     const data = await client.fetch<CalendarEventReturn[]>(eventQuery);
 
     const events = map(data, (item) => {
-      const startDate = DateTime.fromISO(item.startsAt, { zone });
-      const endDate = DateTime.fromISO(item.endsAt, { zone });
+      const startDate = DateTime.unsafeMakeZoned(item.startsAt, {
+        timeZone: zone
+      });
+      const endDate = DateTime.makeZoned(item.endsAt, { timeZone: zone });
 
       const event: IcsEvent = {
         description: isNil(item.description)
           ? ""
           : sanitizeInput(toPlainText(item.description)),
-        stamp: { date: startDate.toJSDate(), type: "DATE-TIME" },
-        start: { date: startDate.toJSDate(), type: "DATE-TIME" },
+        stamp: { date: DateTime.toDateUtc(startDate), type: "DATE-TIME" },
+        start: { date: DateTime.toDateUtc(startDate), type: "DATE-TIME" },
         summary: sanitizeInput(item.title),
         uid: item._id,
-        ...(endDate.isValid && {
-          end: { date: endDate.toJSDate(), type: "DATE-TIME" }
+        ...(Option.isSome(endDate) && {
+          end: { date: DateTime.toDateUtc(endDate.value), type: "DATE-TIME" }
         })
       };
 

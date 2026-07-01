@@ -33,7 +33,7 @@
   "type": "module",
   "version": "1.0.0",
   "dependencies": {
-    "@ethang/toolbelt": "^4.5.0",
+    "@ethang/toolbelt": "^5.0.0",
     "zod": "^4.4.3"
   }
 }

@@ -1,5 +1,5 @@
 import { index, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 
 export const logs = sqliteTable(
   "logs",
@@ -18,7 +18,7 @@ export const logs = sqliteTable(
     timestamp: text("timestamp")
       .notNull()
       .$defaultFn(() => {
-        return DateTime.now().toISO();
+        return DateTime.formatIso(DateTime.unsafeNow());
       })
   },
   (table) => {

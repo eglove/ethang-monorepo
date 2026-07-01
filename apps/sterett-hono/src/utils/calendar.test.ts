@@ -1,3 +1,4 @@
+import { DateTime } from "effect";
 import every from "lodash/every.js";
 import filter from "lodash/filter.js";
 import { describe, expect, it } from "vitest";
@@ -10,8 +11,6 @@ const DATE_KEY_JUNE_16 = "2024-06-16";
 const DATE_KEY_JUNE_30 = "2024-06-30";
 const DATE_KEY_JULY_01 = "2024-07-01";
 const DATE_KEY_DEC_31 = "2024-12-31";
-
-import { DateTime } from "luxon";
 
 import {
   buildCalendarWeeks,
@@ -227,11 +226,7 @@ describe(buildCalendarWeeks, () => {
     expect(leadingCells[0]?.year).toBe(2023);
   });
 
-  it("returns empty array if daysInMonth is missing", () => {
-    // This is hard to trigger with valid inputs but let's try invalid ones if possible
-    // buildCalendarWeeks uses DateTime.fromObject which should return valid dates for these.
-    // But we can check a known month that might have issues if any?
-    // Actually Luxon might return NaN for invalid dates.
+  it("returns empty array for invalid month", () => {
     const weeks = buildCalendarWeeks(2024, 13);
 
     expect(weeks).toStrictEqual([]);
@@ -591,15 +586,17 @@ describe(getViewDateRange, () => {
       lastCell?.day ?? 0
     );
 
-    const firstCellDate = DateTime.fromISO(firstCellKey);
-    const lastCellDate = DateTime.fromISO(lastCellKey);
+    const firstDt = DateTime.unsafeMake(firstCellKey);
+    const lastDt = DateTime.unsafeMake(lastCellKey);
+    const firstCellTime = DateTime.toEpochMillis(firstDt);
+    const lastCellTime = DateTime.toEpochMillis(lastDt);
 
-    const startLimit = DateTime.fromISO(rangeStart);
-    const endLimit = DateTime.fromISO(rangeEndExclusive);
+    const startDt = DateTime.unsafeMake(rangeStart);
+    const endDt = DateTime.unsafeMake(rangeEndExclusive);
+    const startLimitTime = DateTime.toEpochMillis(startDt);
+    const endLimitTime = DateTime.toEpochMillis(endDt);
 
-    expect(firstCellDate.toMillis()).toBeGreaterThanOrEqual(
-      startLimit.toMillis()
-    );
-    expect(lastCellDate.toMillis()).toBeLessThan(endLimit.toMillis());
+    expect(firstCellTime).toBeGreaterThanOrEqual(startLimitTime);
+    expect(lastCellTime).toBeLessThan(endLimitTime);
   });
 });

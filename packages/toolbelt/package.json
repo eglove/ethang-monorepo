@@ -7,15 +7,14 @@
   "dependencies": {
     "@ethang/intl": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
+    "effect": "^3.21.4",
     "lodash": "^4.18.1",
-    "luxon": "^3.7.2",
     "uuid": "^14.0.1",
     "zod": "^4.4.1"
   },
   "devDependencies": {
     "@ethang/eslint-config": "^25.24.1",
     "@types/lodash": "^4.17.24",
-    "@types/luxon": "^3.7.2",
     "@types/node": "^26.0.1",
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/ui": "^4.1.9",
@@ -42,5 +41,5 @@
     "test:watch": "vitest"
   },
   "type": "module",
-  "version": "4.5.0"
+  "version": "5.0.0"
 }

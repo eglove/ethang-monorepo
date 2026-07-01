@@ -1,3 +1,4 @@
+import { DateTime } from "effect";
 import isNil from "lodash/isNil.js";
 
 export type User = {
@@ -27,7 +28,9 @@ export const authenticate = async (request: Request): Promise<User> => {
   }
 
   const user: User = await response.json();
-  const currentTime = Math.floor(Date.now() / 1000);
+  const currentTime = Math.floor(
+    DateTime.toEpochMillis(DateTime.unsafeNow()) / 1000
+  );
 
   if (currentTime > user.exp) {
     throw new Error("Unauthorized");

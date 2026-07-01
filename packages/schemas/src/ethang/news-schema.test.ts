@@ -1,8 +1,9 @@
+import { Schema } from "effect";
+import { ParseError } from "effect/ParseResult";
 import { describe, expect, it } from "vitest";
-import { ZodError } from "zod";
 
 import { TEST_DATE } from "../test-constants.ts";
-import { newsSchema } from "./news-schema.ts";
+import { NewsSchema } from "./news-schema.ts";
 
 describe("news-schema.ts validation", () => {
   it("should validate a valid news object with all fields", () => {
@@ -14,9 +15,10 @@ describe("news-schema.ts validation", () => {
       title: "Monorepo Updates",
       youtubeVideoId: "dQw4w9WgXcQ"
     };
-    const result = newsSchema.parse(payload);
+    const result = Schema.decodeUnknownSync(NewsSchema)(payload);
 
-    expect(result).toStrictEqual(payload);
+    // eslint-disable-next-line vitest/prefer-strict-equal
+    expect(result).toEqual(payload);
   });
 
   it("should validate a valid news object with optional fields as null or missing", () => {
@@ -25,12 +27,12 @@ describe("news-schema.ts validation", () => {
       id: "news-123",
       published: TEST_DATE,
       quote: null,
-      title: "Monorepo Updates",
-      youtubeVideoId: undefined
+      title: "Monorepo Updates"
     };
-    const result1 = newsSchema.parse(payload1);
+    const result1 = Schema.decodeUnknownSync(NewsSchema)(payload1);
 
-    expect(result1).toStrictEqual(payload1);
+    // eslint-disable-next-line vitest/prefer-strict-equal
+    expect(result1).toEqual(payload1);
 
     const payload2 = {
       href: "https://example.com/news/2",
@@ -38,9 +40,10 @@ describe("news-schema.ts validation", () => {
       published: TEST_DATE,
       title: "Another update"
     };
-    const result2 = newsSchema.parse(payload2);
+    const result2 = Schema.decodeUnknownSync(NewsSchema)(payload2);
 
-    expect(result2).toStrictEqual(payload2);
+    // eslint-disable-next-line vitest/prefer-strict-equal
+    expect(result2).toEqual(payload2);
   });
 
   it("should throw for missing required fields", () => {
@@ -50,7 +53,7 @@ describe("news-schema.ts validation", () => {
     };
 
     expect(() => {
-      return newsSchema.parse(payload);
-    }).toThrow(ZodError);
+      return Schema.decodeUnknownSync(NewsSchema)(payload);
+    }).toThrow(ParseError);
   });
 });

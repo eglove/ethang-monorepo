@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 import { defineField, defineType } from "sanity";
 
 export const blogType = defineType({
@@ -65,7 +65,7 @@ export const blogType = defineType({
       type: "reference"
     }),
     {
-      initialValue: DateTime.now().toISO(),
+      initialValue: DateTime.unsafeNow().pipe(DateTime.formatIso),
       name: "publishedAt",
       title: "Published At",
       type: "datetime"

@@ -6,11 +6,11 @@ import {
   useMutation,
   useQueryClient
 } from "@tanstack/react-query";
+import { DateTime } from "effect";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
 import noop from "lodash/noop";
 import orderBy from "lodash/orderBy";
-import { DateTime } from "luxon";
 
 import { rpcRequest } from "../../clients/rpc-client.ts";
 import { allArticlesOptions, feedArticlesOptions } from "./queries.ts";
@@ -118,9 +118,10 @@ export const Articles = () => {
                   </Text>
                   {!isNil(article.node.publishedAt) && (
                     <Text size="1" className="text-slate-600">
-                      {DateTime.fromISO(
-                        article.node.publishedAt
-                      ).toLocaleString()}
+                      {DateTime.format(
+                        DateTime.unsafeMake(article.node.publishedAt),
+                        { dateStyle: "short", timeStyle: "short" }
+                      )}
                     </Text>
                   )}
                 </Flex>

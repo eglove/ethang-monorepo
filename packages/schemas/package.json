@@ -14,14 +14,13 @@
     "lint": "eslint src --fix && pnpm tsc --noEmit"
   },
   "dependencies": {
-    "jose": "^6.2.3",
-    "luxon": "^3.7.2",
-    "zod": "^4.4.1"
+    "effect": "^3.21.4",
+    "jose": "^6.2.3"
   },
   "devDependencies": {
+    "@effect/vitest": "^0.29.0",
     "@ethang/eslint-config": "^25.24.1",
     "@types/lodash": "^4.17.24",
-    "@types/luxon": "^3.7.2",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.6.0",
     "typescript": "^6.0.3"

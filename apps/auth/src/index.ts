@@ -1,13 +1,14 @@
-import { signUpSchema, verifySchema } from "@ethang/schemas/auth/user.ts";
+import { SignInSchema as AppSignInSchema } from "@ethang/schemas/auth/sign-in-schema.ts";
+import { SignUpSchema } from "@ethang/schemas/auth/sign-up-schema.ts";
+import { VerifySchema } from "@ethang/schemas/auth/verify-schema.ts";
 import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
 import { setCookieValue } from "@ethang/toolbelt/http/cookie.js";
-import { zValidator } from "@hono/zod-validator";
-import { Effect } from "effect";
+import { Effect, Option, Schema } from "effect";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
+import isString from "lodash/isString.js";
 
 import type { UserCommand } from "./domain/user/commands.ts";
 
@@ -27,101 +28,114 @@ const hasSessionToken = (
   return isObject(value) && "sessionToken" in value;
 };
 
-const handleAuthCommand = async (
+const handleAuthCommand = (
   command: UserCommand,
   context: { env: { DB: D1Database; "token-auth"?: string } }
 ) => {
   const database = getDatabase(context.env.DB);
   const tokenSecret = context.env["token-auth"] ?? "";
-  const repo = createUserRepo(database);
-  const passwordService = createPasswordService();
-  const tokenService = createTokenService(tokenSecret);
-
-  return Effect.runPromise(
-    carryUserAuthCommand(command, repo, passwordService, tokenService)
+  return carryUserAuthCommand(
+    command,
+    createUserRepo(database),
+    createPasswordService(),
+    createTokenService(tokenSecret)
   );
 };
 
-const setAuthCookie = (response: Response, token: null | string) => {
-  if (null !== token) {
-    setCookieValue({
-      config: {
-        HttpOnly: false,
-        "Max-Age": 31_536_000,
-        Path: "/",
-        SameSite: "None",
-        Secure: true
-      },
-      cookieName: AUTH_COOKIE_NAME,
-      cookieValue: token,
-      response
-    });
-  }
-};
-
-const getErrorMessage = (error: unknown): string => {
-  if (isError(error)) {
-    return error.message;
-  }
-  return String(error);
+const setAuthCookie = (
+  response: Response,
+  token: null | string | undefined
+) => {
+  if (isNil(token)) return;
+  setCookieValue({
+    config: {
+      HttpOnly: false,
+      "Max-Age": 31_536_000,
+      Path: "/",
+      SameSite: "None",
+      Secure: true
+    },
+    cookieName: AUTH_COOKIE_NAME,
+    cookieValue: token,
+    response
+  });
 };
 
 const app = new Hono<AuthContextObject>();
 app.use("*", cors());
 
-app.post("/sign-up", zValidator("json", signUpSchema), async (context) => {
-  const body = context.req.valid("json");
+const VALIDATION_ERROR = "Validation failed";
+const UNAUTHORIZED_ERROR = "Unauthorized";
 
-  const command: UserCommand = {
-    email: body.email,
-    kind: "SignUp",
-    password: body.password,
-    ...(!isNil(body.username) && { username: body.username })
-  };
+app.post("/sign-up", async (context) => {
+  const body: unknown = await context.req.json();
 
-  let result;
-  try {
-    result = await handleAuthCommand(command, context);
-  } catch (error) {
-    return createJsonResponse(
-      { error: getErrorMessage(error) },
-      "INTERNAL_SERVER_ERROR"
-    );
+  const parsed = Schema.decodeUnknownOption(SignUpSchema)(body);
+  if (Option.isNone(parsed)) {
+    return createJsonResponse({ error: VALIDATION_ERROR }, "BAD_REQUEST");
   }
 
-  const sessionToken = hasSessionToken(result) ? result.sessionToken : null;
+  const { email, password, username } = parsed.value;
+  const command: UserCommand = {
+    email,
+    kind: "SignUp",
+    password
+  };
+  if (!isNil(username)) {
+    (command as Record<string, unknown>)["username"] = username;
+  }
+
+  const effect = Effect.catchAll(
+    handleAuthCommand(command, context).pipe(Effect.andThen(Effect.succeed)),
+    (error) => {
+      return Effect.succeed({
+        error: Error.isError(error) ? error.message : String(error)
+      });
+    }
+  );
+  const result = await Effect.runPromise(effect);
+
+  if ("error" in result && isString(result.error)) {
+    return createJsonResponse({ error: result.error }, "INTERNAL_SERVER_ERROR");
+  }
   const response = createJsonResponse(result, "OK");
-  setAuthCookie(response, sessionToken ?? null);
+  setAuthCookie(response, hasSessionToken(result) ? result.sessionToken : null);
   return response;
 });
 
-app.post("/sign-in", zValidator("json", signUpSchema), async (context) => {
-  const body = context.req.valid("json");
+app.post("/sign-in", async (context) => {
+  const body: unknown = await context.req.json();
 
-  const command: UserCommand = {
-    email: body.email,
-    kind: "SignIn",
-    password: body.password
-  };
-
-  let result;
-  try {
-    result = await handleAuthCommand(command, context);
-  } catch {
-    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+  const parsed = Schema.decodeUnknownOption(AppSignInSchema)(body);
+  if (Option.isNone(parsed)) {
+    return createJsonResponse({ error: VALIDATION_ERROR }, "BAD_REQUEST");
   }
 
-  const sessionToken = hasSessionToken(result) ? result.sessionToken : null;
-  const response = createJsonResponse(result, "OK");
-  setAuthCookie(response, sessionToken ?? null);
-  return response;
+  const { email, password } = parsed.value;
+
+  const effect = Effect.catchAll(
+    handleAuthCommand({ email, kind: "SignIn", password }, context).pipe(
+      Effect.andThen(Effect.succeed)
+    ),
+    () => {
+      return Effect.succeed({ error: UNAUTHORIZED_ERROR });
+    }
+  );
+  const result = (await Effect.runPromise(effect)) as Record<string, unknown>;
+
+  if (!isNil(result["error"])) {
+    return createJsonResponse({ error: result["error"] }, "UNAUTHORIZED");
+  }
+  const rsp = createJsonResponse(result, "OK");
+  setAuthCookie(rsp, hasSessionToken(result) ? result.sessionToken : null);
+  return rsp;
 });
 
 app.get("/verify", async (context) => {
   const token = context.req.raw.headers.get("X-Token");
 
   if (null === token) {
-    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+    return createJsonResponse({ error: UNAUTHORIZED_ERROR }, "UNAUTHORIZED");
   }
 
   const database = getDatabase(context.env.DB);
@@ -130,40 +144,51 @@ app.get("/verify", async (context) => {
   const passwordService = createPasswordService();
   const tokenService = createTokenService(tokenSecret);
 
-  const command: UserCommand = {
-    kind: "VerifyToken",
-    token
-  };
+  const effect = Effect.catchAll(
+    carryUserAuthCommand(
+      { kind: "VerifyToken", token },
+      repo,
+      passwordService,
+      tokenService
+    ).pipe(Effect.andThen(Effect.succeed)),
+    () => {
+      return Effect.succeed({ error: UNAUTHORIZED_ERROR });
+    }
+  );
+  const result = (await Effect.runPromise(effect)) as Record<string, unknown>;
 
-  let verifiedResult;
-  try {
-    verifiedResult = await Effect.runPromise(
-      carryUserAuthCommand(command, repo, passwordService, tokenService)
-    );
-  } catch {
-    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+  if (!isNil(result["error"])) {
+    return createJsonResponse({ error: result["error"] }, "UNAUTHORIZED");
   }
-
-  const verifiedPayload =
-    "payload" in verifiedResult ? verifiedResult.payload : verifiedResult;
-  return createJsonResponse(verifiedPayload, "OK");
+  const payload = "payload" in result ? result["payload"] : result;
+  return createJsonResponse(payload, "OK");
 });
 
-app.post("/verify", zValidator("json", verifySchema), async (context) => {
-  const body = context.req.valid("json");
+app.post("/verify", async (context) => {
+  const body: unknown = await context.req.json();
 
-  const command: UserCommand = {
-    email: body.email,
-    kind: "ValidateCredentials",
-    password: body.password
-  };
-
-  try {
-    const result = await handleAuthCommand(command, context);
-    return createJsonResponse(result, "OK");
-  } catch {
-    return createJsonResponse({ error: "Unauthorized" }, "UNAUTHORIZED");
+  const parsed = Schema.decodeUnknownOption(VerifySchema)(body);
+  if (Option.isNone(parsed)) {
+    return createJsonResponse({ error: VALIDATION_ERROR }, "BAD_REQUEST");
   }
+
+  const { email, password } = parsed.value;
+
+  const effect = Effect.catchAll(
+    handleAuthCommand(
+      { email, kind: "ValidateCredentials", password },
+      context
+    ).pipe(Effect.andThen(Effect.succeed)),
+    () => {
+      return Effect.succeed({ error: UNAUTHORIZED_ERROR });
+    }
+  );
+  const result = (await Effect.runPromise(effect)) as Record<string, unknown>;
+  const error = isNil(result["error"]) ? undefined : result["error"];
+
+  return isNil(error)
+    ? createJsonResponse(result, "OK")
+    : createJsonResponse({ error }, "UNAUTHORIZED");
 });
 
 export { app };
