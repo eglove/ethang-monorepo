@@ -29,7 +29,7 @@ The following entries are accumulated solutions to difficult lint rules encounte
 ### TypeScript: TS4104 (readonly type mismatch)
 
 * **Rule:** `readonly` arrays cannot be assigned to mutable array types.
-* **Problem:* `GLOBAL_COMMANDS` is declared `as const` (producing `readonly [CommandDefinition, CommandDefinition]`), but `CompilerConfig.commands` was typed as `CommandDefinition[]` (mutable).
+* **Problem:** `GLOBAL_COMMANDS` is declared `as const` (producing `readonly [CommandDefinition, CommandDefinition]`), but `CompilerConfig.commands` was typed as `CommandDefinition[]` (mutable).
 * **Solution:** Change the `commands` property type in `CompilerConfig` from `CommandDefinition[]` to `readonly CommandDefinition[]`, since the compiler never mutates the input arrays.
 
 ### no-continue

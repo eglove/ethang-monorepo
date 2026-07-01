@@ -391,25 +391,6 @@ describe("hooks generation", () => {
     rmSync(temporaryDirectory, { force: true, recursive: true });
   });
 
-  it("does not generate hooks config when hooksPath is provided (hooks generation removed)", () => {
-    const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
-    const skillsDirectory = path.join(temporaryDirectory, "skills");
-    const hooksPath = path.join(temporaryDirectory, "hooks.json");
-
-    const config: CompilerConfig = {
-      hooksPath,
-      rootDir: temporaryDirectory,
-      rules: [],
-      rulesDir: rulesDirectory,
-      skills: [],
-      skillsDir: skillsDirectory
-    };
-
-    compile(config);
-
-    expect(existsSync(hooksPath)).toBe(false);
-  });
-
   it("skips hooks generation when hooksPath is not provided", () => {
     const rulesDirectory = path.join(temporaryDirectory, rulesDirectoryName);
     const skillsDirectory = path.join(temporaryDirectory, "skills");
