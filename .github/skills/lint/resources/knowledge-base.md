@@ -31,3 +31,33 @@ The following entries are accumulated solutions to difficult lint rules encounte
 * **Rule:** `readonly` arrays cannot be assigned to mutable array types.
 * **Problem:* `GLOBAL_COMMANDS` is declared `as const` (producing `readonly [CommandDefinition, CommandDefinition]`), but `CompilerConfig.commands` was typed as `CommandDefinition[]` (mutable).
 * **Solution:** Change the `commands` property type in `CompilerConfig` from `CommandDefinition[]` to `readonly CommandDefinition[]`, since the compiler never mutates the input arrays.
+
+### no-continue
+
+* **Rule:** The `continue` statement is forbidden.
+* **Problem:** `for (const x of list) { if (!condition) { continue; } ... }` — early-skip pattern using `continue`.
+* **Solution:** Invert the condition to wrap the loop body instead: `for (const x of list) { if (condition) { ... } }`. This avoids `continue` entirely while preserving the same control flow.
+
+### no-plusplus
+
+* **Rule:** Unary `++` / `--` operators are forbidden.
+* **Problem:** `courseIndex++` used to increment a counter in a loop body.
+* **Solution:** Use `+= 1` instead: `courseIndex += 1`.
+
+### unicorn/prefer-iterator-to-array
+
+* **Rule:** Prefer `Iterator#toArray()` over spreading an iterator into an array.
+* **Problem:** `[...coursesByLp.keys()]` creates a temporary spread array from a `Map` iterator.
+* **Solution:** Replace with `coursesByLp.keys().toArray()`.
+
+### sonar/nested-control-flow
+
+* **Rule:** Control flow nesting depth exceeds the allowed limit (typically 3 levels).
+* **Problem:** A loop body contains `if` statements that themselves contain loops and further `if`s, reaching 4+ levels of braces.
+* **Solution:** Flatten nested structures using `flatMap` (or lodash `flatMap`) to merge an inner loop's results into the outer array, then iterate the flattened result with a single `for...of`. This keeps each loop body at ≤3 nesting levels.
+
+### @typescript-eslint/no-shadow
+
+* **Rule:** Variables declared in outer scopes must not be redeclared in inner scopes.
+* **Problem:** Module-level constants (`CREATED_AT`, `COURSE_1`, `LP_1`, etc.) were redeclared with identical values inside a nested `describe` block's callback, causing shadowing.
+* **Solution:** Remove the inner redeclarations and reference the module-level constants directly. Ensure mock data uses the same values as the module-level constants for assertions to match.

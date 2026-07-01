@@ -33,7 +33,7 @@
   "services": [
     {
       "binding": "ethang_courses",
-      "remote": false,
+      "remote": true,
       "service": "ethang-courses"
     },
     {

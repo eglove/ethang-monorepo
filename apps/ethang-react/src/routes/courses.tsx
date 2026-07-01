@@ -2,8 +2,9 @@ import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import filter from "lodash/filter";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import isNil from "lodash/isNil.js";
+import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import map from "lodash/map";
 import { DateTime } from "luxon";
 
 import { rpcRequest } from "../clients/rpc-client.ts";
@@ -87,7 +88,7 @@ const RouteComponent = () => {
       </Skeleton>
       <Skeleton loading={isPending}>
         <Flex my="6" gap="4" direction="column">
-          {[...learningPathsData.keys()].map((learningPathId) => {
+          {map(learningPathsData.keys().toArray(), (learningPathId) => {
             return (
               <LearningPath
                 key={learningPathId}

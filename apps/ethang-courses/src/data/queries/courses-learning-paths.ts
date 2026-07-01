@@ -201,6 +201,64 @@ const buildCourseEntry = (
   };
 };
 
+const groupCoursesByLp = (
+  learningPathCourses: (typeof learningPathCoursesTable.$inferSelect)[]
+): Map<string, (typeof learningPathCoursesTable.$inferSelect)[]> => {
+  const coursesByLp = new Map<
+    string,
+    (typeof learningPathCoursesTable.$inferSelect)[]
+  >();
+  for (const lpc of learningPathCourses) {
+    const existing = coursesByLp.get(lpc.learningPathId);
+    if (existing) {
+      existing.push(lpc);
+    } else {
+      coursesByLp.set(lpc.learningPathId, [lpc]);
+    }
+  }
+  return coursesByLp;
+};
+
+const buildLpCurriculumOrder = (
+  curriculumLearningPaths: (typeof curriculumLearningPathsTable.$inferSelect)[]
+): Map<string, number> => {
+  const lpCurriculumOrder = new Map<string, number>();
+  for (const clp of curriculumLearningPaths) {
+    if (!lpCurriculumOrder.has(clp.learningPathId)) {
+      lpCurriculumOrder.set(clp.learningPathId, clp.orderRank);
+    }
+  }
+  return lpCurriculumOrder;
+};
+
+const buildAllCoursesFromSortedLpIds = (
+  sortedLpIds: string[],
+  coursesByLp: Map<string, (typeof learningPathCoursesTable.$inferSelect)[]>,
+  courseMap: Map<string, typeof coursesTable.$inferSelect>,
+  learningPathMap: Map<string, typeof learningPathsTable.$inferSelect>
+): LearningPathCourseEntry[] => {
+  const entries = sortedLpIds.flatMap((lpId) => {
+    return coursesByLp.get(lpId) ?? [];
+  });
+  const allCourses: LearningPathCourseEntry[] = [];
+  let courseIndex = 0;
+
+  for (const lpc of entries) {
+    courseIndex += 1;
+    const result = buildCourseEntry(
+      lpc,
+      courseIndex,
+      courseMap,
+      learningPathMap
+    );
+    if (result) {
+      allCourses.push(result);
+    }
+  }
+
+  return allCourses;
+};
+
 export const coursesAllQuery = (database: Database, _parameters: null) => {
   return Effect.tryPromise({
     catch: (cause) => {
@@ -232,13 +290,7 @@ export const coursesAllQuery = (database: Database, _parameters: null) => {
         .from(curriculumLearningPathsTable)
         .orderBy(asc(curriculumLearningPathsTable.orderRank));
 
-      // Build a map of learning path ID → its first curriculum order rank (or null if not in curriculum)
-      const lpCurriculumOrder = new Map<string, number>();
-      for (const clp of curriculumLearningPaths) {
-        if (!lpCurriculumOrder.has(clp.learningPathId)) {
-          lpCurriculumOrder.set(clp.learningPathId, clp.orderRank);
-        }
-      }
+      const lpCurriculumOrder = buildLpCurriculumOrder(curriculumLearningPaths);
 
       const courseMap = new Map(
         map(courseRecords, (course) => {
@@ -252,49 +304,24 @@ export const coursesAllQuery = (database: Database, _parameters: null) => {
         })
       );
 
-      // Group courses by learning path, preserving order within each path
-      const coursesByLp = new Map<string, typeof learningPathCourses>();
-      for (const lpc of learningPathCourses) {
-        const existing = coursesByLp.get(lpc.learningPathId);
-        if (existing) {
-          existing.push(lpc);
-        } else {
-          coursesByLp.set(lpc.learningPathId, [lpc]);
-        }
-      }
+      const coursesByLp = groupCoursesByLp(learningPathCourses);
 
       // Sort learning path IDs by curriculum order (or fall back to learning path ID)
-      const sortedLpIds = [...coursesByLp.keys()].toSorted((a, b) => {
-        const orderA = lpCurriculumOrder.get(a) ?? Number.MAX_SAFE_INTEGER;
-        const orderB = lpCurriculumOrder.get(b) ?? Number.MAX_SAFE_INTEGER;
-        return orderA - orderB;
-      });
+      const sortedLpIds = coursesByLp
+        .keys()
+        .toArray()
+        .toSorted((a, b) => {
+          const orderA = lpCurriculumOrder.get(a) ?? Number.MAX_SAFE_INTEGER;
+          const orderB = lpCurriculumOrder.get(b) ?? Number.MAX_SAFE_INTEGER;
+          return orderA - orderB;
+        });
 
-      // Build flat course list in correct learning path order with stable indices
-      let courseIndex = 0;
-      const allCourses: ReturnType<typeof buildCourseEntry>[] = [];
-
-      for (const lpId of sortedLpIds) {
-        const lpcList = coursesByLp.get(lpId);
-        if (!lpcList) {
-          continue;
-        }
-
-        for (const lpc of lpcList) {
-          courseIndex++;
-          const result = buildCourseEntry(
-            lpc,
-            courseIndex,
-            courseMap,
-            learningPathMap
-          );
-          if (result) {
-            allCourses.push(result);
-          }
-        }
-      }
-
-      return allCourses;
+      return buildAllCoursesFromSortedLpIds(
+        sortedLpIds,
+        coursesByLp,
+        courseMap,
+        learningPathMap
+      );
     }
   });
 };
