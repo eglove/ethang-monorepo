@@ -7,11 +7,11 @@ import { ripgrep } from "./ripgrep.ts";
 import { swebok } from "./swebok/swebok.ts";
 
 export const GLOBAL_SKILLS = [
+  lint,
   swebok,
   ddd,
-  ripgrep,
-  jq,
   everythingSearch,
   githubCli,
-  lint
+  ripgrep,
+  jq
 ];

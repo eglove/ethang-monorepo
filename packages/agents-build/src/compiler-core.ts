@@ -55,22 +55,6 @@ export const MCP_SERVERS: McpConfig = {
   }
 };
 
-export const HOOKS = {
-  hooks: {
-    sessionStart: [
-      {
-        prompt: "/swebok",
-        type: "prompt"
-      },
-      {
-        prompt: "/ddd",
-        type: "prompt"
-      }
-    ]
-  },
-  version: 1
-};
-
 export class CompileError extends Error {
   public failures: string[];
 
@@ -107,8 +91,6 @@ const processMcpConfig = (
 
   write(config.mcpPublicPath, JSON.stringify(MCP_SERVERS, null, 2));
 };
-
-// Removed hooks generation logic as requested
 
 const processRules = (
   config: CompilerConfig,

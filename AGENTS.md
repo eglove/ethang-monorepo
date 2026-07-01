@@ -41,11 +41,22 @@ integrity, and drift checks.
 
 ---
 
+## Skills Discovery
+
+Skills are available in two locations:
+
+* **`.github/skills/`** — Custom skills specific to this repository
+* **`.agents/skills/`** — Generated skills from the compiler
+
+When resolving skill references, check both locations. The `.agents/skills/` directory contains built-in and generated skills (402 items), while `.github/skills/` contains repository-specific custom skills (7 items).
+
+---
+
 ## CRITICAL: Tool Usage
 
 AI agents must follow this tool priority order:
 
-1. **webstorm** — use for: file writes/creates/renames, refactoring, builds, database/SQL queries
+1. **WebStorm MCP** — use for: file reads/writes/creates/renames, refactoring, builds, database/SQL queries, code search, symbol navigation, rename refactoring
 2. **PowerShell + Specialized CLIs** (fallback) — use `rg`, `jq`, `es` (Everything Search), `gh`
 
 ---
