@@ -19,6 +19,13 @@ import { decodeHtmlEntities } from "./utilities.ts";
 
 const RSS_SERVICE = "ethang_rss";
 
+export const markArticleReadMutationFunction = async (variables: {
+  articleId: string;
+  isRead: boolean;
+}) => {
+  return rpcRequest(RSS_SERVICE, "markArticleRead", variables);
+};
+
 export const Articles = () => {
   const feedId = useStore(rssStore, (state) => {
     return state.selectedFeedId;
@@ -64,9 +71,7 @@ export const Articles = () => {
 
   const { isPending: isMarkingRead, mutateAsync: markArticleRead } =
     useMutation({
-      mutationFn: async (variables: { articleId: string; isRead: boolean }) => {
-        return rpcRequest(RSS_SERVICE, "markArticleRead", variables);
-      },
+      mutationFn: markArticleReadMutationFunction,
       onSuccess: async () => {
         await queryClient.invalidateQueries({
           queryKey: allArticlesOptions().queryKey

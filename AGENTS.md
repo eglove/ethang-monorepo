@@ -3,6 +3,20 @@
 This document outlines the global rules, development principles, and tool-usage hierarchies for AI agents operating in
 `ethang-monorepo`.
 
+---
+
+## CRITICAL: Agent Operational Notes
+
+**These notes are non-negotiable and MUST always be followed for every task:**
+
+1. **State Test Coverage**: Aim for 100% state test coverage using `/effect-ts` testEffect/runEffect to validate state transitions comprehensively via compositional testing patterns.
+2. **Scientific Process**: Follow `/effect-ts` scientific process: use ./references/ to define hypotheses, build code as proof, and validate state transitions with `/effect-ts` compositional testing framework.
+3. **Library Preferences**: Always prefer lodash and `/effect-ts` wherever they can be used.
+3. **SWEBOK Principles**: Follow the principles of `/swebok` and reference them for everything.
+4. **DDD Principles**: Follow the principles of Domain-Driven Design (DDD) and reference the `/ddd` skill for everything.
+
+---
+
 ## CRITICAL: `.agents/` is a Generated Artifact
 
 **Never edit files in `.agents/` directly.** The `.agents/` directory (which contains workspace rules, commands, skills,
@@ -27,9 +41,9 @@ integrity, and drift checks.
 
 ---
 
-## CRITICAL: MCP Server Usage
+## CRITICAL: Tool Usage
 
-AI agents must follow this MCP tool priority order:
+AI agents must follow this tool priority order:
 
 1. **webstorm** — use for: file writes/creates/renames, refactoring, builds, database/SQL queries
 2. **PowerShell + Specialized CLIs** (fallback) — use `rg`, `jq`, `es` (Everything Search), `gh`

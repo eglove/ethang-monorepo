@@ -1,3 +1,4 @@
+import { auth } from "@ethang/intl/en/auth.ts";
 import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
@@ -5,9 +6,9 @@ import { TokenSignError } from "../../errors/token-sign-error.ts";
 import { TokenVerifyError } from "../../errors/token-verify-error.ts";
 import { createTokenService } from "./token-service.ts";
 
-const TEST_SECRET = "test-secret-key-at-least-32-chars!";
-const TEST_TOKEN = "test.jwt.token";
-const TEST_PAYLOAD = { email: "test@test.com", sub: "user-1" };
+const { EMAIL, SECRET, TEST_TOKEN } = auth;
+
+const TEST_PAYLOAD = { email: EMAIL, sub: "user-1" };
 
 const { mockJwtVerify, mockSignJWT } = vi.hoisted(() => {
   return {
@@ -29,7 +30,7 @@ vi.mock("jose", () => {
 });
 
 describe("createTokenService", () => {
-  const tokenService = createTokenService(TEST_SECRET);
+  const tokenService = createTokenService(SECRET);
 
   describe("sign", () => {
     it("signs a payload successfully", async () => {
@@ -60,6 +61,23 @@ describe("createTokenService", () => {
       const result = await Effect.runPromise(tokenService.verify(TEST_TOKEN));
 
       expect(result).toStrictEqual(verifyResult);
+    });
+
+    it("handles nil and non-string values in the payload", async () => {
+      const mixedPayload = {
+        email: EMAIL,
+        nilValue: null,
+        numValue: 123,
+        sub: "user-1"
+      };
+      mockJwtVerify.mockResolvedValue({ payload: mixedPayload });
+
+      const result = await Effect.runPromise(tokenService.verify(TEST_TOKEN));
+
+      expect(result.payload["nilValue"]).toBe("");
+      expect(result.payload["numValue"]).toBe("123");
+      expect(result.payload["email"]).toBe("test@test.com");
+      expect(result.payload["sub"]).toBe("user-1");
     });
 
     it("fails with TokenVerifyError when verification fails", async () => {

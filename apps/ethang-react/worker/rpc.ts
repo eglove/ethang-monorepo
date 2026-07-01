@@ -5,6 +5,7 @@ type RpcBinding = {
   allArticles: (parameters: Record<string, unknown>) => Promise<unknown>;
   course: (parameters: Record<string, unknown>) => Promise<unknown>;
   courses: (parameters: Record<string, unknown>) => Promise<unknown>;
+  coursesAll: (parameters: Record<string, unknown>) => Promise<unknown>;
   courseTracking: (parameters: Record<string, unknown>) => Promise<unknown>;
   courseTrackings: (parameters: Record<string, unknown>) => Promise<unknown>;
   createCurriculum: (parameters: Record<string, unknown>) => Promise<unknown>;
@@ -48,7 +49,8 @@ const coursesDispatchMap = buildDispatchMap([
   "curriculums",
   "cycleCourseTrackingStatus",
   "learningPath",
-  "learningPaths"
+  "learningPaths",
+  "coursesAll"
 ]);
 
 const rssDispatchMap = buildDispatchMap([

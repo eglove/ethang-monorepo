@@ -1,4 +1,3 @@
-import { commit } from "./commit.ts";
 import { ddd } from "./ddd.ts";
 import { everythingSearch } from "./everything-search.ts";
 import { githubCli } from "./github-cli.ts";
@@ -14,6 +13,5 @@ export const GLOBAL_SKILLS = [
   jq,
   everythingSearch,
   githubCli,
-  commit,
   lint
 ];

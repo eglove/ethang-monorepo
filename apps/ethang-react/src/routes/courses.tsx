@@ -1,76 +1,98 @@
-import { courses as coursesIntl } from "@ethang/intl/en/courses.ts";
 import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import forEach from "lodash/forEach.js";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import filter from "lodash/filter";
 import isNil from "lodash/isNil.js";
+import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import map from "lodash/map";
 import { DateTime } from "luxon";
 
 import { rpcRequest } from "../clients/rpc-client.ts";
-import { courseStore } from "../components/courses/course-store.ts";
 import { LearningPath } from "../components/courses/learning-path.tsx";
 import { MainLayout } from "../components/layout/main-layout.tsx";
 
+type CourseData = {
+  author: string;
+  courseId: string;
+  courseIndex: number;
+  learningPathId: string;
+  learningPathName: null | string;
+  learningPathOrder: number;
+  learningPathUrl: null | string;
+  name: string;
+  swebokFocus: null | string;
+  updatedAt: string;
+  url: string;
+};
+
 const COURSES_SERVICE = "ethang_courses";
 
-export const curriculumQueryOptions = () => {
+export const coursesAllQueryOptions = () => {
   return queryOptions({
     queryFn: async () => {
-      return rpcRequest<{
-        id: string;
-        learningPaths: { courses: { id: string }[]; id: string }[];
-        name?: string;
-        updatedAt: string;
-      }>(COURSES_SERVICE, "curriculum", {
-        id: "019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4"
-      });
+      return rpcRequest<CourseData[]>(COURSES_SERVICE, "coursesAll", {});
     },
-    queryKey: ["curriculum", "019e9dc1-b3bf-7039-a8e2-e6d7f25be6e4"]
+    queryKey: ["coursesAll"]
   });
 };
 
 const RouteComponent = () => {
-  const { data, isPending } = useQuery(curriculumQueryOptions());
+  const { data, isPending } = useQuery(coursesAllQueryOptions());
 
-  const latestUpdate = data?.updatedAt;
-  courseStore.reset();
+  if (isPending || isNil(data)) {
+    return (
+      <MainLayout>
+        <Skeleton loading>
+          <Heading mb="2" as="h1" size="8">
+            Courses
+          </Heading>
+        </Skeleton>
+      </MainLayout>
+    );
+  }
 
-  const formattedDate = isNil(latestUpdate)
-    ? ""
-    : DateTime.fromISO(latestUpdate).toLocaleString({
-        dateStyle: "medium",
-        timeStyle: "long"
-      });
+  // Find the most recently updated course
+  const latestUpdatedAt =
+    filter(data, (item): item is { updatedAt: string } & CourseData => {
+      return !isNil(item.updatedAt);
+    }).toSorted((a, b) => {
+      return b.updatedAt.localeCompare(a.updatedAt);
+    })[0]?.updatedAt ?? "";
 
-  const pathOffsets: Record<string, number> = {};
-  let totalCount = 0;
-  forEach(data?.learningPaths, (learningPath) => {
-    pathOffsets[learningPath.id] = totalCount;
-    totalCount += learningPath.courses.length;
-  });
+  const dateString = DateTime.fromISO(latestUpdatedAt).toLocaleString(
+    DateTime.DATETIME_FULL
+  );
+
+  // Group courses by learning path, preserving backend sort order
+  const learningPathsData = new Map<string, CourseData[]>();
+  for (const course of data) {
+    const existing = learningPathsData.get(course.learningPathId);
+    if (existing) {
+      existing.push(course);
+    } else {
+      learningPathsData.set(course.learningPathId, [course]);
+    }
+  }
 
   return (
     <MainLayout>
       <Skeleton loading={isPending}>
         <Heading mb="2" as="h1" size="8">
-          {data?.name}
+          Courses
         </Heading>
       </Skeleton>
       <Skeleton loading={isPending}>
         <Text as="p" mb="4">
-          {coursesIntl.LAST_UPDATED} {formattedDate}
+          Last Updated: {dateString}
         </Text>
       </Skeleton>
       <Skeleton loading={isPending}>
         <Flex my="6" gap="4" direction="column">
-          {map(data?.learningPaths, (learningPath) => {
+          {map(learningPathsData.keys().toArray(), (learningPathId) => {
             return (
               <LearningPath
-                key={learningPath.id}
-                learningPathId={learningPath.id}
-                courseOffset={pathOffsets[learningPath.id] ?? 0}
+                key={learningPathId}
+                learningPathId={learningPathId}
               />
             );
           })}

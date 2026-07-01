@@ -108,16 +108,7 @@ const processMcpConfig = (
   write(config.mcpPublicPath, JSON.stringify(MCP_SERVERS, null, 2));
 };
 
-const processHooksConfig = (
-  config: CompilerConfig,
-  write: (absolutePath: string, content: string) => void
-): void => {
-  if (undefined === config.hooksPath) {
-    return;
-  }
-
-  write(config.hooksPath, JSON.stringify(HOOKS, null, 2));
-};
+// Removed hooks generation logic as requested
 
 const processRules = (
   config: CompilerConfig,
@@ -288,7 +279,6 @@ export const compile = (config: CompilerConfig): void => {
   processRules(config, failures, write);
   processSkills(config, failures, write);
   processMcpConfig(config, write);
-  processHooksConfig(config, write);
   scanDirectories(config, failures);
 
   if (0 < failures.length) {

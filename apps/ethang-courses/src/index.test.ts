@@ -29,6 +29,21 @@ vi.mock("drizzle-orm/d1", () => {
 vi.mock("./data/queries/courses-learning-paths.ts", () => {
   return {
     courseQuery: vi.fn().mockReturnValue(Effect.succeed(TEST_COURSE_DATA)),
+    coursesAllQuery: vi.fn().mockReturnValue(
+      Effect.succeed([
+        {
+          author: TEST_COURSE_DATA.name,
+          courseId: TEST_COURSE_DATA.id,
+          courseIndex: 1,
+          learningPathId: "lp1",
+          learningPathName: "Test LP",
+          learningPathOrder: 1,
+          name: TEST_COURSE_DATA.name,
+          swebokFocus: "testing",
+          url: EXAMPLE_URL
+        }
+      ])
+    ),
     coursesQuery: vi.fn().mockReturnValue(Effect.succeed([TEST_COURSE_DATA])),
     learningPathQuery: vi.fn().mockReturnValue(Effect.succeed({ id: "lp1" })),
     learningPathsQuery: vi.fn().mockReturnValue(Effect.succeed([{ id: "lp1" }]))
@@ -120,6 +135,7 @@ describe("ethang-courses WorkerEntrypoint", () => {
       expect(instance.learningPaths).toBeInstanceOf(Function);
       expect(instance.createCurriculum).toBeInstanceOf(Function);
       expect(instance.cycleCourseTrackingStatus).toBeInstanceOf(Function);
+      expect(instance.coursesAll).toBeInstanceOf(Function);
     });
 
     it("courses returns all courses", async () => {
@@ -203,6 +219,23 @@ describe("ethang-courses WorkerEntrypoint", () => {
       const instance = createInstance({ ethang_courses: {} });
       const result = await instance.learningPaths();
       expect(result).toEqual([{ id: "lp1" }]);
+    });
+
+    it("coursesAll returns all courses with indices and learning path context", async () => {
+      const instance = createInstance({ ethang_courses: {} });
+      const result = await instance.coursesAll();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toStrictEqual({
+        author: TEST_COURSE_DATA.name,
+        courseId: TEST_COURSE_DATA.id,
+        courseIndex: 1,
+        learningPathId: "lp1",
+        learningPathName: "Test LP",
+        learningPathOrder: 1,
+        name: TEST_COURSE_DATA.name,
+        swebokFocus: "testing",
+        url: EXAMPLE_URL
+      });
     });
   });
 });

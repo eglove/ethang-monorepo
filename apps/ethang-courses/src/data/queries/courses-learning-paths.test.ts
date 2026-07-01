@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   courseQuery,
+  coursesAllQuery,
   coursesQuery,
   learningPathQuery,
   learningPathsQuery
@@ -113,8 +114,7 @@ describe("learningPathsQuery", () => {
     };
 
     const mockCoursesSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([mockCourseData])
+      from: vi.fn().mockResolvedValue([mockCourseData])
     };
 
     const mockDatabase = {
@@ -211,8 +211,7 @@ describe("learningPathQuery", () => {
     };
 
     const mockCoursesSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([mockCourseData])
+      from: vi.fn().mockResolvedValue([mockCourseData])
     };
 
     const mockDatabase = {
@@ -260,8 +259,7 @@ describe("learningPathQuery", () => {
     };
 
     const mockCoursesSelectResult = {
-      from: vi.fn().mockReturnThis(),
-      where: vi.fn().mockResolvedValue([])
+      from: vi.fn().mockResolvedValue([])
     };
 
     const mockDatabase = {
@@ -350,5 +348,219 @@ describe("learningPathQuery", () => {
     );
 
     expect(result).toBeNull();
+  });
+});
+
+describe("coursesAllQuery", () => {
+  describe("basic functionality", () => {
+    it("returns empty array when no learning path courses exist", async () => {
+      const mockLPCSelectResult = {
+        from: vi.fn().mockReturnThis(),
+        orderBy: vi.fn().mockResolvedValue([]),
+        where: vi.fn().mockReturnThis()
+      };
+
+      const mockDatabase = {
+        select: vi.fn().mockReturnValue(mockLPCSelectResult)
+      };
+
+      const result = await Effect.runPromise(
+        // @ts-expect-error test double
+        coursesAllQuery(mockDatabase, null)
+      );
+
+      expect(result).toStrictEqual([]);
+    });
+
+    it("filters out entries where the course is not found in courseMap", async () => {
+      const mockLPCSelectResult = {
+        from: vi.fn().mockReturnThis(),
+        orderBy: vi.fn().mockResolvedValue([
+          { courseId: COURSE_1, learningPathId: LP_1, orderRank: 1 },
+          { courseId: "missing-course", learningPathId: LP_1, orderRank: 2 }
+        ]),
+        where: vi.fn().mockReturnThis()
+      };
+
+      const mockCoursesSelectResult = {
+        from: vi.fn().mockResolvedValue([
+          {
+            author: TEST_AUTHOR,
+            createdAt: CREATED_AT,
+            id: COURSE_1,
+            name: TEST_COURSE,
+            updatedAt: UPDATED_AT,
+            url: EXAMPLE_COURSE
+          }
+        ])
+      };
+
+      const mockLPSelectResult = {
+        from: vi.fn().mockResolvedValue([
+          {
+            createdAt: CREATED_AT,
+            id: LP_1,
+            name: TEST_LP,
+            swebokFocus: TEST_FOCUS,
+            updatedAt: UPDATED_AT,
+            url: EXAMPLE_LP
+          }
+        ])
+      };
+
+      const mockCurriculumLPSelectResult = {
+        from: vi.fn().mockReturnThis(),
+        orderBy: vi.fn().mockResolvedValue([]),
+        where: vi.fn().mockReturnThis()
+      };
+
+      const mockDatabase = {
+        select: vi
+          .fn()
+          .mockReturnValueOnce(mockLPCSelectResult)
+          .mockReturnValueOnce(mockCoursesSelectResult)
+          .mockReturnValueOnce(mockLPSelectResult)
+          .mockReturnValue(mockCurriculumLPSelectResult)
+      };
+
+      const result = await Effect.runPromise(
+        // @ts-expect-error test double
+        coursesAllQuery(mockDatabase, null)
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0]?.courseId).toBe(COURSE_1);
+    });
+
+    it("handles missing learning path gracefully (null name/swebokFocus)", async () => {
+      const mockLPCSelectResult = {
+        from: vi.fn().mockReturnThis(),
+        orderBy: vi
+          .fn()
+          .mockResolvedValue([
+            { courseId: COURSE_1, learningPathId: "missing-lp", orderRank: 1 }
+          ]),
+        where: vi.fn().mockReturnThis()
+      };
+
+      const mockCoursesSelectResult = {
+        from: vi.fn().mockResolvedValue([
+          {
+            author: TEST_AUTHOR,
+            createdAt: CREATED_AT,
+            id: COURSE_1,
+            name: TEST_COURSE,
+            updatedAt: UPDATED_AT,
+            url: EXAMPLE_COURSE
+          }
+        ])
+      };
+
+      const mockLPSelectResult = {
+        from: vi.fn().mockResolvedValue([])
+      };
+
+      const mockDatabase = {
+        select: vi
+          .fn()
+          .mockReturnValueOnce(mockLPCSelectResult)
+          .mockReturnValueOnce(mockCoursesSelectResult)
+          .mockReturnValueOnce(mockLPSelectResult)
+          .mockReturnValue({
+            from: vi.fn().mockReturnThis(),
+            orderBy: vi.fn().mockResolvedValue([]),
+            where: vi.fn().mockReturnThis()
+          })
+      };
+
+      const result = await Effect.runPromise(
+        // @ts-expect-error test double
+        coursesAllQuery(mockDatabase, null)
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0]?.courseId).toBe(COURSE_1);
+      expect(result[0]?.learningPathName).toBeNull();
+      expect(result[0]?.swebokFocus).toBeNull();
+    });
+  });
+
+  describe("context resolution", () => {
+    const mockCurriculumLPSelectResult = {
+      from: vi.fn().mockReturnThis(),
+      orderBy: vi
+        .fn()
+        .mockResolvedValue([
+          { curriculumId: "cur-1", learningPathId: LP_1, orderRank: 1 }
+        ]),
+      where: vi.fn().mockReturnThis()
+    };
+
+    it("returns all courses with learning path context", async () => {
+      const mockLPCSelectResult = {
+        from: vi.fn().mockReturnThis(),
+        orderBy: vi
+          .fn()
+          .mockResolvedValue([
+            { courseId: COURSE_1, learningPathId: LP_1, orderRank: 1 }
+          ]),
+        where: vi.fn().mockReturnThis()
+      };
+
+      const mockCoursesSelectResult = {
+        from: vi.fn().mockResolvedValue([
+          {
+            author: TEST_AUTHOR,
+            createdAt: CREATED_AT,
+            id: COURSE_1,
+            name: TEST_COURSE,
+            updatedAt: UPDATED_AT,
+            url: EXAMPLE_COURSE
+          }
+        ])
+      };
+
+      const mockLPSelectResult = {
+        from: vi.fn().mockResolvedValue([
+          {
+            createdAt: CREATED_AT,
+            id: LP_1,
+            name: TEST_LP,
+            swebokFocus: TEST_FOCUS,
+            updatedAt: UPDATED_AT,
+            url: EXAMPLE_LP
+          }
+        ])
+      };
+
+      const mockDatabase = {
+        select: vi
+          .fn()
+          .mockReturnValueOnce(mockLPCSelectResult)
+          .mockReturnValueOnce(mockCoursesSelectResult)
+          .mockReturnValueOnce(mockLPSelectResult)
+          .mockReturnValue(mockCurriculumLPSelectResult)
+      };
+
+      const result = await Effect.runPromise(
+        // @ts-expect-error test double
+        coursesAllQuery(mockDatabase, null)
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toStrictEqual({
+        author: TEST_AUTHOR,
+        courseId: COURSE_1,
+        courseIndex: 1,
+        learningPathId: LP_1,
+        learningPathName: TEST_LP,
+        learningPathOrder: 1,
+        learningPathUrl: EXAMPLE_LP,
+        name: TEST_COURSE,
+        swebokFocus: TEST_FOCUS,
+        updatedAt: UPDATED_AT,
+        url: EXAMPLE_COURSE
+      });
+    });
   });
 });

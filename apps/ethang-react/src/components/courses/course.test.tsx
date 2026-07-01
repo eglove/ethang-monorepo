@@ -1,10 +1,16 @@
 import { render, screen } from "@testing-library/react";
+import isNil from "lodash/isNil.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { Course, courseQueryOptions } from "./course.tsx";
+import { Course } from "./course.tsx";
 
-const mockCourseStore = {
-  data: null as unknown,
+type QueryKey = [string, ...unknown[]];
+
+const mockAllCoursesStore: {
+  allCoursesData: unknown;
+  isPending: boolean;
+} = {
+  allCoursesData: null,
   isPending: false
 };
 const introductionToTesting = "Introduction to Testing";
@@ -15,10 +21,17 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
   return {
     // @ts-expect-error for test
     ...actual,
-    useQuery: () => {
+    useQuery: (options: {
+      queryKey: QueryKey;
+      select?: (data: unknown) => unknown;
+    }) => {
+      let data = mockAllCoursesStore.allCoursesData;
+      if (!isNil(data) && options.select) {
+        data = options.select(data);
+      }
       return {
-        data: mockCourseStore.data,
-        isPending: mockCourseStore.isPending
+        data,
+        isPending: mockAllCoursesStore.isPending
       };
     }
   };
@@ -26,33 +39,15 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
 
 describe("Course", () => {
   beforeEach(() => {
-    mockCourseStore.data = null;
-    mockCourseStore.isPending = false;
-  });
-
-  it("executes the query function", async () => {
-    const mockData = {
-      author: "John Doe",
-      id: "1",
-      name: introductionToTesting,
-      url: testingUrl
-    };
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json(mockData, { status: 200 })
-    );
-
-    const options = courseQueryOptions("1");
-    // @ts-expect-error for test
-    const result = await options.queryFn();
-
-    expect(result).toEqual(mockData);
+    mockAllCoursesStore.allCoursesData = null;
+    mockAllCoursesStore.isPending = false;
   });
 
   it("renders loader skeleton when query is pending", () => {
-    mockCourseStore.isPending = true;
+    mockAllCoursesStore.isPending = true;
     render(
       <ul>
-        <Course courseId="1" courseIndex={1} />
+        <Course courseId="1" />
       </ul>
     );
 
@@ -62,20 +57,30 @@ describe("Course", () => {
   });
 
   it("renders course details when data is loaded", () => {
-    mockCourseStore.data = {
-      author: "John Doe",
-      id: "1",
-      name: introductionToTesting,
-      url: testingUrl
-    };
+    mockAllCoursesStore.allCoursesData = [
+      {
+        author: "John Doe",
+        courseId: "0",
+        courseIndex: 1,
+        name: "Course Zero",
+        url: "https://example.com/0"
+      },
+      {
+        author: "John Doe",
+        courseId: "1",
+        courseIndex: 2,
+        name: introductionToTesting,
+        url: testingUrl
+      }
+    ];
 
     render(
       <ul>
-        <Course courseId="1" courseIndex={1} />
+        <Course courseId="1" />
       </ul>
     );
 
-    expect(screen.getByText("1.")).toBeDefined();
+    expect(screen.getByText("2.")).toBeDefined();
     const linkElement = screen.getByRole("link", {
       name: introductionToTesting
     });

@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 
-import { Articles } from "./articles.tsx";
+import { Articles, markArticleReadMutationFunction } from "./articles.tsx";
 
 const mockArticlesStore = {
   allArticlesData: null as unknown,
@@ -142,6 +142,22 @@ const clearMocks = () => {
   mockMutate.mockClear();
   mockInvalidateQueries.mockClear();
 };
+
+describe("markArticleReadMutationFn", () => {
+  it("calls rpcRequest with the correct arguments and returns the result", async () => {
+    const mockResponse = { success: true };
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(mockResponse, { status: 200 })
+    );
+
+    const result = await markArticleReadMutationFunction({
+      articleId: "test-article",
+      isRead: true
+    });
+
+    expect(result).toEqual(mockResponse);
+  });
+});
 
 describe("Articles - Rendering and Actions", () => {
   beforeEach(() => {
@@ -388,5 +404,83 @@ describe("Articles - Pagination", () => {
       name: MARK_AS_READ
     });
     expect(markAsReadButton).not.toBeDisabled();
+  });
+});
+
+describe("Articles - isRead filter", () => {
+  beforeEach(() => {
+    clearMocks();
+  });
+
+  it("does not render article when isRead is true", () => {
+    mockArticlesStore.selectedFeedId = null;
+    mockArticlesStore.allArticlesData = {
+      pages: [
+        makePage(
+          [
+            makeArticleEdge({
+              id: ARTICLE_ONE_ID,
+              isRead: true,
+              title: ARTICLE_ONE_TITLE
+            })
+          ],
+          false
+        )
+      ]
+    };
+
+    render(<Articles />);
+
+    expect(screen.queryByText(ARTICLE_ONE_TITLE)).toBeNull();
+  });
+
+  it("renders article when isRead is false", () => {
+    mockArticlesStore.selectedFeedId = null;
+    mockArticlesStore.allArticlesData = {
+      pages: [
+        makePage(
+          [
+            makeArticleEdge({
+              id: ARTICLE_ONE_ID,
+              isRead: false,
+              title: ARTICLE_ONE_TITLE
+            })
+          ],
+          false
+        )
+      ]
+    };
+
+    render(<Articles />);
+
+    expect(screen.getByText(ARTICLE_ONE_TITLE)).toBeDefined();
+  });
+
+  it("filters out isRead articles but renders unread ones in mixed data", () => {
+    mockArticlesStore.selectedFeedId = null;
+    mockArticlesStore.allArticlesData = {
+      pages: [
+        makePage(
+          [
+            makeArticleEdge({
+              id: "read-1",
+              isRead: true,
+              title: "Read Article"
+            }),
+            makeArticleEdge({
+              id: ARTICLE_ONE_ID,
+              isRead: false,
+              title: ARTICLE_ONE_TITLE
+            })
+          ],
+          false
+        )
+      ]
+    };
+
+    render(<Articles />);
+
+    expect(screen.queryByText("Read Article")).toBeNull();
+    expect(screen.getByText(ARTICLE_ONE_TITLE)).toBeDefined();
   });
 });

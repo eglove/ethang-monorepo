@@ -1,4 +1,4 @@
-import { asc, eq, inArray } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { Effect } from "effect";
 import filter from "lodash/filter.js";
 import isError from "lodash/isError.js";
@@ -8,6 +8,7 @@ import type { Database } from "../types.ts";
 
 import {
   coursesTable,
+  curriculumLearningPathsTable,
   learningPathCoursesTable,
   learningPathsTable
 } from "../../db/schema.ts";
@@ -73,18 +74,21 @@ const fetchLpData = async (database: Database, lpId: string) => {
     .where(eq(learningPathCoursesTable.learningPathId, lpId))
     .orderBy(asc(learningPathCoursesTable.orderRank));
 
-  const courseIds = map(coursesInPath, (lpc) => {
-    return lpc.courseId;
-  });
+  const courseIds = new Set(
+    map(coursesInPath, (lpc) => {
+      return lpc.courseId;
+    })
+  );
 
-  if (0 === courseIds.length) {
+  if (0 === courseIds.size) {
     return { orderedCourses: [] };
   }
 
-  const courseRecords = await database
-    .select()
-    .from(coursesTable)
-    .where(inArray(coursesTable.id, courseIds));
+  // Fetch all courses and filter in-memory to avoid D1's 100 bound parameter limit
+  const allCourseRecords = await database.select().from(coursesTable);
+  const courseRecords = filter(allCourseRecords, (c) => {
+    return courseIds.has(c.id);
+  });
 
   const courseMap = new Map(
     map(courseRecords, (course) => {
@@ -150,6 +154,174 @@ export const learningPathQuery = (
         updatedAt: lpRecord.updatedAt,
         url: lpRecord.url ?? null
       };
+    }
+  });
+};
+
+type LearningPathCourseEntry = {
+  author: string;
+  courseId: string;
+  courseIndex: number;
+  learningPathId: string;
+  learningPathName: null | string;
+  learningPathOrder: number;
+  learningPathUrl: null | string;
+  name: string;
+  swebokFocus: null | string;
+  updatedAt: string;
+  url: string;
+};
+
+const buildCourseEntry = (
+  lpc: typeof learningPathCoursesTable.$inferSelect,
+  index: number,
+  courseMap: Map<string, typeof coursesTable.$inferSelect>,
+  learningPathMap: Map<string, typeof learningPathsTable.$inferSelect>
+): LearningPathCourseEntry | null => {
+  const course = courseMap.get(lpc.courseId);
+
+  if (!course) {
+    return null;
+  }
+
+  const learningPath = learningPathMap.get(lpc.learningPathId);
+
+  return {
+    author: course.author,
+    courseId: course.id,
+    courseIndex: index,
+    learningPathId: lpc.learningPathId,
+    learningPathName: learningPath?.name ?? null,
+    learningPathOrder: lpc.orderRank,
+    learningPathUrl: learningPath?.url ?? null,
+    name: course.name,
+    swebokFocus: learningPath?.swebokFocus ?? null,
+    updatedAt: course.updatedAt,
+    url: course.url
+  };
+};
+
+const groupCoursesByLp = (
+  learningPathCourses: (typeof learningPathCoursesTable.$inferSelect)[]
+): Map<string, (typeof learningPathCoursesTable.$inferSelect)[]> => {
+  const coursesByLp = new Map<
+    string,
+    (typeof learningPathCoursesTable.$inferSelect)[]
+  >();
+  for (const lpc of learningPathCourses) {
+    const existing = coursesByLp.get(lpc.learningPathId);
+    if (existing) {
+      existing.push(lpc);
+    } else {
+      coursesByLp.set(lpc.learningPathId, [lpc]);
+    }
+  }
+  return coursesByLp;
+};
+
+const buildLpCurriculumOrder = (
+  curriculumLearningPaths: (typeof curriculumLearningPathsTable.$inferSelect)[]
+): Map<string, number> => {
+  const lpCurriculumOrder = new Map<string, number>();
+  for (const clp of curriculumLearningPaths) {
+    if (!lpCurriculumOrder.has(clp.learningPathId)) {
+      lpCurriculumOrder.set(clp.learningPathId, clp.orderRank);
+    }
+  }
+  return lpCurriculumOrder;
+};
+
+const buildAllCoursesFromSortedLpIds = (
+  sortedLpIds: string[],
+  coursesByLp: Map<string, (typeof learningPathCoursesTable.$inferSelect)[]>,
+  courseMap: Map<string, typeof coursesTable.$inferSelect>,
+  learningPathMap: Map<string, typeof learningPathsTable.$inferSelect>
+): LearningPathCourseEntry[] => {
+  const entries = sortedLpIds.flatMap((lpId) => {
+    return coursesByLp.get(lpId) ?? [];
+  });
+  const allCourses: LearningPathCourseEntry[] = [];
+  let courseIndex = 0;
+
+  for (const lpc of entries) {
+    courseIndex += 1;
+    const result = buildCourseEntry(
+      lpc,
+      courseIndex,
+      courseMap,
+      learningPathMap
+    );
+    if (result) {
+      allCourses.push(result);
+    }
+  }
+
+  return allCourses;
+};
+
+export const coursesAllQuery = (database: Database, _parameters: null) => {
+  return Effect.tryPromise({
+    catch: (cause) => {
+      return isError(cause) ? cause : new Error(String(cause));
+    },
+    try: async () => {
+      // Fetch all learning path course relationships with order
+      const learningPathCourses = await database
+        .select()
+        .from(learningPathCoursesTable)
+        .orderBy(
+          asc(learningPathCoursesTable.learningPathId),
+          asc(learningPathCoursesTable.orderRank)
+        );
+
+      if (0 === learningPathCourses.length) {
+        return [];
+      }
+
+      // Fetch all courses and learning paths (small tables, avoids D1's 100 bound parameter limit with inArray)
+      const courseRecords = await database.select().from(coursesTable);
+      const learningPathRecords = await database
+        .select()
+        .from(learningPathsTable);
+
+      // Fetch curriculum learning path ordering to sort learning paths correctly
+      const curriculumLearningPaths = await database
+        .select()
+        .from(curriculumLearningPathsTable)
+        .orderBy(asc(curriculumLearningPathsTable.orderRank));
+
+      const lpCurriculumOrder = buildLpCurriculumOrder(curriculumLearningPaths);
+
+      const courseMap = new Map(
+        map(courseRecords, (course) => {
+          return [course.id, course] as const;
+        })
+      );
+
+      const learningPathMap = new Map(
+        map(learningPathRecords, (lp) => {
+          return [lp.id, lp] as const;
+        })
+      );
+
+      const coursesByLp = groupCoursesByLp(learningPathCourses);
+
+      // Sort learning path IDs by curriculum order (or fall back to learning path ID)
+      const sortedLpIds = coursesByLp
+        .keys()
+        .toArray()
+        .toSorted((a, b) => {
+          const orderA = lpCurriculumOrder.get(a) ?? Number.MAX_SAFE_INTEGER;
+          const orderB = lpCurriculumOrder.get(b) ?? Number.MAX_SAFE_INTEGER;
+          return orderA - orderB;
+        });
+
+      return buildAllCoursesFromSortedLpIds(
+        sortedLpIds,
+        coursesByLp,
+        courseMap,
+        learningPathMap
+      );
     }
   });
 };

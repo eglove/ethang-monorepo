@@ -3,8 +3,7 @@ import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import { app } from "./index.js";
-import { createUserRepo } from "./infrastructure/user/repo.js";
-import { createTokenService } from "./infrastructure/user/token-service.js";
+import { carryUserAuthCommand } from "./infrastructure/user/aggregate.js";
 
 const { EMAIL, PASSWORD, SECRET, TEST_USERNAME } = auth;
 const TEST_EMAIL = EMAIL;
@@ -55,6 +54,12 @@ vi.mock("./infrastructure/user/password-service.js", () => {
   };
 });
 
+vi.mock("./infrastructure/user/aggregate.js", () => {
+  return {
+    carryUserAuthCommand: vi.fn().mockReturnValue(Effect.succeed(mockUser))
+  };
+});
+
 vi.mock("./infrastructure/user/token-service.js", () => {
   return {
     createTokenService: vi.fn().mockReturnValue({
@@ -94,10 +99,8 @@ describe("POST /sign-up", () => {
   });
 
   it("should return 500 error when sign up fails", async () => {
-    vi.mocked(createUserRepo).mockImplementationOnce(() => {
-      return {
-        fetch: vi.fn().mockReturnValue(Effect.fail(new Error("Sign up failed")))
-      } as any;
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.fail(new Error("Sign up failed"));
     });
 
     const response = await app.request(
@@ -121,6 +124,33 @@ describe("POST /sign-up", () => {
     expect(body).toEqual({ error: "Sign up failed" });
   });
 
+  it("should return 500 with string error when sign up throws non-Error", async () => {
+    // @ts-expect-error for test
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.fail("STRING_ERROR");
+    });
+
+    const response = await app.request(
+      "/sign-up",
+      {
+        body: JSON.stringify({
+          email: TEST_EMAIL,
+          password: TEST_PASSWORD,
+          username: TEST_USERNAME_VALUE
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST"
+      },
+      {
+        "token-auth": TEST_SECRET
+      }
+    );
+
+    expect(response.status).toBe(500);
+    const body = await response.json();
+    expect(body).toEqual({ error: "STRING_ERROR" });
+  });
+
   it("should return success when sign up with fallback token-auth", async () => {
     const response = await app.request(
       "/sign-up",
@@ -142,13 +172,8 @@ describe("POST /sign-up", () => {
   });
 
   it("should return success when sign up is valid but no token", async () => {
-    vi.mocked(createUserRepo).mockImplementationOnce(() => {
-      return {
-        fetch: vi.fn().mockReturnValue(Effect.succeed(null)),
-        save: vi
-          .fn()
-          .mockReturnValue(Effect.succeed({ ...mockUser, sessionToken: null }))
-      };
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.succeed({ ...mockUser, sessionToken: null });
     });
 
     const response = await app.request(
@@ -175,13 +200,8 @@ describe("POST /sign-up", () => {
 
 describe("POST /sign-in", () => {
   it("should return success when sign in is valid but no token", async () => {
-    vi.mocked(createUserRepo).mockImplementationOnce(() => {
-      return {
-        fetch: vi.fn().mockReturnValue(Effect.succeed(mockUser)),
-        save: vi
-          .fn()
-          .mockReturnValue(Effect.succeed({ ...mockUser, sessionToken: null }))
-      };
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.succeed({ ...mockUser, sessionToken: null });
     });
 
     const response = await app.request(
@@ -205,11 +225,8 @@ describe("POST /sign-in", () => {
   });
 
   it("should return success when sign in is valid", async () => {
-    vi.mocked(createUserRepo).mockImplementationOnce(() => {
-      return {
-        fetch: vi.fn().mockReturnValue(Effect.succeed(mockUser)),
-        save: vi.fn().mockReturnValue(Effect.succeed(mockUser))
-      };
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.succeed(mockUser);
     });
 
     const response = await app.request(
@@ -235,10 +252,8 @@ describe("POST /sign-in", () => {
   });
 
   it("should return 401 when sign in fails", async () => {
-    vi.mocked(createUserRepo).mockImplementationOnce(() => {
-      return {
-        fetch: vi.fn().mockReturnValue(Effect.succeed(null))
-      } as any;
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.fail(new Error("Unauthorized"));
     });
 
     const response = await app.request(
@@ -264,6 +279,10 @@ describe("POST /sign-in", () => {
 
 describe("GET /verify", () => {
   it("should verify token with env secret", async () => {
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.succeed({ payload: { email: hoistedEmail } });
+    });
+
     const response = await app.request(
       "/verify",
       {
@@ -281,6 +300,10 @@ describe("GET /verify", () => {
   });
 
   it("should verify token with fallback when token-auth is missing", async () => {
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.succeed({ payload: { email: hoistedEmail } });
+    });
+
     const response = await app.request(
       "/verify",
       {
@@ -312,11 +335,8 @@ describe("GET /verify", () => {
   });
 
   it("should return 401 if token is invalid", async () => {
-    vi.mocked(createTokenService).mockImplementationOnce(() => {
-      return {
-        sign: vi.fn(),
-        verify: vi.fn().mockReturnValue(Effect.fail(new Error("Invalid token")))
-      };
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.fail(new Error("Invalid token"));
     });
 
     const response = await app.request(
@@ -338,10 +358,8 @@ describe("GET /verify", () => {
 
 describe("POST /verify", () => {
   it("should validate credentials", async () => {
-    vi.mocked(createUserRepo).mockImplementationOnce(() => {
-      return {
-        fetch: vi.fn().mockReturnValue(Effect.succeed(mockUser))
-      } as any;
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.succeed(mockUser);
     });
 
     const response = await app.request(
@@ -365,10 +383,8 @@ describe("POST /verify", () => {
   });
 
   it("should return 401 if credentials are invalid", async () => {
-    vi.mocked(createUserRepo).mockImplementationOnce(() => {
-      return {
-        fetch: vi.fn().mockReturnValue(Effect.succeed(null))
-      } as any;
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.fail(new Error("Unauthorized"));
     });
 
     const response = await app.request(

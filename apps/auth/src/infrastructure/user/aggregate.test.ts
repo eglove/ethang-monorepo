@@ -3,6 +3,7 @@ import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import type { UserCommand } from "../../domain/user/commands.ts";
+import type { UserEvent } from "../../domain/user/events.ts";
 import type { UserState } from "../../domain/user/state.ts";
 import type { UserRepo } from "./repo.ts";
 
@@ -13,6 +14,28 @@ import { SaveError } from "../../errors/save-error.ts";
 import { TokenSignError } from "../../errors/token-sign-error.ts";
 import { TokenVerifyError } from "../../errors/token-verify-error.ts";
 import { carryUserAuthCommand } from "./aggregate.ts";
+
+const { decideMockRef } = vi.hoisted(() => {
+  const reference: { value: null | ReturnType<typeof vi.fn> } = { value: null };
+  return { decideMockRef: reference };
+});
+
+// eslint-disable-next-line sonar/no-duplicate-string
+vi.mock("../../domain/user/aggregate.ts", async () => {
+  const actual = await vi.importActual<
+    typeof import("../../domain/user/aggregate.ts")
+  >("../../domain/user/aggregate.ts");
+  const mockedDecide = vi.fn();
+  mockedDecide.mockImplementation((..._arguments) => {
+    // @ts-expect-error for test
+    return actual.decide(..._arguments);
+  });
+  decideMockRef.value = mockedDecide;
+  return {
+    apply: actual.apply,
+    decide: mockedDecide
+  };
+});
 
 const {
   EMAIL,
@@ -253,6 +276,47 @@ describe("SignIn", () => {
 
     expect(result).toBeInstanceOf(InvalidCredentialsError);
   });
+
+  it("fails with InvalidCredentialsError when existing user has null password", async () => {
+    const repo = createMockRepo({
+      fetch: fetchUser({ ...EXISTING_USER, password: null })
+    });
+    const passwordService = createMockPasswordService();
+    const tokenService = createMockTokenService();
+    const command = makeSignInCommand();
+
+    const result = await Effect.runPromise(
+      carryUserAuthCommand(command, repo, passwordService, tokenService).pipe(
+        Effect.flip
+      )
+    );
+
+    expect(result).toBeInstanceOf(InvalidCredentialsError);
+  });
+});
+
+describe("unexpected event from decide", () => {
+  it("fails with error when decide returns a non-SignInOrUpEvent", async () => {
+    decideMockRef.value?.mockImplementationOnce(() => {
+      return [
+        {
+          email: "test@test.com",
+          kind: "CredentialsValidated"
+        } as UserEvent
+      ];
+    });
+
+    const repo = createMockRepo();
+    const passwordService = createMockPasswordService();
+    const tokenService = createMockTokenService();
+    const command = makeSignUpCommand();
+
+    await expect(
+      Effect.runPromise(
+        carryUserAuthCommand(command, repo, passwordService, tokenService)
+      )
+    ).rejects.toThrow("Unexpected event type");
+  });
 });
 
 describe("ValidateCredentials", () => {
@@ -285,6 +349,28 @@ describe("ValidateCredentials", () => {
 
     const command: UserCommand = {
       email: UNKNOWN_EMAIL,
+      kind: "ValidateCredentials",
+      password: TEST_PASSWORD
+    };
+
+    const result = await Effect.runPromise(
+      carryUserAuthCommand(command, repo, passwordService, tokenService).pipe(
+        Effect.flip
+      )
+    );
+
+    expect(result).toBeInstanceOf(InvalidCredentialsError);
+  });
+
+  it("fails with InvalidCredentialsError when user has null password", async () => {
+    const repo = createMockRepo({
+      fetch: fetchUser({ ...EXISTING_USER, password: null })
+    });
+    const passwordService = createMockPasswordService();
+    const tokenService = createMockTokenService();
+
+    const command: UserCommand = {
+      email: TEST_EMAIL,
       kind: "ValidateCredentials",
       password: TEST_PASSWORD
     };

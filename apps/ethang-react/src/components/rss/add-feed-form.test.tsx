@@ -2,7 +2,10 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import repeat from "lodash/repeat.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { AddFeedForm } from "./add-feed-form.tsx";
+import {
+  AddFeedForm,
+  addSubscriptionMutationFunction
+} from "./add-feed-form.tsx";
 
 const mockAddSubscription = vi.fn().mockResolvedValue({});
 const mockAddFeedFormStore = { isMockLoading: false };
@@ -25,7 +28,23 @@ vi.mock("@tanstack/react-query", () => {
 });
 
 const FEED_XML_URL_PLACEHOLDER = "Feed XML URL";
+const RSS_XML_URL = "https://example.com/rss.xml";
 const SCOPE_FORM = ":scope form";
+
+describe("addSubscriptionMutationFn", () => {
+  it("calls rpcRequest with the correct arguments and returns the result", async () => {
+    const mockResponse = { success: true };
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(mockResponse, { status: 200 })
+    );
+
+    const result = await addSubscriptionMutationFunction({
+      xmlAddress: RSS_XML_URL
+    });
+
+    expect(result).toEqual(mockResponse);
+  });
+});
 
 describe("AddFeedForm", () => {
   beforeEach(() => {
@@ -51,12 +70,12 @@ describe("AddFeedForm", () => {
     const button = screen.getByRole("button", { name: "Add Feed" });
 
     fireEvent.change(input, {
-      target: { value: "https://example.com/rss.xml" }
+      target: { value: RSS_XML_URL }
     });
     fireEvent.click(button);
 
     expect(mockAddSubscription).toHaveBeenCalledWith({
-      xmlAddress: "https://example.com/rss.xml"
+      xmlAddress: RSS_XML_URL
     });
   });
 

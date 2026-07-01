@@ -9,17 +9,38 @@ import {
   Text
 } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
+import filter from "lodash/filter";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
 
 import { rpcRequest } from "../../clients/rpc-client.ts";
 import { Course } from "./course.tsx";
 
-const COURSES_SERVICE = "ethang_courses";
+export type AllCourseData = {
+  author: string;
+  courseId: string;
+  courseIndex: number;
+  learningPathId: string;
+  learningPathName: null | string;
+  learningPathOrder: number;
+  learningPathUrl: null | string;
+  name: string;
+  swebokFocus: null | string;
+  updatedAt: string;
+  url: string;
+};
 
 type LearningPathProperties = {
-  courseOffset: number;
   learningPathId: string;
+};
+
+export const coursesAllQueryOptions = () => {
+  return queryOptions({
+    queryFn: async () => {
+      return rpcRequest<AllCourseData[]>("ethang_courses", "coursesAll", {});
+    },
+    queryKey: ["coursesAll"]
+  });
 };
 
 const swebokFocusMap = new Map([
@@ -44,34 +65,25 @@ const swebokFocusMap = new Map([
   ["testing", "Software Testing"]
 ]);
 
-export const learningPathQueryOptions = (learningPathId: string) => {
-  return queryOptions({
-    queryFn: async () => {
-      return rpcRequest<{
-        courses: { id: string }[];
-        id: string;
-        name: string;
-        swebokFocus?: string;
-        url?: string;
-      }>(COURSES_SERVICE, "learningPath", { id: learningPathId });
-    },
-    queryKey: ["learningPath", learningPathId]
-  });
+const selectPathCourses = (learningPathId: string) => {
+  return (allCourses: AllCourseData[]) => {
+    return filter(allCourses, { learningPathId });
+  };
 };
 
 export const LearningPath = ({
-  courseOffset,
   learningPathId
 }: Readonly<LearningPathProperties>) => {
-  const { data, isPending } = useQuery(
-    learningPathQueryOptions(learningPathId)
-  );
+  const { data: courses, isPending } = useQuery({
+    ...coursesAllQueryOptions(),
+    select: selectPathCourses(learningPathId)
+  });
 
-  const url = data?.url;
-  const name = data?.name;
-  const swebokFocus = data?.swebokFocus;
-  const courses = data?.courses;
-  const courseLength = data?.courses.length;
+  const [firstCourse] = courses ?? [];
+  const name = firstCourse?.learningPathName;
+  const swebokFocus = firstCourse?.swebokFocus;
+  const url = firstCourse?.learningPathUrl;
+  const courseLength = courses?.length;
 
   return (
     <Skeleton loading={isPending}>
@@ -98,17 +110,16 @@ export const LearningPath = ({
         </Text>
         <Flex asChild gap="1" direction="column">
           <ul>
-            {map(courses, (course, index) => {
-              const courseIndex = courseOffset + 1 + index;
-
-              return (
-                <Course
-                  key={course.id}
-                  courseId={course.id}
-                  courseIndex={courseIndex}
-                />
-              );
-            })}
+            {map(
+              courses?.toSorted((a, b) => {
+                return a.courseIndex - b.courseIndex;
+              }) ?? [],
+              (course) => {
+                return (
+                  <Course key={course.courseId} courseId={course.courseId} />
+                );
+              }
+            )}
           </ul>
         </Flex>
       </Card>

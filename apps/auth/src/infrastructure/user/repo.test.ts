@@ -176,5 +176,36 @@ describe("createUserRepo", () => {
       expect(result).toBeInstanceOf(SaveError);
       expect(result.message).toContain("Insert failed");
     });
+
+    it("inserts with empty string password when state password is null", async () => {
+      const NULL_PASSWORD_STATE: UserState = { ...STATE, password: null };
+      const EXPECTED_NULL_PASSWORD_ROW = {
+        ...ROW,
+        password: ""
+      };
+      const { database, insertReturningMock } = createMockDatabase();
+      insertReturningMock.mockResolvedValue([EXPECTED_NULL_PASSWORD_ROW]);
+
+      const repo = createUserRepo(database);
+      const result = await Effect.runPromise(
+        repo.save(NULL_PASSWORD_STATE, null)
+      );
+
+      expect(result.password).toBe("");
+    });
+
+    it("updates with empty string password when state password is null", async () => {
+      const NULL_PASSWORD_STATE: UserState = { ...STATE, password: null };
+      const { database, updateRunMock } = createMockDatabase();
+      updateRunMock.mockResolvedValue(undefined);
+
+      const repo = createUserRepo(database);
+      const result = await Effect.runPromise(
+        repo.save(NULL_PASSWORD_STATE, TEST_USER_ID)
+      );
+
+      expect(result.password).toBeNull();
+      expect(result.id).toBe(TEST_USER_ID);
+    });
   });
 });
