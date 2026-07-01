@@ -19,6 +19,7 @@ const mockEnvironment: Environment = {
 describe("rpcServiceDispatch", () => {
   it("dispatches to ethang_courses service", async () => {
     const result = await rpcServiceDispatch(
+      // @ts-expect-error for test
       mockEnvironment,
       "ethang_courses",
       "courses",
@@ -30,18 +31,17 @@ describe("rpcServiceDispatch", () => {
   });
 
   it("dispatches to ethang_rss service", async () => {
-    const result = await rpcServiceDispatch(
-      mockEnvironment,
-      "ethang_rss",
-      "allArticles",
-      { first: 10 }
-    );
+    // @ts-expect-error for test
+    await rpcServiceDispatch(mockEnvironment, "ethang_rss", "allArticles", {
+      first: 10
+    });
 
     expect(mockBinding.allArticles).toHaveBeenCalledWith({ first: 10 });
   });
 
   it("throws 'Invalid service' when service is not recognized", async () => {
     await expect(
+      // @ts-expect-error for test
       rpcServiceDispatch(mockEnvironment, "unknown_service", "courses", {})
     ).rejects.toThrow("Invalid service");
   });
@@ -49,6 +49,7 @@ describe("rpcServiceDispatch", () => {
   it("throws 'Invalid method' when method is not in the dispatch map", async () => {
     await expect(
       rpcServiceDispatch(
+        // @ts-expect-error for test
         mockEnvironment,
         "ethang_courses",
         "nonExistentMethod",
@@ -62,6 +63,7 @@ describe("rpcServiceDispatch", () => {
 
     await expect(
       rpcServiceDispatch(
+        // @ts-expect-error for test
         environmentWithoutBinding,
         "ethang_courses",
         "courses",

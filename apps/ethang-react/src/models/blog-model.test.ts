@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getAllBlogs, getBlogBySlug, getPaginatedBlogs } from "./blog-model.ts";
 
@@ -7,8 +7,8 @@ const mockFetch = vi.fn();
 vi.mock("../clients/sanity.ts", () => {
   return {
     sanityClient: {
-      fetch: (...arguments_: unknown[]) => {
-        return mockFetch(...arguments_);
+      fetch: (..._arguments: unknown[]) => {
+        return mockFetch(..._arguments);
       }
     }
   };
@@ -17,6 +17,8 @@ vi.mock("../clients/sanity.ts", () => {
 const MOCK_SLUG = "test-blog";
 const MOCK_PAGE = 2;
 const MOCK_PAGE_SIZE = 5;
+const DATE_2024_01_01 = "2024-01-01";
+const DATE_2024_01_02 = "2024-01-02";
 
 describe("getAllBlogs", () => {
   beforeEach(() => {
@@ -31,16 +33,16 @@ describe("getAllBlogs", () => {
   it("calls sanityClient.fetch with correct GROQ query in queryFn", async () => {
     const mockData = [
       {
-        _createdAt: "2024-01-01",
+        _createdAt: DATE_2024_01_01,
         _id: "1",
-        _updatedAt: "2024-01-02",
+        _updatedAt: DATE_2024_01_02,
         author: "Author",
         blogCategory: {
-          _createdAt: "2024-01-01",
+          _createdAt: DATE_2024_01_01,
           _id: "c1",
           _rev: "r1",
           _type: "blogCategory",
-          _updatedAt: "2024-01-02",
+          _updatedAt: DATE_2024_01_02,
           title: "Blog"
         },
         description: "A blog post",
@@ -51,7 +53,8 @@ describe("getAllBlogs", () => {
     mockFetch.mockResolvedValue(mockData);
 
     const options = getAllBlogs();
-    const result = await options.queryFn();
+    // @ts-expect-error for test
+    const result = await options.queryFn?.();
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.stringContaining('*[_type == "blog"] | order(_createdAt desc)')
@@ -72,12 +75,12 @@ describe("getBlogBySlug", () => {
 
   it("calls sanityClient.fetch with correct GROQ query and slug parameter", async () => {
     const mockData = {
-      _createdAt: "2024-01-01",
+      _createdAt: DATE_2024_01_01,
       _id: "1",
       _rev: "r1",
       _system: { base: { id: "1", rev: "r1" } },
       _type: "blog",
-      _updatedAt: "2024-01-02",
+      _updatedAt: DATE_2024_01_02,
       author: "Author",
       blogCategory: { _ref: "c1", _type: "reference" },
       body: [],
@@ -90,7 +93,8 @@ describe("getBlogBySlug", () => {
     mockFetch.mockResolvedValue(mockData);
 
     const options = getBlogBySlug(MOCK_SLUG);
-    const result = await options.queryFn();
+    // @ts-expect-error for tests
+    const result = await options.queryFn?.();
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.stringContaining('*[_type == "blog" && slug.current == $slug][0]'),
@@ -122,21 +126,20 @@ describe("getPaginatedBlogs", () => {
       {
         posts: [
           {
-            _createdAt: "2024-01-01",
+            _createdAt: DATE_2024_01_01,
             _id: "1",
-            _updatedAt: "2024-01-02",
+            _updatedAt: DATE_2024_01_02,
             author: "A",
             blogCategory: {
-              _createdAt: "2024-01-01",
+              _createdAt: DATE_2024_01_01,
               _id: "c1",
               _rev: "r1",
               _type: "blogCategory",
-              _updatedAt: "2024-01-02",
+              _updatedAt: DATE_2024_01_02,
               title: "Blog"
             },
             description: "D",
             slug: { _type: "slug", current: "post-1" },
-            title: "Post 1",
             title: "Post 1"
           }
         ]
@@ -146,7 +149,8 @@ describe("getPaginatedBlogs", () => {
     mockFetch.mockResolvedValue(mockResult);
 
     const options = getPaginatedBlogs(MOCK_PAGE, MOCK_PAGE_SIZE);
-    const result = await options.queryFn();
+    // @ts-expect-error for tests
+    const result = await options.queryFn?.();
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.stringContaining(
@@ -172,8 +176,9 @@ describe("getPaginatedBlogs", () => {
     mockFetch.mockResolvedValue(mockResult);
 
     const options = getPaginatedBlogs(1, 10);
-    const result = await options.queryFn();
+    // @ts-expect-error for tests
+    const result = await options.queryFn?.();
 
-    expect(result.maxPages).toBe(1);
+    expect(result?.maxPages).toBe(1);
   });
 });

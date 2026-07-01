@@ -26,8 +26,9 @@ vi.mock("../../domain/user/aggregate.ts", async () => {
     typeof import("../../domain/user/aggregate.ts")
   >("../../domain/user/aggregate.ts");
   const mockedDecide = vi.fn();
-  mockedDecide.mockImplementation((...arguments_) => {
-    return actual.decide(...arguments_);
+  mockedDecide.mockImplementation((..._arguments) => {
+    // @ts-expect-error for test
+    return actual.decide(..._arguments);
   });
   decideMockRef.value = mockedDecide;
   return {

@@ -1,9 +1,10 @@
+import { urls } from "@ethang/intl/en/urls.ts";
 import { describe, expect, it, vi } from "vitest";
 
 import { authenticate } from "./authenticate.ts";
 
 const UNAUTHORIZED = "Unauthorized";
-const EXAMPLE_URL = "https://example.com";
+const { EXAMPLE_URL } = urls;
 
 describe("authenticate", () => {
   it("should throw if X-Token is missing", async () => {

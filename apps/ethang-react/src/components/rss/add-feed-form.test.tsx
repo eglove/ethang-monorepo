@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   AddFeedForm,
-  addSubscriptionMutationFn as addSubscriptionMutationFunction
+  addSubscriptionMutationFunction
 } from "./add-feed-form.tsx";
 
 const mockAddSubscription = vi.fn().mockResolvedValue({});
@@ -28,6 +28,7 @@ vi.mock("@tanstack/react-query", () => {
 });
 
 const FEED_XML_URL_PLACEHOLDER = "Feed XML URL";
+const RSS_XML_URL = "https://example.com/rss.xml";
 const SCOPE_FORM = ":scope form";
 
 describe("addSubscriptionMutationFn", () => {
@@ -38,7 +39,7 @@ describe("addSubscriptionMutationFn", () => {
     );
 
     const result = await addSubscriptionMutationFunction({
-      xmlAddress: "https://example.com/rss.xml"
+      xmlAddress: RSS_XML_URL
     });
 
     expect(result).toEqual(mockResponse);
@@ -69,12 +70,12 @@ describe("AddFeedForm", () => {
     const button = screen.getByRole("button", { name: "Add Feed" });
 
     fireEvent.change(input, {
-      target: { value: "https://example.com/rss.xml" }
+      target: { value: RSS_XML_URL }
     });
     fireEvent.click(button);
 
     expect(mockAddSubscription).toHaveBeenCalledWith({
-      xmlAddress: "https://example.com/rss.xml"
+      xmlAddress: RSS_XML_URL
     });
   });
 

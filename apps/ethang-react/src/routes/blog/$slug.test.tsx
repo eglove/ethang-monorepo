@@ -1,24 +1,40 @@
 import { render, screen } from "@testing-library/react";
+import React from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { Route } from "./$slug.tsx";
 
-const { mockBody, mockSlug, mockTitle } = vi.hoisted(() => {
-  return {
-    mockBody: [
-      {
-        _key: "b1",
-        _type: "block",
-        children: [
-          { _key: "s1", _type: "span", marks: [], text: "Hello world" }
-        ],
-        style: "normal"
+const { mockBody, mockRouteConfig, mockSlug, mockTitle, SanityText } =
+  vi.hoisted(() => {
+    return {
+      mockBody: [
+        {
+          _key: "b1",
+          _type: "block",
+          children: [
+            { _key: "s1", _type: "span", marks: [], text: "Hello world" }
+          ],
+          style: "normal"
+        }
+      ],
+      mockRouteConfig: (config: { component: React.ComponentType }) => {
+        const result: { options: { component: React.ComponentType } } = {
+          options: { component: config.component }
+        };
+        return result;
+      },
+      mockSlug: "test-blog-slug",
+      mockTitle: "Test Blog Title",
+      SanityText: ({ value }: { value: unknown }) => {
+        return (
+          <div data-testid="sanity-text">
+            {((value as { _key: string }[])[0] as { text?: string } | undefined)
+              ?.text ?? ""}
+          </div>
+        );
       }
-    ],
-    mockSlug: "test-blog-slug",
-    mockTitle: "Test Blog Title"
-  };
-});
+    };
+  });
 
 vi.mock("@tanstack/react-query", () => {
   return {
@@ -35,9 +51,7 @@ vi.mock("@tanstack/react-query", () => {
 vi.mock("@tanstack/react-router", () => {
   return {
     createFileRoute: () => {
-      return (config: { component: React.ComponentType }) => {
-        return { options: { component: config.component } };
-      };
+      return mockRouteConfig;
     },
     useParams: () => {
       return { slug: mockSlug };
@@ -76,20 +90,13 @@ vi.mock("../../components/layout/main-layout.tsx", () => {
 });
 
 vi.mock("../../components/sanity-text.tsx", () => {
-  return {
-    SanityText: ({ value }: { value: unknown }) => {
-      return (
-        <div data-testid="sanity-text">
-          {(value as { _key: string }[])?.[0]?.text ?? ""}
-        </div>
-      );
-    }
-  };
+  return { SanityText };
 });
 
 describe("Blog Slug Route", () => {
   it("renders blog title and body via SanityText", () => {
     const Component = Route.options.component;
+    // @ts-expect-error for test
     render(<Component />);
 
     expect(screen.getByTestId("main-layout")).toBeDefined();

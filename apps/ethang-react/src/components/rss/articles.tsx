@@ -19,7 +19,7 @@ import { decodeHtmlEntities } from "./utilities.ts";
 
 const RSS_SERVICE = "ethang_rss";
 
-export const markArticleReadMutationFn = async (variables: {
+export const markArticleReadMutationFunction = async (variables: {
   articleId: string;
   isRead: boolean;
 }) => {
@@ -71,7 +71,7 @@ export const Articles = () => {
 
   const { isPending: isMarkingRead, mutateAsync: markArticleRead } =
     useMutation({
-      mutationFn: markArticleReadMutationFn,
+      mutationFn: markArticleReadMutationFunction,
       onSuccess: async () => {
         await queryClient.invalidateQueries({
           queryKey: allArticlesOptions().queryKey

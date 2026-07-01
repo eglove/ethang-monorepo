@@ -1,6 +1,6 @@
-import type { ComponentType, ReactElement, ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -195,7 +195,6 @@ describe("RSS Feature", () => {
 
   describe("RssComponent Rendering", () => {
     it("renders the RSS page with AddFeedForm, Feeds, and RssContainer", () => {
-      // @ts-expect-error for test
       const Component = Route.options.component as ComponentType;
       const tree = render(<Component />);
 

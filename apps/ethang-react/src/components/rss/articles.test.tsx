@@ -2,10 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 
-import {
-  Articles,
-  markArticleReadMutationFn as markArticleReadMutationFunction
-} from "./articles.tsx";
+import { Articles, markArticleReadMutationFunction } from "./articles.tsx";
 
 const mockArticlesStore = {
   allArticlesData: null as unknown,
