@@ -6,7 +6,7 @@
   "dependencies": {
     "@ethang/intl": "workspace:*",
     "@ethang/schemas": "workspace:*",
-    "@ethang/toolbelt": "^5.0.0",
+    "@ethang/toolbelt": "^5.0.2",
     "@hono/zod-validator": "^0.8.0",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",

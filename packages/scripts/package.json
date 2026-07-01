@@ -5,9 +5,9 @@
     "current node"
   ],
   "dependencies": {
-    "@ethang/toolbelt": "^5.0.0",
-    "lodash": "^4.18.1",
-    "zod": "^4.4.1"
+    "@ethang/toolbelt": "^5.0.2",
+    "effect": "^3.21.4",
+    "lodash": "^4.18.1"
   },
   "description": "",
   "devDependencies": {

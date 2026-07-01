@@ -1,6 +1,6 @@
 import { parseFetchJson } from "@ethang/toolbelt/fetch/json.js";
+import { Schema } from "effect";
 import isError from "lodash/isError.js";
-import { z } from "zod";
 
 export const getLatestReact = async () => {
   const response = await globalThis.fetch(
@@ -8,7 +8,7 @@ export const getLatestReact = async () => {
   );
   const data = await parseFetchJson(
     response,
-    z.object({ version: z.string() })
+    Schema.Struct({ version: Schema.String })
   );
 
   if (isError(data)) {

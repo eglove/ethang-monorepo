@@ -87,6 +87,14 @@ describe(getLocale, () => {
 
       expect(result).toBe("de-DE");
     });
+
+    it("falls through when navigator is undefined", () => {
+      vi.stubGlobal("navigator", undefined);
+
+      const result = getLocale(["navigator", "accept-language"], "en-US");
+
+      expect(result).toBe("en-US");
+    });
   });
 
   describe("localStorage source", () => {

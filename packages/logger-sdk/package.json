@@ -17,8 +17,7 @@
   },
   "dependencies": {
     "@ethang/schemas": "workspace:*",
-    "lodash": "^4.18.1",
-    "zod": "^4.4.1"
+    "lodash": "^4.18.1"
   },
   "devDependencies": {
     "@ethang/eslint-config": "^25.24.1",

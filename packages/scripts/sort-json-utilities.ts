@@ -1,4 +1,5 @@
 import { parseJson } from "@ethang/toolbelt/json/json.js";
+import { Schema } from "effect";
 import get from "lodash/get.js";
 import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
@@ -10,7 +11,6 @@ import map from "lodash/map.js";
 import startsWith from "lodash/startsWith.js";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import z from "zod";
 
 export const recursiveSort = (value: unknown): unknown => {
   if (isArray(value)) {
@@ -46,8 +46,7 @@ export const sortJson = (filePath: string) => {
   }
 
   const fileContent = readFileSync(absolutePath, "utf8");
-  // @ts-expect-error allow
-  const jsonObject = parseJson(fileContent, z.unknown());
+  const jsonObject = parseJson(fileContent, Schema.Unknown);
 
   if (isError(jsonObject)) {
     globalThis.console.error("Failed to parse JSON", jsonObject);

@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@ethang/markdown-generator": "^2.0.2",
-    "@ethang/toolbelt": "^5.0.0",
+    "@ethang/toolbelt": "^5.0.2",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
     "@types/lodash": "^4.17.24",
@@ -54,8 +54,7 @@
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
     "vite": "^8.1.0",
-    "vitest": "^4.1.9",
-    "zod": "^4.4.3"
+    "vitest": "^4.1.9"
   },
   "engines": {
     "node": ">=24"

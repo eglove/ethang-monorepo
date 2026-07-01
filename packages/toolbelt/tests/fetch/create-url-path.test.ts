@@ -1,6 +1,6 @@
 import isError from "lodash/isError.js";
 import { describe, expect, it } from "vitest";
-import { z, ZodError } from "zod";
+import { Schema } from "effect";
 
 import { createUrlPath } from "../../src/fetch/create-url-path.ts";
 
@@ -9,7 +9,7 @@ describe("createUrlPath", () => {
     const result = createUrlPath(
       "user/:userId",
       { userId: "2" },
-      z.object({ userId: z.string() }),
+      Schema.Struct({ userId: Schema.String }),
     );
 
     expect(result).toBe("user/2");
@@ -21,9 +21,9 @@ describe("createUrlPath", () => {
       {
         userId: "2",
       },
-      z.object({
-        dashboardId: z.string().optional(),
-        userId: z.string(),
+      Schema.Struct({
+        dashboardId: Schema.optional(Schema.String),
+        userId: Schema.String,
       }),
     );
 
@@ -35,13 +35,13 @@ describe("createUrlPath", () => {
       "user/:userId/dashboard(/:dashboardId)",
       // @ts-expect-error allow for test
       { dashboardId: "2" },
-      z.object({
-        dashboardId: z.string().optional(),
-        userId: z.string(),
+      Schema.Struct({
+        dashboardId: Schema.optional(Schema.String),
+        userId: Schema.String,
       }),
     );
 
-    expect(result).toBeInstanceOf(ZodError);
+    expect(result).toBeInstanceOf(Error);
   });
 
   it("should return error if not path variable schema is provided", () => {
@@ -67,9 +67,9 @@ describe("createUrlPath", () => {
         dashboardId: "4",
         userId: "2",
       },
-      z.object({
-        dashboardId: z.string(),
-        userId: z.string(),
+      Schema.Struct({
+        dashboardId: Schema.String,
+        userId: Schema.String,
       }),
     );
 
@@ -85,9 +85,9 @@ describe("createUrlPath", () => {
     const result = createUrlPath(
       "user/:userId/dashboard(/:dashboardId)",
       parameters,
-      z.object({
-        dashboardId: z.string().optional(),
-        userId: z.string(),
+      Schema.Struct({
+        dashboardId: Schema.optional(Schema.String),
+        userId: Schema.String,
       }),
     );
 

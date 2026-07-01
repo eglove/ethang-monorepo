@@ -1,5 +1,5 @@
+import { Schema } from "effect";
 import { describe, expect, it, vi } from "vitest";
-import { z } from "zod";
 
 import { fetchJson } from "../../src/fetch/fetch-json.ts";
 
@@ -7,12 +7,12 @@ describe(fetchJson, () => {
   it("returns parsed data when response matches schema", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(new Response(JSON.stringify({ name: "test" }))),
+      vi.fn().mockResolvedValue(Response.json({ name: "test" }))
     );
 
     const result = await fetchJson(
       "https://example.com",
-      z.object({ name: z.string() }),
+      Schema.Struct({ name: Schema.String })
     );
 
     expect(result).toStrictEqual({ name: "test" });
@@ -22,12 +22,12 @@ describe(fetchJson, () => {
   it("returns Error when response does not match schema", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(new Response(JSON.stringify({ wrong: 1 }))),
+      vi.fn().mockResolvedValue(Response.json({ wrong: 1 }))
     );
 
     const result = await fetchJson(
       "https://example.com",
-      z.object({ name: z.string() }),
+      Schema.Struct({ name: Schema.String })
     );
 
     expect(result).toBeInstanceOf(Error);

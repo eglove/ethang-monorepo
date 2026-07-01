@@ -1,8 +1,5 @@
-import type { ZodObject } from "zod";
-
-import get from "lodash/get.js";
+import { Schema } from "effect";
 import isArray from "lodash/isArray.js";
-import isFunction from "lodash/isFunction.js";
 import isNil from "lodash/isNil.js";
 import keys from "lodash/keys.js";
 
@@ -11,23 +8,18 @@ type SearchParametersRecord = Record<
   number | number[] | string | string[] | undefined
 >;
 
-export const createSearchParameters = <Z extends ZodObject>(
+export const createSearchParameters = <Z extends Schema.Schema.AnyNoContext>(
   searchParameters: SearchParametersRecord,
-  searchParametersSchema: ZodObject
-): Error | ReturnType<Z["safeParse"]>["error"] | URLSearchParams => {
+  searchParametersSchema: Z
+): Error | URLSearchParams => {
   if (isNil(searchParametersSchema)) {
-    return new Error("must provide a valid zod schema");
+    return new Error("must provide a valid schema");
   }
 
-  const safeParse = get(searchParametersSchema, "safeParse");
-  if (!isFunction(safeParse)) {
-    return new Error("must provide a valid zod schema");
-  }
-
-  const result = searchParametersSchema.safeParse(searchParameters);
-
-  if (!result.success) {
-    return result.error;
+  try {
+    Schema.decodeUnknownSync(searchParametersSchema)(searchParameters);
+  } catch {
+    return new Error("Validation failed");
   }
 
   const search = new URLSearchParams();
