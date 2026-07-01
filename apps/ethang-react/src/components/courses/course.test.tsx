@@ -1,23 +1,16 @@
 import { render, screen } from "@testing-library/react";
+import isNil from "lodash/isNil.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  Course,
-  courseQueryOptions,
-  coursesAllQueryOptions
-} from "./course.tsx";
+import { Course } from "./course.tsx";
 
 type QueryKey = [string, ...unknown[]];
 
-const mockCourseStore: {
+const mockAllCoursesStore: {
   allCoursesData: unknown;
-  courseData: unknown;
-  isLoading: boolean;
   isPending: boolean;
 } = {
   allCoursesData: null,
-  courseData: null,
-  isLoading: false,
   isPending: false
 };
 const introductionToTesting = "Introduction to Testing";
@@ -28,19 +21,17 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
   return {
     // @ts-expect-error for test
     ...actual,
-    useQuery: (options: { queryKey: QueryKey }) => {
-      const [key] = options.queryKey;
-      if ("coursesAll" === key) {
-        return {
-          data: mockCourseStore.allCoursesData,
-          isLoading: mockCourseStore.isLoading,
-          isPending: false
-        };
+    useQuery: (options: {
+      queryKey: QueryKey;
+      select?: (data: unknown) => unknown;
+    }) => {
+      let data = mockAllCoursesStore.allCoursesData;
+      if (!isNil(data) && options.select) {
+        data = options.select(data);
       }
       return {
-        data: mockCourseStore.courseData,
-        isLoading: false,
-        isPending: mockCourseStore.isPending
+        data,
+        isPending: mockAllCoursesStore.isPending
       };
     }
   };
@@ -48,55 +39,15 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
 
 describe("Course", () => {
   beforeEach(() => {
-    mockCourseStore.courseData = null;
-    mockCourseStore.allCoursesData = null;
-    mockCourseStore.isPending = false;
-    mockCourseStore.isLoading = false;
-  });
-
-  it("executes the query function", async () => {
-    const mockData = {
-      author: "John Doe",
-      id: "1",
-      name: introductionToTesting,
-      url: testingUrl
-    };
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json(mockData, { status: 200 })
-    );
-
-    const options = courseQueryOptions("1");
-    // @ts-expect-error for test
-    const result = await options.queryFn();
-
-    expect(result).toEqual(mockData);
-  });
-
-  it("executes the coursesAll query function", async () => {
-    const mockData = [
-      {
-        author: "John",
-        id: "1",
-        name: "Course 1",
-        url: "https://example.com/1"
-      }
-    ];
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json(mockData, { status: 200 })
-    );
-
-    const options = coursesAllQueryOptions();
-    // @ts-expect-error for test
-    const result = await options.queryFn();
-
-    expect(result).toEqual(mockData);
+    mockAllCoursesStore.allCoursesData = null;
+    mockAllCoursesStore.isPending = false;
   });
 
   it("renders loader skeleton when query is pending", () => {
-    mockCourseStore.isPending = true;
+    mockAllCoursesStore.isPending = true;
     render(
       <ul>
-        <Course courseId="1" courseIndex={1} />
+        <Course courseId="1" />
       </ul>
     );
 
@@ -106,21 +57,26 @@ describe("Course", () => {
   });
 
   it("renders course details when data is loaded", () => {
-    mockCourseStore.courseData = {
-      author: "John Doe",
-      id: "1",
-      name: introductionToTesting,
-      url: testingUrl
-    };
-
-    mockCourseStore.allCoursesData = [
-      { id: "0", name: "Course Zero" },
-      { id: "1", name: introductionToTesting }
+    mockAllCoursesStore.allCoursesData = [
+      {
+        author: "John Doe",
+        courseId: "0",
+        courseIndex: 1,
+        name: "Course Zero",
+        url: "https://example.com/0"
+      },
+      {
+        author: "John Doe",
+        courseId: "1",
+        courseIndex: 2,
+        name: introductionToTesting,
+        url: testingUrl
+      }
     ];
 
     render(
       <ul>
-        <Course courseId="1" courseIndex={1} />
+        <Course courseId="1" />
       </ul>
     );
 

@@ -3,6 +3,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { coursesAllQueryOptions, Route } from "./courses.tsx";
 
+const LEARNING_PATH_TEST_ID = "learning-path";
+const SOFTWARE_CONSTRUCTION = "Software Construction";
+
 const mockStore = {
   data: null as unknown,
   isPending: false
@@ -24,19 +27,9 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
 
 vi.mock("../components/courses/learning-path.tsx", () => {
   return {
-    LearningPath: ({
-      courseOffset,
-      learningPathId
-    }: {
-      courseOffset: number;
-      learningPathId: string;
-    }) => {
+    LearningPath: ({ learningPathId }: { learningPathId: string }) => {
       return (
-        <div
-          data-id={learningPathId}
-          data-offset={courseOffset}
-          data-testid="learning-path"
-        >
+        <div data-id={learningPathId} data-testid="learning-path">
           Mocked Learning Path {learningPathId}
         </div>
       );
@@ -74,7 +67,7 @@ describe("Courses Route Component", () => {
         courseId: "c1",
         courseIndex: 1,
         learningPathId: "path-1",
-        learningPathName: "Software Construction",
+        learningPathName: SOFTWARE_CONSTRUCTION,
         learningPathOrder: 1,
         learningPathUrl: null,
         name: "Introduction to Testing",
@@ -110,7 +103,7 @@ describe("Courses Route Component", () => {
         courseId: "c1",
         courseIndex: 1,
         learningPathId: "path-1",
-        learningPathName: "Software Construction",
+        learningPathName: SOFTWARE_CONSTRUCTION,
         learningPathOrder: 1,
         learningPathUrl: null,
         name: "Course 1",
@@ -122,7 +115,7 @@ describe("Courses Route Component", () => {
         courseId: "c2",
         courseIndex: 2,
         learningPathId: "path-1",
-        learningPathName: "Software Construction",
+        learningPathName: SOFTWARE_CONSTRUCTION,
         learningPathOrder: 2,
         learningPathUrl: null,
         name: "Course 2",
@@ -147,13 +140,11 @@ describe("Courses Route Component", () => {
     const Component = Route.component;
     render(<Component />);
 
-    const learningPaths = screen.getAllByTestId("learning-path");
+    const learningPaths = screen.getAllByTestId(LEARNING_PATH_TEST_ID);
     expect(learningPaths).toHaveLength(2);
 
     expect(learningPaths[0]?.dataset["id"]).toBe("path-1");
-    expect(learningPaths[0]?.dataset["offset"]).toBe("0");
 
     expect(learningPaths[1]?.dataset["id"]).toBe("path-2");
-    expect(learningPaths[1]?.dataset["offset"]).toBe("0"); // courseIndex 1 - 1 = 0
   });
 });
