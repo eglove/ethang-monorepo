@@ -26,7 +26,7 @@ describe("GLOBAL_SKILLS verification", () => {
     expect(dddSkill?.resources?.length).toBe(6);
   });
 
-  it("should have ten registered skills", () => {
-    expect(GLOBAL_SKILLS).toHaveLength(10);
+  it("should have seven registered skills", () => {
+    expect(GLOBAL_SKILLS).toHaveLength(7);
   });
 });
