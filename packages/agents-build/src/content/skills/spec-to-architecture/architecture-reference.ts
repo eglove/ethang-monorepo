@@ -22,8 +22,16 @@ export const architectureReference: MarkdownBlock[] = [
   {
     headers: ["Stage", "Scope", "Who handles it"],
     rows: [
-      ["Architecture Design", "System Context + Container levels (this skill)", "spec-to-architecture skill"],
-      ["Detailed Design", "Component + Code levels (internal module structure)", "Separate detailed design step"]
+      [
+        "Architecture Design",
+        "System Context + Container levels (this skill)",
+        "spec-to-architecture skill"
+      ],
+      [
+        "Detailed Design",
+        "Component + Code levels (internal module structure)",
+        "Separate detailed design step"
+      ]
     ],
     type: "table"
   },
@@ -51,7 +59,7 @@ export const architectureReference: MarkdownBlock[] = [
     type: "text"
   },
   {
-    code: "flowchart LR\n  user[\"User<br/>Primary user of the system\"]\n  system[\"FeatureName<br/>System being specified\"]\n  external[\"External System<br/>Dependency\"]\n\n  user -- \"Uses (HTTPS)\" --> system\n  system -- \"Integrates with (API)\" --> external",
+    code: 'flowchart LR\n  user["User<br/>Primary user of the system"]\n  system["FeatureName<br/>System being specified"]\n  external["External System<br/>Dependency"]\n\n  user -- "Uses (HTTPS)" --> system\n  system -- "Integrates with (API)" --> external',
     language: "mermaid",
     type: "codeBlock"
   },
@@ -62,9 +70,15 @@ export const architectureReference: MarkdownBlock[] = [
   },
   {
     items: [
-      { text: "Person actors: extracted from BDD steps that mention user roles (Given a user... When an admin...). Each distinct role becomes a Person in the diagram." },
-      { text: "External systems: extracted from BDD steps referencing external services (e.g., \"When the email service is called\", \"Given the payment gateway\"). These become System_Ext boxes." },
-      { text: "The system itself: named by the feature name from the /specification output directory." }
+      {
+        text: "Person actors: extracted from BDD steps that mention user roles (Given a user... When an admin...). Each distinct role becomes a Person in the diagram."
+      },
+      {
+        text: 'External systems: extracted from BDD steps referencing external services (e.g., "When the email service is called", "Given the payment gateway"). These become System_Ext boxes.'
+      },
+      {
+        text: "The system itself: named by the feature name from the /specification output directory."
+      }
     ],
     type: "unorderedList"
   },
@@ -78,7 +92,7 @@ export const architectureReference: MarkdownBlock[] = [
     type: "text"
   },
   {
-    code: "flowchart TB\n  user[\"User\"]\n\n  subgraph system[\"FeatureName System\"]\n    api[\"API<br/>REST<br/>Handles incoming requests\"]\n    worker[\"Worker<br/>Background job<br/>Processes async tasks\"]\n    db[\"Database<br/>PostgreSQL<br/>Stores state\"]\n  end\n\n  user -- \"HTTPS\" --> api\n  api -- \"Reads/writes (SQL)\" --> db\n  worker -- \"Reads/writes (SQL)\" --> db",
+    code: 'flowchart TB\n  user["User"]\n\n  subgraph system["FeatureName System"]\n    api["API<br/>REST<br/>Handles incoming requests"]\n    worker["Worker<br/>Background job<br/>Processes async tasks"]\n    db["Database<br/>PostgreSQL<br/>Stores state"]\n  end\n\n  user -- "HTTPS" --> api\n  api -- "Reads/writes (SQL)" --> db\n  worker -- "Reads/writes (SQL)" --> db',
     language: "mermaid",
     type: "codeBlock"
   },
@@ -89,9 +103,15 @@ export const architectureReference: MarkdownBlock[] = [
   },
   {
     items: [
-      { text: "Containers are derived from the behaviors described in BDD scenarios. Each distinct capability (processing, storing, notifying, etc.) maps to a container candidate." },
-      { text: "Data stores (ContainerDb) are identified from scenarios describing persistence (state changes, resource storage, records)." },
-      { text: "Extract container interfaces from BDD action descriptions: inputs in Given clauses, side effects in Then clauses." }
+      {
+        text: "Containers are derived from the behaviors described in BDD scenarios. Each distinct capability (processing, storing, notifying, etc.) maps to a container candidate."
+      },
+      {
+        text: "Data stores (ContainerDb) are identified from scenarios describing persistence (state changes, resource storage, records)."
+      },
+      {
+        text: "Extract container interfaces from BDD action descriptions: inputs in Given clauses, side effects in Then clauses."
+      }
     ],
     type: "unorderedList"
   },
@@ -108,11 +128,20 @@ export const architectureReference: MarkdownBlock[] = [
     headers: ["Quality Attribute", "Architecture Decision"],
     rows: [
       ["Performance", "Container sizing, caching strategy, async processing"],
-      ["Security", "Authentication container, authorization boundaries, encryption"],
-      ["Reliability", "Failover containers, retry logic, deployment observability"],
+      [
+        "Security",
+        "Authentication container, authorization boundaries, encryption"
+      ],
+      [
+        "Reliability",
+        "Failover containers, retry logic, deployment observability"
+      ],
       ["Scalability", "Worker pool sizing, stateless API design"],
       ["Availability", "Replica count, health checks, graceful degradation"],
-      ["Maintainability", "Separation of contracts vs implementation containers"],
+      [
+        "Maintainability",
+        "Separation of contracts vs implementation containers"
+      ],
       ["Testability", "Container interface isolation for mocking"]
     ],
     type: "table"
@@ -128,10 +157,18 @@ export const architectureReference: MarkdownBlock[] = [
   },
   {
     items: [
-      { text: "Abstraction: The architecture shows essential structural elements only, not implementation details." },
-      { text: "Modularization: Containers are separated by well-defined interfaces (Rel edges in C4 diagrams)." },
-      { text: "Separation of Concerns: Each container has a single, clearly stated responsibility." },
-      { text: "Verifiability: Container boundaries and interactions map directly to BDD scenarios (traceability)." }
+      {
+        text: "Abstraction: The architecture shows essential structural elements only, not implementation details."
+      },
+      {
+        text: "Modularization: Containers are separated by well-defined interfaces (Rel edges in C4 diagrams)."
+      },
+      {
+        text: "Separation of Concerns: Each container has a single, clearly stated responsibility."
+      },
+      {
+        text: "Verifiability: Container boundaries and interactions map directly to BDD scenarios (traceability)."
+      }
     ],
     type: "unorderedList"
   }

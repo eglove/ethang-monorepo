@@ -20,7 +20,7 @@ export const tlaPlusReference: MarkdownBlock[] = [
     type: "text"
   },
   {
-    code: "---------------------------- MODULE FeatureName ----------------------------\nEXTENDS Naturals, Sequences, FiniteSets\n\nCONSTANTS Users, Resources, MaxRetries  \\* Model values for bounded checking\n\nVARIABLES state, requests, responses\n\nvars  ==  <<state, requests, responses>>\n\nTypeInvariant  ==  /\\ state \\in {\"idle\", \"processing\", \"done\", \"error\"}\n                   /\\ requests \\in SUBSET (Users \\times Resources)\n\nInit  ==  /\\ state = \"idle\"\n           /\\ requests = {}\n           /\\ responses = {}\n\nAction1  ==  /\\ state = \"idle\"\n              /\\ state' = \"processing\"\n              /\\ UNCHANGED <<requests, responses>>\n\nNext  ==  Action1 \\/ Action2 \\/ ... \\/ ActionN\n\nSpec  ==  Init /\\ [][Next]_vars\n\nSafetyInvariant1  ==  state = \"done\" => responses /= {}\nLivenessProperty1  ==  [](state = \"processing\" <> state = \"done\")\n\n=============================================================================",
+    code: '---------------------------- MODULE FeatureName ----------------------------\nEXTENDS Naturals, Sequences, FiniteSets\n\nCONSTANTS Users, Resources, MaxRetries  \\* Model values for bounded checking\n\nVARIABLES state, requests, responses\n\nvars  ==  <<state, requests, responses>>\n\nTypeInvariant  ==  /\\ state \\in {"idle", "processing", "done", "error"}\n                   /\\ requests \\in SUBSET (Users \\times Resources)\n\nInit  ==  /\\ state = "idle"\n           /\\ requests = {}\n           /\\ responses = {}\n\nAction1  ==  /\\ state = "idle"\n              /\\ state\' = "processing"\n              /\\ UNCHANGED <<requests, responses>>\n\nNext  ==  Action1 \\/ Action2 \\/ ... \\/ ActionN\n\nSpec  ==  Init /\\ [][Next]_vars\n\nSafetyInvariant1  ==  state = "done" => responses /= {}\nLivenessProperty1  ==  [](state = "processing" <> state = "done")\n\n=============================================================================',
     language: "",
     type: "codeBlock"
   },
@@ -36,13 +36,41 @@ export const tlaPlusReference: MarkdownBlock[] = [
   {
     headers: ["BDD Element", "TLA+ Construct", "Extraction Rule"],
     rows: [
-      ["Background Given clauses", "Init predicate", "All Background conditions become conjoined predicates in Init"],
-      ["Given clause (scenario-level)", "Action precondition (guard)", "Each Given becomes a guard predicate on the action: state = \"...\" /\\ ..."],
-      ["When clause", "Action predicate (Next disjunction member)", "Each When clause becomes a named action in the Next disjunction"],
-      ["Then clause (state assertion)", "INVARIANT", "Then clauses asserting always-true conditions become safety invariants"],
-      ["Then clause (eventual outcome)", "Temporal property", "Then clauses using \"eventually\" become <>[] or <>P temporal formulas"],
-      ["Scenario Outline Examples", "Parameterized CONSTANTS and action predicates", "Each column header becomes a CONSTANT; each row populates model values in .cfg"],
-      ["And/But keywords", "Conjuncts (/\\)", "And/But steps are conjoined to their parent step's predicate"]
+      [
+        "Background Given clauses",
+        "Init predicate",
+        "All Background conditions become conjoined predicates in Init"
+      ],
+      [
+        "Given clause (scenario-level)",
+        "Action precondition (guard)",
+        String.raw`Each Given becomes a guard predicate on the action: state = "..." /\ ...`
+      ],
+      [
+        "When clause",
+        "Action predicate (Next disjunction member)",
+        "Each When clause becomes a named action in the Next disjunction"
+      ],
+      [
+        "Then clause (state assertion)",
+        "INVARIANT",
+        "Then clauses asserting always-true conditions become safety invariants"
+      ],
+      [
+        "Then clause (eventual outcome)",
+        "Temporal property",
+        'Then clauses using "eventually" become <>[] or <>P temporal formulas'
+      ],
+      [
+        "Scenario Outline Examples",
+        "Parameterized CONSTANTS and action predicates",
+        "Each column header becomes a CONSTANT; each row populates model values in .cfg"
+      ],
+      [
+        "And/But keywords",
+        String.raw`Conjuncts (/\)`,
+        "And/But steps are conjoined to their parent step's predicate"
+      ]
     ],
     type: "table"
   },
@@ -67,9 +95,15 @@ export const tlaPlusReference: MarkdownBlock[] = [
   },
   {
     items: [
-      { text: "Sets: use 2-3 literal elements (e.g., {u1, u2}) to bound state space." },
-      { text: "Scalars: use small integers (e.g., MaxRetries = 3) that are sufficient to test invariants." },
-      { text: "Strings: represent states as string literals in TLA+ (use model values)." }
+      {
+        text: "Sets: use 2-3 literal elements (e.g., {u1, u2}) to bound state space."
+      },
+      {
+        text: "Scalars: use small integers (e.g., MaxRetries = 3) that are sufficient to test invariants."
+      },
+      {
+        text: "Strings: represent states as string literals in TLA+ (use model values)."
+      }
     ],
     type: "unorderedList"
   },
@@ -94,11 +128,21 @@ export const tlaPlusReference: MarkdownBlock[] = [
   },
   {
     items: [
-      { text: "If TLC reports a syntax error: diagnose the error type, apply a minimal fix to the .tla file, re-run TLC." },
-      { text: "If TLC reports an invariant violation: analyze the counterexample trace, modify the action predicate or invariant, re-run TLC." },
-      { text: "If TLC reports deadlock: determine if deadlock is expected; if not, add weak fairness to Spec or add a stuttering-tolerant Next predicate." },
-      { text: "The loop continues while progress is being made (error type changes, state count increases toward a plateau)." },
-      { text: "The loop stops if the same error persists across iterations with no improvement, or if the agent determines the issue requires user input." }
+      {
+        text: "If TLC reports a syntax error: diagnose the error type, apply a minimal fix to the .tla file, re-run TLC."
+      },
+      {
+        text: "If TLC reports an invariant violation: analyze the counterexample trace, modify the action predicate or invariant, re-run TLC."
+      },
+      {
+        text: "If TLC reports deadlock: determine if deadlock is expected; if not, add weak fairness to Spec or add a stuttering-tolerant Next predicate."
+      },
+      {
+        text: "The loop continues while progress is being made (error type changes, state count increases toward a plateau)."
+      },
+      {
+        text: "The loop stops if the same error persists across iterations with no improvement, or if the agent determines the issue requires user input."
+      }
     ],
     type: "unorderedList"
   },

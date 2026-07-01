@@ -90,16 +90,43 @@ export const specToArchitecture = defineSkill({
     {
       headers: ["Failure", "Behavior"],
       rows: [
-        ["Specification directory missing", "Halt. Inform user to run /specification first."],
-        ["Empty BDD feature files", "Halt with warning. No verifiable behavior found."],
-        ["Malformed Gherkin", "Attempt auto-correction. Continue if fixed. Report if not."],
-        ["Unmappable BDD scenarios", "Log as unmapped. Continue with mappable scenarios."],
+        [
+          "Specification directory missing",
+          "Halt. Inform user to run /specification first."
+        ],
+        [
+          "Empty BDD feature files",
+          "Halt with warning. No verifiable behavior found."
+        ],
+        [
+          "Malformed Gherkin",
+          "Attempt auto-correction. Continue if fixed. Report if not."
+        ],
+        [
+          "Unmappable BDD scenarios",
+          "Log as unmapped. Continue with mappable scenarios."
+        ],
         ["TLA+ syntax error", "Diagnose, fix, re-run TLC."],
-        ["Invariant violation", "Analyze counterexample, modify spec, re-run TLC."],
-        ["Deadlock detected", "Determine if expected. If not, add fairness or modify Next."],
-        ["TLC unbounded state", "Terminate TLC. Report partial results. Recommend smaller CONSTANTS."],
-        ["Auto-fix no convergence", "Stop loop. Report current state and TLC output to user."],
-        ["tla2tools.jar missing", "Report missing dependency. Still generate .tla and .cfg files."]
+        [
+          "Invariant violation",
+          "Analyze counterexample, modify spec, re-run TLC."
+        ],
+        [
+          "Deadlock detected",
+          "Determine if expected. If not, add fairness or modify Next."
+        ],
+        [
+          "TLC unbounded state",
+          "Terminate TLC. Report partial results. Recommend smaller CONSTANTS."
+        ],
+        [
+          "Auto-fix no convergence",
+          "Stop loop. Report current state and TLC output to user."
+        ],
+        [
+          "tla2tools.jar missing",
+          "Report missing dependency. Still generate .tla and .cfg files."
+        ]
       ],
       type: "table"
     },
@@ -115,8 +142,16 @@ export const specToArchitecture = defineSkill({
     {
       headers: ["Topic", "Reference Document", "Description / Keywords"],
       rows: [
-        ["C4 Model Architecture Design", "[architecture-reference.md](resources/architecture-reference.md)", "C4 Context + Container levels, Mermaid diagrams, quality attribute mapping, SWEBOK Ch 2/3 compliance"],
-        ["TLA+ Formal Specification", "[tla-plus-reference.md](resources/tla-plus-reference.md)", "TLA+ module structure, BDD-to-TLA+ extraction, TLC config generation, auto-fix loop, SWEBOK Ch 11"]
+        [
+          "C4 Model Architecture Design",
+          "[architecture-reference.md](resources/architecture-reference.md)",
+          "C4 Context + Container levels, Mermaid diagrams, quality attribute mapping, SWEBOK Ch 2/3 compliance"
+        ],
+        [
+          "TLA+ Formal Specification",
+          "[tla-plus-reference.md](resources/tla-plus-reference.md)",
+          "TLA+ module structure, BDD-to-TLA+ extraction, TLC config generation, auto-fix loop, SWEBOK Ch 11"
+        ]
       ],
       type: "table"
     },
@@ -131,13 +166,27 @@ export const specToArchitecture = defineSkill({
     },
     {
       items: [
-        { text: "[requirements-fundamentals.md](../swebok/resources/requirements-fundamentals.md) — Requirements traceability from BDD to architecture and TLA+." },
-        { text: "[architecture-fundamentals.md](../swebok/resources/architecture-fundamentals.md) — Architecture design stage, prescriptive vs descriptive architecture, stakeholders." },
-        { text: "[architecture-description.md](../swebok/resources/architecture-description.md) — C4 Model as an architecture view, ADLs, architecture patterns." },
-        { text: "[design-fundamentals.md](../swebok/resources/design-fundamentals.md) — Design principles (abstraction, modularization, separation of concerns) applied to architecture." },
-        { text: "[testing-fundamentals.md](../swebok/resources/testing-fundamentals.md) — Traceability from requirements to test cases (TLC verification as testing)." },
-        { text: "[models-methods-modeling.md](../swebok/resources/models-methods-modeling.md) — Modeling formalisms, state machines, preconditions/postconditions/invariants." },
-        { text: "[models-methods-types.md](../swebok/resources/models-methods-types.md) — Structural and behavioral modeling types for TLA+ extraction." }
+        {
+          text: "[requirements-fundamentals.md](../swebok/resources/requirements-fundamentals.md) — Requirements traceability from BDD to architecture and TLA+."
+        },
+        {
+          text: "[architecture-fundamentals.md](../swebok/resources/architecture-fundamentals.md) — Architecture design stage, prescriptive vs descriptive architecture, stakeholders."
+        },
+        {
+          text: "[architecture-description.md](../swebok/resources/architecture-description.md) — C4 Model as an architecture view, ADLs, architecture patterns."
+        },
+        {
+          text: "[design-fundamentals.md](../swebok/resources/design-fundamentals.md) — Design principles (abstraction, modularization, separation of concerns) applied to architecture."
+        },
+        {
+          text: "[testing-fundamentals.md](../swebok/resources/testing-fundamentals.md) — Traceability from requirements to test cases (TLC verification as testing)."
+        },
+        {
+          text: "[models-methods-modeling.md](../swebok/resources/models-methods-modeling.md) — Modeling formalisms, state machines, preconditions/postconditions/invariants."
+        },
+        {
+          text: "[models-methods-types.md](../swebok/resources/models-methods-types.md) — Structural and behavioral modeling types for TLA+ extraction."
+        }
       ],
       type: "unorderedList"
     },
@@ -148,16 +197,30 @@ export const specToArchitecture = defineSkill({
     },
     {
       items: [
-        { text: "Was the specification directory validated before processing?" },
-        { text: "Were all three BDD feature files (normal-course, exceptions, boundaries) parsed?" },
-        { text: "Does the architecture contain both System Context and Container C4 diagrams?" },
-        { text: "Are quality attributes from non-functional requirements mapped to architectural decisions?" },
-        { text: "Does the TLA+ module include CONSTANTS, VARIABLES, Init, Next, Spec, and INVARIANTS?" },
-        { text: "Does the TLC config assign concrete model values to all CONSTANTS?" },
+        {
+          text: "Was the specification directory validated before processing?"
+        },
+        {
+          text: "Were all three BDD feature files (normal-course, exceptions, boundaries) parsed?"
+        },
+        {
+          text: "Does the architecture contain both System Context and Container C4 diagrams?"
+        },
+        {
+          text: "Are quality attributes from non-functional requirements mapped to architectural decisions?"
+        },
+        {
+          text: "Does the TLA+ module include CONSTANTS, VARIABLES, Init, Next, Spec, and INVARIANTS?"
+        },
+        {
+          text: "Does the TLC config assign concrete model values to all CONSTANTS?"
+        },
         { text: "Were unmappable scenarios logged with reasons?" },
         { text: "Was TLC executed and results captured?" },
         { text: "Was the auto-fix loop monitored for convergence?" },
-        { text: "Does the README contain traceability from BDD scenarios to architecture and TLA+ elements?" }
+        {
+          text: "Does the README contain traceability from BDD scenarios to architecture and TLA+ elements?"
+        }
       ],
       type: "unorderedList"
     },

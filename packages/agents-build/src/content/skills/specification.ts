@@ -73,29 +73,45 @@ const blocks: MarkdownBlock[] = [
     items: [
       {
         children: [
-          { text: "A header with feature name, version, date, and status (Draft/Approved)." },
-          { text: "A stakeholder section listing all identified stakeholder classes." }
+          {
+            text: "A header with feature name, version, date, and status (Draft/Approved)."
+          },
+          {
+            text: "A stakeholder section listing all identified stakeholder classes."
+          }
         ],
         text: "**Document Metadata**:"
       },
       {
         children: [
-          { text: "Each requirement MUST have a unique identifier (e.g., REQ-F001, REQ-NF001)." },
-          { text: "Each requirement MUST be classified as Functional (F) or Non-Functional (NF)." }
+          {
+            text: "Each requirement MUST have a unique identifier (e.g., REQ-F001, REQ-NF001)."
+          },
+          {
+            text: "Each requirement MUST be classified as Functional (F) or Non-Functional (NF)."
+          }
         ],
         text: "**Requirement Identification**:"
       },
       {
         children: [
-          { text: "Functional requirements MUST use structured natural language (Actor-Action format or Use Case)." },
-          { text: "Non-functional requirements MUST be quantitative using Gilb's Planguage attributes (Scale, Meter, Minimum, Target)." }
+          {
+            text: "Functional requirements MUST use structured natural language (Actor-Action format or Use Case)."
+          },
+          {
+            text: "Non-functional requirements MUST be quantitative using Gilb's Planguage attributes (Scale, Meter, Minimum, Target)."
+          }
         ],
         text: "**Specification Format**:"
       },
       {
         children: [
-          { text: "Each requirement MUST include: description, rationale, source (stakeholder), priority, and acceptance criteria." },
-          { text: "BDD Given-When-Then scenarios MUST be referenced from the `bdd/` subdirectory." }
+          {
+            text: "Each requirement MUST include: description, rationale, source (stakeholder), priority, and acceptance criteria."
+          },
+          {
+            text: "BDD Given-When-Then scenarios MUST be referenced from the `bdd/` subdirectory."
+          }
         ],
         text: "**Traceability**:"
       }
@@ -139,7 +155,9 @@ const blocks: MarkdownBlock[] = [
       { text: "Feature overview (2-3 sentences summarizing purpose)." },
       { text: "Links to requirements.md and each BDD feature file." },
       { text: "Traceability matrix mapping requirement IDs to BDD scenarios." },
-      { text: "Open questions or assumptions that need stakeholder validation." }
+      {
+        text: "Open questions or assumptions that need stakeholder validation."
+      }
     ],
     type: "unorderedList"
   },
@@ -189,12 +207,24 @@ const blocks: MarkdownBlock[] = [
   },
   {
     items: [
-      { text: "[requirements-fundamentals.md](../swebok/resources/requirements-fundamentals.md) — Classification of requirements, Perfect Technology Filter, recursive design, derived requirements." },
-      { text: "[requirements-elicitation.md](../swebok/resources/requirements-elicitation.md) — Stakeholder analysis, elicitation techniques, tacit knowledge discovery." },
-      { text: "[requirements-analysis.md](../swebok/resources/requirements-analysis.md) — Conflict resolution, feasibility, quality of service economics." },
-      { text: "[requirements-specification.md](../swebok/resources/requirements-specification.md) — Structured natural language, BDD Given-When-Then, Gilb's Planguage, model-based specs." },
-      { text: "[requirements-validation.md](../swebok/resources/requirements-validation.md) — Five validation questions, reviews, simulation, prototyping, testability." },
-      { text: "[requirements-management-activities.md](../swebok/resources/requirements-management-activities.md) — Change control, traceability, scope matching." }
+      {
+        text: "[requirements-fundamentals.md](../swebok/resources/requirements-fundamentals.md) — Classification of requirements, Perfect Technology Filter, recursive design, derived requirements."
+      },
+      {
+        text: "[requirements-elicitation.md](../swebok/resources/requirements-elicitation.md) — Stakeholder analysis, elicitation techniques, tacit knowledge discovery."
+      },
+      {
+        text: "[requirements-analysis.md](../swebok/resources/requirements-analysis.md) — Conflict resolution, feasibility, quality of service economics."
+      },
+      {
+        text: "[requirements-specification.md](../swebok/resources/requirements-specification.md) — Structured natural language, BDD Given-When-Then, Gilb's Planguage, model-based specs."
+      },
+      {
+        text: "[requirements-validation.md](../swebok/resources/requirements-validation.md) — Five validation questions, reviews, simulation, prototyping, testability."
+      },
+      {
+        text: "[requirements-management-activities.md](../swebok/resources/requirements-management-activities.md) — Change control, traceability, scope matching."
+      }
     ],
     type: "unorderedList"
   },
