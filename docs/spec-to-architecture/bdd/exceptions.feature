@@ -27,7 +27,7 @@ Feature: spec-to-architecture exception and error handling
     And if correction fails, the skill reports the specific line and error
     And the skill continues processing remaining valid files where possible
 
-  Scenario Outline: E004 - BDD scenarios that do not map to TLA+
+  Scenario: E004 - BDD scenarios that do not map to TLA+
     Given a BDD scenario describes <concern>
     When the skill attempts to extract TLA+ elements
     Then the scenario is logged as "unmapped" with a reason

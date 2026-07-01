@@ -1,9 +1,10 @@
 import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import filter from "lodash/filter";
 import groupBy from "lodash/groupBy";
-import isNil from "lodash/isNil.js";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import orderBy from "lodash/orderBy.js";
 import { DateTime } from "luxon";
@@ -60,7 +61,9 @@ const RouteComponent = () => {
 
   // Find the most recently updated course
   const latestUpdatedAt =
-    data.toSorted((a, b) => {
+    filter(data, (item): item is { updatedAt: string } & CourseData => {
+      return !isNil(item.updatedAt);
+    }).toSorted((a, b) => {
       return b.updatedAt.localeCompare(a.updatedAt);
     })[0]?.updatedAt ?? "";
 
