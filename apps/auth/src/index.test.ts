@@ -4,8 +4,6 @@ import { describe, expect, it, vi } from "vitest";
 
 import { app } from "./index.js";
 import { carryUserAuthCommand } from "./infrastructure/user/aggregate.js";
-import { createUserRepo } from "./infrastructure/user/repo.js";
-import { createTokenService } from "./infrastructure/user/token-service.js";
 
 const { EMAIL, PASSWORD, SECRET, TEST_USERNAME } = auth;
 const TEST_EMAIL = EMAIL;
@@ -127,6 +125,7 @@ describe("POST /sign-up", () => {
   });
 
   it("should return 500 with string error when sign up throws non-Error", async () => {
+    // @ts-expect-error for test
     vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
       return Effect.fail("STRING_ERROR");
     });

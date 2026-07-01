@@ -73,10 +73,10 @@ describe("createTokenService", () => {
 
       const result = await Effect.runPromise(tokenService.verify(TEST_TOKEN));
 
-      expect(result.payload.nilValue).toBe("");
-      expect(result.payload.numValue).toBe("123");
-      expect(result.payload.email).toBe("test@test.com");
-      expect(result.payload.sub).toBe("user-1");
+      expect(result.payload["nilValue"]).toBe("");
+      expect(result.payload["numValue"]).toBe("123");
+      expect(result.payload["email"]).toBe("test@test.com");
+      expect(result.payload["sub"]).toBe("user-1");
     });
 
     it("fails with TokenVerifyError when verification fails", async () => {

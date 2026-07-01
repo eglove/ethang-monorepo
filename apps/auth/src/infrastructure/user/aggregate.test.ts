@@ -20,6 +20,7 @@ const { decideMockRef } = vi.hoisted(() => {
   return { decideMockRef: reference };
 });
 
+// eslint-disable-next-line sonar/no-duplicate-string
 vi.mock("../../domain/user/aggregate.ts", async () => {
   const actual = await vi.importActual<
     typeof import("../../domain/user/aggregate.ts")
@@ -295,7 +296,7 @@ describe("SignIn", () => {
 
 describe("unexpected event from decide", () => {
   it("fails with error when decide returns a non-SignInOrUpEvent", async () => {
-    decideMockRef.value!.mockImplementationOnce(() => {
+    decideMockRef.value?.mockImplementationOnce(() => {
       return [
         {
           email: "test@test.com",
