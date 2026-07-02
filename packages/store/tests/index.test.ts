@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/strict-void-return */
-// eslint-disable-next-line max-classes-per-file
+import { Effect, Either } from "effect";
 import constant from "lodash/constant.js";
 import find from "lodash/find.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -510,20 +509,17 @@ describe("BaseStore", () => {
     it("should not process queue when destroyed", () => {
       const subscriber = vi.fn();
       // @ts-expect-error for test
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       const testStore = new BaseStore({ count: 0 });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+
       testStore.subscribe(subscriber);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       testStore.update((draft: { count: number }) => {
         draft.count = 1;
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       testStore.destroy();
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       testStore.update((draft: { count: number }) => {
         draft.count = 2;
       });
@@ -551,12 +547,14 @@ describe("BaseStore", () => {
     it("should clear the patch queue and break if destroyed during processQueue", () => {
       const subscriber = vi.fn();
       store.subscribe((state) => {
-        if (1 === state.count) {
-          store.publicUpdate((draft) => {
-            draft.count = 2;
-          });
-          store.destroy();
+        if (1 !== state.count) {
+          return;
         }
+
+        store.publicUpdate((draft) => {
+          draft.count = 2;
+        });
+        store.destroy();
       });
       store.subscribe(subscriber);
 
@@ -572,13 +570,13 @@ describe("BaseStore", () => {
   describe("reentrant update", () => {
     it("should batch reentrant updates from subscriber callbacks", () => {
       const subscriber = vi.fn();
-      let reentrantDone = false;
+      let isReentrantDone = false;
 
       store.subscribe((state) => {
         subscriber(state);
         // Trigger a reentrant update only once
-        if (!reentrantDone) {
-          reentrantDone = true;
+        if (!isReentrantDone) {
+          isReentrantDone = true;
           store.setName("Reentrant");
         }
       });
@@ -616,13 +614,22 @@ describe("BaseStore", () => {
 
       // Error surfaced via queueMicrotask
       const errorCallback = find(captured, (callback) => {
-        try {
-          callback();
-          return false;
-        } catch (error) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-          return "subscriber error" === (error as Error).message;
+        const workflow = Effect.try({
+          catch: (error) => {
+            return error as Error;
+          },
+          try: () => {
+            callback();
+          }
+        });
+
+        const result = Effect.runSync(Effect.either(workflow));
+
+        if (Either.isLeft(result)) {
+          return "subscriber error" === result.left.message;
         }
+
+        return false;
       });
       expect(errorCallback).toBeDefined();
 
@@ -634,11 +641,19 @@ describe("BaseStore", () => {
       const queueMicrotaskSpy = vi
         .spyOn(globalThis, "queueMicrotask")
         .mockImplementation((callback) => {
-          try {
-            callback();
-          } catch (_error) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-            error = _error as Error;
+          const callbackWorkflow = Effect.try({
+            catch: (_error) => {
+              return _error as Error;
+            },
+            try: () => {
+              callback();
+            }
+          });
+
+          const resultEither = Effect.runSync(Effect.either(callbackWorkflow));
+
+          if (Either.isLeft(resultEither)) {
+            error = resultEither.left;
           }
         });
 
@@ -715,13 +730,15 @@ describe("BaseStore", () => {
     });
 
     it("should enqueue reset during drain (reentrant-safe)", () => {
-      let resetDone = false;
+      let isResetDone = false;
 
       store.subscribe(() => {
-        if (!resetDone) {
-          resetDone = true;
-          store.reset();
+        if (isResetDone) {
+          return;
         }
+
+        isResetDone = true;
+        store.reset();
       });
 
       store.increment();
@@ -749,6 +766,7 @@ describe("BaseStore", () => {
 
   describe("subscriber self-unsubscribing and queue safety", () => {
     it("should handle subscriber self-unsubscribing inside callback without crashing", () => {
+      // eslint-disable-next-line prefer-const
       let unsubscribe: (() => void) | undefined;
       const callback = vi.fn(() => {
         if (unsubscribe) {
@@ -770,12 +788,12 @@ describe("BaseStore", () => {
 
     it("should handle empty/undefined elements in the patch queue safely without crashing", () => {
       // @ts-expect-error accessing private property for testing safety
-      store["_patchQueue"].push(undefined);
+      store._patchQueue.push(undefined);
 
       expect(() => {
-        store["processQueue"]();
+        // @ts-expect-error for test
+        store.processQueue();
       }).not.toThrow();
     });
   });
 });
-

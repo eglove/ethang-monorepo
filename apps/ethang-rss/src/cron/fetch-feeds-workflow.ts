@@ -7,7 +7,7 @@ import {
 } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { DateTime } from "effect";
+import { DateTime, Effect } from "effect";
 import { XMLParser } from "fast-xml-parser";
 import filter from "lodash/filter.js";
 import find from "lodash/find.js";
@@ -138,7 +138,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     step: WorkflowStep
   ): Promise<void> {
     const apiKey = convertToString(
-      await getSecretValue(this.env.LOGGER_API_KEY)
+      await Effect.runPromise(getSecretValue(this.env.LOGGER_API_KEY))
     );
     const environmentName =
       getEnvironmentString(this.env, "ENVIRONMENT") ?? "production";

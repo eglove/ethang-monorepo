@@ -1,22 +1,27 @@
-import { Schema } from "effect";
-import attempt from "lodash/attempt.js";
-import isError from "lodash/isError.js";
+import { Effect, Schema } from "effect";
 
-export const parseJson = <Z extends Schema.Schema.AnyNoContext>(
+export const parseJson = <A>(
   text: string,
-  validator: Z,
+  validator: Schema.Schema<A>,
   reviver?: (this: unknown, key: string, value: unknown) => unknown
-): Error | Schema.Schema.Type<Z> => {
-  const caught = attempt(JSON.parse, text, reviver);
+): Effect.Effect<A, Error> => {
+  return Effect.gen(function* () {
+    const caught = yield* Effect.try({
+      catch: (error) => {
+        return Error.isError(error) ? error : new Error(String(error));
+      },
+      try: () => {
+        return JSON.parse(text, reviver);
+      }
+    });
 
-  if (isError(caught)) {
-    return caught;
-  }
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    return Schema.decodeUnknownSync(validator)(caught) as Schema.Schema.Type<Z>;
-  } catch {
-    return new Error("Validation failed");
-  }
+    return yield* Effect.try({
+      catch: () => {
+        return new Error("Validation failed");
+      },
+      try: () => {
+        return Schema.decodeUnknownSync(validator)(caught);
+      }
+    });
+  });
 };

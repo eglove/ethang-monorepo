@@ -1,3 +1,4 @@
+import { Effect, Either } from "effect";
 import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
 import isError from "lodash/isError.js";
@@ -153,11 +154,20 @@ describe("validation failures and warnings", () => {
       }
     );
 
+    const compileEffect = Effect.try({
+      catch: (error) => {
+        return error;
+      },
+      try: () => {
+        compile(config);
+      }
+    });
+
+    const resultEither = Effect.runSync(Effect.either(compileEffect));
+
     let thrownError: unknown;
-    try {
-      compile(config);
-    } catch (error) {
-      thrownError = error;
+    if (Either.isLeft(resultEither)) {
+      thrownError = resultEither.left;
     }
 
     expect(thrownError).toBeDefined();
@@ -599,11 +609,20 @@ describe("error handling", () => {
       false
     );
 
+    const compileWorkflow = Effect.try({
+      catch: (error) => {
+        return error;
+      },
+      try: () => {
+        compile(config);
+      }
+    });
+
+    const resultEither = Effect.runSync(Effect.either(compileWorkflow));
+
     let thrownError: unknown;
-    try {
-      compile(config);
-    } catch (error) {
-      thrownError = error;
+    if (Either.isLeft(resultEither)) {
+      thrownError = resultEither.left;
     }
 
     expect(thrownError).toBeInstanceOf(CompileError);

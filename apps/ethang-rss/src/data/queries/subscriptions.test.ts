@@ -1,3 +1,4 @@
+import { Effect, pipe } from "effect";
 import isFunction from "lodash/isFunction.js";
 import { Buffer } from "node:buffer";
 import { describe, expect, it, vi } from "vitest";
@@ -618,7 +619,21 @@ describe("subscriptionsQuery - environment fallbacks and invalid inputs", () => 
       writable: true
     });
 
-    try {
+    const cleanupPrototypes = Effect.sync(() => {
+      if (undefined === originalToBase64) {
+        delete (Uint8Array.prototype as any).toBase64;
+      } else {
+        (Uint8Array.prototype as any).toBase64 = originalToBase64;
+      }
+
+      if (undefined === originalFromBase64) {
+        delete (Uint8Array as any).fromBase64;
+      } else {
+        (Uint8Array as any).fromBase64 = originalFromBase64;
+      }
+    });
+
+    const testRunner = Effect.tryPromise(async () => {
       const mockSubscriptions = [
         {
           feedId: FEED_ID_1,
@@ -631,7 +646,6 @@ describe("subscriptionsQuery - environment fallbacks and invalid inputs", () => 
       ];
 
       const mockDatabase = new MockQueryBuilder(mockSubscriptions);
-
       const cursor = encodeTestCursor(["Feed A", "sub-1"]);
 
       const result = await subscriptionsQuery(
@@ -646,19 +660,11 @@ describe("subscriptionsQuery - environment fallbacks and invalid inputs", () => 
       );
 
       expect(result.edges).toHaveLength(1);
-    } finally {
-      if (undefined === originalToBase64) {
-        delete (Uint8Array.prototype as any).toBase64;
-      } else {
-        (Uint8Array.prototype as any).toBase64 = originalToBase64;
-      }
+    });
 
-      if (undefined === originalFromBase64) {
-        delete (Uint8Array as any).fromBase64;
-      } else {
-        (Uint8Array as any).fromBase64 = originalFromBase64;
-      }
-    }
+    const testWorkflow = pipe(testRunner, Effect.ensuring(cleanupPrototypes));
+    await Effect.runPromise(testWorkflow);
+
     /* eslint-enable no-extend-native, unicorn/prefer-uint8array-base64 */
   });
 

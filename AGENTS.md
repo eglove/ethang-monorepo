@@ -9,11 +9,28 @@ This document outlines the global rules, development principles, and tool-usage 
 
 **These notes are non-negotiable and MUST always be followed for every task:**
 
-1. **State Test Coverage**: Aim for 100% state test coverage using `/effect-ts` testEffect/runEffect to validate state transitions comprehensively via compositional testing patterns.
-2. **Scientific Process**: Follow `/effect-ts` scientific process: use ./references/ to define hypotheses, build code as proof, and validate state transitions with `/effect-ts` compositional testing framework.
+1. **ESLint Issue Resolution**: When fixing eslint issues, never take error messages or suggestions literally unless using autofix. Instead, examine the surrounding context and design a better solution that addresses the root cause.
+
+2. **Hypothesis-Driven Development (Red -> Green -> Refactor)**:
+   - **Red**: Write a failing test that captures the desired behavior or exposes a bug (hypothesis). For bugs, the bug itself is the hypothesis — write the test to prove it exists. For new features, the hypothesis is that X results in Y. Use `vitest it.each` liberally to consider all possible states (treat it like a state machine).
+   - **Green**: Implement the minimum code to make the test pass. This directly addresses the hypothesis and fixes the identified issue.
+   - **Refactor**: Simplify the implementation, run ESLint to ensure code quality, optimize performance, and enforce codebase standards without changing behavior.
+
 3. **Library Preferences**: Always prefer lodash and `/effect-ts` wherever they can be used.
-3. **SWEBOK Principles**: Follow the principles of `/swebok` and reference them for everything.
-4. **DDD Principles**: Follow the principles of Domain-Driven Design (DDD) and reference the `/ddd` skill for everything.
+
+4. **SWEBOK Principles**: Follow the principles of `/swebok` and reference them for everything.
+
+5. **DDD Principles**: Follow the principles of Domain-Driven Design (DDD) and reference the `/ddd` skill for everything.
+
+6. **TypeScript Coding Standards**: Do not annotate explicit return types on functions, methods, or arrow functions. Let TypeScript infer the return type. This avoids redundancy and keeps signatures concise.
+
+   ```typescript
+   // ❌ Avoid – explicit return type annotation
+   const getUsers = async (): Promise<User[]> => db.select().from(users);
+
+   // ✅ Prefer – inferred return type
+   const getUsers = async () => db.select().from(users);
+   ```
 
 ---
 

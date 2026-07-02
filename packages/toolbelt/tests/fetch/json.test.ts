@@ -1,5 +1,5 @@
+import { Effect } from "effect";
 import { Schema } from "effect";
-import isError from "lodash/isError.js";
 import { describe, expect, it } from "vitest";
 
 import { parseFetchJson } from "../../src/fetch/json.ts";
@@ -12,12 +12,10 @@ describe("fetch json", () => {
       body: JSON.stringify({ json: "stuff" }),
       method: "POST"
     });
-    const results = await parseFetchJson(
-      request,
-      Schema.Struct({ json: Schema.String })
+    const results = await Effect.runPromise(
+      parseFetchJson(request, Schema.Struct({ json: Schema.String }))
     );
 
-    expect(isError(results)).toBe(false);
     expect(results).toStrictEqual({ json: "stuff" });
   });
 
@@ -25,56 +23,59 @@ describe("fetch json", () => {
     const response = Response.json({
       json: "stuff"
     });
-    const results = await parseFetchJson(
-      response,
-      Schema.Struct({ json: Schema.String })
+    const results = await Effect.runPromise(
+      parseFetchJson(response, Schema.Struct({ json: Schema.String }))
     );
 
-    expect(isError(results)).toBe(false);
     expect(results).toStrictEqual({ json: "stuff" });
   });
 });
 
 describe("error cases", () => {
-  it("should return Error when validation is incorrect", async () => {
+  it("should fail with Error when validation is incorrect", async () => {
     const request = new Request(testUrl, {
       body: JSON.stringify({ fail: 0 }),
       method: "POST"
     });
-    const results = await parseFetchJson(
-      request,
-      Schema.Struct({ fail: Schema.String })
+    const result = await Effect.runPromise(
+      parseFetchJson(request, Schema.Struct({ fail: Schema.String })).pipe(
+        Effect.flip
+      )
     );
 
-    expect(isError(results)).toBe(true);
-    expect(results).toBeInstanceOf(Error);
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toBe("Validation failed");
   });
 
-  it("should return Error when validation is incorrect with array", async () => {
+  it("should fail with Error when validation is incorrect with array", async () => {
     const request = new Request(testUrl, {
       body: JSON.stringify({ fail: 0 }),
       method: "POST"
     });
-    const results = await parseFetchJson(
-      request,
-      Schema.Array(Schema.Struct({ fail: Schema.String }))
+    const result = await Effect.runPromise(
+      parseFetchJson(
+        request,
+        Schema.Array(Schema.Struct({ fail: Schema.String }))
+      ).pipe(Effect.flip)
     );
 
-    expect(isError(results)).toBe(true);
-    expect(results).toBeInstanceOf(Error);
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toBe("Validation failed");
   });
 
-  it("should return error with invalid JSON", async () => {
+  it("should fail with Error with invalid JSON", async () => {
     const request = new Request(testUrl, {
       body: "",
       method: "POST"
     });
-    const results = await parseFetchJson(
-      request,
-      Schema.Array(Schema.Struct({ fail: Schema.String }))
+    const result = await Effect.runPromise(
+      parseFetchJson(
+        request,
+        Schema.Array(Schema.Struct({ fail: Schema.String }))
+      ).pipe(Effect.flip)
     );
 
-    expect(isError(results)).toBe(true);
-    expect(results).toBeInstanceOf(Error);
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toBe("Unexpected end of JSON input");
   });
 });

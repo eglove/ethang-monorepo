@@ -1,4 +1,6 @@
 import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
+import { Effect } from "effect";
+import constant from "lodash/constant.js";
 import filter from "lodash/filter.js";
 import isArray from "lodash/isArray.js";
 import isObject from "lodash/isObject.js";
@@ -174,16 +176,18 @@ const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
 };
 
 const loadManifest = (config: CompilerConfig): string[] => {
-  if (config.manifestPath === undefined) {
+  const { manifestPath } = config;
+  if (manifestPath === undefined) {
     return [];
   }
-  try {
-    return parseManifestContent(
-      fsProxy.readFileSync(config.manifestPath, "utf8")
-    );
-  } catch {
-    return [];
-  }
+  return Effect.try(() => {
+    return parseManifestContent(fsProxy.readFileSync(manifestPath, "utf8"));
+  }).pipe(
+    Effect.catchAll(() => {
+      return Effect.succeed([] as string[]);
+    }),
+    Effect.runSync
+  );
 };
 
 const parseManifestContent = (content: string): string[] => {
@@ -198,11 +202,17 @@ const parseManifestContent = (content: string): string[] => {
 };
 
 const canRemoveDirectory = (directory: string): boolean => {
-  try {
-    return 0 === fsProxy.readdirSync(directory).length;
-  } catch {
-    return false;
-  }
+  return Effect.try(() => {
+    return fsProxy.readdirSync(directory);
+  }).pipe(
+    Effect.match({
+      onFailure: constant(false),
+      onSuccess: (files) => {
+        return 0 === files.length;
+      }
+    }),
+    Effect.runSync
+  );
 };
 
 const cleanFileAndEmptyParents = (

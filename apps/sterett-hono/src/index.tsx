@@ -1,5 +1,5 @@
 import { lastModifiedMiddleware } from "@ethang/hono-middleware/src/last-modified.ts";
-import { DateTime } from "effect";
+import { DateTime, Effect, pipe } from "effect";
 import { Hono } from "hono";
 import { validator } from "hono/validator";
 import includes from "lodash/includes.js";
@@ -70,14 +70,25 @@ app.get(
     };
   }),
   async (c) => {
-    try {
-      const { date, month, view, year } = c.req.valid("query");
-      return await c.html(
-        <CalendarPage date={date} view={view} year={year} month={month} />
-      );
-    } catch {
-      return c.text("Internal error", 500);
-    }
+    const renderWorkflow = pipe(
+      Effect.tryPromise({
+        catch: (error) => {
+          return error;
+        },
+        try: async () => {
+          const { date, month, view, year } = c.req.valid("query");
+
+          return c.html(
+            <CalendarPage date={date} view={view} year={year} month={month} />
+          );
+        }
+      }),
+      Effect.catchAll(() => {
+        return Effect.succeed(c.text("Internal error", 500));
+      })
+    );
+
+    return Effect.runPromise(renderWorkflow);
   }
 );
 app.get("/trustees", async (c) => {

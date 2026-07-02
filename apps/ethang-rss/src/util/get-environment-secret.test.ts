@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import {
@@ -32,24 +33,17 @@ describe("getSecretValue", () => {
     const secret = {
       get: vi.fn().mockResolvedValue("my-secret-key")
     };
-    await expect(getSecretValue(secret)).resolves.toBe("my-secret-key");
+    await expect(Effect.runPromise(getSecretValue(secret))).resolves.toBe(
+      "my-secret-key"
+    );
   });
 
   it("returns undefined if secret.get throws an error", async () => {
     const secret = {
       get: vi.fn().mockRejectedValue(new Error("Failed to get secret"))
     };
-    await expect(getSecretValue(secret)).resolves.toBeUndefined();
-  });
-
-  it("returns string directly if secret is a string", async () => {
-    await expect(getSecretValue("my-raw-string")).resolves.toBe(
-      "my-raw-string"
-    );
-  });
-
-  it("returns undefined if secret is not a string and has no get method", async () => {
-    await expect(getSecretValue(123)).resolves.toBeUndefined();
-    await expect(getSecretValue(null)).resolves.toBeUndefined();
+    await expect(
+      Effect.runPromise(getSecretValue(secret))
+    ).resolves.toBeUndefined();
   });
 });

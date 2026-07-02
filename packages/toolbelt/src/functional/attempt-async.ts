@@ -1,16 +1,14 @@
-import isError from "lodash/isError.js";
+import { Effect } from "effect";
 
-export const attemptAsync = async <
-  T extends (...parameters: Parameters<T>) => unknown
->(
-  callback: T,
-  ...parameters: Parameters<T>
-): Promise<Awaited<ReturnType<T>> | Error> => {
-  try {
-    // Assume this is used with async function, force the await to catch the error
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    return (await callback(...parameters)) as Awaited<ReturnType<T>>;
-  } catch (error: unknown) {
-    return isError(error) ? error : new Error(`${callback.name} failed`);
-  }
+export const attemptAsync = <A>(
+  callback: () => Promise<A>
+): Effect.Effect<A, Error> => {
+  return Effect.tryPromise({
+    catch: (error: unknown) => {
+      return Error.isError(error)
+        ? error
+        : new Error(`${callback.name} failed`);
+    },
+    try: callback
+  });
 };
