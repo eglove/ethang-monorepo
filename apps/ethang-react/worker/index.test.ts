@@ -7,7 +7,12 @@ const TEST_COURSE_NAME = "Test Course" as const;
 const TEST_EMAIL = "test@test.com" as const;
 const TEST_TOKEN = "test-token" as const;
 const TEST_URL = "https://ethang.dev/api/rpc";
-const MOCK_USER = { email: TEST_EMAIL, sub: "test-user" };
+const MOCK_USER = {
+  email: TEST_EMAIL,
+  role: "user",
+  sub: "test-user",
+  username: "test-user"
+};
 
 const DEPLOYED_ARTICLES = { edges: [], pageInfo: { hasNextPage: false } };
 

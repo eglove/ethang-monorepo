@@ -2,16 +2,17 @@ import { LogQuerySchema } from "@ethang/schemas/logger/log-query-schema.ts";
 import { LogIngestSchema } from "@ethang/schemas/logger/log-schema.ts";
 import { and, eq, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { DateTime, Option, Schema } from "effect";
+import { DateTime, Effect, Either, Option, Schema } from "effect";
 import { Hono } from "hono";
-import attempt from "lodash/attempt.js";
+import constant from "lodash/constant.js";
 import includes from "lodash/includes.js";
-import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import split from "lodash/split.js";
 
 import { logs } from "./db/schema.ts";
+
+const succeedUndefined = constant(Effect.succeed(undefined));
 
 type Bindings = {
   ADMIN_KEY: string;
@@ -42,6 +43,15 @@ const getSecretValue = async (secret: unknown): Promise<string> => {
 };
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+const runOrUndefined = async <A>(
+  thunk: () => Promise<A>
+): Promise<A | undefined> => {
+  return Effect.tryPromise(thunk).pipe(
+    Effect.catchAll(succeedUndefined),
+    Effect.runPromise
+  );
+};
 
 const isWithinRateLimit = (ip: string): boolean => {
   const now = DateTime.toEpochMillis(DateTime.unsafeNow());
@@ -121,10 +131,11 @@ app.post("/log", async (c) => {
     return c.json({ error: "Forbidden" }, 403);
   }
 
-  let body: unknown;
-  try {
-    body = await c.req.json();
-  } catch {
+  const parseJson = async (): Promise<unknown> => {
+    return c.req.json<unknown>();
+  };
+  const body: unknown = await runOrUndefined(parseJson);
+  if (undefined === body) {
     return c.json({ error: "Invalid JSON" }, 400);
   }
 
@@ -136,8 +147,8 @@ app.post("/log", async (c) => {
   const validatedData = parseResult.value;
   const database = getDatabase(c.env);
 
-  try {
-    await database
+  const doInsert = async (): Promise<D1Result> => {
+    return database
       .insert(logs)
       .values({
         environment: validatedData.environment,
@@ -148,7 +159,10 @@ app.post("/log", async (c) => {
         stack: validatedData.stack
       })
       .run();
-  } catch {
+  };
+
+  const insertResult = await runOrUndefined(doInsert);
+  if (undefined === insertResult) {
     return c.json({ error: "Database error" }, 500);
   }
 
@@ -199,17 +213,16 @@ app.get("/logs", async (c) => {
   }
 
   const queryParameters = c.req.query();
-  const filters = attempt(() => {
-    return Schema.decodeSync(LogQuerySchema)(queryParameters);
-  });
-
-  if (isError(filters)) {
+  const decodeResult =
+    Schema.decodeUnknownEither(LogQuerySchema)(queryParameters);
+  if (Either.isLeft(decodeResult)) {
     return c.json(
       { details: "Invalid query parameters", error: "Bad Request" },
       400
     );
   }
 
+  const filters = decodeResult.right;
   const database = getDatabase(c.env);
   const conditions = buildConditions(filters);
 
@@ -222,12 +235,14 @@ app.get("/logs", async (c) => {
   const limit = Math.min(limitNumber, 100);
   const offset = filters.offset ?? 0;
 
-  try {
-    const results = await query.limit(limit).offset(offset).all();
-    return c.json({ logs: cleanLogRows(results) });
-  } catch {
+  const doQuery = async () => {
+    return query.limit(limit).offset(offset).all();
+  };
+  const results = await runOrUndefined(doQuery);
+  if (undefined === results) {
     return c.json({ error: "Database error" }, 500);
   }
+  return c.json({ logs: cleanLogRows(results) });
 });
 
 export default app;

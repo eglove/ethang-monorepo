@@ -1,3 +1,5 @@
+import { Effect } from "effect";
+import constant from "lodash/constant.js";
 import isArray from "lodash/isArray.js";
 import isFunction from "lodash/isFunction.js";
 import isString from "lodash/isString.js";
@@ -33,36 +35,52 @@ const decodeBase64ToBytes = (cursor: string) => {
   return new Uint8Array(Buffer.from(cursor, "base64"));
 };
 
-const safeDecode = (cursor: string) => {
-  const bytes = decodeBase64ToBytes(cursor);
-  const decoder = new TextDecoder();
-  return decoder.decode(bytes);
+const safeDecode = (cursor: string): Effect.Effect<string, unknown> => {
+  return Effect.try(() => {
+    const bytes = decodeBase64ToBytes(cursor);
+    const decoder = new TextDecoder();
+    return decoder.decode(bytes);
+  });
 };
 
-export const decodeCursor = (cursor: string) => {
-  let json = "";
-  try {
-    json = safeDecode(cursor);
-  } catch {
-    return null;
-  }
-
-  let decoded: unknown;
-  try {
-    decoded = JSON.parse(json);
-  } catch {
-    return null;
-  }
-
-  if (isArray(decoded) && 2 === decoded.length) {
-    const array: unknown[] = decoded;
-    const [firstValue, secondValue] = array;
-    if (
-      (isString(firstValue) || null === firstValue) &&
-      isString(secondValue)
-    ) {
-      return [firstValue, secondValue] as [null | string, string];
+export const decodeCursor = (
+  cursor: string
+): Effect.Effect<[null | string, string] | null> => {
+  return Effect.gen(function* () {
+    const json = yield* safeDecode(cursor).pipe(
+      Effect.orElse(() => {
+        return Effect.succeed("");
+      })
+    );
+    if ("" === json) {
+      return null;
     }
-  }
-  return null;
+
+    const decoded: unknown = yield* Effect.try({
+      catch: constant(null),
+      try: () => {
+        return JSON.parse(json) as unknown;
+      }
+    }).pipe(
+      Effect.orElse(() => {
+        return Effect.succeed(null);
+      })
+    );
+
+    if (null === decoded) {
+      return null;
+    }
+
+    if (isArray(decoded) && 2 === decoded.length) {
+      const array: unknown[] = decoded;
+      const [firstValue, secondValue] = array;
+      if (
+        (isString(firstValue) || null === firstValue) &&
+        isString(secondValue)
+      ) {
+        return [firstValue, secondValue] as [null | string, string];
+      }
+    }
+    return null;
+  });
 };

@@ -1,4 +1,4 @@
-import { Schema } from "effect";
+import { Effect, Schema } from "effect";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import replace from "lodash/replace.js";
@@ -16,25 +16,32 @@ export const createUrlPath = <T extends string>(
   path: T,
   parameters: ParseUrlParameters<T>,
   parametersSchema?: Schema.Schema.AnyNoContext
-): Error | string => {
-  if (!isEmpty(parameters) && isNil(parametersSchema)) {
-    return new Error("must provide path variables schema");
-  }
-
-  if (!isNil(parametersSchema)) {
-    try {
-      Schema.decodeUnknownSync(parametersSchema)(parameters);
-    } catch {
-      return new Error("Validation failed");
+): Effect.Effect<string, Error> => {
+  return Effect.gen(function* () {
+    if (!isEmpty(parameters) && isNil(parametersSchema)) {
+      return yield* Effect.fail(
+        new Error("must provide path variables schema")
+      );
     }
-  }
 
-  let url: string = path;
-  for (const [key, value] of Object.entries(parameters)) {
-    if (!isNil(value)) {
-      url = replace(url, `:${key}`, value);
+    if (!isNil(parametersSchema)) {
+      yield* Effect.try({
+        catch: () => {
+          return new Error("Validation failed");
+        },
+        try: () => {
+          Schema.decodeUnknownSync(parametersSchema)(parameters);
+        }
+      });
     }
-  }
 
-  return url.replaceAll(/(?<group>\(|\)|\/?:[^/]+)/gu, "");
+    let url: string = path;
+    for (const [key, value] of Object.entries(parameters)) {
+      if (!isNil(value)) {
+        url = replace(url, `:${key}`, value);
+      }
+    }
+
+    return url.replaceAll(/(?<group>\(|\)|\/?:[^/]+)/gu, "");
+  });
 };

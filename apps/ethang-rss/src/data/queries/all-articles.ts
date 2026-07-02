@@ -1,4 +1,5 @@
 import { and, desc, eq, isNull, lt, or } from "drizzle-orm";
+import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
@@ -28,9 +29,9 @@ export const allArticlesQuery = async (
   let lastId: null | string = null;
 
   if (!isNil(after)) {
-    const decoded = decodeCursor(after);
-    if (!isNil(decoded)) {
-      [lastPublishedAt, lastId] = decoded;
+    const result = await Effect.runPromise(decodeCursor(after));
+    if (!isNil(result)) {
+      [lastPublishedAt, lastId] = result;
     }
   }
 

@@ -1,8 +1,5 @@
-import type { Schema } from "effect";
-
-import attempt from "lodash/attempt.js";
+import { Effect, type Schema } from "effect";
 import get from "lodash/get.js";
-import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 
 import { appendSearchParameters } from "../url/append-search-parameters.js";
@@ -34,7 +31,7 @@ const hasValidationError = <Url extends string>(
 const resolvePath = <Url extends string>(
   urlString: Url,
   config?: UrlConfig<Url>
-): Error | string => {
+): Effect.Effect<string, Error> => {
   if (!isNil(config) && !isNil(config.pathVariables)) {
     return createUrlPath(
       urlString,
@@ -43,53 +40,52 @@ const resolvePath = <Url extends string>(
     );
   }
 
-  return urlString;
+  return Effect.succeed(urlString);
 };
 
 export const createUrl = <Url extends string>(
   urlString: Url,
   config?: UrlConfig<Url>
-): Error | URL => {
-  if (hasValidationError("pathVariables", "pathVariablesSchema", config)) {
-    return new Error("must provide path variables schema");
-  }
+): Effect.Effect<URL, Error> => {
+  return Effect.gen(function* () {
+    if (hasValidationError("pathVariables", "pathVariablesSchema", config)) {
+      return yield* Effect.fail(
+        new Error("must provide path variables schema")
+      );
+    }
 
-  const resolvedUrlString = resolvePath(urlString, config);
+    const resolvedUrlString = yield* resolvePath(urlString, config);
 
-  if (isError(resolvedUrlString)) {
-    return resolvedUrlString;
-  }
+    const url = yield* Effect.try({
+      catch: (error) => {
+        return Error.isError(error) ? error : new Error(String(error));
+      },
+      try: () => {
+        return new URL(resolvedUrlString, config?.urlBase);
+      }
+    });
 
-  const url = attempt(() => {
-    return new URL(resolvedUrlString, config?.urlBase);
-  });
+    if (hasValidationError("searchParams", "searchParamsSchema", config)) {
+      return yield* Effect.fail(
+        new Error("must provide search parameters schema")
+      );
+    }
 
-  if (isError(url)) {
+    if (
+      !isNil(config) &&
+      !isNil(config.searchParams) &&
+      !isNil(config.searchParamsSchema)
+    ) {
+      const parameters = yield* createSearchParameters(
+        config.searchParams,
+        config.searchParamsSchema
+      );
+
+      if (!isNil(parameters)) {
+        appendSearchParameters(url, parameters);
+      }
+    }
+
     return url;
-  }
-
-  if (hasValidationError("searchParams", "searchParamsSchema", config)) {
-    return new Error("must provide search parameters schema");
-  }
-
-  if (
-    !isNil(config) &&
-    !isNil(config.searchParams) &&
-    !isNil(config.searchParamsSchema)
-  ) {
-    const parameters = createSearchParameters(
-      config.searchParams,
-      config.searchParamsSchema
-    );
-
-    if (isError(parameters)) {
-      return parameters;
-    }
-
-    if (!isNil(parameters)) {
-      appendSearchParameters(url, parameters);
-    }
-  }
-
-  return url;
+  });
 };

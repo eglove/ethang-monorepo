@@ -6,6 +6,7 @@
   "dependencies": {
     "@ethang/intl": "workspace:*",
     "@ethang/logger-sdk": "workspace:*",
+    "@ethang/schemas": "workspace:*",
     "@ethang/store": "^3.1.0",
     "@ethang/toolbelt": "^5.0.2",
     "@portabletext/react": "^6.2.0",

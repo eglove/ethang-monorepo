@@ -1,4 +1,5 @@
 import { and, desc, eq, gt, lt, or, sql, type SQLWrapper } from "drizzle-orm";
+import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
@@ -7,11 +8,11 @@ import type { User } from "../../index.ts";
 import { type Database, databaseSchema } from "../../db/database-schema.ts";
 import { decodeCursor, encodeCursor } from "../util/cursor.ts";
 
-const getCursorParameters = (after: string | undefined) => {
+const getCursorParameters = async (after: string | undefined) => {
   if (isNil(after)) {
     return [null, null] as const;
   }
-  const decoded = decodeCursor(after);
+  const decoded = await Effect.runPromise(decodeCursor(after));
   if (isNil(decoded)) {
     return [null, null] as const;
   }
@@ -79,7 +80,7 @@ const getTitleSortedSubscriptions = async (
   direction: "ASC" | "DESC",
   limit: number
 ) => {
-  const [lastTitle, lastId] = getCursorParameters(after);
+  const [lastTitle, lastId] = await getCursorParameters(after);
 
   const subquery = database
     .select({
@@ -129,7 +130,7 @@ const getPublishedAtSortedSubscriptions = async (
   direction: "ASC" | "DESC",
   limit: number
 ) => {
-  const [lastPublishedAt, lastId] = getCursorParameters(after);
+  const [lastPublishedAt, lastId] = await getCursorParameters(after);
 
   const maxPublishedAtSql = sql<string>`coalesce(max(${
     databaseSchema.articlesTable.publishedAt

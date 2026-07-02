@@ -1,57 +1,130 @@
-import isError from "lodash/isError.js";
+import { TokenSchema } from "@ethang/schemas/auth/token-schema.js";
+import { Effect, Schema } from "effect";
 import isNil from "lodash/isNil.js";
 import startsWith from "lodash/startsWith.js";
 
 import { getSessionToken } from "./auth.ts";
 import { rpcServiceDispatch } from "./rpc.ts";
 
-const verifySessionToken = async (
+const verifySessionToken = (
   sessionToken: string
-): Promise<{ email: string; sub: string }> => {
-  const userResponse = await fetch("https://auth.ethang.dev/verify", {
-    headers: { "X-Token": sessionToken }
+): Effect.Effect<{ email: string; sub: string }, Error> => {
+  return Effect.gen(function* () {
+    const userResponse = yield* Effect.tryPromise({
+      catch: (error) => {
+        return new Error(String(error));
+      },
+      try: async () => {
+        return fetch("https://auth.ethang.dev/verify", {
+          headers: { "X-Token": sessionToken }
+        });
+      }
+    });
+
+    if (!userResponse.ok) {
+      return yield* Effect.fail(new Error("Unauthorized"));
+    }
+
+    return yield* Effect.tryPromise({
+      catch: (error) => {
+        return new Error(String(error));
+      },
+      try: async () => {
+        return Schema.decodeUnknownPromise(TokenSchema)(
+          await userResponse.json()
+        );
+      }
+    });
   });
+};
 
-  if (!userResponse.ok) {
-    throw new Error("Unauthorized");
-  }
+const parseJsonBody = (
+  request: Request
+): Effect.Effect<
+  {
+    method: string;
+    params: Record<string, unknown>;
+    service: string;
+  },
+  Response
+> => {
+  return Effect.tryPromise({
+    catch: () => {
+      return new Response("Invalid JSON body", { status: 400 });
+    },
+    try: async () => {
+      return request.json();
+    }
+  });
+};
 
-  return userResponse.json();
+const callRpcService = (
+  environment: Env,
+  service: string,
+  method: string,
+  parameters: Record<string, unknown>
+): Effect.Effect<unknown, Response> => {
+  return Effect.tryPromise({
+    catch: (error) => {
+      return new Response(
+        Error.isError(error) ? error.message : "Internal Server Error",
+        { status: 500 }
+      );
+    },
+    try: async () => {
+      return rpcServiceDispatch(environment, service, method, parameters);
+    }
+  });
 };
 
 const handleRpcRequest = async (
   request: Request,
   environment: Env
 ): Promise<Response> => {
-  let sessionToken: string;
+  const sessionTokenResult = await Effect.runPromise(
+    Effect.tryPromise({
+      catch: () => {
+        return new Error("Unauthorized");
+      },
+      try: async () => {
+        return getSessionToken(request, environment);
+      }
+    }).pipe(
+      Effect.catchAll(() => {
+        return Effect.succeed(null as null | string);
+      })
+    )
+  );
 
-  try {
-    sessionToken = await getSessionToken(request, environment);
-  } catch {
+  if (null === sessionTokenResult) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  let verifiedUser: { email: string; sub: string };
+  const verifiedUserResult = await Effect.runPromise(
+    verifySessionToken(sessionTokenResult).pipe(
+      Effect.catchAll(() => {
+        return Effect.succeed(null);
+      })
+    )
+  );
 
-  try {
-    verifiedUser = await verifySessionToken(sessionToken);
-  } catch {
+  if (null === verifiedUserResult) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  let body: {
-    method: string;
-    params: Record<string, unknown>;
-    service: string;
-  };
+  const bodyResult = await Effect.runPromise(
+    parseJsonBody(request).pipe(
+      Effect.catchAll((response) => {
+        return Effect.succeed(response);
+      })
+    )
+  );
 
-  try {
-    body = await request.json();
-  } catch {
-    return new Response("Invalid JSON body", { status: 400 });
+  if (bodyResult instanceof Response) {
+    return bodyResult;
   }
 
-  const { method, params, service } = body;
+  const { method, params, service } = bodyResult;
 
   if (isNil(method) || isNil(service)) {
     return new Response("Missing service or method", { status: 400 });
@@ -61,20 +134,24 @@ const handleRpcRequest = async (
     return new Response("Invalid service or method", { status: 400 });
   }
 
-  try {
-    const result = await rpcServiceDispatch(environment, service, method, {
+  const result = await Effect.runPromise(
+    callRpcService(environment, service, method, {
       ...params,
-      sessionToken,
-      userEmail: verifiedUser.email,
-      userSub: verifiedUser.sub
-    });
-    return Response.json(result);
-  } catch (error) {
-    return new Response(
-      isError(error) ? error.message : "Internal Server Error",
-      { status: 500 }
-    );
+      sessionToken: sessionTokenResult,
+      userEmail: verifiedUserResult.email,
+      userSub: verifiedUserResult.sub
+    }).pipe(
+      Effect.catchAll((response) => {
+        return Effect.succeed(response);
+      })
+    )
+  );
+
+  if (result instanceof Response) {
+    return result;
   }
+
+  return Response.json(result);
 };
 
 export default {

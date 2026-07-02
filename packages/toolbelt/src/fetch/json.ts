@@ -1,24 +1,22 @@
-import { Schema } from "effect";
-import isError from "lodash/isError.js";
+import { Effect, Schema } from "effect";
 
 import { attemptAsync } from "../functional/attempt-async.js";
 
-export const parseFetchJson = async <Z extends Schema.Schema.AnyNoContext>(
+export const parseFetchJson = <A>(
   value: Request | Response,
-  schema: Z
-): Promise<Error | Schema.Schema.Type<Z>> => {
-  const unparsed = await attemptAsync(async () => {
-    return value.json();
+  schema: Schema.Schema<A>
+): Effect.Effect<A, Error> => {
+  return Effect.gen(function* () {
+    const unparsed = yield* attemptAsync(async () => {
+      return value.json();
+    });
+    return yield* Effect.try({
+      catch: () => {
+        return new Error("Validation failed");
+      },
+      try: () => {
+        return Schema.decodeUnknownSync(schema)(unparsed);
+      }
+    });
   });
-
-  if (isError(unparsed)) {
-    return unparsed;
-  }
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    return Schema.decodeUnknownSync(schema)(unparsed) as Schema.Schema.Type<Z>;
-  } catch {
-    return new Error("Validation failed");
-  }
 };

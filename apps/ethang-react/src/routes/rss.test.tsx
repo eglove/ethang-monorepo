@@ -1,6 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 
 import { render } from "@testing-library/react";
+import { Effect, pipe } from "effect";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -184,12 +185,17 @@ describe("RSS Feature", () => {
         }
       };
 
-      try {
+      const runTest = Effect.sync(() => {
         expect(decodeHtmlEntities("some text")).toBe("some text");
-      } finally {
+      });
+
+      const cleanupDOMParser = Effect.sync(() => {
         // eslint-disable-next-line unicorn/no-global-object-property-assignment
         globalThis.DOMParser = originalDOMParser;
-      }
+      });
+
+      const testWorkflow = pipe(runTest, Effect.ensuring(cleanupDOMParser));
+      Effect.runSync(testWorkflow);
     });
   });
 
