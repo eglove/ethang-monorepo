@@ -62,7 +62,7 @@ describe("requireAuth Middleware", () => {
 
     expect(response.status).toBe(200);
 
-    const body: { user: { id: string } } = await response.json();
+    const body = (await response.json()) as { user: { id: string } };
 
     expect(body.user).toStrictEqual({ id: "123" });
   });

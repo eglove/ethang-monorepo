@@ -27,7 +27,7 @@ export class AuthStore extends BaseStore<typeof initialState> {
     let initialUser: null | User = null;
     if (null !== storedUser) {
       const parsed: unknown = attempt(() => {
-        return JSON.parse(storedUser) as unknown;
+        return JSON.parse(storedUser);
       });
       if (!isError(parsed) && isObject(parsed)) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
