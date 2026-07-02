@@ -59,7 +59,7 @@ export const decodeCursor = (
     const decoded: unknown = yield* Effect.try({
       catch: constant(null),
       try: () => {
-        return JSON.parse(json) as unknown;
+        return JSON.parse(json);
       }
     }).pipe(
       Effect.orElse(() => {
