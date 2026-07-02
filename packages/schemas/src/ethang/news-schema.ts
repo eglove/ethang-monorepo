@@ -8,5 +8,5 @@ export class NewsSchema extends Schema.Class<NewsSchema>("NewsSchema")({
   published: Schema.String,
   quote: Schema.optional(Schema.NullOr(Schema.String)),
   title: Schema.String,
-  youtubeVideoId: Schema.optional(Schema.String)
+  youtubeVideoId: Schema.optional(Schema.NullOr(Schema.String))
 }) {}

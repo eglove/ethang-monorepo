@@ -86,15 +86,14 @@ export const CalendarPage = async ({
   const nextYear = DateTime.toPartsUtc(nextDate).year;
   const monthName = DateTime.format(
     DateTime.unsafeMakeZoned(DateTime.unsafeMake({ day: 1, month, year }), {
+      adjustForTimeZone: true,
       timeZone: CHICAGO
     }),
     { month: "long", timeZone: CHICAGO }
   );
-  const todayNowParts = DateTime.toPartsUtc(
-    DateTime.unsafeMakeZoned(DateTime.unsafeNow(), { timeZone: CHICAGO })
-  );
-  const todayYear = todayNowParts.year;
-  const todayMonth = todayNowParts.month;
+  const todayParts = DateTime.toPartsUtc(DateTime.unsafeMake(today));
+  const todayYear = todayParts.year;
+  const todayMonth = todayParts.month;
   const isCurrentMonth = year === todayYear && month === todayMonth;
 
   // Week view locals

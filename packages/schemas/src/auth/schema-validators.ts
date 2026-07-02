@@ -13,4 +13,9 @@ export const passwordSchema = Schema.Trim.pipe(
   )
 );
 
-export const emailSchema = Schema.Trim;
+// Bounded lengths prevent super-linear backtracking.
+const EMAIL_REGEX = /^[^\s@]{1,64}@[^\s@]{1,64}\.[^\s@]{2,}$/u;
+
+export const emailSchema = Schema.Trim.pipe(
+  Schema.pattern(EMAIL_REGEX, { message: constant("Invalid email address") })
+);

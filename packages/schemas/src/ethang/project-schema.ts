@@ -8,7 +8,7 @@ export class Project extends Schema.Class<Project>("Project")({
   code: Schema.String,
   description: Schema.String,
   id: Schema.String,
-  publicUrl: Schema.optional(Schema.String),
+  publicUrl: Schema.optional(Schema.NullOr(Schema.String)),
   techs: Schema.Array(TechSchema),
   title: Schema.String
 }) {}

@@ -7,7 +7,6 @@ import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import padStart from "lodash/padStart.js";
-import split from "lodash/split.js";
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 
@@ -41,13 +40,30 @@ const addToDateMap = (
   dateMap.get(key)?.push(event);
 };
 
+const extractChicagoDateKey = (iso: string): string => {
+  const maybeZoned = DateTime.makeZoned(iso, { timeZone: CHICAGO });
+  if (Option.isNone(maybeZoned)) {
+    return "";
+  }
+  return DateTime.formatIsoDate(maybeZoned.value);
+};
+
 export const buildEventsByDate = (events: CalendarEventRecord[]) => {
   const dateMap = new Map<string, CalendarEventRecord[]>();
 
-  for (const event of events) {
-    const startKey = split(event.startsAt, "T", 1)[0] ?? "";
-    const endKey = split(event.endsAt, "T", 1)[0] ?? "";
+  const entries = filter(
+    map(events, (event) => {
+      const startKey = extractChicagoDateKey(event.startsAt);
+      const endKey = extractChicagoDateKey(event.endsAt);
 
+      return { endKey, event, startKey };
+    }),
+    (entry) => {
+      return "" !== entry.startKey && "" !== entry.endKey;
+    }
+  );
+
+  for (const { endKey, event, startKey } of entries) {
     let cursor = DateTime.unsafeMake(startKey);
     const end = DateTime.unsafeMake(endKey);
 

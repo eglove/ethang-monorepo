@@ -17,7 +17,7 @@ export class LogIngestSchema extends Schema.Class<LogIngestSchema>(
   level: logLevelSchema,
   message: Schema.String,
   metadata: Schema.optional(
-    Schema.Record({ key: Schema.String, value: Schema.String })
+    Schema.Record({ key: Schema.String, value: Schema.Unknown })
   ),
   serviceName: Schema.String,
   stack: Schema.optional(Schema.String)

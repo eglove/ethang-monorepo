@@ -15,6 +15,7 @@ plan.md
 .output.json
 reports
 .repos
+repo-plan.md
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,jetbrains+all,visualstudiocode,storybookjs
