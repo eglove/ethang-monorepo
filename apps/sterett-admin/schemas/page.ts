@@ -1,4 +1,4 @@
-import { DocumentTextIcon } from "@sanity/icons";
+import { DocumentTextIcon } from "@sanity/icons/DocumentText";
 import replace from "lodash/replace.js";
 import toLower from "lodash/toLower.js";
 import { defineType, type Rule } from "sanity";

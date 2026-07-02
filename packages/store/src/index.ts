@@ -21,17 +21,16 @@ export type StorePatch<State extends object> = Simplify<Patch> &
   (ValidDataPathTuple<State> extends infer P
     ? P extends readonly string[]
       ? Get<State, P> extends infer ValueType
-        ?
-            | {
-                op: "add" | "replace";
-                path: P;
-                value: ValueType;
-              }
-            | {
-                op: "remove";
-                path: P;
-                value?: never;
-              }
+        ? | {
+              op: "add" | "replace";
+              path: P;
+              value: ValueType;
+            }
+          | {
+              op: "remove";
+              path: P;
+              value?: never;
+            }
         : never
       : never
     : never);
@@ -45,11 +44,10 @@ type QueuedUpdate<State extends object> =
 type ValidDataPathTuple<T> = T extends Primitive
   ? never
   : T extends readonly (infer U)[]
-    ?
-        | readonly [`${number}`]
-        | (U extends object
-            ? readonly [`${number}`, ...ValidDataPathTuple<U>]
-            : never)
+    ? | readonly [`${number}`]
+      | (U extends object
+          ? readonly [`${number}`, ...ValidDataPathTuple<U>]
+          : never)
     : T extends object
       ? {
           [K in keyof T]: K extends string
@@ -61,8 +59,7 @@ type ValidDataPathTuple<T> = T extends Primitive
       : never;
 
 type WaitForResult<State extends object> =
-  | { error: Error; ok: false }
-  | { ok: true; value: State };
+  { error: Error; ok: false } | { ok: true; value: State };
 
 export abstract class BaseStore<State extends object> {
   public get destroyed() {

@@ -1,4 +1,4 @@
-import { BulbOutlineIcon } from "@sanity/icons";
+import { BulbOutlineIcon } from "@sanity/icons/BulbOutline";
 import { DateTime } from "effect";
 import { defineType, type Rule } from "sanity";
 

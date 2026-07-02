@@ -102,10 +102,11 @@ vi.mock("./data/queries/curriculums.ts", () => {
 import WorkerClass from "./index.ts";
 
 const createInstance = (environment: Record<string, any> = {}): any => {
-  // eslint-disable-next-line unicorn/no-unreadable-new-expression
-  const instance = new (WorkerClass as unknown as new () => {
+  const initializer = WorkerClass as unknown as new () => {
     env: Record<string, unknown>;
-  })();
+  };
+
+  const instance = new initializer();
   instance.env = environment;
   return instance;
 };

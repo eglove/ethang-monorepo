@@ -4,7 +4,7 @@ import { DateTime } from "effect";
 import isNil from "lodash/isNil.js";
 import replace from "lodash/replace.js";
 
-export const isUrlUnique = (
+export const validateUrlUniqueness = (
   rule: UrlRule,
   isRequired: boolean,
   documentType: string

@@ -1,4 +1,4 @@
-import { ActivityIcon } from "@sanity/icons";
+import { ActivityIcon } from "@sanity/icons/Activity";
 import { defineType } from "sanity";
 
 import { eventFields } from "./event-fields";

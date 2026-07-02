@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { isUrlUnique } from "./is-url-unique.ts";
+import { validateUrlUniqueness } from "./validate-url-uniqueness.ts";
 
 const TEST_URL = "https://google.com";
 const TEST_DOC_ID = "123";
@@ -15,7 +15,7 @@ describe("isUrlUnique validation rule", () => {
     };
 
     // @ts-expect-error mock rule
-    const validator = isUrlUnique(mockRule, true, TEST_DOC_TYPE);
+    const validator = validateUrlUniqueness(mockRule, true, TEST_DOC_TYPE);
 
     // @ts-expect-error mock context
     const result = await validator(undefined, {});
@@ -30,7 +30,7 @@ describe("isUrlUnique validation rule", () => {
     };
 
     // @ts-expect-error mock rule
-    const validator = isUrlUnique(mockRule, false, TEST_DOC_TYPE);
+    const validator = validateUrlUniqueness(mockRule, false, TEST_DOC_TYPE);
 
     // @ts-expect-error mock context
     const result = await validator(undefined, {});
@@ -45,7 +45,7 @@ describe("isUrlUnique validation rule", () => {
     };
 
     // @ts-expect-error mock rule
-    const validator = isUrlUnique(mockRule, false, TEST_DOC_TYPE);
+    const validator = validateUrlUniqueness(mockRule, false, TEST_DOC_TYPE);
 
     // @ts-expect-error mock context
     const result = await validator(TEST_URL, {
@@ -68,7 +68,7 @@ describe("isUrlUnique validation rule", () => {
     };
 
     // @ts-expect-error mock rule
-    const validator = isUrlUnique(mockRule, false, TEST_DOC_TYPE);
+    const validator = validateUrlUniqueness(mockRule, false, TEST_DOC_TYPE);
 
     const context = {
       document: { _id: "drafts.123" },
@@ -99,7 +99,7 @@ describe("isUrlUnique validation rule", () => {
     };
 
     // @ts-expect-error mock rule
-    const validator = isUrlUnique(mockRule, false, TEST_DOC_TYPE);
+    const validator = validateUrlUniqueness(mockRule, false, TEST_DOC_TYPE);
 
     const context = {
       document: { _id: TEST_DOC_ID },

@@ -34,8 +34,7 @@ export type MarkdownDocument = {
 };
 
 export type TableHeader =
-  | { align?: "center" | "left" | "right"; text: string }
-  | string;
+  { align?: "center" | "left" | "right"; text: string } | string;
 
 export type TaskListItem = {
   isComplete: boolean;

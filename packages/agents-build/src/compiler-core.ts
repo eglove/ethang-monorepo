@@ -41,8 +41,7 @@ export type McpConfig = {
 };
 
 export type McpServerConfig =
-  | { args: string[]; command: string }
-  | { type?: "http" | "sse"; url: string };
+  { args: string[]; command: string } | { type?: "http" | "sse"; url: string };
 
 export const MCP_SERVERS: McpConfig = {
   mcpServers: {

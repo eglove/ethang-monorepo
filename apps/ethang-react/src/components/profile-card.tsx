@@ -60,8 +60,8 @@ export const ProfileCard = () => {
             <Button asChild variant="surface">
               <HybridLink
                 target="_blank"
-                href="https://cal.com/ethan-glover/meet"
                 className="border-foreground border-2 px-4 py-2"
+                href="https://calendar.proton.me/u/2/bookings#10S2zo5jm_rTCXVDnyi55vEBS9HN8Cam4w3HxHr5Omg="
               >
                 {forms.SCHEDULE_MEETING}
               </HybridLink>
