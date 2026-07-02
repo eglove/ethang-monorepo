@@ -61,8 +61,7 @@ const BlockStyleComponents: PortableTextComponents["block"] = {
   blockquote: ({ children, value }) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const node = value as
-      | { author?: string; source?: string; sourceUrl?: string }
-      | undefined;
+      { author?: string; source?: string; sourceUrl?: string } | undefined;
 
     return (
       <Blockquote>

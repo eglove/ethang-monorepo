@@ -40,9 +40,7 @@ type FeedItem = {
   guid?: { "#text"?: string } | string;
   id?: string;
   link?:
-    | { "@_href"?: string; "@_rel"?: string }[]
-    | { "@_href"?: string }
-    | string;
+    { "@_href"?: string; "@_rel"?: string }[] | { "@_href"?: string } | string;
   pubDate?: string;
   published?: string;
   summary?: string;

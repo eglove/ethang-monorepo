@@ -84,6 +84,52 @@ describe("POST /api/rpc - authentication", () => {
     expect(response.status).toBe(401);
   });
 
+  it("should return 401 when getSessionToken fetch throws", async () => {
+    vi.restoreAllMocks();
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(
+      new Error("session network failure")
+    );
+
+    const request = new Request(TEST_URL, {
+      body: JSON.stringify({
+        method: "courses",
+        params: {},
+        service: "ethang_courses"
+      }),
+      headers: { "Content-Type": APPLICATION_JSON },
+      method: "POST"
+    });
+
+    // @ts-expect-error test double
+    const response = await worker.fetch(request, mockEnvironment);
+    expect(response.status).toBe(401);
+  });
+
+  it("should return 401 when verifySessionToken schema decode throws", async () => {
+    vi.restoreAllMocks();
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        Response.json({ sessionToken: TEST_TOKEN }, { status: 200 })
+      )
+      .mockResolvedValueOnce(
+        Response.json({ malformed: "user" }, { status: 200 })
+      );
+
+    const request = new Request(TEST_URL, {
+      body: JSON.stringify({
+        method: "courses",
+        params: {},
+        service: "ethang_courses"
+      }),
+      headers: { "Content-Type": APPLICATION_JSON },
+      method: "POST"
+    });
+
+    // @ts-expect-error test double
+    const response = await worker.fetch(request, mockEnvironment);
+    expect(response.status).toBe(401);
+  });
+
   it("should handle getSessionToken without X-Token successfully", async () => {
     vi.restoreAllMocks();
     vi.spyOn(globalThis, "fetch")

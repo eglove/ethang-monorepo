@@ -1,4 +1,4 @@
-import { DocumentPdfIcon } from "@sanity/icons";
+import { DocumentPdfIcon } from "@sanity/icons/DocumentPdf";
 import { DateTime } from "effect";
 import { defineType, type Rule } from "sanity";
 

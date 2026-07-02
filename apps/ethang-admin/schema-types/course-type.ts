@@ -1,6 +1,6 @@
 import { defineField, defineType } from "sanity";
 
-import { isUrlUnique } from "../util/is-url-unique.ts";
+import { validateUrlUniqueness } from "../util/validate-url-uniqueness.ts";
 
 export const courseType = defineType({
   fields: [
@@ -23,7 +23,7 @@ export const courseType = defineType({
       title: "URL",
       type: "url",
       validation: (rule) => {
-        return isUrlUnique(rule, true, "course");
+        return validateUrlUniqueness(rule, true, "course");
       }
     })
   ],

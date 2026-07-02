@@ -14,18 +14,18 @@
     "uuid": "^14.0.1"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.16.20",
-    "@ethang/eslint-config": "workspace:*",
+    "@cloudflare/vitest-pool-workers": "^0.18.0",
+    "@ethang/eslint-config": "^25.25.1",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^26.0.1",
+    "@types/node": "^26.1.0",
     "browserslist-config-baseline": "^0.5.0",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.6.0",
     "typescript": "^6.0.3",
     "vitest": "~4.1.9",
-    "wrangler": "^4.105.0"
+    "wrangler": "^4.107.0"
   },
   "engines": {
     "node": ">=24"

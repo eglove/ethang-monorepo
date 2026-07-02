@@ -17,7 +17,6 @@ export type Database = DrizzleD1Database<{
 }>;
 
 export type DatabaseTransaction =
-  | Database
-  | Parameters<Parameters<Database["transaction"]>[0]>[0];
+  Database | Parameters<Parameters<Database["transaction"]>[0]>[0];
 
 export const TYPE_MARKER = "types";

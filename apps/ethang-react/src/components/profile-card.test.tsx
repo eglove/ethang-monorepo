@@ -31,7 +31,7 @@ describe("ProfileCard", () => {
       name: "Schedule a Meeting"
     });
     expect(meetingLink.getAttribute("href")).toBe(
-      "https://cal.com/ethan-glover/meet"
+      "https://calendar.proton.me/u/2/bookings#10S2zo5jm_rTCXVDnyi55vEBS9HN8Cam4w3HxHr5Omg="
     );
   });
 });

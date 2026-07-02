@@ -3,6 +3,7 @@ export { courseTracking } from "./course-tracking.ts";
 export { courses } from "./courses.ts";
 export { errors } from "./errors.ts";
 export { forms } from "./forms.ts";
+export { home } from "./home.ts";
 export { jsonHeaders } from "./http.ts";
 export { navigation } from "./navigation.ts";
 export { rss } from "./rss.ts";

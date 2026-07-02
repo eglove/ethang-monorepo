@@ -3,15 +3,15 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      include: ["util/is-url-unique.ts", "schema-types/wow-task-types.ts"],
+      include: ["util/*", "schema-types/*"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
         branches: 100,
-        functions: 100,
-        lines: 100,
-        statements: 100
+        functions: 96,
+        lines: 98.07,
+        statements: 98.07
       }
     },
     environment: "node"

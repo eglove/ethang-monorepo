@@ -59,10 +59,20 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
         isPending
       };
     },
-    useMutation: () => {
+    useMutation: ({
+      onSuccess
+    }: {
+      onSuccess?: (data: unknown) => Promise<void>;
+    }) => {
       return {
         isPending: mockArticlesStore.isMutationPending,
-        mutateAsync: mockMutate
+        mutateAsync: async (input: unknown) => {
+          const result = await mockMutate(input);
+          if (undefined !== onSuccess) {
+            await onSuccess(result);
+          }
+          return result;
+        }
       };
     },
     useQuery: () => {

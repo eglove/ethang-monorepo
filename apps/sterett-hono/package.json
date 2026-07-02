@@ -18,20 +18,20 @@
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.24.1",
+    "@ethang/eslint-config": "^25.25.1",
     "@faker-js/faker": "^10.5.0",
     "@portabletext/types": "^4.0.2",
     "@tailwindcss/typography": "^0.5.20",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^26.0.1",
+    "@types/node": "^26.1.0",
     "@vitest/coverage-v8": "^4.1.9",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.6.0",
-    "tsx": "^4.22.4",
+    "tsx": "^4.22.5",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9",
-    "wrangler": "^4.105.0"
+    "wrangler": "^4.107.0"
   },
   "engines": {
     "node": ">=24"

@@ -4,7 +4,7 @@ import {
 } from "@sanity/orderable-document-list";
 import { defineField, defineType } from "sanity";
 
-import { isUrlUnique } from "../util/is-url-unique.ts";
+import { validateUrlUniqueness } from "../util/validate-url-uniqueness.ts";
 
 export const learningPathType = defineType({
   fields: [
@@ -20,7 +20,7 @@ export const learningPathType = defineType({
       title: "URL",
       type: "url",
       validation: (rule) => {
-        return isUrlUnique(rule, false, "learningPath");
+        return validateUrlUniqueness(rule, false, "learningPath");
       }
     }),
     defineField({

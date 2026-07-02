@@ -93,10 +93,11 @@ const DEFAULT_ENVIRONMENT: Record<string, unknown> = { ethang_modlist: {} };
 const createInstance = (
   environment: Record<string, unknown> = DEFAULT_ENVIRONMENT
 ): any => {
-  // eslint-disable-next-line unicorn/no-unreadable-new-expression
-  const instance = new (WorkerClass as unknown as new () => {
+  const initializer = WorkerClass as unknown as new () => {
     env: Record<string, unknown>;
-  })();
+  };
+
+  const instance = new initializer();
   instance.env = environment;
   return instance;
 };
