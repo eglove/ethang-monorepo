@@ -3,7 +3,12 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      include: ["util/is-url-unique.ts", "schema-types/wow-task-types.ts"],
+      include: [
+        "util/validate-url-uniqueness.ts",
+        "schema-types/course-type.ts",
+        "schema-types/learning-path-type.ts",
+        "schema-types/wow-task-types.ts"
+      ],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {

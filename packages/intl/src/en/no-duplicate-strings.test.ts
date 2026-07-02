@@ -5,9 +5,11 @@ import { courseTracking } from "./course-tracking.ts";
 import { courses } from "./courses.ts";
 import { errors } from "./errors.ts";
 import { forms } from "./forms.ts";
+import { home } from "./home.ts";
 import { navigation } from "./navigation.ts";
 import { rss } from "./rss.ts";
 import { ui } from "./ui.ts";
+import { urls } from "./urls.ts";
 
 const modules = {
   auth,
@@ -15,9 +17,11 @@ const modules = {
   courseTracking,
   errors,
   forms,
+  home,
   navigation,
   rss,
-  ui
+  ui,
+  urls
 };
 
 describe("intl constants", () => {

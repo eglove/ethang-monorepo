@@ -6,7 +6,7 @@ const TEST_URL = "https://google.com";
 const TEST_DOC_ID = "123";
 const TEST_DOC_TYPE = "post";
 
-describe("isUrlUnique validation rule", () => {
+describe("validateUrlUniqueness validation rule", () => {
   it("should return error if value is empty/nil and isRequired is true", async () => {
     const mockRule = {
       custom: vi.fn((validationCallback) => {
