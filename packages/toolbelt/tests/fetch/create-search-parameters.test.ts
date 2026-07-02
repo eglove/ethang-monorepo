@@ -1,5 +1,6 @@
+import { Schema } from "effect";
+import create from "lodash/create.js";
 import { describe, expect, it } from "vitest";
-import { z, ZodError } from "zod";
 
 import { createSearchParameters } from "../../src/fetch/create-search-parameters.ts";
 
@@ -11,15 +12,15 @@ describe("create search parameters", () => {
         max: 100,
         numbers: [1, 2, 3],
         otherValue: undefined,
-        to: "tomorrow",
+        to: "tomorrow"
       },
-      z.object({
-        filter: z.array(z.string()),
-        max: z.number(),
-        numbers: z.array(z.number()),
-        otherValue: z.undefined(),
-        to: z.string(),
-      }),
+      Schema.Struct({
+        filter: Schema.Array(Schema.String),
+        max: Schema.Number,
+        numbers: Schema.Array(Schema.Number),
+        otherValue: Schema.Undefined,
+        to: Schema.String
+      })
     );
     const expected = new URLSearchParams();
     expected.append("filter", "done");
@@ -31,7 +32,7 @@ describe("create search parameters", () => {
     expected.append("numbers", "3");
     expected.append("to", "tomorrow");
 
-    expect(expected.toString()).toEqual(result?.toString());
+    expect(expected.toString()).toEqual(result.toString());
     expect(expected).toStrictEqual(result);
   });
 
@@ -39,54 +40,59 @@ describe("create search parameters", () => {
     const result = createSearchParameters(
       // @ts-expect-error testing nil guard in array
       { tags: [null, "a", undefined, "b"] },
-      z.object({ tags: z.array(z.string().nullable().optional()) }),
+      Schema.Struct({
+        // @ts-expect-error for test
+        // eslint-disable-next-line unicorn/max-nested-calls
+        tags: Schema.Array(Schema.optional(Schema.NullOr(Schema.String)))
+      })
     );
 
     const expected = new URLSearchParams();
     expected.append("tags", "a");
     expected.append("tags", "b");
 
-    expect(result?.toString()).toBe(expected.toString());
+    expect(result.toString()).toBe(expected.toString());
   });
 
   it("should return error when validation fails", () => {
     const result = createSearchParameters(
       {
-        filter: ["done", "recent", "expired"],
+        filter: ["done", "recent", "expired"]
       },
-      z.object({
-        filter: z.array(z.number()),
-      }),
+      Schema.Struct({
+        filter: Schema.Array(Schema.Number)
+      })
     );
 
-    expect(result).toBeInstanceOf(ZodError);
+    expect(result).toBeInstanceOf(Error);
   });
 
   it("should ignore inherited properties", () => {
     const parent = { a: "parent" };
-    const child = Object.create(parent);
+    const child = create(parent);
+    // @ts-expect-error for test
     child.b = "child";
 
     const result = createSearchParameters(
       child,
-      z.object({ a: z.string().optional(), b: z.string() }),
+      Schema.Struct({ a: Schema.optional(Schema.String), b: Schema.String })
     );
 
     const expected = new URLSearchParams();
     expected.append("b", "child");
 
-    expect(result?.toString()).toBe(expected.toString());
+    expect(result.toString()).toBe(expected.toString());
   });
 
   it("should return error when schema is nil or invalid", () => {
     // @ts-expect-error testing nil schema
     const resultNil = createSearchParameters({ max: 100 }, null);
     expect(resultNil).toBeInstanceOf(Error);
-    expect((resultNil as Error).message).toBe("must provide a valid zod schema");
+    expect((resultNil as Error).message).toBe("must provide a valid schema");
 
-    // @ts-expect-error testing invalid schema lacking safeParse
+    // @ts-expect-error testing invalid schema lacking decodeUnknownSync
     const resultInvalid = createSearchParameters({ max: 100 }, {});
     expect(resultInvalid).toBeInstanceOf(Error);
-    expect((resultInvalid as Error).message).toBe("must provide a valid zod schema");
+    expect((resultInvalid as Error).message).toBe("Validation failed");
   });
 });

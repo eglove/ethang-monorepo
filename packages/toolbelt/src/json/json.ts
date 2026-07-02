@@ -1,24 +1,22 @@
-import type { z, ZodObject } from "zod";
-
+import { Schema } from "effect";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
 
-export const parseJson = <Z extends ZodObject>(
+export const parseJson = <Z extends Schema.Schema.AnyNoContext>(
   text: string,
   validator: Z,
   reviver?: (this: unknown, key: string, value: unknown) => unknown
-): Error | z.output<Z> | z.ZodError<Z> => {
+): Error | Schema.Schema.Type<Z> => {
   const caught = attempt(JSON.parse, text, reviver);
 
   if (isError(caught)) {
     return caught;
   }
 
-  const unparsed = validator.safeParse(caught);
-
-  if (unparsed.success) {
-    return unparsed.data;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    return Schema.decodeUnknownSync(validator)(caught) as Schema.Schema.Type<Z>;
+  } catch {
+    return new Error("Validation failed");
   }
-
-  return unparsed.error;
 };

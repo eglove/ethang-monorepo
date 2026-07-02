@@ -1,13 +1,15 @@
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 
 type TimeDisplayProperties = {
   readonly date: string;
 };
 
 const formatDate = (date: string): string => {
-  return DateTime.fromISO(date).toLocaleString({
+  const dt = DateTime.unsafeMake(date);
+  const formatter = new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium"
   });
+  return formatter.format(DateTime.toDate(dt));
 };
 
 export const TimeDisplay = ({ date }: TimeDisplayProperties) => {

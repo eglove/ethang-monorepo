@@ -1,7 +1,8 @@
+import { Schema } from "effect";
+import { ParseError } from "effect/ParseResult";
 import { describe, expect, it } from "vitest";
-import { ZodError } from "zod";
 
-import { projectSchema } from "./project-schema.ts";
+import { Project } from "./project-schema.ts";
 
 describe("project-schema.ts validation", () => {
   it("should validate a valid project object with all fields", () => {
@@ -16,9 +17,10 @@ describe("project-schema.ts validation", () => {
       ],
       title: "Antigravity Project"
     };
-    const result = projectSchema.parse(payload);
+    const result = Schema.decodeUnknownSync(Project)(payload);
 
-    expect(result).toStrictEqual(payload);
+    // eslint-disable-next-line vitest/prefer-strict-equal
+    expect(result).toEqual(payload);
   });
 
   it("should validate a valid project object with optional fields as null or missing", () => {
@@ -29,9 +31,10 @@ describe("project-schema.ts validation", () => {
       techs: [],
       title: "Python App"
     };
-    const result = projectSchema.parse(payload);
+    const result = Schema.decodeUnknownSync(Project)(payload);
 
-    expect(result).toStrictEqual(payload);
+    // eslint-disable-next-line vitest/prefer-strict-equal
+    expect(result).toEqual(payload);
   });
 
   it("should throw for invalid types or missing required fields", () => {
@@ -42,7 +45,7 @@ describe("project-schema.ts validation", () => {
     };
 
     expect(() => {
-      return projectSchema.parse(payload);
-    }).toThrow(ZodError);
+      return Schema.decodeUnknownSync(Project)(payload);
+    }).toThrow(ParseError);
   });
 });

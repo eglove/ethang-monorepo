@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -7,38 +7,38 @@ import {
   buildPrefetchUrls
 } from "./calendar-nav.ts";
 
-const CHICAGO = "America/Chicago";
 const JUNE_26_2026 = "2024-06-15";
 
 describe(buildCrossViewDate, () => {
   it("returns currentMonthDt for month view", () => {
-    const currentMonthDt = DateTime.fromObject(
-      { day: 1, month: 6, year: 2024 },
-      { zone: CHICAGO }
+    const currentMonthDt = DateTime.toEpochMillis(
+      DateTime.unsafeMake({ day: 1, month: 6, year: 2024 })
     );
     const result = buildCrossViewDate("month", JUNE_26_2026, currentMonthDt);
 
-    expect(result.toISODate()).toBe("2024-06-01");
+    expect(result).toBe(currentMonthDt);
   });
 
   it("returns date-parsed DateTime for week view", () => {
-    const currentMonthDt = DateTime.fromObject(
-      { day: 1, month: 6, year: 2024 },
-      { zone: CHICAGO }
+    const currentMonthDt = DateTime.toEpochMillis(
+      DateTime.unsafeMake({ day: 1, month: 6, year: 2024 })
     );
     const result = buildCrossViewDate("week", JUNE_26_2026, currentMonthDt);
 
-    expect(result.toISODate()).toBe(JUNE_26_2026);
+    expect(DateTime.formatIsoDate(DateTime.unsafeMake(result))).toBe(
+      JUNE_26_2026
+    );
   });
 
   it("returns date-parsed DateTime for day view", () => {
-    const currentMonthDt = DateTime.fromObject(
-      { day: 1, month: 6, year: 2024 },
-      { zone: CHICAGO }
+    const currentMonthDt = DateTime.toEpochMillis(
+      DateTime.unsafeMake({ day: 1, month: 6, year: 2024 })
     );
     const result = buildCrossViewDate("day", JUNE_26_2026, currentMonthDt);
 
-    expect(result.toISODate()).toBe(JUNE_26_2026);
+    expect(DateTime.formatIsoDate(DateTime.unsafeMake(result))).toBe(
+      JUNE_26_2026
+    );
   });
 });
 

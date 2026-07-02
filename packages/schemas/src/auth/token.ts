@@ -1,25 +1,15 @@
-import type { JWTVerifyResult } from "jose";
+import { Schema } from "effect";
 
-import { z } from "zod";
+export type SignInResponse = Schema.Schema.Type<SignInResponseToken>;
 
-const trimKey = "trim";
-
-export const tokenSchema = z.object({
-  email: z.string()[trimKey](),
-  role: z.string()[trimKey](),
-  sub: z.string()[trimKey](),
-  username: z.string()[trimKey]()
-});
-
-export const signInResponseToken = z.object({
-  email: z.string(),
-  id: z.string(),
-  lastLoggedIn: z.string(),
-  role: z.string(),
-  sessionToken: z.string(),
-  updatedAt: z.string(),
-  username: z.string()
-});
-
-export type TokenSchema = z.infer<typeof tokenSchema>;
-export type VerifiedTokenSchema = JWTVerifyResult<TokenSchema>;
+export class SignInResponseToken extends Schema.Class<SignInResponseToken>(
+  "SignInResponseToken"
+)({
+  email: Schema.String,
+  id: Schema.String,
+  lastLoggedIn: Schema.String,
+  role: Schema.String,
+  sessionToken: Schema.String,
+  updatedAt: Schema.String,
+  username: Schema.String
+}) {}

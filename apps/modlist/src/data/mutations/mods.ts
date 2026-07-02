@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 
 import type { Database } from "../types.ts";
 
@@ -43,7 +43,7 @@ export const updateModificationMutation = async (
     .update(moduleTable)
     .set({
       title: parameters.title,
-      updatedAt: DateTime.now().toISO(),
+      updatedAt: DateTime.formatIso(DateTime.unsafeNow()),
       url: parameters.url
     })
     .where(eq(moduleTable.id, parameters.id))

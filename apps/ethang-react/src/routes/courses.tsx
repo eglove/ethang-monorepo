@@ -1,11 +1,12 @@
 import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { DateTime, Option } from "effect";
+import constant from "lodash/constant.js";
+import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import filter from "lodash/filter";
 import isNil from "lodash/isNil.js";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import map from "lodash/map";
-import { DateTime } from "luxon";
 
 import { rpcRequest } from "../clients/rpc-client.ts";
 import { LearningPath } from "../components/courses/learning-path.tsx";
@@ -59,9 +60,15 @@ const RouteComponent = () => {
       return b.updatedAt.localeCompare(a.updatedAt);
     })[0]?.updatedAt ?? "";
 
-  const dateString = DateTime.fromISO(latestUpdatedAt).toLocaleString(
-    DateTime.DATETIME_FULL
-  );
+  const dateString = Option.match(DateTime.make(latestUpdatedAt), {
+    onNone: constant(""),
+    onSome: (dt) => {
+      return DateTime.format(dt, {
+        dateStyle: "full",
+        timeStyle: "full"
+      });
+    }
+  });
 
   // Group courses by learning path, preserving backend sort order
   const learningPathsData = new Map<string, CourseData[]>();

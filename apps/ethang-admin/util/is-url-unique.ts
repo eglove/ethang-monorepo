@@ -1,8 +1,8 @@
 import type { UrlRule } from "sanity";
 
+import { DateTime } from "effect";
 import isNil from "lodash/isNil.js";
 import replace from "lodash/replace.js";
-import { DateTime } from "luxon";
 
 export const isUrlUnique = (
   rule: UrlRule,
@@ -20,7 +20,7 @@ export const isUrlUnique = (
       return true;
     }
 
-    const dateString = DateTime.now().toISODate();
+    const dateString = DateTime.formatIsoDate(DateTime.unsafeNow());
     const client = getClient({ apiVersion: dateString });
     const id = replace(document._id, /^drafts\./u, "");
 

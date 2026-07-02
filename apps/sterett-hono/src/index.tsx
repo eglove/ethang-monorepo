@@ -1,11 +1,11 @@
 import { lastModifiedMiddleware } from "@ethang/hono-middleware/src/last-modified.ts";
+import { DateTime } from "effect";
 import { Hono } from "hono";
 import { validator } from "hono/validator";
 import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
 import last from "lodash/last.js";
 import map from "lodash/map.js";
-import { DateTime } from "luxon";
 
 import type { NewsAndEvents } from "./sanity/get-news-and-events.ts";
 
@@ -51,13 +51,22 @@ app.get("/files", async (c) => {
 app.get(
   "/calendar",
   validator("query", (value) => {
-    const now = DateTime.now().setZone("America/Chicago");
+    const chicagoTime = DateTime.formatIsoDate(
+      DateTime.unsafeMakeZoned(DateTime.unsafeNow(), {
+        timeZone: "America/Chicago"
+      })
+    );
     const rawView = lastQuery(value["view"]) ?? "month";
+    const nowParts = DateTime.toPartsUtc(
+      DateTime.unsafeMakeZoned(DateTime.unsafeNow(), {
+        timeZone: "America/Chicago"
+      })
+    );
     return {
-      date: lastQuery(value["date"]) ?? now.toFormat("yyyy-MM-dd"),
-      month: Number(lastQuery(value["month"]) ?? now.month),
+      date: lastQuery(value["date"]) ?? chicagoTime,
+      month: Number(lastQuery(value["month"]) ?? nowParts.month),
       view: isCalendarView(rawView) ? rawView : "month",
-      year: Number(lastQuery(value["year"]) ?? now.year)
+      year: Number(lastQuery(value["year"]) ?? nowParts.year)
     };
   }),
   async (c) => {

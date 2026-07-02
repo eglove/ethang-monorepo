@@ -1,5 +1,5 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 import { v7 } from "uuid";
 
 export const generateId = () => {
@@ -10,14 +10,14 @@ export const modificationListTable = sqliteTable("modList", {
   createdAt: text("createdAt")
     .notNull()
     .$defaultFn(() => {
-      return DateTime.now().toISO();
+      return DateTime.formatIso(DateTime.unsafeNow());
     }),
   id: text("id").primaryKey().$defaultFn(generateId),
   name: text("name").notNull(),
   updatedAt: text("updatedAt")
     .notNull()
     .$defaultFn(() => {
-      return DateTime.now().toISO();
+      return DateTime.formatIso(DateTime.unsafeNow());
     })
 });
 
@@ -25,7 +25,7 @@ export const modificationTable = sqliteTable("mod", {
   createdAt: text("createdAt")
     .notNull()
     .$defaultFn(() => {
-      return DateTime.now().toISO();
+      return DateTime.formatIso(DateTime.unsafeNow());
     }),
   id: text("id").primaryKey().$defaultFn(generateId),
   modListId: text("modListId")
@@ -41,7 +41,7 @@ export const modificationTable = sqliteTable("mod", {
   updatedAt: text("updatedAt")
     .notNull()
     .$defaultFn(() => {
-      return DateTime.now().toISO();
+      return DateTime.formatIso(DateTime.unsafeNow());
     }),
   url: text("url").notNull()
 });

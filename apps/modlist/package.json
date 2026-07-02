@@ -5,13 +5,12 @@
   ],
   "dependencies": {
     "drizzle-orm": "^0.45.2",
-    "luxon": "^3.7.2",
+    "effect": "^3.21.4",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260630.1",
     "@ethang/eslint-config": "workspace:*",
-    "@types/luxon": "^3.7.2",
     "@types/node": "^26.0.1",
     "@vitest/coverage-v8": "^4.1.9",
     "browserslist-config-baseline": "^0.5.0",

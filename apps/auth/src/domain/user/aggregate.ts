@@ -1,11 +1,11 @@
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 
 import type { UserCommand } from "./commands.ts";
 import type { UserEvent } from "./events.ts";
 import type { UserState } from "./state.ts";
 
 const getTimestamp = () => {
-  return DateTime.now().toISO();
+  return DateTime.formatIso(DateTime.unsafeNow());
 };
 
 export const decide = (

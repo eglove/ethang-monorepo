@@ -7,6 +7,7 @@ import {
 } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
+import { DateTime } from "effect";
 import { XMLParser } from "fast-xml-parser";
 import filter from "lodash/filter.js";
 import find from "lodash/find.js";
@@ -17,7 +18,6 @@ import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import convertToString from "lodash/toString.js";
-import { DateTime } from "luxon";
 
 import { articlesTable, feedsTable } from "../db/schema.ts";
 import {
@@ -206,7 +206,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
           await Promise.all(insertPromises);
 
           const updateFields: Partial<typeof feedsTable.$inferInsert> = {
-            lastFetchedAt: DateTime.now().toISO()
+            lastFetchedAt: DateTime.formatIso(DateTime.unsafeNow())
           };
 
           if ("" !== parsedMeta.title) {

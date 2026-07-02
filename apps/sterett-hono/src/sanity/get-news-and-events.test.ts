@@ -1,3 +1,4 @@
+import { DateTime } from "effect";
 import map from "lodash/map.js";
 import split from "lodash/split.js";
 import { describe, expect, it, vi } from "vitest";
@@ -11,8 +12,6 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
   };
 });
 
-import { DateTime } from "luxon";
-
 import { sterettSanityClient } from "../clients/sanity-client.ts";
 import {
   eventRangeFormat,
@@ -21,7 +20,9 @@ import {
 } from "./get-news-and-events.ts";
 
 // Fixed "now" for all relative date tests: 2024-06-15 12:00:00 UTC
-const NOW = DateTime.fromISO("2024-06-15T12:00:00.000Z");
+const NOW_MS = DateTime.toEpochMillis(
+  DateTime.unsafeMake("2024-06-15T12:00:00.000Z")
+);
 
 describe(eventRangeFormat, () => {
   it("formats a same-day event with start datetime and end time only", () => {
@@ -65,119 +66,113 @@ describe(eventRangeFormat, () => {
   });
 });
 
+const makeIso = (epoch: number) => {
+  return DateTime.formatIso(DateTime.unsafeMake(epoch));
+};
+
 describe(getRelativeDate, () => {
   it('returns "Today" for the current moment', () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
-    expect(getRelativeDate(NOW.toString())).toBe("Today");
+    expect(getRelativeDate(makeIso(NOW_MS))).toBe("Today");
 
     vi.useRealTimers();
   });
 
   it('returns "Today" for a date within the same rounding boundary', () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
-    const almostTomorrow = NOW.plus({ hours: 11 });
-
-    expect(getRelativeDate(almostTomorrow.toString())).toBe("Today");
+    expect(getRelativeDate(makeIso(NOW_MS + 11 * 3_600_000))).toBe("Today");
 
     vi.useRealTimers();
   });
 
   it('returns "tomorrow" for 1 day in the future', () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
-    const tomorrow = NOW.plus({ hours: 24 });
-
-    expect(getRelativeDate(tomorrow.toString())).toBe("tomorrow");
+    expect(getRelativeDate(makeIso(NOW_MS + 24 * 3_600_000))).toBe("tomorrow");
 
     vi.useRealTimers();
   });
 
   it('returns "yesterday" for 1 day in the past', () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
-    const yesterday = NOW.minus({ hours: 24 });
-
-    expect(getRelativeDate(yesterday.toString())).toBe("yesterday");
+    expect(getRelativeDate(makeIso(NOW_MS - 24 * 3_600_000))).toBe("yesterday");
 
     vi.useRealTimers();
   });
 
   it("returns days for 2–6 days in the future", () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
-    const in3Days = NOW.plus({ hours: 24 * 3 });
-
-    expect(getRelativeDate(in3Days.toString())).toBe("in 3 days");
+    expect(getRelativeDate(makeIso(NOW_MS + 72 * 3_600_000))).toBe("in 3 days");
 
     vi.useRealTimers();
   });
 
   it("returns days for 2–6 days in the past", () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
-    const ago3Days = NOW.minus({ hours: 24 * 3 });
-
-    expect(getRelativeDate(ago3Days.toString())).toBe("3 days ago");
+    expect(getRelativeDate(makeIso(NOW_MS - 72 * 3_600_000))).toBe(
+      "3 days ago"
+    );
 
     vi.useRealTimers();
   });
 
   it("returns weeks for 7–29 days out", () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
-    const in1Week = NOW.plus({ hours: 24 * 7 });
-
-    expect(getRelativeDate(in1Week.toString())).toBe("next week");
-
-    const in2Weeks = NOW.plus({ hours: 24 * 14 });
-
-    expect(getRelativeDate(in2Weeks.toString())).toBe("in 2 weeks");
+    expect(getRelativeDate(makeIso(NOW_MS + 168 * 3_600_000))).toBe(
+      "next week"
+    );
+    expect(getRelativeDate(makeIso(NOW_MS + 336 * 3_600_000))).toBe(
+      "in 2 weeks"
+    );
 
     vi.useRealTimers();
   });
 
   it("returns weeks for 7–29 days ago", () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
-    const ago1Week = NOW.minus({ hours: 24 * 7 });
-
-    expect(getRelativeDate(ago1Week.toString())).toBe("last week");
+    expect(getRelativeDate(makeIso(NOW_MS - 168 * 3_600_000))).toBe(
+      "last week"
+    );
 
     vi.useRealTimers();
   });
 
   it("returns months for 30+ days out", () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
-    const in1Month = NOW.plus({ hours: 24 * 30 });
-
-    expect(getRelativeDate(in1Month.toString())).toBe("next month");
-
-    const in2Months = NOW.plus({ hours: 24 * 60 });
-
-    expect(getRelativeDate(in2Months.toString())).toBe("in 2 months");
+    expect(getRelativeDate(makeIso(NOW_MS + 720 * 3_600_000))).toBe(
+      "next month"
+    );
+    expect(getRelativeDate(makeIso(NOW_MS + 1440 * 3_600_000))).toBe(
+      "in 2 months"
+    );
 
     vi.useRealTimers();
   });
 
   it("returns months for 30+ days ago", () => {
     vi.useFakeTimers();
-    vi.setSystemTime(NOW.toMillis());
+    vi.setSystemTime(NOW_MS);
 
-    const ago1Month = NOW.minus({ hours: 24 * 30 });
-
-    expect(getRelativeDate(ago1Month.toString())).toBe("last month");
+    expect(getRelativeDate(makeIso(NOW_MS - 720 * 3_600_000))).toBe(
+      "last month"
+    );
 
     vi.useRealTimers();
   });

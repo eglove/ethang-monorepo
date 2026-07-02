@@ -1,9 +1,8 @@
 import { inArray } from "drizzle-orm";
-import { Effect } from "effect";
+import { DateTime, Effect } from "effect";
 import chunk from "lodash/chunk.js";
 import filter from "lodash/filter.js";
 import map from "lodash/map.js";
-import { DateTime } from "luxon";
 
 import type { Database } from "../../data/types.ts";
 import type { Curriculum } from "../../domain/curriculum/state.ts";
@@ -47,7 +46,7 @@ export const createCurriculumRepo = (database: Database) => {
           return new SaveError(String(cause));
         },
         try: async () => {
-          const now = DateTime.now().toISO();
+          const now = DateTime.formatIso(DateTime.unsafeNow());
           const databaseUrl = curriculum.url ?? null;
 
           const insertCurriculumStatement = database

@@ -2,9 +2,10 @@ import type { PortableTextBlock } from "@portabletext/types";
 
 import { toPlainText } from "@portabletext/react";
 import { createClient } from "@sanity/client";
+import { DateTime, Option } from "effect";
+import filter from "lodash/filter.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
-import { DateTime } from "luxon";
 import { generateIcsCalendar, type IcsEvent } from "ts-ics";
 
 type CalendarEventReturn = {
@@ -38,25 +39,43 @@ export default {
 
     const data = await client.fetch<CalendarEventReturn[]>(eventQuery);
 
-    const events = map(data, (item) => {
-      const startDate = DateTime.fromISO(item.startsAt, { zone });
-      const endDate = DateTime.fromISO(item.endsAt, { zone });
+    const events = filter(
+      map(data, (item) => {
+        const maybeStartDate = DateTime.makeZoned(item.startsAt, {
+          timeZone: zone
+        });
 
-      const event: IcsEvent = {
-        description: isNil(item.description)
-          ? ""
-          : sanitizeInput(toPlainText(item.description)),
-        stamp: { date: startDate.toJSDate(), type: "DATE-TIME" },
-        start: { date: startDate.toJSDate(), type: "DATE-TIME" },
-        summary: sanitizeInput(item.title),
-        uid: item._id,
-        ...(endDate.isValid && {
-          end: { date: endDate.toJSDate(), type: "DATE-TIME" }
-        })
-      };
+        if (Option.isNone(maybeStartDate)) {
+          return null;
+        }
 
-      return event;
-    });
+        const maybeEndDate = DateTime.makeZoned(item.endsAt, {
+          timeZone: zone
+        });
+
+        const startDate = maybeStartDate.value;
+        const event: IcsEvent = {
+          description: isNil(item.description)
+            ? ""
+            : sanitizeInput(toPlainText(item.description)),
+          stamp: { date: DateTime.toDateUtc(startDate), type: "DATE-TIME" },
+          start: { date: DateTime.toDateUtc(startDate), type: "DATE-TIME" },
+          summary: sanitizeInput(item.title),
+          uid: item._id,
+          ...(Option.isSome(maybeEndDate) && {
+            end: {
+              date: DateTime.toDateUtc(maybeEndDate.value),
+              type: "DATE-TIME"
+            }
+          })
+        };
+
+        return event;
+      }),
+      (event): event is IcsEvent => {
+        return !isNil(event);
+      }
+    );
 
     const calendar = generateIcsCalendar({
       events,

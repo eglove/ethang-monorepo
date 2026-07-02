@@ -1,7 +1,6 @@
+import { Schema } from "effect";
 import isError from "lodash/isError.js";
-import isNil from "lodash/isNil.js";
 import { describe, expect, it } from "vitest";
-import { z, ZodError } from "zod";
 
 import { parseFetchJson } from "../../src/fetch/json.ts";
 
@@ -11,11 +10,11 @@ describe("fetch json", () => {
   it("should parse request body correctly", async () => {
     const request = new Request(testUrl, {
       body: JSON.stringify({ json: "stuff" }),
-      method: "POST",
+      method: "POST"
     });
     const results = await parseFetchJson(
       request,
-      z.object({ json: z.string() }),
+      Schema.Struct({ json: Schema.String })
     );
 
     expect(isError(results)).toBe(false);
@@ -24,11 +23,11 @@ describe("fetch json", () => {
 
   it("should parse response body correctly", async () => {
     const response = Response.json({
-      json: "stuff",
+      json: "stuff"
     });
     const results = await parseFetchJson(
       response,
-      z.object({ json: z.string() }),
+      Schema.Struct({ json: Schema.String })
     );
 
     expect(isError(results)).toBe(false);
@@ -37,64 +36,45 @@ describe("fetch json", () => {
 });
 
 describe("error cases", () => {
-  it("should return ZodError when validation is incorrect", async () => {
+  it("should return Error when validation is incorrect", async () => {
     const request = new Request(testUrl, {
       body: JSON.stringify({ fail: 0 }),
-      method: "POST",
+      method: "POST"
     });
     const results = await parseFetchJson(
       request,
-      z.object({ fail: z.string() }),
+      Schema.Struct({ fail: Schema.String })
     );
 
     expect(isError(results)).toBe(true);
-    expect(results).toBeInstanceOf(ZodError);
-
-    if (results instanceof ZodError && !isNil(results.issues[0])) {
-      expect(results.issues[0].message).toStrictEqual(
-        "Invalid input: expected string, received number",
-      );
-    }
+    expect(results).toBeInstanceOf(Error);
   });
 
-  it("should return ZodError when validation is incorrect with array", async () => {
+  it("should return Error when validation is incorrect with array", async () => {
     const request = new Request(testUrl, {
       body: JSON.stringify({ fail: 0 }),
-      method: "POST",
+      method: "POST"
     });
     const results = await parseFetchJson(
       request,
-      // @ts-expect-error testing
-      z.array(z.object({ fail: z.string() })),
+      Schema.Array(Schema.Struct({ fail: Schema.String }))
     );
 
     expect(isError(results)).toBe(true);
-    expect(results).toBeInstanceOf(ZodError);
-
-    if (results instanceof ZodError && !isNil(results.issues[0])) {
-      expect(results.issues[0].message).toStrictEqual(
-        "Invalid input: expected array, received object",
-      );
-    }
+    expect(results).toBeInstanceOf(Error);
   });
 
   it("should return error with invalid JSON", async () => {
     const request = new Request(testUrl, {
       body: "",
-      method: "POST",
+      method: "POST"
     });
     const results = await parseFetchJson(
       request,
-      // @ts-expect-error testing
-      z.array(z.object({ fail: z.string() })),
+      Schema.Array(Schema.Struct({ fail: Schema.String }))
     );
 
     expect(isError(results)).toBe(true);
-
-    if (results instanceof ZodError && !isNil(results.issues[0])) {
-      expect(results.issues[0].message).toStrictEqual(
-        "Expected array, received object",
-      );
-    }
+    expect(results).toBeInstanceOf(Error);
   });
 });

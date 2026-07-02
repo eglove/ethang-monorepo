@@ -1,46 +1,15 @@
-import isString from "lodash/isString.js";
-import trim from "lodash/trim.js";
-import { z } from "zod";
+import { Schema } from "effect";
 
-const trimKey = "trim";
-const minKey = "min";
+import { emailSchema, passwordSchema } from "./schema-validators.ts";
 
-const passwordSchema = z
-  .string()
-  [minKey](8, "Password must be at least eight characters long")
-  [trimKey]();
-
-const emailSchema = z.preprocess((value) => {
-  return isString(value) ? trim(value) : value;
-}, z.email());
-
-export const userSchema = z.object({
-  createdAt: z.string()[trimKey](),
+export class UserSchema extends Schema.Class<UserSchema>("UserSchema")({
+  createdAt: Schema.String,
   email: emailSchema,
-  lastLoggedIn: z.string()[trimKey]().nullable(),
+  lastLoggedIn: Schema.NullOr(Schema.String),
   password: passwordSchema,
-  role: z.string()[trimKey]().nullable(),
-  updatedAt: z.string()[trimKey](),
-  username: z.string()[trimKey]()
-});
+  role: Schema.NullOr(Schema.String),
+  updatedAt: Schema.String,
+  username: Schema.String
+}) {}
 
-export const signUpSchema = z.object({
-  email: emailSchema,
-  password: passwordSchema,
-  username: z.string()[trimKey]().optional()
-});
-
-export const signInSchema = z.object({
-  email: emailSchema,
-  password: passwordSchema
-});
-
-export const verifySchema = z.object({
-  email: emailSchema,
-  password: passwordSchema
-});
-
-export type SignInSchema = z.infer<typeof signInSchema>;
-export type SignUpSchema = z.infer<typeof signUpSchema>;
-export type UserSchema = z.infer<typeof userSchema>;
-export type VerifySchema = z.infer<typeof verifySchema>;
+export const userSchema = UserSchema;

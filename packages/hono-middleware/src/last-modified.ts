@@ -1,18 +1,35 @@
 import type { MiddlewareHandler } from "hono";
 
+import { DateTime, Option } from "effect";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
-import { DateTime } from "luxon";
+
+const setLastModifiedHeader = (headers: Headers, content: string) => {
+  // Try strict ISO parsing first via Effect DateTime
+  const maybeIso = DateTime.make(content);
+  if (Option.isSome(maybeIso)) {
+    headers.set(
+      "Last-Modified",
+      DateTime.toDateUtc(maybeIso.value).toUTCString()
+    );
+    return;
+  }
+
+  // Fall back to Date.parse for RFC 2822 / RFC 850 / asctime
+  // eslint-disable-next-line unicorn/prefer-temporal
+  const epoch = Date.parse(content);
+  if (Number.isNaN(epoch)) {
+    return;
+  }
+  const parsedDate = DateTime.toDateUtc(DateTime.unsafeMake(epoch));
+  headers.set("Last-Modified", parsedDate.toUTCString());
+};
 
 export const lastModifiedMiddleware: MiddlewareHandler = async (
   context,
   next
 ) => {
   await next();
-  // c.res.clone() is safe here: clone() creates a new Response that shares the
-  // same underlying body stream. Calling .text() on the clone reads the clone's
-  // copy, leaving c.res.body intact. Hono's c.html() always produces a fully
-  // buffered body, so the clone is consumed synchronously in memory.
   if (
     !context.res.body ||
     !includes(context.res.headers.get("content-type") ?? "", "text/html")
@@ -30,20 +47,9 @@ export const lastModifiedMiddleware: MiddlewareHandler = async (
   if (isNil(content)) {
     return;
   }
-  const fromHTTP = DateTime.fromHTTP(content);
-  const fromIso = DateTime.fromISO(content);
-  if (!fromHTTP.isValid && !fromIso.isValid) {
-    return;
-  }
   const headers = new Headers(context.res.headers);
 
-  if (fromHTTP.isValid) {
-    headers.set("Last-Modified", fromHTTP.toHTTP());
-  }
-
-  if (fromIso.isValid) {
-    headers.set("Last-Modified", fromIso.toHTTP());
-  }
+  setLastModifiedHeader(headers, content);
 
   context.res = new Response(context.res.body, {
     headers,

@@ -1,7 +1,7 @@
+import { DateTime } from "effect";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
-import { DateTime } from "luxon";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -63,26 +63,37 @@ export const CalendarPage = async ({
       .at(-1) ?? (await getLatestCalendarEventUpdatedAt());
 
   const eventsByDate = buildEventsByDate(events);
-  const todayDt = DateTime.now().setZone(CHICAGO);
-  const today = todayDt.toISODate();
+  const today = DateTime.formatIsoDate(
+    DateTime.unsafeMakeZoned(DateTime.unsafeNow(), { timeZone: CHICAGO })
+  );
   if (isNil(today)) throw new Error("Could not determine current date");
 
   // Month view locals
   const weeks = buildCalendarWeeks(year, month);
-  const currentMonthDt = DateTime.fromObject(
-    { day: 1, month, year },
-    { zone: CHICAGO }
+  const currentMonthDt = DateTime.toEpochMillis(
+    DateTime.unsafeMake({ day: 1, month, year })
   );
-  const previousMonth = currentMonthDt.minus({ months: 1 }).month;
-  const previousYear = currentMonthDt.minus({ months: 1 }).year;
-  const nextMonth = currentMonthDt.plus({ months: 1 }).month;
-  const nextYear = currentMonthDt.plus({ months: 1 }).year;
-  const monthName = currentMonthDt.toLocaleString(
-    { month: "long" },
-    { locale: "en-US" }
+  const previousDate = DateTime.subtract(
+    DateTime.unsafeMake({ day: 1, month, year }),
+    { months: 1 }
   );
-  const todayYear = todayDt.year;
-  const todayMonth = todayDt.month;
+  const previousMonth = DateTime.toPartsUtc(previousDate).month;
+  const previousYear = DateTime.toPartsUtc(previousDate).year;
+  const nextDate = DateTime.add(DateTime.unsafeMake({ day: 1, month, year }), {
+    months: 1
+  });
+  const nextMonth = DateTime.toPartsUtc(nextDate).month;
+  const nextYear = DateTime.toPartsUtc(nextDate).year;
+  const monthName = DateTime.format(
+    DateTime.unsafeMakeZoned(DateTime.unsafeMake({ day: 1, month, year }), {
+      adjustForTimeZone: true,
+      timeZone: CHICAGO
+    }),
+    { month: "long", timeZone: CHICAGO }
+  );
+  const todayParts = DateTime.toPartsUtc(DateTime.unsafeMake(today));
+  const todayYear = todayParts.year;
+  const todayMonth = todayParts.month;
   const isCurrentMonth = year === todayYear && month === todayMonth;
 
   // Week view locals
@@ -93,12 +104,15 @@ export const CalendarPage = async ({
   const isToday = date === today;
 
   const crossViewDt = buildCrossViewDate(view, date, currentMonthDt);
-  const crossViewDate = crossViewDt.toISODate();
+  const crossViewDate = DateTime.formatIsoDate(
+    DateTime.unsafeMake(crossViewDt)
+  );
   if (isNil(crossViewDate))
     throw new Error("Could not determine cross-view date");
 
-  const crossViewYear = crossViewDt.year;
-  const crossViewMonth = crossViewDt.month;
+  const crossViewParts = DateTime.toPartsUtc(DateTime.unsafeMake(crossViewDt));
+  const crossViewYear = crossViewParts.year;
+  const crossViewMonth = crossViewParts.month;
 
   const navLinkClass =
     "inline-flex min-h-6 items-center rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors";

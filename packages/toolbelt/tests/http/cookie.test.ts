@@ -1,6 +1,6 @@
 import constant from "lodash/constant.js";
 import isError from "lodash/isError.js";
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -56,7 +56,7 @@ describe("get cookie", () => {
   it("should set cookie with options", () => {
     const cookieName = TEST_COOKIE;
     const cookieValue = "test-val";
-    const expires = DateTime.now();
+    const expires = DateTime.toDateUtc(DateTime.unsafeNow());
     const config = {
       Expires: expires,
       HttpOnly: true,
@@ -72,7 +72,7 @@ describe("get cookie", () => {
     });
 
     expect(mockResponse.headers.get(SET_COOKIE)).toBe(
-      `${cookieName}=${cookieValue}; Expires=${expires.toHTTP()}; HttpOnly; Path=${config.Path}`
+      `${cookieName}=${cookieValue}; Expires=${expires.toUTCString()}; HttpOnly; Path=${config.Path}`
     );
   });
 
@@ -82,9 +82,9 @@ describe("get cookie", () => {
 
     deleteCookieValue(cookieName, mockResponse);
 
-    const expiresDate = DateTime.fromMillis(0);
+    const expiresDate = DateTime.toDateUtc(DateTime.unsafeMake(0));
     expect(mockResponse.headers.get(SET_COOKIE)).toBe(
-      `${cookieName}=; Expires=${expiresDate.toHTTP()}; Max-Age=0`
+      `${cookieName}=; Expires=${expiresDate.toUTCString()}; Max-Age=0`
     );
   });
 
@@ -97,9 +97,9 @@ describe("get cookie", () => {
       SameSite: "Lax"
     });
 
-    const expiresDate = DateTime.fromMillis(0);
+    const expiresDate = DateTime.toDateUtc(DateTime.unsafeMake(0));
     expect(mockResponse.headers.get(SET_COOKIE)).toBe(
-      `${cookieName}=; Path=/; SameSite=Lax; Expires=${expiresDate.toHTTP()}; Max-Age=0`
+      `${cookieName}=; Path=/; SameSite=Lax; Expires=${expiresDate.toUTCString()}; Max-Age=0`
     );
   });
 

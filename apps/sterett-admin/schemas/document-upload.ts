@@ -1,5 +1,5 @@
 import { DocumentPdfIcon } from "@sanity/icons";
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 import { defineType, type Rule } from "sanity";
 
 export default defineType({
@@ -26,7 +26,7 @@ export default defineType({
     {
       initialValue: (): { date: Date } => {
         return {
-          date: DateTime.now().toJSDate()
+          date: DateTime.toDate(DateTime.unsafeNow())
         };
       },
       name: "date",

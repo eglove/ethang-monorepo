@@ -1,17 +1,14 @@
-import { z } from "zod";
+import { Schema } from "effect";
 
-const techSchema = z.object({
-  id: z.string(),
-  name: z.string()
-});
+import { TechSchema } from "./tech-schema.ts";
 
-export const projectSchema = z.object({
-  code: z.string(),
-  description: z.string(),
-  id: z.string(),
-  publicUrl: z.string().optional().nullable(),
-  techs: z.array(techSchema),
-  title: z.string()
-});
+export type ProjectType = Schema.Schema.Type<Project>;
 
-export type Project = z.output<typeof projectSchema>;
+export class Project extends Schema.Class<Project>("Project")({
+  code: Schema.String,
+  description: Schema.String,
+  id: Schema.String,
+  publicUrl: Schema.optional(Schema.NullOr(Schema.String)),
+  techs: Schema.Array(TechSchema),
+  title: Schema.String
+}) {}

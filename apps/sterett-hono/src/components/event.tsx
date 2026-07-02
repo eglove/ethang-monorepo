@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { DateTime } from "effect";
 
 import {
   type CalendarEventReturn,
@@ -12,11 +12,10 @@ type EventProperties = {
 };
 
 export const getIsHappeningNow = (start: string, end: string) => {
-  const now = DateTime.now().toMillis();
-  return (
-    DateTime.fromISO(start).toMillis() <= now &&
-    now <= DateTime.fromISO(end).toMillis()
-  );
+  const now = DateTime.toEpochMillis(DateTime.unsafeNow());
+  const startDt = DateTime.toEpochMillis(DateTime.unsafeMake(start));
+  const endDt = DateTime.toEpochMillis(DateTime.unsafeMake(end));
+  return startDt <= now && now <= endDt;
 };
 
 export const CalendarEvent = async ({ data }: EventProperties) => {

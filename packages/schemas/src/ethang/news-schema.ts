@@ -1,12 +1,12 @@
-import { z } from "zod";
+import { Schema } from "effect";
 
-export const newsSchema = z.object({
-  href: z.string(),
-  id: z.string(),
-  published: z.string(),
-  quote: z.string().optional().nullable(),
-  title: z.string(),
-  youtubeVideoId: z.string().optional().nullable()
-});
+export type NewsSchemaType = Schema.Schema.Type<NewsSchema>;
 
-export type NewsSchema = z.output<typeof newsSchema>;
+export class NewsSchema extends Schema.Class<NewsSchema>("NewsSchema")({
+  href: Schema.String,
+  id: Schema.String,
+  published: Schema.String,
+  quote: Schema.optional(Schema.NullOr(Schema.String)),
+  title: Schema.String,
+  youtubeVideoId: Schema.optional(Schema.NullOr(Schema.String))
+}) {}

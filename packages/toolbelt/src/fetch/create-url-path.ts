@@ -1,8 +1,5 @@
-import type { ZodError, ZodObject } from "zod";
-
-import get from "lodash/get.js";
+import { Schema } from "effect";
 import isEmpty from "lodash/isEmpty.js";
-import isFunction from "lodash/isFunction.js";
 import isNil from "lodash/isNil.js";
 import replace from "lodash/replace.js";
 
@@ -18,22 +15,17 @@ export type ParseUrlParameters<Url> =
 export const createUrlPath = <T extends string>(
   path: T,
   parameters: ParseUrlParameters<T>,
-  parametersSchema?: ZodObject
-): Error | string | ZodError => {
+  parametersSchema?: Schema.Schema.AnyNoContext
+): Error | string => {
   if (!isEmpty(parameters) && isNil(parametersSchema)) {
     return new Error("must provide path variables schema");
   }
 
   if (!isNil(parametersSchema)) {
-    const safeParse = get(parametersSchema, "safeParse");
-    if (!isFunction(safeParse)) {
-      return new Error("must provide a valid zod schema");
-    }
-
-    const result = parametersSchema.safeParse(parameters);
-
-    if (!result.success) {
-      return result.error;
+    try {
+      Schema.decodeUnknownSync(parametersSchema)(parameters);
+    } catch {
+      return new Error("Validation failed");
     }
   }
 

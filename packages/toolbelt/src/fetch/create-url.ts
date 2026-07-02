@@ -1,4 +1,4 @@
-import type { ZodError, ZodObject } from "zod";
+import type { Schema } from "effect";
 
 import attempt from "lodash/attempt.js";
 import get from "lodash/get.js";
@@ -17,9 +17,9 @@ export type SearchParametersRecord = Record<
 
 export type UrlConfig<Url extends string> = {
   pathVariables?: ParseUrlParameters<Url>;
-  pathVariablesSchema?: ZodObject;
+  pathVariablesSchema?: Schema.Schema.AnyNoContext;
   searchParams?: SearchParametersRecord;
-  searchParamsSchema?: ZodObject;
+  searchParamsSchema?: Schema.Schema.AnyNoContext;
   urlBase?: string | URL;
 };
 
@@ -34,7 +34,7 @@ const hasValidationError = <Url extends string>(
 const resolvePath = <Url extends string>(
   urlString: Url,
   config?: UrlConfig<Url>
-): Error | string | ZodError => {
+): Error | string => {
   if (!isNil(config) && !isNil(config.pathVariables)) {
     return createUrlPath(
       urlString,
@@ -49,7 +49,7 @@ const resolvePath = <Url extends string>(
 export const createUrl = <Url extends string>(
   urlString: Url,
   config?: UrlConfig<Url>
-): Error | URL | ZodError => {
+): Error | URL => {
   if (hasValidationError("pathVariables", "pathVariablesSchema", config)) {
     return new Error("must provide path variables schema");
   }

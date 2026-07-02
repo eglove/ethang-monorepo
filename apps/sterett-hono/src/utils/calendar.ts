@@ -1,4 +1,5 @@
 import { toHTML } from "@portabletext/to-html";
+import { DateTime, Option } from "effect";
 import constant from "lodash/constant.js";
 import filter from "lodash/filter.js";
 import isArray from "lodash/isArray.js";
@@ -6,27 +7,24 @@ import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import padStart from "lodash/padStart.js";
-import { DateTime } from "luxon";
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 
 const CHICAGO = "America/Chicago";
-const LOCALE = "en-US";
 
 export type CalendarCell = {
-  current: boolean;
-  day: number;
-  month: number;
-  year: number;
+  readonly current: boolean;
+  readonly day: number;
+  readonly month: number;
+  readonly year: number;
 };
 
 export const formatDateTime = (iso: string) => {
-  return DateTime.fromISO(iso)
-    .setZone(CHICAGO)
-    .toLocaleString(
-      { dateStyle: "medium", timeStyle: "short" },
-      { locale: LOCALE }
-    );
+  return DateTime.format(DateTime.unsafeMake(iso), {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: CHICAGO
+  });
 };
 
 export const toDateKey = (year: number, month: number, day: number) => {
@@ -42,48 +40,66 @@ const addToDateMap = (
   dateMap.get(key)?.push(event);
 };
 
+const extractChicagoDateKey = (iso: string): string => {
+  const maybeZoned = DateTime.makeZoned(iso, { timeZone: CHICAGO });
+  if (Option.isNone(maybeZoned)) {
+    return "";
+  }
+  return DateTime.formatIsoDate(maybeZoned.value);
+};
+
 export const buildEventsByDate = (events: CalendarEventRecord[]) => {
   const dateMap = new Map<string, CalendarEventRecord[]>();
 
-  for (const event of events) {
-    let cursor = DateTime.fromISO(event.startsAt)
-      .setZone(CHICAGO)
-      .startOf("day");
-    const end = DateTime.fromISO(event.endsAt).setZone(CHICAGO).startOf("day");
+  const entries = filter(
+    map(events, (event) => {
+      const startKey = extractChicagoDateKey(event.startsAt);
+      const endKey = extractChicagoDateKey(event.endsAt);
 
-    while (cursor.toMillis() <= end.toMillis()) {
-      const key = cursor.toISODate();
-      cursor = cursor.plus({ days: 1 });
-      if (!isNil(key)) addToDateMap(dateMap, key, event);
+      return { endKey, event, startKey };
+    }),
+    (entry) => {
+      return "" !== entry.startKey && "" !== entry.endKey;
+    }
+  );
+
+  for (const { endKey, event, startKey } of entries) {
+    let cursor = DateTime.unsafeMake(startKey);
+    const end = DateTime.unsafeMake(endKey);
+
+    while (DateTime.lessThanOrEqualTo(cursor, end)) {
+      addToDateMap(dateMap, DateTime.formatIsoDate(cursor), event);
+      cursor = DateTime.add(cursor, { days: 1 });
     }
   }
 
   return dateMap;
 };
 
-export const buildCalendarWeeks = (
-  year: number,
-  month: number
-): CalendarCell[][] => {
-  const firstDayDt = DateTime.fromObject(
-    { day: 1, month, year },
-    { zone: CHICAGO }
-  );
-  const firstDay = firstDayDt.weekday % 7; // 0=Sun, 1=Mon, …, 6=Sat
-  const { daysInMonth } = firstDayDt;
-  const previousMonthDt = firstDayDt.minus({ months: 1 });
-  const daysInPreviousMonth = previousMonthDt.daysInMonth;
+type MonthGridParameters = {
+  readonly daysInMonth: number;
+  readonly daysInPreviousMonth: number;
+  readonly firstDay: number;
+  readonly month: number;
+  readonly nextMonth: number;
+  readonly nextYear: number;
+  readonly previousMonth: number;
+  readonly previousYear: number;
+  readonly year: number;
+};
 
-  if (isNil(daysInMonth) || isNil(daysInPreviousMonth)) return [];
-
-  const nextMonthDt = firstDayDt.plus({ months: 1 });
-  const previousMonth = previousMonthDt.month;
-  const previousYear = previousMonthDt.year;
-  const nextMonth = nextMonthDt.month;
-  const nextYear = nextMonthDt.year;
-
+const buildMonthGrid = ({
+  daysInMonth,
+  daysInPreviousMonth,
+  firstDay,
+  month,
+  nextMonth,
+  nextYear,
+  previousMonth,
+  previousYear,
+  year
+}: MonthGridParameters): CalendarCell[][] => {
   const cells: CalendarCell[] = [];
-
   for (let index = firstDay - 1; 0 <= index; index -= 1) {
     cells.push({
       current: false,
@@ -101,12 +117,45 @@ export const buildCalendarWeeks = (
       cells.push({ current: false, day: d, month: nextMonth, year: nextYear });
     }
   }
-
   const weeks: CalendarCell[][] = [];
   for (let index = 0; index < cells.length; index += 7) {
     weeks.push(cells.slice(index, index + 7));
   }
   return weeks;
+};
+
+export const buildCalendarWeeks = (
+  year: number,
+  month: number
+): CalendarCell[][] => {
+  if (1 > month || 12 < month || !Number.isSafeInteger(month)) {
+    return [];
+  }
+
+  const firstOfMonth = DateTime.unsafeMake({ day: 1, month, year });
+  const firstDay = DateTime.toPartsUtc(firstOfMonth).weekDay % 7;
+  const daysInMonth = DateTime.toPartsUtc(
+    DateTime.endOf(firstOfMonth, "month")
+  ).day;
+  const lastOfPreviousMonth = DateTime.subtract(firstOfMonth, { days: 1 });
+  const daysInPreviousMonth = DateTime.toPartsUtc(lastOfPreviousMonth).day;
+
+  const previousMonth = 1 === month ? 12 : month - 1;
+  const previousYear = 1 === month ? year - 1 : year;
+  const nextMonth = 12 === month ? 1 : month + 1;
+  const nextYear = 12 === month ? year + 1 : year;
+
+  return buildMonthGrid({
+    daysInMonth,
+    daysInPreviousMonth,
+    firstDay,
+    month,
+    nextMonth,
+    nextYear,
+    previousMonth,
+    previousYear,
+    year
+  });
 };
 
 export const getViewDateRange = (
@@ -127,19 +176,15 @@ export const getViewDateRange = (
     };
   }
   // Month view: use the full visible grid including leading/trailing days from adjacent months.
-  // Grid start = Sunday on or before the 1st; grid end = Saturday on or after the last day.
-  const firstDayDt = DateTime.fromObject(
-    { day: 1, month, year },
-    { zone: CHICAGO }
-  );
-  const lastDayDt = firstDayDt.endOf("month").startOf("day");
-  const gridStartDt = firstDayDt.minus({ days: firstDayDt.weekday % 7 });
-  const gridEndExclusiveDt = lastDayDt.plus({
-    days: 7 - (lastDayDt.weekday % 7)
-  });
+  const firstOfMonth = DateTime.unsafeMake({ day: 1, month, year });
+  const firstWeekday = DateTime.toPartsUtc(firstOfMonth).weekDay % 7;
+  const gridStart = DateTime.subtract(firstOfMonth, { days: firstWeekday });
+  const lastOfMonth = DateTime.endOf(firstOfMonth, "month");
+  const lastWeekday = DateTime.toPartsUtc(lastOfMonth).weekDay % 7;
+  const gridEndExclusive = DateTime.add(lastOfMonth, { days: 7 - lastWeekday });
   return {
-    rangeEndExclusive: gridEndExclusiveDt.toISODate() ?? shiftDate(date, 42),
-    rangeStart: gridStartDt.toISODate() ?? date
+    rangeEndExclusive: DateTime.formatIsoDate(gridEndExclusive),
+    rangeStart: DateTime.formatIsoDate(gridStart)
   };
 };
 
@@ -152,31 +197,44 @@ export const renderDescriptionHtml = (
 };
 
 export const shiftDate = (dateString: string, days: number): string => {
-  const result = DateTime.fromISO(dateString, { zone: CHICAGO })
-    .plus({ days })
-    .toISODate();
-  return isNil(result) ? dateString : result;
+  return DateTime.formatIsoDate(
+    DateTime.add(DateTime.unsafeMake(dateString), { days })
+  );
 };
 
 export const getWeekDays = (dateString: string): string[] => {
-  const anchor = DateTime.fromISO(dateString, { zone: CHICAGO });
-  const sunday = anchor.minus({ days: anchor.weekday % 7 });
+  const maybeAnchor = DateTime.make(dateString);
+  if (Option.isNone(maybeAnchor)) return [];
+
+  const anchor = maybeAnchor.value;
+  const weekday = DateTime.toPartsUtc(anchor).weekDay % 7;
+  const sunday = DateTime.subtract(anchor, { days: weekday });
   return Array.from({ length: 7 }, (_, index) => {
-    const date = sunday.plus({ days: index }).toISODate();
-    return isNil(date) ? "" : date;
+    return DateTime.formatIsoDate(DateTime.add(sunday, { days: index }));
   });
 };
 
 export const formatTimeOnly = (iso: string): string => {
-  return DateTime.fromISO(iso)
-    .setZone(CHICAGO)
-    .toLocaleString({ hour: "numeric", minute: "2-digit" }, { locale: LOCALE });
+  return DateTime.format(DateTime.unsafeMake(iso), {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: CHICAGO
+  });
 };
 
 export const formatDayHeading = (dateString: string): string => {
-  return DateTime.fromISO(dateString, { zone: CHICAGO }).toLocaleString(
-    { day: "numeric", month: "long", weekday: "long", year: "numeric" },
-    { locale: LOCALE }
+  return DateTime.format(
+    DateTime.unsafeMakeZoned(dateString, {
+      adjustForTimeZone: true,
+      timeZone: CHICAGO
+    }),
+    {
+      day: "numeric",
+      month: "long",
+      timeZone: CHICAGO,
+      weekday: "long",
+      year: "numeric"
+    }
   );
 };
 
@@ -186,18 +244,26 @@ export const formatWeekHeading = (dateString: string): string => {
   if (isNil(firstDay) || isNil(lastDay) || "" === firstDay || "" === lastDay) {
     return "";
   }
-  const startDt = DateTime.fromISO(firstDay, { zone: CHICAGO });
-  const endDt = DateTime.fromISO(lastDay, { zone: CHICAGO });
-  if (!startDt.isValid || !endDt.isValid) return "";
+  const startDate = DateTime.unsafeMakeZoned(firstDay, {
+    adjustForTimeZone: true,
+    timeZone: CHICAGO
+  });
+  const endDate = DateTime.unsafeMakeZoned(lastDay, {
+    adjustForTimeZone: true,
+    timeZone: CHICAGO
+  });
 
-  const start = startDt.toLocaleString(
-    { day: "numeric", month: "short" },
-    { locale: LOCALE }
-  );
-  const end = endDt.toLocaleString(
-    { day: "numeric", month: "short", year: "numeric" },
-    { locale: LOCALE }
-  );
+  const start = DateTime.format(startDate, {
+    day: "numeric",
+    month: "short",
+    timeZone: CHICAGO
+  });
+  const end = DateTime.format(endDate, {
+    day: "numeric",
+    month: "short",
+    timeZone: CHICAGO,
+    year: "numeric"
+  });
   return `${start} – ${end}`;
 };
 

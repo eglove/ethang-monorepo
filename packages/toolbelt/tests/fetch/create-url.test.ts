@@ -1,6 +1,6 @@
 import isError from "lodash/isError.js";
 import { describe, expect, it } from "vitest";
-import { z, ZodError } from "zod";
+import { Schema } from "effect";
 
 import { createUrl } from "../../src/fetch/create-url.ts";
 import { vi } from "vitest";
@@ -24,14 +24,14 @@ describe("url builder", () => {
   it("build the url", () => {
     const url = createUrl("todos/:id", {
       pathVariables: { id: "2" },
-      pathVariablesSchema: z.object({ id: z.string() }),
+      pathVariablesSchema: Schema.Struct({ id: Schema.String }),
       searchParams: {
         filter: "done",
         orderBy: "due",
       },
-      searchParamsSchema: z.object({
-        filter: z.string(),
-        orderBy: z.string(),
+      searchParamsSchema: Schema.Struct({
+        filter: Schema.String,
+        orderBy: Schema.String,
       }),
       urlBase: typicode,
     });
@@ -56,8 +56,8 @@ describe("url builder", () => {
   it("should build url with an array of search params", () => {
     const url = createUrl("todos/:id", {
       searchParams: { filter: ["done", "recent", "expired"] },
-      searchParamsSchema: z.object({
-        filter: z.string().or(z.array(z.string())),
+      searchParamsSchema: Schema.Struct({
+        filter: Schema.Union(Schema.String, Schema.Array(Schema.String)),
       }),
       urlBase: typicode,
     });
@@ -78,14 +78,14 @@ describe("url builder", () => {
   it("should fail with bad urls", () => {
     const badUrl = createUrl("bad-url", {
       pathVariables: { id: "invalid" },
-      pathVariablesSchema: z.object({ id: z.number() }),
+      pathVariablesSchema: Schema.Struct({ id: Schema.Number }),
       searchParams: {
         filter: "done",
         orderBy: "due",
       },
-      searchParamsSchema: z.object({
-        filter: z.string(),
-        orderBy: z.string(),
+      searchParamsSchema: Schema.Struct({
+        filter: Schema.String,
+        orderBy: Schema.String,
       }),
       urlBase: typicode,
     });
@@ -124,12 +124,12 @@ describe("url builder", () => {
   it("should return error for incorrect search params schema", () => {
     const url = createUrl("todos", {
       searchParams: { id: 1 },
-      searchParamsSchema: z.object({ name: z.string() }),
+      searchParamsSchema: Schema.Struct({ name: Schema.String }),
       urlBase: "https://example.com",
     });
 
     expect(isError(url)).toBe(true);
-    expect(url).toBeInstanceOf(ZodError);
+    expect(url).toBeInstanceOf(Error);
   });
 
   it("should return error is search params are provided but there is no schema", () => {
@@ -149,9 +149,9 @@ describe("url builder", () => {
   it("should allow optional path variables", () => {
     const url = createUrl("user/:userId/dashboard/(:dashboardId)", {
       pathVariables: { userId: "3" },
-      pathVariablesSchema: z.object({
-        dashboardId: z.string().optional(),
-        userId: z.string(),
+      pathVariablesSchema: Schema.Struct({
+        dashboardId: Schema.optional(Schema.String),
+        userId: Schema.String,
       }),
       urlBase: "https://example.com",
     });
@@ -167,18 +167,18 @@ describe("url builder", () => {
   it("should return error from createSearchParameters", () => {
     const url = createUrl("todos", {
       searchParams: { filter: "done" },
-      searchParamsSchema: z.object({
-        filter: z.number(),
+      searchParamsSchema: Schema.Struct({
+        filter: Schema.Number,
       }),
       urlBase: typicode,
     });
 
     expect(isError(url)).toBe(true);
-    expect(url).toBeInstanceOf(ZodError);
+    expect(url).toBeInstanceOf(Error);
   });
 
   describe("resolvePath and schema validation behavior", () => {
-    it("should return an Error when pathVariablesSchema is not a valid Zod schema", () => {
+    it("should return an Error when pathVariablesSchema is not a valid schema", () => {
       const url = createUrl("todos/:id", {
         pathVariables: { id: "2" },
         // @ts-expect-error for testing
@@ -189,7 +189,7 @@ describe("url builder", () => {
       expect(isError(url)).toBe(true);
     });
 
-    it("should return an Error when searchParamsSchema is not a valid Zod schema", () => {
+    it("should return an Error when searchParamsSchema is not a valid schema", () => {
       const url = createUrl("todos", {
         searchParams: { id: 1 },
         // @ts-expect-error for testing
@@ -203,7 +203,7 @@ describe("url builder", () => {
     it("should not append search parameters if createSearchParameters returns nil", () => {
       const url = createUrl("todos", {
         searchParams: { mockNil: true } as any,
-        searchParamsSchema: z.object({ mockNil: z.boolean().optional() }),
+        searchParamsSchema: Schema.Struct({ mockNil: Schema.optional(Schema.Boolean) }),
         urlBase: typicode,
       });
 

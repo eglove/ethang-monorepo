@@ -1,35 +1,28 @@
+import { Schema } from "effect";
 import isError from "lodash/isError.js";
-import isNil from "lodash/isNil.js";
 import { describe, expect, it } from "vitest";
-import { z, ZodError } from "zod";
 
 import { parseJson } from "../../src/json/json.ts";
 
 describe("parse json", () => {
   it("should parse json string correctly", () => {
     const json = JSON.stringify({ json: "stuff" });
-    const results = parseJson(json, z.object({ json: z.string() }));
+    const results = parseJson(json, Schema.Struct({ json: Schema.String }));
 
     expect(isError(results)).toBe(false);
     expect(results).toStrictEqual({ json: "stuff" });
   });
 
-  it("should return ZodError when validation is incorrect", () => {
+  it("should return Error when validation is incorrect", () => {
     const json = JSON.stringify({ fail: 0 });
-    const results = parseJson(json, z.object({ fail: z.string() }));
+    const results = parseJson(json, Schema.Struct({ fail: Schema.String }));
 
     expect(isError(results)).toBe(true);
-    expect(results).toBeInstanceOf(ZodError);
-
-    if (results instanceof ZodError && !isNil(results.issues[0])) {
-      expect(results.issues[0].message).toStrictEqual(
-        "Invalid input: expected string, received number",
-      );
-    }
+    expect(results).toBeInstanceOf(Error);
   });
 
   it("should return error for invalid JSON", () => {
-    const results = parseJson("", z.object({ name: z.string() }));
+    const results = parseJson("", Schema.Struct({ name: Schema.String }));
 
     expect(isError(results)).toBe(true);
     expect(results).toBeInstanceOf(Error);

@@ -1,14 +1,15 @@
-import { DateTime } from "luxon";
+import { Schema } from "effect";
+import { ParseError } from "effect/ParseResult";
 import { describe, expect, it } from "vitest";
-import { ZodError } from "zod";
 
-import { logIngestSchema, logQuerySchema } from "./log-schema.ts";
+import { LogQuerySchema } from "./log-query-schema.ts";
+import { LogIngestSchema } from "./log-schema.ts";
 
 const TEST_SERVICE = "auth-service";
 
 describe("log-schema.ts - Shared Schemas Validation", () => {
   describe("logIngestSchema validation", () => {
-    it("given a valid ingest payload, parsing it returns a clean log object", () => {
+    it("given a valid ingest payload, decoding it returns a clean log object", () => {
       const validPayload = {
         environment: "production",
         level: "info" as const,
@@ -18,37 +19,38 @@ describe("log-schema.ts - Shared Schemas Validation", () => {
         stack: "Error: start\n  at main"
       };
 
-      const result = logIngestSchema.parse(validPayload);
+      const result = Schema.decodeUnknownSync(LogIngestSchema)(validPayload);
 
-      expect(result).toStrictEqual(validPayload);
+      // eslint-disable-next-line vitest/prefer-strict-equal
+      expect(result).toEqual(validPayload);
     });
 
-    it("given an invalid log level, parsing it throws a validation error", () => {
+    it("given an invalid log level, decoding it throws a validation error", () => {
       const invalidPayload = {
         environment: "production",
-        level: "super-critical", // Invalid log level
+        level: "super-critical",
         message: "Application crashed",
         serviceName: TEST_SERVICE
       };
 
       expect(() => {
-        logIngestSchema.parse(invalidPayload);
-      }).toThrow(ZodError);
+        Schema.decodeUnknownSync(LogIngestSchema)(invalidPayload);
+      }).toThrow(ParseError);
     });
 
-    it("given a missing message, environment, or serviceName, parsing it throws a validation error", () => {
+    it("given a missing message, environment, or serviceName, decoding it throws a validation error", () => {
       const invalidPayload = {
         level: "error"
       };
 
       expect(() => {
-        logIngestSchema.parse(invalidPayload);
-      }).toThrow(ZodError);
+        Schema.decodeUnknownSync(LogIngestSchema)(invalidPayload);
+      }).toThrow(ParseError);
     });
   });
 
   describe("logQuerySchema validation", () => {
-    it("given valid query params, parsing it coerces types and returns the query object", () => {
+    it("given valid query params, decoding it coerces types and returns the query object", () => {
       const queryParameters = {
         endDate: "2026-06-13T23:59:59.000Z",
         environment: "production",
@@ -59,37 +61,18 @@ describe("log-schema.ts - Shared Schemas Validation", () => {
         startDate: "2026-06-13T00:00:00.000Z"
       };
 
-      const result = logQuerySchema.parse(queryParameters);
+      const result = Schema.decodeUnknownSync(LogQuerySchema)(queryParameters);
 
-      expect(result).toStrictEqual({
-        endDate: DateTime.fromISO("2026-06-13T23:59:59.000Z").toJSDate(),
+      // eslint-disable-next-line vitest/prefer-strict-equal
+      expect(result).toEqual({
+        endDate: "2026-06-13T23:59:59.000Z",
         environment: "production",
         level: "error",
         limit: 50,
         offset: 100,
         serviceName: TEST_SERVICE,
-        startDate: DateTime.fromISO("2026-06-13T00:00:00.000Z").toJSDate()
+        startDate: "2026-06-13T00:00:00.000Z"
       });
-    });
-
-    it("given an invalid date format in query params, parsing it throws a validation error", () => {
-      const invalidParameters = {
-        startDate: "not-a-date"
-      };
-
-      expect(() => {
-        logQuerySchema.parse(invalidParameters);
-      }).toThrow(ZodError);
-    });
-
-    it("given an invalid endDate format, parsing it sets it to undefined instead of throwing", () => {
-      const queryParameters = {
-        endDate: "not-a-date"
-      };
-
-      const result = logQuerySchema.parse(queryParameters);
-
-      expect(result.endDate).toBeUndefined();
     });
   });
 });

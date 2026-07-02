@@ -1,12 +1,12 @@
-import {
-  logIngestSchema,
-  type LogQueryInput,
-  logQuerySchema
-} from "@ethang/schemas/logger/log-schema.ts";
+import { LogQuerySchema } from "@ethang/schemas/logger/log-query-schema.ts";
+import { LogIngestSchema } from "@ethang/schemas/logger/log-schema.ts";
 import { and, eq, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
+import { DateTime, Option, Schema } from "effect";
 import { Hono } from "hono";
+import attempt from "lodash/attempt.js";
 import includes from "lodash/includes.js";
+import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import split from "lodash/split.js";
@@ -44,7 +44,7 @@ const getSecretValue = async (secret: unknown): Promise<string> => {
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
 const isWithinRateLimit = (ip: string): boolean => {
-  const now = Date.now();
+  const now = DateTime.toEpochMillis(DateTime.unsafeNow());
   const limit = rateLimitMap.get(ip);
   if (!limit || now > limit.resetAt) {
     rateLimitMap.set(ip, { count: 1, resetAt: now + 60_000 });
@@ -128,15 +128,12 @@ app.post("/log", async (c) => {
     return c.json({ error: "Invalid JSON" }, 400);
   }
 
-  const parseResult = logIngestSchema.safeParse(body);
-  if (!parseResult.success) {
-    return c.json(
-      { details: parseResult.error.message, error: "Bad Request" },
-      400
-    );
+  const parseResult = Schema.decodeUnknownOption(LogIngestSchema)(body);
+  if (Option.isNone(parseResult)) {
+    return c.json({ details: String(parseResult), error: "Bad Request" }, 400);
   }
 
-  const validatedData = parseResult.data;
+  const validatedData = parseResult.value;
   const database = getDatabase(c.env);
 
   try {
@@ -163,11 +160,11 @@ app.post("/log", async (c) => {
   return c.json({ success: true }, 202, headers);
 });
 
-const buildConditions = (filters: LogQueryInput) => {
+const buildConditions = (filters: LogQuerySchema) => {
   const conditions = [];
 
   if (!isNil(filters.level)) {
-    conditions.push(eq(logs.level, filters.level));
+    conditions.push(eq(logs.level, filters.level as string));
   }
   if (!isNil(filters.serviceName)) {
     conditions.push(eq(logs.serviceName, filters.serviceName));
@@ -176,10 +173,10 @@ const buildConditions = (filters: LogQueryInput) => {
     conditions.push(eq(logs.environment, filters.environment));
   }
   if (!isNil(filters.startDate)) {
-    conditions.push(gte(logs.timestamp, filters.startDate.toString()));
+    conditions.push(gte(logs.timestamp, filters.startDate));
   }
   if (!isNil(filters.endDate)) {
-    conditions.push(lte(logs.timestamp, filters.endDate.toString()));
+    conditions.push(lte(logs.timestamp, filters.endDate));
   }
 
   return conditions;
@@ -202,15 +199,17 @@ app.get("/logs", async (c) => {
   }
 
   const queryParameters = c.req.query();
-  const parseResult = logQuerySchema.safeParse(queryParameters);
-  if (!parseResult.success) {
+  const filters = attempt(() => {
+    return Schema.decodeSync(LogQuerySchema)(queryParameters);
+  });
+
+  if (isError(filters)) {
     return c.json(
-      { details: parseResult.error.message, error: "Bad Request" },
+      { details: "Invalid query parameters", error: "Bad Request" },
       400
     );
   }
 
-  const filters = parseResult.data;
   const database = getDatabase(c.env);
   const conditions = buildConditions(filters);
 
@@ -219,7 +218,8 @@ app.get("/logs", async (c) => {
     query = query.where(and(...conditions));
   }
 
-  const limit = Math.min(filters.limit ?? 50, 100);
+  const limitNumber = filters.limit ?? 50;
+  const limit = Math.min(limitNumber, 100);
   const offset = filters.offset ?? 0;
 
   try {
