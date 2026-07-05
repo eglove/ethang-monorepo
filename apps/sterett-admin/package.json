@@ -6,10 +6,10 @@
   ],
   "dependencies": {
     "@sanity/cli": "^7.5.0",
-    "@sanity/code-input": "^7.2.2",
-    "@sanity/dashboard": "^6.0.5",
-    "@sanity/icons": "^4.1.0",
-    "@sanity/orderable-document-list": "^2.0.5",
+    "@sanity/code-input": "^7.2.5",
+    "@sanity/dashboard": "^6.0.7",
+    "@sanity/icons": "^5.0.0",
+    "@sanity/orderable-document-list": "^2.0.8",
     "@sanity/vision": "^6.3.0",
     "@types/react": "19.2.17",
     "effect": "^3.21.4",
@@ -22,7 +22,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.25.1",
+    "@ethang/eslint-config": "^25.25.2",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",

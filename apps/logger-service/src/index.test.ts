@@ -284,7 +284,9 @@ describe("apps/logger-service - POST /log Ingestion", () => {
     );
 
     expect(response.status).toBe(202);
-    expect(mockD1.prepare).toHaveBeenCalledWith(expect.any(String));
+    expect(mockD1.prepare).toHaveBeenCalledWith(
+      'insert into "logs" ("environment", "id", "level", "message", "metadata", "serviceName", "stack", "timestamp") values (?, ?, ?, ?, null, ?, null, ?)'
+    );
   });
 
   it("returns 202 Accepted and inserts into D1 when requesting POST /log using a server write key without Origin header", async () => {
@@ -310,7 +312,9 @@ describe("apps/logger-service - POST /log Ingestion", () => {
     );
 
     expect(response.status).toBe(202);
-    expect(mockD1.prepare).toHaveBeenCalledWith(expect.any(String));
+    expect(mockD1.prepare).toHaveBeenCalledWith(
+      'insert into "logs" ("environment", "id", "level", "message", "metadata", "serviceName", "stack", "timestamp") values (?, ?, ?, ?, null, ?, null, ?)'
+    );
   });
 
   it("returns 400 Bad Request when requesting POST /log with an invalid body", async () => {
