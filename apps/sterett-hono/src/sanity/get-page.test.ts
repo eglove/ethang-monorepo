@@ -50,8 +50,29 @@ describe(getPage, () => {
 
     await getPage("about");
 
-    expect(sterettSanityClient.fetch).toHaveBeenCalledWith(expect.any(String), {
-      slug: "about"
-    });
+    expect(sterettSanityClient.fetch).toHaveBeenCalledWith(
+      `*[_type == "page" && slug.current == $slug]{
+    _id,
+    _updatedAt,
+    title,
+    content[] {
+      ...,
+      asset-> {
+        _id,
+        url,
+        hotspot,
+        crop,
+        metadata {
+          lqip,
+          dimensions {
+            height,
+            width,
+          }
+        }
+      }
+    }
+  }`,
+      { slug: "about" }
+    );
   });
 });

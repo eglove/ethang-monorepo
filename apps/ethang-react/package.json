@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.43.0",
-    "@ethang/eslint-config": "^25.25.1",
+    "@ethang/eslint-config": "^25.25.2",
     "@tanstack/router-plugin": "^1.168.19",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

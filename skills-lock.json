@@ -71,7 +71,7 @@
       "source": "github/awesome-copilot",
       "sourceType": "github",
       "skillPath": ".github/skills/agentic-workflows/SKILL.md",
-      "computedHash": "028722e2e895a0e371d8d935fc985b2f78ea359fa07f47bfbfddfd0dc62aa6b2"
+      "computedHash": "3052f67211882591ee05b3ecf4528d82b6b0712410bd4cf9b130babe86293717"
     },
     "agents-sdk": {
       "source": "cloudflare/skills",
@@ -504,6 +504,12 @@
       "sourceType": "github",
       "skillPath": "skills/copilot-instructions-blueprint-generator/SKILL.md",
       "computedHash": "45fd25e507349b05f80a0cafc159109071ed6c24ac5f014b9c749fd6846bd62b"
+    },
+    "copilot-pr-autopilot": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/copilot-pr-autopilot/SKILL.md",
+      "computedHash": "82616e27cbe437bc7edf4c7a6b9a908b158b47a11ea48555d3b90c6978a854be"
     },
     "copilot-sdk": {
       "source": "github/awesome-copilot",
@@ -1549,6 +1555,18 @@
       "skillPath": "skills/performance-review-writer/SKILL.md",
       "computedHash": "41aa964d32bff75567743e07f9588fac0eef56fc8dfdb1ddd9c5c5c81971eaf1"
     },
+    "pester-migration": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/pester-migration/SKILL.md",
+      "computedHash": "534bce3e6e30e730f182ce8f810b36e6c5d1513d1ef5897db0ae2c56e22ad0a6"
+    },
+    "pester-should-migration": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/pester-should-migration/SKILL.md",
+      "computedHash": "a2426cf86b84d22436087d86f11e45fa328d56150c00563e6ad4c25e90ea4371"
+    },
     "phoenix-cli": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
@@ -2069,7 +2087,7 @@
       "source": "harshanandak/forge",
       "sourceType": "github",
       "skillPath": "skills/sonarcloud-analysis/SKILL.md",
-      "computedHash": "733b4405541f3490419ddbee50aa9fed24dda69078561e09a378faba892f9697"
+      "computedHash": "8ccfb24a7e6f756f2042fbf449f5f0c5de6ad486188010fa5595ec8e21e2023a"
     },
     "sponsor-finder": {
       "source": "github/awesome-copilot",
