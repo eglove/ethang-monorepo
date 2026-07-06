@@ -18,6 +18,7 @@ type RpcBinding = {
   learningPath: (parameters: Record<string, unknown>) => Promise<unknown>;
   learningPaths: (parameters: Record<string, unknown>) => Promise<unknown>;
   markArticleRead: (parameters: Record<string, unknown>) => Promise<unknown>;
+  removeSubscription: (parameters: Record<string, unknown>) => Promise<unknown>;
   subscription: (parameters: Record<string, unknown>) => Promise<unknown>;
   subscriptions: (parameters: Record<string, unknown>) => Promise<unknown>;
 };
@@ -58,6 +59,7 @@ const rssDispatchMap = buildDispatchMap([
   "allArticles",
   "feedArticles",
   "markArticleRead",
+  "removeSubscription",
   "subscription",
   "subscriptions"
 ]);

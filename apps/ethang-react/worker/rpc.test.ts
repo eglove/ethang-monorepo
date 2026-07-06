@@ -8,7 +8,8 @@ const mockBinding = {
   allArticles: vi
     .fn()
     .mockResolvedValue({ edges: [], pageInfo: { hasNextPage: false } }),
-  courses: vi.fn().mockResolvedValue([{ id: "c1", name: "Course 1" }])
+  courses: vi.fn().mockResolvedValue([{ id: "c1", name: "Course 1" }]),
+  removeSubscription: vi.fn().mockResolvedValue(undefined)
 };
 
 const mockEnvironment: Environment = {
@@ -37,6 +38,22 @@ describe("rpcServiceDispatch", () => {
     });
 
     expect(mockBinding.allArticles).toHaveBeenCalledWith({ first: 10 });
+  });
+
+  it("dispatches removeSubscription to ethang_rss service", async () => {
+    const result = await rpcServiceDispatch(
+      // @ts-expect-error for test
+      mockEnvironment,
+      "ethang_rss",
+      "removeSubscription",
+      { feedId: "feed-1", sessionToken: "token" }
+    );
+
+    expect(mockBinding.removeSubscription).toHaveBeenCalledWith({
+      feedId: "feed-1",
+      sessionToken: "token"
+    });
+    expect(result).toBeUndefined();
   });
 
   it("throws 'Invalid service' when service is not recognized", async () => {

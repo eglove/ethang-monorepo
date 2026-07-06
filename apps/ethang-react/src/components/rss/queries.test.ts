@@ -4,6 +4,7 @@ import { rpcRequest } from "../../clients/rpc-client.ts";
 import {
   allArticlesOptions,
   feedArticlesOptions,
+  removeSubscriptionMutationFunction,
   subscriptionsOptions
 } from "./queries.ts";
 
@@ -166,6 +167,24 @@ describe("RSS Queries Options", () => {
         after: cursorXyz,
         isRead: false
       });
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  describe("removeSubscriptionMutationFunction", () => {
+    it("calls rpcRequest with the removeSubscription method and feedId", async () => {
+      const mockResult = { success: true };
+      vi.mocked(rpcRequest).mockResolvedValue(mockResult);
+
+      const result = await removeSubscriptionMutationFunction({
+        feedId: "feed-1"
+      });
+
+      expect(rpcRequest).toHaveBeenCalledWith(
+        "ethang_rss",
+        "removeSubscription",
+        { feedId: "feed-1" }
+      );
       expect(result).toEqual(mockResult);
     });
   });

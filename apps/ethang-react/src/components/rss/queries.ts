@@ -5,11 +5,33 @@ import { rpcRequest } from "../../clients/rpc-client.ts";
 
 const RSS_SERVICE = "ethang_rss";
 
+type ArticleFeed = {
+  iconUrl: null | string;
+  id: string;
+  title: string;
+};
+
+type ArticleNode = {
+  feed: ArticleFeed;
+  id: string;
+  isRead: boolean;
+  link: string;
+  publishedAt: null | string;
+  title: string;
+};
+
+type SubscriptionNode = {
+  iconUrl: null | string;
+  id: string;
+  title: string;
+  website: null | string;
+};
+
 export const subscriptionsOptions = () => {
   return infiniteQueryOptions({
     queryFn: async ({ pageParam }) => {
       return rpcRequest<{
-        edges: { cursor: string; node: { id: string; title: string } }[];
+        edges: { cursor: string; node: SubscriptionNode }[];
         pageInfo: { endCursor: null | string; hasNextPage: boolean };
       }>(RSS_SERVICE, "subscriptions", {
         after: pageParam,
@@ -30,17 +52,7 @@ export const allArticlesOptions = () => {
   return infiniteQueryOptions({
     queryFn: async ({ pageParam }) => {
       return rpcRequest<{
-        edges: {
-          cursor: string;
-          node: {
-            feed: { id: string; title: string };
-            id: string;
-            isRead: boolean;
-            link: string;
-            publishedAt: null | string;
-            title: string;
-          };
-        }[];
+        edges: { cursor: string; node: ArticleNode }[];
         pageInfo: { endCursor: null | string; hasNextPage: boolean };
       }>(RSS_SERVICE, "allArticles", {
         after: pageParam,
@@ -61,17 +73,7 @@ export const feedArticlesOptions = (feedId: null | string) => {
     enabled: !isNil(feedId),
     queryFn: async ({ pageParam }) => {
       return rpcRequest<{
-        edges: {
-          cursor: string;
-          node: {
-            feed: { id: string; title: string };
-            id: string;
-            isRead: boolean;
-            link: string;
-            publishedAt: null | string;
-            title: string;
-          };
-        }[];
+        edges: { cursor: string; node: ArticleNode }[];
         pageInfo: { endCursor: null | string; hasNextPage: boolean };
       }>(RSS_SERVICE, "feedArticles", {
         after: pageParam,
@@ -86,4 +88,10 @@ export const feedArticlesOptions = (feedId: null | string) => {
     initialPageParam: null as null | string,
     queryKey: ["feedArticles", feedId]
   });
+};
+
+export const removeSubscriptionMutationFunction = async (variables: {
+  feedId: string;
+}) => {
+  return rpcRequest(RSS_SERVICE, "removeSubscription", variables);
 };
