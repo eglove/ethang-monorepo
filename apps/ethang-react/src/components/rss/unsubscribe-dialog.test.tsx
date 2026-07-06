@@ -56,7 +56,7 @@ describe("UnsubscribeDialog", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Unsubscribe" }));
+    fireEvent.click(screen.getByTestId("unsubscribe-confirm"));
 
     expect(onConfirm).toHaveBeenCalledTimes(1);
   });
@@ -104,7 +104,7 @@ describe("UnsubscribeDialog", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: "Unsubscribe" })).toBeDisabled();
+    expect(screen.getByTestId("unsubscribe-confirm")).toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
   });
 });

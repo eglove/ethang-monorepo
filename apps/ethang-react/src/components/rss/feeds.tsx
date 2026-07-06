@@ -19,6 +19,7 @@ import {
 } from "./queries.ts";
 import { rssStore } from "./rss-store.ts";
 import { SourceIcon } from "./source-icon.tsx";
+import { UnsubscribeDialog } from "./unsubscribe-dialog.tsx";
 import { decodeHtmlEntities } from "./utilities.ts";
 
 type SubscriptionEdge = {
@@ -41,25 +42,30 @@ export const Feeds = () => {
     return state.selectedFeedId;
   });
 
+  const pendingUnsubscribe = useStore(rssStore, (state) => {
+    return state.pendingUnsubscribe;
+  });
+
   const queryClient = useQueryClient();
 
-  const { mutateAsync: removeSubscription } = useMutation({
-    mutationFn: removeSubscriptionMutationFunction,
-    onSuccess: async (_data, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: subscriptionsOptions().queryKey
-      });
-      await queryClient.invalidateQueries({
-        queryKey: allArticlesOptions().queryKey
-      });
-      await queryClient.invalidateQueries({
-        queryKey: feedArticlesOptions(variables.feedId).queryKey
-      });
-      if (variables.feedId === selectedFeedId) {
-        rssStore.setSelectedFeedId(null);
+  const { isPending: isUnsubscribing, mutateAsync: removeSubscription } =
+    useMutation({
+      mutationFn: removeSubscriptionMutationFunction,
+      onSuccess: async (_data, variables) => {
+        await queryClient.invalidateQueries({
+          queryKey: subscriptionsOptions().queryKey
+        });
+        await queryClient.invalidateQueries({
+          queryKey: allArticlesOptions().queryKey
+        });
+        await queryClient.invalidateQueries({
+          queryKey: feedArticlesOptions(variables.feedId).queryKey
+        });
+        if (variables.feedId === selectedFeedId) {
+          rssStore.setSelectedFeedId(null);
+        }
       }
-    }
-  });
+    });
 
   const edges = isNil(data)
     ? []
@@ -75,11 +81,20 @@ export const Feeds = () => {
     fetchNextPage().catch(noop);
   };
 
-  const handleUnsubscribe = async (feedId: string) => {
-    // eslint-disable-next-line no-alert -- custom Radix dialog lands in a follow-up
-    if (!globalThis.confirm(rss.UNSUBSCRIBE_CONFIRM_DESCRIPTION)) {
+  const handleRequestUnsubscribe = (feedId: string, title: string) => {
+    rssStore.requestUnsubscribe(feedId, title);
+  };
+
+  const handleCancelUnsubscribe = () => {
+    rssStore.cancelUnsubscribe();
+  };
+
+  const handleConfirmUnsubscribe = async () => {
+    if (isNil(pendingUnsubscribe)) {
       return;
     }
+    const { feedId } = pendingUnsubscribe;
+    rssStore.cancelUnsubscribe();
     await removeSubscription({ feedId });
   };
 
@@ -137,7 +152,10 @@ export const Feeds = () => {
                     className="shrink-0 cursor-pointer p-1"
                     onClick={(event) => {
                       event.stopPropagation();
-                      handleUnsubscribe(feed.id).catch(noop);
+                      handleRequestUnsubscribe(
+                        feed.id,
+                        decodeHtmlEntities(feed.title)
+                      );
                     }}
                   >
                     <Trash size={14} focusable="false" aria-hidden="true" />
@@ -159,6 +177,15 @@ export const Feeds = () => {
           </Flex>
         </Skeleton>
       </Card>
+      <UnsubscribeDialog
+        isPending={isUnsubscribing}
+        onClose={handleCancelUnsubscribe}
+        isOpen={!isNil(pendingUnsubscribe)}
+        feedTitle={pendingUnsubscribe?.title ?? ""}
+        onConfirm={() => {
+          handleConfirmUnsubscribe().catch(noop);
+        }}
+      />
     </Box>
   );
 };

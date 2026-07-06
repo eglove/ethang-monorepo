@@ -34,6 +34,7 @@ export const UnsubscribeDialog = (properties: UnsubscribeDialogProperties) => {
             type="button"
             onClick={onConfirm}
             disabled={isPending}
+            data-testid="unsubscribe-confirm"
           >
             {rss.UNSUBSCRIBE}
           </Button>

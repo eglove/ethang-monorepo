@@ -10,6 +10,7 @@ import { rssStore } from "./rss-store.ts";
 const mockFeedsStore = {
   isFetchingNextPage: false,
   isQueryPending: false,
+  pendingUnsubscribe: null as { feedId: string; title: string } | null,
   queryData: null as unknown,
   selectedFeedId: null as null | string
 };
@@ -79,9 +80,15 @@ vi.mock("@ethang/store/use-store", () => {
   return {
     useStore: <T, U>(
       _store: T,
-      selector: (state: { selectedFeedId: null | string }) => U
+      selector: (state: {
+        pendingUnsubscribe: { feedId: string; title: string } | null;
+        selectedFeedId: null | string;
+      }) => U
     ): U => {
-      return selector({ selectedFeedId: mockFeedsStore.selectedFeedId });
+      return selector({
+        pendingUnsubscribe: mockFeedsStore.pendingUnsubscribe,
+        selectedFeedId: mockFeedsStore.selectedFeedId
+      });
     }
   };
 });
@@ -89,6 +96,10 @@ vi.mock("@ethang/store/use-store", () => {
 vi.mock("./rss-store.ts", () => {
   return {
     rssStore: {
+      cancelUnsubscribe: vi.fn(),
+      requestUnsubscribe: vi.fn((feedId: string, title: string) => {
+        mockFeedsStore.pendingUnsubscribe = { feedId, title };
+      }),
       setSelectedFeedId: vi.fn()
     }
   };
@@ -102,6 +113,12 @@ const FEED_A_ICON_URL = "https://alpha.example.com/favicon.ico";
 const FEED_B_ICON_URL = "https://beta.example.com/favicon.ico";
 const FEED_A_WEBSITE = "https://alpha.example.com";
 const FEED_B_WEBSITE = "https://beta.example.com";
+const UNSUBSCRIBE_CONFIRM_TESTID = "unsubscribe-confirm";
+const ALPHA_PENDING_UNSUBSCRIBE = {
+  feedId: FEED_A_ID,
+  title: ALPHA_FEED_TITLE
+};
+const FEED_A_REMOVE_INPUT = { feedId: FEED_A_ID };
 
 describe("Feeds", () => {
   beforeEach(() => {
@@ -113,7 +130,6 @@ describe("Feeds", () => {
     mockRemoveSubscription.mockClear();
     mockInvalidateQueries.mockClear();
     vi.mocked(rssStore.setSelectedFeedId).mockClear();
-    vi.spyOn(globalThis, "confirm").mockReset();
   });
 
   it("renders a loading skeleton when loading and data is nil", () => {
@@ -228,9 +244,12 @@ describe("Feeds - Unsubscribe", () => {
       ]
     };
     mockFeedsStore.selectedFeedId = null;
+    mockFeedsStore.pendingUnsubscribe = null;
     mockRemoveSubscription.mockClear();
     mockInvalidateQueries.mockClear();
     vi.mocked(rssStore.setSelectedFeedId).mockClear();
+    vi.mocked(rssStore.requestUnsubscribe).mockClear();
+    vi.mocked(rssStore.cancelUnsubscribe).mockClear();
   });
 
   it("renders an unsubscribe button for each feed", () => {
@@ -239,91 +258,19 @@ describe("Feeds - Unsubscribe", () => {
     expect(screen.getByTestId(`unsubscribe-${FEED_A_ID}`)).toBeInTheDocument();
   });
 
-  it("prompts with window.confirm and calls removeSubscription when confirmed", async () => {
-    const confirmSpy = vi.spyOn(globalThis, "confirm").mockReturnValue(true);
-
+  it("opens the unsubscribe dialog (not a window.confirm) when the trash icon is clicked", () => {
     render(<Feeds />);
 
     const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
     fireEvent.click(unsubscribeButton);
 
-    expect(confirmSpy).toHaveBeenCalledWith(
-      "You will no longer receive new articles from this feed."
+    expect(rssStore.requestUnsubscribe).toHaveBeenCalledWith(
+      FEED_A_ID,
+      ALPHA_FEED_TITLE
     );
-    await vi.waitFor(() => {
-      expect(mockRemoveSubscription).toHaveBeenCalledWith({
-        feedId: FEED_A_ID
-      });
-    });
-    await vi.waitFor(() => {
-      expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: ["subscriptions"]
-      });
-    });
   });
 
-  it("invalidates the allArticles query after a successful unsubscribe", async () => {
-    vi.spyOn(globalThis, "confirm").mockReturnValue(true);
-
-    render(<Feeds />);
-
-    const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
-    fireEvent.click(unsubscribeButton);
-
-    await vi.waitFor(() => {
-      expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: ["allArticles"]
-      });
-    });
-  });
-
-  it("invalidates the feedArticles query for the unsubscribed feed after a successful unsubscribe", async () => {
-    vi.spyOn(globalThis, "confirm").mockReturnValue(true);
-
-    render(<Feeds />);
-
-    const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
-    fireEvent.click(unsubscribeButton);
-
-    await vi.waitFor(() => {
-      expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: ["feedArticles", FEED_A_ID]
-      });
-    });
-  });
-
-  it("clears selectedFeedId when the unsubscribed feed is the selected one", async () => {
-    vi.spyOn(globalThis, "confirm").mockReturnValue(true);
-    mockFeedsStore.selectedFeedId = FEED_A_ID;
-
-    render(<Feeds />);
-
-    const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
-    fireEvent.click(unsubscribeButton);
-
-    await vi.waitFor(() => {
-      expect(rssStore.setSelectedFeedId).toHaveBeenCalledWith(null);
-    });
-  });
-
-  it("does NOT clear selectedFeedId when the unsubscribed feed is not selected", async () => {
-    vi.spyOn(globalThis, "confirm").mockReturnValue(true);
-    mockFeedsStore.selectedFeedId = FEED_B_ID;
-
-    render(<Feeds />);
-
-    const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
-    fireEvent.click(unsubscribeButton);
-
-    await vi.waitFor(() => {
-      expect(mockRemoveSubscription).toHaveBeenCalled();
-    });
-    expect(rssStore.setSelectedFeedId).not.toHaveBeenCalledWith(null);
-  });
-
-  it("does NOT call removeSubscription when user cancels the confirm dialog", () => {
-    vi.spyOn(globalThis, "confirm").mockReturnValue(false);
-
+  it("does not call removeSubscription when the trash icon is clicked", () => {
     render(<Feeds />);
 
     const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
@@ -333,9 +280,127 @@ describe("Feeds - Unsubscribe", () => {
     expect(mockInvalidateQueries).not.toHaveBeenCalled();
   });
 
-  it("does NOT select the feed when the unsubscribe button is clicked", () => {
-    vi.spyOn(globalThis, "confirm").mockReturnValue(false);
+  it("calls removeSubscription when the dialog is confirmed", async () => {
+    const { rerender } = render(<Feeds />);
 
+    const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
+    fireEvent.click(unsubscribeButton);
+
+    mockFeedsStore.pendingUnsubscribe = ALPHA_PENDING_UNSUBSCRIBE;
+    rerender(<Feeds />);
+
+    fireEvent.click(screen.getByTestId(UNSUBSCRIBE_CONFIRM_TESTID));
+
+    await vi.waitFor(() => {
+      expect(mockRemoveSubscription).toHaveBeenCalledWith(FEED_A_REMOVE_INPUT);
+    });
+  });
+
+  it("invalidates the subscriptions query after a successful unsubscribe", async () => {
+    const { rerender } = render(<Feeds />);
+
+    const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
+    fireEvent.click(unsubscribeButton);
+
+    mockFeedsStore.pendingUnsubscribe = ALPHA_PENDING_UNSUBSCRIBE;
+    rerender(<Feeds />);
+
+    fireEvent.click(screen.getByTestId(UNSUBSCRIBE_CONFIRM_TESTID));
+
+    await vi.waitFor(() => {
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: ["subscriptions"]
+      });
+    });
+  });
+
+  it("invalidates the allArticles query after a successful unsubscribe", async () => {
+    const { rerender } = render(<Feeds />);
+
+    const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
+    fireEvent.click(unsubscribeButton);
+
+    mockFeedsStore.pendingUnsubscribe = ALPHA_PENDING_UNSUBSCRIBE;
+    rerender(<Feeds />);
+
+    fireEvent.click(screen.getByTestId(UNSUBSCRIBE_CONFIRM_TESTID));
+
+    await vi.waitFor(() => {
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: ["allArticles"]
+      });
+    });
+  });
+
+  it("invalidates the feedArticles query for the unsubscribed feed after a successful unsubscribe", async () => {
+    const { rerender } = render(<Feeds />);
+
+    const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
+    fireEvent.click(unsubscribeButton);
+
+    mockFeedsStore.pendingUnsubscribe = ALPHA_PENDING_UNSUBSCRIBE;
+    rerender(<Feeds />);
+
+    fireEvent.click(screen.getByTestId(UNSUBSCRIBE_CONFIRM_TESTID));
+
+    await vi.waitFor(() => {
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: ["feedArticles", FEED_A_ID]
+      });
+    });
+  });
+
+  it("clears selectedFeedId when the unsubscribed feed is the selected one", async () => {
+    mockFeedsStore.selectedFeedId = FEED_A_ID;
+    const { rerender } = render(<Feeds />);
+
+    const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
+    fireEvent.click(unsubscribeButton);
+
+    mockFeedsStore.pendingUnsubscribe = ALPHA_PENDING_UNSUBSCRIBE;
+    rerender(<Feeds />);
+
+    fireEvent.click(screen.getByTestId(UNSUBSCRIBE_CONFIRM_TESTID));
+
+    await vi.waitFor(() => {
+      expect(rssStore.setSelectedFeedId).toHaveBeenCalledWith(null);
+    });
+  });
+
+  it("does NOT clear selectedFeedId when the unsubscribed feed is not selected", async () => {
+    mockFeedsStore.selectedFeedId = FEED_B_ID;
+    const { rerender } = render(<Feeds />);
+
+    const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
+    fireEvent.click(unsubscribeButton);
+
+    mockFeedsStore.pendingUnsubscribe = ALPHA_PENDING_UNSUBSCRIBE;
+    rerender(<Feeds />);
+
+    fireEvent.click(screen.getByTestId(UNSUBSCRIBE_CONFIRM_TESTID));
+
+    await vi.waitFor(() => {
+      expect(mockRemoveSubscription).toHaveBeenCalled();
+    });
+    expect(rssStore.setSelectedFeedId).not.toHaveBeenCalledWith(null);
+  });
+
+  it("does NOT call removeSubscription when the user cancels the dialog", () => {
+    const { rerender } = render(<Feeds />);
+
+    const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
+    fireEvent.click(unsubscribeButton);
+
+    mockFeedsStore.pendingUnsubscribe = ALPHA_PENDING_UNSUBSCRIBE;
+    rerender(<Feeds />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(mockRemoveSubscription).not.toHaveBeenCalled();
+    expect(mockInvalidateQueries).not.toHaveBeenCalled();
+  });
+
+  it("does NOT select the feed when the unsubscribe button is clicked", () => {
     render(<Feeds />);
 
     const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
@@ -347,6 +412,7 @@ describe("Feeds - Unsubscribe", () => {
 
 describe("Feeds - SourceIcon", () => {
   beforeEach(() => {
+    mockFeedsStore.pendingUnsubscribe = null;
     mockFeedsStore.queryData = {
       pages: [
         {
