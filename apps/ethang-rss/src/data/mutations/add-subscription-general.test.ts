@@ -38,6 +38,7 @@ describe("addSubscriptionMutation", () => {
     const mockFeedsInsertResult = {
       returning: vi.fn().mockResolvedValue([
         {
+          iconUrl: null,
           id: "feed-4",
           title: FALLBACK_TITLE,
           website: FALLBACK_WEBSITE,
@@ -73,6 +74,7 @@ describe("addSubscriptionMutation", () => {
     );
 
     expect(result).toEqual({
+      iconUrl: null,
       id: "feed-4",
       title: FALLBACK_TITLE,
       website: FALLBACK_WEBSITE,
@@ -80,6 +82,7 @@ describe("addSubscriptionMutation", () => {
     });
     expect(fetchSpy).toHaveBeenCalledWith(FALLBACK_XML);
     expect(mockFeedsInsertResult.values).toHaveBeenCalledWith({
+      iconUrl: null,
       title: FALLBACK_TITLE,
       website: FALLBACK_WEBSITE,
       xmlAddress: FALLBACK_XML

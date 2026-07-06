@@ -50,6 +50,7 @@ const getDefaultSubscriptions = async (
   return database
     .select({
       feedId: databaseSchema.subscriptionsTable.feedId,
+      iconUrl: databaseSchema.feedsTable.iconUrl,
       id: databaseSchema.subscriptionsTable.id,
       lastFetchedAt: databaseSchema.feedsTable.lastFetchedAt,
       title: databaseSchema.feedsTable.title,
@@ -85,6 +86,7 @@ const getTitleSortedSubscriptions = async (
   const subquery = database
     .select({
       feedId: databaseSchema.subscriptionsTable.feedId,
+      iconUrl: databaseSchema.feedsTable.iconUrl,
       id: databaseSchema.subscriptionsTable.id,
       lastFetchedAt: databaseSchema.feedsTable.lastFetchedAt,
       title: databaseSchema.feedsTable.title,
@@ -143,6 +145,7 @@ const getPublishedAtSortedSubscriptions = async (
   const subquery = database
     .select({
       feedId: databaseSchema.subscriptionsTable.feedId,
+      iconUrl: databaseSchema.feedsTable.iconUrl,
       id: databaseSchema.subscriptionsTable.id,
       lastFetchedAt: databaseSchema.feedsTable.lastFetchedAt,
       maxPublishedAt: maxPublishedAtSql.as("maxPublishedAt"),
@@ -209,6 +212,7 @@ const getItemCursor = (
 const buildEdges = (
   items: {
     feedId: string;
+    iconUrl: null | string;
     id?: string;
     lastFetchedAt: null | string;
     maxPublishedAt?: string;
@@ -226,6 +230,7 @@ const buildEdges = (
       cursor: getItemCursor(item, sortBy),
       node: {
         __typename: "Feed" as const,
+        iconUrl: item.iconUrl,
         id: item.feedId,
         lastFetchedAt: item.lastFetchedAt,
         title: item.title,
@@ -253,6 +258,7 @@ export const subscriptionsQuery = async (
 
   let items: {
     feedId: string;
+    iconUrl: null | string;
     id?: string;
     lastFetchedAt: null | string;
     maxPublishedAt?: string;

@@ -15,6 +15,7 @@ import orderBy from "lodash/orderBy";
 import { rpcRequest } from "../../clients/rpc-client.ts";
 import { allArticlesOptions, feedArticlesOptions } from "./queries.ts";
 import { rssStore } from "./rss-store.ts";
+import { SourceIcon } from "./source-icon.tsx";
 import { decodeHtmlEntities } from "./utilities.ts";
 
 const RSS_SERVICE = "ethang_rss";
@@ -102,16 +103,23 @@ export const Articles = () => {
           >
             <Flex gap="3" align="center" justify="between">
               <Box className="min-w-0 flex-1">
-                <Heading mb="1" size="3" className="truncate">
-                  <a
-                    target="_blank"
-                    href={article.node.link}
-                    rel="noopener noreferrer"
-                    className="text-white hover:text-blue-400 hover:underline"
-                  >
-                    {decodeHtmlEntities(article.node.title)}
-                  </a>
-                </Heading>
+                <Flex mb="1" gap="2" align="center">
+                  <SourceIcon
+                    link={article.node.link}
+                    className="size-4 shrink-0"
+                    iconUrl={article.node.feed.iconUrl}
+                  />
+                  <Heading size="3" className="truncate">
+                    <a
+                      target="_blank"
+                      href={article.node.link}
+                      rel="noopener noreferrer"
+                      className="text-white hover:text-blue-400 hover:underline"
+                    >
+                      {decodeHtmlEntities(article.node.title)}
+                    </a>
+                  </Heading>
+                </Flex>
                 <Flex gap="3" align="center">
                   <Text size="1" className="text-slate-500">
                     {decodeHtmlEntities(article.node.feed.title)}

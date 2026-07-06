@@ -8,6 +8,7 @@ import convertToString from "lodash/toString.js";
 
 import { addSubscriptionMutation } from "./data/mutations/add-subscription.ts";
 import { markArticleReadMutation } from "./data/mutations/mark-article-read.ts";
+import { removeSubscriptionMutation } from "./data/mutations/remove-subscription.ts";
 import { allArticlesQuery } from "./data/queries/all-articles.ts";
 import { feedArticlesQuery } from "./data/queries/feed-articles.ts";
 import { subscriptionQuery } from "./data/queries/subscription.ts";
@@ -105,6 +106,16 @@ export default class extends WorkerEntrypoint<Env> {
     const database = createDatabase(this.env.ethang_rss);
 
     return markArticleReadMutation(database, queryParameters, user);
+  }
+
+  public async removeSubscription(parameters: {
+    feedId: string;
+    sessionToken: string;
+  }) {
+    const { sessionToken, ...mutationParameters } = parameters;
+    const user = await verifySessionToken(sessionToken);
+    const database = createDatabase(this.env.ethang_rss);
+    return removeSubscriptionMutation(database, mutationParameters, user);
   }
 
   public override async scheduled(event: ScheduledEvent) {

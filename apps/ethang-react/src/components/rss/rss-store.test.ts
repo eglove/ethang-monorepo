@@ -18,4 +18,22 @@ describe("RssStore", () => {
     rssStore.setSelectedFeedId(null);
     expect(rssStore.state.selectedFeedId).toBeNull();
   });
+
+  it("should initialize with null pendingUnsubscribe", () => {
+    expect(rssStore.state.pendingUnsubscribe).toBeNull();
+  });
+
+  it("should set pendingUnsubscribe when requestUnsubscribe is called", () => {
+    rssStore.requestUnsubscribe("feed-1", "My Feed");
+    expect(rssStore.state.pendingUnsubscribe).toEqual({
+      feedId: "feed-1",
+      title: "My Feed"
+    });
+  });
+
+  it("should clear pendingUnsubscribe when cancelUnsubscribe is called", () => {
+    rssStore.requestUnsubscribe("feed-1", "My Feed");
+    rssStore.cancelUnsubscribe();
+    expect(rssStore.state.pendingUnsubscribe).toBeNull();
+  });
 });

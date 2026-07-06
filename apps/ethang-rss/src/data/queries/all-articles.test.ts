@@ -220,6 +220,7 @@ describe("allArticlesQuery - feed title behavior", () => {
   it("should include feed object when feedTitle is present", async () => {
     const mockArticles = [
       {
+        feedIconUrl: "https://example.com/icon.png",
         feedId: FEED_ID_1,
         feedTitle: "Test Feed",
         id: "1",
@@ -246,6 +247,7 @@ describe("allArticlesQuery - feed title behavior", () => {
     );
 
     expect(result.edges[0]?.node.feed).toEqual({
+      iconUrl: "https://example.com/icon.png",
       id: FEED_ID_1,
       title: "Test Feed"
     });

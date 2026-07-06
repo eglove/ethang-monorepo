@@ -1,0 +1,1 @@
+ALTER TABLE `feeds` ADD `iconUrl` text;
