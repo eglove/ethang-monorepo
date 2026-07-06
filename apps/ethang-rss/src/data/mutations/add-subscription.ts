@@ -7,7 +7,69 @@ import trim from "lodash/trim.js";
 import type { User } from "../../index.ts";
 
 import { type Database, databaseSchema } from "../../db/database-schema.ts";
+import { extractIconUrl } from "../../util/extract-icon-url.ts";
 import { parseFeedMetadata } from "../../util/parse-feed-metadata.ts";
+
+const fetchDerivedMetadata = async (xmlAddress: string) => {
+  const derived: { title: string; website: string } = {
+    title: "",
+    website: ""
+  };
+
+  await attemptAsync(async () => {
+    const response = await globalThis.fetch(xmlAddress);
+
+    if (response.ok) {
+      const xmlText = await response.text();
+      const parsedMeta = parseFeedMetadata(xmlText);
+
+      if (parsedMeta.title) {
+        derived.title = parsedMeta.title;
+      }
+
+      if (parsedMeta.website) {
+        derived.website = parsedMeta.website;
+      }
+    }
+  });
+
+  return derived;
+};
+
+const fillMissingFromUrl = (
+  derived: { title: string; website: string },
+  xmlAddress: string
+) => {
+  attempt(() => {
+    const url = new URL(xmlAddress);
+
+    if ("" === trim(derived.title)) {
+      derived.title = url.hostname;
+    }
+
+    if ("" === trim(derived.website)) {
+      derived.website = url.origin;
+    }
+  });
+};
+
+const fetchIconUrl = async (website: string) => {
+  let iconUrl: null | string = null;
+
+  await attemptAsync(async () => {
+    const websiteResponse = await globalThis.fetch(website);
+
+    if (websiteResponse.ok) {
+      const html = await websiteResponse.text();
+      const extracted = extractIconUrl(html, website);
+      if (!isNil(extracted)) {
+        iconUrl = extracted;
+      }
+    }
+  });
+
+  return iconUrl;
+};
 
 export const addSubscriptionMutation = async (
   database: Database,
@@ -20,45 +82,23 @@ export const addSubscriptionMutation = async (
     .where(eq(databaseSchema.feedsTable.xmlAddress, parameters.xmlAddress));
 
   if (isNil(feed)) {
-    let derivedTitle = "";
-    let derivedWebsite = "";
+    const derived = await fetchDerivedMetadata(parameters.xmlAddress);
 
-    await attemptAsync(async () => {
-      const response = await globalThis.fetch(parameters.xmlAddress);
-
-      if (response.ok) {
-        const xmlText = await response.text();
-        const parsedMeta = parseFeedMetadata(xmlText);
-
-        if (parsedMeta.title) {
-          derivedTitle = parsedMeta.title;
-        }
-
-        if (parsedMeta.website) {
-          derivedWebsite = parsedMeta.website;
-        }
-      }
-    });
-
-    if ("" === trim(derivedTitle) || "" === trim(derivedWebsite)) {
-      attempt(() => {
-        const url = new URL(parameters.xmlAddress);
-
-        if ("" === trim(derivedTitle)) {
-          derivedTitle = url.hostname;
-        }
-
-        if ("" === trim(derivedWebsite)) {
-          derivedWebsite = url.origin;
-        }
-      });
+    if ("" === trim(derived.title) || "" === trim(derived.website)) {
+      fillMissingFromUrl(derived, parameters.xmlAddress);
     }
+
+    const hasWebsite = "" !== trim(derived.website);
+    const derivedIconUrl: null | string = hasWebsite
+      ? await fetchIconUrl(derived.website)
+      : null;
 
     [feed] = await database
       .insert(databaseSchema.feedsTable)
       .values({
-        title: trim(derivedTitle),
-        website: trim(derivedWebsite),
+        iconUrl: derivedIconUrl,
+        title: trim(derived.title),
+        website: trim(derived.website),
         xmlAddress: parameters.xmlAddress
       })
       .returning();

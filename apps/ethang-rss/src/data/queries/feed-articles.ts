@@ -28,6 +28,7 @@ export const feedArticlesQuery = async (
   const articles = await database
     .select({
       content: databaseSchema.articlesTable.content,
+      feedIconUrl: databaseSchema.feedsTable.iconUrl,
       feedId: databaseSchema.articlesTable.feedId,
       feedTitle: databaseSchema.feedsTable.title,
       guid: databaseSchema.articlesTable.guid,
@@ -68,6 +69,7 @@ export const feedArticlesQuery = async (
   return createConnection(
     map(items, (article) => {
       const {
+        feedIconUrl,
         feedId: articleFeedId,
         feedTitle,
         isRead: articleIsRead,
@@ -78,7 +80,7 @@ export const feedArticlesQuery = async (
         ...rest,
         feed: isNil(feedTitle)
           ? undefined
-          : { id: articleFeedId, title: feedTitle },
+          : { iconUrl: feedIconUrl, id: articleFeedId, title: feedTitle },
         isRead: articleIsRead ?? false
       };
     }),

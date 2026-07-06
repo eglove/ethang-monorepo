@@ -70,7 +70,7 @@ const readLinkTag = (tag: string) => {
   if (isNil(relationshipMatch)) {
     return;
   }
-  const linkRelationship = relationshipMatch[1];
+  const [, linkRelationship = ""] = relationshipMatch;
   if (!isIconRelationship(linkRelationship)) {
     return;
   }

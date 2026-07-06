@@ -98,9 +98,7 @@ describe("extractIconUrl - sizes preference", () => {
       <link rel="icon" sizes="any" href="/any.png">
       <link rel="icon" href="/second.png">
     `;
-    expect(extractIconUrl(html, BASE_URL)).toBe(
-      "https://example.com/any.png"
-    );
+    expect(extractIconUrl(html, BASE_URL)).toBe("https://example.com/any.png");
   });
 
   it("matches rel values with extra descriptors (suffix match)", () => {

@@ -71,6 +71,7 @@ describe("subscriptionsQuery - default pagination", () => {
     const mockSubscriptions = [
       {
         feedId: FEED_ID_1,
+        iconUrl: "https://feed1.com/icon.png",
         id: SUB_ID_1,
         lastFetchedAt: lastFetchedAt1,
         title: FEED_NAME_1,
@@ -79,6 +80,7 @@ describe("subscriptionsQuery - default pagination", () => {
       },
       {
         feedId: FEED_ID_2,
+        iconUrl: null,
         id: SUB_ID_2,
         lastFetchedAt: lastFetchedAt2,
         title: FEED_NAME_2,
@@ -109,6 +111,8 @@ describe("subscriptionsQuery - default pagination", () => {
     expect(result.pageInfo.hasNextPage).toBe(false);
     expect(result.edges[0]?.cursor).toBe(SUB_ID_1);
     expect(result.edges[0]?.node.title).toBe(FEED_NAME_1);
+    expect(result.edges[0]?.node.iconUrl).toBe("https://feed1.com/icon.png");
+    expect(result.edges[1]?.node.iconUrl).toBeNull();
     expect(result.pageInfo.startCursor).toBe(SUB_ID_1);
     expect(result.pageInfo.endCursor).toBe(SUB_ID_2);
   });
