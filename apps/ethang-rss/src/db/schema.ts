@@ -10,6 +10,7 @@ const uuidId = text()
   });
 
 export const feedsTable = sqliteTable("feeds", {
+  iconUrl: text(),
   id: uuidId,
   lastFetchedAt: text(),
   title: text().notNull(),

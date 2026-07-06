@@ -46,6 +46,12 @@ vi.mock("./data/mutations/mark-article-read.ts", () => {
   };
 });
 
+vi.mock("./data/mutations/remove-subscription.ts", () => {
+  return {
+    removeSubscriptionMutation: vi.fn().mockResolvedValue(undefined)
+  };
+});
+
 vi.mock("./data/queries/all-articles.ts", () => {
   return {
     allArticlesQuery: vi.fn().mockResolvedValue(undefined)
@@ -120,6 +126,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
     expect(instance.subscriptions).toBeInstanceOf(Function);
     expect(instance.addSubscription).toBeInstanceOf(Function);
     expect(instance.markArticleRead).toBeInstanceOf(Function);
+    expect(instance.removeSubscription).toBeInstanceOf(Function);
   });
 
   describe("RPC methods", () => {
@@ -157,6 +164,15 @@ describe("ethang-rss WorkerEntrypoint", () => {
       const result = await instance.addSubscription({
         sessionToken: auth.TEST_TOKEN,
         xmlAddress: "https://example.com/feed.xml"
+      });
+      expect(result).toBeUndefined();
+    });
+
+    it("removeSubscription removes a subscription", async () => {
+      const instance = createInstance({ ethang_rss: {} });
+      const result = await instance.removeSubscription({
+        feedId: "feed-1",
+        sessionToken: auth.TEST_TOKEN
       });
       expect(result).toBeUndefined();
     });
