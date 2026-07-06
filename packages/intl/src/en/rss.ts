@@ -6,5 +6,9 @@ export const rss = {
   LOAD_MORE: "Load More",
   MARK_AS_READ: "Mark as Read",
   NO_SUBSCRIPTIONS: "No subscriptions found.",
-  NO_UNREAD_ARTICLES: "No unread articles."
+  NO_UNREAD_ARTICLES: "No unread articles.",
+  UNSUBSCRIBE: "Unsubscribe",
+  UNSUBSCRIBE_CONFIRM_DESCRIPTION:
+    "You will no longer receive new articles from this feed.",
+  UNSUBSCRIBE_CONFIRM_TITLE: "Unsubscribe from feed?"
 } as const;

@@ -494,3 +494,54 @@ describe("Articles - isRead filter", () => {
     expect(screen.getByText(ARTICLE_ONE_TITLE)).toBeDefined();
   });
 });
+
+describe("Articles - SourceIcon rendering", () => {
+  beforeEach(() => {
+    clearMocks();
+  });
+
+  it("renders the YouTube icon when the article link is a YouTube URL", () => {
+    mockArticlesStore.selectedFeedId = null;
+    mockArticlesStore.allArticlesData = {
+      pages: [
+        makePage(
+          [
+            makeArticleEdge({
+              id: ARTICLE_ONE_ID,
+              link: "https://www.youtube.com/watch?v=abc123",
+              title: ARTICLE_ONE_TITLE
+            })
+          ],
+          false
+        )
+      ]
+    };
+
+    const { container } = render(<Articles />);
+
+    expect(container.querySelector('path[fill="#FF0000"]')).not.toBeNull();
+  });
+
+  it("renders the Newspaper icon when the article link is not a YouTube URL", () => {
+    mockArticlesStore.selectedFeedId = null;
+    mockArticlesStore.allArticlesData = {
+      pages: [
+        makePage(
+          [
+            makeArticleEdge({
+              id: ARTICLE_ONE_ID,
+              link: ARTICLE_ONE_LINK,
+              title: ARTICLE_ONE_TITLE
+            })
+          ],
+          false
+        )
+      ]
+    };
+
+    const { container } = render(<Articles />);
+
+    expect(container.querySelector('path[fill="#FF0000"]')).toBeNull();
+    expect(container.querySelector("svg.lucide-newspaper")).not.toBeNull();
+  });
+});
