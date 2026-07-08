@@ -32,4 +32,37 @@ describe("parse json", () => {
     expect(result).toBeInstanceOf(Error);
     expect(result.message).toBe("Unexpected end of JSON input");
   });
+
+  it("wraps non-Error parser rejections in an Error", async () => {
+    const original = JSON.parse;
+    (JSON as { parse: typeof JSON.parse }).parse = (() => {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw "string-failure";
+    }) as typeof JSON.parse;
+    try {
+      const result = await Effect.runPromise(
+        parseJson("{}", Schema.Struct({ name: Schema.String })).pipe(Effect.flip)
+      );
+      expect(result).toBeInstanceOf(Error);
+      expect(result.message).toBe("string-failure");
+    } finally {
+      (JSON as { parse: typeof JSON.parse }).parse = original;
+    }
+  });
+
+  it("should wrap non-Error parser rejections in an Error", async () => {
+    const original = JSON.parse;
+    JSON.parse = () => {
+      throw "string-failure";
+    };
+    try {
+      const result = await Effect.runPromise(
+        parseJson("{}", Schema.Struct({ name: Schema.String })).pipe(Effect.flip)
+      );
+      expect(result).toBeInstanceOf(Error);
+      expect(result.message).toBe("string-failure");
+    } finally {
+      JSON.parse = original;
+    }
+  });
 });

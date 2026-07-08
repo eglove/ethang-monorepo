@@ -30,7 +30,12 @@
   "engines": {
     "node": ">=24"
   },
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*"
+  },
   "license": "ISC",
+  "main": "./dist/index.js",
   "name": "@ethang/toolbelt",
   "scripts": {
     "build": "bun build.ts",

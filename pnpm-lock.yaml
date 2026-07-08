@@ -190,6 +190,9 @@ importers:
       '@ethang/intl':
         specifier: workspace:*
         version: link:../../packages/intl
+      '@ethang/toolbelt':
+        specifier: workspace:*
+        version: link:../../packages/toolbelt
       '@sanity/client':
         specifier: ^7.23.0
         version: 7.23.0
@@ -261,8 +264,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0(react@19.2.7)
       '@ethang/toolbelt':
-        specifier: ^5.0.2
-        version: 5.0.2
+        specifier: workspace:*
+        version: link:../../packages/toolbelt
       '@portabletext/react':
         specifier: ^6.2.0
         version: 6.2.0(react@19.2.7)
@@ -385,8 +388,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/logger-sdk
       '@ethang/toolbelt':
-        specifier: ^5.0.2
-        version: 5.0.2
+        specifier: workspace:*
+        version: link:../../packages/toolbelt
       drizzle-orm:
         specifier: ^0.45.2
         version: 0.45.2(@cloudflare/workers-types@4.20260702.1)(@opentelemetry/api@1.9.1)
@@ -445,6 +448,9 @@ importers:
       '@ethang/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@ethang/toolbelt':
+        specifier: workspace:*
+        version: link:../../packages/toolbelt
       drizzle-orm:
         specifier: ^0.45.2
         version: 0.45.2(@cloudflare/workers-types@5.20260705.1)(@opentelemetry/api@1.9.1)

@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { rpcRequest } from "./rpc-client.ts";
 
+const API_RPC_URL = "/api/rpc";
+const ETHANG_USER_STORAGE_KEY = "ethang-user";
 const TEST_TOKEN = "test-session-token";
 const TEST_RESULT = { data: "test-result" };
 
@@ -22,7 +24,7 @@ describe("rpcRequest", () => {
 
     expect(result).toEqual(TEST_RESULT);
 
-    expect(globalThis.fetch).toHaveBeenCalledWith("/api/rpc", {
+    expect(globalThis.fetch).toHaveBeenCalledWith(API_RPC_URL, {
       body: JSON.stringify({
         method: "courses",
         params: {},
@@ -37,7 +39,7 @@ describe("rpcRequest", () => {
 
   it("should send X-Token header when session token is stored in localStorage", async () => {
     localStorage.setItem(
-      "ethang-user",
+      ETHANG_USER_STORAGE_KEY,
       JSON.stringify({ sessionToken: TEST_TOKEN })
     );
 
@@ -45,7 +47,7 @@ describe("rpcRequest", () => {
 
     expect(result).toEqual(TEST_RESULT);
 
-    expect(globalThis.fetch).toHaveBeenCalledWith("/api/rpc", {
+    expect(globalThis.fetch).toHaveBeenCalledWith(API_RPC_URL, {
       body: JSON.stringify({
         method: "allArticles",
         params: { first: 10 },
@@ -61,13 +63,34 @@ describe("rpcRequest", () => {
 
   it("should not send X-Token header when stored user has no sessionToken", async () => {
     localStorage.setItem(
-      "ethang-user",
+      ETHANG_USER_STORAGE_KEY,
       JSON.stringify({ email: "test@test.com" })
     );
 
     await rpcRequest("ethang_courses", "courses", {});
 
-    expect(globalThis.fetch).toHaveBeenCalledWith("/api/rpc", {
+    expect(globalThis.fetch).toHaveBeenCalledWith(API_RPC_URL, {
+      body: JSON.stringify({
+        method: "courses",
+        params: {},
+        service: "ethang_courses"
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      },
+      method: "POST"
+    });
+  });
+
+  it("should not send X-Token header when sessionToken is not a string", async () => {
+    localStorage.setItem(
+      ETHANG_USER_STORAGE_KEY,
+      JSON.stringify({ sessionToken: 12_345 })
+    );
+
+    await rpcRequest("ethang_courses", "courses", {});
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(API_RPC_URL, {
       body: JSON.stringify({
         method: "courses",
         params: {},
@@ -91,12 +114,32 @@ describe("rpcRequest", () => {
     );
   });
 
+  it("should ignore localStorage value when JSON parse fails", async () => {
+    localStorage.setItem(ETHANG_USER_STORAGE_KEY, "not-valid-json");
+
+    const result = await rpcRequest("ethang_courses", "courses", {});
+
+    expect(result).toEqual(TEST_RESULT);
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(API_RPC_URL, {
+      body: JSON.stringify({
+        method: "courses",
+        params: {},
+        service: "ethang_courses"
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      },
+      method: "POST"
+    });
+  });
+
   it("should pass empty params object when parameters are not provided", async () => {
     const result = await rpcRequest("ethang_courses", "courses");
 
     expect(result).toEqual(TEST_RESULT);
 
-    expect(globalThis.fetch).toHaveBeenCalledWith("/api/rpc", {
+    expect(globalThis.fetch).toHaveBeenCalledWith(API_RPC_URL, {
       body: JSON.stringify({
         method: "courses",
         params: {},

@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import isError from "lodash/isError.js";
 import { describe, expect, it } from "vitest";
 
 import { attemptAsync } from "../../src/functional/attempt-async.js";
@@ -9,36 +9,37 @@ describe("attemptAsync", () => {
       body: JSON.stringify({ name: "John" }),
       method: "POST"
     });
-    const body = await Effect.runPromise(
-      attemptAsync(() => request.json())
-    );
+    const body = await attemptAsync(() => request.json());
 
+    expect(isError(body)).toBe(false);
     expect(body).toStrictEqual({ name: "John" });
   });
 
-  it("fails with Error when a non-Error value is thrown", async () => {
+  it("returns a new Error when a non-Error value is thrown", async () => {
     const fn = async () => {
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw "string error";
     };
-    const result = await Effect.runPromise(
-      attemptAsync(fn).pipe(Effect.flip)
-    );
+    const body = await attemptAsync(fn);
 
-    expect(result).toBeInstanceOf(Error);
-    expect(result.message).toBe("fn failed");
+    expect(body).toBeInstanceOf(Error);
+    if (body instanceof Error) {
+      expect(body.message).toBe("fn failed");
+    }
   });
 
-  it("should fail with error on unsuccessful response", async () => {
+  it("should return error with unsuccessful response", async () => {
     const request = new Request("https://example.com", {
       body: "",
       method: "POST"
     });
-    const result = await Effect.runPromise(
-      attemptAsync(() => request.json()).pipe(Effect.flip)
-    );
+    const body = await attemptAsync(() => request.json());
 
-    expect(result).toBeInstanceOf(SyntaxError);
-    expect(result.message).toBe("Unexpected end of JSON input");
+    expect(isError(body)).toBe(true);
+    expect(body).toBeInstanceOf(SyntaxError);
+
+    if (body instanceof SyntaxError) {
+      expect(body.message).toBe("Unexpected end of JSON input");
+    }
   });
 });

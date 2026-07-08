@@ -1,12 +1,17 @@
+import map from "lodash/map.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import worker from "./index.ts";
 
 const APPLICATION_JSON = "application/json" as const;
+const CACHE_CONTROL_HEADER = "Cache-Control";
+const HTTP_POST = "POST" as const;
 const TEST_COURSE_NAME = "Test Course" as const;
 const TEST_EMAIL = "test@test.com" as const;
 const TEST_TOKEN = "test-token" as const;
 const TEST_URL = "https://ethang.dev/api/rpc";
+const PUBLIC_CACHE_CONTROL =
+  "public, max-age=300, stale-while-revalidate=3600" as const;
 const MOCK_USER = {
   email: TEST_EMAIL,
   role: "user",
@@ -41,7 +46,7 @@ const mockEnvironment = {
   }
 };
 
-describe("POST /api/rpc - authentication", () => {
+describe(`${HTTP_POST} /api/rpc - authentication`, () => {
   it("should return 401 when verifySessionToken fails", async () => {
     vi.restoreAllMocks();
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
@@ -55,12 +60,13 @@ describe("POST /api/rpc - authentication", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
     const response = await worker.fetch(request, mockEnvironment);
     expect(response.status).toBe(401);
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
 
   it("should return 401 if authentication fails", async () => {
@@ -76,12 +82,13 @@ describe("POST /api/rpc - authentication", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
     const response = await worker.fetch(request, mockEnvironment);
     expect(response.status).toBe(401);
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
 
   it("should return 401 when getSessionToken fetch throws", async () => {
@@ -97,12 +104,13 @@ describe("POST /api/rpc - authentication", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
     const response = await worker.fetch(request, mockEnvironment);
     expect(response.status).toBe(401);
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
 
   it("should return 401 when verifySessionToken schema decode throws", async () => {
@@ -122,12 +130,13 @@ describe("POST /api/rpc - authentication", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
     const response = await worker.fetch(request, mockEnvironment);
     expect(response.status).toBe(401);
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
 
   it("should handle getSessionToken without X-Token successfully", async () => {
@@ -145,7 +154,7 @@ describe("POST /api/rpc - authentication", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -158,9 +167,33 @@ describe("POST /api/rpc - authentication", () => {
       userSub: "test-user"
     });
   });
+
+  it("should return 401 when verifySessionToken fetch throws a non-Error value", async () => {
+    vi.restoreAllMocks();
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        Response.json({ sessionToken: TEST_TOKEN }, { status: 200 })
+      )
+      .mockRejectedValueOnce("string-failure");
+
+    const request = new Request(TEST_URL, {
+      body: JSON.stringify({
+        method: "courses",
+        params: {},
+        service: "ethang_courses"
+      }),
+      headers: { "Content-Type": APPLICATION_JSON },
+      method: HTTP_POST
+    });
+
+    // @ts-expect-error test double
+    const response = await worker.fetch(request, mockEnvironment);
+    expect(response.status).toBe(401);
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
+  });
 });
 
-describe("POST /api/rpc - input validation", () => {
+describe(`${HTTP_POST} /api/rpc - input validation`, () => {
   beforeEach(() => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       Response.json(MOCK_USER, { status: 200 })
@@ -174,24 +207,26 @@ describe("POST /api/rpc - input validation", () => {
     const request = new Request(TEST_URL, {
       body: "not-json",
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
     const response = await worker.fetch(request, mockEnvironment);
     expect(response.status).toBe(400);
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
 
   it("should return 400 for missing service or method", async () => {
     const request = new Request(TEST_URL, {
       body: JSON.stringify({ params: {} }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
     const response = await worker.fetch(request, mockEnvironment);
     expect(response.status).toBe(400);
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
 
   it("should return 400 for invalid service name", async () => {
@@ -202,16 +237,17 @@ describe("POST /api/rpc - input validation", () => {
         service: "non_existent"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
     const response = await worker.fetch(request, mockEnvironment);
     expect(response.status).toBe(400);
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
 });
 
-describe("POST /api/rpc - ethang_courses dispatch", () => {
+describe(`${HTTP_POST} /api/rpc - ethang_courses dispatch`, () => {
   beforeEach(() => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       Response.json(MOCK_USER, { status: 200 })
@@ -229,7 +265,7 @@ describe("POST /api/rpc - ethang_courses dispatch", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -244,6 +280,13 @@ describe("POST /api/rpc - ethang_courses dispatch", () => {
       userEmail: TEST_EMAIL,
       userSub: "test-user"
     });
+
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBe(
+      PUBLIC_CACHE_CONTROL
+    );
+    expect(response.headers.get("Cache-Tag")).toBe(
+      "ethang-react-rpc:ethang_courses:courses"
+    );
   });
 
   it("should dispatch to ethang_courses course method", async () => {
@@ -254,7 +297,7 @@ describe("POST /api/rpc - ethang_courses dispatch", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -280,7 +323,7 @@ describe("POST /api/rpc - ethang_courses dispatch", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -303,7 +346,7 @@ describe("POST /api/rpc - ethang_courses dispatch", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -328,7 +371,7 @@ describe("POST /api/rpc - ethang_courses dispatch", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -344,7 +387,7 @@ describe("POST /api/rpc - ethang_courses dispatch", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -353,7 +396,7 @@ describe("POST /api/rpc - ethang_courses dispatch", () => {
   });
 });
 
-describe("POST /api/rpc - ethang_rss dispatch", () => {
+describe(`${HTTP_POST} /api/rpc - ethang_rss dispatch`, () => {
   beforeEach(() => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       Response.json(MOCK_USER, { status: 200 })
@@ -371,7 +414,7 @@ describe("POST /api/rpc - ethang_rss dispatch", () => {
         service: "ethang_rss"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -394,7 +437,7 @@ describe("POST /api/rpc - ethang_rss dispatch", () => {
         service: "ethang_rss"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -418,7 +461,7 @@ describe("POST /api/rpc - ethang_rss dispatch", () => {
         service: "ethang_rss"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -441,7 +484,7 @@ describe("POST /api/rpc - ethang_rss dispatch", () => {
         service: "ethang_rss"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -465,7 +508,7 @@ describe("POST /api/rpc - ethang_rss dispatch", () => {
         service: "ethang_rss"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -488,7 +531,7 @@ describe("POST /api/rpc - ethang_rss dispatch", () => {
         service: "ethang_rss"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -497,7 +540,7 @@ describe("POST /api/rpc - ethang_rss dispatch", () => {
   });
 });
 
-describe("POST /api/rpc - error handling", () => {
+describe(`${HTTP_POST} /api/rpc - error handling`, () => {
   beforeEach(() => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       Response.json(MOCK_USER, { status: 200 })
@@ -515,12 +558,13 @@ describe("POST /api/rpc - error handling", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
     const response = await worker.fetch(request, mockEnvironment);
     expect(response.status).toBe(500);
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
 
   it("should return 500 if service binding throws", async () => {
@@ -538,7 +582,7 @@ describe("POST /api/rpc - error handling", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -546,6 +590,7 @@ describe("POST /api/rpc - error handling", () => {
     expect(response.status).toBe(500);
     const body = await response.text();
     expect(body).toBe("DB Error");
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
 
   it("should return 500 with Internal Server Error when a non-Error is thrown", async () => {
@@ -563,7 +608,7 @@ describe("POST /api/rpc - error handling", () => {
         service: "ethang_courses"
       }),
       headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-      method: "POST"
+      method: HTTP_POST
     });
 
     // @ts-expect-error test double
@@ -571,15 +616,127 @@ describe("POST /api/rpc - error handling", () => {
     expect(response.status).toBe(500);
     const body = await response.text();
     expect(body).toBe("Internal Server Error");
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
 });
 
-describe("POST /api/rpc - routing", () => {
+describe(`${HTTP_POST} /api/rpc - routing`, () => {
   it("should return 404 for unknown routes", async () => {
     const request = new Request("https://ethang.dev/api/unknown");
 
     // @ts-expect-error test double
     const response = await worker.fetch(request, mockEnvironment);
     expect(response.status).toBe(404);
+    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
+});
+
+describe("cache headers", () => {
+  const COURSES_METHODS = [
+    "course",
+    "courses",
+    "courseTracking",
+    "courseTrackings",
+    "createCurriculum",
+    "curriculum",
+    "curriculums",
+    "cycleCourseTrackingStatus",
+    "learningPath",
+    "learningPaths",
+    "coursesAll"
+  ] as const;
+
+  const RSS_METHODS = [
+    "addSubscription",
+    "allArticles",
+    "feedArticles",
+    "markArticleRead",
+    "removeSubscription",
+    "subscription",
+    "subscriptions"
+  ] as const;
+
+  const buildCacheHeaderEnvironment = () => {
+    const coursesMocks: Record<string, ReturnType<typeof vi.fn>> = {};
+    for (const method of COURSES_METHODS) {
+      coursesMocks[method] = vi.fn().mockResolvedValue({ method, ok: true });
+    }
+    const rssMocks: Record<string, ReturnType<typeof vi.fn>> = {};
+    for (const method of RSS_METHODS) {
+      rssMocks[method] = vi.fn().mockResolvedValue({ method, ok: true });
+    }
+    return {
+      ...mockEnvironment,
+      ethang_courses: coursesMocks,
+      ethang_rss: rssMocks
+    };
+  };
+
+  beforeEach(() => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(MOCK_USER, { status: 200 })
+    );
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it.each(
+    map(COURSES_METHODS, (method) => {
+      return {
+        expectedTag: `ethang-react-rpc:ethang_courses:${method}`,
+        method,
+        service: "ethang_courses"
+      };
+    })
+  )(
+    "ethang_courses.$method sets Cache-Control and Cache-Tag",
+    async ({ expectedTag, method, service }) => {
+      const environment = buildCacheHeaderEnvironment();
+
+      const request = new Request(TEST_URL, {
+        body: JSON.stringify({ method, params: {}, service }),
+        headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
+        method: HTTP_POST
+      });
+
+      // @ts-expect-error test double
+      const response = await worker.fetch(request, environment);
+      expect(response.status).toBe(200);
+      expect(response.headers.get(CACHE_CONTROL_HEADER)).toBe(
+        PUBLIC_CACHE_CONTROL
+      );
+      expect(response.headers.get("Cache-Tag")).toBe(expectedTag);
+    }
+  );
+
+  it.each(
+    map(RSS_METHODS, (method) => {
+      return {
+        expectedTag: `ethang-react-rpc:ethang_rss:${method}`,
+        method,
+        service: "ethang_rss"
+      };
+    })
+  )(
+    "ethang_rss.$method sets Cache-Control and Cache-Tag",
+    async ({ expectedTag, method, service }) => {
+      const environment = buildCacheHeaderEnvironment();
+
+      const request = new Request(TEST_URL, {
+        body: JSON.stringify({ method, params: {}, service }),
+        headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
+        method: HTTP_POST
+      });
+
+      // @ts-expect-error test double
+      const response = await worker.fetch(request, environment);
+      expect(response.status).toBe(200);
+      expect(response.headers.get(CACHE_CONTROL_HEADER)).toBe(
+        PUBLIC_CACHE_CONTROL
+      );
+      expect(response.headers.get("Cache-Tag")).toBe(expectedTag);
+    }
+  );
 });

@@ -5,6 +5,7 @@
   ],
   "dependencies": {
     "@ethang/intl": "workspace:*",
+    "@ethang/toolbelt": "workspace:*",
     "@sanity/client": "^7.23.0",
     "drizzle-orm": "^0.45.2",
     "effect": "^3.21.4",

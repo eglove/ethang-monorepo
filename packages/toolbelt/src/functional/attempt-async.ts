@@ -1,14 +1,11 @@
-import { Effect } from "effect";
+import isError from "lodash/isError.js";
 
-export const attemptAsync = <A>(
+export const attemptAsync = async <A>(
   callback: () => Promise<A>
-): Effect.Effect<A, Error> => {
-  return Effect.tryPromise({
-    catch: (error: unknown) => {
-      return Error.isError(error)
-        ? error
-        : new Error(`${callback.name} failed`);
-    },
-    try: callback
-  });
+): Promise<A | Error> => {
+  try {
+    return await callback();
+  } catch (error: unknown) {
+    return isError(error) ? error : new Error(`${callback.name} failed`);
+  }
 };

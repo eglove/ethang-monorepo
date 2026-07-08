@@ -1,5 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
+  "cache": {
+    "enabled": true
+  },
   "compatibility_date": "2026-07-05",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [

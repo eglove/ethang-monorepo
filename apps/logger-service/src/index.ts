@@ -1,5 +1,6 @@
 import { LogQuerySchema } from "@ethang/schemas/logger/log-query-schema.ts";
 import { LogIngestSchema } from "@ethang/schemas/logger/log-schema.ts";
+import { withCacheHeaders } from "@ethang/toolbelt/cache/cache-control.js";
 import { and, eq, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { DateTime, Effect, Either, Option, Schema } from "effect";
@@ -242,7 +243,11 @@ app.get("/logs", async (c) => {
   if (undefined === results) {
     return c.json({ error: "Database error" }, 500);
   }
-  return c.json({ logs: cleanLogRows(results) });
+  const response = c.json({ logs: cleanLogRows(results) });
+  return withCacheHeaders(response, {
+    cacheControl: { maxAge: 30, scope: "private", swr: 300 },
+    tags: ["logs"]
+  });
 });
 
 export default app;

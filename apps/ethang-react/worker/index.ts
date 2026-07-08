@@ -1,4 +1,5 @@
 import { TokenSchema } from "@ethang/schemas/auth/token-schema.js";
+import { withCacheHeaders } from "@ethang/toolbelt/cache/cache-control.js";
 import { Effect, Schema } from "effect";
 import isNil from "lodash/isNil.js";
 import startsWith from "lodash/startsWith.js";
@@ -151,7 +152,19 @@ const handleRpcRequest = async (
     return result;
   }
 
-  return Response.json(result);
+  // Per the Cloudflare Workers Cache blog post, the binding call below is made
+  // WITHOUT forwarding the inbound request, so the header-based cache bypass
+  // does NOT apply at the binding boundary. The cache key is the tuple
+  // (service, method, params). Per-user correctness is the responsibility of
+  // the backend services, which set `Cache-Control: private, no-store` on
+  // responses for user-specific methods (e.g. courseTracking, subscriptions).
+  // If the backend returned a Response (e.g. with a private cache header), it
+  // was returned verbatim above. Otherwise, wrap the JSON body with public
+  // cache headers and a service/method tag for targeted purges.
+  return withCacheHeaders(Response.json(result), {
+    cacheControl: { maxAge: 300, scope: "public", swr: 3600 },
+    tags: [`ethang-react-rpc:${service}:${method}`]
+  });
 };
 
 export default {
