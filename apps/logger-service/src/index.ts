@@ -8,6 +8,7 @@ import { Hono } from "hono";
 import constant from "lodash/constant.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
+import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import split from "lodash/split.js";
@@ -31,11 +32,15 @@ export const app = new Hono<{ Bindings: Bindings }>();
 const getSecretValue = async (
   secret: SecretsStoreSecret | string
 ): Promise<string> => {
-  if (!isString(secret) && !isNil(secret)) {
+  if (isString(secret)) {
+    return secret;
+  }
+
+  if (!isNil(secret) && isObject(secret)) {
     return secret.get();
   }
 
-  return isString(secret) ? secret : "";
+  return "";
 };
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
