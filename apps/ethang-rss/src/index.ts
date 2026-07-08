@@ -1,4 +1,5 @@
 import { LoggerClient } from "@ethang/logger-sdk";
+import { createCachedJsonResponse } from "@ethang/toolbelt/cache/cache-control.js";
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
 import { Effect, pipe } from "effect";
@@ -59,7 +60,10 @@ export default class extends WorkerEntrypoint<Env> {
     const { sessionToken, xmlAddress } = parameters;
     const user = await verifySessionToken(sessionToken);
     const database = createDatabase(this.env.ethang_rss);
-    return addSubscriptionMutation(database, { xmlAddress }, user);
+    await addSubscriptionMutation(database, { xmlAddress }, user);
+    return createCachedJsonResponse(undefined, {
+      cacheControl: { scope: "no-store" }
+    });
   }
 
   public async allArticles(parameters: {
@@ -73,7 +77,11 @@ export default class extends WorkerEntrypoint<Env> {
 
     const database = createDatabase(this.env.ethang_rss);
 
-    return allArticlesQuery(database, queryParameters, user);
+    const result = await allArticlesQuery(database, queryParameters, user);
+    return createCachedJsonResponse(result, {
+      cacheControl: { scope: "no-store" },
+      vary: ["Cookie"]
+    });
   }
 
   public async feedArticles(parameters: {
@@ -88,7 +96,11 @@ export default class extends WorkerEntrypoint<Env> {
 
     const database = createDatabase(this.env.ethang_rss);
 
-    return feedArticlesQuery(database, queryParameters, user);
+    const result = await feedArticlesQuery(database, queryParameters, user);
+    return createCachedJsonResponse(result, {
+      cacheControl: { scope: "no-store" },
+      vary: ["Cookie"]
+    });
   }
 
   public override fetch(): Response {
@@ -105,7 +117,14 @@ export default class extends WorkerEntrypoint<Env> {
 
     const database = createDatabase(this.env.ethang_rss);
 
-    return markArticleReadMutation(database, queryParameters, user);
+    const result = await markArticleReadMutation(
+      database,
+      queryParameters,
+      user
+    );
+    return createCachedJsonResponse(result, {
+      cacheControl: { scope: "no-store" }
+    });
   }
 
   public async removeSubscription(parameters: {
@@ -115,7 +134,10 @@ export default class extends WorkerEntrypoint<Env> {
     const { sessionToken, ...mutationParameters } = parameters;
     const user = await verifySessionToken(sessionToken);
     const database = createDatabase(this.env.ethang_rss);
-    return removeSubscriptionMutation(database, mutationParameters, user);
+    await removeSubscriptionMutation(database, mutationParameters, user);
+    return createCachedJsonResponse(undefined, {
+      cacheControl: { scope: "no-store" }
+    });
   }
 
   public override async scheduled(event: ScheduledEvent) {
@@ -177,7 +199,11 @@ export default class extends WorkerEntrypoint<Env> {
   public async subscription(parameters: { feedId: string }) {
     const database = createDatabase(this.env.ethang_rss);
 
-    return subscriptionQuery(database, parameters);
+    const result = await subscriptionQuery(database, parameters);
+    return createCachedJsonResponse(result, {
+      cacheControl: { maxAge: 300, scope: "public", swr: 3600 },
+      tags: ["subscriptions", `subscription:${parameters.feedId}`]
+    });
   }
 
   public async subscriptions(parameters: {
@@ -194,7 +220,11 @@ export default class extends WorkerEntrypoint<Env> {
 
     const database = createDatabase(this.env.ethang_rss);
 
-    return subscriptionsQuery(database, queryParameters, user);
+    const result = await subscriptionsQuery(database, queryParameters, user);
+    return createCachedJsonResponse(result, {
+      cacheControl: { scope: "no-store" },
+      vary: ["Cookie"]
+    });
   }
 }
 

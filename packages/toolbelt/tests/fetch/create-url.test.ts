@@ -121,6 +121,29 @@ describe("url builder", () => {
     expect(result.message).toBe("Invalid URL");
   });
 
+  it("should wrap non-Error url constructor rejections in an Error", async () => {
+    const original = URL;
+    class ThrowingURL {
+      public searchParams: URLSearchParams = new URLSearchParams();
+      public toString(): string {
+        return "throwing";
+      }
+    }
+    (globalThis as unknown as { URL: unknown }).URL = function () {
+      throw "string-failure";
+    };
+    try {
+      const result = await Effect.runPromise(
+        createUrl("todos", { urlBase: "https://example.com" }).pipe(Effect.flip)
+      );
+      expect(result).toBeInstanceOf(Error);
+      expect(result.message).toBe("string-failure");
+    } finally {
+      (globalThis as unknown as { URL: unknown }).URL = original;
+      void ThrowingURL;
+    }
+  });
+
   it("should return error for incorrect search params schema", async () => {
     const result = await Effect.runPromise(
       createUrl("todos", {

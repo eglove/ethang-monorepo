@@ -12,26 +12,26 @@
     "@tailwindcss/cli": "^4.3.2",
     "calendar-link": "^2.11.4",
     "effect": "^3.21.4",
-    "hono": "^4.12.27",
+    "hono": "^4.12.28",
     "lodash": "^4.18.1",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.25.2",
+    "@ethang/eslint-config": "^25.25.5",
     "@faker-js/faker": "^10.5.0",
     "@portabletext/types": "^4.0.2",
     "@tailwindcss/typography": "^0.5.20",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^26.1.0",
-    "@vitest/coverage-v8": "^4.1.9",
+    "@types/node": "^26.1.1",
+    "@vitest/coverage-v8": "^4.1.10",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.6.0",
     "tsx": "^4.23.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.9",
-    "wrangler": "^4.107.0"
+    "vitest": "^4.1.10",
+    "wrangler": "^4.108.0"
   },
   "engines": {
     "node": ">=24"

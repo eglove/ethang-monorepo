@@ -155,79 +155,87 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     for (const feed of feeds) {
       // eslint-disable-next-line no-await-in-loop
       await step.do(`fetch-feed-${feed.id}`, async () => {
-        const error = await attemptAsync(async () => {
-          const response = await fetch(feed.xmlAddress);
-          const xml = await response.text();
-          const parsedMeta = parseFeedMetadata(xml);
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-          const result = parser.parse(xml) as unknown as FeedResult;
+        const fetchError = await Effect.runPromise(
+          attemptAsync(async () => {
+            const response = await fetch(feed.xmlAddress);
+            const xml = await response.text();
+            const parsedMeta = parseFeedMetadata(xml);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+            const parseResult = parser.parse(xml) as unknown as FeedResult;
 
-          const rawItems =
-            result.rss?.channel?.item ?? result.feed?.entry ?? [];
-          const items = isArray(rawItems) ? rawItems : [rawItems];
+            const rawItems =
+              parseResult.rss?.channel?.item ?? parseResult.feed?.entry ?? [];
+            const items = isArray(rawItems) ? rawItems : [rawItems];
 
-          const normalizedItems = map(items, (item) => {
-            const link = normalizeLink(item);
-            const guid = normalizeGuid(item, link);
-            const content = normalizeContent(item);
-            const title = normalizeTitle(item);
+            const normalizedItems = map(items, (item) => {
+              const link = normalizeLink(item);
+              const guid = normalizeGuid(item, link);
+              const content = normalizeContent(item);
+              const title = normalizeTitle(item);
 
-            const publishedAt = normalizeDate(
-              item.pubDate ?? item.published ?? item.updated
-            );
+              const publishedAt = normalizeDate(
+                item.pubDate ?? item.published ?? item.updated
+              );
 
-            return {
-              content,
-              feedId: feed.id,
-              guid,
-              link,
-              publishedAt,
-              title
+              return {
+                content,
+                feedId: feed.id,
+                guid,
+                link,
+                publishedAt,
+                title
+              };
+            });
+
+            const filteredItems = filter(normalizedItems, (item) => {
+              return !YOUTUBE_SHORTS_REGEX.test(item.link);
+            });
+
+            const insertPromises = map(filteredItems, async (item) => {
+              if (isNil(item.guid) || "" === item.guid) {
+                return;
+              }
+
+              return database
+                .insert(articlesTable)
+                .values(item)
+                .onConflictDoNothing();
+            });
+
+            await Promise.all(insertPromises);
+
+            const updateFields: Partial<typeof feedsTable.$inferInsert> = {
+              lastFetchedAt: DateTime.formatIso(DateTime.unsafeNow())
             };
-          });
 
-          const filteredItems = filter(normalizedItems, (item) => {
-            return !YOUTUBE_SHORTS_REGEX.test(item.link);
-          });
-
-          const insertPromises = map(filteredItems, async (item) => {
-            if (isNil(item.guid) || "" === item.guid) {
-              return;
+            if ("" !== parsedMeta.title) {
+              updateFields.title = parsedMeta.title;
             }
 
-            return database
-              .insert(articlesTable)
-              .values(item)
-              .onConflictDoNothing();
-          });
+            if ("" !== parsedMeta.website) {
+              updateFields.website = parsedMeta.website;
+            }
 
-          await Promise.all(insertPromises);
-
-          const updateFields: Partial<typeof feedsTable.$inferInsert> = {
-            lastFetchedAt: DateTime.formatIso(DateTime.unsafeNow())
-          };
-
-          if ("" !== parsedMeta.title) {
-            updateFields.title = parsedMeta.title;
+            await database
+              .update(feedsTable)
+              .set(updateFields)
+              .where(eq(feedsTable.id, feed.id));
+          })
+        ).catch((error: unknown) => {
+          if (isError(error)) {
+            return error;
           }
 
-          if ("" !== parsedMeta.website) {
-            updateFields.website = parsedMeta.website;
-          }
-
-          await database
-            .update(feedsTable)
-            .set(updateFields)
-            .where(eq(feedsTable.id, feed.id));
+          return new Error("failed");
         });
 
-        if (isError(error)) {
+        if (isError(fetchError)) {
           logger.error(
             `Failed to fetch feed ${feed.xmlAddress}`,
             undefined,
-            error.stack
+            fetchError.stack
           );
-          throw error; // Rethrow so Workflow can retry if configured
+          throw fetchError; // Rethrow so Workflow can retry if configured
         }
       });
     }

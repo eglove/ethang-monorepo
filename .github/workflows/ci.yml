@@ -23,6 +23,7 @@ jobs:
           node-version: "24"
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile --prefer-offline
+      - run: pnpm build
       - run: pnpm lint
       - run: git diff --exit-code
 
@@ -52,6 +53,7 @@ jobs:
           node-version: "24"
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile --prefer-offline
+      - run: pnpm build
       - run: pnpm test
       - uses: SonarSource/sonarqube-scan-action@299e4b793aaa83bf2aba7c9c14bedbb485688ec4 # v7
         env:

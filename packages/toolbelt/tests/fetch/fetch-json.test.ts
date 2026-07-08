@@ -35,4 +35,46 @@ describe(fetchJson, () => {
     expect(result).toBeInstanceOf(Error);
     vi.unstubAllGlobals();
   });
+
+  it("wraps non-Error fetch rejections in an Error", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue("string-failure"));
+
+    const result = await Effect.runPromise(
+      fetchJson("https://example.com", Schema.Struct({ name: Schema.String })).pipe(
+        Effect.flip
+      )
+    );
+
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toBe("string-failure");
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps non-Error fetch rejections in an Error", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue("string-failure"));
+
+    const result = await Effect.runPromise(
+      fetchJson("https://example.com", Schema.Struct({ name: Schema.String })).pipe(
+        Effect.flip
+      )
+    );
+
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toBe("string-failure");
+    vi.unstubAllGlobals();
+  });
+
+  it("propagates Error fetch rejections unchanged", async () => {
+    const originalError = new TypeError("network down");
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(originalError));
+
+    const result = await Effect.runPromise(
+      fetchJson("https://example.com", Schema.Struct({ name: Schema.String })).pipe(
+        Effect.flip
+      )
+    );
+
+    expect(result).toBe(originalError);
+    vi.unstubAllGlobals();
+  });
 });

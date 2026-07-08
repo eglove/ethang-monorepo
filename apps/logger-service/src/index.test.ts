@@ -126,6 +126,10 @@ describe("apps/logger-service - GET /logs", () => {
     );
 
     expect(response.status).toBe(200);
+    expect(response.headers.get("Cache-Control")).toBe(
+      "private, max-age=30, stale-while-revalidate=300"
+    );
+    expect(response.headers.get("Cache-Tag")).toBe("logs");
 
     const body = await response.json();
 
@@ -164,6 +168,49 @@ describe("apps/logger-service - GET /logs", () => {
 
     expect(response.status).toBe(400);
   });
+
+  it.each([
+    { description: "no filters", query: "" },
+    {
+      description: "level filter only",
+      query: "?level=info"
+    },
+    {
+      description: "serviceName filter only",
+      query: `?serviceName=${AUTH_SERVICE_NAME}`
+    },
+    {
+      description: "level and serviceName filters",
+      query: `?level=info&serviceName=${AUTH_SERVICE_NAME}`
+    },
+    {
+      description: "level, serviceName, and environment filters",
+      query: `?level=error&serviceName=${SERVICE_NAME}&environment=${PRODUCTION_ENV}`
+    },
+    {
+      description: "all supported filters combined",
+      query: `?level=info&serviceName=${AUTH_SERVICE_NAME}&environment=${PRODUCTION_ENV}&startDate=2026-06-13T00:00:00.000Z&endDate=2026-06-13T23:59:59.000Z&limit=25&offset=10`
+    }
+  ])(
+    "sets Cache-Control and Cache-Tag headers on GET /logs response with $description",
+    async ({ query }) => {
+      const { mockEnvironment } = createMockEnvironment();
+
+      const response = await app.request(
+        `/logs${query}`,
+        {
+          headers: { "x-admin-key": ADMIN_SECRET_KEY }
+        },
+        mockEnvironment
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get("Cache-Control")).toBe(
+        "private, max-age=30, stale-while-revalidate=300"
+      );
+      expect(response.headers.get("Cache-Tag")).toBe("logs");
+    }
+  );
 });
 
 describe("apps/logger-service - POST /log Auth", () => {

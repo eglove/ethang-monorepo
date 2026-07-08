@@ -14,24 +14,25 @@
   },
   "dependencies": {
     "@ethang/schemas": "workspace:*",
+    "@ethang/toolbelt": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "effect": "^3.21.4",
-    "hono": "^4.12.27",
+    "hono": "^4.12.28",
     "lodash": "^4.18.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260705.1",
-    "@ethang/eslint-config": "^25.25.2",
+    "@cloudflare/workers-types": "^5.20260708.1",
+    "@ethang/eslint-config": "^25.25.5",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^26.1.0",
-    "@vitest/coverage-v8": "^4.1.9",
+    "@types/node": "^26.1.1",
+    "@vitest/coverage-v8": "^4.1.10",
     "browserslist-config-baseline": "^0.5.0",
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.6.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.9",
-    "wrangler": "^4.107.0"
+    "vitest": "^4.1.10",
+    "wrangler": "^4.108.0"
   },
   "browserslist": [
     "extends browserslist-config-baseline",

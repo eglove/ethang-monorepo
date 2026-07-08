@@ -1,3 +1,10 @@
+// Calls of the form `env.ethang_courses.<method>(params)` and
+// `env.ethang_rss.<method>(params)` are service-binding RPC calls. Per the
+// Cloudflare Workers Cache blog post, these calls also flow through the
+// callee's cache when caching is enabled in the callee's wrangler config, so
+// the backend services remain the source of truth for per-response caching
+// policy (including the `private, no-store` directive on user-specific
+// methods).
 import isNil from "lodash/isNil.js";
 
 type RpcBinding = {

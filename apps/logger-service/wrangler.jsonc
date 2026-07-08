@@ -2,8 +2,11 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "logger-service",
   "main": "src/index.ts",
-  "compatibility_date": "2026-07-05",
+  "compatibility_date": "2026-07-08",
   "compatibility_flags": ["nodejs_compat"],
+  "cache": {
+    "enabled": true
+  },
   "observability": {
     "enabled": true
   },

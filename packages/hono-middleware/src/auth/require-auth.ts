@@ -1,7 +1,7 @@
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
+import { Effect } from "effect";
 import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
-import isError from "lodash/isError.js";
 
 export type AuthConfig = {
   cookieName?: string;
@@ -19,7 +19,7 @@ export const requireAuth = (config?: AuthConfig) => {
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const result = await attemptAsync(async () => {
+    const verify = async (): Promise<void> => {
       const response = await fetch(verifyUrl, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -27,16 +27,17 @@ export const requireAuth = (config?: AuthConfig) => {
       });
 
       if (!response.ok) {
-        return new Error("Unauthorized");
+        throw new Error("Unauthorized");
       }
 
       const data: unknown = await response.json();
 
       c.set("user", data);
-      return null;
-    });
+    };
 
-    if (isError(result)) {
+    const exit = await Effect.runPromiseExit(attemptAsync(verify));
+
+    if ("Failure" === exit._tag) {
       return c.json({ error: "Unauthorized" }, 401);
     }
 

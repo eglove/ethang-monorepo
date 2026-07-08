@@ -78,4 +78,20 @@ describe("error cases", () => {
     expect(result).toBeInstanceOf(Error);
     expect(result.message).toBe("Unexpected end of JSON input");
   });
+
+  it("wraps non-Error json() rejections in an Error", async () => {
+    const fakeResponse = {
+      json: () => Promise.reject("string-failure")
+    } as unknown as Response;
+
+    const result = await Effect.runPromise(
+      parseFetchJson(
+        fakeResponse,
+        Schema.Array(Schema.Struct({ fail: Schema.String }))
+      ).pipe(Effect.flip)
+    );
+
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toBe("string-failure");
+  });
 });

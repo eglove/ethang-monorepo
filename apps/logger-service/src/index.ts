@@ -1,5 +1,6 @@
 import { LogQuerySchema } from "@ethang/schemas/logger/log-query-schema.ts";
 import { LogIngestSchema } from "@ethang/schemas/logger/log-schema.ts";
+import { withCacheHeaders } from "@ethang/toolbelt/cache/cache-control.js";
 import { and, eq, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { DateTime, Effect, Either, Option, Schema } from "effect";
@@ -7,6 +8,8 @@ import { Hono } from "hono";
 import constant from "lodash/constant.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
+import isObject from "lodash/isObject.js";
+import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import split from "lodash/split.js";
 
@@ -26,20 +29,18 @@ type Bindings = {
 
 export const app = new Hono<{ Bindings: Bindings }>();
 
-const getSecretValue = async (secret: unknown): Promise<string> => {
-  if (
-    // eslint-disable-next-line lodash/prefer-lodash-typecheck
-    "object" === typeof secret &&
-    null !== secret &&
-    "get" in secret &&
-    // eslint-disable-next-line lodash/prefer-lodash-typecheck
-    "function" === typeof secret.get
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    return (secret as { get: () => Promise<string> }).get();
+const getSecretValue = async (
+  secret: SecretsStoreSecret | string
+): Promise<string> => {
+  if (isString(secret)) {
+    return secret;
   }
-  // eslint-disable-next-line lodash/prefer-lodash-typecheck
-  return "string" === typeof secret ? secret : "";
+
+  if (!isNil(secret) && isObject(secret)) {
+    return secret.get();
+  }
+
+  return "";
 };
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -242,7 +243,11 @@ app.get("/logs", async (c) => {
   if (undefined === results) {
     return c.json({ error: "Database error" }, 500);
   }
-  return c.json({ logs: cleanLogRows(results) });
+  const response = c.json({ logs: cleanLogRows(results) });
+  return withCacheHeaders(response, {
+    cacheControl: { maxAge: 30, scope: "private", swr: 300 },
+    tags: ["logs"]
+  });
 });
 
 export default app;

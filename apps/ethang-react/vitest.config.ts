@@ -11,10 +11,10 @@ export default defineConfig({
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 97.28,
-        functions: 92.46,
-        lines: 94.55,
-        statements: 94.55
+        branches: 97.3,
+        functions: 92.96,
+        lines: 94.67,
+        statements: 94.67
       }
     },
     environment: "jsdom",

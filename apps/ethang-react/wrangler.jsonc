@@ -3,8 +3,19 @@
   "assets": {
     "not_found_handling": "single-page-application"
   },
-  "compatibility_date": "2026-07-05",
+  "cache": {
+    "enabled": true
+  },
+  "compatibility_date": "2026-07-08",
   "compatibility_flags": ["nodejs_compat"],
+  "exports": {
+    "default": {
+      "cache": {
+        "enabled": true
+      },
+      "type": "worker"
+    }
+  },
   "main": "worker/index.ts",
   "name": "ethang-react",
   "observability": {
