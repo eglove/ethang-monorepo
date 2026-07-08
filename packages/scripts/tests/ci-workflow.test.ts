@@ -304,6 +304,7 @@ describe("CI Workflow Validation", () => {
       "pnpm-setup",
       "setup-node",
       "install",
+      "build",
       "test",
       "sonar"
     ]);
