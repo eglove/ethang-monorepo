@@ -1,4 +1,4 @@
-import isError from "lodash/isError.js";
+import { Effect } from "effect";
 import { describe, expect, it } from "vitest";
 
 import { attemptAsync } from "../../src/functional/attempt-async.js";
@@ -9,9 +9,8 @@ describe("attemptAsync", () => {
       body: JSON.stringify({ name: "John" }),
       method: "POST"
     });
-    const body = await attemptAsync(() => request.json());
+    const body = await Effect.runPromise(attemptAsync(() => request.json()));
 
-    expect(isError(body)).toBe(false);
     expect(body).toStrictEqual({ name: "John" });
   });
 
@@ -20,7 +19,7 @@ describe("attemptAsync", () => {
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw "string error";
     };
-    const body = await attemptAsync(fn);
+    const body = await Effect.runPromise(attemptAsync(fn).pipe(Effect.flip));
 
     expect(body).toBeInstanceOf(Error);
     if (body instanceof Error) {
@@ -33,9 +32,10 @@ describe("attemptAsync", () => {
       body: "",
       method: "POST"
     });
-    const body = await attemptAsync(() => request.json());
+    const body = await Effect.runPromise(
+      attemptAsync(() => request.json()).pipe(Effect.flip)
+    );
 
-    expect(isError(body)).toBe(true);
     expect(body).toBeInstanceOf(SyntaxError);
 
     if (body instanceof SyntaxError) {

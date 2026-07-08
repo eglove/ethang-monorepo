@@ -1,7 +1,9 @@
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { eq } from "drizzle-orm";
+import { Effect } from "effect";
 import attempt from "lodash/attempt.js";
 import isNil from "lodash/isNil.js";
+import noop from "lodash/noop.js";
 import trim from "lodash/trim.js";
 
 import type { User } from "../../index.ts";
@@ -16,22 +18,24 @@ const fetchDerivedMetadata = async (xmlAddress: string) => {
     website: ""
   };
 
-  await attemptAsync(async () => {
-    const response = await globalThis.fetch(xmlAddress);
+  await Effect.runPromise(
+    attemptAsync(async () => {
+      const response = await globalThis.fetch(xmlAddress);
 
-    if (response.ok) {
-      const xmlText = await response.text();
-      const parsedMeta = parseFeedMetadata(xmlText);
+      if (response.ok) {
+        const xmlText = await response.text();
+        const parsedMeta = parseFeedMetadata(xmlText);
 
-      if (parsedMeta.title) {
-        derived.title = parsedMeta.title;
+        if (parsedMeta.title) {
+          derived.title = parsedMeta.title;
+        }
+
+        if (parsedMeta.website) {
+          derived.website = parsedMeta.website;
+        }
       }
-
-      if (parsedMeta.website) {
-        derived.website = parsedMeta.website;
-      }
-    }
-  });
+    })
+  ).catch(noop);
 
   return derived;
 };
@@ -56,17 +60,19 @@ const fillMissingFromUrl = (
 const fetchIconUrl = async (website: string) => {
   let iconUrl: null | string = null;
 
-  await attemptAsync(async () => {
-    const websiteResponse = await globalThis.fetch(website);
+  await Effect.runPromise(
+    attemptAsync(async () => {
+      const websiteResponse = await globalThis.fetch(website);
 
-    if (websiteResponse.ok) {
-      const html = await websiteResponse.text();
-      const extracted = extractIconUrl(html, website);
-      if (!isNil(extracted)) {
-        iconUrl = extracted;
+      if (websiteResponse.ok) {
+        const html = await websiteResponse.text();
+        const extracted = extractIconUrl(html, website);
+        if (!isNil(extracted)) {
+          iconUrl = extracted;
+        }
       }
-    }
-  });
+    })
+  ).catch(noop);
 
   return iconUrl;
 };

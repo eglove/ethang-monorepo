@@ -1,6 +1,7 @@
 import { auth } from "@ethang/intl/en/auth.ts";
 import { BaseStore } from "@ethang/store";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
+import { Effect } from "effect";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
 import isObject from "lodash/isObject.js";
@@ -54,57 +55,65 @@ export class AuthStore extends BaseStore<typeof initialState> {
       draft.error = null;
     });
 
-    const result = await attemptAsync(async () => {
-      const response = await fetch("https://auth.ethang.dev/sign-in", {
-        body: JSON.stringify({ email, password }),
-        headers: {
-          "Content-Type": "application/json"
-        },
-        method: "POST"
-      });
+    const result = await Effect.runPromise(
+      attemptAsync(async () => {
+        const response = await fetch("https://auth.ethang.dev/sign-in", {
+          body: JSON.stringify({ email, password }),
+          headers: {
+            "Content-Type": "application/json"
+          },
+          method: "POST"
+        });
 
-      const data: {
-        email: string;
-        error: string;
-        sessionToken: string;
-        username: string;
-      } = await response.json();
+        const data: {
+          email: string;
+          error: string;
+          sessionToken: string;
+          username: string;
+        } = await response.json();
 
-      const {
-        email: emailValue,
-        error: errorValue,
-        sessionToken: sessionTokenValue,
-        username: usernameValue
-      } = data;
+        const {
+          email: emailValue,
+          error: errorValue,
+          sessionToken: sessionTokenValue,
+          username: usernameValue
+        } = data;
 
-      if (!response.ok) {
-        const errorMessage = isString(errorValue)
-          ? errorValue
-          : auth.FAILED_TO_SIGN_IN;
-        throw new Error(errorMessage);
+        if (!response.ok) {
+          const errorMessage = isString(errorValue)
+            ? errorValue
+            : auth.FAILED_TO_SIGN_IN;
+          throw new Error(errorMessage);
+        }
+
+        if (
+          !isString(emailValue) ||
+          !isString(sessionTokenValue) ||
+          !isString(usernameValue)
+        ) {
+          throw new TypeError(auth.INVALID_RESPONSE);
+        }
+
+        const user: User = {
+          email: emailValue,
+          sessionToken: sessionTokenValue,
+          username: usernameValue
+        };
+
+        localStorage.setItem(AuthStore.USER_KEY, JSON.stringify(user));
+
+        this.update((draft) => {
+          draft.user = user;
+          draft.isPending = false;
+          draft.error = null;
+        });
+      })
+    ).catch((error: unknown) => {
+      if (isError(error)) {
+        return error;
       }
 
-      if (
-        !isString(emailValue) ||
-        !isString(sessionTokenValue) ||
-        !isString(usernameValue)
-      ) {
-        throw new TypeError(auth.INVALID_RESPONSE);
-      }
-
-      const user: User = {
-        email: emailValue,
-        sessionToken: sessionTokenValue,
-        username: usernameValue
-      };
-
-      localStorage.setItem(AuthStore.USER_KEY, JSON.stringify(user));
-
-      this.update((draft) => {
-        draft.user = user;
-        draft.isPending = false;
-        draft.error = null;
-      });
+      return new Error("failed");
     });
 
     if (isError(result)) {

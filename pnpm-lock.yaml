@@ -954,8 +954,8 @@ importers:
   packages/hono-middleware:
     dependencies:
       '@ethang/toolbelt':
-        specifier: ^5.0.2
-        version: 5.0.2
+        specifier: workspace:*
+        version: link:../toolbelt
       effect:
         specifier: ^3.21.4
         version: 3.21.4
@@ -1246,8 +1246,8 @@ importers:
   packages/store:
     dependencies:
       '@ethang/toolbelt':
-        specifier: 5.0.2
-        version: 5.0.2
+        specifier: workspace:*
+        version: link:../toolbelt
       effect:
         specifier: ^3.21.4
         version: 3.21.4
