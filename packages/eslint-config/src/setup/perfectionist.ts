@@ -7,6 +7,10 @@ import { genRules, getNonDeprecatedRules } from "./gen-rules.ts";
 const ruleNames = keys(getNonDeprecatedRules(perfectionist.rules));
 const customRules = [
   {
+    name: "sort-arrays",
+    rule: "off"
+  },
+  {
     name: "sort-jsx-props",
     rule: [
       "error",

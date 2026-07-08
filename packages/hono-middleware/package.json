@@ -6,20 +6,20 @@
   "dependencies": {
     "@ethang/toolbelt": "workspace:*",
     "effect": "^3.21.4",
-    "hono": "^4.12.27",
+    "hono": "^4.12.28",
     "lodash": "^4.18.1"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.25.2",
+    "@ethang/eslint-config": "^25.25.5",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^26.1.0",
+    "@types/node": "^26.1.1",
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.6.0",
     "rimraf": "^6.1.3",
     "typescript": "^6.0.3",
     "vite": "^8.1.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "engines": {
     "node": ">=24"
