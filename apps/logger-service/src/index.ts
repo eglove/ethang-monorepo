@@ -7,9 +7,7 @@ import { DateTime, Effect, Either, Option, Schema } from "effect";
 import { Hono } from "hono";
 import constant from "lodash/constant.js";
 import includes from "lodash/includes.js";
-import isFunction from "lodash/isFunction.js";
 import isNil from "lodash/isNil.js";
-import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 import split from "lodash/split.js";
@@ -30,15 +28,11 @@ type Bindings = {
 
 export const app = new Hono<{ Bindings: Bindings }>();
 
-const getSecretValue = async (secret: unknown): Promise<string> => {
-  if (
-    isObject(secret) &&
-    !isNil(secret) &&
-    "get" in secret &&
-    isFunction(secret.get)
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    return (secret as { get: () => Promise<string> }).get();
+const getSecretValue = async (
+  secret: SecretsStoreSecret | string
+): Promise<string> => {
+  if (!isString(secret) && !isNil(secret)) {
+    return secret.get();
   }
 
   return isString(secret) ? secret : "";
