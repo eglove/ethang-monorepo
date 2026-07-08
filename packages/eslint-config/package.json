@@ -14,6 +14,8 @@
     "@eslint/js": "^10.0.1",
     "@eslint/json": "^2.0.1",
     "@eslint/markdown": "^8.0.3",
+    "@ethang/markdown-generator": "workspace:*",
+    "@ethang/toolbelt": "workspace:*",
     "@html-eslint/eslint-plugin": "^0.63.0",
     "@tanstack/eslint-plugin-query": "^5.101.2",
     "@tanstack/eslint-plugin-router": "^1.162.0",
@@ -38,8 +40,6 @@
     "typescript-eslint": "^8.63.0"
   },
   "devDependencies": {
-    "@ethang/markdown-generator": "^2.0.2",
-    "@ethang/toolbelt": "^5.0.2",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
@@ -60,8 +60,11 @@
   "engines": {
     "node": ">=24"
   },
+  "exports": {
+    "./*": "./src/*"
+  },
   "license": "ISC",
-  "main": "config.main.js",
+  "main": "src/config.main.js",
   "name": "@ethang/eslint-config",
   "repository": {
     "url": "git+https://github.com/eglove/ethang-monorepo.git#master"

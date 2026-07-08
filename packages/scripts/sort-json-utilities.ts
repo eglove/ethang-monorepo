@@ -1,9 +1,8 @@
-import { parseJson } from "@ethang/toolbelt/json/json.js";
-import { Schema } from "effect";
+import { parseJson } from "@ethang/toolbelt/json/json.ts";
+import { Effect, Schema } from "effect";
 import get from "lodash/get.js";
 import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
-import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import keys from "lodash/keys.js";
@@ -46,14 +45,16 @@ export const sortJson = (filePath: string) => {
   }
 
   const fileContent = readFileSync(absolutePath, "utf8");
-  const jsonObject = parseJson(fileContent, Schema.Unknown);
+  const result = Effect.runSync(
+    parseJson(fileContent, Schema.Unknown).pipe(Effect.either)
+  );
 
-  if (isError(jsonObject)) {
-    globalThis.console.error("Failed to parse JSON", jsonObject);
+  if ("Left" === result._tag) {
+    globalThis.console.error("Failed to parse JSON", result.left);
     return;
   }
 
-  const sortedJson = recursiveSort(jsonObject);
+  const sortedJson = recursiveSort(result.right);
 
   writeFileSync(absolutePath, JSON.stringify(sortedJson, null, 2), "utf8");
 
@@ -79,7 +80,7 @@ export const findFilesRecursively = (
     } else if (entry.isFile() && entry.name === filename) {
       results.push(entryPath);
     } else {
-      // Do nothing
+      // Ignore other files
     }
   }
 

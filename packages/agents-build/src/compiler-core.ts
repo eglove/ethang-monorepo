@@ -1,4 +1,4 @@
-import { generateMarkdown } from "@ethang/markdown-generator/markdown-generator.js";
+import { generateMarkdown } from "@ethang/markdown-generator";
 import { Effect } from "effect";
 import constant from "lodash/constant.js";
 import filter from "lodash/filter.js";

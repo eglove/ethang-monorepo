@@ -24,7 +24,9 @@ describe("get-react-version", () => {
       vi.fn().mockRejectedValue(new Error("Network error"))
     );
 
-    await expect(getLatestReact()).rejects.toThrow("Network error");
+    const result = await getLatestReact();
+
+    expect(result).toBeUndefined();
   });
 
   it("should return undefined on invalid json", async () => {
