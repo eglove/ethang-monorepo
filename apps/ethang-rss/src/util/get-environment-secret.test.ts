@@ -1,10 +1,6 @@
-import { Effect } from "effect";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-import {
-  getEnvironmentString,
-  getSecretValue
-} from "./get-environment-secret.ts";
+import { getEnvironmentString } from "./get-environment-secret.ts";
 
 describe("getEnvironmentString", () => {
   it("returns value if key exists and is a string", () => {
@@ -25,25 +21,5 @@ describe("getEnvironmentString", () => {
   it("returns undefined if input is not an object", () => {
     expect(getEnvironmentString(null, "ENVIRONMENT")).toBeUndefined();
     expect(getEnvironmentString("string", "ENVIRONMENT")).toBeUndefined();
-  });
-});
-
-describe("getSecretValue", () => {
-  it("returns string value if secret has get function", async () => {
-    const secret = {
-      get: vi.fn().mockResolvedValue("my-secret-key")
-    };
-    await expect(Effect.runPromise(getSecretValue(secret))).resolves.toBe(
-      "my-secret-key"
-    );
-  });
-
-  it("returns undefined if secret.get throws an error", async () => {
-    const secret = {
-      get: vi.fn().mockRejectedValue(new Error("Failed to get secret"))
-    };
-    await expect(
-      Effect.runPromise(getSecretValue(secret))
-    ).resolves.toBeUndefined();
   });
 });

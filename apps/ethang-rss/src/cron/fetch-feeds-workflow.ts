@@ -1,4 +1,3 @@
-import { LoggerClient } from "@ethang/logger-sdk";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import {
   WorkflowEntrypoint,
@@ -12,18 +11,12 @@ import { XMLParser } from "fast-xml-parser";
 import filter from "lodash/filter.js";
 import find from "lodash/find.js";
 import isArray from "lodash/isArray.js";
-import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
-import convertToString from "lodash/toString.js";
 
 import { articlesTable, feedsTable } from "../db/schema.ts";
-import {
-  getEnvironmentString,
-  getSecretValue
-} from "../util/get-environment-secret.ts";
 import { normalizeDate } from "../util/normalize-date.ts";
 import { parseFeedMetadata } from "../util/parse-feed-metadata.ts";
 
@@ -135,17 +128,6 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     _event: WorkflowEvent<unknown>,
     step: WorkflowStep
   ): Promise<void> {
-    const apiKey = convertToString(
-      await Effect.runPromise(getSecretValue(this.env.LOGGER_API_KEY))
-    );
-    const environmentName =
-      getEnvironmentString(this.env, "ENVIRONMENT") ?? "production";
-    const logger = new LoggerClient({
-      apiKey,
-      environment: environmentName,
-      serviceName: "ethang-rss-workflow"
-    });
-
     const database = drizzle(this.env.ethang_rss);
 
     const feeds = await step.do("get-feeds", async () => {
@@ -155,8 +137,8 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     for (const feed of feeds) {
       // eslint-disable-next-line no-await-in-loop
       await step.do(`fetch-feed-${feed.id}`, async () => {
-        const fetchError = await Effect.runPromise(
-          attemptAsync(async () => {
+        const fetchError: Error | undefined = await Effect.runPromise(
+          attemptAsync(async (): Promise<void> => {
             const response = await fetch(feed.xmlAddress);
             const xml = await response.text();
             const parsedMeta = parseFeedMetadata(xml);
@@ -220,20 +202,26 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
               .update(feedsTable)
               .set(updateFields)
               .where(eq(feedsTable.id, feed.id));
-          })
-        ).catch((error: unknown) => {
-          if (isError(error)) {
-            return error;
-          }
+          }).pipe(
+            Effect.matchEffect({
+              onFailure: (error: Error) => {
+                return Effect.succeed(error);
+              },
+              onSuccess: () => {
+                return Effect.succeed(undefined as Error | undefined);
+              }
+            })
+          )
+        );
 
-          return new Error("failed");
-        });
-
-        if (isError(fetchError)) {
-          logger.error(
-            `Failed to fetch feed ${feed.xmlAddress}`,
-            undefined,
-            fetchError.stack
+        if (fetchError !== undefined) {
+          Effect.runSync(
+            Effect.logError(`Failed to fetch feed ${feed.xmlAddress}`, {
+              error: fetchError.message,
+              feedId: feed.id,
+              feedUrl: feed.xmlAddress,
+              stack: fetchError.stack
+            })
           );
           throw fetchError; // Rethrow so Workflow can retry if configured
         }

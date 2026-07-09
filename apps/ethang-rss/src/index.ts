@@ -1,4 +1,4 @@
-import { LoggerClient } from "@ethang/logger-sdk";
+import { fn, installCloudflareLogger } from "@ethang/telemetry";
 import { createCachedJsonResponse } from "@ethang/toolbelt/cache/cache-control.js";
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
@@ -16,10 +16,9 @@ import { subscriptionQuery } from "./data/queries/subscription.ts";
 import { subscriptionsQuery } from "./data/queries/subscriptions.ts";
 // eslint-disable-next-line sonar/no-wildcard-import
 import * as databaseSchema from "./db/schema.ts";
-import {
-  getEnvironmentString,
-  getSecretValue
-} from "./util/get-environment-secret.ts";
+
+// Route Effect logs through console.* so they reach Cloudflare Workers Logs.
+installCloudflareLogger();
 
 export type User = {
   email: string;
@@ -142,58 +141,43 @@ export default class extends WorkerEntrypoint<Env> {
 
   public override async scheduled(event: ScheduledEvent) {
     const workflowId = `fetch-feeds-${event.scheduledTime}`;
+    const workflowBinding = this.env.FETCH_FEEDS_WORKFLOW;
 
-    const feedWorkflow = Effect.tryPromise({
-      catch: (error) => {
-        return error;
-      },
-      try: async () => {
-        return this.env.FETCH_FEEDS_WORKFLOW.create({ id: workflowId });
-      }
+    const startFetchFeedsWorkflow = fn("startFetchFeedsWorkflow")(function* () {
+      const tryCreateWorkflow = Effect.tryPromise({
+        catch: (error) => {
+          return error;
+        },
+        try: async () => {
+          return workflowBinding.create({ id: workflowId });
+        }
+      });
+
+      return yield* pipe(
+        tryCreateWorkflow,
+        Effect.catchAll((error) => {
+          const message = isError(error)
+            ? error.message
+            : convertToString(error);
+
+          if (includes(message, "already exists")) {
+            return Effect.void;
+          }
+
+          return pipe(
+            Effect.logError("Failed to start feed sync workflow", {
+              error: message,
+              stack: isError(error) ? error.stack : undefined
+            }),
+            Effect.flatMap(() => {
+              return Effect.fail(error);
+            })
+          );
+        })
+      );
     });
 
-    const apiKeyEffect = pipe(
-      getSecretValue(this.env.LOGGER_API_KEY),
-      // eslint-disable-next-line lodash/prefer-lodash-method
-      Effect.map(convertToString)
-    );
-
-    const runnableEffect = pipe(
-      feedWorkflow,
-      Effect.catchAll((error) => {
-        const message = isError(error) ? error.message : convertToString(error);
-
-        if (includes(message, "already exists")) {
-          return Effect.void;
-        }
-
-        return pipe(
-          apiKeyEffect,
-          // eslint-disable-next-line lodash/prefer-lodash-method,array-callback-return
-          Effect.map((apiKey) => {
-            const environmentName =
-              getEnvironmentString(this.env, "ENVIRONMENT") ?? "production";
-
-            const logger = new LoggerClient({
-              apiKey,
-              environment: environmentName,
-              serviceName: "ethang-rss-scheduler"
-            });
-
-            logger.error(
-              "Failed to start feed sync workflow",
-              undefined,
-              isError(error) ? error.stack : convertToString(error)
-            );
-          }),
-          Effect.flatMap(() => {
-            return Effect.fail(error);
-          })
-        );
-      })
-    );
-
-    await Effect.runPromise(runnableEffect);
+    await Effect.runPromise(startFetchFeedsWorkflow());
   }
 
   public async subscription(parameters: { feedId: string }) {

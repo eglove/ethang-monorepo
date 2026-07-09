@@ -1,10 +1,8 @@
 import { auth } from "@ethang/intl/en/auth.ts";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MockLoggerClient } from "./test-utilities/mock-logger-client.ts";
 import { MockWorkflowEntrypoint } from "./test-utilities/mock-workflow-entrypoint.ts";
 import {
-  LOGGER_KEY,
   SOME_NON_ERROR_OBJECT,
   SOME_OTHER_D1_ERROR
 } from "./test-utilities/test-constants.ts";
@@ -16,12 +14,6 @@ vi.mock("cloudflare:workers", () => {
       public env: Record<string, unknown> = {};
     },
     WorkflowEntrypoint: MockWorkflowEntrypoint
-  };
-});
-
-vi.mock("@ethang/logger-sdk", () => {
-  return {
-    LoggerClient: MockLoggerClient
   };
 });
 
@@ -251,8 +243,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
         .mockRejectedValue(new Error(SOME_OTHER_D1_ERROR));
       const instance = createInstance({
         ENVIRONMENT: "test",
-        FETCH_FEEDS_WORKFLOW: { create: createMock },
-        LOGGER_API_KEY: LOGGER_KEY
+        FETCH_FEEDS_WORKFLOW: { create: createMock }
       });
 
       await expect(
@@ -263,8 +254,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
     it("logs other non-Error objects and rethrows them with default environment", async () => {
       const createMock = vi.fn().mockRejectedValue(SOME_NON_ERROR_OBJECT);
       const instance = createInstance({
-        FETCH_FEEDS_WORKFLOW: { create: createMock },
-        LOGGER_API_KEY: LOGGER_KEY
+        FETCH_FEEDS_WORKFLOW: { create: createMock }
       });
 
       await expect(
