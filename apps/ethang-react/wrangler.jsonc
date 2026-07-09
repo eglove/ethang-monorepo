@@ -18,9 +18,7 @@
   },
   "main": "worker/index.ts",
   "name": "ethang-react",
-  "observability": {
-    "enabled": true
-  },
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
   "placement": {
     "mode": "smart"
   },
@@ -32,13 +30,6 @@
     {
       "custom_domain": true,
       "pattern": "www.ethang.dev"
-    }
-  ],
-  "secrets_store_secrets": [
-    {
-      "binding": "LOGGER_CLIENT_API_KEY",
-      "secret_name": "LOGGER_CLIENT_API_KEY",
-      "store_id": "737fce8854f042e4905cb36a696dd3c2"
     }
   ],
   "services": [
