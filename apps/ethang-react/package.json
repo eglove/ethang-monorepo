@@ -5,7 +5,6 @@
   ],
   "dependencies": {
     "@ethang/intl": "workspace:*",
-    "@ethang/logger-sdk": "workspace:*",
     "@ethang/schemas": "workspace:*",
     "@ethang/store": "workspace:*",
     "@ethang/toolbelt": "workspace:*",
