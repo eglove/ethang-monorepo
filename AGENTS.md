@@ -5,6 +5,15 @@ This document outlines the global rules, development principles, and tool-usage 
 
 ---
 
+## CRITICAL: Read the README First
+
+Before starting any task, AI agents **must** read [`README.md`](README.md) to understand the layout of the monorepo —
+the active apps, packages, technologies, and tooling. The README is the source of truth for *what* exists in this
+repo; this `AGENTS.md` focuses on *how* to work within it. Re-read the README after pulling if you are unsure which
+workspaces, frameworks, or scripts are current.
+
+---
+
 ## CRITICAL: Agent Operational Notes
 
 **These notes are non-negotiable and MUST always be followed for every task:**
